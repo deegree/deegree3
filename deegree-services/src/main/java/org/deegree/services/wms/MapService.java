@@ -766,7 +766,6 @@ public class MapService {
                             FeatureLayer l = ftToLayer.get( name );
 
                             applyHints( l, qualities, interpolations, antialiases, g );
-
                             render( f, evaluator, ftToStyle.get( name ), renderer, textRenderer, gm.getScale(),
                                     gm.getResolution() );
                         }
@@ -785,6 +784,7 @@ public class MapService {
                         rs.close();
                     }
                 }
+                return;
             }
 
             LOG.debug( "Not using collected queries." );
