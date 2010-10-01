@@ -48,6 +48,7 @@ import org.apache.axiom.om.OMAttribute;
 import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.impl.OMNamespaceImpl;
 import org.apache.axiom.om.impl.llom.OMAttributeImpl;
+import org.deegree.commons.utils.JDBCUtils;
 import org.deegree.commons.xml.NamespaceContext;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.XPath;
@@ -122,6 +123,7 @@ public class ResourceIdentifier implements RecordInspector {
                     }
                 }
                 LOG.debug( "There was no match between resourceIdentifier and the id-attribute! Without any automatic guarantee this metadata has to be rejected! " );
+                JDBCUtils.close( conn );
                 throw new MetadataStoreException( "There was no match between resourceIdentifier and the id-attribute!" );
             }
             if ( checkRSListAgainstID( rsList, id ) ) {
