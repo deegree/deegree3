@@ -120,14 +120,16 @@ public class IdUtils {
             }
 
             if ( uuidIsEqual == true ) {
-                close( rs, stm, conn, LOG );
+                close( rs );
+                close( stm );
                 return generateUUID();
             }
         } catch ( SQLException e ) {
             LOG.debug( "Error while generating a new UUID for the metadata: {}", e.getMessage() );
             throw new MetadataStoreException( "Error while generating a new UUID for the metadata: {}", e );
         } finally {
-            close( rs, stm, null, LOG );
+            close( rs );
+            close( stm );
         }
         return uuid;
 

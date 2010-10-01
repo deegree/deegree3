@@ -124,16 +124,18 @@ public class ISOMetadataStoreTransaction implements MetadataStoreTransaction {
 
             try {
                 OMElement elemFI = ca.getFi().inspect( element );
-                OMElement elemRI = ResourceIdentifier.newInstance( ca.getIc().getRic(), conn ).inspect( elemFI );
-                ISORecord rec = new ISORecord( elemRI );
-                GenerateQueryableProperties generateQP = new GenerateQueryableProperties();
-                BuildMetadataXMLRepresentation buildRecXML = new BuildMetadataXMLRepresentation();
+                if ( elemFI != null ) {
+                    OMElement elemRI = ResourceIdentifier.newInstance( ca.getIc().getRic(), conn ).inspect( elemFI );
+                    ISORecord rec = new ISORecord( elemRI );
+                    GenerateQueryableProperties generateQP = new GenerateQueryableProperties();
+                    BuildMetadataXMLRepresentation buildRecXML = new BuildMetadataXMLRepresentation();
 
-                int operatesOnId = generateQP.generateMainDatabaseDataset( conn, rec );
+                    int operatesOnId = generateQP.generateMainDatabaseDataset( conn, rec );
 
-                String[] identifier = buildRecXML.generateISO( conn, operatesOnId, rec );
-                generateQP.executeQueryableProperties( false, conn, operatesOnId, rec );
-                identifierList.addAll( Arrays.asList( identifier ) );
+                    String[] identifier = buildRecXML.generateISO( conn, operatesOnId, rec );
+                    generateQP.executeQueryableProperties( false, conn, operatesOnId, rec );
+                    identifierList.addAll( Arrays.asList( identifier ) );
+                }
 
             } catch ( IOException e ) {
                 LOG.info( e.getMessage() );
