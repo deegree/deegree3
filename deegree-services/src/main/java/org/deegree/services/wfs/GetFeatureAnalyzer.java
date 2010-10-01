@@ -99,6 +99,8 @@ public class GetFeatureAnalyzer {
 
     private static final Logger LOG = LoggerFactory.getLogger( GetFeatureAnalyzer.class );
 
+    private final WFSController controller;
+
     private final WFService service;
 
     private final GMLVersion outputFormat;
@@ -134,9 +136,10 @@ public class GetFeatureAnalyzer {
      * @throws OWSException
      *             if the request cannot be performed, e.g. because it queries feature types that are not served
      */
-    public GetFeatureAnalyzer( GetFeature request, WFService service, GMLVersion outputFormat, boolean checkInputDomain )
-                            throws OWSException {
+    public GetFeatureAnalyzer( GetFeature request, WFSController controller, WFService service,
+                               GMLVersion outputFormat, boolean checkInputDomain ) throws OWSException {
 
+        this.controller = controller;
         this.service = service;
         this.outputFormat = outputFormat;
         this.checkAreaOfUse = checkInputDomain;
@@ -158,6 +161,8 @@ public class GetFeatureAnalyzer {
             // TODO what about queries with different SRS?
             if ( wfsQuery.getSrsName() != null ) {
                 requestedCrs = wfsQuery.getSrsName();
+            } else {
+                requestedCrs = controller.getDefaultQueryCrs();
             }
         }
 

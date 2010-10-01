@@ -38,6 +38,7 @@ package org.deegree.services.wfs;
 
 import static org.deegree.commons.utils.StringUtils.REMOVE_DOUBLE_FIELDS;
 import static org.deegree.commons.utils.StringUtils.REMOVE_EMPTY_FIELDS;
+import static org.deegree.cs.CRS.EPSG_4326;
 import static org.deegree.protocol.wfs.WFSConstants.VERSION_100;
 import static org.deegree.protocol.wfs.WFSConstants.VERSION_110;
 import static org.deegree.protocol.wfs.WFSConstants.VERSION_200;
@@ -180,6 +181,8 @@ public class WFSController extends AbstractOGCServiceController {
 
     private boolean enableStreaming;
 
+    private CRS defaultQueryCRS = EPSG_4326;
+
     private List<CRS> querySRS = new ArrayList<CRS>();
 
     private final Map<String, OutputFormat> mimeTypeToFormat = new LinkedHashMap<String, OutputFormat>();
@@ -243,6 +246,9 @@ public class WFSController extends AbstractOGCServiceController {
                     CRS crs = new CRS( srs );
                     crs.getWrappedCRS();
                     this.querySRS.add( crs );
+                }
+                if ( querySrs.length > 0 ) {
+                    defaultQueryCRS = this.querySRS.get( 0 );
                 }
             }
         } catch ( UnknownCRSException e ) {
@@ -842,5 +848,9 @@ public class WFSController extends AbstractOGCServiceController {
     public boolean getCheckAreaOfUse() {
         // TODO Auto-generated method stub
         return checkAreaOfUse;
+    }
+
+    public CRS getDefaultQueryCrs() {
+        return defaultQueryCRS;
     }
 }
