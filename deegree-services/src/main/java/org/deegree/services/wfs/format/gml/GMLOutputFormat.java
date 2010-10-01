@@ -239,6 +239,7 @@ class GMLOutputFormat implements OutputFormat {
         }
         XMLStreamWriter xmlStream = WFSController.getXMLResponseWriter( response, schemaLocation );
         GMLStreamWriter gmlStream = GMLOutputFactory.createGMLStreamWriter( gmlVersion, xmlStream );
+        gmlStream.setOutputCRS( master.getDefaultQueryCrs() );
         gmlStream.setLocalXLinkTemplate( master.getObjectXlinkTemplate( request.getVersion(), gmlVersion ) );
         gmlStream.setXLinkDepth( traverseXLinkDepth );
         gmlStream.setCoordinateFormatter( formatter );
@@ -258,7 +259,7 @@ class GMLOutputFormat implements OutputFormat {
 
         LOG.debug( "Performing GetFeature (results) request." );
 
-        GetFeatureAnalyzer analyzer = new GetFeatureAnalyzer( request, service, gmlVersion, checkAreaOfUse );
+        GetFeatureAnalyzer analyzer = new GetFeatureAnalyzer( request, master, service, gmlVersion, checkAreaOfUse );
         String lockId = acquireLock( request, analyzer );
         String schemaLocation = getSchemaLocation( request.getVersion(), analyzer.getFeatureTypes() );
 
@@ -600,7 +601,7 @@ class GMLOutputFormat implements OutputFormat {
 
         LOG.debug( "Performing GetFeature (hits) request." );
 
-        GetFeatureAnalyzer analyzer = new GetFeatureAnalyzer( request, service, gmlVersion, checkAreaOfUse );
+        GetFeatureAnalyzer analyzer = new GetFeatureAnalyzer( request, master, service, gmlVersion, checkAreaOfUse );
         String lockId = acquireLock( request, analyzer );
         String schemaLocation = getSchemaLocation( request.getVersion(), analyzer.getFeatureTypes() );
 
