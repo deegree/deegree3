@@ -47,8 +47,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-import junit.framework.Assert;
-
 import org.apache.axiom.om.OMElement;
 import org.deegree.CoreTstProperties;
 import org.deegree.commons.jdbc.ConnectionManager;
@@ -60,6 +58,7 @@ import org.deegree.metadata.publication.InsertTransaction;
 import org.deegree.protocol.csw.CSWConstants;
 import org.deegree.protocol.csw.CSWConstants.OutputSchema;
 import org.deegree.protocol.csw.CSWConstants.ReturnableElement;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -89,16 +88,27 @@ public class ISOMetadataStoreTest {
         String jdbcPass = CoreTstProperties.getProperty( "iso_store_pass" );
         if ( jdbcURL != null && jdbcUser != null && jdbcPass != null ) {
             Set<String> connIds = ConnectionManager.getConnectionIds();
+            LOG.info( "publish the connectionIDs: " + connIds + " " );
             if ( connIds.contains( "iso_pg_set_up_tables" ) ) {
                 // skip new creation of the connection
-                deleteFromTables( ConnectionManager.getConnection( "iso_pg_set_up_tables" ) );
+                Connection connDeleteTables = null;
+                try {
+                    connDeleteTables = ConnectionManager.getConnection( "iso_pg_set_up_tables" );
+
+                    deleteFromTables( connDeleteTables );
+                } finally {
+                    connDeleteTables.close();
+                }
+
             } else {
                 ConnectionManager.addConnection( "iso_pg_set_up_tables", jdbcURL, jdbcUser, jdbcPass, 5, 20 );
                 Connection connSetUpTables = null;
 
                 try {
                     connSetUpTables = ConnectionManager.getConnection( "iso_pg_set_up_tables" );
+
                     setUpTables( connSetUpTables );
+
                 } finally {
                     connSetUpTables.close();
                 }
@@ -114,10 +124,13 @@ public class ISOMetadataStoreTest {
         Statement stmt = null;
         try {
             stmt = conn.createStatement();
+
             for ( String sql : new ISOMetadataStoreProvider().getDropStatements( TstConstants.configURL ) ) {
                 stmt.executeUpdate( sql );
             }
+
             for ( String sql : new ISOMetadataStoreProvider().getCreateStatements( TstConstants.configURL ) ) {
+
                 stmt.execute( sql );
             }
 
@@ -146,13 +159,13 @@ public class ISOMetadataStoreTest {
     // @Test
     // public void testInsert()
     // throws MetadataStoreException, XMLStreamException, FactoryConfigurationError, IOException {
-    // store = (ISOMetadataStore) new ISOMetadataStoreProvider().getMetadataStore( TestConstants.configURL );
+    // store = (ISOMetadataStore) new ISOMetadataStoreProvider().getMetadataStore( TstConstants.configURL );
     // if ( store == null ) {
     // LOG.warn( "Skipping test (needs configuration)." );
     // return;
     // }
     // MetadataStoreTransaction ta = store.acquireTransaction();
-    // List<OMElement> records;
+    // List<OMElement> records = new ArrayList<OMElement>();
     // int countInserted = 0;
     // int countInsert = 0;
     // String test_folder = CoreTstProperties.getProperty( "iso_metadata_insert_test_folder" );
@@ -163,19 +176,21 @@ public class ISOMetadataStoreTest {
     // countInsert = fileArray.length;
     // System.out.println( "TEST: arraySize: " + countInsert );
     // for ( File f : fileArray ) {
-    // records = new ArrayList<OMElement>();
+    //
     // OMElement record = new XMLAdapter( f ).getRootElement();
     // // MetadataRecord record = loadRecord( url );
     // LOG.info( "inserting filename: " + f.getName() );
     // records.add( record );
+    //
+    // }
+    // }
+    //
     // InsertTransaction insert = new InsertTransaction( records, records.get( 0 ).getQName(), "insert" );
     // List<String> ids = ta.performInsert( insert );
     // if ( !ids.isEmpty() ) {
     // countInserted += ids.size();
     // }
     // ta.commit();
-    // }
-    // }
     // LOG.info( countInserted + " from " + countInsert + " Metadata inserted." );
     //
     // // TODO test various queries
@@ -185,18 +200,18 @@ public class ISOMetadataStoreTest {
     // @Test
     // public void testGetRecord()
     // throws MetadataStoreException {
-    //
+    //    
     // File file = new File( "/home/thomas/Dokumente/metadata/testCases/1.xml" );
     // List<String> ids = insertOneMetadata( file );
-    //
+    //    
     // MetadataResultSet resultSet = store.getRecordsById(
     // ids,
     // CSWConstants.OutputSchema.determineOutputSchema( OutputSchema.ISO_19115 ),
     // ReturnableElement.full );
     // // LOG.info( "" + resultSet.getResultType().getNumberOfRecordsMatched() );
-    //
+    //    
     // Assert.assertEquals( 1, resultSet.getMembers().size() );
-    //
+    //    
     // // TODO test various queries
     // }
 
@@ -211,37 +226,9 @@ public class ISOMetadataStoreTest {
     @Test
     public void testIdentifierRejectFalse()
                             throws MetadataStoreException {
-        // TODO please implement a proper test initialization that skips the test if config is unavailable
+        store = (ISOMetadataStore) new ISOMetadataStoreProvider().getMetadataStore( TstConstants.configURL_REJECT_FI_FALSE );
         if ( store != null ) {
-            store = (ISOMetadataStore) new ISOMetadataStoreProvider().getMetadataStore( TstConstants.configURL_REJECT_FI_FALSE );
-
-            List<String> ids = insertMetadata( store, TstConstants.fileTest_1, TstConstants.fileTest_2 );
-
-            MetadataResultSet resultSet = store.getRecordsById(
-                                                                ids,
-                                                                CSWConstants.OutputSchema.determineOutputSchema( OutputSchema.ISO_19115 ),
-                                                                ReturnableElement.full );
-
-            Assert.assertEquals( 2, resultSet.getMembers().size() );
-        }
-    }
-
-    /**
-     * If the fileIdentifier shouldn't be generated automaticaly if not set.
-     * <p>
-     * 1.xml has no fileIdentifier but with one ResourceIdentifier -> insert<br>
-     * 2.xml has a fileIdentifier -> insert Output: 2 because 1.xml has a resourceIdentifier which can be taken
-     * 
-     * @throws MetadataStoreException
-     */
-    @Test
-    public void testIdentifierRejectTrue()
-                            throws MetadataStoreException {
-        // TODO please implement a proper test initialization that skips the test if config is unavailable        
-        if ( store != null ) {
-            store = (ISOMetadataStore) new ISOMetadataStoreProvider().getMetadataStore( TstConstants.configURL_REJECT_FI_TRUE );
-
-            List<String> ids = insertMetadata( store, TstConstants.fileTest_1, TstConstants.fileTest_2 );
+            List<String> ids = insertMetadata( store, TstConstants.tst_1, TstConstants.tst_2 );
 
             MetadataResultSet resultSet = store.getRecordsById(
                                                                 ids,
@@ -255,74 +242,26 @@ public class ISOMetadataStoreTest {
     // /**
     // * If the fileIdentifier shouldn't be generated automaticaly if not set.
     // * <p>
-    // * 1.xml has no fileIdentifier and no ResourceIdentifier -> reject<br>
-    // * 2.xml has a fileIdentifier -> insert <br>
-    // * Output should be a MetadataStoreException
+    // * 1.xml has no fileIdentifier but with one ResourceIdentifier -> insert<br>
+    // * 2.xml has a fileIdentifier -> insert Output: 2 because 1.xml has a resourceIdentifier which can be taken
     // *
     // * @throws MetadataStoreException
     // */
-    // @Test(expected = MetadataStoreException.class)
-    // public void testIdentifierRejectTrueWithRejection()
+    // @Test
+    // public void testIdentifierRejectTrue()
     // throws MetadataStoreException {
-    // store = (ISOMetadataStore) new ISOMetadataStoreProvider().getMetadataStore(
-    // TestConstants.configURL_REJECT_FI_TRUE );
-    //
-    // insertMetadata( store, TestConstants.fileTest_1, TestConstants.fileTest_3 );
-    //
-    // }
-    //
-    // /**
-    // * If the ResourceIdentifier shouldn't be generated automaticaly and <br>
-    // * if there is no neither RS_ID not id-attribute set
-    // * <p>
-    // * Output should be generate a MetadataStoreException
-    // *
-    // * @throws MetadataStoreException
-    // */
-    // @Test(expected = MetadataStoreException.class)
-    // public void testResourceIdentifierGenerateFALSE_NO_RS_ID()
-    // throws MetadataStoreException {
-    // store = (ISOMetadataStore) new ISOMetadataStoreProvider().getMetadataStore( TestConstants.configURL_RS_GEN_FALSE
+    // store = (ISOMetadataStore) new ISOMetadataStoreProvider().getMetadataStore( TstConstants.configURL_REJECT_FI_TRUE
     // );
+    // if ( store != null ) {
+    // List<String> ids = insertMetadata( store, TstConstants.tst_1, TstConstants.tst_2 );
     //
-    // List<String> ids = insertMetadata( store, TestConstants.fileTest_2 );
+    // MetadataResultSet resultSet = store.getRecordsById(
+    // ids,
+    // CSWConstants.OutputSchema.determineOutputSchema( OutputSchema.ISO_19115 ),
+    // ReturnableElement.full );
     //
+    // Assert.assertEquals( 2, resultSet.getMembers().size() );
     // }
-    //
-    // /**
-    // * If the ResourceIdentifier shouldn't be generated automaticaly and <br>
-    // * there is no RS_ID set but id-attribute set
-    // * <p>
-    // * Output should be generate a MetadataStoreException
-    // *
-    // * @throws MetadataStoreException
-    // */
-    // @Test(expected = MetadataStoreException.class)
-    // public void testResourceIdentifierGenerateFALSE_With_ID_Attrib()
-    // throws MetadataStoreException {
-    // store = (ISOMetadataStore) new ISOMetadataStoreProvider().getMetadataStore( TestConstants.configURL_RS_GEN_FALSE
-    // );
-    //
-    // List<String> ids = insertMetadata( store, TestConstants.fileTest_4 );
-    //
-    // }
-    //
-    // /**
-    // * If the ResourceIdentifier shouldn't be generated automaticaly and <br>
-    // * there is no RS_ID set but id-attribute and uuid-attribute set
-    // * <p>
-    // * Output should be generate a MetadataStoreException
-    // *
-    // * @throws MetadataStoreException
-    // */
-    // @Test(expected = MetadataStoreException.class)
-    // public void testResourceIdentifierGenerateFALSE_With_ID_UUID_Attrib()
-    // throws MetadataStoreException {
-    // store = (ISOMetadataStore) new ISOMetadataStoreProvider().getMetadataStore( TestConstants.configURL_RS_GEN_FALSE
-    // );
-    //
-    // List<String> ids = insertMetadata( store, TestConstants.fileTest_5 );
-    //
     // }
     //
     // /**
@@ -336,53 +275,18 @@ public class ISOMetadataStoreTest {
     // @Test
     // public void testResourceIdentifierGenerateFALSE_With_ID_Attrib_RSID_Equals()
     // throws MetadataStoreException {
-    // store = (ISOMetadataStore) new ISOMetadataStoreProvider().getMetadataStore( TestConstants.configURL_RS_GEN_FALSE
+    // store = (ISOMetadataStore) new ISOMetadataStoreProvider().getMetadataStore( TstConstants.configURL_RS_GEN_FALSE
     // );
+    // if ( store != null ) {
     //
-    // List<String> ids = insertMetadata( store, TestConstants.fileTest_6 );
+    // List<String> ids = insertMetadata( store, TstConstants.tst_6 );
     // MetadataResultSet resultSet = store.getRecordsById(
     // ids,
     // CSWConstants.OutputSchema.determineOutputSchema( OutputSchema.ISO_19115 ),
     // ReturnableElement.full );
     //
     // Assert.assertEquals( 1, resultSet.getMembers().size() );
-    //
     // }
-    //
-    // /**
-    // * If the ResourceIdentifier shouldn't be generated automaticaly and <br>
-    // * if there is RS_ID set and id-attribute set but not equals
-    // * <p>
-    // * Output should be generate a MetadataStoreException
-    // *
-    // * @throws MetadataStoreException
-    // */
-    // @Test(expected = MetadataStoreException.class)
-    // public void testResourceIdentifierGenerateFALSE_With_ID_Attrib_RSID_NOT_Equals()
-    // throws MetadataStoreException {
-    // store = (ISOMetadataStore) new ISOMetadataStoreProvider().getMetadataStore( TestConstants.configURL_RS_GEN_FALSE
-    // );
-    //
-    // List<String> ids = insertMetadata( store, TestConstants.fileTest_7 );
-    //
-    // }
-    //
-    // /**
-    // * If the ResourceIdentifier shouldn't be generated automaticaly and <br>
-    // * if there is RS_ID set and id-attribute set and equals but not uuid compliant
-    // * <p>
-    // * Output should be generate a MetadataStoreException
-    // *
-    // * @throws MetadataStoreException
-    // */
-    // @Test(expected = MetadataStoreException.class)
-    // public void testResourceIdentifierGenerateFALSE_With_ID_Attrib_RSID_NOT_Equals_NO_UUID()
-    // throws MetadataStoreException {
-    // store = (ISOMetadataStore) new ISOMetadataStoreProvider().getMetadataStore( TestConstants.configURL_RS_GEN_FALSE
-    // );
-    //
-    // List<String> ids = insertMetadata( store, TestConstants.fileTest_8 );
-    //
     // }
     //
     // /**
@@ -400,12 +304,10 @@ public class ISOMetadataStoreTest {
     // @Test
     // public void testResourceIdentifierGenerateTRUE()
     // throws MetadataStoreException {
-    // store = (ISOMetadataStore) new ISOMetadataStoreProvider().getMetadataStore( TestConstants.configURL_RS_GEN_TRUE
-    // );
-    //
-    // List<String> ids = insertMetadata( store, TestConstants.fileTest_3, TestConstants.fileTest_4,
-    // TestConstants.fileTest_5, TestConstants.fileTest_6,
-    // TestConstants.fileTest_7, TestConstants.fileTest_8 );
+    // store = (ISOMetadataStore) new ISOMetadataStoreProvider().getMetadataStore( TstConstants.configURL_RS_GEN_TRUE );
+    // if ( store != null ) {
+    // List<String> ids = insertMetadata( store, TstConstants.tst_3, TstConstants.tst_4, TstConstants.tst_5,
+    // TstConstants.tst_6, TstConstants.tst_7, TstConstants.tst_8 );
     //
     // MetadataResultSet resultSet = store.getRecordsById(
     // ids,
@@ -413,7 +315,117 @@ public class ISOMetadataStoreTest {
     // ReturnableElement.full );
     //
     // Assert.assertEquals( 6, resultSet.getMembers().size() );
+    // }
+    // }
     //
+    // /**
+    // * If the ResourceIdentifier shouldn't be generated automaticaly and <br>
+    // * if there is no neither RS_ID not id-attribute set
+    // * <p>
+    // * Output should be generate a MetadataStoreException
+    // *
+    // * @throws MetadataStoreException
+    // */
+    // @Test(expected = MetadataStoreException.class)
+    // public void testResourceIdentifierGenerateFALSE_NO_RS_ID()
+    // throws MetadataStoreException {
+    // store = (ISOMetadataStore) new ISOMetadataStoreProvider().getMetadataStore( TstConstants.configURL_RS_GEN_FALSE
+    // );
+    // if ( store != null ) {
+    // List<String> ids = insertMetadata( store, TstConstants.tst_2 );
+    // }
+    // }
+
+    /**
+     * If the ResourceIdentifier shouldn't be generated automaticaly and <br>
+     * there is no RS_ID set but id-attribute set
+     * <p>
+     * Output should be generate a MetadataStoreException
+     * 
+     * @throws MetadataStoreException
+     */
+    @Test(expected = MetadataStoreException.class)
+    public void testResourceIdentifierGenerateFALSE_With_ID_Attrib()
+                            throws MetadataStoreException {
+        store = (ISOMetadataStore) new ISOMetadataStoreProvider().getMetadataStore( TstConstants.configURL_RS_GEN_FALSE );
+        if ( store != null ) {
+            List<String> ids = insertMetadata( store, TstConstants.tst_4 );
+        }
+    }
+
+    // /**
+    // * If the ResourceIdentifier shouldn't be generated automaticaly and <br>
+    // * there is no RS_ID set but id-attribute and uuid-attribute set
+    // * <p>
+    // * Output should be generate a MetadataStoreException
+    // *
+    // * @throws MetadataStoreException
+    // */
+    // @Test(expected = MetadataStoreException.class)
+    // public void testResourceIdentifierGenerateFALSE_With_ID_UUID_Attrib()
+    // throws MetadataStoreException {
+    // store = (ISOMetadataStore) new ISOMetadataStoreProvider().getMetadataStore( TstConstants.configURL_RS_GEN_FALSE
+    // );
+    // if ( store != null ) {
+    // List<String> ids = insertMetadata( store, TstConstants.tst_5 );
+    // }
+    // }
+    //
+    // /**
+    // * If the fileIdentifier shouldn't be generated automaticaly if not set.
+    // * <p>
+    // * 1.xml has no fileIdentifier and no ResourceIdentifier -> reject<br>
+    // * 2.xml has a fileIdentifier -> insert <br>
+    // * Output should be a MetadataStoreException
+    // *
+    // * @throws MetadataStoreException
+    // */
+    // @Test(expected = MetadataStoreException.class)
+    // public void testIdentifierRejectTrueWithRejection()
+    // throws MetadataStoreException {
+    // store = (ISOMetadataStore) new ISOMetadataStoreProvider().getMetadataStore( TstConstants.configURL_REJECT_FI_TRUE
+    // );
+    //
+    // if ( store != null ) {
+    //
+    // List<String> ids = insertMetadata( store, TstConstants.tst_1, TstConstants.tst_3 );
+    // }
+    // }
+    //
+    // /**
+    // * If the ResourceIdentifier shouldn't be generated automaticaly and <br>
+    // * if there is RS_ID set and id-attribute set but not equals
+    // * <p>
+    // * Output should be generate a MetadataStoreException
+    // *
+    // * @throws MetadataStoreException
+    // */
+    // @Test(expected = MetadataStoreException.class)
+    // public void testResourceIdentifierGenerateFALSE_With_ID_Attrib_RSID_NOT_Equals()
+    // throws MetadataStoreException {
+    // store = (ISOMetadataStore) new ISOMetadataStoreProvider().getMetadataStore( TstConstants.configURL_RS_GEN_FALSE
+    // );
+    // if ( store != null ) {
+    // List<String> ids = insertMetadata( store, TstConstants.tst_7 );
+    // }
+    // }
+    //
+    // /**
+    // * If the ResourceIdentifier shouldn't be generated automaticaly and <br>
+    // * if there is RS_ID set and id-attribute set and equals but not uuid compliant
+    // * <p>
+    // * Output should be generate a MetadataStoreException
+    // *
+    // * @throws MetadataStoreException
+    // */
+    // @Test(expected = MetadataStoreException.class)
+    // public void testResourceIdentifierGenerateFALSE_With_ID_Attrib_RSID_NOT_Equals_NO_UUID()
+    // throws MetadataStoreException {
+    // store = (ISOMetadataStore) new ISOMetadataStoreProvider().getMetadataStore( TstConstants.configURL_RS_GEN_FALSE
+    // );
+    // if ( store != null ) {
+    // List<String> ids = insertMetadata( store, TstConstants.tst_8 );
+    // }
     // }
 
     private List<String> insertMetadata( ISOMetadataStore store, URL... URLInput )
