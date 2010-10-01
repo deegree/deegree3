@@ -119,6 +119,14 @@ public class CommonNamespaces {
      */
     public static final String ISOAP10GCONS = "http://www.isotc211.org/2005/gco";
 
+    public static final String ISO_2005_GCO_NS = "http://www.isotc211.org/2005/gco";
+    
+    public static final String ISO_2005_GSR_NS = "http://www.isotc211.org/2005/gsr";
+
+    public static final String ISO_2005_GSS_NS = "http://www.isotc211.org/2005/gss";
+    
+    public static final String ISO_2005_GTS_NS = "http://www.isotc211.org/2005/gts";
+
     /**
      * The APISO namespace is currently bound to: "http://www.opengis.net/cat/csw/apiso/1.0"
      */
@@ -294,22 +302,6 @@ public class CommonNamespaces {
         } else if ( XSNS.equals( ns ) ) {
             return true;
         } else if ( XLNNS.equals( ns ) ) {
-            return true;
-        }
-        return false;
-    }
-
-    /**
-     * Returns whether the given namespace is a GML core namespace.
-     * 
-     * @param ns
-     *            namespace to check, may be <code>null</code>
-     * @return true, if it is a GML core namespace, false otherwise
-     */
-    public static boolean isGMLNamespace( String ns ) {
-        if ( GMLNS.equals( ns ) ) {
-            return true;
-        } else if ( GML3_2_NS.equals( ns ) ) {
             return true;
         }
         return false;

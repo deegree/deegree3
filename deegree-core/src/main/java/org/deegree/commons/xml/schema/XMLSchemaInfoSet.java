@@ -46,18 +46,22 @@ import static org.w3c.dom.DOMError.SEVERITY_WARNING;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.xml.namespace.QName;
 
 import org.apache.xerces.impl.xs.XMLSchemaLoader;
 import org.apache.xerces.impl.xs.util.StringListImpl;
+import org.apache.xerces.xs.StringList;
 import org.apache.xerces.xs.XSComplexTypeDefinition;
 import org.apache.xerces.xs.XSConstants;
 import org.apache.xerces.xs.XSElementDeclaration;
 import org.apache.xerces.xs.XSModel;
 import org.apache.xerces.xs.XSNamedMap;
+import org.apache.xerces.xs.XSNamespaceItem;
 import org.apache.xerces.xs.XSNamespaceItemList;
 import org.apache.xerces.xs.XSTypeDefinition;
 import org.deegree.commons.xml.XMLProcessingException;
@@ -74,19 +78,21 @@ import org.w3c.dom.DOMErrorHandler;
  * types.
  * </p>
  * 
- * @see org.deegree.gml.schema.GMLSchemaAnalyzer
+ * @see org.deegree.gml.schema.GMLSchemaInfoSet
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
  * 
  * @version $Revision:$, $Date:$
  */
-public class XSModelAnalyzer {
+public class XMLSchemaInfoSet {
 
-    private static final Logger LOG = LoggerFactory.getLogger( XSModelAnalyzer.class );
+    private static final Logger LOG = LoggerFactory.getLogger( XMLSchemaInfoSet.class );
 
     /** The XML schema infoset. */
     protected final XSModel xmlSchema;
+
+    private Map<String, List<String>> nsToLocations;
 
     /**
      * Creates a new <code>XSModelAnalyzer</code> for the given (Xerces) XML schema infoset.
@@ -94,12 +100,12 @@ public class XSModelAnalyzer {
      * @param xmlSchema
      *            schema infoset, must not be <code>null</code>
      */
-    public XSModelAnalyzer( XSModel xmlSchema ) {
+    public XMLSchemaInfoSet( XSModel xmlSchema ) {
         this.xmlSchema = xmlSchema;
     }
 
     /**
-     * Creates a new {@link XSModelAnalyzer} instance that reads the schema documents from the given URLs.
+     * Creates a new {@link XMLSchemaInfoSet} instance that reads the schema documents from the given URLs.
      * 
      * @param schemaUrls
      *            locations of the schema documents, must not be <code>null</code> and contain at least one entry
@@ -108,9 +114,46 @@ public class XSModelAnalyzer {
      * @throws InstantiationException
      * @throws IllegalAccessException
      */
-    public XSModelAnalyzer( String... schemaUrls ) throws ClassCastException, ClassNotFoundException,
+    public XMLSchemaInfoSet( String... schemaUrls ) throws ClassCastException, ClassNotFoundException,
                             InstantiationException, IllegalAccessException {
         xmlSchema = loadModel( schemaUrls );
+    }
+
+    /**
+     * Returns all namespaces that participate in this infoset.
+     * 
+     * @return all namespaces, never <code>null</code>
+     */
+    public Set<String> getSchemaNamespaces() {
+        return getNSMap().keySet();
+    }
+
+    /**
+     * Returns the locations of all schema files that contributed to the given namespace.
+     * 
+     * @param namespace
+     *            namespace, must not be <code>null</code>
+     * @return the locations of the schema files, or <code>null</code> if the namespace does not belong to the schema
+     */
+    public List<String> getComponentLocations( String namespace ) {
+        return getNSMap().get( namespace );
+    }
+
+    private synchronized Map<String, List<String>> getNSMap() {
+        if ( nsToLocations == null ) {
+            nsToLocations = new LinkedHashMap<String, List<String>>();
+            XSNamespaceItemList nsItems = xmlSchema.getNamespaceItems();
+            for ( int i = 0; i < nsItems.getLength(); i++ ) {
+                XSNamespaceItem nsItem = nsItems.item( i );
+                StringList locations = nsItem.getDocumentLocations();
+                List<String> loc = new ArrayList<String>( locations.getLength() );
+                for ( int j = 0; j < locations.getLength(); j++ ) {
+                    loc.add( locations.item( j ) );
+                }
+                nsToLocations.put( nsItem.getSchemaNamespace(), loc );
+            }
+        }
+        return nsToLocations;
     }
 
     public XSNamespaceItemList getNamespaces() {

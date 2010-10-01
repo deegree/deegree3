@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.services.wfs.format;
+package org.deegree.services.wfs.format.gml;
 
 import java.util.Properties;
 
@@ -42,6 +42,8 @@ import javax.xml.namespace.QName;
 import org.deegree.geometry.io.CoordinateFormatter;
 import org.deegree.geometry.io.DecimalCoordinateFormatter;
 import org.deegree.services.wfs.WFSController;
+import org.deegree.services.wfs.format.OutputFormat;
+import org.deegree.services.wfs.format.OutputFormatProvider;
 
 /**
  * {@link OutputFormatProvider} for the {@link GMLOutputFormat}.

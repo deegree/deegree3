@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.services.wfs.format;
+package org.deegree.services.wfs.format.gml;
 
 import static org.deegree.commons.xml.CommonNamespaces.GML3_2_NS;
 import static org.deegree.commons.xml.CommonNamespaces.GMLNS;
@@ -106,6 +106,7 @@ import org.deegree.services.i18n.Messages;
 import org.deegree.services.wfs.GetFeatureAnalyzer;
 import org.deegree.services.wfs.WFSController;
 import org.deegree.services.wfs.WFService;
+import org.deegree.services.wfs.format.OutputFormat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -121,7 +122,7 @@ class GMLOutputFormat implements OutputFormat {
 
     private static final Logger LOG = LoggerFactory.getLogger( GMLOutputFormat.class );
 
-    private final GMLVersion gmlVersion;
+    final GMLVersion gmlVersion;
 
     private final String mimeType;
 
@@ -141,6 +142,8 @@ class GMLOutputFormat implements OutputFormat {
 
     private final CoordinateFormatter formatter;
 
+    private final DescribeFeatureTypeHandler dftHandler;
+
     /**
      * 
      * @param master
@@ -158,6 +161,7 @@ class GMLOutputFormat implements OutputFormat {
                      QName responseContainerEl, String schemaLocation ) {
         this.master = master;
         this.service = master.getService();
+        this.dftHandler = new DescribeFeatureTypeHandler( service );
         this.streamMode = streamMode;
         this.featureLimit = master.getMaxFeatures();
         this.checkAreaOfUse = master.getCheckAreaOfUse();
@@ -169,8 +173,9 @@ class GMLOutputFormat implements OutputFormat {
     }
 
     @Override
-    public void doDescribeFeatureType( DescribeFeatureType request, HttpResponseBuffer response ) {
-        // TODO Auto-generated method stub
+    public void doDescribeFeatureType( DescribeFeatureType request, HttpResponseBuffer response )
+                            throws OWSException, XMLStreamException, IOException {
+        dftHandler.doDescribeFeatureType( request, response, this );
     }
 
     @Override
@@ -255,7 +260,7 @@ class GMLOutputFormat implements OutputFormat {
 
         GetFeatureAnalyzer analyzer = new GetFeatureAnalyzer( request, service, gmlVersion, checkAreaOfUse );
         String lockId = acquireLock( request, analyzer );
-        String schemaLocation = getSchemaLocation( request.getVersion(), gmlVersion, analyzer.getFeatureTypes() );
+        String schemaLocation = getSchemaLocation( request.getVersion(), analyzer.getFeatureTypes() );
 
         int traverseXLinkDepth = 0;
         int traverseXLinkExpiry = -1;
@@ -410,7 +415,7 @@ class GMLOutputFormat implements OutputFormat {
     }
 
     private void writeBoundedBy( GMLStreamWriter gmlStream, GMLVersion outputFormat )
-                            throws XMLStreamException, UnknownCRSException, TransformationException {
+                            throws XMLStreamException {
 
         XMLStreamWriter xmlStream = gmlStream.getXMLStream();
         switch ( outputFormat ) {
@@ -597,7 +602,7 @@ class GMLOutputFormat implements OutputFormat {
 
         GetFeatureAnalyzer analyzer = new GetFeatureAnalyzer( request, service, gmlVersion, checkAreaOfUse );
         String lockId = acquireLock( request, analyzer );
-        String schemaLocation = getSchemaLocation( request.getVersion(), gmlVersion, analyzer.getFeatureTypes() );
+        String schemaLocation = getSchemaLocation( request.getVersion(), analyzer.getFeatureTypes() );
 
         XMLStreamWriter xmlStream = WFSController.getXMLResponseWriter( response, schemaLocation );
 
@@ -656,35 +661,32 @@ class GMLOutputFormat implements OutputFormat {
      *            requested feature types, can be <code>null</code> (any feature type may occur in the output)
      * @return value for the <code>xsi:schemaLocation</code> attribute, never <code>null</code>
      */
-    private String getSchemaLocation( Version requestVersion, GMLVersion gmlVersion,
-                                      Collection<FeatureType> requestedFts ) {
+    private String getSchemaLocation( Version requestVersion, Collection<FeatureType> requestedFts ) {
 
         String schemaLocation = null;
         QName wfsFeatureCollection = new QName( WFS_NS, "FeatureCollection", WFS_PREFIX );
-        if ( VERSION_100.equals( requestVersion ) ) {
-            if ( GML_2 == gmlVersion ) {
-                schemaLocation = WFS_NS + " http://schemas.opengis.net/wfs/1.0.0/WFS-basic.xsd";
+        if ( responseContainerEl == null || wfsFeatureCollection.equals( responseContainerEl ) ) {
+            if ( VERSION_100.equals( requestVersion ) ) {
+                if ( GML_2 == gmlVersion ) {
+                    schemaLocation = WFS_NS + " http://schemas.opengis.net/wfs/1.0.0/WFS-basic.xsd";
+                } else {
+                    schemaLocation = WFSController.getSchemaLocation( requestVersion, gmlVersion, wfsFeatureCollection );
+                }
+            } else if ( VERSION_110.equals( requestVersion ) ) {
+                if ( GML_31 == gmlVersion ) {
+                    schemaLocation = WFS_NS + " http://schemas.opengis.net/wfs/1.1.0/wfs.xsd";
+                } else {
+                    schemaLocation = WFSController.getSchemaLocation( requestVersion, gmlVersion, wfsFeatureCollection );
+                }
+            } else if ( VERSION_200.equals( requestVersion ) ) {
+                if ( GML_32 == gmlVersion ) {
+                    schemaLocation = WFS_200_NS + " http://schemas.opengis.net/wfs/2.0.0/wfs.xsd";
+                } else {
+                    schemaLocation = WFSController.getSchemaLocation( requestVersion, gmlVersion, wfsFeatureCollection );
+                }
             } else {
-                schemaLocation = WFSController.getSchemaLocation( requestVersion, gmlVersion, wfsFeatureCollection );
+                throw new RuntimeException( "Internal error: Unhandled WFS version: " + requestVersion );
             }
-        } else if ( VERSION_110.equals( requestVersion ) ) {
-            if ( GML_31 == gmlVersion ) {
-                schemaLocation = WFS_NS + " http://schemas.opengis.net/wfs/1.1.0/wfs.xsd";
-            } else {
-                schemaLocation = WFSController.getSchemaLocation( requestVersion, gmlVersion, wfsFeatureCollection );
-            }
-        } else if ( VERSION_200.equals( requestVersion ) ) {
-            if ( GML_32 == gmlVersion ) {
-                schemaLocation = WFS_200_NS + " http://schemas.opengis.net/wfs/2.0.0/wfs.xsd";
-            } else {
-                schemaLocation = WFSController.getSchemaLocation( requestVersion, gmlVersion, wfsFeatureCollection );
-            }
-        } else {
-            throw new RuntimeException( "Internal error: Unhandled WFS version: " + requestVersion );
-        }
-
-        if ( this.schemaLocation != null ) {
-            return schemaLocation + " " + this.schemaLocation;
         }
 
         if ( requestedFts == null ) {
@@ -697,6 +699,9 @@ class GMLOutputFormat implements OutputFormat {
             requestedFtNames[i++] = requestedFt.getName();
         }
 
+        if ( schemaLocation == null ) {
+            return WFSController.getSchemaLocation( requestVersion, gmlVersion, requestedFtNames );
+        }
         return schemaLocation + " " + WFSController.getSchemaLocation( requestVersion, gmlVersion, requestedFtNames );
     }
 

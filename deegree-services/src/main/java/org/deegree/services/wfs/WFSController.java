@@ -174,8 +174,6 @@ public class WFSController extends AbstractOGCServiceController {
 
     private WFService service;
 
-    private DescribeFeatureTypeHandler dftHandler;
-
     private LockFeatureHandler lockFeatureHandler;
 
     private boolean enableTransactions;
@@ -270,7 +268,6 @@ public class WFSController extends AbstractOGCServiceController {
         } catch ( Exception e ) {
             throw new ControllerInitException( "Error initializing WFS / FeatureStores: " + e.getMessage(), e );
         }
-        dftHandler = new DescribeFeatureTypeHandler( service );
         lockFeatureHandler = new LockFeatureHandler( this );
 
         initFormats( jaxbConfig.getPublishedInformation().getFormat() );
@@ -371,7 +368,8 @@ public class WFSController extends AbstractOGCServiceController {
             switch ( requestType ) {
             case DescribeFeatureType:
                 DescribeFeatureType describeFt = DescribeFeatureTypeKVPAdapter.parse( kvpParamsUC );
-                dftHandler.doDescribeFeatureType( describeFt, response );
+                OutputFormat format = determineFormat( requestVersion, describeFt.getOutputFormat(), "outputFormat" );
+                format.doDescribeFeatureType( describeFt, response );
                 break;
             case GetCapabilities:
                 GetCapabilities getCapabilities = GetCapabilitiesKVPAdapter.parse( requestVersion, kvpParamsUC );
@@ -379,7 +377,7 @@ public class WFSController extends AbstractOGCServiceController {
                 break;
             case GetFeature:
                 GetFeature getFeature = GetFeatureKVPAdapter.parse( kvpParamsUC, nsMap );
-                OutputFormat format = determineFormat( requestVersion, getFeature.getOutputFormat(), "outputFormat" );
+                format = determineFormat( requestVersion, getFeature.getOutputFormat(), "outputFormat" );
                 format.doGetFeature( getFeature, response );
                 break;
             case GetFeatureWithLock:
@@ -480,7 +478,8 @@ public class WFSController extends AbstractOGCServiceController {
                 DescribeFeatureTypeXMLAdapter describeFtAdapter = new DescribeFeatureTypeXMLAdapter();
                 describeFtAdapter.setRootElement( new XMLAdapter( xmlStream ).getRootElement() );
                 DescribeFeatureType describeFt = describeFtAdapter.parse( requestVersion );
-                dftHandler.doDescribeFeatureType( describeFt, response );
+                OutputFormat format = determineFormat( requestVersion, describeFt.getOutputFormat(), "outputFormat" );
+                format.doDescribeFeatureType( describeFt, response );
                 break;
             case GetCapabilities:
                 GetCapabilitiesXMLAdapter getCapabilitiesAdapter = new GetCapabilitiesXMLAdapter();
@@ -492,7 +491,7 @@ public class WFSController extends AbstractOGCServiceController {
                 GetFeatureXMLAdapter getFeatureAdapter = new GetFeatureXMLAdapter();
                 getFeatureAdapter.setRootElement( new XMLAdapter( xmlStream ).getRootElement() );
                 GetFeature getFeature = getFeatureAdapter.parse( requestVersion );
-                OutputFormat format = determineFormat( requestVersion, getFeature.getOutputFormat(), "outputFormat" );
+                format = determineFormat( requestVersion, getFeature.getOutputFormat(), "outputFormat" );
                 format.doGetFeature( getFeature, response );
                 break;
             case GetFeatureWithLock:
@@ -613,21 +612,13 @@ public class WFSController extends AbstractOGCServiceController {
      * @param gmlVersion
      *            requested GML version, must not be <code>null</code>
      * @param fts
-     *            types of features included in the response
+     *            types of features included in the response, must not be <code>null</code>
      * @return schemaLocation value
      */
     public static String getSchemaLocation( Version version, GMLVersion gmlVersion, QName... fts ) {
 
-        if ( fts.length == 0 ) {
-            return OGCFrontController.getHttpGetURL() + "SERVICE=WFS&VERSION=" + version
-                   + "&REQUEST=DescribeFeatureType";
-        }
-
         String baseUrl = OGCFrontController.getHttpGetURL() + "SERVICE=WFS&VERSION=" + version
                          + "&REQUEST=DescribeFeatureType&OUTPUTFORMAT=";
-
-        // String baseUrl = OGCFrontController.getHttpGetURL() + "SERVICE=WFS&VERSION=" + version
-        // + "&REQUEST=DescribeFeatureType";
 
         try {
             if ( VERSION_100.equals( version ) && gmlVersion == GMLVersion.GML_2 ) {
@@ -635,36 +626,42 @@ public class WFSController extends AbstractOGCServiceController {
             } else {
                 baseUrl += URLEncoder.encode( gmlVersion.getMimeType(), "UTF-8" );
             }
-            baseUrl += "&TYPENAME=";
 
-            Map<String, String> bindings = new HashMap<String, String>();
-            for ( int i = 0; i < fts.length; i++ ) {
-                QName ftName = fts[i];
-                bindings.put( ftName.getPrefix(), ftName.getNamespaceURI() );
-                baseUrl += URLEncoder.encode( ftName.getPrefix(), "UTF-8" ) + ":"
-                           + URLEncoder.encode( ftName.getLocalPart(), "UTF-8" );
-                if ( i != fts.length - 1 ) {
-                    baseUrl += ",";
-                }
-            }
+            if ( fts.length > 0 ) {
+                baseUrl += "&TYPENAME=";
 
-            if ( !VERSION_100.equals( version ) ) {
-                baseUrl += "&NAMESPACE=xmlns(";
-                int i = 0;
-                for ( String prefix : bindings.keySet() ) {
-                    baseUrl += URLEncoder.encode( prefix, "UTF-8" ) + "="
-                               + URLEncoder.encode( bindings.get( prefix ), "UTF-8" );
-                    if ( i != bindings.size() - 1 ) {
+                Map<String, String> bindings = new HashMap<String, String>();
+                for ( int i = 0; i < fts.length; i++ ) {
+                    QName ftName = fts[i];
+                    bindings.put( ftName.getPrefix(), ftName.getNamespaceURI() );
+                    baseUrl += URLEncoder.encode( ftName.getPrefix(), "UTF-8" ) + ":"
+                               + URLEncoder.encode( ftName.getLocalPart(), "UTF-8" );
+                    if ( i != fts.length - 1 ) {
                         baseUrl += ",";
                     }
                 }
-                baseUrl += ")";
+
+                if ( !VERSION_100.equals( version ) ) {
+                    baseUrl += "&NAMESPACE=xmlns(";
+                    int i = 0;
+                    for ( String prefix : bindings.keySet() ) {
+                        baseUrl += URLEncoder.encode( prefix, "UTF-8" ) + "="
+                                   + URLEncoder.encode( bindings.get( prefix ), "UTF-8" );
+                        if ( i != bindings.size() - 1 ) {
+                            baseUrl += ",";
+                        }
+                    }
+                    baseUrl += ")";
+                }
             }
         } catch ( UnsupportedEncodingException e ) {
-            // should never happen (UTF-8 *is* known)
+            // should never happen (UTF-8 *is* known to Java)
         }
 
-        return fts[0].getNamespaceURI() + " " + baseUrl;
+        if ( fts.length > 0 ) {
+            return fts[0].getNamespaceURI() + " " + baseUrl;
+        }
+        return baseUrl;
     }
 
     private Version getVersion( String versionString )
@@ -818,7 +815,7 @@ public class WFSController extends AbstractOGCServiceController {
                 }
             }
         } else {
-            if ( "GML2".equals( format ) ) {
+            if ( "GML2".equals( format ) || "XMLSCHEMA".equals( format ) ) {
                 outputFormat = mimeTypeToFormat.get( "text/xml; subtype=gml/2.1.2" );
             } else if ( "GML3".equals( format ) ) {
                 outputFormat = mimeTypeToFormat.get( "text/xml; subtype=gml/3.1.1" );

@@ -42,7 +42,7 @@ import org.deegree.services.controller.utils.HttpResponseBuffer;
 import org.deegree.services.wfs.WFSController;
 
 /**
- * Implementations handle output formats for the {@link WFSController}.
+ * Implementations provide output formats for the {@link WFSController}.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
@@ -58,7 +58,8 @@ public interface OutputFormat {
      * @param response
      *            sink for writing the respone, never <code>null</code>
      */
-    public void doDescribeFeatureType( DescribeFeatureType request, HttpResponseBuffer response ) throws Exception;
+    public void doDescribeFeatureType( DescribeFeatureType request, HttpResponseBuffer response )
+                            throws Exception;
 
     /**
      * Invoked by the {@link WFSController} when this output format instance is responsible for handling the request.
@@ -67,8 +68,14 @@ public interface OutputFormat {
      * @param response
      *            sink for writing the respone, never <code>null</code>
      */
-    public void doGetFeature( GetFeature request, HttpResponseBuffer response ) throws Exception;
+    public void doGetFeature( GetFeature request, HttpResponseBuffer response )
+                            throws Exception;
 
+    /**
+     * @param request
+     * @param response
+     * @throws Exception
+     */
     public void doGetGmlObject( GetGmlObject request, HttpResponseBuffer response )
                             throws Exception;
 }

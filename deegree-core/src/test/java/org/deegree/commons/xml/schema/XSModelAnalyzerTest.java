@@ -55,7 +55,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Tests for the {@link XSModelAnalyzer}.
+ * Tests for the {@link XMLSchemaInfoSet}.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
@@ -79,7 +79,7 @@ public class XSModelAnalyzerTest {
                             throws ClassCastException, ClassNotFoundException, InstantiationException,
                             IllegalAccessException {
 
-        XSModelAnalyzer analyzer = new XSModelAnalyzer(
+        XMLSchemaInfoSet analyzer = new XMLSchemaInfoSet(
                                                         XSModelAnalyzerTest.class.getResource( "Philosopher.xsd" ).toString() );
         QName abstractFeatureElementName = new QName( "http://www.opengis.net/gml", "_Feature" );
         List<XSElementDeclaration> concreteFeatureElements = analyzer.getSubstitutions( abstractFeatureElementName,
@@ -103,7 +103,7 @@ public class XSModelAnalyzerTest {
         String schemaURL = XSModelAnalyzerTest.class.getResource( "Philosopher.xsd" ).toString();
         String schemaURL2 = "http://schemas.opengis.net/wfs/1.1.0/wfs.xsd";
 
-        XSModelAnalyzer analyzer = new XSModelAnalyzer( schemaURL, schemaURL2 );
+        XMLSchemaInfoSet analyzer = new XMLSchemaInfoSet( schemaURL, schemaURL2 );
         XSModel model = analyzer.getXSModel();
         XSElementDeclaration a = model.getElementDeclaration( "Philosopher", "http://www.deegree.org/app" );
         XSElementDeclaration b = model.getElementDeclaration( "FeatureCollection", "http://www.opengis.net/wfs" );
@@ -121,7 +121,7 @@ public class XSModelAnalyzerTest {
                             throws ClassCastException, ClassNotFoundException, InstantiationException,
                             IllegalAccessException {
 
-        XSModelAnalyzer analyzer = new XSModelAnalyzer( "http://schemas.opengis.net/gml/2.1.2/geometry.xsd" );
+        XMLSchemaInfoSet analyzer = new XMLSchemaInfoSet( "http://schemas.opengis.net/gml/2.1.2/geometry.xsd" );
         QName abstractFeatureElementName = new QName( "http://www.opengis.net/gml", "_Geometry" );
         List<XSElementDeclaration> geometryElements = analyzer.getSubstitutions( abstractFeatureElementName, null,
                                                                                  true, false );

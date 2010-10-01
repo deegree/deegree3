@@ -65,7 +65,7 @@ public class GMLSchemaAnalyzer {
 
     private static final String OPT_NAMESPACE = "namespace";
 
-    private static void printFeatureTypeHierarchy( org.deegree.gml.schema.GMLSchemaAnalyzer analyzer, String ns ) {
+    private static void printFeatureTypeHierarchy( org.deegree.gml.schema.GMLSchemaInfoSet analyzer, String ns ) {
         System.out.println( "Feature types in namespace {" + ns + "}:\n" );
         XSElementDeclaration abstractFeatureDecl = analyzer.getAbstractFeatureElementDeclaration();
         for ( XSElementDeclaration featureDecl : analyzer.getSubstitutions( abstractFeatureDecl, ns, false, false ) ) {
@@ -75,7 +75,7 @@ public class GMLSchemaAnalyzer {
         }
     }
 
-    private static void printGeometryTypeInformation( org.deegree.gml.schema.GMLSchemaAnalyzer analyzer ) {
+    private static void printGeometryTypeInformation( org.deegree.gml.schema.GMLSchemaInfoSet analyzer ) {
         System.out.println( "\nGeometry types:\n" );
         XSElementDeclaration geometryDecl = analyzer.getAbstractGeometryElementDeclaration();
         for ( XSElementDeclaration decl : analyzer.getSubstitutions( geometryDecl, null, false, false ) ) {
@@ -101,7 +101,7 @@ public class GMLSchemaAnalyzer {
         }
     }
 
-    private static void printElementHierarchy( org.deegree.gml.schema.GMLSchemaAnalyzer analyzer,
+    private static void printElementHierarchy( org.deegree.gml.schema.GMLSchemaInfoSet analyzer,
                                                XSElementDeclaration decl, String ns, String indent ) {
         if ( ns == null ) {
             System.out.println( indent + "- {" + decl.getNamespace() + "}" + decl.getName()
@@ -142,7 +142,7 @@ public class GMLSchemaAnalyzer {
             String namespace = options.getOption( OPT_NAMESPACE ).getValue();
 
             File file = new File( inputFileName );
-            org.deegree.gml.schema.GMLSchemaAnalyzer analyzer = new org.deegree.gml.schema.GMLSchemaAnalyzer(
+            org.deegree.gml.schema.GMLSchemaInfoSet analyzer = new org.deegree.gml.schema.GMLSchemaInfoSet(
                                                                                                               GMLVersion.GML_31,
                                                                                                               file.toURI().toURL().toString() );
 
