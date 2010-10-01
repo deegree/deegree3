@@ -45,9 +45,9 @@ import java.net.URL;
  * 
  * @version $Revision$, $Date$
  */
-public class TestConstants {
+public class TstConstants {
 
-    private TestConstants() {
+    private TstConstants() {
 
     }
 
