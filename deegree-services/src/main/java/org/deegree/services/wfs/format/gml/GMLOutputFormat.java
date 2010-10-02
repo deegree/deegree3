@@ -243,6 +243,7 @@ class GMLOutputFormat implements OutputFormat {
         gmlStream.setLocalXLinkTemplate( master.getObjectXlinkTemplate( request.getVersion(), gmlVersion ) );
         gmlStream.setXLinkDepth( traverseXLinkDepth );
         gmlStream.setCoordinateFormatter( formatter );
+        gmlStream.setNamespaceBindings( service.getPrefixToNs() );
         try {
             gmlStream.write( o );
         } catch ( UnknownCRSException e ) {
@@ -361,7 +362,7 @@ class GMLOutputFormat implements OutputFormat {
         gmlStream.setXLinkDepth( traverseXLinkDepth );
         gmlStream.setXLinkExpiry( traverseXLinkExpiry );
         gmlStream.setXLinkFeatureProperties( analyzer.getXLinkProps() );
-
+        gmlStream.setNamespaceBindings( service.getPrefixToNs() );
         bindFeatureTypePrefixes( xmlStream, analyzer.getFeatureTypes() );
 
         if ( outputFormat == GML_2 ) {
@@ -492,7 +493,7 @@ class GMLOutputFormat implements OutputFormat {
         gmlStream.setFeatureProperties( analyzer.getRequestedProps() );
         gmlStream.setOutputCRS( analyzer.getRequestedCRS() );
         gmlStream.setCoordinateFormatter( formatter );
-
+        gmlStream.setNamespaceBindings( service.getPrefixToNs() );
         bindFeatureTypePrefixes( xmlStream, analyzer.getFeatureTypes() );
 
         if ( outputFormat == GML_2 || allFeatures.getEnvelope() != null ) {

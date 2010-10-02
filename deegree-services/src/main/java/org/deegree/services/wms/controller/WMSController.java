@@ -116,10 +116,10 @@ import org.deegree.services.jaxb.main.DeegreeServicesMetadataType;
 import org.deegree.services.jaxb.main.ServiceIdentificationType;
 import org.deegree.services.jaxb.main.ServiceProviderType;
 import org.deegree.services.jaxb.wms.PublishedInformation;
-import org.deegree.services.jaxb.wms.ServiceConfiguration;
 import org.deegree.services.jaxb.wms.PublishedInformation.GetFeatureInfoFormat;
 import org.deegree.services.jaxb.wms.PublishedInformation.ImageFormat;
 import org.deegree.services.jaxb.wms.PublishedInformation.SupportedVersions;
+import org.deegree.services.jaxb.wms.ServiceConfiguration;
 import org.deegree.services.wms.MapService;
 import org.deegree.services.wms.WMSException.InvalidDimensionValue;
 import org.deegree.services.wms.WMSException.MissingDimensionValue;
@@ -250,8 +250,7 @@ public class WMSController extends AbstractOGCServiceController {
                     for ( GetFeatureInfoFormat t : pi.getGetFeatureInfoFormat() ) {
                         String format = t.getFormat();
                         if ( t.getFile() != null ) {
-                            supportedFeatureInfoFormats.put(
-                                                             format,
+                            supportedFeatureInfoFormats.put( format,
                                                              new File( controllerConf.resolve( t.getFile() ).toURI() ).toString() );
                         } else {
                             instantiateSerializer( featureInfoSerializers, format, t.getClazz(),
@@ -347,14 +346,12 @@ public class WMSController extends AbstractOGCServiceController {
         try {
             req = IMPLEMENTATION_METADATA.getRequestTypeByName( map.get( "REQUEST" ) );
         } catch ( IllegalArgumentException e ) {
-            controllers.get( version ).sendException(
-                                                      new OWSException( get( "WMS.OPERATION_NOT_KNOWN",
+            controllers.get( version ).sendException( new OWSException( get( "WMS.OPERATION_NOT_KNOWN",
                                                                              map.get( "REQUEST" ) ),
                                                                         OPERATION_NOT_SUPPORTED ), response );
             return;
         } catch ( NullPointerException e ) {
-            controllers.get( version ).sendException(
-                                                      new OWSException( get( "WMS.PARAM_MISSING", "REQUEST" ),
+            controllers.get( version ).sendException( new OWSException( get( "WMS.PARAM_MISSING", "REQUEST" ),
                                                                         OPERATION_NOT_SUPPORTED ), response );
             return;
         }
@@ -450,8 +447,7 @@ public class WMSController extends AbstractOGCServiceController {
     private void getLegendGraphic( Map<String, String> map, HttpResponseBuffer response )
                             throws OWSException, IOException {
         GetLegendGraphic glg = securityManager == null ? new GetLegendGraphic( map, service )
-                                                      : securityManager.preprocess(
-                                                                                    new GetLegendGraphic( map, service ),
+                                                      : securityManager.preprocess( new GetLegendGraphic( map, service ),
                                                                                     OGCFrontController.getContext().getCredentials() );
 
         if ( !supportedImageFormats.contains( glg.getFormat() ) ) {
@@ -497,8 +493,7 @@ public class WMSController extends AbstractOGCServiceController {
     private void getFeatureInfo( Map<String, String> map, HttpResponseBuffer response, Version version )
                             throws OWSException, IOException, MissingDimensionValue, InvalidDimensionValue {
         GetFeatureInfo fi = securityManager == null ? new GetFeatureInfo( map, version, service )
-                                                   : securityManager.preprocess(
-                                                                                 new GetFeatureInfo( map, version,
+                                                   : securityManager.preprocess( new GetFeatureInfo( map, version,
                                                                                                      service ),
                                                                                  OGCFrontController.getContext().getCredentials() );
         checkGetFeatureInfo( fi );
@@ -552,8 +547,8 @@ public class WMSController extends AbstractOGCServiceController {
                 bindings.put( "http://www.opengis.net/wfs", "http://schemas.opengis.net/wfs/1.0.0/WFS-basic.xsd" );
 
                 new GMLFeatureWriter( GMLVersion.GML_2, xmlWriter, fi.getCoordinateSystem(), null, null, null, 0, -1,
-                                      null, false, fi.returnGeometries() ).export( col, ns == null ? loc : null,
-                                                                                   bindings );
+                                      null, false, fi.returnGeometries(), null ).export( col, ns == null ? loc : null,
+                                                                                         bindings );
             } catch ( XMLStreamException e ) {
                 LOG.warn( "Error when writing GetFeatureInfo GML response '{}'.", e.getLocalizedMessage() );
                 LOG.trace( "Stack trace:", e );
@@ -587,8 +582,7 @@ public class WMSController extends AbstractOGCServiceController {
     private void getFeatureInfoSchema( Map<String, String> map, HttpResponseBuffer response )
                             throws IOException {
         GetFeatureInfoSchema fis = securityManager == null ? new GetFeatureInfoSchema( map )
-                                                          : securityManager.preprocess(
-                                                                                        new GetFeatureInfoSchema( map ),
+                                                          : securityManager.preprocess( new GetFeatureInfoSchema( map ),
                                                                                         OGCFrontController.getContext().getCredentials() );
         List<FeatureType> schema = service.getSchema( fis );
         try {
@@ -666,8 +660,7 @@ public class WMSController extends AbstractOGCServiceController {
             version = map.get( "WMTVER" );
         }
         GetCapabilities req = securityManager == null ? new GetCapabilities( version )
-                                                     : securityManager.preprocess(
-                                                                                   new GetCapabilities( version ),
+                                                     : securityManager.preprocess( new GetCapabilities( version ),
                                                                                    OGCFrontController.getContext().getCredentials() );
 
         Version myVersion = negotiateVersion( req );
