@@ -42,6 +42,7 @@ import static org.deegree.commons.xml.CommonNamespaces.XLNNS;
 import static org.deegree.gml.GMLVersion.GML_32;
 
 import java.util.HashSet;
+import java.util.Map;
 
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
@@ -105,7 +106,7 @@ public class GMLStreamWriter {
 
     private int traverseXLinkExpiry;
 
-    private boolean autoNs;
+    private Map<String, String> prefixToNs;
 
     /**
      * Creates a new {@link GMLStreamWriter} instance.
@@ -166,8 +167,15 @@ public class GMLStreamWriter {
         this.formatter = formatter;
     }
 
-    public void setAutoNamespaceBinding( boolean autoNs ) {
-        this.autoNs = autoNs;
+    /**
+     * Controls the namespace prefixes that are used whenever a qualified element or attribute is written (and no
+     * namespace prefix has been bound on the stream).
+     * 
+     * @param prefixToNs
+     *            keys: prefix, value: namespace, may be <code>null</code>
+     */
+    public void setNamespaceBindings( Map<String, String> prefixToNs ) {
+        this.prefixToNs = prefixToNs;
     }
 
     /**
@@ -322,7 +330,8 @@ public class GMLStreamWriter {
     private GMLFeatureWriter getFeatureWriter() {
         if ( featureWriter == null ) {
             featureWriter = new GMLFeatureWriter( version, xmlStream, crs, formatter, localXLinkTemplate, featureProps,
-                                                  inlineXLinklevels, traverseXLinkExpiry, xlinkProps, false );
+                                                  inlineXLinklevels, traverseXLinkExpiry, xlinkProps, false, true,
+                                                  prefixToNs );
         }
         return featureWriter;
     }

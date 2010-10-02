@@ -104,7 +104,7 @@ public class GMLFeatureWriterTest {
         writer.setPrefix( "xlink", "http://www.w3.org/1999/xlink" );
         writer.setPrefix( "xsi", "http://www.w3.org/2001/XMLSchema-instance" );
         GMLFeatureWriter exporter = new GMLFeatureWriter( GML_2, new FormattingXMLStreamWriter( writer ), null, null,
-                                                          null, null, 0, -1, null, false );
+                                                          null, null, 0, -1, null, false, true, null );
         exporter.export( feature );
         writer.flush();
         writer.close();
@@ -137,10 +137,58 @@ public class GMLFeatureWriterTest {
         writer.setPrefix( "wfs", "http://www.opengis.net/wfs" );
         writer.setPrefix( "xlink", "http://www.w3.org/1999/xlink" );
         writer.setPrefix( "xsi", "http://www.w3.org/2001/XMLSchema-instance" );
-        GMLFeatureWriter exporter = new GMLFeatureWriter( GML_31, writer, null, null, null, null, 0, -1, null, false );
+        GMLFeatureWriter exporter = new GMLFeatureWriter( GML_31, writer, null, null, null, null, 0, -1, null, false,
+                                                          true, null );
         exporter.export( feature );
         writer.flush();
         writer.close();
         // XMLAssert.assertValidity( memoryWriter.getReader() );
+        // System.out.println (memoryWriter.toString());
     }
+
+    // @Test
+    // public void testFI()
+    // throws XMLStreamException, ClassCastException, ClassNotFoundException,
+    // InstantiationException, IllegalAccessException, XMLParsingException, UnknownCRSException,
+    // FactoryConfigurationError, IOException, TransformationException {
+    //
+    // String schemaURL = this.getClass().getResource( SCHEMA_LOCATION_ATTRIBUTE ).toString();
+    // ApplicationSchemaXSDDecoder xsdAdapter = new ApplicationSchemaXSDDecoder( GML_31, null, schemaURL );
+    // ApplicationSchema schema = xsdAdapter.extractFeatureTypeSchema();
+    //
+    // URL docURL = GMLFeatureWriterTest.class.getResource( DIR + SOURCE_FILE );
+    // GMLStreamReader gmlReader = GMLInputFactory.createGMLStreamReader( GML_31, docURL );
+    // gmlReader.setApplicationSchema( schema );
+    // Feature feature = gmlReader.readFeature();
+    // gmlReader.getIdContext().resolveLocalRefs();
+    //
+    // OutputStream fiDocument = new FileOutputStream( "/tmp/out.fi" );
+    //
+    // // Create the StAX document serializer
+    // StAXDocumentSerializer staxDocumentSerializer = new StAXDocumentSerializer();
+    // staxDocumentSerializer.setOutputStream( fiDocument );
+    //
+    // SerializerVocabulary initialVocabulary = new SerializerVocabulary();
+    // initialVocabulary.setExternalVocabulary( "urn:external-vocabulary", BinaryVocabulary.serializerVoc, false );
+    // staxDocumentSerializer.setVocabulary( initialVocabulary );
+    //
+    // // Obtain XMLStreamWriter interface
+    // XMLStreamWriter writer = staxDocumentSerializer;
+    // writer.writeStartDocument();
+    //
+    // // writer.setDefaultNamespace( "http://www.opengis.net/gml" );
+    // writer.setPrefix( "app1", "http://www.deegree.org/app" );
+    // writer.setPrefix( "gml", "http://www.opengis.net/gml" );
+    // writer.setPrefix( "ogc", "http://www.opengis.net/ogc" );
+    // writer.setPrefix( "wfs", "http://www.opengis.net/wfs" );
+    // writer.setPrefix( "xlink", "http://www.w3.org/1999/xlink" );
+    // writer.setPrefix( "xsi", "http://www.w3.org/2001/XMLSchema-instance" );
+    //
+    // GMLFeatureWriter exporter = new GMLFeatureWriter( GML_31, writer, null, null, null, null, 0, -1, null, false);
+    // exporter.export( feature );
+    //
+    // writer.writeEndDocument();
+    //
+    // writer.close();
+    // }
 }
