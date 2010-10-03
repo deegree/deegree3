@@ -60,6 +60,7 @@ import org.deegree.gml.feature.GMLFeatureWriter;
 import org.deegree.gml.geometry.GML2GeometryWriter;
 import org.deegree.gml.geometry.GML3GeometryWriter;
 import org.deegree.gml.geometry.GMLGeometryWriter;
+import org.deegree.gml.utils.AdditionalObjectHandler;
 import org.deegree.protocol.wfs.getfeature.XLinkPropertyName;
 
 /**
@@ -107,6 +108,8 @@ public class GMLStreamWriter {
     private int traverseXLinkExpiry;
 
     private Map<String, String> prefixToNs;
+
+    private AdditionalObjectHandler additionalObjectHandler;
 
     /**
      * Creates a new {@link GMLStreamWriter} instance.
@@ -231,6 +234,10 @@ public class GMLStreamWriter {
         this.xlinkProps = xlinkProps;
     }
 
+    public void setAdditionalObjectHandler( AdditionalObjectHandler handler ) {
+        this.additionalObjectHandler = handler;
+    }
+
     /**
      * Returns whether the specified gml object has already been exported.
      * 
@@ -331,7 +338,7 @@ public class GMLStreamWriter {
         if ( featureWriter == null ) {
             featureWriter = new GMLFeatureWriter( version, xmlStream, crs, formatter, localXLinkTemplate, featureProps,
                                                   inlineXLinklevels, traverseXLinkExpiry, xlinkProps, false, true,
-                                                  prefixToNs );
+                                                  prefixToNs, additionalObjectHandler );
         }
         return featureWriter;
     }
