@@ -57,9 +57,9 @@ public class GMLOutputFormatProvider implements OutputFormatProvider {
 
     @Override
     public OutputFormat create( WFSController wfs, String mimeType, Properties props ) {
-        boolean streamMode = "true".equals( props.getProperty( "streamMode" ) );
+        boolean disableStreamMode = "true".equals( props.getProperty( "DISABLE_STREAMING" ) );
         CoordinateFormatter formatter = new DecimalCoordinateFormatter( 8 );
-        String decimalPlaces = props.getProperty( "decimalPlaces" );
+        String decimalPlaces = props.getProperty( "DECIMAL_PLACES" );
         if ( decimalPlaces != null ) {
             formatter = new DecimalCoordinateFormatter( Integer.parseInt( decimalPlaces ) );
         }
@@ -72,7 +72,7 @@ public class GMLOutputFormatProvider implements OutputFormatProvider {
                                              props.getProperty( "GET_FEATURE_RESPONSE_LOCAL_NAME" ),
                                              props.getProperty( "GET_FEATURE_RESPONSE_PREFIX" ) );
         }
-        return new GMLOutputFormat( wfs, streamMode, formatter, mimeType, responseContainerEl, schemaLocation );
+        return new GMLOutputFormat( wfs, disableStreamMode, formatter, mimeType, responseContainerEl, schemaLocation );
     }
 
     @Override

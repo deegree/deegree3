@@ -86,6 +86,7 @@ import org.deegree.geometry.Geometry;
 import org.deegree.geometry.io.CoordinateFormatter;
 import org.deegree.gml.GMLObject;
 import org.deegree.gml.GMLOutputFactory;
+import org.deegree.gml.GMLReference;
 import org.deegree.gml.GMLStreamWriter;
 import org.deegree.gml.GMLVersion;
 import org.deegree.protocol.wfs.describefeaturetype.DescribeFeatureType;
@@ -130,7 +131,7 @@ class GMLOutputFormat implements OutputFormat {
 
     private final String schemaLocation;
 
-    private final boolean streamMode;
+    private final boolean disableStreaming;
 
     private final WFSController master;
 
@@ -148,21 +149,21 @@ class GMLOutputFormat implements OutputFormat {
      * 
      * @param master
      *            corresponding WFS controller
-     * @param streamMode
-     *            if <code>true</code>, features are streamed (implies that the FeatureCollection's boundedBy-element
-     *            cannot be populated and that the numberOfFeatures attribute cannot be written)
+     * @param disableStreaming
+     *            if <code>true</code>, features are not streamed (implies that the FeatureCollection's
+     *            boundedBy-element is populated and that the numberOfFeatures attribute is be written)
      * @param formatter
      *            coordinate formatter to use, must not be <code>null</code>
      * @param mimeType
      * @param responseContainerEl
      * @param schemaLocation
      */
-    GMLOutputFormat( WFSController master, boolean streamMode, CoordinateFormatter formatter, String mimeType,
+    GMLOutputFormat( WFSController master, boolean disableStreaming, CoordinateFormatter formatter, String mimeType,
                      QName responseContainerEl, String schemaLocation ) {
         this.master = master;
         this.service = master.getService();
         this.dftHandler = new DescribeFeatureTypeHandler( service );
-        this.streamMode = streamMode;
+        this.disableStreaming = disableStreaming;
         this.featureLimit = master.getMaxFeatures();
         this.checkAreaOfUse = master.getCheckAreaOfUse();
         this.formatter = formatter;
@@ -335,11 +336,11 @@ class GMLOutputFormat implements OutputFormat {
             maxFeatures = request.getMaxFeatures();
         }
 
-        if ( streamMode ) {
-            writeFeatureMembersStream( request.getVersion(), xmlStream, analyzer, gmlVersion, xLinkTemplate,
+        if ( disableStreaming ) {
+            writeFeatureMembersCached( request.getVersion(), xmlStream, analyzer, gmlVersion, xLinkTemplate,
                                        traverseXLinkDepth, traverseXLinkExpiry, maxFeatures );
         } else {
-            writeFeatureMembersCached( request.getVersion(), xmlStream, analyzer, gmlVersion, xLinkTemplate,
+            writeFeatureMembersStream( request.getVersion(), xmlStream, analyzer, gmlVersion, xLinkTemplate,
                                        traverseXLinkDepth, traverseXLinkExpiry, maxFeatures );
         }
 
@@ -363,6 +364,8 @@ class GMLOutputFormat implements OutputFormat {
         gmlStream.setXLinkExpiry( traverseXLinkExpiry );
         gmlStream.setXLinkFeatureProperties( analyzer.getXLinkProps() );
         gmlStream.setNamespaceBindings( service.getPrefixToNs() );
+        XlinkedObjectsHandler additionalObjects = new XlinkedObjectsHandler();
+        gmlStream.setAdditionalObjectHandler( additionalObjects );
         bindFeatureTypePrefixes( xmlStream, analyzer.getFeatureTypes() );
 
         if ( outputFormat == GML_2 ) {
@@ -370,42 +373,17 @@ class GMLOutputFormat implements OutputFormat {
         }
 
         // retrieve and write result features
-        int featuresAdded = 0; // limit the number of features written to maxfeatures
+        int featuresAdded = 0;
         for ( Map.Entry<FeatureStore, List<Query>> fsToQueries : analyzer.getQueries().entrySet() ) {
             FeatureStore fs = fsToQueries.getKey();
             Query[] queries = fsToQueries.getValue().toArray( new Query[fsToQueries.getValue().size()] );
             FeatureResultSet rs = fs.query( queries );
             try {
-                for ( Feature feature : rs ) {
-                    if ( gmlStream.isObjectExported( feature.getId() ) ) {
-                        if ( GML_32 == outputFormat ) {
-                            if ( VERSION_200.equals( wfsVersion ) ) {
-                                xmlStream.writeEmptyElement( "wfs", "member", WFS_200_NS );
-                            } else {
-                                xmlStream.writeEmptyElement( "gml", "featureMember", GML3_2_NS );
-                                // xmlStream.writeEmptyElement( "wfs", "member", WFS_NS );
-                            }
-                        } else {
-                            xmlStream.writeEmptyElement( "gml", "featureMember", GMLNS );
-                        }
-                        xmlStream.writeAttribute( "xlink", XLNNS, "href", "#" + feature.getId() );
-                    } else {
-                        if ( GML_32 == outputFormat ) {
-                            if ( VERSION_200.equals( wfsVersion ) ) {
-                                xmlStream.writeStartElement( "wfs", "member", WFS_200_NS );
-                            } else {
-                                xmlStream.writeStartElement( "gml", "featureMember", GML3_2_NS );
-                                // xmlStream.writeStartElement( "wfs", "member", WFS_NS );
-                            }
-                        } else {
-                            xmlStream.writeStartElement( "gml", "featureMember", GMLNS );
-                        }
-                        gmlStream.write( feature );
-                        xmlStream.writeEndElement();
-                    }
-
+                for ( Feature member : rs ) {
+                    writeMemberFeature( member, gmlStream, xmlStream, wfsVersion );
                     featuresAdded++;
                     if ( featuresAdded == maxFeatures ) {
+                        // limit the number of features written to maxfeatures
                         break;
                     }
                 }
@@ -413,6 +391,11 @@ class GMLOutputFormat implements OutputFormat {
                 LOG.debug( "Closing FeatureResultSet (stream)" );
                 rs.close();
             }
+        }
+
+        if ( !additionalObjects.getAdditionalRefs().isEmpty() ) {
+            xmlStream.writeComment( "Additional features (subfeatures of requested features)" );
+            writeAdditionalObjects( wfsVersion, gmlStream, additionalObjects, traverseXLinkDepth );
         }
     }
 
@@ -485,6 +468,8 @@ class GMLOutputFormat implements OutputFormat {
             xmlStream.writeAttribute( "numberOfFeatures", "" + allFeatures.size() );
         }
 
+        XlinkedObjectsHandler additionalObjects = new XlinkedObjectsHandler();
+
         GMLStreamWriter gmlStream = GMLOutputFactory.createGMLStreamWriter( outputFormat, xmlStream );
         gmlStream.setLocalXLinkTemplate( xLinkTemplate );
         gmlStream.setXLinkDepth( traverseXLinkDepth );
@@ -494,6 +479,7 @@ class GMLOutputFormat implements OutputFormat {
         gmlStream.setOutputCRS( analyzer.getRequestedCRS() );
         gmlStream.setCoordinateFormatter( formatter );
         gmlStream.setNamespaceBindings( service.getPrefixToNs() );
+        gmlStream.setAdditionalObjectHandler( additionalObjects );
         bindFeatureTypePrefixes( xmlStream, analyzer.getFeatureTypes() );
 
         if ( outputFormat == GML_2 || allFeatures.getEnvelope() != null ) {
@@ -502,32 +488,60 @@ class GMLOutputFormat implements OutputFormat {
 
         // retrieve and write result features
         for ( Feature member : allFeatures ) {
-            if ( gmlStream.isObjectExported( member.getId() ) ) {
-                if ( GML_32 == outputFormat ) {
-                    if ( VERSION_200.equals( wfsVersion ) ) {
-                        xmlStream.writeEmptyElement( "wfs", "member", WFS_200_NS );
-                    } else {
-                        xmlStream.writeEmptyElement( "gml", "featureMember", GML3_2_NS );
-                        // xmlStream.writeEmptyElement( "wfs", "member", WFS_NS );
-                    }
-                } else {
-                    xmlStream.writeEmptyElement( "gml", "featureMember", GMLNS );
-                }
-                xmlStream.writeAttribute( "xlink", XLNNS, "href", "#" + member.getId() );
-            } else {
-                if ( GML_32 == outputFormat ) {
-                    if ( VERSION_200.equals( wfsVersion ) ) {
-                        xmlStream.writeStartElement( "wfs", "member", WFS_200_NS );
-                    } else {
-                        xmlStream.writeStartElement( "gml", "featureMember", GML3_2_NS );
-                        // xmlStream.writeStartElement( "wfs", "member", WFS_NS );
-                    }
-                } else {
-                    xmlStream.writeStartElement( "gml", "featureMember", GMLNS );
-                }
-                gmlStream.write( member );
-                xmlStream.writeEndElement();
+            writeMemberFeature( member, gmlStream, xmlStream, wfsVersion );
+        }
+
+        if ( !additionalObjects.getAdditionalRefs().isEmpty() ) {
+            xmlStream.writeComment( "Additional features (subfeatures of requested features)" );
+            writeAdditionalObjects( wfsVersion, gmlStream, additionalObjects, traverseXLinkDepth );
+        }
+    }
+
+    private void writeAdditionalObjects( Version wfsVersion, GMLStreamWriter gmlStream,
+                                         XlinkedObjectsHandler additionalObjects, int traverseXLinkDepth )
+                            throws XMLStreamException, UnknownCRSException, TransformationException {
+
+        int currentLevel = 1;
+        Collection<GMLReference<?>> includeObjects = additionalObjects.getAdditionalRefs();
+
+        while ( ( traverseXLinkDepth == -1 || currentLevel++ <= traverseXLinkDepth ) && !includeObjects.isEmpty() ) {
+            additionalObjects.clear();
+            for ( GMLReference<?> gmlReference : includeObjects ) {
+                Feature feature = (Feature) gmlReference;
+                writeMemberFeature( feature, gmlStream, gmlStream.getXMLStream(), wfsVersion );
             }
+            includeObjects = additionalObjects.getAdditionalRefs();
+        }
+    }
+
+    private void writeMemberFeature( Feature member, GMLStreamWriter gmlStream, XMLStreamWriter xmlStream,
+                                     Version wfsVersion )
+                            throws XMLStreamException, UnknownCRSException, TransformationException {
+        if ( gmlStream.isObjectExported( member.getId() ) ) {
+            if ( GML_32 == gmlVersion ) {
+                if ( VERSION_200.equals( wfsVersion ) ) {
+                    xmlStream.writeEmptyElement( "wfs", "member", WFS_200_NS );
+                } else {
+                    xmlStream.writeEmptyElement( "gml", "featureMember", GML3_2_NS );
+                    // xmlStream.writeEmptyElement( "wfs", "member", WFS_NS );
+                }
+            } else {
+                xmlStream.writeEmptyElement( "gml", "featureMember", GMLNS );
+            }
+            xmlStream.writeAttribute( "xlink", XLNNS, "href", "#" + member.getId() );
+        } else {
+            if ( GML_32 == gmlVersion ) {
+                if ( VERSION_200.equals( wfsVersion ) ) {
+                    xmlStream.writeStartElement( "wfs", "member", WFS_200_NS );
+                } else {
+                    xmlStream.writeStartElement( "gml", "featureMember", GML3_2_NS );
+                    // xmlStream.writeStartElement( "wfs", "member", WFS_NS );
+                }
+            } else {
+                xmlStream.writeStartElement( "gml", "featureMember", GMLNS );
+            }
+            gmlStream.write( member );
+            xmlStream.writeEndElement();
         }
     }
 
