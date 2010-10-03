@@ -464,8 +464,8 @@ public class ApplicationSchemaXSDDecoder {
             switch ( typeDef.getTypeCategory() ) {
             case XSTypeDefinition.SIMPLE_TYPE: {
                 pt = new SimplePropertyType( ptName, minOccurs, maxOccurs, getPrimitiveType( (XSSimpleType) typeDef ),
-                                             elementDecl.getAbstract(), elementDecl.getNillable(),
-                                             ptSubstitutions, (XSSimpleTypeDefinition) typeDef );
+                                             elementDecl.getAbstract(), elementDecl.getNillable(), ptSubstitutions,
+                                             (XSSimpleTypeDefinition) typeDef );
                 ( (SimplePropertyType) pt ).setCodeList( getCodeListId( elementDecl ) );
                 break;
             }
@@ -496,8 +496,8 @@ public class ApplicationSchemaXSDDecoder {
                                            ptSubstitutions );
             } else if ( typeName.equals( new QName( gmlVersion.getNamespace(), "BoundingShapeType" ) ) ) {
                 LOG.trace( "Identified an EnvelopePropertyType." );
-                pt = new EnvelopePropertyType( ptName, minOccurs, maxOccurs, elementDecl.getAbstract(),
-                                               isNillable, ptSubstitutions );
+                pt = new EnvelopePropertyType( ptName, minOccurs, maxOccurs, elementDecl.getAbstract(), isNillable,
+                                               ptSubstitutions );
             } else if ( typeName.equals( new QName( gmlVersion.getNamespace(), "MeasureType" ) ) ) {
                 LOG.trace( "Identified a MeasurePropertyType (GENERIC)." );
                 pt = new MeasurePropertyType( ptName, minOccurs, maxOccurs, elementDecl.getAbstract(), isNillable,
@@ -605,8 +605,8 @@ public class ApplicationSchemaXSDDecoder {
 
         switch ( typeDef.getContentType() ) {
         case XSComplexTypeDefinition.CONTENTTYPE_EMPTY: {
-            pt = new FeaturePropertyType( ptName, minOccurs, maxOccurs, elementDecl.getAbstract(), elementDecl.getNillable(),
-                                          ptSubstitutions, null, ValueRepresentation.REMOTE );
+            pt = new FeaturePropertyType( ptName, minOccurs, maxOccurs, elementDecl.getAbstract(),
+                                          elementDecl.getNillable(), ptSubstitutions, null, ValueRepresentation.REMOTE );
             return pt;
         }
         case XSComplexTypeDefinition.CONTENTTYPE_ELEMENT: {
@@ -642,23 +642,24 @@ public class ApplicationSchemaXSDDecoder {
                             pt = null;
                             if ( gmlNs.equals( elementName.getNamespaceURI() ) ) {
                                 if ( allowsXLink ) {
-                                    pt = new FeaturePropertyType( ptName, minOccurs, maxOccurs, elementDecl.getAbstract(),
-                                                                  elementDecl.getNillable(), ptSubstitutions,
-                                                                  null, ValueRepresentation.BOTH );
+                                    pt = new FeaturePropertyType( ptName, minOccurs, maxOccurs,
+                                                                  elementDecl.getAbstract(), elementDecl.getNillable(),
+                                                                  ptSubstitutions, null, ValueRepresentation.BOTH );
                                 } else {
-                                    pt = new FeaturePropertyType( ptName, minOccurs, maxOccurs, elementDecl.getAbstract(),
-                                                                  elementDecl.getNillable(), ptSubstitutions,
-                                                                  null, ValueRepresentation.INLINE );
+                                    pt = new FeaturePropertyType( ptName, minOccurs, maxOccurs,
+                                                                  elementDecl.getAbstract(), elementDecl.getNillable(),
+                                                                  ptSubstitutions, null, ValueRepresentation.INLINE );
                                 }
                             } else {
                                 if ( allowsXLink ) {
-                                    pt = new FeaturePropertyType( ptName, minOccurs, maxOccurs, elementDecl.getAbstract(),
-                                                                  elementDecl.getNillable(), ptSubstitutions,
-                                                                  elementName, ValueRepresentation.BOTH );
+                                    pt = new FeaturePropertyType( ptName, minOccurs, maxOccurs,
+                                                                  elementDecl.getAbstract(), elementDecl.getNillable(),
+                                                                  ptSubstitutions, elementName,
+                                                                  ValueRepresentation.BOTH );
                                 } else {
-                                    pt = new FeaturePropertyType( ptName, minOccurs, maxOccurs, elementDecl.getAbstract(),
-                                                                  elementDecl.getNillable(), ptSubstitutions,
-                                                                  null, ValueRepresentation.INLINE );
+                                    pt = new FeaturePropertyType( ptName, minOccurs, maxOccurs,
+                                                                  elementDecl.getAbstract(), elementDecl.getNillable(),
+                                                                  ptSubstitutions, null, ValueRepresentation.INLINE );
                                 }
                             }
                             featurePropertyTypes.add( pt );
@@ -731,9 +732,9 @@ public class ApplicationSchemaXSDDecoder {
         if ( refElement != null ) {
             LOG.debug( "Identified a feature property (urn:x-gml:targetElement)." );
             QName elementName = createQName( elementDecl.getNamespace(), elementDecl.getName() );
-            FeaturePropertyType pt = new FeaturePropertyType( elementName, minOccurs, maxOccurs, elementDecl.getAbstract(),
-                                                              elementDecl.getNillable(), ptSubstitutions,
-                                                              refElement, ValueRepresentation.BOTH );
+            FeaturePropertyType pt = new FeaturePropertyType( elementName, minOccurs, maxOccurs,
+                                                              elementDecl.getAbstract(), elementDecl.getNillable(),
+                                                              ptSubstitutions, refElement, ValueRepresentation.BOTH );
             featurePropertyTypes.add( pt );
             return pt;
         }
@@ -756,9 +757,9 @@ public class ApplicationSchemaXSDDecoder {
         if ( refElement != null ) {
             LOG.trace( "Identified a feature property (adv style)." );
             QName elementName = createQName( elementDecl.getNamespace(), elementDecl.getName() );
-            FeaturePropertyType pt = new FeaturePropertyType( elementName, minOccurs, maxOccurs, elementDecl.getAbstract(),
-                                                              elementDecl.getNillable(), ptSubstitutions,
-                                                              refElement, ValueRepresentation.BOTH );
+            FeaturePropertyType pt = new FeaturePropertyType( elementName, minOccurs, maxOccurs,
+                                                              elementDecl.getAbstract(), elementDecl.getNillable(),
+                                                              ptSubstitutions, refElement, ValueRepresentation.BOTH );
             featurePropertyTypes.add( pt );
             return pt;
         }
@@ -779,10 +780,12 @@ public class ApplicationSchemaXSDDecoder {
                                                          null );
         if ( refElement != null ) {
             LOG.trace( "Identified a feature property (GML 3.2 style)." );
+            // TODO determine this properly
+            ValueRepresentation vp = ValueRepresentation.REMOTE;
             QName elementName = createQName( elementDecl.getNamespace(), elementDecl.getName() );
-            FeaturePropertyType pt = new FeaturePropertyType( elementName, minOccurs, maxOccurs, elementDecl.getAbstract(),
-                                                              elementDecl.getNillable(), ptSubstitutions,
-                                                              refElement, ValueRepresentation.REMOTE );
+            FeaturePropertyType pt = new FeaturePropertyType( elementName, minOccurs, maxOccurs,
+                                                              elementDecl.getAbstract(), elementDecl.getNillable(),
+                                                              ptSubstitutions, refElement, vp );
             featurePropertyTypes.add( pt );
             return pt;
         }
@@ -852,8 +855,8 @@ public class ApplicationSchemaXSDDecoder {
                     }
                     if ( !allowedTypes.isEmpty() ) {
                         return new GeometryPropertyType( ptName, minOccurs, maxOccurs, elementDecl.getAbstract(),
-                                                         elementDecl.getNillable(), ptSubstitutions,
-                                                         allowedTypes, CoordinateDimension.DIM_2_OR_3, BOTH );
+                                                         elementDecl.getNillable(), ptSubstitutions, allowedTypes,
+                                                         CoordinateDimension.DIM_2_OR_3, BOTH );
                     }
                     break;
                 }
@@ -880,8 +883,8 @@ public class ApplicationSchemaXSDDecoder {
                             LOG.trace( "Identified a geometry property." );
                             GeometryType geometryType = getGeometryType( elementName );
                             return new GeometryPropertyType( ptName, minOccurs, maxOccurs, elementDecl.getAbstract(),
-                                                             elementDecl.getNillable(), ptSubstitutions,
-                                                             geometryType, CoordinateDimension.DIM_2_OR_3, BOTH );
+                                                             elementDecl.getNillable(), ptSubstitutions, geometryType,
+                                                             CoordinateDimension.DIM_2_OR_3, BOTH );
                         }
                     }
                     case XSConstants.WILDCARD: {
@@ -929,10 +932,10 @@ public class ApplicationSchemaXSDDecoder {
                                 }
                             }
                             if ( !allowedTypes.isEmpty() ) {
-                                return new GeometryPropertyType( ptName, minOccurs, maxOccurs, elementDecl.getAbstract(),
-                                                                 elementDecl.getNillable(),
-                                                                 ptSubstitutions, allowedTypes, CoordinateDimension.DIM_2_OR_3,
-                                                                 BOTH );
+                                return new GeometryPropertyType( ptName, minOccurs, maxOccurs,
+                                                                 elementDecl.getAbstract(), elementDecl.getNillable(),
+                                                                 ptSubstitutions, allowedTypes,
+                                                                 CoordinateDimension.DIM_2_OR_3, BOTH );
                             }
                             break;
                         }
