@@ -11,9 +11,10 @@
     <QuerySRS>EPSG:4258</QuerySRS>
     <Format handler="GENERIC_GML">
       <MimeType>text/xml; subtype=gml/3.2.1</MimeType>
-      <Param key="responseContainerLocalName">FeatureCollection</Param>
-      <Param key="responseContainerPrefix">gml</Param>
-      <Param key="responseContainerNs">http://www.opengis.net/gml/3.2</Param>
+      <Param key="GET_FEATURE_RESPONSE_LOCAL_NAME">FeatureCollection</Param>
+      <Param key="GET_FEATURE_RESPONSE_PREFIX">gml</Param>
+      <Param key="GET_FEATURE_RESPONSE_NAMESPACE">http://www.opengis.net/gml/3.2</Param>
+      <Param key="GET_FEATURE_RESPONSE_XSI_SCHEMA_LOCATION">http://www.opengis.net/gml/3.2 http://schemas.opengis.net/gml/3.2.1/deprecatedTypes.xsd</Param>
     </Format>
   </PublishedInformation>
 </deegreeWFS>
