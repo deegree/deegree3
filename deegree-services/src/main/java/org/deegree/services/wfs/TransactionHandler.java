@@ -68,6 +68,7 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
 
+import org.deegree.commons.tom.ows.Version;
 import org.deegree.commons.utils.kvp.InvalidParameterValueException;
 import org.deegree.commons.utils.kvp.MissingParameterException;
 import org.deegree.commons.xml.CommonNamespaces;
@@ -106,9 +107,9 @@ import org.deegree.protocol.wfs.transaction.Insert;
 import org.deegree.protocol.wfs.transaction.Native;
 import org.deegree.protocol.wfs.transaction.PropertyReplacement;
 import org.deegree.protocol.wfs.transaction.Transaction;
+import org.deegree.protocol.wfs.transaction.Transaction.ReleaseAction;
 import org.deegree.protocol.wfs.transaction.TransactionOperation;
 import org.deegree.protocol.wfs.transaction.Update;
-import org.deegree.protocol.wfs.transaction.Transaction.ReleaseAction;
 import org.deegree.services.controller.exception.ControllerException;
 import org.deegree.services.controller.ows.OWSException;
 import org.deegree.services.controller.utils.HttpResponseBuffer;
@@ -338,9 +339,8 @@ class TransactionHandler {
             }
         }
 
-//        GMLVersion inputFormat = master.determineFormat( request.getVersion(), insert.getInputFormat() );
-        GMLVersion inputFormat = GML_31;
-        
+        GMLVersion inputFormat = determineFormat( request.getVersion(), insert.getInputFormat() );
+
         FeatureStoreTransaction ta = null;
         try {
             FeatureCollection fc = parseFeaturesOrCollection( insert.getFeatures(), inputFormat, defaultCRS );
@@ -487,9 +487,7 @@ class TransactionHandler {
                                     OWSException.INVALID_PARAMETER_VALUE );
         }
 
-        // TODO
-        // GMLVersion inputFormat = master.determineFormat( request.getVersion(), update.getInputFormat() );
-        GMLVersion inputFormat = GML_31;
+        GMLVersion inputFormat = determineFormat( request.getVersion(), update.getInputFormat() );
 
         FeatureStoreTransaction ta = acquireTransaction( fs );
         List<Property> replacementProps = getReplacementProps( update, ft, inputFormat );
@@ -691,5 +689,34 @@ class TransactionHandler {
         xmlWriter.writeEndElement();
         xmlWriter.writeEndDocument();
         xmlWriter.flush();
+    }
+
+    private GMLVersion determineFormat( Version requestVersion, String format ) {
+
+        GMLVersion gmlVersion = null;
+
+        if ( format == null ) {
+            // default values for the different WFS version
+            if ( VERSION_100.equals( requestVersion ) ) {
+                gmlVersion = GMLVersion.GML_2;
+            } else if ( VERSION_110.equals( requestVersion ) ) {
+                gmlVersion = GMLVersion.GML_31;
+            } else if ( VERSION_200.equals( requestVersion ) ) {
+                gmlVersion = GMLVersion.GML_32;
+            } else {
+                throw new RuntimeException( "Internal error: Unhandled WFS version: " + requestVersion );
+            }
+        } else {
+            if ( "text/xml; subtype=gml/2.1.2".equals( format ) || "GML2".equals( format ) ) {
+                gmlVersion = GMLVersion.GML_2;
+            } else if ( "text/xml; subtype=gml/3.0.1".equals( format ) ) {
+                gmlVersion = GMLVersion.GML_30;
+            } else if ( "text/xml; subtype=gml/3.1.1".equals( format ) || "GML3".equals( format ) ) {
+                gmlVersion = GMLVersion.GML_31;
+            } else if ( "text/xml; subtype=gml/3.2.1".equals( format ) ) {
+                gmlVersion = GMLVersion.GML_32;
+            }
+        }
+        return gmlVersion;
     }
 }
