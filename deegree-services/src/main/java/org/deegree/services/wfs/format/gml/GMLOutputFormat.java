@@ -665,29 +665,35 @@ class GMLOutputFormat implements OutputFormat {
      */
     private String getSchemaLocation( Version requestVersion, Collection<FeatureType> requestedFts ) {
 
-        String schemaLocation = null;
-        QName wfsFeatureCollection = new QName( WFS_NS, "FeatureCollection", WFS_PREFIX );
-        if ( responseContainerEl == null || wfsFeatureCollection.equals( responseContainerEl ) ) {
-            if ( VERSION_100.equals( requestVersion ) ) {
-                if ( GML_2 == gmlVersion ) {
-                    schemaLocation = WFS_NS + " http://schemas.opengis.net/wfs/1.0.0/WFS-basic.xsd";
+        String schemaLocation = this.schemaLocation;
+        if ( schemaLocation == null ) {
+            // use "wfs:FeatureCollection" then
+            QName wfsFeatureCollection = new QName( WFS_NS, "FeatureCollection", WFS_PREFIX );
+            if ( responseContainerEl == null || wfsFeatureCollection.equals( responseContainerEl ) ) {
+                if ( VERSION_100.equals( requestVersion ) ) {
+                    if ( GML_2 == gmlVersion ) {
+                        schemaLocation = WFS_NS + " http://schemas.opengis.net/wfs/1.0.0/WFS-basic.xsd";
+                    } else {
+                        schemaLocation = WFSController.getSchemaLocation( requestVersion, gmlVersion,
+                                                                          wfsFeatureCollection );
+                    }
+                } else if ( VERSION_110.equals( requestVersion ) ) {
+                    if ( GML_31 == gmlVersion ) {
+                        schemaLocation = WFS_NS + " http://schemas.opengis.net/wfs/1.1.0/wfs.xsd";
+                    } else {
+                        schemaLocation = WFSController.getSchemaLocation( requestVersion, gmlVersion,
+                                                                          wfsFeatureCollection );
+                    }
+                } else if ( VERSION_200.equals( requestVersion ) ) {
+                    if ( GML_32 == gmlVersion ) {
+                        schemaLocation = WFS_200_NS + " http://schemas.opengis.net/wfs/2.0.0/wfs.xsd";
+                    } else {
+                        schemaLocation = WFSController.getSchemaLocation( requestVersion, gmlVersion,
+                                                                          wfsFeatureCollection );
+                    }
                 } else {
-                    schemaLocation = WFSController.getSchemaLocation( requestVersion, gmlVersion, wfsFeatureCollection );
+                    throw new RuntimeException( "Internal error: Unhandled WFS version: " + requestVersion );
                 }
-            } else if ( VERSION_110.equals( requestVersion ) ) {
-                if ( GML_31 == gmlVersion ) {
-                    schemaLocation = WFS_NS + " http://schemas.opengis.net/wfs/1.1.0/wfs.xsd";
-                } else {
-                    schemaLocation = WFSController.getSchemaLocation( requestVersion, gmlVersion, wfsFeatureCollection );
-                }
-            } else if ( VERSION_200.equals( requestVersion ) ) {
-                if ( GML_32 == gmlVersion ) {
-                    schemaLocation = WFS_200_NS + " http://schemas.opengis.net/wfs/2.0.0/wfs.xsd";
-                } else {
-                    schemaLocation = WFSController.getSchemaLocation( requestVersion, gmlVersion, wfsFeatureCollection );
-                }
-            } else {
-                throw new RuntimeException( "Internal error: Unhandled WFS version: " + requestVersion );
             }
         }
 
@@ -701,9 +707,6 @@ class GMLOutputFormat implements OutputFormat {
             requestedFtNames[i++] = requestedFt.getName();
         }
 
-        if ( schemaLocation == null ) {
-            return WFSController.getSchemaLocation( requestVersion, gmlVersion, requestedFtNames );
-        }
         return schemaLocation + " " + WFSController.getSchemaLocation( requestVersion, gmlVersion, requestedFtNames );
     }
 

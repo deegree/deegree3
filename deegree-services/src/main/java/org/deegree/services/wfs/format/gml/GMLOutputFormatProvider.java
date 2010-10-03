@@ -63,14 +63,14 @@ public class GMLOutputFormatProvider implements OutputFormatProvider {
         if ( decimalPlaces != null ) {
             formatter = new DecimalCoordinateFormatter( Integer.parseInt( decimalPlaces ) );
         }
-        String schemaLocation = props.getProperty( "schemaLocation" );
+        String schemaLocation = props.getProperty( "GET_FEATURE_RESPONSE_XSI_SCHEMA_LOCATION" );
         QName responseContainerEl = null;
-        if ( props.getProperty( "responseContainerLocalName" ) != null
-             && props.getProperty( "responseContainerPrefix" ) != null
-             && props.getProperty( "responseContainerNs" ) != null ) {
-            responseContainerEl = new QName( props.getProperty( "responseContainerNs" ),
-                                             props.getProperty( "responseContainerLocalName" ),
-                                             props.getProperty( "responseContainerPrefix" ) );
+        if ( props.getProperty( "GET_FEATURE_RESPONSE_LOCAL_NAME" ) != null
+             && props.getProperty( "GET_FEATURE_RESPONSE_PREFIX" ) != null
+             && props.getProperty( "GET_FEATURE_RESPONSE_NAMESPACE" ) != null ) {
+            responseContainerEl = new QName( props.getProperty( "GET_FEATURE_RESPONSE_NAMESPACE" ),
+                                             props.getProperty( "GET_FEATURE_RESPONSE_LOCAL_NAME" ),
+                                             props.getProperty( "GET_FEATURE_RESPONSE_PREFIX" ) );
         }
         return new GMLOutputFormat( wfs, streamMode, formatter, mimeType, responseContainerEl, schemaLocation );
     }

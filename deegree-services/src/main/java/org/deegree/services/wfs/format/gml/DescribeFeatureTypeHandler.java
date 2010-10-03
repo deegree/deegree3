@@ -479,7 +479,7 @@ class DescribeFeatureTypeHandler {
                 ApplicationSchema schema = fs.getSchema();
                 List<String> depNs = schema.getNamespacesDependencies( ns );
                 for ( String n : depNs ) {
-                    if ( set.contains( n ) ) {
+                    if ( !set.contains( n ) ) {
                         dependentNamespaces.add( n );
                     }
                 }
