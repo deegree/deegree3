@@ -369,7 +369,12 @@ class GMLOutputFormat implements OutputFormat {
         bindFeatureTypePrefixes( xmlStream, analyzer.getFeatureTypes() );
 
         if ( outputFormat == GML_2 ) {
-            writeBoundedBy( gmlStream, outputFormat );
+            // "gml:boundedBy" is necessary for GML 2 schema compliance
+            xmlStream.writeStartElement( "gml", GMLNS, "boundedBy" );
+            xmlStream.writeStartElement( GMLNS, "null" );
+            xmlStream.writeCharacters( "unknown" );
+            xmlStream.writeEndElement();
+            xmlStream.writeEndElement();
         }
 
         // retrieve and write result features
@@ -396,39 +401,6 @@ class GMLOutputFormat implements OutputFormat {
         if ( !additionalObjects.getAdditionalRefs().isEmpty() ) {
             xmlStream.writeComment( "Additional features (subfeatures of requested features)" );
             writeAdditionalObjects( wfsVersion, gmlStream, additionalObjects, traverseXLinkDepth );
-        }
-    }
-
-    private void writeBoundedBy( GMLStreamWriter gmlStream, GMLVersion outputFormat )
-                            throws XMLStreamException {
-
-        XMLStreamWriter xmlStream = gmlStream.getXMLStream();
-        switch ( outputFormat ) {
-        case GML_2: {
-            xmlStream.writeStartElement( "gml", "boundedBy", GMLNS );
-            xmlStream.writeStartElement( "gml", "null", GMLNS );
-            xmlStream.writeCharacters( "unknown" );
-            xmlStream.writeEndElement();
-            xmlStream.writeEndElement();
-            break;
-        }
-        case GML_30:
-        case GML_31: {
-            xmlStream.writeStartElement( "gml", "boundedBy", GMLNS );
-            xmlStream.writeStartElement( "gml", "Null", GMLNS );
-            xmlStream.writeCharacters( "unknown" );
-            xmlStream.writeEndElement();
-            xmlStream.writeEndElement();
-            break;
-        }
-        case GML_32: {
-            xmlStream.writeStartElement( "gml", "boundedBy", GML3_2_NS );
-            xmlStream.writeStartElement( "gml", "Null", GML3_2_NS );
-            xmlStream.writeCharacters( "unknown" );
-            xmlStream.writeEndElement();
-            xmlStream.writeEndElement();
-            break;
-        }
         }
     }
 
@@ -652,12 +624,11 @@ class GMLOutputFormat implements OutputFormat {
 
         xmlStream.writeAttribute( "numberOfFeatures", "" + numHits );
 
-        // "gml:boundedBy" is necessary for GML 2
-        // TODO strategies for including the correct value
+        // "gml:boundedBy" is necessary for GML 2 schema compliance
         if ( gmlVersion.equals( GMLVersion.GML_2 ) ) {
             xmlStream.writeStartElement( "gml", GMLNS, "boundedBy" );
             xmlStream.writeStartElement( GMLNS, "null" );
-            xmlStream.writeCharacters( "not available (WFS streaming mode)" );
+            xmlStream.writeCharacters( "unknown" );
             xmlStream.writeEndElement();
             xmlStream.writeEndElement();
         }
