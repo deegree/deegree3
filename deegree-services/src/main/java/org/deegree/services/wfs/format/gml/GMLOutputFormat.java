@@ -328,7 +328,7 @@ class GMLOutputFormat implements OutputFormat {
         }
 
         if ( GML_32 == gmlVersion ) {
-            xmlStream.writeAttribute( "gml", GML3_2_NS, "id", "GML_32_FEATURECOLLECTION" );
+            xmlStream.writeAttribute( "gml", GML3_2_NS, "id", "WFS_RESPONSE" );
         }
 
         int maxFeatures = featureLimit;
