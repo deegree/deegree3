@@ -3,6 +3,7 @@
   <head>
     <link rel="stylesheet" href="OpenLayers/theme/default/style.css" type="text/css"/>
     <script src="OpenLayers/OpenLayers.js"></script>
+    
     <script type="text/javascript">
         function init(){
           var loc = window.location + ""
@@ -19,11 +20,13 @@
             units: "m",
             maxResolution: 156543.0339,
             maxExtent: new OpenLayers.Bounds(-1381981, 5150021, 4635141, 7872402),
+            minResolution: "auto",
+            minExtent: new OpenLayers.Bounds(-1, -1, 1, 1),
             allOverlays: true
           } )
 
-          var osmLayer = new OpenLayers.Layer.OSM("OpenStreetMap");
-          map.addLayer(osmLayer)
+          //var osmLayer = new OpenLayers.Layer.OSM("OpenStreetMap");
+          //map.addLayer(osmLayer)
           
           var layer1 = new OpenLayers.Layer.WMS( 'ALKIS all', loc + "../../services", {layers: 'TatsaechlicheNutzung,Relief,BauwerkeEinrichtungenUndSonstigeAngaben,GesetzlicheFestlegungenGebietseinheitenKataloge,AngabenzumGebaeude,FlurstueckeLagePunkt,Beschriftung', transparent: true}, {singleTile: true});
           map.addLayer(layer1);
