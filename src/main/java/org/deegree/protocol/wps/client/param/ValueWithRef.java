@@ -85,4 +85,9 @@ public class ValueWithRef {
     public String getRef() {
         return ref;
     }
+
+    @Override
+    public String toString() {
+        return value + ": " + ref;
+    }
 }
