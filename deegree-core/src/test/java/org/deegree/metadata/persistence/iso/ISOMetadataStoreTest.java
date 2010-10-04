@@ -64,6 +64,7 @@ import org.deegree.protocol.csw.CSWConstants.OutputSchema;
 import org.deegree.protocol.csw.CSWConstants.ReturnableElement;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.slf4j.Logger;
 
@@ -160,6 +161,7 @@ public class ISOMetadataStoreTest {
         }
     }
 
+    @Ignore
     @Test
     public void testInsert()
                             throws MetadataStoreException, XMLStreamException, FactoryConfigurationError, IOException {
@@ -228,6 +230,7 @@ public class ISOMetadataStoreTest {
      * 
      * @throws MetadataStoreException
      */
+    @Ignore
     @Test
     public void testIdentifierRejectFalse()
                             throws MetadataStoreException {
@@ -257,6 +260,7 @@ public class ISOMetadataStoreTest {
      * 
      * @throws MetadataStoreException
      */
+    @Ignore
     @Test
     public void testIdentifierRejectTrue()
                             throws MetadataStoreException {
@@ -285,6 +289,7 @@ public class ISOMetadataStoreTest {
      * 
      * @throws MetadataStoreException
      */
+    @Ignore
     @Test
     public void testResourceIdentifierGenerateFALSE_With_ID_Attrib_RSID_Equals()
                             throws MetadataStoreException {
@@ -317,6 +322,7 @@ public class ISOMetadataStoreTest {
      * 
      * @throws MetadataStoreException
      */
+    @Ignore
     @Test
     public void testResourceIdentifierGenerateTRUE()
                             throws MetadataStoreException {
