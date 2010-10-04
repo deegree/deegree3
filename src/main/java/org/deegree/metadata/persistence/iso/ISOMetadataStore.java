@@ -385,8 +385,8 @@ public class ISOMetadataStore implements MetadataStore {
                                    recOpt.getOutputSchema().toString(), nextRecord,
                                    DateUtils.formatISO8601Date( new Date() ) );
             } else {
-                result = new Hits( recOpt.returnableElement(), countRows, 0,
-                                   recOpt.getOutputSchema().toString(), 1, DateUtils.formatISO8601Date( new Date() ) );
+                result = new Hits( recOpt.returnableElement(), countRows, 0, recOpt.getOutputSchema().toString(), 1,
+                                   DateUtils.formatISO8601Date( new Date() ) );
             }
 
         } catch ( Exception e ) {
@@ -665,9 +665,10 @@ public class ISOMetadataStore implements MetadataStore {
     public MetadataStoreTransaction acquireTransaction()
                             throws MetadataStoreException {
         ISOMetadataStoreTransaction ta = null;
+        Connection conn = null;
         try {
-            ta = new ISOMetadataStoreTransaction( ConnectionManager.getConnection( connectionId ), config, typeNames,
-                                                  useLegacyPredicates );
+            conn = ConnectionManager.getConnection( connectionId );
+            ta = new ISOMetadataStoreTransaction( conn, config, typeNames, useLegacyPredicates );
         } catch ( SQLException e ) {
             throw new MetadataStoreException( e.getMessage() );
         }
