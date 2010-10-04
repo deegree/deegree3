@@ -33,7 +33,7 @@
              <SvgParameter name="stroke-width">0.18</SvgParameter>
            </Stroke>
          </Mark>
-         <Size>1</Size>
+         <Size>2</Size>
          <Rotation>
            <ogc:Mul>
              <ogc:PropertyName>adv:drehwinkel</ogc:PropertyName>

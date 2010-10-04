@@ -2,8 +2,8 @@
 <FeatureTypeStyle xmlns="http://www.opengis.net/se" xmlns:adv="http://www.adv-online.de/namespaces/adv/gid/6.0" xmlns:ogc="http://www.opengis.net/ogc" xmlns:sed="http://www.deegree.org/se"
     xmlns:deegreeogc="http://www.deegree.org/ogc" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://www.opengis.net/se http://schemas.opengis.net/se/1.1.0/FeatureStyle.xsd http://www.deegree.org/se http://schemas.deegree.org/se/1.1.0/Symbolizer-deegree.xsd">
-  <Name>adv:AX_BoeschungKliff</Name>
-  <FeatureTypeName>adv:AX_BoeschungKliff</FeatureTypeName>
+  <Name>adv:AX_Boeschungsflaeche</Name>
+  <FeatureTypeName>adv:AX_Boeschungsflaeche</FeatureTypeName>
   <!-- Test-Zeichenregel fuer noch nicht umgesetzte FeatureTypes-->
   <Rule>
     <Name>Test</Name>

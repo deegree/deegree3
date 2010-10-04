@@ -30,13 +30,13 @@
         </ogc:Not>
       </ogc:And>
     </ogc:Filter>
-    <TextSymbolizer>
+    <TextSymbolizer uom="meter">
       <Label>
         <ogc:PropertyName>adv:schriftinhalt</ogc:PropertyName>
       </Label>
       <Font>
         <SvgParameter name="font-family">Arial</SvgParameter>
-        <SvgParameter name="font-size">8</SvgParameter>
+        <SvgParameter name="font-size">2</SvgParameter>
       </Font>
        <LabelPlacement>
         <PointPlacement>
@@ -79,13 +79,13 @@
         </ogc:Not>
       </ogc:And>
     </ogc:Filter>
-    <TextSymbolizer>
+    <TextSymbolizer uom="meter">
       <Label>
         <ogc:PropertyName>adv:dientZurDarstellungVon/adv:AX_LagebezeichnungMitHausnummer/adv:hausnummer</ogc:PropertyName>
       </Label>
       <Font>
         <SvgParameter name="font-family">Arial</SvgParameter>
-        <SvgParameter name="font-size">8</SvgParameter>
+        <SvgParameter name="font-size">2</SvgParameter>
       </Font>
        <LabelPlacement>
         <PointPlacement>
@@ -123,13 +123,13 @@
           </ogc:PropertyIsNull>
       </ogc:And>
     </ogc:Filter>
-    <TextSymbolizer>
+    <TextSymbolizer uom="meter">
       <Label>
         <ogc:PropertyName>adv:schriftinhalt</ogc:PropertyName>
       </Label>
       <Font>
         <SvgParameter name="font-family">Arial</SvgParameter>
-        <SvgParameter name="font-size">8</SvgParameter>
+        <SvgParameter name="font-size">2</SvgParameter>
       </Font>
       <Fill>
         <SvgParameter name="fill">#000000</SvgParameter>
@@ -155,13 +155,13 @@
           </ogc:PropertyIsNull>
       </ogc:And>
     </ogc:Filter>
-    <TextSymbolizer>
+    <TextSymbolizer uom="meter">
       <Label>
         <ogc:PropertyName>adv:dientZurDarstellungVon/adv:AX_LagebezeichnungMitHausnummer/adv:hausnummer</ogc:PropertyName>
       </Label>
       <Font>
         <SvgParameter name="font-family">Arial</SvgParameter>
-        <SvgParameter name="font-size">8</SvgParameter>
+        <SvgParameter name="font-size">2</SvgParameter>
       </Font>
       <Fill>
         <SvgParameter name="fill">#000000</SvgParameter>
@@ -197,13 +197,13 @@
         </ogc:Not>
       </ogc:And>
     </ogc:Filter>
-    <TextSymbolizer>
+    <TextSymbolizer uom="meter">
       <Label>
         <ogc:PropertyName>adv:schriftinhalt</ogc:PropertyName>
       </Label>
       <Font>
         <SvgParameter name="font-family">Arial</SvgParameter>
-        <SvgParameter name="font-size">8</SvgParameter>
+        <SvgParameter name="font-size">2</SvgParameter>
       </Font>
        <LabelPlacement>
         <PointPlacement>
@@ -246,13 +246,13 @@
         </ogc:Not>
       </ogc:And>
     </ogc:Filter>
-    <TextSymbolizer>
+    <TextSymbolizer uom="meter">
       <Label>
         <ogc:PropertyName>adv:dientZurDarstellungVon/adv:AX_LagebezeichnungMitHausnummer/adv:hausnummer</ogc:PropertyName>
       </Label>
       <Font>
         <SvgParameter name="font-family">Arial</SvgParameter>
-        <SvgParameter name="font-size">8</SvgParameter>
+        <SvgParameter name="font-size">2</SvgParameter>
       </Font>
        <LabelPlacement>
         <PointPlacement>
@@ -294,19 +294,18 @@
         </ogc:Not>
       </ogc:And>
     </ogc:Filter>
-    <TextSymbolizer>
+    <TextSymbolizer uom="meter">
       <Label>
         <ogc:PropertyName>adv:schriftinhalt</ogc:PropertyName>
       </Label>
       <Font>
         <SvgParameter name="font-family">Arial</SvgParameter>
         <SvgParameter name="font-weight">bold</SvgParameter>
-        <SvgParameter name="font-size">16</SvgParameter>
+        <SvgParameter name="font-size">4</SvgParameter>
       </Font>
       <Fill>
         <SvgParameter name="fill">#000000</SvgParameter>
       </Fill>
     </TextSymbolizer>
   </Rule>
-  <!-- TODO inverse Relationen Fachobjekt -> Praesentationsobjekt fehlen, muessen in Fachobjekten abgebildet werden, Verschluesselte Lagen -->
 </FeatureTypeStyle>

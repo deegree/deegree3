@@ -11,17 +11,6 @@
 </h:head>
 <h:body>  
     ------------------------------------------------------------------------------<br />
-    Statistics<br />
-    ------------------------------------------------------------------------------<br />
-    <br/>
-    - Number of feature types (total): <h:outputText value="#{editConfig.numFtsTotal}"/>
-    <br/>
-    - Number of feature types (concrete): <h:outputText value="#{editConfig.numFtsConcrete}"/>    
-    <br/>
-    - Number of feature types (abstract): <h:outputText value="#{editConfig.numFtsAbstract}"/>
-    <br/>
-    <br/>    
-    ------------------------------------------------------------------------------<br />
     Namespaces<br />
     ------------------------------------------------------------------------------<br />
     <br/>
@@ -31,9 +20,16 @@
     <br/>
     <br/>
     ------------------------------------------------------------------------------<br />
-    Hierarchy (stored instances)<br />
+    Feature types (<h:outputText value="#{editConfig.numFtsTotal}"/> total/<h:outputText value="#{editConfig.numFtsAbstract}"/> abstract)<br />
     ------------------------------------------------------------------------------<br />
     <br/>
     <h:outputText value="#{editConfig.ftInfo}" escape="false" />
+    <br/>    
+    <br/>
+    ------------------------------------------------------------------------------<br />
+    Feature collection type hierarchy<br />
+    ------------------------------------------------------------------------------<br />
+    <br/>
+    <h:outputText value="#{editConfig.fcInfo}" escape="false" />    
 </h:body>
 </html>

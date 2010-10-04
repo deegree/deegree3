@@ -21,13 +21,13 @@
       </ogc:PropertyIsEqualTo>
       </ogc:And>
     </ogc:Filter>
-    <TextSymbolizer>
+    <TextSymbolizer uom="meter">
       <Label>
         <ogc:Literal>Sportanlage</ogc:Literal>
       </Label>
       <Font>
         <SvgParameter name="font-family">Arial</SvgParameter>
-        <SvgParameter name="font-size">14</SvgParameter>
+        <SvgParameter name="font-size">4</SvgParameter>
       </Font>
       <Fill>
         <SvgParameter name="fill">#000000</SvgParameter>
@@ -51,13 +51,13 @@
       </ogc:PropertyIsEqualTo>
       </ogc:And>
     </ogc:Filter>
-    <TextSymbolizer>
+    <TextSymbolizer uom="meter">
       <Label>
         <ogc:Literal>Freizeitanlage</ogc:Literal>
       </Label>
       <Font>
         <SvgParameter name="font-family">Arial</SvgParameter>
-        <SvgParameter name="font-size">14</SvgParameter>
+        <SvgParameter name="font-size">4</SvgParameter>
       </Font>
       <Fill>
         <SvgParameter name="fill">#000000</SvgParameter>
@@ -81,13 +81,13 @@
       </ogc:PropertyIsEqualTo>
       </ogc:And>
     </ogc:Filter>
-    <TextSymbolizer>
+    <TextSymbolizer uom="meter">
       <Label>
         <ogc:Literal>Wochenend- und Ferienhausfläche</ogc:Literal>
       </Label>
       <Font>
         <SvgParameter name="font-family">Arial</SvgParameter>
-        <SvgParameter name="font-size">14</SvgParameter>
+        <SvgParameter name="font-size">4</SvgParameter>
       </Font>
       <Fill>
         <SvgParameter name="fill">#000000</SvgParameter>
@@ -111,13 +111,13 @@
       </ogc:PropertyIsEqualTo>
       </ogc:And>
     </ogc:Filter>
-    <TextSymbolizer>
+    <TextSymbolizer uom="meter">
       <Label>
         <ogc:Literal>Golfplatz</ogc:Literal>
       </Label>
       <Font>
         <SvgParameter name="font-family">Arial</SvgParameter>
-        <SvgParameter name="font-size">14</SvgParameter>
+        <SvgParameter name="font-size">4</SvgParameter>
       </Font>
       <Fill>
         <SvgParameter name="fill">#000000</SvgParameter>
@@ -141,13 +141,13 @@
       </ogc:PropertyIsEqualTo>
       </ogc:And>
     </ogc:Filter>
-    <TextSymbolizer>
+    <TextSymbolizer uom="meter">
       <Label>
         <ogc:Literal>Freizeitpark</ogc:Literal>
       </Label>
       <Font>
         <SvgParameter name="font-family">Arial</SvgParameter>
-        <SvgParameter name="font-size">14</SvgParameter>
+        <SvgParameter name="font-size">4</SvgParameter>
       </Font>
       <Fill>
         <SvgParameter name="fill">#000000</SvgParameter>
@@ -171,13 +171,13 @@
       </ogc:PropertyIsEqualTo>
       </ogc:And>
     </ogc:Filter>
-    <TextSymbolizer>
+    <TextSymbolizer uom="meter">
       <Label>
         <ogc:Literal>Freilichttheater</ogc:Literal>
       </Label>
       <Font>
         <SvgParameter name="font-family">Arial</SvgParameter>
-        <SvgParameter name="font-size">14</SvgParameter>
+        <SvgParameter name="font-size">4</SvgParameter>
       </Font>
       <Fill>
         <SvgParameter name="fill">#000000</SvgParameter>
@@ -201,13 +201,13 @@
       </ogc:PropertyIsEqualTo>
       </ogc:And>
     </ogc:Filter>
-    <TextSymbolizer>
+    <TextSymbolizer uom="meter">
       <Label>
         <ogc:Literal>Freilichtmuseum</ogc:Literal>
       </Label>
       <Font>
         <SvgParameter name="font-family">Arial</SvgParameter>
-        <SvgParameter name="font-size">14</SvgParameter>
+        <SvgParameter name="font-size">4</SvgParameter>
       </Font>
       <Fill>
         <SvgParameter name="fill">#000000</SvgParameter>
@@ -231,13 +231,13 @@
       </ogc:PropertyIsEqualTo>
       </ogc:And>
     </ogc:Filter>
-    <TextSymbolizer>
+    <TextSymbolizer uom="meter">
       <Label>
         <ogc:Literal>Autokino, Freilichtkino</ogc:Literal>
       </Label>
       <Font>
         <SvgParameter name="font-family">Arial</SvgParameter>
-        <SvgParameter name="font-size">14</SvgParameter>
+        <SvgParameter name="font-size">4</SvgParameter>
       </Font>
       <Fill>
         <SvgParameter name="fill">#000000</SvgParameter>
@@ -261,13 +261,13 @@
       </ogc:PropertyIsEqualTo>
       </ogc:And>
     </ogc:Filter>
-    <TextSymbolizer>
+    <TextSymbolizer uom="meter">
       <Label>
         <ogc:Literal>Verkehrsübungsplatz</ogc:Literal>
       </Label>
       <Font>
         <SvgParameter name="font-family">Arial</SvgParameter>
-        <SvgParameter name="font-size">14</SvgParameter>
+        <SvgParameter name="font-size">4</SvgParameter>
       </Font>
       <Fill>
         <SvgParameter name="fill">#000000</SvgParameter>
@@ -291,13 +291,13 @@
       </ogc:PropertyIsEqualTo>
       </ogc:And>
     </ogc:Filter>
-    <TextSymbolizer>
+    <TextSymbolizer uom="meter">
       <Label>
         <ogc:Literal>Hundeübungsplatz</ogc:Literal>
       </Label>
       <Font>
         <SvgParameter name="font-family">Arial</SvgParameter>
-        <SvgParameter name="font-size">14</SvgParameter>
+        <SvgParameter name="font-size">4</SvgParameter>
       </Font>
       <Fill>
         <SvgParameter name="fill">#000000</SvgParameter>
@@ -321,13 +321,13 @@
       </ogc:PropertyIsEqualTo>
       </ogc:And>
     </ogc:Filter>
-    <TextSymbolizer>
+    <TextSymbolizer uom="meter">
       <Label>
         <ogc:Literal>Modellflugplatz</ogc:Literal>
       </Label>
       <Font>
         <SvgParameter name="font-family">Arial</SvgParameter>
-        <SvgParameter name="font-size">14</SvgParameter>
+        <SvgParameter name="font-size">4</SvgParameter>
       </Font>
       <Fill>
         <SvgParameter name="fill">#000000</SvgParameter>
@@ -357,13 +357,13 @@
       </ogc:Or>
       </ogc:And>
     </ogc:Filter>
-    <TextSymbolizer>
+    <TextSymbolizer uom="meter">
       <Label>
         <ogc:Literal>Erholungsfläche</ogc:Literal>
       </Label>
       <Font>
         <SvgParameter name="font-family">Arial</SvgParameter>
-        <SvgParameter name="font-size">14</SvgParameter>
+        <SvgParameter name="font-size">4</SvgParameter>
       </Font>
       <Fill>
         <SvgParameter name="fill">#000000</SvgParameter>
@@ -393,13 +393,13 @@
       </ogc:Or>
       </ogc:And>
     </ogc:Filter>
-    <TextSymbolizer>
+    <TextSymbolizer uom="meter">
       <Label>
         <ogc:Literal>Bad</ogc:Literal>
       </Label>
       <Font>
         <SvgParameter name="font-family">Arial</SvgParameter>
-        <SvgParameter name="font-size">14</SvgParameter>
+        <SvgParameter name="font-size">4</SvgParameter>
       </Font>
       <Fill>
         <SvgParameter name="fill">#000000</SvgParameter>
@@ -423,13 +423,13 @@
       </ogc:PropertyIsEqualTo>
       </ogc:And>
     </ogc:Filter>
-    <TextSymbolizer>
+    <TextSymbolizer uom="meter">
       <Label>
         <ogc:Literal>Wochenendplatz</ogc:Literal>
       </Label>
       <Font>
         <SvgParameter name="font-family">Arial</SvgParameter>
-        <SvgParameter name="font-size">14</SvgParameter>
+        <SvgParameter name="font-size">4</SvgParameter>
       </Font>
       <Fill>
         <SvgParameter name="fill">#000000</SvgParameter>
@@ -454,19 +454,18 @@
       </ogc:Not>
       </ogc:And>
     </ogc:Filter>
-    <TextSymbolizer>
+    <TextSymbolizer uom="meter">
       <Label>
         <ogc:PropertyName>adv:name</ogc:PropertyName>
       </Label>    
       <Font>
         <SvgParameter name="font-family">Arial</SvgParameter>
         <SvgParameter name="font-weight">bold</SvgParameter>
-        <SvgParameter name="font-size">14</SvgParameter>
+        <SvgParameter name="font-size">4</SvgParameter>
       </Font>
       <Fill>
         <SvgParameter name="fill">#000000</SvgParameter>
       </Fill>
     </TextSymbolizer>
   </Rule>
-  <!-- Verknuepfungen -->
 </FeatureTypeStyle>                    

@@ -5,7 +5,7 @@
 
     <UnrequestableLayer>
       <Title>Root Layer</Title>
-      <CRS>EPSG:25833 EPSG:25832 EPSG:4326 urn:adv:crs:ETRS89_UTM33 urn:adv:crs:ETRS89_UTM32</CRS>
+      <CRS>EPSG:900913 EPSG:25833 EPSG:25832 EPSG:4326 urn:adv:crs:ETRS89_UTM33 urn:adv:crs:ETRS89_UTM32</CRS>
 
 
       <RequestableLayer>

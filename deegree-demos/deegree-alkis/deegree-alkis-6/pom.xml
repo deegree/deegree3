@@ -62,6 +62,7 @@
               <includeGroupIds>org.deegree</includeGroupIds>
               <includeArtifactIds>deegree-services-console</includeArtifactIds>
               <outputDirectory>src/main/webapp</outputDirectory>
+              <excludes>**/wms.html</excludes>
             </configuration>
           </execution>
         </executions>

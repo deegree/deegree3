@@ -40,7 +40,7 @@
         </ogc:Or>
       </ogc:And>
     </ogc:Filter>
-    <TextSymbolizer>
+    <TextSymbolizer uom="meter">
       <Label>
         <Recode fallbackValue="">
           <LookupValue>
@@ -86,7 +86,7 @@
       </Label>
       <Font>
         <SvgParameter name="font-family">Arial</SvgParameter>
-        <SvgParameter name="font-size">8</SvgParameter>
+        <SvgParameter name="font-size">2</SvgParameter>
       </Font>
       <Fill>
         <SvgParameter name="fill">#000000</SvgParameter>
@@ -128,13 +128,13 @@
         </ogc:PropertyIsEqualTo>
       </ogc:And>
     </ogc:Filter>
-    <TextSymbolizer>
+    <TextSymbolizer uom="meter">
       <Label>
         <ogc:Literal>(außer Betrieb)</ogc:Literal>
       </Label>
       <Font>
         <SvgParameter name="font-family">Arial</SvgParameter>
-        <SvgParameter name="font-size">8</SvgParameter>
+        <SvgParameter name="font-size">2</SvgParameter>
       </Font>
       <LabelPlacement>
         <PointPlacement>
@@ -184,13 +184,13 @@
         </ogc:PropertyIsEqualTo>
       </ogc:And>
     </ogc:Filter>
-    <TextSymbolizer>
+    <TextSymbolizer uom="meter">
       <Label>
         <ogc:Literal>(zerstört)</ogc:Literal>
       </Label>
       <Font>
         <SvgParameter name="font-family">Arial</SvgParameter>
-        <SvgParameter name="font-size">8</SvgParameter>
+        <SvgParameter name="font-size">2</SvgParameter>
       </Font>
       <LabelPlacement>
         <PointPlacement>
@@ -241,13 +241,13 @@
         </ogc:PropertyIsEqualTo>
       </ogc:And>
     </ogc:Filter>
-    <TextSymbolizer>
+    <TextSymbolizer uom="meter">
       <Label>
         <ogc:Literal>(außer Betrieb)</ogc:Literal>
       </Label>
       <Font>
         <SvgParameter name="font-family">Arial</SvgParameter>
-        <SvgParameter name="font-size">8</SvgParameter>
+        <SvgParameter name="font-size">2</SvgParameter>
       </Font>
       <Fill>
         <SvgParameter name="fill">#000000</SvgParameter>
@@ -289,13 +289,13 @@
         </ogc:PropertyIsEqualTo>
       </ogc:And>
     </ogc:Filter>
-    <TextSymbolizer>
+    <TextSymbolizer uom="meter">
       <Label>
         <ogc:Literal>(zerstört)</ogc:Literal>
       </Label>
       <Font>
         <SvgParameter name="font-family">Arial</SvgParameter>
-        <SvgParameter name="font-size">8</SvgParameter>
+        <SvgParameter name="font-size">2</SvgParameter>
       </Font>
       <Fill>
         <SvgParameter name="fill">#000000</SvgParameter>
@@ -320,14 +320,14 @@
       </ogc:Not>
       </ogc:And>
     </ogc:Filter>
-    <TextSymbolizer>
+    <TextSymbolizer uom="meter">
       <Label>
         <ogc:PropertyName>adv:name</ogc:PropertyName>
       </Label>
       <Font>
         <SvgParameter name="font-family">Arial</SvgParameter>
         <SvgParameter name="font-weight">bold</SvgParameter>
-        <SvgParameter name="font-size">8</SvgParameter>
+        <SvgParameter name="font-size">2</SvgParameter>
       </Font>
       <Fill>
         <SvgParameter name="fill">#000000</SvgParameter>

@@ -27,14 +27,14 @@
         </ogc:Not>
         </ogc:And>
       </ogc:Filter>
-      <TextSymbolizer>
+      <TextSymbolizer uom="meter">
         <Label>
           <ogc:PropertyName>adv:schriftinhalt</ogc:PropertyName>
         </Label>
         <Font>
           <SvgParameter name="font-family">Arial</SvgParameter>
           <SvgParameter name="font-weight">bold</SvgParameter>
-          <SvgParameter name="font-size">14</SvgParameter>
+          <SvgParameter name="font-size">4</SvgParameter>
         </Font>
         <Fill>
           <SvgParameter name="fill">#000000</SvgParameter>
@@ -62,14 +62,14 @@
           </ogc:PropertyIsNull>
         </ogc:And>
       </ogc:Filter>
-      <TextSymbolizer>
+      <TextSymbolizer uom="meter">
         <Label>
           <ogc:PropertyName>adv:dientZurDarstellungVon/adv:AX_BauwerkOderAnlageFuerIndustrieUndGewerbe/adv:name</ogc:PropertyName>
         </Label>
         <Font>
           <SvgParameter name="font-family">Arial</SvgParameter>
           <SvgParameter name="font-weight">bold</SvgParameter>
-          <SvgParameter name="font-size">14</SvgParameter>
+          <SvgParameter name="font-size">4</SvgParameter>
         </Font>
         <Fill>
           <SvgParameter name="fill">#000000</SvgParameter>
@@ -97,7 +97,7 @@
           </ogc:PropertyIsNull>
         </ogc:And>
        </ogc:Filter>
-       <TextSymbolizer>
+       <TextSymbolizer uom="meter">
         <Label>
           <Recode fallbackValue="">
             <LookupValue>
@@ -115,7 +115,7 @@
         </Label>
         <Font>
           <SvgParameter name="font-family">Arial</SvgParameter>
-          <SvgParameter name="font-size">10</SvgParameter>
+          <SvgParameter name="font-size">3</SvgParameter>
         </Font>
         <Fill>
           <SvgParameter name="fill">#000000</SvgParameter>
@@ -149,13 +149,13 @@
           </ogc:Not>
          </ogc:And>
       </ogc:Filter>
-      <TextSymbolizer>
+      <TextSymbolizer uom="meter">
         <Label>
           <ogc:PropertyName>adv:schriftinhalt</ogc:PropertyName>
         </Label>
         <Font>
           <SvgParameter name="font-family">Arial</SvgParameter>
-          <SvgParameter name="font-size">10</SvgParameter>
+          <SvgParameter name="font-size">3</SvgParameter>
         </Font>
         <Fill>
           <SvgParameter name="fill">#000000</SvgParameter>
@@ -183,7 +183,7 @@
           </ogc:PropertyIsNull>
         </ogc:And>
        </ogc:Filter>
-       <TextSymbolizer>
+       <TextSymbolizer uom="meter">
         <Label>
           <Recode fallbackValue="">
             <LookupValue>
@@ -197,7 +197,7 @@
         </Label>
         <Font>
           <SvgParameter name="font-family">Arial</SvgParameter>
-          <SvgParameter name="font-size">14</SvgParameter>
+          <SvgParameter name="font-size">4</SvgParameter>
         </Font>
         <Fill>
           <SvgParameter name="fill">#000000</SvgParameter>
@@ -231,13 +231,13 @@
           </ogc:Not>
          </ogc:And>
       </ogc:Filter>
-      <TextSymbolizer>
+      <TextSymbolizer uom="meter">
         <Label>
           <ogc:PropertyName>adv:schriftinhalt</ogc:PropertyName>
         </Label>
         <Font>
           <SvgParameter name="font-family">Arial</SvgParameter>
-          <SvgParameter name="font-size">10</SvgParameter>
+          <SvgParameter name="font-size">3</SvgParameter>
         </Font>
         <Fill>
           <SvgParameter name="fill">#000000</SvgParameter>
@@ -262,7 +262,7 @@
           </ogc:PropertyIsEqualTo>
         </ogc:And>  
       </ogc:Filter>
-      <TextSymbolizer>
+      <TextSymbolizer uom="meter">
         <Label>
           <Recode fallbackValue="">
             <LookupValue>
@@ -284,7 +284,7 @@
         </Label>
         <Font>
           <SvgParameter name="font-family">Arial</SvgParameter>
-          <SvgParameter name="font-size">8</SvgParameter>
+          <SvgParameter name="font-size">2</SvgParameter>
         </Font>
         <Fill>
           <SvgParameter name="fill">#000000</SvgParameter>

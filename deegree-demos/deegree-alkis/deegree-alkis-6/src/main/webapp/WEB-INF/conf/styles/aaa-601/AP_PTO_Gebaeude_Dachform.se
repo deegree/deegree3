@@ -15,13 +15,13 @@
         <ogc:Literal>Flachdach</ogc:Literal>
       </ogc:PropertyIsEqualTo>
     </ogc:Filter>
-    <TextSymbolizer>
+    <TextSymbolizer uom="meter">
        <Label>
         <ogc:Literal>F</ogc:Literal>
       </Label>
       <Font>
         <SvgParameter name="font-family">Arial</SvgParameter>
-        <SvgParameter name="font-size">8</SvgParameter>
+        <SvgParameter name="font-size">2</SvgParameter>
       </Font>
       <Fill>
         <SvgParameter name="fill">#000000</SvgParameter>
@@ -39,13 +39,13 @@
         <ogc:Literal>Pultdach</ogc:Literal>
       </ogc:PropertyIsEqualTo>
     </ogc:Filter>
-    <TextSymbolizer>
+    <TextSymbolizer uom="meter">
      <Label>
         <ogc:Literal>P</ogc:Literal>
       </Label>
       <Font>
         <SvgParameter name="font-family">Arial</SvgParameter>
-        <SvgParameter name="font-size">8</SvgParameter>
+        <SvgParameter name="font-size">2</SvgParameter>
       </Font>
       <Fill>
         <SvgParameter name="fill">#000000</SvgParameter>
@@ -63,13 +63,13 @@
         <ogc:Literal>VersetztesPultdach</ogc:Literal>
       </ogc:PropertyIsEqualTo>
     </ogc:Filter>
-    <TextSymbolizer>
+    <TextSymbolizer uom="meter">
       <Label>
         <ogc:Literal>VP</ogc:Literal>
       </Label>
       <Font>
         <SvgParameter name="font-family">Arial</SvgParameter>
-        <SvgParameter name="font-size">8</SvgParameter>
+        <SvgParameter name="font-size">2</SvgParameter>
       </Font>
       <Fill>
         <SvgParameter name="fill">#000000</SvgParameter>
@@ -87,13 +87,13 @@
         <ogc:Literal>Satteldach</ogc:Literal>
       </ogc:PropertyIsEqualTo>
     </ogc:Filter>
-    <TextSymbolizer>
+    <TextSymbolizer uom="meter">
       <Label>
         <ogc:Literal>S</ogc:Literal>
       </Label>
       <Font>
         <SvgParameter name="font-family">Arial</SvgParameter>
-        <SvgParameter name="font-size">8</SvgParameter>
+        <SvgParameter name="font-size">2</SvgParameter>
       </Font>
       <Fill>
         <SvgParameter name="fill">#000000</SvgParameter>
@@ -111,13 +111,13 @@
         <ogc:Literal>Walmdach</ogc:Literal>
       </ogc:PropertyIsEqualTo>
     </ogc:Filter>
-    <TextSymbolizer>
+    <TextSymbolizer uom="meter">
       <Label>
         <ogc:Literal>W</ogc:Literal>
       </Label>
       <Font>
         <SvgParameter name="font-family">Arial</SvgParameter>
-        <SvgParameter name="font-size">8</SvgParameter>
+        <SvgParameter name="font-size">2</SvgParameter>
       </Font>
       <Fill>
         <SvgParameter name="fill">#000000</SvgParameter>
@@ -135,13 +135,13 @@
         <ogc:Literal>Krueppelwalmdach</ogc:Literal>
       </ogc:PropertyIsEqualTo>
     </ogc:Filter>
-    <TextSymbolizer>
+    <TextSymbolizer uom="meter">
       <Label>
         <ogc:Literal>KW</ogc:Literal>
       </Label>
       <Font>
         <SvgParameter name="font-family">Arial</SvgParameter>
-        <SvgParameter name="font-size">8</SvgParameter>
+        <SvgParameter name="font-size">2</SvgParameter>
       </Font>
       <Fill>
         <SvgParameter name="fill">#000000</SvgParameter>
@@ -159,13 +159,13 @@
         <ogc:Literal>Mansardendach</ogc:Literal>
       </ogc:PropertyIsEqualTo>
     </ogc:Filter>
-    <TextSymbolizer>
+    <TextSymbolizer uom="meter">
       <Label>
         <ogc:Literal>M</ogc:Literal>
       </Label>
       <Font>
         <SvgParameter name="font-family">Arial</SvgParameter>
-        <SvgParameter name="font-size">8</SvgParameter>
+        <SvgParameter name="font-size">2</SvgParameter>
       </Font>
       <Fill>
         <SvgParameter name="fill">#000000</SvgParameter>
@@ -183,13 +183,13 @@
         <ogc:Literal>Zeltdach</ogc:Literal>
       </ogc:PropertyIsEqualTo>
     </ogc:Filter>
-    <TextSymbolizer>
+    <TextSymbolizer uom="meter">
       <Label>
         <ogc:Literal>Z</ogc:Literal>
       </Label>
       <Font>
         <SvgParameter name="font-family">Arial</SvgParameter>
-        <SvgParameter name="font-size">8</SvgParameter>
+        <SvgParameter name="font-size">2</SvgParameter>
       </Font>
       <Fill>
         <SvgParameter name="fill">#000000</SvgParameter>
@@ -207,13 +207,13 @@
         <ogc:Literal>Kegeldach</ogc:Literal>
       </ogc:PropertyIsEqualTo>
     </ogc:Filter>
-    <TextSymbolizer>
+    <TextSymbolizer uom="meter">
       <Label>
         <ogc:Literal>KE</ogc:Literal>
       </Label>
       <Font>
         <SvgParameter name="font-family">Arial</SvgParameter>
-        <SvgParameter name="font-size">8</SvgParameter>
+        <SvgParameter name="font-size">2</SvgParameter>
       </Font>
       <Fill>
         <SvgParameter name="fill">#000000</SvgParameter>
@@ -231,13 +231,13 @@
         <ogc:Literal>Kuppeldach</ogc:Literal>
       </ogc:PropertyIsEqualTo>
     </ogc:Filter>
-    <TextSymbolizer>
+    <TextSymbolizer uom="meter">
       <Label>
         <ogc:Literal>KU</ogc:Literal>
       </Label>
       <Font>
         <SvgParameter name="font-family">Arial</SvgParameter>
-        <SvgParameter name="font-size">8</SvgParameter>
+        <SvgParameter name="font-size">2</SvgParameter>
       </Font>
       <Fill>
         <SvgParameter name="fill">#000000</SvgParameter>
@@ -255,13 +255,13 @@
         <ogc:Literal>Sheddach</ogc:Literal>
       </ogc:PropertyIsEqualTo>
     </ogc:Filter>
-    <TextSymbolizer>
+    <TextSymbolizer uom="meter">
       <Label>
         <ogc:Literal>SH</ogc:Literal>
       </Label>
       <Font>
         <SvgParameter name="font-family">Arial</SvgParameter>
-        <SvgParameter name="font-size">8</SvgParameter>
+        <SvgParameter name="font-size">2</SvgParameter>
       </Font>
       <Fill>
         <SvgParameter name="fill">#000000</SvgParameter>
@@ -279,13 +279,13 @@
         <ogc:Literal>Bogendach</ogc:Literal>
       </ogc:PropertyIsEqualTo>
     </ogc:Filter>
-    <TextSymbolizer>
+    <TextSymbolizer uom="meter">
       <Label>
         <ogc:Literal>B</ogc:Literal>
       </Label>
       <Font>
         <SvgParameter name="font-family">Arial</SvgParameter>
-        <SvgParameter name="font-size">8</SvgParameter>
+        <SvgParameter name="font-size">2</SvgParameter>
       </Font>
       <Fill>
         <SvgParameter name="fill">#000000</SvgParameter>
@@ -303,13 +303,13 @@
         <ogc:Literal>Turmdach</ogc:Literal>
       </ogc:PropertyIsEqualTo>
     </ogc:Filter>
-    <TextSymbolizer>
+    <TextSymbolizer uom="meter">
       <Label>
         <ogc:Literal>T</ogc:Literal>
       </Label>
       <Font>
         <SvgParameter name="font-family">Arial</SvgParameter>
-        <SvgParameter name="font-size">8</SvgParameter>
+        <SvgParameter name="font-size">2</SvgParameter>
       </Font>
       <Fill>
         <SvgParameter name="fill">#000000</SvgParameter>
@@ -327,13 +327,13 @@
         <ogc:Literal>Mischform</ogc:Literal>
       </ogc:PropertyIsEqualTo>
     </ogc:Filter>
-    <TextSymbolizer>
+    <TextSymbolizer uom="meter">
       <Label>
         <ogc:Literal>MD</ogc:Literal>
       </Label>
       <Font>
         <SvgParameter name="font-family">Arial</SvgParameter>
-        <SvgParameter name="font-size">8</SvgParameter>
+        <SvgParameter name="font-size">2</SvgParameter>
       </Font>
       <Fill>
         <SvgParameter name="fill">#000000</SvgParameter>
@@ -351,13 +351,13 @@
         <ogc:Literal>SonstigeDachform</ogc:Literal>
       </ogc:PropertyIsEqualTo>
     </ogc:Filter>
-    <TextSymbolizer>
+    <TextSymbolizer uom="meter">
       <Label>
         <ogc:Literal>SD</ogc:Literal>
       </Label>
       <Font>
         <SvgParameter name="font-family">Arial</SvgParameter>
-        <SvgParameter name="font-size">8</SvgParameter>
+        <SvgParameter name="font-size">2</SvgParameter>
       </Font>
       <Fill>
         <SvgParameter name="fill">#000000</SvgParameter>
