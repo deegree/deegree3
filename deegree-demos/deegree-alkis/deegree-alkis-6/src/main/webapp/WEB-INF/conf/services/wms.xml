@@ -1301,7 +1301,7 @@
             </RequestableLayer>
             </RequestableLayer>
             <RequestableLayer>
-              <Name>Verkehr</Name>
+              <Name>VerkehrBeschriftung</Name>
               <Title>Verkehr</Title>
               <RequestableLayer>
                 <Name>StrassenverkehrBeschriftung</Name>
@@ -1410,7 +1410,7 @@
             </RequestableLayer>
 
         <RequestableLayer>
-          <Name>BauwerkeEinrichtungenUndSonstigeAngaben</Name>
+          <Name>BauwerkeEinrichtungenUndSonstigeAngabenBeschriftung</Name>
           <Title>Bauwerke, Einrichtungen und sonstige Angaben</Title>
           <RequestableLayer>
             <Name>BauwerkeUndEinrichtungenInSiedlungsflaechenBeschriftung</Name>
@@ -1603,10 +1603,10 @@
         </RequestableLayer>
 
         <RequestableLayer>
-          <Name>GesetzlicheFestlegungenGebietseinheitenKataloge</Name>
+          <Name>GesetzlicheFestlegungenGebietseinheitenKatalogeBeschriftung</Name>
           <Title>Gesetzliche Festlegungen, Gebietseinheiten, Kataloge</Title>
           <RequestableLayer>
-            <Name>OeffentlichRechtlicheUndSonstigeFestlegungen</Name>
+            <Name>OeffentlichRechtlicheUndSonstigeFestlegungenBeschriftung</Name>
             <Title>Öffentlich-rechtliche und sonstige Festlegungen</Title>
             <RequestableLayer>
               <Name>KlassifizierungNachStrassenrechtBezeichnung</Name>
