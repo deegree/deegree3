@@ -54,6 +54,7 @@ import org.deegree.feature.persistence.query.Query;
 import org.deegree.feature.property.Property;
 import org.deegree.feature.types.ApplicationSchema;
 import org.deegree.feature.types.property.FeaturePropertyType;
+import org.deegree.feature.xpath.FeatureXPathEvaluator;
 import org.deegree.filter.Expression;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.XPathEvaluator;
@@ -108,9 +109,15 @@ public class HasPO implements FunctionProvider {
                 if ( is511 || schema.getFeatureType( gemeinde601 ) != null ) {
                     featureStore = (MemoryFeatureStore) store;
                 }
-
             }
         }
+
+        // activate xpath caching
+        LOG.info( "Enabling XPath-evaluation cache." );
+        FeatureXPathEvaluator.enableCache();
+
+        LOG.info( "Filling HasPO lookup table." );
+        update();
     }
 
     /**
