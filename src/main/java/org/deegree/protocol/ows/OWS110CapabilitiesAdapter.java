@@ -518,7 +518,10 @@ public class OWS110CapabilitiesAdapter extends XMLAdapter {
                 }
             }
             OMElement typeEl = getElement( keywordsEl, new XPath( "ows:Type", nsContext ) );
-            CodeType type = parseCodeSpace( typeEl );
+            CodeType type = null;
+            if ( typeEl != null ) {
+                type = parseCodeSpace( typeEl );
+            }
 
             description.getKeywords().add( new Pair( keywordLS, type ) );
         }
@@ -584,9 +587,10 @@ public class OWS110CapabilitiesAdapter extends XMLAdapter {
         serviceContact.setContactInfo( contactInfo );
 
         xpath = new XPath( "ows:Role", nsContext );
-        CodeType role = parseCodeSpace( getElement( serviceContactEl, xpath ) );
-        serviceContact.setRole( role );
-
+        OMElement roleEl = getElement( serviceContactEl, xpath );
+        if ( roleEl != null ) {
+            serviceContact.setRole( parseCodeSpace( roleEl ) );
+        }
         return serviceContact;
     }
 

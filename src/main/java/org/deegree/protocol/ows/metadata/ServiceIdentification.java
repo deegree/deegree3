@@ -124,6 +124,9 @@ public class ServiceIdentification {
      * @return accessConstraints, may be <code>null</code>.
      */
     public List<String> getAccessConstraints() {
+        if ( accessConstraints == null ) {
+            accessConstraints = new ArrayList<String>();
+        }
         return accessConstraints;
     }
 
