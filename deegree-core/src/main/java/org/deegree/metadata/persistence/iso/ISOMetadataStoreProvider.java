@@ -51,6 +51,8 @@ import org.deegree.metadata.persistence.MetadataStore;
 import org.deegree.metadata.persistence.MetadataStoreException;
 import org.deegree.metadata.persistence.MetadataStoreProvider;
 import org.deegree.metadata.persistence.iso19115.jaxb.ISOMetadataStoreConfig;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * {@link MetadataStoreProvider} for the {@link ISOMetadataStore}.
@@ -61,6 +63,7 @@ import org.deegree.metadata.persistence.iso19115.jaxb.ISOMetadataStoreConfig;
  * @version $Revision$, $Date$
  */
 public class ISOMetadataStoreProvider implements MetadataStoreProvider {
+    private static Logger LOG = LoggerFactory.getLogger( ISOMetadataStoreProvider.class );
 
     @Override
     public String getConfigNamespace() {
@@ -122,13 +125,21 @@ public class ISOMetadataStoreProvider implements MetadataStoreProvider {
     public MetadataStore getMetadataStore( URL configURL )
                             throws MetadataStoreException {
         ISOMetadataStoreConfig config = null;
-        try {
-            JAXBContext jc = JAXBContext.newInstance( "org.deegree.metadata.persistence.iso19115.jaxb" );
-            Unmarshaller u = jc.createUnmarshaller();
-            config = (ISOMetadataStoreConfig) u.unmarshal( configURL );
-        } catch ( JAXBException e ) {
-            e.printStackTrace();
+        ISOMetadataStore store = null;
+        if ( configURL == null ) {
+            LOG.warn( "No metadata store configuration found!" );
+        } else {
+            try {
+                JAXBContext jc = JAXBContext.newInstance( "org.deegree.metadata.persistence.iso19115.jaxb" );
+                Unmarshaller u = jc.createUnmarshaller();
+                config = (ISOMetadataStoreConfig) u.unmarshal( configURL );
+                store = new ISOMetadataStore( config );
+            } catch ( JAXBException e ) {
+                String msg = "Error in metadata store configuration file '" + configURL + "': " + e.getMessage();
+                LOG.error( msg );
+                throw new MetadataStoreException( msg, e );
+            }
         }
-        return new ISOMetadataStore( config );
+        return store;
     }
 }
