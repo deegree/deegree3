@@ -53,7 +53,7 @@ public class TstConstants {
 
     static final URL configURL = TstConstants.class.getResource( "configdocs/iso19115_SetUpTables.xml" );
 
-    static final URL configURL_REJECT_FI_FALSE = TstConstants.class.getResource( "configdocs/iso19115_Reject_FI_ALSE.xml" );
+    static final URL configURL_REJECT_FI_FALSE = TstConstants.class.getResource( "configdocs/iso19115_Reject_FI_FALSE.xml" );
 
     static final URL configURL_REJECT_FI_TRUE = TstConstants.class.getResource( "configdocs/iso19115_Reject_FI_TRUE.xml" );
 
