@@ -25,14 +25,14 @@
         </ogc:Not>
       </ogc:And>  
     </ogc:Filter>
-    <TextSymbolizer>
+    <TextSymbolizer uom="meter">
       <Label>
         Flur<ogc:Literal> </ogc:Literal><ogc:PropertyName>adv:dientZurDarstellungVon/adv:AX_GemarkungsteilFlur/adv:bezeichnung</ogc:PropertyName>
       </Label>
       <Font>
         <SvgParameter name="font-family">Arial</SvgParameter>
         <SvgParameter name="font-weight">bold</SvgParameter>
-        <SvgParameter name="font-size">14</SvgParameter>
+        <SvgParameter name="font-size">6</SvgParameter>
       </Font>
       <Fill>
         <SvgParameter name="fill">#000000</SvgParameter>
@@ -58,14 +58,14 @@
           </ogc:PropertyIsLike>
       </ogc:And>  
     </ogc:Filter>
-    <TextSymbolizer>
+    <TextSymbolizer uom="meter">
       <Label>
         <ogc:Literal> </ogc:Literal><ogc:PropertyName>adv:dientZurDarstellungVon/adv:AX_GemarkungsteilFlur/adv:bezeichnung</ogc:PropertyName>
       </Label>
       <Font>
         <SvgParameter name="font-family">Arial</SvgParameter>
         <SvgParameter name="font-weight">bold</SvgParameter>
-        <SvgParameter name="font-size">14</SvgParameter>
+        <SvgParameter name="font-size">6</SvgParameter>
       </Font>
       <Fill>
         <SvgParameter name="fill">#000000</SvgParameter>

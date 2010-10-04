@@ -27,7 +27,7 @@
         </ogc:Not>
       </ogc:And>  
     </ogc:Filter>
-    <TextSymbolizer>
+    <TextSymbolizer uom="meter">
       <Label>
         <ogc:PropertyName>adv:schriftinhalt</ogc:PropertyName>
       </Label>
@@ -35,7 +35,7 @@
         <SvgParameter name="font-family">Arial</SvgParameter>
         <SvgParameter name="font-weight">bold</SvgParameter>
         <SvgParameter name="font-style">italic</SvgParameter>
-        <SvgParameter name="font-size">20</SvgParameter>
+        <SvgParameter name="font-size">6</SvgParameter>
       </Font>
       <Fill>
         <SvgParameter name="fill">#00FF00</SvgParameter>
@@ -63,7 +63,7 @@
           </ogc:PropertyIsNull>
       </ogc:And>  
     </ogc:Filter>
-    <TextSymbolizer>
+    <TextSymbolizer uom="meter">
       <Label>
         <ogc:PropertyName>adv:dientZurDarstellungVon/adv:AX_Heide/adv:name</ogc:PropertyName>
       </Label>
@@ -71,7 +71,7 @@
         <SvgParameter name="font-family">Arial</SvgParameter>
         <SvgParameter name="font-weight">bold</SvgParameter>
         <SvgParameter name="font-style">italic</SvgParameter>
-        <SvgParameter name="font-size">20</SvgParameter>
+        <SvgParameter name="font-size">6</SvgParameter>
       </Font>
       <Fill>
         <SvgParameter name="fill">#00FF00</SvgParameter>

@@ -22,14 +22,14 @@
       </ogc:Not>
       </ogc:And>
     </ogc:Filter>
-    <TextSymbolizer>
+    <TextSymbolizer uom="meter">
       <Label>
         <ogc:PropertyName>adv:name</ogc:PropertyName>
       </Label>    
       <Font>
         <SvgParameter name="font-family">Arial</SvgParameter>
         <SvgParameter name="font-weight">bold</SvgParameter>
-        <SvgParameter name="font-size">20</SvgParameter>
+        <SvgParameter name="font-size">6</SvgParameter>
       </Font>
       <Fill>
         <SvgParameter name="fill">#000000</SvgParameter>

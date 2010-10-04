@@ -21,13 +21,13 @@
       </ogc:PropertyIsEqualTo>
       </ogc:And>
     </ogc:Filter>
-    <TextSymbolizer>
+    <TextSymbolizer uom="meter">
       <Label>
       <ogc:Literal>Fußgängerzone</ogc:Literal>
       </Label>    
       <Font>
         <SvgParameter name="font-family">Arial</SvgParameter>
-        <SvgParameter name="font-size">10</SvgParameter>
+        <SvgParameter name="font-size">3</SvgParameter>
       </Font>
       <Fill>
         <SvgParameter name="fill">#000000</SvgParameter>
@@ -51,13 +51,13 @@
       </ogc:PropertyIsEqualTo>
       </ogc:And>
     </ogc:Filter>
-    <TextSymbolizer>
+    <TextSymbolizer uom="meter">
       <Label>
       <ogc:Literal>Marktplatz</ogc:Literal>
       </Label>    
       <Font>
         <SvgParameter name="font-family">Arial</SvgParameter>
-        <SvgParameter name="font-size">14</SvgParameter>
+        <SvgParameter name="font-size">4</SvgParameter>
       </Font>
       <Fill>
         <SvgParameter name="fill">#000000</SvgParameter>
@@ -81,13 +81,13 @@
       </ogc:PropertyIsEqualTo>
       </ogc:And>
     </ogc:Filter>
-    <TextSymbolizer>
+    <TextSymbolizer uom="meter">
       <Label>
       <ogc:Literal>Festplatz</ogc:Literal>
       </Label>    
       <Font>
         <SvgParameter name="font-family">Arial</SvgParameter>
-        <SvgParameter name="font-size">14</SvgParameter>
+        <SvgParameter name="font-size">4</SvgParameter>
       </Font>
       <Fill>
         <SvgParameter name="fill">#000000</SvgParameter>
@@ -112,14 +112,14 @@
       </ogc:Not>
       </ogc:And>
     </ogc:Filter>
-    <TextSymbolizer>
+    <TextSymbolizer uom="meter">
       <Label>
       <ogc:PropertyName>adv:zweitname</ogc:PropertyName>
       </Label>    
       <Font>
         <SvgParameter name="font-family">Arial</SvgParameter>
         <SvgParameter name="font-weight">bold</SvgParameter>
-        <SvgParameter name="font-size">14</SvgParameter>
+        <SvgParameter name="font-size">4</SvgParameter>
       </Font>
       <Fill>
         <SvgParameter name="fill">#000000</SvgParameter>

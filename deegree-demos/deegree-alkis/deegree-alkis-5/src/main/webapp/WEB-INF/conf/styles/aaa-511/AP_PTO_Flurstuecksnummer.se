@@ -36,14 +36,14 @@
         </ogc:Not>
       </ogc:And>
     </ogc:Filter>
-    <TextSymbolizer>
+    <TextSymbolizer uom="meter">
       <Label>
         <ogc:PropertyName>adv:schriftinhalt</ogc:PropertyName>
       </Label>
       <Font>
         <SvgParameter name="font-family">Arial</SvgParameter>
         <SvgParameter name="font-style">italic</SvgParameter>
-        <SvgParameter name="font-size">10</SvgParameter>
+        <SvgParameter name="font-size">3</SvgParameter>
       </Font>
       <Fill>
         <SvgParameter name="fill">#000000</SvgParameter>
@@ -80,14 +80,14 @@
         </ogc:Or>
       </ogc:And>
     </ogc:Filter>
-    <TextSymbolizer>
+    <TextSymbolizer uom="meter">
       <Label>
         <ogc:PropertyName>adv:dientZurDarstellungVon/adv:AX_Flurstueck/adv:flurstuecksnummer/adv:AX_Flurstuecksnummer/adv:zaehler</ogc:PropertyName>
       </Label>
       <Font>
         <SvgParameter name="font-family">Arial</SvgParameter>
         <SvgParameter name="font-style">italic</SvgParameter>
-        <SvgParameter name="font-size">10</SvgParameter>
+        <SvgParameter name="font-size">3</SvgParameter>
       </Font>
       <Fill>
         <SvgParameter name="fill">#000000</SvgParameter>
@@ -126,14 +126,14 @@
             </ogc:PropertyIsEqualTo>
       </ogc:And>
     </ogc:Filter>
-    <TextSymbolizer>
+    <TextSymbolizer uom="meter">
       <Label>
         <ogc:PropertyName>adv:dientZurDarstellungVon/adv:AX_Flurstueck/adv:flurstuecksnummer/adv:AX_Flurstuecksnummer/adv:zaehler</ogc:PropertyName>/<ogc:PropertyName>adv:dientZurDarstellungVon/adv:AX_Flurstueck/adv:flurstuecksnummer/adv:AX_Flurstuecksnummer/adv:nenner</ogc:PropertyName>
       </Label>
       <Font>
         <SvgParameter name="font-family">Arial</SvgParameter>
         <SvgParameter name="font-style">italic</SvgParameter>
-        <SvgParameter name="font-size">10</SvgParameter>
+        <SvgParameter name="font-size">3</SvgParameter>
       </Font>
       <Fill>
         <SvgParameter name="fill">#000000</SvgParameter>
@@ -173,14 +173,14 @@
             </ogc:PropertyIsEqualTo>
       </ogc:And>
     </ogc:Filter>
-    <TextSymbolizer>
+    <TextSymbolizer uom="meter">
       <Label>
         <ogc:PropertyName>adv:schriftinhalt</ogc:PropertyName>
       </Label>
       <Font>
         <SvgParameter name="font-family">Arial</SvgParameter>
         <SvgParameter name="font-style">italic</SvgParameter>
-        <SvgParameter name="font-size">10</SvgParameter>
+        <SvgParameter name="font-size">3</SvgParameter>
       </Font>
       <Fill>
         <SvgParameter name="fill">#000000</SvgParameter>
@@ -221,7 +221,7 @@
         </ogc:Or>
       </ogc:And>
     </ogc:Filter>
-    <TextSymbolizer>
+    <TextSymbolizer uom="meter">
     <Label>
       <Substring fallbackValue="">
         <StringValue>
@@ -244,13 +244,13 @@
       <Font>
         <SvgParameter name="font-family">Arial</SvgParameter>
         <SvgParameter name="font-style">italic</SvgParameter>
-        <SvgParameter name="font-size">10</SvgParameter>
+        <SvgParameter name="font-size">3</SvgParameter>
       </Font>
       <LabelPlacement>
         <PointPlacement>
           <Displacement>
             <DisplacementX>0</DisplacementX>
-            <DisplacementY>-5.5</DisplacementY>
+            <DisplacementY>-1.5</DisplacementY>
           </Displacement>
         </PointPlacement>
       </LabelPlacement>
@@ -258,20 +258,20 @@
         <SvgParameter name="fill">#000000</SvgParameter>
       </Fill>
     </TextSymbolizer>
-    <TextSymbolizer>
+    <TextSymbolizer uom="meter">
       <Label>
         <ogc:Literal>____</ogc:Literal>
       </Label>
       <Font>
         <SvgParameter name="font-family">Arial</SvgParameter>
         <SvgParameter name="font-style">italic</SvgParameter>
-        <SvgParameter name="font-size">10</SvgParameter>
+        <SvgParameter name="font-size">3</SvgParameter>
       </Font>
       <Fill>
         <SvgParameter name="fill">#000000</SvgParameter>
       </Fill>
     </TextSymbolizer>
-    <TextSymbolizer>
+    <TextSymbolizer uom="meter">
       <Label>
         <Substring fallbackValue="">
           <StringValue>
@@ -308,13 +308,13 @@
       <Font>
         <SvgParameter name="font-family">Arial</SvgParameter>
         <SvgParameter name="font-style">italic</SvgParameter>
-        <SvgParameter name="font-size">10</SvgParameter>
+        <SvgParameter name="font-size">3</SvgParameter>
       </Font>
       <LabelPlacement>
         <PointPlacement>
           <Displacement>
             <DisplacementX>0</DisplacementX>
-            <DisplacementY>6.5</DisplacementY>
+            <DisplacementY>1.8</DisplacementY>
           </Displacement>
         </PointPlacement>
       </LabelPlacement>
@@ -354,20 +354,20 @@
         </ogc:Or>
       </ogc:And>
     </ogc:Filter>
-    <TextSymbolizer>
+    <TextSymbolizer uom="meter">
     <Label>
       <ogc:PropertyName>adv:dientZurDarstellungVon/adv:AX_Flurstueck/adv:flurstuecksnummer/adv:AX_Flurstuecksnummer/adv:zaehler</ogc:PropertyName>
     </Label>
       <Font>
         <SvgParameter name="font-family">Arial</SvgParameter>
         <SvgParameter name="font-style">italic</SvgParameter>
-        <SvgParameter name="font-size">10</SvgParameter>
+        <SvgParameter name="font-size">3</SvgParameter>
       </Font>
       <LabelPlacement>
         <PointPlacement>
           <Displacement>
             <DisplacementX>0</DisplacementX>
-            <DisplacementY>-5.5</DisplacementY>
+            <DisplacementY>-1.5</DisplacementY>
           </Displacement>
         </PointPlacement>
       </LabelPlacement>
@@ -375,33 +375,33 @@
         <SvgParameter name="fill">#000000</SvgParameter>
       </Fill>
     </TextSymbolizer>
-    <TextSymbolizer>
+    <TextSymbolizer uom="meter">
       <Label>
         <ogc:Literal>____</ogc:Literal>
       </Label>
       <Font>
         <SvgParameter name="font-family">Arial</SvgParameter>
         <SvgParameter name="font-style">italic</SvgParameter>
-        <SvgParameter name="font-size">10</SvgParameter>
+        <SvgParameter name="font-size">3</SvgParameter>
       </Font>
       <Fill>
         <SvgParameter name="fill">#000000</SvgParameter>
       </Fill>
     </TextSymbolizer>
-    <TextSymbolizer>
+    <TextSymbolizer uom="meter">
       <Label>
         <ogc:PropertyName>adv:dientZurDarstellungVon/adv:AX_Flurstueck/adv:flurstuecksnummer/adv:AX_Flurstuecksnummer/adv:nenner</ogc:PropertyName>
       </Label>
       <Font>
         <SvgParameter name="font-family">Arial</SvgParameter>
         <SvgParameter name="font-style">italic</SvgParameter>
-        <SvgParameter name="font-size">10</SvgParameter>
+        <SvgParameter name="font-size">3</SvgParameter>
       </Font>
       <LabelPlacement>
         <PointPlacement>
           <Displacement>
             <DisplacementX>0</DisplacementX>
-            <DisplacementY>6.5</DisplacementY>
+            <DisplacementY>1.8</DisplacementY>
           </Displacement>
         </PointPlacement>
       </LabelPlacement>
@@ -444,14 +444,14 @@
         </ogc:Or>
       </ogc:And>
     </ogc:Filter>
-    <TextSymbolizer>
+    <TextSymbolizer uom="meter">
       <Label>
         <ogc:PropertyName>adv:schriftinhalt</ogc:PropertyName>
       </Label>
       <Font>
         <SvgParameter name="font-family">Arial</SvgParameter>
         <SvgParameter name="font-style">italic</SvgParameter>
-        <SvgParameter name="font-size">10</SvgParameter>
+        <SvgParameter name="font-size">3</SvgParameter>
       </Font>
       <Fill>
         <SvgParameter name="fill">#000000</SvgParameter>
@@ -494,14 +494,14 @@
         </ogc:Or>
       </ogc:And>
     </ogc:Filter>
-    <TextSymbolizer>
+    <TextSymbolizer uom="meter">
       <Label>
         <ogc:PropertyName>adv:dientZurDarstellungVon/adv:AX_Flurstueck/adv:flurstuecksnummer/adv:AX_Flurstuecksnummer/adv:zaehler</ogc:PropertyName>/<ogc:PropertyName>adv:dientZurDarstellungVon/adv:AX_Flurstueck/adv:flurstuecksnummer/adv:AX_Flurstuecksnummer/adv:nenner</ogc:PropertyName>
       </Label>
       <Font>
         <SvgParameter name="font-family">Arial</SvgParameter>
         <SvgParameter name="font-style">italic</SvgParameter>
-        <SvgParameter name="font-size">10</SvgParameter>
+        <SvgParameter name="font-size">3</SvgParameter>
       </Font>
       <Fill>
         <SvgParameter name="fill">#000000</SvgParameter>
@@ -536,14 +536,14 @@
         </ogc:PropertyIsEqualTo>
       </ogc:And>
     </ogc:Filter>
-    <TextSymbolizer>
+    <TextSymbolizer uom="meter"> 
       <Label>
         <ogc:PropertyName>adv:schriftinhalt</ogc:PropertyName>
       </Label>
       <Font>
         <SvgParameter name="font-family">Arial</SvgParameter>
         <SvgParameter name="font-style">italic</SvgParameter>
-        <SvgParameter name="font-size">10</SvgParameter>
+        <SvgParameter name="font-size">3</SvgParameter>
       </Font>
       <Fill>
         <SvgParameter name="fill">#CCCCCC</SvgParameter>
@@ -579,14 +579,14 @@
         </ogc:PropertyIsEqualTo>
       </ogc:And>
     </ogc:Filter>
-    <TextSymbolizer>
+    <TextSymbolizer uom="meter">
       <Label>
         <ogc:PropertyName>adv:dientZurDarstellungVon/adv:AX_Flurstueck/adv:flurstuecksnummer/adv:AX_Flurstuecksnummer/adv:zaehler</ogc:PropertyName>
       </Label>
       <Font>
         <SvgParameter name="font-family">Arial</SvgParameter>
         <SvgParameter name="font-style">italic</SvgParameter>
-        <SvgParameter name="font-size">10</SvgParameter>
+        <SvgParameter name="font-size">3</SvgParameter>
       </Font>
       <Fill>
         <SvgParameter name="fill">#CCCCCC</SvgParameter>
@@ -633,14 +633,14 @@
         </ogc:Or>
       </ogc:And>
     </ogc:Filter>
-    <TextSymbolizer>
+    <TextSymbolizer uom="meter">
       <Label>
         <ogc:PropertyName>adv:dientZurDarstellungVon/adv:AX_Flurstueck/adv:flurstuecksnummer/adv:AX_Flurstuecksnummer/adv:zaehler</ogc:PropertyName>/<ogc:PropertyName>adv:dientZurDarstellungVon/adv:AX_Flurstueck/adv:flurstuecksnummer/adv:AX_Flurstuecksnummer/adv:nenner</ogc:PropertyName>
       </Label>
       <Font>
         <SvgParameter name="font-family">Arial</SvgParameter>
         <SvgParameter name="font-style">italic</SvgParameter>
-        <SvgParameter name="font-size">10</SvgParameter>
+        <SvgParameter name="font-size">3</SvgParameter>
       </Font>
       <Fill>
         <SvgParameter name="fill">#CCCCCC</SvgParameter>
@@ -685,7 +685,7 @@
         </ogc:Not>
       </ogc:And>
     </ogc:Filter>
-    <TextSymbolizer>
+    <TextSymbolizer uom="meter">
     <Label>
       <Substring fallbackValue="">
         <StringValue>
@@ -708,13 +708,13 @@
       <Font>
         <SvgParameter name="font-family">Arial</SvgParameter>
         <SvgParameter name="font-style">italic</SvgParameter>
-        <SvgParameter name="font-size">10</SvgParameter>
+        <SvgParameter name="font-size">3</SvgParameter>
       </Font>
       <LabelPlacement>
         <PointPlacement>
           <Displacement>
             <DisplacementX>0</DisplacementX>
-            <DisplacementY>-5.5</DisplacementY>
+            <DisplacementY>-1.5</DisplacementY>
           </Displacement>
         </PointPlacement>
       </LabelPlacement>
@@ -722,20 +722,20 @@
         <SvgParameter name="fill">#CCCCCC</SvgParameter>
       </Fill>
     </TextSymbolizer>
-    <TextSymbolizer>
+    <TextSymbolizer uom="meter">
       <Label>
         <ogc:Literal>____</ogc:Literal>
       </Label>
       <Font>
         <SvgParameter name="font-family">Arial</SvgParameter>
         <SvgParameter name="font-style">italic</SvgParameter>
-        <SvgParameter name="font-size">10</SvgParameter>
+        <SvgParameter name="font-size">3</SvgParameter>
       </Font>
       <Fill>
         <SvgParameter name="fill">#CCCCCC</SvgParameter>
       </Fill>
     </TextSymbolizer>
-    <TextSymbolizer>
+    <TextSymbolizer uom="meter">
       <Label>
         <Substring fallbackValue="">
           <StringValue>
@@ -772,13 +772,13 @@
       <Font>
         <SvgParameter name="font-family">Arial</SvgParameter>
         <SvgParameter name="font-style">italic</SvgParameter>
-        <SvgParameter name="font-size">10</SvgParameter>
+        <SvgParameter name="font-size">3</SvgParameter>
       </Font>
       <LabelPlacement>
         <PointPlacement>
           <Displacement>
             <DisplacementX>0</DisplacementX>
-            <DisplacementY>6.5</DisplacementY>
+            <DisplacementY>1.8</DisplacementY>
           </Displacement>
         </PointPlacement>
       </LabelPlacement>
@@ -829,7 +829,7 @@
         </ogc:Not>
       </ogc:And>
     </ogc:Filter>
-    <TextSymbolizer>
+    <TextSymbolizer uom="meter">
     <Label>
       <Substring fallbackValue="">
         <StringValue>
@@ -852,13 +852,13 @@
       <Font>
         <SvgParameter name="font-family">Arial</SvgParameter>
         <SvgParameter name="font-style">italic</SvgParameter>
-        <SvgParameter name="font-size">10</SvgParameter>
+        <SvgParameter name="font-size">3</SvgParameter>
       </Font>
       <LabelPlacement>
         <PointPlacement>
           <Displacement>
             <DisplacementX>0</DisplacementX>
-            <DisplacementY>-5.5</DisplacementY>
+            <DisplacementY>-1.5</DisplacementY>
           </Displacement>
         </PointPlacement>
       </LabelPlacement>
@@ -866,20 +866,20 @@
         <SvgParameter name="fill">#CCCCCC</SvgParameter>
       </Fill>
     </TextSymbolizer>
-    <TextSymbolizer>
+    <TextSymbolizer uom="meter">
       <Label>
         <ogc:Literal>____</ogc:Literal>
       </Label>
       <Font>
         <SvgParameter name="font-family">Arial</SvgParameter>
         <SvgParameter name="font-style">italic</SvgParameter>
-        <SvgParameter name="font-size">10</SvgParameter>
+        <SvgParameter name="font-size">3</SvgParameter>
       </Font>
       <Fill>
         <SvgParameter name="fill">#CCCCCC</SvgParameter>
       </Fill>
     </TextSymbolizer>
-    <TextSymbolizer>
+    <TextSymbolizer uom="meter">
       <Label>
         <Substring fallbackValue="">
           <StringValue>
@@ -916,13 +916,13 @@
       <Font>
         <SvgParameter name="font-family">Arial</SvgParameter>
         <SvgParameter name="font-style">italic</SvgParameter>
-        <SvgParameter name="font-size">10</SvgParameter>
+        <SvgParameter name="font-size">3</SvgParameter>
       </Font>
       <LabelPlacement>
         <PointPlacement>
           <Displacement>
             <DisplacementX>0</DisplacementX>
-            <DisplacementY>6.5</DisplacementY>
+            <DisplacementY>1.8</DisplacementY>
           </Displacement>
         </PointPlacement>
       </LabelPlacement>
@@ -975,14 +975,14 @@
          </ogc:Or>
       </ogc:And>
     </ogc:Filter>
-    <TextSymbolizer>
+    <TextSymbolizer uom="meter">
       <Label>
         <ogc:PropertyName>adv:schriftinhalt</ogc:PropertyName>
       </Label>
       <Font>
         <SvgParameter name="font-family">Arial</SvgParameter>
         <SvgParameter name="font-style">italic</SvgParameter>
-        <SvgParameter name="font-size">10</SvgParameter>
+        <SvgParameter name="font-size">3</SvgParameter>
       </Font>
       <Fill>
         <SvgParameter name="fill">#CCCCCC</SvgParameter>
@@ -1036,7 +1036,7 @@
          </ogc:Or>
       </ogc:And>
     </ogc:Filter>
-    <TextSymbolizer>
+    <TextSymbolizer uom="meter">
     <Label>
       <ogc:Literal>/</ogc:Literal>
       <ogc:PropertyName>adv:schriftinhalt</ogc:PropertyName>
@@ -1044,13 +1044,13 @@
       <Font>
         <SvgParameter name="font-family">Arial</SvgParameter>
         <SvgParameter name="font-style">italic</SvgParameter>
-        <SvgParameter name="font-size">10</SvgParameter>
+        <SvgParameter name="font-size">3</SvgParameter>
       </Font>
       <LabelPlacement>
         <PointPlacement>
           <Displacement>
             <DisplacementX>0</DisplacementX>
-            <DisplacementY>-5.5</DisplacementY>
+            <DisplacementY>-1.5</DisplacementY>
           </Displacement>
         </PointPlacement>
       </LabelPlacement>
