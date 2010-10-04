@@ -746,10 +746,10 @@
         <Title>Beschriftung</Title>
         <Abstract>Beschriftungen und Einzelsymbole</Abstract>
         <RequestableLayer>
-          <Name>FlurstueckeLagePunkt</Name>
+          <Name>FlurstueckeLagePunktBeschriftung</Name>
           <Title>Flurstücke, Lage, Punkt</Title>
           <RequestableLayer>
-            <Name>AngabenZumFlurstueck</Name>
+            <Name>AngabenZumFlurstueckBeschriftung</Name>
             <Title>Angaben zum Flurstück</Title>
             <RequestableLayer>
               <Name>Flurstuecksnummer</Name>
