@@ -40,6 +40,7 @@ import java.util.Iterator;
 import java.util.Map;
 
 import javax.faces.component.UIComponent;
+import javax.faces.component.UIInput;
 import javax.faces.context.FacesContext;
 import javax.faces.context.ResponseWriter;
 import javax.faces.convert.ConverterException;
@@ -162,7 +163,7 @@ public class InputBBoxRenderer extends MenuRenderer {
 
     private void encodeCoordFields( ResponseWriter writer, HtmlInputBBox bbox, String clientId )
                             throws IOException {
-        BBox value = bbox.getValue();
+        BBox value = getCurrentValue( bbox );
         // min X
         double minx = -180;
         if ( value != null && !Double.isNaN( value.getMinx() ) ) {
@@ -220,4 +221,20 @@ public class InputBBoxRenderer extends MenuRenderer {
         }
         return null;
     }
+
+    private BBox getCurrentValue( HtmlInputBBox component ) {
+        Object submittedValue = ( (UIInput) component ).getSubmittedValue();
+        if ( submittedValue != null ) {
+            return (BBox) submittedValue;
+        }
+
+        BBox currentValue = null;
+        Object currentObj = getValue( component );
+        if ( currentObj != null ) {
+            currentValue = (BBox) currentObj;
+        }
+        return currentValue;
+
+    }
+
 }

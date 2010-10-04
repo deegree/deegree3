@@ -53,14 +53,14 @@ public class BBox {
 
     private double maxx;
 
-    private double minX;
+    private double minx;
 
     public BBox() {
     }
 
     public BBox( String crs, double minx, double miny, double maxx, double maxy ) {
         this.crs = crs;
-        this.minX = minx;
+        this.minx = minx;
         this.miny = miny;
         this.maxx = maxx;
         this.maxy = maxy;
@@ -83,6 +83,11 @@ public class BBox {
     }
 
     public double getMinx() {
-        return minX;
+        return minx;
+    }
+
+    @Override
+    public String toString() {
+        return "min: " + minx + ", " + miny + " max: " + maxx + ", " + maxy + " (" + crs + ")";
     }
 }
