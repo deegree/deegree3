@@ -6,29 +6,48 @@
       <Title>Root Layer</Title>
       <CRS>EPSG:4258 EPSG:4326 EPSG:900913 EPSG:28992</CRS>
 
+      <RequestableLayer>
+        <Name>inspire-ad</Name>
+        <Title>INSPIRE Addresses</Title>
+        <FeatureStoreId>inspire-memory</FeatureStoreId>
+        <DirectStyle>
+          <File>../styles/Addresses.xml</File>
+          <Name>addresses</Name>
+        </DirectStyle>
+      </RequestableLayer>
+
+      <RequestableLayer>
+        <Name>inspire-cp</Name>
+        <Title>INSPIRE Cadastral Parcels</Title>
+        <FeatureStoreId>inspire-memory</FeatureStoreId>
+        <DirectStyle>
+          <File>../styles/CadastralParcels.xml</File>
+          <Name>cadastralparcels</Name>
+        </DirectStyle>
+      </RequestableLayer>
 
       <RequestableLayer>
         <Name>inspire-au</Name>
         <Title>INSPIRE AdministrativeUnits</Title>
         <LogicalLayer>
-          <ScaleDenominators min="500000" max="100000000"/>
-          <FeatureStoreId>inspire-postgis</FeatureStoreId>
+          <ScaleDenominators min="500000" max="100000000" />
+          <FeatureStoreId>inspire-memory</FeatureStoreId>
           <DirectStyle>
             <File>../styles/AdministrativeUnits1.xml</File>
             <Name>inspire-au</Name>
           </DirectStyle>
         </LogicalLayer>
         <LogicalLayer>
-          <ScaleDenominators min="100000" max="500000"/>
-          <FeatureStoreId>inspire-postgis</FeatureStoreId>
+          <ScaleDenominators min="100000" max="1000000" />
+          <FeatureStoreId>inspire-memory</FeatureStoreId>
           <DirectStyle>
             <File>../styles/AdministrativeUnits2.xml</File>
             <Name>inspire-au</Name>
           </DirectStyle>
         </LogicalLayer>
         <LogicalLayer>
-          <ScaleDenominators min="0" max="100000"/>
-          <FeatureStoreId>inspire-postgis</FeatureStoreId>
+          <ScaleDenominators min="0" max="100000" />
+          <FeatureStoreId>inspire-memory</FeatureStoreId>
           <DirectStyle>
             <File>../styles/AdministrativeUnits3.xml</File>
             <Name>inspire-au</Name>
@@ -36,34 +55,6 @@
         </LogicalLayer>
       </RequestableLayer>
 
-      <RequestableLayer>
-        <Name>cadastralparcels</Name>
-        <Title>INSPIRE Cadastral Parcels</Title>
-        <FeatureStoreId>inspire-postgis</FeatureStoreId>
-        <DirectStyle>
-          <File>../styles/CadastralParcels.xml</File>
-          <Name>cadastralparcels</Name>
-        </DirectStyle>
-      </RequestableLayer>
-
     </UnrequestableLayer>
-
-
-    <!--
-      UnrequestableLayer> <Title>GeoSciML Layers</Title> <RequestableLayer> <Name>MappedFeature</Name> <Title>Mapped
-      Features (GeoSciML)</Title> <FeatureStoreId>geosciml-postgis</FeatureStoreId> <DirectStyle>
-      <File>../styles/MappedFeature.xml</File> </DirectStyle> </RequestableLayer> </UnrequestableLayer
-    -->
-
-    <!--
-      UnrequestableLayer> <Title>INSPIRE Layers</Title> <CRS>EPSG:31468 EPSG:31466 EPSG:31467 EPSG:25832 EPSG:25833
-      EPSG:25834 EPSG:28992</CRS> <RequestableLayer> <Name>addresses</Name> <Title>INSPIRE Addresses</Title>
-      <FeatureStoreId>inspire-postgis</FeatureStoreId> <DirectStyle> <File>../styles/Addresses.xml</File>
-      <Name>addresses</Name> </DirectStyle> </RequestableLayer> <RequestableLayer> <Name>cadastralparcels</Name>
-      <Title>INSPIRE Cadastral Parcels</Title> <FeatureStoreId>inspire-postgis</FeatureStoreId> <DirectStyle>
-      <File>../styles/CadastralParcels.xml</File> <Name>cadastralparcels</Name> </DirectStyle> </RequestableLayer>
-      </UnrequestableLayer
-    -->
-
   </ServiceConfiguration>
 </deegreeWMS>

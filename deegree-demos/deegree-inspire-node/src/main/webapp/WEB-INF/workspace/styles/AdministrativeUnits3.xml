@@ -1,11 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<FeatureTypeStyle
-    xmlns="http://www.opengis.net/se"
-    xmlns:ogc="http://www.opengis.net/ogc"
-    xmlns:au="urn:x-inspire:specification:gmlas:AdministrativeUnits:3.0"
-    xmlns:base="urn:x-inspire:specification:gmlas:BaseTypes:3.2"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://www.opengis.net/se http://schemas.opengis.net/se/1.1.0/FeatureStyle.xsd">
+<FeatureTypeStyle xmlns="http://www.opengis.net/se" xmlns:ogc="http://www.opengis.net/ogc"
+  xmlns:au="urn:x-inspire:specification:gmlas:AdministrativeUnits:3.0" xmlns:base="urn:x-inspire:specification:gmlas:BaseTypes:3.2"
+  xmlns:gn="urn:x-inspire:specification:gmlas:GeographicalNames:3.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.opengis.net/se http://schemas.opengis.net/se/1.1.0/FeatureStyle.xsd">
 
   <FeatureTypeName>au:AdministrativeUnit</FeatureTypeName>
 
@@ -50,7 +47,7 @@
     </ogc:Filter>
     <TextSymbolizer>
       <Label>
-        <ogc:PropertyName>au:nationalCode</ogc:PropertyName>
+        <ogc:PropertyName>au:name/gn:GeographicalName/gn:spelling/gn:SpellingOfName/gn:text</ogc:PropertyName>
       </Label>
       <Font>
         <SvgParameter name="font-family">Arial</SvgParameter>
