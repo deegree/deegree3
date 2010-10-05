@@ -15,7 +15,4 @@
   <GMLFeatureCollectionFileURL gmlVersion="GML_32">data/addresses.xml</GMLFeatureCollectionFileURL>
   <GMLFeatureCollectionFileURL gmlVersion="GML_32">data/cadastralparcels-limburg.xml</GMLFeatureCollectionFileURL>
   <GMLFeatureCollectionFileURL gmlVersion="GML_32">data/cadastralparcels-northholland.xml</GMLFeatureCollectionFileURL>
-  <GMLFeatureCollectionFileURL gmlVersion="GML_32">/home/schneider/geodaten/inspire/au-spatial-ds/au-gemeenten.gml</GMLFeatureCollectionFileURL>
-  <GMLFeatureCollectionFileURL gmlVersion="GML_32">/home/schneider/geodaten/inspire/au-spatial-ds/au-land.gml</GMLFeatureCollectionFileURL>
-  <GMLFeatureCollectionFileURL gmlVersion="GML_32">/home/schneider/geodaten/inspire/au-spatial-ds/au-provincies.gml</GMLFeatureCollectionFileURL>
 </MemoryFeatureStore>
