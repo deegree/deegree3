@@ -36,7 +36,7 @@
 								<h:commandButton value="#{labels['wpsURLSubmit']}" id="wpsUrlBt">
 									<f:ajax render=":selectProcess :emptyForm :messagePanel :responsePanel selectWPS" execute="@form" listener="#{clientBean.selectWPS}"/>
 								</h:commandButton>
-								<h:commandButton id="infoWPSBt" action="#{clientBean.updateInfoText}" image="resources/wpsclient/images/information.png" class="infoText" rendered="#{clientBean.wpsEntered}">
+								<h:commandButton id="infoWPSBt" action="#{clientBean.updateInfoText}" image="resources/wpsclient/images/information_icon.png" class="infoText" rendered="#{clientBean.wpsEntered}">
 									<f:ajax execute="@this" event="action" render=":infoOT" >
 										<f:param name="type" value="WPS"/>
 									</f:ajax>
@@ -50,21 +50,22 @@
 				  	<div>
 				  		<h:form id="selectProcess">
 				  			<h:panelGroup rendered="#{!empty clientBean.processes}">
-									<h:panelGrid columns="2" id="selectProcessPG">
+									<h:panelGrid columns="1" id="selectProcessPG">
 										<h:outputFormat value="#{labels['wpsSelectedURL']}" style="width:400px;"  id="selectProcessLabel">
 											<f:param value="#{clientBean.url}" />
 										</h:outputFormat>
-										<h:panelGroup />
-						  			<h:selectOneMenu id="processList" value="#{clientBean.process}">
-											<f:ajax render=":emptyForm :messagePanel :responsePanel selectProcess" listener="#{clientBean.selectProcess}"/>
-											<f:selectItem itemLabel="#{labels['noProcess']}"/>
-						  				<f:selectItems value="#{clientBean.processes}" var="p" itemLabel="#{p.title}" itemValue="#{p.id}" itemDescription="#{p.abstract}"/>
-						  			</h:selectOneMenu>
-										<h:commandButton id="infoProcessBt" action="#{clientBean.updateInfoText}" image="resources/wpsclient/images/information.png" class="infoText" rendered="#{clientBean.processSelected}">
-											<f:ajax execute="@this" event="action" render=":infoOT" >
-												<f:param name="type" value="PROCESS"/>
-											</f:ajax>
-										</h:commandButton>
+										<h:panelGroup>
+							  			<h:selectOneMenu id="processList" value="#{clientBean.process}">
+												<f:ajax render=":emptyForm :messagePanel :responsePanel selectProcess :infoOT" listener="#{clientBean.selectProcess}"/>
+												<f:selectItem itemLabel="#{labels['noProcess']}"/>
+							  				<f:selectItems value="#{clientBean.processes}" var="p" itemLabel="#{p.title}" itemValue="#{p.id}" itemDescription="#{p.abstract}"/>
+							  			</h:selectOneMenu>
+											<h:commandButton id="infoProcessBt" action="#{clientBean.updateInfoText}" image="resources/wpsclient/images/information_icon.png" class="infoText" rendered="#{clientBean.processSelected}">
+												<f:ajax execute="@this" event="action" render=":infoOT" >
+													<f:param name="type" value="PROCESS"/>
+												</f:ajax>
+											</h:commandButton>
+										</h:panelGroup>
 					  			</h:panelGrid>	
 								</h:panelGroup>
 								<h:panelGroup rendered="#{!!empty clientBean.processes}">

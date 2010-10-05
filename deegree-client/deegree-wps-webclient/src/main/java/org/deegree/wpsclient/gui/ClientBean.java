@@ -61,6 +61,7 @@ import javax.faces.component.behavior.AjaxBehavior;
 import javax.faces.component.html.HtmlCommandButton;
 import javax.faces.component.html.HtmlInputText;
 import javax.faces.component.html.HtmlMessage;
+import javax.faces.component.html.HtmlOutputLabel;
 import javax.faces.component.html.HtmlOutputText;
 import javax.faces.component.html.HtmlPanelGrid;
 import javax.faces.component.html.HtmlSelectManyCheckbox;
@@ -210,6 +211,7 @@ public class ClientBean implements Serializable {
         MethodExpressionActionListener listener = new MethodExpressionActionListener( action );
 
         button.addActionListener( listener );
+
         executeForm.getChildren().add( button );
     }
 
@@ -230,9 +232,11 @@ public class ClientBean implements Serializable {
 
         for ( int i = 0; i < inputDescription.length; i++ ) {
             InputType input = inputDescription[i];
-            HtmlOutputText label = new HtmlOutputText();
+            String inputId = input.getId().toString();
+            HtmlOutputLabel label = new HtmlOutputLabel();
             String labelId = getUniqueId();
             label.setId( labelId );
+            label.setFor( inputId );
             label.setValue( input.getTitle().getString() );
             inputGrid.getChildren().add( label );
             String minOccurs = input.getMinOccurs();
@@ -243,6 +247,17 @@ public class ClientBean implements Serializable {
                 }
             } catch ( NumberFormatException e ) {
                 // Nothing to DO (1 assumed)
+            }
+
+            int maxOccurs = 1;
+            try {
+                if ( "unbounded".equals( input.getMaxOccurs() ) ) {
+                    maxOccurs = -1;
+                } else {
+                    maxOccurs = Integer.parseInt( input.getMaxOccurs() );
+                }
+            } catch ( NumberFormatException e ) {
+                // Nothing to do
             }
             if ( input instanceof LiteralInputType ) {
                 /*
@@ -281,7 +296,7 @@ public class ClientBean implements Serializable {
                 literalText.setStyleClass( "inputField" );
                 String valueEL = "#{executeBean.literalInputs['" + input.getId().toString() + "']}";
                 ValueExpression valueVE = fc.getApplication().getExpressionFactory().createValueExpression(
-                                                                                                            fc.getELContext(),
+                                                                                                       fc.getELContext(),
                                                                                                             valueEL,
                                                                                                             Object.class );
 
@@ -294,6 +309,7 @@ public class ClientBean implements Serializable {
 
             } else if ( input instanceof BBoxInputType ) {
                 HtmlInputBBox bbox = new HtmlInputBBox();
+                bbox.setId( inputId );
                 String valueEL = "#{executeBean.bboxInputs['" + input.getId().toString() + "']}";
                 ValueExpression valueVE = fc.getApplication().getExpressionFactory().createValueExpression(
                                                                                                             fc.getELContext(),
@@ -315,7 +331,7 @@ public class ClientBean implements Serializable {
                 inputGrid.getChildren().add( bbox );
             } else if ( input instanceof ComplexInputType ) {
                 HtmlInputFile upload = new HtmlInputFile();
-                upload.setId( input.getId().toString() );
+                upload.setId( inputId );
                 upload.setStyleClass( "inputField" );
                 upload.setTarget( "upload" );
                 String type = "binary";
@@ -361,7 +377,7 @@ public class ClientBean implements Serializable {
         // info button
         HtmlCommandButton infoBt = new HtmlCommandButton();
         infoBt.setId( getUniqueId() );
-        infoBt.setImage( "resources/wpsclient/images/information.png" );
+        infoBt.setImage( "resources/wpsclient/images/information_icon_small.png" );
 
         ExpressionFactory ef = FacesContext.getCurrentInstance().getApplication().getExpressionFactory();
         String me = "#{clientBean.updateInfoText}";
