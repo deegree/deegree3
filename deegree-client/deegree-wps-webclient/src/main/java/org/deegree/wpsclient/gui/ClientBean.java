@@ -37,7 +37,6 @@ package org.deegree.wpsclient.gui;
 
 import static org.deegree.client.core.utils.MessageUtils.getFacesMessage;
 
-import java.io.IOException;
 import java.io.Serializable;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -46,43 +45,19 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.UUID;
 
-import javax.el.ExpressionFactory;
-import javax.el.MethodExpression;
-import javax.el.ValueExpression;
 import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
-import javax.faces.component.UIComponent;
-import javax.faces.component.UIParameter;
-import javax.faces.component.UISelectItem;
-import javax.faces.component.behavior.AjaxBehavior;
-import javax.faces.component.html.HtmlCommandButton;
-import javax.faces.component.html.HtmlInputText;
-import javax.faces.component.html.HtmlMessage;
-import javax.faces.component.html.HtmlOutputLabel;
-import javax.faces.component.html.HtmlOutputText;
-import javax.faces.component.html.HtmlPanelGrid;
-import javax.faces.component.html.HtmlSelectManyCheckbox;
 import javax.faces.context.FacesContext;
 import javax.faces.event.AbortProcessingException;
-import javax.faces.event.ActionEvent;
 import javax.faces.event.AjaxBehaviorEvent;
-import javax.faces.event.MethodExpressionActionListener;
 
-import org.deegree.client.core.component.HtmlInputBBox;
-import org.deegree.client.core.component.HtmlInputFile;
-import org.deegree.client.core.model.BBox;
 import org.deegree.commons.tom.ows.CodeType;
 import org.deegree.commons.tom.ows.LanguageString;
-import org.deegree.protocol.ows.exception.OWSException;
 import org.deegree.protocol.ows.metadata.ServiceIdentification;
 import org.deegree.protocol.wps.client.WPSClient;
-import org.deegree.protocol.wps.client.input.type.BBoxInputType;
-import org.deegree.protocol.wps.client.input.type.ComplexInputType;
 import org.deegree.protocol.wps.client.input.type.InputType;
-import org.deegree.protocol.wps.client.input.type.LiteralInputType;
 import org.deegree.protocol.wps.client.output.type.OutputType;
 import org.deegree.protocol.wps.client.process.Process;
 
@@ -114,15 +89,13 @@ public class ClientBean implements Serializable {
 
     private String information;
 
-    private final String WPS_INFOKEY = "WPS";
+    final static String WPS_INFOKEY = "WPS";
 
-    private final String PROCESS_INFOKEY = "PROCESS";
+    final static String PROCESS_INFOKEY = "PROCESS";
 
-    private final String IN_INFOKEY = "INPUT";
+    final static String IN_INFOKEY = "INPUT";
 
-    private final String OUT_INFOKEY = "OUTPUT";
-
-    // private Map<CodeType, SimpleLiteralInput> literalInputs = new HashMap<CodeType, SimpleLiteralInput>();
+    final static String OUT_INFOKEY = "OUTPUT";
 
     /**
      * change the URL of the WPS and update the list of processes
@@ -138,15 +111,15 @@ public class ClientBean implements Serializable {
             URL capUrl = new URL( url + "?service=WPS&version=1.0.0&request=GetCapabilities" );
             wpsClient = new WPSClient( capUrl );
             FacesMessage msg = getFacesMessage( FacesMessage.SEVERITY_INFO, "INFO.SELECT_WPS", url );
-            fc.addMessage( "WPSBean.selectWPS.SELECT_WPS", msg );
+            fc.addMessage( "ClientBean.selectWPS.SELECT_WPS", msg );
             Process[] p = wpsClient.getProcesses();
             processes.addAll( (List<Process>) Arrays.asList( p ) );
         } catch ( MalformedURLException e ) {
             FacesMessage msg = getFacesMessage( FacesMessage.SEVERITY_ERROR, "ERROR.INVALID_URL", url );
-            fc.addMessage( "WPSBean.selectWPS.INVALID_URL", msg );
+            fc.addMessage( "ClientBean.selectWPS.INVALID_URL", msg );
         } catch ( Exception e ) {
             FacesMessage msg = getFacesMessage( FacesMessage.SEVERITY_ERROR, "ERROR.INVALID_WPS", url, e.getMessage() );
-            fc.addMessage( "WPSBean.selectWPS.INVALID_WPS", msg );
+            fc.addMessage( "ClientBean.selectWPS.INVALID_WPS", msg );
         }
     }
 
@@ -161,296 +134,93 @@ public class ClientBean implements Serializable {
         FacesContext fc = FacesContext.getCurrentInstance();
         if ( wpsClient == null ) {
             FacesMessage msg = getFacesMessage( FacesMessage.SEVERITY_ERROR, "ERROR.NO_URL" );
-
-            fc.addMessage( "WPSBean.selectProcess.NO_WPS", msg );
+            fc.addMessage( "ClientBean.selectProcess.NO_WPS", msg );
             return;
         }
         if ( process == null ) {
             FacesMessage msg = getFacesMessage( FacesMessage.SEVERITY_ERROR, "ERROR.NO_PROCESS" );
-            fc.addMessage( "WPSBean.selectProcess.NO_Process", msg );
+            fc.addMessage( "ClientBean.selectProcess.NO_Process", msg );
             return;
         }
         selectedProcess = wpsClient.getProcess( process.getCode(), process.getCodeSpace() );
         if ( selectedProcess == null ) {
             FacesMessage msg = getFacesMessage( FacesMessage.SEVERITY_WARN, "WARN.NO_PROCESS_WITH_ID", url, process );
-            fc.addMessage( "WPSBean.selectProcess.NO_PROCESS_FOR_ID", msg );
+            fc.addMessage( "ClientBean.selectProcess.NO_PROCESS_FOR_ID", msg );
             return;
         }
         information = selectedProcess.getAbstract() != null ? selectedProcess.getAbstract().getString() : "";
-        createForm( selectedProcess );
         FacesMessage msg = getFacesMessage( FacesMessage.SEVERITY_INFO, "INFO.SELECT_PROCESS", selectedProcess.getId() );
-        fc.addMessage( "WPSBean.selectProcess.SELECT_PROCESS", msg );
-
+        fc.addMessage( "ClientBean.selectProcess.SELECT_PROCESS", msg );
     }
 
-    private void createForm( Process process ) {
+    /**
+     * action methode to update the information text dependent on the given parameter
+     * 
+     * @return null, to stay on the same page
+     */
+    public Object updateInfoText() {
         FacesContext fc = FacesContext.getCurrentInstance();
-        UIComponent executeForm = fc.getViewRoot().findComponent( "emptyForm" );
-        executeForm.getChildren().clear();
-
-        try {
-            addInputParams( fc, executeForm, process.getInputTypes() );
-            setOutputParams( fc, executeForm, process.getOutputTypes() );
-        } catch ( OWSException e ) {
-            FacesMessage msg = getFacesMessage( FacesMessage.SEVERITY_WARN, "WARN.EXCEPTION", e.getMessage() );
-            fc.addMessage( "WPSBean.selectProcess.EXCEPTION", msg );
-        } catch ( IOException e ) {
-            FacesMessage msg = getFacesMessage( FacesMessage.SEVERITY_WARN, "WARN.IOEXCEPTION", e.getMessage() );
-            fc.addMessage( "WPSBean.selectProcess.IOEXCEPTION", msg );
+        Map<String, String> params = fc.getExternalContext().getRequestParameterMap();
+        if ( params.containsKey( "type" ) ) {
+            String type = params.get( "type" );
+            if ( WPS_INFOKEY.equals( type ) && wpsClient != null ) {
+                ServiceIdentification si = wpsClient.getMetadata().getServiceIdentification();
+                information = getAsLocaleString( si.getDescription().getAbstract() );
+            } else if ( PROCESS_INFOKEY.equals( type ) && selectedProcess != null ) {
+                information = selectedProcess.getAbstract() != null ? selectedProcess.getAbstract().getString() : "";
+            } else if ( IN_INFOKEY.equals( type ) && params.containsKey( "dataId" ) && selectedProcess != null ) {
+                try {
+                    String id = params.get( "dataId" );
+                    InputType[] inputTypes = selectedProcess.getInputTypes();
+                    for ( int i = 0; i < inputTypes.length; i++ ) {
+                        if ( equalsCodeType( inputTypes[i].getId(), id ) ) {
+                            information = inputTypes[i].getAbstract() != null ? inputTypes[i].getAbstract().getString()
+                                                                             : "";
+                        }
+                    }
+                } catch ( Exception e ) {
+                    information = null;
+                    FacesMessage msg = getFacesMessage( FacesMessage.SEVERITY_INFO, "INFO.UPDATE_INFO_FAILED" );
+                    fc.addMessage( "ClientBean.updateInfoText.FAILED", msg );
+                }
+            } else if ( OUT_INFOKEY.equals( type ) && params.containsKey( "dataId" ) && selectedProcess != null ) {
+                try {
+                    String id = params.get( "dataId" );
+                    OutputType[] outputTypes = selectedProcess.getOutputTypes();
+                    for ( int i = 0; i < outputTypes.length; i++ ) {
+                        if ( equalsCodeType( outputTypes[i].getId(), id ) ) {
+                            information = outputTypes[i].getAbstract() != null ? outputTypes[i].getAbstract().getString()
+                                                                              : "";
+                        }
+                    }
+                } catch ( Exception e ) {
+                    information = null;
+                    FacesMessage msg = getFacesMessage( FacesMessage.SEVERITY_INFO, "INFO.UPDATE_INFO_FAILED" );
+                    fc.addMessage( "ClientBean.updateInfoText.FAILED", msg );
+                }
+            }
         }
-        HtmlCommandButton button = new HtmlCommandButton();
-        button.setId( "executeButton" );
-        button.setValue( "Execute" );
-        String buttonEL = "#{executeBean.executeProcess}";
-        MethodExpression action = fc.getApplication().getExpressionFactory().createMethodExpression(
-                                                                                                     fc.getELContext(),
-                                                                                                     buttonEL,
-                                                                                                     null,
-                                                                                                     new Class<?>[] { ActionEvent.class } );
-        button.getAttributes().put( ExecuteBean.PROCESS_ATTRIBUTE_KEY, process );
-        MethodExpressionActionListener listener = new MethodExpressionActionListener( action );
-
-        button.addActionListener( listener );
-
-        executeForm.getChildren().add( button );
+        return null;
     }
 
-    private void addInputParams( FacesContext fc, UIComponent parent, InputType[] inputDescription ) {
-        HtmlPanelGrid inputGrid = new HtmlPanelGrid();
-        inputGrid.setId( getUniqueId() );
-        inputGrid.setColumns( 4 );
-        inputGrid.setStyleClass( "paramBody" );
-        inputGrid.setHeaderClass( "paramHeader" );
-        HtmlOutputText inputText = new HtmlOutputText();
-        String inputTextEL = "#{labels['inputParams']}";
-        ValueExpression inputTextVE = fc.getApplication().getExpressionFactory().createValueExpression(
-                                                                                                        fc.getELContext(),
-                                                                                                        inputTextEL,
-                                                                                                        String.class );
-        inputText.setValueExpression( "value", inputTextVE );
-        inputGrid.getFacets().put( "header", inputText );
-
-        for ( int i = 0; i < inputDescription.length; i++ ) {
-            InputType input = inputDescription[i];
-            String inputId = input.getId().toString();
-            HtmlOutputLabel label = new HtmlOutputLabel();
-            String labelId = getUniqueId();
-            label.setId( labelId );
-            label.setFor( inputId );
-            label.setValue( input.getTitle().getString() );
-            inputGrid.getChildren().add( label );
-            String minOccurs = input.getMinOccurs();
-            boolean isRequired = false;
-            try {
-                if ( Integer.parseInt( minOccurs ) > 0 ) {
-                    isRequired = true;
-                }
-            } catch ( NumberFormatException e ) {
-                // Nothing to DO (1 assumed)
-            }
-
-            int maxOccurs = 1;
-            try {
-                if ( "unbounded".equals( input.getMaxOccurs() ) ) {
-                    maxOccurs = -1;
-                } else {
-                    maxOccurs = Integer.parseInt( input.getMaxOccurs() );
-                }
-            } catch ( NumberFormatException e ) {
-                // Nothing to do
-            }
-            if ( input instanceof LiteralInputType ) {
-                /*
-                 * insert a composite component Application application = fc.getApplication(); Resource resource =
-                 * application.getResourceHandler().createResource( "LiteralInput.xhtml", "wpsclient" ); UIComponent
-                 * compositeComponent = application.createComponent( fc, resource ); compositeComponent.setId(
-                 * "composite" ); ValueExpression value = application.getExpressionFactory().createValueExpression(
-                 * fc.getELContext(), "#{executeBean.literalInputs['" + input.getId().toString() + "']}",
-                 * LiteralInputType.class ); LiteralInputType lit = (LiteralInputType) input;
-                 * 
-                 * SimpleLiteralInput in = new SimpleLiteralInput(); in.setUom( lit.getDefaultUom().getRef() );
-                 * literalInputs.put( input.getId(), in ); compositeComponent.setValueExpression( "value", value );
-                 * 
-                 * compositeComponent.getAttributes().put( "blub", "einTest" ); if ( lit.getDataType() != null ) {
-                 * compositeComponent.getAttributes().put( "dataType", lit.getDataType() ); } if (
-                 * lit.getSupportedUoms() != null ) { compositeComponent.getAttributes().put( "supportedUoms",
-                 * lit.getSupportedUoms() ); } if ( lit.getAllowedValues() != null ) {
-                 * compositeComponent.getAttributes().put( "allowedValues", lit.getAllowedValues() ); } if (
-                 * lit.getRanges() != null ) { compositeComponent.getAttributes().put( "ranges", lit.getRanges() ); }
-                 * 
-                 * FaceletFactory factory = (FaceletFactory) RequestStateManager.get( fc,
-                 * RequestStateManager.FACELET_FACTORY );
-                 * 
-                 * final UIComponent compositeRoot = application.createComponent( UIPanel.COMPONENT_TYPE );
-                 * compositeRoot.setRendererType( "javax.faces.Group" );
-                 * 
-                 * try { Facelet f = factory.getFacelet( resource.getURL() ); f.apply( fc, compositeRoot );
-                 * compositeComponent.getFacets().put( UIComponent.COMPOSITE_FACET_NAME, compositeRoot ); } catch (
-                 * IOException ioex ) { throw new FaceletException( ioex ); }
-                 * 
-                 * inputGrid.getChildren().add( compositeComponent );
-                 */
-
-                HtmlInputText literalText = new HtmlInputText();
-                literalText.setId( input.getId().toString() );
-                literalText.setStyleClass( "inputField" );
-                String valueEL = "#{executeBean.literalInputs['" + input.getId().toString() + "']}";
-                ValueExpression valueVE = fc.getApplication().getExpressionFactory().createValueExpression(
-                                                                                                       fc.getELContext(),
-                                                                                                            valueEL,
-                                                                                                            Object.class );
-
-                literalText.setValueExpression( "value", valueVE );
-                literalText.setRequired( isRequired );
-                if ( isRequired ) {
-                    literalText.setStyleClass( "required" );
-                }
-                inputGrid.getChildren().add( literalText );
-
-            } else if ( input instanceof BBoxInputType ) {
-                HtmlInputBBox bbox = new HtmlInputBBox();
-                bbox.setId( inputId );
-                String valueEL = "#{executeBean.bboxInputs['" + input.getId().toString() + "']}";
-                ValueExpression valueVE = fc.getApplication().getExpressionFactory().createValueExpression(
-                                                                                                            fc.getELContext(),
-                                                                                                            valueEL,
-                                                                                                            BBox.class );
-
-                bbox.setRequired( isRequired );
-                if ( isRequired ) {
-                    bbox.setStyleClass( "required" );
-                }
-                bbox.setValueExpression( "value", valueVE );
-                String[] supportedCrs = ( (BBoxInputType) input ).getSupportedCrs();
-                for ( int j = 0; j < supportedCrs.length; j++ ) {
-                    UISelectItem crs = new UISelectItem();
-                    crs.setItemLabel( supportedCrs[j] );
-                    crs.setItemValue( supportedCrs[j] );
-                    bbox.getChildren().add( crs );
-                }
-                inputGrid.getChildren().add( bbox );
-            } else if ( input instanceof ComplexInputType ) {
-                HtmlInputFile upload = new HtmlInputFile();
-                upload.setId( inputId );
-                upload.setStyleClass( "inputField" );
-                upload.setTarget( "upload" );
-                String type = "binary";
-                if ( ( (ComplexInputType) input ).getDefaultFormat().getMimeType() != null
-                     && ( (ComplexInputType) input ).getDefaultFormat().getMimeType().contains( "xml" ) ) {
-                    type = "xml";
-                }
-                String valueEL = "#{executeBean." + type + "Inputs['" + input.getId().toString() + "']}";
-                ValueExpression valueVE = fc.getApplication().getExpressionFactory().createValueExpression(
-                                                                                                            fc.getELContext(),
-                                                                                                            valueEL,
-                                                                                                            Object.class );
-
-                upload.setValueExpression( "value", valueVE );
-                upload.setRequired( isRequired );
-
-                // FileMimeTypeValidator validator = new FileMimeTypeValidator();
-                // ComplexFormat[] supportedFormats = ( (ComplexInputType) input ).getSupportedFormats();
-                // for ( int j = 0; j < supportedFormats.length; j++ ) {
-                // validator.addMimeType( supportedFormats[0].getMimeType() );
-                // }
-                // upload.addValidator( validator );
-                if ( isRequired ) {
-                    upload.setStyleClass( "required" );
-                }
-                inputGrid.getChildren().add( upload );
-            }
-
-            inputGrid.getChildren().add( createInfoBt( IN_INFOKEY, input.getId().getCode() ) );
-
-            // messages
-            HtmlMessage msg = new HtmlMessage();
-            msg.setId( getUniqueId() );
-            msg.setShowSummary( true );
-            msg.setShowDetail( true );
-            msg.setFor( labelId );
-            inputGrid.getChildren().add( msg );
+    private boolean equalsCodeType( CodeType codeType, String string ) {
+        if ( codeType != null && codeType.getCode().equals( string ) ) {
+            return true;
         }
-        parent.getChildren().add( inputGrid );
+        return false;
     }
 
-    private HtmlCommandButton createInfoBt( String type, String idCode ) {
-        // info button
-        HtmlCommandButton infoBt = new HtmlCommandButton();
-        infoBt.setId( getUniqueId() );
-        infoBt.setImage( "resources/wpsclient/images/information_icon_small.png" );
-
-        ExpressionFactory ef = FacesContext.getCurrentInstance().getApplication().getExpressionFactory();
-        String me = "#{clientBean.updateInfoText}";
-
-        MethodExpression methodExpression = ef.createMethodExpression(
-                                                                       FacesContext.getCurrentInstance().getELContext(),
-                                                                       me, Object.class, new Class<?>[0] );
-        infoBt.setActionExpression( methodExpression );
-
-        UIParameter paramType = new UIParameter();
-        paramType.setName( "type" );
-        paramType.setValue( type );
-        UIParameter param = new UIParameter();
-        param.setName( "dataId" );
-        param.setValue( idCode );
-        infoBt.getChildren().add( paramType );
-        infoBt.getChildren().add( param );
-
-        AjaxBehavior ajaxB = new AjaxBehavior();
-        List<String> render = new ArrayList<String>();
-        render.add( ":infoOT" );
-        ajaxB.setRender( render );
-        infoBt.addClientBehavior( infoBt.getDefaultEventName(), ajaxB );
-        return infoBt;
-    }
-
-    private void setOutputParams( FacesContext fc, UIComponent parent, OutputType[] outputs ) {
-        if ( outputs.length > 1 ) {
-            HtmlPanelGrid outputGrid = new HtmlPanelGrid();
-            outputGrid.setId( getUniqueId() );
-            outputGrid.setStyleClass( "paramBody" );
-            outputGrid.setHeaderClass( "paramHeader" );
-            outputGrid.setColumns( 2 );
-            HtmlOutputText outputText = new HtmlOutputText();
-            outputText.setId( getUniqueId() );
-            String outputTextEL = "#{labels['outputParams']}";
-            ValueExpression outputTextVE = fc.getApplication().getExpressionFactory().createValueExpression(
-                                                                                                             fc.getELContext(),
-                                                                                                             outputTextEL,
-                                                                                                             String.class );
-            outputText.setValueExpression( "value", outputTextVE );
-            outputGrid.getFacets().put( "header", outputText );
-
-            HtmlSelectManyCheckbox cb = new HtmlSelectManyCheckbox();
-            cb.setLayout( "pageDirection" );
-            cb.setId( getUniqueId() );
-            String valueEL = "#{executeBean.outputs}";
-            ValueExpression valueVE = fc.getApplication().getExpressionFactory().createValueExpression(
-                                                                                                        fc.getELContext(),
-                                                                                                        valueEL,
-                                                                                                        List.class );
-            cb.setValueExpression( "value", valueVE );
-            cb.setRequired( true );
-            for ( int i = 0; i < outputs.length; i++ ) {
-                UISelectItem item = new UISelectItem();
-                item.setItemLabel( outputs[i].getTitle().getString() );
-                item.setItemValue( outputs[i].getId().toString() );
-                if ( outputs[i].getAbstract() != null ) {
-                    item.setItemDescription( outputs[i].getAbstract().toString() );
-                }
-                cb.getChildren().add( item );
+    private String getAsLocaleString( List<LanguageString> languageStrings ) {
+        Locale locale = FacesContext.getCurrentInstance().getViewRoot().getLocale();
+        for ( LanguageString ls : languageStrings ) {
+            if ( locale.getLanguage().equals( ls.getLanguage() ) ) {
+                return ls.getString();
             }
-
-            outputGrid.getChildren().add( cb );
-            // TODO!
-            // outputGrid.getChildren().add( createInfoBt( "", ) );
-
-            parent.getChildren().add( outputGrid );
         }
-    }
-
-    private static String getUniqueId() {
-        return "id_" + UUID.randomUUID();
+        if ( !languageStrings.isEmpty() ) {
+            return languageStrings.get( 0 ).getString();
+        }
+        return "";
     }
 
     /******************* GETTER / SETTER ******************/
@@ -493,97 +263,40 @@ public class ClientBean implements Serializable {
         return processes;
     }
 
+    /**
+     * @param information
+     *            information text to set
+     */
     public void setInformation( String information ) {
         this.information = information;
     }
 
+    /**
+     * @return the currently set information text
+     */
     public String getInformation() {
         return information;
     }
 
-    public Object updateInfoText() {
-        FacesContext fc = FacesContext.getCurrentInstance();
-        Map<String, String> params = fc.getExternalContext().getRequestParameterMap();
-        if ( params.containsKey( "type" ) ) {
-            String type = params.get( "type" );
-            if ( WPS_INFOKEY.equals( type ) && wpsClient != null ) {
-                ServiceIdentification si = wpsClient.getMetadata().getServiceIdentification();
-                information = getAsLocaleString( si.getDescription().getAbstract() );
-            } else if ( PROCESS_INFOKEY.equals( type ) && selectedProcess != null ) {
-                information = selectedProcess.getAbstract() != null ? selectedProcess.getAbstract().getString() : "";
-            } else if ( IN_INFOKEY.equals( type ) && params.containsKey( "dataId" ) && selectedProcess != null ) {
-                try {
-                    String id = params.get( "dataId" );
-                    InputType[] inputTypes = selectedProcess.getInputTypes();
-                    for ( int i = 0; i < inputTypes.length; i++ ) {
-                        if ( equalsCodeType( inputTypes[i].getId(), id ) ) {
-                            information = inputTypes[i].getAbstract() != null ? inputTypes[i].getAbstract().getString()
-                                                                             : "";
-                        }
-                    }
-                } catch ( IOException e ) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-                } catch ( OWSException e ) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-                }
-            } else if ( OUT_INFOKEY.equals( type ) && params.containsKey( "dataId" ) && selectedProcess != null ) {
-                try {
-                    String id = params.get( "dataId" );
-                    OutputType[] outputTypes = selectedProcess.getOutputTypes();
-                    for ( int i = 0; i < outputTypes.length; i++ ) {
-                        if ( equalsCodeType( outputTypes[i].getId(), id ) ) {
-                            information = outputTypes[i].getAbstract() != null ? outputTypes[i].getAbstract().getString()
-                                                                              : "";
-                        }
-                    }
-                } catch ( IOException e ) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-                } catch ( OWSException e ) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-                }
-            }
-        }
-        return null;
-    }
-
-    private boolean equalsCodeType( CodeType codeType, String string ) {
-        if ( codeType != null && codeType.getCode().equals( string ) ) {
-            return true;
-        }
-        return false;
-    }
-
-    private String getAsLocaleString( List<LanguageString> languageStrings ) {
-        Locale locale = FacesContext.getCurrentInstance().getViewRoot().getLocale();
-        for ( LanguageString ls : languageStrings ) {
-            if ( locale.getLanguage().equals( ls.getLanguage() ) ) {
-                return ls.getString();
-            }
-        }
-        if ( !languageStrings.isEmpty() ) {
-            return languageStrings.get( 0 ).getString();
-        }
-        return "";
-    }
-
-    // public void setLiteralInputs( Map<CodeType, SimpleLiteralInput> literalInputs ) {
-    // this.literalInputs = literalInputs;
-    // }
-    //
-    // public Map<CodeType, SimpleLiteralInput> getLiteralInputs() {
-    // return literalInputs;
-    // }
-
+    /**
+     * @return true if a valid wps is selected
+     */
     public boolean isWpsEntered() {
         return wpsClient != null;
     }
 
+    /**
+     * @return true if a process is selected
+     */
     public boolean isProcessSelected() {
         return selectedProcess != null;
+    }
+
+    /**
+     * @return the currently selected process
+     */
+    public Process getSelectedProcess() {
+        return selectedProcess;
     }
 
 }

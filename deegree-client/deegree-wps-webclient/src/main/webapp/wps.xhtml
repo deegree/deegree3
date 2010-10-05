@@ -75,7 +75,9 @@
 				  	</div>
 				  	
 				  	<div>
-				  	<h:form id="emptyForm" enctype="multipart/form-data" styleClass="form"/>
+				  	<h:form id="emptyForm" enctype="multipart/form-data" styleClass="form" binding="#{formBean.executeForm}">
+				  		<f:event listener="#{formBean.create}" type="preRenderComponent" />
+				  	</h:form>
 				  	</div>
 			  	</fieldset>
 		  	
