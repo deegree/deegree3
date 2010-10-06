@@ -268,8 +268,7 @@ public class GetRecordsHandler {
                 MetadataStore rec = service.getStore();
                 MetadataQuery query = new MetadataQuery( getRec.getConstraint(), getRec.getOutputSchema(),
                                                          getRec.getSortBy(), getRec.getResultType(),
-                                                         getRec.getElementSetName(), getRec.getMaxRecords(),
-                                                         getRec.getStartPosition() );
+                                                         getRec.getMaxRecords(), getRec.getStartPosition() );
 
                 // commits the record to the getRecords operation
 
@@ -283,7 +282,7 @@ public class GetRecordsHandler {
 
             type = storeSet.getResultType();
             col = storeSet.getMembers();
-            writer.writeAttribute( "elementSet", type.getReturnableElement().name() );
+            writer.writeAttribute( "elementSet", getRec.getElementSetName().name() );
 
             writer.writeAttribute( "recordSchema", type.getRecordSchema() );
 
@@ -300,7 +299,7 @@ public class GetRecordsHandler {
         }
 
         for ( MetadataRecord m : col ) {
-            m.serialize( writer, null );
+            m.serialize( writer, getRec.getElementSetName() );
         }
 
         writer.writeEndElement();// SearchResult

@@ -166,8 +166,7 @@ public class GetRecordByIdHandler {
         if ( service.getMetadataStore() != null ) {
             try {
                 for ( MetadataStore rec : service.getMetadataStore() ) {
-                    resultSet = rec.getRecordsById( getRecBI.getRequestedIds(), getRecBI.getOutputSchema(),
-                                                   getRecBI.getElementSetName() );
+                    resultSet = rec.getRecordsById( getRecBI.getRequestedIds(), getRecBI.getOutputSchema() );
                 }
             } catch ( MetadataStoreException e ) {
                 throw new OWSException( e.getMessage(), OWSException.INVALID_PARAMETER_VALUE, "outputFormat" );
@@ -175,7 +174,7 @@ public class GetRecordByIdHandler {
         }
 
         for ( MetadataRecord m : resultSet.getMembers() ) {
-            m.serialize( writer, null );
+            m.serialize( writer, getRecBI.getElementSetName() );
         }
 
         writer.writeEndDocument();

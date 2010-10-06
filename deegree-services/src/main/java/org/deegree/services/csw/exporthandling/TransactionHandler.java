@@ -248,8 +248,7 @@ public class TransactionHandler {
                 }
                 MetadataResultSet rs = service.getStore().getRecordsById(
                                                                           ids,
-                                                                          OutputSchema.determineOutputSchema( OutputSchema.DC ),
-                                                                          ReturnableElement.brief );
+                                                                          OutputSchema.determineOutputSchema( OutputSchema.DC ) );
                 for ( MetadataRecord meta : rs.getMembers() ) {
                     meta.serialize( writer, ReturnableElement.brief );
                 }
