@@ -155,7 +155,7 @@ public class GenerateMetadata {
                 isoBriefElement.addChild( elem );
             }
         }
-        // Contact, is mandatory in the metadataEntity.xsd but not in ISO spec -> contact is provided empty
+        // modified
         if ( dateStamp != null ) {
 
             // isoBriefElement.addChild( new OMElementImpl( new QName( GMD_NS, "dateStamp" ), dateStamp, factory ) );

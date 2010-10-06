@@ -46,7 +46,6 @@ import javax.xml.namespace.QName;
 import org.apache.axiom.om.OMAbstractFactory;
 import org.apache.axiom.om.OMAttribute;
 import org.apache.axiom.om.OMElement;
-import org.apache.axiom.om.impl.OMNamespaceImpl;
 import org.apache.axiom.om.impl.llom.OMAttributeImpl;
 import org.deegree.commons.utils.JDBCUtils;
 import org.deegree.commons.xml.NamespaceContext;
@@ -76,6 +75,8 @@ public class ResourceIdentifier implements RecordInspector {
 
     private final XMLAdapter a;
 
+    private boolean isRic;
+
     private final IdUtils util;
 
     private ResourceIdentifier( RequireInspireCompliance ric, Connection conn ) {
@@ -91,9 +92,9 @@ public class ResourceIdentifier implements RecordInspector {
 
     public boolean checkInspireCompliance() {
         if ( ric == null ) {
-            return false;
+            return isRic = false;
         } else {
-            return true;
+            return isRic = true;
         }
     }
 
@@ -158,6 +159,7 @@ public class ResourceIdentifier implements RecordInspector {
             }
         }
         LOG.info( "No modification happened, so the resourceIdentifierList will be passed through. " );
+        rsList.clear();
         return rsList;
     }
 
@@ -229,15 +231,10 @@ public class ResourceIdentifier implements RecordInspector {
                 LOG.debug( "No uuid attribute found, set it from the resourceIdentifier..." );
 
             } else {
-                LOG.debug( " uuid attribute found, but anyway, set it from the resourceIdentifier..." );
+                LOG.debug( "uuid attribute found, but anyway, set it from the resourceIdentifier..." );
                 sv_service_OR_md_dataIdentification.getAttribute( new QName( "uuid" ) );
             }
-            sv_service_OR_md_dataIdentification.addAttribute( new OMAttributeImpl(
-                                                                                   "uuid",
-                                                                                   new OMNamespaceImpl(
-                                                                                                        nsContext.getURI( "gmd" ),
-                                                                                                        "gmd" ),
-                                                                                   rsList.get( 0 ),
+            sv_service_OR_md_dataIdentification.addAttribute( new OMAttributeImpl( "uuid", null, rsList.get( 0 ),
                                                                                    OMAbstractFactory.getOMFactory() ) );
 
             LOG.debug( "Setting id attribute from the resourceIdentifier..." );
@@ -247,17 +244,16 @@ public class ResourceIdentifier implements RecordInspector {
 
                 sv_service_OR_md_dataIdentification.removeAttribute( attribute_id );
             }
-            sv_service_OR_md_dataIdentification.addAttribute( new OMAttributeImpl(
-                                                                                   "id",
-                                                                                   new OMNamespaceImpl(
-                                                                                                        nsContext.getURI( "gmd" ),
-                                                                                                        "gmd" ),
-                                                                                   rsList.get( 0 ),
+
+            // sv_service_OR_md_dataIdentification.addAttribute( "id", "", null );
+            sv_service_OR_md_dataIdentification.addAttribute( new OMAttributeImpl( "id", null, rsList.get( 0 ),
                                                                                    OMAbstractFactory.getOMFactory() ) );
 
-            LOG.debug( "id attribute is now: '"
-                       + sv_service_OR_md_dataIdentification.getAttributeValue( new QName( nsContext.getURI( "gmd" ),
-                                                                                           "id", "gmd" ) ) + "' " );
+            LOG.info( "id attribute is now: '"
+                      + sv_service_OR_md_dataIdentification.getAttributeValue( new QName( "id" ) ) + "' " );
+            // LOG.debug( "id attribute is now: '"
+            // + sv_service_OR_md_dataIdentification.getAttributeValue( new QName( nsContext.getURI( "gmd" ),
+            // "id", "gmd" ) ) + "' " );
         }
 
         // check where to set the resourceIdentifier element

@@ -35,8 +35,12 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.metadata;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
+import javax.xml.namespace.QName;
+import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
@@ -74,6 +78,66 @@ public class ISORecord implements MetadataRecord {
     private OMElement root;
 
     private ParsedProfileElement pElem;
+
+    private static String[] summaryLocalParts = new String[14];
+
+    private static String[] briefLocalParts = new String[9];
+
+    private static String[] briefSummaryLocalParts = new String[23];
+
+    static {
+
+        summaryLocalParts[0] = "datasetURI";
+        summaryLocalParts[1] = "locale";
+        summaryLocalParts[2] = "spatialRepresentationInfo";
+        summaryLocalParts[3] = "metadataExtensionInfo";
+        summaryLocalParts[4] = "contentInfo";
+        summaryLocalParts[5] = "portrayalCatalogueInfo";
+        summaryLocalParts[6] = "metadataConstraints";
+        summaryLocalParts[7] = "applicationSchemaInfo";
+        summaryLocalParts[8] = "metadataMaintenance";
+        summaryLocalParts[9] = "series";
+        summaryLocalParts[10] = "describes";
+        summaryLocalParts[11] = "propertyType";
+        summaryLocalParts[12] = "featureType";
+        summaryLocalParts[13] = "featureAttribute";
+
+        briefLocalParts[0] = "language";
+        briefLocalParts[1] = "metadataCharacterSet";
+        briefLocalParts[2] = "parentIdentifier";
+        briefLocalParts[3] = "hierarchieLevelName";
+        briefLocalParts[4] = "metadataStandardName";
+        briefLocalParts[5] = "metadataStandardVersion";
+        briefLocalParts[6] = "referenceSystemInfo";
+        briefLocalParts[7] = "distributionInfo";
+        briefLocalParts[8] = "dataQualityInfo";
+
+        briefSummaryLocalParts[0] = "datasetURI";
+        briefSummaryLocalParts[1] = "locale";
+        briefSummaryLocalParts[2] = "spatialRepresentationInfo";
+        briefSummaryLocalParts[3] = "metadataExtensionInfo";
+        briefSummaryLocalParts[4] = "contentInfo";
+        briefSummaryLocalParts[5] = "portrayalCatalogueInfo";
+        briefSummaryLocalParts[6] = "metadataConstraints";
+        briefSummaryLocalParts[7] = "applicationSchemaInfo";
+        briefSummaryLocalParts[8] = "metadataMaintenance";
+        briefSummaryLocalParts[9] = "series";
+        briefSummaryLocalParts[10] = "describes";
+        briefSummaryLocalParts[11] = "propertyType";
+        briefSummaryLocalParts[12] = "featureType";
+        briefSummaryLocalParts[13] = "featureAttribute";
+        briefSummaryLocalParts[14] = "language";
+        briefSummaryLocalParts[15] = "metadataCharacterSet";
+        briefSummaryLocalParts[16] = "parentIdentifier";
+        briefSummaryLocalParts[17] = "hierarchieLevelName";
+        briefSummaryLocalParts[18] = "metadataStandardName";
+        briefSummaryLocalParts[19] = "metadataStandardVersion";
+        briefSummaryLocalParts[20] = "referenceSystemInfo";
+        briefSummaryLocalParts[21] = "distributionInfo";
+        briefSummaryLocalParts[22] = "dataQualityInfo";
+    }
+
+    private static Set<QName> summaryFilterElements;
 
     // public ISORecord( URL url ) {
     // this.root = new XMLAdapter( xmlStream ).getRootElement();
@@ -190,10 +254,28 @@ public class ISORecord implements MetadataRecord {
     @Override
     public void serialize( XMLStreamWriter writer, ReturnableElement returnType )
                             throws XMLStreamException {
-
         XMLStreamReader xmlStream = root.getXMLStreamReader();
-        StAXParsingHelper.skipStartDocument( xmlStream );
-        XMLAdapter.writeElement( writer, xmlStream );
+
+        switch ( returnType ) {
+        case brief:
+            StAXParsingHelper.skipStartDocument( xmlStream );
+            toBrief( writer, xmlStream );
+            break;
+        case summary:
+            StAXParsingHelper.skipStartDocument( xmlStream );
+            toSummary( writer, xmlStream );
+            break;
+        case full:
+            StAXParsingHelper.skipStartDocument( xmlStream );
+
+            XMLAdapter.writeElement( writer, xmlStream );
+            break;
+        default:
+            StAXParsingHelper.skipStartDocument( xmlStream );
+            toSummary( writer, xmlStream );
+            break;
+        }
+
     }
 
     @Override
@@ -208,7 +290,6 @@ public class ISORecord implements MetadataRecord {
     }
 
     public String getLanguage() {
-        ;
         return pElem.getQueryableProperties().getLanguage();
     }
 
@@ -221,4 +302,44 @@ public class ISORecord implements MetadataRecord {
         return pElem;
     }
 
+    private void toSummary( XMLStreamWriter writer, XMLStreamReader xmlStream )
+                            throws XMLStreamException {
+
+        XMLStreamReader filter = new NamedElementFilter( xmlStream, removeElementsISONamespace( summaryLocalParts ) );
+
+        generateOutput( writer, filter );
+
+    }
+
+    private void toBrief( XMLStreamWriter writer, XMLStreamReader xmlStream )
+                            throws XMLStreamException {
+        XMLStreamReader filter = new NamedElementFilter( xmlStream, removeElementsISONamespace( briefSummaryLocalParts ) );
+        generateOutput( writer, filter );
+    }
+
+    private Set<QName> removeElementsISONamespace( String[] localParts ) {
+        Set<QName> removeElements = new HashSet<QName>();
+        for ( String l : localParts ) {
+            removeElements.add( new QName( "http://www.isotc211.org/2005/gmd", l, "gmd" ) );
+        }
+
+        return removeElements;
+
+    }
+
+    private void generateOutput( XMLStreamWriter writer, XMLStreamReader filter )
+                            throws XMLStreamException {
+
+        while ( filter.hasNext() ) {
+
+            if ( filter.getEventType() == XMLStreamConstants.START_ELEMENT ) {
+
+                XMLAdapter.writeElement( writer, filter );
+            } else {
+                filter.next();
+            }
+        }
+        filter.close();
+
+    }
 }

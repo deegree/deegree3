@@ -104,7 +104,10 @@ public class MetadataValidation implements RecordInspector {
     @Override
     public OMElement inspect( OMElement record )
                             throws MetadataStoreException {
-        // TODO Auto-generated method stub
+        List<String> errors = validate( record );
+        if ( errors.isEmpty() ) {
+            return record;
+        }
         return null;
     }
 }

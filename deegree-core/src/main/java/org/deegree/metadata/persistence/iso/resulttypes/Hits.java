@@ -36,7 +36,6 @@
 package org.deegree.metadata.persistence.iso.resulttypes;
 
 import org.deegree.metadata.MetadataResultType;
-import org.deegree.protocol.csw.CSWConstants.ReturnableElement;
 
 /**
  * Impementation of the {@link MetadataResultType} which holds the minimum amount of information needed to fullfill a
@@ -48,8 +47,6 @@ import org.deegree.protocol.csw.CSWConstants.ReturnableElement;
  * @version $Revision$, $Date$
  */
 public class Hits implements MetadataResultType {
-
-    private final ReturnableElement resultType;
 
     private final int numberOfRecordsMatched;
 
@@ -70,9 +67,9 @@ public class Hits implements MetadataResultType {
      * @param nextRecord
      * @param expires
      */
-    public Hits( ReturnableElement resultType, int numberOfRecordsMatched, int numberOfRecordsReturned,
-                 String recordSchema, int nextRecord, String expires ) {
-        this.resultType = resultType;
+    public Hits( int numberOfRecordsMatched, int numberOfRecordsReturned, String recordSchema, int nextRecord,
+                 String expires ) {
+
         this.numberOfRecordsMatched = numberOfRecordsMatched;
         this.numberOfRecordsReturned = numberOfRecordsReturned;
         this.recordSchema = recordSchema;
@@ -107,11 +104,6 @@ public class Hits implements MetadataResultType {
     public String getRecordSchema() {
 
         return this.recordSchema;
-    }
-
-    @Override
-    public ReturnableElement getReturnableElement() {
-        return this.resultType;
     }
 
 }

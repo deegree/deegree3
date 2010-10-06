@@ -86,8 +86,8 @@ public interface GenericDatabaseExecution {
     int executeUpdateStatement( Connection connection, ParsedProfileElement parsedElement )
                             throws MetadataStoreException;
 
-    PreparedStatement executeGetRecords( String formatType, MetadataQuery recordStoreOptions, int typeNameFormatNumber,
-                                         boolean setCount, PostGISWhereBuilder builder, Connection conn )
+    PreparedStatement executeGetRecords( MetadataQuery recordStoreOptions, boolean setCount,
+                                         PostGISWhereBuilder builder, Connection conn )
                             throws MetadataStoreException;
 
 }

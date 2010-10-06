@@ -35,7 +35,6 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.metadata;
 
-import org.deegree.protocol.csw.CSWConstants.ReturnableElement;
 
 /**
  * Responsible for the information holding in the header of any getRecords operation.
@@ -46,13 +45,6 @@ import org.deegree.protocol.csw.CSWConstants.ReturnableElement;
  * @version $Revision$, $Date$
  */
 public interface MetadataResultType {
-
-    /**
-     * brief, summary, full
-     * 
-     * @return the {@link ReturnableElement}.
-     */
-    ReturnableElement getReturnableElement();
 
     /**
      * TODO outsourcing possible
