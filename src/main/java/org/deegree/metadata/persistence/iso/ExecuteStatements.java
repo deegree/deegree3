@@ -539,8 +539,7 @@ public class ExecuteStatements implements GenericDatabaseExecution {
     }
 
     @Override
-    public PreparedStatement executeGetRecords( String formatType, MetadataQuery recordStoreOptions,
-                                                int typeNameFormatNumber, boolean setCount,
+    public PreparedStatement executeGetRecords( MetadataQuery recordStoreOptions, boolean setCount,
                                                 PostGISWhereBuilder builder, Connection conn )
                             throws MetadataStoreException {
 
@@ -592,7 +591,7 @@ public class ExecuteStatements implements GenericDatabaseExecution {
             }
 
             getDatasetIDs.append( " LEFT OUTER JOIN " );
-            getDatasetIDs.append( formatType );
+            getDatasetIDs.append( "recordfull" );
             getDatasetIDs.append( " AS " );
             getDatasetIDs.append( blobTableAlias );
             getDatasetIDs.append( " ON " );
@@ -604,11 +603,11 @@ public class ExecuteStatements implements GenericDatabaseExecution {
             getDatasetIDs.append( "." );
             getDatasetIDs.append( fk_datasets );
 
-            getDatasetIDs.append( " WHERE " );
-            getDatasetIDs.append( blobTableAlias );
-            getDatasetIDs.append( '.' );
-            getDatasetIDs.append( format );
-            getDatasetIDs.append( "=?" );
+            // getDatasetIDs.append( " WHERE " );
+            // getDatasetIDs.append( blobTableAlias );
+            // getDatasetIDs.append( '.' );
+            // getDatasetIDs.append( format );
+            // getDatasetIDs.append( "=?" );
 
             if ( builder.getWhere() != null ) {
                 getDatasetIDs.append( " AND " );
@@ -628,7 +627,7 @@ public class ExecuteStatements implements GenericDatabaseExecution {
             preparedStatement = conn.prepareStatement( getDatasetIDs.toString() );
 
             int i = 1;
-            preparedStatement.setInt( i++, typeNameFormatNumber );
+            // preparedStatement.setInt( i++, typeNameFormatNumber );
 
             if ( builder.getWhere() != null ) {
                 for ( SQLLiteral o : builder.getWhere().getLiterals() ) {

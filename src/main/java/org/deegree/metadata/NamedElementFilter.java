@@ -44,6 +44,8 @@ import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
+import org.deegree.commons.xml.stax.StAXParsingHelper;
+
 /**
  * TODO add class documentation here
  * 
@@ -237,7 +239,9 @@ public class NamedElementFilter implements XMLStreamReader {
         int event = input.next();
         while ( ( event == XMLStreamConstants.START_ELEMENT || event == XMLStreamConstants.END_ELEMENT )
                 && removeElements.contains( getName() ) ) {
-            event = input.next();
+            StAXParsingHelper.skipElement( input );
+            event = StAXParsingHelper.nextElement( input );
+
         }
         return event;
     }
@@ -247,7 +251,8 @@ public class NamedElementFilter implements XMLStreamReader {
         int event = input.nextTag();
         while ( ( event == XMLStreamConstants.START_ELEMENT || event == XMLStreamConstants.END_ELEMENT )
                 && removeElements.contains( getName() ) ) {
-            event = input.nextTag();
+            StAXParsingHelper.skipElement( input );
+            event = StAXParsingHelper.nextElement( input );
         }
         return event;
     }
@@ -260,4 +265,5 @@ public class NamedElementFilter implements XMLStreamReader {
     public boolean standaloneSet() {
         return input.standaloneSet();
     }
+
 }

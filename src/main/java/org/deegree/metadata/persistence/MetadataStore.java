@@ -98,7 +98,7 @@ public interface MetadataStore {
      *            {@link ReturnableElement}
      * @throws MetadataStoreException
      */
-    public MetadataResultSet getRecordsById( List<String> idList, URI outputSchema, ReturnableElement elementSetName )
+    public MetadataResultSet getRecordsById( List<String> idList, URI outputSchema )
                             throws MetadataStoreException;
 
     /**

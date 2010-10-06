@@ -58,9 +58,6 @@ public class MetadataQuery {
     private final ResultType resultType;
 
     // ?
-    private final ReturnableElement returnableElement;
-
-    // ?
     private final int maxRecords;
 
     private final int startPosition;
@@ -87,13 +84,12 @@ public class MetadataQuery {
      *            at which record position should start the response}
      */
     public MetadataQuery( Filter filter, URI outputSchema, SortProperty[] sorting, ResultType resultType,
-                          ReturnableElement returnableElement, int maxRecords, int startPosition ) {
+                          int maxRecords, int startPosition ) {
 
         this.filter = filter;
         this.outputSchema = outputSchema;
         this.sorting = sorting;
         this.resultType = resultType;
-        this.returnableElement = returnableElement;
         this.maxRecords = maxRecords;
         this.startPosition = startPosition;
 
@@ -111,13 +107,6 @@ public class MetadataQuery {
      */
     public ResultType getResultType() {
         return resultType;
-    }
-
-    /**
-     * @return the setOfReturnableElements
-     */
-    public ReturnableElement returnableElement() {
-        return returnableElement;
     }
 
     /**
