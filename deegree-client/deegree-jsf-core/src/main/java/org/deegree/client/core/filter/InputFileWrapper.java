@@ -73,12 +73,21 @@ public class InputFileWrapper extends HttpServletRequestWrapper {
             formParameters = new HashMap<String, String[]>();
             for ( int i = 0; i < fileItems.size(); i++ ) {
                 FileItem item = fileItems.get( i );
-                if ( item.isFormField() == true ) {
-                    formParameters.put( item.getFieldName(), new String[] { item.getString() } );
-                } else {
-                    if ( item != null && item.getName() != null && item.getName().length() > 0 && item.getSize() > 0 ) {
-                        request.setAttribute( item.getFieldName(), item );
+                if ( item.isFormField() ) {
+                    String[] values;
+                    if ( formParameters.containsKey( item.getFieldName() ) ) {
+                        String[] strings = formParameters.get( item.getFieldName() );
+                        values = new String[strings.length + 1];
+                        for ( int j = 0; j < strings.length; j++ ) {
+                            values[j] = strings[j];
+                        }
+                        values[strings.length] = item.getString();
+                    } else {
+                        values = new String[] { item.getString() };
                     }
+                    formParameters.put( item.getFieldName(), values );
+                } else if ( item.getName() != null && item.getName().length() > 0 && item.getSize() > 0 ) {
+                    request.setAttribute( item.getFieldName(), item );
                 }
             }
         } catch ( FileUploadException fe ) {
