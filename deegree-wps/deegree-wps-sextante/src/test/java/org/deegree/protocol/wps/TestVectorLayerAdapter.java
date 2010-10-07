@@ -70,7 +70,7 @@ public class TestVectorLayerAdapter {
     private static Logger LOG = LoggerFactory.getLogger( TestVectorLayerAdapter.class );
 
     // enabled/disabled all tests
-    private static final boolean ENABLED = true;
+    private static final boolean ENABLED = false;
 
     /**
      * Tests the {@link VectorLayerAdapter} to convert geometries to {@link VectorLayerImpl} and back. <br>
