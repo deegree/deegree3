@@ -262,37 +262,23 @@ public class TestGeoAlgorithm {
 
         if ( !getAll ) {// return only one algorithm
 
+            //
             // ---------------------------------------------------------------------------------------------------------------------------
-            // vectorcluster algorithm
-            String vectorclusterName = "vectorcluster";
-            GeoAlgorithmWithData vectorclusterAlg = new GeoAlgorithmWithData(
-                                                                              Sextante.getAlgorithmFromCommandLineName( vectorclusterName ) );
+            // countpoints algorithm
+            String countpointsName = "countpoints";
+            GeoAlgorithmWithData countpointsAlg = new GeoAlgorithmWithData(
+                                                                            Sextante.getAlgorithmFromCommandLineName( countpointsName ) );
             // add test data
-            LinkedList<ExampleData> vectorclusterData1 = new LinkedList<ExampleData>();
-            vectorclusterData1.add( VectorExampleData.GML_31_FEATURE_COLLECTION_POLYGONS ); // LAYER
-            vectorclusterData1.add( LiteralExampleData.STRING_NAME_UPPERNAME_DATAORIGIN_AREA_QUERYBBOXOVERLAP ); // FIELDS
-            vectorclusterData1.add( LiteralExampleData.NUMERICAL_VALUE_5 ); // NUMCLASS: 5
-            vectorclusterAlg.addInputData( vectorclusterData1 );
-            vectorclusterAlg.addAllOutputFormats( allGMLFormats );
-            allAlgs.add( vectorclusterAlg );
-
-            // //
-            // ---------------------------------------------------------------------------------------------------------------------------
-            // // countpoints algorithm
-            // String countpointsName = "countpoints";
-            // GeoAlgorithmWithData countpointsAlg = new GeoAlgorithmWithData(
-            // Sextante.getAlgorithmFromCommandLineName( countpointsName ) );
-            // // add test data
-            // LinkedList<ExampleData> countpointsData1 = new LinkedList<ExampleData>();
-            // countpointsData1.add( VectorExampleData.GML_31_POINT );
-            // countpointsData1.add( VectorExampleData.GML_31_POLYGON );
-            // countpointsAlg.addInputData( countpointsData1 );
-            // LinkedList<ExampleData> countpointsData2 = new LinkedList<ExampleData>();
-            // countpointsData2.add( VectorExampleData.GML_31_FEATURE_COLLECTION_POINTS );
-            // countpointsData2.add( VectorExampleData.GML_31_FEATURE_COLLECTION_POLYGONS );
-            // countpointsAlg.addInputData( countpointsData2 );
-            // countpointsAlg.addAllOutputFormats( allGMLFormats );
-            // allAlgs.add( countpointsAlg );
+            LinkedList<ExampleData> countpointsData1 = new LinkedList<ExampleData>();
+            countpointsData1.add( VectorExampleData.GML_31_POINT );
+            countpointsData1.add( VectorExampleData.GML_31_POLYGON );
+            countpointsAlg.addInputData( countpointsData1 );
+            LinkedList<ExampleData> countpointsData2 = new LinkedList<ExampleData>();
+            countpointsData2.add( VectorExampleData.GML_31_FEATURE_COLLECTION_POINTS );
+            countpointsData2.add( VectorExampleData.GML_31_FEATURE_COLLECTION_WFS );
+            countpointsAlg.addInputData( countpointsData2 );
+            countpointsAlg.addAllOutputFormats( allGMLFormats );
+            allAlgs.add( countpointsAlg );
 
             // //
             // ---------------------------------------------------------------------------------------------------------------------------

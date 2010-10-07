@@ -46,7 +46,6 @@ import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
 
-import org.deegree.commons.xml.CommonNamespaces;
 import org.deegree.commons.xml.stax.XMLStreamWriterWrapper;
 import org.deegree.feature.Feature;
 import org.deegree.feature.FeatureCollection;
@@ -72,7 +71,6 @@ import org.slf4j.LoggerFactory;
 import es.unex.sextante.core.GeoAlgorithm;
 import es.unex.sextante.core.OutputObjectsSet;
 import es.unex.sextante.core.ParametersSet;
-import es.unex.sextante.core.Sextante;
 import es.unex.sextante.dataObjects.IRasterLayer;
 import es.unex.sextante.dataObjects.ITable;
 import es.unex.sextante.dataObjects.IVectorLayer;

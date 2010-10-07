@@ -44,7 +44,6 @@ import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.feature.Feature;
 import org.deegree.feature.FeatureCollection;
 import org.deegree.feature.property.Property;
-import org.deegree.feature.types.FeatureType;
 import org.deegree.feature.types.property.PropertyType;
 import org.deegree.feature.types.property.SimplePropertyType;
 import org.deegree.geometry.Geometry;
