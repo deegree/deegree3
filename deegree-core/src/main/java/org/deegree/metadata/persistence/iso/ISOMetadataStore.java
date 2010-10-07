@@ -36,21 +36,11 @@
 package org.deegree.metadata.persistence.iso;
 
 import static org.deegree.commons.utils.JDBCUtils.close;
-import static org.deegree.protocol.csw.CSWConstants.APISO_NS;
-import static org.deegree.protocol.csw.CSWConstants.APISO_PREFIX;
-import static org.deegree.protocol.csw.CSWConstants.CSW_202_NS;
-import static org.deegree.protocol.csw.CSWConstants.CSW_PREFIX;
-import static org.deegree.protocol.csw.CSWConstants.DC_LOCAL_PART;
-import static org.deegree.protocol.csw.CSWConstants.DC_NS;
-import static org.deegree.protocol.csw.CSWConstants.GMD_LOCAL_PART;
-import static org.deegree.protocol.csw.CSWConstants.GMD_NS;
-import static org.deegree.protocol.csw.CSWConstants.GMD_PREFIX;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.net.URI;
 import java.nio.charset.Charset;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -58,11 +48,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
-import javax.xml.namespace.QName;
 import javax.xml.stream.FactoryConfigurationError;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
@@ -86,7 +73,6 @@ import org.deegree.metadata.persistence.iso.parsing.IdUtils;
 import org.deegree.metadata.persistence.iso.resulttypes.Hits;
 import org.deegree.metadata.persistence.iso19115.jaxb.ISOMetadataStoreConfig;
 import org.deegree.protocol.csw.CSWConstants.ResultType;
-import org.deegree.protocol.csw.CSWConstants.ReturnableElement;
 import org.slf4j.Logger;
 
 /**
@@ -105,7 +91,7 @@ public class ISOMetadataStore implements MetadataStore {
      * registers the typeNames that are applicable to this recordStore and maps a typeName to a format, if it is DC or
      * ISO
      */
-    private static Map<QName, Integer> typeNames = new HashMap<QName, Integer>();
+    // private static Map<QName, Integer> typeNames = new HashMap<QName, Integer>();
 
     private final String connectionId;
 
@@ -144,21 +130,22 @@ public class ISOMetadataStore implements MetadataStore {
      * maps the specific returnable element format to a concrete table in the backend<br>
      * brief, summary, full
      */
-    private static final Map<ReturnableElement, String> formatTypeInISORecordStore = new HashMap<ReturnableElement, String>();
+    // private static final Map<ReturnableElement, String> formatTypeInISORecordStore = new HashMap<ReturnableElement,
+    // String>();
 
     static {
 
-        formatTypeInISORecordStore.put( ReturnableElement.brief, "recordbrief" );
-        formatTypeInISORecordStore.put( ReturnableElement.summary, "recordsummary" );
-        formatTypeInISORecordStore.put( ReturnableElement.full, "recordfull" );
+        // formatTypeInISORecordStore.put( ReturnableElement.brief, "recordbrief" );
+        // formatTypeInISORecordStore.put( ReturnableElement.summary, "recordsummary" );
+        // formatTypeInISORecordStore.put( ReturnableElement.full, "recordfull" );
 
-        typeNames.put( new QName( "", "", "" ), 1 );
-        typeNames.put( new QName( CSW_202_NS, DC_LOCAL_PART, "" ), 1 );
-        typeNames.put( new QName( CSW_202_NS, DC_LOCAL_PART, CSW_PREFIX ), 1 );
-        typeNames.put( new QName( DC_NS, "", "dc" ), 1 );
-        typeNames.put( new QName( GMD_NS, GMD_LOCAL_PART, "" ), 2 );
-        typeNames.put( new QName( GMD_NS, GMD_LOCAL_PART, GMD_PREFIX ), 2 );
-        typeNames.put( new QName( APISO_NS, "", APISO_PREFIX ), 2 );
+        // typeNames.put( new QName( "", "", "" ), 1 );
+        // typeNames.put( new QName( CSW_202_NS, DC_LOCAL_PART, "" ), 1 );
+        // typeNames.put( new QName( CSW_202_NS, DC_LOCAL_PART, CSW_PREFIX ), 1 );
+        // typeNames.put( new QName( DC_NS, "", "dc" ), 1 );
+        // typeNames.put( new QName( GMD_NS, GMD_LOCAL_PART, "" ), 2 );
+        // typeNames.put( new QName( GMD_NS, GMD_LOCAL_PART, GMD_PREFIX ), 2 );
+        // typeNames.put( new QName( APISO_NS, "", APISO_PREFIX ), 2 );
 
     }
 
@@ -277,7 +264,7 @@ public class ISOMetadataStore implements MetadataStore {
      * javax.xml.namespace.QName)
      */
     @Override
-    public MetadataResultSet getRecords( QName typeName, MetadataQuery query )
+    public MetadataResultSet getRecords( MetadataQuery query )
                             throws MetadataStoreException {
 
         PostGISMappingsISODC mapping = new PostGISMappingsISODC();
@@ -293,23 +280,13 @@ public class ISOMetadataStore implements MetadataStore {
             builder = new PostGISWhereBuilder( mapping, (OperatorFilter) query.getFilter(), query.getSorting(),
                                                useLegacyPredicates );
 
-            int profileFormatNumberOutputSchema = 0;
-
-            for ( QName qName : typeNames.keySet() ) {
-                if ( qName.getNamespaceURI().equals( query.getOutputSchema().toString() ) ) {
-                    profileFormatNumberOutputSchema = typeNames.get( qName );
-                }
-            }
-
             switch ( query.getResultType() ) {
             case results:
 
-                result = doResultsOnGetRecord( typeName, profileFormatNumberOutputSchema, query, builder, conn );
+                result = doResultsOnGetRecord( query, builder, conn );
                 break;
             case hits:
-                resultType = doHitsOnGetRecord( query,
-
-                ResultType.hits, builder, conn, new ExecuteStatements() );
+                resultType = doHitsOnGetRecord( query, ResultType.hits, builder, conn, new ExecuteStatements() );
                 result = new ISOMetadataResultSet( col, resultType );
                 break;
 
@@ -374,11 +351,9 @@ public class ISOMetadataStore implements MetadataStore {
             }
 
             if ( resultType.equals( ResultType.results ) ) {
-                result = new Hits( countRows, returnedRecords, recOpt.getOutputSchema().toString(), nextRecord,
-                                   DateUtils.formatISO8601Date( new Date() ) );
+                result = new Hits( countRows, returnedRecords, nextRecord, DateUtils.formatISO8601Date( new Date() ) );
             } else {
-                result = new Hits( countRows, 0, recOpt.getOutputSchema().toString(), 1,
-                                   DateUtils.formatISO8601Date( new Date() ) );
+                result = new Hits( countRows, 0, 1, DateUtils.formatISO8601Date( new Date() ) );
             }
 
         } catch ( Exception e ) {
@@ -410,51 +385,17 @@ public class ISOMetadataStore implements MetadataStore {
      * @throws XMLStreamException
      * @throws IOException
      */
-    private MetadataResultSet doResultsOnGetRecord( QName typeName, int profileFormatNumberOutputSchema,
-                                                    MetadataQuery recordStoreOptions, PostGISWhereBuilder builder,
+    private MetadataResultSet doResultsOnGetRecord( MetadataQuery recordStoreOptions, PostGISWhereBuilder builder,
                                                     Connection conn )
                             throws MetadataStoreException {
-        int typeNameFormatNumber = 0;
-        if ( typeNames.containsKey( typeName ) ) {
-            typeNameFormatNumber = typeNames.get( typeName );
-        }
         MetadataResultType type = null;
         MetadataCollection col = new ISOCollection();
         ResultSet rs = null;
         ResultSet rsOut = null;
         PreparedStatement preparedStatement = null;
         PreparedStatement stmtOut = null;
-        String formatType = null;
         ExecuteStatements exe = new ExecuteStatements();
         try {
-            // switch ( recordStoreOptions.returnableElement() ) {
-            //
-            // case brief:
-            // formatType = formatTypeInISORecordStore.get( CSWConstants.ReturnableElement.brief );
-            // preparedStatement = exe.executeGetRecords( formatType, recordStoreOptions, typeNameFormatNumber, false,
-            // builder, conn );
-            //
-            // type = doHitsOnGetRecord( typeNameFormatNumber, recordStoreOptions, formatType, ResultType.results,
-            // builder, conn, exe );
-            // break;
-            // case summary:
-            // formatType = formatTypeInISORecordStore.get( CSWConstants.ReturnableElement.summary );
-            // preparedStatement = exe.executeGetRecords( formatType, recordStoreOptions, typeNameFormatNumber, false,
-            // builder, conn );
-            //
-            // type = doHitsOnGetRecord( typeNameFormatNumber, recordStoreOptions, formatType, ResultType.results,
-            // builder, conn, exe );
-            // break;
-            // case full:
-            // formatType = formatTypeInISORecordStore.get( CSWConstants.ReturnableElement.full );
-            // preparedStatement = exe.executeGetRecords( formatType, recordStoreOptions, typeNameFormatNumber, false,
-            // builder, conn );
-            //
-            // type = doHitsOnGetRecord( typeNameFormatNumber, recordStoreOptions, formatType, ResultType.results,
-            // builder, conn, exe );
-            // break;
-            // }
-
             preparedStatement = exe.executeGetRecords( recordStoreOptions, false, builder, conn );
             type = doHitsOnGetRecord( recordStoreOptions, ResultType.results, builder, conn, exe );
             rs = preparedStatement.executeQuery();
@@ -468,8 +409,7 @@ public class ISOMetadataStore implements MetadataStore {
                     outS.append( "SELECT " ).append( "recordfull" ).append( '.' ).append( data );
                     outS.append( " FROM " ).append( "recordfull" );
                     outS.append( " WHERE " ).append( "recordfull" ).append( '.' ).append( fk_datasets );
-                    outS.append( " = " ).append( returnedID ).append( " AND " ).append( format );
-                    outS.append( " = " ).append( profileFormatNumberOutputSchema );
+                    outS.append( " = " ).append( returnedID );
                     stmtOut = conn.prepareStatement( outS.toString() );
                     LOG.debug( "" + stmtOut );
                     rsOut = stmtOut.executeQuery();
@@ -545,11 +485,9 @@ public class ISOMetadataStore implements MetadataStore {
      * org.deegree.commons.configuration.JDBCConnections, java.util.List)
      */
     @Override
-    public MetadataResultSet getRecordsById( List<String> idList, URI outputSchema )
+    public MetadataResultSet getRecordsById( List<String> idList )
                             throws MetadataStoreException {
 
-        int profileFormatNumberOutputSchema = 0;
-        String elementSetNameString = null;
         ResultSet rs = null;
         Connection conn = null;
         PreparedStatement stmt = null;
@@ -558,11 +496,6 @@ public class ISOMetadataStore implements MetadataStore {
         try {
 
             conn = ConnectionManager.getConnection( connectionId );
-            for ( QName qName : typeNames.keySet() ) {
-                if ( qName.getNamespaceURI().equals( outputSchema.toString() ) ) {
-                    profileFormatNumberOutputSchema = typeNames.get( qName );
-                }
-            }
 
             for ( String identifier : idList ) {
                 if ( IdUtils.newInstance( conn ).proveIdExistence( identifier ) ) {
@@ -581,8 +514,7 @@ public class ISOMetadataStore implements MetadataStore {
                 select.append( id ).append( " AND i." );
                 select.append( fk_datasets ).append( " = ds." );
                 select.append( id ).append( " AND i." );
-                select.append( backendIdentifier ).append( " = ? AND recordAlias." );
-                select.append( format ).append( " = ?;" );
+                select.append( backendIdentifier ).append( " = ? " );
 
                 stmt = conn.prepareStatement( select.toString() );
                 LOG.debug( "select RecordById statement: " + stmt );
@@ -590,9 +522,7 @@ public class ISOMetadataStore implements MetadataStore {
                 if ( stmt != null ) {
 
                     stmt.setObject( 1, identifier );
-                    stmt.setInt( 2, profileFormatNumberOutputSchema );
                     LOG.debug( "identifier: " + identifier );
-                    LOG.debug( "outputFormat: " + profileFormatNumberOutputSchema );
                     LOG.debug( "" + stmt );
                     rs = stmt.executeQuery();
 
@@ -641,7 +571,7 @@ public class ISOMetadataStore implements MetadataStore {
         Connection conn = null;
         try {
             conn = ConnectionManager.getConnection( connectionId );
-            ta = new ISOMetadataStoreTransaction( conn, config, typeNames, useLegacyPredicates );
+            ta = new ISOMetadataStoreTransaction( conn, config, useLegacyPredicates );
         } catch ( SQLException e ) {
             throw new MetadataStoreException( e.getMessage() );
         }

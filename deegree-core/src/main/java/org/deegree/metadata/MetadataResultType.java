@@ -35,7 +35,6 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.metadata;
 
-
 /**
  * Responsible for the information holding in the header of any getRecords operation.
  * 
@@ -45,13 +44,6 @@ package org.deegree.metadata;
  * @version $Revision$, $Date$
  */
 public interface MetadataResultType {
-
-    /**
-     * TODO outsourcing possible
-     * 
-     * @return the recordSchema that is requested
-     */
-    String getRecordSchema();
 
     /**
      * How many records match the request. getNumberOfRecordsReturned instead is the number that can really be seen in

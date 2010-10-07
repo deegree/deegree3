@@ -50,7 +50,6 @@ import java.sql.SQLException;
 import java.util.Date;
 import java.util.List;
 
-import javax.xml.namespace.QName;
 import javax.xml.stream.FactoryConfigurationError;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
@@ -71,6 +70,7 @@ import org.deegree.metadata.persistence.MetadataQuery;
 import org.deegree.metadata.persistence.MetadataResultSet;
 import org.deegree.metadata.persistence.MetadataStore;
 import org.deegree.metadata.persistence.MetadataStoreException;
+import org.deegree.protocol.csw.CSWConstants.OutputSchema;
 import org.deegree.protocol.csw.CSWConstants.ResultType;
 import org.deegree.services.controller.exception.ControllerException;
 import org.deegree.services.controller.ows.OWSException;
@@ -263,28 +263,22 @@ public class GetRecordsHandler {
 
             writer.writeStartElement( CSW_202_NS, "SearchResults" );
 
-            // Question if there is the specified record available
-            for ( QName typeName : getRec.getTypeNames() ) {
-                MetadataStore rec = service.getStore();
-                MetadataQuery query = new MetadataQuery( getRec.getConstraint(), getRec.getOutputSchema(),
-                                                         getRec.getSortBy(), getRec.getResultType(),
-                                                         getRec.getMaxRecords(), getRec.getStartPosition() );
+            MetadataStore rec = service.getStore();
+            MetadataQuery query = new MetadataQuery( getRec.getConstraint(), getRec.getSortBy(),
+                                                     getRec.getResultType(), getRec.getMaxRecords(),
+                                                     getRec.getStartPosition() );
 
-                // commits the record to the getRecords operation
-
-                try {
-                    storeSet = rec.getRecords( typeName, query );
-                } catch ( MetadataStoreException e ) {
-                    throw new OWSException( e.getMessage(), OWSException.INVALID_PARAMETER_VALUE );
-                }
-
+            try {
+                storeSet = rec.getRecords( query );
+            } catch ( MetadataStoreException e ) {
+                throw new OWSException( e.getMessage(), OWSException.INVALID_PARAMETER_VALUE );
             }
 
             type = storeSet.getResultType();
             col = storeSet.getMembers();
             writer.writeAttribute( "elementSet", getRec.getElementSetName().name() );
 
-            writer.writeAttribute( "recordSchema", type.getRecordSchema() );
+            writer.writeAttribute( "recordSchema", getRec.getOutputSchema().toString() );
 
             writer.writeAttribute( "numberOfRecordsMatched", Integer.toString( type.getNumberOfRecordsMatched() ) );
 
@@ -299,7 +293,11 @@ public class GetRecordsHandler {
         }
 
         for ( MetadataRecord m : col ) {
-            m.serialize( writer, getRec.getElementSetName() );
+            if ( getRec.getOutputSchema().equals( OutputSchema.determineOutputSchema( OutputSchema.ISO_19115 ) ) ) {
+                m.serialize( writer, getRec.getElementSetName() );
+            } else {
+                m.toDublinCore( writer, getRec.getElementSetName() );
+            }
         }
 
         writer.writeEndElement();// SearchResult

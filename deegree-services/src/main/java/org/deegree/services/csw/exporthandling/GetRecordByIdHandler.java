@@ -53,6 +53,8 @@ import org.deegree.metadata.MetadataRecord;
 import org.deegree.metadata.persistence.MetadataResultSet;
 import org.deegree.metadata.persistence.MetadataStore;
 import org.deegree.metadata.persistence.MetadataStoreException;
+import org.deegree.protocol.csw.CSWConstants.OutputSchema;
+import org.deegree.services.controller.exception.ControllerException;
 import org.deegree.services.controller.ows.OWSException;
 import org.deegree.services.controller.utils.HttpResponseBuffer;
 import org.deegree.services.csw.CSWService;
@@ -119,6 +121,9 @@ public class GetRecordByIdHandler {
         } catch ( OWSException e ) {
             LOG.debug( e.getMessage() );
             throw new InvalidParameterValueException( e.getMessage() );
+        } catch ( MetadataStoreException e ) {
+            LOG.debug( e.getMessage() );
+            throw new OWSException( e.getMessage(), ControllerException.NO_APPLICABLE_CODE );
         }
         xmlWriter.flush();
 
@@ -134,9 +139,10 @@ public class GetRecordByIdHandler {
      * @throws XMLStreamException
      * @throws SQLException
      * @throws OWSException
+     * @throws MetadataStoreException
      */
     private void export( XMLStreamWriter xmlWriter, GetRecordById getRecBI, Version version, boolean isSoap )
-                            throws XMLStreamException, OWSException {
+                            throws XMLStreamException, OWSException, MetadataStoreException {
         if ( VERSION_202.equals( version ) ) {
             export202( xmlWriter, getRecBI, isSoap );
         } else {
@@ -153,9 +159,10 @@ public class GetRecordByIdHandler {
      * @throws XMLStreamException
      * @throws SQLException
      * @throws OWSException
+     * @throws MetadataStoreException
      */
     private void export202( XMLStreamWriter writer, GetRecordById getRecBI, boolean isSoap )
-                            throws XMLStreamException, OWSException {
+                            throws XMLStreamException, OWSException, MetadataStoreException {
 
         writer.setDefaultNamespace( CSW_202_NS );
         writer.setPrefix( CSW_PREFIX, CSW_202_NS );
@@ -166,7 +173,7 @@ public class GetRecordByIdHandler {
         if ( service.getMetadataStore() != null ) {
             try {
                 for ( MetadataStore rec : service.getMetadataStore() ) {
-                    resultSet = rec.getRecordsById( getRecBI.getRequestedIds(), getRecBI.getOutputSchema() );
+                    resultSet = rec.getRecordsById( getRecBI.getRequestedIds() );
                 }
             } catch ( MetadataStoreException e ) {
                 throw new OWSException( e.getMessage(), OWSException.INVALID_PARAMETER_VALUE, "outputFormat" );
@@ -174,7 +181,11 @@ public class GetRecordByIdHandler {
         }
 
         for ( MetadataRecord m : resultSet.getMembers() ) {
-            m.serialize( writer, getRecBI.getElementSetName() );
+            if ( getRecBI.getOutputSchema() == OutputSchema.determineOutputSchema( OutputSchema.ISO_19115 ) ) {
+                m.serialize( writer, getRecBI.getElementSetName() );
+            } else {
+                m.toDublinCore( writer, getRecBI.getElementSetName() );
+            }
         }
 
         writer.writeEndDocument();

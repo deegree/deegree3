@@ -77,10 +77,18 @@ public class TstConstants {
 
     static final URL tst_8 = TstConstants.class.getResource( "metadatarecords/8.xml" );
 
+    static final URL tst_9 = TstConstants.class.getResource( "metadatarecords/9.xml" );
+
+    static final URL tst_10 = TstConstants.class.getResource( "metadatarecords/10.xml" );
+
+    static final URL tst_11 = TstConstants.class.getResource( "metadatarecords/11.xml" );
+
     static final URL fullRecord = TstConstants.class.getResource( "metadatarecords/filterTstFull.xml" );
 
     static final URL summaryRecord = TstConstants.class.getResource( "metadatarecords/filterTstSummary.xml" );
 
     static final URL briefRecord = TstConstants.class.getResource( "metadatarecords/filterTstBrief.xml" );
+
+    static final URL propEqualToID = TstConstants.class.getResource( "filter/propEqualToID.xml" );
 
 }

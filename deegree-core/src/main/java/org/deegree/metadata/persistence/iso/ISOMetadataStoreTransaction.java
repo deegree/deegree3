@@ -7,14 +7,12 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 
 import org.apache.axiom.om.OMElement;
-import org.deegree.commons.utils.kvp.InvalidParameterValueException;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.OperatorFilter;
 import org.deegree.filter.sql.postgis.PostGISWhereBuilder;
@@ -52,12 +50,12 @@ public class ISOMetadataStoreTransaction implements MetadataStoreTransaction {
 
     private final ConfigurationAccess ca;
 
-    private final Map<QName, Integer> typeNames;
+    // private final Map<QName, Integer> typeNames;
 
     private final boolean useLegacyPredicates;
 
-    ISOMetadataStoreTransaction( Connection conn, ISOMetadataStoreConfig config, Map<QName, Integer> typeNames,
-                                 boolean useLegacyPredicates ) throws SQLException {
+    ISOMetadataStoreTransaction( Connection conn, ISOMetadataStoreConfig config, boolean useLegacyPredicates )
+                            throws SQLException {
         this.conn = conn;
 
         FileIdentifierInspector fi = FileIdentifierInspector.newInstance( config.getIdentifierInspector(), conn );
@@ -65,7 +63,6 @@ public class ISOMetadataStoreTransaction implements MetadataStoreTransaction {
         CoupledDataInspector ci = CoupledDataInspector.newInstance( config.getCoupledResourceInspector(), conn );
         MetadataValidation mv = MetadataValidation.newInstance( config.isValidate() );
         this.ca = ConfigurationAccess.newInstance( fi, ic, ci, mv );
-        this.typeNames = typeNames;
         this.useLegacyPredicates = useLegacyPredicates;
         conn.setAutoCommit( false );
 
@@ -93,14 +90,14 @@ public class ISOMetadataStoreTransaction implements MetadataStoreTransaction {
         // if there is a typeName denoted, the record with this profile should be deleted.
         // if there is no typeName attribute denoted, every record matched should be deleted.
         if ( delete.getTypeName() != null ) {
-            formatNumber = typeNames.get( delete.getTypeName() );
-            if ( formatNumber == 0 ) {
-                throw new InvalidParameterValueException( "The typeName could not be resolved! " );
-            }
+            // formatNumber = typeNames.get( delete.getTypeName() );
+            // if ( formatNumber == 0 ) {
+            // throw new InvalidParameterValueException( "The typeName could not be resolved! " );
+            // }
         } else {
             // TODO remove hack,
             // but: a csw record is available in every case, if not there is no iso, as well
-            formatNumber = 1;
+            formatNumber = 2;
         }
 
         try {

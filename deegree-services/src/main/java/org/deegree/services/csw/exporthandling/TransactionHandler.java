@@ -58,7 +58,6 @@ import org.deegree.metadata.publication.DeleteTransaction;
 import org.deegree.metadata.publication.InsertTransaction;
 import org.deegree.metadata.publication.TransactionOperation;
 import org.deegree.metadata.publication.UpdateTransaction;
-import org.deegree.protocol.csw.CSWConstants.OutputSchema;
 import org.deegree.protocol.csw.CSWConstants.ReturnableElement;
 import org.deegree.services.controller.ows.OWSException;
 import org.deegree.services.controller.utils.HttpResponseBuffer;
@@ -246,11 +245,9 @@ public class TransactionHandler {
                 if ( handle != null ) {
                     writer.writeAttribute( "handleRef", handle );
                 }
-                MetadataResultSet rs = service.getStore().getRecordsById(
-                                                                          ids,
-                                                                          OutputSchema.determineOutputSchema( OutputSchema.DC ) );
+                MetadataResultSet rs = service.getStore().getRecordsById( ids );
                 for ( MetadataRecord meta : rs.getMembers() ) {
-                    meta.serialize( writer, ReturnableElement.brief );
+                    meta.toDublinCore( writer, ReturnableElement.brief );
                 }
                 writer.writeEndElement();// InsertResult
             }

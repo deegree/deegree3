@@ -75,7 +75,8 @@ public interface MetadataRecord {
 
     public Envelope[] getBoundingBox();
 
-    public DCRecord toDublinCore();
+    public void toDublinCore( XMLStreamWriter writer, ReturnableElement returnType )
+                            throws XMLStreamException, MetadataStoreException;
 
     /**
      * Returns whether this {@link MetadataRecord} matches the given {@link Filter} expression.

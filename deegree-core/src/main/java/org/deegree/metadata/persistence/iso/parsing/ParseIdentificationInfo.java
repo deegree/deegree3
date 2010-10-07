@@ -710,8 +710,8 @@ public class ParseIdentificationInfo extends XMLAdapter {
                         tempEnd = new Date( temporalExtentEnd );
                     }
                 } catch ( ParseException e ) {
-
-                    e.printStackTrace();
+                    LOG.debug( "Parsing of Date failed. " );
+                    throw new MetadataStoreException( "Parsing of Date failed. " + e.getMessage() );
                 }
 
                 OMElement bbox = getElement(
@@ -980,21 +980,23 @@ public class ParseIdentificationInfo extends XMLAdapter {
 
         LOG.debug( "hasSecurityConstraints..." );
         OMElement hasSecurityConstraintsElement = null;
-        String[] rightsElements = null;
+        List<String> rightsElements = new ArrayList<String>();
         for ( OMElement resourceConstraintsElem : resourceConstraints ) {
-            rightsElements = getNodesAsStrings(
-                                                resourceConstraintsElem,
-                                                new XPath(
-                                                           "./gmd:MD_LegalConstraints/gmd:accessConstraints/@codeListValue",
-                                                           nsContextParseII ) );
-
+            String rights = getNodeAsString(
+                                             resourceConstraintsElem,
+                                             new XPath(
+                                                        "./gmd:MD_LegalConstraints/gmd:accessConstraints/gmd:MD_RestrictionCode/@codeListValue",
+                                                        nsContextParseII ), null );
+            if ( rights != null ) {
+                rightsElements.add( rights );
+            }
             hasSecurityConstraintsElement = getElement( resourceConstraintsElem,
                                                         new XPath( "./gmd:MD_SecurityConstraints", nsContextParseII ) );
 
         }
         if ( rightsElements != null ) {
             LOG.debug( "hasRights..." );
-            rp.setRights( Arrays.asList( rightsElements ) );
+            rp.setRights( rightsElements );
         }
 
         boolean hasSecurityConstraint = false;

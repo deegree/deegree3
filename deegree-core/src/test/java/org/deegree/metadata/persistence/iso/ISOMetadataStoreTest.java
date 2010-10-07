@@ -37,11 +37,15 @@ package org.deegree.metadata.persistence.iso;
 
 import static org.slf4j.LoggerFactory.getLogger;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.sql.Connection;
@@ -63,13 +67,17 @@ import org.apache.axiom.om.OMElement;
 import org.deegree.CoreTstProperties;
 import org.deegree.commons.jdbc.ConnectionManager;
 import org.deegree.commons.xml.XMLAdapter;
+import org.deegree.commons.xml.stax.StAXParsingHelper;
+import org.deegree.filter.Filter;
+import org.deegree.filter.xml.Filter110XMLDecoder;
 import org.deegree.metadata.MetadataRecord;
+import org.deegree.metadata.persistence.MetadataQuery;
 import org.deegree.metadata.persistence.MetadataResultSet;
 import org.deegree.metadata.persistence.MetadataStoreException;
 import org.deegree.metadata.persistence.MetadataStoreTransaction;
+import org.deegree.metadata.publication.DeleteTransaction;
 import org.deegree.metadata.publication.InsertTransaction;
-import org.deegree.protocol.csw.CSWConstants;
-import org.deegree.protocol.csw.CSWConstants.OutputSchema;
+import org.deegree.protocol.csw.CSWConstants.ResultType;
 import org.deegree.protocol.csw.CSWConstants.ReturnableElement;
 import org.junit.Assert;
 import org.junit.Before;
@@ -188,56 +196,77 @@ public class ISOMetadataStoreTest {
             LOG.warn( "Skipping test (needs configuration)." );
             return;
         }
-        MetadataStoreTransaction ta = store.acquireTransaction();
-        List<OMElement> records = new ArrayList<OMElement>();
-        int countInserted = 0;
-        int countInsert = 0;
         String test_folder = CoreTstProperties.getProperty( "iso_metadata_insert_test_folder" );
-
+        if ( test_folder == null ) {
+            LOG.warn( "Skipping test (no testCase folder found)" );
+            return;
+        }
         File folder = new File( test_folder );
         File[] fileArray = folder.listFiles();
+        URL[] urlArray = null;
         if ( fileArray != null ) {
-            countInsert = fileArray.length;
-            System.out.println( "TEST: arraySize: " + countInsert );
+            urlArray = new URL[fileArray.length];
+            int counter = 0;
             for ( File f : fileArray ) {
-
-                OMElement record = new XMLAdapter( f ).getRootElement();
-                // MetadataRecord record = loadRecord( url );
-                LOG.info( "inserting filename: " + f.getName() );
-                records.add( record );
+                urlArray[counter++] = new URL( "file:" + f.getAbsolutePath() );
 
             }
-        }
 
-        InsertTransaction insert = new InsertTransaction( records, records.get( 0 ).getQName(), "insert" );
-        List<String> ids = ta.performInsert( insert );
-        if ( !ids.isEmpty() ) {
-            countInserted += ids.size();
         }
-        ta.commit();
-        LOG.info( countInserted + " from " + countInsert + " Metadata inserted." );
+        MetadataStoreTransaction ta = store.acquireTransaction();
+        List<String> ids = insertMetadata( store, ta, urlArray );
 
         // TODO test various queries
 
     }
 
-    // @Test
-    // public void testGetRecord()
-    // throws MetadataStoreException {
-    //    
-    // File file = new File( "/home/thomas/Dokumente/metadata/testCases/1.xml" );
-    // List<String> ids = insertOneMetadata( file );
-    //    
-    // MetadataResultSet resultSet = store.getRecordsById(
-    // ids,
-    // CSWConstants.OutputSchema.determineOutputSchema( OutputSchema.ISO_19115 ),
-    // ReturnableElement.full );
-    // // LOG.info( "" + resultSet.getResultType().getNumberOfRecordsMatched() );
-    //    
-    // Assert.assertEquals( 1, resultSet.getMembers().size() );
-    //    
-    // // TODO test various queries
-    // }
+    /**
+     * Tests if 3 records will be inserted and 2 delete so the output should be 1 <br>
+     * The request-query tests after getAllRecords
+     * 
+     * 
+     * @throws MetadataStoreException
+     * @throws XMLStreamException
+     * @throws FactoryConfigurationError
+     * @throws IOException
+     */
+    @Test
+    public void testDelete()
+                            throws MetadataStoreException, XMLStreamException, FactoryConfigurationError, IOException {
+        LOG.info( "START Test: testDelete" );
+
+        if ( jdbcURL != null && jdbcUser != null && jdbcPass != null ) {
+            store = (ISOMetadataStore) new ISOMetadataStoreProvider().getMetadataStore( TstConstants.configURL );
+        }
+        if ( store == null ) {
+            LOG.warn( "Skipping test (needs configuration)." );
+            return;
+        }
+
+        MetadataStoreTransaction ta = store.acquireTransaction();
+        List<String> ids = insertMetadata( store, ta, TstConstants.tst_9, TstConstants.tst_10, TstConstants.tst_11,
+                                           TstConstants.tst_1 );
+
+        LOG.info( "Inserted records with ids: " + ids + ". Now: delete them..." );
+        String fileString = TstConstants.propEqualToID.getFile();
+        if ( fileString == null ) {
+            LOG.warn( "Skipping test (file with filterExpression not found)." );
+            return;
+        }
+
+        // test the deletion
+        XMLStreamReader xmlStreamFilter = readXMLStream( fileString );
+        Filter constraintDelete = Filter110XMLDecoder.parse( xmlStreamFilter );
+        xmlStreamFilter.close();
+        DeleteTransaction delete = new DeleteTransaction( "delete", null, constraintDelete );
+        ta.performDelete( delete );
+        ta.commit();
+        // test query
+        MetadataQuery query = new MetadataQuery( null, null, ResultType.results, 10, 1 );
+        MetadataResultSet resultSet = store.getRecords( query );
+        Assert.assertEquals( 1, resultSet.getMembers().size() );
+
+    }
 
     /**
      * If the fileIdentifier should be generated automaticaly if not set.
@@ -259,12 +288,10 @@ public class ISOMetadataStoreTest {
             LOG.warn( "Skipping test (needs configuration)." );
             return;
         }
+        MetadataStoreTransaction ta = store.acquireTransaction();
+        List<String> ids = insertMetadata( store, ta, TstConstants.tst_1, TstConstants.tst_2 );
 
-        List<String> ids = insertMetadata( store, TstConstants.tst_1, TstConstants.tst_2 );
-
-        MetadataResultSet resultSet = store.getRecordsById(
-                                                            ids,
-                                                            CSWConstants.OutputSchema.determineOutputSchema( OutputSchema.ISO_19115 ) );
+        MetadataResultSet resultSet = store.getRecordsById( ids );
 
         Assert.assertEquals( 2, resultSet.getMembers().size() );
 
@@ -291,11 +318,10 @@ public class ISOMetadataStoreTest {
             LOG.warn( "Skipping test (needs configuration)." );
             return;
         }
-        List<String> ids = insertMetadata( store, TstConstants.tst_1, TstConstants.tst_2 );
+        MetadataStoreTransaction ta = store.acquireTransaction();
+        List<String> ids = insertMetadata( store, ta, TstConstants.tst_1, TstConstants.tst_2 );
 
-        MetadataResultSet resultSet = store.getRecordsById(
-                                                            ids,
-                                                            CSWConstants.OutputSchema.determineOutputSchema( OutputSchema.ISO_19115 ) );
+        MetadataResultSet resultSet = store.getRecordsById( ids );
 
         Assert.assertEquals( 2, resultSet.getMembers().size() );
 
@@ -322,11 +348,9 @@ public class ISOMetadataStoreTest {
             LOG.warn( "Skipping test (needs configuration)." );
             return;
         }
-
-        List<String> ids = insertMetadata( store, TstConstants.tst_6 );
-        MetadataResultSet resultSet = store.getRecordsById(
-                                                            ids,
-                                                            CSWConstants.OutputSchema.determineOutputSchema( OutputSchema.ISO_19115 ) );
+        MetadataStoreTransaction ta = store.acquireTransaction();
+        List<String> ids = insertMetadata( store, ta, TstConstants.tst_6 );
+        MetadataResultSet resultSet = store.getRecordsById( ids );
 
         Assert.assertEquals( 1, resultSet.getMembers().size() );
 
@@ -346,7 +370,7 @@ public class ISOMetadataStoreTest {
     @Test
     public void testOutputBrief()
                             throws MetadataStoreException, XMLStreamException, FactoryConfigurationError, IOException {
-        LOG.info( "START Test: is brief? " );
+        LOG.info( "START Test: is output ISO brief? " );
 
         if ( jdbcURL != null && jdbcUser != null && jdbcPass != null ) {
             store = (ISOMetadataStore) new ISOMetadataStoreProvider().getMetadataStore( TstConstants.configURL );
@@ -355,11 +379,9 @@ public class ISOMetadataStoreTest {
             LOG.warn( "Skipping test (needs configuration)." );
             return;
         }
-
-        List<String> ids = insertMetadata( store, TstConstants.fullRecord );
-        MetadataResultSet resultSet = store.getRecordsById(
-                                                            ids,
-                                                            CSWConstants.OutputSchema.determineOutputSchema( OutputSchema.ISO_19115 ) );
+        MetadataStoreTransaction ta = store.acquireTransaction();
+        List<String> ids = insertMetadata( store, ta, TstConstants.fullRecord );
+        MetadataResultSet resultSet = store.getRecordsById( ids );
 
         XMLStreamReader xmlStreamThis = XMLInputFactory.newInstance().createXMLStreamReader(
                                                                                              TstConstants.briefRecord.openStream() );
@@ -369,7 +391,9 @@ public class ISOMetadataStoreTest {
 
         // create the is output
         StringBuilder streamThat = stringBuilderFromResultSet( resultSet, ReturnableElement.brief );
-
+        if ( streamThat == null ) {
+            return;
+        }
         LOG.info( "streamThis: " + streamThis.toString() );
         LOG.info( "streamThat: " + streamThat.toString() );
         Assert.assertEquals( streamThis.toString(), streamThat.toString() );
@@ -390,7 +414,7 @@ public class ISOMetadataStoreTest {
     @Test
     public void testOutputSummary()
                             throws MetadataStoreException, XMLStreamException, FactoryConfigurationError, IOException {
-        LOG.info( "START Test: is summary? " );
+        LOG.info( "START Test: is output ISO summary? " );
 
         if ( jdbcURL != null && jdbcUser != null && jdbcPass != null ) {
             store = (ISOMetadataStore) new ISOMetadataStoreProvider().getMetadataStore( TstConstants.configURL );
@@ -399,11 +423,9 @@ public class ISOMetadataStoreTest {
             LOG.warn( "Skipping test (needs configuration)." );
             return;
         }
-
-        List<String> ids = insertMetadata( store, TstConstants.fullRecord );
-        MetadataResultSet resultSet = store.getRecordsById(
-                                                            ids,
-                                                            CSWConstants.OutputSchema.determineOutputSchema( OutputSchema.ISO_19115 ) );
+        MetadataStoreTransaction ta = store.acquireTransaction();
+        List<String> ids = insertMetadata( store, ta, TstConstants.fullRecord );
+        MetadataResultSet resultSet = store.getRecordsById( ids );
 
         XMLStreamReader xmlStreamThis = XMLInputFactory.newInstance().createXMLStreamReader(
                                                                                              TstConstants.summaryRecord.openStream() );
@@ -413,50 +435,13 @@ public class ISOMetadataStoreTest {
 
         // create the is output
         StringBuilder streamThat = stringBuilderFromResultSet( resultSet, ReturnableElement.summary );
-
+        if ( streamThat == null ) {
+            return;
+        }
         LOG.debug( "streamThis: " + streamThis.toString() );
         LOG.debug( "streamThat: " + streamThat.toString() );
         Assert.assertEquals( streamThis.toString(), streamThat.toString() );
 
-    }
-
-    private StringBuilder stringBuilderFromResultSet( MetadataResultSet resultSet, ReturnableElement returnableElement )
-                            throws XMLStreamException, FileNotFoundException {
-        ByteArrayOutputStream byteArrayOutput = new ByteArrayOutputStream();
-        FileOutputStream fout = new FileOutputStream( "/home/thomas/Desktop/zTest.xml" );
-        XMLStreamWriter writer = XMLOutputFactory.newInstance().createXMLStreamWriter( fout );
-
-        for ( MetadataRecord m : resultSet.getMembers() ) {
-            m.serialize( writer, returnableElement );
-        }
-        writer.flush();
-
-        StringBuilder streamThat = new StringBuilder();
-        // InputStream in = new ByteArrayInputStream( byteArrayOutput.toByteArray() );
-        // XMLStreamReader xmlStreamThat = XMLInputFactory.newInstance().createXMLStreamReader( in );
-        // xmlStreamThat.nextTag();
-        // while ( xmlStreamThat.hasNext() ) {
-        // xmlStreamThat.next();
-        // if ( xmlStreamThat.getEventType() == XMLStreamConstants.START_ELEMENT ) {
-        // streamThat.append( xmlStreamThat.getName() ).append( ' ' );
-        // }
-        // }
-
-        return streamThat;
-    }
-
-    private StringBuilder stringBuilderFromXMLStream( XMLStreamReader xmlStreamThis )
-                            throws XMLStreamException {
-        StringBuilder streamThis = new StringBuilder();
-        xmlStreamThis.nextTag();
-        while ( xmlStreamThis.hasNext() ) {
-            xmlStreamThis.next();
-            if ( xmlStreamThis.getEventType() == XMLStreamConstants.START_ELEMENT ) {
-                streamThis.append( xmlStreamThis.getName() ).append( ' ' );
-            }
-        }
-
-        return streamThis;
     }
 
     /**
@@ -483,12 +468,11 @@ public class ISOMetadataStoreTest {
             LOG.warn( "Skipping test (needs configuration)." );
             return;
         }
-        List<String> ids = insertMetadata( store, TstConstants.tst_3, TstConstants.tst_4, TstConstants.tst_5,
+        MetadataStoreTransaction ta = store.acquireTransaction();
+        List<String> ids = insertMetadata( store, ta, TstConstants.tst_3, TstConstants.tst_4, TstConstants.tst_5,
                                            TstConstants.tst_6, TstConstants.tst_7, TstConstants.tst_8 );
 
-        MetadataResultSet resultSet = store.getRecordsById(
-                                                            ids,
-                                                            CSWConstants.OutputSchema.determineOutputSchema( OutputSchema.ISO_19115 ) );
+        MetadataResultSet resultSet = store.getRecordsById( ids );
 
         Assert.assertEquals( 6, resultSet.getMembers().size() );
 
@@ -514,7 +498,8 @@ public class ISOMetadataStoreTest {
             LOG.warn( "Skipping test (needs configuration)." );
             throw new MetadataStoreException( "skipping test (needs configuration)" );
         }
-        List<String> ids = insertMetadata( store, TstConstants.tst_2 );
+        MetadataStoreTransaction ta = store.acquireTransaction();
+        List<String> ids = insertMetadata( store, ta, TstConstants.tst_2 );
 
     }
 
@@ -526,7 +511,6 @@ public class ISOMetadataStoreTest {
      * 
      * @throws MetadataStoreException
      */
-    @Ignore
     @Test(expected = MetadataStoreException.class)
     public void testResourceIdentifierGenerateFALSE_With_ID_Attrib()
                             throws MetadataStoreException {
@@ -537,9 +521,10 @@ public class ISOMetadataStoreTest {
         }
         if ( store == null ) {
             LOG.warn( "Skipping test (needs configuration)." );
-            return;
+            throw new MetadataStoreException( "skipping test (needs configuration)" );
         }
-        List<String> ids = insertMetadata( store, TstConstants.tst_4 );
+        MetadataStoreTransaction ta = store.acquireTransaction();
+        List<String> ids = insertMetadata( store, ta, TstConstants.tst_4 );
 
     }
 
@@ -551,7 +536,6 @@ public class ISOMetadataStoreTest {
      * 
      * @throws MetadataStoreException
      */
-    @Ignore
     @Test(expected = MetadataStoreException.class)
     public void testResourceIdentifierGenerateFALSE_With_ID_UUID_Attrib()
                             throws MetadataStoreException {
@@ -562,9 +546,10 @@ public class ISOMetadataStoreTest {
         }
         if ( store == null ) {
             LOG.warn( "Skipping test (needs configuration)." );
-            return;
+            throw new MetadataStoreException( "skipping test (needs configuration)" );
         }
-        List<String> ids = insertMetadata( store, TstConstants.tst_5 );
+        MetadataStoreTransaction ta = store.acquireTransaction();
+        List<String> ids = insertMetadata( store, ta, TstConstants.tst_5 );
 
     }
 
@@ -577,7 +562,6 @@ public class ISOMetadataStoreTest {
      * 
      * @throws MetadataStoreException
      */
-    @Ignore
     @Test(expected = MetadataStoreException.class)
     public void testIdentifierRejectTrue2()
                             throws MetadataStoreException {
@@ -588,10 +572,10 @@ public class ISOMetadataStoreTest {
         }
         if ( store == null ) {
             LOG.warn( "Skipping test (needs configuration)." );
-            return;
+            throw new MetadataStoreException( "skipping test (needs configuration)" );
         }
-
-        List<String> ids = insertMetadata( store, TstConstants.tst_1, TstConstants.tst_3 );
+        MetadataStoreTransaction ta = store.acquireTransaction();
+        List<String> ids = insertMetadata( store, ta, TstConstants.tst_1, TstConstants.tst_3 );
 
     }
 
@@ -603,7 +587,6 @@ public class ISOMetadataStoreTest {
      * 
      * @throws MetadataStoreException
      */
-    @Ignore
     @Test(expected = MetadataStoreException.class)
     public void testResourceIdentifierGenerateFALSE_With_ID_Attrib_RSID_NOT_Equals_NO_UUID()
                             throws MetadataStoreException {
@@ -612,9 +595,10 @@ public class ISOMetadataStoreTest {
         }
         if ( store == null ) {
             LOG.warn( "Skipping test (needs configuration)." );
-            return;
+            throw new MetadataStoreException( "skipping test (needs configuration)" );
         }
-        List<String> ids = insertMetadata( store, TstConstants.tst_8 );
+        MetadataStoreTransaction ta = store.acquireTransaction();
+        List<String> ids = insertMetadata( store, ta, TstConstants.tst_8 );
 
     }
 
@@ -626,7 +610,6 @@ public class ISOMetadataStoreTest {
      * 
      * @throws MetadataStoreException
      */
-    @Ignore
     @Test(expected = MetadataStoreException.class)
     public void testResourceIdentifierGenerateFALSE_With_ID_Attrib_RSID_NOT_Equals()
                             throws MetadataStoreException {
@@ -637,16 +620,16 @@ public class ISOMetadataStoreTest {
         }
         if ( store == null ) {
             LOG.warn( "Skipping test (needs configuration)." );
-            return;
+            throw new MetadataStoreException( "skipping test (needs configuration)" );
         }
-        List<String> ids = insertMetadata( store, TstConstants.tst_7 );
+        MetadataStoreTransaction ta = store.acquireTransaction();
+        List<String> ids = insertMetadata( store, ta, TstConstants.tst_7 );
 
     }
 
-    private List<String> insertMetadata( ISOMetadataStore store, URL... URLInput )
+    private List<String> insertMetadata( ISOMetadataStore store, MetadataStoreTransaction ta, URL... URLInput )
                             throws MetadataStoreException {
 
-        MetadataStoreTransaction ta = store.acquireTransaction();
         List<OMElement> records = new ArrayList<OMElement>();
 
         List<String> ids = new ArrayList<String>();
@@ -657,14 +640,77 @@ public class ISOMetadataStoreTest {
             records.add( record );
 
         }
+
+        int countInserted = 0;
+        int countInsert = 0;
+        countInsert = URLInput.length;
+
         InsertTransaction insert = new InsertTransaction( records, records.get( 0 ).getQName(), "insert" );
         ids = ta.performInsert( insert );
         ta.commit();
-        int counter = 0;
-        for ( URL file : URLInput ) {
-            LOG.info( file + " with id'" + ids.get( counter++ ) + "' as Metadata inserted." );
+
+        if ( !ids.isEmpty() ) {
+            countInserted += ids.size();
         }
+
+        LOG.info( countInserted + " from " + countInsert + " Metadata inserted." );
         return ids;
+    }
+
+    private XMLStreamReader readXMLStream( String fileString )
+                            throws FileNotFoundException, XMLStreamException, FactoryConfigurationError {
+        XMLStreamReader xmlStream = XMLInputFactory.newInstance().createXMLStreamReader(
+                                                                                         new FileInputStream(
+                                                                                                              new File(
+                                                                                                                        fileString ) ) );
+        StAXParsingHelper.skipStartDocument( xmlStream );
+        return xmlStream;
+    }
+
+    private StringBuilder stringBuilderFromResultSet( MetadataResultSet resultSet, ReturnableElement returnableElement )
+                            throws XMLStreamException, FileNotFoundException {
+        // ByteArrayOutputStream fout = new ByteArrayOutputStream();
+        String file = "/home/thomas/Desktop/zTest.xml";
+        OutputStream fout = new FileOutputStream( file );
+
+        XMLStreamWriter writer = XMLOutputFactory.newInstance().createXMLStreamWriter( fout );
+
+        for ( MetadataRecord m : resultSet.getMembers() ) {
+            m.serialize( writer, returnableElement );
+        }
+        writer.flush();
+
+        StringBuilder streamThat = new StringBuilder();
+        if ( fout instanceof FileOutputStream ) {
+            LOG.warn( "The output is written into a file: " + file );
+            return null;
+        } else if ( fout instanceof ByteArrayOutputStream ) {
+            InputStream in = new ByteArrayInputStream( ( (ByteArrayOutputStream) fout ).toByteArray() );
+            XMLStreamReader xmlStreamThat = XMLInputFactory.newInstance().createXMLStreamReader( in );
+            xmlStreamThat.nextTag();
+            while ( xmlStreamThat.hasNext() ) {
+                xmlStreamThat.next();
+                if ( xmlStreamThat.getEventType() == XMLStreamConstants.START_ELEMENT ) {
+                    streamThat.append( xmlStreamThat.getName() ).append( ' ' );
+                }
+            }
+        }
+
+        return streamThat;
+    }
+
+    private StringBuilder stringBuilderFromXMLStream( XMLStreamReader xmlStreamThis )
+                            throws XMLStreamException {
+        StringBuilder streamThis = new StringBuilder();
+        xmlStreamThis.nextTag();
+        while ( xmlStreamThis.hasNext() ) {
+            xmlStreamThis.next();
+            if ( xmlStreamThis.getEventType() == XMLStreamConstants.START_ELEMENT ) {
+                streamThis.append( xmlStreamThis.getName() ).append( ' ' );
+            }
+        }
+
+        return streamThis;
     }
 
     // private MetadataRecord loadRecord( URL url )

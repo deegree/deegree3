@@ -170,8 +170,7 @@ public class ExecuteStatements implements GenericDatabaseExecution {
             }
 
             getDatasetIDs.append( " LEFT OUTER JOIN " );
-            // TODO remove hard coded
-            getDatasetIDs.append( "recordbrief" );
+            getDatasetIDs.append( "recordfull" );
             getDatasetIDs.append( " AS " );
             getDatasetIDs.append( blobTableAlias );
             getDatasetIDs.append( " ON " );
@@ -210,7 +209,7 @@ public class ExecuteStatements implements GenericDatabaseExecution {
                 }
             }
 
-            LOG.debug( preparedStatement.toString() );
+            LOG.debug( "Find records with expression: " + preparedStatement.toString() );
 
             rs = preparedStatement.executeQuery();
 
@@ -232,6 +231,7 @@ public class ExecuteStatements implements GenericDatabaseExecution {
 
                     preparedStatement = connection.prepareStatement( stringBuilder.toString() );
                     preparedStatement.setInt( 1, d );
+                    LOG.debug( "Delete records with expression:" + preparedStatement.toString() );
                     preparedStatement.executeUpdate();
 
                 }
