@@ -35,12 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.metadata.persistence;
 
-import java.net.URI;
 import java.util.List;
-
-import javax.xml.namespace.QName;
-
-import org.deegree.protocol.csw.CSWConstants.ReturnableElement;
 
 /**
  * Base interface of the {@link MetadataStore} persistence layer, provides access to stored {@link MetadataStore}
@@ -76,29 +71,21 @@ public interface MetadataStore {
      * 
      * Exports the XML for the requested records.
      * 
-     * @param typeName
-     *            of a specific requested record profile
      * @param query
      *            {@link MetadataQuery}
      * @throws MetadataStoreException
      */
-    public MetadataResultSet getRecords( QName typeName, MetadataQuery query )
+    public MetadataResultSet getRecords( MetadataQuery query )
                             throws MetadataStoreException;
 
     /**
      * Exports the records by the requested identifier.
      * 
-     * @param writer
-     *            writer to export to, must not be <code>null</code>
      * @param idList
      *            list of the requested identifiers
-     * @param outputSchema
-     *            that should be presented in the response
-     * @param elementSetName
-     *            {@link ReturnableElement}
      * @throws MetadataStoreException
      */
-    public MetadataResultSet getRecordsById( List<String> idList, URI outputSchema )
+    public MetadataResultSet getRecordsById( List<String> idList )
                             throws MetadataStoreException;
 
     /**

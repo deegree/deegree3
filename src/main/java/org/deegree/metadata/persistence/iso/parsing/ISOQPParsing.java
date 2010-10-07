@@ -437,11 +437,19 @@ public final class ISOQPParsing extends XMLAdapter {
      */
     private void parseDistributionInfo() {
 
-        List<OMElement> formats = getElements(
-                                               rootElement,
-                                               new XPath(
-                                                          "./gmd:distributionInfo/gmd:MD_Distribution/gmd:distributor/gmd:MD_Distributor/gmd:distributorFormat/gmd:MD_Format",
-                                                          nsContextISOParsing ) );
+        List<OMElement> formats = new ArrayList<OMElement>();
+
+        formats.addAll( getElements(
+                                     rootElement,
+                                     new XPath(
+                                                "./gmd:distributionInfo/gmd:MD_Distribution/gmd:distributor/gmd:MD_Distributor/gmd:distributorFormat/gmd:MD_Format",
+                                                nsContextISOParsing ) ) );
+
+        formats.addAll( getElements(
+                                     rootElement,
+                                     new XPath(
+                                                "./gmd:distributionInfo/gmd:MD_Distribution/gmd:distributionFormat/gmd:MD_Format",
+                                                nsContextISOParsing ) ) );
 
         // String onlineResource = getNodeAsString(
         // rootElement,

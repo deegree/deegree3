@@ -54,13 +54,12 @@ import org.deegree.commons.xml.stax.StAXParsingHelper;
  * 
  * @version $Revision$, $Date$
  */
-public class NamedElementFilter implements XMLStreamReader {
-
+public class NamedElementCreator implements XMLStreamReader {
     private final XMLStreamReader input;
 
     private final Set<QName> removeElements;
 
-    public NamedElementFilter( XMLStreamReader input, Set<QName> removeElements ) {
+    public NamedElementCreator( XMLStreamReader input, Set<QName> removeElements ) {
         this.input = input;
         this.removeElements = removeElements;
     }
@@ -238,10 +237,11 @@ public class NamedElementFilter implements XMLStreamReader {
                             throws XMLStreamException {
         int event = input.next();
         while ( ( event == XMLStreamConstants.START_ELEMENT || event == XMLStreamConstants.END_ELEMENT )
-                && removeElements.contains( getName() ) ) {
+                && !removeElements.contains( getName() ) ) {
             StAXParsingHelper.skipElement( input );
             event = StAXParsingHelper.nextElement( input );
         }
+
         return event;
     }
 
@@ -249,7 +249,7 @@ public class NamedElementFilter implements XMLStreamReader {
                             throws XMLStreamException {
         int event = input.nextTag();
         while ( ( event == XMLStreamConstants.START_ELEMENT || event == XMLStreamConstants.END_ELEMENT )
-                && removeElements.contains( getName() ) ) {
+                && !removeElements.contains( getName() ) ) {
             StAXParsingHelper.skipElement( input );
             event = StAXParsingHelper.nextElement( input );
         }
@@ -264,5 +264,4 @@ public class NamedElementFilter implements XMLStreamReader {
     public boolean standaloneSet() {
         return input.standaloneSet();
     }
-
 }
