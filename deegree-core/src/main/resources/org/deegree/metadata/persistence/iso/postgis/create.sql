@@ -279,38 +279,13 @@ COMMENT ON TABLE ISOQP_Type
 COMMENT ON COLUMN ISOQP_Type.Type
     IS 'MD_Metadata.hierarchyLevel.MD_ScopeCode/@codeListValue. If MD_Metadata.hierarchyLevel is missing, ''Type'' will be considered as "Dataset" (default).';
 
-CREATE TABLE RecordBrief ( 
-	ID integer NOT NULL,
-	fk_datasets integer NOT NULL,
-	format numeric(2) NOT NULL,
-	data bytea NOT NULL
-);
-COMMENT ON TABLE RecordBrief
-    IS 'This is the table for the brief representation of a getRecords response, because a brief representation has to be allways provided.';
-
-CREATE TABLE RecordSummary ( 
-    ID integer NOT NULL,
-	fk_datasets integer NOT NULL,
-	format numeric(2) NOT NULL,
-	data bytea NOT NULL
-);
-COMMENT ON TABLE RecordSummary
-    IS 'This is the table for the summary representation of a getRecords response';
-
 CREATE TABLE RecordFull ( 
     ID integer NOT NULL,
 	fk_datasets integer NOT NULL,
-	format numeric(2) NOT NULL,
 	data bytea NOT NULL
 );
 COMMENT ON TABLE RecordFull
     IS 'This is the mandatory table for the full representation of a getRecords response';
-
---CREATE TABLE UserDefinedQueryableProperties ( 
---	fk_datasets integer NOT NULL
---);
---COMMENT ON TABLE UserDefinedQueryableProperties
---    IS 'Collection of user defined queryable properties';
     
 CREATE TABLE QP_Identifier ( 
 ID integer NOT NULL,
@@ -432,15 +407,6 @@ ALTER TABLE ISOQP_TopicCategory ADD CONSTRAINT PK_ISOQP_TopicCategory
 
 ALTER TABLE ISOQP_Type ADD CONSTRAINT PK_ISOQP_Type 
 	PRIMARY KEY (ID);
-
-
-ALTER TABLE RecordBrief ADD CONSTRAINT PK_RecordBrief
-	PRIMARY KEY (ID);
-
-
-ALTER TABLE RecordSummary ADD CONSTRAINT PK_RecordSummary
-	PRIMARY KEY (ID);
-
 
 ALTER TABLE RecordFull ADD CONSTRAINT PK_RecordFull
 	PRIMARY KEY (ID);
@@ -584,12 +550,6 @@ ALTER TABLE ISOQP_TopicCategory ADD CONSTRAINT FK_ISOQP_TopicCategory_Datasets
 	FOREIGN KEY (fk_datasets) REFERENCES Datasets (ID) ON DELETE CASCADE;
 
 ALTER TABLE ISOQP_Type ADD CONSTRAINT FK_ISOQP_Type_Datasets 
-	FOREIGN KEY (fk_datasets) REFERENCES Datasets (ID) ON DELETE CASCADE;
-
-ALTER TABLE RecordBrief ADD CONSTRAINT FK_RecordBrief_Datasets 
-	FOREIGN KEY (fk_datasets) REFERENCES Datasets (ID) ON DELETE CASCADE;
-
-ALTER TABLE RecordSummary ADD CONSTRAINT FK_RecordSummary_Datasets 
 	FOREIGN KEY (fk_datasets) REFERENCES Datasets (ID) ON DELETE CASCADE;
 
 ALTER TABLE RecordFull ADD CONSTRAINT FK_RecordFull_Datasets 
