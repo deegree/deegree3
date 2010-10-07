@@ -92,10 +92,4 @@ public class DeleteTransaction extends TransactionOperation {
         return constraint;
     }
 
-    // @Override
-    // public List<OMElement> getElements() {
-    //
-    // return null;
-    // }
-
 }
