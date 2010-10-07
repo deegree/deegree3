@@ -31,8 +31,6 @@ ALTER TABLE ISOQP_Title DROP CONSTRAINT FK_ISOQP_Title_Datasets;
 ALTER TABLE ISOQP_TopicCategory DROP CONSTRAINT FK_ISOQP_TopicCategory_Datasets;
 ALTER TABLE ISOQP_Type DROP CONSTRAINT FK_ISOQP_Type_Datasets;
 ALTER TABLE RecordFull DROP CONSTRAINT fk_recordfull_datasets;
-ALTER TABLE RecordBrief DROP CONSTRAINT fk_recordbrief_datasets;
-ALTER TABLE RecordSummary DROP CONSTRAINT fk_recordsummary_datasets;
 ALTER TABLE QP_Identifier DROP CONSTRAINT fk_qp_identifier_datasets;
 ALTER TABLE DCQP_RIGHTS DROP CONSTRAINT FK_DCQP_RIGHTS_Datasets;
 
@@ -61,10 +59,7 @@ DROP TABLE ISOQP_TemporalExtent;
 DROP TABLE ISOQP_Title;
 DROP TABLE ISOQP_TopicCategory;
 DROP TABLE ISOQP_Type;
-DROP TABLE RecordBrief;
-DROP TABLE RecordSummary;
 DROP TABLE RecordFull;
 DROP TABLE QP_Identifier;
---DROP TABLE UserDefinedQueryableProperties;
 DROP TABLE DCQP_RIGHTS;
 
