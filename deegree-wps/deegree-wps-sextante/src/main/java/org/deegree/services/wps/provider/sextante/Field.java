@@ -51,7 +51,7 @@ public class Field {
 
     private final Class<?> m_Type; // data type
 
-    private final String m_NamespaceURI; // namespace of this property
+    private final String m_NamespaceURI; // namespace URI of this property
 
     private final String m_Prefix; // prefix of namespace
 

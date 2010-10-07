@@ -120,11 +120,11 @@ public class VectorLayerAdapter {
         if ( it.hasNext() ) {
 
             // get feature type
-            Feature f = it.next();
-            FeatureType fType = f.getType();
+            Feature firstFeature = it.next();
+            FeatureType fType = firstFeature.getType();
 
             // get crs
-            crs = determineCRS( f );
+            crs = determineCRS( firstFeature );
 
             // get property declarations
             // vectorLayerPropertyDeclarations = determinePropertyDeclarationsForVectorLayer( fType );
@@ -148,7 +148,7 @@ public class VectorLayerAdapter {
                         // add feature
                         features.add( new FeatureImpl( geom, values ) );
                     } else {
-                        LOG.warn( "Feature '" + f.getId() + "' was skipped." );
+                        LOG.warn( "Feature '" + feature.getId() + "' was skipped." );
                     }
 
                 } else {
@@ -633,7 +633,7 @@ public class VectorLayerAdapter {
         Object value = null;
 
         if ( valueClass.equals( BigDecimal.class ) ) {
-            value = new BigDecimal( 0.0 );
+            value = new BigDecimal( 0 );
         } else {
             if ( valueClass.equals( BigInteger.class ) ) {
                 value = new BigInteger( "0" );

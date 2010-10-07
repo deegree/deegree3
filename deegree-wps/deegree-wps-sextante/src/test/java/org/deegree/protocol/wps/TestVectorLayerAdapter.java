@@ -43,6 +43,8 @@ import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.feature.Feature;
 import org.deegree.feature.FeatureCollection;
+import org.deegree.feature.property.Property;
+import org.deegree.feature.types.FeatureType;
 import org.deegree.feature.types.property.PropertyType;
 import org.deegree.feature.types.property.SimplePropertyType;
 import org.deegree.geometry.Geometry;
@@ -63,12 +65,12 @@ import es.unex.sextante.dataObjects.IVectorLayer;
  * 
  * @version $Revision: $, $Date: $
  */
-public class VectorLayerAdapterTest {
+public class TestVectorLayerAdapter {
 
-    private static Logger LOG = LoggerFactory.getLogger( VectorLayerAdapterTest.class );
+    private static Logger LOG = LoggerFactory.getLogger( TestVectorLayerAdapter.class );
 
     // enabled/disabled all tests
-    private static final boolean ENABLED = false;
+    private static final boolean ENABLED = true;
 
     /**
      * Tests the {@link VectorLayerAdapter} to convert geometries to {@link VectorLayerImpl} and back. <br>
@@ -203,6 +205,7 @@ public class VectorLayerAdapterTest {
         LinkedList<FeatureCollection> colls = new LinkedList<FeatureCollection>();
 
         LinkedList<VectorExampleData> data = VectorExampleData.getAllFeatureCollections();
+
         for ( VectorExampleData dataFc : data ) {
             // read file
             GMLStreamReader gmlStreamReader = GMLInputFactory.createGMLStreamReader( dataFc.getGMLVersion(),
@@ -279,66 +282,93 @@ public class VectorLayerAdapterTest {
      */
     private void checkFeature( Feature fIn, Feature fOut ) {
 
-        // collect simple properties
-        LinkedList<SimplePropertyType> sptsIn = new LinkedList<SimplePropertyType>();
-        LinkedList<SimplePropertyType> sptsOut = new LinkedList<SimplePropertyType>();
+        // check only if geometries available
+        if ( fIn.getGeometryProperties().length > 0 && fOut.getGeometryProperties().length > 0 ) {
 
-        // properties (input)
-        List<PropertyType> proDeclIn = fIn.getType().getPropertyDeclarations();
-        Iterator<PropertyType> itInProDecl = proDeclIn.iterator();
-        while ( itInProDecl.hasNext() ) {
-            PropertyType ptIn = itInProDecl.next();
-            // simple properties
-            if ( ptIn instanceof SimplePropertyType ) {
-                sptsIn.add( (SimplePropertyType) ptIn );
-            }
-        }
+            // collect simple properties
+            LinkedList<SimplePropertyType> sptsIn = new LinkedList<SimplePropertyType>();
+            LinkedList<SimplePropertyType> sptsOut = new LinkedList<SimplePropertyType>();
 
-        // properties (output)
-        List<PropertyType> proDeclOut = fOut.getType().getPropertyDeclarations();
-        Iterator<PropertyType> itOutProDecl = proDeclOut.iterator();
-        while ( itOutProDecl.hasNext() ) {
-            PropertyType ptOut = itOutProDecl.next();
-            // simple properties
-            if ( ptOut instanceof SimplePropertyType ) {
-                sptsOut.add( (SimplePropertyType) ptOut );
-            }
-        }
-
-        // check simple property size
-        Assert.assertTrue( sptsIn.size() == sptsOut.size() );
-
-        for ( SimplePropertyType sptIn : sptsIn ) {
-            boolean found = false;
-
-            for ( SimplePropertyType sptOut : sptsOut ) {
-                if ( sptIn.getName().equals( sptOut.getName() ) ) {
-                    found = true;
-
-                    // check value content (only the first property with the same name)
-                    TypedObjectNode valueIn = fIn.getProperties( sptIn.getName() )[0].getValue();
-                    TypedObjectNode valueOut = fOut.getProperties( sptOut.getName() )[0].getValue();
-                    if ( valueIn instanceof PrimitiveValue && valueOut instanceof PrimitiveValue ) {
-                        Assert.assertTrue( ( (PrimitiveValue) valueIn ).getAsText().equals(
-                                                                                            ( (PrimitiveValue) valueIn ).getAsText() ) );
-                    } else {
-                        Assert.fail();
-                    }
-
+            // properties (input)
+            List<PropertyType> proDeclIn = fIn.getType().getPropertyDeclarations();
+            Iterator<PropertyType> itInProDecl = proDeclIn.iterator();
+            while ( itInProDecl.hasNext() ) {
+                PropertyType ptIn = itInProDecl.next();
+                // simple properties
+                if ( ptIn instanceof SimplePropertyType ) {
+                    sptsIn.add( (SimplePropertyType) ptIn );
                 }
             }
 
-            // check property was found
-            Assert.assertTrue( found );
-            found = false;
+            // properties (output)
+            List<PropertyType> proDeclOut = fOut.getType().getPropertyDeclarations();
+            Iterator<PropertyType> itOutProDecl = proDeclOut.iterator();
+            while ( itOutProDecl.hasNext() ) {
+                PropertyType ptOut = itOutProDecl.next();
+                // simple properties
+                if ( ptOut instanceof SimplePropertyType ) {
+                    sptsOut.add( (SimplePropertyType) ptOut );
+                }
+            }
 
+            // check simple property size
+            Assert.assertTrue( sptsIn.size() == sptsOut.size() );
+
+            for ( SimplePropertyType sptIn : sptsIn ) {
+                boolean found = false;
+
+                for ( SimplePropertyType sptOut : sptsOut ) {
+                    if ( sptIn.getName().equals( sptOut.getName() ) ) {
+                        found = true;
+
+                        // check property name, namespace and prefix
+                        Assert.assertTrue( sptIn.getName().equals( sptOut.getName() ) );
+
+                        // check value content (only the first property with the same name)
+                        Property[] valuesIn = fIn.getProperties( sptIn.getName() );
+                        Property[] valuesOut = fOut.getProperties( sptOut.getName() );
+
+                        if ( valuesIn.length > 0 ) { // check if input value available
+                            TypedObjectNode valueIn = valuesIn[0].getValue();
+
+                            if ( valuesOut.length > 0 ) {// check if output value available
+                                TypedObjectNode valueOut = valuesOut[0].getValue();
+
+                                // check values
+                                if ( valueIn instanceof PrimitiveValue && valueOut instanceof PrimitiveValue ) {
+                                    Assert.assertTrue( ( (PrimitiveValue) valueIn ).getAsText().equals(
+                                                                                                        ( (PrimitiveValue) valueIn ).getAsText() ) );
+                                } else {
+                                    Assert.fail();
+                                }
+                            }
+                        } else { // no input value, check output value
+                            if ( valuesOut.length > 0 ) {// check if output value available
+                                TypedObjectNode valueOut = valuesOut[0].getValue();
+                                if ( valueOut instanceof PrimitiveValue ) {
+                                    String val = ( (PrimitiveValue) valueOut ).getAsText();
+                                    Assert.assertTrue( val.equals( "0" ) || val.equals( "0.0" ) || val.equals( "null" )
+                                                       || val.equals( "" ) );
+                                } else {
+                                    Assert.fail();
+                                }
+                            }
+                        }
+
+                    }
+                }
+
+                // check property was found
+                Assert.assertTrue( found );
+                found = false;
+
+            }
+
+            // check geometry content (only first geometry)
+            TypedObjectNode geomIn = fIn.getGeometryProperties()[0].getValue();
+            TypedObjectNode geomOut = fOut.getGeometryProperties()[0].getValue();
+            Assert.assertTrue( geomIn.toString().equals( geomOut.toString() ) );
         }
-
-        // check geometry content (only first geometry)
-        TypedObjectNode geomIn = fIn.getGeometryProperties()[0].getValue();
-        TypedObjectNode geomOut = fOut.getGeometryProperties()[0].getValue();
-        Assert.assertTrue( geomIn.toString().equals( geomOut.toString() ) );
-
     }
 
     /**
@@ -351,17 +381,30 @@ public class VectorLayerAdapterTest {
      */
     private void checkFeatureCollection( FeatureCollection fcIn, FeatureCollection fcOut ) {
 
-        // check size
-        Assert.assertTrue( fcIn.size() == fcOut.size() );
-
         // check features
         Iterator<Feature> itIn = fcIn.iterator();
         Iterator<Feature> itOut = fcOut.iterator();
         while ( itIn.hasNext() && itOut.hasNext() ) {
-            Feature fIn = itIn.next();
+            Feature fIn = getNextFeatureWithGeometry( itIn ); // skip features without geometry
             Feature fOut = itOut.next();
             checkFeature( fIn, fOut );
         }
+
     }
 
+    /**
+     * The method returns the next {@link Feature} which contains a {@link Geometry}. {@link Feature}s without
+     * {@link Geometry} would skipped.
+     * 
+     * @param it
+     *            - {@link Iterator} for iterate over features.
+     * @return {@link Feature} with geometry
+     */
+    private Feature getNextFeatureWithGeometry( Iterator<Feature> it ) {
+        Feature f = it.next();
+        if ( f.getGeometryProperties().length > 0 )
+            return f;
+        else
+            return getNextFeatureWithGeometry( it );
+    }
 }

@@ -67,10 +67,10 @@ import es.unex.sextante.parameters.Parameter;
  * 
  * @version $Revision: $, $Date: $
  */
-public class GeoAlgorithmTest {
+public class TestGeoAlgorithm {
 
     // logger
-    private static Logger LOG = LoggerFactory.getLogger( GeoAlgorithmTest.class );
+    private static Logger LOG = LoggerFactory.getLogger( TestGeoAlgorithm.class );
 
     // enabled/disabled all tests
     private static final boolean ENABLED = false;
@@ -80,7 +80,7 @@ public class GeoAlgorithmTest {
 
     private WPSClient client;
 
-    public GeoAlgorithmTest() {
+    public TestGeoAlgorithm() {
 
         // initialize SEXTANTE
         Sextante.initialize();
