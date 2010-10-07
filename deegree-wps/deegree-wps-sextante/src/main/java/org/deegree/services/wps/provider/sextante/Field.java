@@ -35,6 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.services.wps.provider.sextante;
 
+import javax.xml.namespace.QName;
 
 /**
  * Defines a column of a attribute table. <br>
@@ -49,6 +50,10 @@ public class Field {
     private final String m_Name; // column name
 
     private final Class<?> m_Type; // data type
+
+    private final String m_NamespaceURI; // namespace of this property
+
+    private final String m_Prefix; // prefix of namespace
 
     /**
      * Creates an array of {@link Field}s. If the length of names and types are different then this method returns null.
@@ -67,7 +72,7 @@ public class Field {
             f = new Field[names.length];
 
             for ( int i = 0; i < f.length; i++ ) {
-                f[i] = new Field( names[i], types[i] );
+                f[i] = new Field( determineQName( names[i] ), types[i] );
             }
         } else {
             // TODO throw Exception?
@@ -77,19 +82,106 @@ public class Field {
 
     }
 
+    /**
+     * This method determine {@link QName} of a NameWithNamespaceAndPrefix.
+     * 
+     * @param name
+     *            From the method getNameWithNamespaceAndPrefix().
+     * @return {@link QName} of a NameWithNamespaceAndPrefix.
+     */
+    private static QName determineQName( String name ) {
+
+        QName qName;
+
+        if ( name != null ) {
+
+            String[] nameAsArray = name.split( "~" );
+
+            if ( nameAsArray.length == 3 ) {
+                qName = new QName( nameAsArray[2], nameAsArray[0], nameAsArray[1] );
+            } else {
+                qName = new QName( VectorLayerAdapter.APP_NS, name, VectorLayerAdapter.APP_PREFIX );
+            }
+
+        } else {
+            qName = new QName( VectorLayerAdapter.APP_NS, "PROPERTY_WITHOUT_NAME", VectorLayerAdapter.APP_PREFIX );
+        }
+
+        return qName;
+    }
+
     public Field( String name, Class<?> type ) {
-        m_Name = name;
+        this( name, type, null, null );
+    }
+
+    public Field( QName name, Class<?> type ) {
+        this( name.getLocalPart(), type, name.getNamespaceURI(), name.getPrefix() );
+    }
+
+    private Field( String name, Class<?> type, String ns, String prefix ) {
+
+        if ( name == null )
+            name = "PROPERTY_WITHOUT_NAME";
+
+        if ( ns == null )
+            ns = VectorLayerAdapter.APP_NS;
+
+        if ( prefix == null )
+            prefix = VectorLayerAdapter.APP_PREFIX;
+
+        if ( type == null )
+            type = String.class;
+
+        m_Name = name.replace( " ", "" );
         m_Type = type;
+        m_NamespaceURI = ns;
+        m_Prefix = prefix;
     }
 
     /**
-     * Returns the column name.
+     * Returns the field name.
      * 
-     * @return Column name.
+     * @return Field name.
      * 
      */
     public String getName() {
         return m_Name;
+    }
+
+    /**
+     * Returns the field name with namespace and prefix.
+     * 
+     * @return Name with namespace and prefix like this "name~prefix~namespace". If namespace or prefix is null, it
+     *         returns only the name.
+     */
+    public String getNameWithNamespaceAndPrefix() {
+        String name = "";
+        name += m_Name + "~" + m_Prefix + "~" + m_NamespaceURI;
+        return name;
+    }
+
+    public QName getQName() {
+        return new QName( m_NamespaceURI, m_Name, m_Prefix );
+    }
+
+    /**
+     * Returns prefix of namespace.
+     * 
+     * @return Prefix of namespace.
+     * 
+     */
+    public String getPrefix() {
+        return m_Prefix;
+    }
+
+    /**
+     * Returns namespace.
+     * 
+     * @return namespace.
+     * 
+     */
+    public String getNamespaceURI() {
+        return m_NamespaceURI;
     }
 
     /**

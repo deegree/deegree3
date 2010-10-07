@@ -92,9 +92,9 @@ public class VectorLayerAdapter {
     // logger
     private static final Logger LOG = LoggerFactory.getLogger( VectorLayerAdapter.class );
 
-    private static final String APP_NS = "http://www.deegree.org/sextante";
+    public static final String APP_NS = "http://www.deegree.org/sextante";
 
-    private static final String APP_PREFIX = "st";
+    public static final String APP_PREFIX = "st";
 
     /**
      * Creates an {@link IVectorLayer} from a {@link FeatureCollection}.
@@ -109,7 +109,7 @@ public class VectorLayerAdapter {
      * @return An {@link IVectorLayer} with {@link IFeature}s. The {@link IFeature}s contains only one
      *         {@link com.vividsolutions.jts.geom.Geometry} and only properties with different names.
      */
-    public static IVectorLayer createVectorLayer( FeatureCollection c ) {
+    public static VectorLayerImpl createVectorLayer( FeatureCollection c ) {
 
         // parameters for vector layer
         LinkedList<IFeature> features = new LinkedList<IFeature>();
@@ -142,7 +142,7 @@ public class VectorLayerAdapter {
                                                                                  vectorLayerPropertyDeclarations );
 
                     // create geometry
-                    com.vividsolutions.jts.geom.Geometry geom = createJTSGeometry( feature );
+                    com.vividsolutions.jts.geom.Geometry geom = createJTSGeometryFromFeature( feature );
 
                     if ( geom != null ) {
                         // add feature
@@ -184,7 +184,7 @@ public class VectorLayerAdapter {
      * @return An {@link IVectorLayer} with a {@link IFeature}. The {@link IFeature} contains only one
      *         {@link com.vividsolutions.jts.geom.Geometry} and only properties with different names.
      */
-    public static IVectorLayer createVectorLayer( Feature f ) {
+    public static VectorLayerImpl createVectorLayer( Feature f ) {
 
         if ( f instanceof FeatureCollection ) {
             return createVectorLayer( (FeatureCollection) f );
@@ -193,13 +193,13 @@ public class VectorLayerAdapter {
             String crs = determineCRS( f );
 
             // create property declarations
-            Field[] propertiyDeclarations = determinePropertyDeclarationsForVectorLayer( f.getType() );
+            Field[] propertiyDeclarations = determinePropertyDeclarationsForVectorLayer( f );
 
             // create properties
             Object[] properties = determinePropertiesForVectorLayerGeometry( f, propertiyDeclarations );
 
             // create geometry
-            com.vividsolutions.jts.geom.Geometry geom = createJTSGeometry( f );
+            com.vividsolutions.jts.geom.Geometry geom = createJTSGeometryFromFeature( f );
 
             // create vector layer
             VectorLayerImpl layer = new VectorLayerImpl( "FeatureLayer", crs, propertiyDeclarations );
@@ -223,13 +223,13 @@ public class VectorLayerAdapter {
      * @return An {@link IVectorLayer} with a {@link IFeature}. The {@link IFeature} contains only one
      *         {@link com.vividsolutions.jts.geom.Geometry} and no properties.
      */
-    public static IVectorLayer createVectorLayer( Geometry g ) {
+    public static VectorLayerImpl createVectorLayer( Geometry g ) {
 
         // create vector layer
         VectorLayerImpl layer = new VectorLayerImpl( "GeometryLayer", g.getCoordinateSystem().getName() );
 
         // add geometry to layer
-        layer.addFeature( createJTSGeometry( g ), null );
+        layer.addFeature( createJTSGeometryFromGeometry( g ), null );
 
         return layer;
     }
@@ -249,7 +249,7 @@ public class VectorLayerAdapter {
      * @throws InstantiationException
      * @throws IllegalAccessException
      */
-    public static FeatureCollection createFeatureCollection( IVectorLayer l )
+    public static GenericFeatureCollection createFeatureCollection( IVectorLayer l )
                             throws IteratorException, IllegalArgumentException, InstantiationException,
                             IllegalAccessException {
 
@@ -309,142 +309,6 @@ public class VectorLayerAdapter {
     }
 
     /**
-     * Creates a {@link Feature} from an {@link IFeature}.
-     * 
-     * @param f
-     *            {@link IFeature}
-     * @param id
-     *            {@link IFeature} id
-     * @param l
-     *            {@link IVectorLayer}
-     * 
-     * @return {@link Feature}
-     * 
-     * @throws IllegalArgumentException
-     * @throws InstantiationException
-     * @throws IllegalAccessException
-     */
-    private static Feature createFeature( IFeature f, String id, IVectorLayer l )
-                            throws IllegalArgumentException, InstantiationException, IllegalAccessException {
-
-        // feature
-        Feature feature;
-
-        // create property declarations
-        LinkedList<PropertyType> propDecls = new LinkedList<PropertyType>();
-        Object[] propObjs = f.getRecord().getValues();
-
-        // create simple properties
-        for ( int i = 0; i < l.getFieldCount(); i++ ) {
-
-            String nameRaw = l.getFieldName( i );
-            if ( nameRaw == null ) {
-                nameRaw = "PROPERTY_WITHOUT_NAME";
-            }
-
-            // determine element name
-            QName probName = new QName( APP_NS, nameRaw.replace( " ", "" ), APP_PREFIX );
-
-            // TODO correct redundancy
-            // modify value
-            Object value = propObjs[i];
-            if ( value != null ) { // value is not null
-                if ( value instanceof Integer )// PrimitiveType only support BigInteger
-                    value = new BigInteger( value.toString() );
-                else if ( value instanceof Long )// PrimitiveType only support Double
-                    value = new Double( value.toString() );
-
-            } else {// value is null
-
-                // TODO dangerous handling
-                Class<?> valueClass = l.getFieldType( i );
-                if ( valueClass.equals( BigDecimal.class ) ) {
-                    value = new BigDecimal( 0.0 );
-                } else {
-                    if ( valueClass.equals( BigInteger.class ) ) {
-                        value = new BigInteger( "0" );
-                    } else {
-                        value = valueClass.newInstance();
-                    }
-                }
-            }
-
-            // create property type
-
-            SimplePropertyType spt = new SimplePropertyType( probName, 1, 1,
-                                                             PrimitiveType.determinePrimitiveType( value ), false,
-                                                             false, new LinkedList<PropertyType>() );
-
-            propDecls.add( spt );
-        }
-
-        // create simple geometry
-        GeometryPropertyType gpt = new GeometryPropertyType( new QName( APP_NS, "geom", APP_PREFIX ), 1, 1, false,
-                                                             false, new LinkedList<PropertyType>(),
-                                                             GeometryType.MULTI_GEOMETRY, CoordinateDimension.DIM_2,
-                                                             ValueRepresentation.INLINE );
-        propDecls.add( gpt );
-
-        // creatre feature type
-        GenericFeatureType fty = new GenericFeatureType( new QName( APP_NS, "SextanteFeature", APP_PREFIX ), propDecls,
-                                                         false );
-
-        // create properties
-        LinkedList<Property> props = new LinkedList<Property>();
-        Iterator<PropertyType> it = propDecls.iterator();
-        for ( int i = 0; i < propObjs.length; i++ ) {
-            if ( it.hasNext() ) {
-
-                // TODO correct redundancy
-                // modify value
-                Object value = propObjs[i];
-                if ( value != null ) { // value is not null
-                    if ( value instanceof Integer )// PrimitiveType only support BigInteger
-                        value = new BigInteger( value.toString() );
-                    else if ( value instanceof Long )// PrimitiveType only support Double
-                        value = new Double( value.toString() );
-
-                } else {// value is null
-
-                    // TODO dangerous handling
-                    Class<?> valueClass = l.getFieldType( i );
-                    if ( valueClass.equals( BigDecimal.class ) ) {
-                        value = new BigDecimal( 0.0 );
-                    } else {
-                        if ( valueClass.equals( BigInteger.class ) ) {
-                            value = new BigInteger( "0" );
-                        } else {
-                            value = valueClass.newInstance();
-                        }
-                    }
-                }
-
-                // GenericProperty gp = new GenericProperty( it.next(), new PrimitiveValue( propObjs[i] ) );
-                SimpleProperty sp = new SimpleProperty( (SimplePropertyType) it.next(), value.toString(),
-                                                        PrimitiveType.determinePrimitiveType( value ) );
-
-                props.add( sp );
-            }
-        }
-        if ( it.hasNext() ) {
-
-            Geometry geom = createGeometry( f.getGeometry(), l.getCRS().toString() );
-
-            if ( geom != null ) {
-                GenericProperty gp = new GenericProperty( it.next(), geom );
-                props.add( gp );
-
-            }
-
-        }
-
-        // create feature
-        feature = new GenericFeature( fty, id, props, GMLVersion.GML_31 );
-
-        return feature;
-    }
-
-    /**
      * Creates a {@link Geometry} from an {@link IVectorLayer}.
      * 
      * @param l
@@ -489,28 +353,9 @@ public class VectorLayerAdapter {
         }
 
         // create a deegree geometry
-        Geometry g = createGeometry( gJTS, l.getCRS().toString() );
+        Geometry g = createGeometryFromJTSGeometry( gJTS, l.getCRS().toString() );
 
         return g;
-    }
-
-    /**
-     * Creates a CRS name from a {@link Feature}.
-     * 
-     * @param f
-     *            {@link Feature}
-     * @return CRS name.
-     */
-    private static String determineCRS( Feature f ) {
-
-        String crs = null;
-        Property[] geoms = f.getGeometryProperties();
-        if ( geoms.length > 0 ) {
-            Geometry g = (Geometry) geoms[0].getValue();
-            crs = g.getCoordinateSystem().getName();
-        }
-
-        return crs;
     }
 
     /**
@@ -521,19 +366,19 @@ public class VectorLayerAdapter {
      * @return Returns a {@link com.vividsolutions.jts.geom.Geometry}. If the {@link Feature} contains more than one
      *         geometry property, they will be merged to a MultiGeometry.
      */
-    private static com.vividsolutions.jts.geom.Geometry createJTSGeometry( Feature f ) {
+    private static com.vividsolutions.jts.geom.Geometry createJTSGeometryFromFeature( Feature f ) {
 
         Property[] fGeometries = f.getGeometryProperties();
         com.vividsolutions.jts.geom.Geometry geom;
 
         if ( fGeometries.length == 1 ) { // only one geometry
 
-            geom = createJTSGeometry( (Geometry) fGeometries[0].getValue() );
+            geom = createJTSGeometryFromGeometry( (Geometry) fGeometries[0].getValue() );
 
         } else { // more geometries
 
             if ( fGeometries.length != 0 ) { // feature with more than one geometry
-                geom = createJTSGeometry( (Geometry) fGeometries[0].getValue() );
+                geom = createJTSGeometryFromGeometry( (Geometry) fGeometries[0].getValue() );
 
                 LOG.warn( "Feature '" + f.getId() + "' has many geometries, only the first is in use." );
 
@@ -570,7 +415,7 @@ public class VectorLayerAdapter {
      * @return Returns a {@link com.vividsolutions.jts.geom.Geometry}. If the {@link Geometry} isn't simple, it will be
      *         linearized.
      */
-    private static com.vividsolutions.jts.geom.Geometry createJTSGeometry( Geometry g ) {
+    private static com.vividsolutions.jts.geom.Geometry createJTSGeometryFromGeometry( Geometry g ) {
 
         // create jts geometry
         AbstractDefaultGeometry gAbst = (AbstractDefaultGeometry) g;
@@ -586,7 +431,7 @@ public class VectorLayerAdapter {
      *            {@link com.vividsolutions.jts.geom.Geometry}
      * @return {@link Geometry} or <code>null</code> if the given geometry is an empty collection.
      */
-    private static Geometry createGeometry( com.vividsolutions.jts.geom.Geometry gJTS, String crsName ) {
+    private static Geometry createGeometryFromJTSGeometry( com.vividsolutions.jts.geom.Geometry gJTS, String crsName ) {
 
         // default deegree geometry to create a deegree geometry from JTS geometry
         GeometryFactory gFactory = new GeometryFactory();
@@ -599,15 +444,141 @@ public class VectorLayerAdapter {
     }
 
     /**
+     * Creates a {@link Feature} from an {@link IFeature}.
+     * 
+     * @param f
+     *            {@link IFeature}
+     * @param id
+     *            {@link IFeature} id
+     * @param l
+     *            {@link IVectorLayer}
+     * 
+     * @return {@link Feature}
+     * 
+     * @throws IllegalArgumentException
+     * @throws InstantiationException
+     * @throws IllegalAccessException
+     */
+    private static GenericFeature createFeature( IFeature f, String id, IVectorLayer l )
+                            throws IllegalArgumentException, InstantiationException, IllegalAccessException {
+
+        // feature
+        GenericFeature feature;
+
+        // create property declarations
+        LinkedList<PropertyType> propDecls = new LinkedList<PropertyType>();
+        Object[] propObjs = f.getRecord().getValues();
+
+        // create simple properties types
+        for ( int i = 0; i < l.getFieldCount(); i++ ) {
+
+            // determine element name
+            QName probName;
+            if ( l instanceof VectorLayerImpl ) {
+                Field field = ( (VectorLayerImpl) l ).getField( i );
+                probName = field.getQName();
+            } else {
+                probName = new QName( APP_NS, l.getFieldName( i ), APP_PREFIX );
+            }
+
+            // modify value
+            Object value = propObjs[i];
+            if ( value != null ) { // value is not null
+                value = modifyPropertyValue( value );
+            } else {// value is null
+                value = determinePropertyNullValue( l.getFieldType( i ) );
+            }
+
+            // create property type
+            SimplePropertyType spt = new SimplePropertyType( probName, 1, 1,
+                                                             PrimitiveType.determinePrimitiveType( value ), false,
+                                                             false, new LinkedList<PropertyType>() );
+
+            propDecls.add( spt );
+        }
+
+        // create simple geometry
+        GeometryPropertyType gpt = new GeometryPropertyType( new QName( APP_NS, "geom", APP_PREFIX ), 1, 1, false,
+                                                             false, new LinkedList<PropertyType>(),
+                                                             GeometryType.MULTI_GEOMETRY, CoordinateDimension.DIM_2,
+                                                             ValueRepresentation.INLINE );
+        propDecls.add( gpt );
+
+        // creatre feature type
+        GenericFeatureType fty = new GenericFeatureType( new QName( APP_NS, "SextanteFeature", APP_PREFIX ), propDecls,
+                                                         false );
+
+        // create properties
+        LinkedList<Property> props = new LinkedList<Property>();
+        Iterator<PropertyType> it = propDecls.iterator();
+        for ( int i = 0; i < propObjs.length; i++ ) {
+
+            // create simple properties
+            if ( it.hasNext() ) {
+
+                // modify value
+                Object value = propObjs[i];
+                if ( value != null ) { // value is not null
+                    value = modifyPropertyValue( value );
+                } else {// value is null
+                    value = determinePropertyNullValue( l.getFieldType( i ) );
+                }
+
+                // GenericProperty gp = new GenericProperty( it.next(), new PrimitiveValue( propObjs[i] ) );
+                SimpleProperty sp = new SimpleProperty( (SimplePropertyType) it.next(), value.toString(),
+                                                        PrimitiveType.determinePrimitiveType( value ) );
+
+                props.add( sp );
+            }
+        }
+
+        // create geometric properties
+        if ( it.hasNext() ) {
+            Geometry geom = createGeometryFromJTSGeometry( f.getGeometry(), l.getCRS().toString() );
+
+            if ( geom != null ) {
+                GenericProperty gp = new GenericProperty( it.next(), geom );
+                props.add( gp );
+
+            }
+        }
+
+        // create feature
+        feature = new GenericFeature( fty, id, props, GMLVersion.GML_31 );
+
+        return feature;
+    }
+
+    /**
+     * Creates a CRS name from a {@link Feature}.
+     * 
+     * @param f
+     *            {@link Feature}
+     * @return CRS name.
+     */
+    private static String determineCRS( Feature f ) {
+
+        String crs = null;
+        Property[] geoms = f.getGeometryProperties();
+        if ( geoms.length > 0 ) {
+            Geometry g = (Geometry) geoms[0].getValue();
+            crs = g.getCoordinateSystem().getName();
+        }
+
+        return crs;
+    }
+
+    /**
      * Creates a property declaration of a {@link IVectorLayer}.
      * 
      * @param type
      *            - {@link FeatureType}
      * @return The property declaration of a {@link IVectorLayer} as a {@link Field} array.
      */
-    private static Field[] determinePropertyDeclarationsForVectorLayer( FeatureType type ) {
+    private static Field[] determinePropertyDeclarationsForVectorLayer( Feature f ) {
 
-        // LOG.info( "FEATURE TYP: " + type.getName().toString() );
+        // feature type
+        FeatureType type = f.getType();
 
         // list of property declaration for vector layer
         LinkedList<Field> vectoLayerPropertyDeclarations = new LinkedList<Field>();
@@ -629,7 +600,7 @@ public class VectorLayerAdapter {
                 // Class<?> pClass = String.class;
 
                 // notice name and class as field
-                vectoLayerPropertyDeclarations.add( new Field( pName.getLocalPart(), pClass ) );
+                vectoLayerPropertyDeclarations.add( new Field( pName, pClass ) );
 
                 // LOG.info( "  PROPERTY: " + pName + ":   " + pClass );
             }
@@ -646,9 +617,37 @@ public class VectorLayerAdapter {
         return fields;
     }
 
+    /**
+     * This method determines a property value with 0 by {@link Class} object. Only use this method if the property
+     * value is null.
+     * 
+     * @param valueClass
+     *            {@link Class} of property value.
+     * @return Property value with 0.
+     * @throws InstantiationException
+     * @throws IllegalAccessException
+     */
+    private static Object determinePropertyNullValue( Class<?> valueClass )
+                            throws InstantiationException, IllegalAccessException {
+
+        Object value = null;
+
+        if ( valueClass.equals( BigDecimal.class ) ) {
+            value = new BigDecimal( 0.0 );
+        } else {
+            if ( valueClass.equals( BigInteger.class ) ) {
+                value = new BigInteger( "0" );
+            } else {
+                value = valueClass.newInstance();
+            }
+        }
+
+        return value;
+    }
+
     private static Field[] determinePropertyDeclarationsForVectorLayer( FeatureCollection c ) {
 
-        HashMap<String, Class<?>> properties = new HashMap<String, Class<?>>();
+        HashMap<String, Field> properties = new HashMap<String, Field>();
 
         Iterator<Feature> it = c.iterator();
         if ( it.hasNext() ) {
@@ -673,9 +672,9 @@ public class VectorLayerAdapter {
                     Class<?> pClass = spt.getPrimitiveType().getValueClass();
                     // Class<?> pClass = String.class;
 
-                    // notice name and class
+                    // notice name and field
                     if ( f.getGeometryProperties().length > 0 )
-                        properties.put( pName.getLocalPart(), pClass );
+                        properties.put( pName.getLocalPart(), new Field( pName, pClass ) );
 
                     // LOG.info( "  PROPERTY: " + pName + ":   " + pClass );
                 }
@@ -688,7 +687,7 @@ public class VectorLayerAdapter {
         Set<String> names = properties.keySet();
         int i = 0;
         for ( String name : names ) {
-            vectoLayerPropertyDeclarations[i++] = new Field( name, properties.get( name ) );
+            vectoLayerPropertyDeclarations[i++] = properties.get( name );
         }
 
         return vectoLayerPropertyDeclarations;
@@ -758,4 +757,24 @@ public class VectorLayerAdapter {
 
         return geomProperties;
     }
+
+    /**
+     * This method modifies a property value of a {@link IVectorLayer} if it is not compatible to {@link PrimitiveType}.
+     * 
+     * @param value
+     *            Property value of a {@link IVectorLayer}.
+     * 
+     * @return Modified property value. It's compatible to {@link PrimitiveType}.
+     */
+    private static Object modifyPropertyValue( Object value ) {
+        Object newValue = value;
+
+        if ( value instanceof Integer )// PrimitiveType only support BigInteger
+            newValue = new BigInteger( value.toString() );
+        else if ( value instanceof Long )// PrimitiveType only support Double
+            newValue = new Double( value.toString() );
+
+        return newValue;
+    }
+
 }

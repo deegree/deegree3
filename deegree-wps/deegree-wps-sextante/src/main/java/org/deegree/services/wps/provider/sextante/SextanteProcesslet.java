@@ -37,12 +37,20 @@ package org.deegree.services.wps.provider.sextante;
 
 import static org.deegree.commons.xml.CommonNamespaces.GMLNS;
 
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.Set;
+
+import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
 
 import org.deegree.commons.xml.CommonNamespaces;
 import org.deegree.commons.xml.stax.XMLStreamWriterWrapper;
+import org.deegree.feature.Feature;
 import org.deegree.feature.FeatureCollection;
+import org.deegree.feature.property.Property;
 import org.deegree.geometry.Geometry;
 import org.deegree.gml.GMLInputFactory;
 import org.deegree.gml.GMLOutputFactory;
@@ -64,12 +72,14 @@ import org.slf4j.LoggerFactory;
 import es.unex.sextante.core.GeoAlgorithm;
 import es.unex.sextante.core.OutputObjectsSet;
 import es.unex.sextante.core.ParametersSet;
+import es.unex.sextante.core.Sextante;
 import es.unex.sextante.dataObjects.IRasterLayer;
 import es.unex.sextante.dataObjects.ITable;
 import es.unex.sextante.dataObjects.IVectorLayer;
 import es.unex.sextante.exceptions.IteratorException;
 import es.unex.sextante.exceptions.NullParameterValueException;
 import es.unex.sextante.exceptions.WrongOutputIDException;
+import es.unex.sextante.exceptions.WrongParameterTypeException;
 import es.unex.sextante.outputs.Output;
 import es.unex.sextante.parameters.Parameter;
 
@@ -127,6 +137,7 @@ public class SextanteProcesslet implements Processlet {
             e.printStackTrace();
             String message = "'" + SextanteWPSProcess.createIdentifier( alg ) + "' algorithm found false input data. ("
                              + e.getLocalizedMessage() + ")";
+
             throw new ProcessletException( message );
 
         } catch ( ArrayIndexOutOfBoundsException e ) { // false input data
@@ -155,6 +166,38 @@ public class SextanteProcesslet implements Processlet {
     }
 
     /**
+     * This method determines all namespaces of a {@link Feature}. If the {@link Feature} is a {@link FeatureCollection}
+     * , the first {@link Feature} of the {@link FeatureCollection} is used to determine the namespaces.
+     * 
+     * @param f
+     *            {@link Feature}.
+     * 
+     * @return {@link HashMap} of namespaces. The key is the prefix and the value the namespace URI.
+     */
+    private HashMap<String, String> determinePropertyNamespaces( Feature f ) {
+
+        Feature propertyTypeFeature = f;
+
+        if ( f instanceof FeatureCollection ) {
+            FeatureCollection fc = (FeatureCollection) f;
+            Iterator<Feature> it = fc.iterator();
+            if ( it.hasNext() ) {
+                propertyTypeFeature = it.next();
+            }
+        }
+
+        HashMap<String, String> namespaces = new HashMap<String, String>();
+
+        Property[] props = propertyTypeFeature.getProperties();
+        for ( int i = 0; i < props.length; i++ ) {
+            QName name = props[i].getName();
+            namespaces.put( name.getNamespaceURI(), name.getPrefix() );
+        }
+
+        return namespaces;
+    }
+
+    /**
      * Commits the input data (all supported types) to the {@link GeoAlgorithm} input parameter.
      * 
      * @param alg
@@ -164,9 +207,12 @@ public class SextanteProcesslet implements Processlet {
      * 
      * @throws ProcessletException
      * @throws ClassNotFoundException
+     * @throws NullParameterValueException
+     * @throws WrongParameterTypeException
      */
     private void setInputValues( GeoAlgorithm alg, ProcessletInputs in )
-                            throws ProcessletException, ClassNotFoundException {
+                            throws ProcessletException, ClassNotFoundException, WrongParameterTypeException,
+                            NullParameterValueException {
 
         // input parameters
         ParametersSet paramSet = alg.getParameters();
@@ -188,9 +234,9 @@ public class SextanteProcesslet implements Processlet {
             else if ( paramTypeName.equals( SextanteWPSProcess.BOOLEAN_INPUT ) )
                 setBooleanInputValue( in, param );
             else if ( paramTypeName.equals( SextanteWPSProcess.STRING_INPUT ) )
-                setStringInputValue( in, param );
+                setStringInputValue( in, param, alg );
             else if ( paramTypeName.equals( SextanteWPSProcess.MULTIPLE_INPUT_INPUT ) )
-                setMultipleInputInputValue( in, param, alg.getParameters() );
+                setMultipleInputInputValue( in, param, alg );
             else if ( paramTypeName.equals( SextanteWPSProcess.RASTER_LAYER_INPUT ) )
                 setRasterLayerInputValue( in, param );
             else if ( paramTypeName.equals( SextanteWPSProcess.TABLE_FIELD_INPUT ) )
@@ -350,10 +396,59 @@ public class SextanteProcesslet implements Processlet {
      *            Input data as {@link ProcessletInputs}.
      * @param param
      *            Input parameter of {@link GeoAlgorithm}.
+     * @throws NullParameterValueException
+     * @throws WrongParameterTypeException
      */
-    private void setStringInputValue( ProcessletInputs in, Parameter param ) {
+    private void setStringInputValue( ProcessletInputs in, Parameter param, GeoAlgorithm alg )
+                            throws WrongParameterTypeException, NullParameterValueException {
         LiteralInput literalInput = (LiteralInput) in.getParameter( param.getParameterName() );
-        param.setParameterValue( literalInput.getValue() );
+
+        String stringInput = literalInput.getValue();
+
+        // special case of vectorcluster algorithm
+        if ( alg.getCommandLineName().equals( "vectorcluster" ) ) {
+
+            // determine input vector layer if available
+            IVectorLayer layer = null;
+            ParametersSet params = alg.getParameters();
+            for ( int i = 0; i < params.getNumberOfParameters(); i++ ) {
+                Parameter p = params.getParameter( i );
+                if ( p.getParameterTypeName().equals( SextanteWPSProcess.VECTOR_LAYER_INPUT ) ) {
+                    layer = p.getParameterValueAsVectorLayer();
+                    break;
+                }
+            }
+
+            // determine input strings in format of getNameWithNamespaceAndPrefix() method
+            String[] fNamesInput = stringInput.split( "," );
+            LinkedList<String> newNames = new LinkedList<String>();
+            if ( layer != null ) {
+                if ( layer instanceof VectorLayerImpl ) {
+                    Field[] fields = ( (VectorLayerImpl) layer ).getFields();
+                    for ( int i = 0; i < fields.length; i++ ) {
+                        String fNameLayer = fields[i].getQName().getLocalPart();
+                        for ( int j = 0; j < fNamesInput.length; j++ ) {
+                            if ( fNameLayer.equals( fNamesInput[i] ) ) {
+                                newNames.add( fields[i].getNameWithNamespaceAndPrefix() );
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+
+            // modify input string
+            stringInput = "";
+            Iterator<String> itNewNames = newNames.iterator();
+            if ( itNewNames.hasNext() ) {
+                stringInput += itNewNames.next();
+            }
+            while ( itNewNames.hasNext() ) {
+                stringInput += "," + itNewNames.next();
+            }
+        }
+
+        param.setParameterValue( stringInput );
     }
 
     /**
@@ -366,7 +461,7 @@ public class SextanteProcesslet implements Processlet {
      *@param paramSet
      *            Input parameter set of {@link GeoAlgorithm}.
      */
-    private void setMultipleInputInputValue( ProcessletInputs in, Parameter param, ParametersSet paramSet ) {
+    private void setMultipleInputInputValue( ProcessletInputs in, Parameter param, GeoAlgorithm paramSet ) {
         LOG.error( "Using multiple input input data is not supported." );
     }
 
@@ -498,7 +593,7 @@ public class SextanteProcesslet implements Processlet {
                                                                                xmlReader );
 
             FeatureCollection fc = gmlReader.readFeatureCollection();
-            
+
             return fc;
         } catch ( Exception e ) {
             e.printStackTrace();
@@ -702,11 +797,22 @@ public class SextanteProcesslet implements Processlet {
     private void writeFeatureCollection( ComplexOutput gmlOutput, FeatureCollection coll )
                             throws ProcessletException {
         try {
+
             XMLStreamWriter sw = gmlOutput.getXMLStreamWriter();
+
+            // determine and set namespaces
+            HashMap<String, String> namespaces = determinePropertyNamespaces( coll );
+            Set<String> namespaceURIs = namespaces.keySet();
+            for ( String uri : namespaceURIs ) {
+                sw.setPrefix( namespaces.get( uri ), uri );
+            }
+
+            // sw.setPrefix( VectorLayerAdapter.APP_PREFIX, VectorLayerAdapter.APP_NS );
             // sw.setPrefix( "gml", CommonNamespaces.GML3_2_NS );
             GMLStreamWriter gmlWriter = GMLOutputFactory.createGMLStreamWriter(
                                                                                 FormatHelper.determineGMLVersion( gmlOutput ),
                                                                                 sw );
+
             gmlWriter.write( coll );
 
         } catch ( Exception e ) {

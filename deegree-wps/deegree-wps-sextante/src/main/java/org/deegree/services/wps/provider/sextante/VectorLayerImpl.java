@@ -157,12 +157,33 @@ public class VectorLayerImpl extends AbstractVectorLayer {
 
     @Override
     public String getFieldName( int index ) {
-        return m_Fields[index].getName();
+        return m_Fields[index].getNameWithNamespaceAndPrefix();
     }
 
     @Override
     public Class<?> getFieldType( int index ) {
         return m_Fields[index].getType();
+    }
+
+    /**
+     * Returns the {@link Field}.
+     * 
+     * @param index
+     *            Index of the {@link Field}.
+     * 
+     * @return {@link Field}.
+     */
+    public Field getField( int index ) {
+        return m_Fields[index];
+    }
+
+    /**
+     * Returns all {@link Field}s.
+     * 
+     * @return All {@link Field}s.
+     */
+    public Field[] getFields() {
+        return m_Fields;
     }
 
     @Override

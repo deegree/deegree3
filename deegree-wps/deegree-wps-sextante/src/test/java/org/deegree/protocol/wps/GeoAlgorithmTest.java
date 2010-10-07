@@ -73,7 +73,7 @@ public class GeoAlgorithmTest {
     private static Logger LOG = LoggerFactory.getLogger( GeoAlgorithmTest.class );
 
     // enabled/disabled all tests
-    private static final boolean ENABLED = false;
+    private static final boolean ENABLED = true;
 
     // manages all supported algorithms with example data
     private final LinkedList<GeoAlgorithmWithData> algorithms;
@@ -258,26 +258,41 @@ public class GeoAlgorithmTest {
             allGMLFormats.add( list );
         }
 
-        boolean getAll = false;
+        boolean getAll = true;
 
         if ( !getAll ) {// return only one algorithm
 
             // ---------------------------------------------------------------------------------------------------------------------------
-            // centroids algorithm
-            String centroidsName = "centroids";
-            GeoAlgorithmWithData centroidsAlg = new GeoAlgorithmWithData(
-                                                                          Sextante.getAlgorithmFromCommandLineName( centroidsName ) );
-            // add all test data
-            LinkedList<ExampleData> centroidsData = new LinkedList<ExampleData>();
-            centroidsData.add( VectorExampleData.GML_31_FEATURE_COLLECTION_WFS );
+            // vectorcluster algorithm
+            String vectorclusterName = "vectorcluster";
+            GeoAlgorithmWithData vectorclusterAlg = new GeoAlgorithmWithData(
+                                                                              Sextante.getAlgorithmFromCommandLineName( vectorclusterName ) );
+            // add test data
+            LinkedList<ExampleData> vectorclusterData1 = new LinkedList<ExampleData>();
+            vectorclusterData1.add( VectorExampleData.GML_31_FEATURE_COLLECTION_POLYGONS ); // LAYER
+            vectorclusterData1.add( LiteralExampleData.STRING_NAME_UPPERNAME_DATAORIGIN_AREA_QUERYBBOXOVERLAP ); // FIELDS
+            vectorclusterData1.add( LiteralExampleData.NUMERICAL_VALUE_5 ); // NUMCLASS: 5
+            vectorclusterAlg.addInputData( vectorclusterData1 );
+            vectorclusterAlg.addAllOutputFormats( allGMLFormats );
+            allAlgs.add( vectorclusterAlg );
 
-            for ( ExampleData data : centroidsData ) {
-                LinkedList<ExampleData> list = new LinkedList<ExampleData>();
-                list.add( data );
-                centroidsAlg.addInputData( list );
-            }
-            centroidsAlg.addAllOutputFormats( allGMLFormats );
-            allAlgs.add( centroidsAlg );
+            // //
+            // ---------------------------------------------------------------------------------------------------------------------------
+            // // countpoints algorithm
+            // String countpointsName = "countpoints";
+            // GeoAlgorithmWithData countpointsAlg = new GeoAlgorithmWithData(
+            // Sextante.getAlgorithmFromCommandLineName( countpointsName ) );
+            // // add test data
+            // LinkedList<ExampleData> countpointsData1 = new LinkedList<ExampleData>();
+            // countpointsData1.add( VectorExampleData.GML_31_POINT );
+            // countpointsData1.add( VectorExampleData.GML_31_POLYGON );
+            // countpointsAlg.addInputData( countpointsData1 );
+            // LinkedList<ExampleData> countpointsData2 = new LinkedList<ExampleData>();
+            // countpointsData2.add( VectorExampleData.GML_31_FEATURE_COLLECTION_POINTS );
+            // countpointsData2.add( VectorExampleData.GML_31_FEATURE_COLLECTION_POLYGONS );
+            // countpointsAlg.addInputData( countpointsData2 );
+            // countpointsAlg.addAllOutputFormats( allGMLFormats );
+            // allAlgs.add( countpointsAlg );
 
             // //
             // ---------------------------------------------------------------------------------------------------------------------------
@@ -1120,25 +1135,25 @@ public class GeoAlgorithmTest {
             if ( param.getTypeDescription().equals( SextanteWPSProcess.RASTER_LAYER_OUTPUT ) ) {
                 // TODO implements it.
                 LOG.error( error );
-                throw new UnsupportedOperationException(error);
+                throw new UnsupportedOperationException( error );
             } else {
                 // table data
                 if ( param.getTypeDescription().equals( SextanteWPSProcess.TABLE_OUTPUT ) ) {
                     // TODO implements it.
                     LOG.error( error );
-                    throw new UnsupportedOperationException(error);
+                    throw new UnsupportedOperationException( error );
                 } else {
                     // text data
                     if ( param.getTypeDescription().equals( SextanteWPSProcess.TEXT_OUTPUT ) ) {
                         // TODO implements it.
                         LOG.error( error );
-                        throw new UnsupportedOperationException(error);
+                        throw new UnsupportedOperationException( error );
                     } else {
                         // chart data
                         if ( param.getTypeDescription().equals( SextanteWPSProcess.CHART_OUTPUT ) ) {
                             // TODO implements it.
                             LOG.error( error );
-                            throw new UnsupportedOperationException(error);
+                            throw new UnsupportedOperationException( error );
                         } else {
                             LOG.error( "The ouput parameter '" + param.getTypeDescription() + "' is unknown." );
                             throw new UnsupportedOperationException();
