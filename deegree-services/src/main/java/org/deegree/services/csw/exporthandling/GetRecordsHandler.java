@@ -63,6 +63,7 @@ import org.deegree.commons.utils.time.DateUtils;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.schema.SchemaValidator;
 import org.deegree.commons.xml.stax.XMLStreamWriterWrapper;
+import org.deegree.metadata.DCRecord;
 import org.deegree.metadata.MetadataRecord;
 import org.deegree.metadata.MetadataResultType;
 import org.deegree.metadata.persistence.MetadataCollection;
@@ -296,7 +297,8 @@ public class GetRecordsHandler {
             if ( getRec.getOutputSchema().equals( OutputSchema.determineOutputSchema( OutputSchema.ISO_19115 ) ) ) {
                 m.serialize( writer, getRec.getElementSetName() );
             } else {
-                m.toDublinCore( writer, getRec.getElementSetName() );
+                DCRecord dc = m.toDublinCore();
+                dc.serialize( writer, getRec.getElementSetName() );
             }
         }
 

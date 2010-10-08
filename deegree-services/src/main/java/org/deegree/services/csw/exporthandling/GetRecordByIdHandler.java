@@ -49,6 +49,7 @@ import javax.xml.stream.XMLStreamWriter;
 import org.deegree.commons.tom.ows.Version;
 import org.deegree.commons.utils.kvp.InvalidParameterValueException;
 import org.deegree.commons.xml.stax.XMLStreamWriterWrapper;
+import org.deegree.metadata.DCRecord;
 import org.deegree.metadata.MetadataRecord;
 import org.deegree.metadata.persistence.MetadataResultSet;
 import org.deegree.metadata.persistence.MetadataStore;
@@ -184,7 +185,8 @@ public class GetRecordByIdHandler {
             if ( getRecBI.getOutputSchema() == OutputSchema.determineOutputSchema( OutputSchema.ISO_19115 ) ) {
                 m.serialize( writer, getRecBI.getElementSetName() );
             } else {
-                m.toDublinCore( writer, getRecBI.getElementSetName() );
+                DCRecord dc = m.toDublinCore();
+                dc.serialize( writer, getRecBI.getElementSetName() );
             }
         }
 

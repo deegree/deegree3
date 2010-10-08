@@ -81,7 +81,6 @@ import org.deegree.protocol.csw.CSWConstants.ResultType;
 import org.deegree.protocol.csw.CSWConstants.ReturnableElement;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.slf4j.Logger;
 
@@ -366,7 +365,6 @@ public class ISOMetadataStoreTest {
      * @throws XMLStreamException
      * @throws IOException
      */
-    @Ignore
     @Test
     public void testOutputBrief()
                             throws MetadataStoreException, XMLStreamException, FactoryConfigurationError, IOException {
@@ -390,7 +388,8 @@ public class ISOMetadataStoreTest {
         StringBuilder streamThis = stringBuilderFromXMLStream( xmlStreamThis );
 
         // create the is output
-        StringBuilder streamThat = stringBuilderFromResultSet( resultSet, ReturnableElement.brief );
+        String file = "/home/thomas/Desktop/zTestBrief.xml";
+        StringBuilder streamThat = stringBuilderFromResultSet( resultSet, ReturnableElement.brief, file );
         if ( streamThat == null ) {
             return;
         }
@@ -434,7 +433,8 @@ public class ISOMetadataStoreTest {
         StringBuilder streamThis = stringBuilderFromXMLStream( xmlStreamThis );
 
         // create the is output
-        StringBuilder streamThat = stringBuilderFromResultSet( resultSet, ReturnableElement.summary );
+        String file = "/home/thomas/Desktop/zTestSummary.xml";
+        StringBuilder streamThat = stringBuilderFromResultSet( resultSet, ReturnableElement.summary, file );
         if ( streamThat == null ) {
             return;
         }
@@ -667,11 +667,15 @@ public class ISOMetadataStoreTest {
         return xmlStream;
     }
 
-    private StringBuilder stringBuilderFromResultSet( MetadataResultSet resultSet, ReturnableElement returnableElement )
+    private StringBuilder stringBuilderFromResultSet( MetadataResultSet resultSet, ReturnableElement returnableElement,
+                                                      String file )
                             throws XMLStreamException, FileNotFoundException {
-        // ByteArrayOutputStream fout = new ByteArrayOutputStream();
-        String file = "/home/thomas/Desktop/zTest.xml";
-        OutputStream fout = new FileOutputStream( file );
+        OutputStream fout = null;
+        if ( file == null ) {
+            fout = new ByteArrayOutputStream();
+        } else {
+            fout = new FileOutputStream( file );
+        }
 
         XMLStreamWriter writer = XMLOutputFactory.newInstance().createXMLStreamWriter( fout );
 

@@ -57,7 +57,6 @@ import org.deegree.metadata.ISORecord;
 import org.deegree.metadata.persistence.MetadataStoreException;
 import org.deegree.metadata.persistence.iso.PostGISMappingsISODC;
 import org.deegree.metadata.persistence.iso.parsing.ParsedProfileElement;
-import org.deegree.metadata.persistence.iso.parsing.QueryableProperties;
 import org.slf4j.Logger;
 
 /**
@@ -79,23 +78,17 @@ public class BuildMetadataXMLRepresentation {
 
     private static final String fk_datasetsColumn = PostGISMappingsISODC.CommonColumnNames.fk_datasets.name();
 
-    private static final String formatColumn = PostGISMappingsISODC.CommonColumnNames.format.name();
-
     private static final StringBuilder sqlStatementUpdate = new StringBuilder().append( " SET " ).append( dataColumn ).append(
                                                                                                                                " = ? WHERE " ).append(
                                                                                                                                                        fk_datasetsColumn ).append(
-                                                                                                                                                                                   " = ? AND " ).append(
-                                                                                                                                                                                                         formatColumn ).append(
-                                                                                                                                                                                                                                " = ?;" );;
+                                                                                                                                                                                   " = ?;" );
 
     private static final StringBuilder sqlStatementInsert = new StringBuilder().append( " ( " ).append( idColumn ).append(
                                                                                                                            ", " ).append(
                                                                                                                                           fk_datasetsColumn ).append(
                                                                                                                                                                       ", " ).append(
-                                                                                                                                                                                     formatColumn ).append(
-                                                                                                                                                                                                            ", " ).append(
-                                                                                                                                                                                                                           dataColumn ).append(
-                                                                                                                                                                                                                                                " ) VALUES (?, ?, ?, ?);" );
+                                                                                                                                                                                     dataColumn ).append(
+                                                                                                                                                                                                          " ) VALUES (?, ?, ?);" );
 
     private int insertDatadaseTableLength;
 
@@ -206,43 +199,30 @@ public class BuildMetadataXMLRepresentation {
         insertDatadaseTableLength = insertDatabaseTable.length();
         sqlStatementInsert.insert( 0, "INSERT INTO " ).insert( 12, databaseTableISO );
         // ------------------------
-        PreparedStatement stm = null;
-        OMElement isoElement;
-        // if ( databaseTableISO.equals( PostGISMappingsISODC.RECORDBRIEF ) ) {
-        // isoElement = parsedElement.getGenerateRecord().getIsoBriefElement();
-        // } else if ( databaseTableISO.equals( PostGISMappingsISODC.RECORDSUMMARY ) ) {
-        // isoElement = parsedElement.getGenerateRecord().getIsoSummaryElement();
-        // } else {
-        // isoElement = parsedElement.getGenerateRecord().getIsoFullElement();
-        // }
 
         try {
 
             idDatabaseTable = getLastDatasetId( connection, databaseTableISO );
             idDatabaseTable++;
 
-            executeInsert( stm, connection, idDatabaseTable, operatesOnId, rec, 2 );
+            executeInsert( connection, idDatabaseTable, operatesOnId, rec );
         } catch ( SQLException e ) {
 
             LOG.debug( "error: " + e.getMessage(), e );
+            throw new MetadataStoreException( "error: " + e.getMessage() );
         }
 
-        /*
-         * additional it generates the Dublin Core representation
-         */
         return rec.getIdentifier();
-        // return generateDC( connection, operatesOnId, parsedElement );
 
     }
 
-    private void executeInsert( PreparedStatement stm, Connection connection, int idDatabaseTable, int operatesOnId,
-                                ISORecord element, int format )
+    private void executeInsert( Connection connection, int idDatabaseTable, int operatesOnId, ISORecord element )
                             throws SQLException, XMLStreamException {
-        stm = connection.prepareStatement( sqlStatementInsert.toString() );
+
+        PreparedStatement stm = connection.prepareStatement( sqlStatementInsert.toString() );
         stm.setObject( 1, idDatabaseTable );
         stm.setObject( 2, operatesOnId );
-        stm.setObject( 3, format );
-        stm.setBytes( 4, new XMLAdapter( element.getAsXMLStream() ).getRootElement().toString().getBytes() );
+        stm.setBytes( 3, new XMLAdapter( element.getAsXMLStream() ).getRootElement().toString().getBytes() );
         LOG.debug( "" + stm );
         stm.executeUpdate();
         stm.close();
@@ -252,117 +232,15 @@ public class BuildMetadataXMLRepresentation {
 
     }
 
-    private void executeUpdate( PreparedStatement stm, Connection connection, int fk_datasets, OMElement omElement )
+    private void executeUpdate( Connection connection, int fk_datasets, OMElement omElement )
                             throws SQLException {
-        stm = connection.prepareStatement( sqlStatementUpdate.toString() );
+        PreparedStatement stm = connection.prepareStatement( sqlStatementUpdate.toString() );
         stm.setBytes( 1, omElement.toString().getBytes() );
         stm.setObject( 2, fk_datasets );
         stm.setObject( 3, 1 );
         LOG.debug( "" + stm );
         stm.executeUpdate();
-    }
-
-    /**
-     * Generates the Dublin Core representation in brief, summary and full for this dataset.
-     * 
-     * @param connection
-     * @param stm
-     * @param operatesOnId
-     * @param parsedElement
-     * 
-     * @return an integer that is the primarykey from the inserted record
-     * @throws MetadataStoreException
-     */
-    public String generateDC( Connection connection, int operatesOnId, ParsedProfileElement parsedElement )
-                            throws MetadataStoreException {
-
-        OMFactory factory = OMAbstractFactory.getOMFactory();
-        OMNamespace namespaceCSW = factory.createOMNamespace( CSW_202_NS, CSW_PREFIX );
-
-        int idDatabaseTable;
-        String identifier = null;
-        // for ( String databaseTableDC : PostGISMappingsISODC.getTableRecordType().keySet() ) {
-        // PreparedStatement stm = null;
-        //
-        // // ------------------------
-        // // there is a restriction regarding to the databasetables.
-        // // in some cases there is no preparedStatement allowed for databasetables
-        // // so: put the insert-preample before the final statement
-        // // and delete it later...
-        // String insertDatabaseTable = "INSERT INTO " + databaseTableDC;
-        // insertDatadaseTableLength = insertDatabaseTable.length();
-        // sqlStatementInsert.insert( 0, "INSERT INTO " ).insert( 12, databaseTableDC );
-        // // ------------------------
-        // try {
-        //
-        // idDatabaseTable = getLastDatasetId( connection, databaseTableDC );
-        // idDatabaseTable++;
-        //
-        // OMElement omElement = factory.createOMElement(
-        // PostGISMappingsISODC.getTableRecordType().get(
-        // databaseTableDC ),
-        // namespaceCSW );
-        //
-        // if ( omElement.getLocalName().equals( PostGISMappingsISODC.BRIEFRECORD ) ) {
-        // identifier = parsedElement.getGenerateRecord().buildElementAsDcBriefElement( omElement, factory );
-        // } else if ( omElement.getLocalName().equals( PostGISMappingsISODC.SUMMARYRECORD ) ) {
-        // identifier = parsedElement.getGenerateRecord().buildElementAsDcSummaryElement( omElement, factory );
-        // } else {
-        // identifier = parsedElement.getGenerateRecord().buildElementAsDcFullElement( omElement, factory );
-        // }
-        //
-        // if ( parsedElement.getQueryableProperties().getBoundingBox() != null ) {
-        // setBoundingBoxElement( omElement, parsedElement.getQueryableProperties() );
-        // }
-        //
-        // stm = connection.prepareStatement( sqlStatementInsert.toString() );
-        //
-        // executeInsert( stm, connection, idDatabaseTable, operatesOnId, omElement, 1 );
-        //
-        // } catch ( SQLException e ) {
-        //
-        // LOG.debug( "error: " + e.getMessage(), e );
-        // throw new MetadataStoreException( e.getMessage() );
-        // } catch ( ParseException e ) {
-        //
-        // LOG.debug( "error: " + e.getMessage(), e );
-        // throw new MetadataStoreException( e.getMessage() );
-        // }
-
-        // }
-
-        return identifier;
-
-    }
-
-    /**
-     * Creation of the boundingBox element. Specifies which points has to be at which corner. The CRS is set to
-     * EPSG:4326 because EX_GeographicBoundingBox is in this code implicitly.
-     * 
-     * 
-     * @param omElement
-     * @param qp
-     */
-    private void setBoundingBoxElement( OMElement omElement, QueryableProperties qp ) {
-
-        OMFactory factory = OMAbstractFactory.getOMFactory();
-        OMNamespace namespaceOWS = factory.createOMNamespace( "http://www.opengis.net/ows", "ows" );
-
-        OMElement omBoundingBox = factory.createOMElement( "BoundingBox", namespaceOWS );
-        OMElement omLowerCorner = factory.createOMElement( "LowerCorner", namespaceOWS );
-        OMElement omUpperCorner = factory.createOMElement( "UpperCorner", namespaceOWS );
-        // OMAttribute omCrs = factory.createOMAttribute( "crs", namespaceOWS, "EPSG:4326" );
-
-        omUpperCorner.setText( qp.getBoundingBox().getEastBoundLongitude() + " "
-                               + qp.getBoundingBox().getNorthBoundLatitude() );
-        omLowerCorner.setText( qp.getBoundingBox().getWestBoundLongitude() + " "
-                               + qp.getBoundingBox().getSouthBoundLatitude() );
-        omBoundingBox.addChild( omLowerCorner );
-        omBoundingBox.addChild( omUpperCorner );
-        // omBoundingBox.addAttribute( omCrs );
-
-        omElement.addChild( omBoundingBox );
-
+        stm.close();
     }
 
     /**

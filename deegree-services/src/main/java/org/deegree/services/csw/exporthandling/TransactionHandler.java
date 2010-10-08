@@ -49,6 +49,7 @@ import javax.xml.stream.XMLStreamWriter;
 
 import org.deegree.commons.tom.ows.Version;
 import org.deegree.commons.xml.stax.XMLStreamWriterWrapper;
+import org.deegree.metadata.DCRecord;
 import org.deegree.metadata.MetadataRecord;
 import org.deegree.metadata.persistence.MetadataResultSet;
 import org.deegree.metadata.persistence.MetadataStore;
@@ -246,8 +247,9 @@ public class TransactionHandler {
                     writer.writeAttribute( "handleRef", handle );
                 }
                 MetadataResultSet rs = service.getStore().getRecordsById( ids );
-                for ( MetadataRecord meta : rs.getMembers() ) {
-                    meta.toDublinCore( writer, ReturnableElement.brief );
+                for ( MetadataRecord m : rs.getMembers() ) {
+                    DCRecord dc = m.toDublinCore();
+                    dc.serialize( writer, ReturnableElement.brief );
                 }
                 writer.writeEndElement();// InsertResult
             }
