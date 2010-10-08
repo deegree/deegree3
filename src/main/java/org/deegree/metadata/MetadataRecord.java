@@ -41,7 +41,6 @@ import javax.xml.stream.XMLStreamWriter;
 import org.deegree.commons.tom.datetime.Date;
 import org.deegree.filter.Filter;
 import org.deegree.geometry.Envelope;
-import org.deegree.metadata.persistence.MetadataStoreException;
 import org.deegree.protocol.csw.CSWConstants.ReturnableElement;
 
 /**
@@ -64,8 +63,7 @@ public interface MetadataRecord {
 
     public String[] getRelation();
 
-    public Date[] getModified()
-                            throws MetadataStoreException;
+    public Date[] getModified();
 
     public String[] getAbstract();
 
@@ -73,10 +71,26 @@ public interface MetadataRecord {
 
     public String[] getSubject();
 
+    public String getSource();
+
+    public String[] getRights();
+
+    public String getCreator();
+
+    public String getPublisher();
+
+    public String getContributor();
+
+    public String getLanguage();
+
     public Envelope[] getBoundingBox();
 
-    public void toDublinCore( XMLStreamWriter writer, ReturnableElement returnType )
-                            throws XMLStreamException, MetadataStoreException;
+    /**
+     * Returns the Dublin Core representation of the requested record.
+     * 
+     * @return {@link DCRecord}.
+     */
+    public DCRecord toDublinCore();
 
     /**
      * Returns whether this {@link MetadataRecord} matches the given {@link Filter} expression.

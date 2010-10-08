@@ -35,7 +35,6 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.metadata;
 
-import java.text.ParseException;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -46,10 +45,7 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
 
-import org.apache.axiom.om.OMAbstractFactory;
 import org.apache.axiom.om.OMElement;
-import org.apache.axiom.om.OMFactory;
-import org.apache.axiom.om.OMNamespace;
 import org.deegree.commons.tom.datetime.Date;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.stax.StAXParsingHelper;
@@ -60,8 +56,6 @@ import org.deegree.geometry.GeometryFactory;
 import org.deegree.metadata.persistence.MetadataStoreException;
 import org.deegree.metadata.persistence.iso.parsing.ISOQPParsing;
 import org.deegree.metadata.persistence.iso.parsing.ParsedProfileElement;
-import org.deegree.metadata.persistence.iso.parsing.QueryableProperties;
-import org.deegree.metadata.persistence.iso.parsing.ReturnableProperties;
 import org.deegree.metadata.persistence.types.BoundingBox;
 import org.deegree.metadata.persistence.types.Format;
 import org.deegree.metadata.persistence.types.Keyword;
@@ -91,22 +85,7 @@ public class ISORecord implements MetadataRecord {
 
     private static String[] briefSummaryLocalParts = new String[23];
 
-    private static OMNamespace namespaceDC;
-
-    private static OMNamespace namespaceCSW;
-
-    private static OMNamespace namespaceOWS;
-
-    private static OMNamespace namespaceDCT;
-
-    private static OMFactory fac = OMAbstractFactory.getOMFactory();
-
     static {
-
-        namespaceDC = fac.createOMNamespace( "http://purl.org/dc/elements/1.1/", "dc" );
-        namespaceCSW = fac.createOMNamespace( "http://www.opengis.net/cat/csw/2.0.2", "csw" );
-        namespaceOWS = fac.createOMNamespace( "http://www.opengis.net/ows", "ows" );
-        namespaceDCT = fac.createOMNamespace( "http://purl.org/dc/terms/", "dct" );
 
         summaryLocalParts[0] = "datasetURI";
         summaryLocalParts[1] = "locale";
@@ -225,8 +204,7 @@ public class ISORecord implements MetadataRecord {
     }
 
     @Override
-    public Date[] getModified()
-                            throws MetadataStoreException {
+    public Date[] getModified() {
         Date[] d = this.pElem.getQueryableProperties().getModified();
 
         return d;
@@ -271,15 +249,25 @@ public class ISORecord implements MetadataRecord {
     public String[] getSubject() {
 
         List<Keyword> keywords = pElem.getQueryableProperties().getKeywords();
-        String[] keywordNames = new String[keywords.size()];
+        int keywordSizeCount = 0;
+        for ( Keyword k : keywords ) {
+
+            keywordSizeCount += k.getKeywords().size();
+
+        }
+        List<String> topicCategories = pElem.getQueryableProperties().getTopicCategory();
+        String[] subjects = new String[keywordSizeCount + topicCategories.size()];
         int counter = 0;
         for ( Keyword k : keywords ) {
             for ( String kName : k.getKeywords() ) {
-                keywordNames[counter++] = kName;
+                subjects[counter++] = kName;
             }
         }
+        for ( String topics : topicCategories ) {
+            subjects[counter++] = topics;
+        }
 
-        return keywordNames;
+        return subjects;
     }
 
     public XMLStreamReader getAsXMLStream()
@@ -316,206 +304,49 @@ public class ISORecord implements MetadataRecord {
     }
 
     @Override
-    public void toDublinCore( XMLStreamWriter writer, ReturnableElement returnType )
-                            throws XMLStreamException, MetadataStoreException {
-
-        OMElement omElement = null;
-
-        switch ( returnType ) {
-        case brief:
-            omElement = fac.createOMElement( "BriefRecord", namespaceCSW );
-            generateDCBrief( omElement );
-            generateDCBBoxElement( omElement );
-
-            break;
-        case summary:
-            omElement = fac.createOMElement( "SummaryRecord", namespaceCSW );
-            generateDCSummary( omElement );
-            break;
-        case full:
-            omElement = fac.createOMElement( "Record", namespaceCSW );
-            generateDCFull( omElement );
-            generateDCBBoxElement( omElement );
-            break;
-        default:
-            omElement = fac.createOMElement( "BriefRecord", namespaceCSW );
-            generateDCBrief( omElement );
-            generateDCBBoxElement( omElement );
-            break;
-        }
-        if ( omElement != null ) {
-            XMLStreamReader xmlStream = omElement.getXMLStreamReader();
-            StAXParsingHelper.skipStartDocument( xmlStream );
-            XMLAdapter.writeElement( writer, xmlStream );
-            xmlStream.close();
-        }
-
-    }
-
-    private void generateDCFull( OMElement omElement )
-                            throws MetadataStoreException {
-        generateDCSummary( omElement );
-
-        QueryableProperties qp = pElem.getQueryableProperties();
-
-        ReturnableProperties rp = pElem.getReturnableProperties();
-        if ( rp.getCreator() != null ) {
-            OMElement omCreator = fac.createOMElement( "creator", namespaceDC );
-            omCreator.setText( rp.getCreator() );
-            omElement.addChild( omCreator );
-        }
-
-        if ( rp.getPublisher() != null ) {
-            OMElement omPublisher = fac.createOMElement( "publisher", namespaceDC );
-            omPublisher.setText( rp.getPublisher() );
-            omElement.addChild( omPublisher );
-        }
-        if ( rp.getContributor() != null ) {
-            OMElement omContributor = fac.createOMElement( "contributor", namespaceDC );
-            omContributor.setText( rp.getContributor() );
-            omElement.addChild( omContributor );
-        }
-        if ( rp.getSource() != null ) {
-            OMElement omSource = fac.createOMElement( "source", namespaceDC );
-            omSource.setText( rp.getSource() );
-            omElement.addChild( omSource );
-        }
-        if ( qp.getLanguage() != null ) {
-            OMElement omLanguage = fac.createOMElement( "language", namespaceDC );
-            omLanguage.setText( qp.getLanguage() );
-            omElement.addChild( omLanguage );
-        }
-
-        // dc:rights
-        if ( rp.getRights() != null ) {
-            for ( String rights : rp.getRights() ) {
-                OMElement omRights = fac.createOMElement( "rights", namespaceDC );
-                omRights.setText( rights );
-                omElement.addChild( omRights );
-            }
-        }
-
-    }
-
-    private void generateDCBBoxElement( OMElement omElement ) {
-        for ( Envelope bbox : getBoundingBox() ) {
-            OMElement omBBox = fac.createOMElement( "BoundingBox", namespaceOWS );
-            OMElement omLC = fac.createOMElement( "LowerCorner", namespaceOWS );
-            OMElement omUC = fac.createOMElement( "UpperCorner", namespaceOWS );
-
-            omLC.setText( bbox.getMin().get0() + " " + bbox.getMin().get1() );
-            omUC.setText( bbox.getMax().get0() + " " + bbox.getMax().get1() );
-            omBBox.addChild( omLC );
-            omBBox.addChild( omUC );
-            omElement.addChild( omBBox );
-        }
-
-    }
-
-    private void generateDCBrief( OMElement omElement ) {
-        OMElement omType = fac.createOMElement( "type", namespaceDC );
-        // String identifier = qp.getIdentifier().get( 0 );
-
-        for ( String identifierDC : getIdentifier() ) {
-            OMElement omIdentifier = fac.createOMElement( "identifier", namespaceDC );
-            omIdentifier.setText( identifierDC );
-            omElement.addChild( omIdentifier );
-
-        }
-        for ( String title : getTitle() ) {
-            OMElement omTitle = fac.createOMElement( "title", namespaceDC );
-            omTitle.setText( title );
-            omElement.addChild( omTitle );
-        }
-        if ( getType() != null ) {
-            omType.setText( getType() );
-        } else {
-            omType.setText( "" );
-        }
-        omElement.addChild( omType );
-
-    }
-
-    private void generateDCSummary( OMElement omElement )
-                            throws MetadataStoreException {
-        generateDCBrief( omElement );
-
-        QueryableProperties qp = pElem.getQueryableProperties();
-
-        ReturnableProperties rp = pElem.getReturnableProperties();
-
-        OMElement omSubject;
-        // dc:subject
-        for ( String subject : getSubject() ) {
-
-            omSubject = fac.createOMElement( "subject", namespaceDC );
-            omSubject.setText( subject );
-            omElement.addChild( omSubject );
-
-        }
-        if ( qp.getTopicCategory() != null ) {
-            for ( String subject : qp.getTopicCategory() ) {
-                omSubject = fac.createOMElement( "subject", namespaceDC );
-                omSubject.setText( subject );
-                omElement.addChild( omSubject );
-            }
-        }
-        // dc:format
-        if ( qp.getFormat() != null ) {
-            for ( Format format : qp.getFormat() ) {
-                OMElement omFormat = fac.createOMElement( "format", namespaceDC );
-                omFormat.setText( format.getName() );
-                omElement.addChild( omFormat );
-            }
-        } else {
-            OMElement omFormat = fac.createOMElement( "format", namespaceDC );
-            omElement.addChild( omFormat );
-        }
-
-        // dct:relation
-        if ( rp.getRelation() != null ) {
-            for ( String relation : rp.getRelation() ) {
-                OMElement omFormat = fac.createOMElement( "relation", namespaceDC );
-                omFormat.setText( relation );
-                omElement.addChild( omFormat );
-            }
-        } else {
-            OMElement omFormat = fac.createOMElement( "relation", namespaceDC );
-            omElement.addChild( omFormat );
-        }
-
-        // dct:modified
-        // for ( Date date : qp.getModified() ) {
-        // OMElement omModified = factory.createOMElement( "modified", namespaceDCT );
-        // omModified.setText( date.toString() );
-        // omElement.addChild( omModified );
-        // }
-
-        try {
-            if ( qp.getModified() != null && !qp.getModified().equals( new Date( "0000-00-00" ) ) ) {
-                OMElement omModified = fac.createOMElement( "modified", namespaceDCT );
-                omModified.setText( qp.getModified()[0].toString() );
-                omElement.addChild( omModified );
-            } else {
-                OMElement omModified = fac.createOMElement( "modified", namespaceDCT );
-                omElement.addChild( omModified );
-            }
-        } catch ( ParseException e ) {
-            LOG.debug( "Parsing of Date failed. " );
-            throw new MetadataStoreException( "Parsing of Date failed. " + e.getMessage() );
-        }
-        // dct:abstract
-        for ( String _abstract : qp.get_abstract() ) {
-            OMElement omAbstract = fac.createOMElement( "abstract", namespaceDCT );
-            omAbstract.setText( _abstract.toString() );
-            omElement.addChild( omAbstract );
-        }
+    public DCRecord toDublinCore() {
+        return new DCRecord( this );
 
     }
 
     public boolean isHasSecurityConstraints() {
 
         return pElem.getQueryableProperties().isHasSecurityConstraints();
+    }
+
+    @Override
+    public String getContributor() {
+    
+        return pElem.getReturnableProperties().getContributor();
+    }
+
+    @Override
+    public String getPublisher() {
+    
+        return pElem.getReturnableProperties().getPublisher();
+    }
+
+    @Override
+    public String[] getRights() {
+        List<String> l = pElem.getReturnableProperties().getRights();
+        String[] s = new String[l.size()];
+        int counter = 0;
+        for ( String st : l ) {
+            s[counter++] = st;
+        }
+        return s;
+    
+    }
+
+    @Override
+    public String getSource() {
+        return pElem.getReturnableProperties().getSource();
+    }
+
+    @Override
+    public String getCreator() {
+    
+        return pElem.getReturnableProperties().getCreator();
     }
 
     public String getLanguage() {

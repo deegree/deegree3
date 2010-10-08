@@ -128,8 +128,6 @@ public class ExecuteStatements implements GenericDatabaseExecution {
         List<Integer> deletableDatasets;
         try {
 
-            LOG.debug( "wherebuilder: " + builder );
-
             String rootTableAlias = builder.getAliasManager().getRootTableAlias();
             String blobTableAlias = builder.getAliasManager().generateNew();
 
@@ -138,10 +136,6 @@ public class ExecuteStatements implements GenericDatabaseExecution {
             getDatasetIDs.append( rootTableAlias );
             getDatasetIDs.append( '.' );
             getDatasetIDs.append( id );
-            // getDatasetIDs.append( ',' );
-            // getDatasetIDs.append( blobTableAlias );
-            // getDatasetIDs.append( '.' );
-            // getDatasetIDs.append( PostGISMappingsISODC.CommonColumnNames.data.name() );
 
             getDatasetIDs.append( " FROM " );
             getDatasetIDs.append( PostGISMappingsISODC.DatabaseTables.datasets.name() );
@@ -183,20 +177,15 @@ public class ExecuteStatements implements GenericDatabaseExecution {
             getDatasetIDs.append( fk_datasets );
 
             getDatasetIDs.append( " WHERE " );
-            getDatasetIDs.append( blobTableAlias );
-            getDatasetIDs.append( '.' );
-            getDatasetIDs.append( PostGISMappingsISODC.CommonColumnNames.format.name() );
-            getDatasetIDs.append( "=?" );
 
             if ( builder.getWhere() != null ) {
-                getDatasetIDs.append( " AND " );
                 getDatasetIDs.append( builder.getWhere().getSQL() );
             }
 
             preparedStatement = connection.prepareStatement( getDatasetIDs.toString() );
 
             int i = 1;
-            preparedStatement.setInt( i++, formatNumber );
+            LOG.debug( "" + preparedStatement );
 
             if ( builder.getWhere() != null ) {
                 for ( SQLLiteral o : builder.getWhere().getLiterals() ) {
@@ -539,7 +528,7 @@ public class ExecuteStatements implements GenericDatabaseExecution {
     }
 
     @Override
-    public PreparedStatement executeGetRecords( MetadataQuery recordStoreOptions, boolean setCount,
+    public PreparedStatement executeGetRecords( MetadataQuery query, boolean setCount,
                                                 PostGISWhereBuilder builder, Connection conn )
                             throws MetadataStoreException {
 
@@ -547,7 +536,7 @@ public class ExecuteStatements implements GenericDatabaseExecution {
         PreparedStatement preparedStatement = null;
         try {
 
-            LOG.debug( "wherebuilder: " + builder );
+            LOG.debug( "Execute GetRecords: " );
 
             String rootTableAlias = builder.getAliasManager().getRootTableAlias();
             String blobTableAlias = builder.getAliasManager().generateNew();
@@ -603,12 +592,6 @@ public class ExecuteStatements implements GenericDatabaseExecution {
             getDatasetIDs.append( "." );
             getDatasetIDs.append( fk_datasets );
 
-            // getDatasetIDs.append( " WHERE " );
-            // getDatasetIDs.append( blobTableAlias );
-            // getDatasetIDs.append( '.' );
-            // getDatasetIDs.append( format );
-            // getDatasetIDs.append( "=?" );
-
             if ( builder.getWhere() != null ) {
                 getDatasetIDs.append( " AND " );
                 getDatasetIDs.append( builder.getWhere().getSQL() );
@@ -619,16 +602,14 @@ public class ExecuteStatements implements GenericDatabaseExecution {
                 getDatasetIDs.append( builder.getOrderBy().getSQL() );
             }
 
-            if ( !setCount && recordStoreOptions != null ) {
-                getDatasetIDs.append( " OFFSET " ).append( Integer.toString( recordStoreOptions.getStartPosition() - 1 ) );
-                getDatasetIDs.append( " LIMIT " ).append( recordStoreOptions.getMaxRecords() );
+            if ( !setCount && query != null ) {
+                getDatasetIDs.append( " OFFSET " ).append( Integer.toString( query.getStartPosition() - 1 ) );
+                getDatasetIDs.append( " LIMIT " ).append( query.getMaxRecords() );
             }
 
             preparedStatement = conn.prepareStatement( getDatasetIDs.toString() );
 
             int i = 1;
-            // preparedStatement.setInt( i++, typeNameFormatNumber );
-
             if ( builder.getWhere() != null ) {
                 for ( SQLLiteral o : builder.getWhere().getLiterals() ) {
                     preparedStatement.setObject( i++, o.getValue() );
