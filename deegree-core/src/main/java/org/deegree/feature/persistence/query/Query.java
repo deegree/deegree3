@@ -194,7 +194,7 @@ public class Query {
      * <ul>
      * <li>If a loose bbox is available ({@link QueryHint#HINT_LOOSE_BBOX}), it is returned.</li>
      * <li>If no loose bbox is available, but the {@link Query} contains an {@link OperatorFilter}, it is attempted to
-     * extract an {@link Envelope} from it. Note that the envelope is only used, when the corresponding property name
+     * extract an {@link Envelope} from it. TODO Note that the envelope is only used when the corresponding property name
      * targets a property of the root feature (and not a property of a subfeature).</li>
      * <li>If neither a loose bbox is available, nor a bbox can be extracted from the filter, <code>null</code> is
      * returned.</li>
@@ -300,5 +300,4 @@ public class Query {
     public int getMaxFeatures() {
         return maxFeatures;
     }
-
 }
