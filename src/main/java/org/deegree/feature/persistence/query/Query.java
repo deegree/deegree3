@@ -54,7 +54,14 @@ import org.deegree.filter.OperatorFilter;
 import org.deegree.filter.logical.LogicalOperator;
 import org.deegree.filter.sort.SortProperty;
 import org.deegree.filter.spatial.BBOX;
+import org.deegree.filter.spatial.Contains;
+import org.deegree.filter.spatial.Crosses;
+import org.deegree.filter.spatial.Equals;
+import org.deegree.filter.spatial.Intersects;
+import org.deegree.filter.spatial.Overlaps;
 import org.deegree.filter.spatial.SpatialOperator;
+import org.deegree.filter.spatial.Within;
+import org.deegree.filter.spatial.SpatialOperator.SubType;
 import org.deegree.geometry.Envelope;
 import org.deegree.protocol.wfs.getfeature.TypeName;
 
@@ -244,12 +251,26 @@ public class Query {
     }
 
     private Envelope extractBBox( SpatialOperator oper ) {
-        switch ( oper.getSubType() ) {
-        case BBOX: {
+        SubType type = oper.getSubType();
+        switch ( type ) {
+        case BBOX:
             return ( (BBOX) oper ).getBoundingBox();
-        }
+        case CONTAINS:
+            return ( (Contains) oper ).getGeometry().getEnvelope();
+        case CROSSES:
+            return ( (Crosses) oper ).getGeometry().getEnvelope();
+        case DWITHIN:
+            // TOOD use enlarged bbox
+            return null;
+        case EQUALS:
+            return ( (Equals) oper ).getGeometry().getEnvelope();
+        case INTERSECTS:
+            return ( (Intersects) oper ).getGeometry().getEnvelope();
+        case OVERLAPS:
+            return ( (Overlaps) oper ).getGeometry().getEnvelope();
+        case WITHIN:
+            return ( (Within) oper ).getGeometry().getEnvelope();
         default: {
-            // TODO implement full strategy
             return null;
         }
         }
