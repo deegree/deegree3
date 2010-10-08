@@ -51,6 +51,7 @@ import org.deegree.filter.Filter;
 import org.deegree.filter.IdFilter;
 import org.deegree.filter.Operator;
 import org.deegree.filter.OperatorFilter;
+import org.deegree.filter.logical.LogicalOperator;
 import org.deegree.filter.sort.SortProperty;
 import org.deegree.filter.spatial.BBOX;
 import org.deegree.filter.spatial.SpatialOperator;
@@ -212,6 +213,27 @@ public class Query {
             return null;
         }
         case LOGICAL: {
+            LogicalOperator logical = (LogicalOperator) oper;
+            switch ( logical.getSubType() ) {
+            case AND:
+                Envelope env = null;
+                for ( Operator child : logical.getParams() ) {
+                    Envelope childEnv = extractBBox( child );
+                    if ( childEnv != null ) {
+                        if ( env == null ) {
+                            env = childEnv;
+                        } else {
+                            // TODO what about different CRS?
+                            env = env.merge( childEnv );
+                        }
+                    }
+                }
+                return env;
+            case OR:
+                return null;
+            case NOT:
+                return null;
+            }
             return null;
         }
         case SPATIAL: {
