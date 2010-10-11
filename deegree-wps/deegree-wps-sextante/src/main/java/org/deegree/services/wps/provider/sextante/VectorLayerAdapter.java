@@ -654,32 +654,34 @@ public class VectorLayerAdapter {
 
             // get feature type
             Feature f = it.next();
-            FeatureType fType = f.getType();
+            if ( f.getGeometryProperties().length > 0 ) {
 
-            // get property declarations
-            List<PropertyType> propertyDeclarations = fType.getPropertyDeclarations();
+                FeatureType fType = f.getType();
 
-            for ( PropertyType pt : propertyDeclarations ) {
+                // get property declarations
+                List<PropertyType> propertyDeclarations = fType.getPropertyDeclarations();
 
-                // handle only SimplePropertyType
-                if ( pt instanceof SimplePropertyType ) {
-                    SimplePropertyType spt = (SimplePropertyType) pt;
+                for ( PropertyType pt : propertyDeclarations ) {
 
-                    // name
-                    QName pName = spt.getName();
+                    // handle only SimplePropertyType
+                    if ( pt instanceof SimplePropertyType ) {
+                        SimplePropertyType spt = (SimplePropertyType) pt;
 
-                    // class
-                    Class<?> pClass = spt.getPrimitiveType().getValueClass();
-                    // Class<?> pClass = String.class;
+                        // name
+                        QName pName = spt.getName();
 
-                    // notice name and field
-                    if ( f.getGeometryProperties().length > 0 )
+                        // class
+                        Class<?> pClass = spt.getPrimitiveType().getValueClass();
+                        // Class<?> pClass = String.class;
+
+                        // notice name and field
+
                         properties.put( pName.getLocalPart(), new Field( pName, pClass ) );
 
-                    // LOG.info( "  PROPERTY: " + pName + ":   " + pClass );
+                        // LOG.info( "  PROPERTY: " + pName + ":   " + pClass );
+                    }
                 }
             }
-
         }
 
         // create fields array

@@ -80,6 +80,8 @@ public class LiteralExampleData implements ExampleData {
     public static LiteralExampleData NUMERICAL_VALUE_50 = new LiteralExampleData( "50", NUMERICAL_VALUE_TYPE );
 
     public static LiteralExampleData NUMERICAL_VALUE_100 = new LiteralExampleData( "100", NUMERICAL_VALUE_TYPE );
+    
+    public static LiteralExampleData NUMERICAL_VALUE_180 = new LiteralExampleData( "180", NUMERICAL_VALUE_TYPE );
 
     public static LiteralExampleData NUMERICAL_VALUE_200 = new LiteralExampleData( "200", NUMERICAL_VALUE_TYPE );
 
