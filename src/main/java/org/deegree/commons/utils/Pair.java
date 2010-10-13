@@ -144,4 +144,12 @@ public class Pair<T, U> {
         return first == null && second == null;
     }
 
+    public T getFirst() {
+        return first;
+    }
+
+    public U getSecond() {
+        return second;
+    }
+
 }
