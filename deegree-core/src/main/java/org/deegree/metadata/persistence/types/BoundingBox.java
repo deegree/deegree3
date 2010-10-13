@@ -45,13 +45,13 @@ package org.deegree.metadata.persistence.types;
  */
 public class BoundingBox {
 
-    private double westBoundLongitude;
+    private final double westBoundLongitude;
 
-    private double southBoundLatitude;
+    private final double southBoundLatitude;
 
-    private double eastBoundLongitude;
+    private final double eastBoundLongitude;
 
-    private double northBoundLatitude;
+    private final double northBoundLatitude;
 
     /**
      * 
