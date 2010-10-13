@@ -69,9 +69,9 @@ public interface GenericDatabaseExecution {
      * @throws MetadataStoreException
      */
     String executeInsertStatement( boolean isDC, Connection connection, ParsedProfileElement parsedElement )
-                            throws IOException, MetadataStoreException;
+                            throws MetadataStoreException;
 
-    int executeDeleteStatement( Connection connection, PostGISWhereBuilder builder, int formatNumber )
+    int executeDeleteStatement( Connection connection, PostGISWhereBuilder builder )
                             throws MetadataStoreException;
 
     /**

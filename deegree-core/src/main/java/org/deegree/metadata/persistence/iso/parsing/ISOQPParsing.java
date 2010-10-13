@@ -45,6 +45,7 @@ import java.io.IOException;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
 
 import org.apache.axiom.om.OMAbstractFactory;
@@ -54,11 +55,9 @@ import org.deegree.commons.tom.datetime.Date;
 import org.deegree.commons.xml.NamespaceContext;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.XPath;
-import org.deegree.cs.CRS;
+import org.deegree.cs.CRSCodeType;
 import org.deegree.metadata.persistence.MetadataStoreException;
-import org.deegree.metadata.persistence.types.BoundingBox;
 import org.deegree.metadata.persistence.types.Format;
-import org.deegree.metadata.persistence.types.Keyword;
 import org.slf4j.Logger;
 
 /**
@@ -285,21 +284,23 @@ public final class ISOQPParsing extends XMLAdapter {
                                                               "./gmd:referenceSystemInfo/gmd:MD_ReferenceSystem/gmd:referenceSystemIdentifier/gmd:RS_Identifier",
                                                               nsContextISOParsing ) );
 
-        List<CRS> crsList = new ArrayList<CRS>();
+        List<CRSCodeType> crsList = new LinkedList<CRSCodeType>();
         for ( OMElement crsElement : crsElements ) {
             String crsIdentification = getNodeAsString( crsElement, new XPath( "./gmd:code/gco:CharacterString",
-                                                                               nsContextISOParsing ), "" );
+                                                                               nsContextISOParsing ), null );
 
-            // String crsAuthority = getNodeAsString( crsElement, new XPath( "./gmd:codeSpace/gco:CharacterString",
-            // nsContextISOParsing ), "" );
-            //
-            // String crsVersion = getNodeAsString( crsElement,
-            // new XPath( "./gmd:version/gco:CharacterString", nsContextISOParsing ), "" );
+            String crsAuthority = getNodeAsString( crsElement, new XPath( "./gmd:codeSpace/gco:CharacterString",
+                                                                          nsContextISOParsing ), null );
 
-            CRS crs = new CRS( crsIdentification );
+            String crsVersion = getNodeAsString( crsElement, new XPath( "./gmd:version/gco:CharacterString",
+                                                                        nsContextISOParsing ), null );
 
-            crsList.add( crs );
+            String crs = crsIdentification;
+
+            crsList.add( new CRSCodeType( crs, crsAuthority ) );
         }
+
+        qp.setCrs( crsList );
 
         /*---------------------------------------------------------------
          * 
@@ -320,7 +321,7 @@ public final class ISOQPParsing extends XMLAdapter {
                                                                                   nsContextISOParsing ) );
 
         ParseIdentificationInfo pI = new ParseIdentificationInfo( factory, nsContextISOParsing );
-        pI.parseIdentificationInfo( identificationInfo, qp, rp, crsList );
+        pI.parseIdentificationInfo( identificationInfo, qp, rp );
         /*---------------------------------------------------------------
          * 
          * 
@@ -479,11 +480,15 @@ public final class ISOQPParsing extends XMLAdapter {
      * DataQualityInfo
      */
     private void parseDataQualityInfo() {
-        qp.setLineage( getNodeAsString(
-                                        rootElement,
-                                        new XPath(
-                                                   "./gmd:dataQualityInfo/gmd:DQ_DataQuality/gmd:lineage/gmd:LI_Lineage/gmd:statement/gco:CharacterString",
-                                                   nsContextISOParsing ), "" ) );
+        String source = getNodeAsString(
+                                         rootElement,
+                                         new XPath(
+                                                    "./gmd:dataQualityInfo/gmd:DQ_DataQuality/gmd:lineage/gmd:LI_Lineage/gmd:statement/gco:CharacterString",
+                                                    nsContextISOParsing ), null );
+        if ( source != null ) {
+            qp.setLineage( source );
+            rp.setSource( source );
+        }
         qp.setDegree( getNodeAsBoolean(
                                         rootElement,
                                         new XPath(
@@ -537,118 +542,6 @@ public final class ISOQPParsing extends XMLAdapter {
         }
 
         qp.setSpecificationDate( dateSpecificationDate );
-
-    }
-
-    /**
-     * This method parses the OMElement regarding to the Dublin Core profile.
-     * 
-     * @param element
-     * @return {@link ParsedProfileElement}
-     * 
-     * @throws IOException
-     * @throws MetadataStoreException
-     */
-    public ParsedProfileElement parseAPDC( OMElement element )
-                            throws MetadataStoreException {
-
-        qp = new QueryableProperties();
-
-        rp = new ReturnableProperties();
-
-        setRootElement( element );
-        if ( element.getDefaultNamespace() != null ) {
-            nsContextISOParsing.addNamespace( rootElement.getDefaultNamespace().getPrefix(),
-                                              rootElement.getDefaultNamespace().getNamespaceURI() );
-        }
-
-        // for ( String error : ca.getMv().validate( rootElement ) ) {
-        // throw new MetadataStoreException( "VALIDATION-ERROR: " + error );
-        // }
-
-        List<Keyword> keywordList = new ArrayList<Keyword>();
-
-        List<Format> formatList = new ArrayList<Format>();
-        // TODO anyText
-        // StringWriter anyText = new StringWriter();
-
-        String[] b = getNodesAsStrings( rootElement, new XPath( "./dc:identifier", nsContextISOParsing ) );
-        qp.setIdentifier( b );
-
-        rp.setCreator( getNodeAsString( rootElement, new XPath( "./dc:creator", nsContextISOParsing ), null ) );
-
-        Keyword keyword = new Keyword( null, Arrays.asList( getNodesAsStrings( rootElement,
-                                                                               new XPath( "./dc:subject",
-                                                                                          nsContextISOParsing ) ) ),
-                                       null );
-        keywordList.add( keyword );
-        qp.setKeywords( keywordList );
-
-        qp.setTitle( Arrays.asList( getNodesAsStrings( rootElement, new XPath( "./dc:title", nsContextISOParsing ) ) ) );
-
-        // List<String> abstractList = new ArrayList<String>();
-        // TODO because there are more abstracts possible in theory...
-        // abstractList.add( e )
-
-        qp.set_abstract( Arrays.asList( getNodesAsStrings( rootElement, new XPath( "./dct:abstract",
-                                                                                   nsContextISOParsing ) ) ) );
-
-        String[] formatStrings = getNodesAsStrings( rootElement, new XPath( "./dc:format", nsContextISOParsing ) );
-
-        for ( String s : formatStrings ) {
-
-            Format format = new Format( s, null );
-            formatList.add( format );
-        }
-
-        qp.setFormat( formatList );
-
-        // Date[] modified = null;
-        // try {
-        // modified = new Date(
-        // getNodeAsString( rootElement, new XPath( "./dct:modified", nsContextISOParsing ), null ) );
-        // } catch ( ParseException e ) {
-        //
-        // LOG.debug( "Error while parsing the date: {} ", e.getMessage() );
-        // throw new MetadataStoreException( "Error while parsing the date: {} ", e );
-        // }
-        // qp.setModified( modified );
-
-        qp.setType( getNodeAsString( rootElement, new XPath( "./dc:type", nsContextISOParsing ), null ) );
-
-        String bbox_lowerCorner = getNodeAsString(
-                                                   rootElement,
-                                                   new XPath(
-                                                              "./ows:BoundingBox/ows:LowerCorner | ./ows:WGS84BoundingBox/ows:LowerCorner",
-                                                              nsContextISOParsing ), null );
-        String bbox_upperCorner = getNodeAsString(
-                                                   rootElement,
-                                                   new XPath(
-                                                              "./ows:BoundingBox/ows:UpperCorner | ./ows:WGS84BoundingBox/ows:UpperCorner",
-                                                              nsContextISOParsing ), null );
-
-        if ( bbox_lowerCorner != null && bbox_upperCorner != null ) {
-            String[] lowerCornerSplitting = bbox_lowerCorner.split( " " );
-            String[] upperCornerSplitting = bbox_upperCorner.split( " " );
-
-            double boundingBoxWestLongitude = Double.parseDouble( lowerCornerSplitting[0] );
-
-            double boundingBoxEastLongitude = Double.parseDouble( lowerCornerSplitting[1] );
-
-            double boundingBoxSouthLatitude = Double.parseDouble( upperCornerSplitting[0] );
-
-            double boundingBoxNorthLatitude = Double.parseDouble( upperCornerSplitting[1] );
-
-            qp.setBoundingBox( new BoundingBox( boundingBoxWestLongitude, boundingBoxSouthLatitude,
-                                                boundingBoxEastLongitude, boundingBoxNorthLatitude ) );
-        }
-        rp.setPublisher( getNodeAsString( rootElement, new XPath( "./dc:publisher", nsContextISOParsing ), null ) );
-
-        rp.setContributor( getNodeAsString( rootElement, new XPath( "./dc:contributor", nsContextISOParsing ), null ) );
-
-        rp.setSource( getNodeAsString( rootElement, new XPath( "./dc:source", nsContextISOParsing ), null ) );
-
-        return new ParsedProfileElement( qp, rp );
 
     }
 

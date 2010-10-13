@@ -1,6 +1,5 @@
 package org.deegree.metadata.persistence.iso;
 
-import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -19,7 +18,6 @@ import org.deegree.filter.sql.postgis.PostGISWhereBuilder;
 import org.deegree.metadata.ISORecord;
 import org.deegree.metadata.persistence.MetadataStoreException;
 import org.deegree.metadata.persistence.MetadataStoreTransaction;
-import org.deegree.metadata.persistence.iso.generating.BuildMetadataXMLRepresentation;
 import org.deegree.metadata.persistence.iso.generating.GenerateQueryableProperties;
 import org.deegree.metadata.persistence.iso.parsing.inspectation.CoupledDataInspector;
 import org.deegree.metadata.persistence.iso.parsing.inspectation.FileIdentifierInspector;
@@ -49,8 +47,6 @@ public class ISOMetadataStoreTransaction implements MetadataStoreTransaction {
     private final Connection conn;
 
     private final ConfigurationAccess ca;
-
-    // private final Map<QName, Integer> typeNames;
 
     private final boolean useLegacyPredicates;
 
@@ -85,30 +81,15 @@ public class ISOMetadataStoreTransaction implements MetadataStoreTransaction {
     public int performDelete( DeleteTransaction delete )
                             throws MetadataStoreException {
         PostGISWhereBuilder builder = null;
-        int formatNumber = 0;
-
-        // if there is a typeName denoted, the record with this profile should be deleted.
-        // if there is no typeName attribute denoted, every record matched should be deleted.
-        if ( delete.getTypeName() != null ) {
-            // formatNumber = typeNames.get( delete.getTypeName() );
-            // if ( formatNumber == 0 ) {
-            // throw new InvalidParameterValueException( "The typeName could not be resolved! " );
-            // }
-        } else {
-            // TODO remove hack,
-            // but: a csw record is available in every case, if not there is no iso, as well
-            formatNumber = 2;
-        }
 
         try {
             builder = new PostGISWhereBuilder( new PostGISMappingsISODC(), (OperatorFilter) delete.getConstraint(),
                                                null, useLegacyPredicates );
 
             ExecuteStatements execStm = new ExecuteStatements();
-            return execStm.executeDeleteStatement( conn, builder, formatNumber );
+            return execStm.executeDeleteStatement( conn, builder );
 
         } catch ( FilterEvaluationException e ) {
-
             throw new MetadataStoreException( "The Filterexpression has thrown an error! " + e.getMessage() );
         }
     }
@@ -125,18 +106,11 @@ public class ISOMetadataStoreTransaction implements MetadataStoreTransaction {
                     OMElement elemRI = ResourceIdentifier.newInstance( ca.getIc().getRic(), conn ).inspect( elemFI );
                     ISORecord rec = new ISORecord( elemRI );
                     GenerateQueryableProperties generateQP = new GenerateQueryableProperties();
-                    BuildMetadataXMLRepresentation buildRecXML = new BuildMetadataXMLRepresentation();
-
                     int operatesOnId = generateQP.generateMainDatabaseDataset( conn, rec );
-
-                    String[] identifier = buildRecXML.generateISO( conn, operatesOnId, rec );
                     generateQP.executeQueryableProperties( false, conn, operatesOnId, rec );
-                    identifierList.addAll( Arrays.asList( identifier ) );
+                    identifierList.addAll( Arrays.asList( rec.getIdentifier() ) );
                 }
 
-            } catch ( IOException e ) {
-                LOG.info( e.getMessage() );
-                throw new MetadataStoreException( "Error on insert: " + e.getMessage(), e );
             } catch ( XMLStreamException e ) {
                 throw new MetadataStoreException( "Error on insert: " + e.getMessage(), e );
             }

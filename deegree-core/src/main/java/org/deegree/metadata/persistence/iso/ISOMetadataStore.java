@@ -87,22 +87,10 @@ public class ISOMetadataStore implements MetadataStore {
 
     private static final Logger LOG = getLogger( ISOMetadataStore.class );
 
-    /**
-     * registers the typeNames that are applicable to this recordStore and maps a typeName to a format, if it is DC or
-     * ISO
-     */
-    // private static Map<QName, Integer> typeNames = new HashMap<QName, Integer>();
-
     private final String connectionId;
 
     // if true, use old-style for spatial predicates (intersects instead of ST_Intersecs)
     private boolean useLegacyPredicates;
-
-    // private FileIdentifierInspector fi;
-    //
-    // private InspireCompliance ic;
-    //
-    // private CoupledDataInspector ci;
 
     /**
      * shows the encoding of the database that is used
@@ -118,36 +106,11 @@ public class ISOMetadataStore implements MetadataStore {
 
     private static final String id = PostGISMappingsISODC.CommonColumnNames.id.name();
 
-    private static final String fk_datasets = PostGISMappingsISODC.CommonColumnNames.fk_datasets.name();
-
     private static final String backendIdentifier = PostGISMappingsISODC.CommonColumnNames.identifier.name();
 
     private static final String data = PostGISMappingsISODC.CommonColumnNames.data.name();
 
-    private static final String format = PostGISMappingsISODC.CommonColumnNames.format.name();
-
-    /**
-     * maps the specific returnable element format to a concrete table in the backend<br>
-     * brief, summary, full
-     */
-    // private static final Map<ReturnableElement, String> formatTypeInISORecordStore = new HashMap<ReturnableElement,
-    // String>();
-
-    static {
-
-        // formatTypeInISORecordStore.put( ReturnableElement.brief, "recordbrief" );
-        // formatTypeInISORecordStore.put( ReturnableElement.summary, "recordsummary" );
-        // formatTypeInISORecordStore.put( ReturnableElement.full, "recordfull" );
-
-        // typeNames.put( new QName( "", "", "" ), 1 );
-        // typeNames.put( new QName( CSW_202_NS, DC_LOCAL_PART, "" ), 1 );
-        // typeNames.put( new QName( CSW_202_NS, DC_LOCAL_PART, CSW_PREFIX ), 1 );
-        // typeNames.put( new QName( DC_NS, "", "dc" ), 1 );
-        // typeNames.put( new QName( GMD_NS, GMD_LOCAL_PART, "" ), 2 );
-        // typeNames.put( new QName( GMD_NS, GMD_LOCAL_PART, GMD_PREFIX ), 2 );
-        // typeNames.put( new QName( APISO_NS, "", APISO_PREFIX ), 2 );
-
-    }
+    private static final String recordfull = PostGISMappingsISODC.CommonColumnNames.recordfull.name();
 
     /**
      * Creates a new {@link ISOMetadataStore} instance from the given JAXB configuration object.
@@ -282,14 +245,12 @@ public class ISOMetadataStore implements MetadataStore {
 
             switch ( query.getResultType() ) {
             case results:
-
                 result = doResultsOnGetRecord( query, builder, conn );
                 break;
             case hits:
                 resultType = doHitsOnGetRecord( query, ResultType.hits, builder, conn, new ExecuteStatements() );
                 result = new ISOMetadataResultSet( col, resultType );
                 break;
-
             case validate:
                 // TODO
             }
@@ -406,9 +367,9 @@ public class ISOMetadataStore implements MetadataStore {
                     int returnedID = rs.getInt( 1 );
 
                     StringBuilder outS = new StringBuilder();
-                    outS.append( "SELECT " ).append( "recordfull" ).append( '.' ).append( data );
-                    outS.append( " FROM " ).append( "recordfull" );
-                    outS.append( " WHERE " ).append( "recordfull" ).append( '.' ).append( fk_datasets );
+                    outS.append( "SELECT " ).append( datasets ).append( '.' ).append( recordfull );
+                    outS.append( " FROM " ).append( datasets );
+                    outS.append( " WHERE " ).append( id );
                     outS.append( " = " ).append( returnedID );
                     stmtOut = conn.prepareStatement( outS.toString() );
                     LOG.debug( "" + stmtOut );
@@ -504,16 +465,13 @@ public class ISOMetadataStore implements MetadataStore {
                     throw new MetadataStoreException( msg );
                 }
 
-                StringBuilder select = new StringBuilder().append( "SELECT recordAlias." );
-                select.append( data ).append( " FROM " );
-                select.append( "recordfull" ).append( " AS recordAlias, " );
-                select.append( datasets ).append( " AS ds, " );
+                StringBuilder select = new StringBuilder();
+                select.append( "SELECT " ).append( "d." ).append( recordfull );
+                select.append( " FROM " ).append( datasets ).append( " AS d" ).append( ',' );
                 select.append( qp_identifier );
-                select.append( " AS i WHERE recordAlias." );
-                select.append( fk_datasets ).append( " = ds." );
-                select.append( id ).append( " AND i." );
-                select.append( fk_datasets ).append( " = ds." );
-                select.append( id ).append( " AND i." );
+                select.append( " AS i" );
+                select.append( " WHERE d." ).append( id );
+                select.append( " = " ).append( "i.fk_datasets" ).append( " AND i." );
                 select.append( backendIdentifier ).append( " = ? " );
 
                 stmt = conn.prepareStatement( select.toString() );

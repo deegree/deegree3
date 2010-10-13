@@ -40,6 +40,7 @@ import java.util.List;
 import java.util.Set;
 
 import javax.xml.namespace.QName;
+import javax.xml.stream.FactoryConfigurationError;
 import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
@@ -50,6 +51,7 @@ import org.deegree.commons.tom.datetime.Date;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.stax.StAXParsingHelper;
 import org.deegree.cs.CRS;
+import org.deegree.cs.CRSCodeType;
 import org.deegree.filter.Filter;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryFactory;
@@ -139,6 +141,10 @@ public class ISORecord implements MetadataRecord {
 
     private static Set<QName> summaryFilterElements;
 
+    private static Set<QName> briefFilterElements;
+
+    private static Set<QName> briefSummaryFilterElements;
+
     // public ISORecord( URL url ) {
     // this.root = new XMLAdapter( xmlStream ).getRootElement();
     // }
@@ -148,6 +154,11 @@ public class ISORecord implements MetadataRecord {
         this.root = new XMLAdapter( xmlStream ).getRootElement();
 
         this.pElem = new ISOQPParsing().parseAPISO( root, false );
+
+        summaryFilterElements = removeElementsISONamespace( summaryLocalParts );
+        briefFilterElements = removeElementsISONamespace( briefLocalParts );
+        briefSummaryFilterElements = removeElementsISONamespace( briefSummaryLocalParts );
+
     }
 
     public ISORecord( OMElement root ) throws MetadataStoreException {
@@ -176,13 +187,18 @@ public class ISORecord implements MetadataRecord {
     @Override
     public Envelope[] getBoundingBox() {
 
-        Envelope[] env = new Envelope[1];
+        List<BoundingBox> bboxList = pElem.getQueryableProperties().getBoundingBox();
 
-        BoundingBox box = pElem.getQueryableProperties().getBoundingBox();
-        env[0] = new GeometryFactory().createEnvelope( box.getWestBoundLongitude(), box.getSouthBoundLatitude(),
-                                                       box.getEastBoundLongitude(), box.getNorthBoundLatitude(),
-                                                       new CRS( "EPSG:4326" ) );
-
+        Envelope[] env = new Envelope[bboxList.size()];
+        int counter = 0;
+        for ( BoundingBox box : bboxList ) {
+            CRSCodeType bboxCRS = pElem.getQueryableProperties().getCrs().get( counter );
+            CRS crs = new CRS( bboxCRS.toString() );
+            env[counter++] = new GeometryFactory().createEnvelope( box.getWestBoundLongitude(),
+                                                                   box.getSouthBoundLatitude(),
+                                                                   box.getEastBoundLongitude(),
+                                                                   box.getNorthBoundLatitude(), crs );
+        }
         return env;
     }
 
@@ -270,11 +286,23 @@ public class ISORecord implements MetadataRecord {
         return subjects;
     }
 
+    /**
+     * 
+     * @return the ISORecord as xmlStreamReader with skipped startDocument-preamble
+     * @throws XMLStreamException
+     */
     public XMLStreamReader getAsXMLStream()
                             throws XMLStreamException {
         XMLStreamReader xmlStream = root.getXMLStreamReader();
         StAXParsingHelper.skipStartDocument( xmlStream );
         return xmlStream;
+    }
+
+    public byte[] getAsByteArray()
+                            throws XMLStreamException, FactoryConfigurationError {
+
+        return root.toString().getBytes();
+
     }
 
     @Override
@@ -316,13 +344,13 @@ public class ISORecord implements MetadataRecord {
 
     @Override
     public String getContributor() {
-    
+
         return pElem.getReturnableProperties().getContributor();
     }
 
     @Override
     public String getPublisher() {
-    
+
         return pElem.getReturnableProperties().getPublisher();
     }
 
@@ -335,7 +363,7 @@ public class ISORecord implements MetadataRecord {
             s[counter++] = st;
         }
         return s;
-    
+
     }
 
     @Override
@@ -345,7 +373,7 @@ public class ISORecord implements MetadataRecord {
 
     @Override
     public String getCreator() {
-    
+
         return pElem.getReturnableProperties().getCreator();
     }
 
@@ -365,7 +393,7 @@ public class ISORecord implements MetadataRecord {
     private void toISOSummary( XMLStreamWriter writer, XMLStreamReader xmlStream )
                             throws XMLStreamException {
 
-        XMLStreamReader filter = new NamedElementFilter( xmlStream, removeElementsISONamespace( summaryLocalParts ) );
+        XMLStreamReader filter = new NamedElementFilter( xmlStream, summaryFilterElements );
 
         generateOutput( writer, filter );
 
@@ -373,7 +401,7 @@ public class ISORecord implements MetadataRecord {
 
     private void toISOBrief( XMLStreamWriter writer, XMLStreamReader xmlStream )
                             throws XMLStreamException {
-        XMLStreamReader filter = new NamedElementFilter( xmlStream, removeElementsISONamespace( briefSummaryLocalParts ) );
+        XMLStreamReader filter = new NamedElementFilter( xmlStream, briefSummaryFilterElements );
         generateOutput( writer, filter );
 
     }

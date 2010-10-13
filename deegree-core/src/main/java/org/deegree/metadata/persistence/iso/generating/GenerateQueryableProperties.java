@@ -46,13 +46,16 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.text.ParseException;
 
+import javax.xml.stream.XMLStreamException;
+
 import org.deegree.commons.utils.time.DateUtils;
-import org.deegree.cs.CRS;
+import org.deegree.cs.CRSCodeType;
 import org.deegree.metadata.ISORecord;
 import org.deegree.metadata.persistence.MetadataStoreException;
 import org.deegree.metadata.persistence.iso.PostGISMappingsISODC;
 import org.deegree.metadata.persistence.iso.parsing.QueryableProperties;
 import org.deegree.metadata.persistence.iso.parsing.ReturnableProperties;
+import org.deegree.metadata.persistence.types.BoundingBox;
 import org.deegree.metadata.persistence.types.Format;
 import org.deegree.metadata.persistence.types.Keyword;
 import org.deegree.metadata.persistence.types.OperatesOnData;
@@ -89,9 +92,10 @@ public class GenerateQueryableProperties {
      * @return the primarykey of the inserted dataset which is the foreignkey for the queryable properties
      *         databasetables
      * @throws MetadataStoreException
+     * @throws XMLStreamException
      */
     public int generateMainDatabaseDataset( Connection connection, ISORecord rec )
-                            throws MetadataStoreException {
+                            throws MetadataStoreException, XMLStreamException {
         final String databaseTable = PostGISMappingsISODC.DatabaseTables.datasets.name();
         StringWriter sqlStatement = new StringWriter( 1000 );
         boolean isCaseSensitive = true;
@@ -106,7 +110,7 @@ public class GenerateQueryableProperties {
                                  + databaseTable
                                  + " ("
                                  + id
-                                 + ", version, status, anyText, modified, hassecurityconstraints, language, parentidentifier, source, association) VALUES (?,?,?,?,?,?,?,?,?,?);" );
+                                 + ", version, status, anyText, modified, hassecurityconstraints, language, parentidentifier, recordfull, source, association) VALUES (?,?,?,?,?,?,?,?,?,?,?);" );
 
             stm = connection.prepareStatement( sqlStatement.toString() );
             stm.setObject( 1, operatesOnId );
@@ -127,17 +131,19 @@ public class GenerateQueryableProperties {
             stm.setObject( 6, rec.isHasSecurityConstraints() );
             stm.setObject( 7, rec.getLanguage() );
             stm.setObject( 8, rec.getParentIdentifier() );
-            stm.setObject( 9, null );
+            stm.setBytes( 9, rec.getAsByteArray() );
             stm.setObject( 10, null );
+            stm.setObject( 11, null );
+            LOG.debug( stm.toString() );
             stm.executeUpdate();
             stm.close();
 
         } catch ( SQLException e ) {
 
             LOG.debug( "error: " + e.getMessage(), e );
+            throw new MetadataStoreException( e.getMessage() );
         } catch ( ParseException e ) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            throw new MetadataStoreException( e.getMessage() );
         }
 
         return operatesOnId;
@@ -152,8 +158,10 @@ public class GenerateQueryableProperties {
      * @param stm
      * @param operatesOnId
      * @param parsedElement
+     * @throws MetadataStoreException
      */
-    public void executeQueryableProperties( boolean isUpdate, Connection connection, int operatesOnId, ISORecord rec ) {
+    public void executeQueryableProperties( boolean isUpdate, Connection connection, int operatesOnId, ISORecord rec )
+                            throws MetadataStoreException {
 
         if ( rec.getParsedElement().getQueryableProperties().getIdentifier() != null ) {
             generateQP_IdentifierStatement( isUpdate, connection, operatesOnId,
@@ -427,8 +435,8 @@ public class GenerateQueryableProperties {
 
         // crs
         if ( qp.getCrs() != null ) {
-            for ( CRS crs : qp.getCrs() ) {
-                anyText.append( crs.getName() + stopWord );
+            for ( CRSCodeType crs : qp.getCrs() ) {
+                anyText.append( crs.getCodeSpace() + stopWord + crs.getCode() + stopWord );
 
             }
         }
@@ -1150,45 +1158,61 @@ public class GenerateQueryableProperties {
      * Puts the boundingbox for this dataset into the database.
      * 
      * @param isUpdate
+     * @throws MetadataStoreException
      */
     // TODO one record got one or more bboxes?
     private void generateISOQP_BoundingBoxStatement( boolean isUpdate, Connection connection, int operatesOnId,
-                                                     QueryableProperties qp ) {
+                                                     QueryableProperties qp )
+                            throws MetadataStoreException {
         final String databaseTable = PostGISMappingsISODC.DatabaseTables.isoqp_BoundingBox.name();
         StringWriter sqlStatement = new StringWriter( 500 );
         PreparedStatement stm = null;
-        double east = qp.getBoundingBox().getEastBoundLongitude();
-        double north = qp.getBoundingBox().getNorthBoundLatitude();
-        double west = qp.getBoundingBox().getWestBoundLongitude();
-        double south = qp.getBoundingBox().getSouthBoundLatitude();
+        int counter = 0;
+        for ( BoundingBox bbox : qp.getBoundingBox() ) {
+            double east = bbox.getEastBoundLongitude();
+            double north = bbox.getNorthBoundLatitude();
+            double west = bbox.getWestBoundLongitude();
+            double south = bbox.getSouthBoundLatitude();
 
-        int localId = 0;
-        try {
+            int localId = 0;
+            try {
 
-            if ( isUpdate == false ) {
-                localId = getLastDatasetId( connection, databaseTable );
-                localId++;
-                sqlStatement.append( "INSERT INTO " ).append( databaseTable ).append( '(' );
-                sqlStatement.append( id ).append( ',' );
-                sqlStatement.append( fk_datasets );
-                sqlStatement.append( ", bbox) VALUES (" + localId ).append( "," + operatesOnId );
-                sqlStatement.append( ",SetSRID('BOX3D(" + west ).append( " " + south ).append( "," + east );
-                sqlStatement.append( " " + north ).append( ")'::box3d,-1));" );
-            } else {
-                sqlStatement.append( "UPDATE " ).append( databaseTable ).append( " SET bbox = SetSRID('BOX3D(" + west );
-                sqlStatement.append( " " + south ).append( "," + east ).append( " " + north );
-                sqlStatement.append( ")'::box3d,-1) WHERE " );
-                sqlStatement.append( fk_datasets );
-                sqlStatement.append( " = " + operatesOnId + ";" );
+                if ( isUpdate == false ) {
+                    localId = getLastDatasetId( connection, databaseTable );
+                    localId++;
+                    sqlStatement.append( "INSERT INTO " ).append( databaseTable ).append( '(' );
+                    sqlStatement.append( id ).append( ',' );
+                    sqlStatement.append( fk_datasets ).append( ',' );
+                    sqlStatement.append( "authority" ).append( ',' );
+                    sqlStatement.append( "id_crs" ).append( ',' );
+                    sqlStatement.append( "version" );
+                    sqlStatement.append( ", bbox) VALUES (" + localId ).append( "," + operatesOnId );
+                    sqlStatement.append( ",'" + qp.getCrs().get( counter ).getCodeSpace() ).append( '\'' );
+                    sqlStatement.append( ",'" + qp.getCrs().get( counter ).getCode() ).append( '\'' );
+                    sqlStatement.append( ",'" + qp.getCrs().get( counter ).getCodeVersion() ).append( '\'' );
+                    sqlStatement.append( ",SetSRID('BOX3D(" + west ).append( " " + south ).append( "," + east );
+                    sqlStatement.append( " " + north ).append( ")'::box3d,-1));" );
+                } else {
+                    sqlStatement.append( "UPDATE " ).append( databaseTable ).append(
+                                                                                     " SET bbox = SetSRID('BOX3D("
+                                                                                                             + west );
+                    sqlStatement.append( " " + south ).append( "," + east ).append( " " + north );
+                    sqlStatement.append( ")'::box3d,-1) WHERE " );
+                    sqlStatement.append( fk_datasets );
+                    sqlStatement.append( " = " + operatesOnId + ";" );
+                }
+                stm = connection.prepareStatement( sqlStatement.toString() );
+                LOG.debug( "boundinbox: " + stm );
+                stm.executeUpdate();
+                stm.close();
+                counter++;
+
+            } catch ( SQLException e ) {
+
+                LOG.debug( "error: " + e.getMessage(), e );
+                throw new MetadataStoreException( e.getMessage() );
             }
-            stm = connection.prepareStatement( sqlStatement.toString() );
-            LOG.debug( "boundinbox: " + stm );
-            stm.executeUpdate();
-            stm.close();
 
-        } catch ( SQLException e ) {
-
-            LOG.debug( "error: " + e.getMessage(), e );
         }
 
     }
