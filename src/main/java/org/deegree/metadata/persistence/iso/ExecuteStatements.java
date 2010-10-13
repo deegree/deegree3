@@ -43,6 +43,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Timestamp;
+import java.sql.Types;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -51,6 +53,7 @@ import java.util.List;
 import org.apache.axiom.om.OMElement;
 import org.deegree.commons.tom.datetime.Date;
 import org.deegree.commons.utils.JDBCUtils;
+import org.deegree.commons.utils.time.DateUtils;
 import org.deegree.feature.persistence.mapping.DBField;
 import org.deegree.feature.persistence.mapping.Join;
 import org.deegree.filter.sql.PropertyNameMapping;
@@ -523,8 +526,13 @@ public class ExecuteStatements implements GenericDatabaseExecution {
 
             getDatasetIDs.append( "SELECT " );
             if ( setCount ) {
-                getDatasetIDs.append( "COUNT(*)" );
+                getDatasetIDs.append( "COUNT( DISTINCT " );
+                getDatasetIDs.append( rootTableAlias );
+                getDatasetIDs.append( '.' );
+                getDatasetIDs.append( id );
+                getDatasetIDs.append( ')' );
             } else {
+                getDatasetIDs.append( " DISTINCT " );
                 getDatasetIDs.append( rootTableAlias );
                 getDatasetIDs.append( '.' );
                 getDatasetIDs.append( id );
@@ -556,7 +564,7 @@ public class ExecuteStatements implements GenericDatabaseExecution {
             }
 
             if ( builder.getWhere() != null ) {
-                getDatasetIDs.append( " AND " );
+                getDatasetIDs.append( " WHERE " );
                 getDatasetIDs.append( builder.getWhere().getSQL() );
             }
 
@@ -575,7 +583,20 @@ public class ExecuteStatements implements GenericDatabaseExecution {
             int i = 1;
             if ( builder.getWhere() != null ) {
                 for ( SQLLiteral o : builder.getWhere().getLiterals() ) {
-                    preparedStatement.setObject( i++, o.getValue() );
+                    if ( o.getSQLType() == Types.TIMESTAMP ) {
+                        java.util.Date date = DateUtils.parseISO8601Date( o.getValue().toString() );
+                        Timestamp d = new Timestamp( date.getTime() );
+                        preparedStatement.setTimestamp( i++, d );
+                    } else if ( o.getSQLType() == Types.BOOLEAN ) {
+                        String bool = o.getValue().toString();
+                        boolean b = false;
+                        if ( bool.equals( "true" ) ) {
+                            b = true;
+                        }
+                        preparedStatement.setBoolean( i++, b );
+                    } else {
+                        preparedStatement.setObject( i++, o.getValue() );
+                    }
                 }
             }
             if ( builder.getOrderBy() != null ) {
@@ -588,6 +609,9 @@ public class ExecuteStatements implements GenericDatabaseExecution {
         } catch ( SQLException e ) {
             LOG.debug( "Error while generating the SELECT statement: {}", e.getMessage() );
             throw new MetadataStoreException( "Error while generating the SELECT statement: {}", e );
+        } catch ( ParseException e ) {
+            LOG.debug( "Error while pasring the date: {}", e.getMessage() );
+            throw new MetadataStoreException( "Error while pasring the date: {}", e );
         }
         return preparedStatement;
 

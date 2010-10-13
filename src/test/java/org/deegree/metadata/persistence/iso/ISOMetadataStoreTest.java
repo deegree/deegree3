@@ -196,13 +196,17 @@ public class ISOMetadataStoreTest {
             LOG.warn( "Skipping test (needs configuration)." );
             return;
         }
-        String test_folder = CoreTstProperties.getProperty( "iso_metadata_insert_test_folder" );
+        String test_folder = "/home/thomas/inserts_bkg/";// CoreTstProperties.getProperty(
+        // "iso_metadata_insert_test_folder"
+        // );
         if ( test_folder == null ) {
             LOG.warn( "Skipping test (no testCase folder found)" );
             return;
         }
+
         File folder = new File( test_folder );
         File[] fileArray = folder.listFiles();
+        LOG.info( "" + fileArray.length );
         URL[] urlArray = null;
         if ( fileArray != null ) {
             urlArray = new URL[fileArray.length];
