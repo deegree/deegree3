@@ -40,6 +40,7 @@ import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
@@ -55,7 +56,6 @@ import javax.faces.component.UISelectItem;
 import javax.faces.component.behavior.AjaxBehavior;
 import javax.faces.component.html.HtmlCommandButton;
 import javax.faces.component.html.HtmlForm;
-import javax.faces.component.html.HtmlInputText;
 import javax.faces.component.html.HtmlMessage;
 import javax.faces.component.html.HtmlOutputLabel;
 import javax.faces.component.html.HtmlOutputText;
@@ -63,9 +63,7 @@ import javax.faces.component.html.HtmlPanelGrid;
 import javax.faces.component.html.HtmlSelectManyCheckbox;
 import javax.faces.context.FacesContext;
 import javax.faces.event.AbortProcessingException;
-import javax.faces.event.ActionEvent;
 import javax.faces.event.ComponentSystemEvent;
-import javax.faces.event.MethodExpressionActionListener;
 
 import org.deegree.client.core.component.HtmlInputBBox;
 import org.deegree.client.core.component.HtmlInputFile;
@@ -76,11 +74,13 @@ import org.deegree.protocol.wps.client.input.type.ComplexInputType;
 import org.deegree.protocol.wps.client.input.type.InputType;
 import org.deegree.protocol.wps.client.input.type.LiteralInputType;
 import org.deegree.protocol.wps.client.output.type.OutputType;
+import org.deegree.protocol.wps.client.param.ValueWithRef;
 import org.deegree.protocol.wps.client.process.Process;
+import org.deegree.wpsclient.gui.component.HtmlLiteralInput;
 import org.slf4j.Logger;
 
 /**
- * TODO add class documentation here
+ * <code>FormBean</code> manages the creation of the form dependent of the selected process
  * 
  * @author <a href="mailto:buesching@lat-lon.de">Lyn Buesching</a>
  * @author last edited by: $Author: lyn $
@@ -129,34 +129,32 @@ public class FormBean {
             MethodExpression action = fc.getApplication().getExpressionFactory().createMethodExpression(
                                                                                                          fc.getELContext(),
                                                                                                          buttonEL,
-                                                                                                         null,
-                                                                                                         new Class<?>[] { ActionEvent.class } );
+                                                                                                         Object.class,
+                                                                                                         new Class<?>[] {} );
             button.getAttributes().put( ExecuteBean.PROCESS_ATTRIBUTE_KEY, process );
-            MethodExpressionActionListener listener = new MethodExpressionActionListener( action );
-
-            button.addActionListener( listener );
+            button.setActionExpression( action );
 
             executeForm.getChildren().add( button );
         }
     }
 
-    private void addInputParams( FacesContext fc, UIComponent parent, InputType[] inputDescription ) {
+    private void addInputParams( FacesContext fc, UIComponent parent, InputType[] inputs ) {
         HtmlPanelGrid inputGrid = new HtmlPanelGrid();
         inputGrid.setId( getUniqueId() );
         inputGrid.setColumns( 4 );
         inputGrid.setStyleClass( "paramBody" );
         inputGrid.setHeaderClass( "paramHeader" );
-        HtmlOutputText inputText = new HtmlOutputText();
-        String inputTextEL = "#{labels['inputParams']}";
+
+        HtmlOutputText headerText = new HtmlOutputText();
         ValueExpression inputTextVE = fc.getApplication().getExpressionFactory().createValueExpression(
                                                                                                         fc.getELContext(),
-                                                                                                        inputTextEL,
+                                                                                                        "#{labels['inputParams']}",
                                                                                                         String.class );
-        inputText.setValueExpression( "value", inputTextVE );
-        inputGrid.getFacets().put( "header", inputText );
+        headerText.setValueExpression( "value", inputTextVE );
+        inputGrid.getFacets().put( "header", headerText );
 
-        for ( int i = 0; i < inputDescription.length; i++ ) {
-            InputType input = inputDescription[i];
+        for ( int i = 0; i < inputs.length; i++ ) {
+            InputType input = inputs[i];
             String inputId = input.getId().toString();
             HtmlOutputLabel label = new HtmlOutputLabel();
             String labelId = getUniqueId();
@@ -166,11 +164,8 @@ public class FormBean {
             inputGrid.getChildren().add( label );
 
             int minOccurs = 0;
-            boolean isRequired = false;
             try {
-                if ( Integer.parseInt( input.getMinOccurs() ) > 0 ) {
-                    isRequired = true;
-                }
+                minOccurs = Integer.parseInt( input.getMinOccurs() );
             } catch ( NumberFormatException e ) {
                 // Nothing to DO (0 assumed)
             }
@@ -185,107 +180,17 @@ public class FormBean {
             } catch ( NumberFormatException e ) {
                 // Nothing to do (1 assumed)
             }
-            if ( input instanceof LiteralInputType ) {
-                /*
-                 * insert a composite component Application application = fc.getApplication(); Resource resource =
-                 * application.getResourceHandler().createResource( "LiteralInput.xhtml", "wpsclient" ); UIComponent
-                 * compositeComponent = application.createComponent( fc, resource ); compositeComponent.setId(
-                 * "composite" ); ValueExpression value = application.getExpressionFactory().createValueExpression(
-                 * fc.getELContext(), "#{executeBean.literalInputs['" + input.getId().toString() + "']}",
-                 * LiteralInputType.class ); LiteralInputType lit = (LiteralInputType) input;
-                 * 
-                 * SimpleLiteralInput in = new SimpleLiteralInput(); in.setUom( lit.getDefaultUom().getRef() );
-                 * literalInputs.put( input.getId(), in ); compositeComponent.setValueExpression( "value", value );
-                 * 
-                 * compositeComponent.getAttributes().put( "blub", "einTest" ); if ( lit.getDataType() != null ) {
-                 * compositeComponent.getAttributes().put( "dataType", lit.getDataType() ); } if (
-                 * lit.getSupportedUoms() != null ) { compositeComponent.getAttributes().put( "supportedUoms",
-                 * lit.getSupportedUoms() ); } if ( lit.getAllowedValues() != null ) {
-                 * compositeComponent.getAttributes().put( "allowedValues", lit.getAllowedValues() ); } if (
-                 * lit.getRanges() != null ) { compositeComponent.getAttributes().put( "ranges", lit.getRanges() ); }
-                 * 
-                 * FaceletFactory factory = (FaceletFactory) RequestStateManager.get( fc,
-                 * RequestStateManager.FACELET_FACTORY );
-                 * 
-                 * final UIComponent compositeRoot = application.createComponent( UIPanel.COMPONENT_TYPE );
-                 * compositeRoot.setRendererType( "javax.faces.Group" );
-                 * 
-                 * try { Facelet f = factory.getFacelet( resource.getURL() ); f.apply( fc, compositeRoot );
-                 * compositeComponent.getFacets().put( UIComponent.COMPOSITE_FACET_NAME, compositeRoot ); } catch (
-                 * IOException ioex ) { throw new FaceletException( ioex ); }
-                 * 
-                 * inputGrid.getChildren().add( compositeComponent );
-                 */
-
-                HtmlInputText literalText = new HtmlInputText();
-                literalText.setId( input.getId().toString() );
-                literalText.setStyleClass( "inputField" );
-                String valueEL = "#{executeBean.literalInputs['" + input.getId().toString() + "']}";
-                ValueExpression valueVE = fc.getApplication().getExpressionFactory().createValueExpression(
-                                                                                                            fc.getELContext(),
-                                                                                                            valueEL,
-                                                                                                            Object.class );
-
-                literalText.setValueExpression( "value", valueVE );
-                literalText.setRequired( isRequired );
-                if ( isRequired ) {
-                    literalText.setStyleClass( "required" );
-                }
-                inputGrid.getChildren().add( literalText );
-
-            } else if ( input instanceof BBoxInputType ) {
-                HtmlInputBBox bbox = new HtmlInputBBox();
-                bbox.setId( inputId );
-                String valueEL = "#{executeBean.bboxInputs['" + input.getId().toString() + "']}";
-                ValueExpression valueVE = fc.getApplication().getExpressionFactory().createValueExpression(
-                                                                                                            fc.getELContext(),
-                                                                                                            valueEL,
-                                                                                                            BBox.class );
-
-                bbox.setRequired( isRequired );
-                if ( isRequired ) {
-                    bbox.setStyleClass( "required" );
-                }
-                bbox.setValueExpression( "value", valueVE );
-                String[] supportedCrs = ( (BBoxInputType) input ).getSupportedCrs();
-                for ( int j = 0; j < supportedCrs.length; j++ ) {
-                    UISelectItem crs = new UISelectItem();
-                    crs.setItemLabel( supportedCrs[j] );
-                    crs.setItemValue( supportedCrs[j] );
-                    bbox.getChildren().add( crs );
-                }
-                inputGrid.getChildren().add( bbox );
-            } else if ( input instanceof ComplexInputType ) {
-                HtmlInputFile upload = new HtmlInputFile();
-                upload.setId( inputId );
-                upload.setStyleClass( "inputField" );
-                upload.setTarget( "upload" );
-                String type = "binary";
-                if ( ( (ComplexInputType) input ).getDefaultFormat().getMimeType() != null
-                     && ( (ComplexInputType) input ).getDefaultFormat().getMimeType().contains( "xml" ) ) {
-                    type = "xml";
-                }
-                String valueEL = "#{executeBean." + type + "Inputs['" + input.getId().toString() + "']}";
-                ValueExpression valueVE = fc.getApplication().getExpressionFactory().createValueExpression(
-                                                                                                            fc.getELContext(),
-                                                                                                            valueEL,
-                                                                                                            Object.class );
-
-                upload.setValueExpression( "value", valueVE );
-                upload.setRequired( isRequired );
-
-                // FileMimeTypeValidator validator = new FileMimeTypeValidator();
-                // ComplexFormat[] supportedFormats = ( (ComplexInputType) input ).getSupportedFormats();
-                // for ( int j = 0; j < supportedFormats.length; j++ ) {
-                // validator.addMimeType( supportedFormats[0].getMimeType() );
-                // }
-                // upload.addValidator( validator );
-                if ( isRequired ) {
-                    upload.setStyleClass( "required" );
-                }
-                inputGrid.getChildren().add( upload );
+            switch ( input.getType() ) {
+            case COMPLEX:
+                addComplexInput( fc, (ComplexInputType) input, minOccurs, maxOccurs, inputGrid );
+                break;
+            case BBOX:
+                addBBoxInput( fc, (BBoxInputType) input, minOccurs, maxOccurs, inputGrid );
+                break;
+            case LITERAL:
+                addLiteralInput( fc, (LiteralInputType) input, minOccurs, maxOccurs, inputGrid );
+                break;
             }
-
             inputGrid.getChildren().add( createInfoBt( ClientBean.IN_INFOKEY, input.getId().getCode() ) );
 
             // messages
@@ -299,8 +204,89 @@ public class FormBean {
         parent.getChildren().add( inputGrid );
     }
 
+    private void addComplexInput( FacesContext fc, ComplexInputType input, int minOccurs, int maxOccurs,
+                                  HtmlPanelGrid inputGrid ) {
+        HtmlInputFile upload = new HtmlInputFile();
+        upload.setId( input.getId().toString() );
+        upload.setStyleClass( "inputField" );
+        upload.setTarget( "upload" );
+        String type = "binary";
+        if ( ( (ComplexInputType) input ).getDefaultFormat().getMimeType() != null
+             && ( (ComplexInputType) input ).getDefaultFormat().getMimeType().contains( "xml" ) ) {
+            type = "xml";
+        }
+        String valueEL = "#{executeBean." + type + "Inputs['" + input.getId().toString() + "']}";
+        ValueExpression valueVE = fc.getApplication().getExpressionFactory().createValueExpression( fc.getELContext(),
+                                                                                                    valueEL,
+                                                                                                    Object.class );
+
+        upload.setValueExpression( "value", valueVE );
+        upload.setRequired( minOccurs > 0 );
+
+        // TODO: validation
+        // FileMimeTypeValidator validator = new FileMimeTypeValidator();
+        // ComplexFormat[] supportedFormats = ( (ComplexInputType) input ).getSupportedFormats();
+        // for ( int j = 0; j < supportedFormats.length; j++ ) {
+        // validator.addMimeType( supportedFormats[0].getMimeType() );
+        // }
+        // upload.addValidator( validator );
+        if ( minOccurs > 0 ) {
+            upload.setStyleClass( "required" );
+        }
+        inputGrid.getChildren().add( upload );
+
+    }
+
+    private void addBBoxInput( FacesContext fc, BBoxInputType input, int minOccurs, int maxOccurs,
+                               HtmlPanelGrid inputGrid ) {
+        HtmlInputBBox bbox = new HtmlInputBBox();
+        bbox.setId( input.getId().toString() );
+        String valueEL = "#{executeBean.bboxInputs['" + input.getId().toString() + "']}";
+        ValueExpression valueVE = fc.getApplication().getExpressionFactory().createValueExpression( fc.getELContext(),
+                                                                                                    valueEL, BBox.class );
+
+        bbox.setRequired( minOccurs > 0 );
+        if ( minOccurs > 0 ) {
+            bbox.setStyleClass( "required" );
+        }
+        bbox.setValueExpression( "value", valueVE );
+        String[] supportedCrs = ( (BBoxInputType) input ).getSupportedCrs();
+        for ( int j = 0; j < supportedCrs.length; j++ ) {
+            UISelectItem crs = new UISelectItem();
+            crs.setItemLabel( supportedCrs[j] );
+            crs.setItemValue( supportedCrs[j] );
+            bbox.getChildren().add( crs );
+        }
+        inputGrid.getChildren().add( bbox );
+
+    }
+
+    private void addLiteralInput( FacesContext fc, LiteralInputType input, int minOccurs, int maxOccurs,
+                                  HtmlPanelGrid inputGrid ) {
+        HtmlLiteralInput literalInput = new HtmlLiteralInput();
+        literalInput.setId( input.getId().toString() );
+        literalInput.setStyleClass( "inputField" );
+        String valueEL = "#{executeBean.literalInputs['" + input.getId().toString() + "']}";
+        ValueExpression valueVE = fc.getApplication().getExpressionFactory().createValueExpression( fc.getELContext(),
+                                                                                                    valueEL,
+                                                                                                    Object.class );
+        literalInput.setValueExpression( "value", valueVE );
+
+        ValueWithRef[] supportedCrs = input.getSupportedUoms();
+        for ( int j = 0; j < supportedCrs.length; j++ ) {
+            UISelectItem uom = new UISelectItem();
+            uom.setItemLabel( supportedCrs[j].getValue() );
+            uom.setItemValue( supportedCrs[j].getValue() );
+            literalInput.getChildren().add( uom );
+        }
+        if ( input.getDefaultUom() != null )
+            literalInput.setDefaultUom( input.getDefaultUom().getValue() );
+        if ( input.getAllowedValues() != null )
+            literalInput.setAllowedValues( Arrays.asList( input.getAllowedValues() ) );
+        inputGrid.getChildren().add( literalInput );
+    }
+
     private HtmlCommandButton createInfoBt( String type, String idCode ) {
-        // info button
         HtmlCommandButton infoBt = new HtmlCommandButton();
         infoBt.setId( getUniqueId() );
         infoBt.setImage( "resources/wpsclient/images/information_icon_small.png" );
@@ -337,26 +323,27 @@ public class FormBean {
             outputGrid.setStyleClass( "paramBody" );
             outputGrid.setHeaderClass( "paramHeader" );
             outputGrid.setColumns( 2 );
-            HtmlOutputText outputText = new HtmlOutputText();
-            outputText.setId( getUniqueId() );
-            String outputTextEL = "#{labels['outputParams']}";
+            HtmlOutputText headerText = new HtmlOutputText();
+            headerText.setId( getUniqueId() );
+            String headerTextEL = "#{labels['outputParams']}";
             ValueExpression outputTextVE = fc.getApplication().getExpressionFactory().createValueExpression(
                                                                                                              fc.getELContext(),
-                                                                                                             outputTextEL,
+                                                                                                             headerTextEL,
                                                                                                              String.class );
-            outputText.setValueExpression( "value", outputTextVE );
-            outputGrid.getFacets().put( "header", outputText );
+            headerText.setValueExpression( "value", outputTextVE );
+            outputGrid.getFacets().put( "header", headerText );
 
             HtmlSelectManyCheckbox cb = new HtmlSelectManyCheckbox();
             cb.setLayout( "pageDirection" );
             cb.setId( getUniqueId() );
+
             String valueEL = "#{executeBean.outputs}";
             ValueExpression valueVE = fc.getApplication().getExpressionFactory().createValueExpression(
                                                                                                         fc.getELContext(),
                                                                                                         valueEL,
                                                                                                         List.class );
             cb.setValueExpression( "value", valueVE );
-            cb.setRequired( true );
+            // cb.setRequired( true );
             for ( int i = 0; i < outputs.length; i++ ) {
                 OutputType output = outputs[i];
                 UISelectItem item = new UISelectItem();

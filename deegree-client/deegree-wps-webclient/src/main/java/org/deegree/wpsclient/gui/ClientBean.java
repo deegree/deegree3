@@ -42,9 +42,11 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 
 import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
@@ -75,9 +77,12 @@ public class ClientBean implements Serializable {
 
     private static final long serialVersionUID = -1434783003208250369L;
 
-    private String url = "http://deegree3-testing.deegree.org/deegree-wps-demo/services";
+    private Set<String> insertedURLs = new HashSet<String>();
+
+    // private String url = "http://deegree3-testing.deegree.org/deegree-wps-demo/services";
 
     // private String url = "http://localhost:8080/deegree-wps-demo/services";
+    private String url = "http://flexigeoweb.lat-lon.de/deegree-wps-demo/services";
 
     private WPSClient wpsClient;
 
@@ -114,6 +119,7 @@ public class ClientBean implements Serializable {
             fc.addMessage( "ClientBean.selectWPS.SELECT_WPS", msg );
             Process[] p = wpsClient.getProcesses();
             processes.addAll( (List<Process>) Arrays.asList( p ) );
+            insertedURLs.add( url );
         } catch ( MalformedURLException e ) {
             FacesMessage msg = getFacesMessage( FacesMessage.SEVERITY_ERROR, "ERROR.INVALID_URL", url );
             fc.addMessage( "ClientBean.selectWPS.INVALID_URL", msg );
@@ -297,6 +303,10 @@ public class ClientBean implements Serializable {
      */
     public Process getSelectedProcess() {
         return selectedProcess;
+    }
+
+    public Set<String> getInsertedURLs() {
+        return insertedURLs;
     }
 
 }

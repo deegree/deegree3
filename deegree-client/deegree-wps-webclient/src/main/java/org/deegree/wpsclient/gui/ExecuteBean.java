@@ -47,12 +47,11 @@ import java.util.Map;
 import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.RequestScoped;
-import javax.faces.component.html.HtmlCommandButton;
 import javax.faces.context.FacesContext;
-import javax.faces.event.ActionEvent;
 
 import org.deegree.client.core.model.BBox;
 import org.deegree.client.core.model.UploadedFile;
+import org.deegree.commons.utils.StringPair;
 import org.deegree.protocol.wps.client.output.BBoxOutput;
 import org.deegree.protocol.wps.client.output.ComplexOutput;
 import org.deegree.protocol.wps.client.output.ExecutionOutput;
@@ -80,7 +79,7 @@ public class ExecuteBean implements Serializable {
 
     public static final String PROCESS_ATTRIBUTE_KEY = "process";
 
-    private Map<String, String> literalInputs = new HashMap<String, String>();
+    private Map<String, StringPair> literalInputs = new HashMap<String, StringPair>();
 
     private Map<String, UploadedFile> xmlInputs = new HashMap<String, UploadedFile>();
 
@@ -104,50 +103,54 @@ public class ExecuteBean implements Serializable {
      * 
      * @param event
      */
-    public void executeProcess( ActionEvent event ) {
 
-        if ( event.getComponent() instanceof HtmlCommandButton ) {
-            Process selectedProcess = (Process) event.getComponent().getAttributes().get( PROCESS_ATTRIBUTE_KEY );
+    public Object executeProcess() {
+        FacesContext fc = FacesContext.getCurrentInstance();
+        ClientBean cb = (ClientBean) fc.getELContext().getELResolver().getValue( fc.getELContext(), null, "clientBean" );
+        Process selectedProcess = cb.getSelectedProcess();
 
-            if ( selectedProcess != null ) {
-                FacesContext fc = FacesContext.getCurrentInstance();
-                if ( outputs.size() == 0 ) {
-                    try {
-                        outputs.add( selectedProcess.getOutputTypes()[0].getId().toString() );
-                    } catch ( Exception e ) {
-                        if ( LOG.isDebugEnabled() ) {
-                            e.printStackTrace();
-                        }
-                        FacesMessage msg = getFacesMessage( FacesMessage.SEVERITY_ERROR, "ERROR.REQUEST_WPS",
-                                                            e.getMessage() );
-                        fc.addMessage( "ExecuteBean.execute.ERROR_REQUEST", msg );
+        if ( selectedProcess != null ) {
+            if ( outputs.size() == 0 ) {
+                try {
+                    outputs.add( selectedProcess.getOutputTypes()[0].getId().toString() );
+                } catch ( Exception e ) {
+                    if ( LOG.isDebugEnabled() ) {
+                        e.printStackTrace();
                     }
-                }
-                ProcessExecuter executer = new ProcessExecuter();
-                ExecutionOutput[] executionOutput = executer.execute( selectedProcess, literalInputs, bboxInputs,
-                                                                      xmlInputs, binaryInputs, outputs );
-
-                if ( executionOutput != null ) {
-                    for ( int i = 0; i < executionOutput.length; i++ ) {
-                        ExecutionOutput output = executionOutput[i];
-                        if ( output instanceof LiteralOutput ) {
-                            literalOutputs.add( (LiteralOutput) output );
-                        } else if ( output instanceof BBoxOutput ) {
-                            bboxOutputs.add( (BBoxOutput) output );
-                        } else if ( output instanceof ComplexOutput ) {
-                            ComplexFormat format = ( (ComplexOutput) output ).getFormat();
-                            if ( format.getMimeType() != null && format.getMimeType().contains( "xml" ) ) {
-                                xmlOutputs.add( (ComplexOutput) output );
-                            } else {
-                                binaryOutputs.add( (ComplexOutput) output );
-                            }
-                        }
-                    }
-                    FacesMessage msg = getFacesMessage( FacesMessage.SEVERITY_INFO, "INFO.REQUEST_SUCCESS" );
-                    fc.addMessage( "ExecuteBean.execute.REQUEST", msg );
+                    FacesMessage msg = getFacesMessage( FacesMessage.SEVERITY_ERROR, "ERROR.REQUEST_WPS",
+                                                        e.getMessage() );
+                    fc.addMessage( "ExecuteBean.execute.ERROR_REQUEST", msg );
                 }
             }
+
+//            Map<String, SimpleLiteralInput> literalInputs2 = cb.getLiteralInputs();
+//            System.out.println( literalInputs2 );
+
+            ProcessExecuter executer = new ProcessExecuter();
+            ExecutionOutput[] executionOutput = executer.execute( selectedProcess, literalInputs, bboxInputs,
+                                                                  xmlInputs, binaryInputs, outputs );
+
+            if ( executionOutput != null ) {
+                for ( int i = 0; i < executionOutput.length; i++ ) {
+                    ExecutionOutput output = executionOutput[i];
+                    if ( output instanceof LiteralOutput ) {
+                        literalOutputs.add( (LiteralOutput) output );
+                    } else if ( output instanceof BBoxOutput ) {
+                        bboxOutputs.add( (BBoxOutput) output );
+                    } else if ( output instanceof ComplexOutput ) {
+                        ComplexFormat format = ( (ComplexOutput) output ).getFormat();
+                        if ( format.getMimeType() != null && format.getMimeType().contains( "xml" ) ) {
+                            xmlOutputs.add( (ComplexOutput) output );
+                        } else {
+                            binaryOutputs.add( (ComplexOutput) output );
+                        }
+                    }
+                }
+                FacesMessage msg = getFacesMessage( FacesMessage.SEVERITY_INFO, "INFO.REQUEST_SUCCESS" );
+                fc.addMessage( "ExecuteBean.execute.REQUEST", msg );
+            }
         }
+        return null;
     }
 
     /******************* GETTER / SETTER ******************/
@@ -160,7 +163,7 @@ public class ExecuteBean implements Serializable {
     }
 
     // INPUTS
-    public Map<String, String> getLiteralInputs() {
+    public Map<String, StringPair> getLiteralInputs() {
         return literalInputs;
     }
 

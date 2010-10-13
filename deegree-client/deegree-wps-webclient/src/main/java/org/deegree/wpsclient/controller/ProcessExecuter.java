@@ -47,6 +47,7 @@ import javax.faces.context.FacesContext;
 
 import org.deegree.client.core.model.BBox;
 import org.deegree.client.core.model.UploadedFile;
+import org.deegree.commons.utils.StringPair;
 import org.deegree.protocol.wps.client.input.type.BBoxInputType;
 import org.deegree.protocol.wps.client.input.type.ComplexInputType;
 import org.deegree.protocol.wps.client.input.type.InputType;
@@ -86,7 +87,7 @@ public class ProcessExecuter {
      *            the outputs
      * @return the response of the WPS request
      */
-    public ExecutionOutput[] execute( Process processToExecute, Map<String, String> literalInputs,
+    public ExecutionOutput[] execute( Process processToExecute, Map<String, StringPair> literalInputs,
                                       Map<String, BBox> bboxInputs, Map<String, UploadedFile> xmlInputs,
                                       Map<String, UploadedFile> binaryInputs, List<String> outputs ) {
 
@@ -105,10 +106,10 @@ public class ProcessExecuter {
             for ( int i = 0; i < inputDescription.length; i++ ) {
                 InputType input = inputDescription[i];
                 if ( input instanceof LiteralInputType ) {
-                    String literal = literalInputs.get( input.getId().toString() );
+                    StringPair literal = literalInputs.get( input.getId().toString() );
                     if ( literal != null ) {
-                        execution.addLiteralInput( input.getId().getCode(), input.getId().getCodeSpace(), literal,
-                                                   null, null );
+                        execution.addLiteralInput( input.getId().getCode(), input.getId().getCodeSpace(),
+                                                   literal.getFirst(), null, literal.getSecond() );
                     }
                 } else if ( input instanceof ComplexInputType ) {
                     UploadedFile xml = xmlInputs.get( input.getId().toString() );
