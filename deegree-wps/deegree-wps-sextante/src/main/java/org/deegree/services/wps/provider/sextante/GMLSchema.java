@@ -40,9 +40,8 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Set;
+
 import org.deegree.gml.GMLVersion;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Describes a GML schema with {@link URL}, {@link GMLVersion} and {@link GMLType}.
@@ -54,8 +53,7 @@ import org.slf4j.LoggerFactory;
  */
 public class GMLSchema implements OutputFormat {
 
-    // logger
-    private static final Logger LOG = LoggerFactory.getLogger( GMLSchema.class );
+    // private static final Logger LOG = LoggerFactory.getLogger( GMLSchema.class );
 
     /**
      * Describes the type (like GEOMETRY or FEATURE_COLLECTION) of the GML data.
@@ -131,9 +129,7 @@ public class GMLSchema implements OutputFormat {
         if ( foundSchema != null ) {
             return foundSchema;
         } else {
-            LOG.error( "\"" + schema + " \" is a not supported GML schema." );
-            // TODO throw Exception?
-            return null;
+            throw new IllegalArgumentException( "'" + schema + "' is a not supported GML schema." );
         }
     }
 

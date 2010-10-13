@@ -170,14 +170,14 @@ public class SextanteProcessProvider implements ProcessProvider {
                 if ( alg != null ) {// found
                     algs.add( alg );
                 } else {// not found
-                    // TODO throw Exception??
-                    LOG.error( "Algorithm with the id '" + p.getId() + "' is not found." );
+                    String message = "Algorithm with the id '" + p.getId() + "' is not found.";
+                    LOG.error( message );
                 }
             }
 
         } else {
-            // TODO throw Exception??
-            LOG.error( "Configuration file can not be found." );
+            String message = "Configuration file can not be found.";
+            LOG.error( message );
         }
 
         return algs.toArray( new GeoAlgorithm[algs.size()] );

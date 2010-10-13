@@ -39,25 +39,16 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.Iterator;
 import java.util.LinkedList;
-import java.util.List;
 
-import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
-import org.deegree.commons.tom.TypedObjectNode;
-import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.cs.exceptions.UnknownCRSException;
-import org.deegree.feature.FeatureCollection;
-import org.deegree.feature.property.Property;
 import org.deegree.geometry.primitive.Point;
 import org.deegree.geometry.primitive.Polygon;
-import org.deegree.geometry.primitive.Ring;
-import org.deegree.geometry.standard.AbstractDefaultGeometry;
 import org.deegree.gml.GMLInputFactory;
 import org.deegree.gml.GMLStreamReader;
-import org.deegree.gml.GMLVersion;
 import org.deegree.protocol.ows.exception.OWSException;
 import org.deegree.protocol.wps.VectorExampleData.GeometryType;
 import org.deegree.protocol.wps.client.WPSClient;

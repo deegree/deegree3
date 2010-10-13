@@ -43,8 +43,6 @@ import org.deegree.services.wps.ProcessletOutputs;
 import org.deegree.services.wps.input.ComplexInput;
 import org.deegree.services.wps.output.ComplexOutput;
 import org.deegree.services.wps.provider.sextante.GMLSchema.GMLType;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import es.unex.sextante.core.GeoAlgorithm;
 
@@ -60,8 +58,7 @@ import es.unex.sextante.core.GeoAlgorithm;
  */
 public class FormatHelper {
 
-    // logger
-    private static final Logger LOG = LoggerFactory.getLogger( FormatHelper.class );
+    // private static final Logger LOG = LoggerFactory.getLogger( FormatHelper.class );
 
     /**
      * Returns the {@link GMLVersion} of the input data.
@@ -76,9 +73,7 @@ public class FormatHelper {
         if ( schema != null ) {
             return schema.getGMLVersion();
         } else {
-            LOG.error( "INPUT: \"" + input.getSchema() + " \" is a not supported GML schema." );
-            // TODO throw Exception?
-            return null;
+            throw new IllegalArgumentException( "INPUT: '" + input.getSchema() + "' is a not supported GML schema." );
         }
     }
 
@@ -96,13 +91,8 @@ public class FormatHelper {
         if ( schema != null ) {
             return schema.getGMLVersion();
         } else {
-            LOG.error( "OUTPUT: \"" + output.getRequestedSchema() + " \" is a not supported GML schema." );
-            // TODO throw Exception?
-
-            // use default schema
-            GMLSchema defaultSchema = GMLSchema.getGMLSchema( getDefaultOutputFormat().getSchema() );
-            LOG.info( "OUTPUT: Default schema \"" + defaultSchema.getSchemaURL() + "\" is in use." );
-            return defaultSchema.getGMLVersion();
+            throw new IllegalArgumentException( "OUTPUT: '" + output.getRequestedSchema()
+                                                + "' is a not supported GML schema." );
         }
     }
 
@@ -119,9 +109,7 @@ public class FormatHelper {
         if ( schema != null ) {
             return schema.getGMLType();
         } else {
-            LOG.error( "INPUT: \"" + input.getSchema() + " \" is a not supported GML schema." );
-            // TODO throw Exception?
-            return null;
+            throw new IllegalArgumentException( "INPUT: '" + input.getSchema() + "' is a not supported GML schema." );
         }
     }
 
@@ -139,13 +127,8 @@ public class FormatHelper {
         if ( schema != null ) {
             return schema.getGMLType();
         } else {
-            LOG.error( "OUTPUT: \"" + output.getRequestedSchema() + " \" is a not supported GML schema." );
-            // TODO throw Exception?
-
-            // use default schema
-            GMLSchema defaultSchema = GMLSchema.getGMLSchema( getDefaultOutputFormat().getSchema() );
-            LOG.info( "OUTPUT: Default schema \"" + defaultSchema.getSchemaURL() + "\" is in use." );
-            return defaultSchema.getGMLType();
+            throw new IllegalArgumentException( "OUTPUT: '" + output.getRequestedSchema()
+                                                + " ' is a not supported GML schema." );
         }
     }
 
@@ -188,11 +171,12 @@ public class FormatHelper {
 
         LinkedList<GMLSchema> schemas = GMLSchema.getAllSchemas();
         for ( GMLSchema gmlSchema : schemas ) {
-            if ( !defaultKey.equals( gmlSchema.getSchemaURL() ) ) {
+            String schema = gmlSchema.getSchemaURL();
+            if ( !defaultKey.equals( schema ) ) {
                 ComplexFormatType cft = new ComplexFormatType();
                 cft.setEncoding( "UTF-8" );
                 cft.setMimeType( "text/xml" );
-                cft.setSchema( gmlSchema.getSchemaURL() );
+                cft.setSchema( schema );
                 inputCft.add( cft );
             }
         }
@@ -209,13 +193,4 @@ public class FormatHelper {
         return getInputFormatsWithoutDefault();
     }
 
-    // public static String getApplicationSchema( ComplexInput input ) {
-    // // TODO ???
-    // return input.getSchema();
-    // }
-    //
-    // public static String getApplicationSchema( ComplexOutput output ) {
-    // // TODO ???
-    // return output.getRequestedSchema();
-    // }
 }

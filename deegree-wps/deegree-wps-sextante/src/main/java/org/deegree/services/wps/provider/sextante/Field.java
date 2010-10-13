@@ -75,7 +75,7 @@ public class Field {
                 f[i] = new Field( determineQName( names[i] ), types[i] );
             }
         } else {
-            // TODO throw Exception?
+            throw new IndexOutOfBoundsException( "The number of names and types aren't equal." );
         }
 
         return f;
@@ -110,14 +110,42 @@ public class Field {
         return qName;
     }
 
+    /**
+     * Creates a Field by name und type.
+     * 
+     * @param name
+     *            Name
+     * @param type
+     *            Type
+     */
     public Field( String name, Class<?> type ) {
         this( name, type, null, null );
     }
 
+    /**
+     * Creates a Field by {@link QName} und type.
+     * 
+     * @param name
+     *            {@link QName}.
+     * @param type
+     *            Type.
+     */
     public Field( QName name, Class<?> type ) {
         this( name.getLocalPart(), type, name.getNamespaceURI(), name.getPrefix() );
     }
 
+    /**
+     * Creates a Field by name, type, namespace URL and prefix.
+     * 
+     * @param name
+     *            Name.
+     * @param type
+     *            Type.
+     * @param ns
+     *            Namespace URL.
+     * @param prefix
+     *            Prefix for namespace.
+     */
     private Field( String name, Class<?> type, String ns, String prefix ) {
 
         if ( name == null )
@@ -160,6 +188,11 @@ public class Field {
         return name;
     }
 
+    /**
+     * Returns the field name as a {@link QName}.
+     * 
+     * @return Field name as a {@link QName} with namespace URL and prefix.
+     */
     public QName getQName() {
         return new QName( m_NamespaceURI, m_Name, m_Prefix );
     }

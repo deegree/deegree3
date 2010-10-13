@@ -55,9 +55,6 @@ import es.unex.sextante.rasterWrappers.GridExtent;
  */
 import javax.swing.JDialog;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 /**
  * This class can used from a SEXTANTE {@link GeoAlgorithm}, to create output objects like {@link IVectorLayer},
  * {@link IRasterLayer} or {@link ITable}.
@@ -69,8 +66,7 @@ import org.slf4j.LoggerFactory;
  */
 public class OutputFactoryExt extends OutputFactory {
 
-    // logger
-    private static final Logger LOG = LoggerFactory.getLogger( OutputFactoryExt.class );
+    // private static final Logger LOG = LoggerFactory.getLogger( OutputFactoryExt.class );
 
     @Override
     public Object getDefaultCRS() {
@@ -82,8 +78,7 @@ public class OutputFactoryExt extends OutputFactory {
                                            IOutputChannel channel, Object crs )
                             throws UnsupportedOutputChannelException {
         // TODO implement this method.
-        LOG.error( "The method \"" + "getNewRasterLayer()" + "\" isn't implemented." );
-        return null;
+        throw new UnsupportedOperationException( "The method '" + "getNewRasterLayer()" + "' isn't implemented." );
     }
 
     @SuppressWarnings("unchecked")
@@ -91,8 +86,7 @@ public class OutputFactoryExt extends OutputFactory {
     public ITable getNewTable( String sName, Class[] types, String[] sFields, IOutputChannel channe )
                             throws UnsupportedOutputChannelException {
         // TODO implement this method.
-        LOG.error( "The method \"" + "getNewTable()" + "\" isn't implemented." );
-        return null;
+        throw new UnsupportedOperationException( "The method '" + "getNewTable()" + "' isn't implemented." );
     }
 
     @SuppressWarnings("unchecked")
@@ -116,22 +110,20 @@ public class OutputFactoryExt extends OutputFactory {
     @Override
     public String[] getRasterLayerOutputExtensions() {
         // TODO implement this method.
-        LOG.error( "The method \"" + "getRasterLayerOutputExtensions()" + "\" isn't implemented." );
-        return null;
+        throw new UnsupportedOperationException( "The method '" + "getRasterLayerOutputExtensions()"
+                                                 + "' isn't implemented." );
     }
 
     @Override
     public String[] getTableOutputExtensions() {
         // TODO implement this method.
-        LOG.error( "The method \"" + "getTableOutputExtensions()" + "\" isn't implemented." );
-        return null;
+        throw new UnsupportedOperationException( "The method '" + "getTableOutputExtensions()" + "' isn't implemented." );
     }
 
     @Override
     public ITaskMonitor getTaskMonitor( String sTitle, boolean bDeterminate, JDialog parent ) {
         // TODO implement this method.
-        LOG.error( "The method \"" + "getTaskMonitor()" + "\" isn't implemented." );
-        return null;
+        throw new UnsupportedOperationException( "The method '" + "getTaskMonitor()" + "' isn't implemented." );
     }
 
     @Override

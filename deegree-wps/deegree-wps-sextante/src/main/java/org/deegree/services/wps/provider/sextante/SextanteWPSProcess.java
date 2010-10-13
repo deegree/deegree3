@@ -333,7 +333,7 @@ public class SextanteWPSProcess implements WPSProcess {
             else if ( paramTypeName.equals( FIXED_TABLE_INPUT ) )
                 listInput.add( createFixedTableInputParameter( param ) );
             else {
-                LOG.error( "\"" + paramTypeName + "\" is a not supported input parameter type." );
+                LOG.error( "'" + paramTypeName + "' is a not supported input parameter type." );
                 // TODO throw exception
             }
 
@@ -405,7 +405,7 @@ public class SextanteWPSProcess implements WPSProcess {
             else if ( paramTypeDesc.equals( CHART_OUTPUT ) )
                 listOutput.add( createChartOutputParameter( param ) );
             else {
-                LOG.error( "\"" + paramTypeDesc + "\" is a not supported output parameter type." );
+                LOG.error( "'" + paramTypeDesc + "' is a not supported output parameter type." );
                 // TODO throw exception
             }
 
@@ -545,8 +545,8 @@ public class SextanteWPSProcess implements WPSProcess {
      * @return
      */
     private JAXBElement<? extends ProcessletInputDefinition> createFilepathInputParameter( Parameter param ) {
-        LOG.error( "\"" + param.getParameterTypeName()
-                   + "\" a is not supported input parameter type (but is in implementation)" );
+        LOG.error( "'" + param.getParameterTypeName()
+                   + "' a is not supported input parameter type (but is in implementation)" );
         // TODO implement this input parameter type
         return null;
     }
@@ -601,20 +601,20 @@ public class SextanteWPSProcess implements WPSProcess {
 
         // type of vector layers
         if ( paramSet.getNumberOfVectorLayers( true ) - paramSet.getNumberOfVectorLayers( false ) > 0 ) {
-            LOG.error( "\"" + param.getParameterTypeName()
-                       + " - Vector Layer\" a is not supported input parameter type (but is in implementation)" );
+            LOG.error( "'" + param.getParameterTypeName()
+                       + " - Vector Layer' a is not supported input parameter type (but is in implementation)" );
             // TODO implement this input parameter type
         } else {
 
             // type of raster layers
             if ( paramSet.getNumberOfRasterLayers( true ) - paramSet.getNumberOfRasterLayers( false ) > 0 ) {
-                LOG.error( "\"" + param.getParameterTypeName()
-                           + " - Raster Layer\" a is not supported input parameter type (but is in implementation)" );
+                LOG.error( "'" + param.getParameterTypeName()
+                           + " - Raster Layer' a is not supported input parameter type (but is in implementation)" );
                 // TODO implement this input parameter type
 
             } else {
-                LOG.error( "\"" + param.getParameterTypeName()
-                           + " - unknown type\" a is not supported input parameter type." );
+                LOG.error( "'" + param.getParameterTypeName()
+                           + " - unknown type' a is not supported input parameter type." );
                 // TODO throw exception
             }
         }
@@ -665,8 +665,8 @@ public class SextanteWPSProcess implements WPSProcess {
      * @return
      */
     private JAXBElement<? extends ProcessletInputDefinition> createRasterLayerInputParameter( Parameter param ) {
-        LOG.error( "\"" + param.getParameterTypeName()
-                   + "\" a is not supported input parameter type (but is in implementation)" );
+        LOG.error( "'" + param.getParameterTypeName()
+                   + "' a is not supported input parameter type (but is in implementation)" );
         // TODO implement this input parameter type
         return null;
     }
@@ -680,8 +680,8 @@ public class SextanteWPSProcess implements WPSProcess {
      * @return
      */
     private JAXBElement<? extends ProcessletInputDefinition> createTableFieldInputParameter( Parameter param ) {
-        LOG.error( "\"" + param.getParameterTypeName()
-                   + "\" a is not supported input parameter type (but is in implementation)" );
+        LOG.error( "'" + param.getParameterTypeName()
+                   + "' a is not supported input parameter type (but is in implementation)" );
         // TODO implement this input parameter type
         return null;
     }
@@ -694,8 +694,8 @@ public class SextanteWPSProcess implements WPSProcess {
      * @return
      */
     private JAXBElement<? extends ProcessletInputDefinition> createPointInputParameter( Parameter param ) {
-        LOG.error( "\"" + param.getParameterTypeName()
-                   + "\" a is not supported input parameter type (but is in implementation)" );
+        LOG.error( "'" + param.getParameterTypeName()
+                   + "' a is not supported input parameter type (but is in implementation)" );
         // TODO implement this input parameter type
         return null;
     }
@@ -708,8 +708,8 @@ public class SextanteWPSProcess implements WPSProcess {
      * @return
      */
     private JAXBElement<? extends ProcessletInputDefinition> createBandInputParameter( Parameter param ) {
-        LOG.error( "\"" + param.getParameterTypeName()
-                   + "\" a is not supported input parameter type (but is in implementation)" );
+        LOG.error( "'" + param.getParameterTypeName()
+                   + "' a is not supported input parameter type (but is in implementation)" );
         // TODO implement this input parameter type
         return null;
     }
@@ -722,8 +722,8 @@ public class SextanteWPSProcess implements WPSProcess {
      * @return
      */
     private JAXBElement<? extends ProcessletInputDefinition> createTableInputParameter( Parameter param ) {
-        LOG.error( "\"" + param.getParameterTypeName()
-                   + "\" a is not supported input parameter type (but is in implementation)" );
+        LOG.error( "'" + param.getParameterTypeName()
+                   + "' a is not supported input parameter type (but is in implementation)" );
         // TODO implement this input parameter type
         return null;
     }
@@ -736,8 +736,8 @@ public class SextanteWPSProcess implements WPSProcess {
      * @return
      */
     private JAXBElement<? extends ProcessletInputDefinition> createFixedTableInputParameter( Parameter param ) {
-        LOG.error( "\"" + param.getParameterTypeName()
-                   + "\" a is not supported input parameter type (but is in implementation)" );
+        LOG.error( "'" + param.getParameterTypeName()
+                   + "' a is not supported input parameter type (but is in implementation)" );
         // TODO implement this input parameter type
         return null;
     }
@@ -784,8 +784,8 @@ public class SextanteWPSProcess implements WPSProcess {
      * @return
      */
     private JAXBElement<? extends ProcessletOutputDefinition> createRasterLayerOutputParameter( Output out ) {
-        LOG.error( "\"" + out.getTypeDescription()
-                   + "\" a is not supported output parameter type (but is in implementation)" );
+        LOG.error( "'" + out.getTypeDescription()
+                   + "' a is not supported output parameter type (but is in implementation)" );
         // TODO implement this output parameter type
         return null;
     }
@@ -798,8 +798,8 @@ public class SextanteWPSProcess implements WPSProcess {
      * @return
      */
     private JAXBElement<? extends ProcessletOutputDefinition> createTableOutputParameter( Output out ) {
-        LOG.error( "\"" + out.getTypeDescription()
-                   + "\" a is not supported output parameter type (but is in implementation)" );
+        LOG.error( "'" + out.getTypeDescription()
+                   + "' a is not supported output parameter type (but is in implementation)" );
         // TODO implement this output parameter type
         return null;
     }
@@ -812,8 +812,8 @@ public class SextanteWPSProcess implements WPSProcess {
      * @return
      */
     private JAXBElement<? extends ProcessletOutputDefinition> createTextOutputParameter( Output out ) {
-        LOG.error( "\"" + out.getTypeDescription()
-                   + "\" a is not supported output parameter type (but is in implementation)" );
+        LOG.error( "'" + out.getTypeDescription()
+                   + "' a is not supported output parameter type (but is in implementation)" );
         // TODO implement this output parameter type
         return null;
     }
@@ -826,8 +826,8 @@ public class SextanteWPSProcess implements WPSProcess {
      * @return
      */
     private JAXBElement<? extends ProcessletOutputDefinition> createChartOutputParameter( Output out ) {
-        LOG.error( "\"" + out.getTypeDescription()
-                   + "\" a is not supported output parameter type (but is in implementation)" );
+        LOG.error( "'" + out.getTypeDescription()
+                   + "' a is not supported output parameter type (but is in implementation)" );
         // TODO implement this output parameter type
         return null;
     }

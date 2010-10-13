@@ -102,9 +102,9 @@ public class VectorLayerAdapter {
      * @param c
      *            The {@link FeatureCollection} must contain simple {@link Feature}s, this means that a {@link Feature}
      *            has only one geometry and only properties with different names. If a {@link Feature} has more
-     *            geometries, they would be merged. If a {@link Feature} has more properties with the same name, it will
-     *            be used the first. Some cases can't handled, when the {@link Feature}s has different
-     *            {@link FeatureType}s or contains other {@link Feature}s.
+     *            geometries, it will be used the first. If a {@link Feature} has more properties with the same name, it
+     *            will be used the first. Some cases can't handled, if the {@link Feature}s contains other
+     *            {@link Feature}s. A {@link Feature} without geometry will be skipped.
      * 
      * @return An {@link IVectorLayer} with {@link IFeature}s. The {@link IFeature}s contains only one
      *         {@link com.vividsolutions.jts.geom.Geometry} and only properties with different names.
@@ -121,40 +121,27 @@ public class VectorLayerAdapter {
 
             // get feature type
             Feature firstFeature = it.next();
-            FeatureType fType = firstFeature.getType();
 
             // get crs
             crs = determineCRS( firstFeature );
 
             // get property declarations
-            // vectorLayerPropertyDeclarations = determinePropertyDeclarationsForVectorLayer( fType );
             vectorLayerPropertyDeclarations = determinePropertyDeclarationsForVectorLayer( c );
 
             // traverse all features
             for ( Feature feature : c ) {
 
-                if ( feature.getType().equals( fType ) ) {// check feature type
+                // create properties
+                Object[] values = determinePropertiesForVectorLayerGeometry( feature, vectorLayerPropertyDeclarations );
 
-                    // LOG.info( "FEATURE: " + feature.getId() );
+                // create geometry
+                com.vividsolutions.jts.geom.Geometry geom = createJTSGeometryFromFeature( feature );
 
-                    // create properties
-                    Object[] values = determinePropertiesForVectorLayerGeometry( feature,
-                                                                                 vectorLayerPropertyDeclarations );
-
-                    // create geometry
-                    com.vividsolutions.jts.geom.Geometry geom = createJTSGeometryFromFeature( feature );
-
-                    if ( geom != null ) {
-                        // add feature
-                        features.add( new FeatureImpl( geom, values ) );
-                    } else {
-                        LOG.warn( "Feature '" + feature.getId() + "' was skipped." );
-                    }
-
+                if ( geom != null ) {
+                    // add feature
+                    features.add( new FeatureImpl( geom, values ) );
                 } else {
-                    LOG.error( "Feature with id '" + feature.getId()
-                               + "' have an other feature type as the others (not supported)." );
-                    // TODO throw Exception
+                    LOG.warn( "Feature '" + feature.getId() + "' was skipped." );
                 }
 
             }
@@ -176,10 +163,10 @@ public class VectorLayerAdapter {
      * 
      * @param f
      *            The {@link Feature} must be simple, this means that a {@link Feature} has only one geometry and only
-     *            properties with different names. If a {@link Feature} has more geometries, they would be merged. If a
-     *            {@link Feature} has more properties with the same name, it will be used the first. A case can't
+     *            properties with different names. If a {@link Feature} has more geometries, it will be used the first.
+     *            If a {@link Feature} has more properties with the same name, it will be used the first. A case can't
      *            handled, if the {@link Feature} contains other {@link Feature}s. If the {@link Feature} is a
-     *            {@link FeatureCollection}, it can handled.
+     *            {@link FeatureCollection}, it can handled. A {@link Feature} without geometry will be skipped.
      * 
      * @return An {@link IVectorLayer} with a {@link IFeature}. The {@link IFeature} contains only one
      *         {@link com.vividsolutions.jts.geom.Geometry} and only properties with different names.
@@ -237,8 +224,6 @@ public class VectorLayerAdapter {
     /**
      * Creates a {@link FeatureCollection} from an {@link IVectorLayer}.
      * 
-     * TODO more details.
-     * 
      * @param l
      *            Every {@link IVectorLayer}.
      * 
@@ -272,8 +257,6 @@ public class VectorLayerAdapter {
 
     /**
      * Creates a {@link Feature} from an {@link IVectorLayer}.
-     * 
-     * TODO more details.
      * 
      * @param l
      *            {@link IVectorLayer}
@@ -571,8 +554,8 @@ public class VectorLayerAdapter {
     /**
      * Creates a property declaration of a {@link IVectorLayer}.
      * 
-     * @param type
-     *            - {@link FeatureType}
+     * @param f
+     *            {@link Feature}
      * @return The property declaration of a {@link IVectorLayer} as a {@link Field} array.
      */
     private static Field[] determinePropertyDeclarationsForVectorLayer( Feature f ) {
@@ -618,6 +601,62 @@ public class VectorLayerAdapter {
     }
 
     /**
+     * Creates a property declaration of a {@link IVectorLayer}.
+     * 
+     * @param c
+     *            {@link FeatureCollection}
+     * @return The property declaration of a {@link IVectorLayer} as a {@link Field} array.
+     */
+    private static Field[] determinePropertyDeclarationsForVectorLayer( FeatureCollection c ) {
+
+        HashMap<String, Field> properties = new HashMap<String, Field>();
+
+        Iterator<Feature> it = c.iterator();
+        while ( it.hasNext() ) {
+
+            // get feature type
+            Feature f = it.next();
+
+            // if feature has geometries
+            if ( f.getGeometryProperties().length > 0 ) {
+
+                FeatureType fType = f.getType();
+
+                // get property declarations
+                List<PropertyType> propertyDeclarations = fType.getPropertyDeclarations();
+
+                for ( PropertyType pt : propertyDeclarations ) {
+
+                    // handle only SimplePropertyType
+                    if ( pt instanceof SimplePropertyType ) {
+                        SimplePropertyType spt = (SimplePropertyType) pt;
+
+                        // name
+                        QName pName = spt.getName();
+
+                        // class
+                        Class<?> pClass = spt.getPrimitiveType().getValueClass();
+                        // Class<?> pClass = String.class;
+
+                        // notice name and field
+                        properties.put( pName.getLocalPart(), new Field( pName, pClass ) );
+                    }
+                }
+            }
+        }
+
+        // create fields array
+        Field[] vectoLayerPropertyDeclarations = new Field[properties.size()];
+        Set<String> names = properties.keySet();
+        int i = 0;
+        for ( String name : names ) {
+            vectoLayerPropertyDeclarations[i++] = properties.get( name );
+        }
+
+        return vectoLayerPropertyDeclarations;
+    }
+
+    /**
      * This method determines a property value with 0 by {@link Class} object. Only use this method if the property
      * value is null.
      * 
@@ -645,56 +684,6 @@ public class VectorLayerAdapter {
         return value;
     }
 
-    private static Field[] determinePropertyDeclarationsForVectorLayer( FeatureCollection c ) {
-
-        HashMap<String, Field> properties = new HashMap<String, Field>();
-
-        Iterator<Feature> it = c.iterator();
-        if ( it.hasNext() ) {
-
-            // get feature type
-            Feature f = it.next();
-            if ( f.getGeometryProperties().length > 0 ) {
-
-                FeatureType fType = f.getType();
-
-                // get property declarations
-                List<PropertyType> propertyDeclarations = fType.getPropertyDeclarations();
-
-                for ( PropertyType pt : propertyDeclarations ) {
-
-                    // handle only SimplePropertyType
-                    if ( pt instanceof SimplePropertyType ) {
-                        SimplePropertyType spt = (SimplePropertyType) pt;
-
-                        // name
-                        QName pName = spt.getName();
-
-                        // class
-                        Class<?> pClass = spt.getPrimitiveType().getValueClass();
-                        // Class<?> pClass = String.class;
-
-                        // notice name and field
-
-                        properties.put( pName.getLocalPart(), new Field( pName, pClass ) );
-
-                        // LOG.info( "  PROPERTY: " + pName + ":   " + pClass );
-                    }
-                }
-            }
-        }
-
-        // create fields array
-        Field[] vectoLayerPropertyDeclarations = new Field[properties.size()];
-        Set<String> names = properties.keySet();
-        int i = 0;
-        for ( String name : names ) {
-            vectoLayerPropertyDeclarations[i++] = properties.get( name );
-        }
-
-        return vectoLayerPropertyDeclarations;
-    }
-
     /**
      * Creates properties for a {@link com.vividsolutions.jts.geom.Geometry} of the {@link IVectorLayer}. <br>
      * If a {@link Feature} has more properties with the same name, it will be used the first.
@@ -709,6 +698,7 @@ public class VectorLayerAdapter {
      */
     private static Object[] determinePropertiesForVectorLayerGeometry( Feature f, Field[] propertyDeclarations ) {
 
+        // property values of a IFeature
         Object[] geomProperties;
 
         if ( propertyDeclarations != null ) {
@@ -716,12 +706,12 @@ public class VectorLayerAdapter {
 
             for ( int i = 0; i < propertyDeclarations.length; i++ ) {
 
-                // propterties by name
+                // determine property value by name
                 Property[] allProperties = f.getProperties();
                 LinkedList<Property> propertyByName = new LinkedList<Property>();
                 for ( int j = 0; j < allProperties.length; j++ ) {
                     Property prop = allProperties[j];
-                    if ( prop.getName().getLocalPart().equals( propertyDeclarations[i].getName() ) )
+                    if ( prop.getName().equals( propertyDeclarations[i].getQName() ) )
                         propertyByName.add( prop );
                 }
 
@@ -741,7 +731,7 @@ public class VectorLayerAdapter {
                         geomProperties[i] = ( (PrimitiveValue) probNode ).getValue();
                         // geomProperties[i] = ( (PrimitiveValue) properties[0].getValue() ).getAsText();
                     } else {
-                        LOG.warn( "Property '" + prop.getName() + "' is not supported." );
+                        LOG.error( "Property '" + prop.getName() + "' is not supported." );
                         geomProperties[i] = null;
                     }
 
@@ -749,12 +739,10 @@ public class VectorLayerAdapter {
                     geomProperties[i] = null;
                 }
 
-                // LOG.info( "  PROPERTY: " + propertyDeclarations[i].getName() + ": " + geomProperties[i] );
-
             }
 
-        } else { // if names=null
-            geomProperties = new Object[] {};
+        } else { // if propertyDeclaration = null
+            geomProperties = new Object[] {}; // no property values
         }
 
         return geomProperties;
