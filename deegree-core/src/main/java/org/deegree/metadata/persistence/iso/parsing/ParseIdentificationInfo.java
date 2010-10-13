@@ -361,8 +361,9 @@ public class ParseIdentificationInfo extends XMLAdapter {
                                                            new XPath( "./gmd:aggregationInfo", nsContextParseII ) );
 
             List<OMElement> extent_md_dataIdent = new ArrayList<OMElement>();
-            List<OMElement> topicCategory = new ArrayList<OMElement>();
+            List<String> topicCategory = new ArrayList<String>();
             List<OMElement> spatialRepresentationType = null;
+            List<String> languageList = new ArrayList<String>();
             List<OMElement> spatialResolution = null;
             List<OMElement> language_md_dataIdent = null;
             List<OMElement> characterSet_md_dataIdent = null;
@@ -416,14 +417,17 @@ public class ParseIdentificationInfo extends XMLAdapter {
                  *---------------------------------------------------------------*/
                 LOG.debug( "MD_DataIdentification/TopicCategory element..." );
 
-                topicCategory = getElements( md_dataIdentification, new XPath( "./gmd:topicCategory", nsContextParseII ) );
+                // topicCategory = getElements( md_dataIdentification, new XPath( "./gmd:topicCategory",
+                // nsContextParseII ) );
 
                 if ( md_dataIdentification != null ) {
                     topicCategories = getNodesAsStrings( md_dataIdentification,
                                                          new XPath( "./gmd:topicCategory/gmd:MD_TopicCategoryCode",
                                                                     nsContextParseII ) );
+                    for ( String t : topicCategories ) {
+                        topicCategory.add( t );
+                    }
                 }
-                qp.setTopicCategory( Arrays.asList( topicCategories ) );
 
                 /*---------------------------------------------------------------
                  * MD_DataIdentification
@@ -454,15 +458,12 @@ public class ParseIdentificationInfo extends XMLAdapter {
                 supplementalInformation = getElement( md_dataIdentification,
                                                       new XPath( "./gmd:supplementalInformation", nsContextParseII ) );
 
-                List<String> languageList = new ArrayList<String>();
                 for ( OMElement langElem : language_md_dataIdent ) {
                     String resourceLanguage = getNodeAsString( langElem,
                                                                new XPath( "./gmd:language/gco:CharacterString",
                                                                           nsContextParseII ), null );
                     languageList.add( resourceLanguage );
                 }
-
-                qp.setResourceLanguage( languageList );
 
                 for ( OMElement spatialResolutionElem : spatialResolution ) {
                     int denominator = getNodeAsInt(
@@ -487,6 +488,9 @@ public class ParseIdentificationInfo extends XMLAdapter {
                 }
 
             }
+
+            qp.setTopicCategory( topicCategory );
+            qp.setResourceLanguage( languageList );
 
             List<String> relationList = new ArrayList<String>();
             for ( OMElement aggregatInfoElem : aggregationInfo ) {

@@ -104,6 +104,7 @@ public class ISOMetadataStoreTransaction implements MetadataStoreTransaction {
                 OMElement elemFI = ca.getFi().inspect( element );
                 if ( elemFI != null ) {
                     OMElement elemRI = ResourceIdentifier.newInstance( ca.getIc().getRic(), conn ).inspect( elemFI );
+
                     ISORecord rec = new ISORecord( elemRI );
                     GenerateQueryableProperties generateQP = new GenerateQueryableProperties();
                     int operatesOnId = generateQP.generateMainDatabaseDataset( conn, rec );

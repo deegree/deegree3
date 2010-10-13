@@ -182,7 +182,7 @@ public class GetRecordByIdHandler {
         }
 
         for ( MetadataRecord m : resultSet.getMembers() ) {
-            if ( getRecBI.getOutputSchema() == OutputSchema.determineOutputSchema( OutputSchema.ISO_19115 ) ) {
+            if ( getRecBI.getOutputSchema().equals( OutputSchema.determineOutputSchema( OutputSchema.ISO_19115 ) ) ) {
                 m.serialize( writer, getRecBI.getElementSetName() );
             } else {
                 DCRecord dc = m.toDublinCore();

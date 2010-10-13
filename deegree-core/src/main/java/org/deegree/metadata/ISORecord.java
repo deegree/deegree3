@@ -36,6 +36,7 @@
 package org.deegree.metadata;
 
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
@@ -56,6 +57,7 @@ import org.deegree.filter.Filter;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryFactory;
 import org.deegree.metadata.persistence.MetadataStoreException;
+import org.deegree.metadata.persistence.iso.FillProperties;
 import org.deegree.metadata.persistence.iso.parsing.ISOQPParsing;
 import org.deegree.metadata.persistence.iso.parsing.ParsedProfileElement;
 import org.deegree.metadata.persistence.types.BoundingBox;
@@ -80,6 +82,8 @@ public class ISORecord implements MetadataRecord {
     private OMElement root;
 
     private ParsedProfileElement pElem;
+
+    private FillProperties props;
 
     private static String[] summaryLocalParts = new String[14];
 
@@ -152,9 +156,8 @@ public class ISORecord implements MetadataRecord {
     public ISORecord( XMLStreamReader xmlStream ) throws MetadataStoreException {
 
         this.root = new XMLAdapter( xmlStream ).getRootElement();
-
         this.pElem = new ISOQPParsing().parseAPISO( root, false );
-
+        // this.props = props;
         summaryFilterElements = removeElementsISONamespace( summaryLocalParts );
         briefFilterElements = removeElementsISONamespace( briefLocalParts );
         briefSummaryFilterElements = removeElementsISONamespace( briefSummaryLocalParts );
@@ -162,8 +165,9 @@ public class ISORecord implements MetadataRecord {
     }
 
     public ISORecord( OMElement root ) throws MetadataStoreException {
-        this( root.getXMLStreamReader() );
 
+        this( root.getXMLStreamReader() );
+        // this.pElem = pElem;
     }
 
     @Override
@@ -174,6 +178,7 @@ public class ISORecord implements MetadataRecord {
 
     @Override
     public String[] getAbstract() {
+
         List<String> l = pElem.getQueryableProperties().get_abstract();
         String[] s = new String[l.size()];
         int counter = 0;
@@ -188,6 +193,14 @@ public class ISORecord implements MetadataRecord {
     public Envelope[] getBoundingBox() {
 
         List<BoundingBox> bboxList = pElem.getQueryableProperties().getBoundingBox();
+        if ( pElem.getQueryableProperties().getCrs().isEmpty() ) {
+            List<CRSCodeType> newCRSList = new LinkedList<CRSCodeType>();
+            for ( BoundingBox b : bboxList ) {
+                newCRSList.add( new CRSCodeType( "4326", "EPSG" ) );
+            }
+
+            pElem.getQueryableProperties().setCrs( newCRSList );
+        }
 
         Envelope[] env = new Envelope[bboxList.size()];
         int counter = 0;
@@ -246,7 +259,13 @@ public class ISORecord implements MetadataRecord {
 
     @Override
     public String[] getTitle() {
-        List<String> l = pElem.getQueryableProperties().getTitle();
+        List<String> l = null;
+        if ( pElem != null ) {
+            l = pElem.getQueryableProperties().getTitle();
+        }
+        // else {
+        // return props
+        // }
         String[] s = new String[l.size()];
         int counter = 0;
         for ( String st : l ) {
@@ -272,6 +291,7 @@ public class ISORecord implements MetadataRecord {
 
         }
         List<String> topicCategories = pElem.getQueryableProperties().getTopicCategory();
+
         String[] subjects = new String[keywordSizeCount + topicCategories.size()];
         int counter = 0;
         for ( Keyword k : keywords ) {

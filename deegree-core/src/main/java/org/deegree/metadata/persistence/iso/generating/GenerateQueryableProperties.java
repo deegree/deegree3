@@ -45,6 +45,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.text.ParseException;
+import java.util.LinkedList;
+import java.util.List;
 
 import javax.xml.stream.XMLStreamException;
 
@@ -117,7 +119,9 @@ public class GenerateQueryableProperties {
             stm.setObject( 2, null );
             stm.setObject( 3, null );
             // TODO should be anyText
-            stm.setObject( 4, "" );
+            stm.setObject( 4, generateISOQP_AnyTextStatement( isCaseSensitive,
+                                                              rec.getParsedElement().getQueryableProperties(),
+                                                              rec.getParsedElement().getReturnableProperties() ) );
             if ( rec.getModified() != null ) {
                 // TODO think of more than one date
                 String time = rec.getModified()[0].toString();
@@ -175,6 +179,7 @@ public class GenerateQueryableProperties {
             generateISOQP_TypeStatement( isUpdate, connection, operatesOnId,
                                          rec.getParsedElement().getQueryableProperties() );
         }
+
         if ( rec.getParsedElement().getQueryableProperties().getKeywords() != null ) {
             generateISOQP_KeywordStatement( isUpdate, connection, operatesOnId,
                                             rec.getParsedElement().getQueryableProperties() );
@@ -255,15 +260,11 @@ public class GenerateQueryableProperties {
             generateISOQP_CouplingTypeStatement( isUpdate, connection, operatesOnId,
                                                  rec.getParsedElement().getQueryableProperties() );
         }
-        // TODO spatial
         LOG.debug( "Boundingbox = " + rec.getParsedElement().getQueryableProperties().getBoundingBox() );
         if ( rec.getParsedElement().getQueryableProperties().getBoundingBox() != null ) {
             generateISOQP_BoundingBoxStatement( isUpdate, connection, operatesOnId,
                                                 rec.getParsedElement().getQueryableProperties() );
         }
-        // if ( qp.getCrs() != null || qp.getCrs().size() != 0 ) {
-        // generateISOQP_CRSStatement( isUpdate );
-        // }
 
         generateADDQP_DegreeStatement( isUpdate, connection, operatesOnId,
                                        rec.getParsedElement().getQueryableProperties() );
@@ -304,9 +305,11 @@ public class GenerateQueryableProperties {
      * Puts the identifier for this dataset into the database.
      * 
      * @param isUpdate
+     * @throws MetadataStoreException
      */
     private void generateQP_IdentifierStatement( boolean isUpdate, Connection connection, int operatesOnId,
-                                                 QueryableProperties qp ) {
+                                                 QueryableProperties qp )
+                            throws MetadataStoreException {
         final String databaseTable = PostGISMappingsISODC.DatabaseTables.qp_identifier.name();
         StringWriter s_PRE = new StringWriter( 200 );
         StringWriter s_POST = new StringWriter( 50 );
@@ -337,10 +340,12 @@ public class GenerateQueryableProperties {
      *            the precondition to generate an executable statement
      * @param queryablePropertyStatement_POST
      *            the postcondition to generate an executable statement
+     * @throws MetadataStoreException
      */
     private void executeQueryablePropertiesDatabasetables( boolean isUpdate, Connection connection, int operatesOnId,
                                                            String databaseTable, Writer queryablePropertyStatement_PRE,
-                                                           Writer queryablePropertyStatement_POST ) {
+                                                           Writer queryablePropertyStatement_POST )
+                            throws MetadataStoreException {
         StringWriter sqlStatement = new StringWriter( 500 );
         PreparedStatement stm = null;
 
@@ -350,7 +355,7 @@ public class GenerateQueryableProperties {
             if ( isUpdate == true ) {
                 sqlStatement.append( "DELETE FROM " + databaseTable + " WHERE " + fk_datasets + " = ?;" );
                 stm = connection.prepareStatement( sqlStatement.toString() );
-                stm.setObject( 1, operatesOnId );
+                stm.setInt( 1, operatesOnId );
                 stm.executeUpdate();
             }
             localId = getLastDatasetId( connection, databaseTable );
@@ -361,8 +366,8 @@ public class GenerateQueryableProperties {
 
             stm = connection.prepareStatement( sqlStatement.toString() );
             LOG.debug( stm.toString() );
-            stm.setObject( 1, localId );
-            stm.setObject( 2, operatesOnId );
+            stm.setInt( 1, localId );
+            stm.setInt( 2, operatesOnId );
             stm.executeUpdate();
             stm.close();
 
@@ -379,6 +384,7 @@ public class GenerateQueryableProperties {
         } catch ( SQLException e ) {
 
             LOG.debug( "error: " + e.getMessage(), e );
+            throw new MetadataStoreException( e.getMessage() );
         }
 
     }
@@ -528,9 +534,11 @@ public class GenerateQueryableProperties {
      * Puts the organisationname for this dataset into the database.
      * 
      * @param isUpdate
+     * @throws MetadataStoreException
      */
     private void generateISOQP_OrganisationNameStatement( boolean isUpdate, Connection connection, int operatesOnId,
-                                                          QueryableProperties qp ) {
+                                                          QueryableProperties qp )
+                            throws MetadataStoreException {
         final String databaseTable = PostGISMappingsISODC.DatabaseTables.isoqp_organisationname.name();
 
         StringWriter s_PRE = new StringWriter( 200 );
@@ -548,9 +556,11 @@ public class GenerateQueryableProperties {
      * Puts the temporalextent for this dataset into the database.
      * 
      * @param isUpdate
+     * @throws MetadataStoreException
      */
     private void generateISOQP_TemporalExtentStatement( boolean isUpdate, Connection connection, int operatesOnId,
-                                                        QueryableProperties qp ) {
+                                                        QueryableProperties qp )
+                            throws MetadataStoreException {
         final String databaseTable = PostGISMappingsISODC.DatabaseTables.isoqp_temporalextent.name();
 
         StringWriter s_PRE = new StringWriter( 200 );
@@ -572,9 +582,11 @@ public class GenerateQueryableProperties {
      * Puts the spatialresolution for this dataset into the database.
      * 
      * @param isUpdate
+     * @throws MetadataStoreException
      */
     private void generateISOQP_SpatialResolutionStatement( boolean isUpdate, Connection connection, int operatesOnId,
-                                                           QueryableProperties qp ) {
+                                                           QueryableProperties qp )
+                            throws MetadataStoreException {
         final String databaseTable = PostGISMappingsISODC.DatabaseTables.isoqp_spatialresolution.name();
 
         StringWriter s_PRE = new StringWriter( 200 );
@@ -593,9 +605,11 @@ public class GenerateQueryableProperties {
      * Puts the couplingtype for this dataset into the database.
      * 
      * @param isUpdate
+     * @throws MetadataStoreException
      */
     private void generateISOQP_CouplingTypeStatement( boolean isUpdate, Connection connection, int operatesOnId,
-                                                      QueryableProperties qp ) {
+                                                      QueryableProperties qp )
+                            throws MetadataStoreException {
         final String databaseTable = PostGISMappingsISODC.DatabaseTables.isoqp_couplingtype.name();
 
         StringWriter s_PRE = new StringWriter( 200 );
@@ -613,9 +627,11 @@ public class GenerateQueryableProperties {
      * Puts the operatesondata for this dataset into the database.
      * 
      * @param isUpdate
+     * @throws MetadataStoreException
      */
     private void generateISOQP_OperatesOnStatement( boolean isUpdate, Connection connection, int operatesOnId,
-                                                    QueryableProperties qp ) {
+                                                    QueryableProperties qp )
+                            throws MetadataStoreException {
         final String databaseTable = PostGISMappingsISODC.DatabaseTables.isoqp_operatesondata.name();
 
         StringWriter s_PRE = new StringWriter( 200 );
@@ -638,9 +654,11 @@ public class GenerateQueryableProperties {
      * Puts the operation for this dataset into the database.
      * 
      * @param isUpdate
+     * @throws MetadataStoreException
      */
     private void generateISOQP_OperationStatement( boolean isUpdate, Connection connection, int operatesOnId,
-                                                   QueryableProperties qp ) {
+                                                   QueryableProperties qp )
+                            throws MetadataStoreException {
         final String databaseTable = PostGISMappingsISODC.DatabaseTables.isoqp_operation.name();
 
         StringWriter s_PRE = new StringWriter( 200 );
@@ -660,9 +678,11 @@ public class GenerateQueryableProperties {
      * Puts the geographicDescriptionCode for the type "service" for this dataset into the database.
      * 
      * @param isUpdate
+     * @throws MetadataStoreException
      */
     private void generateISOQP_GeographicDescriptionCode_ServiceStatement( boolean isUpdate, Connection connection,
-                                                                           int operatesOnId, QueryableProperties qp ) {
+                                                                           int operatesOnId, QueryableProperties qp )
+                            throws MetadataStoreException {
         final String databaseTable = PostGISMappingsISODC.DatabaseTables.isoqp_geographicdescriptioncode.name();
 
         StringWriter s_PRE = new StringWriter( 200 );
@@ -683,9 +703,11 @@ public class GenerateQueryableProperties {
      * Puts the servicetypeversion for this dataset into the database.
      * 
      * @param isUpdate
+     * @throws MetadataStoreException
      */
     private void generateISOQP_ServiceTypeVersionStatement( boolean isUpdate, Connection connection, int operatesOnId,
-                                                            QueryableProperties qp ) {
+                                                            QueryableProperties qp )
+                            throws MetadataStoreException {
         final String databaseTable = PostGISMappingsISODC.DatabaseTables.isoqp_servicetypeversion.name();
 
         StringWriter s_PRE = new StringWriter( 200 );
@@ -703,9 +725,11 @@ public class GenerateQueryableProperties {
      * Puts the servicetype for this dataset into the database.
      * 
      * @param isUpdate
+     * @throws MetadataStoreException
      */
     private void generateISOQP_ServiceTypeStatement( boolean isUpdate, Connection connection, int operatesOnId,
-                                                     QueryableProperties qp ) {
+                                                     QueryableProperties qp )
+                            throws MetadataStoreException {
         final String databaseTable = PostGISMappingsISODC.DatabaseTables.isoqp_servicetype.name();
 
         StringWriter s_PRE = new StringWriter( 200 );
@@ -723,9 +747,11 @@ public class GenerateQueryableProperties {
      * Puts the resourcelanguage for this dataset into the database.
      * 
      * @param isUpdate
+     * @throws MetadataStoreException
      */
     private void generateISOQP_ResourceLanguageStatement( boolean isUpdate, Connection connection, int operatesOnId,
-                                                          QueryableProperties qp ) {
+                                                          QueryableProperties qp )
+                            throws MetadataStoreException {
         final String databaseTable = PostGISMappingsISODC.DatabaseTables.isoqp_resourcelanguage.name();
 
         StringWriter s_PRE = new StringWriter( 200 );
@@ -743,9 +769,11 @@ public class GenerateQueryableProperties {
      * Puts the revisiondate for this dataset into the database.
      * 
      * @param isUpdate
+     * @throws MetadataStoreException
      */
     private void generateISOQP_RevisionDateStatement( boolean isUpdate, Connection connection, int operatesOnId,
-                                                      QueryableProperties qp ) {
+                                                      QueryableProperties qp )
+                            throws MetadataStoreException {
         final String databaseTable = PostGISMappingsISODC.DatabaseTables.isoqp_revisiondate.name();
 
         StringWriter s_PRE = new StringWriter( 200 );
@@ -766,9 +794,11 @@ public class GenerateQueryableProperties {
      * Puts the creationdate for this dataset into the database.
      * 
      * @param isUpdate
+     * @throws MetadataStoreException
      */
     private void generateISOQP_CreationDateStatement( boolean isUpdate, Connection connection, int operatesOnId,
-                                                      QueryableProperties qp ) {
+                                                      QueryableProperties qp )
+                            throws MetadataStoreException {
         final String databaseTable = PostGISMappingsISODC.DatabaseTables.isoqp_creationdate.name();
 
         StringWriter s_PRE = new StringWriter( 200 );
@@ -789,9 +819,11 @@ public class GenerateQueryableProperties {
      * Puts the publicationdate for this dataset into the database.
      * 
      * @param isUpdate
+     * @throws MetadataStoreException
      */
     private void generateISOQP_PublicationDateStatement( boolean isUpdate, Connection connection, int operatesOnId,
-                                                         QueryableProperties qp ) {
+                                                         QueryableProperties qp )
+                            throws MetadataStoreException {
         final String databaseTable = PostGISMappingsISODC.DatabaseTables.isoqp_publicationdate.name();
 
         StringWriter s_PRE = new StringWriter( 200 );
@@ -812,9 +844,11 @@ public class GenerateQueryableProperties {
      * Puts the resourceIdentifier for this dataset into the database.
      * 
      * @param isUpdate
+     * @throws MetadataStoreException
      */
     private void generateISOQP_ResourceIdentifierStatement( boolean isUpdate, Connection connection, int operatesOnId,
-                                                            QueryableProperties qp ) {
+                                                            QueryableProperties qp )
+                            throws MetadataStoreException {
         final String databaseTable = PostGISMappingsISODC.DatabaseTables.isoqp_resourceidentifier.name();
 
         StringWriter s_PRE = new StringWriter( 200 );
@@ -834,9 +868,11 @@ public class GenerateQueryableProperties {
      * Puts the alternatetitle for this dataset into the database.
      * 
      * @param isUpdate
+     * @throws MetadataStoreException
      */
     private void generateISOQP_AlternateTitleStatement( boolean isUpdate, Connection connection, int operatesOnId,
-                                                        QueryableProperties qp ) {
+                                                        QueryableProperties qp )
+                            throws MetadataStoreException {
         final String databaseTable = PostGISMappingsISODC.DatabaseTables.isoqp_alternatetitle.name();
 
         StringWriter s_PRE = new StringWriter( 200 );
@@ -856,9 +892,11 @@ public class GenerateQueryableProperties {
      * Puts the title for this dataset into the database.
      * 
      * @param isUpdate
+     * @throws MetadataStoreException
      */
     private void generateISOQP_TitleStatement( boolean isUpdate, Connection connection, int operatesOnId,
-                                               QueryableProperties qp ) {
+                                               QueryableProperties qp )
+                            throws MetadataStoreException {
         final String databaseTable = PostGISMappingsISODC.DatabaseTables.isoqp_title.name();
 
         StringWriter s_PRE = new StringWriter( 200 );
@@ -878,9 +916,11 @@ public class GenerateQueryableProperties {
      * Puts the type for this dataset into the database.
      * 
      * @param isUpdate
+     * @throws MetadataStoreException
      */
     private void generateISOQP_TypeStatement( boolean isUpdate, Connection connection, int operatesOnId,
-                                              QueryableProperties qp ) {
+                                              QueryableProperties qp )
+                            throws MetadataStoreException {
         final String databaseTable = PostGISMappingsISODC.DatabaseTables.isoqp_type.name();
 
         StringWriter s_PRE = new StringWriter( 200 );
@@ -898,9 +938,11 @@ public class GenerateQueryableProperties {
      * Puts the keyword for this dataset into the database.
      * 
      * @param isUpdate
+     * @throws MetadataStoreException
      */
     private void generateISOQP_KeywordStatement( boolean isUpdate, Connection connection, int operatesOnId,
-                                                 QueryableProperties qp ) {
+                                                 QueryableProperties qp )
+                            throws MetadataStoreException {
         final String databaseTable = PostGISMappingsISODC.DatabaseTables.isoqp_keyword.name();
 
         StringWriter s_PRE = new StringWriter( 200 );
@@ -926,9 +968,11 @@ public class GenerateQueryableProperties {
      * Puts the topiccategory for this dataset into the database.
      * 
      * @param isUpdate
+     * @throws MetadataStoreException
      */
     private void generateISOQP_TopicCategoryStatement( boolean isUpdate, Connection connection, int operatesOnId,
-                                                       QueryableProperties qp ) {
+                                                       QueryableProperties qp )
+                            throws MetadataStoreException {
         final String databaseTable = PostGISMappingsISODC.DatabaseTables.isoqp_topiccategory.name();
 
         StringWriter s_PRE = new StringWriter( 200 );
@@ -948,9 +992,11 @@ public class GenerateQueryableProperties {
      * Puts the format for this dataset into the database.
      * 
      * @param isUpdate
+     * @throws MetadataStoreException
      */
     private void generateISOQP_FormatStatement( boolean isUpdate, Connection connection, int operatesOnId,
-                                                QueryableProperties qp ) {
+                                                QueryableProperties qp )
+                            throws MetadataStoreException {
         final String databaseTable = PostGISMappingsISODC.DatabaseTables.isoqp_format.name();
 
         StringWriter s_PRE = new StringWriter( 200 );
@@ -971,9 +1017,11 @@ public class GenerateQueryableProperties {
      * Puts the abstract for this dataset into the database.
      * 
      * @param isUpdate
+     * @throws MetadataStoreException
      */
     private void generateISOQP_AbstractStatement( boolean isUpdate, Connection connection, int operatesOnId,
-                                                  QueryableProperties qp ) {
+                                                  QueryableProperties qp )
+                            throws MetadataStoreException {
         final String databaseTable = PostGISMappingsISODC.DatabaseTables.isoqp_abstract.name();
 
         StringWriter s_PRE = new StringWriter( 200 );
@@ -997,9 +1045,11 @@ public class GenerateQueryableProperties {
      * @param stm
      * @param operatesOnId
      * @param qp
+     * @throws MetadataStoreException
      */
     private void generateADDQP_DegreeStatement( boolean isUpdate, Connection connection, int operatesOnId,
-                                                QueryableProperties qp ) {
+                                                QueryableProperties qp )
+                            throws MetadataStoreException {
         final String databaseTable = PostGISMappingsISODC.DatabaseTables.addqp_degree.name();
 
         StringWriter s_PRE = new StringWriter( 200 );
@@ -1021,9 +1071,11 @@ public class GenerateQueryableProperties {
      * @param stm
      * @param operatesOnId
      * @param qp
+     * @throws MetadataStoreException
      */
     private void generateADDQP_LineageStatement( boolean isUpdate, Connection connection, int operatesOnId,
-                                                 QueryableProperties qp ) {
+                                                 QueryableProperties qp )
+                            throws MetadataStoreException {
         final String databaseTable = PostGISMappingsISODC.DatabaseTables.addqp_lineage.name();
 
         StringWriter s_PRE = new StringWriter( 200 );
@@ -1041,15 +1093,17 @@ public class GenerateQueryableProperties {
      * Puts the specification for this dataset into the database.
      * 
      * @param isUpdate
+     * @throws MetadataStoreException
      */
     private void generateADDQP_SpecificationStatement( boolean isUpdate, Connection connection, int operatesOnId,
-                                                       QueryableProperties qp ) {
+                                                       QueryableProperties qp )
+                            throws MetadataStoreException {
         final String databaseTable = PostGISMappingsISODC.DatabaseTables.addqp_specification.name();
 
         StringWriter s_PRE = new StringWriter( 200 );
         StringWriter s_POST = new StringWriter( 50 );
 
-        if ( qp.getSpecificationDate() != null ) {
+        if ( qp.getSpecificationTitle() != null ) {
             for ( String specificationTitle : qp.getSpecificationTitle() ) {
 
                 s_PRE.append( "INSERT INTO " + databaseTable + " (" + id + ", " + fk_datasets
@@ -1069,9 +1123,11 @@ public class GenerateQueryableProperties {
      * Puts the accessConstraints for this dataset into the database.
      * 
      * @param isUpdate
+     * @throws MetadataStoreException
      */
     private void generateADDQP_AccessConstraintsStatement( boolean isUpdate, Connection connection, int operatesOnId,
-                                                           QueryableProperties qp ) {
+                                                           QueryableProperties qp )
+                            throws MetadataStoreException {
         final String databaseTable = PostGISMappingsISODC.DatabaseTables.addqp_accessconstraint.name();
 
         StringWriter s_PRE = new StringWriter( 200 );
@@ -1091,9 +1147,11 @@ public class GenerateQueryableProperties {
      * Puts the limitation for this dataset into the database.
      * 
      * @param isUpdate
+     * @throws MetadataStoreException
      */
     private void generateADDQP_LimitationsStatement( boolean isUpdate, Connection connection, int operatesOnId,
-                                                     QueryableProperties qp ) {
+                                                     QueryableProperties qp )
+                            throws MetadataStoreException {
         final String databaseTable = PostGISMappingsISODC.DatabaseTables.addqp_limitation.name();
 
         StringWriter s_PRE = new StringWriter( 200 );
@@ -1113,9 +1171,11 @@ public class GenerateQueryableProperties {
      * Puts the otherConstaints for this dataset into the database.
      * 
      * @param isUpdate
+     * @throws MetadataStoreException
      */
     private void generateADDQP_OtherConstraintsStatement( boolean isUpdate, Connection connection, int operatesOnId,
-                                                          QueryableProperties qp ) {
+                                                          QueryableProperties qp )
+                            throws MetadataStoreException {
         final String databaseTable = PostGISMappingsISODC.DatabaseTables.addqp_otherconstraint.name();
 
         StringWriter s_PRE = new StringWriter( 200 );
@@ -1135,9 +1195,11 @@ public class GenerateQueryableProperties {
      * Puts the classification for this dataset into the database.
      * 
      * @param isUpdate
+     * @throws MetadataStoreException
      */
     private void generateADDQP_ClassificationStatement( boolean isUpdate, Connection connection, int operatesOnId,
-                                                        QueryableProperties qp ) {
+                                                        QueryableProperties qp )
+                            throws MetadataStoreException {
         final String databaseTable = PostGISMappingsISODC.DatabaseTables.addqp_classification.name();
 
         StringWriter s_PRE = new StringWriter( 200 );
@@ -1160,13 +1222,22 @@ public class GenerateQueryableProperties {
      * @param isUpdate
      * @throws MetadataStoreException
      */
-    // TODO one record got one or more bboxes?
     private void generateISOQP_BoundingBoxStatement( boolean isUpdate, Connection connection, int operatesOnId,
                                                      QueryableProperties qp )
                             throws MetadataStoreException {
         final String databaseTable = PostGISMappingsISODC.DatabaseTables.isoqp_BoundingBox.name();
         StringWriter sqlStatement = new StringWriter( 500 );
         PreparedStatement stm = null;
+
+        if ( qp.getCrs().isEmpty() ) {
+            List<CRSCodeType> newCRSList = new LinkedList<CRSCodeType>();
+            for ( BoundingBox b : qp.getBoundingBox() ) {
+                newCRSList.add( new CRSCodeType( "4326", "EPSG" ) );
+            }
+
+            qp.setCrs( newCRSList );
+        }
+
         int counter = 0;
         for ( BoundingBox bbox : qp.getBoundingBox() ) {
             double east = bbox.getEastBoundLongitude();
