@@ -38,7 +38,7 @@ package org.deegree.metadata.persistence.iso.parsing;
 import java.util.List;
 
 import org.deegree.commons.tom.datetime.Date;
-import org.deegree.cs.CRS;
+import org.deegree.cs.CRSCodeType;
 import org.deegree.metadata.persistence.types.BoundingBox;
 import org.deegree.metadata.persistence.types.Format;
 import org.deegree.metadata.persistence.types.Keyword;
@@ -72,9 +72,9 @@ public class QueryableProperties {
 
     private String type;
 
-    private BoundingBox boundingBox;
+    private List<BoundingBox> boundingBox;
 
-    private List<CRS> crs;
+    private List<CRSCodeType> crs;
 
     // ---</common queryable properties>
 
@@ -387,7 +387,7 @@ public class QueryableProperties {
     /**
      * @return the crs
      */
-    public List<CRS> getCrs() {
+    public List<CRSCodeType> getCrs() {
         return crs;
     }
 
@@ -395,7 +395,7 @@ public class QueryableProperties {
      * @param crs
      *            the crs to set
      */
-    public void setCrs( List<CRS> crs ) {
+    public void setCrs( List<CRSCodeType> crs ) {
         this.crs = crs;
     }
 
@@ -417,7 +417,7 @@ public class QueryableProperties {
     /**
      * @return the boundingBox
      */
-    public BoundingBox getBoundingBox() {
+    public List<BoundingBox> getBoundingBox() {
         return boundingBox;
     }
 
@@ -425,7 +425,7 @@ public class QueryableProperties {
      * @param boundingBox
      *            the boundingBox to set
      */
-    public void setBoundingBox( BoundingBox boundingBox ) {
+    public void setBoundingBox( List<BoundingBox> boundingBox ) {
         this.boundingBox = boundingBox;
     }
 

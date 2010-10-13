@@ -90,21 +90,6 @@ public class PostGISMappingsISODC implements PostGISMapping {
     private static Map<QName, Triple<String, String, PrimitiveType>> propToTableAndCol = new HashMap<QName, Triple<String, String, PrimitiveType>>();
 
     /**
-     * Tablename in backend
-     */
-    public final static String RECORDBRIEF = "recordbrief";
-
-    /**
-     * Tablename in backend
-     */
-    public final static String RECORDSUMMARY = "recordsummary";
-
-    /**
-     * Tablename in backend
-     */
-    public final static String RECORDFULL = "recordfull";
-
-    /**
      * XML element name in the representation of the response
      */
     public final static String BRIEFRECORD = "BriefRecord";
@@ -125,10 +110,6 @@ public class PostGISMappingsISODC implements PostGISMapping {
     // private static Map<String, String> tableRecordType = new HashMap<String, String>();
 
     static {
-
-        // tableRecordType.put( RECORDBRIEF, BRIEFRECORD );
-        // tableRecordType.put( RECORDSUMMARY, SUMMARYRECORD );
-        // tableRecordType.put( RECORDFULL, RECORD );
 
         // ----------------------------------------------------------------------------------------
         // ----------------------<common queryable properties>-------------------------------------
@@ -265,7 +246,13 @@ public class PostGISMappingsISODC implements PostGISMapping {
         /**
          * the identifier of the record
          */
-        identifier;
+        identifier,
+
+        /**
+         * the BLOB data for the reecord
+         */
+        recordfull;
+
     }
 
     /**

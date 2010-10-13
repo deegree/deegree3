@@ -60,7 +60,6 @@ import org.deegree.metadata.persistence.GenericDatabaseExecution;
 import org.deegree.metadata.persistence.MetadataQuery;
 import org.deegree.metadata.persistence.MetadataStoreException;
 import org.deegree.metadata.persistence.iso.generating.BuildMetadataXMLRepresentation;
-import org.deegree.metadata.persistence.iso.generating.GenerateQueryableProperties;
 import org.deegree.metadata.persistence.iso.parsing.ParsedProfileElement;
 import org.slf4j.Logger;
 
@@ -76,8 +75,6 @@ public class ExecuteStatements implements GenericDatabaseExecution {
 
     private static final Logger LOG = getLogger( ExecuteStatements.class );
 
-    private GenerateQueryableProperties generateQP;
-
     private BuildMetadataXMLRepresentation buildRecXML;
 
     private static final String databaseTable = PostGISMappingsISODC.DatabaseTables.datasets.name();
@@ -92,34 +89,33 @@ public class ExecuteStatements implements GenericDatabaseExecution {
 
     private static final String data = PostGISMappingsISODC.CommonColumnNames.data.name();
 
-    private static final String format = PostGISMappingsISODC.CommonColumnNames.format.name();
+    private static final String recordfull = PostGISMappingsISODC.CommonColumnNames.recordfull.name();
 
     @Override
     public String executeInsertStatement( boolean isDC, Connection connection, ParsedProfileElement parsedElement )
-                            throws IOException, MetadataStoreException {
-        generateQP = new GenerateQueryableProperties();
-        buildRecXML = new BuildMetadataXMLRepresentation();
-
-        boolean isUpdate = false;
-        String identifier = null;
-        // if ( parsedElement != null ) {
-        // int operatesOnId = generateQP.generateMainDatabaseDataset( connection, parsedElement );
+                            throws MetadataStoreException {
+        // buildRecXML = new BuildMetadataXMLRepresentation();
         //
-        // if ( isDC == true ) {
-        // identifier = buildRecXML.generateDC( connection, operatesOnId, parsedElement );
-        // } else {
-        // identifier = buildRecXML.generateISO( connection, operatesOnId, parsedElement );
-        //
-        // }
-        // 
-        return identifier;
-        // }
-        // return null;
+        // boolean isUpdate = false;
+        // String identifier = null;
+        // // if ( parsedElement != null ) {
+        // // int operatesOnId = generateQP.generateMainDatabaseDataset( connection, parsedElement );
+        // //
+        // // if ( isDC == true ) {
+        // // identifier = buildRecXML.generateDC( connection, operatesOnId, parsedElement );
+        // // } else {
+        // // identifier = buildRecXML.generateISO( connection, operatesOnId, parsedElement );
+        // //
+        // // }
+        // //
+        // return identifier;
+        // // }
+        return null;
 
     }
 
     @Override
-    public int executeDeleteStatement( Connection connection, PostGISWhereBuilder builder, int formatNumber )
+    public int executeDeleteStatement( Connection connection, PostGISWhereBuilder builder )
                             throws MetadataStoreException {
 
         StringBuilder getDatasetIDs = new StringBuilder( 300 );
@@ -163,19 +159,6 @@ public class ExecuteStatements implements GenericDatabaseExecution {
                 }
             }
 
-            getDatasetIDs.append( " LEFT OUTER JOIN " );
-            getDatasetIDs.append( "recordfull" );
-            getDatasetIDs.append( " AS " );
-            getDatasetIDs.append( blobTableAlias );
-            getDatasetIDs.append( " ON " );
-            getDatasetIDs.append( rootTableAlias );
-            getDatasetIDs.append( "." );
-            getDatasetIDs.append( id );
-            getDatasetIDs.append( "=" );
-            getDatasetIDs.append( blobTableAlias );
-            getDatasetIDs.append( "." );
-            getDatasetIDs.append( fk_datasets );
-
             getDatasetIDs.append( " WHERE " );
 
             if ( builder.getWhere() != null ) {
@@ -185,7 +168,7 @@ public class ExecuteStatements implements GenericDatabaseExecution {
             preparedStatement = connection.prepareStatement( getDatasetIDs.toString() );
 
             int i = 1;
-            LOG.debug( "" + preparedStatement );
+            LOG.debug( "Delete statement: " + preparedStatement );
 
             if ( builder.getWhere() != null ) {
                 for ( SQLLiteral o : builder.getWhere().getLiterals() ) {
@@ -227,7 +210,6 @@ public class ExecuteStatements implements GenericDatabaseExecution {
             }
 
         } catch ( SQLException e ) {
-            // JDBCUtils.close( rs, preparedStatement, connection, LOG );
 
             LOG.debug( "Error while generating the SELECT statement: {}", e.getMessage() );
             throw new MetadataStoreException( "Error while generating the SELECT statement: {}", e );
@@ -245,7 +227,6 @@ public class ExecuteStatements implements GenericDatabaseExecution {
                             throws MetadataStoreException {
 
         boolean isUpdate = true;
-        generateQP = new GenerateQueryableProperties();
         buildRecXML = new BuildMetadataXMLRepresentation();
         int result = 0;
 
@@ -528,8 +509,8 @@ public class ExecuteStatements implements GenericDatabaseExecution {
     }
 
     @Override
-    public PreparedStatement executeGetRecords( MetadataQuery query, boolean setCount,
-                                                PostGISWhereBuilder builder, Connection conn )
+    public PreparedStatement executeGetRecords( MetadataQuery query, boolean setCount, PostGISWhereBuilder builder,
+                                                Connection conn )
                             throws MetadataStoreException {
 
         StringBuilder getDatasetIDs = new StringBuilder( 300 );
@@ -539,7 +520,6 @@ public class ExecuteStatements implements GenericDatabaseExecution {
             LOG.debug( "Execute GetRecords: " );
 
             String rootTableAlias = builder.getAliasManager().getRootTableAlias();
-            String blobTableAlias = builder.getAliasManager().generateNew();
 
             getDatasetIDs.append( "SELECT " );
             if ( setCount ) {
@@ -548,10 +528,6 @@ public class ExecuteStatements implements GenericDatabaseExecution {
                 getDatasetIDs.append( rootTableAlias );
                 getDatasetIDs.append( '.' );
                 getDatasetIDs.append( id );
-                getDatasetIDs.append( ',' );
-                getDatasetIDs.append( blobTableAlias );
-                getDatasetIDs.append( '.' );
-                getDatasetIDs.append( data );
             }
             getDatasetIDs.append( " FROM " );
             getDatasetIDs.append( databaseTable );
@@ -578,19 +554,6 @@ public class ExecuteStatements implements GenericDatabaseExecution {
                     getDatasetIDs.append( to.getColumn() );
                 }
             }
-
-            getDatasetIDs.append( " LEFT OUTER JOIN " );
-            getDatasetIDs.append( "recordfull" );
-            getDatasetIDs.append( " AS " );
-            getDatasetIDs.append( blobTableAlias );
-            getDatasetIDs.append( " ON " );
-            getDatasetIDs.append( rootTableAlias );
-            getDatasetIDs.append( "." );
-            getDatasetIDs.append( id );
-            getDatasetIDs.append( "=" );
-            getDatasetIDs.append( blobTableAlias );
-            getDatasetIDs.append( "." );
-            getDatasetIDs.append( fk_datasets );
 
             if ( builder.getWhere() != null ) {
                 getDatasetIDs.append( " AND " );

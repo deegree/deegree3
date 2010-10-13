@@ -41,6 +41,7 @@ import java.io.IOException;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
 
 import javax.xml.namespace.QName;
@@ -51,7 +52,6 @@ import org.deegree.commons.tom.datetime.Date;
 import org.deegree.commons.xml.NamespaceContext;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.XPath;
-import org.deegree.cs.CRS;
 import org.deegree.metadata.persistence.MetadataStoreException;
 import org.deegree.metadata.persistence.types.BoundingBox;
 import org.deegree.metadata.persistence.types.Keyword;
@@ -96,7 +96,7 @@ public class ParseIdentificationInfo extends XMLAdapter {
      * @throws IOException
      */
     protected void parseIdentificationInfo( List<OMElement> identificationInfo, QueryableProperties qp,
-                                            ReturnableProperties rp, List<CRS> crsList )
+                                            ReturnableProperties rp )
                             throws MetadataStoreException {
 
         List<OMElement> identificationInfo_Update = new ArrayList<OMElement>();
@@ -678,17 +678,12 @@ public class ParseIdentificationInfo extends XMLAdapter {
             List<OMElement> extent = (List<OMElement>) ( extent_md_dataIdent.size() != 0 ? extent_md_dataIdent
                                                                                         : extent_service );
 
-            double boundingBoxWestLongitude = 0.0;
-            double boundingBoxEastLongitude = 0.0;
-            double boundingBoxSouthLatitude = 0.0;
-            double boundingBoxNorthLatitude = 0.0;
-
-            CRS crs = null;
             Date tempBeg = null;
             Date tempEnd = null;
 
             String geographicDescriptionCode_service = null;
             String[] geographicDescriptionCode_serviceOtherLang = null;
+            List<BoundingBox> bboxList = new LinkedList<BoundingBox>();
 
             for ( OMElement extentElem : extent ) {
 
@@ -714,65 +709,71 @@ public class ParseIdentificationInfo extends XMLAdapter {
                     throw new MetadataStoreException( "Parsing of Date failed. " + e.getMessage() );
                 }
 
-                OMElement bbox = getElement(
-                                             extentElem,
-                                             new XPath(
-                                                        "./gmd:EX_Extent/gmd:geographicElement/gmd:EX_GeographicBoundingBox",
-                                                        nsContextParseII ) );
-                if ( boundingBoxWestLongitude == 0.0 ) {
-                    boundingBoxWestLongitude = getNodeAsDouble( bbox,
-                                                                new XPath( "./gmd:westBoundLongitude/gco:Decimal",
-                                                                           nsContextParseII ), 0.0 );
+                List<OMElement> geographicElement = getElements( extentElem,
+                                                                 new XPath( "./gmd:EX_Extent/gmd:geographicElement",
+                                                                            nsContextParseII ) );
 
-                }
-                if ( boundingBoxEastLongitude == 0.0 ) {
-                    boundingBoxEastLongitude = getNodeAsDouble( bbox,
-                                                                new XPath( "./gmd:eastBoundLongitude/gco:Decimal",
-                                                                           nsContextParseII ), 0.0 );
+                for ( OMElement geographicElem : geographicElement ) {
 
-                }
-                if ( boundingBoxSouthLatitude == 0.0 ) {
-                    boundingBoxSouthLatitude = getNodeAsDouble( bbox,
-                                                                new XPath( "./gmd:southBoundLatitude/gco:Decimal",
-                                                                           nsContextParseII ), 0.0 );
+                    double boundingBoxWestLongitude = 0.0;
+                    double boundingBoxEastLongitude = 0.0;
+                    double boundingBoxSouthLatitude = 0.0;
+                    double boundingBoxNorthLatitude = 0.0;
 
-                }
-                if ( boundingBoxNorthLatitude == 0.0 ) {
-                    boundingBoxNorthLatitude = getNodeAsDouble( bbox,
-                                                                new XPath( "./gmd:northBoundLatitude/gco:Decimal",
-                                                                           nsContextParseII ), 0.0 );
+                    OMElement bbox = getElement( geographicElem, new XPath( "./gmd:EX_GeographicBoundingBox",
+                                                                            nsContextParseII ) );
+                    if ( boundingBoxWestLongitude == 0.0 ) {
+                        boundingBoxWestLongitude = getNodeAsDouble( bbox,
+                                                                    new XPath( "./gmd:westBoundLongitude/gco:Decimal",
+                                                                               nsContextParseII ), 0.0 );
 
-                }
+                    }
+                    if ( boundingBoxEastLongitude == 0.0 ) {
+                        boundingBoxEastLongitude = getNodeAsDouble( bbox,
+                                                                    new XPath( "./gmd:eastBoundLongitude/gco:Decimal",
+                                                                               nsContextParseII ), 0.0 );
 
-                if ( bbox != null ) {
-                    crs = new CRS( "EPSG:4326" );
-                    crsList.add( crs );
-                    // TODO
-                }
+                    }
+                    if ( boundingBoxSouthLatitude == 0.0 ) {
+                        boundingBoxSouthLatitude = getNodeAsDouble( bbox,
+                                                                    new XPath( "./gmd:southBoundLatitude/gco:Decimal",
+                                                                               nsContextParseII ), 0.0 );
 
-                if ( geographicDescriptionCode_service == null ) {
-                    OMElement geographicDescriptionCode_serviceElem = getElement(
-                                                                                  extentElem,
-                                                                                  new XPath(
-                                                                                             "./gmd:EX_Extent/gmd:geographicElement/gmd:EX_GeopraphicDescription/gmd:geographicIdentifier/gmd:MD_Identifier/gmd:code",
-                                                                                             nsContextParseII ) );
-                    geographicDescriptionCode_service = getNodeAsString( geographicDescriptionCode_serviceElem,
-                                                                         new XPath( "./gco:CharacterString",
-                                                                                    nsContextParseII ), null );
-                    geographicDescriptionCode_serviceOtherLang = getNodesAsStrings(
-                                                                                    geographicDescriptionCode_serviceElem,
-                                                                                    new XPath(
-                                                                                               "./gmd:PT_FreeText/gmd:textGroup/gmd:LocalisedCharacterString",
-                                                                                               nsContextParseII ) );
+                    }
+                    if ( boundingBoxNorthLatitude == 0.0 ) {
+                        boundingBoxNorthLatitude = getNodeAsDouble( bbox,
+                                                                    new XPath( "./gmd:northBoundLatitude/gco:Decimal",
+                                                                               nsContextParseII ), 0.0 );
+
+                    }
+
+                    if ( geographicDescriptionCode_service == null ) {
+                        OMElement geographicDescriptionCode_serviceElem = getElement(
+                                                                                      geographicElem,
+                                                                                      new XPath(
+                                                                                                 "./gmd:EX_GeopraphicDescription/gmd:geographicIdentifier/gmd:MD_Identifier/gmd:code",
+                                                                                                 nsContextParseII ) );
+                        geographicDescriptionCode_service = getNodeAsString( geographicDescriptionCode_serviceElem,
+                                                                             new XPath( "./gco:CharacterString",
+                                                                                        nsContextParseII ), null );
+                        geographicDescriptionCode_serviceOtherLang = getNodesAsStrings(
+                                                                                        geographicDescriptionCode_serviceElem,
+                                                                                        new XPath(
+                                                                                                   "./gmd:PT_FreeText/gmd:textGroup/gmd:LocalisedCharacterString",
+                                                                                                   nsContextParseII ) );
+                    }
+
+                    if ( bbox != null ) {
+                        bboxList.add( new BoundingBox( boundingBoxWestLongitude, boundingBoxSouthLatitude,
+                                                       boundingBoxEastLongitude, boundingBoxNorthLatitude ) );
+                    }
                 }
 
             }
 
             qp.setTemporalExtentBegin( tempBeg );
             qp.setTemporalExtentEnd( tempEnd );
-            qp.setBoundingBox( new BoundingBox( boundingBoxWestLongitude, boundingBoxSouthLatitude,
-                                                boundingBoxEastLongitude, boundingBoxNorthLatitude ) );
-            qp.setCrs( crsList );
+            qp.setBoundingBox( bboxList );
 
             List<String> geographicDescCode_serviceList = new ArrayList<String>();
             geographicDescCode_serviceList.addAll( Arrays.asList( geographicDescriptionCode_service ) );
