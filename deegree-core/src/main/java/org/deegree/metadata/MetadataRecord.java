@@ -35,6 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.metadata;
 
+import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
@@ -52,6 +53,8 @@ import org.deegree.protocol.csw.CSWConstants.ReturnableElement;
  * @version $Revision$, $Date$
  */
 public interface MetadataRecord {
+
+    public QName getName();
 
     public String[] getIdentifier();
 

@@ -63,6 +63,8 @@ import org.deegree.protocol.csw.CSWConstants.ReturnableElement;
  */
 public class DCRecord implements MetadataRecord {
 
+    private final QName root;
+
     private final String[] titles;
 
     private final String[] identifier;
@@ -118,7 +120,13 @@ public class DCRecord implements MetadataRecord {
         this.publisher = record.getPublisher();
         this.language = record.getLanguage();
         this.source = record.getSource();
+        this.root = record.getName();
 
+    }
+
+    @Override
+    public QName getName() {
+        return root;
     }
 
     @Override
