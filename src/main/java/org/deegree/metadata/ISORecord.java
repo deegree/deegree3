@@ -59,7 +59,6 @@ import org.deegree.filter.Filter;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryFactory;
 import org.deegree.metadata.persistence.MetadataStoreException;
-import org.deegree.metadata.persistence.iso.FillProperties;
 import org.deegree.metadata.persistence.iso.parsing.ISOQPParsing;
 import org.deegree.metadata.persistence.iso.parsing.ParsedProfileElement;
 import org.deegree.metadata.persistence.types.BoundingBox;
@@ -84,8 +83,6 @@ public class ISORecord implements MetadataRecord {
     private OMElement root;
 
     private ParsedProfileElement pElem;
-
-    private FillProperties props;
 
     private static String[] summaryLocalParts = new String[14];
 
@@ -149,45 +146,24 @@ public class ISORecord implements MetadataRecord {
         briefSummaryLocalParts[22] = "/gmd:MD_Metadata/gmd:dataQualityInfo";
     }
 
-    // private static Set<QName> summaryFilterElements;
-    //
-    // private static Set<QName> briefFilterElements;
-    //
-    // private static Set<QName> briefSummaryFilterElements;
-
     private static Set<XPath> summaryFilterElementsXPath;
 
     private static Set<XPath> briefFilterElementsXPath;
-
-    // public ISORecord( URL url ) {
-    // this.root = new XMLAdapter( xmlStream ).getRootElement();
-    // }
 
     public ISORecord( XMLStreamReader xmlStream ) throws MetadataStoreException {
 
         this.root = new XMLAdapter( xmlStream ).getRootElement();
         this.pElem = new ISOQPParsing().parseAPISO( root, false );
-        // this.props = props;
-        // summaryFilterElements = removeElementsISONamespace( summaryLocalParts );
-        // briefFilterElements = removeElementsISONamespace( briefLocalParts );
-        // briefSummaryFilterElements = removeElementsISONamespace( briefSummaryLocalParts );
 
         summaryFilterElementsXPath = removeElementsXPath( summaryLocalParts );
 
         briefFilterElementsXPath = removeElementsXPath( briefSummaryLocalParts );
-
-        // try {
-        // xm.add( new XPathMetadata( "//gmd:MD_Metadata/fileIdentifier" ) );
-        // } catch ( JaxenException e ) {
-        // e.printStackTrace();
-        // }
 
     }
 
     public ISORecord( OMElement root ) throws MetadataStoreException {
 
         this( root.getXMLStreamReader() );
-        // this.pElem = pElem;
     }
 
     @Override
@@ -284,13 +260,7 @@ public class ISORecord implements MetadataRecord {
 
     @Override
     public String[] getTitle() {
-        List<String> l = null;
-        if ( pElem != null ) {
-            l = pElem.getQueryableProperties().getTitle();
-        }
-        // else {
-        // return props
-        // }
+        List<String> l = pElem.getQueryableProperties().getTitle();
         String[] s = new String[l.size()];
         int counter = 0;
         for ( String st : l ) {

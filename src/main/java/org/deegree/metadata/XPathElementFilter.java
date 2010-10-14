@@ -57,6 +57,8 @@ import org.apache.axiom.om.OMXMLParserWrapper;
 import org.apache.axiom.om.xpath.AXIOMXPath;
 import org.deegree.commons.xml.XPath;
 import org.jaxen.JaxenException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * TODO add class documentation here
@@ -67,6 +69,8 @@ import org.jaxen.JaxenException;
  * @version $Revision$, $Date$
  */
 public class XPathElementFilter implements OMElement {
+
+    private static Logger LOG = LoggerFactory.getLogger( XPathElementFilter.class );
 
     private final OMElement input;
 
@@ -135,8 +139,9 @@ public class XPathElementFilter implements OMElement {
                 }
 
             } catch ( JaxenException e ) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+
+                LOG.debug( e.getMessage() );
+                throw new OMException( e.getMessage() );
             }
         }
         return input.detach();
