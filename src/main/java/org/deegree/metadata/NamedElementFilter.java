@@ -63,6 +63,7 @@ public class NamedElementFilter implements XMLStreamReader {
     public NamedElementFilter( XMLStreamReader input, Set<QName> removeElements ) {
         this.input = input;
         this.removeElements = removeElements;
+
     }
 
     public void close()
