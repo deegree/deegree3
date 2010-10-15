@@ -145,6 +145,7 @@ public class GetRecordsXMLAdapter extends AbstractCSWRequestXMLAdapter {
         Set<QName> SetOfTypeNames = new HashSet<QName>();
 
         ReturnableElement elementSetName = null;
+        String[] elementName = null;
 
         Filter constraint = null;
         ConstraintLanguage constraintLanguage = null;
@@ -312,13 +313,12 @@ public class GetRecordsXMLAdapter extends AbstractCSWRequestXMLAdapter {
         QName[] typeNames = new QName[SetOfTypeNames.size()];
         SetOfTypeNames.toArray( typeNames );
 
-        if ( elementSetName == null ) {
+        if ( elementName == null && elementSetName == null ) {
             elementSetName = ReturnableElement.summary;
         }
 
-        // TODO ElementName
         return new GetRecords( VERSION_202, nsContext, typeNames, outputFormat, resultType, requestId, outputSchema,
-                               startPosition, maxRecords, null, elementSetName, constraintLanguage, constraint,
+                               startPosition, maxRecords, elementName, elementSetName, constraintLanguage, constraint,
                                sortProps, distributedSearch, hopCount, responseHandler, holeRequest );
     }
 }

@@ -248,12 +248,16 @@ public class GetRecordsHandler {
      * @param getRec
      * @param version
      * @throws XMLStreamException
-     * @throws SQLException
      * @throws OWSException
      * @throws MetadataStoreException
      */
     private void searchResult( XMLStreamWriter writer, GetRecords getRec, Version version )
                             throws XMLStreamException, OWSException, MetadataStoreException {
+        boolean isElementName = false;
+        if ( getRec.getElementName() != null ) {
+            isElementName = true;
+        }
+        String elementSetValue = getRec.getElementSetName() != null ? getRec.getElementSetName().name() : "custom";
 
         MetadataResultType type = null;
 
@@ -277,7 +281,8 @@ public class GetRecordsHandler {
 
             type = storeSet.getResultType();
             col = storeSet.getMembers();
-            writer.writeAttribute( "elementSet", getRec.getElementSetName().name() );
+
+            writer.writeAttribute( "elementSet", elementSetValue );
 
             writer.writeAttribute( "recordSchema", getRec.getOutputSchema().toString() );
 
@@ -294,11 +299,20 @@ public class GetRecordsHandler {
         }
 
         for ( MetadataRecord m : col ) {
-            if ( getRec.getOutputSchema().equals( OutputSchema.determineOutputSchema( OutputSchema.ISO_19115 ) ) ) {
-                m.serialize( writer, getRec.getElementSetName() );
+            if ( isElementName == false ) {
+                if ( getRec.getOutputSchema().equals( OutputSchema.determineOutputSchema( OutputSchema.ISO_19115 ) ) ) {
+                    m.serialize( writer, getRec.getElementSetName() );
+                } else {
+                    DCRecord dc = m.toDublinCore();
+                    dc.serialize( writer, getRec.getElementSetName() );
+                }
             } else {
-                DCRecord dc = m.toDublinCore();
-                dc.serialize( writer, getRec.getElementSetName() );
+                if ( getRec.getOutputSchema().equals( OutputSchema.determineOutputSchema( OutputSchema.ISO_19115 ) ) ) {
+                    m.serialize( writer, getRec.getElementName() );
+                } else {
+                    DCRecord dc = m.toDublinCore();
+                    dc.serialize( writer, getRec.getElementName() );
+                }
             }
         }
 

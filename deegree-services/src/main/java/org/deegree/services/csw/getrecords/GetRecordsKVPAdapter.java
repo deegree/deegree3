@@ -154,7 +154,13 @@ public class GetRecordsKVPAdapter extends AbstractCSWKVPAdapter {
         int maxRecords = KVPUtils.getInt( normalizedKVPParams, "MAXRECORDS", 10 );
 
         // elementName List<String>
-        List<String> elementName = KVPUtils.splitAll( normalizedKVPParams, "ELEMENTNAME" );
+        List<String> elementNameList = KVPUtils.splitAll( normalizedKVPParams, "ELEMENTNAME" );
+
+        String[] elementName = new String[elementNameList.size()];
+        int counter = 0;
+        for ( String s : elementNameList ) {
+            elementName[counter++] = s;
+        }
 
         /**
          * NOTE: Spec says nothing about the handling which properties should exported if there is just an ELEMENTNAME

@@ -36,7 +36,6 @@
 package org.deegree.services.csw.getrecords;
 
 import java.net.URI;
-import java.util.List;
 
 import javax.xml.namespace.QName;
 
@@ -68,7 +67,7 @@ public class GetRecords extends AbstractCSWRequest {
 
     private int maxRecords;
 
-    private List<String> elementName;
+    private String[] elementName;
 
     private ReturnableElement elementSetName;
 
@@ -119,9 +118,9 @@ public class GetRecords extends AbstractCSWRequest {
      */
     public GetRecords( Version version, NamespaceContext namespaces, QName[] typeNames, String outputFormat,
                        ResultType resultType, String requestId, URI outputSchema, int startPosition, int maxRecords,
-                       List<String> elementName, ReturnableElement elementSetName,
-                       ConstraintLanguage constraintLanguage, Filter constraint, SortProperty[] sortBy,
-                       boolean distributedSearch, int hopCount, String responseHandler, OMElement holeRequest ) {
+                       String[] elementName, ReturnableElement elementSetName, ConstraintLanguage constraintLanguage,
+                       Filter constraint, SortProperty[] sortBy, boolean distributedSearch, int hopCount,
+                       String responseHandler, OMElement holeRequest ) {
         super( version, namespaces, typeNames, outputFormat );
         this.resultType = resultType;
         this.requestId = requestId;
@@ -170,7 +169,7 @@ public class GetRecords extends AbstractCSWRequest {
     /**
      * @return the elementName
      */
-    public List<String> getElementName() {
+    public String[] getElementName() {
         return elementName;
     }
 
