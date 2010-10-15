@@ -38,9 +38,10 @@ package org.deegree.metadata;
 import java.io.OutputStream;
 import java.io.Writer;
 import java.util.Iterator;
-import java.util.Set;
+import java.util.List;
 
 import javax.xml.namespace.QName;
+import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
@@ -55,6 +56,7 @@ import org.apache.axiom.om.OMNode;
 import org.apache.axiom.om.OMOutputFormat;
 import org.apache.axiom.om.OMXMLParserWrapper;
 import org.apache.axiom.om.xpath.AXIOMXPath;
+import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.XPath;
 import org.jaxen.JaxenException;
 import org.slf4j.Logger;
@@ -74,12 +76,15 @@ public class XPathElementFilter implements OMElement {
 
     private final OMElement input;
 
-    private final Set<XPath> removeElements;
+    private final OMContainer root;
 
-    public XPathElementFilter( OMElement input, Set<XPath> removeElements ) {
+    private final List<XPath> elements;
+
+    public XPathElementFilter( OMElement input, List<XPath> elements ) {
         this.input = input;
-        this.removeElements = removeElements;
-        detach();
+        this.elements = elements;
+        this.root = input.getFirstElement().getParent();
+
     }
 
     public OMAttribute addAttribute( OMAttribute arg0 ) {
@@ -91,10 +96,12 @@ public class XPathElementFilter implements OMElement {
     }
 
     public void addChild( OMNode arg0 ) {
+
         input.addChild( arg0 );
     }
 
     public void build() {
+
         input.build();
     }
 
@@ -126,10 +133,16 @@ public class XPathElementFilter implements OMElement {
         return input.declareNamespace( arg0, arg1 );
     }
 
+    /**
+     * @return OMNode that is extricated by the {@link XPath} elements specified during initialization.
+     * @throws OMException
+     *             if parsing of the XPath expression failed.
+     */
+    @Override
     public OMNode detach()
                             throws OMException {
         AXIOMXPath path;
-        for ( XPath x : removeElements ) {
+        for ( XPath x : elements ) {
             try {
                 path = new AXIOMXPath( x.getXPath() );
                 path.setNamespaceContext( x.getNamespaceContext() );
@@ -139,7 +152,6 @@ public class XPathElementFilter implements OMElement {
                 }
 
             } catch ( JaxenException e ) {
-
                 LOG.debug( e.getMessage() );
                 throw new OMException( e.getMessage() );
             }
@@ -314,9 +326,68 @@ public class XPathElementFilter implements OMElement {
         input.serialize( arg0 );
     }
 
-    public void serialize( XMLStreamWriter arg0 )
+    /**
+     * Serializes the OMElement to the XMLStreamWriter.
+     * 
+     * @param writer
+     *            to write to, must be not <Code>null</Code>.
+     * @throws XMLStreamException
+     */
+    @Override
+    public void serialize( XMLStreamWriter writer )
                             throws XMLStreamException {
-        input.serialize( arg0 );
+        // Iterator iter = input.getAllAttributes();
+        XMLStreamReader inStream = input.getXMLStreamReader();
+        inStream.nextTag();
+
+        writer.writeStartElement( input.getQName().getPrefix(), input.getQName().getLocalPart(),
+                                  input.getQName().getNamespaceURI() );
+        // copy all namespace bindings
+        for ( int i = 0; i < inStream.getNamespaceCount(); i++ ) {
+            String nsPrefix = inStream.getNamespacePrefix( i );
+            String nsURI = inStream.getNamespaceURI( i );
+            writer.writeNamespace( nsPrefix, nsURI );
+        }
+
+        // copy all attributes
+        for ( int i = 0; i < inStream.getAttributeCount(); i++ ) {
+            String localName = inStream.getAttributeLocalName( i );
+            String nsPrefix = inStream.getAttributePrefix( i );
+            String value = inStream.getAttributeValue( i );
+            String nsURI = inStream.getAttributeNamespace( i );
+            if ( nsURI == null ) {
+                writer.writeAttribute( localName, value );
+            } else {
+                writer.writeAttribute( nsPrefix, nsURI, localName, value );
+            }
+        }
+
+        writer.writeCharacters( "\n" );
+        AXIOMXPath path;
+        for ( XPath x : elements ) {
+            try {
+                path = new AXIOMXPath( x.getXPath() );
+                path.setNamespaceContext( x.getNamespaceContext() );
+                Object node = path.selectSingleNode( input );
+                if ( node != null ) {
+                    XMLStreamReader reader = ( (OMElement) node ).getXMLStreamReader();
+                    while ( reader.hasNext() ) {
+                        if ( reader.getEventType() == XMLStreamConstants.START_ELEMENT ) {
+                            XMLAdapter.writeElement( writer, reader );
+                            writer.writeCharacters( "\n" );
+                        } else {
+                            reader.next();
+                        }
+                    }
+
+                }
+
+            } catch ( JaxenException e ) {
+                LOG.debug( e.getMessage() );
+                throw new OMException( e.getMessage() );
+            }
+        }
+        writer.writeEndElement();
     }
 
     public void serializeAndConsume( OutputStream arg0, OMOutputFormat arg1 )
