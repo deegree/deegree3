@@ -35,6 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.metadata;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -49,6 +50,7 @@ import javax.xml.stream.XMLStreamWriter;
 
 import org.apache.axiom.om.OMElement;
 import org.deegree.commons.tom.datetime.Date;
+import org.deegree.commons.xml.CommonNamespaces;
 import org.deegree.commons.xml.NamespaceContext;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.XPath;
@@ -92,8 +94,14 @@ public class ISORecord implements MetadataRecord {
 
     private static final NamespaceContext ns = new NamespaceContext();
 
+    private static final List<XPath> m = new ArrayList<XPath>();
+
     static {
         ns.addNamespace( "gmd", "http://www.isotc211.org/2005/gmd" );
+
+        m.add( new XPath( "/gmd:MD_Metadata/gmd:fileIdentifier", ns ) );
+        m.add( new XPath( "/gmd:MD_Metadata/gmd:metadataStandardVersion", ns ) );
+        m.add( new XPath( "/gmd:MD_Metadata/gmd:series", ns ) );
 
         summaryLocalParts[0] = "/gmd:MD_Metadata/gmd:dataSetURI";
         summaryLocalParts[1] = "/gmd:MD_Metadata/gmd:locale";
@@ -146,9 +154,9 @@ public class ISORecord implements MetadataRecord {
         briefSummaryLocalParts[22] = "/gmd:MD_Metadata/gmd:dataQualityInfo";
     }
 
-    private static Set<XPath> summaryFilterElementsXPath;
+    private static List<XPath> summaryFilterElementsXPath;
 
-    private static Set<XPath> briefFilterElementsXPath;
+    private static List<XPath> briefFilterElementsXPath;
 
     public ISORecord( XMLStreamReader xmlStream ) throws MetadataStoreException {
 
@@ -347,6 +355,19 @@ public class ISORecord implements MetadataRecord {
     }
 
     @Override
+    public void serialize( XMLStreamWriter writer, String[] elementNames )
+                            throws XMLStreamException {
+        List<XPath> xpathEN = new ArrayList<XPath>();
+        for ( String s : elementNames ) {
+            xpathEN.add( new XPath( s, CommonNamespaces.getNamespaceContext() ) );
+        }
+
+        // TODO change m to xpathEN
+        OMElement elem = new XPathElementFilter( root, m );
+        elem.serialize( writer );
+    }
+
+    @Override
     public DCRecord toDublinCore() {
         return new DCRecord( this );
 
@@ -410,85 +431,15 @@ public class ISORecord implements MetadataRecord {
 
         // XMLStreamReader filter = new NamedElementFilter( xmlStream, summaryFilterElements );
         OMElement filter = new XPathElementFilter( root, summaryFilterElementsXPath );
-
-        // List<?> result = null;
-        // try {
-        // XPath xpath = new XPathMetadata( "//gmd:MD_Metadata/gmd:fileIdentifier", this );
-        // XPath xpath2 = new XPathMetadata( "/gmd:MD_Metadata/gmd:fileIdentifier", this );
-        //
-        // xpath.addNamespace( "gmd", "http://www.isotc211.org/2005/gmd" );
-        // xpath2.addNamespace( "gmd", "http://www.isotc211.org/2005/gmd" );
-        //
-        // result = xpath.selectNodes( new ElementNode( new QName( "http://www.isotc211.org/2005/gmd", "MD_Metadata",
-        // "gmd" ), null ) );
-        // result = xpath2.selectNodes( new ElementNode( new QName( "http://www.isotc211.org/2005/gmd", "MD_Metadata",
-        // "gmd" ), null ) );
-        //
-        // } catch ( JaxenException e ) {
-        // // TODO Auto-generated catch block
-        // e.printStackTrace();
-        // }
-        // LOG.debug( "" + result );
-
-        // StringBuffer sb = new StringBuffer();
-        // for ( XPathMetadata m : xm ) {
-        // int state = 0;
-        //
-        // while ( xmlStream.hasNext() ) {
-        // // xmlStream.next();
-        // if ( xmlStream.getEventType() == XMLStreamConstants.START_ELEMENT ) {
-        //
-        // String name = ( xmlStream.hasName() ) ? xmlStream.getName().getLocalPart().trim() : null;
-        // boolean b1 = xmlStream.hasName() && name.equals( m.getParent().getLocalPart().trim() ); // <ParentElem>
-        // boolean b2 = xmlStream.hasName() && name.equals( m.getChild().getLocalPart().trim() ); // <ChildElem>
-        // if ( b1 && xmlStream.isStartElement() )
-        // state = 1; // <ParentElem>
-        // if ( b1 && xmlStream.isEndElement() )
-        // state = 0;
-        // if ( state == 1 && b2 && xmlStream.isStartElement() ) {
-        // sb.append( xmlStream.getLocalName() ); // <ChildElem>
-        // StAXParsingHelper.skipElement( xmlStream );
-        // } else {
-        // writer.writeStartElement( xmlStream.getPrefix(), xmlStream.getLocalName(),
-        // xmlStream.getNamespaceURI() );
-        // for ( int i = 0; i < xmlStream.getNamespaceCount(); i++ ) {
-        // String nsPrefix = xmlStream.getNamespacePrefix( i );
-        // String nsURI = xmlStream.getNamespaceURI( i );
-        // writer.writeNamespace( nsPrefix, nsURI );
-        // }
-        // // copy all attributes
-        // for ( int i = 0; i < xmlStream.getAttributeCount(); i++ ) {
-        // String localName = xmlStream.getAttributeLocalName( i );
-        // String nsPrefix = xmlStream.getAttributePrefix( i );
-        // String value = xmlStream.getAttributeValue( i );
-        // String nsURI = xmlStream.getAttributeNamespace( i );
-        // if ( nsURI == null ) {
-        // writer.writeAttribute( localName, value );
-        // } else {
-        // writer.writeAttribute( nsPrefix, nsURI, localName, value );
-        // }
-        // }
-        // writer.writeEndElement();
-        // writer.writeCharacters( "\n" );
-        // }
-        // if ( state == 2 && b2 && xmlStream.isEndElement() )
-        // break;
-        //
-        // }
-        // xmlStream.next();
-        //
-        // }
-        // }
-        // System.out.println( sb );
-
+        filter.detach();
         generateOutput( writer, filter.getXMLStreamReader() );
-
     }
 
     private void toISOBrief( XMLStreamWriter writer, XMLStreamReader xmlStream )
                             throws XMLStreamException {
         // XMLStreamReader filter = new NamedElementFilter( xmlStream, briefSummaryFilterElements );
         OMElement filter = new XPathElementFilter( root, briefFilterElementsXPath );
+        filter.detach();
         generateOutput( writer, filter.getXMLStreamReader() );
 
     }
@@ -503,8 +454,8 @@ public class ISORecord implements MetadataRecord {
 
     }
 
-    private Set<XPath> removeElementsXPath( String[] xpathExpr ) {
-        Set<XPath> removeElements = new HashSet<XPath>();
+    private List<XPath> removeElementsXPath( String[] xpathExpr ) {
+        List<XPath> removeElements = new ArrayList<XPath>();
         for ( String l : xpathExpr ) {
 
             removeElements.add( new XPath( l, ns ) );

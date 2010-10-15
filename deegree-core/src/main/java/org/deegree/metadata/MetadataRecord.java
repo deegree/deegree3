@@ -117,4 +117,16 @@ public interface MetadataRecord {
     public void serialize( XMLStreamWriter writer, ReturnableElement returnType )
                             throws XMLStreamException;
 
+    /**
+     * Writes the XML representation of the specified elements to the given XML stream.
+     * 
+     * @param writer
+     *            xml writer to write to, must not be <code>null</code>
+     * @param elementNames
+     *            the element set to return, must not be <Code>null</Code>.
+     * @throws XMLStreamException
+     *             if the writing of the XML fails
+     */
+    public void serialize( XMLStreamWriter writer, String[] elementNames )
+                            throws XMLStreamException;
 }
