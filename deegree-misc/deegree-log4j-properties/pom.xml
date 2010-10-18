@@ -27,7 +27,7 @@
             <annotationProcessor>org.deegree.commons.utils.log.LoggingAnnotationProcessor</annotationProcessor>
           </annotationProcessors>
           <proc>only</proc>
-          <compilerArgument>-Alog4j.outputfile=target/log4j.properties</compilerArgument>
+          <compilerArgument>-Alog4j.outputfile=${project.build.directory}/log4j.properties</compilerArgument>
         </configuration>
       </plugin>
 
