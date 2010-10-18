@@ -58,6 +58,13 @@ public interface FunctionProvider {
     public String getName();
 
     /**
+     * Returns the number of arguments of the provided function.
+     * 
+     * @return the number of arguments
+     */
+    public int getArgCount();
+
+    /**
      * Creates a new {@link Function} instance.
      * 
      * @param params

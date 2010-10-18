@@ -32,6 +32,11 @@ public class IsPoint implements FunctionProvider {
     public String getName() {
         return NAME;
     }
+    
+    @Override
+    public int getArgCount() {
+        return 1;
+    }
 
     @Override
     public Function create( List<Expression> params ) {

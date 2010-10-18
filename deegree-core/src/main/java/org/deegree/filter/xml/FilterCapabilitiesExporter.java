@@ -39,8 +39,15 @@ import static org.deegree.commons.xml.CommonNamespaces.GMLNS;
 import static org.deegree.commons.xml.CommonNamespaces.OGCNS;
 import static org.deegree.commons.xml.XMLAdapter.writeElement;
 
+import java.util.Map;
+import java.util.SortedSet;
+import java.util.TreeSet;
+
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
+
+import org.deegree.filter.function.FunctionManager;
+import org.deegree.filter.function.FunctionProvider;
 
 /**
  * Writes (currently static) XML <code>ogc:Filter_Capabilities</code> documents that describes the capabilities of
@@ -102,13 +109,13 @@ public class FilterCapabilitiesExporter {
 
     private static void exportIdCapabilities110( XMLStreamWriter writer )
                             throws XMLStreamException {
-    
+
         writer.writeStartElement( OGCNS, "Id_Capabilities" );
-    
+
         // TODO: check what EID means (nothing found in spec/schema)
         writer.writeEmptyElement( OGCNS, "EID" );
         writer.writeEmptyElement( OGCNS, "FID" );
-    
+
         writer.writeEndElement();
     }
 
@@ -128,19 +135,33 @@ public class FilterCapabilitiesExporter {
 
         writer.writeStartElement( OGCNS, "Arithmetic_Operators" );
         writer.writeEmptyElement( OGCNS, "Simple_Arithmetic" );
-        // TODO functions
+
+        writer.writeStartElement( OGCNS, "Functions" );
+        writer.writeStartElement( OGCNS, "Function_Names" );
+        Map<String, FunctionProvider> functions = FunctionManager.getFunctionProviders();
+        SortedSet<String> functionNames = new TreeSet<String>( functions.keySet() );
+        for ( String functionName : functionNames ) {
+            FunctionProvider provider = functions.get( functionName );
+            writer.writeStartElement( OGCNS, "Function_Name" );
+            writer.writeAttribute( "nArgs", "" + provider.getArgCount() );
+            writer.writeCharacters( provider.getName() );
+            writer.writeEndElement();
+        }
+        writer.writeEndElement();
+        writer.writeEndElement();
+
         writer.writeEndElement();
 
         writer.writeEndElement();
     }
 
-    private static void exportScalarCapabilities110( XMLStreamWriter writer ) throws XMLStreamException {
-    
-        writer.writeStartElement( OGCNS, "Scalar_Capabilities" );       
-        
+    private static void exportScalarCapabilities110( XMLStreamWriter writer )
+                            throws XMLStreamException {
+
+        writer.writeStartElement( OGCNS, "Scalar_Capabilities" );
+
         writer.writeEmptyElement( OGCNS, "LogicalOperators" );
-    
-        
+
         writer.writeStartElement( OGCNS, "ComparisonOperators" );
         writeElement( writer, OGCNS, "ComparisonOperator", "LessThan" );
         writeElement( writer, OGCNS, "ComparisonOperator", "GreaterThan" );
@@ -152,14 +173,26 @@ public class FilterCapabilitiesExporter {
         writeElement( writer, OGCNS, "ComparisonOperator", "Between" );
         writeElement( writer, OGCNS, "ComparisonOperator", "NullCheck" );
         writer.writeEndElement();
-        
+
         writer.writeStartElement( OGCNS, "ArithmeticOperators" );
         writer.writeEmptyElement( OGCNS, "SimpleArithmetic" );
-        // TODO functions
-//        writer.writeStartElement( OGCNS, "Functions" );
-//        writer.writeEndElement();        
+
+        writer.writeStartElement( OGCNS, "Functions" );
+        writer.writeStartElement( OGCNS, "FunctionNames" );
+        Map<String, FunctionProvider> functions = FunctionManager.getFunctionProviders();
+        SortedSet<String> functionNames = new TreeSet<String>( functions.keySet() );
+        for ( String functionName : functionNames ) {
+            FunctionProvider provider = functions.get( functionName );
+            writer.writeStartElement( OGCNS, "FunctionName" );
+            writer.writeAttribute( "nArgs", "" + provider.getArgCount() );
+            writer.writeCharacters( provider.getName() );
+            writer.writeEndElement();
+        }
         writer.writeEndElement();
-    
+        writer.writeEndElement();
+        
+        writer.writeEndElement();
+
         writer.writeEndElement();
     }
 

@@ -35,6 +35,11 @@ public class IsSurface implements FunctionProvider {
     }
 
     @Override
+    public int getArgCount() {
+        return 1;
+    }
+
+    @Override
     public Function create( List<Expression> params ) {
         if ( params.size() != 1 ) {
             throw new IllegalArgumentException( NAME + " requires exactly one parameter." );
