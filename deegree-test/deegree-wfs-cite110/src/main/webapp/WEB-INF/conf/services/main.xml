@@ -13,5 +13,10 @@
     <HTTPPost>http://localhost:8080/deegree/services</HTTPPost> <SOAP>http://localhost:8080/deegree/services</SOAP>
   -->
   <!--   </DCP>-->
-
+  <FrontControllerOptions>
+    <RequestLogging>
+      <OutputDirectory>/tmp/requests</OutputDirectory>
+      <OnlySuccessful>false</OnlySuccessful>
+    </RequestLogging>
+  </FrontControllerOptions>
 </deegreeServiceController>

@@ -131,19 +131,19 @@
         </xsl:if>
                 <!-- Expect an explicit EPSG value or a regular expression in the capabilities document for each supported SRS, i.e. urn:ogc:def:crs:EPSG:\d{4,5} -->
             <xsl:variable name="value0"><![CDATA[urn:ogc:def:crs:EPSG::4326]]></xsl:variable>
-        <xsl:if test="matches($value0, $wfs.GetCapabilities.document//wfs:FeatureType[contains(wfs:Name, ':PrimitiveGeoFeature')]/wfs:DefaultSRS) or matches($value0, $wfs.GetCapabilities.document//wfs:FeatureType[contains(wfs:Name, ':PrimitiveGeoFeature')]/wfs:OtherSRS) or matches($value0, $wfs.GetCapabilities.document//wfs:FeatureTypeList/wfs:DefaultSRS) or matches($value0, $wfs.GetCapabilities.document//wfs:FeatureTypeList/wfs:OtherSRS)">
+        <xsl:if test="boolean($wfs.GetCapabilities.document//wfs:FeatureType[contains(wfs:Name, ':PrimitiveGeoFeature')]/wfs:DefaultSRS[text() = $value0]) or boolean($wfs.GetCapabilities.document//wfs:FeatureType[contains(wfs:Name, ':PrimitiveGeoFeature')]/wfs:OtherSRS[text() = $value0]) or boolean($wfs.GetCapabilities.document//wfs:FeatureTypeList/wfs:DefaultSRS[text() = $value0]) or boolean($wfs.GetCapabilities.document//wfs:FeatureTypeList/wfs:OtherSRS[text() = $value0])">
                         <ctl:call-test name="wfs:wfs-1.1.0-Basic-GetFeature-tc209.1">
                                 <ctl:with-param name="wfs.GetFeature.post.url" select="$wfs.GetFeature.post.url"/>
                         </ctl:call-test>
                 </xsl:if>
             <xsl:variable name="value1"><![CDATA[urn:ogc:def:crs:EPSG:32629]]></xsl:variable>
-        <xsl:if test="matches($value1, $wfs.GetCapabilities.document//wfs:FeatureType[contains(wfs:Name, ':PrimitiveGeoFeature')]/wfs:DefaultSRS) or matches($value1, $wfs.GetCapabilities.document//wfs:FeatureType[contains(wfs:Name, ':PrimitiveGeoFeature')]/wfs:OtherSRS) or matches($value1, $wfs.GetCapabilities.document//wfs:FeatureTypeList/wfs:DefaultSRS) or matches($value1, $wfs.GetCapabilities.document//wfs:FeatureTypeList/wfs:OtherSRS)">
+        <xsl:if test="boolean($wfs.GetCapabilities.document//wfs:FeatureType[contains(wfs:Name, ':PrimitiveGeoFeature')]/wfs:DefaultSRS[text() = $value1]) or boolean($wfs.GetCapabilities.document//wfs:FeatureType[contains(wfs:Name, ':PrimitiveGeoFeature')]/wfs:OtherSRS[text() = $value1]) or boolean($wfs.GetCapabilities.document//wfs:FeatureTypeList/wfs:DefaultSRS[text() = $value1]) or boolean($wfs.GetCapabilities.document//wfs:FeatureTypeList/wfs:OtherSRS[text() = $value1])">
           <ctl:call-test name="wfs:wfs-1.1.0-Basic-GetFeature-tc209.2">
                         <ctl:with-param name="wfs.GetFeature.post.url" select="$wfs.GetFeature.post.url"/>
                   </ctl:call-test>
         </xsl:if>
             <xsl:variable name="value2"><![CDATA[urn:ogc:def:crs:EPSG:32631]]></xsl:variable>
-        <xsl:if test="matches($value2, $wfs.GetCapabilities.document//wfs:FeatureType[contains(wfs:Name, ':PrimitiveGeoFeature')]/wfs:DefaultSRS) or matches($value2, $wfs.GetCapabilities.document//wfs:FeatureType[contains(wfs:Name, ':PrimitiveGeoFeature')]/wfs:OtherSRS) or matches($value2, $wfs.GetCapabilities.document//wfs:FeatureTypeList/wfs:DefaultSRS) or matches($value2, $wfs.GetCapabilities.document//wfs:FeatureTypeList/wfs:OtherSRS)">
+        <xsl:if test="boolean($wfs.GetCapabilities.document//wfs:FeatureType[contains(wfs:Name, ':PrimitiveGeoFeature')]/wfs:DefaultSRS[text() = $value2]) or boolean($wfs.GetCapabilities.document//wfs:FeatureType[contains(wfs:Name, ':PrimitiveGeoFeature')]/wfs:OtherSRS[text() = $value2]) or boolean($wfs.GetCapabilities.document//wfs:FeatureTypeList/wfs:DefaultSRS[text() = $value2]) or boolean($wfs.GetCapabilities.document//wfs:FeatureTypeList/wfs:OtherSRS[text() = $value2])">
           <ctl:call-test name="wfs:wfs-1.1.0-Basic-GetFeature-tc209.3">
                         <ctl:with-param name="wfs.GetFeature.post.url" select="$wfs.GetFeature.post.url"/>
                   </ctl:call-test>

@@ -1233,7 +1233,7 @@
                                         <ctl:param name="service">WFS</ctl:param>
                                         <ctl:param name="version">1.1.0</ctl:param>
                                         <param name="typename">
-                                                <xsl:value-of select="wfs:encode($CAPABILITIES/wfs:FeatureTypeList/wfs:FeatureType[1]/wfs:Name)"/>
+                                                <xsl:value-of select="wfs:encode($CAPABILITIES/wfs:FeatureTypeList/wfs:FeatureType[1]/wfs:Name,'UTF-8')"/>
                                         </param>
                             <parsers:HTTPParser>
                                <parsers:parse>
@@ -1268,7 +1268,7 @@
                                                         <ctl:param name="service">WFS</ctl:param>
                                                         <ctl:param name="version">1.1.0</ctl:param>
                                                         <param name="typename">
-                                                                <xsl:value-of select="wfs:encode($CAPABILITIES/wfs:FeatureTypeList/wfs:FeatureType[1]/wfs:Name)"/>
+                                                                <xsl:value-of select="wfs:encode($CAPABILITIES/wfs:FeatureTypeList/wfs:FeatureType[1]/wfs:Name,'UTF-8')"/>
                                                         </param>
                                                         <ctl:param name="outputformat">GML2</ctl:param>
                                             <parsers:HTTPParser>
@@ -1278,7 +1278,9 @@
                                             </parsers:HTTPParser>
                                                 </ctl:request>
                                         </xsl:variable>
-                                        <xsl:if test="not($RESPONSE/response/headers/header[lower-case(@name) = 'content-type']= 'text/xml; subtype=gml/2.1.2')">
+                                        <xsl:variable name="header" select="$RESPONSE/response/headers/header[@name='Content-Type']" />
+                                        <xsl:variable name="content-type" select="substring-before(concat($header, ';'), ';')"/>
+                                        <xsl:if test="not($content-type = 'text/xml' and contains($header, 'subtype=gml/2.1.2'))">
                                                 <ctl:fail/>
                                         </xsl:if>
                     </xsl:when>
@@ -1307,10 +1309,10 @@
                                                         <ctl:param name="service">WFS</ctl:param>
                                                         <ctl:param name="version">1.1.0</ctl:param>
                                                         <param name="typename">
-                                                                <xsl:value-of select="wfs:encode($CAPABILITIES/wfs:FeatureTypeList/wfs:FeatureType[1]/wfs:Name)"/>
+                                                                <xsl:value-of select="wfs:encode($CAPABILITIES/wfs:FeatureTypeList/wfs:FeatureType[1]/wfs:Name,'UTF-8')"/>
                                                         </param>
                                                         <ctl:param name="outputformat">
-                                                                <xsl:value-of select="wfs:encode('text/xml; subtype=gml/2.1.2')"/>
+                                                                <xsl:value-of select="wfs:encode('text/xml; subtype=gml/2.1.2','UTF-8')"/>
                                                         </ctl:param>
                                             <parsers:HTTPParser>
                                                <parsers:parse>
@@ -1319,7 +1321,9 @@
                                             </parsers:HTTPParser>
                                                 </ctl:request>
                                         </xsl:variable>
-                                        <xsl:if test="not($RESPONSE/response/headers/header[lower-case(@name) = 'content-type']= 'text/xml; subtype=gml/2.1.2')">
+                                        <xsl:variable name="header" select="$RESPONSE/response/headers/header[@name='Content-Type']" />
+                                        <xsl:variable name="content-type" select="substring-before(concat($header, ';'), ';')"/>
+                                        <xsl:if test="not($content-type = 'text/xml' and contains($header, 'subtype=gml/2.1.2'))">
                                                 <ctl:fail/>
                                         </xsl:if>
                     </xsl:when>
@@ -1347,7 +1351,7 @@
                                         <ctl:param name="version">1.1.0</ctl:param>
                                         <ctl:param name="extra">Unknown</ctl:param>
                                         <param name="typename">
-                                                <xsl:value-of select="wfs:encode($CAPABILITIES/wfs:FeatureTypeList/wfs:FeatureType[1]/wfs:Name)"/>
+                                                <xsl:value-of select="wfs:encode($CAPABILITIES/wfs:FeatureTypeList/wfs:FeatureType[1]/wfs:Name,'UTF-8')"/>
                                         </param>
                             <parsers:HTTPParser>
                                <parsers:parse>
@@ -1378,9 +1382,9 @@
                                         <ctl:param name="request">GetFeature</ctl:param>
                                         <ctl:param name="service">WFS</ctl:param>
                                         <ctl:param name="version">1.1.0</ctl:param>
-                                        <ctl:param name="resultType">Results</ctl:param>
+                                        <ctl:param name="resultType">results</ctl:param>
                                         <param name="typename">
-                                                <xsl:value-of select="wfs:encode($CAPABILITIES/wfs:FeatureTypeList/wfs:FeatureType[1]/wfs:Name)"/>
+                                                <xsl:value-of select="wfs:encode($CAPABILITIES/wfs:FeatureTypeList/wfs:FeatureType[1]/wfs:Name,'UTF-8')"/>
                                         </param>
                             <parsers:HTTPParser>
                                <parsers:parse>

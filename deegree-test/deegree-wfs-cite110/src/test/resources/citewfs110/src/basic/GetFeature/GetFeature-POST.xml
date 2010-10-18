@@ -2151,7 +2151,7 @@
         <test name="wfs:wfs-1.1.0-Basic-GetFeature-tc28.1">
       <param name="wfs.GetFeature.post.url"/>
       <param name="wfs.PrimitiveGeoFeature.DefaultSRS"/>
-      <assertion>If the @srsName of the supplied literal geometry or gml:Envelope is unspecified, it shall be handled as if it corresponded to the advertised default CRS.</assertion>
+      <assertion>If the @srsName of the Query is unspecified, it shall be handled as if it corresponded to the advertised default CRS.</assertion>
       <comment>GetFeature spatial query, with no srsName specified, the default is expected (from the capabilities document).  Pass if all of the following conditions are true: (1) the response is schema valid; (2) the root document is an wfs:FeatureCollection document; (3) the response shall use the default srs value from the capabilities document.</comment>
       <link>filter-1.1.0-spatial-atc3</link>
       <link>OGC 04-095, 8.3, p.12</link>

@@ -631,7 +631,7 @@
                                                         <ctl:param name="service">WFS</ctl:param>
                                                         <ctl:param name="version">1.1.0</ctl:param>
                                                         <ctl:param name="outputformat">
-                                                         <xsl:value-of select="wfs:encode('text/xml; subtype=gml/2.1.2')"/>
+                                                         <xsl:value-of select="wfs:encode('text/xml; subtype=gml/2.1.2', 'UTF-8')"/>
                                                         </ctl:param>
                                             <parsers:HTTPParser>
                                                <parsers:parse>
@@ -668,7 +668,7 @@
                                         <ctl:param name="service">WFS</ctl:param>
                                         <ctl:param name="version">1.1.0</ctl:param>
                                         <ctl:param name="outputformat">
-                                         <xsl:value-of select="wfs:encode('text/xml; subtype=gml/3.1.1')"/>
+                                         <xsl:value-of select="wfs:encode('text/xml; subtype=gml/3.1.1', 'UTF-8')"/>
                                         </ctl:param>
                             <parsers:HTTPParser>
                                <parsers:parse>

@@ -986,7 +986,7 @@
                                                         <ctl:param name="service">WFS</ctl:param>
                                                         <ctl:param name="version">1.1.0</ctl:param>
                                                         <param name="typename">
-                                                                <xsl:value-of select="wfs:encode($CAPABILITIES/wfs:FeatureTypeList/wfs:FeatureType[wfs:Name='sf:LinkedFeature']/wfs:Name)"/>
+                                                                <xsl:value-of select="wfs:encode($CAPABILITIES/wfs:FeatureTypeList/wfs:FeatureType[wfs:Name='sf:LinkedFeature']/wfs:Name,'UTF-8')"/>
                                                         </param>
                                                         <ctl:param name="traverseXlinkExpiry">0</ctl:param>
                                             <parsers:HTTPParser>

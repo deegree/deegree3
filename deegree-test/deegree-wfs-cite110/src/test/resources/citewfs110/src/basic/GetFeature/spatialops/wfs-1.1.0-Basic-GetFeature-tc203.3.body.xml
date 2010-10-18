@@ -4,7 +4,7 @@
   <wfs:Query xmlns:sf="http://cite.opengeospatial.org/gmlsf" typeName="sf:EntitéGénérique">
     <ogc:Filter xmlns:ogc="http://www.opengis.net/ogc" xmlns:gml="http://www.opengis.net/gml">
       <ogc:Within>
-        <ogc:PropertyName />
+        <ogc:PropertyName>sf:nonExistingAttribute</ogc:PropertyName>
         <gml:Polygon srsName="urn:ogc:def:crs:EPSG::4326">
           <gml:exterior>
             <gml:LinearRing>

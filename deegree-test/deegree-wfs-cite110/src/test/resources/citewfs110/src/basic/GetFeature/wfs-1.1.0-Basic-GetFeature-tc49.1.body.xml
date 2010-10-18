@@ -5,7 +5,7 @@
                 <ogc:Filter>
                         <ogc:BBOX>
                                 <ogc:PropertyName>sf:pointProperty</ogc:PropertyName>
-                                <gml:Envelope>
+                                <gml:Envelope srsName="urn:ogc:def:crs:EPSG::4326">
                                         <gml:lowerCorner>37.0 -2.5</gml:lowerCorner>
                                         <gml:upperCorner>42.0 2.5</gml:upperCorner>
                                 </gml:Envelope>
