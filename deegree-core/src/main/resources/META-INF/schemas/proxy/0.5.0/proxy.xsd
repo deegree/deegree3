@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+  <!--
+    This file is part of deegree, for copyright/license information, please visit http://www.deegree.org/license.
+  -->
+<schema xmlns="http://www.w3.org/2001/XMLSchema" xmlns:jdbc="http://www.deegree.org/proxy" xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
+  targetNamespace="http://www.deegree.org/proxy" elementFormDefault="qualified" jaxb:version="2.1">
+  <annotation>
+    <appinfo>
+      <jaxb:schemaBindings>
+        <jaxb:package name="org.deegree.commons.proxy.jaxb" />
+      </jaxb:schemaBindings>
+    </appinfo>
+  </annotation>
+  <element name="ProxyConfiguration">
+    <complexType>
+      <annotation>
+        <documentation>Parameters that deegree uses to connect to other resources on the network.</documentation>
+      </annotation>
+      <sequence>
+        <element name="ProxyHost" type="string" minOccurs="0" />
+        <element name="HttpProxyHost" type="string" minOccurs="0" />
+        <element name="FtpProxyHost" type="string" minOccurs="0" />
+        <element name="ProxyPort" type="positiveInteger" minOccurs="0" />
+        <element name="HttpProxyPort" type="positiveInteger" minOccurs="0" />
+        <element name="FtpProxyPort" type="positiveInteger" minOccurs="0" />
+        <element name="ProxyUser" type="string" minOccurs="0" />
+        <element name="HttpProxyUser" type="string" minOccurs="0" />
+        <element name="FtpProxyUser" type="string" minOccurs="0" />
+        <element name="ProxyPassword" type="string" minOccurs="0" />
+        <element name="HttpProxyPassword" type="string" minOccurs="0" />
+        <element name="FtpProxyPassword" type="string" minOccurs="0" />
+        <element name="NonProxyHosts" type="string" minOccurs="0" />
+        <element name="HttpNonProxyHosts" type="string" minOccurs="0" />
+        <element name="FtpNonProxyHosts" type="string" minOccurs="0" />
+      </sequence>
+      <attribute name="overrideSystemSettings" type="boolean" use="optional" />
+      <attribute name="configVersion" use="required" fixed="0.5.0"/>
+    </complexType>
+  </element>
+</schema>
