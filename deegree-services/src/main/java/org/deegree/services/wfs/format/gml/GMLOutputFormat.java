@@ -370,7 +370,7 @@ class GMLOutputFormat implements OutputFormat {
 
         if ( outputFormat == GML_2 ) {
             // "gml:boundedBy" is necessary for GML 2 schema compliance
-            xmlStream.writeStartElement( "gml", GMLNS, "boundedBy" );
+            xmlStream.writeStartElement( "gml", "boundedBy", GMLNS );
             xmlStream.writeStartElement( GMLNS, "null" );
             xmlStream.writeCharacters( "unknown" );
             xmlStream.writeEndElement();
@@ -626,7 +626,7 @@ class GMLOutputFormat implements OutputFormat {
 
         // "gml:boundedBy" is necessary for GML 2 schema compliance
         if ( gmlVersion.equals( GMLVersion.GML_2 ) ) {
-            xmlStream.writeStartElement( "gml", GMLNS, "boundedBy" );
+            xmlStream.writeStartElement( "gml", "boundedBy", GMLNS );
             xmlStream.writeStartElement( GMLNS, "null" );
             xmlStream.writeCharacters( "unknown" );
             xmlStream.writeEndElement();
