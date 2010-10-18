@@ -51,7 +51,7 @@ import org.deegree.filter.expression.Function;
 import org.deegree.filter.function.FunctionProvider;
 
 /**
- * <code>IMod</code>
+ * Expects two arguments corresponding to two single values.
  * 
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
  * @author last edited by: $Author$
@@ -67,6 +67,21 @@ public class IMod implements FunctionProvider {
         return NAME;
     }
 
+    static void checkTwoArguments( String name, TypedObjectNode[] vals1, TypedObjectNode[] vals2 )
+                            throws FilterEvaluationException {
+        if ( vals1.length == 0 || vals2.length == 0 ) {
+            String msg = "The " + name + " function expects two arguments, but ";
+            if ( vals1.length == 0 && vals2.length == 0 ) {
+                msg += "both arguments were missing.";
+            } else {
+                msg += "the ";
+                msg += vals1.length == 0 ? "first" : "second";
+                msg += " argument was missing.";
+            }
+            throw new FilterEvaluationException( msg );
+        }
+    }
+
     @Override
     public Function create( List<Expression> params ) {
         return new Function( NAME, params ) {
@@ -76,6 +91,8 @@ public class IMod implements FunctionProvider {
                                     throws FilterEvaluationException {
                 TypedObjectNode[] vals1 = first.evaluate( f, xpathEvaluator );
                 TypedObjectNode[] vals2 = second.evaluate( f, xpathEvaluator );
+
+                checkTwoArguments( NAME, vals1, vals2 );
 
                 PrimitiveValue pv1;
                 PrimitiveValue pv2;

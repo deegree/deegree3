@@ -17,7 +17,8 @@ import org.deegree.geometry.multi.MultiLineString;
 import org.deegree.geometry.primitive.Curve;
 
 /**
- * <code>IsCurve</code>
+ * Returns no value in case the argument expression evaluates to no value, or multiple values, or the value can not be
+ * interpreted as a geometry.
  * 
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
  * @author last edited by: $Author$
@@ -49,7 +50,6 @@ public class IsCurve implements FunctionProvider {
                 if ( vals.length != 1 || !( vals[0] instanceof Geometry ) && !( vals[0] instanceof Property )
                      && !( ( (Property) vals[0] ).getValue() instanceof Geometry ) ) {
                     return new TypedObjectNode[0];
-                    // throw new FilterEvaluationException( "The argument to the Is*** functions must be a geometry." );
                 }
                 Geometry geom = vals[0] instanceof Geometry ? (Geometry) vals[0]
                                                            : (Geometry) ( (Property) vals[0] ).getValue();
