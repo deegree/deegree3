@@ -94,6 +94,7 @@ import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
 
 import org.apache.xerces.impl.dv.util.Base64;
+import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.commons.utils.DoublePair;
 import org.deegree.commons.utils.Pair;
 import org.deegree.commons.utils.Triple;
@@ -1350,7 +1351,7 @@ public class SymbologyParser {
                             }
                             if ( p.second != null ) {
                                 try {
-                                    Object[] evald = p.second.first.evaluate( f, evaluator );
+                                    TypedObjectNode[] evald = p.second.first.evaluate( f, evaluator );
                                     if ( evald.length == 0 ) {
                                         LOG.warn( get( "R2D.EXPRESSION_TO_NULL" ), p.second.second );
                                     } else {
