@@ -37,6 +37,7 @@ package org.deegree.services.controller;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -204,7 +205,7 @@ public abstract class AbstractOGCServiceController implements OWS {
      */
     @Override
     public void doSOAP( SOAPEnvelope soapDoc, HttpServletRequest request, HttpResponseBuffer response,
-                           List<FileItem> multiParts, SOAPFactory factory )
+                        List<FileItem> multiParts, SOAPFactory factory )
                             throws ServletException, IOException, SecurityException {
         sendSOAPException( soapDoc.getHeader(), factory, response, null, null, null,
                            "SOAP DCP is not implemented for this service.", request.getServerName(),
@@ -309,6 +310,19 @@ public abstract class AbstractOGCServiceController implements OWS {
             }
         }
         return s;
+    }
+
+    /**
+     * Returns the offered protocol versions.
+     * 
+     * @return the offered protocol versions
+     */
+    public List<String> getOfferedVersions() {
+        List<String> versions = new ArrayList<String>( offeredVersions.size() );
+        for ( Version version : offeredVersions ) {
+            versions.add( version.toString() );
+        }
+        return versions;
     }
 
     /**

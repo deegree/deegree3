@@ -51,6 +51,7 @@ import javax.xml.stream.XMLStreamWriter;
 import org.deegree.commons.tom.ows.Version;
 import org.deegree.protocol.ows.capabilities.GetCapabilities;
 import org.deegree.services.controller.ows.capabilities.OWSCapabilitiesXMLAdapter;
+import org.deegree.services.controller.ows.capabilities.OWSOperation;
 import org.deegree.services.jaxb.main.DCPType;
 import org.deegree.services.jaxb.main.ServiceIdentificationType;
 import org.deegree.services.jaxb.main.ServiceProviderType;
@@ -91,7 +92,7 @@ public class CapabilitiesXMLAdapter extends OWSCapabilitiesXMLAdapter {
      * @throws XMLStreamException
      */
     public void export040( XMLStreamWriter writer, GetCapabilities request, ServiceIdentificationType serviceID,
-                           ServiceProviderType serviceProvider, List<String> operations, DCPType dcp,
+                           ServiceProviderType serviceProvider, List<OWSOperation> operations, DCPType dcp,
                            ServiceConfiguration serviceConfig )
                             throws XMLStreamException {
 
@@ -119,7 +120,7 @@ public class CapabilitiesXMLAdapter extends OWSCapabilitiesXMLAdapter {
             exportServiceProvider110( writer, serviceProvider );
         }
         if ( all || sections.contains( "OperationsMetadata" ) ) {
-            exportOperationsMetadata110( writer, operations, dcp );
+            exportOperationsMetadata110( writer, operations );
         }
         if ( all || sections.contains( "Dataset" ) ) {
             exportDatasets( writer, serviceConfig.getDatasetDefinitions() );

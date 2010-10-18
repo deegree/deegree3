@@ -41,6 +41,7 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
 import org.deegree.commons.tom.ows.Version;
+import org.deegree.commons.utils.Pair;
 import org.deegree.protocol.ows.OWSCommonXMLAdapter;
 import org.deegree.services.jaxb.main.AddressType;
 import org.deegree.services.jaxb.main.CodeType;
@@ -206,55 +207,31 @@ public class OWSCapabilitiesXMLAdapter extends OWSCommonXMLAdapter {
     }
 
     /**
-     * Exports a list of operation names as an OWS 1.0.0 <code>OperationsMetadata</code> element.
-     * <p>
-     * Please note that the generated <code>OperationsMetadata</code> element only contains a minimum of information,
-     * i.e. it has no information on parameters (<code>Parameter</code> elements) or constraints (
-     * <code>Constraint</code> elements). If information in these sections are necessary, a service implementation has
-     * to generate the <code>OperationsMetadata</code> element itself. It is however possible to use
-     * {@link #exportDCP(XMLStreamWriter, DCPType, String)} in that case for the generation of the contained
-     * <code>DCP</code> elements.
-     * </p>
-     * 
-     * @see #exportDCP(XMLStreamWriter, DCPType, String)
+     * Exports a list of {@link OWSOperation}s as an OWS 1.0.0 <code>OperationsMetadata</code> element.
      * 
      * @param writer
-     *            writer to append the xml
+     *            writer to append the xml, must not be <code>null</code>
      * @param operations
-     *            operation names, e.g. "GetCapabilities"
-     * @param dcp
-     *            <code>DCPType</code> to export
+     *            operations, e.g. "GetCapabilities", must not be <code>null</code>
      * @throws XMLStreamException
      */
-    public static void exportOperationsMetadata100( XMLStreamWriter writer, List<String> operations, DCPType dcp )
+    public static void exportOperationsMetadata100( XMLStreamWriter writer, List<OWSOperation> operations )
                             throws XMLStreamException {
-        exportOperationsMetadata( writer, operations, dcp, OWS_NS );
+        exportOperationsMetadata( writer, operations, OWS_NS );
     }
 
     /**
-     * Exports a list of operation names as an OWS 1.1.0 <code>OperationsMetadata</code> element.
-     * <p>
-     * Please note that the generated <code>OperationsMetadata</code> element only contains a minimum of information,
-     * i.e. it has no information on parameters (<code>Parameter</code> elements) or constraints (
-     * <code>Constraint</code> elements). If information in these sections are necessary, a service implementation has
-     * to generate the <code>OperationsMetadata</code> element itself. It is however possible to use
-     * {@link #exportDCP(XMLStreamWriter, DCPType, String)} in that case for the generation of the contained
-     * <code>DCP</code> elements.
-     * </p>
-     * 
-     * @see #exportDCP(XMLStreamWriter, DCPType, String)
+     * Exports a list of {@link OWSOperation}s as an OWS 1.1.0 <code>OperationsMetadata</code> element.
      * 
      * @param writer
-     *            writer to append the xml
+     *            writer to append the xml, must not be <code>null</code>
      * @param operations
-     *            operation names, e.g. "GetCapabilities"
-     * @param dcp
-     *            <code>DCPType</code> to export
+     *            operations, e.g. "GetCapabilities", must not be <code>null</code>
      * @throws XMLStreamException
      */
-    public static void exportOperationsMetadata110( XMLStreamWriter writer, List<String> operations, DCPType dcp )
+    public static void exportOperationsMetadata110( XMLStreamWriter writer, List<OWSOperation> operations )
                             throws XMLStreamException {
-        exportOperationsMetadata( writer, operations, dcp, OWS110_NS );
+        exportOperationsMetadata( writer, operations, OWS110_NS );
     }
 
     /**
@@ -526,17 +503,36 @@ public class OWSCapabilitiesXMLAdapter extends OWSCommonXMLAdapter {
      *            namespace for the generated elements
      * @throws XMLStreamException
      */
-    private static void exportOperationsMetadata( XMLStreamWriter writer, List<String> operations, DCPType dcp,
-                                                  String owsNS )
+    private static void exportOperationsMetadata( XMLStreamWriter writer, List<OWSOperation> operations, String owsNS )
                             throws XMLStreamException {
 
         writer.writeStartElement( owsNS, "OperationsMetadata" );
 
-        for ( String operation : operations ) {
+        for ( OWSOperation operation : operations ) {
             // ows:Operation
             writer.writeStartElement( owsNS, "Operation" );
-            writer.writeAttribute( "name", operation );
-            exportDCP( writer, dcp, owsNS );
+            writer.writeAttribute( "name", operation.getName() );
+            exportDCP( writer, operation.getDcp(), owsNS );
+            for ( Pair<String, List<String>> param : operation.getParams() ) {
+                writer.writeStartElement( owsNS, "Parameter" );
+                writer.writeAttribute( "name", param.first );
+                for ( String value : param.second ) {
+                    writer.writeStartElement( owsNS, "Value" );
+                    writer.writeCharacters( value );
+                    writer.writeEndElement();
+                }
+                writer.writeEndElement();
+            }
+            for ( Pair<String, List<String>> constraint : operation.getConstraints() ) {
+                writer.writeStartElement( owsNS, "Constraint" );
+                writer.writeAttribute( "name", constraint.first );
+                for ( String value : constraint.second ) {
+                    writer.writeStartElement( owsNS, "Value" );
+                    writer.writeCharacters( value );
+                    writer.writeEndElement();
+                }
+                writer.writeEndElement();
+            }
             writer.writeEndElement();
         }
 

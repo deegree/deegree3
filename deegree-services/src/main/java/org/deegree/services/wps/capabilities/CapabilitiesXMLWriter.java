@@ -36,6 +36,7 @@
 
 package org.deegree.services.wps.capabilities;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -44,8 +45,10 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
 import org.deegree.commons.tom.ows.CodeType;
+import org.deegree.commons.utils.Pair;
 import org.deegree.services.controller.OGCFrontController;
 import org.deegree.services.controller.ows.capabilities.OWSCapabilitiesXMLAdapter;
+import org.deegree.services.controller.ows.capabilities.OWSOperation;
 import org.deegree.services.jaxb.main.DCPType;
 import org.deegree.services.jaxb.main.DeegreeServicesMetadataType;
 import org.deegree.services.jaxb.wps.ProcessDefinition;
@@ -196,16 +199,20 @@ public class CapabilitiesXMLWriter extends OWSCapabilitiesXMLAdapter {
 
     private static void exportOperationsMetadata( XMLStreamWriter writer )
                             throws XMLStreamException {
-        List<String> operations = new LinkedList<String>();
-        operations.add( "GetCapabilities" );
-        operations.add( "DescribeProcess" );
-        operations.add( "Execute" );
 
+        List<OWSOperation> operations = new LinkedList<OWSOperation>();
         DCPType dcp = new DCPType();
         dcp.setHTTPGet( OGCFrontController.getHttpGetURL() );
         dcp.setHTTPPost( OGCFrontController.getHttpPostURL() );
 
-        exportOperationsMetadata110( writer, operations, dcp );
+        List<Pair<String, List<String>>> params = new ArrayList<Pair<String, List<String>>>();
+        List<Pair<String, List<String>>> constraints = new ArrayList<Pair<String, List<String>>>();
+
+        operations.add( new OWSOperation( "GetCapabilities", dcp, params, constraints ) );
+        operations.add( new OWSOperation( "DescribeProcess", dcp, params, constraints ) );
+        operations.add( new OWSOperation( "Execute", dcp, params, constraints ) );
+
+        exportOperationsMetadata110( writer, operations );
     }
 
     private static void exportServiceIdentification( XMLStreamWriter writer )

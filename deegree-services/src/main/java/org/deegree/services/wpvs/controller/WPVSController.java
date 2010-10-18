@@ -43,6 +43,7 @@ import static org.deegree.services.controller.OGCFrontController.getServiceWorks
 
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -80,6 +81,7 @@ import org.deegree.services.controller.exception.ControllerInitException;
 import org.deegree.services.controller.exception.serializer.XMLExceptionSerializer;
 import org.deegree.services.controller.ows.OWSException;
 import org.deegree.services.controller.ows.OWSException110XMLAdapter;
+import org.deegree.services.controller.ows.capabilities.OWSOperation;
 import org.deegree.services.controller.utils.HttpResponseBuffer;
 import org.deegree.services.exception.ServiceInitException;
 import org.deegree.services.jaxb.main.DCPType;
@@ -88,8 +90,8 @@ import org.deegree.services.jaxb.main.DeegreeServicesMetadataType;
 import org.deegree.services.jaxb.main.ServiceIdentificationType;
 import org.deegree.services.jaxb.main.ServiceProviderType;
 import org.deegree.services.jaxb.wpvs.PublishedInformation;
-import org.deegree.services.jaxb.wpvs.PublishedInformation.AllowedOperations;
 import org.deegree.services.jaxb.wpvs.ServiceConfiguration;
+import org.deegree.services.jaxb.wpvs.PublishedInformation.AllowedOperations;
 import org.deegree.services.wpvs.PerspectiveViewService;
 import org.deegree.services.wpvs.controller.capabilities.CapabilitiesXMLAdapter;
 import org.deegree.services.wpvs.controller.getview.GetView;
@@ -369,8 +371,14 @@ public class WPVSController extends AbstractOGCServiceController {
         try {
             XMLStreamWriter xsw = factory.createXMLStreamWriter( response.getOutputStream(), "UTF-8" );
             FormattingXMLStreamWriter xmlWriter = new FormattingXMLStreamWriter( xsw );
-            new CapabilitiesXMLAdapter().export040( xmlWriter, req, identification, provider, allowedOperations,
-                                                    wpvsDCP, service.getServiceConfiguration() );
+            List<OWSOperation> operations = new ArrayList<OWSOperation>();
+            List<Pair<String, List<String>>> params = new ArrayList<Pair<String, List<String>>>();
+            List<Pair<String, List<String>>> constraints = new ArrayList<Pair<String, List<String>>>();
+            for ( String operation : allowedOperations ) {
+                operations.add( new OWSOperation( operation, wpvsDCP, params, constraints ) );
+            }
+            new CapabilitiesXMLAdapter().export040( xmlWriter, req, identification, provider, operations, wpvsDCP,
+                                                    service.getServiceConfiguration() );
             xmlWriter.writeEndDocument();
         } catch ( XMLStreamException e ) {
             throw new IOException( e );

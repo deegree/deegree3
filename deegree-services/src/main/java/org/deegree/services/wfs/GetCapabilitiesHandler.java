@@ -54,7 +54,9 @@ import static org.deegree.protocol.wfs.WFSConstants.WFS_NS;
 import static org.deegree.protocol.wfs.WFSConstants.WFS_PREFIX;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -66,6 +68,7 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
 import org.deegree.commons.tom.ows.Version;
+import org.deegree.commons.utils.Pair;
 import org.deegree.commons.xml.CommonNamespaces;
 import org.deegree.cs.CRS;
 import org.deegree.feature.persistence.FeatureStore;
@@ -82,6 +85,7 @@ import org.deegree.protocol.ows.capabilities.GetCapabilities;
 import org.deegree.protocol.wfs.WFSConstants.WFSRequestType;
 import org.deegree.services.controller.OGCFrontController;
 import org.deegree.services.controller.ows.capabilities.OWSCapabilitiesXMLAdapter;
+import org.deegree.services.controller.ows.capabilities.OWSOperation;
 import org.deegree.services.jaxb.main.DCPType;
 import org.deegree.services.jaxb.main.ServiceIdentificationType;
 import org.deegree.services.jaxb.main.ServiceProviderType;
@@ -413,12 +417,12 @@ class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
     private void exportOperations100()
                             throws XMLStreamException {
         writer.writeStartElement( WFS_NS, "Operations" );
+        writer.writeEmptyElement( WFS_NS, "Query" );
         if ( enableTransactions ) {
             writer.writeEmptyElement( WFS_NS, "Insert" );
             writer.writeEmptyElement( WFS_NS, "Update" );
             writer.writeEmptyElement( WFS_NS, "Delete" );
         }
-        writer.writeEmptyElement( WFS_NS, "Query" );
         if ( enableTransactions ) {
             writer.writeEmptyElement( WFS_NS, "Lock" );
         }
@@ -479,7 +483,7 @@ class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
         // ows:ServiceIdentification
         if ( sections == null || sections.contains( "SERVICEIDENTIFICATION" ) ) {
             List<Version> serviceVersions = new ArrayList<Version>();
-            serviceVersions.add( Version.parseVersion( "1.0.0" ) );
+            serviceVersions.add( Version.parseVersion( "1.1.0" ) );
             exportServiceIdentification100( writer, serviceId, "WFS", serviceVersions );
         }
 
@@ -490,23 +494,76 @@ class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
 
         // ows:OperationsMetadata
         if ( sections == null || sections.contains( "OPERATIONSMETADATA" ) ) {
-            List<String> operations = new LinkedList<String>();
-            operations.add( WFSRequestType.DescribeFeatureType.name() );
-            operations.add( WFSRequestType.GetCapabilities.name() );
-            operations.add( WFSRequestType.GetFeature.name() );
-            if ( enableTransactions ) {
-                operations.add( WFSRequestType.GetFeatureWithLock.name() );
-            }
-            operations.add( WFSRequestType.GetGmlObject.name() );
-            if ( enableTransactions ) {
-                operations.add( WFSRequestType.LockFeature.name() );
-                operations.add( WFSRequestType.Transaction.name() );
-            }
-            // TODO
+            List<OWSOperation> operations = new ArrayList<OWSOperation>();
             DCPType dcp = new DCPType();
             dcp.setHTTPGet( OGCFrontController.getHttpGetURL() );
             dcp.setHTTPPost( OGCFrontController.getHttpPostURL() );
-            exportOperationsMetadata100( writer, operations, dcp );
+
+            // DescribeFeatureType
+            List<Pair<String, List<String>>> params = new ArrayList<Pair<String, List<String>>>();
+            List<String> outputFormats = new ArrayList<String>( master.getOutputFormats() );
+            params.add( new Pair<String, List<String>>( "outputFormat", outputFormats ) );
+            List<Pair<String, List<String>>> constraints = new ArrayList<Pair<String, List<String>>>();
+            operations.add( new OWSOperation( WFSRequestType.DescribeFeatureType.name(), dcp, params, constraints ) );
+
+            // GetCapabilities
+            params = new ArrayList<Pair<String, List<String>>>();
+            params.add( new Pair<String, List<String>>( "AcceptVersions", master.getOfferedVersions() ) );
+            params.add( new Pair<String, List<String>>( "AcceptFormats", Collections.singletonList( "text/xml" ) ) );
+//            List<String> sections = new ArrayList<String>();
+//            sections.add( "ServiceIdentification" );
+//            sections.add( "ServiceProvider" );
+//            sections.add( "OperationsMetadata" );
+//            sections.add( "FeatureTypeList" );
+//            sections.add( "Filter_Capabilities" );
+//            params.add( new Pair<String, List<String>>( "Sections", sections ) );
+            constraints = new ArrayList<Pair<String, List<String>>>();
+            operations.add( new OWSOperation( WFSRequestType.GetCapabilities.name(), dcp, params, constraints ) );
+
+            // GetFeature
+            params = new ArrayList<Pair<String, List<String>>>();
+            params.add( new Pair<String, List<String>>( "resultType",
+                                                        Arrays.asList( new String[] { "results", "hits" } ) ) );
+            params.add( new Pair<String, List<String>>( "outputFormat", outputFormats ) );
+            operations.add( new OWSOperation( WFSRequestType.GetFeature.name(), dcp, params, constraints ) );
+
+            // GetFeatureWithLock
+            if ( enableTransactions ) {
+                params = new ArrayList<Pair<String, List<String>>>();
+                params.add( new Pair<String, List<String>>( "resultType", Arrays.asList( new String[] { "results",
+                                                                                                       "hits" } ) ) );
+                params.add( new Pair<String, List<String>>( "outputFormat", outputFormats ) );
+                operations.add( new OWSOperation( WFSRequestType.GetFeatureWithLock.name(), dcp, params, constraints ) );
+            }
+
+            // GetGmlObject
+            params = new ArrayList<Pair<String, List<String>>>();
+            params = new ArrayList<Pair<String, List<String>>>();
+            params.add( new Pair<String, List<String>>( "outputFormat", outputFormats ) );
+            constraints = new ArrayList<Pair<String, List<String>>>();
+            operations.add( new OWSOperation( WFSRequestType.GetGmlObject.name(), dcp, params, constraints ) );
+
+            if ( enableTransactions ) {
+
+                // LockFeature
+                params = new ArrayList<Pair<String, List<String>>>();
+                params.add( new Pair<String, List<String>>( "lockAction",
+                                                            Arrays.asList( new String[] { "ALL", "SOME" } ) ) );
+                operations.add( new OWSOperation( WFSRequestType.LockFeature.name(), dcp, params, constraints ) );
+
+                // Transaction
+                params = new ArrayList<Pair<String, List<String>>>();
+                params.add( new Pair<String, List<String>>( "inputFormat", outputFormats ) );
+                params.add( new Pair<String, List<String>>( "idgen", Arrays.asList( new String[] { "GenerateNew",
+                                                                                                  "UseExisting",
+                                                                                                  "ReplaceDuplicate" } ) ) );
+                params.add( new Pair<String, List<String>>( "releaseAction", Arrays.asList( new String[] { "ALL",
+                                                                                                          "SOME" } ) ) );
+                operations.add( new OWSOperation( WFSRequestType.Transaction.name(), dcp, params, constraints ) );
+            }
+            // TODO
+
+            exportOperationsMetadata100( writer, operations );
         }
 
         // wfs:FeatureTypeList
@@ -684,19 +741,19 @@ class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
 
         // ows:OperationsMetadata
         if ( sections.size() == 0 || sections.contains( "OperationsMetadata" ) ) {
-            List<String> operations = new LinkedList<String>();
-            operations.add( WFSRequestType.DescribeFeatureType.name() );
-            operations.add( WFSRequestType.GetCapabilities.name() );
-            operations.add( WFSRequestType.GetFeature.name() );
-            if ( enableTransactions ) {
-                operations.add( WFSRequestType.GetFeatureWithLock.name() );
-            }
-            operations.add( WFSRequestType.GetGmlObject.name() );
-            if ( enableTransactions ) {
-                operations.add( WFSRequestType.LockFeature.name() );
-                operations.add( WFSRequestType.Transaction.name() );
-            }
-            exportOperationsMetadata100( writer, operations, null );
+            List<OWSOperation> operations = new LinkedList<OWSOperation>();
+            // operations.add( WFSRequestType.DescribeFeatureType.name() );
+            // operations.add( WFSRequestType.GetCapabilities.name() );
+            // operations.add( WFSRequestType.GetFeature.name() );
+            // if ( enableTransactions ) {
+            // operations.add( WFSRequestType.GetFeatureWithLock.name() );
+            // }
+            // operations.add( WFSRequestType.GetGmlObject.name() );
+            // if ( enableTransactions ) {
+            // operations.add( WFSRequestType.LockFeature.name() );
+            // operations.add( WFSRequestType.Transaction.name() );
+            // }
+            exportOperationsMetadata100( writer, operations );
         }
 
         // wfs:FeatureTypeList
