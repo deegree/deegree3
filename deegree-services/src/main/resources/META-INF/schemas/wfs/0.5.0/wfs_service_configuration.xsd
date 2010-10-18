@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema xmlns="http://www.w3.org/2001/XMLSchema" xmlns:wfs="http://www.deegree.org/services/wfs" targetNamespace="http://www.deegree.org/services/wfs"
+  elementFormDefault="qualified">
+  <element name="ServiceConfiguration">
+    <complexType>
+      <sequence>
+        <element name="CoordinateFormatter" minOccurs="0">
+          <complexType>
+            <attribute name="javaClass" use="required" type="string" />
+          </complexType>
+        </element>
+      </sequence>
+    </complexType>
+  </element>
+</schema>

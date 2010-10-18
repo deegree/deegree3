@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:sec="http://www.deegree.org/security" xmlns:xs="http://www.w3.org/2001/XMLSchema"
+  targetNamespace="http://www.deegree.org/security" elementFormDefault="qualified" xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
+  jaxb:version="2.1">
+
+  <xs:annotation>
+    <xs:appinfo>
+      <jaxb:schemaBindings>
+        <jaxb:package name="org.deegree.services.jaxb.security" />
+      </jaxb:schemaBindings>
+    </xs:appinfo>
+  </xs:annotation>
+
+  <xs:element name="SecurityConfiguration">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="CredentialsProvider" type="sec:CredentialsProviderType" minOccurs="0" />
+      </xs:sequence>
+      <xs:attribute name="configVersion" fixed="0.6.0" use="required" />
+    </xs:complexType>
+  </xs:element>
+
+  <xs:complexType name="empty" />
+
+  <xs:complexType name="CredentialsProviderType">
+    <xs:annotation>
+      <xs:documentation>
+        Defines for the security layer the authentication method used for the service.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="HttpBasicCredentialsProvider" type="sec:empty" minOccurs="0" />
+      <xs:element name="HttpDigestCredentialsProvider" type="sec:empty" minOccurs="0" />
+      <xs:element name="SOAPCredentialsProvider" type="sec:empty" minOccurs="0" />
+      <xs:element name="DeegreeCredentialsProvider" type="sec:empty" minOccurs="0" />
+    </xs:sequence>
+  </xs:complexType>
+
+</xs:schema>
