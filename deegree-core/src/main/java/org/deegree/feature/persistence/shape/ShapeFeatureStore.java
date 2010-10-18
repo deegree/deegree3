@@ -263,8 +263,8 @@ public class ShapeFeatureStore implements FeatureStore {
             ft = dbf.getFeatureType();
         } catch ( IOException e ) {
             LOG.warn( "A dbf file was not loaded (no attributes will be available): {}.dbf", shpName );
-            GeometryPropertyType geomProp = new GeometryPropertyType( new QName( namespace, "geometry" ), 0, 1,
-                                                                      false, false, null, GEOMETRY, DIM_2_OR_3, BOTH );
+            GeometryPropertyType geomProp = new GeometryPropertyType( new QName( namespace, "geometry" ), 0, 1, false,
+                                                                      false, null, GEOMETRY, DIM_2_OR_3, BOTH );
             ft = new GenericFeatureType( featureTypeName, Collections.<PropertyType> singletonList( geomProp ), false );
         }
         schema = new ApplicationSchema( new FeatureType[] { ft }, null, null, null );
@@ -342,10 +342,7 @@ public class ShapeFeatureStore implements FeatureStore {
         LOG.debug( "Read envelopes from shape file..." );
         Pair<ArrayList<Pair<float[], Long>>, Boolean> p = shapeReader.readEnvelopes();
         LOG.debug( "done reading envelopes." );
-        for ( Pair<float[], Long> pair : p.first ) {
-            result.insert( pair.first, pair.second );
-        }
-        // result.insertBulk( p.first );
+        result.insertBulk( p.first );
         return new Pair<RTree<Long>, Boolean>( result, p.second );
     }
 
