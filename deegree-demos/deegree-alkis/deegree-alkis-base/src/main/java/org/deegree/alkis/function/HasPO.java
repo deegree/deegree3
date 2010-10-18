@@ -170,4 +170,8 @@ public class HasPO implements FunctionProvider {
         };
     }
 
+    public int getArgCount() {
+        return 0;
+    }
+
 }
