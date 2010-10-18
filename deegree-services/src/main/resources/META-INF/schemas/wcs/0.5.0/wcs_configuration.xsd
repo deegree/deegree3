@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:wcs="http://www.deegree.org/services/wcs" xmlns:xlink="http://www.w3.org/1999/xlink"
+  xmlns:xs="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.deegree.org/services/wcs" elementFormDefault="qualified"
+  jaxb:version="2.1" xmlns:jaxb="http://java.sun.com/xml/ns/jaxb">
+
+  <xs:annotation>
+    <xs:appinfo>
+      <jaxb:schemaBindings>
+        <jaxb:package name="org.deegree.services.jaxb.wcs" />
+      </jaxb:schemaBindings>
+    </xs:appinfo>
+  </xs:annotation>
+
+  <xs:include schemaLocation="wcs_published_information.xsd" />
+  <xs:include schemaLocation="wcs_service_configuration.xsd" />
+
+  <xs:element name="deegreeWCS">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="wcs:ServiceConfiguration" />
+        <xs:element ref="wcs:PublishedInformation" />
+      </xs:sequence>
+      <xs:attribute name="configVersion" fixed="0.5.0" use="required" />
+    </xs:complexType>
+  </xs:element>
+</xs:schema>
