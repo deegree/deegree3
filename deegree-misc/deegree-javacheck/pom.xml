@@ -8,6 +8,11 @@
   <version>3.0-SNAPSHOT</version>
   <name>deegree-javacheck</name>
   <url>http://www.deegree.org</url>
+  <parent>
+    <groupId>org.deegree</groupId>
+    <artifactId>deegree-misc</artifactId>
+    <version>3.0-SNAPSHOT</version>
+  </parent>
   <scm>
       <developerConnection>scm:svn:http://svn.wald.intevation.org/svn/deegree/deegree3/trunk/deegree-misc/deegree-javacheck</developerConnection>
       <url>http://svn.wald.intevation.org/svn/deegree/deegree3/trunk/deegree-misc/deegree-javacheck</url>

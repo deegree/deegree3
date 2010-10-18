@@ -13,6 +13,7 @@
     <url>http://svn.wald.intevation.org/svn/deegree/deegree3/trunk/demos</url>
   </scm>
   <modules>
+    <module>deegree-javacheck</module>
     <module>deegree-tomcat</module>
     <module>deegree-log4j-properties</module>
   </modules>
