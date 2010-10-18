@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ogc:Filter xmlns:ogc="http://www.opengis.net/ogc" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/ogc http://schemas.opengis.net/filter/1.1.0/filter.xsd">
+  <ogc:And>
+    <ogc:PropertyIsGreaterThan>
+      <ogc:PropertyName></ogc:PropertyName>
+      <ogc:Literal>1820</ogc:Literal>
+    </ogc:PropertyIsGreaterThan>
+    <ogc:PropertyIsEqualTo>
+      <ogc:PropertyName>app:placeOfBirth/app:Place/app:country/app:Country/app:name</ogc:PropertyName>
+      <ogc:Literal>Germany</ogc:Literal>
+    </ogc:PropertyIsEqualTo>
+  </ogc:And>
+</ogc:Filter>

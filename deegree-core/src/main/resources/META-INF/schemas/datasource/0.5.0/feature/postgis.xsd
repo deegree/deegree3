@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+  <!--
+  This file is part of deegree, for copyright/license information, please visit http://www.deegree.org/license.
+-->
+<schema xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:postgisfs="http://www.deegree.org/datasource/feature/postgis" xmlns="http://www.w3.org/2001/XMLSchema"
+  targetNamespace="http://www.deegree.org/datasource/feature/postgis" elementFormDefault="qualified"
+  xmlns:jaxb="http://java.sun.com/xml/ns/jaxb" jaxb:version="2.1">
+  <annotation>
+    <appinfo>
+      <jaxb:schemaBindings>
+        <jaxb:package name="org.deegree.feature.persistence.postgis.jaxb" />
+      </jaxb:schemaBindings>
+    </appinfo>
+  </annotation>
+  <element name="PostGISFeatureStore">
+    <annotation>
+      <documentation>FeatureStore that is backed by a PostgreSQL/PostGIS database.</documentation>
+      <appinfo>
+        <jaxb:class name="PostGISFeatureStoreConfig" />
+      </appinfo>
+    </annotation>
+    <complexType>
+      <sequence>
+        <element name="NamespaceHint" minOccurs="0" maxOccurs="unbounded">
+          <complexType>
+            <attribute name="prefix" type="string" use="required" />
+            <attribute name="namespaceURI" type="string" use="required" />
+          </complexType>
+        </element>
+        <element name="StorageSRS" type="string" />
+        <element name="JDBCConnId" type="string" />
+        <element name="DBSchemaQualifier" type="string" minOccurs="0" />
+        <element name="GMLSchemaFileURL" minOccurs="0" maxOccurs="unbounded">
+          <complexType>
+            <simpleContent>
+              <extension base="string">
+                <attribute name="gmlVersion" type="postgisfs:GMLVersionType" use="required" />
+              </extension>
+            </simpleContent>
+          </complexType>
+        </element>
+        <element name="RelationalMapping" type="string" minOccurs="0" maxOccurs="unbounded" />
+      </sequence>
+      <attribute name="configVersion" use="required" fixed="0.5.0" />
+    </complexType>
+  </element>
+  <simpleType name="GMLVersionType">
+    <restriction base="string">
+      <enumeration value="GML_2" />
+      <enumeration value="GML_30" />
+      <enumeration value="GML_31" />
+      <enumeration value="GML_32" />
+    </restriction>
+  </simpleType>  
+</schema>
