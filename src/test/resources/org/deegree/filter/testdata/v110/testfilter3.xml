@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<ogc:Filter xmlns:ogc="http://www.opengis.net/ogc" xmlns:gml="http://www.opengis.net/gml"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://www.opengis.net/ogc http://schemas.opengis.net/filter/1.1.0/filter.xsd">
-  <ogc:GmlObjectId gml:id="PHILOSOPHER_5" />
-  <ogc:GmlObjectId gml:id="PHILOSOPHER_6" />
-</ogc:Filter>

@@ -1,2 +1,0 @@
-ENVELOPE(11 22, 44 88)
-POLYGON((11.0 22.0,44.0 22.0,44.0 88.0,11.0 88.0,11.0 22.0)) <-- if counterclockwise...is there a default value? not found in the spec.
