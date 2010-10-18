@@ -42,8 +42,10 @@ import static org.deegree.commons.xml.stax.StAXParsingHelper.getAttributeValueAs
 import static org.deegree.commons.xml.stax.StAXParsingHelper.getRequiredAttributeValue;
 import static org.deegree.commons.xml.stax.StAXParsingHelper.nextElement;
 import static org.deegree.commons.xml.stax.StAXParsingHelper.require;
+import static org.deegree.commons.xml.stax.StAXParsingHelper.requireStartElement;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -691,8 +693,7 @@ public class Filter110XMLDecoder {
 
     private static PropertyName parsePropertyName( XMLStreamReader xmlStream, boolean permitEmpty )
                             throws XMLStreamException {
-
-        xmlStream.require( XMLStreamConstants.START_ELEMENT, OGC_NS, "PropertyName" );
+        requireStartElement( xmlStream, Collections.singleton( new QName( OGC_NS, "PropertyName" ) ) );
         NamespaceContext nsc = StAXParsingHelper.getDeegreeNamespaceContext( xmlStream );
         String xpath = xmlStream.getElementText().trim();
         if ( !permitEmpty && xpath.isEmpty() ) {
