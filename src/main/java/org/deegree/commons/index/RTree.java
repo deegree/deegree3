@@ -180,7 +180,6 @@ public class RTree<T> extends SpatialIndex<T> {
                             throws IOException {
         // the number of non-null entries in this node
         int n = dis.readInt();
-        System.out.println( "reading: " + n );
 
         NodeEntry[] node = null;
         try {
