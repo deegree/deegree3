@@ -295,7 +295,8 @@ public class Categorize extends AbstractCustomExpression {
         LOG.debug( "Building look-up arrays, for binary search... " );
         Color[] valuesArray = null;
         Float[] thresholdsArray = null;
-        if ( valuesArray == null ) {
+
+        {
             valuesArray = new Color[values.size()];
             List<Color> list = new ArrayList<Color>( values.size() );
             Iterator<StringBuffer> i = values.iterator();
@@ -305,7 +306,7 @@ public class Categorize extends AbstractCustomExpression {
             valuesArray = list.toArray( valuesArray );
         }
 
-        if ( thresholdsArray == null ) {
+        {
             thresholdsArray = new Float[thresholds.size()];
             List<Float> list = new ArrayList<Float>( thresholds.size() );
             Iterator<StringBuffer> i = thresholds.iterator();
