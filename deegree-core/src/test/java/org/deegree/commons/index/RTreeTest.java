@@ -35,6 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.commons.index;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -168,7 +169,7 @@ public class RTreeTest {
     }
 
     @Test
-    public void testFromStorage() {
+    public void testFromStorage() throws IOException {
         tree.writeTreeToDisk( "/tmp/rtree.txt" );
 
         tree = RTree.loadFromDisk( "/tmp/rtree.txt" );
