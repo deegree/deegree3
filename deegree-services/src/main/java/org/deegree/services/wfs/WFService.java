@@ -54,7 +54,7 @@ import org.deegree.feature.persistence.FeatureStoreException;
 import org.deegree.feature.persistence.FeatureStoreManager;
 import org.deegree.feature.types.ApplicationSchema;
 import org.deegree.feature.types.FeatureType;
-import org.deegree.services.jaxb.wfs.ServiceConfiguration;
+import org.deegree.services.jaxb.wfs.DeegreeWFS;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -87,7 +87,7 @@ public class WFService {
      * @param baseURL
      * @throws FeatureStoreException
      */
-    public void init( ServiceConfiguration sc, String baseURL )
+    public void init( DeegreeWFS sc, String baseURL )
                             throws FeatureStoreException {
 
         LOG.debug( "Adding configured feature stores." );
@@ -224,11 +224,11 @@ public class WFService {
                     throw new IllegalArgumentException( msg );
                 }
             }
-            
+
             schemaToStore.put( fs.getSchema(), fs );
             for ( FeatureType ft : fs.getSchema().getFeatureTypes() ) {
                 ftNameToFt.put( ft.getName(), ft );
-            }            
+            }
 
             for ( Entry<String, String> e : fs.getSchema().getNamespaceBindings().entrySet() ) {
                 prefixToNs.put( e.getKey(), e.getValue() );

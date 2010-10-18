@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema xmlns="http://www.w3.org/2001/XMLSchema" xmlns:wfs="http://www.deegree.org/services/wfs" targetNamespace="http://www.deegree.org/services/wfs"
+  elementFormDefault="qualified" xmlns:jaxb="http://java.sun.com/xml/ns/jaxb" jaxb:version="2.1">
+  <annotation>
+    <appinfo>
+      <jaxb:schemaBindings>
+        <jaxb:package name="org.deegree.services.jaxb.wfs" />
+      </jaxb:schemaBindings>
+    </appinfo>
+  </annotation>
+  <element name="deegreeWFS">
+    <complexType>
+      <sequence>
+        <element name="SupportedVersions">
+          <complexType>
+            <sequence>
+              <element name="Version" type="wfs:WFSVersionType" maxOccurs="unbounded" />
+            </sequence>
+          </complexType>
+        </element>
+        <element name="CoordinateFormatter" minOccurs="0">
+          <complexType>
+            <attribute name="javaClass" use="required" type="string" />
+          </complexType>
+        </element>
+        <element name="EnableTransactions" type="boolean" minOccurs="0" default="false" />
+        <element name="DisableResponseBuffering" type="boolean" minOccurs="0" default="true" />
+        <element name="QueryCRS" type="string" minOccurs="0" default="EPSG:4326" />
+        <element name="QueryMaxFeatures" type="integer" minOccurs="0" default="15000" />
+        <element name="CheckAreaOfUse" type="boolean" minOccurs="0" default="false" />
+        <element name="Format" minOccurs="0" maxOccurs="unbounded">
+          <complexType>
+            <sequence>
+              <element name="MimeType" type="string" />
+              <element name="Param" minOccurs="0" maxOccurs="unbounded">
+                <complexType>
+                  <simpleContent>
+                    <extension base="string">
+                      <attribute name="key" type="string" use="required" />
+                    </extension>
+                  </simpleContent>
+                </complexType>
+              </element>
+            </sequence>
+            <attribute name="handler" use="optional" />
+          </complexType>
+        </element>
+        <element ref="wfs:FeatureTypeMetadata" minOccurs="0" maxOccurs="unbounded" />
+      </sequence>
+      <attribute name="configVersion" use="required" fixed="0.6.0" />
+    </complexType>
+  </element>
+  <element name="FeatureTypeMetadata">
+    <complexType>
+      <sequence>
+        <element name="Name" type="QName" />
+        <element name="Title" type="string" minOccurs="0" />
+        <element name="Abstract" type="string" minOccurs="0" />
+      </sequence>
+    </complexType>
+  </element>
+  <simpleType name="WFSVersionType">
+    <restriction base="string">
+      <enumeration value="1.0.0" />
+      <enumeration value="1.1.0" />
+      <!-- enumeration value="2.0.0" / -->
+    </restriction>
+  </simpleType>
+</schema>

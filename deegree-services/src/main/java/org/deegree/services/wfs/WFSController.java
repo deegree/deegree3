@@ -127,11 +127,9 @@ import org.deegree.services.jaxb.main.DeegreeServicesMetadataType;
 import org.deegree.services.jaxb.main.ServiceIdentificationType;
 import org.deegree.services.jaxb.main.ServiceProviderType;
 import org.deegree.services.jaxb.wfs.DeegreeWFS;
+import org.deegree.services.jaxb.wfs.DeegreeWFS.Format;
+import org.deegree.services.jaxb.wfs.DeegreeWFS.Format.Param;
 import org.deegree.services.jaxb.wfs.FeatureTypeMetadata;
-import org.deegree.services.jaxb.wfs.PublishedInformation;
-import org.deegree.services.jaxb.wfs.ServiceConfiguration;
-import org.deegree.services.jaxb.wfs.PublishedInformation.Format;
-import org.deegree.services.jaxb.wfs.PublishedInformation.Format.Param;
 import org.deegree.services.wfs.format.OutputFormat;
 import org.deegree.services.wfs.format.OutputFormatManager;
 import org.deegree.services.wfs.format.OutputFormatProvider;
@@ -167,7 +165,7 @@ public class WFSController extends AbstractOGCServiceController {
             supportedVersions = new Version[] { VERSION_100, VERSION_110, VERSION_200 };
             handledNamespaces = new String[] { WFS_NS, WFS_200_NS };
             handledRequests = WFSRequestType.class;
-            supportedConfigVersions = new Version[] { Version.parseVersion( "0.5.0" ) };
+            supportedConfigVersions = new Version[] { Version.parseVersion( "0.6.0" ) };
         }
     };
 
@@ -179,7 +177,7 @@ public class WFSController extends AbstractOGCServiceController {
 
     private boolean enableTransactions;
 
-    private boolean enableStreaming;
+    private boolean disableBuffering;
 
     private CRS defaultQueryCRS = EPSG_4326;
 
@@ -229,18 +227,18 @@ public class WFSController extends AbstractOGCServiceController {
                                                + e.getLinkedException().getMessage(), e );
         }
 
-        PublishedInformation pi = jaxbConfig.getPublishedInformation();
-
-        validateAndSetOfferedVersions( pi.getSupportedVersions().getVersion() );
-        enableTransactions = pi.isEnableTransactions();
-        enableStreaming = ( pi.isEnableStreaming() != null ) ? pi.isEnableStreaming() : false;
-        maxFeatures = pi.getQueryMaxFeatures() == null ? DEFAULT_MAX_FEATURES : pi.getQueryMaxFeatures().intValue();
-        checkAreaOfUse = pi.isCheckAreaOfUse() == null ? false : pi.isCheckAreaOfUse();
+        validateAndSetOfferedVersions( jaxbConfig.getSupportedVersions().getVersion() );
+        enableTransactions = jaxbConfig.isEnableTransactions();
+        disableBuffering = ( jaxbConfig.isDisableResponseBuffering() != null ) ? jaxbConfig.isDisableResponseBuffering()
+                                                                              : false;
+        maxFeatures = jaxbConfig.getQueryMaxFeatures() == null ? DEFAULT_MAX_FEATURES
+                                                              : jaxbConfig.getQueryMaxFeatures().intValue();
+        checkAreaOfUse = jaxbConfig.isCheckAreaOfUse() == null ? false : jaxbConfig.isCheckAreaOfUse();
 
         try {
-            if ( jaxbConfig.getPublishedInformation().getQuerySRS() != null ) {
-                String[] querySrs = StringUtils.split( jaxbConfig.getPublishedInformation().getQuerySRS(), " ",
-                                                       REMOVE_EMPTY_FIELDS | REMOVE_DOUBLE_FIELDS );
+            if ( jaxbConfig.getQueryCRS() != null ) {
+                String[] querySrs = StringUtils.split( jaxbConfig.getQueryCRS(), " ", REMOVE_EMPTY_FIELDS
+                                                                                      | REMOVE_DOUBLE_FIELDS );
                 for ( String srs : querySrs ) {
                     LOG.debug( "Query SRS: " + srs );
                     CRS crs = new CRS( srs );
@@ -257,26 +255,25 @@ public class WFSController extends AbstractOGCServiceController {
         }
 
         // fill metadata map
-        for ( FeatureTypeMetadata ftMd : jaxbConfig.getPublishedInformation().getFeatureTypeMetadata() ) {
+        for ( FeatureTypeMetadata ftMd : jaxbConfig.getFeatureTypeMetadata() ) {
             ftNameToFtMetadata.put( ftMd.getName(), ftMd );
         }
 
         CoordinateFormatter formatter = new DecimalCoordinateFormatter( 8 );
         service = new WFService();
         try {
-            ServiceConfiguration serviceConfig = jaxbConfig.getServiceConfiguration();
-            if ( serviceConfig.getCoordinateFormatter() != null ) {
+            if ( jaxbConfig.getCoordinateFormatter() != null ) {
                 LOG.info( "Using coordinate formatter class '" + formatter + "'." );
-                String formatterClass = serviceConfig.getCoordinateFormatter().getJavaClass();
+                String formatterClass = jaxbConfig.getCoordinateFormatter().getJavaClass();
                 formatter = (CoordinateFormatter) Class.forName( formatterClass ).newInstance();
             }
-            service.init( serviceConfig, controllerConf.getSystemId() );
+            service.init( jaxbConfig, controllerConf.getSystemId() );
         } catch ( Exception e ) {
             throw new ControllerInitException( "Error initializing WFS / FeatureStores: " + e.getMessage(), e );
         }
         lockFeatureHandler = new LockFeatureHandler( this );
 
-        initFormats( jaxbConfig.getPublishedInformation().getFormat() );
+        initFormats( jaxbConfig.getFormat() );
     }
 
     private void initFormats( List<Format> formatDefs ) {
@@ -367,7 +364,7 @@ public class WFSController extends AbstractOGCServiceController {
             // build namespaces from NamespaceHints given in the configuration
             Map<String, String> nsMap = service.getPrefixToNs();
 
-            if ( enableStreaming ) {
+            if ( disableBuffering ) {
                 response.disableBuffering();
             }
 
@@ -475,7 +472,7 @@ public class WFSController extends AbstractOGCServiceController {
                 }
             }
 
-            if ( enableStreaming ) {
+            if ( disableBuffering ) {
                 response.disableBuffering();
             }
 
