@@ -1,0 +1,269 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<deegreeWMS configVersion="0.5.0" xmlns="http://www.deegree.org/services/wms" xmlns:xlink="http://www.w3.org/1999/xlink"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:dgws="http://www.deegree.org/webservices"
+  xsi:schemaLocation="http://www.deegree.org/services/wms http://schemas.deegree.org/wms/0.5.0/wms_configuration.xsd">
+
+  <ServiceConfiguration>
+    <FeatureInfoRadius>10</FeatureInfoRadius>
+    
+    <UnrequestableLayer>
+      <Title>deegree 3 WMS demo</Title>
+      <CRS>EPSG:4326 CRS:84 EPSG:26912</CRS>
+
+
+      <RequestableLayer>
+        <Name>Administration</Name>
+        <Title>Administration of Utah</Title>
+        <RequestableLayer>
+          <Name>Municipalities</Name>
+          <Title>Municipalities of Utah</Title>
+          <FeatureStoreId>utah_municipalities</FeatureStoreId>
+          <DirectStyle>
+            <File>../styles/utah_municipalities.se</File>
+          </DirectStyle>
+        </RequestableLayer>
+        <RequestableLayer>
+          <Name>Counties</Name>
+          <Title>Counties of Utah</Title>
+          <RequestableLayer>
+            <Name>CountyBoundaries</Name>
+            <Title>Counties of Utah</Title>
+            <FeatureStoreId>utah_counties</FeatureStoreId>
+            <DirectStyle>
+              <File>../styles/utah_counties.se</File>
+            </DirectStyle>
+          </RequestableLayer>
+          <RequestableLayer queryable="0">
+            <Name>CountyNames</Name>
+            <Title>Countynames of Utah</Title>
+            <ScaleUntil>5000000</ScaleUntil>
+            <FeatureStoreId>utah_counties</FeatureStoreId>
+            <DirectStyle>
+              <File>../styles/utah_countynames.se</File>
+            </DirectStyle>
+          </RequestableLayer>
+        </RequestableLayer>
+        <RequestableLayer>
+          <Name>ZipCodes</Name>
+          <Title>Zipcodes of Utah</Title>
+          <FeatureStoreId>utah_zipcodes</FeatureStoreId>
+          <DirectStyle>
+            <File>../styles/utah_zipcodes.se</File>
+          </DirectStyle>
+        </RequestableLayer>
+        <RequestableLayer>
+          <Name>StateBoundary</Name>
+          <Title>State of Utah</Title>
+          <FeatureStoreId>utah_stateboundary</FeatureStoreId>
+          <DirectStyle>
+            <File>../styles/utah_stateboundary.se</File>
+          </DirectStyle>
+        </RequestableLayer>
+      </RequestableLayer>
+
+      <RequestableLayer>
+        <Name>Transportation</Name>
+        <Title>Transportation in Utah</Title>
+        <RequestableLayer>
+          <Name>Railroads</Name>
+          <Title>Railroads of Utah</Title>
+          <FeatureStoreId>utah_railroads</FeatureStoreId>
+          <DirectStyle>
+            <File>../styles/utah_railroads.se</File>
+          </DirectStyle>
+        </RequestableLayer>
+        <RequestableLayer>
+          <Name>Roads</Name>
+          <Title>Roads of Utah</Title>
+          <FeatureStoreId>utah_roads</FeatureStoreId>
+        <DirectStyle>
+            <File>../styles/utah_roads.se</File>
+          </DirectStyle>
+         <SupportedFeatures>
+            <MaxFeatures>10000000</MaxFeatures>
+          </SupportedFeatures>
+        </RequestableLayer>
+        <RequestableLayer>
+          <Name>Airports</Name>
+          <Title>Airports in Utah</Title>
+          <FeatureStoreId>utah_airports</FeatureStoreId>
+          <DirectStyle>
+            <File>../styles/utah_airports.se</File>
+          </DirectStyle>
+        </RequestableLayer>
+      </RequestableLayer>
+
+      <RequestableLayer>
+        <Name>Elevation</Name>
+        <Title>Elevation Data of Utah</Title>
+        <RequestableLayer>
+          <Name>DEM90</Name>
+          <Title>DEM 90m Raster of Utah</Title>
+          <CoverageStoreId>utah_dem</CoverageStoreId>
+          <DirectStyle>
+            <File>../styles/utah_dem.se</File>
+          </DirectStyle>
+        </RequestableLayer>
+        <RequestableLayer>
+          <Name>DEM30</Name>
+          <Title>DEM 30m Raster of Utah</Title>
+          <Dimension isElevation="true">
+            <Property>ELEV</Property>
+            <DefaultValue>0/3500</DefaultValue>
+            <MultipleValues>true</MultipleValues>
+            <NearestValue>true</NearestValue>
+            <Extent>0/3500</Extent>
+          </Dimension>
+          <CoverageStoreId>utah_dem30</CoverageStoreId>
+          <DirectStyle>
+            <File>../styles/utah_dem30.se</File>
+          </DirectStyle>
+        </RequestableLayer>
+        <RequestableLayer>
+          <Name>ElevationContours</Name>
+          <Title>Elevationcontours in Utah</Title>
+          <LogicalLayer>
+            <FeatureStoreId>utah_contours500ft</FeatureStoreId>
+            <SLDStyle>
+              <File>../styles/utah_contours.sld</File>
+              <NamedLayer>ElevationContours</NamedLayer>
+              <Name>ElevationContours</Name>
+              <UserStyle>default:ElevationContours</UserStyle>
+              <UserStyle>ElevationContoursSimple</UserStyle>
+            </SLDStyle>
+          </LogicalLayer>
+          <LogicalLayer>
+            <FeatureStoreId>utah_contours1000ft</FeatureStoreId>
+            <SLDStyle>
+              <File>../styles/utah_contours.sld</File>
+              <NamedLayer>ElevationContours</NamedLayer>
+              <Name>ElevationContours</Name>
+              <UserStyle>default:ElevationContours</UserStyle>
+              <UserStyle>ElevationContoursSimple</UserStyle>
+            </SLDStyle>
+          </LogicalLayer>
+          <LogicalLayer>
+            <FeatureStoreId>utah_contours2500ft</FeatureStoreId>
+            <SLDStyle>
+              <File>../styles/utah_contours.sld</File>
+              <NamedLayer>ElevationContours</NamedLayer>
+              <Name>ElevationContours</Name>
+              <UserStyle>default:ElevationContours</UserStyle>
+              <UserStyle>ElevationContoursSimple</UserStyle>
+            </SLDStyle>
+          </LogicalLayer>
+        </RequestableLayer>
+      </RequestableLayer>
+
+      <RequestableLayer>
+        <Name>Hydrology</Name>
+        <Title>Hydrology of Utah</Title>
+        <RequestableLayer>
+          <Name>Rivers</Name>
+          <Title>Rivers in Utah County</Title>
+          <FeatureStoreId>utah_rivers</FeatureStoreId>
+          <DirectStyle>
+            <File>../styles/utah_rivers.se</File>
+          </DirectStyle>
+        </RequestableLayer>
+        <RequestableLayer>
+          <Name>GroundWater</Name>
+          <Title>Groundwater in Utah County</Title>
+          <FeatureStoreId>utah_groundwater</FeatureStoreId>
+          <DirectStyle>
+            <File>../styles/utah_groundwater.se</File>
+          </DirectStyle>
+        </RequestableLayer>
+        <RequestableLayer>
+          <Name>Lakes</Name>
+          <Title>Lakes in Utah</Title>
+          <FeatureStoreId>utah_lakes</FeatureStoreId>
+          <DirectStyle>
+            <File>../styles/utah_lakes.se</File>
+          </DirectStyle>
+        </RequestableLayer>
+        <RequestableLayer>
+          <Name>Springs</Name>
+          <Title>Springs in Utah</Title>
+          <FeatureStoreId>utah_springs</FeatureStoreId>
+          <DirectStyle>
+            <File>../styles/utah_springs.se</File>
+          </DirectStyle>
+        </RequestableLayer>
+      </RequestableLayer>
+
+      <RequestableLayer>
+        <Name>SatelliteProvo</Name>
+        <Title>Satellite Image of Provo</Title>
+        <CoverageStoreId>utah_sat</CoverageStoreId>
+      </RequestableLayer>
+
+      <RequestableLayer>
+        <Name>DominantVegetation</Name>
+        <Title>Dominant vegetation in Utah</Title>
+        <FeatureStoreId>utah_dominantvegetation</FeatureStoreId>
+        <DirectStyle>
+          <File>../styles/utah_dominantvegetation.se</File>
+        </DirectStyle>
+      </RequestableLayer>
+
+      <RequestableLayer>
+        <Name>EnergyResources</Name>
+        <Title>Energyresources in Utah</Title>
+        <FeatureStoreId>utah_energyresources</FeatureStoreId>
+        <DirectStyle>
+          <File>../styles/utah_energyresources.se</File>
+        </DirectStyle>
+        <SupportedFeatures>
+          <AntiAliasing>NONE</AntiAliasing>
+        </SupportedFeatures>
+      </RequestableLayer>
+
+      <RequestableLayer>
+        <Name>Cities</Name>
+        <Title>Cities in Utah County</Title>
+        <FeatureStoreId>utah_cities</FeatureStoreId>
+        <DirectStyle>
+          <File>../styles/utah_cities.se</File>
+        </DirectStyle>
+      </RequestableLayer>
+      <!-- 
+      <RequestableLayer>
+        <Name>simplesql_postgis_example</Name>
+        <Title>Simplesql PostGIS example</Title>
+        <FeatureStoreId>simplesql_postgis_example</FeatureStoreId>
+      </RequestableLayer>
+      -->
+      <RequestableLayer>
+        <Name>WeatherStations</Name>
+        <Title>Weatherstations in Utah County</Title>
+        <Dimension isTime="true">
+          <Property>TIMESTAMP</Property>
+          <DefaultValue>2009-01-01T00:00:00Z</DefaultValue>
+          <MultipleValues>true</MultipleValues>
+          <NearestValue>true</NearestValue>
+          <Current>true</Current>
+          <Extent>2009-01-01T00:00:00Z/2009-01-07T00:00:00Z/P1D</Extent>
+        </Dimension>
+        <FeatureStoreId>utah_weather</FeatureStoreId>
+        <DirectStyle>
+          <File>../styles/utah_weather.se</File>
+        </DirectStyle>
+      </RequestableLayer>
+
+      <DynamicLayer>
+        <ShapefileDirectory>../../data/utah/vector/busroutes</ShapefileDirectory>
+      </DynamicLayer>
+
+      <StatisticsLayer />
+
+    </UnrequestableLayer>
+    
+  </ServiceConfiguration>
+  <PublishedInformation>
+    <GetFeatureInfoFormat>
+      <File>html.gfi</File>
+      <Format>text/html</Format>
+    </GetFeatureInfoFormat>
+  </PublishedInformation>
+</deegreeWMS>
