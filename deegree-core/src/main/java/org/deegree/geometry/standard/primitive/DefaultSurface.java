@@ -49,6 +49,8 @@ import org.deegree.geometry.primitive.Surface;
 import org.deegree.geometry.primitive.patches.PolygonPatch;
 import org.deegree.geometry.primitive.patches.SurfacePatch;
 import org.deegree.geometry.standard.AbstractDefaultGeometry;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.vividsolutions.jts.geom.LinearRing;
 
@@ -61,6 +63,8 @@ import com.vividsolutions.jts.geom.LinearRing;
  * @version $Revision:$, $Date:$
  */
 public class DefaultSurface extends AbstractDefaultGeometry implements Surface {
+
+    private static final Logger LOG = LoggerFactory.getLogger( DefaultSurface.class );
 
     protected List<? extends SurfacePatch> patches;
 
@@ -118,31 +122,30 @@ public class DefaultSurface extends AbstractDefaultGeometry implements Surface {
 
     @Override
     public Points getExteriorRingCoordinates() {
-        if ( patches.size() == 1 ) {
-            if ( patches.get( 0 ) instanceof PolygonPatch ) {
-                PolygonPatch patch = (PolygonPatch) patches.get( 0 );
-                return patch.getExteriorRing().getControlPoints();
-            }
-            throw new IllegalArgumentException( Messages.getMessage( "SURFACE_IS_NON_PLANAR" ) );
+        if ( patches.size() > 1 ) {
+            LOG.warn( "SURFACE_MORE_THAN_ONE_PATCH" );
         }
-        throw new IllegalArgumentException( Messages.getMessage( "SURFACE_MORE_THAN_ONE_PATCH" ) );
+        if ( patches.get( 0 ) instanceof PolygonPatch ) {
+            PolygonPatch patch = (PolygonPatch) patches.get( 0 );
+            return patch.getExteriorRing().getControlPoints();
+        }
+        throw new IllegalArgumentException( Messages.getMessage( "SURFACE_IS_NON_PLANAR" ) );
     }
 
     @Override
     public List<Points> getInteriorRingsCoordinates() {
         List<Points> controlPoints = new ArrayList<Points>();
-        if ( patches.size() == 1 ) {
-            if ( patches.get( 0 ) instanceof PolygonPatch ) {
-                PolygonPatch patch = (PolygonPatch) patches.get( 0 );
-                List<Ring> interiorRings = patch.getInteriorRings();
-                for ( Ring ring : interiorRings ) {
-                    controlPoints.add( ring.getControlPoints() );
-                }
-            } else {
-                throw new IllegalArgumentException( Messages.getMessage( "SURFACE_IS_NON_PLANAR" ) );
+        if ( patches.size() > 1 ) {
+            LOG.warn( "SURFACE_MORE_THAN_ONE_PATCH" );
+        }
+        if ( patches.get( 0 ) instanceof PolygonPatch ) {
+            PolygonPatch patch = (PolygonPatch) patches.get( 0 );
+            List<Ring> interiorRings = patch.getInteriorRings();
+            for ( Ring ring : interiorRings ) {
+                controlPoints.add( ring.getControlPoints() );
             }
         } else {
-            throw new IllegalArgumentException( Messages.getMessage( "SURFACE_MORE_THAN_ONE_PATCH" ) );
+            throw new IllegalArgumentException( Messages.getMessage( "SURFACE_IS_NON_PLANAR" ) );
         }
         return controlPoints;
     }
