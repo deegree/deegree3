@@ -48,7 +48,7 @@ import org.deegree.filter.function.FunctionProvider;
 import org.deegree.geometry.Geometry;
 
 /**
- * <code>Centroid</code>
+ * Returns a list of centroids for each geometry. Other values are ignored.
  * 
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
  * @author last edited by: $Author$

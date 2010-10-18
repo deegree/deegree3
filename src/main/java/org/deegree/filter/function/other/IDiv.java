@@ -36,6 +36,7 @@
 package org.deegree.filter.function.other;
 
 import static org.deegree.commons.utils.math.MathUtils.round;
+import static org.deegree.filter.function.other.IMod.checkTwoArguments;
 
 import java.math.BigInteger;
 import java.util.List;
@@ -51,7 +52,7 @@ import org.deegree.filter.expression.Function;
 import org.deegree.filter.function.FunctionProvider;
 
 /**
- * <code>IDiv</code>
+ * Expects two arguments corresponding to two single values.
  * 
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
  * @author last edited by: $Author$
@@ -77,6 +78,8 @@ public class IDiv implements FunctionProvider {
                 TypedObjectNode[] vals1 = first.evaluate( f, xpathEvaluator );
                 TypedObjectNode[] vals2 = second.evaluate( f, xpathEvaluator );
 
+                checkTwoArguments( NAME, vals1, vals2 );
+
                 PrimitiveValue pv1;
                 PrimitiveValue pv2;
                 if ( vals1[0] instanceof PrimitiveValue ) {
@@ -95,7 +98,8 @@ public class IDiv implements FunctionProvider {
             }
 
             @Override
-            public <T> TypedObjectNode[] evaluate( T obj, XPathEvaluator<T> xpathEvaluator ) throws FilterEvaluationException {
+            public <T> TypedObjectNode[] evaluate( T obj, XPathEvaluator<T> xpathEvaluator )
+                                    throws FilterEvaluationException {
                 Pair<Integer, Integer> p = extractValues( getParams()[0], getParams()[1], obj, xpathEvaluator );
                 return new TypedObjectNode[] { new PrimitiveValue( BigInteger.valueOf( p.first / p.second ) ) };
             }
