@@ -69,6 +69,11 @@ public class IDiv implements FunctionProvider {
     }
 
     @Override
+    public int getArgCount() {
+        return 2;
+    }
+    
+    @Override
     public Function create( List<Expression> params ) {
         return new Function( NAME, params ) {
 

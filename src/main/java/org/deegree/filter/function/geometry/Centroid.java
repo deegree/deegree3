@@ -65,6 +65,11 @@ public class Centroid implements FunctionProvider {
     }
 
     @Override
+    public int getArgCount() {
+        return 1;
+    }
+
+    @Override
     public Function create( List<Expression> params ) {
         return new Function( NAME, params ) {
             private Geometry getGeomValue( TypedObjectNode node ) {

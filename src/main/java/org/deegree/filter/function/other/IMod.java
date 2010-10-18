@@ -66,6 +66,11 @@ public class IMod implements FunctionProvider {
     public String getName() {
         return NAME;
     }
+    
+    @Override
+    public int getArgCount() {
+        return 2;
+    }
 
     static void checkTwoArguments( String name, TypedObjectNode[] vals1, TypedObjectNode[] vals2 )
                             throws FilterEvaluationException {
