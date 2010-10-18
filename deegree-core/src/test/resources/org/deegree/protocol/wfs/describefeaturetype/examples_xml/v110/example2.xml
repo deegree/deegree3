@@ -1,5 +1,0 @@
-<?xml version="1.0"?>
-<!-- OGC 04-094 (Web Feature Service Implementation 1.1.0), page 30-->
-<DescribeFeatureType version="1.1.0" service="WFS" outputFormat="text/xml; subtype=gml/3.1.1" xmlns="http://www.opengis.net/wfs" xmlns:myns="http://www.myserver.com/myns" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/wfs http://schemas.opengis.net/wfs/1.1.0/wfs.xsd">
-  <TypeName>myns:Person</TypeName>
-</DescribeFeatureType>

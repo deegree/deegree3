@@ -1,6 +1,0 @@
-<DescribeSensor xmlns="http://www.opengis.net/sos/1.0"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://www.opengis.net/sos/1.0  http://schemas.opengis.net/sos/1.0.0/sosAll.xsd"
-  service="SOS" outputFormat="text/xml;subtype=&quot;sensorML/1.0.1&quot;" version="1.0.0">
-  <procedure>urn:ogc:object:Sensor:latlon:salt_lake_city</procedure>
-</DescribeSensor>
