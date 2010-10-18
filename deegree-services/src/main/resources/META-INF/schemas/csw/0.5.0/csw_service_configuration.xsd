@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema xmlns:csw="http://www.deegree.org/services/csw" xmlns="http://www.w3.org/2001/XMLSchema" xmlns:ds="http://www.deegree.org/datasource"
+  targetNamespace="http://www.deegree.org/services/csw" elementFormDefault="qualified">
+  <element name="ServiceConfiguration">
+    <complexType>
+      <sequence>
+        <element name="SecurityManager" type="csw:SecurityManagerType" minOccurs="0" />
+        <element name="RecordStoreId" minOccurs="0" />
+        <element name="FileIdentifierAvailable" type="boolean" default="false" minOccurs="0" />
+      </sequence>
+    </complexType>
+  </element>
+  <complexType name="SecurityManagerType">
+    <sequence>
+      <element name="DummySecurityManager" minOccurs="0">
+        <complexType />
+      </element>
+    </sequence>
+  </complexType>
+</schema>
