@@ -4,7 +4,7 @@
   <groupId>org.deegree</groupId>
   <artifactId>deegree-wps-example-provider</artifactId>
   <packaging>war</packaging>
-  <version>3.0-SNAPSHOT</version>
+  <version>3.0-pre9</version>
   <name>deegree 3 WPS Demo</name>
   <url>http://maven.apache.org</url>
   <repositories>
@@ -20,7 +20,7 @@
     <dependency>
       <groupId>org.deegree</groupId>
       <artifactId>deegree-services</artifactId>
-      <version>3.0-SNAPSHOT</version>
+      <version>3.0-pre9</version>
     </dependency>
     <dependency>
       <groupId>javax.servlet</groupId>
