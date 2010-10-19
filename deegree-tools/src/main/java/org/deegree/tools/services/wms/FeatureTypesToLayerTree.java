@@ -54,7 +54,7 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.PosixParser;
 import org.deegree.commons.xml.XMLAdapter;
-import org.deegree.commons.xml.stax.FormattingXMLStreamWriter;
+import org.deegree.commons.xml.stax.IndentingXMLStreamWriter;
 import org.deegree.feature.persistence.FeatureStore;
 import org.deegree.feature.persistence.FeatureStoreException;
 import org.deegree.feature.persistence.FeatureStoreManager;
@@ -140,7 +140,7 @@ public class FeatureTypesToLayerTree {
 
             FileOutputStream os = new FileOutputStream( line.getOptionValue( "o" ) );
             XMLOutputFactory fac = XMLOutputFactory.newInstance();
-            XMLStreamWriter out = new FormattingXMLStreamWriter( fac.createXMLStreamWriter( os ) );
+            XMLStreamWriter out = new IndentingXMLStreamWriter( fac.createXMLStreamWriter( os ) );
             out.setDefaultNamespace( ns );
 
             FeatureStore store = FeatureStoreManager.create( new File( storeFile ).toURI().toURL() );

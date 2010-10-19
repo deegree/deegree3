@@ -56,7 +56,7 @@ import org.deegree.commons.tom.ows.Version;
 import org.deegree.commons.utils.kvp.InvalidParameterValueException;
 import org.deegree.commons.xml.CommonNamespaces;
 import org.deegree.commons.xml.XMLAdapter;
-import org.deegree.commons.xml.stax.XMLStreamWriterWrapper;
+import org.deegree.commons.xml.stax.SchemaLocationXMLStreamWriter;
 import org.deegree.metadata.persistence.MetadataStore;
 import org.deegree.metadata.persistence.MetadataStoreException;
 import org.deegree.protocol.csw.CSWConstants;
@@ -291,7 +291,7 @@ public class DescribeRecordHandler {
         if ( schemaLocation == null ) {
             return writer.getXMLWriter();
         }
-        return new XMLStreamWriterWrapper( writer.getXMLWriter(), schemaLocation );
+        return new SchemaLocationXMLStreamWriter( writer.getXMLWriter(), schemaLocation );
     }
 
 }

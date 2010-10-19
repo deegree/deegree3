@@ -53,7 +53,7 @@ import javax.xml.stream.XMLStreamWriter;
 
 import org.deegree.commons.utils.log.LoggingNotes;
 import org.deegree.commons.xml.CommonNamespaces;
-import org.deegree.commons.xml.stax.FormattingXMLStreamWriter;
+import org.deegree.commons.xml.stax.IndentingXMLStreamWriter;
 import org.deegree.cs.CRSCodeType;
 import org.deegree.cs.CRSIdentifiable;
 import org.deegree.cs.components.Axis;
@@ -786,7 +786,7 @@ public class CRSExporterBase {
         XMLOutputFactory factory = XMLOutputFactory.newInstance();
         factory.setProperty( "javax.xml.stream.isRepairingNamespaces", Boolean.TRUE );
         FileOutputStream out = new FileOutputStream( new File( "new_crs.xml" ) );
-        XMLStreamWriter writer = new FormattingXMLStreamWriter( factory.createXMLStreamWriter( out ) );
+        XMLStreamWriter writer = new IndentingXMLStreamWriter( factory.createXMLStreamWriter( out ) );
         exporter.export( one, writer );
         writer.close();
     }

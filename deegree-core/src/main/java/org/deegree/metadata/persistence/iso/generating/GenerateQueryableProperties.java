@@ -48,8 +48,10 @@ import java.text.ParseException;
 import java.util.LinkedList;
 import java.util.List;
 
+import javax.xml.stream.FactoryConfigurationError;
 import javax.xml.stream.XMLStreamException;
 
+import org.deegree.commons.utils.JDBCUtils;
 import org.deegree.commons.utils.time.DateUtils;
 import org.deegree.cs.CRSCodeType;
 import org.deegree.metadata.ISORecord;
@@ -76,9 +78,15 @@ public class GenerateQueryableProperties {
 
     private static final Logger LOG = getLogger( GenerateQueryableProperties.class );
 
+    private static final String databaseTable = PostGISMappingsISODC.DatabaseTables.datasets.name();
+
+    private static final String qp_identifier = PostGISMappingsISODC.DatabaseTables.qp_identifier.name();
+
     private static final String id = PostGISMappingsISODC.CommonColumnNames.id.name();
 
     private static final String fk_datasets = PostGISMappingsISODC.CommonColumnNames.fk_datasets.name();
+
+    private static final String identifier = PostGISMappingsISODC.CommonColumnNames.identifier.name();
 
     /**
      * Generates and inserts the maindatabasetable that is needed for the queryable properties databasetables to derive
@@ -115,14 +123,14 @@ public class GenerateQueryableProperties {
                                  + ", version, status, anyText, modified, hassecurityconstraints, language, parentidentifier, recordfull, source, association) VALUES (?,?,?,?,?,?,?,?,?,?,?);" );
 
             stm = connection.prepareStatement( sqlStatement.toString() );
-            stm.setObject( 1, operatesOnId );
+            stm.setInt( 1, operatesOnId );
             stm.setObject( 2, null );
             stm.setObject( 3, null );
             // TODO should be anyText
-            stm.setObject( 4, generateISOQP_AnyTextStatement( isCaseSensitive,
+            stm.setString( 4, generateISOQP_AnyTextStatement( isCaseSensitive,
                                                               rec.getParsedElement().getQueryableProperties(),
                                                               rec.getParsedElement().getReturnableProperties() ) );
-            if ( rec.getModified() != null ) {
+            if ( rec.getModified() != null && rec.getModified().length != 0 ) {
                 // TODO think of more than one date
                 String time = rec.getModified()[0].toString();
                 stm.setTimestamp(
@@ -132,9 +140,9 @@ public class GenerateQueryableProperties {
                 stm.setTimestamp( 5, null );
             }
 
-            stm.setObject( 6, rec.isHasSecurityConstraints() );
-            stm.setObject( 7, rec.getLanguage() );
-            stm.setObject( 8, rec.getParentIdentifier() );
+            stm.setBoolean( 6, rec.isHasSecurityConstraints() );
+            stm.setString( 7, rec.getLanguage() );
+            stm.setString( 8, rec.getParentIdentifier() );
             stm.setBytes( 9, rec.getAsByteArray() );
             stm.setObject( 10, null );
             stm.setObject( 11, null );
@@ -152,6 +160,100 @@ public class GenerateQueryableProperties {
 
         return operatesOnId;
 
+    }
+
+    public int updateMainDatabaseTable( Connection conn, ISORecord rec )
+                            throws MetadataStoreException {
+        int result = 0;
+
+        PreparedStatement stm = null;
+        ResultSet rs = null;
+
+        StringBuilder sqlStatementUpdate = new StringBuilder( 500 );
+
+        int requestedId = 0;
+
+        try {
+            for ( String identifierString : rec.getIdentifier() ) {
+
+                sqlStatementUpdate.append( "SELECT " ).append( databaseTable ).append( '.' );
+                sqlStatementUpdate.append( id ).append( " FROM " );
+                sqlStatementUpdate.append( databaseTable ).append( ',' ).append( qp_identifier ).append( " WHERE " );
+                sqlStatementUpdate.append( databaseTable ).append( '.' ).append( id );
+                sqlStatementUpdate.append( '=' ).append( qp_identifier ).append( '.' ).append( fk_datasets );
+                sqlStatementUpdate.append( " AND " ).append( qp_identifier ).append( '.' ).append( identifier ).append(
+                                                                                                                        " = ?" );
+                LOG.debug( sqlStatementUpdate.toString() );
+
+                stm = conn.prepareStatement( sqlStatementUpdate.toString() );
+                stm.setObject( 1, identifierString );
+                rs = stm.executeQuery();
+                sqlStatementUpdate.setLength( 0 );
+
+                while ( rs.next() ) {
+                    requestedId = rs.getInt( 1 );
+                    LOG.debug( "resultSet: " + rs.getInt( 1 ) );
+                }
+
+                if ( requestedId != 0 ) {
+                    sqlStatementUpdate.append( "UPDATE " ).append( databaseTable ).append( " SET version = ?, " );
+                    sqlStatementUpdate.append( "status = ?, " );
+                    sqlStatementUpdate.append( "anytext = ?, " );
+                    sqlStatementUpdate.append( "modified = ?, " );
+                    sqlStatementUpdate.append( "hassecurityconstraints = ?, " );
+                    sqlStatementUpdate.append( "language = ?, " );
+                    sqlStatementUpdate.append( "parentidentifier = ?, " );
+                    sqlStatementUpdate.append( "recordfull = ?, " );
+                    sqlStatementUpdate.append( "source = ?, " );
+                    sqlStatementUpdate.append( "association = ? " );
+                    sqlStatementUpdate.append( "WHERE " );
+                    sqlStatementUpdate.append( id ).append( '=' );
+                    sqlStatementUpdate.append( requestedId );
+                    stm = conn.prepareStatement( sqlStatementUpdate.toString() );
+
+                    stm.setObject( 1, null );
+                    stm.setObject( 2, null );
+                    // TODO should be anyText
+                    stm.setString( 3, rec.getAnyText() );
+                    if ( rec.getModified() != null ) {
+                        // TODO think of more than one date
+                        String time = rec.getModified()[0].toString();
+                        stm.setTimestamp(
+                                          4,
+                                          Timestamp.valueOf( DateUtils.formatJDBCTimeStamp( DateUtils.parseISO8601Date( time ) ) ) );
+                    } else {
+                        stm.setTimestamp( 4, null );
+                    }
+
+                    stm.setBoolean( 5, rec.isHasSecurityConstraints() );
+                    stm.setString( 6, rec.getLanguage() );
+                    stm.setString( 7, rec.getParentIdentifier() );
+                    stm.setBytes( 8, rec.getAsByteArray() );
+                    stm.setObject( 9, null );
+                    stm.setObject( 10, null );
+                    LOG.debug( stm.toString() );
+                    stm.executeUpdate();
+                    stm.close();
+
+                }
+            }
+
+        } catch ( SQLException e ) {
+            LOG.debug( "error: " + e.getMessage(), e );
+            throw new MetadataStoreException( e.getMessage() );
+        } catch ( ParseException e ) {
+            LOG.debug( "error: " + e.getMessage(), e );
+            throw new MetadataStoreException( e.getMessage() );
+        } catch ( XMLStreamException e ) {
+            LOG.debug( "error: " + e.getMessage(), e );
+            throw new MetadataStoreException( e.getMessage() );
+        } catch ( FactoryConfigurationError e ) {
+            LOG.debug( "error: " + e.getMessage(), e );
+            throw new MetadataStoreException( e.getMessage() );
+        } finally {
+            JDBCUtils.close( rs );
+        }
+        return result;
     }
 
     /**

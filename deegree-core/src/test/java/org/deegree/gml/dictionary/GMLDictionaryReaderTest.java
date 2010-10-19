@@ -46,7 +46,7 @@ import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
-import org.deegree.commons.xml.stax.FormattingXMLStreamWriter;
+import org.deegree.commons.xml.stax.IndentingXMLStreamWriter;
 import org.deegree.gml.GMLDocumentIdContext;
 import org.deegree.junit.XMLMemoryStreamWriter;
 import org.junit.Test;
@@ -95,7 +95,7 @@ public class GMLDictionaryReaderTest {
         Dictionary dict = (Dictionary) dictReader.read();        
 
         XMLMemoryStreamWriter xmlWriter = new XMLMemoryStreamWriter();
-        GMLDictionaryWriter writer = new GMLDictionaryWriter( GML_30, new FormattingXMLStreamWriter( xmlWriter.getXMLStreamWriter() ));
+        GMLDictionaryWriter writer = new GMLDictionaryWriter( GML_30, new IndentingXMLStreamWriter( xmlWriter.getXMLStreamWriter() ));
         writer.write( dict );
         xmlWriter.getXMLStreamWriter().close();
 //        LOG.debug (xmlWriter.toString());

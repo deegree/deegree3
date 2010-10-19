@@ -69,7 +69,7 @@ import org.deegree.commons.utils.kvp.MissingParameterException;
 import org.deegree.commons.xml.NamespaceContext;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.XPath;
-import org.deegree.commons.xml.stax.FormattingXMLStreamWriter;
+import org.deegree.commons.xml.stax.IndentingXMLStreamWriter;
 import org.deegree.protocol.ows.capabilities.GetCapabilities;
 import org.deegree.protocol.ows.capabilities.GetCapabilitiesKVPParser;
 import org.deegree.protocol.wpvs.WPVSConstants.WPVSRequestType;
@@ -370,7 +370,7 @@ public class WPVSController extends AbstractOGCServiceController {
         factory.setProperty( IS_REPAIRING_NAMESPACES, true );
         try {
             XMLStreamWriter xsw = factory.createXMLStreamWriter( response.getOutputStream(), "UTF-8" );
-            FormattingXMLStreamWriter xmlWriter = new FormattingXMLStreamWriter( xsw );
+            IndentingXMLStreamWriter xmlWriter = new IndentingXMLStreamWriter( xsw );
             List<OWSOperation> operations = new ArrayList<OWSOperation>();
             List<Pair<String, List<String>>> params = new ArrayList<Pair<String, List<String>>>();
             List<Pair<String, List<String>>> constraints = new ArrayList<Pair<String, List<String>>>();

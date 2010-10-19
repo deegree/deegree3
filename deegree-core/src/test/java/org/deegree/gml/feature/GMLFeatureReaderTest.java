@@ -63,7 +63,7 @@ import org.deegree.commons.tom.genericxml.GenericXMLElementContent;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.commons.xml.CommonNamespaces;
 import org.deegree.commons.xml.XMLParsingException;
-import org.deegree.commons.xml.stax.FormattingXMLStreamWriter;
+import org.deegree.commons.xml.stax.IndentingXMLStreamWriter;
 import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;
 import org.deegree.cs.exceptions.TransformationException;
 import org.deegree.cs.exceptions.UnknownCRSException;
@@ -169,7 +169,7 @@ public class GMLFeatureReaderTest {
         }
 
         gmlReader.getIdContext().resolveLocalRefs();
-        XMLStreamWriter writer = new FormattingXMLStreamWriter(
+        XMLStreamWriter writer = new IndentingXMLStreamWriter(
                                                                 XMLOutputFactory.newInstance().createXMLStreamWriter( new FileWriter(
                                                                                                                                       System.getProperty( "java.io.tmpdir" )
                                                                                                                                                               + File.separatorChar

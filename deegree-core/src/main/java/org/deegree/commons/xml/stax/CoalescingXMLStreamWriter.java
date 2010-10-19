@@ -1,10 +1,10 @@
-//$HeadURL: svn+ssh://aionita@svn.wald.intevation.org/deegree/base/trunk/resources/eclipse/files_template.xml $
+//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
- Department of Geography, University of Bonn
+ - Department of Geography, University of Bonn -
  and
- lat/lon GmbH
+ - lat/lon GmbH -
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -33,53 +33,40 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-
 package org.deegree.commons.xml.stax;
 
-import static org.deegree.commons.xml.CommonNamespaces.XSINS;
-
 import javax.xml.namespace.NamespaceContext;
+import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
-import org.deegree.commons.xml.CommonNamespaces;
-
 /**
- * Wrapper around <code>XMLStreamWriter</code> instances that allows to sneak a schema reference (
- * <code>xsi:schemaLocation</code>) attribute into the first element written.
+ * TODO add class documentation here
  * 
- * @author <a href="mailto:aionita@lat-lon.de">Andrei Ionita</a>
+ * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
+ * @author last edited by: $Author$
  * 
- * @author last edited by: $Author: ionita $
- * @version $Revision: $, $Date: $
+ * @version $Revision$, $Date$
  */
-public class XMLStreamWriterWrapper implements XMLStreamWriter {
+public class CoalescingXMLStreamWriter implements XMLStreamWriter {
 
-    private XMLStreamWriter writer;
+    private final XMLStreamWriter writer;
 
-    private final String schemaLocation;
+    private QName elementName;
 
-    // for the first element, set the schemaLocation attribute
-    private boolean firstElement = true;
-
-    /**
-     * Create a new {@link XMLStreamWriterWrapper} that will sneak in the given schema location attribute.
-     * 
-     * @param xmlStreamWriter
-     * @param schemaLocation
-     */
-    public XMLStreamWriterWrapper( XMLStreamWriter xmlStreamWriter, String schemaLocation ) {
-        this.writer = xmlStreamWriter;
-        this.schemaLocation = schemaLocation;
+    public CoalescingXMLStreamWriter( XMLStreamWriter writer ) {
+        this.writer = writer;
     }
 
     public void close()
                             throws XMLStreamException {
+        elementName = null;
         writer.close();
     }
 
     public void flush()
                             throws XMLStreamException {
+        elementName = null;
         writer.flush();
     }
 
@@ -112,9 +99,9 @@ public class XMLStreamWriterWrapper implements XMLStreamWriter {
         writer.setPrefix( prefix, uri );
     }
 
-    public void writeAttribute( String localName, String value )
+    public void writeAttribute( String prefix, String namespaceURI, String localName, String value )
                             throws XMLStreamException {
-        writer.writeAttribute( localName, value );
+        writer.writeAttribute( prefix, namespaceURI, localName, value );
     }
 
     public void writeAttribute( String namespaceURI, String localName, String value )
@@ -122,70 +109,85 @@ public class XMLStreamWriterWrapper implements XMLStreamWriter {
         writer.writeAttribute( namespaceURI, localName, value );
     }
 
-    public void writeAttribute( String prefix, String namespaceURI, String localName, String value )
+    public void writeAttribute( String localName, String value )
                             throws XMLStreamException {
-        writer.writeAttribute( prefix, namespaceURI, localName, value );
+        writer.writeAttribute( localName, value );
     }
 
     public void writeCData( String data )
                             throws XMLStreamException {
+        elementName = null;
         writer.writeCData( data );
-    }
-
-    public void writeCharacters( String text )
-                            throws XMLStreamException {
-        writer.writeCharacters( text );
     }
 
     public void writeCharacters( char[] text, int start, int len )
                             throws XMLStreamException {
+        elementName = null;
         writer.writeCharacters( text, start, len );
+    }
+
+    public void writeCharacters( String text )
+                            throws XMLStreamException {
+        elementName = null;
+        writer.writeCharacters( text );
     }
 
     public void writeComment( String data )
                             throws XMLStreamException {
+        elementName = null;
         writer.writeComment( data );
-    }
-
-    public void writeDTD( String dtd )
-                            throws XMLStreamException {
-        writer.writeDTD( dtd );
     }
 
     public void writeDefaultNamespace( String namespaceURI )
                             throws XMLStreamException {
+        elementName = null;
         writer.writeDefaultNamespace( namespaceURI );
     }
 
-    public void writeEmptyElement( String localName )
+    public void writeDTD( String dtd )
                             throws XMLStreamException {
-        writer.writeEmptyElement( localName );
-        if ( firstElement ) {
-            writer.writeAttribute( "xsi", XSINS, "schemaLocation", schemaLocation );
-            firstElement = false;
-        }
-    }
-
-    public void writeEmptyElement( String namespaceURI, String localName )
-                            throws XMLStreamException {
-        writer.writeEmptyElement( namespaceURI, localName );
-        if ( firstElement ) {
-            writer.writeAttribute( "xsi", XSINS, "schemaLocation", schemaLocation );
-            firstElement = false;
-        }
+        elementName = null;
+        writer.writeDTD( dtd );
     }
 
     public void writeEmptyElement( String prefix, String localName, String namespaceURI )
                             throws XMLStreamException {
+        elementName = null;
         writer.writeEmptyElement( prefix, localName, namespaceURI );
-        if ( firstElement ) {
-            writer.writeAttribute( "xsi", XSINS, "schemaLocation", schemaLocation );
-            firstElement = false;
+    }
+
+    public void writeEmptyElement( String namespaceURI, String localName )
+                            throws XMLStreamException {
+        elementName = null;
+        writer.writeEmptyElement( namespaceURI, localName );
+    }
+
+    public void writeEmptyElement( String localName )
+                            throws XMLStreamException {
+        elementName = null;
+        writer.writeEmptyElement( localName );
+    }
+
+    public void writeEndDocument()
+                            throws XMLStreamException {
+        elementName = null;
+        writer.writeEndDocument();
+    }
+
+    public void writeEndElement()
+                            throws XMLStreamException {
+        if ( elementName != null ) {
+            writeCachedStartElement( true );
+        } else {
+            writer.writeEndElement();
         }
     }
 
     public void writeEntityRef( String name )
                             throws XMLStreamException {
+        if ( elementName != null ) {
+            // writeCachedStartElement();
+        }
         writer.writeEntityRef( name );
     }
 
@@ -194,14 +196,14 @@ public class XMLStreamWriterWrapper implements XMLStreamWriter {
         writer.writeNamespace( prefix, namespaceURI );
     }
 
-    public void writeProcessingInstruction( String target )
-                            throws XMLStreamException {
-        writer.writeProcessingInstruction( target );
-    }
-
     public void writeProcessingInstruction( String target, String data )
                             throws XMLStreamException {
         writer.writeProcessingInstruction( target, data );
+    }
+
+    public void writeProcessingInstruction( String target )
+                            throws XMLStreamException {
+        writer.writeProcessingInstruction( target );
     }
 
     public void writeStartDocument()
@@ -209,50 +211,47 @@ public class XMLStreamWriterWrapper implements XMLStreamWriter {
         writer.writeStartDocument();
     }
 
-    public void writeStartDocument( String version )
-                            throws XMLStreamException {
-        writer.writeStartDocument( version );
-    }
-
     public void writeStartDocument( String encoding, String version )
                             throws XMLStreamException {
         writer.writeStartDocument( encoding, version );
     }
 
-    public void writeStartElement( String localName )
+    private final void writeCachedStartElement( boolean empty )
                             throws XMLStreamException {
-        writer.writeStartElement( localName );
-        if ( firstElement ) {
-            writer.writeAttribute( CommonNamespaces.XSINS, "schemaLocation", schemaLocation );
-            firstElement = false;
+        final String ns = elementName.getNamespaceURI();
+        if ( ns == null ) {
+            writer.writeStartElement( elementName.getLocalPart() );
+        } else {
+            final String l = elementName.getLocalPart();
+            final String p = elementName.getPrefix();
+
+            if ( p == null ) {
+                writer.writeStartElement( ns, l );
+            } else {
+                writer.writeStartElement( p, l, ns );
+            }
         }
+        elementName = null;
     }
 
-    public void writeStartElement( String namespaceURI, String localName )
+    public void writeStartDocument( String version )
                             throws XMLStreamException {
-        writer.writeStartElement( namespaceURI, localName );
-        if ( firstElement ) {
-            writer.writeAttribute( "xsi", XSINS, "schemaLocation", schemaLocation );
-            firstElement = false;
-        }
+        writer.writeStartDocument( version );
     }
 
     public void writeStartElement( String prefix, String localName, String namespaceURI )
                             throws XMLStreamException {
-        writer.writeStartElement( prefix, localName, namespaceURI );
-        if ( firstElement ) {
-            writer.writeAttribute( "xsi", XSINS, "schemaLocation", schemaLocation );
-            firstElement = false;
-        }
+        elementName = new QName( namespaceURI, localName, prefix );
     }
 
-    public void writeEndDocument()
+    public void writeStartElement( String namespaceURI, String localName )
                             throws XMLStreamException {
-        writer.writeEndDocument();
+        elementName = new QName( namespaceURI, localName );
     }
 
-    public void writeEndElement()
+    public void writeStartElement( String localName )
                             throws XMLStreamException {
-        writer.writeEndElement();
+        elementName = new QName( localName );
     }
+
 }

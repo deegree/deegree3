@@ -76,14 +76,11 @@ public class XPathElementFilter implements OMElement {
 
     private final OMElement input;
 
-    private final OMContainer root;
-
     private final List<XPath> elements;
 
     public XPathElementFilter( OMElement input, List<XPath> elements ) {
         this.input = input;
         this.elements = elements;
-        this.root = input.getFirstElement().getParent();
 
     }
 
@@ -364,13 +361,14 @@ public class XPathElementFilter implements OMElement {
 
         writer.writeCharacters( "\n" );
         AXIOMXPath path;
+        XMLStreamReader reader;
         for ( XPath x : elements ) {
             try {
                 path = new AXIOMXPath( x.getXPath() );
                 path.setNamespaceContext( x.getNamespaceContext() );
                 Object node = path.selectSingleNode( input );
                 if ( node != null ) {
-                    XMLStreamReader reader = ( (OMElement) node ).getXMLStreamReader();
+                    reader = ( (OMElement) node ).getXMLStreamReader();
                     while ( reader.hasNext() ) {
                         if ( reader.getEventType() == XMLStreamConstants.START_ELEMENT ) {
                             XMLAdapter.writeElement( writer, reader );

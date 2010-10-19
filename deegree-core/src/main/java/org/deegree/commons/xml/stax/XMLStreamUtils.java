@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
- - Department of Geography, University of Bonn -
+ Department of Geography, University of Bonn
  and
- - lat/lon GmbH -
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -33,30 +33,17 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.metadata.persistence;
+package org.deegree.commons.xml.stax;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
+import java.util.Map;
 
-import org.deegree.filter.sql.postgis.PostGISWhereBuilder;
+import javax.xml.stream.XMLStreamWriter;
 
-/**
- * Interface for different kinds of implementions of executing SELECT statements against a database.
- * 
- * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
- */
-public interface GenericDatabaseExecution {
+public class XMLStreamUtils {
 
-    String getEncoding();
-
-    int executeDeleteStatement( Connection connection, PostGISWhereBuilder builder )
-                            throws MetadataStoreException;
-
-    PreparedStatement executeGetRecords( MetadataQuery recordStoreOptions, boolean setCount,
-                                         PostGISWhereBuilder builder, Connection conn )
-                            throws MetadataStoreException;
-
+    public static XMLStreamWriter createWriter( XMLStreamWriter writer, boolean trim, boolean coalesceElements,
+                                                String indent, String xsiSchemaLocation, Map<String, String> nsToPrefix ) {
+        // TODO implement other options
+        return writer;
+    }
 }

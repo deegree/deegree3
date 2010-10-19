@@ -52,11 +52,11 @@ import org.deegree.services.csw.AbstractCSWRequest;
  */
 public class GetRecordById extends AbstractCSWRequest {
 
-    private ReturnableElement elementSetName;
+    private final ReturnableElement elementSetName;
 
-    private URI outputSchema;
+    private final URI outputSchema;
 
-    private List<String> requestedIds;
+    private final List<String> requestedIds;
 
     /**
      * 

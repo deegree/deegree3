@@ -59,7 +59,7 @@ import javax.xml.stream.XMLStreamWriter;
 import org.deegree.commons.utils.io.StreamBufferStore;
 import org.deegree.commons.xml.CommonNamespaces;
 import org.deegree.commons.xml.schema.SchemaValidator;
-import org.deegree.commons.xml.stax.FormattingXMLStreamWriter;
+import org.deegree.commons.xml.stax.IndentingXMLStreamWriter;
 import org.slf4j.Logger;
 
 /**
@@ -203,7 +203,7 @@ public class HttpResponseBuffer extends HttpServletResponseWrapper {
             XMLOutputFactory factory = XMLOutputFactory.newInstance();
             factory.setProperty( "javax.xml.stream.isRepairingNamespaces", Boolean.TRUE );
             String encoding = "UTF-8";
-            xmlWriter = new FormattingXMLStreamWriter( factory.createXMLStreamWriter( getOutputStream(), encoding ) );
+            xmlWriter = new IndentingXMLStreamWriter( factory.createXMLStreamWriter( getOutputStream(), encoding ) );
             xmlWriter.writeStartDocument( encoding, "1.0" );
             // TODO decide again if character encoding should be set (WFS CITE 1.1.0 tests don't like it, but
             // iGeoDesktop/OpenJUMP currently require it)

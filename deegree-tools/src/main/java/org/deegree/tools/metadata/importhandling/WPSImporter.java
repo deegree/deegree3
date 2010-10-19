@@ -65,7 +65,7 @@ import org.apache.axiom.om.OMElement;
 import org.deegree.commons.tom.datetime.Date;
 import org.deegree.commons.tom.ows.Version;
 import org.deegree.commons.xml.XPath;
-import org.deegree.commons.xml.stax.XMLStreamWriterWrapper;
+import org.deegree.commons.xml.stax.SchemaLocationXMLStreamWriter;
 import org.deegree.metadata.persistence.types.BoundingBox;
 import org.deegree.services.controller.ows.capabilities.OWSCapabilitiesXMLAdapter;
 import org.deegree.tools.annotations.Tool;
@@ -225,7 +225,7 @@ public class WPSImporter extends AbstractDCImporter {
         FileOutputStream fout;
         try {
             fout = new FileOutputStream( tmpFile.getName() + File.separator + "output.xml" );
-            XMLStreamWriter writer = new XMLStreamWriterWrapper(
+            XMLStreamWriter writer = new SchemaLocationXMLStreamWriter(
                                                                  XMLOutputFactory.newInstance().createXMLStreamWriter(
                                                                                                                        fout ),
                                                                  schemaLocation );

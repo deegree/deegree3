@@ -128,7 +128,7 @@ public class GRViewerGUI extends JFrame {
         setupMenubar();
         setup2DScene( gbl );
         setupPanelFootprint( gbl );
-        setupOpenGL( gbl, false );
+        // setupOpenGL( gbl, false );
         this.pack();
     }
 

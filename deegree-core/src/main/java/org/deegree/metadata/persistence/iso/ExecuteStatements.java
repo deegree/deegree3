@@ -37,12 +37,10 @@ package org.deegree.metadata.persistence.iso;
 
 import static org.slf4j.LoggerFactory.getLogger;
 
-import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.sql.Timestamp;
 import java.sql.Types;
 import java.text.ParseException;
@@ -51,7 +49,6 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.apache.axiom.om.OMElement;
-import org.deegree.commons.tom.datetime.Date;
 import org.deegree.commons.utils.JDBCUtils;
 import org.deegree.commons.utils.time.DateUtils;
 import org.deegree.feature.persistence.mapping.DBField;
@@ -62,8 +59,6 @@ import org.deegree.filter.sql.postgis.PostGISWhereBuilder;
 import org.deegree.metadata.persistence.GenericDatabaseExecution;
 import org.deegree.metadata.persistence.MetadataQuery;
 import org.deegree.metadata.persistence.MetadataStoreException;
-import org.deegree.metadata.persistence.iso.generating.BuildMetadataXMLRepresentation;
-import org.deegree.metadata.persistence.iso.parsing.ParsedProfileElement;
 import org.slf4j.Logger;
 
 /**
@@ -78,44 +73,9 @@ public class ExecuteStatements implements GenericDatabaseExecution {
 
     private static final Logger LOG = getLogger( ExecuteStatements.class );
 
-    private BuildMetadataXMLRepresentation buildRecXML;
-
     private static final String databaseTable = PostGISMappingsISODC.DatabaseTables.datasets.name();
 
-    private static final String qp_identifier = PostGISMappingsISODC.DatabaseTables.qp_identifier.name();
-
     private static final String id = PostGISMappingsISODC.CommonColumnNames.id.name();
-
-    private static final String fk_datasets = PostGISMappingsISODC.CommonColumnNames.fk_datasets.name();
-
-    private static final String identifier = PostGISMappingsISODC.CommonColumnNames.identifier.name();
-
-    private static final String data = PostGISMappingsISODC.CommonColumnNames.data.name();
-
-    private static final String recordfull = PostGISMappingsISODC.CommonColumnNames.recordfull.name();
-
-    @Override
-    public String executeInsertStatement( boolean isDC, Connection connection, ParsedProfileElement parsedElement )
-                            throws MetadataStoreException {
-        // buildRecXML = new BuildMetadataXMLRepresentation();
-        //
-        // boolean isUpdate = false;
-        // String identifier = null;
-        // // if ( parsedElement != null ) {
-        // // int operatesOnId = generateQP.generateMainDatabaseDataset( connection, parsedElement );
-        // //
-        // // if ( isDC == true ) {
-        // // identifier = buildRecXML.generateDC( connection, operatesOnId, parsedElement );
-        // // } else {
-        // // identifier = buildRecXML.generateISO( connection, operatesOnId, parsedElement );
-        // //
-        // // }
-        // //
-        // return identifier;
-        // // }
-        return null;
-
-    }
 
     @Override
     public int executeDeleteStatement( Connection connection, PostGISWhereBuilder builder )
@@ -128,7 +88,6 @@ public class ExecuteStatements implements GenericDatabaseExecution {
         try {
 
             String rootTableAlias = builder.getAliasManager().getRootTableAlias();
-            String blobTableAlias = builder.getAliasManager().generateNew();
 
             getDatasetIDs.append( "SELECT " );
 
@@ -223,153 +182,6 @@ public class ExecuteStatements implements GenericDatabaseExecution {
 
         return deletableDatasets.size();
 
-    }
-
-    @Override
-    public int executeUpdateStatement( Connection connection, ParsedProfileElement parsedElement )
-                            throws MetadataStoreException {
-
-        boolean isUpdate = true;
-        buildRecXML = new BuildMetadataXMLRepresentation();
-        int result = 0;
-
-        PreparedStatement stm = null;
-        Statement stmt = null;
-        ResultSet rs = null;
-
-        StringBuilder sqlStatementUpdate = new StringBuilder( 500 );
-
-        int requestedId = 0;
-        String modifiedAttribute = "null";
-
-        try {
-            stmt = connection.createStatement();
-            for ( String identifierString : parsedElement.getQueryableProperties().getIdentifier() ) {
-
-                sqlStatementUpdate.append( "SELECT " ).append( databaseTable ).append( '.' );
-                sqlStatementUpdate.append( id ).append( " FROM " );
-                sqlStatementUpdate.append( databaseTable ).append( ',' ).append( qp_identifier ).append( " WHERE " );
-                sqlStatementUpdate.append( databaseTable ).append( '.' ).append( id );
-                sqlStatementUpdate.append( '=' ).append( qp_identifier ).append( '.' ).append( fk_datasets );
-                sqlStatementUpdate.append( " AND " ).append( qp_identifier ).append( '.' ).append( identifier ).append(
-                                                                                                                        " = ?" );
-                LOG.debug( sqlStatementUpdate.toString() );
-
-                stm = connection.prepareStatement( sqlStatementUpdate.toString() );
-                stm.setObject( 1, identifierString );
-                rs = stm.executeQuery();
-                sqlStatementUpdate.setLength( 0 );
-
-                while ( rs.next() ) {
-                    requestedId = rs.getInt( 1 );
-                    LOG.debug( "resultSet: " + rs.getInt( 1 ) );
-                }
-
-                if ( requestedId != 0 ) {
-
-                    if ( !parsedElement.getQueryableProperties().getModified().equals( new Date( "0000-00-00" ) ) ) {
-                        modifiedAttribute = "'" + parsedElement.getQueryableProperties().getModified() + "'";
-                    }
-
-                    // TODO version
-
-                    // TODO status
-
-                    // anyText
-                    if ( parsedElement.getQueryableProperties().getAnyText() != null ) {
-
-                        sqlStatementUpdate.append( "UPDATE " ).append( databaseTable ).append( " SET anyText = '" );
-                        sqlStatementUpdate.append( parsedElement.getQueryableProperties().getAnyText() ).append(
-                                                                                                                 "' WHERE " );
-                        sqlStatementUpdate.append( id ).append( '=' );
-                        sqlStatementUpdate.append( requestedId );
-                        stmt.executeUpdate( sqlStatementUpdate.toString() );
-                        sqlStatementUpdate.setLength( 0 );
-
-                    }
-
-                    // modified
-                    if ( !parsedElement.getQueryableProperties().getModified().equals( new Date( "0000-00-00" ) ) ) {
-                        sqlStatementUpdate.append( "UPDATE " ).append( databaseTable ).append( " SET modified = " ).append(
-                                                                                                                            modifiedAttribute );
-                        sqlStatementUpdate.append( " WHERE " ).append( id );
-                        sqlStatementUpdate.append( '=' ).append( requestedId );
-                        stmt.executeUpdate( sqlStatementUpdate.toString() );
-                        sqlStatementUpdate.setLength( 0 );
-                    }
-                    // hassecurityconstraints
-                    if ( parsedElement.getQueryableProperties().isHasSecurityConstraints() == true ) {
-                        sqlStatementUpdate.append( "UPDATE " ).append( databaseTable ).append(
-                                                                                               " SET hassecurityconstraints = '" );
-                        sqlStatementUpdate.append( parsedElement.getQueryableProperties().isHasSecurityConstraints() );
-                        sqlStatementUpdate.append( "' WHERE " ).append( id );
-                        sqlStatementUpdate.append( '=' ).append( requestedId );
-
-                        stmt.executeUpdate( sqlStatementUpdate.toString() );
-                        sqlStatementUpdate.setLength( 0 );
-                    }
-
-                    // language
-                    if ( parsedElement.getQueryableProperties().getLanguage() != null ) {
-                        sqlStatementUpdate.append( "UPDATE " ).append( databaseTable ).append( " SET language = '" );
-                        sqlStatementUpdate.append( parsedElement.getQueryableProperties().getLanguage() ).append(
-                                                                                                                  "' WHERE " );
-                        sqlStatementUpdate.append( id ).append( '=' );
-                        sqlStatementUpdate.append( requestedId );
-
-                        stmt.executeUpdate( sqlStatementUpdate.toString() );
-                        sqlStatementUpdate.setLength( 0 );
-                    }
-                    // parentidentifier
-                    if ( parsedElement.getQueryableProperties().getParentIdentifier() != null ) {
-                        sqlStatementUpdate.append( "UPDATE " ).append( databaseTable ).append(
-                                                                                               " SET parentidentifier = '" );
-                        sqlStatementUpdate.append( parsedElement.getQueryableProperties().getParentIdentifier() );
-                        sqlStatementUpdate.append( "' WHERE " ).append( id );
-                        sqlStatementUpdate.append( '=' ).append( requestedId );
-
-                        stmt.executeUpdate( sqlStatementUpdate.toString() );
-                        sqlStatementUpdate.setLength( 0 );
-                    }
-                    // TODO source
-
-                    // TODO association
-
-                    // recordBrief, recordSummary, recordFull update
-                    result = buildRecXML.updateRecord( requestedId, parsedElement, connection );
-
-                    // generateQP.executeQueryableProperties( isUpdate, connection, requestedId, parsedElement );
-
-                } else {
-                    // TODO think about what response should be written if there is no such dataset in the backend??
-                    String msg = "No dataset found for the identifier --> "
-                                 + parsedElement.getQueryableProperties().getIdentifier() + " <--. ";
-                    throw new SQLException( msg );
-                }
-                rs.close();
-            }
-            if ( stmt != null ) {
-                stmt.close();
-            }
-            if ( stm != null ) {
-                stm.close();
-            }
-
-        } catch ( SQLException e ) {
-            LOG.debug( "error: " + e.getMessage(), e );
-            throw new MetadataStoreException( e.getMessage() );
-        } catch ( IOException e ) {
-            LOG.debug( "error: " + e.getMessage(), e );
-            throw new MetadataStoreException( e.getMessage() );
-        } catch ( ParseException e ) {
-            LOG.debug( "error: " + e.getMessage(), e );
-            throw new MetadataStoreException( e.getMessage() );
-        } finally {
-            JDBCUtils.close( rs );
-            JDBCUtils.close( stmt );
-        }
-
-        return result;
     }
 
     private void updatePrecondition( PostGISMappingsISODC mapping, PostGISWhereBuilder builder ) {
@@ -518,6 +330,12 @@ public class ExecuteStatements implements GenericDatabaseExecution {
 
         StringBuilder getDatasetIDs = new StringBuilder( 300 );
         PreparedStatement preparedStatement = null;
+        String orderByclause = null;
+        // TODO remove workaround because of distinct and order by
+        if ( builder.getOrderBy() != null ) {
+            int length = builder.getOrderBy().getSQL().length();
+            orderByclause = builder.getOrderBy().getSQL().toString().substring( 0, length - 4 );
+        }
         try {
 
             LOG.debug( "Execute GetRecords: " );
@@ -536,6 +354,10 @@ public class ExecuteStatements implements GenericDatabaseExecution {
                 getDatasetIDs.append( rootTableAlias );
                 getDatasetIDs.append( '.' );
                 getDatasetIDs.append( id );
+                if ( orderByclause != null ) {
+                    getDatasetIDs.append( ',' );
+                    getDatasetIDs.append( orderByclause );
+                }
             }
             getDatasetIDs.append( " FROM " );
             getDatasetIDs.append( databaseTable );

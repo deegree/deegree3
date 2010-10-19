@@ -182,7 +182,7 @@ public class ParseIdentificationInfo extends XMLAdapter {
                 String revisionDateString = getNodeAsString(
                                                              dateElem,
                                                              new XPath(
-                                                                        "./gmd:CI_Date[./gmd:dateType/gmd:CI_DateTypeCode/@codeListValue='revision']/gmd:date/gco:Date",
+                                                                        "./gmd:CI_Date[./gmd:dateType/gmd:CI_DateTypeCode/@codeListValue='revision']/gmd:date/gco:Date | ./gmd:CI_Date[./gmd:dateType/gmd:CI_DateTypeCode/@codeListValue='revision']/gmd:date/gco:DateTime",
                                                                         nsContextParseII ), null );
                 Date date = null;
                 try {

@@ -49,7 +49,7 @@ import org.apache.axiom.om.OMAttribute;
 import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.OMText;
 import org.apache.axiom.om.xpath.AXIOMXPath;
-import org.deegree.commons.xml.stax.FormattingXMLStreamWriter;
+import org.deegree.commons.xml.stax.IndentingXMLStreamWriter;
 import org.jaxen.JaxenException;
 import org.junit.Before;
 import org.junit.Test;
@@ -167,7 +167,7 @@ public class XMLAdapterTest extends XMLAdapter {
         StringWriter stringWriter = new StringWriter();
         XMLOutputFactory factory = XMLOutputFactory.newInstance();
         factory.setProperty( XMLOutputFactory.IS_REPAIRING_NAMESPACES, Boolean.TRUE );
-        XMLStreamWriter writer = new FormattingXMLStreamWriter( factory.createXMLStreamWriter( stringWriter ) );
+        XMLStreamWriter writer = new IndentingXMLStreamWriter( factory.createXMLStreamWriter( stringWriter ) );
 
         XMLStreamReader inputReader = getRootElement().getXMLStreamReaderWithoutCaching();
         inputReader.nextTag();

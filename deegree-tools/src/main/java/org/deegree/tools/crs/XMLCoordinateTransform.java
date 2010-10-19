@@ -58,7 +58,7 @@ import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.PosixParser;
-import org.deegree.commons.xml.stax.FormattingXMLStreamWriter;
+import org.deegree.commons.xml.stax.IndentingXMLStreamWriter;
 import org.deegree.cs.CRS;
 import org.deegree.cs.CRSRegistry;
 import org.deegree.cs.coordinatesystems.CoordinateSystem;
@@ -185,7 +185,7 @@ public class XMLCoordinateTransform {
             xmlWriter = XMLOutputFactory.newInstance().createXMLStreamWriter( System.out, "UTF-8" );
         }
 
-        xmlWriter = new FormattingXMLStreamWriter( xmlWriter, "    ", false );
+        xmlWriter = new IndentingXMLStreamWriter( xmlWriter, "    " );
         xmlWriter.writeStartDocument( "UTF-8", "1.0" );
         XMLTransformer transformer = new XMLTransformer( targetCRS );
         transformer.transform( xmlReader, xmlWriter, sourceCRS, gmlVersion, false, trans );
@@ -219,7 +219,8 @@ public class XMLCoordinateTransform {
         option.setArgs( 1 );
         options.addOption( option );
 
-        option = new Option( OPT_OUTPUT, true, "Filename of the output file. If omitted, output is directed to console." );
+        option = new Option( OPT_OUTPUT, true,
+                             "Filename of the output file. If omitted, output is directed to console." );
         option.setArgs( 1 );
         options.addOption( option );
 

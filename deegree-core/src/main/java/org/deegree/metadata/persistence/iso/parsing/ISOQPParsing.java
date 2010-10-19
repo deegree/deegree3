@@ -35,10 +35,6 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.metadata.persistence.iso.parsing;
 
-import static org.deegree.protocol.csw.CSWConstants.CSW_202_NS;
-import static org.deegree.protocol.csw.CSWConstants.CSW_PREFIX;
-import static org.deegree.protocol.csw.CSWConstants.DCT_NS;
-import static org.deegree.protocol.csw.CSWConstants.DCT_PREFIX;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.IOException;
@@ -82,13 +78,8 @@ public final class ISOQPParsing extends XMLAdapter {
 
     private ReturnableProperties rp;
 
-    // private MetadataValidation mv;
-
     static {
-        nsContextISOParsing.addNamespace( CSW_PREFIX, CSW_202_NS );
         nsContextISOParsing.addNamespace( "srv", "http://www.isotc211.org/2005/srv" );
-        nsContextISOParsing.addNamespace( "ows", "http://www.opengis.net/ows" );
-        nsContextISOParsing.addNamespace( DCT_PREFIX, DCT_NS );
     }
 
     public ISOQPParsing() {
@@ -107,7 +98,7 @@ public final class ISOQPParsing extends XMLAdapter {
      * @return {@link ParsedProfileElement}
      * @throws IOException
      */
-    public ParsedProfileElement parseAPISO( OMElement element, boolean isUpdate )
+    public ParsedProfileElement parseAPISO( OMElement element )
                             throws MetadataStoreException {
 
         OMFactory factory = OMAbstractFactory.getOMFactory();
@@ -211,8 +202,9 @@ public final class ISOQPParsing extends XMLAdapter {
          * 
          * 
          *---------------------------------------------------------------*/
-        String[] dateString = getNodesAsStrings( rootElement, new XPath( "./gmd:dateStamp/gco:Date",
-                                                                         nsContextISOParsing ) );
+        String[] dateString = getNodesAsStrings( rootElement,
+                                                 new XPath( "./gmd:dateStamp/gco:Date | ./gmd:dateStamp/gco:DateTime",
+                                                            nsContextISOParsing ) );
         Date[] date = new Date[dateString.length];
         try {
             int counter = 0;
@@ -296,8 +288,11 @@ public final class ISOQPParsing extends XMLAdapter {
                                                                         nsContextISOParsing ), null );
 
             String crs = crsIdentification;
-
-            crsList.add( new CRSCodeType( crs, crsAuthority ) );
+            if ( crsAuthority != null ) {
+                crsList.add( new CRSCodeType( crs, crsAuthority ) );
+            } else {
+                crsList.add( new CRSCodeType( crs ) );
+            }
         }
 
         qp.setCrs( crsList );
@@ -429,7 +424,7 @@ public final class ISOQPParsing extends XMLAdapter {
          * sets the properties that are needed for building DC records
          */
 
-        return new ParsedProfileElement( qp, rp );
+        return new ParsedProfileElement( qp, rp, element );
 
     }
 

@@ -44,7 +44,7 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
 import org.deegree.commons.xml.XMLAdapter;
-import org.deegree.commons.xml.stax.FormattingXMLStreamWriter;
+import org.deegree.commons.xml.stax.IndentingXMLStreamWriter;
 import org.deegree.services.controller.exception.ControllerException;
 
 /**
@@ -63,7 +63,7 @@ public abstract class XMLExceptionSerializer<T extends ControllerException> exte
                                                                                               ExceptionSerializer<T> {
 
     /**
-     * Wraps a {@link FormattingXMLStreamWriter} around the given output stream and calls
+     * Wraps a {@link IndentingXMLStreamWriter} around the given output stream and calls
      * {@link #serializeExceptionToXML(XMLStreamWriter, ControllerException)}. The writer will prepare namespaces and
      * will start and end the XML document.
      *
@@ -78,7 +78,7 @@ public abstract class XMLExceptionSerializer<T extends ControllerException> exte
         XMLOutputFactory factory = XMLOutputFactory.newInstance();
         factory.setProperty( XMLOutputFactory.IS_REPAIRING_NAMESPACES, Boolean.TRUE );
         try {
-            FormattingXMLStreamWriter xmlWriter = new FormattingXMLStreamWriter(
+            IndentingXMLStreamWriter xmlWriter = new IndentingXMLStreamWriter(
                                                                                  factory.createXMLStreamWriter(
                                                                                                                 outputStream,
                                                                                                                 requestedEncoding ) );

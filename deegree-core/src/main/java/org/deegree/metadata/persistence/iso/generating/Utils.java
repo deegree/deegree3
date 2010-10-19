@@ -33,57 +33,37 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.metadata.persistence.iso.parsing;
+package org.deegree.metadata.persistence.iso.generating;
 
-import org.apache.axiom.om.OMElement;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.OutputStream;
+
+import javax.xml.stream.XMLOutputFactory;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamReader;
+import javax.xml.stream.XMLStreamWriter;
+
+import org.deegree.commons.xml.XMLAdapter;
 
 /**
- * Encapsulates the parsed elements that can be analysed from a record that is affected by the transaction operation.<br>
- * Here are the queryable and returnable properties and the elements in xml format.
+ * TODO add class documentation here
  * 
  * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
  */
-public class ParsedProfileElement {
+public class Utils {
 
-    private final OMElement rootElement;
+    public static void writeIntoFile( XMLStreamReader reader, String file )
+                            throws XMLStreamException, FileNotFoundException {
+        OutputStream fout = new FileOutputStream( file );
 
-    private final QueryableProperties queryableProperties;
+        XMLStreamWriter writer = XMLOutputFactory.newInstance().createXMLStreamWriter( fout );
 
-    private final ReturnableProperties returnableProperties;
+        XMLAdapter.writeElement( writer, reader );
 
-    /**
-     * Creates a new {@link ParsedProfileElement} instance.
-     * 
-     * @param queryableProperties
-     * @param returnableProperties
-     * @param generateRecord
-     */
-    public ParsedProfileElement( QueryableProperties queryableProperties, ReturnableProperties returnableProperties,
-                                 OMElement element ) {
-        this.queryableProperties = queryableProperties;
-        this.returnableProperties = returnableProperties;
-        this.rootElement = element;
-    }
-
-    /**
-     * @return the queryableProperties
-     */
-    public QueryableProperties getQueryableProperties() {
-        return queryableProperties;
-    }
-
-    /**
-     * @return the returnableProperties
-     */
-    public ReturnableProperties getReturnableProperties() {
-        return returnableProperties;
-    }
-
-    public OMElement getRootElement() {
-        return rootElement;
     }
 
 }

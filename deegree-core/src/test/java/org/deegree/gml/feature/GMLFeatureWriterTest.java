@@ -47,8 +47,8 @@ import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
 
 import org.deegree.commons.xml.XMLParsingException;
-import org.deegree.commons.xml.stax.FormattingXMLStreamWriter;
-import org.deegree.commons.xml.stax.XMLStreamWriterWrapper;
+import org.deegree.commons.xml.stax.IndentingXMLStreamWriter;
+import org.deegree.commons.xml.stax.SchemaLocationXMLStreamWriter;
 import org.deegree.cs.exceptions.TransformationException;
 import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.feature.Feature;
@@ -95,7 +95,7 @@ public class GMLFeatureWriterTest {
         XMLOutputFactory outputFactory = XMLOutputFactory.newInstance();
         outputFactory.setProperty( "javax.xml.stream.isRepairingNamespaces", new Boolean( true ) );
         XMLMemoryStreamWriter memoryWriter = new XMLMemoryStreamWriter();
-        XMLStreamWriterWrapper writer = new XMLStreamWriterWrapper( memoryWriter.getXMLStreamWriter(), SCHEMA_LOCATION );
+        SchemaLocationXMLStreamWriter writer = new SchemaLocationXMLStreamWriter( memoryWriter.getXMLStreamWriter(), SCHEMA_LOCATION );
         writer.setDefaultNamespace( "http://www.opengis.net/gml" );
         writer.setPrefix( "app", "http://www.deegree.org/app" );
         writer.setPrefix( "gml", "http://www.opengis.net/gml" );
@@ -103,7 +103,7 @@ public class GMLFeatureWriterTest {
         writer.setPrefix( "wfs", "http://www.opengis.net/wfs" );
         writer.setPrefix( "xlink", "http://www.w3.org/1999/xlink" );
         writer.setPrefix( "xsi", "http://www.w3.org/2001/XMLSchema-instance" );
-        GMLFeatureWriter exporter = new GMLFeatureWriter( GML_2, new FormattingXMLStreamWriter( writer ), null, null,
+        GMLFeatureWriter exporter = new GMLFeatureWriter( GML_2, new IndentingXMLStreamWriter( writer ), null, null,
                                                           null, null, 0, -1, null, false, true, null, null );
         exporter.export( feature );
         writer.flush();
@@ -129,7 +129,7 @@ public class GMLFeatureWriterTest {
         XMLOutputFactory outputFactory = XMLOutputFactory.newInstance();
         outputFactory.setProperty( "javax.xml.stream.isRepairingNamespaces", new Boolean( true ) );
         XMLMemoryStreamWriter memoryWriter = new XMLMemoryStreamWriter();
-        XMLStreamWriterWrapper writer = new XMLStreamWriterWrapper( memoryWriter.getXMLStreamWriter(), SCHEMA_LOCATION );
+        SchemaLocationXMLStreamWriter writer = new SchemaLocationXMLStreamWriter( memoryWriter.getXMLStreamWriter(), SCHEMA_LOCATION );
         writer.setDefaultNamespace( "http://www.opengis.net/gml" );
         writer.setPrefix( "app", "http://www.deegree.org/app" );
         writer.setPrefix( "gml", "http://www.opengis.net/gml" );

@@ -382,7 +382,7 @@ public class ISOMetadataStore implements MetadataStore {
                 rs.close();
             }
         } catch ( SQLException e ) {
-            LOG.debug( "Error while perfoming hits on the metadata: {}", e.getMessage() );
+            LOG.debug( "Error while perfoming results on the metadata: {}", e.getMessage() );
             throw new MetadataStoreException( e.getMessage(), e );
         } finally {
             close( rs );
@@ -395,56 +395,6 @@ public class ISOMetadataStore implements MetadataStore {
 
     }
 
-    // public List<Integer> transaction( TransactionOperation operations )
-    // throws XMLStreamException, MetadataStoreException {
-    //
-    // List<Integer> affectedIds = new ArrayList<Integer>();
-    // PostGISMappingsISODC mapping = new PostGISMappingsISODC();
-    // Connection conn = null;
-    // ResultSet rs = null;
-    // PreparedStatement ps = null;
-    // try {
-    // conn = ConnectionManager.getConnection( connectionId );
-    //
-    // switch ( operations.getType() ) {
-    // case INSERT:
-    //
-    // break;
-    //
-    // /*
-    // * There is a known BUG here. If you update one complete record, there is no problem. If you update just
-    // * some properties, multiple properties like "keywords" are not correctly updated. Have a look at {@link
-    // * #recursiveElementKnotUpdate}
-    // */
-    // case UPDATE:
-    //
-    //                
-    //
-    // break;
-    //
-    // case DELETE:
-    //
-    // break;
-    // }
-    // } catch ( SQLException e ) {
-    // LOG.debug( "Error while opening the JDBC connection: {}", e.getMessage() );
-    // throw new MetadataStoreException( "Error while opening the JDBC connection: {}", e );
-    // } catch ( FilterEvaluationException e ) {
-    // // TODO Auto-generated catch block
-    // e.printStackTrace();
-    // } finally {
-    // close( conn );
-    // }
-    //
-    // return affectedIds;
-    // }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.deegree.record.persistence.RecordStore#getRecordsById(javax.xml.stream.XMLStreamWriter,
-     * org.deegree.commons.configuration.JDBCConnections, java.util.List)
-     */
     @Override
     public MetadataResultSet getRecordsById( List<String> idList )
                             throws MetadataStoreException {

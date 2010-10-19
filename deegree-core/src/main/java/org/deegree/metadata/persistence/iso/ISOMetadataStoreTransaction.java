@@ -1,14 +1,12 @@
 package org.deegree.metadata.persistence.iso;
 
+import java.io.FileNotFoundException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
-import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 
 import org.apache.axiom.om.OMElement;
@@ -19,6 +17,7 @@ import org.deegree.metadata.ISORecord;
 import org.deegree.metadata.persistence.MetadataStoreException;
 import org.deegree.metadata.persistence.MetadataStoreTransaction;
 import org.deegree.metadata.persistence.iso.generating.GenerateQueryableProperties;
+import org.deegree.metadata.persistence.iso.generating.Utils;
 import org.deegree.metadata.persistence.iso.parsing.inspectation.CoupledDataInspector;
 import org.deegree.metadata.persistence.iso.parsing.inspectation.FileIdentifierInspector;
 import org.deegree.metadata.persistence.iso.parsing.inspectation.InspireCompliance;
@@ -106,6 +105,12 @@ public class ISOMetadataStoreTransaction implements MetadataStoreTransaction {
                     OMElement elemRI = ResourceIdentifier.newInstance( ca.getIc().getRic(), conn ).inspect( elemFI );
 
                     ISORecord rec = new ISORecord( elemRI );
+                    try {
+                        Utils.writeIntoFile( rec.getAsXMLStream(), "/home/thomas/Desktop/zztest.xml" );
+                    } catch ( FileNotFoundException e ) {
+                        // TODO Auto-generated catch block
+                        e.printStackTrace();
+                    }
                     GenerateQueryableProperties generateQP = new GenerateQueryableProperties();
                     int operatesOnId = generateQP.generateMainDatabaseDataset( conn, rec );
                     generateQP.executeQueryableProperties( false, conn, operatesOnId, rec );
@@ -123,58 +128,55 @@ public class ISOMetadataStoreTransaction implements MetadataStoreTransaction {
     @Override
     public int performUpdate( UpdateTransaction update )
                             throws MetadataStoreException {
-
-        PostGISMappingsISODC mapping = new PostGISMappingsISODC();
-        PostGISWhereBuilder builder = null;
         int result = 0;
-        /*
-         * if there should a complete record be updated or some properties
-         */
         if ( update.getElement() != null ) {
-            QName localName = update.getElement().getQName();
 
-            ExecuteStatements executeStatements = new ExecuteStatements();
-
-            // if ( localName.getLocalPart().equals( "Record" ) ) {
-            //
-            // result = executeStatements.executeUpdateStatement(
-            // conn,
-            // new ISOQPParsing( ca ).parseAPDC( update.getElement() ) );
-            //
-            // } else {
-            // result = executeStatements.executeUpdateStatement(
-            // conn,
-            // new ISOQPParsing( ca ).parseAPISO(
-            // update.getElement(),
-            // true ) );
-            //
-            // }
-
-        } else {
-
-            // try {
-            // RecordStoreOptions gdds = new RecordStoreOptions( update.getConstraint(),
-            // new URI( update.getTypeName().getNamespaceURI() ), null,
-            // ResultType.results, ReturnableElement.full, result,
-            // result );
-            // } catch ( URISyntaxException e1 ) {
-            // // TODO Auto-generated catch block
-            // e1.printStackTrace();
-            // }
-
-            int formatNumber = 0;
-            Set<QName> qNameSet = new HashSet<QName>();
-
-            // TODO sortProperty
-
-            try {
-                builder = new PostGISWhereBuilder( mapping, (OperatorFilter) update.getConstraint(), null,
-                                                   useLegacyPredicates );
-            } catch ( FilterEvaluationException e ) {
-                throw new MetadataStoreException( e.getMessage() );
-            }
+            ISORecord rec = new ISORecord( update.getElement() );
+            GenerateQueryableProperties generateQP = new GenerateQueryableProperties();
+            int operatesOnId = generateQP.updateMainDatabaseTable( conn, rec );
+            generateQP.executeQueryableProperties( true, conn, operatesOnId, rec );
+            result++;
 
         }
+
+        // PostGISMappingsISODC mapping = new PostGISMappingsISODC();
+        // PostGISWhereBuilder builder = null;
+        // int result = 0;
+        // /*
+        // * if there should a complete record be updated or some properties
+        // */
+        // if ( update.getElement() != null ) {
+        //
+        // ExecuteStatements executeStatements = new ExecuteStatements();
+        //
+        // result = executeStatements.executeUpdateStatement( conn,
+        // new ISOQPParsing().parseAPISO( update.getElement() ) );
+        //
+        // } else {
+        //
+        // // try {
+        // // RecordStoreOptions gdds = new RecordStoreOptions( update.getConstraint(),
+        // // new URI( update.getTypeName().getNamespaceURI() ), null,
+        // // ResultType.results, ReturnableElement.full, result,
+        // // result );
+        // // } catch ( URISyntaxException e1 ) {
+        // // // TODO Auto-generated catch block
+        // // e1.printStackTrace();
+        // // }
+        //
+        // int formatNumber = 0;
+        // Set<QName> qNameSet = new HashSet<QName>();
+        //
+        // // TODO sortProperty
+        //
+        // try {
+        // builder = new PostGISWhereBuilder( mapping, (OperatorFilter) update.getConstraint(), null,
+        // useLegacyPredicates );
+        // } catch ( FilterEvaluationException e ) {
+        // throw new MetadataStoreException( e.getMessage() );
+        // }
+        //
+        // }
         return result;
     }
 

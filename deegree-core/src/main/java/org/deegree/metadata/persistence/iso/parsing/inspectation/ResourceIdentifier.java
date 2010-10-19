@@ -189,6 +189,8 @@ public class ResourceIdentifier implements RecordInspector {
 
         NamespaceContext nsContext = a.getNamespaceContext( record );
         nsContext.addNamespace( "srv", "http://www.isotc211.org/2005/srv" );
+        nsContext.addNamespace( "gmd", "http://www.isotc211.org/2005/gmd" );
+        nsContext.addNamespace( "gco", "http://www.isotc211.org/2005/gco" );
 
         OMElement sv_service_OR_md_dataIdentification = a.getElement(
                                                                       record,

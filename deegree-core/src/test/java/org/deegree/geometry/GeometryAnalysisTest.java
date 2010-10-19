@@ -48,7 +48,7 @@ import javax.xml.stream.XMLStreamWriter;
 
 import junit.framework.Assert;
 
-import org.deegree.commons.xml.stax.FormattingXMLStreamWriter;
+import org.deegree.commons.xml.stax.IndentingXMLStreamWriter;
 import org.deegree.cs.CRS;
 import org.deegree.cs.exceptions.TransformationException;
 import org.deegree.cs.exceptions.UnknownCRSException;
@@ -138,7 +138,7 @@ public class GeometryAnalysisTest {
     private void writeResult( Geometry result )
                             throws UnknownCRSException, TransformationException {
         try {
-            XMLStreamWriter writer = new FormattingXMLStreamWriter(
+            XMLStreamWriter writer = new IndentingXMLStreamWriter(
                                                                     XMLOutputFactory.newInstance().createXMLStreamWriter(
                                                                                                                           new FileWriter(
                                                                                                                                           System.getProperty( "java.io.tmpdir" )

@@ -70,7 +70,7 @@ import org.deegree.commons.xml.NamespaceContext;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.commons.xml.XPath;
-import org.deegree.commons.xml.stax.XMLStreamWriterWrapper;
+import org.deegree.commons.xml.stax.SchemaLocationXMLStreamWriter;
 import org.deegree.metadata.persistence.MetadataStoreException;
 import org.deegree.protocol.csw.CSWConstants;
 import org.deegree.protocol.csw.CSWConstants.CSWRequestType;
@@ -612,7 +612,7 @@ public class CSWController extends AbstractOGCServiceController {
         if ( schemaLocation == null ) {
             return writer.getXMLWriter();
         }
-        return new XMLStreamWriterWrapper( writer.getXMLWriter(), schemaLocation );
+        return new SchemaLocationXMLStreamWriter( writer.getXMLWriter(), schemaLocation );
     }
 
     private void sendServiceException( OWSException ex, HttpResponseBuffer response )

@@ -48,7 +48,7 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
 import org.deegree.commons.tom.ows.Version;
-import org.deegree.commons.xml.stax.XMLStreamWriterWrapper;
+import org.deegree.commons.xml.stax.SchemaLocationXMLStreamWriter;
 import org.deegree.metadata.DCRecord;
 import org.deegree.metadata.MetadataRecord;
 import org.deegree.metadata.persistence.MetadataResultSet;
@@ -304,7 +304,7 @@ public class TransactionHandler {
         if ( schemaLocation.equals( "" ) ) {
             return writer.getXMLWriter();
         }
-        return new XMLStreamWriterWrapper( writer.getXMLWriter(), schemaLocation );
+        return new SchemaLocationXMLStreamWriter( writer.getXMLWriter(), schemaLocation );
     }
 
 }

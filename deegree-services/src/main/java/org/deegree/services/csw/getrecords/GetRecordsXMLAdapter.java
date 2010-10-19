@@ -116,6 +116,7 @@ public class GetRecordsXMLAdapter extends AbstractCSWRequestXMLAdapter {
      * @return {@link GetRecords}
      */
     private GetRecords parse202() {
+        LOG.debug( rootElement.toString() );
 
         String resultTypeStr = getNodeAsString( rootElement, new XPath( "@resultType", nsContext ),
                                                 ResultType.hits.name() );

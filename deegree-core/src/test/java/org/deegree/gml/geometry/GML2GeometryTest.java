@@ -47,7 +47,7 @@ import javax.xml.stream.XMLStreamException;
 import junit.framework.TestCase;
 
 import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;
-import org.deegree.commons.xml.stax.XMLStreamWriterWrapper;
+import org.deegree.commons.xml.stax.SchemaLocationXMLStreamWriter;
 import org.deegree.cs.CRSRegistry;
 import org.deegree.cs.exceptions.TransformationException;
 import org.deegree.cs.exceptions.UnknownCRSException;
@@ -134,7 +134,7 @@ public class GML2GeometryTest extends TestCase {
         outputFactory.setProperty( "javax.xml.stream.isRepairingNamespaces", new Boolean( true ) );
         XMLMemoryStreamWriter memoryWriter = new XMLMemoryStreamWriter();
 
-        XMLStreamWriterWrapper writer = new XMLStreamWriterWrapper( memoryWriter.getXMLStreamWriter(),
+        SchemaLocationXMLStreamWriter writer = new SchemaLocationXMLStreamWriter( memoryWriter.getXMLStreamWriter(),
                                                                     SCHEMA_LOCATION_ATTRIBUTE );
         GML2GeometryWriter exporter = new GML2GeometryWriter( writer, null, null, new HashSet<String>() );
 
@@ -183,7 +183,7 @@ public class GML2GeometryTest extends TestCase {
         outputFactory.setProperty( "javax.xml.stream.isRepairingNamespaces", new Boolean( true ) );
         XMLMemoryStreamWriter memoryWriter = new XMLMemoryStreamWriter();
 
-        XMLStreamWriterWrapper writer = new XMLStreamWriterWrapper( memoryWriter.getXMLStreamWriter(),
+        SchemaLocationXMLStreamWriter writer = new SchemaLocationXMLStreamWriter( memoryWriter.getXMLStreamWriter(),
                                                                     SCHEMA_LOCATION_ATTRIBUTE );
         GML2GeometryWriter exporter = new GML2GeometryWriter( writer, null, null, new HashSet<String>() );
 
@@ -219,7 +219,7 @@ public class GML2GeometryTest extends TestCase {
         outputFactory.setProperty( "javax.xml.stream.isRepairingNamespaces", new Boolean( true ) );
         XMLMemoryStreamWriter memoryWriter = new XMLMemoryStreamWriter();
 
-        XMLStreamWriterWrapper writer = new XMLStreamWriterWrapper( memoryWriter.getXMLStreamWriter(),
+        SchemaLocationXMLStreamWriter writer = new SchemaLocationXMLStreamWriter( memoryWriter.getXMLStreamWriter(),
                                                                     SCHEMA_LOCATION_ATTRIBUTE );
         GML2GeometryWriter exporter = new GML2GeometryWriter( writer, null, null, new HashSet<String>() );
 
@@ -283,7 +283,7 @@ public class GML2GeometryTest extends TestCase {
         outputFactory.setProperty( "javax.xml.stream.isRepairingNamespaces", new Boolean( true ) );
         XMLMemoryStreamWriter memoryWriter = new XMLMemoryStreamWriter();
 
-        XMLStreamWriterWrapper writer = new XMLStreamWriterWrapper( memoryWriter.getXMLStreamWriter(),
+        SchemaLocationXMLStreamWriter writer = new SchemaLocationXMLStreamWriter( memoryWriter.getXMLStreamWriter(),
                                                                     SCHEMA_LOCATION_ATTRIBUTE );
         GML2GeometryWriter exporter = new GML2GeometryWriter( writer, null, null, new HashSet<String>() );
 
@@ -331,7 +331,7 @@ public class GML2GeometryTest extends TestCase {
         outputFactory.setProperty( "javax.xml.stream.isRepairingNamespaces", new Boolean( true ) );
         XMLMemoryStreamWriter memoryWriter = new XMLMemoryStreamWriter();
 
-        XMLStreamWriterWrapper writer = new XMLStreamWriterWrapper( memoryWriter.getXMLStreamWriter(),
+        SchemaLocationXMLStreamWriter writer = new SchemaLocationXMLStreamWriter( memoryWriter.getXMLStreamWriter(),
                                                                     SCHEMA_LOCATION_ATTRIBUTE );
         GML2GeometryWriter exporter = new GML2GeometryWriter( writer, null, null, new HashSet<String>() );
 
@@ -392,7 +392,7 @@ public class GML2GeometryTest extends TestCase {
         outputFactory.setProperty( "javax.xml.stream.isRepairingNamespaces", new Boolean( true ) );
         XMLMemoryStreamWriter memoryWriter = new XMLMemoryStreamWriter();
 
-        XMLStreamWriterWrapper writer = new XMLStreamWriterWrapper( memoryWriter.getXMLStreamWriter(),
+        SchemaLocationXMLStreamWriter writer = new SchemaLocationXMLStreamWriter( memoryWriter.getXMLStreamWriter(),
                                                                     SCHEMA_LOCATION_ATTRIBUTE );
         GML2GeometryWriter exporter = new GML2GeometryWriter( writer, null, null, new HashSet<String>() );
 
@@ -448,7 +448,7 @@ public class GML2GeometryTest extends TestCase {
         outputFactory.setProperty( "javax.xml.stream.isRepairingNamespaces", new Boolean( true ) );
         XMLMemoryStreamWriter memoryWriter = new XMLMemoryStreamWriter();
 
-        XMLStreamWriterWrapper writer = new XMLStreamWriterWrapper( memoryWriter.getXMLStreamWriter(),
+        SchemaLocationXMLStreamWriter writer = new SchemaLocationXMLStreamWriter( memoryWriter.getXMLStreamWriter(),
                                                                     SCHEMA_LOCATION_ATTRIBUTE );
         GML2GeometryWriter exporter = new GML2GeometryWriter( writer, null, null, new HashSet<String>() );
 
@@ -493,7 +493,7 @@ public class GML2GeometryTest extends TestCase {
         outputFactory.setProperty( "javax.xml.stream.isRepairingNamespaces", new Boolean( true ) );
         XMLMemoryStreamWriter memoryWriter = new XMLMemoryStreamWriter();
 
-        XMLStreamWriterWrapper writer = new XMLStreamWriterWrapper( memoryWriter.getXMLStreamWriter(),
+        SchemaLocationXMLStreamWriter writer = new SchemaLocationXMLStreamWriter( memoryWriter.getXMLStreamWriter(),
                                                                     SCHEMA_LOCATION_ATTRIBUTE );
         GML2GeometryWriter exporter = new GML2GeometryWriter( writer, null, null, new HashSet<String>() );
 
@@ -565,7 +565,7 @@ public class GML2GeometryTest extends TestCase {
         outputFactory.setProperty( "javax.xml.stream.isRepairingNamespaces", new Boolean( true ) );
         XMLMemoryStreamWriter memoryWriter = new XMLMemoryStreamWriter();
 
-        XMLStreamWriterWrapper writer = new XMLStreamWriterWrapper( memoryWriter.getXMLStreamWriter(),
+        SchemaLocationXMLStreamWriter writer = new SchemaLocationXMLStreamWriter( memoryWriter.getXMLStreamWriter(),
                                                                     SCHEMA_LOCATION_ATTRIBUTE );
         GML2GeometryWriter exporter = new GML2GeometryWriter( writer, null, null, new HashSet<String>() );
 

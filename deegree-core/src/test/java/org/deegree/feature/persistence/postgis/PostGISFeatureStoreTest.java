@@ -47,7 +47,7 @@ import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
 
 import org.deegree.commons.jdbc.ConnectionManager;
-import org.deegree.commons.xml.stax.FormattingXMLStreamWriter;
+import org.deegree.commons.xml.stax.IndentingXMLStreamWriter;
 import org.deegree.cs.exceptions.TransformationException;
 import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.feature.FeatureCollection;
@@ -156,7 +156,7 @@ public class PostGISFeatureStoreTest {
             FeatureResultSet rs = fs.query( query );
             try {
                 FeatureCollection fc = rs.toCollection();
-                XMLStreamWriter xmlStream = new FormattingXMLStreamWriter(
+                XMLStreamWriter xmlStream = new IndentingXMLStreamWriter(
                                                                            XMLOutputFactory.newInstance().createXMLStreamWriter(
                                                                                                                                  System.out ) );
                 GMLStreamWriter gmlStream = GMLOutputFactory.createGMLStreamWriter( GMLVersion.GML_31, xmlStream );
@@ -187,7 +187,7 @@ public class PostGISFeatureStoreTest {
             FeatureResultSet rs = fs.query( query );
             try {
                 FeatureCollection fc = rs.toCollection();
-                XMLStreamWriter xmlStream = new FormattingXMLStreamWriter(
+                XMLStreamWriter xmlStream = new IndentingXMLStreamWriter(
                                                                            XMLOutputFactory.newInstance().createXMLStreamWriter(
                                                                                                                                  System.out ) );
                 GMLStreamWriter gmlStream = GMLOutputFactory.createGMLStreamWriter( GMLVersion.GML_31, xmlStream );
@@ -230,7 +230,7 @@ public class PostGISFeatureStoreTest {
 
     private void print( FeatureCollection fc )
                             throws XMLStreamException, UnknownCRSException, TransformationException {
-        XMLStreamWriter xmlStream = new FormattingXMLStreamWriter(
+        XMLStreamWriter xmlStream = new IndentingXMLStreamWriter(
                                                                    XMLOutputFactory.newInstance().createXMLStreamWriter(
                                                                                                                          System.out ) );
         GMLStreamWriter gmlStream = GMLOutputFactory.createGMLStreamWriter( GMLVersion.GML_31, xmlStream );

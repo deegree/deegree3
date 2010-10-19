@@ -62,7 +62,7 @@ import org.deegree.commons.utils.kvp.InvalidParameterValueException;
 import org.deegree.commons.utils.time.DateUtils;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.schema.SchemaValidator;
-import org.deegree.commons.xml.stax.XMLStreamWriterWrapper;
+import org.deegree.commons.xml.stax.SchemaLocationXMLStreamWriter;
 import org.deegree.metadata.DCRecord;
 import org.deegree.metadata.MetadataRecord;
 import org.deegree.metadata.MetadataResultType;
@@ -337,7 +337,7 @@ public class GetRecordsHandler {
         if ( schemaLocation == null ) {
             return writer.getXMLWriter();
         }
-        return new XMLStreamWriterWrapper( writer.getXMLWriter(), schemaLocation );
+        return new SchemaLocationXMLStreamWriter( writer.getXMLWriter(), schemaLocation );
     }
 
     /**

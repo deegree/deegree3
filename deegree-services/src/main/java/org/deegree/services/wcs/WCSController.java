@@ -68,7 +68,7 @@ import org.deegree.commons.utils.kvp.MissingParameterException;
 import org.deegree.commons.xml.NamespaceContext;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.XPath;
-import org.deegree.commons.xml.stax.FormattingXMLStreamWriter;
+import org.deegree.commons.xml.stax.IndentingXMLStreamWriter;
 import org.deegree.coverage.rangeset.AxisSubset;
 import org.deegree.coverage.rangeset.RangeSet;
 import org.deegree.coverage.raster.interpolation.InterpolationType;
@@ -578,7 +578,7 @@ public class WCSController extends AbstractOGCServiceController {
                             throws XMLStreamException {
         XMLOutputFactory factory = XMLOutputFactory.newInstance();
         factory.setProperty( XMLOutputFactory.IS_REPAIRING_NAMESPACES, Boolean.TRUE );
-        return new FormattingXMLStreamWriter( factory.createXMLStreamWriter( writer ) );
+        return new IndentingXMLStreamWriter( factory.createXMLStreamWriter( writer ) );
     }
 
     @Override

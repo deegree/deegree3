@@ -55,7 +55,7 @@ import javax.xml.stream.XMLStreamWriter;
 import org.apache.axiom.om.OMElement;
 import org.deegree.commons.tom.ows.Version;
 import org.deegree.commons.utils.log.LoggingNotes;
-import org.deegree.commons.xml.stax.FormattingXMLStreamWriter;
+import org.deegree.commons.xml.stax.IndentingXMLStreamWriter;
 import org.deegree.cs.CRSCodeType;
 import org.deegree.cs.CRSIdentifiable;
 import org.deegree.cs.components.Ellipsoid;
@@ -182,7 +182,7 @@ public class DeegreeCRSProvider<T> extends AbstractCRSProvider<T> {
         factory.setProperty( "javax.xml.stream.isRepairingNamespaces", Boolean.TRUE );
 
         try {
-            XMLStreamWriter xmlWriter = new FormattingXMLStreamWriter( factory.createXMLStreamWriter( writer ) );
+            XMLStreamWriter xmlWriter = new IndentingXMLStreamWriter( factory.createXMLStreamWriter( writer ) );
             exporter.export( crsToExport, xmlWriter );
 
             sb.append( out.toString( Charset.defaultCharset().displayName() ) );

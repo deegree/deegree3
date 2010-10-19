@@ -50,7 +50,7 @@ import javax.xml.stream.XMLStreamException;
 
 import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;
-import org.deegree.commons.xml.stax.XMLStreamWriterWrapper;
+import org.deegree.commons.xml.stax.SchemaLocationXMLStreamWriter;
 import org.deegree.cs.exceptions.TransformationException;
 import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.geometry.Geometry;
@@ -181,7 +181,7 @@ public class GMLGeometryWriterTest {
             outputFactory.setProperty( "javax.xml.stream.isRepairingNamespaces", new Boolean( true ) );
             XMLMemoryStreamWriter memoryWriter = new XMLMemoryStreamWriter();
 
-            XMLStreamWriterWrapper writer = new XMLStreamWriterWrapper( memoryWriter.getXMLStreamWriter(),
+            SchemaLocationXMLStreamWriter writer = new SchemaLocationXMLStreamWriter( memoryWriter.getXMLStreamWriter(),
                                                                         SCHEMA_LOCATION_ATTRIBUTE );
             writer.setPrefix( "app", "http://www.deegree.org/app" );
             writer.setPrefix( "gml", "http://www.opengis.net/gml" );
@@ -225,7 +225,7 @@ public class GMLGeometryWriterTest {
             XMLOutputFactory outputFactory = XMLOutputFactory.newInstance();
             outputFactory.setProperty( "javax.xml.stream.isRepairingNamespaces", new Boolean( true ) );
             XMLMemoryStreamWriter memoryWriter = new XMLMemoryStreamWriter();
-            XMLStreamWriterWrapper writer = new XMLStreamWriterWrapper( memoryWriter.getXMLStreamWriter(),
+            SchemaLocationXMLStreamWriter writer = new SchemaLocationXMLStreamWriter( memoryWriter.getXMLStreamWriter(),
                                                                         SCHEMA_LOCATION_ATTRIBUTE );
             writer.setPrefix( "app", "http://www.deegree.org/app" );
             writer.setPrefix( "gml", "http://www.opengis.net/gml" );
@@ -268,7 +268,7 @@ public class GMLGeometryWriterTest {
             XMLOutputFactory outputFactory = XMLOutputFactory.newInstance();
             outputFactory.setProperty( "javax.xml.stream.isRepairingNamespaces", new Boolean( true ) );
             XMLMemoryStreamWriter memoryWriter = new XMLMemoryStreamWriter();
-            XMLStreamWriterWrapper writer = new XMLStreamWriterWrapper( memoryWriter.getXMLStreamWriter(),
+            SchemaLocationXMLStreamWriter writer = new SchemaLocationXMLStreamWriter( memoryWriter.getXMLStreamWriter(),
                                                                         SCHEMA_LOCATION_ATTRIBUTE );
             writer.setPrefix( "app", "http://www.deegree.org/app" );
             writer.setPrefix( "gml", "http://www.opengis.net/gml" );
@@ -309,7 +309,7 @@ public class GMLGeometryWriterTest {
             XMLOutputFactory outputFactory = XMLOutputFactory.newInstance();
             outputFactory.setProperty( "javax.xml.stream.isRepairingNamespaces", new Boolean( true ) );
             XMLMemoryStreamWriter memoryWriter = new XMLMemoryStreamWriter();
-            XMLStreamWriterWrapper writer = new XMLStreamWriterWrapper( memoryWriter.getXMLStreamWriter(),
+            SchemaLocationXMLStreamWriter writer = new SchemaLocationXMLStreamWriter( memoryWriter.getXMLStreamWriter(),
                                                                         SCHEMA_LOCATION_ATTRIBUTE );
             writer.setPrefix( "app", "http://www.deegree.org/app" );
             writer.setPrefix( "gml", "http://www.opengis.net/gml" );
@@ -354,7 +354,7 @@ public class GMLGeometryWriterTest {
         XMLOutputFactory outputFactory = XMLOutputFactory.newInstance();
         outputFactory.setProperty( "javax.xml.stream.isRepairingNamespaces", new Boolean( true ) );
         XMLMemoryStreamWriter memoryWriter = new XMLMemoryStreamWriter();
-        XMLStreamWriterWrapper writer = new XMLStreamWriterWrapper( memoryWriter.getXMLStreamWriter(),
+        SchemaLocationXMLStreamWriter writer = new SchemaLocationXMLStreamWriter( memoryWriter.getXMLStreamWriter(),
                                                                     SCHEMA_LOCATION_ATTRIBUTE );
         writer.setPrefix( "app", "http://www.deegree.org/app" );
         writer.setPrefix( "gml", "http://www.opengis.net/gml" );
@@ -387,7 +387,7 @@ public class GMLGeometryWriterTest {
         XMLOutputFactory outputFactory = XMLOutputFactory.newInstance();
         outputFactory.setProperty( "javax.xml.stream.isRepairingNamespaces", new Boolean( true ) );
         XMLMemoryStreamWriter memoryWriter = new XMLMemoryStreamWriter();
-        XMLStreamWriterWrapper writer = new XMLStreamWriterWrapper( memoryWriter.getXMLStreamWriter(),
+        SchemaLocationXMLStreamWriter writer = new SchemaLocationXMLStreamWriter( memoryWriter.getXMLStreamWriter(),
                                                                     SCHEMA_LOCATION_ATTRIBUTE );
         writer.setPrefix( "app", "http://www.deegree.org/app" );
         writer.setPrefix( "gml", "http://www.opengis.net/gml" );
@@ -420,7 +420,7 @@ public class GMLGeometryWriterTest {
         XMLOutputFactory outputFactory = XMLOutputFactory.newInstance();
         outputFactory.setProperty( "javax.xml.stream.isRepairingNamespaces", new Boolean( true ) );
         XMLMemoryStreamWriter memoryWriter = new XMLMemoryStreamWriter();
-        XMLStreamWriterWrapper writer = new XMLStreamWriterWrapper( memoryWriter.getXMLStreamWriter(),
+        SchemaLocationXMLStreamWriter writer = new SchemaLocationXMLStreamWriter( memoryWriter.getXMLStreamWriter(),
                                                                     SCHEMA_LOCATION_ATTRIBUTE );
         writer.setPrefix( "app", "http://www.deegree.org/app" );
         writer.setPrefix( "gml", "http://www.opengis.net/gml" );

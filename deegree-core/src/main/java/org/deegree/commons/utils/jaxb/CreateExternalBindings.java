@@ -50,7 +50,7 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
 import org.deegree.commons.utils.StringPair;
-import org.deegree.commons.xml.stax.FormattingXMLStreamWriter;
+import org.deegree.commons.xml.stax.IndentingXMLStreamWriter;
 
 /**
  * The <code>CreateExternalBindings</code> is a little utitly class, which writes a jaxb binding file by reading java
@@ -121,7 +121,7 @@ public class CreateExternalBindings {
         XMLOutputFactory factory = XMLOutputFactory.newInstance();
         factory.setProperty( "javax.xml.stream.isRepairingNamespaces", Boolean.TRUE );
         FileOutputStream fos = new FileOutputStream( targetFile );
-        XMLStreamWriter writer = new FormattingXMLStreamWriter(
+        XMLStreamWriter writer = new IndentingXMLStreamWriter(
                                                                 factory.createXMLStreamWriter( new OutputStreamWriter(
                                                                                                                        fos,
                                                                                                                        "UTF-8" ) ) );

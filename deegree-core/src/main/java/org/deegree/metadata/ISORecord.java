@@ -161,7 +161,7 @@ public class ISORecord implements MetadataRecord {
     public ISORecord( XMLStreamReader xmlStream ) throws MetadataStoreException {
 
         this.root = new XMLAdapter( xmlStream ).getRootElement();
-        this.pElem = new ISOQPParsing().parseAPISO( root, false );
+        this.pElem = new ISOQPParsing().parseAPISO( root );
 
         summaryFilterElementsXPath = removeElementsXPath( summaryLocalParts );
 
@@ -196,6 +196,12 @@ public class ISORecord implements MetadataRecord {
         }
 
         return s;
+    }
+
+    @Override
+    public String getAnyText() {
+        return pElem.getQueryableProperties().getAnyText();
+
     }
 
     @Override
@@ -243,9 +249,8 @@ public class ISORecord implements MetadataRecord {
 
     @Override
     public Date[] getModified() {
-        Date[] d = this.pElem.getQueryableProperties().getModified();
 
-        return d;
+        return pElem.getQueryableProperties().getModified();
     }
 
     @Override
@@ -316,6 +321,7 @@ public class ISORecord implements MetadataRecord {
      */
     public XMLStreamReader getAsXMLStream()
                             throws XMLStreamException {
+        root.declareDefaultNamespace( "http://www.isotc211.org/2005/gmd" );
         XMLStreamReader xmlStream = root.getXMLStreamReader();
         StAXParsingHelper.skipStartDocument( xmlStream );
         return xmlStream;

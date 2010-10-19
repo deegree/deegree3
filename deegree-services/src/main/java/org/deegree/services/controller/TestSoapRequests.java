@@ -71,7 +71,7 @@ import org.apache.commons.httpclient.methods.multipart.MultipartRequestEntity;
 import org.apache.commons.httpclient.methods.multipart.Part;
 import org.apache.commons.httpclient.methods.multipart.StringPart;
 import org.deegree.commons.xml.XMLAdapter;
-import org.deegree.commons.xml.stax.FormattingXMLStreamWriter;
+import org.deegree.commons.xml.stax.IndentingXMLStreamWriter;
 import org.deegree.services.controller.ows.OWSException;
 import org.deegree.services.controller.ows.OWSException110XMLAdapter;
 
@@ -100,7 +100,7 @@ public class TestSoapRequests {
         body.addChild( someCoolRequest.getRootElement() );
         StreamingOMSerializer ser = new StreamingOMSerializer();
         StringWriter w = new StringWriter();
-        XMLStreamWriter wr = new FormattingXMLStreamWriter( StAXUtils.createXMLStreamWriter( w ) );
+        XMLStreamWriter wr = new IndentingXMLStreamWriter( StAXUtils.createXMLStreamWriter( w ) );
         // ser.serialize( someCoolRequest.getRootElement().getXMLStreamReader(), wr );
         ser.serialize( env.getXMLStreamReader(), wr );
 
@@ -132,7 +132,7 @@ public class TestSoapRequests {
         XMLOutputFactory outFac = XMLOutputFactory.newInstance();
         outFac.setProperty( XMLOutputFactory.IS_REPAIRING_NAMESPACES, Boolean.TRUE );
         StringWriter w = new StringWriter();
-        XMLStreamWriter writer = new FormattingXMLStreamWriter( outFac.createXMLStreamWriter( w ) );
+        XMLStreamWriter writer = new IndentingXMLStreamWriter( outFac.createXMLStreamWriter( w ) );
 
         SOAPFactory factory = new SOAP12Factory();
         createSoap( factory, writer );

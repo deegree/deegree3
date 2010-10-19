@@ -39,7 +39,9 @@ import static org.slf4j.LoggerFactory.getLogger;
 
 import java.sql.Connection;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.xml.namespace.QName;
 
@@ -183,7 +185,11 @@ public class FileIdentifierInspector implements RecordInspector {
         a.setRootElement( record );
 
         NamespaceContext nsContext = a.getNamespaceContext( record );
+        // NamespaceContext newNSC = generateNSC(nsContext);
         nsContext.addNamespace( "srv", "http://www.isotc211.org/2005/srv" );
+        nsContext.addNamespace( "gmd", "http://www.isotc211.org/2005/gmd" );
+        nsContext.addNamespace( "gco", "http://www.isotc211.org/2005/gco" );
+        // String GMD_PRE = "gmd";
 
         String[] fileIdentifierString = a.getNodesAsStrings( record,
                                                              new XPath( "./gmd:fileIdentifier/gco:CharacterString",
@@ -223,6 +229,13 @@ public class FileIdentifierInspector implements RecordInspector {
             }
         }
         return record;
+    }
+
+    private NamespaceContext generateNSC( NamespaceContext nsContext ) {
+        NamespaceContext nsc = new NamespaceContext();
+        Map<String, String> nsMap = new HashMap<String, String>();
+
+        return nsc;
     }
 
 }

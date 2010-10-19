@@ -1337,7 +1337,8 @@ public class XMLAdapter {
                 break;
             }
             case START_ELEMENT: {
-                if ( inStream.getNamespaceURI() == NULL_NS_URI || inStream.getPrefix() == DEFAULT_NS_PREFIX ) {
+                if ( inStream.getNamespaceURI() == NULL_NS_URI || inStream.getPrefix() == DEFAULT_NS_PREFIX
+                     || inStream.getPrefix() == null ) {
                     writer.writeStartElement( inStream.getLocalName() );
                 } else {
                     if ( writer.getNamespaceContext().getPrefix( inStream.getPrefix() ) == XMLConstants.NULL_NS_URI ) {

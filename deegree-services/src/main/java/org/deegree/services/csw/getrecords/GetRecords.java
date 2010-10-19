@@ -59,33 +59,33 @@ import org.deegree.services.csw.AbstractCSWRequest;
  */
 public class GetRecords extends AbstractCSWRequest {
 
-    private String requestId;
+    private final String requestId;
 
-    private URI outputSchema;
+    private final URI outputSchema;
 
-    private int startPosition;
+    private final int startPosition;
 
-    private int maxRecords;
+    private final int maxRecords;
 
-    private String[] elementName;
+    private final String[] elementName;
 
-    private ReturnableElement elementSetName;
+    private final ReturnableElement elementSetName;
 
-    private Filter constraint;
+    private final Filter constraint;
 
-    private SortProperty[] sortBy;
+    private final SortProperty[] sortBy;
 
-    private boolean distributedSearch;
+    private final boolean distributedSearch;
 
-    private int hopCount;
+    private final int hopCount;
 
-    private String responseHandler;
+    private final String responseHandler;
 
-    private ResultType resultType;
+    private final ResultType resultType;
 
-    private ConstraintLanguage constraintLanguage;
+    private final ConstraintLanguage constraintLanguage;
 
-    private OMElement holeRequest;
+    private final OMElement holeRequest;
 
     /**
      * Creates a new {@link GetRecords} request.

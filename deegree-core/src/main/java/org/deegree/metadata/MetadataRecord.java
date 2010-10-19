@@ -62,6 +62,8 @@ public interface MetadataRecord {
 
     public String getType();
 
+    public String getAnyText();
+
     public String[] getFormat();
 
     public String[] getRelation();

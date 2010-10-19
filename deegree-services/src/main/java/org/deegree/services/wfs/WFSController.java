@@ -80,7 +80,7 @@ import org.deegree.commons.utils.kvp.MissingParameterException;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.commons.xml.stax.StAXParsingHelper;
-import org.deegree.commons.xml.stax.XMLStreamWriterWrapper;
+import org.deegree.commons.xml.stax.SchemaLocationXMLStreamWriter;
 import org.deegree.cs.CRS;
 import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.feature.persistence.FeatureStore;
@@ -761,7 +761,7 @@ public class WFSController extends AbstractOGCServiceController {
         if ( schemaLocation == null ) {
             return writer.getXMLWriter();
         }
-        return new XMLStreamWriterWrapper( writer.getXMLWriter(), schemaLocation );
+        return new SchemaLocationXMLStreamWriter( writer.getXMLWriter(), schemaLocation );
     }
 
     private void sendServiceException110( OWSException ex, HttpResponseBuffer response )

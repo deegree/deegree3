@@ -61,12 +61,8 @@ public class FillProperties {
 
     private static final String fk_datasets = PostGISMappingsISODC.CommonColumnNames.fk_datasets.name();
 
-    private static final StringBuilder s = new StringBuilder().append( "SELECT " ).append( "?" ).append( " FROM " ).append(
-                                                                                                                            "?" ).append(
-                                                                                                                                          " WHERE " ).append(
-                                                                                                                                                              fk_datasets ).append(
-                                                                                                                                                                                    '=' ).append(
-                                                                                                                                                                                                  "?" );
+    private static final StringBuilder s = new StringBuilder().append( "SELECT ? FROM ? WHERE " ).append( fk_datasets ).append(
+                                                                                                                                " = ?" );
 
     private final Connection conn;
 
