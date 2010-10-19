@@ -18,6 +18,11 @@
             </sequence>
           </complexType>
         </element>
+        <element name="CoordinateFormatter" minOccurs="0">
+          <complexType>
+            <attribute name="javaClass" use="required" type="string" />
+          </complexType>
+        </element>
         <element name="EnableTransactions" type="boolean" minOccurs="0" default="false" />
         <element name="DisableResponseBuffering" type="boolean" minOccurs="0" default="false" />
         <element name="QueryCRS" type="string" minOccurs="0" default="EPSG:4326" />

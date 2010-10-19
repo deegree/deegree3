@@ -79,8 +79,8 @@ import org.deegree.commons.utils.kvp.KVPUtils;
 import org.deegree.commons.utils.kvp.MissingParameterException;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.XMLParsingException;
-import org.deegree.commons.xml.stax.StAXParsingHelper;
 import org.deegree.commons.xml.stax.SchemaLocationXMLStreamWriter;
+import org.deegree.commons.xml.stax.StAXParsingHelper;
 import org.deegree.cs.CRS;
 import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.feature.persistence.FeatureStore;
@@ -127,9 +127,9 @@ import org.deegree.services.jaxb.main.DeegreeServicesMetadataType;
 import org.deegree.services.jaxb.main.ServiceIdentificationType;
 import org.deegree.services.jaxb.main.ServiceProviderType;
 import org.deegree.services.jaxb.wfs.DeegreeWFS;
+import org.deegree.services.jaxb.wfs.FeatureTypeMetadata;
 import org.deegree.services.jaxb.wfs.DeegreeWFS.Format;
 import org.deegree.services.jaxb.wfs.DeegreeWFS.Format.Param;
-import org.deegree.services.jaxb.wfs.FeatureTypeMetadata;
 import org.deegree.services.wfs.format.OutputFormat;
 import org.deegree.services.wfs.format.OutputFormatManager;
 import org.deegree.services.wfs.format.OutputFormatProvider;
@@ -233,7 +233,7 @@ public class WFSController extends AbstractOGCServiceController {
                                                                               : false;
         maxFeatures = jaxbConfig.getQueryMaxFeatures() == null ? DEFAULT_MAX_FEATURES
                                                               : jaxbConfig.getQueryMaxFeatures().intValue();
-        checkAreaOfUse = jaxbConfig.isCheckAreaOfUse() == null ? false : jaxbConfig.isCheckAreaOfUse();
+        checkAreaOfUse = jaxbConfig.isQueryCheckAreaOfUse() == null ? false : jaxbConfig.isQueryCheckAreaOfUse();
 
         try {
             if ( jaxbConfig.getQueryCRS() != null ) {
@@ -309,7 +309,7 @@ public class WFSController extends AbstractOGCServiceController {
         Properties props = new Properties();
         if ( params != null ) {
             for ( Param param : params ) {
-                props.put( param.getKey(), param.getValue() );
+                props.put( param.getName(), param.getValue() );
             }
         }
         return props;
