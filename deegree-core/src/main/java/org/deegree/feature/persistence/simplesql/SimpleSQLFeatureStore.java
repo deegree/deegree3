@@ -50,6 +50,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.TreeMap;
 
+import javax.xml.XMLConstants;
 import javax.xml.namespace.QName;
 
 import org.deegree.commons.jdbc.ResultSetIterator;
@@ -123,6 +124,8 @@ public class SimpleSQLFeatureStore implements FeatureStore {
 
     private String namespace;
 
+    private String prefix;
+
     GenericFeatureType featureType;
 
     private String bbox;
@@ -139,11 +142,12 @@ public class SimpleSQLFeatureStore implements FeatureStore {
      * @param sql
      * @param featureName
      * @param namespace
+     * @param prefix
      * @param bbox
      * @param lods
      */
     public SimpleSQLFeatureStore( String connId, String crs, String sql, String featureName, String namespace,
-                                  String bbox, List<Pair<Integer, String>> lods ) {
+                                  String prefix, String bbox, List<Pair<Integer, String>> lods ) {
         this.connId = connId;
         this.crs = new CRS( crs );
         sql = sql.trim();
@@ -151,8 +155,9 @@ public class SimpleSQLFeatureStore implements FeatureStore {
             sql = sql.substring( 0, sql.length() - 1 );
         }
         this.bbox = bbox;
-        this.featureName = featureName == null ? "feature" : featureName;
-        this.namespace = namespace;
+        this.featureName = featureName == null ? "Feature" : featureName;
+        this.namespace = namespace != null ? namespace : XMLConstants.NULL_NS_URI;
+        this.prefix = prefix != null ? prefix : XMLConstants.DEFAULT_NS_PREFIX;
         try {
             transformer = new GeometryTransformer( this.crs.getWrappedCRS() );
         } catch ( IllegalArgumentException e ) {
@@ -268,7 +273,8 @@ public class SimpleSQLFeatureStore implements FeatureStore {
 
     public void init()
                             throws FeatureStoreException {
-        featureType = Util.determineFeatureType( featureName, namespace, connId, lods.values().iterator().next() );
+        QName ftName = new QName( namespace, featureName, prefix );
+        featureType = Util.determineFeatureType( ftName, connId, lods.values().iterator().next() );
         if ( featureType == null ) {
             available = false;
         } else {

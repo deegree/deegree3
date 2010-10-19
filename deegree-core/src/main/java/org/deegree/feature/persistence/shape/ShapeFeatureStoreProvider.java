@@ -131,8 +131,9 @@ public class ShapeFeatureStoreProvider implements FeatureStoreProvider {
 
             // TODO make cache configurable
             Boolean genIdx = config.isGenerateAlphanumericIndexes();
-            fs = new ShapeFeatureStore( shapeFileName, crs, cs, config.getNamespace(), config.getFeatureTypeName(),
-                                        genIdx == null || genIdx, null );
+            fs = new ShapeFeatureStore( shapeFileName, crs, cs, config.getFeatureTypeNamespace(),
+                                        config.getFeatureTypeName(), config.getFeatureTypePrefix(), genIdx == null
+                                                                                                    || genIdx, null );
 
         } catch ( JAXBException e ) {
             String msg = "Error in feature store configuration file '" + configURL + "': " + e.getMessage();

@@ -109,7 +109,7 @@ public class Scene2DImplShape implements Scene2D {
         try {
             FeatureStore fs = FeatureStoreManager.get( "MyFeatureType" );
             if ( fs == null ) {
-                store = new ShapeFeatureStore( filePath, null, null, "http://www.deegree.org/app", "MyFeatureType",
+                store = new ShapeFeatureStore( filePath, null, null, "http://www.deegree.org/app", "MyFeatureType", "app",
                                                true, null );
 
                 FeatureStoreManager.registerAndInit( store, "MyFeatureType" );

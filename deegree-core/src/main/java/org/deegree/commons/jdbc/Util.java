@@ -89,17 +89,16 @@ public class Util {
     private static final GeometryFactory fac = new GeometryFactory();
 
     /**
-     * @param featureName
-     * @param namespace
+     * @param ftName
      * @param connId
      * @param sql
      * @return null, if an SQL error occurred
      */
-    public static GenericFeatureType determineFeatureType( String featureName, String namespace, String connId,
-                                                           String sql ) {
+    public static GenericFeatureType determineFeatureType( QName ftName, String connId, String sql ) {
         Connection conn = null;
         ResultSet set = null;
         PreparedStatement stmt = null;
+        String namespace = ftName.getNamespaceURI();
         try {
             conn = getConnection( connId );
             boolean isOracle = conn.getMetaData().getDriverName().contains( "Oracle" );
@@ -136,8 +135,8 @@ public class Util {
                 case OTHER:
                 case BINARY:
                 case BLOB:
-                    pt = new GeometryPropertyType( new QName( namespace, name ), 0, 1, false, false, null,
-                                                   GEOMETRY, DIM_2_OR_3, null );
+                    pt = new GeometryPropertyType( new QName( namespace, name ), 0, 1, false, false, null, GEOMETRY,
+                                                   DIM_2_OR_3, null );
                     break;
                 default:
                     LOG.error( "Unsupported data type '{}'.", colType );
@@ -147,7 +146,7 @@ public class Util {
                 ps.add( pt );
             }
 
-            return new GenericFeatureType( new QName( namespace, featureName ), ps, false );
+            return new GenericFeatureType( ftName, ps, false );
         } catch ( SQLException e ) {
             LOG.info( "A DB error occurred: '{}'.", e.getLocalizedMessage() );
             LOG.trace( "Stack trace:", e );

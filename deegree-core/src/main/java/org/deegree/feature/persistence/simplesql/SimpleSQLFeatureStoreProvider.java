@@ -44,8 +44,8 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 
-import org.deegree.commons.utils.CollectionUtils.Mapper;
 import org.deegree.commons.utils.Pair;
+import org.deegree.commons.utils.CollectionUtils.Mapper;
 import org.deegree.feature.persistence.FeatureStore;
 import org.deegree.feature.persistence.FeatureStoreException;
 import org.deegree.feature.persistence.FeatureStoreProvider;
@@ -101,11 +101,12 @@ public class SimpleSQLFeatureStoreProvider implements FeatureStoreProvider {
             String srs = config.getStorageCRS();
             String stmt = config.getSQLStatement();
             String name = config.getFeatureTypeName();
-            String ns = config.getNamespace();
+            String ns = config.getFeatureTypeNamespace();
+            String prefix = config.getFeatureTypePrefix();
             String bbox = config.getBBoxStatement();
             LinkedList<Pair<Integer, String>> lods = map( config.getLODStatement(), lodMapper );
 
-            fs = new SimpleSQLFeatureStore( connId, srs, stmt, name, ns, bbox, lods );
+            fs = new SimpleSQLFeatureStore( connId, srs, stmt, name, ns, prefix, bbox, lods );
         } catch ( JAXBException e ) {
             String msg = "Error in feature store configuration file '" + configURL + "': " + e.getMessage();
             LOG.error( msg );

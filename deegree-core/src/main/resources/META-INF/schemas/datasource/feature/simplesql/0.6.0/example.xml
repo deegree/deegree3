@@ -5,11 +5,14 @@
   <!-- [1] CRS for storing geometries -->
   <StorageCRS>EPSG:4326</StorageCRS>
 
-  <!-- [0..1] target namespace -->
-  <Namespace>http://www.deegree.org/app</Namespace>
-  
-  <!-- [0...1] Name of the feature type -->
-  <FeatureTypeName>Shape</FeatureTypeName>
+  <!-- [0...1] Local name of the feature type (defaults to 'Feature') -->
+  <FeatureTypeName>MyFeature</FeatureTypeName>
+
+  <!-- [0...1] Namespace of the feature type (defaults to NULL namespace) -->
+  <FeatureTypeNamespace>http://www.deegree.org/app</FeatureTypeNamespace>
+
+  <!-- [0...1] Prefix of the feature type (defaults to auto-generated prefix) -->
+  <FeatureTypePrefix>app</FeatureTypePrefix>
 
   <!-- [1] database connection -->
   <ConnectionPoolId>connid</ConnectionPoolId>

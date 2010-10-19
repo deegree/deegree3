@@ -59,6 +59,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.NoSuchElementException;
 
+import javax.xml.XMLConstants;
 import javax.xml.namespace.QName;
 
 import org.deegree.commons.index.RTree;
@@ -149,6 +150,8 @@ public class ShapeFeatureStore implements FeatureStore {
 
     private boolean generateAlphanumericIndexes;
 
+    private Object prefix;
+
     /**
      * Creates a new {@link ShapeFeatureStore} instance from the given parameters.
      * 
@@ -162,19 +165,21 @@ public class ShapeFeatureStore implements FeatureStore {
      *            namespace to be used for the feature type, must not be <code>null</code>
      * @param featureTypeName
      *            if null, the shape file base name will be used
+     * @param prefix
      * @param generateAlphanumericIndexes
      *            whether to copy the dbf into a h2 database for indexing
      * @param cache
      *            used for caching retrieved feature instances, can be <code>null</code> (will create a default cache)
      */
     public ShapeFeatureStore( String shpName, CRS crs, Charset encoding, String namespace, String featureTypeName,
-                              boolean generateAlphanumericIndexes, FeatureStoreCache cache ) {
+                              String prefix, boolean generateAlphanumericIndexes, FeatureStoreCache cache ) {
         this.shpName = shpName;
         this.crs = crs;
         this.encoding = encoding;
-        this.namespace = namespace;
         featureTypeName = featureTypeName == null ? new File( shpName ).getName() : featureTypeName;
-        this.featureTypeName = new QName( namespace, featureTypeName );
+        this.namespace = namespace != null ? namespace : XMLConstants.NULL_NS_URI;
+        this.prefix = prefix != null ? prefix : XMLConstants.DEFAULT_NS_PREFIX;
+        this.featureTypeName = new QName( namespace, featureTypeName, prefix );
         this.generateAlphanumericIndexes = generateAlphanumericIndexes;
         if ( cache != null ) {
             this.cache = cache;

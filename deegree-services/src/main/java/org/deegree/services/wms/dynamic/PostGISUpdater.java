@@ -221,7 +221,8 @@ public class PostGISUpdater extends LayerUpdater {
                     changed = true;
                     layers.remove( new StringPair( name, title ) );
                     ds = new SimpleSQLFeatureStore( connectionid, crs, sourcequery, name == null ? title : name,
-                                                 namespace, bbox, Collections.<Pair<Integer, String>> emptyList() );
+                                                    namespace, "app", bbox,
+                                                    Collections.<Pair<Integer, String>> emptyList() );
                     try {
                         ds.init();
                     } catch ( FeatureStoreException e ) {
