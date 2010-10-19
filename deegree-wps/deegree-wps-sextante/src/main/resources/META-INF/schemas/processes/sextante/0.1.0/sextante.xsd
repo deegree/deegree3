@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<schema xmlns="http://www.w3.org/2001/XMLSchema" xmlns:st="http://www.deegree.org/services/wps/sextante"
-  targetNamespace="http://www.deegree.org/services/wps/sextante"
+<schema xmlns="http://www.w3.org/2001/XMLSchema" xmlns:st="http://www.deegree.org/processes/sextante"
+  targetNamespace="http://www.deegree.org/processes/sextante"
   elementFormDefault="qualified" attributeFormDefault="unqualified"
   xmlns:jaxb="http://java.sun.com/xml/ns/jaxb" jaxb:version="2.1">
   <annotation>
