@@ -36,11 +36,15 @@
 package org.deegree.services.controller.utils;
 
 import static org.deegree.services.controller.FrontControllerStats.incomingKVP;
+import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.File;
+import java.io.IOException;
 
+import org.apache.derby.iapi.services.io.FileUtil;
 import org.deegree.services.controller.Credentials;
 import org.deegree.services.controller.RequestLogger;
+import org.slf4j.Logger;
 
 /**
  * 
@@ -51,13 +55,22 @@ import org.deegree.services.controller.RequestLogger;
  */
 public class StandardRequestLogger implements RequestLogger {
 
+    private static final Logger LOG = getLogger( StandardRequestLogger.class );
+
     public void logKVP( String address, String queryString, long startTime, long endTime, Credentials creds ) {
         // store address as well?
         incomingKVP( queryString, startTime );
     }
 
     public void logXML( String address, File logFile, long startTime, long endTime, Credentials creds ) {
-        logFile.delete();
+        try {
+            File tmp = File.createTempFile( "request", ".xml", logFile.getParentFile() );
+            FileUtil.copyFile( logFile, tmp );
+            LOG.debug( "Logging request to {}", tmp );
+        } catch ( IOException e ) {
+            LOG.trace( "Stack trace:", e );
+            LOG.warn( "Could not log to directory {}", logFile.getParentFile() );
+        }
     }
 
 }

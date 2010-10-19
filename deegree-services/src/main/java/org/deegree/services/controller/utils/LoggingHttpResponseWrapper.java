@@ -36,14 +36,18 @@
 package org.deegree.services.controller.utils;
 
 import static java.lang.System.currentTimeMillis;
+import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpServletResponseWrapper;
 
 import org.deegree.services.controller.Credentials;
 import org.deegree.services.controller.RequestLogger;
+import org.slf4j.Logger;
 
 /**
  * 
@@ -53,6 +57,8 @@ import org.deegree.services.controller.RequestLogger;
  * @version $Revision$, $Date$
  */
 public class LoggingHttpResponseWrapper extends HttpServletResponseWrapper {
+
+    private static final Logger LOG = getLogger( LoggingHttpResponseWrapper.class );
 
     private File requestLog;
 
@@ -72,6 +78,8 @@ public class LoggingHttpResponseWrapper extends HttpServletResponseWrapper {
 
     private String address;
 
+    private InputStream request;
+
     /**
      * If XML request should possibly be logged.
      * 
@@ -83,9 +91,12 @@ public class LoggingHttpResponseWrapper extends HttpServletResponseWrapper {
      * @param entryTime
      * @param creds
      * @param logger
+     * @param request
+     *            is closed before logging is initiated if not null
      */
     public LoggingHttpResponseWrapper( String address, HttpServletResponse response, File requestLog,
-                                       boolean successfulOnly, long entryTime, Credentials creds, RequestLogger logger ) {
+                                       boolean successfulOnly, long entryTime, Credentials creds, RequestLogger logger,
+                                       InputStream request ) {
         super( response );
         this.address = address;
         this.requestLog = requestLog;
@@ -93,6 +104,7 @@ public class LoggingHttpResponseWrapper extends HttpServletResponseWrapper {
         this.entryTime = entryTime;
         this.creds = creds;
         this.logger = logger;
+        this.request = request;
     }
 
     /**
@@ -104,15 +116,18 @@ public class LoggingHttpResponseWrapper extends HttpServletResponseWrapper {
      * @param entryTime
      * @param creds
      * @param logger
+     * @param request
+     *            is closed before logging is initiated if not null
      */
     public LoggingHttpResponseWrapper( HttpServletResponse response, String kvp, boolean successfulOnly,
-                                       long entryTime, Credentials creds, RequestLogger logger ) {
+                                       long entryTime, Credentials creds, RequestLogger logger, InputStream request ) {
         super( response );
         this.kvp = kvp;
         this.successfulOnly = successfulOnly;
         this.entryTime = entryTime;
         this.creds = creds;
         this.logger = logger;
+        this.request = request;
     }
 
     /**
@@ -144,8 +159,18 @@ public class LoggingHttpResponseWrapper extends HttpServletResponseWrapper {
                 logger.logKVP( address, kvp, entryTime, currentTimeMillis(), creds );
             }
         }
-        if ( exceptionSent && successfulOnly && requestLog != null ) {
+        if ( request != null ) {
+            try {
+                request.close();
+            } catch ( IOException e ) {
+                LOG.trace( "Stack trace:", e );
+            }
+        }
+        if ( ( !successfulOnly || !exceptionSent ) && requestLog != null ) {
             logger.logXML( address, requestLog, entryTime, currentTimeMillis(), creds );
+        }
+        if ( requestLog != null ) {
+            requestLog.delete();
         }
     }
 

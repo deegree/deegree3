@@ -420,7 +420,7 @@ public class OGCFrontController extends HttpServlet {
                     boolean onlySuccessful = conf != null && conf;
                     response = logging = new LoggingHttpResponseWrapper( request.getRequestURL().toString(), response,
                                                                          file, onlySuccessful, entryTime, null,
-                                                                         serviceConfiguration.getRequestLogger() );
+                                                                         serviceConfiguration.getRequestLogger(), is );
                     // TODO obtain/set credentials somewhere
                 }
             }
@@ -580,7 +580,7 @@ public class OGCFrontController extends HttpServlet {
                 boolean onlySuccessful = conf != null && conf;
                 response = logging = new LoggingHttpResponseWrapper( response, requestWrapper.getQueryString(),
                                                                      onlySuccessful, entryTime, cred,
-                                                                     serviceConfiguration.getRequestLogger() );
+                                                                     serviceConfiguration.getRequestLogger(), null );
             }
 
             AbstractOGCServiceController subController = null;
@@ -613,9 +613,7 @@ public class OGCFrontController extends HttpServlet {
                 HttpResponseBuffer responseWrapper = new HttpResponseBuffer( response );
                 long dispatchTime = FrontControllerStats.requestDispatched();
                 try {
-
                     subController.doKVP( normalizedKVPParams, requestWrapper, responseWrapper, multiParts );
-
                 } finally {
                     FrontControllerStats.requestFinished( dispatchTime );
                 }
