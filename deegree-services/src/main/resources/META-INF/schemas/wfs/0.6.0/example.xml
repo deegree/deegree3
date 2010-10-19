@@ -1,0 +1,23 @@
+<deegreeWFS xmlns="http://www.deegree.org/services/wfs" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  configVersion="0.6.0" xsi:schemaLocation="http://www.deegree.org/services/wfs http://schemas.deegree.org/wfs/0.6.0/wfs_configuration.xsd">
+  
+  <!-- [0...1] Activated OGC protocol versions, default: -->
+  <SupportedVersions>
+    <Version>1.0.0</Version>
+    <Version>1.1.0</Version>
+  </SupportedVersions>
+
+  <EnableTransactions>true</EnableTransactions>
+
+  <QueryCRS>EPSG:900913 EPSG:4258 EPSG:4326</QueryCRS>
+
+  <Format handler="GENERIC_GML">
+    <MimeType>text/xml; subtype=gml/3.2.1</MimeType>
+    <Param name="GET_FEATURE_RESPONSE_LOCAL_NAME">FeatureCollection</Param>
+    <Param name="GET_FEATURE_RESPONSE_PREFIX">gml</Param>
+    <Param name="GET_FEATURE_RESPONSE_NAMESPACE">http://www.opengis.net/gml/3.2</Param>
+    <Param name="GET_FEATURE_RESPONSE_XSI_SCHEMA_LOCATION">http://www.opengis.net/gml/3.2 http://schemas.opengis.net/gml/3.2.1/deprecatedTypes.xsd</Param>
+    <Param name="DISABLE_STREAMING">false</Param>
+  </Format>
+
+</deegreeWFS>

@@ -11,23 +11,18 @@
   <element name="deegreeWFS">
     <complexType>
       <sequence>
-        <element name="SupportedVersions">
+        <element name="SupportedVersions" minOccurs="0">
           <complexType>
             <sequence>
               <element name="Version" type="wfs:WFSVersionType" maxOccurs="unbounded" />
             </sequence>
           </complexType>
         </element>
-        <element name="CoordinateFormatter" minOccurs="0">
-          <complexType>
-            <attribute name="javaClass" use="required" type="string" />
-          </complexType>
-        </element>
         <element name="EnableTransactions" type="boolean" minOccurs="0" default="false" />
-        <element name="DisableResponseBuffering" type="boolean" minOccurs="0" default="true" />
+        <element name="DisableResponseBuffering" type="boolean" minOccurs="0" default="false" />
         <element name="QueryCRS" type="string" minOccurs="0" default="EPSG:4326" />
         <element name="QueryMaxFeatures" type="integer" minOccurs="0" default="15000" />
-        <element name="CheckAreaOfUse" type="boolean" minOccurs="0" default="false" />
+        <element name="QueryCheckAreaOfUse" type="boolean" minOccurs="0" default="false" />
         <element name="Format" minOccurs="0" maxOccurs="unbounded">
           <complexType>
             <sequence>
@@ -36,7 +31,7 @@
                 <complexType>
                   <simpleContent>
                     <extension base="string">
-                      <attribute name="key" type="string" use="required" />
+                      <attribute name="name" type="string" use="required" />
                     </extension>
                   </simpleContent>
                 </complexType>
