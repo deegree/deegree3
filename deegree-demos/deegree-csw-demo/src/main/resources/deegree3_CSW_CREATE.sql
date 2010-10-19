@@ -7,8 +7,9 @@ CREATE TABLE Datasets (
 	Modified timestamp,    -- common queryable property (ISO AP 1.0): MD_Metadata.dateStamp .Date 
 	HasSecurityConstraints boolean,    -- additional queryable property (ISO AP 1.0): MD_Metadata.AbstractMD_Identification.resourceConstraints.MD_securityConstraints (If an instance of the class MD_SecurityConstraint exists for a resource, the "HasSecurityConstraints" is "true", otherwise "false") 
 	Language varchar(50),    -- additional queryable property (ISO AP 1.0): MD_Metadata.language 
-	ParentIdentifier varchar(50)    -- additional queryable property (ISO AP 1.0): MD_Metadata.parentIdentifier 
-);
+	ParentIdentifier varchar(50),    -- additional queryable property (ISO AP 1.0): MD_Metadata.parentIdentifier 
+    recordfull bytea NOT NULL
+	);
 COMMENT ON COLUMN Datasets.version
     IS 'version of the record';
 COMMENT ON COLUMN Datasets.AnyText
@@ -44,7 +45,10 @@ COMMENT ON COLUMN ISOQP_AlternateTitle.AlternateTitle
 
 CREATE TABLE ISOQP_BoundingBox ( 
 	ID integer NOT NULL,
-	fk_datasets integer NOT NULL
+	fk_datasets integer NOT NULL,
+	Authority varchar(250),    -- MD_Metadata.referenceSystemInfo.MD_ReferenceSystem.referenceSystemIdentifier.RS_Identifier.codeSpace 
+	ID_CRS varchar(50),    -- MD_Metadata.referenceSystemInfo.MD_ReferenceSystem.referenceSystemIdentifier.RS_Identifier.code 
+	Version varchar(50)    -- MD_Metadata.referenceSystemInfo.MD_ReferenceSystem.referenceSystemIdentifier.RS_Identifier.version 
 );
 COMMENT ON TABLE ISOQP_BoundingBox
     IS 'common queryable property (ISO AP 1.0): MD_Metadata.identificationInfo.MD_DataIdentification.extent.EX_Extent.geographicElement.EX_GeographicBoundingBox.westBoundLongitude,  MD_Metadata.identificationInfo.MD_DataIdentification.extent.EX_Extent.geographicElement.EX_GeographicBoundingBox.southBoundLatitude, MD_Metadata.identificationInfo.MD_DataIdentification.extent.EX_Extent.geographicElement.EX_GeographicBoundingBox.eastBoundLongitude, MD_Metadata.identificationInfo.MD_DataIdentification.extent.EX_Extent.geographicElement.EX_GeographicBoundingBox.northBoundLatitude 
@@ -69,22 +73,6 @@ COMMENT ON TABLE ISOQP_CreationDate
     IS 'additional queryable property (ISO AP 1.0)';
 COMMENT ON COLUMN ISOQP_CreationDate.CreationDate
     IS 'MD_Identification.citation.CI_Citation.date.CI_Date[dateType.CI_DateTypeCode.@codeListValue=''creation''].date.Date';
-
-CREATE TABLE ISOQP_CRS ( 
-	ID integer NOT NULL,
-	fk_datasets integer NOT NULL,
-	Authority varchar(250),    -- MD_Metadata.referenceSystemInfo.MD_ReferenceSystem.referenceSystemIdentifier.RS_Identifier.codeSpace 
-	ID_CRS varchar(50),    -- MD_Metadata.referenceSystemInfo.MD_ReferenceSystem.referenceSystemIdentifier.RS_Identifier.code 
-	Version varchar(50)    -- MD_Metadata.referenceSystemInfo.MD_ReferenceSystem.referenceSystemIdentifier.RS_Identifier.version 
-);
-COMMENT ON TABLE ISOQP_CRS
-    IS 'common queryable property (ISO AP 1.0)';
-COMMENT ON COLUMN ISOQP_CRS.Authority
-    IS 'MD_Metadata.referenceSystemInfo.MD_ReferenceSystem.referenceSystemIdentifier.RS_Identifier.codeSpace';
-COMMENT ON COLUMN ISOQP_CRS.ID_CRS
-    IS 'MD_Metadata.referenceSystemInfo.MD_ReferenceSystem.referenceSystemIdentifier.RS_Identifier.code';
-COMMENT ON COLUMN ISOQP_CRS.Version
-    IS 'MD_Metadata.referenceSystemInfo.MD_ReferenceSystem.referenceSystemIdentifier.RS_Identifier.version';
 
 CREATE TABLE ISOQP_Format ( 
 	ID integer NOT NULL,
@@ -279,39 +267,6 @@ COMMENT ON TABLE ISOQP_Type
 COMMENT ON COLUMN ISOQP_Type.Type
     IS 'MD_Metadata.hierarchyLevel.MD_ScopeCode/@codeListValue. If MD_Metadata.hierarchyLevel is missing, ''Type'' will be considered as "Dataset" (default).';
 
-CREATE TABLE RecordBrief ( 
-	ID integer NOT NULL,
-	fk_datasets integer NOT NULL,
-	format numeric(2) NOT NULL,
-	data bytea NOT NULL
-);
-COMMENT ON TABLE RecordBrief
-    IS 'This is the table for the brief representation of a getRecords response, because a brief representation has to be allways provided.';
-
-CREATE TABLE RecordSummary ( 
-    ID integer NOT NULL,
-	fk_datasets integer NOT NULL,
-	format numeric(2) NOT NULL,
-	data bytea NOT NULL
-);
-COMMENT ON TABLE RecordSummary
-    IS 'This is the table for the summary representation of a getRecords response';
-
-CREATE TABLE RecordFull ( 
-    ID integer NOT NULL,
-	fk_datasets integer NOT NULL,
-	format numeric(2) NOT NULL,
-	data bytea NOT NULL
-);
-COMMENT ON TABLE RecordFull
-    IS 'This is the mandatory table for the full representation of a getRecords response';
-
---CREATE TABLE UserDefinedQueryableProperties ( 
---	fk_datasets integer NOT NULL
---);
---COMMENT ON TABLE UserDefinedQueryableProperties
---    IS 'Collection of user defined queryable properties';
-    
 CREATE TABLE QP_Identifier ( 
 ID integer NOT NULL,
 fk_datasets integer NOT NULL,
@@ -359,10 +314,6 @@ ALTER TABLE ISOQP_CouplingType ADD CONSTRAINT PK_ISOQP_CouplingType
 
 
 ALTER TABLE ISOQP_CreationDate ADD CONSTRAINT PK_ISOQP_CreationDate 
-	PRIMARY KEY (ID);
-
-
-ALTER TABLE ISOQP_CRS ADD CONSTRAINT PK_ISOQP_CRS 
 	PRIMARY KEY (ID);
 
 
@@ -434,18 +385,6 @@ ALTER TABLE ISOQP_Type ADD CONSTRAINT PK_ISOQP_Type
 	PRIMARY KEY (ID);
 
 
-ALTER TABLE RecordBrief ADD CONSTRAINT PK_RecordBrief
-	PRIMARY KEY (ID);
-
-
-ALTER TABLE RecordSummary ADD CONSTRAINT PK_RecordSummary
-	PRIMARY KEY (ID);
-
-
-ALTER TABLE RecordFull ADD CONSTRAINT PK_RecordFull
-	PRIMARY KEY (ID);
-
-
 --ALTER TABLE UserDefinedQueryableProperties ADD CONSTRAINT PK_SelfQueryableProperties 
 --	PRIMARY KEY (fk_datasets);
 
@@ -472,8 +411,6 @@ ALTER TABLE ISOQP_CouplingType
 	ADD CONSTRAINT UQ_ISOQP_CouplingType_ID UNIQUE (ID);
 ALTER TABLE ISOQP_CreationDate
 	ADD CONSTRAINT UQ_ISOQP_CreationDate_ID UNIQUE (ID);
-ALTER TABLE ISOQP_CRS
-	ADD CONSTRAINT UQ_ISOQP_CRS_ID UNIQUE (ID);
 ALTER TABLE ISOQP_Format
 	ADD CONSTRAINT UQ_ISOQP_Format_ID UNIQUE (ID);
 ALTER TABLE ISOQP_GeographicDescriptionCode
@@ -532,9 +469,6 @@ ALTER TABLE ISOQP_CouplingType ADD CONSTRAINT FK_ISOQP_CouplingType_Datasets
 ALTER TABLE ISOQP_CreationDate ADD CONSTRAINT FK_ISOQP_CreationDate_Datasets 
 	FOREIGN KEY (fk_datasets) REFERENCES Datasets (ID) ON DELETE CASCADE;
 
-ALTER TABLE ISOQP_CRS ADD CONSTRAINT FK_ISOQP_CRS_Datasets 
-	FOREIGN KEY (fk_datasets) REFERENCES Datasets (ID) ON DELETE CASCADE;
-
 ALTER TABLE ISOQP_Format ADD CONSTRAINT FK_ISOQP_Format_Datasets 
 	FOREIGN KEY (fk_datasets) REFERENCES Datasets (ID) ON DELETE CASCADE;
 
@@ -584,15 +518,6 @@ ALTER TABLE ISOQP_TopicCategory ADD CONSTRAINT FK_ISOQP_TopicCategory_Datasets
 	FOREIGN KEY (fk_datasets) REFERENCES Datasets (ID) ON DELETE CASCADE;
 
 ALTER TABLE ISOQP_Type ADD CONSTRAINT FK_ISOQP_Type_Datasets 
-	FOREIGN KEY (fk_datasets) REFERENCES Datasets (ID) ON DELETE CASCADE;
-
-ALTER TABLE RecordBrief ADD CONSTRAINT FK_RecordBrief_Datasets 
-	FOREIGN KEY (fk_datasets) REFERENCES Datasets (ID) ON DELETE CASCADE;
-
-ALTER TABLE RecordSummary ADD CONSTRAINT FK_RecordSummary_Datasets 
-	FOREIGN KEY (fk_datasets) REFERENCES Datasets (ID) ON DELETE CASCADE;
-
-ALTER TABLE RecordFull ADD CONSTRAINT FK_RecordFull_Datasets 
 	FOREIGN KEY (fk_datasets) REFERENCES Datasets (ID) ON DELETE CASCADE;
 	
 ALTER TABLE DCQP_Rights ADD CONSTRAINT FK_DCQP_Rights_Datasets 

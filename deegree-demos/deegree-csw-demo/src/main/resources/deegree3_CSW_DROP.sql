@@ -12,7 +12,6 @@ ALTER TABLE ISOQP_AlternateTitle DROP CONSTRAINT FK_ISOQP_AlternateTitle_Dataset
 ALTER TABLE ISOQP_BoundingBox DROP CONSTRAINT FK_ISOQP_BoundingBox_Datasets;
 ALTER TABLE ISOQP_CouplingType DROP CONSTRAINT FK_ISOQP_CouplingType_Datasets;
 ALTER TABLE ISOQP_CreationDate DROP CONSTRAINT FK_ISOQP_CreationDate_Datasets;
-ALTER TABLE ISOQP_CRS DROP CONSTRAINT FK_ISOQP_CRS_Datasets;
 ALTER TABLE ISOQP_Format DROP CONSTRAINT FK_ISOQP_Format_Datasets;
 ALTER TABLE ISOQP_GeographicDescriptionCode DROP CONSTRAINT FK_ISOQP_GeographicDescriptionCode_Datasets;
 ALTER TABLE ISOQP_Keyword DROP CONSTRAINT FK_ISOQP_KeywordType_Datasets;
@@ -30,9 +29,6 @@ ALTER TABLE ISOQP_TemporalExtent DROP CONSTRAINT FK_ISOQP_TemporalExtent_Dataset
 ALTER TABLE ISOQP_Title DROP CONSTRAINT FK_ISOQP_Title_Datasets;
 ALTER TABLE ISOQP_TopicCategory DROP CONSTRAINT FK_ISOQP_TopicCategory_Datasets;
 ALTER TABLE ISOQP_Type DROP CONSTRAINT FK_ISOQP_Type_Datasets;
-ALTER TABLE RecordFull DROP CONSTRAINT fk_recordfull_datasets;
-ALTER TABLE RecordBrief DROP CONSTRAINT fk_recordbrief_datasets;
-ALTER TABLE RecordSummary DROP CONSTRAINT fk_recordsummary_datasets;
 ALTER TABLE QP_Identifier DROP CONSTRAINT fk_qp_identifier_datasets;
 ALTER TABLE DCQP_RIGHTS DROP CONSTRAINT FK_DCQP_RIGHTS_Datasets;
 
@@ -43,7 +39,6 @@ DROP TABLE ISOQP_AlternateTitle;
 DROP TABLE ISOQP_BoundingBox;
 DROP TABLE ISOQP_CouplingType;
 DROP TABLE ISOQP_CreationDate;
-DROP TABLE ISOQP_CRS;
 DROP TABLE ISOQP_Format;
 DROP TABLE ISOQP_GeographicDescriptionCode;
 DROP TABLE ISOQP_Keyword;
@@ -61,13 +56,8 @@ DROP TABLE ISOQP_TemporalExtent;
 DROP TABLE ISOQP_Title;
 DROP TABLE ISOQP_TopicCategory;
 DROP TABLE ISOQP_Type;
-DROP TABLE RecordBrief;
-DROP TABLE RecordSummary;
-DROP TABLE RecordFull;
 DROP TABLE QP_Identifier;
---DROP TABLE UserDefinedQueryableProperties;
 DROP TABLE DCQP_RIGHTS;
-
 
 
 --INSPIRE extension
@@ -88,8 +78,4 @@ DROP TABLE ADDQP_AccessConstraint;
 DROP TABLE ADDQP_OtherConstraint;
 DROP TABLE ADDQP_Classification;
 
-
-
-
-	
 
