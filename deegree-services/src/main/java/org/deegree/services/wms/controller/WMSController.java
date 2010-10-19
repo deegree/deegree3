@@ -421,7 +421,7 @@ public class WMSController extends AbstractOGCServiceController {
      * @param response
      */
     private void getDtd( HttpResponseBuffer response ) {
-        InputStream in = WMSController.class.getResourceAsStream( "WMS_MS_Capabilities.dtd" );
+        InputStream in = WMSController.class.getResourceAsStream( "WMS_MS_Capabilities.dtd.invalid" );
         try {
             OutputStream out = response.getOutputStream();
             byte[] buf = new byte[65536];
@@ -431,15 +431,11 @@ public class WMSController extends AbstractOGCServiceController {
             }
         } catch ( IOException e ) {
             LOG.trace( "Could not read/write the internal DTD:", e );
-            // TODO Auto-generated catch block
-            e.printStackTrace();
         } finally {
             try {
                 in.close();
             } catch ( IOException e ) {
                 LOG.trace( "Error while closing DTD input stream:", e );
-                // TODO Auto-generated catch block
-                e.printStackTrace();
             }
         }
     }
