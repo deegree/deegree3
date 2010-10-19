@@ -11,7 +11,7 @@
   </annotation>
   <element name="MemoryFeatureStore">
     <annotation>
-      <documentation>FeatureStore that keeps all features in memory.</documentation>
+      <documentation>FeatureStore that keeps the features in memory.</documentation>
       <appinfo>
         <jaxb:class name="MemoryFeatureStoreConfig" />
       </appinfo>
@@ -25,20 +25,20 @@
             <attribute name="namespaceURI" type="string" use="required" />
           </complexType>
         </element>
-        <element name="GMLSchemaFileURL" maxOccurs="unbounded">
+        <element name="GMLSchema" maxOccurs="unbounded">
           <complexType>
             <simpleContent>
               <extension base="string">
-                <attribute name="gmlVersion" type="memoryfs:GMLVersionType" use="required" />
+                <attribute name="version" type="memoryfs:GMLVersionType" use="required" />
               </extension>
             </simpleContent>
           </complexType>
         </element>
-        <element name="GMLFeatureCollectionFileURL" minOccurs="0" maxOccurs="unbounded">
+        <element name="GMLFeatureCollection" minOccurs="0" maxOccurs="unbounded">
           <complexType>
             <simpleContent>
               <extension base="string">
-                <attribute name="gmlVersion" type="memoryfs:GMLVersionType" use="required" />
+                <attribute name="version" type="memoryfs:GMLVersionType" use="required" />
               </extension>
             </simpleContent>
           </complexType>

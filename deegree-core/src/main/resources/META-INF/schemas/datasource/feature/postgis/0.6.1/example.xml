@@ -1,0 +1,17 @@
+<PostGISFeatureStore configVersion="0.6.1" xmlns="http://www.deegree.org/datasource/feature/postgis"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.deegree.org/datasource/feature/postgis http://schemas.deegree.org/datasource/feature/postgis/0.6.1/postgis.xsd">
+
+  <!-- [1] CRS for storing geometries -->
+  <StorageCRS>EPSG:4326</StorageCRS>
+
+  <!-- [0...n] Prefixes to use for exporting qualified elements (features / properties) -->
+  <NamespaceHint namespaceURI="app" prefix="http://www.deegree.org/app" />
+
+  <!-- [1] Identifier of JDBC connection -->
+  <JDBCConnId>postgis</JDBCConnId>
+
+  <!-- [0...n] GML schema file / directory to be used -->
+  <GMLSchema version="GML_32">...</GMLSchema>
+
+</PostGISFeatureStore>

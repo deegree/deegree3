@@ -55,7 +55,7 @@ import org.deegree.feature.persistence.FeatureStoreProvider;
 import org.deegree.feature.persistence.mapping.MappedApplicationSchema;
 import org.deegree.feature.persistence.postgis.jaxb.GMLVersionType;
 import org.deegree.feature.persistence.postgis.jaxb.PostGISFeatureStoreConfig;
-import org.deegree.feature.persistence.postgis.jaxb.PostGISFeatureStoreConfig.GMLSchemaFileURL;
+import org.deegree.feature.persistence.postgis.jaxb.PostGISFeatureStoreConfig.GMLSchema;
 import org.deegree.feature.persistence.postgis.jaxb.PostGISFeatureStoreConfig.NamespaceHint;
 import org.deegree.feature.types.ApplicationSchema;
 import org.deegree.gml.GMLVersion;
@@ -102,17 +102,17 @@ public class PostGISFeatureStoreProvider implements FeatureStoreProvider {
             CRS storageSRS = new CRS( config.getStorageCRS() );
 
             ApplicationSchema appSchema = null;
-            if ( !config.getGMLSchemaFileURL().isEmpty() ) {
+            if ( !config.getGMLSchema().isEmpty() ) {
                 XMLAdapter resolver = new XMLAdapter();
                 resolver.setSystemId( configURL.toString() );
                 try {
-                    String[] schemaURLs = new String[config.getGMLSchemaFileURL().size()];
+                    String[] schemaURLs = new String[config.getGMLSchema().size()];
                     int i = 0;
                     GMLVersionType gmlVersionType = null;
-                    for ( GMLSchemaFileURL jaxbSchemaURL : config.getGMLSchemaFileURL() ) {
+                    for ( GMLSchema jaxbSchemaURL : config.getGMLSchema() ) {
                         schemaURLs[i++] = resolver.resolve( jaxbSchemaURL.getValue().trim() ).toString();
                         // TODO what about different versions at the same time?
-                        gmlVersionType = jaxbSchemaURL.getGmlVersion();
+                        gmlVersionType = jaxbSchemaURL.getVersion();
                     }
 
                     ApplicationSchemaXSDDecoder decoder = null;

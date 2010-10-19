@@ -1,31 +1,54 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<schema xmlns:ft="http://www.deegree.org/datasource/feature/mapping" xmlns="http://www.w3.org/2001/XMLSchema"
-  targetNamespace="http://www.deegree.org/datasource/feature/mapping" elementFormDefault="qualified"
-  attributeFormDefault="unqualified" xmlns:jaxb="http://java.sun.com/xml/ns/jaxb" jaxb:version="2.1">
+<schema xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:postgisfs="http://www.deegree.org/datasource/feature/postgis"
+  xmlns="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.deegree.org/datasource/feature/postgis"
+  elementFormDefault="qualified" xmlns:jaxb="http://java.sun.com/xml/ns/jaxb" jaxb:version="2.1">
   <annotation>
     <appinfo>
       <jaxb:schemaBindings>
-        <jaxb:package name="org.deegree.feature.persistence.mapping.jaxb" />
+        <jaxb:package name="org.deegree.feature.persistence.postgis.jaxb" />
       </jaxb:schemaBindings>
     </appinfo>
   </annotation>
-  <!--
-    === Root element (container for all feature type declarations) ===
-  -->
-  <element name="Mapping">
+  <element name="PostGISFeatureStore">
     <annotation>
-      <documentation>Root element (container for all feature type declarations)</documentation>
+      <documentation>FeatureStore that is backed by a PostgreSQL/PostGIS database.</documentation>
       <appinfo>
-        <jaxb:class name="Mapping" />
+        <jaxb:class name="PostGISFeatureStoreConfig" />
       </appinfo>
     </annotation>
     <complexType>
       <sequence>
-        <element ref="ft:FeatureType" minOccurs="1" maxOccurs="unbounded" />
+        <element name="StorageCRS" type="string" />
+        <element name="NamespaceHint" minOccurs="0" maxOccurs="unbounded">
+          <complexType>
+            <attribute name="prefix" type="string" use="required" />
+            <attribute name="namespaceURI" type="string" use="required" />
+          </complexType>
+        </element>
+        <element name="JDBCConnId" type="string" />
+        <element name="DBSchemaQualifier" type="string" minOccurs="0" />
+        <element name="GMLSchema" minOccurs="0" maxOccurs="unbounded">
+          <complexType>
+            <simpleContent>
+              <extension base="string">
+                <attribute name="version" type="postgisfs:GMLVersionType" use="required" />
+              </extension>
+            </simpleContent>
+          </complexType>
+        </element>
+        <element ref="postgisfs:FeatureType" minOccurs="0" maxOccurs="unbounded" />
       </sequence>
-      <attribute name="configVersion" use="required" fixed="0.5.0" />
+      <attribute name="configVersion" use="required" fixed="0.6.1" />
     </complexType>
   </element>
+  <simpleType name="GMLVersionType">
+    <restriction base="string">
+      <enumeration value="GML_2" />
+      <enumeration value="GML_30" />
+      <enumeration value="GML_31" />
+      <enumeration value="GML_32" />
+    </restriction>
+  </simpleType>
   <!--
     === Feature type definition ===
   -->
@@ -38,7 +61,7 @@
         </appinfo>
       </annotation>
       <sequence>
-        <element ref="ft:AbstractProperty" minOccurs="0" maxOccurs="unbounded" />
+        <element ref="postgisfs:AbstractProperty" minOccurs="0" maxOccurs="unbounded" />
       </sequence>
       <attribute name="name" type="QName">
         <annotation>
@@ -54,7 +77,7 @@
         <annotation>
           <documentation>Mapping of the feature id (currently, this can only be the name of a column).</documentation>
         </annotation>
-      </attribute>      
+      </attribute>
       <attribute name="abstract" type="boolean" use="optional">
         <annotation>
           <documentation>If true, the feature type is abstract and cannot be instantiated.</documentation>
@@ -73,7 +96,7 @@
   <!--
     === Abstract property definition ===
   -->
-  <element name="AbstractProperty" type="ft:AbstractPropertyType" abstract="true" />
+  <element name="AbstractProperty" type="postgisfs:AbstractPropertyType" abstract="true" />
   <complexType name="AbstractPropertyType" abstract="true">
     <annotation>
       <documentation>Declaration of a property of a feature type.</documentation>
@@ -116,7 +139,7 @@
   <!--
     === Simple property definition ===
   -->
-  <element name="SimpleProperty" substitutionGroup="ft:AbstractProperty">
+  <element name="SimpleProperty" substitutionGroup="postgisfs:AbstractProperty">
     <complexType>
       <annotation>
         <documentation>Declaration of a simple property of a feature type.</documentation>
@@ -125,8 +148,8 @@
         </appinfo>
       </annotation>
       <complexContent>
-        <extension base="ft:AbstractPropertyType">
-          <attribute name="type" type="ft:PrimitiveType">
+        <extension base="postgisfs:AbstractPropertyType">
+          <attribute name="type" type="postgisfs:PrimitiveType">
             <annotation>
               <documentation>Type of the property.</documentation>
             </annotation>
@@ -182,7 +205,7 @@
   <!--
     === Geometry property definition ===
   -->
-  <element name="GeometryProperty" substitutionGroup="ft:AbstractProperty">
+  <element name="GeometryProperty" substitutionGroup="postgisfs:AbstractProperty">
     <complexType>
       <annotation>
         <documentation>Definition of a geometry-valued property of a feature type.</documentation>
@@ -191,10 +214,15 @@
         </appinfo>
       </annotation>
       <complexContent>
-        <extension base="ft:AbstractPropertyType">
-          <attribute name="type" type="ft:GeometryType">
+        <extension base="postgisfs:AbstractPropertyType">
+          <attribute name="type" type="postgisfs:GeometryType">
             <annotation>
               <documentation>Allowed geometry type.</documentation>
+            </annotation>
+          </attribute>
+          <attribute name="srid" type="integer" default="-1">
+            <annotation>
+              <documentation>Oracle SRID of the column</documentation>
             </annotation>
           </attribute>
           <attribute name="coordinateDimension" use="optional">
@@ -248,4 +276,26 @@
       <enumeration value="MultiSolid" />
     </restriction>
   </simpleType>
+  <!--
+    === Feature property definition ===
+  -->
+  <element name="FeatureProperty" substitutionGroup="postgisfs:AbstractProperty">
+    <complexType>
+      <annotation>
+        <documentation>Definition of a feature-valued property of a feature type.</documentation>
+        <appinfo>
+          <jaxb:class name="FeaturePropertyDecl" />
+        </appinfo>
+      </annotation>
+      <complexContent>
+        <extension base="postgisfs:AbstractPropertyType">
+          <attribute name="type" type="QName" use="optional">
+            <annotation>
+              <documentation>Allowed feature type.</documentation>
+            </annotation>
+          </attribute>
+        </extension>
+      </complexContent>
+    </complexType>
+  </element>
 </schema>

@@ -56,8 +56,8 @@ import org.deegree.feature.persistence.FeatureStoreTransaction;
 import org.deegree.feature.persistence.FeatureStoreTransaction.IDGenMode;
 import org.deegree.feature.persistence.memory.jaxb.GMLVersionType;
 import org.deegree.feature.persistence.memory.jaxb.MemoryFeatureStoreConfig;
-import org.deegree.feature.persistence.memory.jaxb.MemoryFeatureStoreConfig.GMLFeatureCollectionFileURL;
-import org.deegree.feature.persistence.memory.jaxb.MemoryFeatureStoreConfig.GMLSchemaFileURL;
+import org.deegree.feature.persistence.memory.jaxb.MemoryFeatureStoreConfig.GMLFeatureCollection;
+import org.deegree.feature.persistence.memory.jaxb.MemoryFeatureStoreConfig.GMLSchema;
 import org.deegree.feature.persistence.memory.jaxb.MemoryFeatureStoreConfig.NamespaceHint;
 import org.deegree.feature.types.ApplicationSchema;
 import org.deegree.gml.GMLInputFactory;
@@ -109,13 +109,13 @@ public class MemoryFeatureStoreProvider implements FeatureStoreProvider {
             XMLAdapter resolver = new XMLAdapter();
             resolver.setSystemId( configURL.toString() );
             try {
-                String[] schemaURLs = new String[config.getGMLSchemaFileURL().size()];
+                String[] schemaURLs = new String[config.getGMLSchema().size()];
                 int i = 0;
                 GMLVersionType gmlVersionType = null;
-                for ( GMLSchemaFileURL jaxbSchemaURL : config.getGMLSchemaFileURL() ) {
+                for ( GMLSchema jaxbSchemaURL : config.getGMLSchema() ) {
                     schemaURLs[i++] = resolver.resolve( jaxbSchemaURL.getValue().trim() ).toString();
                     // TODO what about different versions at the same time?
-                    gmlVersionType = jaxbSchemaURL.getGmlVersion();
+                    gmlVersionType = jaxbSchemaURL.getVersion();
                 }
 
                 ApplicationSchemaXSDDecoder decoder = null;
@@ -139,10 +139,10 @@ public class MemoryFeatureStoreProvider implements FeatureStoreProvider {
             }
 
             fs = new MemoryFeatureStore( schema, storageSRS );
-            for ( GMLFeatureCollectionFileURL datasetFile : config.getGMLFeatureCollectionFileURL() ) {
+            for ( GMLFeatureCollection datasetFile : config.getGMLFeatureCollection() ) {
                 if ( datasetFile != null ) {
                     try {
-                        GMLVersion version = GMLVersion.valueOf( datasetFile.getGmlVersion().name() );
+                        GMLVersion version = GMLVersion.valueOf( datasetFile.getVersion().name() );
                         URL docURL = resolver.resolve( datasetFile.getValue().trim() );
                         GMLStreamReader gmlStream = GMLInputFactory.createGMLStreamReader( version, docURL );
                         gmlStream.setApplicationSchema( schema );
