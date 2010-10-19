@@ -59,7 +59,7 @@ public class SextanteProcessProviderProvider implements ProcessProviderProvider 
 
     private static final Logger LOG = LoggerFactory.getLogger( SextanteProcessProviderProvider.class );
 
-    private static final String CONFIG_NAMESPACE = "http://www.deegree.org/services/wps/sextante";
+    private static final String CONFIG_NAMESPACE = "http://www.deegree.org/processes/sextante";
 
     @Override
     public String getConfigNamespace() {
