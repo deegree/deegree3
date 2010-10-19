@@ -79,12 +79,12 @@ public class SimpleSQLFeatureStoreProvider implements FeatureStoreProvider {
 
     @Override
     public URL getConfigSchema() {
-        return SimpleSQLFeatureStoreProvider.class.getResource( "/META-INF/schemas/datasource/0.5.0/feature/simpleqsl.xsd" );
+        return SimpleSQLFeatureStoreProvider.class.getResource( "/META-INF/schemas/datasource/feature/simplesql/0.6.0/simpleqsl.xsd" );
     }
 
     @Override
     public URL getConfigTemplate() {
-        return SimpleSQLFeatureStoreProvider.class.getResource( "/META-INF/schemas/datasource/0.5.0/feature/example_simpleqsl.xsd" );
+        return SimpleSQLFeatureStoreProvider.class.getResource( "/META-INF/schemas/datasource/feature/simplesql/0.6.0/example.xml" );
     }
 
     @Override
@@ -98,7 +98,7 @@ public class SimpleSQLFeatureStoreProvider implements FeatureStoreProvider {
             SimpleSQLFeatureStoreConfig config = (SimpleSQLFeatureStoreConfig) u.unmarshal( configURL );
 
             String connId = config.getConnectionPoolId();
-            String srs = config.getStorageSRS();
+            String srs = config.getStorageCRS();
             String stmt = config.getSQLStatement();
             String name = config.getFeatureTypeName();
             String ns = config.getNamespace();
