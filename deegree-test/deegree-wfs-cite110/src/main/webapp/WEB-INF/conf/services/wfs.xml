@@ -9,5 +9,5 @@
   <EnableTransactions>true</EnableTransactions>
   <DisableResponseBuffering>true</DisableResponseBuffering>
   <QueryCRS>urn:ogc:def:crs:EPSG:6.11.2:4326</QueryCRS>
-  <CheckAreaOfUse>true</CheckAreaOfUse>
+  <QueryCheckAreaOfUse>true</QueryCheckAreaOfUse>
 </deegreeWFS>
