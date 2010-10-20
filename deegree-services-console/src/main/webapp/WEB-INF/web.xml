@@ -99,7 +99,7 @@
         <role-name>demoadmin</role-name>
     </security-role>
     -->
-    <!-- Ende -->
+    <!-- end -->
 
 
 </web-app>
