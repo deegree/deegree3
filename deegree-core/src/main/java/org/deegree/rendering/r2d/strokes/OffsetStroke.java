@@ -42,6 +42,7 @@ import static java.awt.geom.PathIterator.SEG_LINETO;
 import static java.awt.geom.PathIterator.SEG_MOVETO;
 import static java.awt.geom.PathIterator.SEG_QUADTO;
 import static java.lang.Math.sqrt;
+import static org.deegree.commons.utils.CollectionUtils.clearNulls;
 import static org.deegree.commons.utils.math.MathUtils.isZero;
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -102,8 +103,8 @@ public class OffsetStroke implements Stroke {
                 LOG.debug( "Please implement proper generalization so this won't happen..." );
                 return last;
             }
-            LOG.warn( "Two subsequent points in a curve have been the same. Using the first of the two points instead of the normal..." );
-            return new double[] { x1, y1 };
+            LOG.debug( "Some of the first points in a curve were identical." );
+            return null;
         }
         final double len = sqrt( nx * nx + ny * ny );
         return new double[] { -ny / len, nx / len };
@@ -175,6 +176,8 @@ public class OffsetStroke implements Stroke {
                 break;
             }
         }
+
+        clearNulls( normals );
 
         // calc new path
         // ATTENTION: at least for cubic to this does not work! VM crash...

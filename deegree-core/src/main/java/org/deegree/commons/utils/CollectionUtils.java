@@ -320,4 +320,19 @@ public class CollectionUtils {
         return list;
     }
 
+    /**
+     * Removed null elements in-place.
+     * 
+     * @param <T>
+     * @param col
+     */
+    public static <T> void clearNulls( List<T> col ) {
+        ListIterator<T> iter = col.listIterator();
+        while ( iter.hasNext() ) {
+            if ( iter.next() == null ) {
+                iter.remove();
+            }
+        }
+    }
+
 }
