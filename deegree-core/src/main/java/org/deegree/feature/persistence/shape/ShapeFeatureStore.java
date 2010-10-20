@@ -140,8 +140,6 @@ public class ShapeFeatureStore implements FeatureStore {
 
     private ApplicationSchema schema;
 
-    private final String namespace;
-
     private final FeatureStoreCache cache;
 
     private DBFIndex dbfIndex;
@@ -149,8 +147,6 @@ public class ShapeFeatureStore implements FeatureStore {
     private QName featureTypeName;
 
     private boolean generateAlphanumericIndexes;
-
-    private Object prefix;
 
     /**
      * Creates a new {@link ShapeFeatureStore} instance from the given parameters.
@@ -177,8 +173,11 @@ public class ShapeFeatureStore implements FeatureStore {
         this.crs = crs;
         this.encoding = encoding;
         featureTypeName = featureTypeName == null ? new File( shpName ).getName() : featureTypeName;
-        this.namespace = namespace != null ? namespace : XMLConstants.NULL_NS_URI;
-        this.prefix = prefix != null ? prefix : XMLConstants.DEFAULT_NS_PREFIX;
+        if ( featureTypeName.endsWith( ".shp" ) ) {
+            featureTypeName = featureTypeName.substring( 0, featureTypeName.length() - 4 );
+        }
+        namespace = namespace != null ? namespace : XMLConstants.NULL_NS_URI;
+        prefix = prefix != null ? prefix : XMLConstants.DEFAULT_NS_PREFIX;
         this.featureTypeName = new QName( namespace, featureTypeName, prefix );
         this.generateAlphanumericIndexes = generateAlphanumericIndexes;
         if ( cache != null ) {
@@ -256,6 +255,8 @@ public class ShapeFeatureStore implements FeatureStore {
             LOG.warn( "The shape datastore for '{}' could not be initialized, because the .shp could not be loaded.",
                       shpName );
         }
+
+        String namespace = featureTypeName.getNamespaceURI();
 
         try {
             dbf = new DBFReader( new RandomAccessFile( dbfFile, "r" ), encoding, featureTypeName, namespace );
@@ -366,6 +367,7 @@ public class ShapeFeatureStore implements FeatureStore {
                 if ( dbf != null && dbfLastModified != dbfFile.lastModified() ) {
                     dbf.close();
                     LOG.debug( "Re-opening the dbf file {}", shpName );
+                    String namespace = featureTypeName.getNamespaceURI();
                     dbf = new DBFReader( new RandomAccessFile( dbfFile, "r" ), encoding,
                                          new QName( namespace, shpName ), namespace );
                     if ( generateAlphanumericIndexes ) {
