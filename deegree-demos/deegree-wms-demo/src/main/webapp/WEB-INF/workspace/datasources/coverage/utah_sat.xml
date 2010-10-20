@@ -8,5 +8,5 @@
     look up for the crs in the root element and for the fileType attribute in the RasterDirectory element similar to the
     configuration of a single RasterFile.
   -->
-  <RasterDirectory>../../../data/utah/raster/Satellite_Provo/</RasterDirectory>
+  <RasterDirectory>../../data/data/utah/raster/Satellite_Provo/</RasterDirectory>
 </Raster>

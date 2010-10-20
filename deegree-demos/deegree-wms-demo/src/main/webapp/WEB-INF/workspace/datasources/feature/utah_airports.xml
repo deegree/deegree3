@@ -2,5 +2,5 @@
   <!-- This is an example for a datasource configuration of ShapeFeatureStores for deegree WMS. -->
   <StorageCRS>EPSG:26912</StorageCRS>
   <Namespace>http://www.deegree.org/app</Namespace>
-  <File>../../../data/utah/vector/SGID100_Airports</File>
+  <File>../../data/data/utah/vector/SGID100_Airports</File>
 </ShapeFeatureStore>
