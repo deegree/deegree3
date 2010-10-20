@@ -58,7 +58,6 @@ import org.deegree.metadata.ISORecord;
 import org.deegree.metadata.persistence.MetadataStoreException;
 import org.deegree.metadata.persistence.iso.PostGISMappingsISODC;
 import org.deegree.metadata.persistence.iso.parsing.QueryableProperties;
-import org.deegree.metadata.persistence.iso.parsing.ReturnableProperties;
 import org.deegree.metadata.persistence.types.BoundingBox;
 import org.deegree.metadata.persistence.types.Format;
 import org.deegree.metadata.persistence.types.Keyword;
@@ -126,10 +125,7 @@ public class GenerateQueryableProperties {
             stm.setInt( 1, operatesOnId );
             stm.setObject( 2, null );
             stm.setObject( 3, null );
-            // TODO should be anyText
-            stm.setString( 4, generateISOQP_AnyTextStatement( isCaseSensitive,
-                                                              rec.getParsedElement().getQueryableProperties(),
-                                                              rec.getParsedElement().getReturnableProperties() ) );
+            stm.setString( 4, rec.getAnyText() );
             if ( rec.getModified() != null && rec.getModified().length != 0 ) {
                 // TODO think of more than one date
                 String time = rec.getModified()[0].toString();
@@ -488,147 +484,6 @@ public class GenerateQueryableProperties {
             LOG.debug( "error: " + e.getMessage(), e );
             throw new MetadataStoreException( e.getMessage() );
         }
-
-    }
-
-    /**
-     * Puts the anyText for this dataset into the database.
-     * 
-     * @param isUpdate
-     */
-    private String generateISOQP_AnyTextStatement( boolean isCaseSensitive, QueryableProperties qp,
-                                                   ReturnableProperties rp ) {
-
-        StringWriter anyText = new StringWriter();
-        String stopWord = " # ";
-
-        // Keywords
-        for ( Keyword keyword : qp.getKeywords() ) {
-            if ( keyword.getKeywordType() != null ) {
-                anyText.append( keyword.getKeywordType() + stopWord );
-            }
-            if ( keyword.getThesaurus() != null ) {
-                anyText.append( keyword.getThesaurus() + stopWord );
-            }
-            if ( keyword.getKeywords() != null ) {
-                for ( String keywordString : keyword.getKeywords() ) {
-                    anyText.append( keywordString + stopWord );
-                }
-            }
-        }
-
-        // title
-        if ( qp.getTitle() != null ) {
-            for ( String title : qp.getTitle() ) {
-                anyText.append( title + stopWord );
-            }
-        }
-
-        // abstract
-        if ( qp.get_abstract() != null ) {
-            for ( String _abstract : qp.get_abstract() ) {
-                anyText.append( _abstract + stopWord );
-            }
-        }
-        // format
-        if ( qp.getFormat() != null ) {
-            for ( Format format : qp.getFormat() ) {
-                anyText.append( format.getName() + stopWord );
-                // anyText.append( format.getVersion() + stopWord );
-            }
-        }
-
-        // type
-        anyText.append( qp.getType() + stopWord );
-
-        // crs
-        if ( qp.getCrs() != null ) {
-            for ( CRSCodeType crs : qp.getCrs() ) {
-                anyText.append( crs.getCodeSpace() + stopWord + crs.getCode() + stopWord );
-
-            }
-        }
-
-        // creator
-        anyText.append( rp.getCreator() + stopWord );
-
-        // contributor
-        anyText.append( rp.getContributor() + stopWord );
-
-        // publisher
-        anyText.append( rp.getPublisher() + stopWord );
-
-        // language
-        anyText.append( qp.getLanguage() + stopWord );
-
-        // relation
-        if ( rp.getRelation() != null ) {
-            for ( String relation : rp.getRelation() ) {
-                anyText.append( relation + stopWord );
-            }
-        }
-
-        // rights
-        if ( rp.getRights() != null ) {
-            for ( String rights : rp.getRights() ) {
-                anyText.append( rights + stopWord );
-            }
-        }
-
-        // alternateTitle
-        if ( qp.getAlternateTitle() != null ) {
-            for ( String alternateTitle : qp.getAlternateTitle() ) {
-                anyText.append( alternateTitle + stopWord );
-            }
-        }
-        // organisationName
-        anyText.append( qp.getOrganisationName() + stopWord );
-
-        // topicCategory
-        if ( qp.getTopicCategory() != null ) {
-            for ( String topicCategory : qp.getTopicCategory() ) {
-                anyText.append( topicCategory + stopWord );
-            }
-        }
-        // resourceLanguage
-        if ( qp.getResourceLanguage() != null ) {
-            for ( String resourceLanguage : qp.getResourceLanguage() ) {
-                anyText.append( resourceLanguage + stopWord );
-            }
-        }
-        // geographicDescriptionCode
-        anyText.append( qp.getGeographicDescriptionCode_service() + stopWord );
-
-        // spatialResolution
-        anyText.append( qp.getDistanceUOM() + stopWord );
-
-        // serviceType
-        anyText.append( qp.getServiceType() + stopWord );
-
-        // operation
-        if ( qp.getOperation() != null ) {
-            for ( String operation : qp.getOperation() ) {
-                anyText.append( operation + stopWord );
-            }
-        }
-
-        // operatesOnData
-        if ( qp.getOperatesOnData() != null ) {
-            for ( OperatesOnData data : qp.getOperatesOnData() ) {
-                anyText.append( data.getOperatesOn() + stopWord );
-                anyText.append( data.getOperatesOnIdentifier() + stopWord );
-                anyText.append( data.getOperatesOnName() + stopWord );
-
-            }
-        }
-
-        // couplingType
-        anyText.append( qp.getCouplingType() + stopWord );
-
-        if ( isCaseSensitive == true ) {
-            return anyText.toString();
-        }
-        return anyText.toString().toLowerCase();
 
     }
 

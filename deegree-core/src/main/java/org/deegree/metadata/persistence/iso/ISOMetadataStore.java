@@ -374,7 +374,7 @@ public class ISOMetadataStore implements MetadataStore {
                     stmtOut = conn.prepareStatement( outS.toString() );
                     LOG.debug( "" + stmtOut );
                     rsOut = stmtOut.executeQuery();
-                    col.add( new ISORecord( writeXMLStreamReader( rsOut, 1 ) ) );
+                    col.add( new ISORecord( writeXMLStreamReader( rsOut, 1 ), config.getAnyText() ) );
                     stmtOut.close();
                     rsOut.close();
                 }
@@ -434,7 +434,7 @@ public class ISOMetadataStore implements MetadataStore {
                     LOG.debug( "" + stmt );
                     rs = stmt.executeQuery();
 
-                    col.add( new ISORecord( writeXMLStreamReader( rs, 1 ) ) );
+                    col.add( new ISORecord( writeXMLStreamReader( rs, 1 ), config.getAnyText() ) );
 
                 }
                 stmt.close();

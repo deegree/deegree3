@@ -63,6 +63,8 @@ import org.deegree.geometry.GeometryFactory;
 import org.deegree.metadata.persistence.MetadataStoreException;
 import org.deegree.metadata.persistence.iso.parsing.ISOQPParsing;
 import org.deegree.metadata.persistence.iso.parsing.ParsedProfileElement;
+import org.deegree.metadata.persistence.iso19115.jaxb.ISOMetadataStoreConfig.AnyText;
+import org.deegree.metadata.persistence.iso19115.jaxb.ISOMetadataStoreConfig.AnyText.Custom;
 import org.deegree.metadata.persistence.types.BoundingBox;
 import org.deegree.metadata.persistence.types.Format;
 import org.deegree.metadata.persistence.types.Keyword;
@@ -86,18 +88,30 @@ public class ISORecord implements MetadataRecord {
 
     private ParsedProfileElement pElem;
 
+    private AnyText anyText;
+
+    private final static String STOPWORD = " ";
+
     private static String[] summaryLocalParts = new String[14];
 
     private static String[] briefLocalParts = new String[9];
 
     private static String[] briefSummaryLocalParts = new String[23];
 
-    private static final NamespaceContext ns = new NamespaceContext();
+    private static final NamespaceContext ns = CommonNamespaces.getNamespaceContext();
 
     private static final List<XPath> m = new ArrayList<XPath>();
 
+    private static XPath[] xpathAll = new XPath[1];
+
+    // private static XPath[] xpathCore = new XPath[17];
+
     static {
-        ns.addNamespace( "gmd", "http://www.isotc211.org/2005/gmd" );
+
+        xpathAll[0] = new XPath( "//child::text()", null );
+
+        // xpathCore[0] = new
+        // XPath("./srv:SV_ServiceIdentification/gmd:abstract | ./gmd:MD_DataIdentification/gmd:abstract", ns);
 
         m.add( new XPath( "/gmd:MD_Metadata/gmd:fileIdentifier", ns ) );
         m.add( new XPath( "/gmd:MD_Metadata/gmd:metadataStandardVersion", ns ) );
@@ -158,8 +172,9 @@ public class ISORecord implements MetadataRecord {
 
     private static List<XPath> briefFilterElementsXPath;
 
-    public ISORecord( XMLStreamReader xmlStream ) throws MetadataStoreException {
+    public ISORecord( XMLStreamReader xmlStream, AnyText anyText ) throws MetadataStoreException {
 
+        this.anyText = anyText;
         this.root = new XMLAdapter( xmlStream ).getRootElement();
         this.pElem = new ISOQPParsing().parseAPISO( root );
 
@@ -169,9 +184,9 @@ public class ISORecord implements MetadataRecord {
 
     }
 
-    public ISORecord( OMElement root ) throws MetadataStoreException {
+    public ISORecord( OMElement root, AnyText anyText ) throws MetadataStoreException {
 
-        this( root.getXMLStreamReader() );
+        this( root.getXMLStreamReader(), anyText );
     }
 
     @Override
@@ -200,7 +215,73 @@ public class ISORecord implements MetadataRecord {
 
     @Override
     public String getAnyText() {
-        return pElem.getQueryableProperties().getAnyText();
+        String anyTextString = null;
+        if ( anyText.getAll() != null ) {
+            anyTextString = generateAnyText( xpathAll ).toString();
+        } else if ( anyText.getCore() != null ) {
+            StringBuilder sb = new StringBuilder();
+
+            for ( String s : getAbstract() ) {
+                sb.append( s ).append( STOPWORD );
+            }
+            for ( String f : getFormat() ) {
+                sb.append( f ).append( STOPWORD );
+            }
+            for ( String i : getIdentifier() ) {
+                sb.append( i ).append( STOPWORD );
+            }
+            if ( getLanguage() != null ) {
+                sb.append( getLanguage() ).append( STOPWORD );
+            }
+            for ( Date i : getModified() ) {
+                sb.append( i.getDate() ).append( STOPWORD );
+            }
+            for ( String f : getRelation() ) {
+                sb.append( f ).append( STOPWORD );
+            }
+            for ( String f : getTitle() ) {
+                sb.append( f ).append( STOPWORD );
+            }
+            if ( getType() != null ) {
+                sb.append( getType() ).append( STOPWORD );
+            }
+            for ( String f : getSubject() ) {
+                sb.append( f ).append( STOPWORD );
+            }
+            sb.append( isHasSecurityConstraints() ).append( STOPWORD );
+            for ( String f : getRights() ) {
+                sb.append( f ).append( STOPWORD );
+            }
+            if ( getContributor() != null ) {
+                sb.append( getContributor() ).append( STOPWORD );
+            }
+            if ( getPublisher() != null ) {
+                sb.append( getPublisher() ).append( STOPWORD );
+            }
+            if ( getSource() != null ) {
+                sb.append( getSource() ).append( STOPWORD );
+            }
+            if ( getCreator() != null ) {
+                sb.append( getCreator() ).append( STOPWORD );
+            }
+            if ( getParentIdentifier() != null ) {
+                sb.append( getParentIdentifier() ).append( STOPWORD );
+            }
+            anyTextString = sb.toString();
+        } else if ( anyText.getCustom() != null ) {
+            List<Custom.XPath> xpathList = anyText.getCustom().getXPath();
+            if ( xpathList != null && !xpathList.isEmpty() ) {
+                XPath[] path = new XPath[xpathList.size()];
+                int counter = 0;
+                for ( Custom.XPath x : xpathList ) {
+                    path[counter++] = new XPath( x.getValue(), ns );
+                }
+                anyTextString = generateAnyText( path ).toString();
+            }
+        } else {
+            anyTextString = "";
+        }
+        return anyTextString;
 
     }
 
@@ -484,5 +565,23 @@ public class ISORecord implements MetadataRecord {
         }
         filter.close();
 
+    }
+
+    private StringBuilder generateAnyText( XPath[] xpath ) {
+        StringBuilder sb = new StringBuilder();
+        List<String> textNodes = new ArrayList<String>();
+
+        for ( XPath x : xpath ) {
+
+            String[] tmp = new XMLAdapter().getNodesAsStrings( root, x );
+            for ( String s : tmp ) {
+                textNodes.add( s );
+            }
+        }
+        for ( String s : textNodes ) {
+            sb.append( s ).append( STOPWORD );
+        }
+
+        return sb;
     }
 }

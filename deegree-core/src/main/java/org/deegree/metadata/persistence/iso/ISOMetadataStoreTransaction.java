@@ -1,6 +1,5 @@
 package org.deegree.metadata.persistence.iso;
 
-import java.io.FileNotFoundException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -17,13 +16,13 @@ import org.deegree.metadata.ISORecord;
 import org.deegree.metadata.persistence.MetadataStoreException;
 import org.deegree.metadata.persistence.MetadataStoreTransaction;
 import org.deegree.metadata.persistence.iso.generating.GenerateQueryableProperties;
-import org.deegree.metadata.persistence.iso.generating.Utils;
 import org.deegree.metadata.persistence.iso.parsing.inspectation.CoupledDataInspector;
 import org.deegree.metadata.persistence.iso.parsing.inspectation.FileIdentifierInspector;
 import org.deegree.metadata.persistence.iso.parsing.inspectation.InspireCompliance;
 import org.deegree.metadata.persistence.iso.parsing.inspectation.MetadataValidation;
 import org.deegree.metadata.persistence.iso.parsing.inspectation.ResourceIdentifier;
 import org.deegree.metadata.persistence.iso19115.jaxb.ISOMetadataStoreConfig;
+import org.deegree.metadata.persistence.iso19115.jaxb.ISOMetadataStoreConfig.AnyText;
 import org.deegree.metadata.persistence.types.ConfigurationAccess;
 import org.deegree.metadata.publication.DeleteTransaction;
 import org.deegree.metadata.publication.InsertTransaction;
@@ -47,12 +46,14 @@ public class ISOMetadataStoreTransaction implements MetadataStoreTransaction {
 
     private final ConfigurationAccess ca;
 
+    private final AnyText anyText;
+
     private final boolean useLegacyPredicates;
 
     ISOMetadataStoreTransaction( Connection conn, ISOMetadataStoreConfig config, boolean useLegacyPredicates )
                             throws SQLException {
         this.conn = conn;
-
+        anyText = config.getAnyText();
         FileIdentifierInspector fi = FileIdentifierInspector.newInstance( config.getIdentifierInspector(), conn );
         InspireCompliance ic = InspireCompliance.newInstance( config.getRequireInspireCompliance(), conn );
         CoupledDataInspector ci = CoupledDataInspector.newInstance( config.getCoupledResourceInspector(), conn );
@@ -104,13 +105,14 @@ public class ISOMetadataStoreTransaction implements MetadataStoreTransaction {
                 if ( elemFI != null ) {
                     OMElement elemRI = ResourceIdentifier.newInstance( ca.getIc().getRic(), conn ).inspect( elemFI );
 
-                    ISORecord rec = new ISORecord( elemRI );
-                    try {
-                        Utils.writeIntoFile( rec.getAsXMLStream(), "/home/thomas/Desktop/zztest.xml" );
-                    } catch ( FileNotFoundException e ) {
-                        // TODO Auto-generated catch block
-                        e.printStackTrace();
-                    }
+                    ISORecord rec = new ISORecord( elemRI, anyText );
+
+                    // try {
+                    // Utils.writeIntoFile( rec.getAsXMLStream(), "/home/thomas/Desktop/zztest.xml" );
+                    // } catch ( FileNotFoundException e ) {
+                    // // TODO Auto-generated catch block
+                    // e.printStackTrace();
+                    // }
                     GenerateQueryableProperties generateQP = new GenerateQueryableProperties();
                     int operatesOnId = generateQP.generateMainDatabaseDataset( conn, rec );
                     generateQP.executeQueryableProperties( false, conn, operatesOnId, rec );
@@ -131,7 +133,7 @@ public class ISOMetadataStoreTransaction implements MetadataStoreTransaction {
         int result = 0;
         if ( update.getElement() != null ) {
 
-            ISORecord rec = new ISORecord( update.getElement() );
+            ISORecord rec = new ISORecord( update.getElement(), anyText );
             GenerateQueryableProperties generateQP = new GenerateQueryableProperties();
             int operatesOnId = generateQP.updateMainDatabaseTable( conn, rec );
             generateQP.executeQueryableProperties( true, conn, operatesOnId, rec );

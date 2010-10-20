@@ -14,4 +14,17 @@
 	</IdentifierInspector>
 	<RequireInspireCompliance generateAutomatic="true"/> 
 	<CoupledResourceInspector throwConsistencyError="true" />
+	
+	<!--
+	    If AnyText is specified there is a choice between storing all text found in the record, 
+	    or just the core queryable properties or store a custom set of properties into the 
+	    anyText-queryable property, otherwise the core queryable properties will be stored in 
+	    in the backend.    
+	 -->
+	<AnyText>
+	  <Custom>
+	    <XPath>/gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:descriptiveKeywords/gmd:MD_Keywords/gmd:keyword/gco:CharacterString</XPath>
+	    <XPath>/gmd:MD_Metadata/gmd:contact/gmd:CI_ResponsibleParty/gmd:individualName/gco:CharacterString</XPath>
+	  </Custom>
+	</AnyText>
 </ISOMetadataStore>
