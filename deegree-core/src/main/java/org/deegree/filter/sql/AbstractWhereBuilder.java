@@ -289,7 +289,7 @@ public abstract class AbstractWhereBuilder {
             builder.add( toProtoSQL( propIsBetween.getLowerBoundary() ) );
             builder.add( " <= " );
             builder.add( toProtoSQL( propIsBetween.getExpression() ) );
-            builder.add(" AND ");
+            builder.add( " AND " );
             builder.add( toProtoSQL( propIsBetween.getExpression() ) );
             builder.add( " <= " );
             builder.add( toProtoSQL( propIsBetween.getUpperBoundary() ) );

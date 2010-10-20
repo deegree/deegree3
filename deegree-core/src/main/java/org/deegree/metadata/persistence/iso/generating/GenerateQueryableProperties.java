@@ -164,7 +164,6 @@ public class GenerateQueryableProperties {
 
     public int updateMainDatabaseTable( Connection conn, ISORecord rec )
                             throws MetadataStoreException {
-        int result = 0;
 
         PreparedStatement stm = null;
         ResultSet rs = null;
@@ -253,7 +252,7 @@ public class GenerateQueryableProperties {
         } finally {
             JDBCUtils.close( rs );
         }
-        return result;
+        return requestedId;
     }
 
     /**
@@ -454,14 +453,15 @@ public class GenerateQueryableProperties {
         int localId = 0;
         try {
 
+            localId = getLastDatasetId( connection, databaseTable );
+            localId++;
             if ( isUpdate == true ) {
                 sqlStatement.append( "DELETE FROM " + databaseTable + " WHERE " + fk_datasets + " = ?;" );
                 stm = connection.prepareStatement( sqlStatement.toString() );
                 stm.setInt( 1, operatesOnId );
+                LOG.debug( stm.toString() );
                 stm.executeUpdate();
             }
-            localId = getLastDatasetId( connection, databaseTable );
-            localId++;
             sqlStatement = new StringWriter( 500 );
             sqlStatement.append( queryablePropertyStatement_PRE.toString() + " VALUES ( ?,?,"
                                  + queryablePropertyStatement_POST.toString() );

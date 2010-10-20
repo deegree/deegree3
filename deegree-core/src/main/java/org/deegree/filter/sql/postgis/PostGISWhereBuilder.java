@@ -132,12 +132,18 @@ public class PostGISWhereBuilder extends AbstractWhereBuilder {
         String singleChar = "" + op.getSingleChar();
 
         IsLikeString specialString = new IsLikeString( literal, wildCard, singleChar, escape );
-        // TODO lowerCasing?
         String sqlEncoded = specialString.toSQL( !op.getMatchCase() );
 
         SQLOperationBuilder builder = new SQLOperationBuilder( op.getMatchCase() );
+        if ( !op.getMatchCase() ) {
+            builder.add( "LOWER(" );
+        }
         builder.add( toProtoSQL( op.getPropertyName() ) );
-        builder.add( "::TEXT LIKE '" );
+        if ( op.getMatchCase() ) {
+            builder.add( "::TEXT LIKE '" );
+        } else {
+            builder.add( "::TEXT) LIKE '" );
+        }
         builder.add( sqlEncoded );
         builder.add( "'" );
         return builder.toOperation();
