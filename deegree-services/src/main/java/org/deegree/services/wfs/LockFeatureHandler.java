@@ -139,8 +139,7 @@ class LockFeatureHandler {
 
             lock = manager.acquireLock( request.getLocks(), lockAll, expiry );
 
-            response.setContentType( "text/xml" );
-            XMLStreamWriter writer = WFSController.getXMLResponseWriter( response, schemaLocation );
+            XMLStreamWriter writer = WFSController.getXMLResponseWriter( response, "text/xml", schemaLocation );
             if ( request.getVersion() == WFSConstants.VERSION_100 ) {
                 writer.writeStartElement( "wfs", "WFS_LockFeatureResponse", ns );
             } else {

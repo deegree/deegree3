@@ -107,9 +107,9 @@ import org.deegree.protocol.wfs.transaction.Insert;
 import org.deegree.protocol.wfs.transaction.Native;
 import org.deegree.protocol.wfs.transaction.PropertyReplacement;
 import org.deegree.protocol.wfs.transaction.Transaction;
-import org.deegree.protocol.wfs.transaction.Transaction.ReleaseAction;
 import org.deegree.protocol.wfs.transaction.TransactionOperation;
 import org.deegree.protocol.wfs.transaction.Update;
+import org.deegree.protocol.wfs.transaction.Transaction.ReleaseAction;
 import org.deegree.services.controller.exception.ControllerException;
 import org.deegree.services.controller.ows.OWSException;
 import org.deegree.services.controller.utils.HttpResponseBuffer;
@@ -574,10 +574,9 @@ class TransactionHandler {
 
     private void sendResponse100( Transaction request, HttpResponseBuffer response, boolean failed )
                             throws XMLStreamException, IOException {
-        response.setContentType( "text/xml; charset=UTF-8" );
-        String schemaLocation = WFS_NS + " " + WFS_100_TRANSACTION_URL;
 
-        XMLStreamWriter xmlWriter = getXMLResponseWriter( response, schemaLocation );
+        String schemaLocation = WFS_NS + " " + WFS_100_TRANSACTION_URL;
+        XMLStreamWriter xmlWriter = getXMLResponseWriter( response, "text/xml", schemaLocation );
         xmlWriter.writeStartElement( "wfs", "WFS_TransactionResponse", WFS_NS );
         xmlWriter.writeAttribute( "version", VERSION_100.toString() );
 
@@ -632,7 +631,6 @@ class TransactionHandler {
     private void sendResponse110and200( Transaction request, HttpResponseBuffer response )
                             throws XMLStreamException, IOException {
 
-        response.setContentType( "text/xml; charset=UTF-8" );
         String schemaLocation = null;
         String ns = null;
         if ( VERSION_110.equals( request.getVersion() ) ) {
@@ -645,7 +643,7 @@ class TransactionHandler {
             throw new RuntimeException();
         }
 
-        XMLStreamWriter xmlWriter = getXMLResponseWriter( response, schemaLocation );
+        XMLStreamWriter xmlWriter = getXMLResponseWriter( response, "text/xml", schemaLocation );
         if ( VERSION_110.equals( request.getVersion() ) ) {
             xmlWriter.writeStartElement( "wfs", "TransactionResponse", WFS_NS );
         }

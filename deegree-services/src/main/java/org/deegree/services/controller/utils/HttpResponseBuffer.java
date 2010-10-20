@@ -215,6 +215,36 @@ public class HttpResponseBuffer extends HttpServletResponseWrapper {
     }
 
     /**
+     * Returns an {@link XMLStreamWriter} for writing a response with XML content.
+     * <p>
+     * NOTE: This method may be called more than once -- the first call will create an {@link XMLStreamWriter} object
+     * and subsequent calls return the same object. This provides a convenient means to produce plain XML responses and
+     * SOAP wrapped response bodies with the same code.
+     * </p>
+     * 
+     * @param setCharacterEncoding
+     *            true, if the response's character encoding should be set, false otherwise
+     * @return {@link XMLStreamWriter} for writing the response, with XML preamble already written
+     * @throws IOException
+     * @throws XMLStreamException
+     */
+    public XMLStreamWriter getXMLWriter( boolean setCharacterEncoding )
+                            throws IOException, XMLStreamException {
+
+        if ( xmlWriter == null ) {
+            XMLOutputFactory factory = XMLOutputFactory.newInstance();
+            factory.setProperty( "javax.xml.stream.isRepairingNamespaces", Boolean.TRUE );
+            String xmlEncoding = "UTF-8";
+            xmlWriter = new IndentingXMLStreamWriter( factory.createXMLStreamWriter( getOutputStream(), xmlEncoding ) );
+            xmlWriter.writeStartDocument( xmlEncoding, "1.0" );
+            if ( setCharacterEncoding ) {
+                setCharacterEncoding( xmlEncoding );
+            }
+        }
+        return xmlWriter;
+    }
+
+    /**
      * Performs a schema-based validation of the response (only if the written output has been buffered and was XML).
      */
     public void validate() {

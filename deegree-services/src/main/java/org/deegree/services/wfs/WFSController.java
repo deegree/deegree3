@@ -726,7 +726,6 @@ public class WFSController extends AbstractOGCServiceController {
 
         LOG.debug( "doGetCapabilities: " + request );
         Version negotiatedVersion = negotiateVersion( request );
-        response.setContentType( "text/xml; charset=UTF-8" );
 
         // cope with the 'All' section specifier
         Set<String> sections = request.getSections();
@@ -765,7 +764,7 @@ public class WFSController extends AbstractOGCServiceController {
             }
         }
 
-        XMLStreamWriter xmlWriter = getXMLResponseWriter( response, null );
+        XMLStreamWriter xmlWriter = getXMLResponseWriter( response, "text/xml", null );
         GetCapabilitiesHandler adapter = new GetCapabilitiesHandler( this, service, negotiatedVersion, xmlWriter,
                                                                      serviceId, serviceProvider, sortedFts,
                                                                      ftNameToFtMetadata, sectionsUC,
@@ -779,19 +778,24 @@ public class WFSController extends AbstractOGCServiceController {
      * 
      * @param writer
      *            writer to write the XML to, must not be <code>null</code>
+     * @param mimeType
+     *            mime type, must not be <code>null</code>
      * @param schemaLocation
      *            value for the 'xsi:schemaLocation' attribute in the root element, can be <code>null</code>
      * @return XML stream writer object that takes care of putting the schemaLocation in the root element
      * @throws XMLStreamException
      * @throws IOException
      */
-    public static XMLStreamWriter getXMLResponseWriter( HttpResponseBuffer writer, String schemaLocation )
+    public static XMLStreamWriter getXMLResponseWriter( HttpResponseBuffer writer, String mimeType,
+                                                        String schemaLocation )
                             throws XMLStreamException, IOException {
 
+        writer.setContentType( mimeType );
+        boolean needsEncoding = mimeType.startsWith( "text" );
         if ( schemaLocation == null ) {
-            return writer.getXMLWriter();
+            return writer.getXMLWriter( needsEncoding );
         }
-        return new SchemaLocationXMLStreamWriter( writer.getXMLWriter(), schemaLocation );
+        return new SchemaLocationXMLStreamWriter( writer.getXMLWriter( needsEncoding ), schemaLocation );
     }
 
     private void sendServiceException110( OWSException ex, HttpResponseBuffer response )

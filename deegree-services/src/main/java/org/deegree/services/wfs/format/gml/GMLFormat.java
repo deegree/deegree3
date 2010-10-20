@@ -60,7 +60,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import javax.servlet.http.HttpServletResponse;
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
@@ -216,8 +215,6 @@ public class GMLFormat implements Format {
 
         GMLObject o = retrieveObject( request.getRequestedId() );
 
-        response.setContentType( gmlVersion.getMimeType() );
-
         int traverseXLinkDepth = 0;
         if ( request.getTraverseXlinkDepth() != null ) {
             if ( "*".equals( request.getTraverseXlinkDepth() ) ) {
@@ -256,7 +253,9 @@ public class GMLFormat implements Format {
             String msg = "Error exporting GML object: only exporting of features and geometries is implemented.";
             throw new OWSException( msg, OPERATION_NOT_SUPPORTED );
         }
-        XMLStreamWriter xmlStream = WFSController.getXMLResponseWriter( response, schemaLocation );
+
+        String contentType = getContentType( request.getOutputFormat(), request.getVersion() );
+        XMLStreamWriter xmlStream = WFSController.getXMLResponseWriter( response, contentType, schemaLocation );
         GMLStreamWriter gmlStream = GMLOutputFactory.createGMLStreamWriter( gmlVersion, xmlStream );
         gmlStream.setOutputCRS( master.getDefaultQueryCrs() );
         gmlStream.setLocalXLinkTemplate( master.getObjectXlinkTemplate( request.getVersion(), gmlVersion ) );
@@ -310,8 +309,8 @@ public class GMLFormat implements Format {
             }
         }
 
-        XMLStreamWriter xmlStream = WFSController.getXMLResponseWriter( response, schemaLocation );
-        setContentType( gmlVersion, response );
+        String contentType = getContentType( request.getOutputFormat(), request.getVersion() );
+        XMLStreamWriter xmlStream = WFSController.getXMLResponseWriter( response, contentType, schemaLocation );
 
         // open "wfs:FeatureCollection" element
         if ( request.getVersion().equals( VERSION_100 ) ) {
@@ -507,25 +506,32 @@ public class GMLFormat implements Format {
     private void writeMemberFeature( Feature member, GMLStreamWriter gmlStream, XMLStreamWriter xmlStream,
                                      Version wfsVersion )
                             throws XMLStreamException, UnknownCRSException, TransformationException {
+
         if ( gmlStream.isObjectExported( member.getId() ) ) {
-            if ( GML_32 == gmlVersion ) {
+            if ( responseFeatureMemberEl != null ) {
+                xmlStream.writeEmptyElement( responseFeatureMemberEl.getPrefix(),
+                                             responseFeatureMemberEl.getLocalPart(),
+                                             responseFeatureMemberEl.getNamespaceURI() );
+            } else if ( GML_32 == gmlVersion ) {
                 if ( VERSION_200.equals( wfsVersion ) ) {
                     xmlStream.writeEmptyElement( "wfs", "member", WFS_200_NS );
                 } else {
                     xmlStream.writeEmptyElement( "gml", "featureMember", GML3_2_NS );
-                    // xmlStream.writeEmptyElement( "wfs", "member", WFS_NS );
                 }
             } else {
                 xmlStream.writeEmptyElement( "gml", "featureMember", GMLNS );
             }
             xmlStream.writeAttribute( "xlink", XLNNS, "href", "#" + member.getId() );
         } else {
-            if ( GML_32 == gmlVersion ) {
+            if ( responseFeatureMemberEl != null ) {
+                xmlStream.writeStartElement( responseFeatureMemberEl.getPrefix(),
+                                             responseFeatureMemberEl.getLocalPart(),
+                                             responseFeatureMemberEl.getNamespaceURI() );
+            } else if ( GML_32 == gmlVersion ) {
                 if ( VERSION_200.equals( wfsVersion ) ) {
                     xmlStream.writeStartElement( "wfs", "member", WFS_200_NS );
                 } else {
                     xmlStream.writeStartElement( "gml", "featureMember", GML3_2_NS );
-                    // xmlStream.writeStartElement( "wfs", "member", WFS_NS );
                 }
             } else {
                 xmlStream.writeStartElement( "gml", "featureMember", GMLNS );
@@ -610,9 +616,8 @@ public class GMLFormat implements Format {
         String lockId = acquireLock( request, analyzer );
         String schemaLocation = getSchemaLocation( request.getVersion(), analyzer.getFeatureTypes() );
 
-        XMLStreamWriter xmlStream = WFSController.getXMLResponseWriter( response, schemaLocation );
-
-        setContentType( gmlVersion, response );
+        String contentType = getContentType( request.getOutputFormat(), request.getVersion() );
+        XMLStreamWriter xmlStream = WFSController.getXMLResponseWriter( response, contentType, schemaLocation );
 
         // open "wfs:FeatureCollection" element
         if ( request.getVersion().equals( VERSION_100 ) ) {
@@ -714,31 +719,27 @@ public class GMLFormat implements Format {
     }
 
     /**
-     * Sets the content type header for the HTTP response.
-     * 
-     * TODO integrate handling for custom formats
+     * Returns the content type header for the HTTP response.
      * 
      * @param outputFormat
-     *            output format to be used, must not be <code>null</code>
-     * @param response
-     *            http response, must not be <code>null</code>
+     *            requested output format, may be <code>null</code>
+     * @param version
+     *            request version, must not be <code>null</code>
+     * @return content type for the http header, never <code>null</code>
      */
-    private void setContentType( GMLVersion outputFormat, HttpServletResponse response ) {
+    static String getContentType( String outputFormat, Version version ) {
 
-        switch ( outputFormat ) {
-        case GML_2:
-            response.setContentType( "text/xml; subtype=gml/2.1.2" );
-            break;
-        case GML_30:
-            response.setContentType( "text/xml; subtype=gml/3.0.1" );
-            break;
-        case GML_31:
-            response.setContentType( "text/xml; subtype=gml/3.1.1" );
-            break;
-        case GML_32:
-            response.setContentType( "text/xml; subtype=gml/3.2.1" );
-            break;
+        String contentType = outputFormat;
+        if ( outputFormat == null ) {
+            if ( VERSION_100.equals( version ) ) {
+                contentType = "text/xml; subtype=gml/2.1.2";
+            } else if ( VERSION_110.equals( version ) ) {
+                contentType = "text/xml; subtype=gml/3.1.1";
+            } else if ( VERSION_200.equals( version ) ) {
+                contentType = "text/xml; subtype=gml/3.2.1";
+            }
         }
+        return contentType;
     }
 
     private String acquireLock( GetFeature request, GetFeatureAnalyzer analyzer )

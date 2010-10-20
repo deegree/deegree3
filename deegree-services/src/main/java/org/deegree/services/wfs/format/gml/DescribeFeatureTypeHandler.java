@@ -65,7 +65,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import javax.servlet.http.HttpServletResponse;
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
@@ -159,13 +158,13 @@ class DescribeFeatureTypeHandler {
 
         LOG.debug( "doDescribeFeatureType: " + request );
 
+        String mimeType = GMLFormat.getContentType( request.getOutputFormat(), request.getVersion() );
         GMLVersion version = format.gmlVersion;
-        setContentType( version, response );
 
         LOG.debug( "contentType:" + response.getContentType() );
         LOG.debug( "characterEncoding:" + response.getCharacterEncoding() );
 
-        XMLStreamWriter writer = WFSController.getXMLResponseWriter( response, null );
+        XMLStreamWriter writer = WFSController.getXMLResponseWriter( response, mimeType, null );
 
         // check for deegree-specific DescribeFeatureType request that asks for the WFS schema in a GML
         // version that does not match the WFS schema (e.g. WFS 1.1.0, GML 2)
@@ -563,34 +562,6 @@ class DescribeFeatureTypeHandler {
                     }
                 }
             }
-        }
-    }
-
-    /**
-     * Sets the content type header for the HTTP response.
-     * 
-     * TODO integrate handling for custom formats
-     * 
-     * @param outputFormat
-     *            output format to be used, must not be <code>null</code>
-     * @param response
-     *            http response, must not be <code>null</code>
-     */
-    private void setContentType( GMLVersion outputFormat, HttpServletResponse response ) {
-
-        switch ( outputFormat ) {
-        case GML_2:
-            response.setContentType( "text/xml; subtype=gml/2.1.2" );
-            break;
-        case GML_30:
-            response.setContentType( "text/xml; subtype=gml/3.0.1" );
-            break;
-        case GML_31:
-            response.setContentType( "text/xml; subtype=gml/3.1.1" );
-            break;
-        case GML_32:
-            response.setContentType( "text/xml; subtype=gml/3.2.1" );
-            break;
         }
     }
 }
