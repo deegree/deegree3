@@ -46,7 +46,6 @@ import java.util.Set;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
-import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.namespace.QName;
@@ -69,9 +68,7 @@ import org.deegree.commons.utils.kvp.MissingParameterException;
 import org.deegree.commons.xml.NamespaceContext;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.XMLParsingException;
-import org.deegree.commons.xml.XPath;
 import org.deegree.commons.xml.stax.SchemaLocationXMLStreamWriter;
-import org.deegree.metadata.persistence.MetadataStoreException;
 import org.deegree.protocol.csw.CSWConstants;
 import org.deegree.protocol.csw.CSWConstants.CSWRequestType;
 import org.deegree.protocol.csw.CSWConstants.Sections;
@@ -104,12 +101,10 @@ import org.deegree.services.csw.getrecords.GetRecords;
 import org.deegree.services.csw.getrecords.GetRecordsKVPAdapter;
 import org.deegree.services.csw.getrecords.GetRecordsXMLAdapter;
 import org.deegree.services.csw.security.CSWSecurityManager;
-import org.deegree.services.csw.security.DummyCSWSecurityManager;
 import org.deegree.services.csw.transaction.Transaction;
 import org.deegree.services.csw.transaction.TransactionKVPAdapter;
 import org.deegree.services.csw.transaction.TransactionXMLAdapter;
-import org.deegree.services.jaxb.csw.PublishedInformation;
-import org.deegree.services.jaxb.csw.ServiceConfiguration;
+import org.deegree.services.jaxb.csw.DeegreeCSW;
 import org.deegree.services.jaxb.main.DeegreeServiceControllerType;
 import org.deegree.services.jaxb.main.DeegreeServicesMetadataType;
 import org.slf4j.Logger;
@@ -156,7 +151,7 @@ public class CSWController extends AbstractOGCServiceController {
             supportedVersions = new Version[] { VERSION_202 };
             handledNamespaces = new String[] { CSW_202_NS };
             handledRequests = CSWRequestType.class;
-            supportedConfigVersions = new Version[] { Version.parseVersion( "0.5.0" ) };
+            supportedConfigVersions = new Version[] { Version.parseVersion( "0.6.0" ) };
         }
     };
 
@@ -175,46 +170,26 @@ public class CSWController extends AbstractOGCServiceController {
         NamespaceContext nsContext = new NamespaceContext();
         nsContext.addNamespace( CSWConstants.CSW_PREFIX, "http://www.deegree.org/services/csw" );
 
-        ServiceConfiguration sc = null;
-        PublishedInformation pi = null;
-
+        DeegreeCSW jaxbConfig = null;
         try {
-            XPath xpath = new XPath( "csw:ServiceConfiguration", nsContext );
-
-            final String additionalClasspath = "org.deegree.services.jaxb.csw";
-            Unmarshaller u = getUnmarshaller( additionalClasspath, null );
-
-            OMElement scElement = controllerConf.getRequiredElement( controllerConf.getRootElement(), xpath );
-
+            Unmarshaller u = getUnmarshaller( "org.deegree.services.jaxb.csw",
+                                              "/META-INF/schemas/wms/0.6.0/csw_configuration.xsd" );
             // turn the application schema location into an absolute URL
-            sc = (ServiceConfiguration) u.unmarshal( scElement.getXMLStreamReaderWithoutCaching() );
-
-            u = JAXBContext.newInstance( "org.deegree.services.jaxb.csw" ).createUnmarshaller();
-
-            xpath = new XPath( "csw:PublishedInformation", nsContext );
-            OMElement piElement = controllerConf.getRequiredElement( controllerConf.getRootElement(), xpath );
-            pi = (PublishedInformation) u.unmarshal( piElement.getXMLStreamReaderWithoutCaching() );
-
-            service = new CSWService( sc, controllerConf.getSystemId() );
-
-            if ( sc.getSecurityManager() != null ) {
-                securityManager = sc.getSecurityManager().getDummySecurityManager() != null ? new DummyCSWSecurityManager()
-                                                                                           : null;
-            }
-
-            String securityLogging = securityManager != null ? "A securityManager is specified: " + securityManager
-                                                            : "There is no securityManager specified. No credentials needed and every operation can be requested anonymous.";
-            LOG.debug( securityLogging );
-
+            jaxbConfig = (DeegreeCSW) u.unmarshal( controllerConf.getRootElement().getXMLStreamReaderWithoutCaching() );
         } catch ( XMLParsingException e ) {
-            throw new ControllerInitException( "TODO", e );
+            LOG.error( "Could not load CSW configuration: '{}'", e.getMessage() );
+            LOG.trace( "Stack trace:", e );
+            throw new ControllerInitException( "Error parsing CSW configuration: " + e.getMessage(), e );
         } catch ( JAXBException e ) {
-            throw new ControllerInitException( "TODO", e );
-        } catch ( MetadataStoreException e ) {
-            e.printStackTrace();
+            LOG.error( "Could not load CSW configuration: '{}'", e.getLinkedException().getMessage() );
+            LOG.trace( "Stack trace:", e );
+            // whyever they use the linked exception here...
+            // http://www.jaxb.com/how/to/hide/important/information/from/the/user/of/the/api/unknown_xml_format.xml
+            throw new ControllerInitException( "Error parsing CSW configuration: "
+                                               + e.getLinkedException().getMessage(), e );
         }
 
-        validateAndSetOfferedVersions( pi.getAcceptVersions().getVersion() );
+        validateAndSetOfferedVersions( jaxbConfig.getSupportedVersions().getVersion() );
         describeRecordHandler = new DescribeRecordHandler( service );
         getRecordsHandler = new GetRecordsHandler( service );
         transactionHandler = new TransactionHandler( service );

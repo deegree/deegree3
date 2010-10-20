@@ -43,7 +43,7 @@ import java.util.Set;
 import org.deegree.metadata.persistence.MetadataStore;
 import org.deegree.metadata.persistence.MetadataStoreException;
 import org.deegree.metadata.persistence.MetadataStoreManager;
-import org.deegree.services.jaxb.csw.ServiceConfiguration;
+import org.deegree.services.jaxb.csw.DeegreeCSW;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -67,10 +67,10 @@ public class CSWService {
      * Creates a {@link CSWService} instance to get a binding to the configuration.
      * 
      * @param sc
-     *            the serviceConfiguration that is specified in the configuration.xml document
+     *            the deegree configuration that is specified in the csw_configuration.xml document
      * @throws MetadataStoreException
      */
-    public CSWService( ServiceConfiguration sc, String baseURL ) throws MetadataStoreException {
+    public CSWService( DeegreeCSW sc, String baseURL ) throws MetadataStoreException {
 
         LOG.info( "Initializing/looking up configured record stores." );
 
