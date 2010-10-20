@@ -58,7 +58,6 @@ import static java.awt.image.DataBuffer.TYPE_BYTE;
 import static java.awt.image.Raster.createBandedRaster;
 import static java.lang.Double.NEGATIVE_INFINITY;
 import static java.lang.Double.POSITIVE_INFINITY;
-import static java.lang.Integer.parseInt;
 import static java.lang.Math.max;
 import static javax.media.jai.operator.ColorQuantizerDescriptor.MEDIANCUT;
 import static org.deegree.commons.utils.CollectionUtils.AND;
@@ -139,9 +138,9 @@ import org.deegree.rendering.r2d.styling.TextStyling;
 import org.deegree.services.jaxb.wms.AbstractLayerType;
 import org.deegree.services.jaxb.wms.BaseAbstractLayerType;
 import org.deegree.services.jaxb.wms.DynamicLayer;
-import org.deegree.services.jaxb.wms.ServiceConfiguration;
+import org.deegree.services.jaxb.wms.LayerOptionsType;
+import org.deegree.services.jaxb.wms.ServiceConfigurationType;
 import org.deegree.services.jaxb.wms.StatisticsLayer;
-import org.deegree.services.jaxb.wms.SupportedFeaturesType;
 import org.deegree.services.wms.WMSException.InvalidDimensionValue;
 import org.deegree.services.wms.WMSException.MissingDimensionValue;
 import org.deegree.services.wms.controller.ops.GetFeatureInfo;
@@ -199,9 +198,11 @@ public class MapService {
 
     private HashMap<Layer, Integer> defaultMaxFeatures = new HashMap<Layer, Integer>();
 
+    private HashMap<Layer, Integer> defaultFeatureInfoRadius = new HashMap<Layer, Integer>();
+
     private int globalDefaultMaxFeatures = 10000;
 
-    private int defaultFeatureInfoRadius = 1;
+    private int globalFeatureInfoRadius = 1;
 
     private static int stylesCounter = 0;
 
@@ -217,10 +218,10 @@ public class MapService {
      * @param adapter
      * @throws MalformedURLException
      */
-    public MapService( ServiceConfiguration conf, XMLAdapter adapter ) throws MalformedURLException {
+    public MapService( ServiceConfigurationType conf, XMLAdapter adapter ) throws MalformedURLException {
         layers = new HashMap<String, Layer>();
         if ( conf != null && conf.getAbstractLayer() != null ) {
-            SupportedFeaturesType sf = conf.getSupportedFeatures();
+            LayerOptionsType sf = conf.getDefaultLayerOptions();
             Antialias alias = handleDefaultValue( sf == null ? null : sf.getAntiAliasing(), Antialias.class, BOTH );
             Quality quali = handleDefaultValue( sf == null ? null : sf.getRenderingQuality(), Quality.class, NORMAL );
             Interpolation interpol = handleDefaultValue( sf == null ? null : sf.getInterpolation(),
@@ -232,8 +233,13 @@ public class MapService {
                 LOG.debug( "Using default global max features setting of {}, set it to -1 if you don't want a limit.",
                            globalDefaultMaxFeatures );
             }
+            if ( sf != null && sf.getFeatureInfoRadius() != null ) {
+                globalFeatureInfoRadius = sf.getFeatureInfoRadius();
+                LOG.debug( "Using global feature info radius setting of {}.", globalFeatureInfoRadius );
+            } else {
+                LOG.debug( "Using default feature info radius of {}.", globalFeatureInfoRadius );
+            }
             root = parseLayer( conf.getAbstractLayer().getValue(), null, adapter, alias, interpol, quali );
-            defaultFeatureInfoRadius = conf.getFeatureInfoRadius() == null ? 1 : parseInt( conf.getFeatureInfoRadius() );
             fillInheritedInformation( root, new LinkedList<CRS>( root.getSrs() ) );
             // update the dynamic layers once on startup to avoid having a disappointingly long initial GetCapabilities
             // request...
@@ -416,13 +422,16 @@ public class MapService {
                                                   aLayer.getScaleDenominators().getMax() ) );
             }
 
-            SupportedFeaturesType sf = aLayer.getSupportedFeatures();
+            LayerOptionsType sf = aLayer.getLayerOptions();
             if ( sf != null ) {
                 alias = handleDefaultValue( sf.getAntiAliasing(), Antialias.class, alias );
                 quality = handleDefaultValue( sf.getRenderingQuality(), Quality.class, quality );
                 interpol = handleDefaultValue( sf.getInterpolation(), Interpolation.class, interpol );
                 if ( sf.getMaxFeatures() != null ) {
                     defaultMaxFeatures.put( res, sf.getMaxFeatures() );
+                }
+                if ( sf.getFeatureInfoRadius() != null ) {
+                    defaultFeatureInfoRadius.put( res, sf.getFeatureInfoRadius() );
                 }
             }
             defaultAntialiases.put( res, alias );
@@ -1106,10 +1115,17 @@ public class MapService {
     }
 
     /**
+     * @return the map w/ default settings
+     */
+    public HashMap<Layer, Integer> getDefaultFeatureInfoRadius() {
+        return defaultFeatureInfoRadius;
+    }
+
+    /**
      * @return the default feature info radius
      */
-    public int getFeatureInfoRadius() {
-        return defaultFeatureInfoRadius;
+    public int getGlobalFeatureInfoRadius() {
+        return globalFeatureInfoRadius;
     }
 
     /**

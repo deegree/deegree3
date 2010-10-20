@@ -81,14 +81,12 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
 
-import org.apache.axiom.om.OMElement;
 import org.apache.commons.fileupload.FileItem;
 import org.deegree.commons.tom.ows.Version;
 import org.deegree.commons.utils.Pair;
 import org.deegree.commons.utils.log.LoggingNotes;
 import org.deegree.commons.xml.NamespaceContext;
 import org.deegree.commons.xml.XMLAdapter;
-import org.deegree.commons.xml.XPath;
 import org.deegree.cs.exceptions.TransformationException;
 import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.feature.Feature;
@@ -115,11 +113,9 @@ import org.deegree.services.jaxb.main.DeegreeServiceControllerType;
 import org.deegree.services.jaxb.main.DeegreeServicesMetadataType;
 import org.deegree.services.jaxb.main.ServiceIdentificationType;
 import org.deegree.services.jaxb.main.ServiceProviderType;
-import org.deegree.services.jaxb.wms.PublishedInformation;
-import org.deegree.services.jaxb.wms.PublishedInformation.GetFeatureInfoFormat;
-import org.deegree.services.jaxb.wms.PublishedInformation.ImageFormat;
-import org.deegree.services.jaxb.wms.PublishedInformation.SupportedVersions;
-import org.deegree.services.jaxb.wms.ServiceConfiguration;
+import org.deegree.services.jaxb.wms.DeegreeWMS;
+import org.deegree.services.jaxb.wms.ServiceConfigurationType;
+import org.deegree.services.jaxb.wms.FeatureInfoFormatsType.GetFeatureInfoFormat;
 import org.deegree.services.wms.MapService;
 import org.deegree.services.wms.WMSException.InvalidDimensionValue;
 import org.deegree.services.wms.WMSException.MissingDimensionValue;
@@ -129,7 +125,6 @@ import org.deegree.services.wms.controller.ops.GetLegendGraphic;
 import org.deegree.services.wms.controller.ops.GetMap;
 import org.deegree.services.wms.controller.plugins.FeatureInfoSerializer;
 import org.deegree.services.wms.controller.plugins.ImageSerializer;
-import org.deegree.services.wms.controller.security.DummyWMSSecurityManager;
 import org.deegree.services.wms.controller.security.WMSSecurityManager;
 import org.slf4j.Logger;
 
@@ -146,14 +141,14 @@ public class WMSController extends AbstractOGCServiceController {
 
     private static final Logger LOG = getLogger( WMSController.class );
 
-    private final static String CONFIG_SCHEMA_FILE = "/META-INF/schemas/wms/0.5.0/wms_configuration.xsd";
+    private final static String CONFIG_SCHEMA_FILE = "/META-INF/schemas/wms/0.6.0/wms_configuration.xsd";
 
     private static final ImplementationMetadata<WMSRequestType> IMPLEMENTATION_METADATA = new ImplementationMetadata<WMSRequestType>() {
         {
             supportedVersions = new Version[] { VERSION_111, VERSION_130 };
             handledNamespaces = new String[] { "" }; // WMS uses null namespace for SLD GetMap Post requests
             handledRequests = WMSRequestType.class;
-            supportedConfigVersions = new Version[] { Version.parseVersion( "0.5.0" ) };
+            supportedConfigVersions = new Version[] { Version.parseVersion( "0.6.0" ) };
         }
     };
 
@@ -179,28 +174,29 @@ public class WMSController extends AbstractOGCServiceController {
 
     private Version highestVersion;
 
-    private static <T> void instantiateSerializer( HashMap<String, T> map, String format, String className,
-                                                   Class<T> clazz ) {
-        try {
-            // generics and reflection don't go well together
-            @SuppressWarnings(value = "unchecked")
-            Class<T> c = (Class<T>) Class.forName( className );
-            if ( !c.isAssignableFrom( clazz ) ) {
-                LOG.warn( "The serializer class '{}' does not implement the '{}' interface.", className, clazz );
-            } else {
-                map.put( format, c.newInstance() );
-            }
-        } catch ( ClassNotFoundException e ) {
-            LOG.warn( "The feature info serializer class '{}' could not be found " + "on the classpath.", className );
-            LOG.trace( "Stack trace: ", e );
-        } catch ( InstantiationException e ) {
-            LOG.warn( "The feature info serializer class '{}' could not be instantiated.", className );
-            LOG.trace( "Stack trace: ", e );
-        } catch ( IllegalAccessException e ) {
-            LOG.warn( "The feature info serializer class '{}' could not be instantiated.", className );
-            LOG.trace( "Stack trace: ", e );
-        }
-    }
+    // TODO re-implement this in a proper way
+    // private static <T> void instantiateSerializer( HashMap<String, T> map, String format, String className,
+    // Class<T> clazz ) {
+    // try {
+    // // generics and reflection don't go well together
+    // @SuppressWarnings(value = "unchecked")
+    // Class<T> c = (Class<T>) Class.forName( className );
+    // if ( !c.isAssignableFrom( clazz ) ) {
+    // LOG.warn( "The serializer class '{}' does not implement the '{}' interface.", className, clazz );
+    // } else {
+    // map.put( format, c.newInstance() );
+    // }
+    // } catch ( ClassNotFoundException e ) {
+    // LOG.warn( "The feature info serializer class '{}' could not be found " + "on the classpath.", className );
+    // LOG.trace( "Stack trace: ", e );
+    // } catch ( InstantiationException e ) {
+    // LOG.warn( "The feature info serializer class '{}' could not be instantiated.", className );
+    // LOG.trace( "Stack trace: ", e );
+    // } catch ( IllegalAccessException e ) {
+    // LOG.warn( "The feature info serializer class '{}' could not be instantiated.", className );
+    // LOG.trace( "Stack trace: ", e );
+    // }
+    // }
 
     /**
      * @return the underlying map service
@@ -226,9 +222,6 @@ public class WMSController extends AbstractOGCServiceController {
             String additionalClasspath = "org.deegree.services.jaxb.wms";
             Unmarshaller u = getUnmarshaller( additionalClasspath, CONFIG_SCHEMA_FILE );
 
-            XPath xp = new XPath( "wms:PublishedInformation", nsContext );
-            OMElement elem = controllerConf.getElement( controllerConf.getRootElement(), xp );
-
             // put in the default formats
             supportedFeatureInfoFormats.put( "application/vnd.ogc.gml", "" );
             supportedFeatureInfoFormats.put( "text/xml", "" );
@@ -243,47 +236,40 @@ public class WMSController extends AbstractOGCServiceController {
             supportedImageFormats.add( "image/tiff" );
             supportedImageFormats.add( "image/x-ms-bmp" );
 
-            if ( elem != null ) {
-                PublishedInformation pi = (PublishedInformation) u.unmarshal( elem.getXMLStreamReaderWithoutCaching() );
+            DeegreeWMS conf = (DeegreeWMS) u.unmarshal( controllerConf.getRootElement().getXMLStreamReaderWithoutCaching() );
 
-                if ( pi.getGetFeatureInfoFormat() != null ) {
-                    for ( GetFeatureInfoFormat t : pi.getGetFeatureInfoFormat() ) {
-                        String format = t.getFormat();
-                        if ( t.getFile() != null ) {
-                            supportedFeatureInfoFormats.put(
-                                                             format,
-                                                             new File( controllerConf.resolve( t.getFile() ).toURI() ).toString() );
-                        } else {
-                            instantiateSerializer( featureInfoSerializers, format, t.getClazz(),
-                                                   FeatureInfoSerializer.class );
-                        }
+            if ( conf.getFeatureInfoFormats() != null ) {
+                for ( GetFeatureInfoFormat t : conf.getFeatureInfoFormats().getGetFeatureInfoFormat() ) {
+                    String format = t.getFormat();
+                    if ( t.getFile() != null ) {
+                        supportedFeatureInfoFormats.put(
+                                                         format,
+                                                         new File( controllerConf.resolve( t.getFile() ).toURI() ).toString() );
+                        // } else {
+                        // instantiateSerializer( featureInfoSerializers, format, t.getClazz(),
+                        // FeatureInfoSerializer.class );
                     }
                 }
+            }
 
-                if ( pi.getImageFormat() != null ) {
-                    for ( ImageFormat f : pi.getImageFormat() ) {
-                        instantiateSerializer( imageSerializers, f.getFormat(), f.getClazz(), ImageSerializer.class );
-                    }
-                }
+            // if ( pi.getImageFormat() != null ) {
+            // for ( ImageFormat f : pi.getImageFormat() ) {
+            // instantiateSerializer( imageSerializers, f.getFormat(), f.getClazz(), ImageSerializer.class );
+            // }
+            // }
 
-                // TODO assign overwritten metadata here
-                // identification = pi.getServiceIdentification() == null ? identification :
-                // pi.getServiceIdentification();
-                // provider = pi.getServiceProvider() == null ? provider : pi.getServiceProvider();
-                final SupportedVersions versions = pi.getSupportedVersions();
-                if ( versions == null ) {
-                    ArrayList<String> vs = new ArrayList<String>();
-                    vs.add( "1.1.1" );
-                    vs.add( "1.3.0" );
-                    validateAndSetOfferedVersions( vs );
-                } else {
-                    validateAndSetOfferedVersions( versions.getVersion() );
-                }
-            } else {
+            // TODO assign overwritten metadata here
+            // identification = pi.getServiceIdentification() == null ? identification :
+            // pi.getServiceIdentification();
+            // provider = pi.getServiceProvider() == null ? provider : pi.getServiceProvider();
+            final org.deegree.services.jaxb.wms.DeegreeWMS.SupportedVersions versions = conf.getSupportedVersions();
+            if ( versions == null ) {
                 ArrayList<String> vs = new ArrayList<String>();
                 vs.add( "1.1.1" );
                 vs.add( "1.3.0" );
                 validateAndSetOfferedVersions( vs );
+            } else {
+                validateAndSetOfferedVersions( versions.getVersion() );
             }
 
             for ( Version v : offeredVersions ) {
@@ -300,17 +286,16 @@ public class WMSController extends AbstractOGCServiceController {
                 highestVersion = iter.next();
             }
 
-            xp = new XPath( "wms:ServiceConfiguration", nsContext );
-            elem = controllerConf.getRequiredElement( controllerConf.getRootElement(), xp );
-            ServiceConfiguration sc = (ServiceConfiguration) u.unmarshal( elem.getXMLStreamReaderWithoutCaching() );
+            ServiceConfigurationType sc = conf.getServiceConfiguration();
             service = new MapService( sc, controllerConf );
 
-            if ( sc.getSecurityManager() == null ) {
-                // then do nothing and step over
-            } else {
-                securityManager = sc.getSecurityManager().getDummySecurityManager() != null ? new DummyWMSSecurityManager()
-                                                                                           : null;
-            }
+            // if ( sc.getSecurityManager() == null ) {
+            // // then do nothing and step over
+            // } else {
+            // securityManager = sc.getSecurityManager().getDummySecurityManager() != null ? new
+            // DummyWMSSecurityManager()
+            // : null;
+            // }
 
             String securityLogging = securityManager != null ? "A securityManager is specified: " + securityManager
                                                             : "There is no securityManager specified. Now, there should be no credentials needed and every operation can be requested anonymous.";

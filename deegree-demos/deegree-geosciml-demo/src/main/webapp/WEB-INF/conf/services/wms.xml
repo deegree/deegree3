@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<deegreeWMS xmlns="http://www.deegree.org/services/wms" configVersion="0.5.0"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.deegree.org/services/wms http://schemas.deegree.org/wms/0.5.0/wms_configuration.xsd">
+<deegreeWMS xmlns="http://www.deegree.org/services/wms" configVersion="0.6.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.deegree.org/services/wms http://schemas.deegree.org/wms/0.6.0/wms_configuration.xsd">
   <ServiceConfiguration>
 
     <!-- UnrequestableLayer>

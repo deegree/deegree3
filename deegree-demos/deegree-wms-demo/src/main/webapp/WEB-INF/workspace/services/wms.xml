@@ -1,11 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<deegreeWMS configVersion="0.5.0" xmlns="http://www.deegree.org/services/wms" xmlns:xlink="http://www.w3.org/1999/xlink"
+<deegreeWMS configVersion="0.6.0" xmlns="http://www.deegree.org/services/wms" xmlns:xlink="http://www.w3.org/1999/xlink"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:dgws="http://www.deegree.org/webservices"
-  xsi:schemaLocation="http://www.deegree.org/services/wms http://schemas.deegree.org/wms/0.5.0/wms_configuration.xsd">
+  xsi:schemaLocation="http://www.deegree.org/services/wms http://schemas.deegree.org/wms/0.6.0/wms_configuration.xsd">
 
   <ServiceConfiguration>
-    <FeatureInfoRadius>10</FeatureInfoRadius>
-    
+    <DefaultLayerOptions>
+      <FeatureInfoRadius>10</FeatureInfoRadius>
+    </DefaultLayerOptions>
+
     <UnrequestableLayer>
       <Title>deegree 3 WMS demo</Title>
       <CRS>EPSG:4326 CRS:84 EPSG:26912</CRS>
@@ -76,12 +78,12 @@
           <Name>Roads</Name>
           <Title>Roads of Utah</Title>
           <FeatureStoreId>utah_roads</FeatureStoreId>
-        <DirectStyle>
+          <DirectStyle>
             <File>../styles/utah_roads.se</File>
           </DirectStyle>
-         <SupportedFeatures>
+          <LayerOptions>
             <MaxFeatures>10000000</MaxFeatures>
-          </SupportedFeatures>
+          </LayerOptions>
         </RequestableLayer>
         <RequestableLayer>
           <Name>Airports</Name>
@@ -214,9 +216,9 @@
         <DirectStyle>
           <File>../styles/utah_energyresources.se</File>
         </DirectStyle>
-        <SupportedFeatures>
+        <LayerOptions>
           <AntiAliasing>NONE</AntiAliasing>
-        </SupportedFeatures>
+        </LayerOptions>
       </RequestableLayer>
 
       <RequestableLayer>
@@ -227,12 +229,9 @@
           <File>../styles/utah_cities.se</File>
         </DirectStyle>
       </RequestableLayer>
-      <!-- 
-      <RequestableLayer>
-        <Name>simplesql_postgis_example</Name>
-        <Title>Simplesql PostGIS example</Title>
-        <FeatureStoreId>simplesql_postgis_example</FeatureStoreId>
-      </RequestableLayer>
+      <!--
+        <RequestableLayer> <Name>simplesql_postgis_example</Name> <Title>Simplesql PostGIS example</Title>
+        <FeatureStoreId>simplesql_postgis_example</FeatureStoreId> </RequestableLayer>
       -->
       <RequestableLayer>
         <Name>WeatherStations</Name>
@@ -258,12 +257,14 @@
       <StatisticsLayer />
 
     </UnrequestableLayer>
-    
+
   </ServiceConfiguration>
-  <PublishedInformation>
+
+  <FeatureInfoFormats>
     <GetFeatureInfoFormat>
       <File>html.gfi</File>
       <Format>text/html</Format>
     </GetFeatureInfoFormat>
-  </PublishedInformation>
+  </FeatureInfoFormats>
+
 </deegreeWMS>
