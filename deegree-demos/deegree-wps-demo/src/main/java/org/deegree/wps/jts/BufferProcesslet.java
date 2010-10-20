@@ -45,7 +45,7 @@ import java.util.Map;
 import javax.xml.stream.XMLStreamReader;
 
 import org.deegree.commons.uom.Measure;
-import org.deegree.commons.xml.stax.XMLStreamWriterWrapper;
+import org.deegree.commons.xml.stax.SchemaLocationXMLStreamWriter;
 import org.deegree.geometry.Geometry;
 import org.deegree.gml.GMLInputFactory;
 import org.deegree.gml.GMLOutputFactory;
@@ -104,7 +104,7 @@ public class BufferProcesslet implements Processlet, GeometryHandler {
         ComplexOutput gmlOutputGeometry = (ComplexOutput) out.getParameter( "BufferedGeometry" );
 
         try {
-            XMLStreamWriterWrapper sw = new XMLStreamWriterWrapper( gmlOutputGeometry.getXMLStreamWriter(),
+            SchemaLocationXMLStreamWriter sw = new SchemaLocationXMLStreamWriter( gmlOutputGeometry.getXMLStreamWriter(),
                                                                     "http://www.opengis.net/gml http://schemas.opengis.net/gml/3.1.1/base/geometryAggregates.xsd" );
             sw.setPrefix( "gml", GMLNS );
             GMLStreamWriter gmlWriter = GMLOutputFactory.createGMLStreamWriter( GML_31, sw );

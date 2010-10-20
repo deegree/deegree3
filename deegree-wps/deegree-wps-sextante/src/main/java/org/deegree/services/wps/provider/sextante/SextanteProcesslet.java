@@ -46,7 +46,7 @@ import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
 
-import org.deegree.commons.xml.stax.XMLStreamWriterWrapper;
+import org.deegree.commons.xml.stax.SchemaLocationXMLStreamWriter;
 import org.deegree.feature.Feature;
 import org.deegree.feature.FeatureCollection;
 import org.deegree.feature.property.Property;
@@ -778,7 +778,8 @@ public class SextanteProcesslet implements Processlet {
             else
                 schemaPrefix = "http://www.opengis.net/gml ";
 
-            XMLStreamWriterWrapper sw = new XMLStreamWriterWrapper( gmlOutput.getXMLStreamWriter(), schemaPrefix
+
+            SchemaLocationXMLStreamWriter sw = new SchemaLocationXMLStreamWriter( gmlOutput.getXMLStreamWriter(), schemaPrefix
                                                                                                     + gmlSchema );
             sw.setPrefix( "gml", GMLNS );
             GMLStreamWriter gmlWriter = GMLOutputFactory.createGMLStreamWriter( gmlVersion, sw );

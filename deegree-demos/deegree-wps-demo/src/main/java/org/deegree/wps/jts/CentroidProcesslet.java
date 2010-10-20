@@ -42,7 +42,7 @@ import java.util.Map;
 
 import javax.xml.stream.XMLStreamReader;
 
-import org.deegree.commons.xml.stax.XMLStreamWriterWrapper;
+import org.deegree.commons.xml.stax.SchemaLocationXMLStreamWriter;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.primitive.Point;
 import org.deegree.gml.GMLInputFactory;
@@ -100,7 +100,7 @@ public class CentroidProcesslet implements Processlet, GeometryHandler {
     private void writeGeometry( ComplexOutput gmlOutput, Geometry geometry )
                             throws ProcessletException {
         try {
-            XMLStreamWriterWrapper sw = new XMLStreamWriterWrapper( gmlOutput.getXMLStreamWriter(),
+            SchemaLocationXMLStreamWriter sw = new SchemaLocationXMLStreamWriter( gmlOutput.getXMLStreamWriter(),
                                                                     "http://www.opengis.net/gml http://schemas.opengis.net/gml/3.1.1/base/geometryAggregates.xsd" );
             sw.setPrefix( "gml", GMLNS );
             GMLStreamWriter gmlWriter = GMLOutputFactory.createGMLStreamWriter( GML_31, sw );

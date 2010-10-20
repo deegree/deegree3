@@ -40,7 +40,7 @@ import static org.deegree.gml.GMLVersion.GML_31;
 
 import javax.xml.stream.XMLStreamReader;
 
-import org.deegree.commons.xml.stax.XMLStreamWriterWrapper;
+import org.deegree.commons.xml.stax.SchemaLocationXMLStreamWriter;
 import org.deegree.geometry.Geometry;
 import org.deegree.gml.GMLInputFactory;
 import org.deegree.gml.GMLOutputFactory;
@@ -95,7 +95,7 @@ public class DifferenceProcesslet implements Processlet {
     private void writeGeometry( ComplexOutput gmlOutput, Geometry geometry )
                             throws ProcessletException {
         try {
-            XMLStreamWriterWrapper sw = new XMLStreamWriterWrapper( gmlOutput.getXMLStreamWriter(),
+            SchemaLocationXMLStreamWriter sw = new SchemaLocationXMLStreamWriter( gmlOutput.getXMLStreamWriter(),
                                                                     "http://www.opengis.net/gml http://schemas.opengis.net/gml/3.1.1/base/geometryAggregates.xsd" );
             sw.setPrefix( "gml", GMLNS );
             GMLStreamWriter gmlWriter = GMLOutputFactory.createGMLStreamWriter( GML_31, sw );
