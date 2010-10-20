@@ -54,7 +54,9 @@ import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;
 import org.deegree.filter.Filter;
 import org.deegree.filter.expression.Literal;
 import org.deegree.filter.expression.PropertyName;
+import org.deegree.filter.xml.Filter100XMLDecoder;
 import org.deegree.filter.xml.Filter110XMLDecoder;
+import org.deegree.metadata.persistence.MetadataStoreException;
 import org.deegree.metadata.publication.DeleteTransaction;
 import org.deegree.metadata.publication.InsertTransaction;
 import org.deegree.metadata.publication.MetadataProperty;
@@ -94,7 +96,9 @@ public class TransactionXMLAdapter extends AbstractCSWRequestXMLAdapter {
         Transaction result = null;
 
         if ( VERSION_202.equals( version ) ) {
+
             result = parse202();
+
         } else {
             String msg = Messages.get( "UNSUPPORTED_VERSION", version, Version.getVersionsString( VERSION_202 ) );
             throw new InvalidParameterValueException( msg );
@@ -107,6 +111,7 @@ public class TransactionXMLAdapter extends AbstractCSWRequestXMLAdapter {
      * Parses the {@link Transaction} request on basis of CSW version 2.0.2
      * 
      * @return {@link Transaction}
+     * @throws MetadataStoreException
      */
     private Transaction parse202() {
 
@@ -173,15 +178,19 @@ public class TransactionXMLAdapter extends AbstractCSWRequestXMLAdapter {
                     if ( versionConstraint.equals( new Version( 1, 1, 0 ) ) ) {
 
                         constraintDelete = Filter110XMLDecoder.parse( xmlStream );
-                        System.out.println( constraintDelete );
 
+                    } else if ( versionConstraint.equals( new Version( 1, 0, 0 ) ) ) {
+                        constraintDelete = Filter100XMLDecoder.parse( xmlStream );
                     } else {
                         String msg = Messages.get( "FILTER_VERSION NOT SPECIFIED", versionConstraint,
-                                                   Version.getVersionsString( new Version( 1, 1, 0 ) ) );
+                                                   Version.getVersionsString( new Version( 1, 1, 0 ) ),
+                                                   Version.getVersionsString( new Version( 1, 0, 0 ) ) );
+                        LOG.info( msg );
                         throw new InvalidParameterValueException( msg );
                     }
                 } catch ( XMLStreamException e ) {
-                    LOG.debug( e.getMessage() );
+                    String msg = "FilterParsingException: ";
+                    LOG.debug( msg );
                     throw new XMLParsingException( this, filterEl, e.getMessage() );
                 }
 
@@ -194,29 +203,27 @@ public class TransactionXMLAdapter extends AbstractCSWRequestXMLAdapter {
                 List<MetadataProperty> recordProperties = null;
                 Filter constraintUpdate = null;
                 List<OMElement> recordPropertyElements = getElements( transChildElement,
-                                                                      new XPath( "//csw:RecordProperty", nsContext ) );
+                                                                      new XPath( "./csw:RecordProperty", nsContext ) );
+                OMElement constraintElements = getElement( transChildElement, new XPath( "./csw:Constraint", nsContext ) );
 
-                if ( recordPropertyElements.size() != 0 ) {
+                if ( !recordPropertyElements.isEmpty() ) {
 
                     MetadataProperty recordProperty = null;
                     recordProperties = new ArrayList<MetadataProperty>();
                     for ( OMElement recordPropertyElement : recordPropertyElements ) {
                         QName name = getRequiredNodeAsQName( recordPropertyElement, new XPath( "Name", nsContext ) );
-                        // String name = getRequiredNodeAsString( recordPropertyElement, new XPath( "Name", nsContext )
-                        // );
                         String value = getNodeAsString( recordPropertyElement, new XPath( "Value", nsContext ), null );
 
                         recordProperty = new MetadataProperty( new PropertyName( name ), new Literal( value ) );
                         recordProperties.add( recordProperty );
                     }
+                } else if ( constraintElements != null ) {
 
-                    Version versionConstraintUpdate = getRequiredNodeAsVersion( transChildElement,
-                                                                                new XPath( "//csw:Constraint/@version",
-                                                                                           nsContext ) );
+                    Version versionConstraintUpdate = getRequiredNodeAsVersion( constraintElements,
+                                                                                new XPath( "@version", nsContext ) );
 
-                    OMElement filterElUpdate = (OMElement) getNode(
-                                                                    transChildElement,
-                                                                    new XPath( "//csw:Constraint/ogc:Filter", nsContext ) );
+                    OMElement filterElUpdate = (OMElement) getNode( constraintElements, new XPath( "./ogc:Filter",
+                                                                                                   nsContext ) );
                     // OMElement cqlTextElUpdate = transChildElement.getFirstChildWithName( new QName( "", "CQLTEXT" )
                     // );
 
@@ -233,22 +240,30 @@ public class TransactionXMLAdapter extends AbstractCSWRequestXMLAdapter {
                         if ( versionConstraintUpdate.equals( new Version( 1, 1, 0 ) ) ) {
 
                             constraintUpdate = Filter110XMLDecoder.parse( xmlStream );
-                            System.out.println( constraintUpdate );
 
+                        } else if ( versionConstraintUpdate.equals( new Version( 1, 0, 0 ) ) ) {
+                            constraintUpdate = Filter100XMLDecoder.parse( xmlStream );
                         } else {
                             String msg = Messages.get( "FILTER_VERSION NOT SPECIFIED", versionConstraintUpdate,
-                                                       Version.getVersionsString( new Version( 1, 1, 0 ) ) );
+                                                       Version.getVersionsString( new Version( 1, 1, 0 ) ),
+                                                       Version.getVersionsString( new Version( 1, 0, 0 ) ) );
+                            LOG.info( msg );
                             throw new InvalidParameterValueException( msg );
                         }
                     } catch ( XMLStreamException e ) {
-                        e.printStackTrace();
+                        String msg = "FilterParsingException: There went something wrong while parsing the filter expression, so please check this!";
+                        LOG.debug( msg );
                         throw new XMLParsingException( this, filterElUpdate, e.getMessage() );
                     }
-                } else {
+
                     handle = getNodeAsString( transChildElement, new XPath( "@handle", nsContext ), null );
-                    // typeName = getNodeAsQName( transChildElement, new XPath( "@typeName", nsContext ), null );
+                    typeName = getNodeAsQName( transChildElement, new XPath( "@typeName", nsContext ), null );
 
                     transChildElementUpdate = getRequiredElement( transChildElement, new XPath( "*", nsContext ) );
+                } else {
+                    String msg = "One of RecordProperties or Constraint shall be specified!";
+                    LOG.debug( msg );
+                    throw new InvalidParameterValueException( msg );
                 }
 
                 operations.add( new UpdateTransaction( handle, transChildElementUpdate, typeName, constraintUpdate,

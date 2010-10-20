@@ -59,12 +59,15 @@ import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.filter.Filter;
 import org.deegree.filter.expression.PropertyName;
 import org.deegree.filter.sort.SortProperty;
+import org.deegree.filter.xml.Filter100XMLDecoder;
 import org.deegree.filter.xml.Filter110XMLDecoder;
 import org.deegree.protocol.csw.CSWConstants.ConstraintLanguage;
 import org.deegree.protocol.csw.CSWConstants.ResultType;
 import org.deegree.protocol.csw.CSWConstants.ReturnableElement;
 import org.deegree.protocol.i18n.Messages;
 import org.deegree.services.csw.AbstractCSWKVPAdapter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * 
@@ -76,6 +79,7 @@ import org.deegree.services.csw.AbstractCSWKVPAdapter;
  * @version $Revision: $, $Date: $
  */
 public class GetRecordsKVPAdapter extends AbstractCSWKVPAdapter {
+    private static Logger LOG = LoggerFactory.getLogger( GetRecordsKVPAdapter.class );
 
     /**
      * Parses the {@link GetRecords} kvp request and decides which version has to parse because of the requested version
@@ -177,6 +181,7 @@ public class GetRecordsKVPAdapter extends AbstractCSWKVPAdapter {
         ConstraintLanguage constraintLanguage = null;
         // constraint String Languagequery is specified
         String constraintString = normalizedKVPParams.get( "CONSTRAINT" );
+        String constraintStringVersion = normalizedKVPParams.get( "CONSTRAINT_LANGUAGE_VERSION" );
 
         // "Filterexpression" -> Filterexpression
         // TODO what if no begin and end tag?? -> <....>
@@ -185,6 +190,7 @@ public class GetRecordsKVPAdapter extends AbstractCSWKVPAdapter {
         Filter constraint = null;
 
         XMLStreamReader xmlStream = null;
+        Version versionConstraint = Version.parseVersion( constraintStringVersion );
 
         try {
             // TODO remove usage of wrapper (necessary at the moment to work around problems
@@ -194,10 +200,22 @@ public class GetRecordsKVPAdapter extends AbstractCSWKVPAdapter {
             // skip START_DOCUMENT
             xmlStream.nextTag();
 
-            constraint = Filter110XMLDecoder.parse( xmlStream );
+            if ( versionConstraint.equals( new Version( 1, 1, 0 ) ) ) {
 
+                constraint = Filter110XMLDecoder.parse( xmlStream );
+
+            } else if ( versionConstraint.equals( new Version( 1, 0, 0 ) ) ) {
+                constraint = Filter100XMLDecoder.parse( xmlStream );
+            } else {
+                String msg = Messages.get( "FILTER_VERSION NOT SPECIFIED", versionConstraint,
+                                           Version.getVersionsString( new Version( 1, 1, 0 ) ),
+                                           Version.getVersionsString( new Version( 1, 0, 0 ) ) );
+                LOG.info( msg );
+                throw new InvalidParameterValueException( msg );
+            }
         } catch ( XMLStreamException e ) {
-            e.printStackTrace();
+            String msg = "FilterParsingException: There went something wrong while parsing the filter expression, so please check this!";
+            LOG.debug( msg );
             throw new XMLParsingException( xmlStream, e.getMessage() );
         }
 

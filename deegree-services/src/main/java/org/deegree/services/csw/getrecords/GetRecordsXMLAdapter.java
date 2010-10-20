@@ -61,6 +61,7 @@ import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;
 import org.deegree.filter.Filter;
 import org.deegree.filter.expression.PropertyName;
 import org.deegree.filter.sort.SortProperty;
+import org.deegree.filter.xml.Filter100XMLDecoder;
 import org.deegree.filter.xml.Filter110XMLDecoder;
 import org.deegree.protocol.csw.CSWConstants;
 import org.deegree.protocol.csw.CSWConstants.ConstraintLanguage;
@@ -262,9 +263,12 @@ public class GetRecordsXMLAdapter extends AbstractCSWRequestXMLAdapter {
 
                                     constraint = Filter110XMLDecoder.parse( xmlStream );
 
+                                } else if ( versionConstraint.equals( new Version( 1, 0, 0 ) ) ) {
+                                    constraint = Filter100XMLDecoder.parse( xmlStream );
                                 } else {
                                     String msg = Messages.get( "FILTER_VERSION NOT SPECIFIED", versionConstraint,
-                                                               Version.getVersionsString( new Version( 1, 1, 0 ) ) );
+                                                               Version.getVersionsString( new Version( 1, 1, 0 ) ),
+                                                               Version.getVersionsString( new Version( 1, 0, 0 ) ) );
                                     LOG.info( msg );
                                     throw new InvalidParameterValueException( msg );
                                 }
