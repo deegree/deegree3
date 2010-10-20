@@ -407,7 +407,7 @@ public class FeatureLayer extends Layer {
 
             FeatureCollection col;
             if ( featureType == null ) {
-                List<Query> queries = clearNulls( map( datastore.getSchema().getFeatureTypes( null, false, false ),
+                List<Query> queries = map( datastore.getSchema().getFeatureTypes( null, false, false ),
                                                        new Mapper<Query, FeatureType>() {
                                                            public Query apply( FeatureType u ) {
                                                                if ( u.getDefaultGeometryPropertyDeclaration() == null ) {
@@ -417,7 +417,8 @@ public class FeatureLayer extends Layer {
                                                                                  buildFilter( operator, u, clickBox ),
                                                                                  -1, fi.getFeatureCount(), -1 );
                                                            }
-                                                       } ) );
+                                                       } );
+                clearNulls( queries );
                 col = clearDuplicates( datastore.query( queries.toArray( new Query[queries.size()] ) ) );
             } else {
                 FeatureType ft = datastore.getSchema().getFeatureType( featureType );
