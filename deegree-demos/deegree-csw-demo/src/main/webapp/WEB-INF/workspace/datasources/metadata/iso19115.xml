@@ -6,29 +6,20 @@
 	xmlns="http://www.deegree.org/datasource/metadata/iso19115"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://www.deegree.org/datasource/metadata/iso19115 iso19115.xsd">
-	
-	<!--<RecordInspector name="FILE_IDENTIFIER">
-	
-	</RecordInspector>
-	
-	<RecordInspector name="INSPIRE_COMPLIANCE">
-	
-	</RecordInspector>
-	
-	
-	<RecordInspector name="COUPLED_ReSOURCE">
-	
-	</RecordInspector>-->
-
-	
-	
-	
 	<IdentifierInspector name="DEFAULT">
 		<Param key="rejectEmptyFileIdentifier">true</Param>
 		<Param key="deriveFileIdentifier">gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:citation/gmd:CI_Citation/gmd:identifier/gmd:RS_Identifier
     </Param>
 		<Param key="deriveFileIdentifier">gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/@id</Param>
 	</IdentifierInspector>
-	<RequireInspireCompliance generateAutomatic="true"/> 
-	<CoupledResourceInspector throwConsistencyError="true" />
+	<!--<RequireInspireCompliance generateAutomatic="true"/> 
+	<CoupledResourceInspector throwConsistencyError="true" />-->
+		<AnyText>
+		<Core/>
+	  <!--<Custom>
+	  	<XPath>/gmd:MD_Metadata/gmd:fileIdentifier/gco:CharacterString</XPath>
+	  	<XPath>/gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:descriptiveKeywords/gmd:MD_Keywords/gmd:keyword/gco:CharacterString</XPath>
+	    <XPath>/gmd:MD_Metadata/gmd:contact/gmd:CI_ResponsibleParty/gmd:individualName/gco:CharacterString</XPath>
+	  </Custom>
+	--></AnyText>
 </ISOMetadataStore>
