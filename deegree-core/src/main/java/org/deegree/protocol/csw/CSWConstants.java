@@ -146,6 +146,9 @@ public final class CSWConstants {
     /** CSW protocol version 2.0.2 */
     public static final Version VERSION_202 = Version.parseVersion( "2.0.2" );
 
+    /** CSW protocol version 2.0.2 as String representation */
+    public static final String VERSION_202_STRING = "2.0.2";
+
     /**
      * 
      * Operations that is the webservice capable of <br>
