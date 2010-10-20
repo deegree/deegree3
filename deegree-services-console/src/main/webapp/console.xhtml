@@ -28,7 +28,10 @@
   [<a href="console/wms/wms.html" target="_blank">OpenLayers WMS client</a>]
   [<dg:externalLink target="_blank" href="http://wiki.deegree.org" title="deegree Wiki" />]  
 
+
+  <!-- please comment out the following line and comment in the second line to disable service console configuration restriction to localhost access -->
   <h:panelGroup rendered="#{logBean.loggedIn}">
+  <!-- <h:panelGroup>-->
     <h:form id="reloadForm">
       <br />
       <h:panelGroup rendered="#{configManager.pendingChanges}">
