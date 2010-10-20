@@ -89,8 +89,6 @@ import org.deegree.cs.CRS;
 import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.feature.persistence.FeatureStore;
 import org.deegree.feature.types.FeatureType;
-import org.deegree.geometry.io.CoordinateFormatter;
-import org.deegree.geometry.io.DecimalCoordinateFormatter;
 import org.deegree.gml.GMLVersion;
 import org.deegree.protocol.ows.capabilities.GetCapabilities;
 import org.deegree.protocol.wfs.WFSConstants;
@@ -199,8 +197,6 @@ public class WFSController extends AbstractOGCServiceController {
 
     private boolean checkAreaOfUse;
 
-    private CoordinateFormatter formatter;
-
     @Override
     public void init( XMLAdapter controllerConf, DeegreeServicesMetadataType serviceMetadata,
                       DeegreeServiceControllerType mainConf )
@@ -247,18 +243,13 @@ public class WFSController extends AbstractOGCServiceController {
             ftNameToFtMetadata.put( ftMd.getName(), ftMd );
         }
 
-        formatter = new DecimalCoordinateFormatter( 8 );
         service = new WFService();
         try {
-            if ( jaxbConfig.getCoordinateFormatter() != null ) {
-                LOG.info( "Using coordinate formatter class '" + formatter + "'." );
-                String formatterClass = jaxbConfig.getCoordinateFormatter().getJavaClass();
-                formatter = (CoordinateFormatter) Class.forName( formatterClass ).newInstance();
-            }
             service.init( jaxbConfig, controllerConf.getSystemId() );
         } catch ( Exception e ) {
             throw new ControllerInitException( "Error initializing WFS / FeatureStores: " + e.getMessage(), e );
         }
+
         lockFeatureHandler = new LockFeatureHandler( this );
 
         initQueryCRS( jaxbConfig.getQueryCRS() );
@@ -309,13 +300,13 @@ public class WFSController extends AbstractOGCServiceController {
         if ( formatList == null || formatList.isEmpty() ) {
             LOG.debug( "Using default format configuration." );
             String mimeType = "text/xml; subtype=gml/2.1.2";
-            mimeTypeToFormat.put( mimeType, new org.deegree.services.wfs.format.gml.GMLFormat( this, formatter, GML_2 ) );
+            mimeTypeToFormat.put( mimeType, new org.deegree.services.wfs.format.gml.GMLFormat( this, GML_2 ) );
             mimeType = "text/xml; subtype=gml/3.0.1";
-            mimeTypeToFormat.put( mimeType, new org.deegree.services.wfs.format.gml.GMLFormat( this, formatter, GML_30 ) );
+            mimeTypeToFormat.put( mimeType, new org.deegree.services.wfs.format.gml.GMLFormat( this, GML_30 ) );
             mimeType = "text/xml; subtype=gml/3.1.1";
-            mimeTypeToFormat.put( mimeType, new org.deegree.services.wfs.format.gml.GMLFormat( this, formatter, GML_31 ) );
+            mimeTypeToFormat.put( mimeType, new org.deegree.services.wfs.format.gml.GMLFormat( this, GML_31 ) );
             mimeType = "text/xml; subtype=gml/3.2.1";
-            mimeTypeToFormat.put( mimeType, new org.deegree.services.wfs.format.gml.GMLFormat( this, formatter, GML_32 ) );
+            mimeTypeToFormat.put( mimeType, new org.deegree.services.wfs.format.gml.GMLFormat( this, GML_32 ) );
         } else {
             LOG.debug( "Using customized format configuration." );
             for ( JAXBElement<? extends AbstractFormatType> formatEl : formatList ) {
@@ -323,7 +314,7 @@ public class WFSController extends AbstractOGCServiceController {
                 List<String> mimeTypes = formatDef.getMimeType();
                 Format format = null;
                 if ( formatDef instanceof GMLFormat ) {
-                    format = new org.deegree.services.wfs.format.gml.GMLFormat( this, formatter, (GMLFormat) formatDef );
+                    format = new org.deegree.services.wfs.format.gml.GMLFormat( this, (GMLFormat) formatDef );
                 } else if ( formatDef instanceof CustomFormat ) {
                     CustomFormat cf = (CustomFormat) formatDef;
                     String className = cf.getJavaClass();

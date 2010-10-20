@@ -60,6 +60,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
@@ -83,6 +84,7 @@ import org.deegree.filter.FilterEvaluationException;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.io.CoordinateFormatter;
+import org.deegree.geometry.io.DecimalCoordinateFormatter;
 import org.deegree.gml.GMLObject;
 import org.deegree.gml.GMLOutputFactory;
 import org.deegree.gml.GMLReference;
@@ -100,6 +102,7 @@ import org.deegree.protocol.wfs.lockfeature.BBoxLock;
 import org.deegree.protocol.wfs.lockfeature.FeatureIdLock;
 import org.deegree.protocol.wfs.lockfeature.FilterLock;
 import org.deegree.protocol.wfs.lockfeature.LockOperation;
+import org.deegree.services.controller.exception.ControllerInitException;
 import org.deegree.services.controller.ows.OWSException;
 import org.deegree.services.controller.utils.HttpResponseBuffer;
 import org.deegree.services.i18n.Messages;
@@ -145,7 +148,7 @@ public class GMLFormat implements Format {
 
     private DescribeFeatureTypeHandler dftHandler;
 
-    public GMLFormat( WFSController master, CoordinateFormatter formatter, GMLVersion gmlVersion ) {
+    public GMLFormat( WFSController master, GMLVersion gmlVersion ) {
 
         this.master = master;
         this.service = master.getService();
@@ -153,12 +156,13 @@ public class GMLFormat implements Format {
 
         this.featureLimit = master.getMaxFeatures();
         this.checkAreaOfUse = master.getCheckAreaOfUse();
-        this.formatter = formatter;
+        this.formatter = new DecimalCoordinateFormatter( 8 );
         this.gmlVersion = gmlVersion;
     }
 
-    public GMLFormat( WFSController master, CoordinateFormatter formatter,
-                      org.deegree.services.jaxb.wfs.GMLFormat formatDef ) {
+    public GMLFormat( WFSController master, org.deegree.services.jaxb.wfs.GMLFormat formatDef )
+                            throws ControllerInitException {
+
         this.master = master;
         this.service = master.getService();
         this.dftHandler = new DescribeFeatureTypeHandler( service );
@@ -181,8 +185,29 @@ public class GMLFormat implements Format {
 
         this.featureLimit = master.getMaxFeatures();
         this.checkAreaOfUse = master.getCheckAreaOfUse();
-        this.formatter = formatter;
-        this.gmlVersion = GMLVersion.valueOf( formatDef.getVersion().value() );
+
+        this.formatter = new DecimalCoordinateFormatter( 8 );
+        try {
+            JAXBElement<?> formatterEl = formatDef.getAbstractCoordinateFormatter();
+            if ( formatterEl != null ) {
+                Object formatterConf = formatterEl.getValue();
+                if ( formatterConf instanceof org.deegree.services.jaxb.wfs.DecimalCoordinateFormatter ) {
+                    LOG.info( "Setting up configured DecimalCoordinateFormatter." );
+                    org.deegree.services.jaxb.wfs.DecimalCoordinateFormatter decimalFormatterConf = (org.deegree.services.jaxb.wfs.DecimalCoordinateFormatter) formatterConf;
+                    this.formatter = new DecimalCoordinateFormatter( decimalFormatterConf.getPlaces().intValue() );
+                } else if ( formatterConf instanceof org.deegree.services.jaxb.wfs.CustomCoordinateFormatter ) {
+                    LOG.info( "Setting up CustomCoordinateFormatter." );
+                    org.deegree.services.jaxb.wfs.CustomCoordinateFormatter customFormatterConf = (org.deegree.services.jaxb.wfs.CustomCoordinateFormatter) formatterConf;
+                    this.formatter = (CoordinateFormatter) Class.forName( customFormatterConf.getJavaClass() ).newInstance();
+                } else {
+                    LOG.warn( "Unexpected JAXB type '" + formatterConf.getClass() + "'." );
+                }
+            }
+        } catch ( Exception e ) {
+            throw new ControllerInitException( "Error initializing coordinate formatter: " + e.getMessage(), e );
+        }
+
+        this.gmlVersion = GMLVersion.valueOf( formatDef.getGmlVersion().value() );
     }
 
     @Override

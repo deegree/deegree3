@@ -18,11 +18,6 @@
             </sequence>
           </complexType>
         </element>
-        <element name="CoordinateFormatter" minOccurs="0">
-          <complexType>
-            <attribute name="javaClass" use="required" type="string" />
-          </complexType>
-        </element>
         <element name="EnableTransactions" type="boolean" minOccurs="0" default="false" />
         <element name="DisableResponseBuffering" type="boolean" minOccurs="0" default="false" />
         <element name="QueryCRS" type="string" minOccurs="0" maxOccurs="unbounded" default="EPSG:4326" />
@@ -41,8 +36,8 @@
     <sequence>
       <element name="MimeType" type="string" maxOccurs="unbounded" />
     </sequence>
+    <attribute name="wfsVersion" type="wfs:WFSVersionType" use="optional" />    
   </complexType>
-
   <element name="GMLFormat" substitutionGroup="wfs:AbstractFormat">
     <complexType>
       <complexContent>
@@ -58,29 +53,13 @@
                 </sequence>
               </complexType>
             </element>
-            <element name="CoordinateFormatter" minOccurs="0">
-              <complexType>
-                <sequence>
-                  <element name="JavaClass" type="string" />
-                  <element name="Param" minOccurs="0" maxOccurs="unbounded">
-                    <complexType>
-                      <simpleContent>
-                        <extension base="string">
-                          <attribute name="name" type="string" use="required" />
-                        </extension>
-                      </simpleContent>
-                    </complexType>
-                  </element>
-                </sequence>
-              </complexType>
-            </element>
+            <element ref="wfs:AbstractCoordinateFormatter" minOccurs="0" />
           </sequence>
-          <attribute name="version" type="wfs:GMLVersionType" use="required" />
+          <attribute name="gmlVersion" type="wfs:GMLVersionType" use="required" />
         </extension>
       </complexContent>
     </complexType>
   </element>
-
   <element name="CustomFormat" substitutionGroup="wfs:AbstractFormat">
     <complexType>
       <complexContent>
@@ -91,6 +70,31 @@
           </sequence>
         </extension>
       </complexContent>
+    </complexType>
+  </element>
+
+  <!-- AbstractCoordinateFormatter and substitutions -->
+  <element name="AbstractCoordinateFormatter" abstract="true" />
+  <element name="DecimalCoordinateFormatter" substitutionGroup="wfs:AbstractCoordinateFormatter">
+    <complexType>
+      <sequence />
+      <attribute name="places" type="nonNegativeInteger" />
+    </complexType>
+  </element>
+  <element name="CustomCoordinateFormatter" substitutionGroup="wfs:AbstractCoordinateFormatter">
+    <complexType>
+      <sequence>
+        <element name="JavaClass" type="string" />
+        <element name="Param" minOccurs="0" maxOccurs="unbounded">
+          <complexType>
+            <simpleContent>
+              <extension base="string">
+                <attribute name="name" type="string" use="required" />
+              </extension>
+            </simpleContent>
+          </complexType>
+        </element>
+      </sequence>
     </complexType>
   </element>
 
