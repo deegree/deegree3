@@ -39,6 +39,7 @@ import static org.deegree.protocol.csw.CSWConstants.CSW_202_NS;
 import static org.deegree.protocol.csw.CSWConstants.VERSION_202;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -69,6 +70,7 @@ import org.deegree.commons.xml.NamespaceContext;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.commons.xml.stax.SchemaLocationXMLStreamWriter;
+import org.deegree.metadata.persistence.MetadataStoreException;
 import org.deegree.protocol.csw.CSWConstants;
 import org.deegree.protocol.csw.CSWConstants.CSWRequestType;
 import org.deegree.protocol.csw.CSWConstants.Sections;
@@ -152,6 +154,7 @@ public class CSWController extends AbstractOGCServiceController {
             handledNamespaces = new String[] { CSW_202_NS };
             handledRequests = CSWRequestType.class;
             supportedConfigVersions = new Version[] { Version.parseVersion( "0.6.0" ) };
+
         }
     };
 
@@ -171,11 +174,14 @@ public class CSWController extends AbstractOGCServiceController {
         nsContext.addNamespace( CSWConstants.CSW_PREFIX, "http://www.deegree.org/services/csw" );
 
         DeegreeCSW jaxbConfig = null;
+
         try {
             Unmarshaller u = getUnmarshaller( "org.deegree.services.jaxb.csw",
-                                              "/META-INF/schemas/wms/0.6.0/csw_configuration.xsd" );
+                                              "/META-INF/schemas/csw/0.6.0/csw_configuration.xsd" );
             // turn the application schema location into an absolute URL
             jaxbConfig = (DeegreeCSW) u.unmarshal( controllerConf.getRootElement().getXMLStreamReaderWithoutCaching() );
+
+            service = new CSWService( jaxbConfig, controllerConf.getSystemId() );
         } catch ( XMLParsingException e ) {
             LOG.error( "Could not load CSW configuration: '{}'", e.getMessage() );
             LOG.trace( "Stack trace:", e );
@@ -187,9 +193,19 @@ public class CSWController extends AbstractOGCServiceController {
             // http://www.jaxb.com/how/to/hide/important/information/from/the/user/of/the/api/unknown_xml_format.xml
             throw new ControllerInitException( "Error parsing CSW configuration: "
                                                + e.getLinkedException().getMessage(), e );
+        } catch ( MetadataStoreException e ) {
+            LOG.error( "Could no instanciate the CSWService: '{}' " + e.getMessage() );
+            throw new ControllerInitException( "Could no instanciate the CSWService: " + e.getMessage(), e );
+        }
+        if ( jaxbConfig.getSupportedVersions() == null ) {
+            List<String> defaultVersion = new ArrayList<String>();
+            defaultVersion.add( CSWConstants.VERSION_202_STRING );
+            validateAndSetOfferedVersions( defaultVersion );
+            LOG.info( "No SupportedVersion element provided. The version is set to default 2.0.2" );
+        } else {
+            validateAndSetOfferedVersions( jaxbConfig.getSupportedVersions().getVersion() );
         }
 
-        validateAndSetOfferedVersions( jaxbConfig.getSupportedVersions().getVersion() );
         describeRecordHandler = new DescribeRecordHandler( service );
         getRecordsHandler = new GetRecordsHandler( service );
         transactionHandler = new TransactionHandler( service );
