@@ -94,9 +94,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Handles {@link DescribeFeatureType} requests for the {@link GMLOutputFormat}.
+ * Handles {@link DescribeFeatureType} requests for the {@link GMLFormat}.
  * 
- * @see GMLOutputFormat
+ * @see GMLFormat
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author: schneider $
@@ -154,7 +154,7 @@ class DescribeFeatureTypeHandler {
      * @throws IOException
      *             if an IO-error occurs
      */
-    void doDescribeFeatureType( DescribeFeatureType request, HttpResponseBuffer response, GMLOutputFormat format )
+    void doDescribeFeatureType( DescribeFeatureType request, HttpResponseBuffer response, GMLFormat format )
                             throws OWSException, XMLStreamException, IOException {
 
         LOG.debug( "doDescribeFeatureType: " + request );

@@ -104,30 +104,27 @@ import org.deegree.protocol.wfs.lockfeature.LockOperation;
 import org.deegree.services.controller.ows.OWSException;
 import org.deegree.services.controller.utils.HttpResponseBuffer;
 import org.deegree.services.i18n.Messages;
-import org.deegree.services.jaxb.wfs.GMLFormat;
 import org.deegree.services.jaxb.wfs.GMLFormat.GetFeatureResponse;
 import org.deegree.services.wfs.GetFeatureAnalyzer;
 import org.deegree.services.wfs.WFSController;
 import org.deegree.services.wfs.WFService;
-import org.deegree.services.wfs.format.OutputFormat;
+import org.deegree.services.wfs.format.Format;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Default {@link OutputFormat} implementation that can handle GML 2/3.0/3.1/3.2.
+ * Default {@link Format} implementation that can handle GML 2/3.0/3.1/3.2.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
  */
-public class GMLOutputFormat implements OutputFormat {
+public class GMLFormat implements Format {
 
-    private static final Logger LOG = LoggerFactory.getLogger( GMLOutputFormat.class );
+    private static final Logger LOG = LoggerFactory.getLogger( GMLFormat.class );
 
-    final GMLVersion gmlVersion;
-
-    private final String mimeType;
+    GMLVersion gmlVersion;
 
     private QName responseContainerEl;
 
@@ -137,19 +134,19 @@ public class GMLOutputFormat implements OutputFormat {
 
     private boolean disableStreaming;
 
-    private final WFSController master;
+    private WFSController master;
 
-    private final WFService service;
+    private WFService service;
 
-    private final int featureLimit;
+    private int featureLimit;
 
-    private final boolean checkAreaOfUse;
+    private boolean checkAreaOfUse;
 
-    private final CoordinateFormatter formatter;
+    private CoordinateFormatter formatter;
 
-    private final DescribeFeatureTypeHandler dftHandler;
+    private DescribeFeatureTypeHandler dftHandler;
 
-    public GMLOutputFormat( WFSController master, CoordinateFormatter formatter, String mimeType ) {
+    public GMLFormat( WFSController master, CoordinateFormatter formatter, GMLVersion gmlVersion ) {
 
         this.master = master;
         this.service = master.getService();
@@ -158,17 +155,11 @@ public class GMLOutputFormat implements OutputFormat {
         this.featureLimit = master.getMaxFeatures();
         this.checkAreaOfUse = master.getCheckAreaOfUse();
         this.formatter = formatter;
-        this.mimeType = mimeType;
-        this.gmlVersion = GMLVersion.fromMimeType( mimeType, GML_31 );
+        this.gmlVersion = gmlVersion;
     }
 
-    /**
-     * @param master
-     * @param formatter
-     * @param formatDef
-     */
-    public GMLOutputFormat( WFSController master, CoordinateFormatter formatter, GMLFormat formatDef ) {
-
+    public GMLFormat( WFSController master, CoordinateFormatter formatter,
+                      org.deegree.services.jaxb.wfs.GMLFormat formatDef ) {
         this.master = master;
         this.service = master.getService();
         this.dftHandler = new DescribeFeatureTypeHandler( service );
@@ -192,9 +183,12 @@ public class GMLOutputFormat implements OutputFormat {
         this.featureLimit = master.getMaxFeatures();
         this.checkAreaOfUse = master.getCheckAreaOfUse();
         this.formatter = formatter;
-        // TODO
-        this.mimeType = formatDef.getMimeType().get( 0 );
-        this.gmlVersion = GMLVersion.fromMimeType( mimeType, GML_31 );
+        this.gmlVersion = GMLVersion.valueOf( formatDef.getVersion().value() );
+    }
+
+    @Override
+    public void destroy() {
+        // nothing to do
     }
 
     @Override

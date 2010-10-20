@@ -35,10 +35,6 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.services.wfs.format;
 
-import org.deegree.protocol.wfs.describefeaturetype.DescribeFeatureType;
-import org.deegree.protocol.wfs.getfeature.GetFeature;
-import org.deegree.protocol.wfs.getgmlobject.GetGmlObject;
-import org.deegree.services.controller.utils.HttpResponseBuffer;
 import org.deegree.services.wfs.WFSController;
 
 /**
@@ -49,33 +45,15 @@ import org.deegree.services.wfs.WFSController;
  * 
  * @version $Revision$, $Date$
  */
-public interface OutputFormat {
+public interface CustomFormat extends Format {
 
     /**
-     * Invoked by the {@link WFSController} when this output format instance is responsible for handling the request.
+     * Called by the {@link WFSController} to initialize and configure this {@link CustomFormat}.
      * 
-     * @param request
-     * @param response
-     *            sink for writing the respone, never <code>null</code>
+     * @param master
+     *            wfs controller, never <code>null</code>
+     * @param config
+     *            content of the Config element (from CustomFormat element)
      */
-    public void doDescribeFeatureType( DescribeFeatureType request, HttpResponseBuffer response )
-                            throws Exception;
-
-    /**
-     * Invoked by the {@link WFSController} when this output format instance is responsible for handling the request.
-     * 
-     * @param request
-     * @param response
-     *            sink for writing the respone, never <code>null</code>
-     */
-    public void doGetFeature( GetFeature request, HttpResponseBuffer response )
-                            throws Exception;
-
-    /**
-     * @param request
-     * @param response
-     * @throws Exception
-     */
-    public void doGetGmlObject( GetGmlObject request, HttpResponseBuffer response )
-                            throws Exception;
+    public void init( WFSController master, Object config );
 }

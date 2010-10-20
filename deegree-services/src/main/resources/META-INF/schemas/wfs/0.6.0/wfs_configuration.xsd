@@ -75,6 +75,7 @@
               </complexType>
             </element>
           </sequence>
+          <attribute name="version" type="wfs:GMLVersionType" use="required" />
         </extension>
       </complexContent>
     </complexType>
@@ -86,22 +87,12 @@
         <extension base="wfs:AbstractFormatType">
           <sequence>
             <element name="JavaClass" type="string" />
-            <element name="Param" minOccurs="0" maxOccurs="unbounded">
-              <complexType>
-                <simpleContent>
-                  <extension base="string">
-                    <attribute name="name" type="string" use="required" />
-                  </extension>
-                </simpleContent>
-              </complexType>
-            </element>
+            <element name="Config" type="anyType" />
           </sequence>
         </extension>
       </complexContent>
     </complexType>
   </element>
-
-
 
   <element name="FeatureTypeMetadata">
     <complexType>
@@ -112,11 +103,21 @@
       </sequence>
     </complexType>
   </element>
+
   <simpleType name="WFSVersionType">
     <restriction base="string">
       <enumeration value="1.0.0" />
       <enumeration value="1.1.0" />
       <!-- enumeration value="2.0.0" / -->
+    </restriction>
+  </simpleType>
+
+  <simpleType name="GMLVersionType">
+    <restriction base="string">
+      <enumeration value="GML_2" />
+      <enumeration value="GML_30" />
+      <enumeration value="GML_31" />
+      <enumeration value="GML_32" />
     </restriction>
   </simpleType>
 </schema>

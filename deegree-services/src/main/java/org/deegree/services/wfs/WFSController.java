@@ -39,6 +39,10 @@ package org.deegree.services.wfs;
 import static org.deegree.commons.utils.StringUtils.REMOVE_DOUBLE_FIELDS;
 import static org.deegree.commons.utils.StringUtils.REMOVE_EMPTY_FIELDS;
 import static org.deegree.cs.CRS.EPSG_4326;
+import static org.deegree.gml.GMLVersion.GML_2;
+import static org.deegree.gml.GMLVersion.GML_30;
+import static org.deegree.gml.GMLVersion.GML_31;
+import static org.deegree.gml.GMLVersion.GML_32;
 import static org.deegree.protocol.wfs.WFSConstants.VERSION_100;
 import static org.deegree.protocol.wfs.WFSConstants.VERSION_110;
 import static org.deegree.protocol.wfs.WFSConstants.VERSION_200;
@@ -57,7 +61,6 @@ import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -132,10 +135,8 @@ import org.deegree.services.jaxb.wfs.CustomFormat;
 import org.deegree.services.jaxb.wfs.DeegreeWFS;
 import org.deegree.services.jaxb.wfs.FeatureTypeMetadata;
 import org.deegree.services.jaxb.wfs.GMLFormat;
-import org.deegree.services.jaxb.wfs.CustomFormat.Param;
 import org.deegree.services.jaxb.wfs.DeegreeWFS.SupportedVersions;
-import org.deegree.services.wfs.format.OutputFormat;
-import org.deegree.services.wfs.format.gml.GMLOutputFormat;
+import org.deegree.services.wfs.format.Format;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -162,7 +163,7 @@ import org.slf4j.LoggerFactory;
 public class WFSController extends AbstractOGCServiceController {
 
     private static final Logger LOG = LoggerFactory.getLogger( WFSController.class );
-    
+
     private static final ImplementationMetadata<WFSRequestType> IMPLEMENTATION_METADATA = new ImplementationMetadata<WFSRequestType>() {
         {
             supportedVersions = new Version[] { VERSION_100, VERSION_110 };
@@ -186,7 +187,7 @@ public class WFSController extends AbstractOGCServiceController {
 
     private List<CRS> querySRS = new ArrayList<CRS>();
 
-    private final Map<String, OutputFormat> mimeTypeToFormat = new LinkedHashMap<String, OutputFormat>();
+    private final Map<String, Format> mimeTypeToFormat = new LinkedHashMap<String, Format>();
 
     private final Map<QName, FeatureTypeMetadata> ftNameToFtMetadata = new HashMap<QName, FeatureTypeMetadata>();
 
@@ -302,47 +303,46 @@ public class WFSController extends AbstractOGCServiceController {
         }
     }
 
-    private void initFormats( List<JAXBElement<? extends AbstractFormatType>> formatList ) {
+    private void initFormats( List<JAXBElement<? extends AbstractFormatType>> formatList )
+                            throws ControllerInitException {
+
         if ( formatList == null || formatList.isEmpty() ) {
             LOG.debug( "Using default format configuration." );
             String mimeType = "text/xml; subtype=gml/2.1.2";
-            mimeTypeToFormat.put( mimeType, new GMLOutputFormat( this, formatter, mimeType ) );
+            mimeTypeToFormat.put( mimeType, new org.deegree.services.wfs.format.gml.GMLFormat( this, formatter, GML_2 ) );
             mimeType = "text/xml; subtype=gml/3.0.1";
-            mimeTypeToFormat.put( mimeType, new GMLOutputFormat( this, formatter, mimeType ) );
+            mimeTypeToFormat.put( mimeType, new org.deegree.services.wfs.format.gml.GMLFormat( this, formatter, GML_30 ) );
             mimeType = "text/xml; subtype=gml/3.1.1";
-            mimeTypeToFormat.put( mimeType, new GMLOutputFormat( this, formatter, mimeType ) );
+            mimeTypeToFormat.put( mimeType, new org.deegree.services.wfs.format.gml.GMLFormat( this, formatter, GML_31 ) );
             mimeType = "text/xml; subtype=gml/3.2.1";
-            mimeTypeToFormat.put( mimeType, new GMLOutputFormat( this, formatter, mimeType ) );
+            mimeTypeToFormat.put( mimeType, new org.deegree.services.wfs.format.gml.GMLFormat( this, formatter, GML_32 ) );
         } else {
             LOG.debug( "Using customized format configuration." );
             for ( JAXBElement<? extends AbstractFormatType> formatEl : formatList ) {
                 AbstractFormatType formatDef = formatEl.getValue();
                 List<String> mimeTypes = formatDef.getMimeType();
-                OutputFormat format = null;
+                Format format = null;
                 if ( formatDef instanceof GMLFormat ) {
-                    format = new GMLOutputFormat( this, formatter, (GMLFormat) formatDef );
+                    format = new org.deegree.services.wfs.format.gml.GMLFormat( this, formatter, (GMLFormat) formatDef );
                 } else if ( formatDef instanceof CustomFormat ) {
                     CustomFormat cf = (CustomFormat) formatDef;
                     String className = cf.getJavaClass();
-                    Properties props = buildProperties( cf.getParam() );
-                    // TODO init
-                    // format =
+                    LOG.info( "Using custom format class '" + className + "'." );
+                    try {
+                        format = (org.deegree.services.wfs.format.CustomFormat) Class.forName( className ).newInstance();
+                        ( (org.deegree.services.wfs.format.CustomFormat) format ).init( this, cf.getConfig() );
+                    } catch ( Exception e ) {
+                        throw new ControllerInitException( "Error initializing WFS format: " + e.getMessage(), e );
+                    }
+                } else {
+                    throw new ControllerInitException( "Internal error. Unhandled AbstractFormatType '"
+                                                       + formatDef.getClass() + "'." );
                 }
                 for ( String mimeType : mimeTypes ) {
                     mimeTypeToFormat.put( mimeType, format );
                 }
             }
         }
-    }
-
-    private Properties buildProperties( List<Param> params ) {
-        Properties props = new Properties();
-        if ( params != null ) {
-            for ( Param param : params ) {
-                props.put( param.getName(), param.getValue() );
-            }
-        }
-        return props;
     }
 
     @Override
@@ -401,7 +401,7 @@ public class WFSController extends AbstractOGCServiceController {
             switch ( requestType ) {
             case DescribeFeatureType:
                 DescribeFeatureType describeFt = DescribeFeatureTypeKVPAdapter.parse( kvpParamsUC );
-                OutputFormat format = determineFormat( requestVersion, describeFt.getOutputFormat(), "outputFormat" );
+                Format format = determineFormat( requestVersion, describeFt.getOutputFormat(), "outputFormat" );
                 format.doDescribeFeatureType( describeFt, response );
                 break;
             case GetCapabilities:
@@ -511,7 +511,7 @@ public class WFSController extends AbstractOGCServiceController {
                 DescribeFeatureTypeXMLAdapter describeFtAdapter = new DescribeFeatureTypeXMLAdapter();
                 describeFtAdapter.setRootElement( new XMLAdapter( xmlStream ).getRootElement() );
                 DescribeFeatureType describeFt = describeFtAdapter.parse( requestVersion );
-                OutputFormat format = determineFormat( requestVersion, describeFt.getOutputFormat(), "outputFormat" );
+                Format format = determineFormat( requestVersion, describeFt.getOutputFormat(), "outputFormat" );
                 format.doDescribeFeatureType( describeFt, response );
                 break;
             case GetCapabilities:
@@ -824,10 +824,10 @@ public class WFSController extends AbstractOGCServiceController {
      * @return format handler to use, never <code>null</code>
      * @throws OWSException
      */
-    private OutputFormat determineFormat( Version requestVersion, String format, String locator )
+    private Format determineFormat( Version requestVersion, String format, String locator )
                             throws OWSException {
 
-        OutputFormat outputFormat = null;
+        Format outputFormat = null;
 
         if ( format == null ) {
             // default values for the different WFS version
