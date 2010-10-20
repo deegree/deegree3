@@ -540,9 +540,9 @@ COMMENT ON COLUMN datasets.association IS 'common queryable property in DC, but 
 SELECT AddGeometryColumn('public','isoqp_boundingbox','bbox','-1','POLYGON','2');
 
 
+--INSPIRE
 
 
---INSPIRE extension
 CREATE TABLE ADDQP_Degree ( 
 	ID integer NOT NULL,
 	fk_datasets integer NOT NULL,
@@ -700,4 +700,5 @@ ALTER TABLE ADDQP_OtherConstraint ADD CONSTRAINT FK_ADDQP_OtherConstraint
 
 ALTER TABLE ADDQP_Classification ADD CONSTRAINT FK_ADDQP_Classification 
 	FOREIGN KEY (fk_datasets) REFERENCES Datasets (ID) ON DELETE CASCADE;
+
 
