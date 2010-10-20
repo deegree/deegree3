@@ -42,7 +42,7 @@ import org.deegree.services.controller.utils.HttpResponseBuffer;
 import org.deegree.services.wfs.WFSController;
 
 /**
- * Implementations provide output formats for the {@link WFSController}.
+ * Implementations provide input / output formats for the {@link WFSController}.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$

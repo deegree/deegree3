@@ -16,33 +16,37 @@
   -->
   <DisableResponseBuffering>true</DisableResponseBuffering>
 
-  <!-- [0...1] Announced CRS, default: EPSG:4326 -->
-  <QueryCRS>EPSG:900913 EPSG:4258 EPSG:4326</QueryCRS>
+  <!-- [0...n] Announced CRS, default: EPSG:4326 -->
+  <QueryCRS>EPSG:4326</QueryCRS>
+  <QueryCRS>EPSG:4258</QueryCRS>  
+  <QueryCRS>EPSG:900913</QueryCRS>
 
   <!-- [0...n] Output / input format configuration, default: GML 2.1, 3.0, 3.1, 3.2 -->
-  <Format handler="GENERIC_GML">
+  <GMLFormat>
 
-    <!-- [1] Mime type handled by this configuration -->
+    <!-- [1] Mime type handled by this format configuration -->
     <MimeType>text/xml; subtype=gml/3.2.1</MimeType>
 
-    <!-- [0...1] Root element name for GetFeature response (for handler GENERIC_GML) -->
-    <Param name="GET_FEATURE_RESPONSE_LOCAL_NAME">FeatureCollection</Param>
+    <!-- [0...1] Customization for GetFeature responses -->
+    <GetFeatureResponse xmlns:gml="http://www.opengis.net/gml/3.2">
 
-    <!-- [0...1] Root element prefix for GetFeature response (for handler GENERIC_GML) -->
-    <Param name="GET_FEATURE_RESPONSE_PREFIX">gml</Param>
+      <!-- [0...1] Qualified root element name for GetFeature response -->
+      <ContainerElement>gml:FeatureCollection</ContainerElement>
 
-    <!-- [0...1] Root element namespace for GetFeature response (for handler GENERIC_GML) -->
-    <Param name="GET_FEATURE_RESPONSE_NAMESPACE">http://www.opengis.net/gml/3.2</Param>
+      <!-- [0...1] Feature member element name for GetFeature response -->
+      <FeatureMemberElement>gml:featureMember</FeatureMemberElement>
 
-    <!-- [0...1] Value to add to xsi:schemaLocation attribute (for handler GENERIC_GML) -->
-    <Param name="GET_FEATURE_RESPONSE_XSI_SCHEMA_LOCATION">http://www.opengis.net/gml/3.2 http://schemas.opengis.net/gml/3.2.1/deprecatedTypes.xsd</Param>
+      <!-- [0...1] Value to add to xsi:schemaLocation attribute (to define the container element) -->
+      <SchemaLocation>>http://www.opengis.net/gml/3.2 http://schemas.opengis.net/gml/3.2.1/deprecatedTypes.xsd</SchemaLocation>
 
-    <!--
-      [0...1] Allows to disable output streaming (positive effect: numberOfFeature attribute / gml:boundedBy will be
-      included in GetFeature responses)
-    -->
-    <Param name="DISABLE_STREAMING">false</Param>
+      <!--
+        [0...1] Disable output streaming (positive effect: numberOfFeature attribute / gml:boundedBy can be included in
+        GetFeature responses)
+      -->
+      <DisableStreaming>false</DisableStreaming>
 
-  </Format>
+    </GetFeatureResponse>
+
+  </GMLFormat>
 
 </deegreeWFS>

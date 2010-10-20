@@ -104,6 +104,8 @@ import org.deegree.protocol.wfs.lockfeature.LockOperation;
 import org.deegree.services.controller.ows.OWSException;
 import org.deegree.services.controller.utils.HttpResponseBuffer;
 import org.deegree.services.i18n.Messages;
+import org.deegree.services.jaxb.wfs.GMLFormat;
+import org.deegree.services.jaxb.wfs.GMLFormat.GetFeatureResponse;
 import org.deegree.services.wfs.GetFeatureAnalyzer;
 import org.deegree.services.wfs.WFSController;
 import org.deegree.services.wfs.WFService;
@@ -119,7 +121,7 @@ import org.slf4j.LoggerFactory;
  * 
  * @version $Revision$, $Date$
  */
-class GMLOutputFormat implements OutputFormat {
+public class GMLOutputFormat implements OutputFormat {
 
     private static final Logger LOG = LoggerFactory.getLogger( GMLOutputFormat.class );
 
@@ -127,11 +129,13 @@ class GMLOutputFormat implements OutputFormat {
 
     private final String mimeType;
 
-    private final QName responseContainerEl;
+    private QName responseContainerEl;
 
-    private final String schemaLocation;
+    private QName responseFeatureMemberEl;
 
-    private final boolean disableStreaming;
+    private String schemaLocation;
+
+    private boolean disableStreaming;
 
     private final WFSController master;
 
@@ -145,32 +149,52 @@ class GMLOutputFormat implements OutputFormat {
 
     private final DescribeFeatureTypeHandler dftHandler;
 
-    /**
-     * 
-     * @param master
-     *            corresponding WFS controller
-     * @param disableStreaming
-     *            if <code>true</code>, features are not streamed (implies that the FeatureCollection's
-     *            boundedBy-element is populated and that the numberOfFeatures attribute is be written)
-     * @param formatter
-     *            coordinate formatter to use, must not be <code>null</code>
-     * @param mimeType
-     * @param responseContainerEl
-     * @param schemaLocation
-     */
-    GMLOutputFormat( WFSController master, boolean disableStreaming, CoordinateFormatter formatter, String mimeType,
-                     QName responseContainerEl, String schemaLocation ) {
+    public GMLOutputFormat( WFSController master, CoordinateFormatter formatter, String mimeType ) {
+
         this.master = master;
         this.service = master.getService();
         this.dftHandler = new DescribeFeatureTypeHandler( service );
-        this.disableStreaming = disableStreaming;
+
         this.featureLimit = master.getMaxFeatures();
         this.checkAreaOfUse = master.getCheckAreaOfUse();
         this.formatter = formatter;
         this.mimeType = mimeType;
         this.gmlVersion = GMLVersion.fromMimeType( mimeType, GML_31 );
-        this.responseContainerEl = responseContainerEl;
-        this.schemaLocation = schemaLocation;
+    }
+
+    /**
+     * @param master
+     * @param formatter
+     * @param formatDef
+     */
+    public GMLOutputFormat( WFSController master, CoordinateFormatter formatter, GMLFormat formatDef ) {
+
+        this.master = master;
+        this.service = master.getService();
+        this.dftHandler = new DescribeFeatureTypeHandler( service );
+
+        GetFeatureResponse responseConfig = formatDef.getGetFeatureResponse();
+        if ( responseConfig != null ) {
+            if ( responseConfig.isDisableStreaming() != null ) {
+                disableStreaming = responseConfig.isDisableStreaming();
+            }
+            if ( responseConfig.getContainerElement() != null ) {
+                responseContainerEl = responseConfig.getContainerElement();
+            }
+            if ( responseConfig.getFeatureMemberElement() != null ) {
+                responseFeatureMemberEl = responseConfig.getFeatureMemberElement();
+            }
+            if ( responseConfig.getSchemaLocation() != null ) {
+                schemaLocation = responseConfig.getSchemaLocation();
+            }
+        }
+
+        this.featureLimit = master.getMaxFeatures();
+        this.checkAreaOfUse = master.getCheckAreaOfUse();
+        this.formatter = formatter;
+        // TODO
+        this.mimeType = formatDef.getMimeType().get( 0 );
+        this.gmlVersion = GMLVersion.fromMimeType( mimeType, GML_31 );
     }
 
     @Override

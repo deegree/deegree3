@@ -25,31 +25,84 @@
         </element>
         <element name="EnableTransactions" type="boolean" minOccurs="0" default="false" />
         <element name="DisableResponseBuffering" type="boolean" minOccurs="0" default="false" />
-        <element name="QueryCRS" type="string" minOccurs="0" default="EPSG:4326" />
+        <element name="QueryCRS" type="string" minOccurs="0" maxOccurs="unbounded" default="EPSG:4326" />
         <element name="QueryMaxFeatures" type="integer" minOccurs="0" default="15000" />
         <element name="QueryCheckAreaOfUse" type="boolean" minOccurs="0" default="false" />
-        <element name="Format" minOccurs="0" maxOccurs="unbounded">
-          <complexType>
-            <sequence>
-              <element name="MimeType" type="string" />
-              <element name="Param" minOccurs="0" maxOccurs="unbounded">
-                <complexType>
-                  <simpleContent>
-                    <extension base="string">
-                      <attribute name="name" type="string" use="required" />
-                    </extension>
-                  </simpleContent>
-                </complexType>
-              </element>
-            </sequence>
-            <attribute name="handler" use="optional" />
-          </complexType>
-        </element>
+        <element ref="wfs:AbstractFormat" minOccurs="0" maxOccurs="unbounded" />
         <element ref="wfs:FeatureTypeMetadata" minOccurs="0" maxOccurs="unbounded" />
       </sequence>
       <attribute name="configVersion" use="required" fixed="0.6.0" />
     </complexType>
   </element>
+
+  <!-- AbstractFormat and substitutions -->
+  <element name="AbstractFormat" abstract="true" type="wfs:AbstractFormatType" />
+  <complexType name="AbstractFormatType" abstract="true">
+    <sequence>
+      <element name="MimeType" type="string" maxOccurs="unbounded" />
+    </sequence>
+  </complexType>
+
+  <element name="GMLFormat" substitutionGroup="wfs:AbstractFormat">
+    <complexType>
+      <complexContent>
+        <extension base="wfs:AbstractFormatType">
+          <sequence>
+            <element name="GetFeatureResponse" minOccurs="0">
+              <complexType>
+                <sequence>
+                  <element name="ContainerElement" type="QName" minOccurs="0" />
+                  <element name="FeatureMemberElement" type="QName" minOccurs="0" />
+                  <element name="SchemaLocation" type="string" minOccurs="0" />
+                  <element name="DisableStreaming" type="boolean" minOccurs="0" default="false" />
+                </sequence>
+              </complexType>
+            </element>
+            <element name="CoordinateFormatter" minOccurs="0">
+              <complexType>
+                <sequence>
+                  <element name="JavaClass" type="string" />
+                  <element name="Param" minOccurs="0" maxOccurs="unbounded">
+                    <complexType>
+                      <simpleContent>
+                        <extension base="string">
+                          <attribute name="name" type="string" use="required" />
+                        </extension>
+                      </simpleContent>
+                    </complexType>
+                  </element>
+                </sequence>
+              </complexType>
+            </element>
+          </sequence>
+        </extension>
+      </complexContent>
+    </complexType>
+  </element>
+
+  <element name="CustomFormat" substitutionGroup="wfs:AbstractFormat">
+    <complexType>
+      <complexContent>
+        <extension base="wfs:AbstractFormatType">
+          <sequence>
+            <element name="JavaClass" type="string" />
+            <element name="Param" minOccurs="0" maxOccurs="unbounded">
+              <complexType>
+                <simpleContent>
+                  <extension base="string">
+                    <attribute name="name" type="string" use="required" />
+                  </extension>
+                </simpleContent>
+              </complexType>
+            </element>
+          </sequence>
+        </extension>
+      </complexContent>
+    </complexType>
+  </element>
+
+
+
   <element name="FeatureTypeMetadata">
     <complexType>
       <sequence>

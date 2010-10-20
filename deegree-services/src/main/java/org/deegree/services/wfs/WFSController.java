@@ -63,6 +63,7 @@ import java.util.TreeSet;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
+import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.namespace.QName;
@@ -126,13 +127,15 @@ import org.deegree.services.jaxb.main.DeegreeServiceControllerType;
 import org.deegree.services.jaxb.main.DeegreeServicesMetadataType;
 import org.deegree.services.jaxb.main.ServiceIdentificationType;
 import org.deegree.services.jaxb.main.ServiceProviderType;
+import org.deegree.services.jaxb.wfs.AbstractFormatType;
+import org.deegree.services.jaxb.wfs.CustomFormat;
 import org.deegree.services.jaxb.wfs.DeegreeWFS;
 import org.deegree.services.jaxb.wfs.FeatureTypeMetadata;
-import org.deegree.services.jaxb.wfs.DeegreeWFS.Format;
-import org.deegree.services.jaxb.wfs.DeegreeWFS.Format.Param;
+import org.deegree.services.jaxb.wfs.GMLFormat;
+import org.deegree.services.jaxb.wfs.CustomFormat.Param;
+import org.deegree.services.jaxb.wfs.DeegreeWFS.SupportedVersions;
 import org.deegree.services.wfs.format.OutputFormat;
-import org.deegree.services.wfs.format.OutputFormatManager;
-import org.deegree.services.wfs.format.OutputFormatProvider;
+import org.deegree.services.wfs.format.gml.GMLOutputFormat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -159,10 +162,10 @@ import org.slf4j.LoggerFactory;
 public class WFSController extends AbstractOGCServiceController {
 
     private static final Logger LOG = LoggerFactory.getLogger( WFSController.class );
-
+    
     private static final ImplementationMetadata<WFSRequestType> IMPLEMENTATION_METADATA = new ImplementationMetadata<WFSRequestType>() {
         {
-            supportedVersions = new Version[] { VERSION_100, VERSION_110, VERSION_200 };
+            supportedVersions = new Version[] { VERSION_100, VERSION_110 };
             handledNamespaces = new String[] { WFS_NS, WFS_200_NS };
             handledRequests = WFSRequestType.class;
             supportedConfigVersions = new Version[] { Version.parseVersion( "0.6.0" ) };
@@ -195,6 +198,8 @@ public class WFSController extends AbstractOGCServiceController {
 
     private boolean checkAreaOfUse;
 
+    private CoordinateFormatter formatter;
+
     @Override
     public void init( XMLAdapter controllerConf, DeegreeServicesMetadataType serviceMetadata,
                       DeegreeServiceControllerType mainConf )
@@ -211,7 +216,7 @@ public class WFSController extends AbstractOGCServiceController {
         DeegreeWFS jaxbConfig = null;
         try {
             Unmarshaller u = getUnmarshaller( "org.deegree.services.jaxb.wfs",
-                                              "/META-INF/schemas/wms/0.5.0/wfs_configuration.xsd" );
+                                              "/META-INF/schemas/wfs/0.6.0/wfs_configuration.xsd" );
             // turn the application schema location into an absolute URL
             jaxbConfig = (DeegreeWFS) u.unmarshal( controllerConf.getRootElement().getXMLStreamReaderWithoutCaching() );
         } catch ( XMLParsingException e ) {
@@ -227,7 +232,8 @@ public class WFSController extends AbstractOGCServiceController {
                                                + e.getLinkedException().getMessage(), e );
         }
 
-        validateAndSetOfferedVersions( jaxbConfig.getSupportedVersions().getVersion() );
+        initOfferedVersions( jaxbConfig.getSupportedVersions() );
+
         enableTransactions = jaxbConfig.isEnableTransactions();
         disableBuffering = ( jaxbConfig.isDisableResponseBuffering() != null ) ? jaxbConfig.isDisableResponseBuffering()
                                                                               : false;
@@ -235,31 +241,12 @@ public class WFSController extends AbstractOGCServiceController {
                                                               : jaxbConfig.getQueryMaxFeatures().intValue();
         checkAreaOfUse = jaxbConfig.isQueryCheckAreaOfUse() == null ? false : jaxbConfig.isQueryCheckAreaOfUse();
 
-        try {
-            if ( jaxbConfig.getQueryCRS() != null ) {
-                String[] querySrs = StringUtils.split( jaxbConfig.getQueryCRS(), " ", REMOVE_EMPTY_FIELDS
-                                                                                      | REMOVE_DOUBLE_FIELDS );
-                for ( String srs : querySrs ) {
-                    LOG.debug( "Query SRS: " + srs );
-                    CRS crs = new CRS( srs );
-                    crs.getWrappedCRS();
-                    this.querySRS.add( crs );
-                }
-                if ( querySrs.length > 0 ) {
-                    defaultQueryCRS = this.querySRS.get( 0 );
-                }
-            }
-        } catch ( UnknownCRSException e ) {
-            String msg = "Invalid QuerySRS parameter: " + e.getMessage();
-            throw new ControllerInitException( msg );
-        }
-
         // fill metadata map
         for ( FeatureTypeMetadata ftMd : jaxbConfig.getFeatureTypeMetadata() ) {
             ftNameToFtMetadata.put( ftMd.getName(), ftMd );
         }
 
-        CoordinateFormatter formatter = new DecimalCoordinateFormatter( 8 );
+        formatter = new DecimalCoordinateFormatter( 8 );
         service = new WFService();
         try {
             if ( jaxbConfig.getCoordinateFormatter() != null ) {
@@ -273,34 +260,77 @@ public class WFSController extends AbstractOGCServiceController {
         }
         lockFeatureHandler = new LockFeatureHandler( this );
 
-        initFormats( jaxbConfig.getFormat() );
+        initQueryCRS( jaxbConfig.getQueryCRS() );
+        initFormats( jaxbConfig.getAbstractFormat() );
     }
 
-    private void initFormats( List<Format> formatDefs ) {
-        if ( formatDefs == null || formatDefs.isEmpty() ) {
-            LOG.debug( "Using default output formats." );
-            String handler = "GENERIC_GML";
-            OutputFormatProvider provider = OutputFormatManager.getFormatProvider( handler );
-            String mimeType = "text/xml; subtype=gml/2.1.2";
-            mimeTypeToFormat.put( mimeType, provider.create( this, mimeType, new Properties() ) );
-            mimeType = "text/xml; subtype=gml/3.0.1";
-            mimeTypeToFormat.put( mimeType, provider.create( this, mimeType, new Properties() ) );
-            mimeType = "text/xml; subtype=gml/3.1.1";
-            mimeTypeToFormat.put( mimeType, provider.create( this, mimeType, new Properties() ) );
-            mimeType = "text/xml; subtype=gml/3.2.1";
-            mimeTypeToFormat.put( mimeType, provider.create( this, mimeType, new Properties() ) );
-        } else {
-            LOG.debug( "Using customized output formats." );
-            for ( Format formatDef : formatDefs ) {
-                String handler = formatDef.getHandler();
-                if ( handler == null ) {
-                    handler = "GENERIC_GML";
+    private void initOfferedVersions( SupportedVersions supportedVersions )
+                            throws ControllerInitException {
+
+        List<String> versions = null;
+        if ( supportedVersions != null ) {
+            versions = supportedVersions.getVersion();
+        }
+        if ( versions == null || versions.isEmpty() ) {
+            LOG.info( "No protocol versions configured. Using all implemented versions." );
+            versions = new ArrayList<String>( IMPLEMENTATION_METADATA.getImplementedVersions().size() );
+            for ( Version version : IMPLEMENTATION_METADATA.getImplementedVersions() ) {
+                versions.add( version.toString() );
+            }
+        }
+        validateAndSetOfferedVersions( versions );
+    }
+
+    private void initQueryCRS( List<String> queryCRSLists )
+                            throws ControllerInitException {
+        try {
+            for ( String queryCRS : queryCRSLists ) {
+                String[] querySrs = StringUtils.split( queryCRS, " ", REMOVE_EMPTY_FIELDS | REMOVE_DOUBLE_FIELDS );
+                for ( String srs : querySrs ) {
+                    LOG.debug( "Query CRS: " + srs );
+                    CRS crs = new CRS( srs );
+                    crs.getWrappedCRS();
+                    this.querySRS.add( crs );
                 }
-                OutputFormatProvider provider = OutputFormatManager.getFormatProvider( handler );
-                String mimeType = formatDef.getMimeType();
-                Properties props = buildProperties( formatDef.getParam() );
-                OutputFormat format = provider.create( this, mimeType, props );
-                mimeTypeToFormat.put( mimeType, format );
+            }
+        } catch ( UnknownCRSException e ) {
+            String msg = "Invalid QuerySRS parameter: " + e.getMessage();
+            throw new ControllerInitException( msg );
+        }
+        if ( !querySRS.isEmpty() ) {
+            defaultQueryCRS = this.querySRS.get( 0 );
+        }
+    }
+
+    private void initFormats( List<JAXBElement<? extends AbstractFormatType>> formatList ) {
+        if ( formatList == null || formatList.isEmpty() ) {
+            LOG.debug( "Using default format configuration." );
+            String mimeType = "text/xml; subtype=gml/2.1.2";
+            mimeTypeToFormat.put( mimeType, new GMLOutputFormat( this, formatter, mimeType ) );
+            mimeType = "text/xml; subtype=gml/3.0.1";
+            mimeTypeToFormat.put( mimeType, new GMLOutputFormat( this, formatter, mimeType ) );
+            mimeType = "text/xml; subtype=gml/3.1.1";
+            mimeTypeToFormat.put( mimeType, new GMLOutputFormat( this, formatter, mimeType ) );
+            mimeType = "text/xml; subtype=gml/3.2.1";
+            mimeTypeToFormat.put( mimeType, new GMLOutputFormat( this, formatter, mimeType ) );
+        } else {
+            LOG.debug( "Using customized format configuration." );
+            for ( JAXBElement<? extends AbstractFormatType> formatEl : formatList ) {
+                AbstractFormatType formatDef = formatEl.getValue();
+                List<String> mimeTypes = formatDef.getMimeType();
+                OutputFormat format = null;
+                if ( formatDef instanceof GMLFormat ) {
+                    format = new GMLOutputFormat( this, formatter, (GMLFormat) formatDef );
+                } else if ( formatDef instanceof CustomFormat ) {
+                    CustomFormat cf = (CustomFormat) formatDef;
+                    String className = cf.getJavaClass();
+                    Properties props = buildProperties( cf.getParam() );
+                    // TODO init
+                    // format =
+                }
+                for ( String mimeType : mimeTypes ) {
+                    mimeTypeToFormat.put( mimeType, format );
+                }
             }
         }
     }
