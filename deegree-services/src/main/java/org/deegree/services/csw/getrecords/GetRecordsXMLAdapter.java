@@ -198,7 +198,7 @@ public class GetRecordsXMLAdapter extends AbstractCSWRequestXMLAdapter {
                     QName qname = parseQName( s, rootElement );
                     queryTypeNames[counterQName++] = qname;
                 }
-
+                elementName = getNodesAsStrings( omElement, new XPath( "./csw:ElementName", nsContext ) );
                 for ( OMElement omQueryElement : queryChildElements ) {
 
                     // TODO mandatory exclusiveness between ElementSetName vs. ElementName not implemented yet
@@ -233,11 +233,6 @@ public class GetRecordsXMLAdapter extends AbstractCSWRequestXMLAdapter {
                             }
                         }
 
-                    }
-                    if ( new QName( CSWConstants.CSW_202_NS, "ElementName" ).equals( omQueryElement.getQName() ) ) {
-                        String msg = "ElementName is not implmeneted yet, use ElementSetName, instead. ";
-                        LOG.info( msg );
-                        throw new NotImplementedError( msg );
                     }
 
                     if ( new QName( CSWConstants.CSW_202_NS, "Constraint" ).equals( omQueryElement.getQName() ) ) {
