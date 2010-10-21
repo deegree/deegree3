@@ -35,6 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.metadata;
 
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -61,6 +62,7 @@ import org.deegree.filter.Filter;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryFactory;
 import org.deegree.metadata.persistence.MetadataStoreException;
+import org.deegree.metadata.persistence.iso.generating.Utils;
 import org.deegree.metadata.persistence.iso.parsing.ISOQPParsing;
 import org.deegree.metadata.persistence.iso.parsing.ParsedProfileElement;
 import org.deegree.metadata.persistence.iso19115.jaxb.ISOMetadataStoreConfig.AnyText;
@@ -216,9 +218,7 @@ public class ISORecord implements MetadataRecord {
     @Override
     public String getAnyText() {
         String anyTextString = null;
-        if ( anyText.getAll() != null ) {
-            anyTextString = generateAnyText( xpathAll ).toString();
-        } else if ( anyText.getCore() != null ) {
+        if ( anyText == null || anyText.getCore() != null ) {
             StringBuilder sb = new StringBuilder();
 
             for ( String s : getAbstract() ) {
@@ -268,6 +268,22 @@ public class ISORecord implements MetadataRecord {
                 sb.append( getParentIdentifier() ).append( STOPWORD );
             }
             anyTextString = sb.toString();
+        } else if ( anyText.getAll() != null ) {
+            StringBuilder sb = new StringBuilder();
+            try {
+                XMLStreamReader xmlStream = getAsXMLStream();
+                while ( xmlStream.hasNext() ) {
+                    xmlStream.next();
+                    if ( xmlStream.getEventType() == XMLStreamConstants.CHARACTERS && !xmlStream.isWhiteSpace() ) {
+                        sb.append( xmlStream.getText() ).append( STOPWORD );
+                    }
+                }
+            } catch ( XMLStreamException e ) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+            anyTextString = sb.toString();
+
         } else if ( anyText.getCustom() != null ) {
             List<Custom.XPath> xpathList = anyText.getCustom().getXPath();
             if ( xpathList != null && !xpathList.isEmpty() ) {
@@ -280,6 +296,12 @@ public class ISORecord implements MetadataRecord {
             }
         } else {
             anyTextString = "";
+        }
+        try {
+            Utils.writeIntoFile( anyTextString, "/home/thomas/Desktop/anyTextOut" );
+        } catch ( FileNotFoundException e ) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
         }
         return anyTextString;
 
