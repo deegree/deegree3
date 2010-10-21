@@ -102,22 +102,11 @@ public class ISORecord implements MetadataRecord {
 
     private static final NamespaceContext ns = CommonNamespaces.getNamespaceContext();
 
-    private static final List<XPath> m = new ArrayList<XPath>();
-
     private static XPath[] xpathAll = new XPath[1];
-
-    // private static XPath[] xpathCore = new XPath[17];
 
     static {
 
         xpathAll[0] = new XPath( "//child::text()", null );
-
-        // xpathCore[0] = new
-        // XPath("./srv:SV_ServiceIdentification/gmd:abstract | ./gmd:MD_DataIdentification/gmd:abstract", ns);
-
-        m.add( new XPath( "/gmd:MD_Metadata/gmd:fileIdentifier", ns ) );
-        m.add( new XPath( "/gmd:MD_Metadata/gmd:metadataStandardVersion", ns ) );
-        m.add( new XPath( "/gmd:MD_Metadata/gmd:series", ns ) );
 
         summaryLocalParts[0] = "/gmd:MD_Metadata/gmd:dataSetURI";
         summaryLocalParts[1] = "/gmd:MD_Metadata/gmd:locale";
@@ -471,8 +460,7 @@ public class ISORecord implements MetadataRecord {
             xpathEN.add( new XPath( s, CommonNamespaces.getNamespaceContext() ) );
         }
 
-        // TODO change m to xpathEN
-        OMElement elem = new XPathElementFilter( root, m );
+        OMElement elem = new XPathElementFilter( root, xpathEN );
         elem.serialize( writer );
     }
 
