@@ -231,7 +231,7 @@ public class WFSController extends AbstractOGCServiceController {
 
         initOfferedVersions( jaxbConfig.getSupportedVersions() );
 
-        enableTransactions = jaxbConfig.isEnableTransactions();
+        enableTransactions = jaxbConfig.isEnableTransactions() == null ? false : jaxbConfig.isEnableTransactions();
         disableBuffering = ( jaxbConfig.isDisableResponseBuffering() != null ) ? jaxbConfig.isDisableResponseBuffering()
                                                                               : true;
         maxFeatures = jaxbConfig.getQueryMaxFeatures() == null ? DEFAULT_MAX_FEATURES
