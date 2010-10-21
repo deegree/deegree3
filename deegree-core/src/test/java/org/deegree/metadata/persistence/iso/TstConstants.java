@@ -61,6 +61,12 @@ public class TstConstants {
 
     static final URL configURL_RS_GEN_TRUE = TstConstants.class.getResource( "configdocs/iso19115_RS_Available_Generate_TRUE.xml" );
 
+    static final URL configURL_ANYTEXT_ALL = TstConstants.class.getResource( "configdocs/anyText_All.xml" );
+
+    static final URL configURL_ANYTEXT_CORE = TstConstants.class.getResource( "configdocs/anyText_Core.xml" );
+
+    static final URL configURL_ANYTEXT_CUSTOM = TstConstants.class.getResource( "configdocs/anyText_Custom.xml" );
+
     static final URL tst_1 = TstConstants.class.getResource( "metadatarecords/1.xml" );
 
     static final URL tst_2 = TstConstants.class.getResource( "metadatarecords/2.xml" );
