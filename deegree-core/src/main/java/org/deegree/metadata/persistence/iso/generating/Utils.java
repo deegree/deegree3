@@ -38,6 +38,7 @@ package org.deegree.metadata.persistence.iso.generating;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
+import java.io.PrintWriter;
 
 import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
@@ -66,4 +67,14 @@ public class Utils {
 
     }
 
+    public static void writeIntoFile( String string, String file )
+                            throws FileNotFoundException {
+        OutputStream fout = new FileOutputStream( file );
+
+        PrintWriter writer = new PrintWriter( fout );
+
+        writer.print( string );
+        writer.flush();
+
+    }
 }
