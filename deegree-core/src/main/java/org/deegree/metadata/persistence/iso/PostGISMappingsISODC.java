@@ -165,6 +165,7 @@ public class PostGISMappingsISODC implements PostGISMapping {
         addStringProp( APISO_NS, "Language", DatabaseTables.datasets, "language" );
         addStringProp( APISO_NS, "language", DatabaseTables.datasets, "language" );
         addDateProp( APISO_NS, "RevisionDate", DatabaseTables.isoqp_revisiondate, "revisiondate" );
+        addDateProp( APISO_NS, "CreationDate", DatabaseTables.isoqp_creationdate, "creationdate" );
         addStringProp( APISO_NS, "AlternateTitle", DatabaseTables.isoqp_alternatetitle, "alternatetitle" );
         // addDateProp( APISO_NS, "RevisionDate", "isoqp_revisiondate", "revisiondate" );
         addDateProp( APISO_NS, "PublicationDate", DatabaseTables.isoqp_publicationdate, "publicationdate" );
