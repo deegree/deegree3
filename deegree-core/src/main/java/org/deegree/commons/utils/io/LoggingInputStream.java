@@ -72,7 +72,9 @@ public class LoggingInputStream extends InputStream {
     public int read()
                             throws IOException {
         int read = in.read();
-        out.write( read );
+        if ( read > 0 ) {
+            out.write( read );
+        }
         return read;
     }
 
@@ -80,7 +82,9 @@ public class LoggingInputStream extends InputStream {
     public int read( byte[] bs )
                             throws IOException {
         int read = in.read( bs );
-        out.write( bs, 0, read );
+        if ( read > 0 ) {
+            out.write( bs, 0, read );
+        }
         return read;
     }
 
@@ -88,7 +92,9 @@ public class LoggingInputStream extends InputStream {
     public int read( byte[] bs, int off, int len )
                             throws IOException {
         int read = in.read( bs, off, len );
-        out.write( bs, off, off + read );
+        if ( read > 0 ) {
+            out.write( bs, off, off + read );
+        }
         return read;
     }
 
