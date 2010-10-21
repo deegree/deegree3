@@ -149,7 +149,6 @@ public class ParseIdentificationInfo extends XMLAdapter {
                                                                         nsContextParseII ) );
 
             }
-            List<OMElement> citation_date = getElements( ci_citation, new XPath( "./gmd:date", nsContextParseII ) );
 
             OMElement edition = getElement( ci_citation, new XPath( "./gmd:edition", nsContextParseII ) );
             OMElement editionDate = getElement( ci_citation, new XPath( "./gmd:editionDate", nsContextParseII ) );
@@ -177,65 +176,7 @@ public class ParseIdentificationInfo extends XMLAdapter {
             }
             qp.setAlternateTitle( alternateTitleList );
 
-            for ( OMElement dateElem : citation_date ) {
-
-                String revisionDateString = getNodeAsString(
-                                                             dateElem,
-                                                             new XPath(
-                                                                        "./gmd:CI_Date[./gmd:dateType/gmd:CI_DateTypeCode/@codeListValue='revision']/gmd:date/gco:Date | ./gmd:CI_Date[./gmd:dateType/gmd:CI_DateTypeCode/@codeListValue='revision']/gmd:date/gco:DateTime",
-                                                                        nsContextParseII ), null );
-                Date date = null;
-                try {
-                    if ( revisionDateString != null ) {
-                        date = new Date( revisionDateString );
-                    } else {
-                        date = null;
-                    }
-                } catch ( ParseException e ) {
-
-                    e.printStackTrace();
-                }
-
-                qp.setRevisionDate( date );
-
-                String creationDateString = getNodeAsString(
-                                                             dateElem,
-                                                             new XPath(
-                                                                        "./gmd:CI_Date[./gmd:dateType/gmd:CI_DateTypeCode/@codeListValue='creation']/gmd:date/gco:Date",
-                                                                        nsContextParseII ), null );
-
-                try {
-                    if ( creationDateString != null ) {
-                        date = new Date( creationDateString );
-                    } else {
-                        date = null;
-                    }
-                } catch ( ParseException e ) {
-
-                    e.printStackTrace();
-                }
-
-                qp.setCreationDate( date );
-
-                String publicationDateString = getNodeAsString(
-                                                                dateElem,
-                                                                new XPath(
-                                                                           "./gmd:CI_Date[./gmd:dateType/gmd:CI_DateTypeCode/@codeListValue='publication']/gmd:date/gco:Date",
-                                                                           nsContextParseII ), null );
-
-                try {
-                    if ( publicationDateString != null ) {
-                        date = new Date( publicationDateString );
-                    } else {
-                        date = null;
-                    }
-                } catch ( ParseException e ) {
-
-                    e.printStackTrace();
-                }
-
-                qp.setPublicationDate( date );
-            }
+            parseDateComponents( qp, ci_citation );
 
             /*---------------------------------------------------------------
              * 
@@ -931,6 +872,72 @@ public class ParseIdentificationInfo extends XMLAdapter {
             }
 
         }
+
+    }
+
+    /**
+     * RevisionDate, CreationDate, PublicationDate
+     * 
+     * @param qp
+     * @param ci_citation
+     */
+    private void parseDateComponents( QueryableProperties qp, OMElement ci_citation ) {
+        String revisionDateString = getNodeAsString(
+                                                     ci_citation,
+                                                     new XPath(
+                                                                "./gmd:date/gmd:CI_Date[./gmd:dateType/gmd:CI_DateTypeCode/@codeListValue='revision']/gmd:date/gco:Date | ./gmd:date/gmd:CI_Date[./gmd:dateType/gmd:CI_DateTypeCode/@codeListValue='revision']/gmd:date/gco:DateTime",
+                                                                nsContextParseII ), null );
+        Date date = null;
+        try {
+            if ( revisionDateString != null ) {
+                date = new Date( revisionDateString );
+            } else {
+                date = null;
+            }
+        } catch ( ParseException e ) {
+
+            e.printStackTrace();
+        }
+
+        qp.setRevisionDate( date );
+
+        String creationDateString = getNodeAsString(
+                                                     ci_citation,
+                                                     new XPath(
+                                                                "./gmd:date/gmd:CI_Date[./gmd:dateType/gmd:CI_DateTypeCode/@codeListValue='creation']/gmd:date/gco:DateTime | ./gmd:date/gmd:CI_Date[./gmd:dateType/gmd:CI_DateTypeCode/@codeListValue='creation']/gmd:date/gco:Date",
+                                                                nsContextParseII ), null );
+
+        try {
+            if ( creationDateString != null ) {
+                date = new Date( creationDateString );
+            } else {
+                date = null;
+            }
+        } catch ( ParseException e ) {
+
+            e.printStackTrace();
+        }
+
+        qp.setCreationDate( date );
+
+        String publicationDateString = getNodeAsString(
+                                                        ci_citation,
+                                                        new XPath(
+                                                                   "./gmd:date/gmd:CI_Date[./gmd:dateType/gmd:CI_DateTypeCode/@codeListValue='publication']/gmd:date/gco:Date | ./gmd:date/gmd:CI_Date[./gmd:dateType/gmd:CI_DateTypeCode/@codeListValue='publication']/gmd:date/gco:DateTime",
+                                                                   nsContextParseII ), null );
+
+        try {
+            if ( publicationDateString != null ) {
+                date = new Date( publicationDateString );
+            } else {
+                date = null;
+            }
+        } catch ( ParseException e ) {
+
+            e.printStackTrace();
+        }
+
+        qp.setPublicationDate( date );
 
     }
 
