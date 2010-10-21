@@ -36,13 +36,26 @@
 package org.deegree.commons.xml.schema;
 
 import static javax.xml.XMLConstants.DEFAULT_NS_PREFIX;
+import static org.apache.xerces.xs.XSComplexTypeDefinition.CONTENTTYPE_ELEMENT;
+import static org.apache.xerces.xs.XSComplexTypeDefinition.CONTENTTYPE_EMPTY;
 import static org.deegree.commons.xml.CommonNamespaces.XSNS;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
+import org.apache.xerces.xs.XSAttributeDeclaration;
+import org.apache.xerces.xs.XSAttributeUse;
+import org.apache.xerces.xs.XSComplexTypeDefinition;
+import org.apache.xerces.xs.XSElementDeclaration;
+import org.apache.xerces.xs.XSModelGroup;
+import org.apache.xerces.xs.XSObjectList;
+import org.apache.xerces.xs.XSParticle;
+import org.apache.xerces.xs.XSTerm;
+import org.apache.xerces.xs.XSTypeDefinition;
+import org.apache.xerces.xs.XSWildcard;
 import org.deegree.commons.utils.Pair;
 
 /**
@@ -89,5 +102,86 @@ public class SchemaUtils {
 
         // end 'xs:schema'
         writer.writeEndElement();
+    }
+
+    public static List<String> getPaths( XSComplexTypeDefinition typeDef ) {
+        List<String> paths = new ArrayList<String>();
+        addPaths( typeDef, paths, "" );
+        return paths;
+    }
+
+    private static void addPaths( XSComplexTypeDefinition typeDef, List<String> paths, String base ) {
+
+        // attributes
+        XSObjectList attributeUses = typeDef.getAttributeUses();
+        for ( int i = 0; i < attributeUses.getLength(); i++ ) {
+            XSAttributeDeclaration attributeDecl = ( (XSAttributeUse) attributeUses.item( i ) ).getAttrDeclaration();
+            if ( attributeDecl.getNamespace() == null ) {
+                paths.add( base + "/@" + attributeDecl.getName() );
+            } else {
+                paths.add( base + "/@{" + attributeDecl.getNamespace() + "}" + attributeDecl.getName() );
+            }
+        }
+
+        // text node
+        if ( typeDef.getContentType() != CONTENTTYPE_EMPTY && typeDef.getContentType() != CONTENTTYPE_ELEMENT ) {
+            paths.add( base + "/text()" );
+        }
+
+        // elements
+        XSParticle particle = typeDef.getParticle();
+        if ( particle != null ) {
+            addPaths( particle, paths, base );
+        }
+    }
+
+    private static void addPaths( XSParticle particle, List<String> paths, String base ) {
+        if ( particle.getMaxOccursUnbounded() ) {
+            addPaths( particle.getTerm(), paths, base + "[*]" );
+        } else {
+            for ( int i = 1; i <= particle.getMaxOccurs(); i++ ) {
+                addPaths( particle.getTerm(), paths, base + "[" + i + "]" );
+            }
+        }
+    }
+
+    private static void addPaths( XSTerm term, List<String> paths, String base ) {
+        if ( term instanceof XSElementDeclaration ) {
+            addPaths( (XSElementDeclaration) term, paths, base );
+        } else if ( term instanceof XSModelGroup ) {
+            addPaths( (XSModelGroup) term, paths, base );
+        } else {
+            addPaths( (XSWildcard) term, paths, base );
+        }
+    }
+
+    private static void addPaths( XSElementDeclaration elementDecl, List<String> paths, String base ) {
+
+        // TODO substitutions
+        if ( elementDecl.getNamespace() == null ) {
+            base += "/" + elementDecl.getName();
+        } else {
+            base += "/{" + elementDecl.getNamespace() + "}" + elementDecl.getName();
+        }
+
+        XSTypeDefinition typeDef = elementDecl.getTypeDefinition();
+        if ( typeDef instanceof XSComplexTypeDefinition ) {
+            addPaths( (XSComplexTypeDefinition) typeDef, paths, base );
+        } else {
+            paths.add( base + "/text()" );
+        }
+    }
+
+    private static void addPaths( XSModelGroup modelGroup, List<String> paths, String base ) {
+        base += "compositor_" + modelGroup.getCompositor();
+        XSObjectList particles = modelGroup.getParticles();
+        for ( int i = 0; i < particles.getLength(); i++ ) {
+            XSParticle particle = (XSParticle) particles.item( i );
+            addPaths( particle, paths, base );
+        }
+    }
+
+    private static void addPaths( XSWildcard wildCard, List<String> paths, String base ) {
+        // TODO
     }
 }
