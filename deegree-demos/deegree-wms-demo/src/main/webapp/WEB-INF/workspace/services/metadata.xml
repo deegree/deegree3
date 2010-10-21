@@ -5,6 +5,12 @@
     General service information for all services. Used in the GetCapabilities
     responses.
   -->
+  
+  <ServiceIdentification>
+    <Title>deegree 3 Utah Demo</Title>
+    <Abstract>WMS and WFS demonstration with Utah data</Abstract>
+  </ServiceIdentification>
+  
   <ServiceProvider>
     <ProviderName>lat-lon GmbH</ProviderName>
     <ProviderSite>http://www.lat-lon.de</ProviderSite>
@@ -27,4 +33,5 @@
       <Role>PointOfContact</Role>
     </ServiceContact>
   </ServiceProvider>
+  
 </deegreeServicesMetadata>

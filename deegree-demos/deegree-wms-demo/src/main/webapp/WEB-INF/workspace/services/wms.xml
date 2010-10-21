@@ -251,7 +251,7 @@
       </RequestableLayer>
 
       <DynamicLayer>
-        <ShapefileDirectory>../../data/utah/vector/busroutes</ShapefileDirectory>
+        <ShapefileDirectory>../data/data/utah/vector/busroutes</ShapefileDirectory>
       </DynamicLayer>
 
       <StatisticsLayer />
