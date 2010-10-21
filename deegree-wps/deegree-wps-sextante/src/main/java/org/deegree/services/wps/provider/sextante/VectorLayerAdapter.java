@@ -481,7 +481,7 @@ public class VectorLayerAdapter {
         }
 
         // create simple geometry
-        GeometryPropertyType gpt = new GeometryPropertyType( new QName( APP_NS, "geom", APP_PREFIX ), 1, 1, false,
+        GeometryPropertyType gpt = new GeometryPropertyType( new QName( APP_NS, "the_geom", APP_PREFIX ), 1, 1, false,
                                                              false, new LinkedList<PropertyType>(),
                                                              GeometryType.MULTI_GEOMETRY, CoordinateDimension.DIM_2,
                                                              ValueRepresentation.INLINE );
