@@ -37,22 +37,15 @@ package org.deegree.feature.persistence.postgis;
 
 import static org.deegree.commons.xml.CommonNamespaces.XSINS;
 
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
 import java.util.List;
 import java.util.Map;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
 import javax.xml.namespace.QName;
-import javax.xml.stream.FactoryConfigurationError;
-import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
-import org.deegree.CoreTstProperties;
-import org.deegree.commons.xml.stax.IndentingXMLStreamWriter;
 import org.deegree.feature.types.ApplicationSchema;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.feature.types.property.CodePropertyType;
@@ -62,8 +55,6 @@ import org.deegree.feature.types.property.GeometryPropertyType;
 import org.deegree.feature.types.property.MeasurePropertyType;
 import org.deegree.feature.types.property.PropertyType;
 import org.deegree.feature.types.property.SimplePropertyType;
-import org.deegree.gml.GMLVersion;
-import org.deegree.gml.feature.schema.ApplicationSchemaXSDDecoder;
 
 /**
  * The <code></code> class TODO add class documentation here.
@@ -201,23 +192,23 @@ public class PostGISFeatureStoreConfigHelper {
         return name.getLocalPart();
     }
 
-//    public static void main( String[] args )
-//                            throws XMLStreamException, FactoryConfigurationError, IOException, ClassCastException,
-//                            ClassNotFoundException, InstantiationException, IllegalAccessException {
-//
-//        String schemaURL = CoreTstProperties.getProperty( "schema_inspire_addresses" );
-//        if ( schemaURL == null ) {
-//            return;
-//        }
-//
-//        ApplicationSchemaXSDDecoder adapter = new ApplicationSchemaXSDDecoder( GMLVersion.GML_32, null, schemaURL );
-//        ApplicationSchema schema = adapter.extractFeatureTypeSchema();
-//
-//        OutputStream os = new FileOutputStream( "/tmp/config.xml" );
-//        XMLStreamWriter xmlStream = XMLOutputFactory.newInstance().createXMLStreamWriter( os );
-//        xmlStream = new IndentingXMLStreamWriter( xmlStream );
-//        writeConfig( xmlStream, schema, "EPSG:4258", null, "inspire", null );
-//        xmlStream.close();
-//        os.close();
-//    }
+    // public static void main( String[] args )
+    // throws XMLStreamException, FactoryConfigurationError, IOException, ClassCastException,
+    // ClassNotFoundException, InstantiationException, IllegalAccessException {
+    //
+    // String schemaURL = CoreTstProperties.getProperty( "schema_inspire_addresses" );
+    // if ( schemaURL == null ) {
+    // return;
+    // }
+    //
+    // ApplicationSchemaXSDDecoder adapter = new ApplicationSchemaXSDDecoder( GMLVersion.GML_32, null, schemaURL );
+    // ApplicationSchema schema = adapter.extractFeatureTypeSchema();
+    //
+    // OutputStream os = new FileOutputStream( "/tmp/config.xml" );
+    // XMLStreamWriter xmlStream = XMLOutputFactory.newInstance().createXMLStreamWriter( os );
+    // xmlStream = new IndentingXMLStreamWriter( xmlStream );
+    // writeConfig( xmlStream, schema, "EPSG:4258", null, "inspire", null );
+    // xmlStream.close();
+    // os.close();
+    // }
 }
