@@ -106,9 +106,7 @@
     </annotation>
     <attribute name="name" type="QName">
       <annotation>
-        <documentation>
-          Qualified name of the property.
-        </documentation>
+        <documentation>Qualified name of the property.</documentation>
       </annotation>
     </attribute>
     <attribute name="minOccurs" type="nonNegativeInteger" use="optional">
@@ -135,9 +133,14 @@
         <documentation>Mapping of the property (currently, this can only be the name of a column).</documentation>
       </annotation>
     </attribute>
+    <attribute name="nilMapping" type="string" use="optional">
+      <annotation>
+        <documentation>Boolean column that stores whether the property is nilled.</documentation>
+      </annotation>
+    </attribute>
   </complexType>
   <!--
-    === Simple property definition ===
+    === Simple property declaration / mapping ===
   -->
   <element name="SimpleProperty" substitutionGroup="postgisfs:AbstractProperty">
     <complexType>
@@ -203,7 +206,7 @@
     </restriction>
   </simpleType>
   <!--
-    === Geometry property definition ===
+    === Geometry property declaration / mapping ===
   -->
   <element name="GeometryProperty" substitutionGroup="postgisfs:AbstractProperty">
     <complexType>
@@ -277,7 +280,7 @@
     </restriction>
   </simpleType>
   <!--
-    === Feature property definition ===
+    === Feature property declaration / mapping ===
   -->
   <element name="FeatureProperty" substitutionGroup="postgisfs:AbstractProperty">
     <complexType>
@@ -294,6 +297,119 @@
               <documentation>Allowed feature type.</documentation>
             </annotation>
           </attribute>
+        </extension>
+      </complexContent>
+    </complexType>
+  </element>
+  <!--
+    === Custom property declaration / mapping ===
+  -->
+  <element name="CustomProperty" substitutionGroup="postgisfs:AbstractProperty">
+    <complexType>
+      <annotation>
+        <documentation>Definition of a custom-valued property of a feature type.</documentation>
+        <appinfo>
+          <jaxb:class name="CustomPropertyDecl" />
+        </appinfo>
+      </annotation>
+      <complexContent>
+        <extension base="postgisfs:AbstractPropertyType">
+          <sequence>
+            <element ref="postgisfs:AbstractCustomMapping" minOccurs="0" maxOccurs="unbounded" />
+          </sequence>
+        </extension>
+      </complexContent>
+    </complexType>
+  </element>
+  <element name="AbstractCustomMapping" abstract="true" type="postgisfs:AbstractCustomMappingType" />
+  <complexType name="AbstractCustomMappingType">
+    <annotation>
+      <documentation>Defines the mapping for (a part of) a custom property.</documentation>
+      <appinfo>
+        <jaxb:class name="CustomMapping" />
+      </appinfo>
+    </annotation>
+    <attribute name="path" type="string" use="required">
+      <annotation>
+        <documentation>(Relative) XPath targeted by this mapping.</documentation>
+      </annotation>
+    </attribute>
+    <attribute name="mapping" type="string">
+      <annotation>
+        <documentation>Mapping expression.</documentation>
+      </annotation>
+    </attribute>
+  </complexType>
+  <element name="PrimitiveMapping" substitutionGroup="postgisfs:AbstractCustomMapping">
+    <complexType>
+      <annotation>
+        <documentation>Defines the mapping for a primitive node of a custom property.</documentation>
+        <appinfo>
+          <jaxb:class name="PrimitiveMapping" />
+        </appinfo>
+      </annotation>
+      <complexContent>
+        <extension base="postgisfs:AbstractCustomMappingType">
+          <attribute name="type" type="postgisfs:PrimitiveType">
+            <annotation>
+              <documentation>Primitive type.</documentation>
+            </annotation>
+          </attribute>
+        </extension>
+      </complexContent>
+    </complexType>
+  </element>
+  <element name="GeometryMapping" substitutionGroup="postgisfs:AbstractCustomMapping">
+    <complexType>
+      <annotation>
+        <documentation>Defines the mapping for a Geometry inside a custom property.</documentation>
+        <appinfo>
+          <jaxb:class name="GeometryMapping" />
+        </appinfo>
+      </annotation>
+      <complexContent>
+        <extension base="postgisfs:AbstractCustomMappingType">
+          <attribute name="type" type="postgisfs:GeometryType">
+            <annotation>
+              <documentation>Geometry type.</documentation>
+            </annotation>
+          </attribute>
+        </extension>
+      </complexContent>
+    </complexType>
+  </element>
+  <element name="FeatureMapping" substitutionGroup="postgisfs:AbstractCustomMapping">
+    <complexType>
+      <annotation>
+        <documentation>Defines the mapping for a Feature inside a custom property.</documentation>
+        <appinfo>
+          <jaxb:class name="FeatureMapping" />
+        </appinfo>
+      </annotation>
+      <complexContent>
+        <extension base="postgisfs:AbstractCustomMappingType">
+          <attribute name="type" type="QName" use="optional">
+            <annotation>
+              <documentation>Allowed feature type.</documentation>
+            </annotation>
+          </attribute>
+        </extension>
+      </complexContent>
+    </complexType>
+  </element>
+  <element name="CompoundMapping" substitutionGroup="postgisfs:AbstractCustomMapping">
+    <complexType>
+      <annotation>
+        <documentation>Defines the mapping for a part of a custom property.</documentation>
+        <appinfo>
+          <jaxb:class name="CompoundMapping" />
+        </appinfo>
+      </annotation>
+      <complexContent>
+        <extension base="postgisfs:AbstractCustomMappingType">
+          <sequence>
+            <element ref="postgisfs:AbstractCustomMapping" minOccurs="0" maxOccurs="unbounded" />
+          </sequence>
         </extension>
       </complexContent>
     </complexType>
