@@ -343,7 +343,7 @@ public class SHPReader {
         for ( Long ptr : pointers ) {
             buffer.position( (int) ( ptr - 8 ) );
             int num = getBEInt( buffer );
-            if ( num == 0 && !recordNumStartsWith0 ) {
+            if ( num == 0 && !recordNumStartsWith0 && rtree != null ) {
                 LOG.error( "PLEASE NOTE THIS: Detected that the shape file starts counting record numbers at 0 and not at 1 as specified!" );
                 LOG.error( "PLEASE NOTE THIS: This should not happen any more, and is a bug! Please report this along with the data!" );
                 recordNumStartsWith0 = true;

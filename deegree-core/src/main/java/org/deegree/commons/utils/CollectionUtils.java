@@ -335,4 +335,36 @@ public class CollectionUtils {
         }
     }
 
+    /**
+     * 
+     * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
+     * @author last edited by: $Author$
+     * 
+     * @version $Revision$, $Date$
+     * @param <T>
+     */
+    public static interface Predicate<T> {
+        /**
+         * @param t
+         * @return whether the predicate applies
+         */
+        public boolean applies( T t );
+    }
+
+    /**
+     * @param <T>
+     * @param col
+     * @param pred
+     * @return a list of values which the predicate applies to
+     */
+    public static <T> List<T> filter( Collection<T> col, Predicate<T> pred ) {
+        ArrayList<T> list = new ArrayList<T>( col.size() );
+        for ( T t : col ) {
+            if ( pred.applies( t ) ) {
+                list.add( t );
+            }
+        }
+        return list;
+    }
+
 }
