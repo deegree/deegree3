@@ -153,7 +153,6 @@ public class RasterConverter {
         String outputLoc = line.getOptionValue( OPT_RASTER_OUT_LOC );
         String ext = line.getOptionValue( OPT_OUTPUT_TYPE );
         AbstractCoverage raster = RasterOptionsParser.loadCoverage( line, options );
-
         RasterConverter converter = new RasterConverter();
         converter.convert( raster, outputLoc, numThreads, ext, line.hasOption( OPT_VERBOSE ) );
     }
@@ -161,7 +160,6 @@ public class RasterConverter {
     /**
      * @param numThreads
      * @param outLoc
-     * @param options
      * @throws InterruptedException
      * @throws IOException
      * 
