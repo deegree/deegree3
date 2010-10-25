@@ -32,7 +32,7 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 package org.deegree.feature.persistence.mapping;
 
 /**
@@ -44,5 +44,5 @@ package org.deegree.feature.persistence.mapping;
  * @version $Revision$, $Date$
  */
 public interface MappingExpression {
-
+    // marker interface
 }

@@ -39,6 +39,7 @@ import java.util.Map;
 
 import javax.xml.namespace.QName;
 
+import org.deegree.feature.persistence.mapping.property.Mapping;
 import org.deegree.feature.types.FeatureType;
 
 /**
@@ -59,7 +60,7 @@ public class FeatureTypeMapping {
 
     private final String backendSrs;
 
-    private final Map<QName, MappingExpression> propToColumn;
+    private final Map<QName, Mapping> propToMapping;
 
     /**
      * Creates a new {@link FeatureTypeMapping} instance.
@@ -71,20 +72,19 @@ public class FeatureTypeMapping {
      *            mappings)
      * @param fidColumn
      *            name of the columns where the feature id is stored, may be <code>null</code> (for BLOB-only mappings)
-     * @param propToColumn
+     * @param propToMapping
      *            mapping parameters for the properties of the feature type, may be <code>null</code> (for BLOB-only
      *            mappings)
      * @param backendSrs
      *            the native SRS identifier used by the backend, may be <code>null</code> (for BLOB-only mappings)
      */
-    public FeatureTypeMapping( QName ftName, String table, String fidColumn,
-                               Map<QName, MappingExpression> propToColumn, String backendSrs ) {
+    public FeatureTypeMapping( QName ftName, String table, String fidColumn, Map<QName, Mapping> propToMapping,
+                               String backendSrs ) {
         this.ftName = ftName;
         this.table = table;
         this.fidColumn = fidColumn;
-        this.propToColumn = propToColumn;
+        this.propToMapping = propToMapping;
         this.backendSrs = backendSrs;
-
     }
 
     /**
@@ -116,22 +116,22 @@ public class FeatureTypeMapping {
     }
 
     /**
-     * Returns the mapping parameters for the specified column.
+     * Returns the mapping parameters for the specified property.
      * 
      * @param propName
      *            name of the property, must not be <code>null</code>
      * @return mapping, may be <code>null</code> (if the property is not mapped)
      */
-    public MappingExpression getMapping( QName propName ) {
-        return propToColumn.get( propName );
+    public Mapping getMapping( QName propName ) {
+        return propToMapping.get( propName );
     }
 
     /**
-     * Returns the native SRS identifier used by the backend.
+     * Returns the native CRS identifier used by the backend.
      * 
-     * @return the native SRS identifier used by the backend, may be <code>null</code> (for BLOB-only mappings)
+     * @return the native CRS identifier used by the backend, may be <code>null</code> (for BLOB-only mappings)
      */
-    public String getBackendSrs() {
+    public String getBackendCrs() {
         return backendSrs;
     }
 }

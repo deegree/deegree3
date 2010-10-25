@@ -62,13 +62,19 @@ import org.deegree.cs.CRS;
 import org.deegree.feature.persistence.BlobCodec;
 import org.deegree.feature.persistence.mapping.BBoxTableMapping;
 import org.deegree.feature.persistence.mapping.BlobMapping;
-import org.deegree.feature.persistence.mapping.DBField;
 import org.deegree.feature.persistence.mapping.FeatureTypeMapping;
 import org.deegree.feature.persistence.mapping.MappedApplicationSchema;
 import org.deegree.feature.persistence.mapping.MappingExpression;
 import org.deegree.feature.persistence.mapping.antlr.FMLLexer;
 import org.deegree.feature.persistence.mapping.antlr.FMLParser;
+import org.deegree.feature.persistence.mapping.property.CompoundMapping;
+import org.deegree.feature.persistence.mapping.property.FeatureMapping;
+import org.deegree.feature.persistence.mapping.property.GeometryMapping;
+import org.deegree.feature.persistence.mapping.property.Mapping;
+import org.deegree.feature.persistence.mapping.property.PrimitiveMapping;
 import org.deegree.feature.persistence.postgis.jaxb.AbstractPropertyDecl;
+import org.deegree.feature.persistence.postgis.jaxb.CustomMapping;
+import org.deegree.feature.persistence.postgis.jaxb.CustomPropertyDecl;
 import org.deegree.feature.persistence.postgis.jaxb.FeaturePropertyDecl;
 import org.deegree.feature.persistence.postgis.jaxb.FeatureTypeDecl;
 import org.deegree.feature.persistence.postgis.jaxb.GeometryPropertyDecl;
@@ -76,6 +82,7 @@ import org.deegree.feature.persistence.postgis.jaxb.SimplePropertyDecl;
 import org.deegree.feature.types.ApplicationSchema;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.feature.types.GenericFeatureType;
+import org.deegree.feature.types.property.CustomPropertyType;
 import org.deegree.feature.types.property.FeaturePropertyType;
 import org.deegree.feature.types.property.GeometryPropertyType;
 import org.deegree.feature.types.property.PropertyType;
@@ -84,7 +91,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Creates an {@link MappedApplicationSchema} from feature type declarations.
+ * Creates a {@link MappedApplicationSchema} from feature type declarations / relational mapping information.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
@@ -122,20 +129,26 @@ class PostGISApplicationSchemaBuilder {
                             throws SQLException {
 
         MappedApplicationSchema mappedSchema = null;
-
-        // TODO hybrid mapping
-
         if ( appSchema != null ) {
+            // BLOB / hybrid mode
             BBoxTableMapping bboxMapping = new BBoxTableMapping();
             BlobMapping blobMapping = new BlobMapping( "GML_OBJECTS", new BlobCodec( GML_32, NONE ) );
+
+            PostGISApplicationSchemaBuilder builder = new PostGISApplicationSchemaBuilder( ftDecls, jdbcConnId,
+                                                                                           dbSchema );
+            FeatureTypeMapping[] ftMappings = builder.ftNameToMapping.values().toArray(
+                                                                                        new FeatureTypeMapping[builder.ftNameToMapping.size()] );
+
             mappedSchema = new MappedApplicationSchema( appSchema.getFeatureTypes(), appSchema.getFtToSuperFt(),
-                                                        appSchema.getNamespaceBindings(), appSchema.getXSModel(), null,
-                                                        storageCRS, bboxMapping, blobMapping );
+                                                        appSchema.getNamespaceBindings(), appSchema.getXSModel(),
+                                                        ftMappings, storageCRS, bboxMapping, blobMapping );
         } else {
+            // relational mode
             PostGISApplicationSchemaBuilder builder = new PostGISApplicationSchemaBuilder( ftDecls, jdbcConnId,
                                                                                            dbSchema );
             FeatureType[] fts = builder.ftNameToFt.values().toArray( new FeatureType[builder.ftNameToFt.size()] );
-            FeatureTypeMapping[] ftMappings = builder.ftNameToMapping.values().toArray( new FeatureTypeMapping[builder.ftNameToMapping.size()] );
+            FeatureTypeMapping[] ftMappings = builder.ftNameToMapping.values().toArray(
+                                                                                        new FeatureTypeMapping[builder.ftNameToMapping.size()] );
             mappedSchema = new MappedApplicationSchema( fts, null, null, null, ftMappings, storageCRS, null, null );
         }
 
@@ -171,10 +184,10 @@ class PostGISApplicationSchemaBuilder {
         String backendSrs = "-1";
 
         List<PropertyType> pts = new ArrayList<PropertyType>();
-        Map<QName, MappingExpression> propToColumn = new HashMap<QName, MappingExpression>();
+        Map<QName, Mapping> propToColumn = new HashMap<QName, Mapping>();
         for ( JAXBElement<? extends AbstractPropertyDecl> propDeclEl : ftDecl.getAbstractProperty() ) {
             AbstractPropertyDecl propDecl = propDeclEl.getValue();
-            Pair<PropertyType, MappingExpression> pt = process( propDecl );
+            Pair<PropertyType, Mapping> pt = process( propDecl );
             pts.add( pt.first );
             propToColumn.put( pt.first.getName(), pt.second );
 
@@ -194,7 +207,7 @@ class PostGISApplicationSchemaBuilder {
         ftNameToMapping.put( ftName, ftMapping );
     }
 
-    private Pair<PropertyType, MappingExpression> process( AbstractPropertyDecl propDecl ) {
+    private Pair<PropertyType, Mapping> process( AbstractPropertyDecl propDecl ) {
 
         QName ptName = propDecl.getName();
 
@@ -209,27 +222,8 @@ class PostGISApplicationSchemaBuilder {
             }
         }
 
-        PropertyType pt = null;
-        if ( propDecl instanceof SimplePropertyDecl ) {
-            SimplePropertyDecl spt = (SimplePropertyDecl) propDecl;
-            PrimitiveType primType = getPrimitiveType( spt.getType() );
-            pt = new SimplePropertyType( ptName, minOccurs, maxOccurs, primType, false, false, null );
-        } else if ( propDecl instanceof GeometryPropertyDecl ) {
-            GeometryPropertyDecl gpt = (GeometryPropertyDecl) propDecl;
-            pt = new GeometryPropertyType( ptName, minOccurs, maxOccurs, false, false, null, GEOMETRY, DIM_2, BOTH );
-        } else if ( propDecl instanceof FeaturePropertyDecl ) {
-            FeaturePropertyDecl fpt = (FeaturePropertyDecl) propDecl;
-            pt = new FeaturePropertyType( ptName, minOccurs, maxOccurs, false, false, null, fpt.getType(), BOTH );
-        } else {
-            throw new RuntimeException( "Internal error: Unhandled property JAXB property type: " + propDecl.getClass() );
-        }
-
         MappingExpression mapping = null;
-        if ( propDecl.getMapping() == null ) {
-            mapping = new DBField( pt.getName().getLocalPart().toUpperCase() );
-            LOG.debug( "No explicit mapping for property " + pt.getName()
-                       + " specified, defaulting to local property name '" + mapping + "'." );
-        } else {
+        if ( propDecl.getMapping() != null ) {
             ANTLRStringStream in = new ANTLRStringStream( propDecl.getMapping() );
             FMLLexer lexer = new FMLLexer( in );
             CommonTokenStream tokens = new CommonTokenStream( lexer );
@@ -242,7 +236,70 @@ class PostGISApplicationSchemaBuilder {
             }
         }
 
-        return new Pair<PropertyType, MappingExpression>( pt, mapping );
+        PropertyType pt = null;
+        Mapping m = null;
+        if ( propDecl instanceof SimplePropertyDecl ) {
+            SimplePropertyDecl spt = (SimplePropertyDecl) propDecl;
+            PrimitiveType primType = getPrimitiveType( spt.getType() );
+            pt = new SimplePropertyType( ptName, minOccurs, maxOccurs, primType, false, false, null );
+            m = new PrimitiveMapping( ptName.toString(), mapping, primType );
+        } else if ( propDecl instanceof GeometryPropertyDecl ) {
+            GeometryPropertyDecl gpt = (GeometryPropertyDecl) propDecl;
+            pt = new GeometryPropertyType( ptName, minOccurs, maxOccurs, false, false, null, GEOMETRY, DIM_2, BOTH );
+            m = new GeometryMapping( ptName.toString(), mapping, GEOMETRY, DIM_2, "-1" );
+        } else if ( propDecl instanceof FeaturePropertyDecl ) {
+            FeaturePropertyDecl fpt = (FeaturePropertyDecl) propDecl;
+            pt = new FeaturePropertyType( ptName, minOccurs, maxOccurs, false, false, null, fpt.getType(), BOTH );
+            m = new FeatureMapping( ptName.toString(), mapping, fpt.getType() );
+        } else if ( propDecl instanceof CustomPropertyDecl ) {
+            CustomPropertyDecl cpt = (CustomPropertyDecl) propDecl;
+            pt = new CustomPropertyType( ptName, minOccurs, maxOccurs, null, false, false, null );
+            m = new CompoundMapping( ptName.toString(), mapping, process( cpt.getAbstractCustomMapping() ) );
+        } else {
+            throw new RuntimeException( "Internal error: Unhandled property JAXB property type: " + propDecl.getClass() );
+        }
+
+        return new Pair<PropertyType, Mapping>( pt, m );
+    }
+
+    private List<Mapping> process( List<JAXBElement<? extends CustomMapping>> customMappings ) {
+        List<Mapping> mappings = new ArrayList<Mapping>( customMappings.size() );
+        for ( JAXBElement<? extends CustomMapping> customMappingEl : customMappings ) {
+            CustomMapping customMapping = customMappingEl.getValue();
+
+            String path = customMapping.getPath();
+            MappingExpression mapping = null;
+            if ( customMapping.getMapping() != null ) {
+                ANTLRStringStream in = new ANTLRStringStream( customMapping.getMapping() );
+                FMLLexer lexer = new FMLLexer( in );
+                CommonTokenStream tokens = new CommonTokenStream( lexer );
+                FMLParser parser = new FMLParser( tokens );
+                try {
+                    mapping = parser.mappingExpr().value;
+                } catch ( RecognitionException e ) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
+            }
+
+            if ( customMapping instanceof org.deegree.feature.persistence.postgis.jaxb.PrimitiveMapping ) {
+                org.deegree.feature.persistence.postgis.jaxb.PrimitiveMapping primitiveMapping = (org.deegree.feature.persistence.postgis.jaxb.PrimitiveMapping) customMapping;
+                mappings.add( new PrimitiveMapping( path, mapping, getPrimitiveType( primitiveMapping.getType() ) ) );
+            } else if ( customMapping instanceof org.deegree.feature.persistence.postgis.jaxb.GeometryMapping ) {
+                org.deegree.feature.persistence.postgis.jaxb.GeometryMapping geometryMapping = (org.deegree.feature.persistence.postgis.jaxb.GeometryMapping) customMapping;
+                mappings.add( new GeometryMapping( path, mapping, GEOMETRY, DIM_2, "-1" ) );
+            } else if ( customMapping instanceof org.deegree.feature.persistence.postgis.jaxb.FeatureMapping ) {
+                org.deegree.feature.persistence.postgis.jaxb.FeatureMapping featureMapping = (org.deegree.feature.persistence.postgis.jaxb.FeatureMapping) customMapping;
+                mappings.add( new FeatureMapping( path, mapping, featureMapping.getType() ) );
+            } else if ( customMapping instanceof org.deegree.feature.persistence.postgis.jaxb.CustomMapping ) {
+                org.deegree.feature.persistence.postgis.jaxb.CompoundMapping compoundMapping = (org.deegree.feature.persistence.postgis.jaxb.CompoundMapping) customMapping;
+                List<Mapping> particles = process( compoundMapping.getAbstractCustomMapping() );
+                mappings.add( new CompoundMapping( path, mapping, particles ));
+            } else {
+                throw new RuntimeException( "Internal error. Unexpected JAXB type '" + customMapping.getClass() + "'." );
+            }
+        }
+        return mappings;
     }
 
     private PrimitiveType getPrimitiveType( org.deegree.feature.persistence.postgis.jaxb.PrimitiveType type ) {

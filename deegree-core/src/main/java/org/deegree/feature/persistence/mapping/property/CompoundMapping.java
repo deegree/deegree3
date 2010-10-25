@@ -33,53 +33,41 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.feature.persistence;
+package org.deegree.feature.persistence.mapping.property;
 
-import java.net.URL;
+import java.util.List;
+
+import org.deegree.feature.persistence.mapping.MappingExpression;
 
 /**
  * The <code></code> class TODO add class documentation here.
- * 
- * @see FeatureStore
- * @see FeatureStoreManager
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
  */
-public interface FeatureStoreProvider {
+public class CompoundMapping extends Mapping {
 
-    /**
-     * Returns the namespace for configurations documents that this provider handles.
-     * 
-     * @return the namespace for configurations documents, never <code>null</code>
-     */
-    public String getConfigNamespace();
-    
-    /**
-     * Returns the URL for retrieving the configuration document schema.
-     * 
-     * @return the URL for retrieving the configuration document schema, may be <code>null</code>
-     */
-    public URL getConfigSchema ();
-    
-    /**
-     * Returns the URL for retrieving the configuration document template.
-     * 
-     * @return the URL for retrieving the configuration document template, may be <code>null</code>
-     */    
-    public URL getConfigTemplate ();
+    private List<Mapping> particles;
 
-    /**
-     * Creates a new {@link FeatureStore} instance from the given configuration document.
-     * 
-     * @param configURL
-     *            location of the configuration document, must not be <code>null</code>
-     * @return new feature store instance, configured, not initialized yet
-     * @throws FeatureStoreException
-     *             if the configuration contains an error or creation fails
-     */
-    public FeatureStore getFeatureStore( URL configURL )
-                            throws FeatureStoreException;
+    public CompoundMapping( String path, MappingExpression mapping, List<Mapping> particles ) {
+        super( path, mapping );
+        this.particles = particles;
+    }
+
+    public List<Mapping> getParticles() {
+        return particles;
+    }
+
+    @Override
+    public String toString() {
+        String s = super.toString();
+        s += "{";
+        for ( Mapping particle : particles ) {
+            s += particle + ",";
+        }
+        s += "}";
+        return s;
+    }
 }

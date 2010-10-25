@@ -53,6 +53,7 @@ import org.deegree.feature.persistence.mapping.DBField;
 import org.deegree.feature.persistence.mapping.FeatureTypeMapping;
 import org.deegree.feature.persistence.mapping.JoinChain;
 import org.deegree.feature.persistence.mapping.MappingExpression;
+import org.deegree.feature.persistence.mapping.property.Mapping;
 import org.deegree.feature.property.GenericProperty;
 import org.deegree.feature.property.Property;
 import org.deegree.feature.types.FeatureType;
@@ -119,10 +120,11 @@ class FeatureBuilderRelational implements FeatureBuilder {
             int i = 2;
             for ( PropertyType pt : ft.getPropertyDeclarations() ) {
                 // if it is mappable, it has been SELECTed by contract
-                MappingExpression propMapping = ftMapping.getMapping( pt.getName() );
+                Mapping propMapping = ftMapping.getMapping( pt.getName() );
                 if ( propMapping != null ) {
-                    if ( propMapping instanceof JoinChain ) {
-                        addProperties( conn, props, pt, (JoinChain) propMapping, rs, i );
+                    MappingExpression me = propMapping.getMapping();
+                    if ( me instanceof JoinChain ) {
+                        addProperties( conn, props, pt, (JoinChain) me, rs, i );
                     } else {
                         addProperties( props, pt, rs, i );
                     }

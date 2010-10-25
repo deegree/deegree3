@@ -40,6 +40,7 @@ import java.util.List;
 
 import javax.xml.namespace.QName;
 
+import org.deegree.feature.persistence.mapping.property.Mapping;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.feature.types.property.FeaturePropertyType;
 import org.deegree.feature.types.property.PropertyType;
@@ -53,8 +54,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Represents a {@link PropertyName} that's mapped to the relational model defined by a {@link MappedApplicationSchema}
- * .
+ * Represents a {@link PropertyName} that's mapped to a relational model defined by a {@link MappedApplicationSchema}.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
@@ -178,13 +178,14 @@ public class MappedXPath {
                     throw new UnmappableException( msg );
                 }
 
-                MappingExpression propMapping = ftMapping.getMapping( pt.getName() );
+                Mapping propMapping = ftMapping.getMapping( pt.getName() );
                 if ( propMapping == null ) {
                     String msg = "Property '" + pt.getName() + "' is not mapped.";
                     throw new UnmappableException( msg );
                 }
 
-                addJoins( ftMapping, propMapping, valueFtMapping );
+                // TODO
+                addJoins( ftMapping, propMapping.getMapping(), valueFtMapping );
 
                 ftMapping = valueFtMapping;
                 propStep = true;
@@ -208,11 +209,12 @@ public class MappedXPath {
             String msg = "Feature type '" + ft.getName() + "' is not mapped.";
             throw new UnmappableException( msg );
         }
-        MappingExpression propMapping = ftMapping.getMapping( propName );
-        if ( propMapping == null ) {
+        Mapping mapping = ftMapping.getMapping( propName );
+        if ( mapping == null ) {
             String msg = "Property '" + propName + "' is not mapped.";
             throw new UnmappableException( msg );
         }
+        MappingExpression propMapping = mapping.getMapping();
         if ( propMapping instanceof DBField ) {
             String table = rootFt.getFtTable();
             if ( !joins.isEmpty() ) {

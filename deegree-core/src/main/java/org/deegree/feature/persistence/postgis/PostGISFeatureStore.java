@@ -69,6 +69,7 @@ import org.deegree.feature.persistence.mapping.Join;
 import org.deegree.feature.persistence.mapping.JoinChain;
 import org.deegree.feature.persistence.mapping.MappedApplicationSchema;
 import org.deegree.feature.persistence.mapping.MappingExpression;
+import org.deegree.feature.persistence.mapping.property.Mapping;
 import org.deegree.feature.persistence.query.CombinedResultSet;
 import org.deegree.feature.persistence.query.FeatureResultSet;
 import org.deegree.feature.persistence.query.FilteredFeatureResultSet;
@@ -208,13 +209,14 @@ public class PostGISFeatureStore implements SQLFeatureStore {
         String column = null;
         FeatureType ft = schema.getFeatureType( ftMapping.getFeatureType() );
         GeometryPropertyType pt = ft.getDefaultGeometryPropertyDeclaration();
-        MappingExpression mapping = ftMapping.getMapping( pt.getName() );
-        if ( mapping == null || !( mapping instanceof DBField ) ) {
+        Mapping propMapping = ftMapping.getMapping( pt.getName() );
+        MappingExpression me = propMapping.getMapping();
+        if ( me == null || !( me instanceof DBField ) ) {
             String msg = "Cannot determine BBOX for feature type '" + ft.getName() + "' (relational mode).";
             LOG.warn( msg );
             return null;
         }
-        column = ( (DBField) mapping ).getColumn();
+        column = ( (DBField) me ).getColumn();
 
         Envelope env = null;
         StringBuilder sql = new StringBuilder( "SELECT " );
@@ -392,7 +394,8 @@ public class PostGISFeatureStore implements SQLFeatureStore {
             for ( PropertyType pt : ft.getPropertyDeclarations() ) {
                 // append every (mapped) property to SELECT list
                 // TODO columns in related tables with 1:1 relation
-                MappingExpression column = mapping.getMapping( pt.getName() );
+                Mapping mapping2 = mapping.getMapping( pt.getName() );
+                MappingExpression column = mapping2 == null ? null : mapping2.getMapping();
                 if ( column != null ) {
                     sql.append( ',' );
                     if ( column instanceof JoinChain ) {
@@ -694,7 +697,8 @@ public class PostGISFeatureStore implements SQLFeatureStore {
                 for ( PropertyType pt : ft.getPropertyDeclarations() ) {
                     // append every (mapped) property to SELECT list
                     // TODO columns in related tables
-                    MappingExpression column = ftMapping.getMapping( pt.getName() );
+                    Mapping mapping = ftMapping.getMapping( pt.getName() );
+                    MappingExpression column = mapping == null ? null : mapping.getMapping();
                     if ( column != null ) {
                         sql.append( ',' );
                         if ( column instanceof JoinChain ) {

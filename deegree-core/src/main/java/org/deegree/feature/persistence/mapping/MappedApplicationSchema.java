@@ -50,7 +50,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * An {@link ApplicationSchema} augmented with relational and or BLOB mapping information.
+ * An {@link ApplicationSchema} augmented with relational and / or BLOB mapping information.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
@@ -180,6 +180,9 @@ public class MappedApplicationSchema extends ApplicationSchema {
         return ftIdToName.get( ftId );
     }
 
+    /**
+     * @return
+     */
     public short getFts() {
         return (short) ftIdToName.size();
     }
