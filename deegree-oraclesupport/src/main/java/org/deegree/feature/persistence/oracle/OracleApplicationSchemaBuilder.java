@@ -159,7 +159,8 @@ class OracleApplicationSchemaBuilder {
         FeatureType ft = new GenericFeatureType( ftName, pts, isAbstract );
         ftNameToFt.put( ftName, ft );
 
-        FeatureTypeMapping ftMapping = new FeatureTypeMapping( ftName, mapping, fidMapping, propToColumn, backendSrs );
+        FeatureTypeMapping ftMapping = null;
+//        new FeatureTypeMapping( ftName, mapping, fidMapping, propToColumn, backendSrs );
         ftNameToMapping.put( ftName, ftMapping );
     }
 

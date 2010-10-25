@@ -501,7 +501,7 @@ public class OracleFeatureStore implements FeatureStore {
     }
 
     int getSrid( QName ftName, QName propName ) {
-        return Integer.parseInt( schema.getMapping( ftName ).getBackendSrs() );
+        return Integer.parseInt( schema.getMapping( ftName ).getBackendCrs() );
     }
 
     JGeometryAdapter getJGeometryAdapter( QName ftName, QName ptName ) {
