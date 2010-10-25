@@ -6,7 +6,7 @@
   <StorageCRS>EPSG:4326</StorageCRS>
 
   <!-- [0...n] Prefixes to use for exporting qualified elements (features / properties) -->
-  <NamespaceHint namespaceURI="app" prefix="http://www.deegree.org/app" />
+  <NamespaceHint namespaceURI="http://www.deegree.org/app" prefix="app" />
 
   <!-- [1] Identifier of JDBC connection -->
   <JDBCConnId>postgis</JDBCConnId>

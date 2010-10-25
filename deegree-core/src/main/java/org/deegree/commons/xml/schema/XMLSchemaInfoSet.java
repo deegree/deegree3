@@ -35,6 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.commons.xml.schema;
 
+import static javax.xml.stream.XMLStreamConstants.END_DOCUMENT;
 import static org.apache.xerces.xs.XSConstants.DERIVATION_EXTENSION;
 import static org.apache.xerces.xs.XSConstants.DERIVATION_LIST;
 import static org.apache.xerces.xs.XSConstants.DERIVATION_RESTRICTION;
@@ -44,14 +45,21 @@ import static org.w3c.dom.DOMError.SEVERITY_ERROR;
 import static org.w3c.dom.DOMError.SEVERITY_FATAL_ERROR;
 import static org.w3c.dom.DOMError.SEVERITY_WARNING;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.xml.XMLConstants;
 import javax.xml.namespace.QName;
+import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.XMLStreamReader;
 
 import org.apache.xerces.impl.xs.XMLSchemaLoader;
 import org.apache.xerces.impl.xs.util.StringListImpl;
@@ -94,6 +102,8 @@ public class XMLSchemaInfoSet {
 
     private Map<String, List<String>> nsToLocations;
 
+    private Map<String, String> nsToPrefix;
+
     /**
      * Creates a new <code>XSModelAnalyzer</code> for the given (Xerces) XML schema infoset.
      * 
@@ -129,6 +139,57 @@ public class XMLSchemaInfoSet {
     }
 
     /**
+     * Returns the prefix to namespace bindings used in the original XML schema documents.
+     * 
+     * @return the prefix to namespace bindings, never <code>null</code> (but does not necessarily bindings for all
+     *         namespaces)
+     */
+    public synchronized Map<String, String> getNamespacePrefixes() {
+        if ( nsToPrefix == null ) {
+            nsToPrefix = new HashMap<String, String>();
+            for ( String ns : getSchemaNamespaces() ) {
+                for ( String componentLocation : getComponentLocations( ns ) ) {
+                    InputStream is = null;
+                    try {
+                        LOG.info( "Scanning schema component '" + componentLocation + "'" );
+                        is = new URL( componentLocation ).openStream();
+                        XMLStreamReader xmlStream = XMLInputFactory.newInstance().createXMLStreamReader( is );
+                        while ( xmlStream.next() != END_DOCUMENT ) {
+                            if ( xmlStream.isStartElement() ) {
+                                for ( int i = 0; i < xmlStream.getNamespaceCount(); i++ ) {
+                                    String prefix = xmlStream.getNamespacePrefix( i );
+                                    if ( prefix != null && !prefix.equals( XMLConstants.DEFAULT_NS_PREFIX ) ) {
+                                        String nsUri = xmlStream.getNamespaceURI( i );
+                                        String oldPrefix = nsToPrefix.get( nsUri );
+                                        if ( oldPrefix != null && !oldPrefix.equals( prefix ) ) {
+                                            LOG.warn( "Different prefices for '" + nsUri + "'" + prefix + " / "
+                                                      + oldPrefix );
+                                        } else {
+                                            nsToPrefix.put( nsUri, prefix );
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    } catch ( Exception e ) {
+                        LOG.error( "Error determining namespaces from schema component '" + componentLocation + "': "
+                                   + e.getMessage() );
+                    } finally {
+                        if ( is != null ) {
+                            try {
+                                is.close();
+                            } catch ( IOException e ) {
+                                LOG.error( e.getMessage(), e );
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return nsToPrefix;
+    }
+
+    /**
      * Returns the locations of all schema files that contributed to the given namespace.
      * 
      * @param namespace
@@ -156,6 +217,9 @@ public class XMLSchemaInfoSet {
         return nsToLocations;
     }
 
+    /**
+     * @return
+     */
     public XSNamespaceItemList getNamespaces() {
         return xmlSchema.getNamespaceItems();
     }

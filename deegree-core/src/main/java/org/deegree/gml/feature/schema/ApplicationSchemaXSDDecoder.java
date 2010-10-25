@@ -50,8 +50,8 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
+import java.util.Map.Entry;
 
 import javax.xml.namespace.QName;
 
@@ -84,12 +84,12 @@ import org.deegree.feature.types.property.CustomPropertyType;
 import org.deegree.feature.types.property.EnvelopePropertyType;
 import org.deegree.feature.types.property.FeaturePropertyType;
 import org.deegree.feature.types.property.GeometryPropertyType;
-import org.deegree.feature.types.property.GeometryPropertyType.CoordinateDimension;
-import org.deegree.feature.types.property.GeometryPropertyType.GeometryType;
 import org.deegree.feature.types.property.MeasurePropertyType;
 import org.deegree.feature.types.property.PropertyType;
 import org.deegree.feature.types.property.SimplePropertyType;
 import org.deegree.feature.types.property.ValueRepresentation;
+import org.deegree.feature.types.property.GeometryPropertyType.CoordinateDimension;
+import org.deegree.feature.types.property.GeometryPropertyType.GeometryType;
 import org.deegree.gml.GMLVersion;
 import org.deegree.gml.schema.GMLSchemaInfoSet;
 import org.slf4j.Logger;
@@ -166,6 +166,15 @@ public class ApplicationSchemaXSDDecoder {
                             throws ClassCastException, ClassNotFoundException, InstantiationException,
                             IllegalAccessException {
 
+        this.gmlVersion = gmlVersion;
+        gmlNs = gmlVersion.getNamespace();
+        analyzer = new GMLSchemaInfoSet( gmlVersion, schemaUrls );
+
+        for ( Entry<String, String> nsToPrefix : analyzer.getNamespacePrefixes().entrySet() ) {
+            this.nsToPrefix.put( nsToPrefix.getKey(), nsToPrefix.getValue() );
+            this.prefixToNs.put( nsToPrefix.getValue(), nsToPrefix.getKey() );
+        }
+        
         if ( namespaceHints != null ) {
             for ( Entry<String, String> prefixToNs : namespaceHints.entrySet() ) {
                 nsToPrefix.put( prefixToNs.getValue(), prefixToNs.getKey() );
@@ -173,9 +182,6 @@ public class ApplicationSchemaXSDDecoder {
             }
         }
 
-        this.gmlVersion = gmlVersion;
-        gmlNs = gmlVersion.getNamespace();
-        analyzer = new GMLSchemaInfoSet( gmlVersion, schemaUrls );
         List<XSElementDeclaration> featureElementDecls = analyzer.getFeatureElementDeclarations( null, false );
 
         // feature element declarations
@@ -547,7 +553,8 @@ public class ApplicationSchemaXSDDecoder {
             NamespaceContext nsContext = new NamespaceContext();
             nsContext.addNamespace( "xs", CommonNamespaces.XSNS );
             nsContext.addNamespace( "adv", "http://www.adv-online.de/nas" );
-            codeListId = adapter.getNodeAsString( adapter.getRootElement(),
+            codeListId = adapter.getNodeAsString(
+                                                  adapter.getRootElement(),
                                                   new XPath( "xs:appinfo/adv:referenzierteCodeList/text()", nsContext ),
                                                   null );
             if ( codeListId != null ) {
@@ -725,7 +732,8 @@ public class ApplicationSchemaXSDDecoder {
         // inside the annotation element (e.g. CITE examples for WFS 1.1.0)
         NamespaceContext nsContext = new NamespaceContext();
         nsContext.addNamespace( "xs", CommonNamespaces.XSNS );
-        QName refElement = annotationXML.getNodeAsQName( annotationXML.getRootElement(),
+        QName refElement = annotationXML.getNodeAsQName(
+                                                         annotationXML.getRootElement(),
                                                          new XPath(
                                                                     "xs:appinfo[@source='urn:x-gml:targetElement']/text()",
                                                                     nsContext ), null );

@@ -35,11 +35,12 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.feature.persistence.postgis;
 
+import static javax.xml.XMLConstants.DEFAULT_NS_PREFIX;
+import static javax.xml.XMLConstants.NULL_NS_URI;
 import static org.apache.xerces.xs.XSComplexTypeDefinition.CONTENTTYPE_ELEMENT;
 import static org.apache.xerces.xs.XSComplexTypeDefinition.CONTENTTYPE_EMPTY;
 import static org.deegree.commons.xml.CommonNamespaces.XSINS;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.SortedSet;
@@ -56,9 +57,11 @@ import org.apache.xerces.xs.XSElementDeclaration;
 import org.apache.xerces.xs.XSModelGroup;
 import org.apache.xerces.xs.XSObjectList;
 import org.apache.xerces.xs.XSParticle;
+import org.apache.xerces.xs.XSSimpleTypeDefinition;
 import org.apache.xerces.xs.XSTerm;
 import org.apache.xerces.xs.XSTypeDefinition;
 import org.apache.xerces.xs.XSWildcard;
+import org.deegree.commons.tom.primitive.XMLValueMangler;
 import org.deegree.feature.types.ApplicationSchema;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.feature.types.property.CodePropertyType;
@@ -93,16 +96,24 @@ public class PostGISFeatureStoreConfigHelper {
                              String connId, List<String> schemaURLs )
                             throws XMLStreamException {
 
-        writer.setDefaultNamespace( CONFIG_NS );
-
-        writer.writeStartElement( CONFIG_NS, "deegreeWFS" );
+        writer.writeStartElement( "PostGISFeatureStore" );
         writer.writeAttribute( "configVersion", "0.6.1" );
-        writer.setPrefix( "xsi", XSINS );
+        writer.writeNamespace( DEFAULT_NS_PREFIX, CONFIG_NS );
+        writer.writeNamespace( "xsi", XSINS );
         writer.writeAttribute( XSINS, "schemaLocation", SCHEMA_LOCATION );
+        for ( String ns : schema.getXSModel().getAppNamespaces() ) {
+            writer.writeNamespace( schema.getXSModel().getNamespacePrefixes().get( ns ), ns );
+        }
 
         writer.writeStartElement( CONFIG_NS, "StorageCRS" );
         writer.writeCharacters( storageCrs );
         writer.writeEndElement();
+
+        for ( String ns : schema.getXSModel().getAppNamespaces() ) {
+            writer.writeEmptyElement( CONFIG_NS, "NamespaceHint" );
+            writer.writeAttribute( "prefix", schema.getXSModel().getNamespacePrefixes().get( ns ) );
+            writer.writeAttribute( "namespaceURI", ns );
+        }
 
         writer.writeStartElement( CONFIG_NS, "JDBCConnId" );
         writer.writeCharacters( connId );
@@ -117,18 +128,27 @@ public class PostGISFeatureStoreConfigHelper {
         for ( String qName : ftNames ) {
             QName ftName = QName.valueOf( qName );
             FeatureType ft = schema.getFeatureType( ftName );
-            writer.writeStartElement( CONFIG_NS, "FeatureType" );
-            writer.writeAttribute( "name", getName( ftName ) );
+            writeFeatureTypeMapping( writer, ft );
+        }
 
-            FeatureType parentFt = schema.getParentFt( ft );
-            if ( parentFt != null ) {
-                writer.writeAttribute( "parent", getName( parentFt.getName() ) );
-            }
+        writer.writeEndElement();
+    }
 
-            for ( PropertyType pt : ft.getPropertyDeclarations() ) {
-                writePropertyMapping( writer, pt );
-            }
-            writer.writeEndElement();
+    private void writeFeatureTypeMapping( XMLStreamWriter writer, FeatureType ft )
+                            throws XMLStreamException {
+
+        writer.writeStartElement( CONFIG_NS, "FeatureType" );
+        writer.writeAttribute( "name", getName( ft.getName() ) );
+
+        FeatureType parentFt = schema.getParentFt( ft );
+        if ( parentFt != null ) {
+            writer.writeAttribute( "parent", getName( parentFt.getName() ) );
+        }
+
+        writer.writeAttribute( "mapping", getColumn( ft.getName() ) );
+
+        for ( PropertyType pt : ft.getPropertyDeclarations() ) {
+            writePropertyMapping( writer, pt );
         }
 
         writer.writeEndElement();
@@ -160,22 +180,6 @@ public class PostGISFeatureStoreConfigHelper {
         writer.writeEndElement();
     }
 
-    private void writePropertyMapping( XMLStreamWriter writer, CustomPropertyType pt )
-                            throws XMLStreamException {
-
-        writer.writeStartElement( CONFIG_NS, "CustomProperty" );
-        writeCommonAttrs( writer, pt );
-
-        List<String> paths = getPaths( pt.getXSDValueType() );
-        for ( String path : paths ) {
-            writer.writeStartElement( CONFIG_NS, "SimpleValueMapping" );
-            writer.writeCharacters( path );
-            writer.writeEndElement();
-        }
-
-        writer.writeEndElement();
-    }
-
     private void writePropertyMapping( XMLStreamWriter writer, FeaturePropertyType pt )
                             throws XMLStreamException {
         writer.writeEmptyElement( CONFIG_NS, "FeatureProperty" );
@@ -201,18 +205,20 @@ public class PostGISFeatureStoreConfigHelper {
 
     private void writePropertyMapping( XMLStreamWriter writer, SimplePropertyType pt )
                             throws XMLStreamException {
-        writer.writeStartElement( CONFIG_NS, "SimpleProperty" );
+        writer.writeEmptyElement( CONFIG_NS, "SimpleProperty" );
         writeCommonAttrs( writer, pt );
-        writer.writeAttribute( "type", pt.getPrimitiveType().name().toLowerCase() );
-        writer.writeEndElement();
+        writer.writeAttribute( "type", pt.getPrimitiveType().getXSTypeName() );
     }
 
     private void writeCommonAttrs( XMLStreamWriter writer, PropertyType pt )
                             throws XMLStreamException {
+
         writer.writeAttribute( "name", getName( pt.getName() ) );
+
         if ( pt.getMinOccurs() != 1 ) {
             writer.writeAttribute( "minOccurs", "" + pt.getMinOccurs() );
         }
+
         if ( pt.getMaxOccurs() != 1 ) {
             if ( pt.getMaxOccurs() == -1 ) {
                 writer.writeAttribute( "maxOccurs", "unbounded" );
@@ -220,131 +226,169 @@ public class PostGISFeatureStoreConfigHelper {
                 writer.writeAttribute( "maxOccurs", "" + pt.getMaxOccurs() );
             }
         }
+
+        if ( pt.getMaxOccurs() == 1 ) {
+            writer.writeAttribute( "mapping", getColumn( pt.getName() ) );
+        } else {
+            writer.writeAttribute( "mapping", "ID~" + getColumn( pt.getName() ) + ".ID~VALUE" );
+        }
+
     }
 
     private String getName( QName name ) {
+        if ( name.getNamespaceURI() != null && !name.getNamespaceURI().equals( NULL_NS_URI ) ) {
+            String prefix = schema.getXSModel().getNamespacePrefixes().get( name.getNamespaceURI() );
+            return prefix + ":" + name.getLocalPart();
+        }
         return name.getLocalPart();
     }
 
-    // private PrimitiveType getPrimitiveType( XSSimpleType typeDef ) {
-    //
-    // PrimitiveType pt = null;
-    // if ( typeDef.getName() != null ) {
-    // encounteredTypes.add( createQName( typeDef.getNamespace(), typeDef.getName() ) );
-    // }
-    // pt = XMLValueMangler.getPrimitiveType( typeDef );
-    // LOG.trace( "Mapped '" + typeDef.getName() + "' (base type: '" + typeDef.getBaseType() + "') -> '" + pt + "'" );
-    // return pt;
-    // }
-
-    public List<String> getPaths( XSComplexTypeDefinition typeDef ) {
-        List<String> paths = new ArrayList<String>();
-        addPaths( typeDef, paths, "" );
-        return paths;
+    private String getColumn( QName name ) {
+        if ( name.getNamespaceURI() != null && !name.getNamespaceURI().equals( NULL_NS_URI ) ) {
+            String prefix = schema.getXSModel().getNamespacePrefixes().get( name.getNamespaceURI() );
+            return prefix.toUpperCase() + "_" + name.getLocalPart().toUpperCase();
+        }
+        return name.getLocalPart().toUpperCase();
     }
 
-    private void addPaths( XSComplexTypeDefinition typeDef, List<String> paths, String base ) {
+    private void writePropertyMapping( XMLStreamWriter writer, CustomPropertyType pt )
+                            throws XMLStreamException {
+
+        writer.writeStartElement( CONFIG_NS, "CustomProperty" );
+        writeCommonAttrs( writer, pt );
+        createMapping( writer, pt.getXSDValueType() );
+        writer.writeEndElement();
+    }
+
+    private void createMapping( XMLStreamWriter writer, XSComplexTypeDefinition typeDef )
+                            throws XMLStreamException {
 
         // attributes
         XSObjectList attributeUses = typeDef.getAttributeUses();
         for ( int i = 0; i < attributeUses.getLength(); i++ ) {
-            XSAttributeDeclaration attributeDecl = ( (XSAttributeUse) attributeUses.item( i ) ).getAttrDeclaration();
-            if ( attributeDecl.getNamespace() == null ) {
-                paths.add( base + "/@" + attributeDecl.getName() );
-            } else {
-                paths.add( base + "/@{" + attributeDecl.getNamespace() + "}" + attributeDecl.getName() );
+            XSAttributeDeclaration attrDecl = ( (XSAttributeUse) attributeUses.item( i ) ).getAttrDeclaration();
+            QName attrName = new QName( attrDecl.getName() );
+            if ( attrDecl.getNamespace() != null ) {
+                attrName = new QName( attrDecl.getNamespace(), attrDecl.getName() );
             }
+            writer.writeEmptyElement( CONFIG_NS, "PrimitiveMapping" );
+            writer.writeAttribute( "path", "@" + getName( attrName ) );
+            writer.writeAttribute( "mapping", "ATTR_" + getColumn( attrName ) );
+            writer.writeAttribute( "type", getPrimitiveTypeName( attrDecl.getTypeDefinition() ) );
         }
 
         // text node
         if ( typeDef.getContentType() != CONTENTTYPE_EMPTY && typeDef.getContentType() != CONTENTTYPE_ELEMENT ) {
-            paths.add( base + "/text()" );
+            writer.writeEmptyElement( CONFIG_NS, "PrimitiveMapping" );
+            writer.writeAttribute( "path", "text()" );
+            writer.writeAttribute( "mapping", "VALUE" );
+            writer.writeAttribute( "type", getPrimitiveTypeName( typeDef.getSimpleType() ) );
         }
 
-        // elements
+        // child elements
         XSParticle particle = typeDef.getParticle();
         if ( particle != null ) {
-            addPaths( particle, paths, base );
+            createMapping( writer, particle, 1 );
         }
     }
 
-    private void addPaths( XSParticle particle, List<String> paths, String base ) {
+    private void createMapping( XMLStreamWriter writer, XSParticle particle, int maxOccurs )
+                            throws XMLStreamException {
         if ( particle.getMaxOccursUnbounded() ) {
-            addPaths( particle.getTerm(), paths, base + "[*]" );
+            createMapping( writer, particle.getTerm(), -1 );
         } else {
             for ( int i = 1; i <= particle.getMaxOccurs(); i++ ) {
-                addPaths( particle.getTerm(), paths, base + "[" + i + "]" );
+                createMapping( writer, particle.getTerm(), i );
             }
         }
     }
 
-    private void addPaths( XSTerm term, List<String> paths, String base ) {
+    private void createMapping( XMLStreamWriter writer, XSTerm term, int occurence )
+                            throws XMLStreamException {
         if ( term instanceof XSElementDeclaration ) {
-            addPaths( (XSElementDeclaration) term, paths, base );
+            createMapping( writer, (XSElementDeclaration) term, occurence );
         } else if ( term instanceof XSModelGroup ) {
-            addPaths( (XSModelGroup) term, paths, base );
+            createMapping( writer, (XSModelGroup) term, occurence );
         } else {
-            addPaths( (XSWildcard) term, paths, base );
+            createMapping( writer, (XSWildcard) term, occurence );
         }
     }
 
-    private void addPaths( XSElementDeclaration elDecl, List<String> paths, String base ) {
+    private void createMapping( XMLStreamWriter writer, XSElementDeclaration elDecl, int occurence )
+                            throws XMLStreamException {
 
         QName elName = new QName( elDecl.getName() );
         if ( elDecl.getNamespace() != null ) {
             elName = new QName( elDecl.getNamespace(), elDecl.getName() );
         }
-        if ( schema.getFeatureType( elName ) != null ) {
-            System.out.println( "Skipping '" + base + "/" + elName );
-            return;
-        } else if ( schema.getXSModel().isGMLNamespace( elName.getNamespaceURI() ) ) {
-            System.out.println( "Skipping '" + base + "/" + elName );
-            return;
-        }
+
+        writer.writeStartElement( CONFIG_NS, "CompoundMapping" );
 
         // TODO substitutions
-        base += "/" + getName( elName );
+        writer.writeAttribute( "path", getName( elName ) );
+        writer.writeAttribute( "mapping", getColumn( elName ) );
+
+        if ( schema.getFeatureType( elName ) != null ) {
+            System.out.println( "Skipping '" + elName + "/" + elName );
+            writer.writeEndElement();
+            return;
+        } else if ( schema.getXSModel().isGMLNamespace( elName.getNamespaceURI() ) ) {
+            System.out.println( "Skipping '" + elName + "/" + elName );
+            writer.writeEndElement();
+            return;
+        }
 
         XSTypeDefinition typeDef = elDecl.getTypeDefinition();
         if ( typeDef instanceof XSComplexTypeDefinition ) {
-            addPaths( (XSComplexTypeDefinition) typeDef, paths, base );
+            createMapping( writer, (XSComplexTypeDefinition) typeDef );
         } else {
-            paths.add( base + "/text()" );
+            writer.writeEmptyElement( CONFIG_NS, "PrimitiveMapping" );
+            writer.writeAttribute( "path", "text()" );
+            writer.writeAttribute( "type", getPrimitiveTypeName( (XSSimpleTypeDefinition) typeDef ) );
         }
+        writer.writeEndElement();
     }
 
-    private void addPaths( XSModelGroup modelGroup, List<String> paths, String base ) {
+    private void createMapping( XMLStreamWriter writer, XSModelGroup modelGroup, int occurrence )
+                            throws XMLStreamException {
         // base += "compositor_" + modelGroup.getCompositor();
         XSObjectList particles = modelGroup.getParticles();
         for ( int i = 0; i < particles.getLength(); i++ ) {
             XSParticle particle = (XSParticle) particles.item( i );
-            addPaths( particle, paths, base );
+            createMapping( writer, particle, occurrence );
         }
     }
 
-    private void addPaths( XSWildcard wildCard, List<String> paths, String base ) {
+    private void createMapping( XMLStreamWriter writer, XSWildcard wildCard, int occurrence ) {
         // TODO
     }
 
-    // public static void main( String[] args )
-    // throws XMLStreamException, FactoryConfigurationError, IOException, ClassCastException,
-    // ClassNotFoundException, InstantiationException, IllegalAccessException {
-    //
-    // String schemaURL = CoreTstProperties.getProperty( "schema_inspire_addresses" );
-    // if ( schemaURL == null ) {
-    // return;
-    // }
-    //
-    // ApplicationSchemaXSDDecoder adapter = new ApplicationSchemaXSDDecoder( GMLVersion.GML_32, null, schemaURL );
-    // ApplicationSchema schema = adapter.extractFeatureTypeSchema();
-    //
-    // PostGISFeatureStoreConfigHelper helper = new PostGISFeatureStoreConfigHelper( schema );
-    //
-    // OutputStream os = new FileOutputStream( "/tmp/config.xml" );
-    // XMLStreamWriter xmlStream = XMLOutputFactory.newInstance().createXMLStreamWriter( os );
-    // xmlStream = new IndentingXMLStreamWriter( xmlStream );
-    // helper.writeConfig( xmlStream, "EPSG:4258", null, "inspire", null );
-    // xmlStream.close();
-    // os.close();
-    // }
+    private String getPrimitiveTypeName( XSSimpleTypeDefinition typeDef ) {
+        if ( typeDef == null ) {
+            return "string";
+        }
+        return XMLValueMangler.getPrimitiveType( typeDef ).getXSTypeName();
+    }
+
+//    public static void main( String[] args )
+//                            throws XMLStreamException, FactoryConfigurationError, IOException, ClassCastException,
+//                            ClassNotFoundException, InstantiationException, IllegalAccessException {
+//
+//        String schemaURL = CoreTstProperties.getProperty( "schema_inspire_addresses" );
+//        if ( schemaURL == null ) {
+//            return;
+//        }
+//
+//        ApplicationSchemaXSDDecoder adapter = new ApplicationSchemaXSDDecoder( GML_32, null, schemaURL );
+//        ApplicationSchema schema = adapter.extractFeatureTypeSchema();
+//
+//        PostGISFeatureStoreConfigHelper helper = new PostGISFeatureStoreConfigHelper( schema );
+//
+//        OutputStream os = new FileOutputStream( "/tmp/config.xml" );
+//        XMLStreamWriter xmlStream = XMLOutputFactory.newInstance().createXMLStreamWriter( os );
+//        xmlStream = new IndentingXMLStreamWriter( xmlStream );
+//        helper.writeConfig( xmlStream, "EPSG:4258", null, "inspire", null );
+//        xmlStream.close();
+//        os.close();
+//    }
 }

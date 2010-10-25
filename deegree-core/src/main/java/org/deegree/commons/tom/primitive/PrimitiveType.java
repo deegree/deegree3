@@ -61,30 +61,33 @@ import org.slf4j.LoggerFactory;
 public enum PrimitiveType {
 
     /** Property value is of class <code>String</code>. */
-    STRING( String.class ),
+    STRING( "string", String.class ),
     /** Property value is of class <code>Boolean</code>. */
-    BOOLEAN( Boolean.class ),
+    BOOLEAN( "boolean", Boolean.class ),
     /** Property value is of class <code>BigDecimal</code>. */
-    DECIMAL( BigDecimal.class ),
+    DECIMAL( "decimal", BigDecimal.class ),
     /**
      * Property value is of class <code>Double</code> (needed because BigDecimal cannot express "NaN", "-INF" and
      * "INF"), which are required by <code>xs:double</code> / <code>xs:float</code>.
      */
-    DOUBLE( Double.class ),
+    DOUBLE( "double", Double.class ),
     /** Property value is of class <code>BigInteger</code>. */
-    INTEGER( BigInteger.class ),
+    INTEGER( "integer", BigInteger.class ),
     /** Property value is of class {@link Date}. */
-    DATE( Date.class ),
+    DATE( "date", Date.class ),
     /** Property value is of class {@link DateTime}. */
-    DATE_TIME( DateTime.class ),
+    DATE_TIME( "dateTime", DateTime.class ),
     /** Property value is of class {@link Time}. */
-    TIME( Time.class );
+    TIME( "time", Time.class );
 
     private static final Logger LOG = LoggerFactory.getLogger( PrimitiveType.class );
 
+    private String xsTypeName;
+
     private Class<?> valueClass;
 
-    private PrimitiveType( Class<?> valueClass ) {
+    private PrimitiveType( String xsTypeName, Class<?> valueClass ) {
+        this.xsTypeName = xsTypeName;
         this.valueClass = valueClass;
     }
 
@@ -95,6 +98,13 @@ public enum PrimitiveType {
      */
     public Class<?> getValueClass() {
         return valueClass;
+    }
+
+    /**
+     * @return
+     */
+    public String getXSTypeName() {
+        return xsTypeName;
     }
 
     /**
