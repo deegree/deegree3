@@ -106,7 +106,7 @@ public class TestRasterCache {
     private static final FileInfo TILE_1_1 = new FileInfo( "saltlakecity_1_1", TILED_SINGLE_RASTER_SIZE, TILE_INFO_1_1 );
 
     private static final String[] OVERVIEW_INFO = new String[] { "0.1", "0.0", "0.0", "-0.1", "1000.0", "2100.0", "3",
-                                                                "3", "334", "334", "3", "0", "1002", "1002", "111",
+                                                                "3", "334", "334", "3", "0", "1000", "1000", "111",
                                                                 "111", "111" };
 
     private static final FileInfo OVERVIEW = new FileInfo( "overview", OVERVIEW_RASTER_SIZE, OVERVIEW_INFO );
