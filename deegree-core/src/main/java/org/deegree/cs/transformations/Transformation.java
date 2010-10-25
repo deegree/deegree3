@@ -41,11 +41,22 @@ import java.util.List;
 
 import javax.vecmath.Point3d;
 
+import org.deegree.cs.CRSCodeType;
 import org.deegree.cs.CRSIdentifiable;
 import org.deegree.cs.coordinatesystems.CoordinateSystem;
+import org.deegree.cs.coordinatesystems.GeocentricCRS;
+import org.deegree.cs.coordinatesystems.ProjectedCRS;
 import org.deegree.cs.exceptions.TransformationException;
 import org.deegree.cs.i18n.Messages;
 import org.deegree.cs.transformations.coordinate.ConcatenatedTransform;
+import org.deegree.cs.transformations.coordinate.GeocentricTransform;
+import org.deegree.cs.transformations.coordinate.IdentityTransform;
+import org.deegree.cs.transformations.coordinate.MatrixTransform;
+import org.deegree.cs.transformations.coordinate.NotSupportedTransformation;
+import org.deegree.cs.transformations.coordinate.ProjectionTransform;
+import org.deegree.cs.transformations.helmert.Helmert;
+import org.deegree.cs.transformations.ntv2.NTv2Transformation;
+import org.deegree.cs.transformations.polynomial.LeastSquareApproximation;
 
 /**
  * The <code>Transformation</code> class supplies the most basic method interface for any given transformation.
@@ -412,4 +423,44 @@ public abstract class Transformation extends CRSIdentifiable {
         return false;
     }
 
+    public Transformation copyTransformation( CRSIdentifiable newId ) {
+        Transformation result = null;
+        if ( "Concatenated-Transform".equals( this.getImplementationName() ) ) {
+            // deep copy!
+            Transformation firstTransform = ( (ConcatenatedTransform) this ).getFirstTransform();
+            String newFirstId = firstTransform.getTargetCRS() + "_" + firstTransform.getSourceCRS() + "_copy";
+            Transformation firstT = firstTransform.copyTransformation( new CRSIdentifiable(
+                                                                                            new CRSCodeType( newFirstId ) ) );
+            Transformation secondTransform = ( (ConcatenatedTransform) this ).getSecondTransform();
+            String newSecondId = secondTransform.getTargetCRS() + "_" + secondTransform.getSourceCRS() + "_copy";
+            Transformation secondT = secondTransform.copyTransformation( new CRSIdentifiable(
+                                                                                              new CRSCodeType(
+                                                                                                               newSecondId ) ) );
+            result = new ConcatenatedTransform( firstT, secondT );
+        } else if ( "leastsquare".equals( this.getImplementationName() ) ) {
+            LeastSquareApproximation lsa = (LeastSquareApproximation) this;
+            result = new LeastSquareApproximation( lsa.getFirstParams(), lsa.getSecondParams(), sourceCRS, targetCRS,
+                                                   lsa.getScaleX(), lsa.getScaleY(), newId );
+        } else if ( "Geocentric-Transform".equals( this.getImplementationName() ) ) {
+            result = new GeocentricTransform( sourceCRS, (GeocentricCRS) targetCRS, newId );
+        } else if ( "Helmert".equals( this.getImplementationName() ) ) {
+            Helmert h = (Helmert) this;
+            result = new Helmert( h.dx, h.dy, h.dz, h.ex, h.ey, h.ez, h.ppm, sourceCRS, targetCRS, newId );
+        } else if ( "Identity".equals( this.getImplementationName() ) ) {
+            result = new IdentityTransform( sourceCRS, targetCRS );
+        } else if ( "Matrix-Transform".equals( this.getImplementationName() ) ) {
+            result = new MatrixTransform( sourceCRS, targetCRS, ( (MatrixTransform) this ).getMatrix(), newId );
+        } else if ( "NotSupportedTransformation".equals( this.getImplementationName() ) ) {
+            result = new NotSupportedTransformation( sourceCRS, targetCRS, newId );
+        } else if ( "NTv2".equals( this.getImplementationName() ) ) {
+            result = new NTv2Transformation( sourceCRS, targetCRS, newId,
+                                             ( (NTv2Transformation) this ).getGridfileRef() );
+        } else if ( "Projection-Transform".equals( this.getImplementationName() ) ) {
+            result = new ProjectionTransform( (ProjectedCRS) targetCRS, newId );
+        }
+        if ( result != null && this.isInverseTransform() ) {
+            result.inverse();
+        }
+        return result;
+    }
 }

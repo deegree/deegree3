@@ -36,14 +36,13 @@
 package org.deegree.cs.transformations;
 
 import static org.deegree.cs.coordinatesystems.CoordinateSystem.CRSType.COMPOUND;
-
 import static org.deegree.cs.coordinatesystems.CoordinateSystem.CRSType.GEOCENTRIC;
 import static org.deegree.cs.coordinatesystems.CoordinateSystem.CRSType.GEOGRAPHIC;
 import static org.deegree.cs.coordinatesystems.CoordinateSystem.CRSType.PROJECTED;
 import static org.deegree.cs.transformations.coordinate.ConcatenatedTransform.concatenate;
 import static org.deegree.cs.transformations.coordinate.MatrixTransform.createMatrixTransform;
-import static org.deegree.cs.transformations.ntv2.NTv2Transformation.createAxisAllignedNTv2Transformation;
 import static org.deegree.cs.transformations.helmert.Helmert.createAxisAllignedTransformedHelmertTransformation;
+import static org.deegree.cs.transformations.ntv2.NTv2Transformation.createAxisAllignedNTv2Transformation;
 import static org.deegree.cs.utilities.MappingUtils.updateFromDefinedTransformations;
 import static org.deegree.cs.utilities.Matrix.swapAndRotateGeoAxis;
 import static org.deegree.cs.utilities.Matrix.swapAxis;
@@ -403,6 +402,11 @@ public class TransformationFactory {
                         tr = createAxisAllignedTransformedHelmertTransformation( (Helmert) tr );
                     }
                     result.add( tr );
+                    // add the transformation as insverse
+                    String newId = tr.getTargetCRS() + "_" + tr.getSourceCRS() + "_inverse";
+                    Transformation trInverse = tr.copyTransformation( new CRSIdentifiable( new CRSCodeType( newId ) ) );
+                    trInverse.inverse();
+                    result.add( trInverse );
                 }
             }
         }
@@ -1040,7 +1044,11 @@ public class TransformationFactory {
             LOG.debug( "Creating projected -> projected transformation: from (source): " + sourceCRS.getCode()
                        + " to(target): " + targetCRS.getCode() );
             if ( sourceCRS.getProjection().equals( targetCRS.getProjection() ) ) {
-                return null;
+                /*
+                 * Swap axis order, and rotate the longitude coordinate if prime meridians are different.
+                 */
+                final Matrix matrix = swapAxis( sourceCRS, targetCRS );
+                return createMatrixTransform( sourceCRS, targetCRS, matrix );
             }
             final GeographicCRS sourceGeo = sourceCRS.getGeographicCRS();
             final GeographicCRS targetGeo = targetCRS.getGeographicCRS();
