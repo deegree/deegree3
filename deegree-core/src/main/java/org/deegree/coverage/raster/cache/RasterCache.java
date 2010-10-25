@@ -340,9 +340,6 @@ public class RasterCache {
      * Iterates over all current cache directories and calls dispose on their cache files.
      */
     public static void dispose() {
-        // System.out.println( cache.size() + ") Cache: " + cache );
-        // Set<CacheRasterReader> c = cache.descendingSet();
-        // System.out.println( "Cache: " + c + ", size: " + c.size() );
         synchronized ( MEM_LOCK ) {
             Iterator<CacheRasterReader> it = cache.iterator();
             long allocatedMem = 0;
@@ -539,7 +536,7 @@ public class RasterCache {
      * @return the raster created from the cache or <code>null</code> if no cache file with given id was found.
      */
     public SimpleRaster createFromCache( RasterReader reader, String rasterId ) {
-        //rb: todo what about the CRS from RasterIOOptions
+        // rb: todo what about the CRS from RasterIOOptions
         SimpleRaster result = null;
         if ( rasterId != null ) {
             File cacheFile = new File( this.cacheDir, rasterId + FILE_EXTENSION );

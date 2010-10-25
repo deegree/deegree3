@@ -112,9 +112,7 @@ public class CacheRasterReader extends GridFileReader {
                 for ( int c = 0; c < getTileColumns(); ++c ) {
                     RasterRect rect = new RasterRect( c * getTileRasterWidth(), r * getTileRasterHeight(),
                                                       getTileRasterWidth(), getTileRasterHeight() );
-                    // System.out.println( rect );
                     int key = getTileId( c, r );
-                    // System.out.println( "Key (" + c + "," + r + "): " + key );
                     TileEntry entry = new TileEntry( rect );
                     entry.setTileOnFile( tilesOnFile[r][c] );
                     result.put( key, entry );
@@ -592,8 +590,6 @@ public class CacheRasterReader extends GridFileReader {
     }
 
     /**
-     * @param column
-     * @param row
      * @param tileBuffer
      *            may be <code>null</code>
      */
@@ -709,8 +705,7 @@ public class CacheRasterReader extends GridFileReader {
             }
             CacheInfoFile info = new CacheInfoFile( getGeoReference(), getTileRows(), getTileColumns(),
                                                     getTileRasterWidth(), getTileRasterHeight(), getRasterDataInfo(),
-                                                    super.getWidth(), super.getHeight(), tilesOnFiles,
-                                                    file().lastModified() );
+                                                    getWidth(), getHeight(), tilesOnFiles, file().lastModified() );
             try {
                 CacheInfoFile.write( metaInfo, info );
                 result = true;

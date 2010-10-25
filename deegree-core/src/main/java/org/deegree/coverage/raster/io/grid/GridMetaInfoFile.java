@@ -88,7 +88,7 @@ public class GridMetaInfoFile {
 
     private final RasterDataInfo dataInfo;
 
-    private Envelope envelope;
+    protected Envelope envelope;
 
     /**
      * @param geoReference

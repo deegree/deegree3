@@ -47,6 +47,7 @@ import java.io.PrintWriter;
 import org.deegree.commons.utils.FileUtils;
 import org.deegree.coverage.raster.data.info.RasterDataInfo;
 import org.deegree.coverage.raster.geom.RasterGeoReference;
+import org.deegree.coverage.raster.geom.RasterGeoReference.OriginLocation;
 import org.deegree.coverage.raster.io.grid.GridMetaInfoFile;
 import org.slf4j.Logger;
 
@@ -96,7 +97,6 @@ public class CacheInfoFile extends GridMetaInfoFile {
      * @param gMif
      * @param width
      * @param height
-     * @param tilesInFile
      */
     private CacheInfoFile( GridMetaInfoFile gMif, int width, int height, boolean[][] tilesOnFile, long modificationTime ) {
         super( gMif.getGeoReference(), gMif.rows(), gMif.columns(), gMif.getTileRasterWidth(),
@@ -105,6 +105,8 @@ public class CacheInfoFile extends GridMetaInfoFile {
         this.rHeight = height;
         this.tilesOnFile = tilesOnFile;
         this.modificationTime = modificationTime;
+        this.envelope = gMif.getGeoReference().getEnvelope( OriginLocation.OUTER, rWidth, rHeight,
+                                                            envelope.getCoordinateSystem() );
     }
 
     /**
@@ -183,6 +185,7 @@ public class CacheInfoFile extends GridMetaInfoFile {
                 } catch ( NumberFormatException n ) {
                     throw new NullPointerException( "no height could be read " );
                 }
+
                 // String[] tileInfos = new String[rows];
                 boolean[][] tilesOnFile = new boolean[gmif.rows()][gmif.columns()];
                 int rows = gmif.rows();
