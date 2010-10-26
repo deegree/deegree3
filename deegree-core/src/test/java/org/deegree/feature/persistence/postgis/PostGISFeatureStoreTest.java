@@ -115,24 +115,26 @@ public class PostGISFeatureStoreTest {
     public void testInstantiationInspire()
                             throws FeatureStoreException {
 
-        ConnectionManager.addConnection( "inspire", "jdbc:postgresql://hurricane:5432/inspire", "postgres", "postgres",
-                                         1, 10 );
+        if ( enable ) {
+            ConnectionManager.addConnection( "inspire", "jdbc:postgresql://hurricane:5432/inspire", "postgres",
+                                             "postgres", 1, 10 );
 
-        URL configURL = this.getClass().getResource( "inspire-hybrid.xml" );
-        PostGISFeatureStore fs = (PostGISFeatureStore) FeatureStoreManager.create( configURL );
-        fs.init();
+            URL configURL = this.getClass().getResource( "inspire-hybrid.xml" );
+            PostGISFeatureStore fs = (PostGISFeatureStore) FeatureStoreManager.create( configURL );
+            fs.init();
 
-        MappedApplicationSchema schema = fs.getSchema();
-        Assert.assertEquals( 75, schema.getFeatureTypes().length );
+            MappedApplicationSchema schema = fs.getSchema();
+            Assert.assertEquals( 75, schema.getFeatureTypes().length );
 
-        FeatureType ft = schema.getFeatureType( QName.valueOf( "{urn:x-inspire:specification:gmlas:Addresses:3.0}Address" ) );
-        Assert.assertNotNull( ft );
-        Assert.assertEquals( 13, ft.getPropertyDeclarations().size() );
-        FeatureTypeMapping mapping = schema.getMapping( ft.getName() );
-        Assert.assertNotNull( mapping );
+            FeatureType ft = schema.getFeatureType( QName.valueOf( "{urn:x-inspire:specification:gmlas:Addresses:3.0}Address" ) );
+            Assert.assertNotNull( ft );
+            Assert.assertEquals( 13, ft.getPropertyDeclarations().size() );
+            FeatureTypeMapping mapping = schema.getMapping( ft.getName() );
+            Assert.assertNotNull( mapping );
 
-        Mapping propMapping = mapping.getMapping( QName.valueOf( "{urn:x-inspire:specification:gmlas:Addresses:3.0}inspireId" ) );
-        System.out.println( propMapping );
+            Mapping propMapping = mapping.getMapping( QName.valueOf( "{urn:x-inspire:specification:gmlas:Addresses:3.0}inspireId" ) );
+            System.out.println( propMapping );
+        }
     }
 
     @Test
@@ -184,8 +186,7 @@ public class PostGISFeatureStoreTest {
             try {
                 FeatureCollection fc = rs.toCollection();
                 XMLStreamWriter xmlStream = new IndentingXMLStreamWriter(
-                                                                          XMLOutputFactory.newInstance().createXMLStreamWriter(
-                                                                                                                                System.out ) );
+                                                                          XMLOutputFactory.newInstance().createXMLStreamWriter( System.out ) );
                 GMLStreamWriter gmlStream = GMLOutputFactory.createGMLStreamWriter( GMLVersion.GML_31, xmlStream );
                 gmlStream.write( fc );
                 gmlStream.close();
@@ -215,8 +216,7 @@ public class PostGISFeatureStoreTest {
             try {
                 FeatureCollection fc = rs.toCollection();
                 XMLStreamWriter xmlStream = new IndentingXMLStreamWriter(
-                                                                          XMLOutputFactory.newInstance().createXMLStreamWriter(
-                                                                                                                                System.out ) );
+                                                                          XMLOutputFactory.newInstance().createXMLStreamWriter( System.out ) );
                 GMLStreamWriter gmlStream = GMLOutputFactory.createGMLStreamWriter( GMLVersion.GML_31, xmlStream );
                 gmlStream.setLocalXLinkTemplate( "http://bla?fid={}" );
                 gmlStream.setXLinkDepth( -1 );
@@ -258,8 +258,7 @@ public class PostGISFeatureStoreTest {
     private void print( FeatureCollection fc )
                             throws XMLStreamException, UnknownCRSException, TransformationException {
         XMLStreamWriter xmlStream = new IndentingXMLStreamWriter(
-                                                                  XMLOutputFactory.newInstance().createXMLStreamWriter(
-                                                                                                                        System.out ) );
+                                                                  XMLOutputFactory.newInstance().createXMLStreamWriter( System.out ) );
         GMLStreamWriter gmlStream = GMLOutputFactory.createGMLStreamWriter( GMLVersion.GML_31, xmlStream );
         gmlStream.setLocalXLinkTemplate( "http://bla?fid={}" );
         gmlStream.setXLinkDepth( -1 );
