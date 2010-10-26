@@ -87,39 +87,39 @@ public class GeocentricTransform extends Transformation {
     /**
      * Semi-major axis of ellipsoid in meters.
      */
-    private final double semiMajorAxis;
+    private double semiMajorAxis;
 
     /**
      * Semi-minor axis of ellipsoid in meters.
      */
-    private final double semiMinorAxis;
+    private double semiMinorAxis;
 
     /**
      * Square of semi-major axis {@link #semiMajorAxis}.
      */
-    private final double squaredSemiMajorAxis;
+    private double squaredSemiMajorAxis;
 
     /**
      * Square of semi-minor axis {@link #semiMinorAxis}.
      */
-    private final double squaredSemiMinorAxis;
+    private double squaredSemiMinorAxis;
 
     /**
      * Eccentricity squared.
      */
-    private final double squaredEccentricity;
+    private double squaredEccentricity;
 
     /**
      * 2nd eccentricity squared.
      */
-    private final double ep2;
+    private double ep2;
 
     /**
      * true if the given points will use heights (e.g. have a z/height-value).
      */
     private boolean hasHeight;
 
-    private final double defaultHeightValue;
+    private double defaultHeightValue;
 
     /**
      * @param source
@@ -131,9 +131,13 @@ public class GeocentricTransform extends Transformation {
      */
     public GeocentricTransform( CoordinateSystem source, GeocentricCRS target, CRSIdentifiable id ) {
         super( source, target, id );
-        this.hasHeight = ( source.getType() == CRSType.COMPOUND );
-        defaultHeightValue = ( hasHeight ) ? ( (CompoundCRS) source ).getDefaultHeight() : 0;
-        Ellipsoid ellipsoid = source.getGeodeticDatum().getEllipsoid();
+        calcParams();
+    }
+
+    private void calcParams() {
+        this.hasHeight = ( getSourceCRS().getType() == CRSType.COMPOUND );
+        defaultHeightValue = ( hasHeight ) ? ( (CompoundCRS) getSourceCRS() ).getDefaultHeight() : 0;
+        Ellipsoid ellipsoid = getSourceCRS().getGeodeticDatum().getEllipsoid();
         semiMajorAxis = Unit.METRE.convert( ellipsoid.getSemiMajorAxis(), ellipsoid.getUnits() );
         semiMinorAxis = Unit.METRE.convert( ellipsoid.getSemiMinorAxis(), ellipsoid.getUnits() );
         squaredSemiMajorAxis = semiMajorAxis * semiMajorAxis;
@@ -141,6 +145,12 @@ public class GeocentricTransform extends Transformation {
         squaredEccentricity = ellipsoid.getSquaredEccentricity();
         // e2 = ( a2 - b2 ) / a2;
         ep2 = ( squaredSemiMajorAxis - squaredSemiMinorAxis ) / squaredSemiMinorAxis;
+    }
+
+    @Override
+    public void inverse() {
+        super.inverse();
+        calcParams();
     }
 
     /**
