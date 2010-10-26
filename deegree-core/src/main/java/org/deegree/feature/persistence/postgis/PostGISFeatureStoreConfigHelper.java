@@ -43,9 +43,11 @@ import static org.deegree.commons.xml.CommonNamespaces.XSINS;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import javax.xml.XMLConstants;
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
@@ -71,6 +73,8 @@ import org.deegree.feature.types.property.GeometryPropertyType;
 import org.deegree.feature.types.property.MeasurePropertyType;
 import org.deegree.feature.types.property.PropertyType;
 import org.deegree.feature.types.property.SimplePropertyType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The <code></code> class TODO add class documentation here.
@@ -81,6 +85,8 @@ import org.deegree.feature.types.property.SimplePropertyType;
  * @version $Revision$, $Date$
  */
 public class PostGISFeatureStoreConfigHelper {
+
+    private static Logger LOG = LoggerFactory.getLogger( PostGISFeatureStoreConfigHelper.class );
 
     private static final String CONFIG_NS = new PostGISFeatureStoreProvider().getConfigNamespace();
 
@@ -101,18 +107,24 @@ public class PostGISFeatureStoreConfigHelper {
         writer.writeNamespace( DEFAULT_NS_PREFIX, CONFIG_NS );
         writer.writeNamespace( "xsi", XSINS );
         writer.writeAttribute( XSINS, "schemaLocation", SCHEMA_LOCATION );
+        int i = 1;
         for ( String ns : schema.getXSModel().getAppNamespaces() ) {
-            writer.writeNamespace( schema.getXSModel().getNamespacePrefixes().get( ns ), ns );
+            String prefix = schema.getXSModel().getNamespacePrefixes().get( ns );
+            if ( prefix != null && !prefix.equals( XMLConstants.DEFAULT_NS_PREFIX ) ) {
+                writer.writeNamespace( prefix, ns );
+            } else {
+                writer.writeNamespace( "app" + ( i++ ), ns );
+            }
         }
 
         writer.writeStartElement( CONFIG_NS, "StorageCRS" );
         writer.writeCharacters( storageCrs );
         writer.writeEndElement();
 
-        for ( String ns : schema.getXSModel().getAppNamespaces() ) {
+        for ( Entry<String, String> ns : schema.getNamespaceBindings().entrySet() ) {
             writer.writeEmptyElement( CONFIG_NS, "NamespaceHint" );
-            writer.writeAttribute( "prefix", schema.getXSModel().getNamespacePrefixes().get( ns ) );
-            writer.writeAttribute( "namespaceURI", ns );
+            writer.writeAttribute( "prefix", ns.getKey() );
+            writer.writeAttribute( "namespaceURI", ns.getValue() );
         }
 
         writer.writeStartElement( CONFIG_NS, "JDBCConnId" );
@@ -148,7 +160,12 @@ public class PostGISFeatureStoreConfigHelper {
         writer.writeAttribute( "mapping", getColumn( ft.getName() ) );
 
         for ( PropertyType pt : ft.getPropertyDeclarations() ) {
-            writePropertyMapping( writer, pt );
+            PropertyType[] substitutions = pt.getSubstitutions();
+            for ( PropertyType substitution : substitutions ) {
+                if ( !substitution.isAbstract() ) {
+                    writePropertyMapping( writer, substitution );
+                }
+            }
         }
 
         writer.writeEndElement();
@@ -230,7 +247,7 @@ public class PostGISFeatureStoreConfigHelper {
         if ( pt.getMaxOccurs() == 1 ) {
             writer.writeAttribute( "mapping", getColumn( pt.getName() ) );
         } else {
-            writer.writeAttribute( "mapping", "ID~" + getColumn( pt.getName() ) + ".ID~VALUE" );
+            writer.writeAttribute( "mapping", "id->" + getColumn( pt.getName() ) + ".id->value" );
         }
 
     }
@@ -246,9 +263,13 @@ public class PostGISFeatureStoreConfigHelper {
     private String getColumn( QName name ) {
         if ( name.getNamespaceURI() != null && !name.getNamespaceURI().equals( NULL_NS_URI ) ) {
             String prefix = schema.getXSModel().getNamespacePrefixes().get( name.getNamespaceURI() );
-            return prefix.toUpperCase() + "_" + name.getLocalPart().toUpperCase();
+            if ( prefix == null ) {
+                LOG.warn( "Prefix null!?" );
+                prefix = "app";
+            }
+            return prefix.toLowerCase() + "_" + name.getLocalPart().toLowerCase();
         }
-        return name.getLocalPart().toUpperCase();
+        return name.getLocalPart().toLowerCase();
     }
 
     private void writePropertyMapping( XMLStreamWriter writer, CustomPropertyType pt )
@@ -273,7 +294,7 @@ public class PostGISFeatureStoreConfigHelper {
             }
             writer.writeEmptyElement( CONFIG_NS, "PrimitiveMapping" );
             writer.writeAttribute( "path", "@" + getName( attrName ) );
-            writer.writeAttribute( "mapping", "ATTR_" + getColumn( attrName ) );
+            writer.writeAttribute( "mapping", "attr_" + getColumn( attrName ) );
             writer.writeAttribute( "type", getPrimitiveTypeName( attrDecl.getTypeDefinition() ) );
         }
 
@@ -281,7 +302,7 @@ public class PostGISFeatureStoreConfigHelper {
         if ( typeDef.getContentType() != CONTENTTYPE_EMPTY && typeDef.getContentType() != CONTENTTYPE_ELEMENT ) {
             writer.writeEmptyElement( CONFIG_NS, "PrimitiveMapping" );
             writer.writeAttribute( "path", "text()" );
-            writer.writeAttribute( "mapping", "VALUE" );
+            writer.writeAttribute( "mapping", "value" );
             writer.writeAttribute( "type", getPrimitiveTypeName( typeDef.getSimpleType() ) );
         }
 
@@ -317,36 +338,41 @@ public class PostGISFeatureStoreConfigHelper {
     private void createMapping( XMLStreamWriter writer, XSElementDeclaration elDecl, int occurence )
                             throws XMLStreamException {
 
-        QName elName = new QName( elDecl.getName() );
-        if ( elDecl.getNamespace() != null ) {
-            elName = new QName( elDecl.getNamespace(), elDecl.getName() );
+        // consider every concrete element substitution
+        List<XSElementDeclaration> substitutions = schema.getXSModel().getSubstitutions( elDecl, null, true, true );
+
+        for ( XSElementDeclaration substitution : substitutions ) {
+
+            QName elName = new QName( substitution.getName() );
+            if ( substitution.getNamespace() != null ) {
+                elName = new QName( substitution.getNamespace(), substitution.getName() );
+            }
+
+            if ( schema.getFeatureType( elName ) != null ) {
+                writer.writeEmptyElement( CONFIG_NS, "FeatureMapping" );
+                writer.writeAttribute( "path", getName( elName ) );
+                writer.writeAttribute( "mapping", getColumn( elName ) );
+            } else if ( schema.getXSModel().getGeometryElement( elName ) != null ) {
+                writer.writeEmptyElement( CONFIG_NS, "GeometryMapping" );
+                writer.writeAttribute( "path", getName( elName ) );
+                writer.writeAttribute( "mapping", getColumn( elName ) );
+            } else if ( schema.getXSModel().isGMLNamespace( elName.getNamespaceURI() ) ) {
+                LOG.warn( "Skipping element '" + elName + "'" );
+            } else {
+                writer.writeStartElement( CONFIG_NS, "CompoundMapping" );
+                writer.writeAttribute( "path", getName( elName ) );
+                writer.writeAttribute( "mapping", getColumn( elName ) );
+                XSTypeDefinition typeDef = elDecl.getTypeDefinition();
+                if ( typeDef instanceof XSComplexTypeDefinition ) {
+                    createMapping( writer, (XSComplexTypeDefinition) typeDef );
+                } else {
+                    writer.writeEmptyElement( CONFIG_NS, "PrimitiveMapping" );
+                    writer.writeAttribute( "path", "text()" );
+                    writer.writeAttribute( "type", getPrimitiveTypeName( (XSSimpleTypeDefinition) typeDef ) );
+                }
+                writer.writeEndElement();
+            }
         }
-
-        writer.writeStartElement( CONFIG_NS, "CompoundMapping" );
-
-        // TODO substitutions
-        writer.writeAttribute( "path", getName( elName ) );
-        writer.writeAttribute( "mapping", getColumn( elName ) );
-
-        if ( schema.getFeatureType( elName ) != null ) {
-            System.out.println( "Skipping '" + elName + "/" + elName );
-            writer.writeEndElement();
-            return;
-        } else if ( schema.getXSModel().isGMLNamespace( elName.getNamespaceURI() ) ) {
-            System.out.println( "Skipping '" + elName + "/" + elName );
-            writer.writeEndElement();
-            return;
-        }
-
-        XSTypeDefinition typeDef = elDecl.getTypeDefinition();
-        if ( typeDef instanceof XSComplexTypeDefinition ) {
-            createMapping( writer, (XSComplexTypeDefinition) typeDef );
-        } else {
-            writer.writeEmptyElement( CONFIG_NS, "PrimitiveMapping" );
-            writer.writeAttribute( "path", "text()" );
-            writer.writeAttribute( "type", getPrimitiveTypeName( (XSSimpleTypeDefinition) typeDef ) );
-        }
-        writer.writeEndElement();
     }
 
     private void createMapping( XMLStreamWriter writer, XSModelGroup modelGroup, int occurrence )
@@ -370,25 +396,26 @@ public class PostGISFeatureStoreConfigHelper {
         return XMLValueMangler.getPrimitiveType( typeDef ).getXSTypeName();
     }
 
-//    public static void main( String[] args )
-//                            throws XMLStreamException, FactoryConfigurationError, IOException, ClassCastException,
-//                            ClassNotFoundException, InstantiationException, IllegalAccessException {
-//
-//        String schemaURL = CoreTstProperties.getProperty( "schema_inspire_addresses" );
-//        if ( schemaURL == null ) {
-//            return;
-//        }
-//
-//        ApplicationSchemaXSDDecoder adapter = new ApplicationSchemaXSDDecoder( GML_32, null, schemaURL );
-//        ApplicationSchema schema = adapter.extractFeatureTypeSchema();
-//
-//        PostGISFeatureStoreConfigHelper helper = new PostGISFeatureStoreConfigHelper( schema );
-//
-//        OutputStream os = new FileOutputStream( "/tmp/config.xml" );
-//        XMLStreamWriter xmlStream = XMLOutputFactory.newInstance().createXMLStreamWriter( os );
-//        xmlStream = new IndentingXMLStreamWriter( xmlStream );
-//        helper.writeConfig( xmlStream, "EPSG:4258", null, "inspire", null );
-//        xmlStream.close();
-//        os.close();
-//    }
+    // public static void main( String[] args )
+    // throws XMLStreamException, FactoryConfigurationError, IOException, ClassCastException,
+    // ClassNotFoundException, InstantiationException, IllegalAccessException {
+    //
+    // String schemaURL =
+    // "file:/home/markus/Programmieren/Java/workspace/deegree-inspire-node/src/main/webapp/WEB-INF/workspace/schemas/inspire/annex1/Addresses.xsd";
+    // if ( schemaURL == null ) {
+    // return;
+    // }
+    //
+    // ApplicationSchemaXSDDecoder adapter = new ApplicationSchemaXSDDecoder( GMLVersion.GML_32, null, schemaURL );
+    // ApplicationSchema schema = adapter.extractFeatureTypeSchema();
+    //
+    // PostGISFeatureStoreConfigHelper helper = new PostGISFeatureStoreConfigHelper( schema );
+    //
+    // OutputStream os = new FileOutputStream( "/tmp/config.xml" );
+    // XMLStreamWriter xmlStream = XMLOutputFactory.newInstance().createXMLStreamWriter( os );
+    // xmlStream = new IndentingXMLStreamWriter( xmlStream );
+    // helper.writeConfig( xmlStream, "EPSG:4258", null, "inspire", null );
+    // xmlStream.close();
+    // os.close();
+    // }
 }

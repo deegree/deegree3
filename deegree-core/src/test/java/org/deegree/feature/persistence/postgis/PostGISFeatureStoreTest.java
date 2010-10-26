@@ -36,6 +36,7 @@
 package org.deegree.feature.persistence.postgis;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URL;
 
 import javax.xml.namespace.QName;
@@ -116,7 +117,7 @@ public class PostGISFeatureStoreTest {
                             throws FeatureStoreException {
 
         if ( enable ) {
-            ConnectionManager.addConnection( "inspire", "jdbc:postgresql://hurricane:5432/inspire", "postgres",
+            ConnectionManager.addConnection( "inspire", "jdbc:postgresql://macchiato:5432/inspire", "postgres",
                                              "postgres", 1, 10 );
 
             URL configURL = this.getClass().getResource( "inspire-hybrid.xml" );
@@ -134,6 +135,22 @@ public class PostGISFeatureStoreTest {
 
             Mapping propMapping = mapping.getMapping( QName.valueOf( "{urn:x-inspire:specification:gmlas:Addresses:3.0}inspireId" ) );
             System.out.println( propMapping );
+        }
+    }
+
+    @Test
+    public void testInspireDDL()
+                            throws FeatureStoreException, MalformedURLException {
+
+        if ( enable ) {
+            ConnectionManager.addConnection( "inspire", "jdbc:postgresql://macchiato:5432/inspire", "postgres",
+                                             "postgres", 1, 10 );
+
+            URL configURL = new URL( "file:/tmp/config.xml" );
+            String[] createStmts = new PostGISFeatureStoreProvider().getDDL( configURL );
+            for ( String string : createStmts ) {
+                System.out.println( string );
+            }
         }
     }
 

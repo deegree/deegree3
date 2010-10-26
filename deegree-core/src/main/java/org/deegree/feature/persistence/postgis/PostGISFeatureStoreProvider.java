@@ -93,60 +93,79 @@ public class PostGISFeatureStoreProvider implements FeatureStoreProvider {
     @Override
     public FeatureStore getFeatureStore( URL configURL )
                             throws FeatureStoreException {
+        PostGISFeatureStoreConfig config = parseConfig( configURL );
+        MappedApplicationSchema schema = getSchema( configURL.toString(), config );
+        return new PostGISFeatureStore( schema, config.getJDBCConnId() );
+    }
 
-        FeatureStore fs = null;
+    public String[] getDDL( URL configURL )
+                            throws FeatureStoreException {
+        PostGISFeatureStoreConfig config = parseConfig( configURL );
+        MappedApplicationSchema schema = getSchema( configURL.toString(), config );
+        return new PostGISDDLCreator( schema ).getDDL();
+    }
+
+    private MappedApplicationSchema getSchema( String configURL, PostGISFeatureStoreConfig config )
+                            throws FeatureStoreException {
+
+        ApplicationSchema appSchema = null;
+        CRS storageSRS = new CRS( config.getStorageCRS() );
+        if ( !config.getGMLSchema().isEmpty() ) {
+            XMLAdapter resolver = new XMLAdapter();
+            resolver.setSystemId( configURL );
+            try {
+                String[] schemaURLs = new String[config.getGMLSchema().size()];
+                int i = 0;
+                GMLVersionType gmlVersionType = null;
+                for ( GMLSchema jaxbSchemaURL : config.getGMLSchema() ) {
+                    schemaURLs[i++] = resolver.resolve( jaxbSchemaURL.getValue().trim() ).toString();
+                    // TODO what about different versions at the same time?
+                    gmlVersionType = jaxbSchemaURL.getVersion();
+                }
+
+                ApplicationSchemaXSDDecoder decoder = null;
+                if ( schemaURLs.length == 1 && schemaURLs[0].startsWith( "file:" ) ) {
+                    File file = new File( new URL( schemaURLs[0] ).toURI() );
+                    decoder = new ApplicationSchemaXSDDecoder( GMLVersion.valueOf( gmlVersionType.name() ),
+                                                               getHintMap( config.getNamespaceHint() ), file );
+                } else {
+                    decoder = new ApplicationSchemaXSDDecoder( GMLVersion.valueOf( gmlVersionType.name() ),
+                                                               getHintMap( config.getNamespaceHint() ), schemaURLs );
+                }
+                appSchema = decoder.extractFeatureTypeSchema();
+            } catch ( Exception e ) {
+                String msg = Messages.getMessage( "STORE_MANAGER_STORE_SETUP_ERROR", e.getMessage() );
+                LOG.error( msg, e );
+                throw new FeatureStoreException( msg, e );
+            }
+        }
+
+        MappedApplicationSchema schema = null;
+        try {
+            schema = PostGISApplicationSchemaBuilder.build( appSchema, config.getFeatureType(), config.getJDBCConnId(),
+                                                            config.getDBSchemaQualifier(), storageSRS );
+        } catch ( SQLException e ) {
+            String msg = Messages.getMessage( "STORE_MANAGER_STORE_SETUP_ERROR", e.getMessage() );
+            LOG.error( msg, e );
+            throw new FeatureStoreException( msg, e );
+        }
+        return schema;
+    }
+
+    private PostGISFeatureStoreConfig parseConfig( URL configURL )
+                            throws FeatureStoreException {
+
+        PostGISFeatureStoreConfig config = null;
         try {
             JAXBContext jc = JAXBContext.newInstance( "org.deegree.feature.persistence.postgis.jaxb" );
             Unmarshaller u = jc.createUnmarshaller();
-            PostGISFeatureStoreConfig config = (PostGISFeatureStoreConfig) u.unmarshal( configURL );
-            CRS storageSRS = new CRS( config.getStorageCRS() );
-
-            ApplicationSchema appSchema = null;
-            if ( !config.getGMLSchema().isEmpty() ) {
-                XMLAdapter resolver = new XMLAdapter();
-                resolver.setSystemId( configURL.toString() );
-                try {
-                    String[] schemaURLs = new String[config.getGMLSchema().size()];
-                    int i = 0;
-                    GMLVersionType gmlVersionType = null;
-                    for ( GMLSchema jaxbSchemaURL : config.getGMLSchema() ) {
-                        schemaURLs[i++] = resolver.resolve( jaxbSchemaURL.getValue().trim() ).toString();
-                        // TODO what about different versions at the same time?
-                        gmlVersionType = jaxbSchemaURL.getVersion();
-                    }
-
-                    ApplicationSchemaXSDDecoder decoder = null;
-                    if ( schemaURLs.length == 1 && schemaURLs[0].startsWith( "file:" ) ) {
-                        File file = new File( new URL( schemaURLs[0] ).toURI() );
-                        decoder = new ApplicationSchemaXSDDecoder( GMLVersion.valueOf( gmlVersionType.name() ),
-                                                                   getHintMap( config.getNamespaceHint() ), file );
-                    } else {
-                        decoder = new ApplicationSchemaXSDDecoder( GMLVersion.valueOf( gmlVersionType.name() ),
-                                                                   getHintMap( config.getNamespaceHint() ), schemaURLs );
-                    }
-                    appSchema = decoder.extractFeatureTypeSchema();
-                } catch ( Exception e ) {
-                    String msg = Messages.getMessage( "STORE_MANAGER_STORE_SETUP_ERROR", e.getMessage() );
-                    LOG.error( msg, e );
-                    throw new FeatureStoreException( msg, e );
-                }
-            }
-
-            MappedApplicationSchema schema = PostGISApplicationSchemaBuilder.build( appSchema, config.getFeatureType(),
-                                                                                    config.getJDBCConnId(),
-                                                                                    config.getDBSchemaQualifier(),
-                                                                                    storageSRS );
-            fs = new PostGISFeatureStore( schema, config.getJDBCConnId() );
+            config = (PostGISFeatureStoreConfig) u.unmarshal( configURL );
         } catch ( JAXBException e ) {
-            String msg = "Error in feature store configuration file '" + configURL + "': " + e.getMessage();
-            LOG.error( msg );
-            throw new FeatureStoreException( msg, e );
-        } catch ( SQLException e ) {
-            String msg = "Error creating mapped application schema: " + e.getMessage();
-            LOG.error( msg );
+            String msg = Messages.getMessage( "STORE_MANAGER_STORE_SETUP_ERROR", e.getMessage() );
+            LOG.error( msg, e );
             throw new FeatureStoreException( msg, e );
         }
-        return fs;
+        return config;
     }
 
     private static Map<String, String> getHintMap( List<NamespaceHint> hints ) {

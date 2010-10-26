@@ -22,11 +22,12 @@
 
   <JDBCConnId>inspire</JDBCConnId>
   
-  <GMLSchema version="GML_32">/home/schneider/workspace/deegree-inspire-node/src/main/webapp/WEB-INF/workspace/schemas/inspire/annex1/Addresses.xsd</GMLSchema>
+  <GMLSchema version="GML_32">/home/markus/Programmieren/Java/workspace/deegree-inspire-node/src/main/webapp/WEB-INF/workspace/schemas/inspire/annex1/Addresses.xsd</GMLSchema>
 
   <FeatureType name="ad:Address" mapping="AD_ADDRESS">
 
     <CustomProperty name="ad:inspireId" mapping="AD_INSPIREID">
+
       <CompoundMapping path="base:Identifier" mapping="BASE_IDENTIFIER">
 
         <CompoundMapping path="base:localId" mapping="BASE_LOCALID">
@@ -43,6 +44,7 @@
         </CompoundMapping>
 
       </CompoundMapping>
+
     </CustomProperty>
 
     <CustomProperty name="ad:alternativeIdentifier" minOccurs="0" mapping="AD_ALTERNATIVEIDENTIFIER">
@@ -50,7 +52,7 @@
       <PrimitiveMapping path="text()" mapping="VALUE" type="string" />
     </CustomProperty>
 
-    <CustomProperty name="ad:position" maxOccurs="unbounded" mapping="ID->AD_ADDRESS_AD_POSITION.ID->VALUE">
+    <CustomProperty name="ad:position" maxOccurs="unbounded" mapping="ID->AD_ADDRESS_AD_POSITION.ID">
       <CompoundMapping path="ad:GeographicPosition" mapping="AD_GEOGRAPHICPOSITION">
         <CompoundMapping path="ad:geometry" mapping="AD_GEOMETRY">
           <PrimitiveMapping path="@xlink:type" mapping="ATTR_XLINK_TYPE" type="string" />
@@ -65,19 +67,23 @@
           <PrimitiveMapping path="@owns" mapping="ATTR_OWNS" type="string" />
           <CompoundMapping path="gml:Point" mapping="GML_POINT"></CompoundMapping>
         </CompoundMapping>
+        
         <CompoundMapping path="ad:specification" mapping="AD_SPECIFICATION">
           <PrimitiveMapping path="@nilReason" mapping="ATTR_NILREASON" type="string" />
           <PrimitiveMapping path="@codeSpace" mapping="ATTR_CODESPACE" type="string" />
           <PrimitiveMapping path="text()" mapping="VALUE" type="string" />
         </CompoundMapping>
+
         <CompoundMapping path="ad:method" mapping="AD_METHOD">
           <PrimitiveMapping path="@nilReason" mapping="ATTR_NILREASON" type="string" />
           <PrimitiveMapping path="@codeSpace" mapping="ATTR_CODESPACE" type="string" />
           <PrimitiveMapping path="text()" mapping="VALUE" type="string" />
         </CompoundMapping>
+
         <CompoundMapping path="ad:default" mapping="AD_DEFAULT">
           <PrimitiveMapping path="text()" type="string" />
         </CompoundMapping>
+
       </CompoundMapping>
     </CustomProperty>
 
@@ -87,7 +93,7 @@
       <PrimitiveMapping path="text()" mapping="VALUE" type="string" />
     </CustomProperty>
 
-    <CustomProperty name="ad:locator" maxOccurs="unbounded" mapping="ID->AD_LOCATOR.ID->VALUE">
+    <CustomProperty name="ad:locator" maxOccurs="unbounded" mapping="ID->AD_ADDRESS_AD_LOCATOR.ID">
       <CompoundMapping path="ad:AddressLocator" mapping="AD_ADDRESSLOCATOR">
         <CompoundMapping path="ad:designator" mapping="AD_DESIGNATOR">
           <CompoundMapping path="ad:LocatorDesignator" mapping="AD_LOCATORDESIGNATOR">
@@ -207,15 +213,15 @@
       <PrimitiveMapping path="text()" mapping="VALUE" type="dateTime" />
     </CustomProperty>
 
-    <FeatureProperty name="ad:parcel" minOccurs="0" maxOccurs="unbounded" mapping="ID->AD_PARCEL.ID->VALUE"
+    <FeatureProperty name="ad:parcel" minOccurs="0" maxOccurs="unbounded" mapping="ID->AD_ADDRESS_AD_PARCEL.FROM->TO"
       type="cp:CadastralParcel" />
 
     <FeatureProperty name="ad:parentAddress" minOccurs="0" mapping="AD_PARENTADDRESS" type="ad:Address" />
 
-    <FeatureProperty name="ad:building" minOccurs="0" maxOccurs="unbounded" mapping="ID->AD_BUILDING.ID->VALUE"
+    <FeatureProperty name="ad:building" minOccurs="0" maxOccurs="unbounded" mapping="ID->AD_ADDRESS_AD_BUILDING.FROM->TO"
       type="bui:Building" />
 
-    <FeatureProperty name="ad:component" maxOccurs="unbounded" mapping="ID->AD_COMPONENT.ID->VALUE" type="ad:AddressComponent" />
+    <FeatureProperty name="ad:component" maxOccurs="unbounded" mapping="ID->AD_ADDRESS_AD_COMPONENT.FROM->TO" type="ad:AddressComponent" />
 
   </FeatureType>
 

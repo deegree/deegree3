@@ -51,6 +51,8 @@ import java.util.Map;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import javax.xml.namespace.QName;
+
 import org.apache.xerces.impl.xs.XSComplexTypeDecl;
 import org.apache.xerces.xs.XSConstants;
 import org.apache.xerces.xs.XSElementDeclaration;
@@ -209,13 +211,11 @@ public class GMLSchemaInfoSet extends XMLSchemaInfoSet {
             // TODO do this the right way
             fcDecls = new ArrayList<XSElementDeclaration>();
             if ( xmlSchema.getElementDeclaration( "_FeatureCollection", GML_PRE_32_NS ) != null ) {
-                fcDecls.addAll( getSubstitutions(
-                                                  xmlSchema.getElementDeclaration( "_FeatureCollection", GML_PRE_32_NS ),
+                fcDecls.addAll( getSubstitutions( xmlSchema.getElementDeclaration( "_FeatureCollection", GML_PRE_32_NS ),
                                                   null, true, false ) );
             }
             if ( xmlSchema.getElementDeclaration( "FeatureCollection", GML_PRE_32_NS ) != null ) {
-                fcDecls.addAll( getSubstitutions(
-                                                  xmlSchema.getElementDeclaration( "FeatureCollection", GML_PRE_32_NS ),
+                fcDecls.addAll( getSubstitutions( xmlSchema.getElementDeclaration( "FeatureCollection", GML_PRE_32_NS ),
                                                   null, true, false ) );
             }
 
@@ -481,5 +481,15 @@ public class GMLSchemaInfoSet extends XMLSchemaInfoSet {
 
     public List<XSElementDeclaration> getStyleElementDeclarations( String namespace, boolean onlyConcrete ) {
         return getSubstitutions( abstractStyleElementDecl, namespace, true, onlyConcrete );
+    }
+
+    public XSElementDeclaration getGeometryElement( QName elName ) {
+        for ( XSElementDeclaration elementDecl : getGeometryElementDeclarations( null, false ) ) {
+            if ( elementDecl.getNamespace().equals( elName.getNamespaceURI() )
+                 && elementDecl.getName().equals( elName.getLocalPart() ) ) {
+                return elementDecl;
+            }
+        }
+        return null;
     }
 }

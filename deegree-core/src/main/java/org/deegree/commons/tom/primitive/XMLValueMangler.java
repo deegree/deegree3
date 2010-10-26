@@ -215,11 +215,15 @@ public class XMLValueMangler {
             return PrimitiveType.INTEGER;
         }
 
+        // true, false
+        case XSConstants.BOOLEAN_DT:{
+            return PrimitiveType.BOOLEAN;
+        }
+        
             // other types
         case XSConstants.ANYSIMPLETYPE_DT:
         case XSConstants.ANYURI_DT:
         case XSConstants.BASE64BINARY_DT:
-        case XSConstants.BOOLEAN_DT:
         case XSConstants.DURATION_DT:
         case XSConstants.ENTITY_DT:
         case XSConstants.GDAY_DT:
@@ -235,6 +239,7 @@ public class XMLValueMangler {
         case XSConstants.LISTOFUNION_DT:
         case XSConstants.NAME_DT:
         case XSConstants.NCNAME_DT:
+        case XSConstants.NMTOKEN_DT:
         case XSConstants.NORMALIZEDSTRING_DT:
         case XSConstants.NOTATION_DT:
         case XSConstants.QNAME_DT:
@@ -244,6 +249,6 @@ public class XMLValueMangler {
             return PrimitiveType.STRING;
         }
         }
-        throw new IllegalArgumentException( "Unexpected simple type: " + xsdTypeDef.getBuiltInKind() );
+        throw new IllegalArgumentException( "Unexpected simple type: " + xsdTypeDef);
     }
 }
