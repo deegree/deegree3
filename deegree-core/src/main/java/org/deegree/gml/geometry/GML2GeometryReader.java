@@ -610,6 +610,7 @@ public class GML2GeometryReader implements GMLGeometryReader {
      */
     public Envelope parseEnvelope( XMLStreamReaderWrapper xmlStream, CRS defaultCRS )
                             throws XMLStreamException {
+
         CRS crs = determineActiveCRS( xmlStream, defaultCRS );
         xmlStream.nextTag();
 

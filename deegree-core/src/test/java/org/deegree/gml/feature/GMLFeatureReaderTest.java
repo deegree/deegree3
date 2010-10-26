@@ -80,7 +80,7 @@ import org.junit.Test;
 import org.slf4j.Logger;
 
 /**
- * Tests that check the correct reading of {@link Feature} objects from GML documents.
+ * Tests that check the correct reading of {@link Feature} / {@link FeatureCollection} objects from GML instance documents.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
@@ -88,6 +88,7 @@ import org.slf4j.Logger;
  * @version $Revision:$, $Date:$
  */
 public class GMLFeatureReaderTest {
+
     private static final Logger LOG = getLogger( GMLFeatureReaderTest.class );
 
     private static final String BASE_DIR = "testdata/features/";
@@ -170,10 +171,10 @@ public class GMLFeatureReaderTest {
 
         gmlReader.getIdContext().resolveLocalRefs();
         XMLStreamWriter writer = new IndentingXMLStreamWriter(
-                                                                XMLOutputFactory.newInstance().createXMLStreamWriter( new FileWriter(
-                                                                                                                                      System.getProperty( "java.io.tmpdir" )
-                                                                                                                                                              + File.separatorChar
-                                                                                                                                                              + "out.xml" ) ) );
+                                                               XMLOutputFactory.newInstance().createXMLStreamWriter( new FileWriter(
+                                                                                                                                     System.getProperty( "java.io.tmpdir" )
+                                                                                                                                                             + File.separatorChar
+                                                                                                                                                             + "out.xml" ) ) );
         writer.setPrefix( "xlink", CommonNamespaces.XLNNS );
         writer.setPrefix( "sf", "http://cite.opengeospatial.org/gmlsf" );
         writer.setPrefix( "gml", "http://www.opengis.net/gml" );
@@ -377,13 +378,27 @@ public class GMLFeatureReaderTest {
     }
 
     @Test
-    public void testGeoServerFC()
+    public void testGeoServerWFS100FC()
                             throws XMLStreamException, FactoryConfigurationError, IOException, ClassCastException,
                             ClassNotFoundException, InstantiationException, IllegalAccessException,
                             XMLParsingException, UnknownCRSException, JAXBException, TransformationException,
                             ReferenceResolvingException {
 
-        URL docURL = GMLFeatureReaderTest.class.getResource( BASE_DIR + "GeoServer_FeatureCollection.xml" );
+        URL docURL = GMLFeatureReaderTest.class.getResource( BASE_DIR + "GeoServer_FC_WFS100.xml" );
+        GMLStreamReader gmlReader = GMLInputFactory.createGMLStreamReader( GMLVersion.GML_2, docURL );
+        FeatureCollection fc = (FeatureCollection) gmlReader.readFeature();
+        gmlReader.getIdContext().resolveLocalRefs();
+        Assert.assertEquals( 4, fc.size() );
+    }
+
+    @Test
+    public void testGeoServerWFS110FC()
+                            throws XMLStreamException, FactoryConfigurationError, IOException, ClassCastException,
+                            ClassNotFoundException, InstantiationException, IllegalAccessException,
+                            XMLParsingException, UnknownCRSException, JAXBException, TransformationException,
+                            ReferenceResolvingException {
+
+        URL docURL = GMLFeatureReaderTest.class.getResource( BASE_DIR + "GeoServer_FC_WFS110.xml" );
         GMLStreamReader gmlReader = GMLInputFactory.createGMLStreamReader( GML_31, docURL );
         FeatureCollection fc = (FeatureCollection) gmlReader.readFeature();
         gmlReader.getIdContext().resolveLocalRefs();

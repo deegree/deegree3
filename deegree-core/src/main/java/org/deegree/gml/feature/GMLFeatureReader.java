@@ -584,6 +584,10 @@ public class GMLFeatureReader extends XMLAdapter {
         Envelope env = null;
         xmlStream.nextTag();
         if ( xmlStream.getName().equals( new QName( gmlNs, "Null" ) ) ) {
+            // TODO extract
+            StAXParsingHelper.skipElement( xmlStream );
+        } else if ( xmlStream.getName().equals( new QName( gmlNs, "null" ) ) ) {
+            // GML 2 uses "null" instead of "Null"
             // TODO
             StAXParsingHelper.skipElement( xmlStream );
         } else {
