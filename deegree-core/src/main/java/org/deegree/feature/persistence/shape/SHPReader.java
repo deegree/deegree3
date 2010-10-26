@@ -68,7 +68,6 @@ import org.deegree.geometry.primitive.Point;
 import org.deegree.geometry.primitive.Polygon;
 import org.deegree.geometry.primitive.Ring;
 import org.deegree.geometry.primitive.Surface;
-import org.deegree.geometry.primitive.segments.LineStringSegment;
 import org.deegree.geometry.standard.points.PackedPoints;
 import org.deegree.geometry.standard.points.PointsList;
 import org.slf4j.Logger;
@@ -761,20 +760,17 @@ public class SHPReader {
                                 crs );
     }
 
-    private Curve readPolyline( ByteBuffer buffer, boolean z, boolean m, int length ) {
-
+    private Geometry readPolyline( ByteBuffer buffer, boolean z, boolean m, int length ) {
         Points[] ps = readLines( buffer, m, z, length );
-        Curve curve = null;
         if ( ps.length == 1 ) {
-            curve = fac.createLineString( null, crs, ps[0] );
-        } else {
-            LineStringSegment[] segs = new LineStringSegment[ps.length];
-            for ( int i = 0; i < segs.length; ++i ) {
-                segs[i] = fac.createLineStringSegment( ps[i] );
-            }
-            curve = fac.createCurve( null, crs, segs );
+            return fac.createLineString( null, crs, ps[0] );
         }
-        return curve;
+
+        List<Curve> cs = new ArrayList<Curve>( ps.length );
+        for ( int i = 0; i < ps.length; ++i ) {
+            cs.add( fac.createLineString( null, crs, ps[i] ) );
+        }
+        return fac.createMultiCurve( null, crs, cs );
     }
 
     private MultiPoint readMultipointZ( ByteBuffer buffer, int length ) {
