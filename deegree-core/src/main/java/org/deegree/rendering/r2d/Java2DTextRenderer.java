@@ -139,7 +139,7 @@ public class Java2DTextRenderer implements TextRenderer {
         }
 
         renderer.graphics.setStroke( stroke );
-        Double line = renderer.fromCurve( c );
+        Double line = renderer.fromCurve( c, false );
 
         renderer.graphics.draw( line );
     }

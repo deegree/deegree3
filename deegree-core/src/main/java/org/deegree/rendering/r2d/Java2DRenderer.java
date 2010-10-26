@@ -486,7 +486,7 @@ public class Java2DRenderer implements Renderer {
         }
     }
 
-    Double fromCurve( Curve curve ) {
+    Double fromCurve( Curve curve, boolean close ) {
         Double line = new Double();
 
         // TODO use error criterion
@@ -503,7 +503,7 @@ public class Java2DRenderer implements Renderer {
             if ( iter.hasNext() ) {
                 line.lineTo( p.get0(), p.get1() );
             } else {
-                if ( isZero( x - p.get0() ) && isZero( y - p.get1() ) ) {
+                if ( close && isZero( x - p.get0() ) && isZero( y - p.get1() ) ) {
                     line.closePath();
                 } else {
                     line.lineTo( p.get0(), p.get1() );
@@ -530,7 +530,7 @@ public class Java2DRenderer implements Renderer {
         if ( geom instanceof Curve ) {
             geom = transform( geom );
 
-            Double line = fromCurve( (Curve) geom );
+            Double line = fromCurve( (Curve) geom, false );
             applyStroke( styling.stroke, styling.uom, line, styling.perpendicularOffset,
                          styling.perpendicularOffsetType );
         }
@@ -569,7 +569,7 @@ public class Java2DRenderer implements Renderer {
                 // inside and thus no substraction etc. is needed. This speeds up things SIGNIFICANTLY
                 GeneralPath polygon = new GeneralPath();
                 for ( Curve curve : polygonPatch.getBoundaryRings() ) {
-                    Double d = fromCurve( curve );
+                    Double d = fromCurve( curve, true );
                     lines.add( d );
                     polygon.append( d, false );
                 }

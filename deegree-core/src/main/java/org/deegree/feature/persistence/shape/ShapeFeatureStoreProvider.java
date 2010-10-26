@@ -74,12 +74,12 @@ public class ShapeFeatureStoreProvider implements FeatureStoreProvider {
 
     @Override
     public URL getConfigSchema() {
-        return ShapeFeatureStoreProvider.class.getResource( "/META-INF/schemas/datasource/feature/shape/0.6.0/shape.xsd" );
+        return ShapeFeatureStoreProvider.class.getResource( "/META-INF/schemas/datasource/feature/shape/0.6.1/shape.xsd" );
     }
 
     @Override
     public URL getConfigTemplate() {
-        return ShapeFeatureStoreProvider.class.getResource( "/META-INF/schemas/datasource/feature/shape/0.6.0/example.xml" );
+        return ShapeFeatureStoreProvider.class.getResource( "/META-INF/schemas/datasource/feature/shape/0.6.1/example.xml" );
     }
 
     @Override
