@@ -89,7 +89,6 @@ import org.deegree.geometry.primitive.Point;
 import org.deegree.geometry.primitive.Surface;
 import org.deegree.geometry.primitive.patches.PolygonPatch;
 import org.deegree.geometry.primitive.patches.SurfacePatch;
-import org.deegree.geometry.primitive.segments.CurveSegment;
 import org.deegree.geometry.primitive.segments.LineStringSegment;
 import org.deegree.gml.geometry.refs.GeometryReference;
 import org.deegree.rendering.r2d.strokes.OffsetStroke;
@@ -494,23 +493,20 @@ public class Java2DRenderer implements Renderer {
         CRS crs = curve.getCoordinateSystem();
         curve = linearizer.linearize( curve, new NumPointsCriterion( 100 ) );
         curve.setCoordinateSystem( crs );
-
-        for ( CurveSegment seg : curve.getCurveSegments() ) {
-            Points points = ( (LineStringSegment) seg ).getControlPoints();
-            Iterator<Point> iter = points.iterator();
-            Point p = iter.next();
-            double x = p.get0(), y = p.get1();
-            line.moveTo( x, y );
-            while ( iter.hasNext() ) {
-                p = iter.next();
-                if ( iter.hasNext() ) {
-                    line.lineTo( p.get0(), p.get1() );
+        Points points = curve.getControlPoints();
+        Iterator<Point> iter = points.iterator();
+        Point p = iter.next();
+        double x = p.get0(), y = p.get1();
+        line.moveTo( x, y );
+        while ( iter.hasNext() ) {
+            p = iter.next();
+            if ( iter.hasNext() ) {
+                line.lineTo( p.get0(), p.get1() );
+            } else {
+                if ( close && isZero( x - p.get0() ) && isZero( y - p.get1() ) ) {
+                    line.closePath();
                 } else {
-                    if ( close && isZero( x - p.get0() ) && isZero( y - p.get1() ) ) {
-                        line.closePath();
-                    } else {
-                        line.lineTo( p.get0(), p.get1() );
-                    }
+                    line.lineTo( p.get0(), p.get1() );
                 }
             }
         }
