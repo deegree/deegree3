@@ -105,7 +105,9 @@ import org.deegree.services.wps.describeprocess.DescribeProcessResponseXMLAdapte
 import org.deegree.services.wps.execute.ExecuteRequest;
 import org.deegree.services.wps.execute.ExecuteRequestKVPAdapter;
 import org.deegree.services.wps.execute.ExecuteRequestXMLAdapter;
+import org.deegree.services.wps.execute.RawDataOutput;
 import org.deegree.services.wps.execute.ResponseDocument;
+import org.deegree.services.wps.execute.ResponseForm;
 import org.deegree.services.wps.storage.OutputStorage;
 import org.deegree.services.wps.storage.ResponseDocumentStorage;
 import org.deegree.services.wps.storage.StorageManager;
@@ -176,7 +178,8 @@ public class WPService extends AbstractOGCServiceController {
         try {
             JAXBContext jc = JAXBContext.newInstance( "org.deegree.services.jaxb.wps" );
             Unmarshaller u = jc.createUnmarshaller();
-            OMElement serviceConfigurationElement = controllerConf.getRequiredElement( controllerConf.getRootElement(),
+            OMElement serviceConfigurationElement = controllerConf.getRequiredElement(
+                                                                                       controllerConf.getRootElement(),
                                                                                        new XPath(
                                                                                                   "wps:ServiceConfiguration",
                                                                                                   nsContext ) );
@@ -360,6 +363,12 @@ public class WPService extends AbstractOGCServiceController {
                 executeAdapter.setRootElement( requestElement );
                 // executeAdapter.setSystemId( soapDoc.getSystemId() );
                 ExecuteRequest executeRequest = executeAdapter.parse100();
+                ResponseForm responseForm = executeRequest.getResponseForm();
+                if ( responseForm != null && responseForm instanceof RawDataOutput ) {
+                    String msg = "Response type RawDataOutput is not supported for SOAP requests.";
+                    throw new OWSException( msg, OWSException.OPTION_NOT_SUPPORTED );
+                }
+
                 doExecute( executeRequest, response );
                 break;
             case GetOutput:

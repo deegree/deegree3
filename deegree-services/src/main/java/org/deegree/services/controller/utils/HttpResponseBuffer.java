@@ -197,7 +197,7 @@ public class HttpResponseBuffer extends HttpServletResponseWrapper {
      * @throws IOException
      * @throws XMLStreamException
      */
-    public XMLStreamWriter getXMLWriter()
+    public synchronized XMLStreamWriter getXMLWriter()
                             throws IOException, XMLStreamException {
         if ( xmlWriter == null ) {
             XMLOutputFactory factory = XMLOutputFactory.newInstance();
