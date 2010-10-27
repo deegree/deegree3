@@ -645,6 +645,8 @@ public class OGCFrontController extends HttpServlet {
                 sendException( new OWSException( e.getLocalizedMessage(), ControllerException.NO_APPLICABLE_CODE ),
                                response, null );
             }
+        } finally {
+            instance.CONTEXT.set( null );
         }
     }
 
@@ -719,6 +721,8 @@ public class OGCFrontController extends HttpServlet {
                 sendException( new OWSException( e.getLocalizedMessage(), ControllerException.NO_APPLICABLE_CODE ),
                                response, null );
             }
+        } finally {
+            instance.CONTEXT.set( null );
         }
 
     }
@@ -825,6 +829,8 @@ public class OGCFrontController extends HttpServlet {
                 sendException( new OWSException( e.getLocalizedMessage(), ControllerException.NO_APPLICABLE_CODE ),
                                response, null );
             }
+        } finally {
+            instance.CONTEXT.set( null );
         }
     }
 
