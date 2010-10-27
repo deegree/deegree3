@@ -54,7 +54,7 @@ import org.deegree.commons.xml.XPath;
 import org.deegree.metadata.persistence.MetadataStoreException;
 import org.deegree.metadata.persistence.iso.generating.generatingelements.GenerateOMElement;
 import org.deegree.metadata.persistence.iso.parsing.IdUtils;
-import org.deegree.metadata.persistence.iso19115.jaxb.ISOMetadataStoreConfig.RequireInspireCompliance;
+import org.deegree.metadata.persistence.iso19115.jaxb.ISOMetadataStoreConfig.InspireInspector;
 import org.slf4j.Logger;
 
 /**
@@ -69,33 +69,31 @@ public class ResourceIdentifier implements RecordInspector {
 
     private static final Logger LOG = getLogger( ResourceIdentifier.class );
 
-    private final RequireInspireCompliance ric;
+    private final InspireInspector ric;
 
     private final Connection conn;
 
     private final XMLAdapter a;
 
-    private boolean isRic;
-
     private final IdUtils util;
 
-    private ResourceIdentifier( RequireInspireCompliance ric, Connection conn ) {
+    private ResourceIdentifier( InspireInspector ric, Connection conn ) {
         this.ric = ric;
         this.conn = conn;
         this.util = IdUtils.newInstance( conn );
         this.a = new XMLAdapter();
     }
 
-    public static ResourceIdentifier newInstance( RequireInspireCompliance ric, Connection conn ) {
+    public static ResourceIdentifier newInstance( InspireInspector ric, Connection conn ) {
         return new ResourceIdentifier( ric, conn );
     }
 
-    public boolean checkInspireCompliance() {
+    private boolean checkInspireCompliance() {
         if ( ric == null ) {
-            return isRic = false;
-        } else {
-            return isRic = true;
+            return false;
         }
+        return true;
+
     }
 
     /**
@@ -111,16 +109,18 @@ public class ResourceIdentifier implements RecordInspector {
      * @return a list of RS_Identifier, not <Code>null</Code> but empty, at least.
      * @throws MetadataStoreException
      */
-    public List<String> determineResourceIdentifier( List<String> rsList, String id )
+    private List<String> determineResourceIdentifier( List<String> rsList, String id )
                             throws MetadataStoreException {
 
         if ( checkInspireCompliance() ) {
             boolean generateAutomatic = ric.isGenerateAutomatic();
             if ( generateAutomatic == false ) {
                 if ( id != null ) {
-                    if ( checkRSListAgainstID( rsList, id ) ) {
-                        LOG.info( "The resourceIdentifier has been accepted." );
-                        return rsList;
+                    if ( util.checkUUIDCompliance( id ) ) {
+                        if ( checkRSListAgainstID( rsList, id ) ) {
+                            LOG.info( "The resourceIdentifier has been accepted." );
+                            return rsList;
+                        }
                     }
                 }
                 LOG.debug( "There was no match between resourceIdentifier and the id-attribute! Without any automatic guarantee this metadata has to be rejected! " );

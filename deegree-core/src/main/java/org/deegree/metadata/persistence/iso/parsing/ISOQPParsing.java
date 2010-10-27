@@ -327,10 +327,6 @@ public final class ISOQPParsing extends XMLAdapter {
         String[] fileIdentifierString = getNodesAsStrings( rootElement,
                                                            new XPath( "./gmd:fileIdentifier/gco:CharacterString",
                                                                       nsContextISOParsing ) );
-        // List<String> idList = ca.getFi().determineFileIdentifier( fileIdentifierString,
-        // pI.getResourceIdentifierList(),
-        // pI.getDataIdentificationId(),
-        // pI.getDataIdentificationUuId(), isUpdate );
 
         qp.setIdentifier( fileIdentifierString );
 

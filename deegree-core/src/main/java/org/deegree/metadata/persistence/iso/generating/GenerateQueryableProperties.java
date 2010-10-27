@@ -599,7 +599,7 @@ public class GenerateQueryableProperties {
             s_PRE.append( "INSERT INTO " + databaseTable + " (" + id + ", " + fk_datasets
                           + ", operateson, operatesonidentifier, operatesonname)" );
 
-            s_POST.append( "'" + operatesOnData.getOperatesOn() + "','" + operatesOnData.getOperatesOnIdentifier()
+            s_POST.append( "'" + operatesOnData.getScopedName() + "','" + operatesOnData.getOperatesOnIdentifier()
                            + "','" + operatesOnData.getOperatesOnName() + "');" );
 
             executeQueryablePropertiesDatabasetables( isUpdate, connection, operatesOnId, databaseTable, s_PRE, s_POST );

@@ -847,29 +847,6 @@ public class ParseIdentificationInfo extends XMLAdapter {
             if ( couplingTypeString != null ) {
                 qp.setCouplingType( couplingTypeString );
             }
-            /*---------------------------------------------------------------
-             * SV_ServiceIdentification
-             * Check for consistency in the coupling.
-             * 
-             *---------------------------------------------------------------*/
-            LOG.debug( "checking consistency in coupling..." );
-
-            if ( sv_serviceIdentification != null ) {
-
-                if ( couplingTypeString.equals( "loose" ) ) {
-                    // TODO
-                    LOG.debug( "coupling: loose..." );
-
-                } else if ( couplingTypeString.equals( "tight" ) ) {
-                    LOG.debug( "coupling: tight..." );
-
-                    // ci.determineTightlyCoupled( operatesOnList, Arrays.asList( operatesOnIdentifierList ) );
-
-                    // } else {
-                    // // mixed coupled if there are loose and tight coupled resources.
-                    //
-                }
-            }
 
         }
 

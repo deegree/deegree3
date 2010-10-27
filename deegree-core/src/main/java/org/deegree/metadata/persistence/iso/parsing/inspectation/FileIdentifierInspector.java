@@ -39,9 +39,7 @@ import static org.slf4j.LoggerFactory.getLogger;
 
 import java.sql.Connection;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.xml.namespace.QName;
 
@@ -229,13 +227,6 @@ public class FileIdentifierInspector implements RecordInspector {
             }
         }
         return record;
-    }
-
-    private NamespaceContext generateNSC( NamespaceContext nsContext ) {
-        NamespaceContext nsc = new NamespaceContext();
-        Map<String, String> nsMap = new HashMap<String, String>();
-
-        return nsc;
     }
 
 }

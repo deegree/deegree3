@@ -42,11 +42,18 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
+import javax.xml.namespace.QName;
+
 import org.apache.axiom.om.OMElement;
+import org.deegree.commons.xml.NamespaceContext;
+import org.deegree.commons.xml.XMLAdapter;
+import org.deegree.commons.xml.XPath;
 import org.deegree.metadata.persistence.MetadataStoreException;
 import org.deegree.metadata.persistence.iso19115.jaxb.ISOMetadataStoreConfig.CoupledResourceInspector;
+import org.deegree.metadata.persistence.types.OperatesOnData;
 import org.slf4j.Logger;
 
 /**
@@ -63,63 +70,64 @@ public class CoupledDataInspector implements RecordInspector {
 
     private final Connection conn;
 
+    private final XMLAdapter a;
+
     private final CoupledResourceInspector ci;
 
     private CoupledDataInspector( CoupledResourceInspector ci, Connection conn ) {
         this.conn = conn;
         this.ci = ci;
+        this.a = new XMLAdapter();
     }
 
     public static CoupledDataInspector newInstance( CoupledResourceInspector ci, Connection conn ) {
         return new CoupledDataInspector( ci, conn );
     }
 
+    private boolean checkCouplingEnabled() {
+        if ( ci == null ) {
+            return false;
+        }
+        return true;
+
+    }
+
     /**
      * 
-     * @param operatesOnList
-     * @param operatesOnIdentifierList
-     * @return
+     * @param operatesOnStringUuIdAttribute
+     * @return true if there is a coupling with a data-metadata, otherwise false.
      * @throws MetadataStoreException
      */
-    public boolean determineTightlyCoupled( List<String> operatesOnList, List<String> operatesOnIdentifierList )
+    private boolean determineCoupling( List<String> operatesOnStringUuIdAttribute )
                             throws MetadataStoreException {
-        consistencyCheck( operatesOnList );
-        boolean isTightlyCoupled = false;
-        // TODO please more efficiency and intelligence
-        for ( String operatesOnString : operatesOnList ) {
+        // consistencyCheck( operatesOnStringUuIdAttribute );
+        boolean isCoupled = false;
 
-            for ( String operatesOnIdentifierString : operatesOnIdentifierList ) {
+        for ( String a : operatesOnStringUuIdAttribute ) {
+            isCoupled = getCoupledDataMetadatasets( a );
+        }
 
-                if ( operatesOnString.equals( operatesOnIdentifierString ) ) {
-                    isTightlyCoupled = true;
+        return isCoupled;
+    }
+
+    private boolean checkConsistency( List<String> o, List<String> i )
+                            throws MetadataStoreException {
+        boolean isConsistent = true;
+
+        while ( !i.isEmpty() ) {
+            String id = i.get( 0 );
+            for ( String uuid : o ) {
+                if ( !id.equals( uuid ) ) {
+                    isConsistent = false;
+                } else {
+                    isConsistent = true;
                     break;
                 }
-                isTightlyCoupled = false;
-
             }
-            // OperatesOnList [a,b,c] - OperatesOnIdList [b,c,d] -> a not in OperatesOnIdList ->
-            // inconsistency
-            if ( isTightlyCoupled == false ) {
-
-                String msg = "Missmatch between OperatesOn '" + operatesOnString
-                             + "' and its tightly coupled resource OperatesOnIdentifier. ";
-                LOG.info( msg );
-                throw new MetadataStoreException( msg );
-
-                // there is no possibility to set the operationName -> not able to set the coupledResource
-
-            }
-
-        }
-        // OperatesOnList [] - OperatesOnIdList [a,b,c] -> inconsistency
-        if ( isTightlyCoupled == false && operatesOnIdentifierList.size() != 0 ) {
-
-            String msg = "Missmatch between OperatesOn and its tightly coupled resource OperatesOnIdentifier. ";
-            LOG.info( msg );
-            throw new MetadataStoreException( msg );
+            i.remove( 0 );
         }
 
-        return isTightlyCoupled;
+        return isConsistent;
     }
 
     private void consistencyCheck( List<String> operatesOnList )
@@ -155,10 +163,11 @@ public class CoupledDataInspector implements RecordInspector {
 
         try {
             stm = conn.prepareStatement( s );
-            stm.setObject( 1, resourceIdentifier );
+            stm.setString( 1, resourceIdentifier );
             rs = stm.executeQuery();
             while ( rs.next() ) {
                 gotOneDataset = true;
+                break;
             }
         } catch ( SQLException e ) {
             LOG.debug( "Error while proving the ID for the coupled resources: {}", e.getMessage() );
@@ -175,8 +184,97 @@ public class CoupledDataInspector implements RecordInspector {
     @Override
     public OMElement inspect( OMElement record )
                             throws MetadataStoreException {
-        // TODO Auto-generated method stub
-        return null;
+        a.setRootElement( record );
+
+        NamespaceContext nsContext = a.getNamespaceContext( record );
+        // NamespaceContext newNSC = generateNSC(nsContext);
+        nsContext.addNamespace( "srv", "http://www.isotc211.org/2005/srv" );
+        nsContext.addNamespace( "gmd", "http://www.isotc211.org/2005/gmd" );
+        nsContext.addNamespace( "gco", "http://www.isotc211.org/2005/gco" );
+
+        OMElement identificationInfo = a.getElement( a.getRootElement(), new XPath( "./gmd:identificationInfo[1]",
+                                                                                    nsContext ) );
+
+        List<OMElement> operatesOnElemList = a.getElements( identificationInfo,
+                                                            new XPath( "./srv:SV_ServiceIdentification/srv:operatesOn",
+                                                                       nsContext ) );
+        List<String> operatesOnUuidList = new ArrayList<String>();
+        List<String> resourceIDs = new ArrayList<String>();
+        for ( OMElement operatesOnElem : operatesOnElemList ) {
+            operatesOnUuidList.add( operatesOnElem.getAttributeValue( new QName( "uuidref" ) ) );
+            String operatesOnXLink = operatesOnElem.getAttributeValue( new QName( "xlink:href" ) );
+        }
+
+        List<OMElement> operatesOnCoupledResources = a.getElements(
+                                                                    identificationInfo,
+                                                                    new XPath(
+                                                                               "./srv:SV_ServiceIdentification/srv:coupledResource/srv:SV_CoupledResource",
+                                                                               nsContext ) );
+        List<OperatesOnData> operatesOnDataList = new ArrayList<OperatesOnData>();
+
+        for ( OMElement operatesOnCoupledResource : operatesOnCoupledResources ) {
+            String operatesOnIdentifier = a.getNodeAsString( operatesOnCoupledResource,
+                                                             new XPath( "./srv:identifier/gco:CharacterString",
+                                                                        nsContext ), null );
+
+            String operationName = a.getNodeAsString(
+                                                      operatesOnCoupledResource,
+                                                      new XPath( "./srv:operationName/gco:CharacterString", nsContext ),
+                                                      null );
+
+            String scopedName = a.getNodeAsString( operatesOnCoupledResource,
+                                                   new XPath( "./gco:ScopedName", nsContext ), null );
+            operatesOnDataList.add( new OperatesOnData( scopedName, operatesOnIdentifier, operationName ) );
+            resourceIDs.add( operatesOnIdentifier );
+
+        }
+
+        String couplingType = a.getNodeAsString(
+                                                 identificationInfo,
+                                                 new XPath(
+                                                            "./srv:SV_ServiceIdentification/srv:couplingType/srv:SV_CouplingType/@codeListValue",
+                                                            nsContext ), null );
+
+        /*---------------------------------------------------------------
+         * SV_ServiceIdentification
+         * Check for consistency in the coupling.
+         * 
+         *---------------------------------------------------------------*/
+        LOG.debug( "checking consistency in coupling..." );
+        if ( couplingType != null ) {
+
+            if ( couplingType.equals( "loose" ) ) {
+                // nothing to check
+                LOG.debug( "coupling: loose..." );
+
+            } else {
+                LOG.debug( "coupling: tight/mixed..." );
+                boolean throwException = false;
+                if ( determineCoupling( operatesOnUuidList ) ) {
+                    if ( checkConsistency( operatesOnUuidList, resourceIDs ) ) {
+                        throwException = false;
+                    } else {
+                        throwException = true;
+                    }
+                } else {
+                    throwException = true;
+                }
+                if ( checkCouplingEnabled() ) {
+                    if ( throwException && ci.isThrowConsistencyError() ) {
+                        String msg = "Error while processing the coupling!";
+                        LOG.debug( msg );
+                        throw new MetadataStoreException( msg );
+                    }
+                }
+
+            }
+        }
+
+        return record;
+    }
+
+    public CoupledResourceInspector getCi() {
+        return ci;
     }
 
 }

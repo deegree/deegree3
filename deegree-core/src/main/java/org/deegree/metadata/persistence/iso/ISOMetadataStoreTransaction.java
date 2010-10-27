@@ -20,10 +20,10 @@ import org.deegree.metadata.persistence.iso.parsing.inspectation.CoupledDataInsp
 import org.deegree.metadata.persistence.iso.parsing.inspectation.FileIdentifierInspector;
 import org.deegree.metadata.persistence.iso.parsing.inspectation.InspireCompliance;
 import org.deegree.metadata.persistence.iso.parsing.inspectation.MetadataValidation;
+import org.deegree.metadata.persistence.iso.parsing.inspectation.RecordInspector;
 import org.deegree.metadata.persistence.iso.parsing.inspectation.ResourceIdentifier;
 import org.deegree.metadata.persistence.iso19115.jaxb.ISOMetadataStoreConfig;
 import org.deegree.metadata.persistence.iso19115.jaxb.ISOMetadataStoreConfig.AnyText;
-import org.deegree.metadata.persistence.types.ConfigurationAccess;
 import org.deegree.metadata.publication.DeleteTransaction;
 import org.deegree.metadata.publication.InsertTransaction;
 import org.deegree.metadata.publication.UpdateTransaction;
@@ -44,7 +44,7 @@ public class ISOMetadataStoreTransaction implements MetadataStoreTransaction {
 
     private final Connection conn;
 
-    private final ConfigurationAccess ca;
+    private final List<RecordInspector> inspectors = new ArrayList<RecordInspector>();
 
     private final AnyText anyText;
 
@@ -54,11 +54,13 @@ public class ISOMetadataStoreTransaction implements MetadataStoreTransaction {
                             throws SQLException {
         this.conn = conn;
         anyText = config.getAnyText();
-        FileIdentifierInspector fi = FileIdentifierInspector.newInstance( config.getIdentifierInspector(), conn );
-        InspireCompliance ic = InspireCompliance.newInstance( config.getRequireInspireCompliance(), conn );
-        CoupledDataInspector ci = CoupledDataInspector.newInstance( config.getCoupledResourceInspector(), conn );
-        MetadataValidation mv = MetadataValidation.newInstance( config.isValidate() );
-        this.ca = ConfigurationAccess.newInstance( fi, ic, ci, mv );
+
+        inspectors.add( FileIdentifierInspector.newInstance( config.getIdentifierInspector(), conn ) );
+        inspectors.add( InspireCompliance.newInstance( config.getInspireInspector(), conn ) );
+        inspectors.add( ResourceIdentifier.newInstance( config.getInspireInspector(), conn ) );
+        inspectors.add( CoupledDataInspector.newInstance( config.getCoupledResourceInspector(), conn ) );
+        inspectors.add( MetadataValidation.newInstance( config.isValidate() ) );
+
         this.useLegacyPredicates = useLegacyPredicates;
         conn.setAutoCommit( false );
 
@@ -101,18 +103,19 @@ public class ISOMetadataStoreTransaction implements MetadataStoreTransaction {
         for ( OMElement element : insert.getElements() ) {
 
             try {
-                OMElement elemFI = ca.getFi().inspect( element );
-                if ( elemFI != null ) {
-                    OMElement elemRI = ResourceIdentifier.newInstance( ca.getIc().getRic(), conn ).inspect( elemFI );
+                // OMElement elemFI = ca.getFi().inspect( element );
+                // if ( elemFI != null ) {
+                // OMElement elemRI = ResourceIdentifier.newInstance( ca.getIc().getRic(), conn ).inspect( elemFI );
+                // OMElement elemCI = ca.getCi().inspect( elemRI );
+                for ( RecordInspector r : inspectors ) {
+                    if ( element == null ) {
+                        break;
+                    }
+                    element = r.inspect( element );
+                }
+                if ( element != null ) {
+                    ISORecord rec = new ISORecord( element, anyText );
 
-                    ISORecord rec = new ISORecord( elemRI, anyText );
-
-                    // try {
-                    // Utils.writeIntoFile( rec.getAsXMLStream(), "/home/thomas/Desktop/zztest.xml" );
-                    // } catch ( FileNotFoundException e ) {
-                    // // TODO Auto-generated catch block
-                    // e.printStackTrace();
-                    // }
                     GenerateQueryableProperties generateQP = new GenerateQueryableProperties();
                     int operatesOnId = generateQP.generateMainDatabaseDataset( conn, rec );
                     generateQP.executeQueryableProperties( false, conn, operatesOnId, rec );
