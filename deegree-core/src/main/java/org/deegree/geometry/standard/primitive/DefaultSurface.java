@@ -35,21 +35,26 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.geometry.standard.primitive;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.deegree.commons.uom.Measure;
 import org.deegree.commons.uom.Unit;
 import org.deegree.cs.CRS;
+import org.deegree.geometry.GeometryFactory;
 import org.deegree.geometry.i18n.Messages;
 import org.deegree.geometry.points.Points;
 import org.deegree.geometry.precision.PrecisionModel;
+import org.deegree.geometry.primitive.Point;
 import org.deegree.geometry.primitive.Ring;
 import org.deegree.geometry.primitive.Surface;
 import org.deegree.geometry.primitive.patches.PolygonPatch;
 import org.deegree.geometry.primitive.patches.SurfacePatch;
 import org.deegree.geometry.standard.AbstractDefaultGeometry;
 
+import com.vividsolutions.jts.algorithm.InteriorPointArea;
+import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.LinearRing;
 
 /**
@@ -103,7 +108,15 @@ public class DefaultSurface extends AbstractDefaultGeometry implements Surface {
 
     @Override
     public Measure getArea( Unit requestedBaseUnit ) {
-        throw new UnsupportedOperationException();
+        return new Measure( BigDecimal.valueOf( getJTSGeometry().getArea() ), null );
+    }
+
+    /**
+     * @return an interior point of this geometry
+     */
+    public Point getInteriorPoint() {
+        Coordinate coord = new InteriorPointArea( getJTSGeometry() ).getInteriorPoint();
+        return new GeometryFactory().createPoint( null, coord.x, coord.y, crs );
     }
 
     @Override
@@ -113,7 +126,7 @@ public class DefaultSurface extends AbstractDefaultGeometry implements Surface {
 
     @Override
     public Measure getPerimeter( Unit requestedUnit ) {
-        throw new UnsupportedOperationException();
+        return new Measure( BigDecimal.valueOf( getJTSGeometry().getLength() ), null );
     }
 
     @Override

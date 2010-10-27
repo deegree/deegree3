@@ -1,3 +1,6 @@
+org.deegree.filter.function.geometry.Area
+org.deegree.filter.function.geometry.Length
+org.deegree.filter.function.geometry.InteriorPoint
 org.deegree.filter.function.geometry.Centroid
 org.deegree.filter.function.geometry.IsCurve
 org.deegree.filter.function.geometry.IsPoint
