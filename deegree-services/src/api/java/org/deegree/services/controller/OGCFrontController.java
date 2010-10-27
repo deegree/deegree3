@@ -94,6 +94,7 @@ import org.deegree.commons.utils.log.LoggingNotes;
 import org.deegree.commons.version.DeegreeModuleInfo;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.XMLProcessingException;
+import org.deegree.commons.xml.jaxb.JAXBUtils;
 import org.deegree.commons.xml.stax.StAXParsingHelper;
 import org.deegree.cs.configuration.CRSConfiguration;
 import org.deegree.services.authentication.SecurityException;
@@ -845,6 +846,7 @@ public class OGCFrontController extends HttpServlet {
     public void init( ServletConfig config )
                             throws ServletException {
         instance = this;
+
         try {
             super.init( config );
             LOG.info( "--------------------------------------------------------------------------------" );
@@ -880,6 +882,8 @@ public class OGCFrontController extends HttpServlet {
         } catch ( Exception e ) {
             LOG.error( "Initialization failed!" );
             LOG.trace( "An unexpected error was caught, stack trace:", e );
+        } finally {
+            JAXBUtils.fixThreadLocalLeaks();
         }
     }
 
@@ -974,7 +978,6 @@ public class OGCFrontController extends HttpServlet {
      * href="https://wiki.deegree.org/deegreeWiki/ClassLoaderLeaks">ClassLoaderLeaks in deegree wiki</a>.
      */
     private void plugClassLoaderLeaks() {
-
         // deregister all JDBC drivers loaded by webapp classloader
         Enumeration<Driver> e = DriverManager.getDrivers();
         while ( e.hasMoreElements() ) {
