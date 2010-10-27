@@ -213,6 +213,8 @@ public class MapService {
      */
     public int updateSequence = 0; // TODO how to restore this after restart?
 
+    private Timer styleUpdateTimer;
+
     /**
      * @param conf
      * @param adapter
@@ -244,7 +246,8 @@ public class MapService {
             // update the dynamic layers once on startup to avoid having a disappointingly long initial GetCapabilities
             // request...
             update();
-            new Timer().schedule( registry, 0, 1000 );
+            styleUpdateTimer = new Timer();
+            styleUpdateTimer.schedule( registry, 0, 1000 );
         }
     }
 
@@ -912,6 +915,7 @@ public class MapService {
 
     /***/
     public void close() {
+        styleUpdateTimer.cancel();
         close( root );
     }
 
