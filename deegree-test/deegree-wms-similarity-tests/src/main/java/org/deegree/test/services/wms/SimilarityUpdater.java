@@ -64,10 +64,18 @@ public class SimilarityUpdater {
      */
     public static void main( String[] args )
                             throws IOException {
+        if ( args.length == 0 ) {
+            return;
+        }
         BufferedReader in = new BufferedReader( new FileReader( new File( args[1], "similaritytests.txt" ) ) );
         PrintWriter out = new PrintWriter( new FileWriter( new File( args[1], "footprints.txt" ) ) );
         String url;
         while ( ( url = in.readLine() ) != null ) {
+            int len = -1;
+            while ( len != url.length() ) {
+                len = url.length();
+                url = url.replace( "%20%20", "%20" );
+            }
             url = args[0] + "?" + url;
             System.out.println( "Counting image from URL " + url );
             BigInteger[] vals = PixelCounter.countPixels( ImageIO.read( new URL( url ) ) );
