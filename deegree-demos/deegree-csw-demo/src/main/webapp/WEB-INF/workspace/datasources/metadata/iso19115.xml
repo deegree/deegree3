@@ -9,7 +9,7 @@
 	<IdentifierInspector name="DEFAULT">
 		<Param key="rejectEmptyFileIdentifier">true</Param>
     </IdentifierInspector>
-	<!--<RequireInspireCompliance generateAutomatic="true"/> 
+	<!--<InspireInspector generateAutomatic="true"/> 
 	<CoupledResourceInspector throwConsistencyError="true" />-->
 		<AnyText>
 		<Core/>
