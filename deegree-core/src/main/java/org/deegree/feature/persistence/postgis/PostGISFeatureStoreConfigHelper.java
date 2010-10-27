@@ -43,9 +43,9 @@ import static org.deegree.commons.xml.CommonNamespaces.XSINS;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.SortedSet;
 import java.util.TreeSet;
+import java.util.Map.Entry;
 
 import javax.xml.XMLConstants;
 import javax.xml.namespace.QName;
@@ -157,13 +157,14 @@ public class PostGISFeatureStoreConfigHelper {
             writer.writeAttribute( "parent", getName( parentFt.getName() ) );
         }
 
-        writer.writeAttribute( "mapping", getColumn( ft.getName() ) );
+        String table = getColumn( ft.getName() );
+        writer.writeAttribute( "mapping", table );
 
         for ( PropertyType pt : ft.getPropertyDeclarations() ) {
             PropertyType[] substitutions = pt.getSubstitutions();
             for ( PropertyType substitution : substitutions ) {
                 if ( !substitution.isAbstract() ) {
-                    writePropertyMapping( writer, substitution );
+                    writePropertyMapping( writer, substitution, table );
                 }
             }
         }
@@ -171,60 +172,104 @@ public class PostGISFeatureStoreConfigHelper {
         writer.writeEndElement();
     }
 
-    private void writePropertyMapping( XMLStreamWriter writer, PropertyType pt )
+    private void writePropertyMapping( XMLStreamWriter writer, PropertyType pt, String table )
                             throws XMLStreamException {
         if ( pt instanceof CodePropertyType ) {
-            writePropertyMapping( writer, (CodePropertyType) pt );
+            writePropertyMapping( writer, (CodePropertyType) pt, table );
         } else if ( pt instanceof CustomPropertyType ) {
-            writePropertyMapping( writer, (CustomPropertyType) pt );
+            writePropertyMapping( writer, (CustomPropertyType) pt, table );
         } else if ( pt instanceof FeaturePropertyType ) {
-            writePropertyMapping( writer, (FeaturePropertyType) pt );
+            writePropertyMapping( writer, (FeaturePropertyType) pt, table );
         } else if ( pt instanceof GeometryPropertyType ) {
-            writePropertyMapping( writer, (GeometryPropertyType) pt );
+            writePropertyMapping( writer, (GeometryPropertyType) pt, table );
         } else if ( pt instanceof MeasurePropertyType ) {
-            writePropertyMapping( writer, (MeasurePropertyType) pt );
+            writePropertyMapping( writer, (MeasurePropertyType) pt, table );
         } else if ( pt instanceof SimplePropertyType ) {
-            writePropertyMapping( writer, (SimplePropertyType) pt );
+            writePropertyMapping( writer, (SimplePropertyType) pt, table );
         } else {
             System.out.println( "Unhandled property type '" + pt.getClass() + "'" );
         }
     }
 
-    private void writePropertyMapping( XMLStreamWriter writer, CodePropertyType pt )
+    private void writePropertyMapping( XMLStreamWriter writer, CodePropertyType pt, String table )
                             throws XMLStreamException {
         writer.writeStartElement( CONFIG_NS, "CodeProperty" );
         writeCommonAttrs( writer, pt );
+        writer.writeAttribute( "mapping", getColumn( pt.getName() ) );
+        writer.writeAttribute( "codeSpaceMapping", getColumn( pt.getName() ) + "_codespace" );
+        if ( pt.getMaxOccurs() != 1 ) {
+            writeJoinedTable( writer, pt, table );
+        }
         writer.writeEndElement();
     }
 
-    private void writePropertyMapping( XMLStreamWriter writer, FeaturePropertyType pt )
+    private void writePropertyMapping( XMLStreamWriter writer, FeaturePropertyType pt, String table )
                             throws XMLStreamException {
-        writer.writeEmptyElement( CONFIG_NS, "FeatureProperty" );
+        writer.writeStartElement( CONFIG_NS, "FeatureProperty" );
         writeCommonAttrs( writer, pt );
         if ( pt.getFTName() != null ) {
             writer.writeAttribute( "type", getName( pt.getFTName() ) );
         }
+        if ( pt.getMaxOccurs() == 1 ) {
+            writer.writeAttribute( "mapping", getColumn( pt.getName() ) );
+        } else {
+            writeJoinedTable( writer, pt, table );
+        }
+        writer.writeEndElement();
     }
 
-    private void writePropertyMapping( XMLStreamWriter writer, GeometryPropertyType pt )
+    private void writePropertyMapping( XMLStreamWriter writer, GeometryPropertyType pt, String table )
                             throws XMLStreamException {
         writer.writeStartElement( CONFIG_NS, "GeometryProperty" );
         writeCommonAttrs( writer, pt );
+        if ( pt.getMaxOccurs() == 1 ) {
+            writer.writeAttribute( "mapping", getColumn( pt.getName() ) );
+        } else {
+            writeJoinedTable( writer, pt, table );
+        }
         writer.writeEndElement();
     }
 
-    private void writePropertyMapping( XMLStreamWriter writer, MeasurePropertyType pt )
+    private void writePropertyMapping( XMLStreamWriter writer, MeasurePropertyType pt, String table )
                             throws XMLStreamException {
+
         writer.writeStartElement( CONFIG_NS, "MeasureProperty" );
         writeCommonAttrs( writer, pt );
+        writer.writeAttribute( "mapping", getColumn( pt.getName() ) );
+        writer.writeAttribute( "uomMapping", getColumn( pt.getName() ) + "_uom" );
+        if ( pt.getMaxOccurs() != 1 ) {
+            writeJoinedTable( writer, pt, table );
+        }
         writer.writeEndElement();
     }
 
-    private void writePropertyMapping( XMLStreamWriter writer, SimplePropertyType pt )
+    private void writePropertyMapping( XMLStreamWriter writer, SimplePropertyType pt, String table )
                             throws XMLStreamException {
-        writer.writeEmptyElement( CONFIG_NS, "SimpleProperty" );
+        writer.writeStartElement( CONFIG_NS, "SimpleProperty" );
         writeCommonAttrs( writer, pt );
         writer.writeAttribute( "type", pt.getPrimitiveType().getXSTypeName() );
+        if ( pt.getMaxOccurs() == 1 ) {
+            writer.writeAttribute( "mapping", getColumn( pt.getName() ) );
+        } else {
+            writeJoinedTable( writer, pt, table );
+        }
+        writer.writeEndElement();
+    }
+
+    private void writePropertyMapping( XMLStreamWriter writer, CustomPropertyType pt, String table )
+                            throws XMLStreamException {
+
+        writer.writeStartElement( CONFIG_NS, "CustomProperty" );
+        writeCommonAttrs( writer, pt );
+
+        if ( pt.getMaxOccurs() == 1 ) {
+            writer.writeAttribute( "mapping", getColumn( pt.getName() ) );
+        } else {
+            writeJoinedTable( writer, pt, table );
+        }
+
+        createMapping( writer, pt.getXSDValueType(), table );
+        writer.writeEndElement();
     }
 
     private void writeCommonAttrs( XMLStreamWriter writer, PropertyType pt )
@@ -243,13 +288,14 @@ public class PostGISFeatureStoreConfigHelper {
                 writer.writeAttribute( "maxOccurs", "" + pt.getMaxOccurs() );
             }
         }
+    }
 
-        if ( pt.getMaxOccurs() == 1 ) {
-            writer.writeAttribute( "mapping", getColumn( pt.getName() ) );
-        } else {
-            writer.writeAttribute( "mapping", "id->" + getColumn( pt.getName() ) + ".id->value" );
-        }
-
+    private void writeJoinedTable( XMLStreamWriter writer, PropertyType pt, String table )
+                            throws XMLStreamException {
+        writer.writeStartElement( CONFIG_NS, "JoinedTable" );
+        writer.writeAttribute( "indexColumn", "idx" );
+        writer.writeCharacters( "id=" + table + "_" + getColumn( pt.getName() ) + ".id" );
+        writer.writeEndElement();
     }
 
     private String getName( QName name ) {
@@ -272,16 +318,7 @@ public class PostGISFeatureStoreConfigHelper {
         return name.getLocalPart().toLowerCase();
     }
 
-    private void writePropertyMapping( XMLStreamWriter writer, CustomPropertyType pt )
-                            throws XMLStreamException {
-
-        writer.writeStartElement( CONFIG_NS, "CustomProperty" );
-        writeCommonAttrs( writer, pt );
-        createMapping( writer, pt.getXSDValueType() );
-        writer.writeEndElement();
-    }
-
-    private void createMapping( XMLStreamWriter writer, XSComplexTypeDefinition typeDef )
+    private void createMapping( XMLStreamWriter writer, XSComplexTypeDefinition typeDef, String table )
                             throws XMLStreamException {
 
         // attributes
@@ -361,10 +398,19 @@ public class PostGISFeatureStoreConfigHelper {
             } else {
                 writer.writeStartElement( CONFIG_NS, "CompoundMapping" );
                 writer.writeAttribute( "path", getName( elName ) );
-                writer.writeAttribute( "mapping", getColumn( elName ) );
+
+                if ( occurence == -1 ) {
+                    writer.writeStartElement( CONFIG_NS, "JoinedTable" );
+                    writer.writeAttribute( "indexColumn", "idx" );
+                    writer.writeCharacters( "id=" + getColumn( elName ) + ".id" );
+                    writer.writeEndElement();
+                } else {
+                    writer.writeAttribute( "mapping", getColumn( elName ) );
+                }
+
                 XSTypeDefinition typeDef = elDecl.getTypeDefinition();
                 if ( typeDef instanceof XSComplexTypeDefinition ) {
-                    createMapping( writer, (XSComplexTypeDefinition) typeDef );
+                    createMapping( writer, (XSComplexTypeDefinition) typeDef, "" );
                 } else {
                     writer.writeEmptyElement( CONFIG_NS, "PrimitiveMapping" );
                     writer.writeAttribute( "path", "text()" );
@@ -401,7 +447,7 @@ public class PostGISFeatureStoreConfigHelper {
     // ClassNotFoundException, InstantiationException, IllegalAccessException {
     //
     // String schemaURL =
-    // "file:/home/markus/Programmieren/Java/workspace/deegree-inspire-node/src/main/webapp/WEB-INF/workspace/schemas/inspire/annex1/Addresses.xsd";
+    // "file:/home/schneider/workspace/deegree-inspire-node/src/main/webapp/WEB-INF/workspace/schemas/inspire/annex1/Addresses.xsd";
     // if ( schemaURL == null ) {
     // return;
     // }

@@ -83,11 +83,12 @@
           <documentation>If true, the feature type is abstract and cannot be instantiated.</documentation>
         </annotation>
       </attribute>
-      <attribute name="substitutionGroup" type="QName" use="optional">
+      <attribute name="parent" type="QName" use="optional">
         <annotation>
           <documentation>
-            Name of the feature type that this feature type may substitute, i.e. features of this type may
-            be used wherever the other type is requested.
+            Name of the feature type that this feature type derives, i.e. features of this type may
+            be used
+            wherever the other type is requested.
           </documentation>
         </annotation>
       </attribute>
@@ -104,6 +105,9 @@
         <jaxb:class name="AbstractPropertyDecl" />
       </appinfo>
     </annotation>
+    <sequence>
+      <element ref="postgisfs:JoinedTable" minOccurs="0" />
+    </sequence>
     <attribute name="name" type="QName">
       <annotation>
         <documentation>Qualified name of the property.</documentation>
@@ -302,6 +306,50 @@
     </complexType>
   </element>
   <!--
+    === Code property declaration / mapping ===
+  -->
+  <element name="CodeProperty" substitutionGroup="postgisfs:AbstractProperty">
+    <complexType>
+      <annotation>
+        <documentation>Definition of a code-valued property of a feature type.</documentation>
+        <appinfo>
+          <jaxb:class name="CodePropertyDecl" />
+        </appinfo>
+      </annotation>
+      <complexContent>
+        <extension base="postgisfs:AbstractPropertyType">
+          <attribute name="codeSpaceMapping" type="string" use="optional">
+            <annotation>
+              <documentation>Mapping expression for the codeSpace attribute.</documentation>
+            </annotation>
+          </attribute>
+        </extension>
+      </complexContent>
+    </complexType>
+  </element>
+  <!--
+    === Measure property declaration / mapping ===
+  -->
+  <element name="MeasureProperty" substitutionGroup="postgisfs:AbstractProperty">
+    <complexType>
+      <annotation>
+        <documentation>Definition of a measure-valued property of a feature type.</documentation>
+        <appinfo>
+          <jaxb:class name="MeasurePropertyDecl" />
+        </appinfo>
+      </annotation>
+      <complexContent>
+        <extension base="postgisfs:AbstractPropertyType">
+          <attribute name="uomMapping" type="string" use="optional">
+            <annotation>
+              <documentation>Mapping expression for the uom attribute.</documentation>
+            </annotation>
+          </attribute>
+        </extension>
+      </complexContent>
+    </complexType>
+  </element>
+  <!--
     === Custom property declaration / mapping ===
   -->
   <element name="CustomProperty" substitutionGroup="postgisfs:AbstractProperty">
@@ -408,10 +456,27 @@
       <complexContent>
         <extension base="postgisfs:AbstractCustomMappingType">
           <sequence>
+            <element ref="postgisfs:JoinedTable" minOccurs="0" />
             <element ref="postgisfs:AbstractCustomMapping" minOccurs="0" maxOccurs="unbounded" />
           </sequence>
         </extension>
       </complexContent>
+    </complexType>
+  </element>
+  <element name="JoinedTable">
+    <complexType>
+      <annotation>
+        <documentation>Defines a 1:n mapping in the relational schema.</documentation>
+      </annotation>
+      <simpleContent>
+        <extension base="string">
+          <attribute name="indexColumn" type="string" use="optional">
+            <annotation>
+              <documentation>Name of the column that stores the index of the related object.</documentation>
+            </annotation>
+          </attribute>
+        </extension>
+      </simpleContent>
     </complexType>
   </element>
 </schema>
