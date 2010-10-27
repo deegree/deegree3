@@ -301,6 +301,66 @@ public class ISOMetadataStoreTest {
 
     }
 
+    @Test
+    public void testCouplingConsistencyErrorFALSE()
+                            throws MetadataStoreException {
+        LOG.info( "START Test: test if the the coupling of data and service metadata is correct and no exception will be thrown. " );
+        if ( jdbcURL != null && jdbcUser != null && jdbcPass != null ) {
+            store = (ISOMetadataStore) new ISOMetadataStoreProvider().getMetadataStore( TstConstants.configURL_COUPLING_ACCEPT );
+        }
+        if ( store == null ) {
+            LOG.warn( "Skipping test (needs configuration)." );
+            return;
+        }
+        MetadataStoreTransaction ta = store.acquireTransaction();
+        List<String> ids = insertMetadata( store, ta, TstConstants.tst_12, TstConstants.tst_12_2, TstConstants.tst_13 );
+
+        MetadataResultSet resultSet = store.getRecordsById( ids );
+
+        Assert.assertEquals( 3, resultSet.getMembers().size() );
+
+    }
+
+    @Test
+    public void testCouplingConsistencyErrorFALSE_NO_CONSISTENCY()
+                            throws MetadataStoreException {
+        LOG.info( "START Test: test if the the coupled service metadata will be inserted without any coupling but no exception will be thrown. " );
+        if ( jdbcURL != null && jdbcUser != null && jdbcPass != null ) {
+            store = (ISOMetadataStore) new ISOMetadataStoreProvider().getMetadataStore( TstConstants.configURL_COUPLING_ACCEPT );
+        }
+        if ( store == null ) {
+            LOG.warn( "Skipping test (needs configuration)." );
+            return;
+        }
+        MetadataStoreTransaction ta = store.acquireTransaction();
+        List<String> ids = insertMetadata( store, ta, TstConstants.tst_11, TstConstants.tst_13 );
+
+        MetadataResultSet resultSet = store.getRecordsById( ids );
+
+        Assert.assertEquals( 2, resultSet.getMembers().size() );
+
+    }
+
+    @Test
+    public void testCouplingConsistencyErrorTRUE_NO_Exception()
+                            throws MetadataStoreException {
+        LOG.info( "START Test: test if the the coupling of data and service metadata is correct and no exception will be thrown. " );
+        if ( jdbcURL != null && jdbcUser != null && jdbcPass != null ) {
+            store = (ISOMetadataStore) new ISOMetadataStoreProvider().getMetadataStore( TstConstants.configURL_COUPLING_Ex_AWARE );
+        }
+        if ( store == null ) {
+            LOG.warn( "Skipping test (needs configuration)." );
+            return;
+        }
+        MetadataStoreTransaction ta = store.acquireTransaction();
+        List<String> ids = insertMetadata( store, ta, TstConstants.tst_12, TstConstants.tst_12_2, TstConstants.tst_13 );
+
+        MetadataResultSet resultSet = store.getRecordsById( ids );
+
+        Assert.assertEquals( 3, resultSet.getMembers().size() );
+
+    }
+
     /**
      * If the fileIdentifier shouldn't be generated automaticaly if not set.
      * <p>
@@ -814,6 +874,22 @@ public class ISOMetadataStoreTest {
         }
         MetadataStoreTransaction ta = store.acquireTransaction();
         List<String> ids = insertMetadata( store, ta, TstConstants.tst_7 );
+
+    }
+
+    @Test(expected = MetadataStoreException.class)
+    public void testCouplingConsistencyErrorTRUE_WITH_Exception()
+                            throws MetadataStoreException {
+        LOG.info( "START Test: test if an exception will be thrown if there is an insert of the service metadata. " );
+        if ( jdbcURL != null && jdbcUser != null && jdbcPass != null ) {
+            store = (ISOMetadataStore) new ISOMetadataStoreProvider().getMetadataStore( TstConstants.configURL_COUPLING_Ex_AWARE );
+        }
+        if ( store == null ) {
+            LOG.warn( "Skipping test (needs configuration)." );
+            return;
+        }
+        MetadataStoreTransaction ta = store.acquireTransaction();
+        List<String> ids = insertMetadata( store, ta, TstConstants.tst_11, TstConstants.tst_13 );
 
     }
 

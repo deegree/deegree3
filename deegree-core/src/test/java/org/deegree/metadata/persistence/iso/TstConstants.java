@@ -67,6 +67,10 @@ public class TstConstants {
 
     static final URL configURL_ANYTEXT_CUSTOM = TstConstants.class.getResource( "configdocs/anyText_Custom.xml" );
 
+    static final URL configURL_COUPLING_ACCEPT = TstConstants.class.getResource( "configdocs/iso19115_coupling_accept.xml" );
+
+    static final URL configURL_COUPLING_Ex_AWARE = TstConstants.class.getResource( "configdocs/iso19115_coupling_reject.xml" );
+
     static final URL tst_1 = TstConstants.class.getResource( "metadatarecords/1.xml" );
 
     static final URL tst_2 = TstConstants.class.getResource( "metadatarecords/2.xml" );
@@ -88,6 +92,12 @@ public class TstConstants {
     static final URL tst_10 = TstConstants.class.getResource( "metadatarecords/10.xml" );
 
     static final URL tst_11 = TstConstants.class.getResource( "metadatarecords/11.xml" );
+
+    static final URL tst_12 = TstConstants.class.getResource( "metadatarecords/12_data.xml" );
+
+    static final URL tst_12_2 = TstConstants.class.getResource( "metadatarecords/12_2_data.xml" );
+
+    static final URL tst_13 = TstConstants.class.getResource( "metadatarecords/13_service.xml" );
 
     static final URL fullRecord = TstConstants.class.getResource( "metadatarecords/filterTstFull.xml" );
 
