@@ -3,4 +3,5 @@
   xsi:schemaLocation="http://www.deegree.org/services/wfs http://schemas.deegree.org/wfs/0.6.0/wfs_configuration.xsd">
   <QueryCRS>EPSG:26912</QueryCRS>
   <QueryCRS>EPSG:4326</QueryCRS>
+  <QueryMaxFeatures>-1</QueryMaxFeatures>
 </deegreeWFS>
