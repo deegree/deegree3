@@ -174,30 +174,38 @@ class DescribeFeatureTypeHandler {
             writeWFSSchema( writer, request.getVersion(), version );
         } else {
             Collection<String> namespaces = determineRequiredNamespaces( request );
-            String ns = namespaces.iterator().next();
+            String targetNs = namespaces.iterator().next();
 
             // TODO fix CITE tests to cope with wrapper schemas
-            if ( ns.equals( "http://cite.opengeospatial.org/gmlsf" ) ) {
-                reencodeSchema( request, writer, namespaces, ns, version );
+            if ( targetNs.equals( "http://cite.opengeospatial.org/gmlsf" ) ) {
+                reencodeSchema( request, writer, targetNs, namespaces, version );
             } else if ( service.getStores().length == 1 && service.getStores()[0].getSchema().getXSModel() != null
                         && service.getStores()[0].getSchema().getXSModel().getVersion() == version ) {
-                exportOriginalInfoSet( writer, service.getStores()[0].getSchema().getXSModel(), ns );
+                exportOriginalInfoSet( writer, service.getStores()[0].getSchema().getXSModel(), targetNs );
             } else {
-                reencodeSchema( request, writer, namespaces, ns, version );
+                reencodeSchema( request, writer, targetNs, namespaces, version );
             }
         }
         writer.flush();
     }
 
-    private void reencodeSchema( DescribeFeatureType request, XMLStreamWriter writer, Collection<String> namespaces,
-                                 String ns, GMLVersion version )
+    private void reencodeSchema( DescribeFeatureType request, XMLStreamWriter writer, String targetNs,
+                                 Collection<String> importNs, GMLVersion version )
                             throws XMLStreamException {
-        Map<String, String> importMap = buildImportMap( request, namespaces );
-        Map<String, String> prefixToNs = service.getPrefixToNs();
-        ApplicationSchemaXSDEncoder exporter = new ApplicationSchemaXSDEncoder( version, ns, importMap, prefixToNs );
 
-        // TODO handle multiple feature stores
-        exporter.export( writer, service.getStores()[0].getSchema() );
+        Map<String, String> importMap = buildImportMap( request, importNs );
+        Map<String, String> prefixToNs = service.getPrefixToNs();
+        ApplicationSchemaXSDEncoder exporter = new ApplicationSchemaXSDEncoder( version, targetNs, importMap,
+                                                                                prefixToNs );
+
+        List<FeatureType> fts = new ArrayList<FeatureType>();
+        for ( FeatureType ft : service.getFeatureTypes() ) {
+            if ( ft.getName().getNamespaceURI().equals( targetNs ) ) {
+                fts.add( ft );
+            }
+        }
+
+        exporter.export( writer, fts );
     }
 
     /**
@@ -513,8 +521,7 @@ class DescribeFeatureTypeHandler {
             } else {
                 String ns = request.getNsBindings().values().iterator().next();
                 LOG.debug( "Describing all feature types in namespace '" + ns + "'." );
-                List<FeatureType> nsFts = service.getFeatureTypes().iterator().next().getSchema().getFeatureTypes(
-                                                                                                                   ns,
+                List<FeatureType> nsFts = service.getFeatureTypes().iterator().next().getSchema().getFeatureTypes( ns,
                                                                                                                    true,
                                                                                                                    false );
                 for ( FeatureType ft : nsFts ) {
