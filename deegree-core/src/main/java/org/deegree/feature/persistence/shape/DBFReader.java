@@ -108,11 +108,11 @@ public class DBFReader {
      * @param in
      * @param encoding
      * @param ftName
-     *            the name of the feature type
-     * @param namespace
+     *            the name of the feature type, also used for namespace URI and namespace prefix of property
+     *            declarations (must not be null)
      * @throws IOException
      */
-    public DBFReader( RandomAccessFile in, Charset encoding, QName ftName, String namespace ) throws IOException {
+    public DBFReader( RandomAccessFile in, Charset encoding, QName ftName ) throws IOException {
         this.encoding = encoding;
         this.file = in;
         channel = file.getChannel();
@@ -163,6 +163,9 @@ public class DBFReader {
         LinkedList<Byte> buf = new LinkedList<Byte>();
         LinkedList<PropertyType> types = new LinkedList<PropertyType>();
 
+        String namespace = ftName.getNamespaceURI();
+        String prefix = ftName.getPrefix();
+
         int read;
         while ( ( read = getUnsigned( buffer ) ) != 13 ) {
             while ( read != 0 && buf.size() < 10 ) {
@@ -187,40 +190,36 @@ public class DBFReader {
             int fieldPrecision = getUnsigned( buffer );
             LOG.trace( "Field length is " + fieldLength + ", type is " + type );
 
+            // using the prefix here is vital for repairing of unqualified property names in WFS...
+            QName ptName = new QName( namespace, name, prefix );
             switch ( type ) {
             case 'C':
                 if ( fieldPrecision > 0 ) {
                     fieldLength += fieldPrecision << 8;
                     LOG.trace( "Field length is changed to " + fieldLength + " for text field." );
                 }
-                pt = new SimplePropertyType( new QName( namespace, name ), 0, 1, PrimitiveType.STRING, false, false,
-                                             null );
+                pt = new SimplePropertyType( ptName, 0, 1, PrimitiveType.STRING, false, false, null );
                 break;
             case 'N':
-                pt = new SimplePropertyType( new QName( namespace, name ), 0, 1, PrimitiveType.DECIMAL, false, false,
-                                             null );
+                pt = new SimplePropertyType( ptName, 0, 1, PrimitiveType.DECIMAL, false, false, null );
                 break;
             case 'L':
-                pt = new SimplePropertyType( new QName( namespace, name ), 0, 1, PrimitiveType.BOOLEAN, false, false,
-                                             null );
+                pt = new SimplePropertyType( ptName, 0, 1, PrimitiveType.BOOLEAN, false, false, null );
                 break;
             case 'D':
-                pt = new SimplePropertyType( new QName( namespace, name ), 0, 1, PrimitiveType.DATE, false, false, null );
+                pt = new SimplePropertyType( ptName, 0, 1, PrimitiveType.DATE, false, false, null );
                 break;
             case 'F':
-                pt = new SimplePropertyType( new QName( namespace, name ), 0, 1, PrimitiveType.DECIMAL, false, false,
-                                             null );
+                pt = new SimplePropertyType( ptName, 0, 1, PrimitiveType.DECIMAL, false, false, null );
                 break;
             case 'T':
                 LOG.warn( "Date/Time fields are not supported. Please send the file to the devs, so they can implement it." );
                 break;
             case 'I':
-                pt = new SimplePropertyType( new QName( namespace, name ), 0, 1, PrimitiveType.INTEGER, false, false,
-                                             null );
+                pt = new SimplePropertyType( ptName, 0, 1, PrimitiveType.INTEGER, false, false, null );
                 break;
             case '@':
-                pt = new SimplePropertyType( new QName( namespace, name ), 0, 1, PrimitiveType.DATE_TIME, false, false,
-                                             null );
+                pt = new SimplePropertyType( ptName, 0, 1, PrimitiveType.DATE_TIME, false, false, null );
                 break;
             case 'O':
                 LOG.warn( "Double fields are not supported. Please send the file to the devs, so they can implement it." );
@@ -243,7 +242,7 @@ public class DBFReader {
             }
         }
 
-        types.add( new GeometryPropertyType( new QName( namespace, "geometry" ), 0, 1, false, false, null,
+        types.add( new GeometryPropertyType( new QName( namespace, "geometry", prefix ), 0, 1, false, false, null,
                                              GEOMETRY, DIM_2_OR_3, BOTH ) ); // TODO
         // properly
         // determine the

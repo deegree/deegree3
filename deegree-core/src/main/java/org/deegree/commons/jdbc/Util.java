@@ -98,7 +98,6 @@ public class Util {
         Connection conn = null;
         ResultSet set = null;
         PreparedStatement stmt = null;
-        String namespace = ftName.getNamespaceURI();
         try {
             conn = getConnection( connId );
             boolean isOracle = conn.getMetaData().getDriverName().contains( "Oracle" );
@@ -110,33 +109,33 @@ public class Util {
             ResultSetMetaData md = set.getMetaData();
             LinkedList<PropertyType> ps = new LinkedList<PropertyType>();
             for ( int i = 1; i <= md.getColumnCount(); ++i ) {
-                String name = md.getColumnLabel( i );
 
+                String name = md.getColumnLabel( i );
                 PropertyType pt;
                 int colType = md.getColumnType( i );
+
+                QName ptName = new QName( ftName.getNamespaceURI(), ftName.getLocalPart(), name );
                 switch ( colType ) {
                 case VARCHAR:
                 case CHAR:
-                    pt = new SimplePropertyType( new QName( namespace, name ), 0, 1, STRING, false, false, null );
+                    pt = new SimplePropertyType( ptName, 0, 1, STRING, false, false, null );
                     break;
                 case INTEGER:
                 case SMALLINT:
-                    pt = new SimplePropertyType( new QName( namespace, name ), 0, 1, PrimitiveType.INTEGER, false,
-                                                 false, null );
+                    pt = new SimplePropertyType( ptName, 0, 1, PrimitiveType.INTEGER, false, false, null );
                     break;
                 case BIT:
-                    pt = new SimplePropertyType( new QName( namespace, name ), 0, 1, BOOLEAN, false, false, null );
+                    pt = new SimplePropertyType( ptName, 0, 1, BOOLEAN, false, false, null );
                     break;
                 case NUMERIC:
                 case DOUBLE:
                 case BIGINT:
-                    pt = new SimplePropertyType( new QName( namespace, name ), 0, 1, DECIMAL, false, false, null );
+                    pt = new SimplePropertyType( ptName, 0, 1, DECIMAL, false, false, null );
                     break;
                 case OTHER:
                 case BINARY:
                 case BLOB:
-                    pt = new GeometryPropertyType( new QName( namespace, name ), 0, 1, false, false, null, GEOMETRY,
-                                                   DIM_2_OR_3, null );
+                    pt = new GeometryPropertyType( ptName, 0, 1, false, false, null, GEOMETRY, DIM_2_OR_3, null );
                     break;
                 default:
                     LOG.error( "Unsupported data type '{}'.", colType );

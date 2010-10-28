@@ -59,7 +59,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.NoSuchElementException;
 
-import javax.xml.XMLConstants;
 import javax.xml.namespace.QName;
 
 import org.deegree.commons.index.RTree;
@@ -67,7 +66,6 @@ import org.deegree.commons.utils.CloseableIterator;
 import org.deegree.commons.utils.Pair;
 import org.deegree.commons.utils.log.LoggingNotes;
 import org.deegree.cs.CRS;
-import org.deegree.cs.exceptions.TransformationException;
 import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.cs.exceptions.WKTParsingException;
 import org.deegree.feature.Feature;
@@ -144,7 +142,7 @@ public class ShapeFeatureStore implements FeatureStore {
 
     private DBFIndex dbfIndex;
 
-    private QName featureTypeName;
+    private QName ftName;
 
     private boolean generateAlphanumericIndexes;
 
@@ -157,28 +155,33 @@ public class ShapeFeatureStore implements FeatureStore {
      *            crs used by the shape file, must not be <code>null</code>
      * @param encoding
      *            encoding used in the dbf file, can be <code>null</code> (encoding guess mode)
-     * @param namespace
+     * @param ftNamespace
      *            namespace to be used for the feature type, must not be <code>null</code>
-     * @param featureTypeName
+     * @param localFtName
      *            if null, the shape file base name will be used
-     * @param prefix
+     * @param ftPrefix
      * @param generateAlphanumericIndexes
      *            whether to copy the dbf into a h2 database for indexing
      * @param cache
      *            used for caching retrieved feature instances, can be <code>null</code> (will create a default cache)
      */
-    public ShapeFeatureStore( String shpName, CRS crs, Charset encoding, String namespace, String featureTypeName,
-                              String prefix, boolean generateAlphanumericIndexes, FeatureStoreCache cache ) {
+    public ShapeFeatureStore( String shpName, CRS crs, Charset encoding, String ftNamespace, String localFtName,
+                              String ftPrefix, boolean generateAlphanumericIndexes, FeatureStoreCache cache ) {
         this.shpName = shpName;
         this.crs = crs;
         this.encoding = encoding;
-        featureTypeName = featureTypeName == null ? new File( shpName ).getName() : featureTypeName;
-        if ( featureTypeName.endsWith( ".shp" ) ) {
-            featureTypeName = featureTypeName.substring( 0, featureTypeName.length() - 4 );
+
+        localFtName = localFtName == null ? new File( shpName ).getName() : localFtName;
+        if ( localFtName.endsWith( ".shp" ) ) {
+            localFtName = localFtName.substring( 0, localFtName.length() - 4 );
         }
-        namespace = namespace != null ? namespace : XMLConstants.NULL_NS_URI;
-        prefix = prefix != null ? prefix : XMLConstants.DEFAULT_NS_PREFIX;
-        this.featureTypeName = new QName( namespace, featureTypeName, prefix );
+
+        // TODO allow null namespaces / empty prefix
+        // NOTE: verify that the WFS code for dealing with that (e.g. repairing unqualified names) works with that first
+        ftNamespace = ( ftNamespace != null && !ftNamespace.isEmpty() ) ? ftNamespace : "http://www.deegree.org/app";
+        ftPrefix = ( ftPrefix != null && !ftPrefix.isEmpty() ) ? ftPrefix : "app";
+
+        this.ftName = new QName( ftNamespace, localFtName, ftPrefix );
         this.generateAlphanumericIndexes = generateAlphanumericIndexes;
         if ( cache != null ) {
             this.cache = cache;
@@ -257,10 +260,10 @@ public class ShapeFeatureStore implements FeatureStore {
             available = false;
         }
 
-        String namespace = featureTypeName.getNamespaceURI();
+        String namespace = ftName.getNamespaceURI();
 
         try {
-            dbf = new DBFReader( new RandomAccessFile( dbfFile, "r" ), encoding, featureTypeName, namespace );
+            dbf = new DBFReader( new RandomAccessFile( dbfFile, "r" ), encoding, ftName );
 
             if ( generateAlphanumericIndexes ) {
                 // set up index
@@ -270,9 +273,10 @@ public class ShapeFeatureStore implements FeatureStore {
             ft = dbf.getFeatureType();
         } catch ( IOException e ) {
             LOG.warn( "A dbf file was not loaded (no attributes will be available): {}.dbf", shpName );
-            GeometryPropertyType geomProp = new GeometryPropertyType( new QName( namespace, "geometry" ), 0, 1, false,
+            GeometryPropertyType geomProp = new GeometryPropertyType( new QName( namespace, "geometry",
+                                                                                 ftName.getPrefix() ), 0, 1, false,
                                                                       false, null, GEOMETRY, DIM_2_OR_3, BOTH );
-            ft = new GenericFeatureType( featureTypeName, Collections.<PropertyType> singletonList( geomProp ), false );
+            ft = new GenericFeatureType( ftName, Collections.<PropertyType> singletonList( geomProp ), false );
         }
         schema = new ApplicationSchema( new FeatureType[] { ft }, null, null, null );
     }
@@ -368,9 +372,7 @@ public class ShapeFeatureStore implements FeatureStore {
                 if ( dbf != null && dbfLastModified != dbfFile.lastModified() ) {
                     dbf.close();
                     LOG.debug( "Re-opening the dbf file {}", shpName );
-                    String namespace = featureTypeName.getNamespaceURI();
-                    dbf = new DBFReader( new RandomAccessFile( dbfFile, "r" ), encoding,
-                                         new QName( namespace, shpName ), namespace );
+                    dbf = new DBFReader( new RandomAccessFile( dbfFile, "r" ), encoding, ftName );
                     if ( generateAlphanumericIndexes ) {
                         // set up index
                         dbfIndex = new DBFIndex( dbf, dbfFile, shp.readEnvelopes() );
@@ -393,15 +395,11 @@ public class ShapeFeatureStore implements FeatureStore {
      * @return the bbox in the native srs
      */
     private Envelope getTransformedEnvelope( Envelope bbox ) {
-        if ( bbox != null && transformer != null ) {
+        if ( bbox != null && bbox.getCoordinateSystem() != null && transformer != null ) {
             try {
                 bbox = transformer.transform( bbox );
-            } catch ( IllegalArgumentException e ) {
-                LOG.error( "Unknown error", e );
-            } catch ( TransformationException e ) {
-                LOG.error( "Unknown error", e );
-            } catch ( UnknownCRSException e ) {
-                LOG.error( "Unknown error", e );
+            } catch ( Exception e ) {
+                LOG.error( "Transformation of bbox failed: " + e.getMessage(), e );
             }
         }
         return bbox;

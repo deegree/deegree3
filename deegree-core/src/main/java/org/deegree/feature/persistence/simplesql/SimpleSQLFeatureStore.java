@@ -50,7 +50,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.TreeMap;
 
-import javax.xml.XMLConstants;
 import javax.xml.namespace.QName;
 
 import org.deegree.commons.jdbc.ResultSetIterator;
@@ -110,6 +109,8 @@ public class SimpleSQLFeatureStore implements FeatureStore {
 
     static final Logger LOG = getLogger( SimpleSQLFeatureStore.class );
 
+    private final QName ftName;
+
     private boolean available = false;
 
     private String connId;
@@ -119,12 +120,6 @@ public class SimpleSQLFeatureStore implements FeatureStore {
     private ApplicationSchema schema;
 
     private GeometryFactory fac = new GeometryFactory();
-
-    private String featureName;
-
-    private String namespace;
-
-    private String prefix;
 
     GenericFeatureType featureType;
 
@@ -140,14 +135,14 @@ public class SimpleSQLFeatureStore implements FeatureStore {
      * @param connId
      * @param crs
      * @param sql
-     * @param featureName
-     * @param namespace
-     * @param prefix
+     * @param ftLocalName
+     * @param ftNamespace
+     * @param ftPrefix
      * @param bbox
      * @param lods
      */
-    public SimpleSQLFeatureStore( String connId, String crs, String sql, String featureName, String namespace,
-                                  String prefix, String bbox, List<Pair<Integer, String>> lods ) {
+    public SimpleSQLFeatureStore( String connId, String crs, String sql, String ftLocalName, String ftNamespace,
+                                  String ftPrefix, String bbox, List<Pair<Integer, String>> lods ) {
         this.connId = connId;
         this.crs = new CRS( crs );
         sql = sql.trim();
@@ -155,9 +150,14 @@ public class SimpleSQLFeatureStore implements FeatureStore {
             sql = sql.substring( 0, sql.length() - 1 );
         }
         this.bbox = bbox;
-        this.featureName = featureName == null ? "Feature" : featureName;
-        this.namespace = namespace != null ? namespace : XMLConstants.NULL_NS_URI;
-        this.prefix = prefix != null ? prefix : XMLConstants.DEFAULT_NS_PREFIX;
+
+        // TODO allow null namespaces / empty prefix
+        // NOTE: verify that the WFS code for dealing with that (e.g. repairing unqualified names) works with that first
+        ftLocalName = ( ftLocalName != null && !ftLocalName.isEmpty() ) ? ftLocalName : "Feature";
+        ftNamespace = ( ftNamespace != null && !ftNamespace.isEmpty() ) ? ftNamespace : "http://www.deegree.org/app";
+        ftPrefix = ( ftPrefix != null && !ftPrefix.isEmpty() ) ? ftPrefix : "app";
+        this.ftName = new QName( ftNamespace, ftLocalName, ftPrefix );
+
         try {
             transformer = new GeometryTransformer( this.crs.getWrappedCRS() );
         } catch ( IllegalArgumentException e ) {
@@ -273,7 +273,6 @@ public class SimpleSQLFeatureStore implements FeatureStore {
 
     public void init()
                             throws FeatureStoreException {
-        QName ftName = new QName( namespace, featureName, prefix );
         featureType = Util.determineFeatureType( ftName, connId, lods.values().iterator().next() );
         if ( featureType == null ) {
             available = false;

@@ -60,14 +60,13 @@ import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.GeometryFactory;
 import org.deegree.geometry.multi.MultiPoint;
-import org.deegree.geometry.multi.MultiSurface;
+import org.deegree.geometry.multi.MultiPolygon;
 import org.deegree.geometry.points.Points;
-import org.deegree.geometry.primitive.Curve;
+import org.deegree.geometry.primitive.LineString;
 import org.deegree.geometry.primitive.LinearRing;
 import org.deegree.geometry.primitive.Point;
 import org.deegree.geometry.primitive.Polygon;
 import org.deegree.geometry.primitive.Ring;
-import org.deegree.geometry.primitive.Surface;
 import org.deegree.geometry.standard.points.PackedPoints;
 import org.deegree.geometry.standard.points.PointsList;
 import org.slf4j.Logger;
@@ -656,7 +655,7 @@ public class SHPReader {
 
         Points[] ps = readLines( buffer, m, z, length );
 
-        Ring outer = null;
+        LinearRing outer = null;
         LinkedList<Ring> inners = new LinkedList<Ring>();
         LinkedList<Polygon> polys = new LinkedList<Polygon>();
 
@@ -684,7 +683,7 @@ public class SHPReader {
             if ( outer == null ) {
                 outer = fac.createLinearRing( null, crs, p );
             } else {
-                Ring ring = fac.createLinearRing( null, crs, p );
+                LinearRing ring = fac.createLinearRing( null, crs, p );
                 Polygon outerP = fac.createPolygon( null, crs, outer, null );
                 Polygon innerP = fac.createPolygon( null, crs, ring, null );
                 if ( outerP.contains( innerP ) ) {
@@ -766,11 +765,11 @@ public class SHPReader {
             return fac.createLineString( null, crs, ps[0] );
         }
 
-        List<Curve> cs = new ArrayList<Curve>( ps.length );
+        List<LineString> cs = new ArrayList<LineString>( ps.length );
         for ( int i = 0; i < ps.length; ++i ) {
             cs.add( fac.createLineString( null, crs, ps[i] ) );
         }
-        return fac.createMultiCurve( null, crs, cs );
+        return fac.createMultiLineString( null, crs, cs );
     }
 
     private MultiPoint readMultipointZ( ByteBuffer buffer, int length ) {
@@ -815,7 +814,7 @@ public class SHPReader {
         return fac.createMultiPoint( null, crs, list );
     }
 
-    private MultiSurface readMultipatch( ByteBuffer buffer, int length ) {
+    private MultiPolygon readMultipatch( ByteBuffer buffer, int length ) {
         int numParts = buffer.getInt();
         int numPoints = buffer.getInt();
 
@@ -877,14 +876,14 @@ public class SHPReader {
     }
 
     // converts every triangle to a surface with an outer ring
-    private LinkedList<Surface> fromTriangleStrip( double[][] points ) {
+    private LinkedList<Polygon> fromTriangleStrip( double[][] points ) {
         LinkedList<Point> ps = new LinkedList<Point>();
 
         for ( double[] p : points ) {
             ps.add( fac.createPoint( null, p, crs ) );
         }
 
-        LinkedList<Surface> ss = new LinkedList<Surface>();
+        LinkedList<Polygon> ss = new LinkedList<Polygon>();
 
         while ( ps.size() > 2 ) {
             LinkedList<Point> ring = new LinkedList<Point>();
@@ -893,7 +892,7 @@ public class SHPReader {
             ring.add( ps.get( 2 ) );
             ring.add( ring.getFirst() );
             ps.poll();
-            Ring r = fac.createLinearRing( null, crs, new PointsList( ring ) );
+            LinearRing r = fac.createLinearRing( null, crs, new PointsList( ring ) );
             ss.add( fac.createPolygon( null, crs, r, null ) );
         }
 
@@ -901,14 +900,14 @@ public class SHPReader {
     }
 
     // just uses an outer ring, all vertices and the first one again
-    private LinkedList<Surface> fromTriangleFan( double[][] points ) {
+    private LinkedList<Polygon> fromTriangleFan( double[][] points ) {
         LinkedList<Point> ps = new LinkedList<Point>();
 
         for ( double[] p : points ) {
             ps.add( fac.createPoint( null, p, crs ) );
         }
 
-        LinkedList<Surface> ss = new LinkedList<Surface>();
+        LinkedList<Polygon> ss = new LinkedList<Polygon>();
 
         Point center = ps.poll();
 
@@ -945,7 +944,7 @@ public class SHPReader {
     }
 
     // bad: do it by hand using JTS
-    private boolean isCCW( Curve c ) {
+    private boolean isCCW( LinearRing c ) {
         Points ps = c.getControlPoints();
         Coordinate[] cs = new Coordinate[ps.size()];
         int i = 0;
@@ -956,15 +955,15 @@ public class SHPReader {
         return CGAlgorithms.isCCW( cs );
     }
 
-    private MultiSurface parseMultiPatch( double[][][] ps, int[] partTypes ) {
-        LinkedList<Surface> ss = new LinkedList<Surface>();
+    private MultiPolygon parseMultiPatch( double[][][] ps, int[] partTypes ) {
+        LinkedList<Polygon> ss = new LinkedList<Polygon>();
 
         boolean outerRingMode = false;
-        Ring outerRing = null;
+        LinearRing outerRing = null;
         LinkedList<Ring> innerRings = new LinkedList<Ring>();
 
         boolean unknownRingMode = false;
-        Ring unknownOuterRing = null;
+        LinearRing unknownOuterRing = null;
         LinkedList<Ring> unknownInnerRings = new LinkedList<Ring>();
 
         for ( int i = 0; i < partTypes.length; ++i ) {
@@ -1009,7 +1008,7 @@ public class SHPReader {
             case FIRST_RING:
                 LOG.trace( "Read first ring." );
                 unknownRingMode = true;
-                Ring ring = fromRing( ps[i] );
+                LinearRing ring = fromRing( ps[i] );
                 if ( isCCW( ring ) ) {
                     unknownOuterRing = ring;
                 } else {
@@ -1053,7 +1052,7 @@ public class SHPReader {
         if ( ss.size() == 0 ) {
             return null;
         }
-        return fac.createMultiSurface( null, crs, ss );
+        return fac.createMultiPolygon( null, crs, ss );
     }
 
     private Points[] readLines( ByteBuffer buffer, boolean m, boolean z, int length ) {
