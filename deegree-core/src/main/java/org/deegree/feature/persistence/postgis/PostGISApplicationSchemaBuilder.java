@@ -73,11 +73,13 @@ import org.deegree.feature.persistence.mapping.property.GeometryMapping;
 import org.deegree.feature.persistence.mapping.property.Mapping;
 import org.deegree.feature.persistence.mapping.property.PrimitiveMapping;
 import org.deegree.feature.persistence.postgis.jaxb.AbstractPropertyDecl;
+import org.deegree.feature.persistence.postgis.jaxb.CodePropertyDecl;
 import org.deegree.feature.persistence.postgis.jaxb.CustomMapping;
 import org.deegree.feature.persistence.postgis.jaxb.CustomPropertyDecl;
 import org.deegree.feature.persistence.postgis.jaxb.FeaturePropertyDecl;
 import org.deegree.feature.persistence.postgis.jaxb.FeatureTypeDecl;
 import org.deegree.feature.persistence.postgis.jaxb.GeometryPropertyDecl;
+import org.deegree.feature.persistence.postgis.jaxb.MeasurePropertyDecl;
 import org.deegree.feature.persistence.postgis.jaxb.SimplePropertyDecl;
 import org.deegree.feature.types.ApplicationSchema;
 import org.deegree.feature.types.FeatureType;
@@ -136,8 +138,7 @@ class PostGISApplicationSchemaBuilder {
 
             PostGISApplicationSchemaBuilder builder = new PostGISApplicationSchemaBuilder( ftDecls, jdbcConnId,
                                                                                            dbSchema );
-            FeatureTypeMapping[] ftMappings = builder.ftNameToMapping.values().toArray(
-                                                                                        new FeatureTypeMapping[builder.ftNameToMapping.size()] );
+            FeatureTypeMapping[] ftMappings = builder.ftNameToMapping.values().toArray( new FeatureTypeMapping[builder.ftNameToMapping.size()] );
 
             mappedSchema = new MappedApplicationSchema( appSchema.getFeatureTypes(), appSchema.getFtToSuperFt(),
                                                         appSchema.getNamespaceBindings(), appSchema.getXSModel(),
@@ -147,8 +148,7 @@ class PostGISApplicationSchemaBuilder {
             PostGISApplicationSchemaBuilder builder = new PostGISApplicationSchemaBuilder( ftDecls, jdbcConnId,
                                                                                            dbSchema );
             FeatureType[] fts = builder.ftNameToFt.values().toArray( new FeatureType[builder.ftNameToFt.size()] );
-            FeatureTypeMapping[] ftMappings = builder.ftNameToMapping.values().toArray(
-                                                                                        new FeatureTypeMapping[builder.ftNameToMapping.size()] );
+            FeatureTypeMapping[] ftMappings = builder.ftNameToMapping.values().toArray( new FeatureTypeMapping[builder.ftNameToMapping.size()] );
             mappedSchema = new MappedApplicationSchema( fts, null, null, null, ftMappings, storageCRS, null, null );
         }
 
@@ -173,7 +173,7 @@ class PostGISApplicationSchemaBuilder {
         LOG.debug( "Processing feature type '" + ftName + "'" );
         boolean isAbstract = ftDecl.isAbstract() == null ? false : ftDecl.isAbstract();
 
-        String mapping = ftDecl.getMapping();
+        String mapping = ftDecl.getTable();
         if ( mapping == null ) {
             mapping = ftName.getLocalPart().toUpperCase();
             LOG.debug( "No explicit mapping for feature type " + ftName
@@ -188,6 +188,12 @@ class PostGISApplicationSchemaBuilder {
         for ( JAXBElement<? extends AbstractPropertyDecl> propDeclEl : ftDecl.getAbstractProperty() ) {
             AbstractPropertyDecl propDecl = propDeclEl.getValue();
             Pair<PropertyType, Mapping> pt = process( propDecl );
+            
+            if (pt.first == null) {
+                // TODO
+                continue;
+            }
+            
             pts.add( pt.first );
             propToColumn.put( pt.first.getName(), pt.second );
 
@@ -255,6 +261,10 @@ class PostGISApplicationSchemaBuilder {
             CustomPropertyDecl cpt = (CustomPropertyDecl) propDecl;
             pt = new CustomPropertyType( ptName, minOccurs, maxOccurs, null, false, false, null );
             m = new CompoundMapping( ptName.toString(), mapping, process( cpt.getAbstractCustomMapping() ) );
+        } else if ( propDecl instanceof CodePropertyDecl ) {
+            LOG.warn( "TODO: CodePropertyDecl " );
+        } else if ( propDecl instanceof MeasurePropertyDecl ) {
+            LOG.warn( "TODO: MeasurePropertyDecl " );
         } else {
             throw new RuntimeException( "Internal error: Unhandled property JAXB property type: " + propDecl.getClass() );
         }
@@ -292,9 +302,9 @@ class PostGISApplicationSchemaBuilder {
                 org.deegree.feature.persistence.postgis.jaxb.FeatureMapping featureMapping = (org.deegree.feature.persistence.postgis.jaxb.FeatureMapping) customMapping;
                 mappings.add( new FeatureMapping( path, mapping, featureMapping.getType() ) );
             } else if ( customMapping instanceof org.deegree.feature.persistence.postgis.jaxb.CustomMapping ) {
-                org.deegree.feature.persistence.postgis.jaxb.CompoundMapping compoundMapping = (org.deegree.feature.persistence.postgis.jaxb.CompoundMapping) customMapping;
+                org.deegree.feature.persistence.postgis.jaxb.ComplexMapping compoundMapping = (org.deegree.feature.persistence.postgis.jaxb.ComplexMapping) customMapping;
                 List<Mapping> particles = process( compoundMapping.getAbstractCustomMapping() );
-                mappings.add( new CompoundMapping( path, mapping, particles ));
+                mappings.add( new CompoundMapping( path, mapping, particles ) );
             } else {
                 throw new RuntimeException( "Internal error. Unexpected JAXB type '" + customMapping.getClass() + "'." );
             }

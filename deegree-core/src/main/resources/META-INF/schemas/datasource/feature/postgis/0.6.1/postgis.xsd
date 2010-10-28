@@ -49,9 +49,7 @@
       <enumeration value="GML_32" />
     </restriction>
   </simpleType>
-  <!--
-    === Feature type definition ===
-  -->
+  <!-- === Feature type definition === -->
   <element name="FeatureType">
     <complexType>
       <annotation>
@@ -68,9 +66,9 @@
           <documentation>Qualified name of the feature type.</documentation>
         </annotation>
       </attribute>
-      <attribute name="mapping" type="string" use="optional">
+      <attribute name="table" type="string" use="optional">
         <annotation>
-          <documentation>Mapping of the feature type (currently, this can only be the name of a table).</documentation>
+          <documentation>Table that the feature type is mapped to.</documentation>
         </annotation>
       </attribute>
       <attribute name="fidMapping" type="string" use="optional">
@@ -86,17 +84,14 @@
       <attribute name="parent" type="QName" use="optional">
         <annotation>
           <documentation>
-            Name of the feature type that this feature type derives, i.e. features of this type may
-            be used
+            Name of the feature type that this feature type derives, i.e. features of this type may be used
             wherever the other type is requested.
           </documentation>
         </annotation>
       </attribute>
     </complexType>
   </element>
-  <!--
-    === Abstract property definition ===
-  -->
+  <!-- === Abstract property definition === -->
   <element name="AbstractProperty" type="postgisfs:AbstractPropertyType" abstract="true" />
   <complexType name="AbstractPropertyType" abstract="true">
     <annotation>
@@ -143,9 +138,7 @@
       </annotation>
     </attribute>
   </complexType>
-  <!--
-    === Simple property declaration / mapping ===
-  -->
+  <!-- === Simple property declaration / mapping === -->
   <element name="SimpleProperty" substitutionGroup="postgisfs:AbstractProperty">
     <complexType>
       <annotation>
@@ -209,9 +202,7 @@
       </enumeration>
     </restriction>
   </simpleType>
-  <!--
-    === Geometry property declaration / mapping ===
-  -->
+  <!-- === Geometry property declaration / mapping === -->
   <element name="GeometryProperty" substitutionGroup="postgisfs:AbstractProperty">
     <complexType>
       <annotation>
@@ -253,16 +244,16 @@
       <enumeration value="Geometry" />
       <enumeration value="PrimitiveGeometry" />
       <enumeration value="CompositeGeometry" />
-      <!--  Primitive types (0D) -->
+      <!-- Primitive types (0D) -->
       <enumeration value="Point" />
-      <!--  Primitive types (1D) -->
+      <!-- Primitive types (1D) -->
       <enumeration value="Curve" />
       <enumeration value="LineString" />
       <enumeration value="Ring" />
       <enumeration value="LinearRing" />
       <enumeration value="OrientableCurve" />
       <enumeration value="CompositeCurve" />
-      <!--  Primitive types (2D) -->
+      <!-- Primitive types (2D) -->
       <enumeration value="Surface" />
       <enumeration value="PolyhedralSurface" />
       <enumeration value="TriangulatedSurface" />
@@ -270,7 +261,7 @@
       <enumeration value="Polygon" />
       <enumeration value="OrientableSurface" />
       <enumeration value="CompositeSurface" />
-      <!--  Primitive types (3D) -->
+      <!-- Primitive types (3D) -->
       <enumeration value="Solid" />
       <enumeration value="CompositeSolid" />
       <!-- Aggregate types -->
@@ -283,9 +274,7 @@
       <enumeration value="MultiSolid" />
     </restriction>
   </simpleType>
-  <!--
-    === Feature property declaration / mapping ===
-  -->
+  <!-- === Feature property declaration / mapping === -->
   <element name="FeatureProperty" substitutionGroup="postgisfs:AbstractProperty">
     <complexType>
       <annotation>
@@ -305,9 +294,7 @@
       </complexContent>
     </complexType>
   </element>
-  <!--
-    === Code property declaration / mapping ===
-  -->
+  <!-- === Code property declaration / mapping === -->
   <element name="CodeProperty" substitutionGroup="postgisfs:AbstractProperty">
     <complexType>
       <annotation>
@@ -327,9 +314,7 @@
       </complexContent>
     </complexType>
   </element>
-  <!--
-    === Measure property declaration / mapping ===
-  -->
+  <!-- === Measure property declaration / mapping === -->
   <element name="MeasureProperty" substitutionGroup="postgisfs:AbstractProperty">
     <complexType>
       <annotation>
@@ -349,9 +334,7 @@
       </complexContent>
     </complexType>
   </element>
-  <!--
-    === Custom property declaration / mapping ===
-  -->
+  <!-- === Custom property declaration / mapping === -->
   <element name="CustomProperty" substitutionGroup="postgisfs:AbstractProperty">
     <complexType>
       <annotation>
@@ -445,12 +428,12 @@
       </complexContent>
     </complexType>
   </element>
-  <element name="CompoundMapping" substitutionGroup="postgisfs:AbstractCustomMapping">
+  <element name="ComplexMapping" substitutionGroup="postgisfs:AbstractCustomMapping">
     <complexType>
       <annotation>
         <documentation>Defines the mapping for a part of a custom property.</documentation>
         <appinfo>
-          <jaxb:class name="CompoundMapping" />
+          <jaxb:class name="ComplexMapping" />
         </appinfo>
       </annotation>
       <complexContent>

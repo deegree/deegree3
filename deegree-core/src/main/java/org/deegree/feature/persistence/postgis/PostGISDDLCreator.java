@@ -139,77 +139,70 @@ public class PostGISDDLCreator {
         List<String> ddl = new ArrayList<String>();
         List<String> additionalDDLs = new ArrayList<String>();
 
-        StringBuffer sb = new StringBuffer( "CREATE TABLE " );
-        sb.append( ftMapping.getFtTable() );
-        sb.append( " (\n    " );
-        sb.append( "id integer PRIMARY KEY REFERENCES gml_objects" );
+        StringBuffer sql = new StringBuffer( "CREATE TABLE " );
+        sql.append( ftMapping.getFtTable() );
+        sql.append( " (\n    " );
+        sql.append( "id integer PRIMARY KEY REFERENCES gml_objects" );
         for ( PropertyType pt : ft.getPropertyDeclarations() ) {
             Mapping propMapping = ftMapping.getMapping( pt.getName() );
             if ( propMapping != null ) {
-                process( ftMapping.getFtTable(), "", sb, propMapping, additionalDDLs );
+                process( sql, propMapping, additionalDDLs );
             }
         }
-        sb.append( "\n)" );
-        ddl.add( sb.toString() );
+        sql.append( "\n)" );
+        ddl.add( sql.toString() );
 
         ddl.addAll( additionalDDLs );
 
         return ddl;
     }
 
-    private void process( String table, String columnPrefix, StringBuffer sb, Mapping propMapping,
-                          List<String> additionalDDLs ) {
+    private void process( StringBuffer sql, Mapping propMapping, List<String> additionalDDLs ) {
 
         MappingExpression me = propMapping.getMapping();
         if ( propMapping instanceof PrimitiveMapping ) {
             PrimitiveMapping primitiveMapping = (PrimitiveMapping) propMapping;
+            if ( me instanceof DBField ) {
+                DBField dbField = (DBField) me;
+                sql.append( ",\n    " );
+                sql.append( dbField.getColumn() );
+                sql.append( " " );
+                sql.append( getPostgreSQLType( primitiveMapping.getType() ) );
+            }
         } else if ( propMapping instanceof GeometryMapping ) {
             GeometryMapping geometryMapping = (GeometryMapping) propMapping;
+            if ( me instanceof DBField ) {
+                DBField dbField = (DBField) me;
+                sql.append( ",\n    " );
+                sql.append( dbField.getColumn() );
+                sql.append( " geometry" );
+            }
         } else if ( propMapping instanceof FeatureMapping ) {
             if ( me instanceof DBField ) {
-                sb.append( "," );
-                sb.append( getPrefixedColumn( columnPrefix, (DBField) me ) );
-                sb.append( " integer" );
-            } else if ( me instanceof JoinChain ) {
-                additionalDDLs.add( createFeatureJoinTable( table, (JoinChain) me ) );
-            } else {
-                throw new RuntimeException( "Mapping expressions of type '" + me.getClass()
-                                            + "' are not allowed for feature properties." );
+                sql.append( ",\n    " );
+                sql.append( ( (DBField) me ).getColumn() );
+                sql.append( " integer" );
             }
         } else if ( propMapping instanceof CompoundMapping ) {
             CompoundMapping compoundMapping = (CompoundMapping) propMapping;
-            if ( me instanceof DBField ) {
-                process( table, sb, getPrefixedColumn( columnPrefix, (DBField) me ), compoundMapping, additionalDDLs );
-            } else if ( me instanceof JoinChain ) {
-                process( table, sb, (JoinChain) me, compoundMapping, additionalDDLs );
-            } else {
-                throw new RuntimeException( "Mapping expressions of type '" + me.getClass()
-                                            + "' are not allowed for custom properties." );
-            }
+            process( sql, compoundMapping, additionalDDLs );
         } else {
             throw new RuntimeException( "Internal error. Unhandled mapping type '" + propMapping.getClass() + "'" );
         }
     }
 
-    private void process( String table, StringBuffer sb, String columnPrefix, CompoundMapping cm,
-                          List<String> additionalDDLs ) {
+    private void process( StringBuffer sb, CompoundMapping cm, List<String> additionalDDLs ) {
 
         for ( Mapping mapping : cm.getParticles() ) {
-            MappingExpression me = mapping.getMapping();
-            if ( me == null ) {
-                me = new DBField( "" );
-            }
             if ( mapping instanceof PrimitiveMapping ) {
                 PrimitiveMapping primitiveMapping = (PrimitiveMapping) mapping;
+                MappingExpression me = primitiveMapping.getMapping();
                 if ( me instanceof DBField ) {
                     DBField dbField = (DBField) me;
                     sb.append( ",\n    " );
-                    sb.append( getPrefixedColumn( columnPrefix, dbField ) );
+                    sb.append( dbField.getColumn() );
                     sb.append( " " );
                     sb.append( getPostgreSQLType( primitiveMapping.getType() ) );
-                } else {
-                    throw new RuntimeException( "Mapping expressions of type '" + me.getClass()
-                                                + "' are currently not supported for primitive mappings." );
                 }
             } else if ( mapping instanceof GeometryMapping ) {
 
@@ -217,14 +210,8 @@ public class PostGISDDLCreator {
 
             } else if ( mapping instanceof CompoundMapping ) {
                 CompoundMapping compoundMapping = (CompoundMapping) mapping;
-                if ( me instanceof DBField ) {
-                    DBField dbField = (DBField) me;
-                    for ( Mapping particle : compoundMapping.getParticles() ) {
-                        process( "TODO", getPrefixedColumn( columnPrefix, dbField ), sb, particle, additionalDDLs );
-                    }
-                } else {
-                    throw new RuntimeException( "Mapping expressions of type '" + me.getClass()
-                                                + "' are currently not supported for primitive mappings." );
+                for ( Mapping particle : compoundMapping.getParticles() ) {
+                    process( sb, particle, additionalDDLs );
                 }
             } else {
                 throw new RuntimeException( "Internal error. Unhandled mapping type '" + mapping.getClass() + "'" );
@@ -252,7 +239,7 @@ public class PostGISDDLCreator {
                 if ( me instanceof DBField ) {
                     DBField dbField = (DBField) me;
                     sb.append( ",\n    " );
-                    sb.append( getPrefixedColumn( "", dbField ) );
+                    sb.append( dbField.getColumn() );
                     sb.append( " " );
                     sb.append( getPostgreSQLType( primitiveMapping.getType() ) );
                 } else {
@@ -268,7 +255,7 @@ public class PostGISDDLCreator {
                 if ( me instanceof DBField ) {
                     DBField dbField = (DBField) me;
                     for ( Mapping particle : compoundMapping.getParticles() ) {
-                        process( table, getPrefixedColumn( "", dbField ), sb, particle, additionalDDLs );
+                        process( sb, particle, additionalDDLs );
                     }
                 } else {
                     throw new RuntimeException( "Mapping expressions of type '" + me.getClass()
@@ -298,28 +285,6 @@ public class PostGISDDLCreator {
         sb.append( second.getColumn() );
         sb.append( " integer NOT NULL)" );
         return sb.toString();
-    }
-
-    private String getPrefixedColumn( String prefix, DBField dbField ) {
-        String prefixedName = dbField.getColumn();
-        if ( prefix != null && !prefix.isEmpty() ) {
-            prefixedName = prefix + "_" + dbField.getColumn();
-        }
-        if ( prefixedName.length() > maxColumnLength ) {
-            prefixedName = "TOO_LONG_" + ( columnId++ );
-        }
-        return prefixedName;
-    }
-
-    private String getPrefixedTable( String prefix, DBField dbField ) {
-        String prefixedName = dbField.getTable();
-        if ( prefix != null && !prefix.isEmpty() ) {
-            prefixedName = prefix + "_" + dbField.getTable();
-        }
-        if ( prefixedName.length() > maxTableLength ) {
-            prefixedName = "TOO_LONG_" + ( tableId++ );
-        }
-        return prefixedName;
     }
 
     private String getPostgreSQLType( PrimitiveType type ) {
