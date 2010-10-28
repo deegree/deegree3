@@ -82,6 +82,7 @@ import org.deegree.protocol.csw.CSWConstants.ResultType;
 import org.deegree.protocol.csw.CSWConstants.ReturnableElement;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.slf4j.Logger;
 
@@ -877,6 +878,7 @@ public class ISOMetadataStoreTest {
 
     }
 
+    @Ignore
     @Test(expected = MetadataStoreException.class)
     public void testCouplingConsistencyErrorTRUE_WITH_Exception()
                             throws MetadataStoreException {
