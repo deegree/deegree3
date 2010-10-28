@@ -455,8 +455,11 @@ public class GetFeatureAnalyzer {
      *            property name to be repaired, must be "simple", i.e. contain only of a QName
      * @param typeName
      *            feature type specification from the query, must not be <code>null</code>
+     * @throws OWSException
+     *             if no match could be found
      */
-    private void repairSimpleUnqualified( PropertyName propName, TypeName typeName ) {
+    private void repairSimpleUnqualified( PropertyName propName, TypeName typeName )
+                            throws OWSException {
 
         FeatureType ft = service.lookupFeatureType( typeName.getFeatureTypeName() );
 
@@ -467,6 +470,11 @@ public class GetFeatureAnalyzer {
         }
 
         QName match = QNameUtils.findBestMatch( propName.getAsQName(), propNames );
+        if ( match == null ) {
+            String msg = "Specified PropertyName '" + propName.getPropertyName()
+                         + "' does not exist for feature type '" + ft.getName() + "'.";
+            throw new OWSException( msg, OWSException.INVALID_PARAMETER_VALUE, "PropertyName" );
+        }
         if ( !match.equals( propName.getAsQName() ) ) {
             LOG.warn( "Repairing unqualified PropertyName: " + QNameUtils.toString( propName.getAsQName() ) + " -> "
                       + QNameUtils.toString( match ) );
