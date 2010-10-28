@@ -54,7 +54,8 @@ import org.deegree.commons.xml.XPath;
 import org.deegree.metadata.persistence.MetadataStoreException;
 import org.deegree.metadata.persistence.iso.generating.generatingelements.GenerateOMElement;
 import org.deegree.metadata.persistence.iso.parsing.IdUtils;
-import org.deegree.metadata.persistence.iso19115.jaxb.ISOMetadataStoreConfig.InspireInspector;
+import org.deegree.metadata.persistence.iso19115.jaxb.AbstractInspector;
+import org.deegree.metadata.persistence.iso19115.jaxb.InspireInspector;
 import org.slf4j.Logger;
 
 /**
@@ -69,6 +70,8 @@ public class ResourceIdentifier implements RecordInspector {
 
     private static final Logger LOG = getLogger( ResourceIdentifier.class );
 
+    private static ResourceIdentifier instance;
+
     private final InspireInspector ric;
 
     private final Connection conn;
@@ -82,18 +85,20 @@ public class ResourceIdentifier implements RecordInspector {
         this.conn = conn;
         this.util = IdUtils.newInstance( conn );
         this.a = new XMLAdapter();
+        instance = this;
     }
 
     public static ResourceIdentifier newInstance( InspireInspector ric, Connection conn ) {
         return new ResourceIdentifier( ric, conn );
     }
 
-    private boolean checkInspireCompliance() {
+    @Override
+    public boolean checkAvailability( AbstractInspector inspector ) {
+        InspireInspector ric = (InspireInspector) inspector;
         if ( ric == null ) {
             return false;
         }
         return true;
-
     }
 
     /**
@@ -112,7 +117,7 @@ public class ResourceIdentifier implements RecordInspector {
     private List<String> determineResourceIdentifier( List<String> rsList, String id )
                             throws MetadataStoreException {
 
-        if ( checkInspireCompliance() ) {
+        if ( checkAvailability( ric ) ) {
             boolean generateAutomatic = ric.isGenerateAutomatic();
             if ( generateAutomatic == false ) {
                 if ( id != null ) {
@@ -274,6 +279,10 @@ public class ResourceIdentifier implements RecordInspector {
         }
 
         return record;
+    }
+
+    public static ResourceIdentifier getInstance() {
+        return instance;
     }
 
 }

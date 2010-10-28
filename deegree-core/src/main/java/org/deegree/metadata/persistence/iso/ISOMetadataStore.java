@@ -47,9 +47,11 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import javax.xml.bind.JAXBElement;
 import javax.xml.stream.FactoryConfigurationError;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
@@ -70,8 +72,18 @@ import org.deegree.metadata.persistence.MetadataStore;
 import org.deegree.metadata.persistence.MetadataStoreException;
 import org.deegree.metadata.persistence.MetadataStoreTransaction;
 import org.deegree.metadata.persistence.iso.parsing.IdUtils;
+import org.deegree.metadata.persistence.iso.parsing.inspectation.CoupledDataInspector;
+import org.deegree.metadata.persistence.iso.parsing.inspectation.FileIdentifierInspector;
+import org.deegree.metadata.persistence.iso.parsing.inspectation.InspireCompliance;
+import org.deegree.metadata.persistence.iso.parsing.inspectation.MetadataValidation;
+import org.deegree.metadata.persistence.iso.parsing.inspectation.RecordInspector;
+import org.deegree.metadata.persistence.iso.parsing.inspectation.ResourceIdentifier;
 import org.deegree.metadata.persistence.iso.resulttypes.Hits;
+import org.deegree.metadata.persistence.iso19115.jaxb.AbstractInspector;
+import org.deegree.metadata.persistence.iso19115.jaxb.CoupledResourceInspector;
 import org.deegree.metadata.persistence.iso19115.jaxb.ISOMetadataStoreConfig;
+import org.deegree.metadata.persistence.iso19115.jaxb.IdentifierInspector;
+import org.deegree.metadata.persistence.iso19115.jaxb.InspireInspector;
 import org.deegree.protocol.csw.CSWConstants.ResultType;
 import org.slf4j.Logger;
 
@@ -479,7 +491,26 @@ public class ISOMetadataStore implements MetadataStore {
         Connection conn = null;
         try {
             conn = ConnectionManager.getConnection( connectionId );
-            ta = new ISOMetadataStoreTransaction( conn, config, useLegacyPredicates );
+            List<RecordInspector> ri = new ArrayList<RecordInspector>();
+
+            for ( JAXBElement<? extends AbstractInspector> jaxbElem : config.getAbstractInspector() ) {
+                AbstractInspector d = jaxbElem.getValue();
+                if ( d instanceof IdentifierInspector ) {
+                    ri.add( FileIdentifierInspector.newInstance( (IdentifierInspector) d, conn ) );
+                } else if ( d instanceof InspireInspector ) {
+                    ri.add( InspireCompliance.newInstance( (InspireInspector) d, conn ) );
+                    ri.add( ResourceIdentifier.newInstance( (InspireInspector) d, conn ) );
+                } else if ( d instanceof CoupledResourceInspector ) {
+                    ri.add( CoupledDataInspector.newInstance( (CoupledResourceInspector) d, conn ) );
+                }
+
+            }
+            if ( !ri.contains( FileIdentifierInspector.getInstance() ) ) {
+                ri.add( FileIdentifierInspector.newInstance( new IdentifierInspector(), conn ) );
+            }
+            ri.add( MetadataValidation.newInstance( config.isValidate() ) );
+
+            ta = new ISOMetadataStoreTransaction( conn, ri, config.getAnyText(), useLegacyPredicates );
         } catch ( SQLException e ) {
             throw new MetadataStoreException( e.getMessage() );
         }

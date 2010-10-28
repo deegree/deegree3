@@ -50,8 +50,9 @@ import org.deegree.commons.xml.XPath;
 import org.deegree.metadata.persistence.MetadataStoreException;
 import org.deegree.metadata.persistence.iso.generating.generatingelements.GenerateOMElement;
 import org.deegree.metadata.persistence.iso.parsing.IdUtils;
-import org.deegree.metadata.persistence.iso19115.jaxb.ISOMetadataStoreConfig.IdentifierInspector;
-import org.deegree.metadata.persistence.iso19115.jaxb.ISOMetadataStoreConfig.IdentifierInspector.Param;
+import org.deegree.metadata.persistence.iso19115.jaxb.AbstractInspector;
+import org.deegree.metadata.persistence.iso19115.jaxb.IdentifierInspector;
+import org.deegree.metadata.persistence.iso19115.jaxb.IdentifierInspector.Param;
 import org.slf4j.Logger;
 
 /**
@@ -69,6 +70,8 @@ public class FileIdentifierInspector implements RecordInspector {
 
     private static final String REJECT_EMPTY_FILE_IDENTIFIER = "rejectEmptyFileIdentifier";
 
+    private static FileIdentifierInspector instance;
+
     private final Connection conn;
 
     private final XMLAdapter a;
@@ -79,17 +82,20 @@ public class FileIdentifierInspector implements RecordInspector {
         this.conn = conn;
         this.inspector = inspector;
         this.a = new XMLAdapter();
+        instance = this;
     }
 
     public static FileIdentifierInspector newInstance( IdentifierInspector inspector, Connection conn ) {
         return new FileIdentifierInspector( inspector, conn );
     }
 
-    private boolean isFileIdentifierRejected() {
-        if ( inspector == null ) {
+    @Override
+    public boolean checkAvailability( AbstractInspector inspector ) {
+        IdentifierInspector fi = (IdentifierInspector) inspector;
+        if ( fi == null ) {
             return false;
         } else {
-            List<Param> paramList = inspector.getParam();
+            List<Param> paramList = fi.getParam();
 
             for ( Param p : paramList ) {
                 if ( p.getKey().equals( REJECT_EMPTY_FILE_IDENTIFIER ) ) {
@@ -126,24 +132,11 @@ public class FileIdentifierInspector implements RecordInspector {
                             throws MetadataStoreException {
         List<String> idList = new ArrayList<String>();
         if ( fi.length != 0 ) {
-            String fileID = fi[0];
-            if ( IdUtils.newInstance( conn ).proveIdExistence( fileID ) ) {
-                LOG.info( "'{}' accepted as a valid fileIdentifier. ", fileID );
-                idList.add( fileID );
-                return idList;
-            }
-            // if ( isFileIdentifierExistenceDesired ) {
-            // LOG.info( "'{}' is stored in backend and should be updated. ", fi );
-            // idList.add( fi );
-            // return idList;
-            // }
-            LOG.info( "SKIPPING: The metadata with id '{}' is stored in backend, already! ", fi );
-            // so skip it and return an empty idList
+            LOG.info( "There is a fileIdentifier available with id: '{}' so everything is fine.", fi );
             return idList;
-            // throw new MetadataStoreException( "The metadata with id '" + fi + "' stored in backend, already!" );
         } else {
             // default behavior if there is no inspector provided
-            if ( isFileIdentifierRejected() == false ) {
+            if ( checkAvailability( inspector ) == false ) {
                 if ( rsList.size() == 0 && id == null && uuid == null ) {
 
                     LOG.debug( "(DEFAULT) There is no Identifier available, so a new UUID will be generated..." );
@@ -217,9 +210,9 @@ public class FileIdentifierInspector implements RecordInspector {
 
         List<String> idList = determineFileIdentifier( fileIdentifierString, resourceIdentifierList,
                                                        dataIdentificationId, dataIdentificationUuId );
-        if ( idList.isEmpty() ) {
-            return null;
-        }
+        // if ( idList.isEmpty() ) {
+        // return null;
+        // }
         if ( !idList.isEmpty() && fileIdentifierString.length == 0 ) {
             for ( String id : idList ) {
                 OMElement firstElement = record.getFirstElement();
@@ -227,6 +220,10 @@ public class FileIdentifierInspector implements RecordInspector {
             }
         }
         return record;
+    }
+
+    public static FileIdentifierInspector getInstance() {
+        return instance;
     }
 
 }

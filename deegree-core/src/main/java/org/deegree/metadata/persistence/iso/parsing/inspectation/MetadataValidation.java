@@ -46,6 +46,7 @@ import javax.xml.stream.XMLStreamException;
 import org.apache.axiom.om.OMElement;
 import org.deegree.commons.xml.schema.SchemaValidator;
 import org.deegree.metadata.persistence.MetadataStoreException;
+import org.deegree.metadata.persistence.iso19115.jaxb.AbstractInspector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -62,11 +63,15 @@ public class MetadataValidation implements RecordInspector {
 
     private final boolean isValidate;
 
+    private static MetadataValidation instance;
+
     private MetadataValidation( boolean isValidate ) {
         this.isValidate = isValidate;
+        instance = this;
     }
 
     public static MetadataValidation newInstance( boolean isValidate ) {
+
         return new MetadataValidation( isValidate );
     }
 
@@ -109,5 +114,14 @@ public class MetadataValidation implements RecordInspector {
             return record;
         }
         return null;
+    }
+
+    @Override
+    public boolean checkAvailability( AbstractInspector inspector ) {
+        return true;
+    }
+
+    public static MetadataValidation getInstance() {
+        return instance;
     }
 }

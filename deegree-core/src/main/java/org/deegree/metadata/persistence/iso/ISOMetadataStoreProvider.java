@@ -35,6 +35,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.metadata.persistence.iso;
 
+import static org.slf4j.LoggerFactory.getLogger;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -52,7 +54,6 @@ import org.deegree.metadata.persistence.MetadataStoreException;
 import org.deegree.metadata.persistence.MetadataStoreProvider;
 import org.deegree.metadata.persistence.iso19115.jaxb.ISOMetadataStoreConfig;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * {@link MetadataStoreProvider} for the {@link ISOMetadataStore}.
@@ -63,7 +64,7 @@ import org.slf4j.LoggerFactory;
  * @version $Revision$, $Date$
  */
 public class ISOMetadataStoreProvider implements MetadataStoreProvider {
-    private static Logger LOG = LoggerFactory.getLogger( ISOMetadataStoreProvider.class );
+    private static Logger LOG = getLogger( ISOMetadataStoreProvider.class );
 
     @Override
     public String getConfigNamespace() {
@@ -124,8 +125,13 @@ public class ISOMetadataStoreProvider implements MetadataStoreProvider {
     @Override
     public MetadataStore getMetadataStore( URL configURL )
                             throws MetadataStoreException {
+        return new ISOMetadataStore( getConfig( configURL ) );
+    }
+
+    private ISOMetadataStoreConfig getConfig( URL configURL )
+                            throws MetadataStoreException {
+
         ISOMetadataStoreConfig config = null;
-        ISOMetadataStore store = null;
         if ( configURL == null ) {
             LOG.warn( "No metadata store configuration found!" );
         } else {
@@ -133,13 +139,13 @@ public class ISOMetadataStoreProvider implements MetadataStoreProvider {
                 JAXBContext jc = JAXBContext.newInstance( "org.deegree.metadata.persistence.iso19115.jaxb" );
                 Unmarshaller u = jc.createUnmarshaller();
                 config = (ISOMetadataStoreConfig) u.unmarshal( configURL );
-                store = new ISOMetadataStore( config );
             } catch ( JAXBException e ) {
                 String msg = "Error in metadata store configuration file '" + configURL + "': " + e.getMessage();
                 LOG.error( msg );
                 throw new MetadataStoreException( msg, e );
             }
         }
-        return store;
+        return config;
+
     }
 }

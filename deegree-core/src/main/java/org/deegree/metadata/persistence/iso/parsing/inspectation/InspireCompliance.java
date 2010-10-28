@@ -43,7 +43,8 @@ import java.util.regex.Pattern;
 
 import org.apache.axiom.om.OMElement;
 import org.deegree.metadata.persistence.MetadataStoreException;
-import org.deegree.metadata.persistence.iso19115.jaxb.ISOMetadataStoreConfig.InspireInspector;
+import org.deegree.metadata.persistence.iso19115.jaxb.AbstractInspector;
+import org.deegree.metadata.persistence.iso19115.jaxb.InspireInspector;
 import org.slf4j.Logger;
 
 /**
@@ -58,6 +59,8 @@ public class InspireCompliance implements RecordInspector {
 
     private static final Logger LOG = getLogger( InspireCompliance.class );
 
+    private static InspireCompliance instance;
+
     private final InspireInspector ric;
 
     private final Connection conn;
@@ -65,13 +68,16 @@ public class InspireCompliance implements RecordInspector {
     private InspireCompliance( InspireInspector ric, Connection conn ) {
         this.ric = ric;
         this.conn = conn;
+        instance = this;
     }
 
     public static InspireCompliance newInstance( InspireInspector ric, Connection conn ) {
         return new InspireCompliance( ric, conn );
     }
 
-    public boolean checkInspireCompliance() {
+    @Override
+    public boolean checkAvailability( AbstractInspector inspector ) {
+        InspireInspector ric = (InspireInspector) inspector;
         if ( ric == null ) {
             return false;
         } else {
@@ -167,6 +173,10 @@ public class InspireCompliance implements RecordInspector {
     public OMElement inspect( OMElement record )
                             throws MetadataStoreException {
         return record;
+    }
+
+    public static InspireCompliance getInstance() {
+        return instance;
     }
 
 }

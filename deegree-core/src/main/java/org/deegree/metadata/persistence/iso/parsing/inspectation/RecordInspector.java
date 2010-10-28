@@ -37,9 +37,10 @@ package org.deegree.metadata.persistence.iso.parsing.inspectation;
 
 import org.apache.axiom.om.OMElement;
 import org.deegree.metadata.persistence.MetadataStoreException;
+import org.deegree.metadata.persistence.iso19115.jaxb.AbstractInspector;
 
 /**
- * TODO add class documentation here
+ * Abstract base class for all inspector implementations.
  * 
  * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
  * @author last edited by: $Author$
@@ -48,7 +49,23 @@ import org.deegree.metadata.persistence.MetadataStoreException;
  */
 public interface RecordInspector {
 
+    /**
+     * Inpectation of one record. The metadatarecord goes into the chain of inspectation.
+     * 
+     * @param record
+     * @return the inspected and (possibly) modified metadatarecord.
+     * @throws MetadataStoreException
+     */
     public OMElement inspect( OMElement record )
                             throws MetadataStoreException;
+
+    /**
+     * Proves the availability of the specific inspector. If there is no inspector available there should be run a
+     * default action.
+     * 
+     * @param inspector
+     * @return
+     */
+    public boolean checkAvailability( AbstractInspector inspector );
 
 }
