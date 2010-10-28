@@ -191,6 +191,15 @@ public class ConnectionManager {
         synchronized ( ConnectionManager.class ) {
             String url = jaxbConn.getUrl();
 
+            // this should not be necessary for JDBC 4 drivers, but restarting Tomcat requires it (needs investigation)
+            if ( url.startsWith( "jdbc:postgresql:" ) ) {
+                try {
+                    Class.forName( "org.postgresql.Driver" );
+                } catch ( ClassNotFoundException e ) {
+                    LOG.error( "Unable to load postgresql driver class." );
+                }
+            }
+
             String user = jaxbConn.getUser();
             String password = jaxbConn.getPassword();
             int poolMinSize = jaxbConn.getPoolMinSize().intValue();
