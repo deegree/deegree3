@@ -77,7 +77,7 @@ public class XMLValueMangler {
             } else if ( s.equals( "false" ) || s.equals( "0" ) ) {
                 value = Boolean.FALSE;
             } else {
-                String msg = "Value ('" + s + "') is not valid with respect to the xs:boolean type."
+                String msg = "Value ('" + s + "') is not valid with respect to the xs:boolean type. "
                              + "Valid values are 'true', 'false', '1' and '0'.";
                 throw new IllegalArgumentException( msg );
             }

@@ -35,6 +35,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.commons.tom.primitive;
 
+import static org.deegree.commons.tom.primitive.PrimitiveType.BOOLEAN;
+
 import java.math.BigDecimal;
 import java.text.ParseException;
 
@@ -48,8 +50,8 @@ import org.deegree.commons.uom.Measure;
 import org.deegree.commons.utils.Pair;
 
 /**
- * {@link TypedObjectNode} that represents a primitive value, e.g. an XML text node or an XML attribute value with type
- * information.
+ * {@link TypedObjectNode} that represents a typed primitive value, e.g. an XML text node or an XML attribute value with
+ * type information.
  * 
  * @see PrimitiveType
  * 
@@ -187,6 +189,8 @@ public class PrimitiveValue implements TypedObjectNode, Comparable<PrimitiveValu
         if ( !( value1 instanceof String ) ) {
             if ( value1 instanceof Number ) {
                 result = new Pair<Object, Object>( value1, new BigDecimal( value2.toString() ) );
+            } else if ( value1 instanceof Boolean ) {
+                result = new Pair<Object, Object>( value1, XMLValueMangler.xmlToInternal( value2.toString(), BOOLEAN ) );
             } else if ( value1 instanceof Date ) {
                 try {
                     result = new Pair<Object, Object>( value1, new Date( value2.toString() ) );
@@ -215,6 +219,8 @@ public class PrimitiveValue implements TypedObjectNode, Comparable<PrimitiveValu
         } else if ( !( value2 instanceof String ) ) {
             if ( value2 instanceof Number ) {
                 result = new Pair<Object, Object>( new BigDecimal( value1.toString() ), value2 );
+            } else if ( value1 instanceof Boolean ) {
+                result = new Pair<Object, Object>( XMLValueMangler.xmlToInternal( value1.toString(), BOOLEAN ), value2 );
             } else if ( value2 instanceof Date ) {
                 try {
                     result = new Pair<Object, Object>( new Date( value1.toString() ), value2 );
