@@ -74,10 +74,9 @@ import org.deegree.metadata.persistence.MetadataStoreTransaction;
 import org.deegree.metadata.persistence.iso.parsing.IdUtils;
 import org.deegree.metadata.persistence.iso.parsing.inspectation.CoupledDataInspector;
 import org.deegree.metadata.persistence.iso.parsing.inspectation.FileIdentifierInspector;
-import org.deegree.metadata.persistence.iso.parsing.inspectation.InspireCompliance;
+import org.deegree.metadata.persistence.iso.parsing.inspectation.InspireComplianceInspector;
 import org.deegree.metadata.persistence.iso.parsing.inspectation.MetadataValidation;
 import org.deegree.metadata.persistence.iso.parsing.inspectation.RecordInspector;
-import org.deegree.metadata.persistence.iso.parsing.inspectation.ResourceIdentifier;
 import org.deegree.metadata.persistence.iso.resulttypes.Hits;
 import org.deegree.metadata.persistence.iso19115.jaxb.AbstractInspector;
 import org.deegree.metadata.persistence.iso19115.jaxb.CoupledResourceInspector;
@@ -110,6 +109,8 @@ public class ISOMetadataStore implements MetadataStore {
     private String encoding;
 
     private ISOMetadataStoreConfig config;
+
+    private List<RecordInspector> ri;
 
     // TODO remove...just inside for getById
     private static final String datasets = PostGISMappingsISODC.DatabaseTables.datasets.name();
@@ -173,6 +174,7 @@ public class ISOMetadataStore implements MetadataStore {
             } else {
                 LOG.debug( "PostGIS version is " + version + " -- using modern (SQL-MM) predicates." );
             }
+
         } catch ( SQLException e ) {
             LOG.debug( e.getMessage(), e );
             throw new MetadataStoreException( e.getMessage(), e );
@@ -496,21 +498,20 @@ public class ISOMetadataStore implements MetadataStore {
             for ( JAXBElement<? extends AbstractInspector> jaxbElem : config.getAbstractInspector() ) {
                 AbstractInspector d = jaxbElem.getValue();
                 if ( d instanceof IdentifierInspector ) {
-                    ri.add( FileIdentifierInspector.newInstance( (IdentifierInspector) d, conn ) );
+                    ri.add( FileIdentifierInspector.newInstance( (IdentifierInspector) d ) );
                 } else if ( d instanceof InspireInspector ) {
-                    ri.add( InspireCompliance.newInstance( (InspireInspector) d, conn ) );
-                    ri.add( ResourceIdentifier.newInstance( (InspireInspector) d, conn ) );
+                    ri.add( InspireComplianceInspector.newInstance( (InspireInspector) d ) );
                 } else if ( d instanceof CoupledResourceInspector ) {
-                    ri.add( CoupledDataInspector.newInstance( (CoupledResourceInspector) d, conn ) );
+                    ri.add( CoupledDataInspector.newInstance( (CoupledResourceInspector) d ) );
                 }
 
             }
             if ( !ri.contains( FileIdentifierInspector.getInstance() ) ) {
-                ri.add( FileIdentifierInspector.newInstance( new IdentifierInspector(), conn ) );
+                ri.add( FileIdentifierInspector.newInstance( new IdentifierInspector() ) );
             }
-            ri.add( MetadataValidation.newInstance( config.isValidate() ) );
+            MetadataValidation validate = MetadataValidation.newInstance( config.isValidate() );
 
-            ta = new ISOMetadataStoreTransaction( conn, ri, config.getAnyText(), useLegacyPredicates );
+            ta = new ISOMetadataStoreTransaction( conn, ri, config.getAnyText(), validate, useLegacyPredicates );
         } catch ( SQLException e ) {
             throw new MetadataStoreException( e.getMessage() );
         }

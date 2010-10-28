@@ -48,6 +48,7 @@ import org.deegree.commons.xml.NamespaceContext;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.XPath;
 import org.deegree.metadata.persistence.MetadataStoreException;
+import org.deegree.metadata.persistence.MetadataInspectorManager.InspectorKey;
 import org.deegree.metadata.persistence.iso.generating.generatingelements.GenerateOMElement;
 import org.deegree.metadata.persistence.iso.parsing.IdUtils;
 import org.deegree.metadata.persistence.iso19115.jaxb.AbstractInspector;
@@ -72,21 +73,22 @@ public class FileIdentifierInspector implements RecordInspector {
 
     private static FileIdentifierInspector instance;
 
-    private final Connection conn;
+    private static final InspectorKey NAME = InspectorKey.IdentifierInspector;
+
+    private Connection conn;
 
     private final XMLAdapter a;
 
     private final IdentifierInspector inspector;
 
-    private FileIdentifierInspector( IdentifierInspector inspector, Connection conn ) {
-        this.conn = conn;
+    private FileIdentifierInspector( IdentifierInspector inspector ) {
         this.inspector = inspector;
         this.a = new XMLAdapter();
         instance = this;
     }
 
-    public static FileIdentifierInspector newInstance( IdentifierInspector inspector, Connection conn ) {
-        return new FileIdentifierInspector( inspector, conn );
+    public static FileIdentifierInspector newInstance( IdentifierInspector inspector ) {
+        return new FileIdentifierInspector( inspector );
     }
 
     @Override
@@ -171,8 +173,9 @@ public class FileIdentifierInspector implements RecordInspector {
     }
 
     @Override
-    public OMElement inspect( OMElement record )
+    public OMElement inspect( OMElement record, Connection conn )
                             throws MetadataStoreException {
+        this.conn = conn;
         a.setRootElement( record );
 
         NamespaceContext nsContext = a.getNamespaceContext( record );
@@ -224,6 +227,12 @@ public class FileIdentifierInspector implements RecordInspector {
 
     public static FileIdentifierInspector getInstance() {
         return instance;
+    }
+
+    @Override
+    public InspectorKey getName() {
+
+        return NAME;
     }
 
 }

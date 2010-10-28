@@ -35,46 +35,83 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.metadata.persistence.iso.parsing.inspectation;
 
+import static org.slf4j.LoggerFactory.getLogger;
+
 import java.sql.Connection;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.axiom.om.OMElement;
 import org.deegree.metadata.persistence.MetadataStoreException;
 import org.deegree.metadata.persistence.MetadataInspectorManager.InspectorKey;
 import org.deegree.metadata.persistence.iso19115.jaxb.AbstractInspector;
+import org.deegree.metadata.persistence.iso19115.jaxb.InspireInspector;
+import org.slf4j.Logger;
 
 /**
- * Abstract base class for all inspector implementations.
+ * Inspects the INSPIRE compliance of the metadataset.
  * 
  * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
  */
-public interface RecordInspector {
+public class InspireComplianceInspector implements RecordInspector {
 
-    /**
-     * Inpectation of one record. The metadatarecord goes into the chain of inspectation.
-     * 
-     * @param record
-     * @return the inspected and (possibly) modified metadatarecord.
-     * @throws MetadataStoreException
-     */
+    private static final Logger LOG = getLogger( InspireComplianceInspector.class );
+
+    private static InspireComplianceInspector instance;
+
+    private final InspireInspector ric;
+
+    private static final InspectorKey NAME = InspectorKey.InspireInspector;
+
+    private Connection conn;
+
+    private InspireComplianceInspector( InspireInspector ric ) {
+        this.ric = ric;
+        instance = this;
+    }
+
+    public static InspireComplianceInspector newInstance( InspireInspector ric ) {
+        return new InspireComplianceInspector( ric );
+    }
+
+    @Override
+    public boolean checkAvailability( AbstractInspector inspector ) {
+        InspireInspector ric = (InspireInspector) inspector;
+        if ( ric == null ) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+    public InspireInspector getRic() {
+        return ric;
+    }
+
+    @Override
     public OMElement inspect( OMElement record, Connection conn )
-                            throws MetadataStoreException;
+                            throws MetadataStoreException {
+        this.conn = conn;
+        // TODO make it plugable.
+        List<InspireCompliance> inspireList = new ArrayList<InspireCompliance>();
+        inspireList.add( ResourceIdentifier.newInstance( ric ) );
+        for ( InspireCompliance c : inspireList ) {
+            record = c.inspect( record, conn );
+        }
 
-    /**
-     * Proves the availability of the specific inspector. If there is no inspector available there should be run a
-     * default action.
-     * 
-     * @param inspector
-     * @return
-     */
-    public boolean checkAvailability( AbstractInspector inspector );
+        return record;
+    }
 
-    /**
-     * 
-     * @return the name of the inspector
-     */
-    public InspectorKey getName();
+    public static InspireComplianceInspector getInstance() {
+        return instance;
+    }
+
+    @Override
+    public InspectorKey getName() {
+        return NAME;
+    }
 
 }

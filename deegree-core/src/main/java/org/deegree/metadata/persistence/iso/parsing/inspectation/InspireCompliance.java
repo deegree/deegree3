@@ -35,148 +35,22 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.metadata.persistence.iso.parsing.inspectation;
 
-import static org.slf4j.LoggerFactory.getLogger;
-
 import java.sql.Connection;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.apache.axiom.om.OMElement;
 import org.deegree.metadata.persistence.MetadataStoreException;
-import org.deegree.metadata.persistence.iso19115.jaxb.AbstractInspector;
-import org.deegree.metadata.persistence.iso19115.jaxb.InspireInspector;
-import org.slf4j.Logger;
 
 /**
- * Inspects the INSPIRE compliance of the metadataset.
+ * TODO add class documentation here
  * 
  * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
  */
-public class InspireCompliance implements RecordInspector {
+public interface InspireCompliance {
 
-    private static final Logger LOG = getLogger( InspireCompliance.class );
-
-    private static InspireCompliance instance;
-
-    private final InspireInspector ric;
-
-    private final Connection conn;
-
-    private InspireCompliance( InspireInspector ric, Connection conn ) {
-        this.ric = ric;
-        this.conn = conn;
-        instance = this;
-    }
-
-    public static InspireCompliance newInstance( InspireInspector ric, Connection conn ) {
-        return new InspireCompliance( ric, conn );
-    }
-
-    @Override
-    public boolean checkAvailability( AbstractInspector inspector ) {
-        InspireInspector ric = (InspireInspector) inspector;
-        if ( ric == null ) {
-            return false;
-        } else {
-            return true;
-        }
-    }
-
-    // /**
-    // * Determines if the required constraint of the equality of the attribute
-    // *
-    // <Code>gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:citation/gmd:CI_Citation/gmd:identifier/gmd:RS_Identifier</Code>
-    // * and <Code>gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/@id</Code> is given.
-    // *
-    // * @param rsList
-    // * the list of RS_Identifier, not <Code>null</Code>.
-    // * @param id
-    // * the id attribute if exists, can be <Code>null</Code>.
-    // * @return a list of RS_Identifier, not <Code>null</Code> but empty, at least.
-    // * @throws MetadataStoreException
-    // */
-    // public List<String> determineInspireCompliance( InspireType type )
-    // throws MetadataStoreException {
-    //
-    // if ( checkInspireCompliance() ) {
-    // boolean generateAutomatic = ric.isGenerateAutomatic();
-    // if ( generateAutomatic == false ) {
-    // if ( checkRSListAgainstID( rsList, id ) ) {
-    // LOG.info( "The resourceIdentifier has been accepted." );
-    // return rsList;
-    // }
-    // LOG.debug(
-    // "There was no match between resourceIdentifier and the id-attribute! Without any automatic guarantee this metadata has to be rejected! "
-    // );
-    // throw new MetadataStoreException( "There was no match between resourceIdentifier and the id-attribute!" );
-    // }
-    // if ( checkRSListAgainstID( rsList, id ) ) {
-    // LOG.info( "The resourceIdentifier has been accepted without any automatic creation. " );
-    // return rsList;
-    // }
-    // /**
-    // * if both, id and resourceIdentifier exists but different: update id with resourceIdentifier
-    // * <p>
-    // * if id exists: update resourceIdentifier with id
-    // * <p>
-    // * if resourceIdentifier exists: update id with resourceIdentifier
-    // * <p>
-    // * if nothing exists: generate it for id and resourceIdentifier
-    // */
-    // if ( rsList.size() == 0 && id == null ) {
-    // LOG.info( "Neither an id nor a resourceIdentifier exists...so this creates a new one. " );
-    // rsList.add( IdUtils.newInstance( conn ).generateUUID() );
-    // return rsList;
-    // } else if ( rsList.size() == 0 && id != null ) {
-    // LOG.info( "An id exists but not a resourceIdentifier...so adapting resourceIdentifier with id. " );
-    // rsList.add( id );
-    // return rsList;
-    // }
-    // }
-    // LOG.info( "No modification happened, so the resourceIdentifierList will be passed through. " );
-    // return rsList;
-    // }
-    //
-    // private boolean checkRSListAgainstID( List<String> rsList, String id ) {
-    // if ( rsList.size() == 0 ) {
-    // return false;
-    // } else {
-    // if ( checkUUIDCompliance( rsList.get( 0 ) ) ) {
-    // if ( checkUUIDCompliance( id ) ) {
-    // return rsList.get( 0 ).equals( id );
-    // }
-    // }
-    //
-    // }
-    // return false;
-    // }
-
-    private boolean checkUUIDCompliance( String uuid ) {
-
-        char firstChar = uuid.charAt( 0 );
-        Pattern p = Pattern.compile( "[0-9]" );
-        Matcher m = p.matcher( "" + firstChar );
-        if ( m.matches() ) {
-            return false;
-        }
-        return true;
-    }
-
-    public InspireInspector getRic() {
-        return ric;
-    }
-
-    @Override
-    public OMElement inspect( OMElement record )
-                            throws MetadataStoreException {
-        return record;
-    }
-
-    public static InspireCompliance getInstance() {
-        return instance;
-    }
+    OMElement inspect( OMElement record, Connection conn )
+                            throws MetadataStoreException;
 
 }

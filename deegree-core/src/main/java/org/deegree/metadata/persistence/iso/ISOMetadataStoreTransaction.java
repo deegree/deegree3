@@ -17,6 +17,7 @@ import org.deegree.metadata.persistence.MetadataStoreException;
 import org.deegree.metadata.persistence.MetadataStoreTransaction;
 import org.deegree.metadata.persistence.iso.generating.GenerateQueryableProperties;
 import org.deegree.metadata.persistence.iso.parsing.IdUtils;
+import org.deegree.metadata.persistence.iso.parsing.inspectation.MetadataValidation;
 import org.deegree.metadata.persistence.iso.parsing.inspectation.RecordInspector;
 import org.deegree.metadata.persistence.iso19115.jaxb.ISOMetadataStoreConfig.AnyText;
 import org.deegree.metadata.publication.DeleteTransaction;
@@ -43,14 +44,16 @@ public class ISOMetadataStoreTransaction implements MetadataStoreTransaction {
 
     private final AnyText anyText;
 
+    private final MetadataValidation validate;
+
     private final boolean useLegacyPredicates;
 
     ISOMetadataStoreTransaction( Connection conn, List<RecordInspector> inspectors, AnyText anyText,
-                                 boolean useLegacyPredicates ) throws SQLException {
+                                 MetadataValidation validate, boolean useLegacyPredicates ) throws SQLException {
         this.conn = conn;
         this.anyText = anyText;
         this.inspectors = inspectors;
-
+        this.validate = validate;
         this.useLegacyPredicates = useLegacyPredicates;
         conn.setAutoCommit( false );
 
@@ -94,15 +97,17 @@ public class ISOMetadataStoreTransaction implements MetadataStoreTransaction {
 
             try {
                 for ( RecordInspector r : inspectors ) {
-                    element = r.inspect( element );
+                    element = r.inspect( element, conn );
                 }
-
-                ISORecord rec = new ISORecord( element, anyText );
-                if ( IdUtils.newInstance( conn ).proveIdExistence( rec.getIdentifier()[0] ) ) {
-                    GenerateQueryableProperties generateQP = new GenerateQueryableProperties();
-                    int operatesOnId = generateQP.generateMainDatabaseDataset( conn, rec );
-                    generateQP.executeQueryableProperties( false, conn, operatesOnId, rec );
-                    identifierList.addAll( Arrays.asList( rec.getIdentifier() ) );
+                element = validate.inspect( element );
+                if ( element != null ) {
+                    ISORecord rec = new ISORecord( element, anyText );
+                    if ( IdUtils.newInstance( conn ).proveIdExistence( rec.getIdentifier()[0] ) ) {
+                        GenerateQueryableProperties generateQP = new GenerateQueryableProperties();
+                        int operatesOnId = generateQP.generateMainDatabaseDataset( conn, rec );
+                        generateQP.executeQueryableProperties( false, conn, operatesOnId, rec );
+                        identifierList.addAll( Arrays.asList( rec.getIdentifier() ) );
+                    }
                 }
 
             } catch ( XMLStreamException e ) {

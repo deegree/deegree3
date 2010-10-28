@@ -48,10 +48,12 @@ import java.util.List;
 import javax.xml.namespace.QName;
 
 import org.apache.axiom.om.OMElement;
+import org.deegree.commons.utils.JDBCUtils;
 import org.deegree.commons.xml.NamespaceContext;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.XPath;
 import org.deegree.metadata.persistence.MetadataStoreException;
+import org.deegree.metadata.persistence.MetadataInspectorManager.InspectorKey;
 import org.deegree.metadata.persistence.iso19115.jaxb.AbstractInspector;
 import org.deegree.metadata.persistence.iso19115.jaxb.CoupledResourceInspector;
 import org.deegree.metadata.persistence.types.OperatesOnData;
@@ -71,21 +73,22 @@ public class CoupledDataInspector implements RecordInspector {
 
     private static CoupledDataInspector instance;
 
-    private final Connection conn;
-
     private final XMLAdapter a;
+
+    private Connection conn;
+
+    private static final InspectorKey NAME = InspectorKey.CoupledResourceInspector;
 
     private final CoupledResourceInspector ci;
 
-    private CoupledDataInspector( CoupledResourceInspector ci, Connection conn ) {
-        this.conn = conn;
+    private CoupledDataInspector( CoupledResourceInspector ci ) {
         this.ci = ci;
         this.a = new XMLAdapter();
         instance = this;
     }
 
-    public static CoupledDataInspector newInstance( CoupledResourceInspector ci, Connection conn ) {
-        return new CoupledDataInspector( ci, conn );
+    public static CoupledDataInspector newInstance( CoupledResourceInspector ci ) {
+        return new CoupledDataInspector( ci );
     }
 
     @Override
@@ -187,8 +190,9 @@ public class CoupledDataInspector implements RecordInspector {
     }
 
     @Override
-    public OMElement inspect( OMElement record )
+    public OMElement inspect( OMElement record, Connection conn )
                             throws MetadataStoreException {
+        this.conn = conn;
         a.setRootElement( record );
 
         NamespaceContext nsContext = a.getNamespaceContext( record );
@@ -267,6 +271,7 @@ public class CoupledDataInspector implements RecordInspector {
                 if ( checkAvailability( ci ) ) {
                     if ( throwException && ci.isThrowConsistencyError() ) {
                         String msg = "Error while processing the coupling!";
+                        JDBCUtils.close( conn );
                         LOG.debug( msg );
                         throw new MetadataStoreException( msg );
                     }
@@ -284,6 +289,11 @@ public class CoupledDataInspector implements RecordInspector {
 
     public static CoupledDataInspector getInstance() {
         return instance;
+    }
+
+    @Override
+    public InspectorKey getName() {
+        return NAME;
     }
 
 }

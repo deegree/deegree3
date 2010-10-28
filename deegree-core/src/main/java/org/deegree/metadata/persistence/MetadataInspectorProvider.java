@@ -33,48 +33,31 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.metadata.persistence.iso.parsing.inspectation;
+package org.deegree.metadata.persistence;
 
-import java.sql.Connection;
+import java.net.URL;
 
-import org.apache.axiom.om.OMElement;
-import org.deegree.metadata.persistence.MetadataStoreException;
 import org.deegree.metadata.persistence.MetadataInspectorManager.InspectorKey;
-import org.deegree.metadata.persistence.iso19115.jaxb.AbstractInspector;
+import org.deegree.metadata.persistence.iso.parsing.inspectation.RecordInspector;
 
 /**
- * Abstract base class for all inspector implementations.
+ * TODO add class documentation here
  * 
  * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
  */
-public interface RecordInspector {
+public interface MetadataInspectorProvider {
 
     /**
-     * Inpectation of one record. The metadatarecord goes into the chain of inspectation.
      * 
-     * @param record
-     * @return the inspected and (possibly) modified metadatarecord.
-     * @throws MetadataStoreException
-     */
-    public OMElement inspect( OMElement record, Connection conn )
-                            throws MetadataStoreException;
-
-    /**
-     * Proves the availability of the specific inspector. If there is no inspector available there should be run a
-     * default action.
-     * 
-     * @param inspector
+     * @param config
      * @return
      */
-    public boolean checkAvailability( AbstractInspector inspector );
+    public RecordInspector getInspector( URL config )
+                            throws MetadataStoreException;
 
-    /**
-     * 
-     * @return the name of the inspector
-     */
-    public InspectorKey getName();
+    public InspectorKey getInspectorKey();
 
 }

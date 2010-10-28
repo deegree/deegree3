@@ -59,14 +59,15 @@ import org.deegree.metadata.persistence.iso19115.jaxb.InspireInspector;
 import org.slf4j.Logger;
 
 /**
- * TODO add class documentation here
+ * ResourceIdentifier is a subInspector of the InspireInspector. If there is no INSPIRE needed, this inspector is
+ * unnecessary.
  * 
  * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
  */
-public class ResourceIdentifier implements RecordInspector {
+public class ResourceIdentifier implements InspireCompliance {
 
     private static final Logger LOG = getLogger( ResourceIdentifier.class );
 
@@ -74,25 +75,24 @@ public class ResourceIdentifier implements RecordInspector {
 
     private final InspireInspector ric;
 
-    private final Connection conn;
+    private Connection conn;
+
+    private static final String NAME = InspireInspector.class.getSimpleName();
 
     private final XMLAdapter a;
 
-    private final IdUtils util;
+    private IdUtils util;
 
-    private ResourceIdentifier( InspireInspector ric, Connection conn ) {
+    private ResourceIdentifier( InspireInspector ric ) {
         this.ric = ric;
-        this.conn = conn;
-        this.util = IdUtils.newInstance( conn );
         this.a = new XMLAdapter();
         instance = this;
     }
 
-    public static ResourceIdentifier newInstance( InspireInspector ric, Connection conn ) {
-        return new ResourceIdentifier( ric, conn );
+    public static ResourceIdentifier newInstance( InspireInspector ric ) {
+        return new ResourceIdentifier( ric );
     }
 
-    @Override
     public boolean checkAvailability( AbstractInspector inspector ) {
         InspireInspector ric = (InspireInspector) inspector;
         if ( ric == null ) {
@@ -118,7 +118,7 @@ public class ResourceIdentifier implements RecordInspector {
                             throws MetadataStoreException {
 
         if ( checkAvailability( ric ) ) {
-            boolean generateAutomatic = ric.isGenerateAutomatic();
+            boolean generateAutomatic = ric.isGenerateRIA();
             if ( generateAutomatic == false ) {
                 if ( id != null ) {
                     if ( util.checkUUIDCompliance( id ) ) {
@@ -188,9 +188,11 @@ public class ResourceIdentifier implements RecordInspector {
     }
 
     @Override
-    public OMElement inspect( OMElement record )
+    public OMElement inspect( OMElement record, Connection conn )
                             throws MetadataStoreException {
+        this.conn = conn;
         a.setRootElement( record );
+        this.util = IdUtils.newInstance( conn );
 
         NamespaceContext nsContext = a.getNamespaceContext( record );
         nsContext.addNamespace( "srv", "http://www.isotc211.org/2005/srv" );

@@ -190,8 +190,10 @@ public class MetadataStoreManager {
             String rsId = fileName.substring( 0, fileName.length() - 4 );
             LOG.info( "Setting up metadata store '" + rsId + "' from file '" + fileName + "'..." + "" );
             try {
-                MetadataStore rs = create( rsConfigFile.toURI().toURL() );
+                URL configURL = rsConfigFile.toURI().toURL();
+                MetadataStore rs = create( configURL );
                 registerAndInit( rs, rsId );
+
             } catch ( Exception e ) {
                 LOG.error( "Error initializing metadata store: " + e.getMessage(), e );
             }

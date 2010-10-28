@@ -46,7 +46,6 @@ import javax.xml.stream.XMLStreamException;
 import org.apache.axiom.om.OMElement;
 import org.deegree.commons.xml.schema.SchemaValidator;
 import org.deegree.metadata.persistence.MetadataStoreException;
-import org.deegree.metadata.persistence.iso19115.jaxb.AbstractInspector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -58,7 +57,7 @@ import org.slf4j.LoggerFactory;
  * 
  * @version $Revision$, $Date$
  */
-public class MetadataValidation implements RecordInspector {
+public class MetadataValidation {
     private static Logger LOG = LoggerFactory.getLogger( MetadataValidation.class );
 
     private final boolean isValidate;
@@ -106,7 +105,6 @@ public class MetadataValidation implements RecordInspector {
         return new ArrayList<String>();
     }
 
-    @Override
     public OMElement inspect( OMElement record )
                             throws MetadataStoreException {
         List<String> errors = validate( record );
@@ -114,11 +112,6 @@ public class MetadataValidation implements RecordInspector {
             return record;
         }
         return null;
-    }
-
-    @Override
-    public boolean checkAvailability( AbstractInspector inspector ) {
-        return true;
     }
 
     public static MetadataValidation getInstance() {
