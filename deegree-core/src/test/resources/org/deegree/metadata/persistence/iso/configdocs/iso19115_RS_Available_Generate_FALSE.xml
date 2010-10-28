@@ -12,6 +12,6 @@
     </Param>
 		<Param key="deriveFileIdentifier">gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/@id</Param>
 	</IdentifierInspector>
-	<InspireInspector generateAutomatic="false"/>
+	<InspireInspector generateRIA="false"/>
 	<!--<CoupledResourceInspector throwConsistencyError="true" />-->
 </ISOMetadataStore>

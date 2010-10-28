@@ -702,7 +702,7 @@ public class ISOMetadataStoreTest {
      * 4.xml has no valid combination -> autmatic generating <br>
      * 5.xml has no valid combination -> autmatic generating <br>
      * 6.xml has a valid combination -> so nothing should be generated <br>
-     * 7.xml has no valid combination -> autmatic generating <br>
+     * 7.xml has no valid combination -> auotmatic generating <br>
      * Output should be 5 valid metadataRecords in backend
      * 
      * @throws MetadataStoreException
