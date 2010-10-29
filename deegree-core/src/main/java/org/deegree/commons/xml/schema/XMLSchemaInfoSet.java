@@ -162,8 +162,8 @@ public class XMLSchemaInfoSet {
                                         String nsUri = xmlStream.getNamespaceURI( i );
                                         String oldPrefix = nsToPrefix.get( nsUri );
                                         if ( oldPrefix != null && !oldPrefix.equals( prefix ) ) {
-                                            LOG.warn( "Different prefices for '" + nsUri + "'" + prefix + " / "
-                                                      + oldPrefix );
+                                            LOG.debug( "Multiple prefices for namespace '" + nsUri + "': " + prefix
+                                                       + " / " + oldPrefix );
                                         } else {
                                             nsToPrefix.put( nsUri, prefix );
                                         }
@@ -254,7 +254,7 @@ public class XMLSchemaInfoSet {
 
         // first collect all element names, because XSModels seem to contain multiple XSElementDeclaration
         // elements for the same name (when multiple schema files are involved)
-        Set<QName> elementNames = new HashSet<QName>();        
+        Set<QName> elementNames = new HashSet<QName>();
         XSNamedMap elementDecls = xmlSchema.getComponents( XSConstants.ELEMENT_DECLARATION );
         for ( int i = 0; i < elementDecls.getLength(); i++ ) {
             XSElementDeclaration candidate = (XSElementDeclaration) elementDecls.item( i );
@@ -288,7 +288,8 @@ public class XMLSchemaInfoSet {
         for ( QName name : elementNames ) {
             substDecls.add( xmlSchema.getElementDeclaration( name.getLocalPart(), name.getNamespaceURI() ) );
         }
-        if (!elementNames.contains (new QName (elementDecl.getNamespace(), elementDecl.getName())) && transitive && (!onlyConcrete || !elementDecl.getAbstract())) {
+        if ( !elementNames.contains( new QName( elementDecl.getNamespace(), elementDecl.getName() ) ) && transitive
+             && ( !onlyConcrete || !elementDecl.getAbstract() ) ) {
             substDecls.add( elementDecl );
         }
 
