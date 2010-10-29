@@ -326,7 +326,7 @@ public class SimpleSQLFeatureStore implements FeatureStore {
 
                 stmt = conn.prepareStatement( sql );
                 try {
-                    bbox = (Envelope) transformer.transform( bbox );
+                    bbox = transformer.transform( bbox );
                 } catch ( UnknownCRSException e ) {
                     LOG.info( "Bounding box could not be transformed: '{}'.", e.getLocalizedMessage() );
                     LOG.trace( "Stack trace:", e );

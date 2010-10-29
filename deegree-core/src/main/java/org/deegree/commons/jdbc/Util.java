@@ -114,7 +114,7 @@ public class Util {
                 PropertyType pt;
                 int colType = md.getColumnType( i );
 
-                QName ptName = new QName( ftName.getNamespaceURI(), ftName.getLocalPart(), name );
+                QName ptName = new QName( ftName.getNamespaceURI(), name, ftName.getPrefix() );
                 switch ( colType ) {
                 case VARCHAR:
                 case CHAR:
