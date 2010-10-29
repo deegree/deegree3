@@ -151,7 +151,7 @@ public class XMLSchemaInfoSet {
                 for ( String componentLocation : getComponentLocations( ns ) ) {
                     InputStream is = null;
                     try {
-                        LOG.info( "Scanning schema component '" + componentLocation + "'" );
+                        LOG.debug( "Scanning schema component '" + componentLocation + "'" );
                         is = new URL( componentLocation ).openStream();
                         XMLStreamReader xmlStream = XMLInputFactory.newInstance().createXMLStreamReader( is );
                         while ( xmlStream.next() != END_DOCUMENT ) {
