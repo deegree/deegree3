@@ -146,6 +146,8 @@ public class ShapeFeatureStore implements FeatureStore {
 
     private boolean generateAlphanumericIndexes;
 
+    private String fidPrefix;
+
     /**
      * Creates a new {@link ShapeFeatureStore} instance from the given parameters.
      * 
@@ -175,6 +177,9 @@ public class ShapeFeatureStore implements FeatureStore {
         if ( localFtName.endsWith( ".shp" ) ) {
             localFtName = localFtName.substring( 0, localFtName.length() - 4 );
         }
+        
+        // TODO make this configurable
+        fidPrefix = localFtName.toUpperCase() + "_";
 
         // TODO allow null namespaces / empty prefix
         // NOTE: verify that the WFS code for dealing with that (e.g. repairing unqualified names) works with that first
@@ -534,8 +539,7 @@ public class ShapeFeatureStore implements FeatureStore {
     }
 
     private String buildFID( int num ) {
-        // TODO make this configurable
-        return "shp_" + num;
+        return fidPrefix + num;
     }
 
     @Override
