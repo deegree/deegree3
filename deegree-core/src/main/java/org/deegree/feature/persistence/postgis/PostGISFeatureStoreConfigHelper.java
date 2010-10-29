@@ -41,9 +41,6 @@ import static org.apache.xerces.xs.XSComplexTypeDefinition.CONTENTTYPE_ELEMENT;
 import static org.apache.xerces.xs.XSComplexTypeDefinition.CONTENTTYPE_EMPTY;
 import static org.deegree.commons.xml.CommonNamespaces.XSINS;
 
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
 import java.util.List;
 import java.util.Map;
 import java.util.SortedSet;
@@ -52,8 +49,6 @@ import java.util.Map.Entry;
 
 import javax.xml.XMLConstants;
 import javax.xml.namespace.QName;
-import javax.xml.stream.FactoryConfigurationError;
-import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
@@ -69,7 +64,6 @@ import org.apache.xerces.xs.XSTerm;
 import org.apache.xerces.xs.XSTypeDefinition;
 import org.apache.xerces.xs.XSWildcard;
 import org.deegree.commons.tom.primitive.XMLValueMangler;
-import org.deegree.commons.xml.stax.IndentingXMLStreamWriter;
 import org.deegree.feature.types.ApplicationSchema;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.feature.types.property.CodePropertyType;
@@ -79,8 +73,6 @@ import org.deegree.feature.types.property.GeometryPropertyType;
 import org.deegree.feature.types.property.MeasurePropertyType;
 import org.deegree.feature.types.property.PropertyType;
 import org.deegree.feature.types.property.SimplePropertyType;
-import org.deegree.gml.GMLVersion;
-import org.deegree.gml.feature.schema.ApplicationSchemaXSDDecoder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -483,25 +475,26 @@ public class PostGISFeatureStoreConfigHelper {
         return name.getLocalPart();
     }
 
-    public static void main( String[] args )
-                            throws XMLStreamException, FactoryConfigurationError, IOException, ClassCastException,
-                            ClassNotFoundException, InstantiationException, IllegalAccessException {
-
-        String schemaURL = "file:/home/schneider/workspace/deegree-inspire-node/src/main/webapp/WEB-INF/workspace/schemas/inspire/annex1/Addresses.xsd";
-        if ( schemaURL == null ) {
-            return;
-        }
-
-        ApplicationSchemaXSDDecoder adapter = new ApplicationSchemaXSDDecoder( GMLVersion.GML_32, null, schemaURL );
-        ApplicationSchema schema = adapter.extractFeatureTypeSchema();
-
-        PostGISFeatureStoreConfigHelper helper = new PostGISFeatureStoreConfigHelper( schema );
-
-        OutputStream os = new FileOutputStream( "/tmp/config.xml" );
-        XMLStreamWriter xmlStream = XMLOutputFactory.newInstance().createXMLStreamWriter( os );
-        xmlStream = new IndentingXMLStreamWriter( xmlStream );
-        helper.writeConfig( xmlStream, "EPSG:4258", null, "inspire", null );
-        xmlStream.close();
-        os.close();
-    }
+    // public static void main( String[] args )
+    // throws XMLStreamException, FactoryConfigurationError, IOException, ClassCastException,
+    // ClassNotFoundException, InstantiationException, IllegalAccessException {
+    //
+    // String schemaURL =
+    // "file:/home/schneider/workspace/deegree-inspire-node/src/main/webapp/WEB-INF/workspace/schemas/inspire/annex1/Addresses.xsd";
+    // if ( schemaURL == null ) {
+    // return;
+    // }
+    //
+    // ApplicationSchemaXSDDecoder adapter = new ApplicationSchemaXSDDecoder( GMLVersion.GML_32, null, schemaURL );
+    // ApplicationSchema schema = adapter.extractFeatureTypeSchema();
+    //
+    // PostGISFeatureStoreConfigHelper helper = new PostGISFeatureStoreConfigHelper( schema );
+    //
+    // OutputStream os = new FileOutputStream( "/tmp/config.xml" );
+    // XMLStreamWriter xmlStream = XMLOutputFactory.newInstance().createXMLStreamWriter( os );
+    // xmlStream = new IndentingXMLStreamWriter( xmlStream );
+    // helper.writeConfig( xmlStream, "EPSG:4258", null, "inspire", null );
+    // xmlStream.close();
+    // os.close();
+    // }
 }
