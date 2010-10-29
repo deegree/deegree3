@@ -78,6 +78,7 @@ import org.deegree.commons.tom.genericxml.GenericXMLElement;
 import org.deegree.commons.tom.genericxml.GenericXMLElementContent;
 import org.deegree.commons.tom.ows.CodeType;
 import org.deegree.commons.tom.ows.StringOrRef;
+import org.deegree.commons.tom.primitive.PrimitiveType;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.commons.uom.Measure;
 import org.deegree.commons.xml.CommonNamespaces;
@@ -653,10 +654,11 @@ public class GMLFeatureReader extends XMLAdapter {
         TypedObjectNode value = parseGenericXMLElement( xmlStream, propDecl.getXSDValueType(), crs );
 
         if ( value instanceof GenericXMLElement ) {
-            // unwrap the element -> we just want a node that represents the
-            // element's value
+            // unwrap the element -> we just want a node that represents the element's value
             GenericXMLElement xmlEl = (GenericXMLElement) value;
-            value = new GenericXMLElementContent( xmlEl.getXSType(), xmlEl.getAttributes(), xmlEl.getChildren() );
+            Map<QName, PrimitiveValue> attrs = xmlEl.getAttributes();
+            attrs.remove( new QName( XSINS, "nil" ) );
+            value = new GenericXMLElementContent( xmlEl.getXSType(), attrs, xmlEl.getChildren() );
         }
         return new GenericProperty( propDecl, propName, value, isNilled );
     }
@@ -800,6 +802,13 @@ public class GMLFeatureReader extends XMLAdapter {
                     throw new XMLParsingException( xmlStream, msg );
                 }
             }
+        }
+
+        // TODO check if element actually is nillable
+        String nilled = xmlStream.getAttributeValue( XSINS, "nil" );
+        if ( nilled != null ) {
+            PrimitiveValue xmlValue = new PrimitiveValue( nilled, PrimitiveType.BOOLEAN );
+            attrs.put( new QName( XSINS, "nil", "xsi" ), xmlValue );
         }
         return attrs;
     }
