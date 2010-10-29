@@ -71,7 +71,7 @@ public class FMLParserTest {
     @Test
     public void testParsingChain()
                             throws RecognitionException {
-        ANTLRStringStream in = new ANTLRStringStream( "ID->SUBJECT.PHILOSOPHER_ID->NAME" );
+        ANTLRStringStream in = new ANTLRStringStream( "ID=SUBJECT.PHILOSOPHER_ID=NAME" );
         FMLLexer lexer = new FMLLexer( in );
         CommonTokenStream tokens = new CommonTokenStream( lexer );
         FMLParser parser = new FMLParser( tokens );
