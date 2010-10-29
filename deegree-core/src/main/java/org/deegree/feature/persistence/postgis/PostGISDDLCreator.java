@@ -55,7 +55,7 @@ import org.deegree.feature.types.FeatureType;
 import org.deegree.feature.types.property.PropertyType;
 
 /**
- * Handles the creation of DDL (DataDefinitionLanguage) scripts for the {@link PostGISFeatureStore}.
+ * Creates DDL (DataDefinitionLanguage) scripts for the {@link PostGISFeatureStoreProvider}.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
@@ -65,14 +65,6 @@ import org.deegree.feature.types.property.PropertyType;
 public class PostGISDDLCreator {
 
     private final MappedApplicationSchema schema;
-
-    private int maxColumnLength = 64;
-
-    private int columnId = 0;
-
-    private int maxTableLength = 64;
-
-    private int tableId = 0;
 
     /**
      * @param schema
@@ -146,7 +138,7 @@ public class PostGISDDLCreator {
         for ( PropertyType pt : ft.getPropertyDeclarations() ) {
             Mapping propMapping = ftMapping.getMapping( pt.getName() );
             if ( propMapping != null ) {
-                process( sql, propMapping, additionalDDLs );
+                process( sql, ftMapping.getFtTable(), propMapping, additionalDDLs );
             }
         }
         sql.append( "\n)" );
@@ -157,9 +149,15 @@ public class PostGISDDLCreator {
         return ddl;
     }
 
-    private void process( StringBuffer sql, Mapping propMapping, List<String> additionalDDLs ) {
+    private void process( StringBuffer sql, String table, Mapping propMapping, List<String> additionalDDLs ) {
 
         MappingExpression me = propMapping.getMapping();
+
+        JoinChain jc = propMapping.getJoinedTable();
+        if ( jc != null ) {
+            sql = createJoinedTable( table, jc );
+        }
+
         if ( propMapping instanceof PrimitiveMapping ) {
             PrimitiveMapping primitiveMapping = (PrimitiveMapping) propMapping;
             if ( me instanceof DBField ) {
@@ -185,13 +183,18 @@ public class PostGISDDLCreator {
             }
         } else if ( propMapping instanceof CompoundMapping ) {
             CompoundMapping compoundMapping = (CompoundMapping) propMapping;
-            process( sql, compoundMapping, additionalDDLs );
+            process( sql, table, compoundMapping, additionalDDLs );
         } else {
             throw new RuntimeException( "Internal error. Unhandled mapping type '" + propMapping.getClass() + "'" );
         }
+
+        if ( jc != null ) {
+            sql.append( "\n)" );
+            additionalDDLs.add( sql.toString() );
+        }
     }
 
-    private void process( StringBuffer sb, CompoundMapping cm, List<String> additionalDDLs ) {
+    private void process( StringBuffer sb, String table, CompoundMapping cm, List<String> additionalDDLs ) {
 
         for ( Mapping mapping : cm.getParticles() ) {
             if ( mapping instanceof PrimitiveMapping ) {
@@ -210,8 +213,17 @@ public class PostGISDDLCreator {
 
             } else if ( mapping instanceof CompoundMapping ) {
                 CompoundMapping compoundMapping = (CompoundMapping) mapping;
-                for ( Mapping particle : compoundMapping.getParticles() ) {
-                    process( sb, particle, additionalDDLs );
+                JoinChain jc = compoundMapping.getJoinedTable();
+                if ( jc != null ) {
+                    StringBuffer newSb = createJoinedTable( table, jc );
+                    for ( Mapping particle : compoundMapping.getParticles() ) {
+                        process( newSb, jc.getFields().get( 1 ).getTable(), particle, additionalDDLs );
+                    }
+                    additionalDDLs.add( newSb.toString() );
+                } else {
+                    for ( Mapping particle : compoundMapping.getParticles() ) {
+                        process( sb, table, particle, additionalDDLs );
+                    }
                 }
             } else {
                 throw new RuntimeException( "Internal error. Unhandled mapping type '" + mapping.getClass() + "'" );
@@ -255,7 +267,7 @@ public class PostGISDDLCreator {
                 if ( me instanceof DBField ) {
                     DBField dbField = (DBField) me;
                     for ( Mapping particle : compoundMapping.getParticles() ) {
-                        process( sb, particle, additionalDDLs );
+                        process( sb, table, particle, additionalDDLs );
                     }
                 } else {
                     throw new RuntimeException( "Mapping expressions of type '" + me.getClass()
@@ -270,21 +282,18 @@ public class PostGISDDLCreator {
         additionalDDLs.add( sb.toString() );
     }
 
-    private String createFeatureJoinTable( String fromTable, JoinChain jc ) {
-        DBField first = jc.getFields().get( 1 );
-        DBField second = jc.getFields().get( 2 );
+    private StringBuffer createJoinedTable( String fromTable, JoinChain jc ) {
+
+        DBField to = jc.getFields().get( 1 );
 
         StringBuffer sb = new StringBuffer( "CREATE TABLE " );
-        sb.append( first.getTable() );
-        sb.append( " (" );
-        sb.append( first.getColumn() );
+        sb.append( to.getTable() );
+        sb.append( " (\n    " );
+        sb.append( to.getColumn() );
         sb.append( " integer NOT NULL REFERENCES" );
         sb.append( " " );
         sb.append( fromTable );
-        sb.append( "," );
-        sb.append( second.getColumn() );
-        sb.append( " integer NOT NULL)" );
-        return sb.toString();
+        return sb;
     }
 
     private String getPostgreSQLType( PrimitiveType type ) {

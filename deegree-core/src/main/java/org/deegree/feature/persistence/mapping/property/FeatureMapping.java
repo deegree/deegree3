@@ -37,6 +37,7 @@ package org.deegree.feature.persistence.mapping.property;
 
 import javax.xml.namespace.QName;
 
+import org.deegree.feature.persistence.mapping.JoinChain;
 import org.deegree.feature.persistence.mapping.MappingExpression;
 
 /**
@@ -51,8 +52,8 @@ public class FeatureMapping extends Mapping {
 
     private QName valueFtName;
 
-    public FeatureMapping( String path, MappingExpression mapping, QName valueFtName ) {
-        super( path, mapping );
+    public FeatureMapping( String path, MappingExpression mapping, QName valueFtName, JoinChain joinedTable ) {
+        super( path, mapping, joinedTable );
         this.valueFtName = valueFtName;
     }
 

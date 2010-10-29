@@ -35,10 +35,12 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.feature.persistence.mapping.property;
 
+import org.deegree.feature.persistence.mapping.JoinChain;
 import org.deegree.feature.persistence.mapping.MappingExpression;
+import org.deegree.feature.types.FeatureType;
 
 /**
- * The <code></code> class TODO add class documentation here.
+ * Defines the mapping of a particle of a {@link FeatureType} to a relational model (tables, columns).
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
@@ -47,13 +49,16 @@ import org.deegree.feature.persistence.mapping.MappingExpression;
  */
 public abstract class Mapping {
 
-    private String path;
+    private final String path;
 
-    private MappingExpression mapping;
+    private final MappingExpression mapping;
 
-    protected Mapping( String path, MappingExpression mapping ) {
+    private final JoinChain joinedTable;
+
+    protected Mapping( String path, MappingExpression mapping, JoinChain joinedTable ) {
         this.path = path;
         this.mapping = mapping;
+        this.joinedTable = joinedTable;
     }
 
     public String getPath() {
@@ -63,9 +68,13 @@ public abstract class Mapping {
     public MappingExpression getMapping() {
         return mapping;
     }
-    
+
+    public JoinChain getJoinedTable() {
+        return joinedTable;
+    }
+
     @Override
-    public String toString () {
+    public String toString() {
         return "{path=" + path + ",mapping=" + mapping + "}";
     }
 }

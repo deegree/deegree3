@@ -36,6 +36,7 @@
 package org.deegree.feature.persistence.mapping.property;
 
 import org.deegree.commons.tom.primitive.PrimitiveType;
+import org.deegree.feature.persistence.mapping.JoinChain;
 import org.deegree.feature.persistence.mapping.MappingExpression;
 
 /**
@@ -50,8 +51,8 @@ public class PrimitiveMapping extends Mapping {
 
     private PrimitiveType pt;
 
-    public PrimitiveMapping( String path, MappingExpression mapping, PrimitiveType pt ) {
-        super( path, mapping );
+    public PrimitiveMapping( String path, MappingExpression mapping, PrimitiveType pt, JoinChain joinedTable ) {
+        super( path, mapping, joinedTable );
         this.pt = pt;
     }
 

@@ -49,8 +49,8 @@ catch [RecognitionException re] {
 }
 
 joinChain returns [JoinChain value]
-    :    dbf1=dbField '->' dbf2=dbField {$value=new JoinChain($dbf1.value,$dbf2.value);}
-    |    dbf1=dbField '->' jc1=joinChain {$value=new JoinChain($dbf1.value, $jc1.value);}
+    :    dbf1=dbField '=' dbf2=dbField {$value=new JoinChain($dbf1.value,$dbf2.value);}
+    |    dbf1=dbField '=' jc1=joinChain {$value=new JoinChain($dbf1.value, $jc1.value);}
     ;
 catch [RecognitionException re] {
     throw re;
@@ -70,7 +70,7 @@ catch [RecognitionException re] {
  *------------------------------------------------------------------*/   
    
 Identifier
-    :    ('a'..'z' | 'A'..'Z' | '0'..'9' | '_')+
+    :    ('a'..'z' | 'A'..'Z' | '0'..'9' | '_' | '-' )+
     ;
 
 Text

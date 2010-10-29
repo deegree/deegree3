@@ -143,7 +143,7 @@ public class PostGISFeatureStoreTest {
                             throws FeatureStoreException, MalformedURLException {
 
         if ( enable ) {
-            ConnectionManager.addConnection( "inspire", "jdbc:postgresql://macchiato:5432/inspire", "postgres",
+            ConnectionManager.addConnection( "inspire", "jdbc:postgresql://hurricane:5432/inspire", "postgres",
                                              "postgres", 1, 10 );
 
             URL configURL = new URL( "file:/tmp/config.xml" );
