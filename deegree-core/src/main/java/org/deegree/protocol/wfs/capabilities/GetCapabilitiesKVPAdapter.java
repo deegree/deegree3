@@ -35,6 +35,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.protocol.wfs.capabilities;
 
+import static org.deegree.protocol.wfs.WFSConstants.VERSION_100;
+
 import java.util.Map;
 
 import org.deegree.commons.tom.ows.Version;
@@ -78,8 +80,12 @@ public class GetCapabilitiesKVPAdapter {
             // @version not present -> treat as WFS 1.0.0 request
             request = new GetCapabilities( version );
         } else {
-            // else treat as WFS 1.1.0 request (-> OWS 1.0.0)
-            request = GetCapabilitiesKVPParser.parse( kvpParams );
+            if ( version.equals( VERSION_100 ) ) {
+                request = new GetCapabilities( version );
+            } else {
+                // else treat as WFS 1.1.0 request (-> OWS 1.0.0)
+                request = GetCapabilitiesKVPParser.parse( kvpParams );
+            }
         }
         return request;
     }
