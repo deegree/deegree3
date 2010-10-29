@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema xmlns="http://www.w3.org/2001/XMLSchema" xmlns:wpvs="http://www.deegree.org/services/wpvs"
+  targetNamespace="http://www.deegree.org/services/wpvs" elementFormDefault="qualified" xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
+  jaxb:version="2.1">
+  <annotation>
+    <appinfo>
+      <jaxb:schemaBindings>
+        <jaxb:package name="org.deegree.services.jaxb.wpvs" />
+      </jaxb:schemaBindings>
+    </appinfo>
+  </annotation>
+  <include schemaLocation="wpvs_published_information.xsd" />
+  <include schemaLocation="wpvs_service_configuration.xsd" />
+  <element name="deegreeWPVS">
+    <complexType>
+      <sequence>
+        <!-- Top element of the configuration of the service -->
+        <element ref="wpvs:ServiceConfiguration" />
+        <!-- Top element of the protocol configuration -->
+        <element ref="wpvs:PublishedInformation" minOccurs="0" />
+      </sequence>
+      <attribute name="configVersion" use="required" fixed="0.5.0" />
+    </complexType>
+  </element>
+</schema> 
