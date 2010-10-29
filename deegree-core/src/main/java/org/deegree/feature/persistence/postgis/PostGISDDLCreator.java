@@ -100,7 +100,7 @@ public class PostGISDDLCreator {
         }
 
         // create gml_objects table
-        ddl.add( "CREATE TABLE gml_objects (id SERIAL PRIMARY KEY, "
+        ddl.add( "CREATE TABLE gml_objects (id serial PRIMARY KEY, "
                  + "gml_id text UNIQUE NOT NULL, ft_type smallint REFERENCES feature_types, binary_object bytea)" );
         ddl.add( "COMMENT ON TABLE gml_objects IS 'All objects (features and geometries)'" );
         ddl.add( "SELECT ADDGEOMETRYCOLUMN('public', 'gml_objects','gml_bounded_by','-1','GEOMETRY',2)" );
@@ -156,6 +156,7 @@ public class PostGISDDLCreator {
         JoinChain jc = propMapping.getJoinedTable();
         if ( jc != null ) {
             sql = createJoinedTable( table, jc );
+            table = jc.getFields().get( 1 ).getTable();
         }
 
         if ( propMapping instanceof PrimitiveMapping ) {
@@ -231,57 +232,6 @@ public class PostGISDDLCreator {
         }
     }
 
-    private void process( String table, StringBuffer sb, JoinChain jc, CompoundMapping cm, List<String> additionalDDLs ) {
-
-        sb = new StringBuffer( "CREATE TABLE " );
-        sb.append( jc.getFields().get( 1 ).getTable() );
-        sb.append( " (\n    " );
-        sb.append( "id integer PRIMARY KEY REFERENCES " );
-        sb.append( table );
-
-        table = jc.getFields().get( 1 ).getTable();
-
-        for ( Mapping mapping : cm.getParticles() ) {
-            MappingExpression me = mapping.getMapping();
-            if ( me == null ) {
-                me = new DBField( "" );
-            }
-            if ( mapping instanceof PrimitiveMapping ) {
-                PrimitiveMapping primitiveMapping = (PrimitiveMapping) mapping;
-                if ( me instanceof DBField ) {
-                    DBField dbField = (DBField) me;
-                    sb.append( ",\n    " );
-                    sb.append( dbField.getColumn() );
-                    sb.append( " " );
-                    sb.append( getPostgreSQLType( primitiveMapping.getType() ) );
-                } else {
-                    throw new RuntimeException( "Mapping expressions of type '" + me.getClass()
-                                                + "' are currently not supported for primitive mappings." );
-                }
-            } else if ( mapping instanceof GeometryMapping ) {
-
-            } else if ( mapping instanceof FeatureMapping ) {
-
-            } else if ( mapping instanceof CompoundMapping ) {
-                CompoundMapping compoundMapping = (CompoundMapping) mapping;
-                if ( me instanceof DBField ) {
-                    DBField dbField = (DBField) me;
-                    for ( Mapping particle : compoundMapping.getParticles() ) {
-                        process( sb, table, particle, additionalDDLs );
-                    }
-                } else {
-                    throw new RuntimeException( "Mapping expressions of type '" + me.getClass()
-                                                + "' are currently not supported for primitive mappings." );
-                }
-            } else {
-                throw new RuntimeException( "Internal error. Unhandled mapping type '" + mapping.getClass() + "'" );
-            }
-        }
-
-        sb.append( "\n)" );
-        additionalDDLs.add( sb.toString() );
-    }
-
     private StringBuffer createJoinedTable( String fromTable, JoinChain jc ) {
 
         DBField to = jc.getFields().get( 1 );
@@ -289,6 +239,7 @@ public class PostGISDDLCreator {
         StringBuffer sb = new StringBuffer( "CREATE TABLE " );
         sb.append( to.getTable() );
         sb.append( " (\n    " );
+        sb.append( "id serial PRIMARY KEY,\n    " );
         sb.append( to.getColumn() );
         sb.append( " integer NOT NULL REFERENCES" );
         sb.append( " " );

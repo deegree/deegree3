@@ -321,7 +321,7 @@ public class PostGISFeatureStoreConfigHelper {
                             throws XMLStreamException {
         writer.writeStartElement( CONFIG_NS, "JoinedTable" );
         writer.writeAttribute( "indexColumn", "idx" );
-        writer.writeCharacters( "id=" + table + ".id" );
+        writer.writeCharacters( "id=" + table + ".parentfk" );
         writer.writeEndElement();
     }
 
