@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<schema xmlns="http://www.w3.org/2001/XMLSchema" xmlns:cgu="urn:cgi:xmlns:CGI:Utilities:1.0"
+    targetNamespace="urn:cgi:xmlns:CGI:Utilities:1.0" 
+    elementFormDefault="qualified" attributeFormDefault="unqualified">
+    <annotation>
+        <documentation>A package of utility elements that are not specific to Geoscience.</documentation>
+    </annotation>
+    <include schemaLocation="primitiveTypes.xsd"/>
+</schema>
