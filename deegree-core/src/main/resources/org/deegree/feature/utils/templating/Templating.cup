@@ -1,0 +1,74 @@
+package org.deegree.feature.utils.templating;
+
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java_cup.runtime.*;
+import org.deegree.commons.utils.*;
+import org.deegree.feature.utils.templating.lang.*;
+
+terminal String    TEXT_TOKEN, TEMPLATE_DEFINITION_TOKEN, MAP_DEFINITION_TOKEN, LINK_PREFIX_TOKEN, LINK_TEXT_TOKEN,
+                   EVEN_CALL_TOKEN, ODD_CALL_TOKEN, INDEX_CALL_TOKEN, VALUE_TOKEN, NAME_TOKEN,
+                   LINK_CALL_TOKEN, MAP_KEY_TOKEN, MAP_VALUE_TOKEN, GMLID_TOKEN, END_DEFINITION_TOKEN,
+                   TEMPLATE_NAME_TOKEN, SELECTION_TOKEN, STAR_TOKEN, NOT_TOKEN, LPAREN_TOKEN, RPAREN_TOKEN;
+terminal String[]  PROPERTY_CALL_TOKEN, FEATURE_CALL_TOKEN, MAP_CALL_TOKEN;
+non terminal HashMap<String, Definition>                  definition;
+non terminal TemplateDefinition                           template;
+non terminal MapDefinition                                map;
+non terminal Object                                       templatebody;
+non terminal LinkedList<String>                           names;
+non terminal Triple<String, LinkedList<String>, Boolean>  call;
+
+definition ::= TEMPLATE_DEFINITION_TOKEN:def template:tmpl             {: RESULT = new HashMap<String, Definition>();
+                                                                          tmpl.name = def;
+                                                                          RESULT.put(tmpl.name, tmpl); :}
+         | TEMPLATE_DEFINITION_TOKEN:def template:tmpl definition:defs {: tmpl.name = def;
+                                                                          defs.put(tmpl.name, tmpl);
+                                                                          RESULT = defs; :}
+         | MAP_DEFINITION_TOKEN:def map:map                            {: RESULT = new HashMap<String, Definition>();
+                                                                          map.name = def;
+                                                                          RESULT.put(map.name, map); :}
+         | MAP_DEFINITION_TOKEN:def map:map definition:defs            {: map.name = def;
+                                                                          defs.put(map.name, map);
+                                                                          RESULT = defs; :};
+
+template ::= templatebody:obj template:tmpl     {: tmpl.body.add(0, obj);
+                                                   RESULT = tmpl; :}
+         | templatebody:obj                     {: RESULT = new TemplateDefinition();
+                                                   RESULT.body.add(obj); :}
+         | END_DEFINITION_TOKEN                 {: RESULT = new TemplateDefinition(); :};
+
+names ::= SELECTION_TOKEN:name names:list       {: list.add(name);
+                                                   RESULT = list; :}
+         | SELECTION_TOKEN:name                 {: RESULT = new LinkedList<String>();
+                                                   RESULT.add(name); :};
+
+call ::= STAR_TOKEN TEMPLATE_NAME_TOKEN:name    {: RESULT = new Triple<String, LinkedList<String>, Boolean>(name, new LinkedList<String>(Collections.singletonList("*")), false); :}
+         | names:names TEMPLATE_NAME_TOKEN:name {: RESULT = new Triple<String, LinkedList<String>, Boolean>(name, names, false); :}
+         | NOT_TOKEN LPAREN_TOKEN names:names RPAREN_TOKEN TEMPLATE_NAME_TOKEN:name
+                                                {: RESULT = new Triple<String, LinkedList<String>, Boolean>(name, names, true); :};
+
+templatebody ::= TEXT_TOKEN:text                {: RESULT = text; :}
+         | PROPERTY_CALL_TOKEN call:call        {: RESULT = new PropertyTemplateCall(call.first, call.second, call.third); :}
+         | FEATURE_CALL_TOKEN call:call         {: RESULT = new FeatureTemplateCall(call.first, call.second, call.third); :}
+         | MAP_CALL_TOKEN:call                  {: if(call[0].equalsIgnoreCase("name")) RESULT = new MapCall(call[1], MapCall.Type.Name);
+                                                   else RESULT = new MapCall(call[1], MapCall.Type.Value); :}
+         | EVEN_CALL_TOKEN:call                 {: RESULT = new OddEven(call, false); :}
+         | ODD_CALL_TOKEN:call                  {: RESULT = new OddEven(call, true); :}
+         | INDEX_CALL_TOKEN                     {: RESULT = new Index(); :}
+         | NAME_TOKEN                           {: RESULT = new Name(); :}
+         | VALUE_TOKEN                          {: RESULT = new Value(); :}
+         | LINK_CALL_TOKEN LINK_PREFIX_TOKEN:pre LINK_TEXT_TOKEN:text
+                                                {: RESULT = new Link(pre, text); :}
+         | LINK_CALL_TOKEN LINK_TEXT_TOKEN:text LINK_PREFIX_TOKEN:pre
+                                                {: RESULT = new Link(pre, text); :}
+         | LINK_CALL_TOKEN LINK_TEXT_TOKEN:text {: RESULT = new Link(null, text); :}
+         | LINK_CALL_TOKEN LINK_PREFIX_TOKEN:pre{: RESULT = new Link(pre); :}
+         | LINK_CALL_TOKEN                      {: RESULT = new Link(null); :}
+         | GMLID_TOKEN                          {: RESULT = new GMLId(); :};
+
+map ::= MAP_KEY_TOKEN:key MAP_VALUE_TOKEN:val map:def {: def.map.put(key, val);
+                                                         RESULT = def; :}
+         | MAP_KEY_TOKEN:key MAP_VALUE_TOKEN:val      {: RESULT = new MapDefinition();
+                                                         RESULT.map.put(key, val); :}
+         | END_DEFINITION_TOKEN                       {: RESULT = new MapDefinition(); :};

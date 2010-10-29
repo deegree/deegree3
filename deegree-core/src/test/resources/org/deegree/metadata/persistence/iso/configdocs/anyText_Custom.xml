@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ISOMetadataStore
+	connId="iso_pg_set_up_tables"
+	configVersion="0.6.0"
+	validate="false"
+	xmlns="http://www.deegree.org/datasource/metadata/iso19115"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.deegree.org/datasource/metadata/iso19115 iso19115.xsd">
+  <AnyText>
+    <Custom>
+	  <XPath>/gmd:MD_Metadata/gmd:fileIdentifier/gco:CharacterString</XPath>
+	  <XPath>/gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:descriptiveKeywords/gmd:MD_Keywords/gmd:keyword/gco:CharacterString</XPath>
+	  <XPath>/gmd:MD_Metadata/gmd:contact/gmd:CI_ResponsibleParty/gmd:individualName/gco:CharacterString</XPath>
+	</Custom>
+  </AnyText>
+</ISOMetadataStore>
