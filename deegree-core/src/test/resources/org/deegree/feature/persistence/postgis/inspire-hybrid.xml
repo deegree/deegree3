@@ -1,0 +1,228 @@
+<PostGISFeatureStore configVersion="0.6.1" xmlns="http://www.deegree.org/datasource/feature/postgis"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.deegree.org/datasource/feature/postgis http://schemas.deegree.org/datasource/feature/postgis/0.6.1/postgis.xsd"
+  xmlns:ad="urn:x-inspire:specification:gmlas:Addresses:3.0" xmlns:au="urn:x-inspire:specification:gmlas:AdministrativeUnits:3.0"
+  xmlns:tn-a="urn:x-inspire:specification:gmlas:AirTransportNetwork:3.0" xmlns:base="urn:x-inspire:specification:gmlas:BaseTypes:3.2"
+  xmlns:bui="urn:x-inspire:specification:gmlas:Buildings:0.0" xmlns:cp="urn:x-inspire:specification:gmlas:CadastralParcels:3.0"
+  xmlns:tn="urn:x-inspire:specification:gmlas:CommonTransportElements:3.0" xmlns:gn="urn:x-inspire:specification:gmlas:GeographicalNames:3.0"
+  xmlns:net="urn:x-inspire:specification:gmlas:Network:3.2" xmlns:stat="urn:x-inspire:specification:gmlas:StatisticalUnits:0.0">
+
+  <StorageCRS>EPSG:4258</StorageCRS>
+
+  <NamespaceHint prefix="ad" namespaceURI="urn:x-inspire:specification:gmlas:Addresses:3.0" />
+  <NamespaceHint prefix="au" namespaceURI="urn:x-inspire:specification:gmlas:AdministrativeUnits:3.0" />
+  <NamespaceHint prefix="tn-a" namespaceURI="urn:x-inspire:specification:gmlas:AirTransportNetwork:3.0" />
+  <NamespaceHint prefix="base" namespaceURI="urn:x-inspire:specification:gmlas:BaseTypes:3.2" />
+  <NamespaceHint prefix="bui" namespaceURI="urn:x-inspire:specification:gmlas:Buildings:0.0" />
+  <NamespaceHint prefix="cp" namespaceURI="urn:x-inspire:specification:gmlas:CadastralParcels:3.0" />
+  <NamespaceHint prefix="tn" namespaceURI="urn:x-inspire:specification:gmlas:CommonTransportElements:3.0" />
+  <NamespaceHint prefix="gn" namespaceURI="urn:x-inspire:specification:gmlas:GeographicalNames:3.0" />
+  <NamespaceHint prefix="net" namespaceURI="urn:x-inspire:specification:gmlas:Network:3.2" />
+  <NamespaceHint prefix="stat" namespaceURI="urn:x-inspire:specification:gmlas:StatisticalUnits:0.0" />
+
+  <JDBCConnId>inspire</JDBCConnId>
+  
+  <GMLSchema version="GML_32">/home/markus/Programmieren/Java/workspace/deegree-inspire-node/src/main/webapp/WEB-INF/workspace/schemas/inspire/annex1/Addresses.xsd</GMLSchema>
+
+  <FeatureType name="ad:Address" mapping="AD_ADDRESS">
+
+    <CustomProperty name="ad:inspireId" mapping="AD_INSPIREID">
+
+      <CompoundMapping path="base:Identifier" mapping="BASE_IDENTIFIER">
+
+        <CompoundMapping path="base:localId" mapping="BASE_LOCALID">
+          <PrimitiveMapping path="text()" type="string" />
+        </CompoundMapping>
+
+        <CompoundMapping path="base:namespace" mapping="BASE_NAMESPACE">
+          <PrimitiveMapping path="text()" type="string" />
+        </CompoundMapping>
+
+        <CompoundMapping path="base:versionId" mapping="BASE_VERSIONID">
+          <PrimitiveMapping path="@nilReason" mapping="ATTR_NILREASON" type="string" />
+          <PrimitiveMapping path="text()" mapping="VALUE" type="string" />
+        </CompoundMapping>
+
+      </CompoundMapping>
+
+    </CustomProperty>
+
+    <CustomProperty name="ad:alternativeIdentifier" minOccurs="0" mapping="AD_ALTERNATIVEIDENTIFIER">
+      <PrimitiveMapping path="@nilReason" mapping="ATTR_NILREASON" type="string" />
+      <PrimitiveMapping path="text()" mapping="VALUE" type="string" />
+    </CustomProperty>
+
+    <CustomProperty name="ad:position" maxOccurs="unbounded" mapping="ID->AD_ADDRESS_AD_POSITION.ID">
+      <CompoundMapping path="ad:GeographicPosition" mapping="AD_GEOGRAPHICPOSITION">
+        <CompoundMapping path="ad:geometry" mapping="AD_GEOMETRY">
+          <PrimitiveMapping path="@xlink:type" mapping="ATTR_XLINK_TYPE" type="string" />
+          <PrimitiveMapping path="@xlink:href" mapping="ATTR_XLINK_HREF" type="string" />
+          <PrimitiveMapping path="@xlink:role" mapping="ATTR_XLINK_ROLE" type="string" />
+          <PrimitiveMapping path="@xlink:arcrole" mapping="ATTR_XLINK_ARCROLE" type="string" />
+          <PrimitiveMapping path="@xlink:title" mapping="ATTR_XLINK_TITLE" type="string" />
+          <PrimitiveMapping path="@xlink:show" mapping="ATTR_XLINK_SHOW" type="string" />
+          <PrimitiveMapping path="@xlink:actuate" mapping="ATTR_XLINK_ACTUATE" type="string" />
+          <PrimitiveMapping path="@nilReason" mapping="ATTR_NILREASON" type="string" />
+          <PrimitiveMapping path="@gml:remoteSchema" mapping="ATTR_GML_REMOTESCHEMA" type="string" />
+          <PrimitiveMapping path="@owns" mapping="ATTR_OWNS" type="string" />
+          <CompoundMapping path="gml:Point" mapping="GML_POINT"></CompoundMapping>
+        </CompoundMapping>
+        
+        <CompoundMapping path="ad:specification" mapping="AD_SPECIFICATION">
+          <PrimitiveMapping path="@nilReason" mapping="ATTR_NILREASON" type="string" />
+          <PrimitiveMapping path="@codeSpace" mapping="ATTR_CODESPACE" type="string" />
+          <PrimitiveMapping path="text()" mapping="VALUE" type="string" />
+        </CompoundMapping>
+
+        <CompoundMapping path="ad:method" mapping="AD_METHOD">
+          <PrimitiveMapping path="@nilReason" mapping="ATTR_NILREASON" type="string" />
+          <PrimitiveMapping path="@codeSpace" mapping="ATTR_CODESPACE" type="string" />
+          <PrimitiveMapping path="text()" mapping="VALUE" type="string" />
+        </CompoundMapping>
+
+        <CompoundMapping path="ad:default" mapping="AD_DEFAULT">
+          <PrimitiveMapping path="text()" type="string" />
+        </CompoundMapping>
+
+      </CompoundMapping>
+    </CustomProperty>
+
+    <CustomProperty name="ad:status" minOccurs="0" mapping="AD_STATUS">
+      <PrimitiveMapping path="@nilReason" mapping="ATTR_NILREASON" type="string" />
+      <PrimitiveMapping path="@codeSpace" mapping="ATTR_CODESPACE" type="string" />
+      <PrimitiveMapping path="text()" mapping="VALUE" type="string" />
+    </CustomProperty>
+
+    <CustomProperty name="ad:locator" maxOccurs="unbounded" mapping="ID->AD_ADDRESS_AD_LOCATOR.ID">
+      <CompoundMapping path="ad:AddressLocator" mapping="AD_ADDRESSLOCATOR">
+        <CompoundMapping path="ad:designator" mapping="AD_DESIGNATOR">
+          <CompoundMapping path="ad:LocatorDesignator" mapping="AD_LOCATORDESIGNATOR">
+            <CompoundMapping path="ad:designator" mapping="AD_DESIGNATOR">
+              <PrimitiveMapping path="text()" type="string" />
+            </CompoundMapping>
+            <CompoundMapping path="ad:type" mapping="AD_TYPE">
+              <PrimitiveMapping path="@codeSpace" mapping="ATTR_CODESPACE" type="string" />
+              <PrimitiveMapping path="text()" mapping="VALUE" type="string" />
+            </CompoundMapping>
+          </CompoundMapping>
+        </CompoundMapping>
+        <CompoundMapping path="ad:name" mapping="AD_NAME">
+          <CompoundMapping path="ad:LocatorName" mapping="AD_LOCATORNAME">
+            <CompoundMapping path="ad:name" mapping="AD_NAME">
+              <CompoundMapping path="gn:GeographicalName" mapping="GN_GEOGRAPHICALNAME">
+                <CompoundMapping path="gn:language" mapping="GN_LANGUAGE">
+                  <PrimitiveMapping path="@nilReason" mapping="ATTR_NILREASON" type="string" />
+                  <PrimitiveMapping path="text()" mapping="VALUE" type="string" />
+                </CompoundMapping>
+                <CompoundMapping path="gn:nativeness" mapping="GN_NATIVENESS">
+                  <PrimitiveMapping path="@nilReason" mapping="ATTR_NILREASON" type="string" />
+                  <PrimitiveMapping path="@codeSpace" mapping="ATTR_CODESPACE" type="string" />
+                  <PrimitiveMapping path="text()" mapping="VALUE" type="string" />
+                </CompoundMapping>
+                <CompoundMapping path="gn:nameStatus" mapping="GN_NAMESTATUS">
+                  <PrimitiveMapping path="@nilReason" mapping="ATTR_NILREASON" type="string" />
+                  <PrimitiveMapping path="@codeSpace" mapping="ATTR_CODESPACE" type="string" />
+                  <PrimitiveMapping path="text()" mapping="VALUE" type="string" />
+                </CompoundMapping>
+                <CompoundMapping path="gn:sourceOfName" mapping="GN_SOURCEOFNAME">
+                  <PrimitiveMapping path="@nilReason" mapping="ATTR_NILREASON" type="string" />
+                  <PrimitiveMapping path="text()" mapping="VALUE" type="string" />
+                </CompoundMapping>
+                <CompoundMapping path="gn:pronunciation" mapping="GN_PRONUNCIATION">
+                  <PrimitiveMapping path="@nilReason" mapping="ATTR_NILREASON" type="string" />
+                  <CompoundMapping path="gn:PronunciationOfName" mapping="GN_PRONUNCIATIONOFNAME">
+                    <CompoundMapping path="gn:pronunciationSoundLink" mapping="GN_PRONUNCIATIONSOUNDLINK">
+                      <PrimitiveMapping path="@nilReason" mapping="ATTR_NILREASON" type="string" />
+                      <PrimitiveMapping path="text()" mapping="VALUE" type="string" />
+                    </CompoundMapping>
+                    <CompoundMapping path="gn:pronunciationIPA" mapping="GN_PRONUNCIATIONIPA">
+                      <PrimitiveMapping path="@nilReason" mapping="ATTR_NILREASON" type="string" />
+                      <PrimitiveMapping path="text()" mapping="VALUE" type="string" />
+                    </CompoundMapping>
+                  </CompoundMapping>
+                </CompoundMapping>
+                <CompoundMapping path="gn:spelling" mapping="GN_SPELLING">
+                  <CompoundMapping path="gn:SpellingOfName" mapping="GN_SPELLINGOFNAME">
+                    <CompoundMapping path="gn:text" mapping="GN_TEXT">
+                      <PrimitiveMapping path="text()" type="string" />
+                    </CompoundMapping>
+                    <CompoundMapping path="gn:script" mapping="GN_SCRIPT">
+                      <PrimitiveMapping path="@nilReason" mapping="ATTR_NILREASON" type="string" />
+                      <PrimitiveMapping path="text()" mapping="VALUE" type="string" />
+                    </CompoundMapping>
+                    <CompoundMapping path="gn:transliterationScheme" mapping="GN_TRANSLITERATIONSCHEME">
+                      <PrimitiveMapping path="@nilReason" mapping="ATTR_NILREASON" type="string" />
+                      <PrimitiveMapping path="text()" mapping="VALUE" type="string" />
+                    </CompoundMapping>
+                  </CompoundMapping>
+                </CompoundMapping>
+                <CompoundMapping path="gn:grammaticalGender" mapping="GN_GRAMMATICALGENDER">
+                  <PrimitiveMapping path="@nilReason" mapping="ATTR_NILREASON" type="string" />
+                  <PrimitiveMapping path="@codeSpace" mapping="ATTR_CODESPACE" type="string" />
+                  <PrimitiveMapping path="text()" mapping="VALUE" type="string" />
+                </CompoundMapping>
+                <CompoundMapping path="gn:grammaticalNumber" mapping="GN_GRAMMATICALNUMBER">
+                  <PrimitiveMapping path="@nilReason" mapping="ATTR_NILREASON" type="string" />
+                  <PrimitiveMapping path="@codeSpace" mapping="ATTR_CODESPACE" type="string" />
+                  <PrimitiveMapping path="text()" mapping="VALUE" type="string" />
+                </CompoundMapping>
+              </CompoundMapping>
+            </CompoundMapping>
+            <CompoundMapping path="ad:type" mapping="AD_TYPE">
+              <PrimitiveMapping path="@codeSpace" mapping="ATTR_CODESPACE" type="string" />
+              <PrimitiveMapping path="text()" mapping="VALUE" type="string" />
+            </CompoundMapping>
+          </CompoundMapping>
+        </CompoundMapping>
+        <CompoundMapping path="ad:level" mapping="AD_LEVEL">
+          <PrimitiveMapping path="@codeSpace" mapping="ATTR_CODESPACE" type="string" />
+          <PrimitiveMapping path="text()" mapping="VALUE" type="string" />
+        </CompoundMapping>
+        <CompoundMapping path="ad:withinScopeOf" mapping="AD_WITHINSCOPEOF">
+          <PrimitiveMapping path="@owns" mapping="ATTR_OWNS" type="string" />
+          <PrimitiveMapping path="@xlink:type" mapping="ATTR_XLINK_TYPE" type="string" />
+          <PrimitiveMapping path="@xlink:href" mapping="ATTR_XLINK_HREF" type="string" />
+          <PrimitiveMapping path="@xlink:role" mapping="ATTR_XLINK_ROLE" type="string" />
+          <PrimitiveMapping path="@xlink:arcrole" mapping="ATTR_XLINK_ARCROLE" type="string" />
+          <PrimitiveMapping path="@xlink:title" mapping="ATTR_XLINK_TITLE" type="string" />
+          <PrimitiveMapping path="@xlink:show" mapping="ATTR_XLINK_SHOW" type="string" />
+          <PrimitiveMapping path="@xlink:actuate" mapping="ATTR_XLINK_ACTUATE" type="string" />
+          <PrimitiveMapping path="@nilReason" mapping="ATTR_NILREASON" type="string" />
+          <PrimitiveMapping path="@gml:remoteSchema" mapping="ATTR_GML_REMOTESCHEMA" type="string" />
+        </CompoundMapping>
+      </CompoundMapping>
+    </CustomProperty>
+
+    <CustomProperty name="ad:validFrom" mapping="AD_VALIDFROM">
+      <PrimitiveMapping path="@nilReason" mapping="ATTR_NILREASON" type="string" />
+      <PrimitiveMapping path="text()" mapping="VALUE" type="dateTime" />
+    </CustomProperty>
+
+    <CustomProperty name="ad:validTo" minOccurs="0" mapping="AD_VALIDTO">
+      <PrimitiveMapping path="@nilReason" mapping="ATTR_NILREASON" type="string" />
+      <PrimitiveMapping path="text()" mapping="VALUE" type="dateTime" />
+    </CustomProperty>
+
+    <CustomProperty name="ad:beginLifespanVersion" mapping="AD_BEGINLIFESPANVERSION">
+      <PrimitiveMapping path="@nilReason" mapping="ATTR_NILREASON" type="string" />
+      <PrimitiveMapping path="text()" mapping="VALUE" type="dateTime" />
+    </CustomProperty>
+
+    <CustomProperty name="ad:endLifespanVersion" minOccurs="0" mapping="AD_ENDLIFESPANVERSION">
+      <PrimitiveMapping path="@nilReason" mapping="ATTR_NILREASON" type="string" />
+      <PrimitiveMapping path="text()" mapping="VALUE" type="dateTime" />
+    </CustomProperty>
+
+    <FeatureProperty name="ad:parcel" minOccurs="0" maxOccurs="unbounded" mapping="ID->AD_ADDRESS_AD_PARCEL.FROM->TO"
+      type="cp:CadastralParcel" />
+
+    <FeatureProperty name="ad:parentAddress" minOccurs="0" mapping="AD_PARENTADDRESS" type="ad:Address" />
+
+    <FeatureProperty name="ad:building" minOccurs="0" maxOccurs="unbounded" mapping="ID->AD_ADDRESS_AD_BUILDING.FROM->TO"
+      type="bui:Building" />
+
+    <FeatureProperty name="ad:component" maxOccurs="unbounded" mapping="ID->AD_ADDRESS_AD_COMPONENT.FROM->TO" type="ad:AddressComponent" />
+
+  </FeatureType>
+
+</PostGISFeatureStore>

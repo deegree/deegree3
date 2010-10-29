@@ -1,0 +1,85 @@
+<gml:FeatureCollection xmlns:app="http://www.deegree.org/app" xmlns:gml="http://www.opengis.net/gml"
+  xmlns:wfs="http://www.opengis.net/wfs" xmlns:ogc="http://www.opengis.net/ogc" xmlns:xlink="http://www.w3.org/1999/xlink"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.opengis.net/gml http://schemas.opengis.net/gml/3.1.1/base/gml.xsd http://www.deegree.org/app ../schema/CustomProperties.xsd">
+  <gml:featureMember>
+    <app:ComplexFeature>
+      <app:custom1 mimeType="img/gif" length="5657" />
+      <app:custom2>
+        <app:A>Hallo</app:A>
+        <app:C>2</app:C>
+        <app:C>2</app:C>
+        <app:B>8</app:B>
+        <app:C>2</app:C>
+        <app:C>2</app:C>
+      </app:custom2>
+      <app:custom3>
+        <Surface xmlns="http://www.opengis.net/gml" xmlns:gml="http://www.opengis.net/gml" srsName="EPSG:4326">
+          <patches>
+            <PolygonPatch>
+              <exterior>
+                <LinearRing>
+                  <posList>2 0 0 2 -2 0 -4 2 -6 0 0 10 2 0</posList>
+                </LinearRing>
+              </exterior>
+              <interior>
+                <LinearRing>
+                  <posList>2 0 0 2 -2 0 -4 2 -6 0 0 10 2 0</posList>
+                </LinearRing>
+              </interior>
+              <interior>
+                <LinearRing>
+                  <posList>2 0 0 2 -2 0 -4 2 -6 0 0 10 2 0</posList>
+                </LinearRing>
+              </interior>
+            </PolygonPatch>
+            <PolygonPatch>
+              <exterior>
+                <LinearRing>
+                  <posList>2 0 0 2 -2 0 -4 2 -6 0 0 10 2 0</posList>
+                </LinearRing>
+              </exterior>
+              <interior>
+                <LinearRing>
+                  <posList>2 0 0 2 -2 0 -4 2 -6 0 0 10 2 0</posList>
+                </LinearRing>
+              </interior>
+              <interior>
+                <LinearRing>
+                  <posList>2 0 0 2 -2 0 -4 2 -6 0 0 10 2 0</posList>
+                </LinearRing>
+              </interior>
+            </PolygonPatch>
+          </patches>
+        </Surface>
+      </app:custom3>
+      <app:custom4>
+        <app:Event>
+          <app:action>Insert</app:action>
+          <app:timestamp>2006-06-29T12:37:00+02:00</app:timestamp>
+          <app:userid>Phineas.Fogg</app:userid>
+        </app:Event>
+        <app:Event>
+          <app:action>Update</app:action>
+          <app:timestamp>2006-06-30T10:37:00+02:00</app:timestamp>
+          <app:userid>Phineas.Fogg</app:userid>
+        </app:Event>
+        <app:Event>
+          <app:action>Update</app:action>
+          <app:timestamp>2006-06-30T16:07:00+02:00</app:timestamp>
+          <app:userid>Axel.Lidenbrock</app:userid>
+        </app:Event>
+        <app:Event>
+          <app:action>Update</app:action>
+          <app:timestamp>2006-07-12T16:16:00+02:00</app:timestamp>
+          <app:userid>Axel.Lidenbrock</app:userid>
+        </app:Event>
+        <app:Event>
+          <app:action>Update</app:action>
+          <app:timestamp>2006-09-06T09:47:07Z</app:timestamp>
+          <app:userid>Eugène.Rastignac</app:userid>
+        </app:Event>
+      </app:custom4>
+    </app:ComplexFeature>
+  </gml:featureMember>
+</gml:FeatureCollection>
