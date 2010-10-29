@@ -1,3 +1,0 @@
-<?xml-stylesheet type='text/xsl' href='./CodelistDictionary-v32.xsl'?><Dictionary xmlns="http://www.opengis.net/gml/3.2" xmlns:gml="http://www.opengis.net/gml/3.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" gml:id="AA_BesondereMeilensteinkategorie" xsi:schemaLocation="http://www.opengis.net/gml/3.2 gml/3.2.1/gml.xsd">
-  <identifier codeSpace="http://www.adv-online.de/namespaces/adv/gid/6.0">AA_BesondereMeilensteinkategorie</identifier>
-</Dictionary>

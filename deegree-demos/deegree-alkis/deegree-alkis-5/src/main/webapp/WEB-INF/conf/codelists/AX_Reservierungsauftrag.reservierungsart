@@ -1,5 +1,0 @@
-1100	Reservierung im Anschluss an die höchst vergebene Nummer
-1200	Reservierung im Anschluss an die höchst vergebene Folgenummer
-2100	Reservierung unter Verwendung von Nummerierungslücken bei der Nummer
-2200	Reservierung unter Verwendung von Nummerierungslücken bei der Folgenummer
-3000	Löschung einer Reservierung

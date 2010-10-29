@@ -1,8 +1,0 @@
-1000	Geländereduktion (Reliefkorrektion)
-2000	Freiluftanomalie im System Potsdam 1909 - Normalschwere nach Helmert 1901 - Breite auf dem Krassowski-Ellipsoid
-3000	Freiluftanomalie im System Potsdam 1909 mit Geländereduktion (Fayeanomalie) - Normalschwere nach Helmert 1901 - Breite auf dem Krassowski-Ellipsoid
-3100	Freiluftanomalie nach Molodenski: Schwere (im System DHSN 96) im Oberflächenpunkt minus Normalschwere (Formel des GRS 80) im Telluroidpunkt
-4000	Bougueranomalie im System Potsdam 1909 mit Geländereduktion - Normalschwere nach Helmert 1901 - Breite auf dem Krassowski-Ellipsoid
-5000	Bougueranomalie im System DHSN 82 mit Freiluft- und Plattenreduktion - Normalschwere im GRS 80
-6000	Bougueranomalie im System DHSN 96 mit Freiluft- und Plattenreduktion - Normalschwere im GRS 80
-9998	Art der Anomalie bzw. Reduktion unbekannt
