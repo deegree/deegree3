@@ -13,12 +13,12 @@
     <url>http://svn.wald.intevation.org/svn/deegree/deegree3/trunk/demos</url>
   </scm>
   <modules>
-    <module>deegree-wcts</module>
-    <module>deegree-geosciml-demo</module>
-    <!--module>deegree-wms-demo</module-->
+    <!--module>deegree-wcts</module-->
+    <!--module>deegree-geosciml-demo</module-->
+    <module>deegree-utah-demo</module>
     <module>deegree-wps-demo</module>
     <module>deegree-csw-demo</module>
-    <module>deegree-sos-demo</module>
+    <!--module>deegree-sos-demo</module-->
   </modules>
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
