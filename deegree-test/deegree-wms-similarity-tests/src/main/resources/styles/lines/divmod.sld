@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<sld:StyledLayerDescriptor version="1.0.0" xmlns:sld="http://www.opengis.net/sld" xmlns:ogc="http://www.opengis.net/ogc">
+<sld:StyledLayerDescriptor version="1.0.0" xmlns:sld="http://www.opengis.net/sld" xmlns:ogc="http://www.opengis.net/ogc" xmlns:app="http://www.deegree.org/app">
   <sld:NamedLayer>
     <sld:Name>SGID500_Contours500Ft</sld:Name>
 
@@ -11,7 +11,7 @@
               <sld:SvgParameter name="stroke">#11aa22</sld:SvgParameter>
               <sld:SvgParameter name="stroke-width">
                 <ogc:Function name="idiv">
-                  <ogc:PropertyName>SHAPE_LEN</ogc:PropertyName>
+                  <ogc:PropertyName>app:SHAPE_LEN</ogc:PropertyName>
                   <ogc:Literal>5</ogc:Literal>
                 </ogc:Function>
               </sld:SvgParameter>

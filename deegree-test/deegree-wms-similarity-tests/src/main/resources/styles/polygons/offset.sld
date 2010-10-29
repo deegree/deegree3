@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<sld:StyledLayerDescriptor version="1.0.0" xmlns:sld="http://www.opengis.net/sld" xmlns:ogc="http://www.opengis.net/ogc">
+<sld:StyledLayerDescriptor version="1.0.0" xmlns:sld="http://www.opengis.net/sld" xmlns:ogc="http://www.opengis.net/ogc" xmlns:app="http://www.deegree.org/app">
   <sld:NamedLayer>
     <sld:Name>SGID500_DominantVegetation</sld:Name>
 
@@ -8,7 +8,7 @@
         <sld:Rule>
           <ogc:Filter>
             <ogc:PropertyIsEqualTo>
-              <ogc:PropertyName>DOM</ogc:PropertyName>
+              <ogc:PropertyName>app:DOM</ogc:PropertyName>
               <ogc:Literal>B1</ogc:Literal>
             </ogc:PropertyIsEqualTo>
           </ogc:Filter>

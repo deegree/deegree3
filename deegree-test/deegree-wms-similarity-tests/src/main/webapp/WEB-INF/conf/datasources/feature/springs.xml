@@ -1,3 +1,4 @@
 <ShapeFeatureStore xmlns="http://www.deegree.org/datasource/feature/shape">
   <File>../../../utah/SGID024_Springs.shp</File>
+  <FeatureTypeNamespace>http://www.deegree.org/app</FeatureTypeNamespace>
 </ShapeFeatureStore>
