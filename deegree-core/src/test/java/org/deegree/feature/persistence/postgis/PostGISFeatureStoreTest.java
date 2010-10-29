@@ -38,6 +38,9 @@ package org.deegree.feature.persistence.postgis;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.sql.Statement;
 
 import javax.xml.namespace.QName;
 import javax.xml.stream.FactoryConfigurationError;
@@ -48,6 +51,7 @@ import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
 
 import org.deegree.commons.jdbc.ConnectionManager;
+import org.deegree.commons.utils.JDBCUtils;
 import org.deegree.commons.xml.stax.IndentingXMLStreamWriter;
 import org.deegree.cs.exceptions.TransformationException;
 import org.deegree.cs.exceptions.UnknownCRSException;
@@ -143,13 +147,25 @@ public class PostGISFeatureStoreTest {
                             throws FeatureStoreException, MalformedURLException {
 
         if ( enable ) {
-            ConnectionManager.addConnection( "inspire", "jdbc:postgresql://hurricane:5432/inspire", "postgres",
+            ConnectionManager.addConnection( "inspire", "jdbc:postgresql://macchiato:5432/inspire", "postgres",
                                              "postgres", 1, 10 );
 
             URL configURL = new URL( "file:/tmp/config.xml" );
             String[] createStmts = new PostGISFeatureStoreProvider().getDDL( configURL );
-            for ( String string : createStmts ) {
-                System.out.println( string );
+
+            Connection conn = null;
+            Statement stmt = null;
+            try {
+                conn = ConnectionManager.getConnection( "inspire" );
+                stmt = conn.createStatement();
+                for ( String string : createStmts ) {
+                    System.out.println( string );
+                    stmt.execute( string );
+                }
+            } catch ( SQLException e ) {
+                e.printStackTrace();
+            } finally {
+                JDBCUtils.close( conn );
             }
         }
     }
@@ -203,8 +219,7 @@ public class PostGISFeatureStoreTest {
             try {
                 FeatureCollection fc = rs.toCollection();
                 XMLStreamWriter xmlStream = new IndentingXMLStreamWriter(
-                                                                          XMLOutputFactory.newInstance().createXMLStreamWriter(
-                                                                                                                                System.out ) );
+                                                                          XMLOutputFactory.newInstance().createXMLStreamWriter( System.out ) );
                 GMLStreamWriter gmlStream = GMLOutputFactory.createGMLStreamWriter( GMLVersion.GML_31, xmlStream );
                 gmlStream.write( fc );
                 gmlStream.close();
@@ -234,8 +249,7 @@ public class PostGISFeatureStoreTest {
             try {
                 FeatureCollection fc = rs.toCollection();
                 XMLStreamWriter xmlStream = new IndentingXMLStreamWriter(
-                                                                          XMLOutputFactory.newInstance().createXMLStreamWriter(
-                                                                                                                                System.out ) );
+                                                                          XMLOutputFactory.newInstance().createXMLStreamWriter( System.out ) );
                 GMLStreamWriter gmlStream = GMLOutputFactory.createGMLStreamWriter( GMLVersion.GML_31, xmlStream );
                 gmlStream.setLocalXLinkTemplate( "http://bla?fid={}" );
                 gmlStream.setXLinkDepth( -1 );
@@ -277,8 +291,7 @@ public class PostGISFeatureStoreTest {
     private void print( FeatureCollection fc )
                             throws XMLStreamException, UnknownCRSException, TransformationException {
         XMLStreamWriter xmlStream = new IndentingXMLStreamWriter(
-                                                                  XMLOutputFactory.newInstance().createXMLStreamWriter(
-                                                                                                                        System.out ) );
+                                                                  XMLOutputFactory.newInstance().createXMLStreamWriter( System.out ) );
         GMLStreamWriter gmlStream = GMLOutputFactory.createGMLStreamWriter( GMLVersion.GML_31, xmlStream );
         gmlStream.setLocalXLinkTemplate( "http://bla?fid={}" );
         gmlStream.setXLinkDepth( -1 );

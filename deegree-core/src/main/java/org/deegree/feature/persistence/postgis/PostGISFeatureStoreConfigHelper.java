@@ -43,9 +43,9 @@ import static org.deegree.commons.xml.CommonNamespaces.XSINS;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.SortedSet;
 import java.util.TreeSet;
-import java.util.Map.Entry;
 
 import javax.xml.XMLConstants;
 import javax.xml.namespace.QName;
@@ -480,7 +480,7 @@ public class PostGISFeatureStoreConfigHelper {
     // ClassNotFoundException, InstantiationException, IllegalAccessException {
     //
     // String schemaURL =
-    // "file:/home/schneider/workspace/deegree-inspire-node/src/main/webapp/WEB-INF/workspace/schemas/inspire/annex1/Addresses.xsd";
+    // "file:/home/markus/Programmieren/Java/workspace/deegree-inspire-node/src/main/webapp/WEB-INF/workspace/schemas/inspire/annex1/Addresses.xsd";
     // if ( schemaURL == null ) {
     // return;
     // }

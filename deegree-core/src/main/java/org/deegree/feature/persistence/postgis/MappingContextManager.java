@@ -54,15 +54,21 @@ public class MappingContextManager {
     }
 
     private String toString( QName qName ) {
-        String name = qName.getLocalPart().toLowerCase();
+        String name = toSQL( qName.getLocalPart() );
         if ( qName.getNamespaceURI() != null && !qName.getNamespaceURI().equals( NULL_NS_URI ) ) {
             String nsPrefix = nsToPrefix.get( qName.getNamespaceURI() );
             if ( nsPrefix == null ) {
                 LOG.warn( "Prefix null!?" );
                 nsPrefix = "app";
             }
-            name = nsPrefix.toLowerCase() + "_" + qName.getLocalPart().toLowerCase();
+            name = toSQL( nsPrefix.toLowerCase() ) + "_" + toSQL( qName.getLocalPart() );
         }
         return name;
+    }
+
+    private String toSQL( String identifier ) {
+        String sql = identifier.toLowerCase();
+        sql = sql.replace( "-", "_" );
+        return sql;
     }
 }

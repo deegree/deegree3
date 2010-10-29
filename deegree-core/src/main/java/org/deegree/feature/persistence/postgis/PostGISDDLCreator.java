@@ -79,7 +79,9 @@ public class PostGISDDLCreator {
     public String[] getDDL() {
 
         List<String> ddl = getBLOBCreates();
-        ddl.addAll( getRelationalCreates() );
+        for ( StringBuffer sb : getRelationalCreates() ) {
+            ddl.add( sb.toString() );
+        }
 
         return ddl.toArray( new String[ddl.size()] );
     }
@@ -111,9 +113,9 @@ public class PostGISDDLCreator {
         return ddl;
     }
 
-    public List<String> getRelationalCreates() {
+    public List<StringBuffer> getRelationalCreates() {
 
-        List<String> ddl = new ArrayList<String>();
+        List<StringBuffer> ddl = new ArrayList<StringBuffer>();
 
         for ( short ftId = 0; ftId < schema.getFts(); ftId++ ) {
             QName ftName = schema.getFtName( ftId );
@@ -126,30 +128,28 @@ public class PostGISDDLCreator {
         return ddl;
     }
 
-    private List<String> process( FeatureType ft, FeatureTypeMapping ftMapping ) {
+    private List<StringBuffer> process( FeatureType ft, FeatureTypeMapping ftMapping ) {
 
-        List<String> ddl = new ArrayList<String>();
-        List<String> additionalDDLs = new ArrayList<String>();
+        List<StringBuffer> ddls = new ArrayList<StringBuffer>();
 
         StringBuffer sql = new StringBuffer( "CREATE TABLE " );
+        ddls.add( sql );
         sql.append( ftMapping.getFtTable() );
         sql.append( " (\n    " );
         sql.append( "id integer PRIMARY KEY REFERENCES gml_objects" );
         for ( PropertyType pt : ft.getPropertyDeclarations() ) {
             Mapping propMapping = ftMapping.getMapping( pt.getName() );
             if ( propMapping != null ) {
-                process( sql, ftMapping.getFtTable(), propMapping, additionalDDLs );
+                ddls.addAll( process( sql, ftMapping.getFtTable(), propMapping ) );
             }
         }
         sql.append( "\n)" );
-        ddl.add( sql.toString() );
-
-        ddl.addAll( additionalDDLs );
-
-        return ddl;
+        return ddls;
     }
 
-    private void process( StringBuffer sql, String table, Mapping propMapping, List<String> additionalDDLs ) {
+    private List<StringBuffer> process( StringBuffer sql, String table, Mapping propMapping ) {
+
+        List<StringBuffer> ddls = new ArrayList<StringBuffer>();
 
         MappingExpression me = propMapping.getMapping();
 
@@ -157,6 +157,7 @@ public class PostGISDDLCreator {
         if ( jc != null ) {
             sql = createJoinedTable( table, jc );
             table = jc.getFields().get( 1 ).getTable();
+            ddls.add( sql );
         }
 
         if ( propMapping instanceof PrimitiveMapping ) {
@@ -184,19 +185,20 @@ public class PostGISDDLCreator {
             }
         } else if ( propMapping instanceof CompoundMapping ) {
             CompoundMapping compoundMapping = (CompoundMapping) propMapping;
-            process( sql, table, compoundMapping, additionalDDLs );
+            ddls.addAll( process( sql, table, compoundMapping ) );
         } else {
             throw new RuntimeException( "Internal error. Unhandled mapping type '" + propMapping.getClass() + "'" );
         }
 
         if ( jc != null ) {
             sql.append( "\n)" );
-            additionalDDLs.add( sql.toString() );
         }
+        return ddls;
     }
 
-    private void process( StringBuffer sb, String table, CompoundMapping cm, List<String> additionalDDLs ) {
+    private List<StringBuffer> process( StringBuffer sb, String table, CompoundMapping cm ) {
 
+        List<StringBuffer> ddls = new ArrayList<StringBuffer>();
         for ( Mapping mapping : cm.getParticles() ) {
             if ( mapping instanceof PrimitiveMapping ) {
                 PrimitiveMapping primitiveMapping = (PrimitiveMapping) mapping;
@@ -217,19 +219,20 @@ public class PostGISDDLCreator {
                 JoinChain jc = compoundMapping.getJoinedTable();
                 if ( jc != null ) {
                     StringBuffer newSb = createJoinedTable( table, jc );
+                    ddls.add( newSb );
                     for ( Mapping particle : compoundMapping.getParticles() ) {
-                        process( newSb, jc.getFields().get( 1 ).getTable(), particle, additionalDDLs );
+                        ddls.addAll( process( newSb, jc.getFields().get( 1 ).getTable(), particle ) );
                     }
-                    additionalDDLs.add( newSb.toString() );
                 } else {
                     for ( Mapping particle : compoundMapping.getParticles() ) {
-                        process( sb, table, particle, additionalDDLs );
+                        ddls.addAll( process( sb, table, particle ) );
                     }
                 }
             } else {
                 throw new RuntimeException( "Internal error. Unhandled mapping type '" + mapping.getClass() + "'" );
             }
         }
+        return ddls;
     }
 
     private StringBuffer createJoinedTable( String fromTable, JoinChain jc ) {
