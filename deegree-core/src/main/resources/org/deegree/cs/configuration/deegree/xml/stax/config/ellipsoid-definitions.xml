@@ -1,0 +1,416 @@
+<?xml version="1.0" ?>
+<crs:EllipsoidDefinitions xmlns:crs="http://www.deegree.org/crs" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.deegree.org/crs http://schemas.deegree.org/crs/0.5.0/crsdefinition.xsd" version="0.5.0">
+    <crs:Ellipsoid>
+      <crs:Id>ellipsoid_81</crs:Id>
+      <crs:Name>Proj4 defined ellipsoid</crs:Name>
+      <crs:Version>2008-1-16T9:49</crs:Version>
+      <crs:Description>Handmade proj4 ellipsoid definition (parsed from nad/epsg) used by crs with id: 4243</crs:Description>
+      <crs:Units>metre</crs:Units>
+      <crs:SemiMajorAxis>6377299.36559538</crs:SemiMajorAxis>
+      <crs:InverseFlattening>300.80169999999447</crs:InverseFlattening>
+    </crs:Ellipsoid>
+    <crs:Ellipsoid>
+      <crs:Id>epsg:7002</crs:Id>
+      <crs:Name>Airy Modified 1849</crs:Name>
+      <crs:Version>2003-06-27</crs:Version>
+      <crs:Description>OSGB Airy 1830 figure (ellipsoid code 7001) rescaled by 0.999965 to best fit the scale of the 19th century primary triangulation of Ireland.</crs:Description>
+      <crs:Units>metre</crs:Units>
+      <crs:SemiMajorAxis>6377340.189</crs:SemiMajorAxis>
+      <crs:InverseFlattening>299.324964599999</crs:InverseFlattening>
+    </crs:Ellipsoid>
+    <crs:Ellipsoid>
+      <crs:Id>epsg:7003</crs:Id>
+      <crs:Id>epsg:7050</crs:Id>
+      <crs:Id>http://www.opengis.net/gml/srs/epsg.xml#7050</crs:Id>
+      <crs:Id>urn:ogc:def:crs:epsg::7050</crs:Id>
+      <crs:Name>Australian National Spheroid</crs:Name>
+      <crs:Version>2008-08-11</crs:Version>
+      <crs:Description>Based on the GRS 1967 figure but with 1/f taken to 2 decimal places exactly.  The dimensions are also used as the GRS 1967 Modified ellipsoid (see code 7050).</crs:Description>
+      <crs:Units>metre</crs:Units>
+      <crs:SemiMajorAxis>6378160.0</crs:SemiMajorAxis>
+      <crs:InverseFlattening>298.25</crs:InverseFlattening>
+    </crs:Ellipsoid>
+    <crs:Ellipsoid>
+      <crs:Id>epsg:7005</crs:Id>
+      <crs:Name>Bessel Modified</crs:Name>
+      <crs:Version>1999-04-22</crs:Version>
+      <crs:Description>Used in Norway and also in Sweden with a 1mm increase in semi-major axis.</crs:Description>
+      <crs:Units>metre</crs:Units>
+      <crs:SemiMajorAxis>6377492.018</crs:SemiMajorAxis>
+      <crs:InverseFlattening>299.15281280000056</crs:InverseFlattening>
+    </crs:Ellipsoid>
+    <crs:Ellipsoid>
+      <crs:Id>epsg:7007</crs:Id>
+      <crs:Name>Clarke 1858</crs:Name>
+      <crs:Version>2005-08-14</crs:Version>
+      <crs:Description>Clarke's 1858/II solution. Derived parameters: a = 6378293.645m using his 1865 ratio of 0.3047972654 feet per metre; 1/f = 294.26068Â  In Australia and Amoco Trinidad 1/f taken to two decimal places (294.26 exactly); elsewhere a and b used to derive 1/f.</crs:Description>
+      <crs:Units>metre</crs:Units>
+      <crs:SemiMajorAxis>6378293.645208759</crs:SemiMajorAxis>
+      <crs:InverseFlattening>294.26067636926064</crs:InverseFlattening>
+    </crs:Ellipsoid>
+    <crs:Ellipsoid>
+      <crs:Id>epsg:7008</crs:Id>
+      <crs:Id>http://www.opengis.net/gml/srs/epsg.xml#7008</crs:Id>
+      <crs:Id>urn:ogc:def:crs:epsg::7008</crs:Id>
+      <crs:Id>urn:opengis:def:crs:epsg::7008</crs:Id>
+      <crs:Name>Clarke 1866</crs:Name>
+      <crs:Units>metre</crs:Units>
+      <crs:SemiMajorAxis>6378206.4</crs:SemiMajorAxis>
+      <crs:InverseFlattening>294.9786982138982</crs:InverseFlattening>
+    </crs:Ellipsoid>
+    <crs:Ellipsoid>
+      <crs:Id>epsg:7009</crs:Id>
+      <crs:Name>Clarke 1866 Michigan</crs:Name>
+      <crs:Version>1995-06-02</crs:Version>
+      <crs:Description>Used for Michigan NAD27 State Plane zones.  Radius = ellipsoid radius + 800 feet; this approximates the average elevation of the state.   Derived parameter: 1/f = 294.97870</crs:Description>
+      <crs:Units>metre</crs:Units>
+      <crs:SemiMajorAxis>6378450.047548896</crs:SemiMajorAxis>
+      <crs:InverseFlattening>294.97869716467716</crs:InverseFlattening>
+    </crs:Ellipsoid>
+    <crs:Ellipsoid>
+      <crs:Id>epsg:7010</crs:Id>
+      <crs:Name>Clarke 1880 (Benoit)</crs:Name>
+      <crs:Version>1995-06-02</crs:Version>
+      <crs:Description>Adopts Clarke's values for a and b.  Uses Benoit's 1895 ratio of 0.9143992 metres per yard to convert to metres.</crs:Description>
+      <crs:Units>metre</crs:Units>
+      <crs:SemiMajorAxis>6378300.789</crs:SemiMajorAxis>
+      <crs:InverseFlattening>293.4663155389811</crs:InverseFlattening>
+    </crs:Ellipsoid>
+    <crs:Ellipsoid>
+      <crs:Id>epsg:7011</crs:Id>
+      <crs:Name>Clarke 1880 (IGN)</crs:Name>
+      <crs:Version>1998-04-16</crs:Version>
+      <crs:Description>Adopts Clarke's values for a and b using his 1865 ratio of 39.370432 inches per metre to convert axes to metres.</crs:Description>
+      <crs:Units>metre</crs:Units>
+      <crs:SemiMajorAxis>6378249.2</crs:SemiMajorAxis>
+      <crs:InverseFlattening>293.4660212936269</crs:InverseFlattening>
+    </crs:Ellipsoid>
+    <crs:Ellipsoid>
+      <crs:Id>epsg:7013</crs:Id>
+      <crs:Name>Clarke 1880 (Arc)</crs:Name>
+      <crs:Version>2001-06-05</crs:Version>
+      <crs:Description>Adopts Clarke's value for a with derived 1/f.  Uses his 1865 ratio of 39.370432 inch per metre to convert semi-major axis to metres.</crs:Description>
+      <crs:Units>metre</crs:Units>
+      <crs:SemiMajorAxis>6378249.145</crs:SemiMajorAxis>
+      <crs:InverseFlattening>293.4663076999949</crs:InverseFlattening>
+    </crs:Ellipsoid>
+    <crs:Ellipsoid>
+      <crs:Id>epsg:7014</crs:Id>
+      <crs:Name>Clarke 1880 (SGA 1922)</crs:Name>
+      <crs:Version>1995-06-02</crs:Version>
+      <crs:Description>Used in Old French Triangulation (ATF).   Uses Clarke's 1865 inch-metre ratio of 39.370432 to convert axes to metres.</crs:Description>
+      <crs:Units>metre</crs:Units>
+      <crs:SemiMajorAxis>6378249.2</crs:SemiMajorAxis>
+      <crs:InverseFlattening>293.46598000000307</crs:InverseFlattening>
+    </crs:Ellipsoid>
+    <crs:Ellipsoid>
+      <crs:Id>epsg:7015</crs:Id>
+      <crs:Name>Everest 1830 (1937 Adjustment)</crs:Name>
+      <crs:Version>1996-10-18</crs:Version>
+      <crs:Description>Used for the 1937 readjustment of Indian triangulation.  Clarke's 1865 Indian-British foot ratio (0.99999566) and Benoit's 1898 British inch-metre ratio (39.370113) rounded as 0.30479841 exactly and applied to Everest's 1830 definition taken as a and 1/f</crs:Description>
+      <crs:Units>metre</crs:Units>
+      <crs:SemiMajorAxis>6377276.345</crs:SemiMajorAxis>
+      <crs:InverseFlattening>300.8016999999937</crs:InverseFlattening>
+    </crs:Ellipsoid>
+    <crs:Ellipsoid>
+      <crs:Id>epsg:7018</crs:Id>
+      <crs:Name>Everest 1830 Modified</crs:Name>
+      <crs:Version>1995-06-02</crs:Version>
+      <crs:Description>Adopted 1967 for use in West Malaysia.  Applies Benoit 1898 inch-metre ratio of 39.370113 to Everest 1830 original definition of a and 1/f but with a taken to be in British rather than Indian feet.</crs:Description>
+      <crs:Units>metre</crs:Units>
+      <crs:SemiMajorAxis>6377304.063</crs:SemiMajorAxis>
+      <crs:InverseFlattening>300.8017000000039</crs:InverseFlattening>
+    </crs:Ellipsoid>
+    <crs:Ellipsoid>
+      <crs:Id>epsg:7021</crs:Id>
+      <crs:Name>Indonesian National Spheroid</crs:Name>
+      <crs:Version>1995-06-02</crs:Version>
+      <crs:Description>Based on the GRS 1967 figure but with 1/f taken to 3 decimal places exactly.</crs:Description>
+      <crs:Units>metre</crs:Units>
+      <crs:SemiMajorAxis>6378160.0</crs:SemiMajorAxis>
+      <crs:InverseFlattening>298.247</crs:InverseFlattening>
+    </crs:Ellipsoid>
+    <crs:Ellipsoid>
+      <crs:Id>epsg:7025</crs:Id>
+      <crs:Name>NWL 9D</crs:Name>
+      <crs:Version>1995-06-02</crs:Version>
+      <crs:Description>Used by Transit Precise Ephemeris between October 1971 and January 1987.</crs:Description>
+      <crs:Units>metre</crs:Units>
+      <crs:SemiMajorAxis>6378145.0</crs:SemiMajorAxis>
+      <crs:InverseFlattening>298.25</crs:InverseFlattening>
+    </crs:Ellipsoid>
+    <crs:Ellipsoid>
+      <crs:Id>epsg:7027</crs:Id>
+      <crs:Name>Plessis 1817</crs:Name>
+      <crs:Version>1995-06-02</crs:Version>
+      <crs:Description>Rescaling of Delambre 1810 figure (a=6376985 m) to make meridional arc from equator to pole equal to 10000000 metres exactly. (Ref: Strasser).</crs:Description>
+      <crs:Units>metre</crs:Units>
+      <crs:SemiMajorAxis>6376523.0</crs:SemiMajorAxis>
+      <crs:InverseFlattening>308.63999999999953</crs:InverseFlattening>
+    </crs:Ellipsoid>
+    <crs:Ellipsoid>
+      <crs:Id>epsg:7028</crs:Id>
+      <crs:Name>Struve 1860</crs:Name>
+      <crs:Version>1998-11-11</crs:Version>
+      <crs:Description>Original definition of semi-major axis given as 3272539 toise.  In "Ellipsoidisch Parameter der Erdfigur (1800-1950)" , Strasser suggests a conversion factor of 1.94903631 which gives a=6378297.337 metres.</crs:Description>
+      <crs:Units>metre</crs:Units>
+      <crs:SemiMajorAxis>6378298.3</crs:SemiMajorAxis>
+      <crs:InverseFlattening>294.7300000000063</crs:InverseFlattening>
+    </crs:Ellipsoid>
+    <crs:Ellipsoid>
+      <crs:Id>epsg:7029</crs:Id>
+      <crs:Name>War Office</crs:Name>
+      <crs:Version>2009-10-29</crs:Version>
+      <crs:Description>In non-metric form, a=20926201 Gold Coast feet. DMA Technical Manual 8358.1 and data derived from this quotes value for semi-major axis as 6378300.58m: OGP recommends use of defined value 6378300m exactly.</crs:Description>
+      <crs:Units>metre</crs:Units>
+      <crs:SemiMajorAxis>6378300.0</crs:SemiMajorAxis>
+      <crs:InverseFlattening>295.999999999999</crs:InverseFlattening>
+    </crs:Ellipsoid>
+    <crs:Ellipsoid>
+      <crs:Id>epsg:7030</crs:Id>
+      <crs:Name>WGS84_Ellipsoid</crs:Name>
+      <crs:Units>metre</crs:Units>
+      <crs:SemiMajorAxis>6378137.0</crs:SemiMajorAxis>
+      <crs:InverseFlattening>298.257223563</crs:InverseFlattening>
+    </crs:Ellipsoid>
+    <crs:Ellipsoid>
+      <crs:Id>epsg:7032</crs:Id>
+      <crs:Name>OSU86F</crs:Name>
+      <crs:Version>1995-06-02</crs:Version>
+      <crs:Description>Used for OSU86 gravity potential (geoidal) model.</crs:Description>
+      <crs:Units>metre</crs:Units>
+      <crs:SemiMajorAxis>6378136.2</crs:SemiMajorAxis>
+      <crs:InverseFlattening>298.2572235630046</crs:InverseFlattening>
+    </crs:Ellipsoid>
+    <crs:Ellipsoid>
+      <crs:Id>epsg:7033</crs:Id>
+      <crs:Name>OSU91A</crs:Name>
+      <crs:Version>1995-06-02</crs:Version>
+      <crs:Description>Used for OSU91 gravity potential (geoidal) model.</crs:Description>
+      <crs:Units>metre</crs:Units>
+      <crs:SemiMajorAxis>6378136.3</crs:SemiMajorAxis>
+      <crs:InverseFlattening>298.25722356299553</crs:InverseFlattening>
+    </crs:Ellipsoid>
+    <crs:Ellipsoid>
+      <crs:Id>epsg:7034</crs:Id>
+      <crs:Id>http://www.opengis.net/gml/srs/epsg.xml#7034</crs:Id>
+      <crs:Id>urn:ogc:def:crs:epsg::7034</crs:Id>
+      <crs:Id>urn:opengis:def:crs:epsg::7034</crs:Id>
+      <crs:Name>Clarke 1880 mod.</crs:Name>
+      <crs:Units>metre</crs:Units>
+      <crs:SemiMajorAxis>6378249.145</crs:SemiMajorAxis>
+      <crs:InverseFlattening>293.4663</crs:InverseFlattening>
+    </crs:Ellipsoid>
+    <crs:Ellipsoid>
+      <crs:Id>epsg:7035</crs:Id>
+      <crs:Name>Sphere</crs:Name>
+      <crs:Version>1995-06-02</crs:Version>
+      <crs:Description>Authalic sphere.  1/f is infinite. Superseded by GRS 1980 authalic sphere (code 7047).</crs:Description>
+      <crs:Units>metre</crs:Units>
+      <crs:SemiMajorAxis>6371000.0</crs:SemiMajorAxis>
+      <crs:InverseFlattening>0.0</crs:InverseFlattening>
+    </crs:Ellipsoid>
+    <crs:Ellipsoid>
+      <crs:Id>epsg:7036</crs:Id>
+      <crs:Id>http://www.opengis.net/gml/srs/epsg.xml#7036</crs:Id>
+      <crs:Id>urn:ogc:def:crs:epsg::7036</crs:Id>
+      <crs:Id>urn:opengis:def:crs:epsg::7036</crs:Id>
+      <crs:Name>GRS 67(IUGG 1967)</crs:Name>
+      <crs:Units>metre</crs:Units>
+      <crs:SemiMajorAxis>6378160.0</crs:SemiMajorAxis>
+      <crs:InverseFlattening>298.247167427</crs:InverseFlattening>
+    </crs:Ellipsoid>
+    <crs:Ellipsoid>
+      <crs:Id>epsg:7041</crs:Id>
+      <crs:Name>Average Terrestrial System 1977</crs:Name>
+      <crs:Version>1997-07-22</crs:Version>
+      <crs:Units>metre</crs:Units>
+      <crs:SemiMajorAxis>6378135.0</crs:SemiMajorAxis>
+      <crs:InverseFlattening>298.2569999999998</crs:InverseFlattening>
+    </crs:Ellipsoid>
+    <crs:Ellipsoid>
+      <crs:Id>epsg:7044</crs:Id>
+      <crs:Name>Everest 1830 (1962 Definition)</crs:Name>
+      <crs:Version>1999-10-20</crs:Version>
+      <crs:Description>Used by Pakistan since metrication.  Clarke's 1865 Indian foot-British foot ratio (0.99999566) and his 1865 British inch-metre ratio (39.369971) rounded with slight error as 1 Ind ft = 0.3047995m exactly and applied to Everest's 1830 definition of a &amp; b.</crs:Description>
+      <crs:Units>metre</crs:Units>
+      <crs:SemiMajorAxis>6377301.243</crs:SemiMajorAxis>
+      <crs:InverseFlattening>300.80172550000657</crs:InverseFlattening>
+    </crs:Ellipsoid>
+    <crs:Ellipsoid>
+      <crs:Id>epsg:7045</crs:Id>
+      <crs:Name>Everest 1830 (1975 Definition)</crs:Name>
+      <crs:Version>1999-10-20</crs:Version>
+      <crs:Description>Used by India since metrication.  Clarke's 1865 Indian foot-British foot ratio (0.99999566) and his 1865 British inch-metre ratio (39.369971) rounded as 1 Ind ft = 0.3047995m exactly applied to Everest's 1830 original definition taken as a and b.</crs:Description>
+      <crs:Units>metre</crs:Units>
+      <crs:SemiMajorAxis>6377299.151</crs:SemiMajorAxis>
+      <crs:InverseFlattening>300.8017255000053</crs:InverseFlattening>
+    </crs:Ellipsoid>
+    <crs:Ellipsoid>
+      <crs:Id>epsg:7046</crs:Id>
+      <crs:Id>http://www.opengis.net/gml/srs/epsg.xml#7046</crs:Id>
+      <crs:Id>urn:ogc:def:crs:epsg::7046</crs:Id>
+      <crs:Id>urn:opengis:def:crs:epsg::7046</crs:Id>
+      <crs:Name>Bessel 1841 (Namibia)</crs:Name>
+      <crs:Units>metre</crs:Units>
+      <crs:SemiMajorAxis>6377483.865</crs:SemiMajorAxis>
+      <crs:InverseFlattening>299.1528128</crs:InverseFlattening>
+    </crs:Ellipsoid>
+    <crs:Ellipsoid>
+      <crs:Id>epsg:7048</crs:Id>
+      <crs:Name>GRS 1980 Authalic Sphere</crs:Name>
+      <crs:Version>2001-06-25</crs:Version>
+      <crs:Description>Authalic sphere derived from GRS 1980 ellipsoid (code 7019).  (An authalic sphere is one with a surface area equal to the surface area of the ellipsoid). 1/f is infinite.</crs:Description>
+      <crs:Units>metre</crs:Units>
+      <crs:SemiMajorAxis>6371007.0</crs:SemiMajorAxis>
+      <crs:InverseFlattening>0.0</crs:InverseFlattening>
+    </crs:Ellipsoid>
+    <crs:Ellipsoid>
+      <crs:Id>epsg:7049</crs:Id>
+      <crs:Name>IAG 1975</crs:Name>
+      <crs:Version>2009-11-24</crs:Version>
+      <crs:Units>metre</crs:Units>
+      <crs:SemiMajorAxis>6378140.0</crs:SemiMajorAxis>
+      <crs:InverseFlattening>298.2569999999957</crs:InverseFlattening>
+    </crs:Ellipsoid>
+    <crs:Ellipsoid>
+      <crs:Id>epsg:7051</crs:Id>
+      <crs:Name>Danish 1876</crs:Name>
+      <crs:Version>2003-06-27</crs:Version>
+      <crs:Description>Semi-major axis originally given as 3271883.25 toise. Uses toise to French metre ratio of 1.94903631 to two decimal place precision. An alternative ratio with the German legal metre of 1.9490622 giving 6377104m has not been used in Danish work.</crs:Description>
+      <crs:Units>metre</crs:Units>
+      <crs:SemiMajorAxis>6377019.27</crs:SemiMajorAxis>
+      <crs:InverseFlattening>300.0000000000021</crs:InverseFlattening>
+    </crs:Ellipsoid>
+    <crs:Ellipsoid>
+      <crs:Id>epsg:7052</crs:Id>
+      <crs:Name>Clarke 1866 Authalic Sphere</crs:Name>
+      <crs:Version>2004-04-27</crs:Version>
+      <crs:Description>Authalic sphere derived from Clarke 1866 ellipsoid (code 7008).</crs:Description>
+      <crs:Units>metre</crs:Units>
+      <crs:SemiMajorAxis>6370997.0</crs:SemiMajorAxis>
+      <crs:InverseFlattening>0.0</crs:InverseFlattening>
+    </crs:Ellipsoid>
+    <crs:Ellipsoid>
+      <crs:Id>epsg:7053</crs:Id>
+      <crs:Name>Hough 1960</crs:Name>
+      <crs:Version>2006-01-26</crs:Version>
+      <crs:Units>metre</crs:Units>
+      <crs:SemiMajorAxis>6378270.0</crs:SemiMajorAxis>
+      <crs:InverseFlattening>296.99999999999557</crs:InverseFlattening>
+    </crs:Ellipsoid>
+    <crs:Ellipsoid>
+      <crs:Id>epsg:7054</crs:Id>
+      <crs:Name>PZ-90</crs:Name>
+      <crs:Version>2006-02-03</crs:Version>
+      <crs:Units>metre</crs:Units>
+      <crs:SemiMajorAxis>6378136.0</crs:SemiMajorAxis>
+      <crs:InverseFlattening>298.2578393029947</crs:InverseFlattening>
+    </crs:Ellipsoid>
+    <crs:Ellipsoid>
+      <crs:Id>epsg:7055</crs:Id>
+      <crs:Name>Clarke 1880 (international foot)</crs:Name>
+      <crs:Version>2006-07-14</crs:Version>
+      <crs:Description>Clark'es 1880 definition in feet assumed for the purposes of metric conversion to be international foot. a = 6378306.370Âmetres. 1/f derived from a and b = 293.4663077Â Used in Fiji.</crs:Description>
+      <crs:Units>metre</crs:Units>
+      <crs:SemiMajorAxis>6378306.3696</crs:SemiMajorAxis>
+      <crs:InverseFlattening>293.4663076556355</crs:InverseFlattening>
+    </crs:Ellipsoid>
+    <crs:Ellipsoid>
+      <crs:Id>epsg:7056</crs:Id>
+      <crs:Name>Everest 1830 (RSO 1969)</crs:Name>
+      <crs:Version>2006-07-24</crs:Version>
+      <crs:Description>Adopted for 1969 metrication of peninsula Malaysia RSO grid.  Uses Sears 1922 yard-metre ratio truncated to 6 significant figures applied to Everest 1830 original definition of a and 1/f but with a taken to be in British rather than Indian feet.</crs:Description>
+      <crs:Units>metre</crs:Units>
+      <crs:SemiMajorAxis>6377295.664</crs:SemiMajorAxis>
+      <crs:InverseFlattening>300.80169999999714</crs:InverseFlattening>
+    </crs:Ellipsoid>
+    <crs:Ellipsoid>
+      <crs:Id>google_maps_sphere</crs:Id>
+      <crs:Name>Spherical google_maps definition of WGS84_Ellipsoid</crs:Name>
+      <crs:Version>2009-12-09T13:39</crs:Version>
+      <crs:Units>metre</crs:Units>
+      <crs:SemiMajorAxis>6378137.0</crs:SemiMajorAxis>
+      <crs:InverseFlattening>0.0</crs:InverseFlattening>
+    </crs:Ellipsoid>
+    <crs:Ellipsoid>
+      <crs:Id>epsg:7004</crs:Id>
+      <crs:Id>http://www.opengis.net/gml/srs/epsg.xml#7004</crs:Id>
+      <crs:Id>urn:ogc:def:crs:epsg::7004</crs:Id>
+      <crs:Id>urn:opengis:def:crs:epsg::7004</crs:Id>
+      <crs:Name>Bessel 1841</crs:Name>
+      <crs:Units>metre</crs:Units>
+      <crs:SemiMajorAxis>6377397.155</crs:SemiMajorAxis>
+      <crs:InverseFlattening>299.1528128</crs:InverseFlattening>
+    </crs:Ellipsoid>
+    <crs:Ellipsoid>
+      <crs:Id>epsg:7016</crs:Id>
+      <crs:Id>http://www.opengis.net/gml/srs/epsg.xml#7016</crs:Id>
+      <crs:Id>urn:ogc:def:crs:epsg::7016</crs:Id>
+      <crs:Id>urn:opengis:def:crs:epsg::7016</crs:Id>
+      <crs:Name>Everest (Sabah &amp; Sarawak)</crs:Name>
+      <crs:Units>metre</crs:Units>
+      <crs:SemiMajorAxis>6377298.556</crs:SemiMajorAxis>
+      <crs:InverseFlattening>300.8017</crs:InverseFlattening>
+    </crs:Ellipsoid>
+    <crs:Ellipsoid>
+      <crs:Id>epsg:7019</crs:Id>
+      <crs:Id>http://www.opengis.net/gml/srs/epsg.xml#7019</crs:Id>
+      <crs:Id>urn:ogc:def:crs:epsg::7019</crs:Id>
+      <crs:Id>urn:opengis:def:crs:epsg::7019</crs:Id>
+      <crs:Name>GRS 1980(IUGG, 1980)</crs:Name>
+      <crs:Units>metre</crs:Units>
+      <crs:SemiMajorAxis>6378137.0</crs:SemiMajorAxis>
+      <crs:InverseFlattening>298.257222101</crs:InverseFlattening>
+    </crs:Ellipsoid>
+    <crs:Ellipsoid>
+      <crs:Id>epsg:7043</crs:Id>
+      <crs:Id>http://www.opengis.net/gml/srs/epsg.xml#7043</crs:Id>
+      <crs:Id>urn:ogc:def:crs:epsg::7043</crs:Id>
+      <crs:Id>urn:opengis:def:crs:epsg::7043</crs:Id>
+      <crs:Name>WGS 72</crs:Name>
+      <crs:Units>metre</crs:Units>
+      <crs:SemiMajorAxis>6378135.0</crs:SemiMajorAxis>
+      <crs:InverseFlattening>298.26</crs:InverseFlattening>
+    </crs:Ellipsoid>
+    <crs:Ellipsoid>
+      <crs:Id>epsg:7001</crs:Id>
+      <crs:Id>http://www.opengis.net/gml/srs/epsg.xml#7001</crs:Id>
+      <crs:Id>urn:ogc:def:crs:epsg::7001</crs:Id>
+      <crs:Id>urn:opengis:def:crs:epsg::7001</crs:Id>
+      <crs:Name>Airy 1830</crs:Name>
+      <crs:Units>metre</crs:Units>
+      <crs:SemiMajorAxis>6377563.396</crs:SemiMajorAxis>
+      <crs:InverseFlattening>299.3249753150345</crs:InverseFlattening>
+    </crs:Ellipsoid>
+    <crs:Ellipsoid>
+      <crs:Id>epsg:7024</crs:Id>
+      <crs:Id>http://www.opengis.net/gml/srs/epsg.xml#7024</crs:Id>
+      <crs:Id>urn:ogc:def:crs:epsg::7024</crs:Id>
+      <crs:Id>urn:opengis:def:crs:epsg::7024</crs:Id>
+      <crs:Name>Krassowsky, 1942</crs:Name>
+      <crs:Units>metre</crs:Units>
+      <crs:SemiMajorAxis>6378245.0</crs:SemiMajorAxis>
+      <crs:InverseFlattening>298.3</crs:InverseFlattening>
+    </crs:Ellipsoid>
+    <crs:Ellipsoid>
+      <crs:Id>epsg:7020</crs:Id>
+      <crs:Id>http://www.opengis.net/gml/srs/epsg.xml#7020</crs:Id>
+      <crs:Id>urn:ogc:def:crs:epsg::7020</crs:Id>
+      <crs:Id>urn:opengis:def:crs:epsg::7020</crs:Id>
+      <crs:Name>Helmert 1906</crs:Name>
+      <crs:Units>metre</crs:Units>
+      <crs:SemiMajorAxis>6378200.0</crs:SemiMajorAxis>
+      <crs:InverseFlattening>298.3</crs:InverseFlattening>
+    </crs:Ellipsoid>
+    <crs:Ellipsoid>
+      <crs:Id>epsg:7022</crs:Id>
+      <crs:Id>http://www.opengis.net/gml/srs/epsg.xml#7022</crs:Id>
+      <crs:Id>urn:ogc:def:crs:epsg::7022</crs:Id>
+      <crs:Id>urn:opengis:def:crs:epsg::7022</crs:Id>
+      <crs:Name>International 1909 (Hayford)</crs:Name>
+      <crs:Units>metre</crs:Units>
+      <crs:SemiMajorAxis>6378388.0</crs:SemiMajorAxis>
+      <crs:InverseFlattening>297.0</crs:InverseFlattening>
+    </crs:Ellipsoid>
+  </crs:EllipsoidDefinitions>
