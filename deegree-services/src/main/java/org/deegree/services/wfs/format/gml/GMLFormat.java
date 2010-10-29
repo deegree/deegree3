@@ -699,7 +699,7 @@ public class GMLFormat implements Format {
     private String getSchemaLocation( Version requestVersion, Collection<FeatureType> requestedFts ) {
 
         String schemaLocation = this.schemaLocation;
-        if ( schemaLocation == null ) {
+        if ( responseContainerEl == null ) {
             // use "wfs:FeatureCollection" then
             QName wfsFeatureCollection = new QName( WFS_NS, "FeatureCollection", WFS_PREFIX );
             if ( responseContainerEl == null || wfsFeatureCollection.equals( responseContainerEl ) ) {
@@ -740,7 +740,13 @@ public class GMLFormat implements Format {
             requestedFtNames[i++] = requestedFt.getName();
         }
 
-        return schemaLocation + " " + WFSController.getSchemaLocation( requestVersion, gmlVersion, requestedFtNames );
+        if ( schemaLocation == null || schemaLocation.isEmpty() ) {
+            schemaLocation = WFSController.getSchemaLocation( requestVersion, gmlVersion, requestedFtNames );
+        } else {
+            schemaLocation += " " + WFSController.getSchemaLocation( requestVersion, gmlVersion, requestedFtNames );
+        }
+
+        return schemaLocation;
     }
 
     /**
