@@ -1,0 +1,298 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<deegreeSOS xmlns="http://www.deegree.org/services/sos" xmlns:xlink="http://www.w3.org/1999/xlink"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.deegree.org/schemas/services/sos ../../../../../resources/schema/sos/sos_configuration.xsd">
+    <PublishedInformation>
+        <SupportedVersions>
+            <Version>1.0.0</Version>
+        </SupportedVersions>
+    </PublishedInformation>
+    <ServiceConfiguration>
+        <Offering>
+            <name>urn:MyOrg:offering:1</name>
+            <srsName>EPSG:4326</srsName>
+            <Datastore>
+                <Connection>
+                    <Driver>org.apache.derby.jdbc.EmbeddedDriver</Driver>
+                    <!-- call resources/build-demo.xml ant file to get the observations db -->
+                    <Url>jdbc:derby:classpath:observations</Url>
+                    <User />
+                    <Password />
+                </Connection>
+                <Class>org.deegree.services.sos.storage.SimpleObservationDatastore</Class>
+                <Table>observations</Table>
+                <Column type="timestamp" name="time" />
+                <Option name="db_timezone" value="GMT" />
+            </Datastore>
+            <Procedure xlink:href="urn:ogc:object:Sensor:latlon:foobarnator">
+                <FeatureOfInterest
+                    xlink:href="urn:ogc:object:Sensor:latlon:foobarnator" />
+                <Sensor xlink:href="foobarnator-sensorml.xml" />
+            </Procedure>
+            <Property xlink:href="urn:ogc:def:phenomenon:OGC:windspeed">
+                <Column type="property" name="wind" />
+                <Option name="uom" value="m/s" />
+            </Property>
+            <Property xlink:href="urn:ogc:def:phenomenon:OGC:temperature">
+                <Column type="property" name="temp" />
+                <Option name="uom" value="Cel" />
+            </Property>
+            <Property xlink:href="urn:ogc:def:phenomenon:OGC:entropy">
+                <Column type="property" name="foo" />
+                <Option name="uom" value="foo" />
+            </Property>
+        </Offering>
+        <Offering>
+            <name>utah_climate</name>
+            <srsName>EPSG:26912</srsName>
+            <Datastore>
+                <Connection>
+                    <Driver>org.apache.derby.jdbc.EmbeddedDriver</Driver>
+                    <Url>jdbc:derby:classpath:utah_climate_2004</Url>
+                    <User />
+                    <Password />
+                </Connection>
+                <Class>org.deegree.services.sos.storage.SimpleObservationDatastore</Class>
+                <Table>utah_climate_2004</Table>
+                <Column type="timestamp" name="obs_time" />
+                <Column type="procedure" name="s_id" />
+                <Option name="db_timezone" value="GMT" />
+            </Datastore>
+            <Procedure xlink:href="urn:ogc:object:Sensor:latlon:salt_lake_city">
+                <FeatureOfInterest
+                    xlink:href="urn:ogc:object:Sensor:latlon:salt_lake_city" />
+                <Sensor xlink:href="../../../../../resources/example/data/sos/utah-sensorml.xml" />
+                <Option name="value" value="427598" />
+            </Procedure>
+            <Procedure xlink:href="urn:ogc:object:Sensor:latlon:garfield">
+                <FeatureOfInterest
+                    xlink:href="urn:ogc:object:Sensor:latlon:garfield" />
+                <Sensor xlink:href="../../../../../resources/example/data/sos/utah-sensorml.xml" />
+                <Option name="value" value="423097" />
+            </Procedure>
+            <Procedure xlink:href="urn:ogc:object:Sensor:latlon:farmington_warehouse">
+                <FeatureOfInterest
+                    xlink:href="urn:ogc:object:Sensor:latlon:farmington_warehouse" />
+                <Sensor xlink:href="../../../../../resources/example/data/sos/utah-sensorml.xml" />
+                <Option name="value" value="422726" />
+            </Procedure>
+            <Procedure xlink:href="urn:ogc:object:Sensor:latlon:fairfield">
+                <FeatureOfInterest
+                    xlink:href="urn:ogc:object:Sensor:latlon:fairfield" />
+                <Sensor xlink:href="../../../../../resources/example/data/sos/utah-sensorml.xml" />
+                <Option name="value" value="422696" />
+            </Procedure>
+            <Procedure xlink:href="urn:ogc:object:Sensor:latlon:marysvale">
+                <FeatureOfInterest
+                    xlink:href="urn:ogc:object:Sensor:latlon:marysvale" />
+                <Sensor xlink:href="../../../../../resources/example/data/sos/utah-sensorml.xml" />
+                <Option name="value" value="425477" />
+            </Procedure>
+            <Procedure xlink:href="urn:ogc:object:Sensor:latlon:silver_lake_brighton">
+                <FeatureOfInterest
+                    xlink:href="urn:ogc:object:Sensor:latlon:silver_lake_brighton" />
+                <Sensor xlink:href="../../../../../resources/example/data/sos/utah-sensorml.xml" />
+                <Option name="value" value="427846" />
+            </Procedure>
+            <Procedure xlink:href="urn:ogc:object:Sensor:latlon:black_rock">
+                <FeatureOfInterest
+                    xlink:href="urn:ogc:object:Sensor:latlon:black_rock" />
+                <Sensor xlink:href="../../../../../resources/example/data/sos/utah-sensorml.xml" />
+                <Option name="value" value="420730" />
+            </Procedure>
+            <Property xlink:href="urn:ogc:def:phenomenon:OGC:precipitation">
+                <Column type="property" name="precipitation" />
+                <Option name="uom" value="in" />
+            </Property>
+            <Property xlink:href="urn:ogc:def:phenomenon:OGC:snowfall">
+                <Column type="property" name="snow_fall" />
+                <Option name="uom" value="in" />
+            </Property>
+            <Property xlink:href="urn:ogc:def:phenomenon:OGC:snowdepth">
+                <Column type="property" name="snow_depth" />
+                <Option name="uom" value="in" />
+            </Property>
+            <Property xlink:href="urn:ogc:def:phenomenon:OGC:temperature_max">
+                <Column type="property" name="max_temp" />
+                <Option name="uom" value="degF" />
+            </Property>
+            <Property xlink:href="urn:ogc:def:phenomenon:OGC:temperature_min">
+                <Column type="property" name="min_temp" />
+                <Option name="uom" value="degF" />
+            </Property>
+            <Property xlink:href="urn:ogc:def:phenomenon:OGC:temperature">
+                <Column type="property" name="obs_temp" />
+                <Option name="uom" value="degF" />
+            </Property>
+        </Offering>
+        <Offering>
+            <name>utah_climate_pg</name>
+            <srsName>EPSG:26912</srsName>
+            <Datastore>
+                <Connection>
+                    <Driver>org.postgresql.Driver</Driver>
+                    <Url>jdbc:postgresql://hurricane/tonnhofer</Url>
+                    <User>tonnhofer</User>
+                    <Password>tonnhofer</Password>
+                </Connection>
+                <Class>org.deegree.services.sos.storage.SimpleObservationDatastore</Class>
+                <Table>utah_climate</Table>
+                <Column type="timestamp" name="date" />
+                <Column type="procedure" name="s_id" />
+                <Option name="db_timezone" value="GMT" />
+            </Datastore>
+            <Procedure xlink:href="urn:ogc:object:Sensor:latlon:salt_lake_city">
+                <FeatureOfInterest
+                    xlink:href="urn:ogc:object:Sensor:latlon:salt_lake_city" />
+                <Sensor xlink:href="../../../../../resources/example/data/sos/utah-sensorml.xml" />
+                <Option name="value" value="427598" />
+            </Procedure>
+            <Procedure xlink:href="urn:ogc:object:Sensor:latlon:garfield">
+                <FeatureOfInterest
+                    xlink:href="urn:ogc:object:Sensor:latlon:garfield" />
+                <Sensor xlink:href="../../../../../resources/example/data/sos/utah-sensorml.xml" />
+                <Option name="value" value="423097" />
+            </Procedure>
+            <Procedure xlink:href="urn:ogc:object:Sensor:latlon:farmington_warehouse">
+                <FeatureOfInterest
+                    xlink:href="urn:ogc:object:Sensor:latlon:farmington_warehouse" />
+                <Sensor xlink:href="../../../../../resources/example/data/sos/utah-sensorml.xml" />
+                <Option name="value" value="422726" />
+            </Procedure>
+            <Procedure xlink:href="urn:ogc:object:Sensor:latlon:fairfield">
+                <FeatureOfInterest
+                    xlink:href="urn:ogc:object:Sensor:latlon:fairfield" />
+                <Sensor xlink:href="../../../../../resources/example/data/sos/utah-sensorml.xml" />
+                <Option name="value" value="422696" />
+            </Procedure>
+            <Procedure xlink:href="urn:ogc:object:Sensor:latlon:marysvale">
+                <FeatureOfInterest
+                    xlink:href="urn:ogc:object:Sensor:latlon:marysvale" />
+                <Sensor xlink:href="../../../../../resources/example/data/sos/utah-sensorml.xml" />
+                <Option name="value" value="425477" />
+            </Procedure>
+            <Procedure xlink:href="urn:ogc:object:Sensor:latlon:silver_lake_brighton">
+                <FeatureOfInterest
+                    xlink:href="urn:ogc:object:Sensor:latlon:silver_lake_brighton" />
+                <Sensor xlink:href="../../../../../resources/example/data/sos/utah-sensorml.xml" />
+                <Option name="value" value="427846" />
+            </Procedure>
+            <Procedure xlink:href="urn:ogc:object:Sensor:latlon:black_rock">
+                <FeatureOfInterest
+                    xlink:href="urn:ogc:object:Sensor:latlon:black_rock" />
+                <Sensor xlink:href="../../../../../resources/example/data/sos/utah-sensorml.xml" />
+                <Option name="value" value="420730" />
+            </Procedure>
+            <Property xlink:href="urn:ogc:def:phenomenon:OGC:precipitation">
+                <Column type="property" name="precipitation" />
+                <Option name="uom" value="in" />
+            </Property>
+            <Property xlink:href="urn:ogc:def:phenomenon:OGC:temperature_max">
+                <Column type="property" name="max_temp" />
+                <Option name="uom" value="degF" />
+            </Property>
+            <Property xlink:href="urn:ogc:def:phenomenon:OGC:temperature_min">
+                <Column type="property" name="min_temp" />
+                <Option name="uom" value="degF" />
+            </Property>
+            <Property xlink:href="urn:ogc:def:phenomenon:OGC:temperature">
+                <Column type="property" name="obs_temp" />
+                <Option name="uom" value="degF" />
+            </Property>
+        </Offering>
+        <Offering>
+            <name>urn:MyOrg:offering:2</name>
+            <srsName>EPSG:4326</srsName>
+            <Datastore>
+                <Connection>
+                    <Driver>org.apache.derby.jdbc.EmbeddedDriver</Driver>
+                    <Url>jdbc:derby:classpath:observations</Url>
+                    <User />
+                    <Password />
+                </Connection>
+                <Class>org.deegree.services.sos.storage.ContinuousObservationDatastore</Class>
+                <Table>observations</Table>
+                <Column type="id" name="id" />
+                <Option name="beginDate" value="2008-01-01" />
+                <Option name="interval" value="PT1H" />
+                <!-- Option name="db_timezone" value="GMT" /-->
+				<!-- Option name="endDate" value="2008-05-01" /-->
+                <Option name="firstID" value="1" />
+            </Datastore>
+            <Procedure xlink:href="urn:ogc:object:Sensor:latlon:foobarnator">
+                <FeatureOfInterest
+                    xlink:href="urn:ogc:object:Sensor:latlon:foobarnator" />
+                <Sensor xlink:href="foobarnator-sensorml.xml" />
+            </Procedure>
+            <Property xlink:href="urn:ogc:def:phenomenon:OGC:windspeed">
+                <Column type="property" name="wind" />
+                <Option name="uom" value="m/s" />
+            </Property>
+            <Property xlink:href="urn:ogc:def:phenomenon:OGC:temperature">
+                <Column type="property" name="temp" />
+                <Option name="uom" value="Cel" />
+            </Property>
+            <Property xlink:href="urn:ogc:def:phenomenon:OGC:entropy">
+                <Column type="property" name="foo" />
+                <Option name="uom" value="foo" />
+            </Property>
+        </Offering>
+        <Offering>
+            <name>urn:MyOrg:offering:pg</name>
+            <srsName>EPSG:4326</srsName>
+            <Datastore>
+                <Connection>
+                    <Driver>org.postgresql.Driver</Driver>
+                    <Url>jdbc:postgresql://hurricane/tonnhofer</Url>
+                    <User>tonnhofer</User>
+                    <Password>tonnhofer</Password>
+                </Connection>
+                <Class>org.deegree.services.sos.storage.SimpleObservationDatastore</Class>
+                <Table>observations</Table>
+                <Column type="timestamp" name="time" />
+            </Datastore>
+            <Procedure xlink:href="urn:ogc:object:Sensor:latlon:foobarnator">
+                <FeatureOfInterest
+                    xlink:href="urn:ogc:object:Sensor:latlon:foobarnator" />
+                <Sensor xlink:href="foobarnator-sensorml.xml" />
+            </Procedure>
+            <Property xlink:href="urn:ogc:def:phenomenon:OGC:windspeed">
+                <Column type="property" name="wind" />
+                <Option name="uom" value="m/s" />
+            </Property>
+            <Property xlink:href="urn:ogc:def:phenomenon:OGC:temperature">
+                <Column type="property" name="temp" />
+                <Option name="uom" value="Cel" />
+            </Property>
+            <Property xlink:href="urn:ogc:def:phenomenon:OGC:entropy">
+                <Column type="property" name="foo" />
+                <Option name="uom" value="foo" />
+            </Property>
+        </Offering>
+        <Offering>
+            <name>urn:MyOrg:offering:3</name>
+            <srsName>EPSG:4326</srsName>
+            <Datastore>
+                <Connection>
+                    <Driver>org.apache.derby.jdbc.EmbeddedDriver</Driver>
+                    <Url>jdbc:derby:classpath:observations</Url>
+                    <User />
+                    <Password />
+                </Connection>
+                <Class>org.deegree.services.sos.storage.SimpleObservationDatastore</Class>
+                <Table>observations_small</Table>
+                <Column type="timestamp" name="time" />
+                <Option name="db_timezone" value="GMT-9" />
+			<!--<column type="position" name="geom"/>-->
+            </Datastore>
+            <Procedure xlink:href="urn:ogc:object:Sensor:latlon:foobarnator">
+                <FeatureOfInterest
+                    xlink:href="urn:ogc:object:Sensor:latlon:foobarnator" />
+                <Sensor xlink:href="foobarnator-sensorml.xml" />
+            </Procedure>
+            <Property xlink:href="urn:ogc:def:phenomenon:OGC:temperature">
+                <Column type="property" name="temp" />
+                <Option name="uom" value="Cel" />
+            </Property>
+        </Offering>
+    </ServiceConfiguration>
+</deegreeSOS>
