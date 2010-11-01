@@ -56,6 +56,11 @@ public class GenericXMLElement extends GenericXMLElementContent {
 
     private QName name;
 
+    public GenericXMLElement( QName name, GenericXMLElementContent value ) {
+        super( value.type, value.attrs, value.children );
+        this.name = name;
+    }
+
     public GenericXMLElement( QName name, XSTypeDefinition type, Map<QName, PrimitiveValue> attrs,
                               List<TypedObjectNode> children ) {
         super( type, attrs, children );

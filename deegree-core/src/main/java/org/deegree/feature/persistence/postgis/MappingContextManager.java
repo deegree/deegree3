@@ -48,7 +48,8 @@ public class MappingContextManager {
             id = prefix + "_" + name;
         }
         if ( id.length() > maxLength ) {
-            id = "shortid_" + ( this.id++ );
+            String substring = id.substring( 0, maxLength - 5 );
+            id = substring + "_" + ( this.id++ );
         }
         return id;
     }

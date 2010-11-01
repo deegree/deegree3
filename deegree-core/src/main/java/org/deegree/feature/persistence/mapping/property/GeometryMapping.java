@@ -39,6 +39,7 @@ import org.deegree.feature.persistence.mapping.JoinChain;
 import org.deegree.feature.persistence.mapping.MappingExpression;
 import org.deegree.feature.types.property.GeometryPropertyType.CoordinateDimension;
 import org.deegree.feature.types.property.GeometryPropertyType.GeometryType;
+import org.deegree.filter.expression.PropertyName;
 
 /**
  * The <code></code> class TODO add class documentation here.
@@ -56,7 +57,7 @@ public class GeometryMapping extends Mapping {
 
     private String srid;
 
-    public GeometryMapping( String path, MappingExpression mapping, GeometryType type, CoordinateDimension dim,
+    public GeometryMapping( PropertyName path, MappingExpression mapping, GeometryType type, CoordinateDimension dim,
                             String srid, JoinChain joinedTable ) {
         super( path, mapping, joinedTable );
         this.type = type;

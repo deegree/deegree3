@@ -41,6 +41,7 @@ import static org.apache.xerces.xs.XSComplexTypeDefinition.CONTENTTYPE_ELEMENT;
 import static org.apache.xerces.xs.XSComplexTypeDefinition.CONTENTTYPE_EMPTY;
 import static org.deegree.commons.xml.CommonNamespaces.XSINS;
 
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -64,6 +65,7 @@ import org.apache.xerces.xs.XSTerm;
 import org.apache.xerces.xs.XSTypeDefinition;
 import org.apache.xerces.xs.XSWildcard;
 import org.deegree.commons.tom.primitive.XMLValueMangler;
+import org.deegree.commons.xml.CommonNamespaces;
 import org.deegree.feature.types.ApplicationSchema;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.feature.types.property.CodePropertyType;
@@ -93,10 +95,6 @@ public class PostGISFeatureStoreConfigHelper {
     private static final String SCHEMA_LOCATION = "http://www.deegree.org/datasource/feature/postgis http://schemas.deegree.org/datasource/feature/postgis/0.6.1/postgis.xsd";
 
     private final ApplicationSchema schema;
-
-    private int maxLength = 64;
-
-    private int id = 0;
 
     private final MappingContextManager mcManager;
 
@@ -156,6 +154,8 @@ public class PostGISFeatureStoreConfigHelper {
     private void writeFeatureTypeMapping( XMLStreamWriter writer, FeatureType ft )
                             throws XMLStreamException {
 
+        LOG.info( "Mapping feature type '" + ft.getName() + "'" );
+
         writer.writeStartElement( CONFIG_NS, "FeatureType" );
         writer.writeAttribute( "name", getName( ft.getName() ) );
 
@@ -169,6 +169,9 @@ public class PostGISFeatureStoreConfigHelper {
 
         for ( PropertyType pt : ft.getPropertyDeclarations() ) {
             PropertyType[] substitutions = pt.getSubstitutions();
+            if ( substitutions.length > 1 ) {
+                LOG.info( "Property '" + pt.getName() + "' has multiple substitutions: " + substitutions.length );
+            }
             for ( PropertyType substitution : substitutions ) {
                 if ( !substitution.isAbstract() ) {
                     writePropertyMapping( writer, substitution, mc );
@@ -295,7 +298,10 @@ public class PostGISFeatureStoreConfigHelper {
             writeJoinedTable( writer, customValueContext.getTable() );
         }
 
-        createMapping( writer, pt.getXSDValueType(), customValueContext );
+        Map<QName, QName> elements = new LinkedHashMap<QName, QName>();
+        elements.put( pt.getName(), getQName( pt.getXSDValueType() ) );
+
+        createMapping( writer, pt.getXSDValueType(), customValueContext, elements );
         writer.writeEndElement();
     }
 
@@ -325,7 +331,8 @@ public class PostGISFeatureStoreConfigHelper {
         writer.writeEndElement();
     }
 
-    private void createMapping( XMLStreamWriter writer, XSComplexTypeDefinition typeDef, MappingContext mc )
+    private void createMapping( XMLStreamWriter writer, XSComplexTypeDefinition typeDef, MappingContext mc,
+                                Map<QName, QName> elements )
                             throws XMLStreamException {
 
         // attributes
@@ -355,39 +362,44 @@ public class PostGISFeatureStoreConfigHelper {
         // child elements
         XSParticle particle = typeDef.getParticle();
         if ( particle != null ) {
-            createMapping( writer, particle, 1, mc );
+            createMapping( writer, particle, 1, mc, elements );
         }
     }
 
-    private void createMapping( XMLStreamWriter writer, XSParticle particle, int maxOccurs, MappingContext mc )
+    private void createMapping( XMLStreamWriter writer, XSParticle particle, int maxOccurs, MappingContext mc,
+                                Map<QName, QName> elements )
                             throws XMLStreamException {
         if ( particle.getMaxOccursUnbounded() ) {
-            createMapping( writer, particle.getTerm(), -1, mc );
+            createMapping( writer, particle.getTerm(), -1, mc, elements );
         } else {
             for ( int i = 1; i <= particle.getMaxOccurs(); i++ ) {
-                createMapping( writer, particle.getTerm(), i, mc );
+                createMapping( writer, particle.getTerm(), i, mc, elements );
             }
         }
     }
 
-    private void createMapping( XMLStreamWriter writer, XSTerm term, int occurence, MappingContext mc )
+    private void createMapping( XMLStreamWriter writer, XSTerm term, int occurence, MappingContext mc,
+                                Map<QName, QName> elements )
                             throws XMLStreamException {
         if ( term instanceof XSElementDeclaration ) {
-            createMapping( writer, (XSElementDeclaration) term, occurence, mc );
+            createMapping( writer, (XSElementDeclaration) term, occurence, mc, elements );
         } else if ( term instanceof XSModelGroup ) {
-            createMapping( writer, (XSModelGroup) term, occurence, mc );
+            createMapping( writer, (XSModelGroup) term, occurence, mc, elements );
         } else {
-            createMapping( writer, (XSWildcard) term, occurence, mc );
+            createMapping( writer, (XSWildcard) term, occurence, mc, elements );
         }
     }
 
-    private void createMapping( XMLStreamWriter writer, XSElementDeclaration elDecl, int occurence, MappingContext mc )
+    private void createMapping( XMLStreamWriter writer, XSElementDeclaration elDecl, int occurence, MappingContext mc,
+                                Map<QName, QName> elements )
                             throws XMLStreamException {
 
         // consider every concrete element substitution
         List<XSElementDeclaration> substitutions = schema.getXSModel().getSubstitutions( elDecl, null, true, true );
 
         for ( XSElementDeclaration substitution : substitutions ) {
+
+            Map<QName, QName> elements2 = new LinkedHashMap<QName, QName>( elements );
 
             QName elName = new QName( substitution.getName() );
             if ( substitution.getNamespace() != null ) {
@@ -423,9 +435,72 @@ public class PostGISFeatureStoreConfigHelper {
                     writeJoinedTable( writer, elMC.getTable() );
                 }
                 writer.writeEndElement();
-            } else if ( schema.getXSModel().isGMLNamespace( elName.getNamespaceURI() ) ) {
-                LOG.warn( "Skipping element '" + elName + "'" );
             } else {
+
+                if ( elName.equals( new QName( "http://www.isotc211.org/2005/gmd", "CI_Citation" ) ) ) {
+                    LOG.warn( "Skipping CI_Citation!!!" );
+                    continue;
+                }
+
+                if ( elName.equals( new QName( "http://www.isotc211.org/2005/gmd", "CI_Contact" ) ) ) {
+                    LOG.warn( "Skipping CI_Contact!!!" );
+                    continue;
+                }
+
+                if ( elName.equals( new QName( "http://www.isotc211.org/2005/gmd", "CI_ResponsibleParty" ) ) ) {
+                    LOG.warn( "Skipping CI_ResponsibleParty!!!" );
+                    continue;
+                }
+
+                if ( elName.equals( new QName( "http://www.isotc211.org/2005/gmd", "MD_Resolution" ) ) ) {
+                    LOG.warn( "Skipping MD_Resolution!!!" );
+                    continue;
+                }
+
+                if ( elName.equals( new QName( "http://www.isotc211.org/2005/gmd", "EX_Extent" ) ) ) {
+                    LOG.warn( "Skipping EX_Extent!!!" );
+                    continue;
+                }
+
+                if ( elName.equals( new QName( "http://www.isotc211.org/2005/gmd", "MD_PixelOrientationCode" ) ) ) {
+                    LOG.warn( "Skipping EX_Extent!!!" );
+                    continue;
+                }
+
+                if ( elName.equals( new QName( CommonNamespaces.GML3_2_NS, "TimeOrdinalEra" ) ) ) {
+                    LOG.warn( "Skipping TimeOrdinalEra!!!" );
+                    continue;
+                }
+
+                if ( elName.equals( new QName( CommonNamespaces.GML3_2_NS, "TimePeriod" ) ) ) {
+                    LOG.warn( "Skipping TimePeriod!!!" );
+                    continue;
+                }
+
+                if ( elName.getNamespaceURI().equals( CommonNamespaces.GML3_2_NS ) ) {
+                    if ( elName.getLocalPart().endsWith( "CRS" ) ) {
+                        LOG.warn( "Skipping " + elName.getLocalPart() + "!!!" );
+                    }
+                    continue;
+                }
+
+                XSTypeDefinition typeDef = substitution.getTypeDefinition();
+                QName complexTypeName = getQName( typeDef );
+                // TODO multiple elements with same name?
+                QName complexTypeName2 = elements2.get( elName );
+                if ( complexTypeName2 != null && complexTypeName2.equals( complexTypeName ) ) {
+                    // during this mapping traversal, there already has been an element with this name and type
+                    StringBuffer sb = new StringBuffer( "Path: " );
+                    for ( QName qName : elements2.keySet() ) {
+                        sb.append( qName );
+                        sb.append( " -> " );
+                    }
+                    sb.append( elName );
+                    LOG.info( "Skipping complex element '" + elName + "' -- detected recursion: " + sb );
+                    continue;
+                }
+                elements2.put( elName, getQName( typeDef ) );
+
                 writer.writeStartElement( CONFIG_NS, "ComplexMapping" );
                 writer.writeAttribute( "path", path );
 
@@ -433,9 +508,8 @@ public class PostGISFeatureStoreConfigHelper {
                     writeJoinedTable( writer, elMC.getTable() );
                 }
 
-                XSTypeDefinition typeDef = elDecl.getTypeDefinition();
                 if ( typeDef instanceof XSComplexTypeDefinition ) {
-                    createMapping( writer, (XSComplexTypeDefinition) typeDef, elMC );
+                    createMapping( writer, (XSComplexTypeDefinition) typeDef, elMC, elements2 );
                 } else {
                     writer.writeEmptyElement( CONFIG_NS, "PrimitiveMapping" );
                     writer.writeAttribute( "path", "text()" );
@@ -447,17 +521,26 @@ public class PostGISFeatureStoreConfigHelper {
         }
     }
 
-    private void createMapping( XMLStreamWriter writer, XSModelGroup modelGroup, int occurrence, MappingContext mc )
+    private void createMapping( XMLStreamWriter writer, XSModelGroup modelGroup, int occurrence, MappingContext mc,
+                                Map<QName, QName> elements )
                             throws XMLStreamException {
         XSObjectList particles = modelGroup.getParticles();
         for ( int i = 0; i < particles.getLength(); i++ ) {
             XSParticle particle = (XSParticle) particles.item( i );
-            createMapping( writer, particle, occurrence, mc );
+            createMapping( writer, particle, occurrence, mc, elements );
         }
     }
 
-    private void createMapping( XMLStreamWriter writer, XSWildcard wildCard, int occurrence, String table ) {
-        // TODO
+    private void createMapping( XMLStreamWriter writer, XSWildcard wildCard, int occurrence, MappingContext mc,
+                                Map<QName, QName> elements ) {
+        LOG.warn( "Handling of wild cards not implemented yet." );
+        StringBuffer sb = new StringBuffer( "Path: " );
+        for ( QName qName : elements.keySet() ) {
+            sb.append( qName );
+            sb.append( " -> " );
+        }
+        sb.append( "wildcard" );
+        LOG.info( "Skipping wildcard at path: " + sb );
     }
 
     private String getPrimitiveTypeName( XSSimpleTypeDefinition typeDef ) {
@@ -475,25 +558,37 @@ public class PostGISFeatureStoreConfigHelper {
         return name.getLocalPart();
     }
 
+    private QName getQName( XSTypeDefinition xsType ) {
+        QName name = null;
+        if ( !xsType.getAnonymous() ) {
+            name = new QName( xsType.getNamespace(), xsType.getName() );
+        }
+        return name;
+    }
+
     // public static void main( String[] args )
     // throws XMLStreamException, FactoryConfigurationError, IOException, ClassCastException,
     // ClassNotFoundException, InstantiationException, IllegalAccessException {
     //
-    // String schemaURL =
-    // "file:/home/markus/Programmieren/Java/workspace/deegree-inspire-node/src/main/webapp/WEB-INF/workspace/schemas/inspire/annex1/Addresses.xsd";
-    // if ( schemaURL == null ) {
-    // return;
-    // }
+    // File schemaFolder = new File(
+    // "/home/markus/Programmieren/Java/workspace/deegree-inspire-node/src/main/webapp/WEB-INF/workspace/schemas/inspire/annex1/Addresses.xsd"
+    // );
     //
-    // ApplicationSchemaXSDDecoder adapter = new ApplicationSchemaXSDDecoder( GMLVersion.GML_32, null, schemaURL );
+    // ApplicationSchemaXSDDecoder adapter = new ApplicationSchemaXSDDecoder( GML_32, null, schemaFolder );
     // ApplicationSchema schema = adapter.extractFeatureTypeSchema();
     //
     // PostGISFeatureStoreConfigHelper helper = new PostGISFeatureStoreConfigHelper( schema );
     //
-    // OutputStream os = new FileOutputStream( "/tmp/config.xml" );
+    // OutputStream os = new FileOutputStream(
+    // "/home/markus/Programmieren/Java/workspace/deegree-core/src/test/resources/org/deegree/feature/persistence/postgis/inspire-hybrid.xml"
+    // );
     // XMLStreamWriter xmlStream = XMLOutputFactory.newInstance().createXMLStreamWriter( os );
     // xmlStream = new IndentingXMLStreamWriter( xmlStream );
-    // helper.writeConfig( xmlStream, "EPSG:4258", null, "inspire", null );
+    //
+    // String schemaURL =
+    // "/home/markus/Programmieren/Java/workspace/deegree-inspire-node/src/main/webapp/WEB-INF/workspace/schemas/inspire/annex1/Addresses.xsd";
+    //
+    // helper.writeConfig( xmlStream, "EPSG:4258", null, "inspire", Collections.singletonList( schemaURL ) );
     // xmlStream.close();
     // os.close();
     // }

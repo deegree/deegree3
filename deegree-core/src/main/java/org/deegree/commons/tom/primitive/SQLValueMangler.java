@@ -36,8 +36,10 @@
 package org.deegree.commons.tom.primitive;
 
 import java.math.BigDecimal;
+import java.sql.Timestamp;
 
 import org.deegree.commons.tom.datetime.Date;
+import org.deegree.commons.tom.datetime.DateTime;
 import org.deegree.commons.utils.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -54,6 +56,12 @@ public class SQLValueMangler {
 
     private static final Logger LOG = LoggerFactory.getLogger( SQLValueMangler.class );
 
+    /**
+     * Converts the given {@link PrimitiveValue} value to the corresponding SQL object type.
+     * 
+     * @param value
+     * @return
+     */
     public static Object internalToSQL( Object value ) {
         Object sqlValue = null;
         if ( value != null ) {
@@ -66,7 +74,8 @@ public class SQLValueMangler {
                 sqlValue = new java.sql.Date( ( (Date) value ).getDate().getTime() );
                 break;
             case DATE_TIME:
-                throw new IllegalArgumentException( "SQL type conversion for '" + pt + "' is not implemented yet." );
+                sqlValue = new Timestamp( ( (DateTime) value ).getValue().getTime() );
+                break;                
             case DECIMAL:
                 sqlValue = ( (BigDecimal) value ).doubleValue();
                 break;

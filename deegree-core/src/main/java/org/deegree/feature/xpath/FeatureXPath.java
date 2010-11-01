@@ -72,21 +72,6 @@ public class FeatureXPath extends BaseXPath {
      * 
      * @param xpathExpr
      *            the XPath expression
-     * @param version
-     *            determines the names and types of the standard GML properties, can be <code>null</code> (if no
-     *            properties such as "gml:name" are used)
-     * @throws JaxenException
-     *             if there is a syntax error in the expression
-     */
-    public FeatureXPath( String xpathExpr, GMLVersion version ) throws JaxenException {
-        super( xpathExpr, new FeatureNavigator( null, version ) );
-    }
-
-    /**
-     * Create a new <code>FeatureXPath</code> from an XPath expression string.
-     * 
-     * @param xpathExpr
-     *            the XPath expression
      * @param rootFeature
      *            root of the navigation hierarchy (document node)
      * @param version

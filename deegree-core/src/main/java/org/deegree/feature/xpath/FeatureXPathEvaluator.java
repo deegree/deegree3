@@ -44,8 +44,10 @@ import java.util.Map;
 import javax.xml.namespace.QName;
 
 import org.deegree.commons.tom.TypedObjectNode;
+import org.deegree.commons.tom.genericxml.GenericXMLElement;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.feature.Feature;
+import org.deegree.feature.property.Property;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.XPathEvaluator;
 import org.deegree.filter.expression.PropertyName;
@@ -130,6 +132,62 @@ public class FeatureXPathEvaluator implements XPathEvaluator<Feature> {
                         EVAL_CACHE.put( context, map );
                     }
                     map.put( propName, resultValues );
+                }
+            }
+        } catch ( JaxenException e ) {
+            throw new FilterEvaluationException( e.getMessage() );
+        }
+        return resultValues;
+    }
+
+    public TypedObjectNode[] eval( Property prop, PropertyName propName )
+                            throws FilterEvaluationException {
+
+        TypedObjectNode[] resultValues = null;
+        try {
+            XPath xpath = new FeatureXPath( propName.getPropertyName(), null, version );
+            xpath.setNamespaceContext( propName.getNsContext() );
+            List<?> selectedNodes;
+            selectedNodes = xpath.selectNodes( new PropertyNode( null, prop ) );
+            resultValues = new TypedObjectNode[selectedNodes.size()];
+            int i = 0;
+            for ( Object node : selectedNodes ) {
+                if ( node instanceof XPathNode<?> ) {
+                    resultValues[i++] = ( (XPathNode<?>) node ).getValue();
+                } else if ( node instanceof String || node instanceof Double || node instanceof Boolean ) {
+                    resultValues[i++] = new PrimitiveValue( node );
+                } else {
+                    throw new RuntimeException( "Internal error. Encountered unexpected value of type '"
+                                                + node.getClass().getName() + "' (=" + node
+                                                + ") during XPath-evaluation." );
+                }
+            }
+        } catch ( JaxenException e ) {
+            throw new FilterEvaluationException( e.getMessage() );
+        }
+        return resultValues;
+    }
+
+    public TypedObjectNode[] eval( GenericXMLElement element, PropertyName propName )
+                            throws FilterEvaluationException {
+
+        TypedObjectNode[] resultValues = null;
+        try {
+            XPath xpath = new FeatureXPath( propName.getPropertyName(), null, version );
+            xpath.setNamespaceContext( propName.getNsContext() );
+            List<?> selectedNodes;
+            selectedNodes = xpath.selectNodes( new XMLElementNode( null, element ) );
+            resultValues = new TypedObjectNode[selectedNodes.size()];
+            int i = 0;
+            for ( Object node : selectedNodes ) {
+                if ( node instanceof XPathNode<?> ) {
+                    resultValues[i++] = ( (XPathNode<?>) node ).getValue();
+                } else if ( node instanceof String || node instanceof Double || node instanceof Boolean ) {
+                    resultValues[i++] = new PrimitiveValue( node );
+                } else {
+                    throw new RuntimeException( "Internal error. Encountered unexpected value of type '"
+                                                + node.getClass().getName() + "' (=" + node
+                                                + ") during XPath-evaluation." );
                 }
             }
         } catch ( JaxenException e ) {

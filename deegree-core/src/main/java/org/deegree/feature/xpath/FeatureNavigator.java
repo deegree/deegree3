@@ -461,7 +461,7 @@ class FeatureNavigator extends DefaultNavigator {
     @Override
     public XPath parseXPath( String xpath )
                             throws SAXPathException {
-        return new FeatureXPath( xpath, version );
+        return new FeatureXPath( xpath, null, version );
     }
 
     /**

@@ -58,6 +58,7 @@ import org.antlr.runtime.RecognitionException;
 import org.deegree.commons.jdbc.ConnectionManager;
 import org.deegree.commons.tom.primitive.PrimitiveType;
 import org.deegree.commons.utils.Pair;
+import org.deegree.commons.xml.NamespaceContext;
 import org.deegree.cs.CRS;
 import org.deegree.feature.persistence.BlobCodec;
 import org.deegree.feature.persistence.mapping.BBoxTableMapping;
@@ -90,6 +91,7 @@ import org.deegree.feature.types.property.FeaturePropertyType;
 import org.deegree.feature.types.property.GeometryPropertyType;
 import org.deegree.feature.types.property.PropertyType;
 import org.deegree.feature.types.property.SimplePropertyType;
+import org.deegree.filter.expression.PropertyName;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -108,6 +110,8 @@ class PostGISApplicationSchemaBuilder {
     private Map<QName, FeatureType> ftNameToFt = new HashMap<QName, FeatureType>();
 
     private Map<QName, FeatureTypeMapping> ftNameToMapping = new HashMap<QName, FeatureTypeMapping>();
+
+    private NamespaceContext nsContext = null;
 
     private DatabaseMetaData md;
 
@@ -128,19 +132,18 @@ class PostGISApplicationSchemaBuilder {
      * @throws SQLException
      */
     static MappedApplicationSchema build( ApplicationSchema appSchema, List<FeatureTypeDecl> ftDecls,
-                                          String jdbcConnId, String dbSchema, CRS storageCRS )
+                                          String jdbcConnId, String dbSchema, CRS storageCRS, NamespaceContext nsContext )
                             throws SQLException {
 
         MappedApplicationSchema mappedSchema = null;
+
         if ( appSchema != null ) {
-            // BLOB / hybrid mode
             BBoxTableMapping bboxMapping = new BBoxTableMapping();
             BlobMapping blobMapping = new BlobMapping( "GML_OBJECTS", new BlobCodec( GML_32, NONE ) );
 
             PostGISApplicationSchemaBuilder builder = new PostGISApplicationSchemaBuilder( ftDecls, jdbcConnId,
-                                                                                           dbSchema );
-            FeatureTypeMapping[] ftMappings = builder.ftNameToMapping.values().toArray(
-                                                                                        new FeatureTypeMapping[builder.ftNameToMapping.size()] );
+                                                                                           dbSchema, nsContext );
+            FeatureTypeMapping[] ftMappings = builder.ftNameToMapping.values().toArray( new FeatureTypeMapping[builder.ftNameToMapping.size()] );
 
             mappedSchema = new MappedApplicationSchema( appSchema.getFeatureTypes(), appSchema.getFtToSuperFt(),
                                                         appSchema.getNamespaceBindings(), appSchema.getXSModel(),
@@ -148,21 +151,21 @@ class PostGISApplicationSchemaBuilder {
         } else {
             // relational mode
             PostGISApplicationSchemaBuilder builder = new PostGISApplicationSchemaBuilder( ftDecls, jdbcConnId,
-                                                                                           dbSchema );
+                                                                                           dbSchema, nsContext );
             FeatureType[] fts = builder.ftNameToFt.values().toArray( new FeatureType[builder.ftNameToFt.size()] );
-            FeatureTypeMapping[] ftMappings = builder.ftNameToMapping.values().toArray(
-                                                                                        new FeatureTypeMapping[builder.ftNameToMapping.size()] );
+            FeatureTypeMapping[] ftMappings = builder.ftNameToMapping.values().toArray( new FeatureTypeMapping[builder.ftNameToMapping.size()] );
             mappedSchema = new MappedApplicationSchema( fts, null, null, null, ftMappings, storageCRS, null, null );
         }
 
         return mappedSchema;
     }
 
-    private PostGISApplicationSchemaBuilder( List<FeatureTypeDecl> ftDecls, String connId, String dbSchema )
-                            throws SQLException {
+    private PostGISApplicationSchemaBuilder( List<FeatureTypeDecl> ftDecls, String connId, String dbSchema,
+                                             NamespaceContext nsContext ) throws SQLException {
 
         Connection conn = ConnectionManager.getConnection( connId );
         md = conn.getMetaData();
+        this.nsContext = nsContext;
 
         for ( FeatureTypeDecl ftDecl : ftDecls ) {
             process( ftDecl );
@@ -239,23 +242,24 @@ class PostGISApplicationSchemaBuilder {
 
         PropertyType pt = null;
         Mapping m = null;
+        PropertyName path = new PropertyName( ptName.toString(), nsContext );
         if ( propDecl instanceof SimplePropertyDecl ) {
             SimplePropertyDecl spt = (SimplePropertyDecl) propDecl;
             PrimitiveType primType = getPrimitiveType( spt.getType() );
             pt = new SimplePropertyType( ptName, minOccurs, maxOccurs, primType, false, false, null );
-            m = new PrimitiveMapping( ptName.toString(), mapping, primType, joinedTable );
+            m = new PrimitiveMapping( path, mapping, primType, joinedTable );
         } else if ( propDecl instanceof GeometryPropertyDecl ) {
             GeometryPropertyDecl gpt = (GeometryPropertyDecl) propDecl;
             pt = new GeometryPropertyType( ptName, minOccurs, maxOccurs, false, false, null, GEOMETRY, DIM_2, BOTH );
-            m = new GeometryMapping( ptName.toString(), mapping, GEOMETRY, DIM_2, "-1", joinedTable );
+            m = new GeometryMapping( path, mapping, GEOMETRY, DIM_2, "-1", joinedTable );
         } else if ( propDecl instanceof FeaturePropertyDecl ) {
             FeaturePropertyDecl fpt = (FeaturePropertyDecl) propDecl;
             pt = new FeaturePropertyType( ptName, minOccurs, maxOccurs, false, false, null, fpt.getType(), BOTH );
-            m = new FeatureMapping( ptName.toString(), mapping, fpt.getType(), joinedTable );
+            m = new FeatureMapping( path, mapping, fpt.getType(), joinedTable );
         } else if ( propDecl instanceof CustomPropertyDecl ) {
             CustomPropertyDecl cpt = (CustomPropertyDecl) propDecl;
             pt = new CustomPropertyType( ptName, minOccurs, maxOccurs, null, false, false, null );
-            m = new CompoundMapping( ptName.toString(), mapping, process( cpt.getAbstractCustomMapping() ), joinedTable );
+            m = new CompoundMapping( path, mapping, process( cpt.getAbstractCustomMapping() ), joinedTable );
         } else if ( propDecl instanceof CodePropertyDecl ) {
             LOG.warn( "TODO: CodePropertyDecl " );
         } else if ( propDecl instanceof MeasurePropertyDecl ) {
@@ -286,15 +290,17 @@ class PostGISApplicationSchemaBuilder {
                 }
             }
 
+            PropertyName propName = new PropertyName( path, nsContext );
             if ( customMapping instanceof org.deegree.feature.persistence.postgis.jaxb.PrimitiveMapping ) {
                 org.deegree.feature.persistence.postgis.jaxb.PrimitiveMapping primitiveMapping = (org.deegree.feature.persistence.postgis.jaxb.PrimitiveMapping) customMapping;
-                mappings.add( new PrimitiveMapping( path, mapping, getPrimitiveType( primitiveMapping.getType() ), null ) );
+                mappings.add( new PrimitiveMapping( propName, mapping, getPrimitiveType( primitiveMapping.getType() ),
+                                                    null ) );
             } else if ( customMapping instanceof org.deegree.feature.persistence.postgis.jaxb.GeometryMapping ) {
                 org.deegree.feature.persistence.postgis.jaxb.GeometryMapping geometryMapping = (org.deegree.feature.persistence.postgis.jaxb.GeometryMapping) customMapping;
-                mappings.add( new GeometryMapping( path, mapping, GEOMETRY, DIM_2, "-1", null ) );
+                mappings.add( new GeometryMapping( propName, mapping, GEOMETRY, DIM_2, "-1", null ) );
             } else if ( customMapping instanceof org.deegree.feature.persistence.postgis.jaxb.FeatureMapping ) {
                 org.deegree.feature.persistence.postgis.jaxb.FeatureMapping featureMapping = (org.deegree.feature.persistence.postgis.jaxb.FeatureMapping) customMapping;
-                mappings.add( new FeatureMapping( path, mapping, featureMapping.getType(), null ) );
+                mappings.add( new FeatureMapping( propName, mapping, featureMapping.getType(), null ) );
             } else if ( customMapping instanceof org.deegree.feature.persistence.postgis.jaxb.CustomMapping ) {
                 org.deegree.feature.persistence.postgis.jaxb.ComplexMapping compoundMapping = (org.deegree.feature.persistence.postgis.jaxb.ComplexMapping) customMapping;
                 List<Mapping> particles = process( compoundMapping.getAbstractCustomMapping() );
@@ -303,7 +309,7 @@ class PostGISApplicationSchemaBuilder {
 
                     joinedTable = (JoinChain) parseMappingExpression( compoundMapping.getJoinedTable().getValue() );
                 }
-                mappings.add( new CompoundMapping( path, mapping, particles, joinedTable ) );
+                mappings.add( new CompoundMapping( propName, mapping, particles, joinedTable ) );
             } else {
                 throw new RuntimeException( "Internal error. Unexpected JAXB type '" + customMapping.getClass() + "'." );
             }

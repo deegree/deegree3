@@ -39,6 +39,7 @@ import java.util.List;
 
 import org.deegree.feature.persistence.mapping.JoinChain;
 import org.deegree.feature.persistence.mapping.MappingExpression;
+import org.deegree.filter.expression.PropertyName;
 
 /**
  * The <code></code> class TODO add class documentation here.
@@ -52,7 +53,7 @@ public class CompoundMapping extends Mapping {
 
     private List<Mapping> particles;
 
-    public CompoundMapping( String path, MappingExpression mapping, List<Mapping> particles, JoinChain joinedTable ) {
+    public CompoundMapping( PropertyName path, MappingExpression mapping, List<Mapping> particles, JoinChain joinedTable ) {
         super( path, mapping, joinedTable );
         this.particles = particles;
     }

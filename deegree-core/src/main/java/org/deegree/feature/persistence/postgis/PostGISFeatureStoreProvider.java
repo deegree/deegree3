@@ -41,11 +41,13 @@ import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 
+import org.deegree.commons.xml.NamespaceContext;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.cs.CRS;
 import org.deegree.feature.i18n.Messages;
@@ -110,6 +112,7 @@ public class PostGISFeatureStoreProvider implements FeatureStoreProvider {
 
         ApplicationSchema appSchema = null;
         CRS storageSRS = new CRS( config.getStorageCRS() );
+        NamespaceContext nsContext = new NamespaceContext();
         if ( !config.getGMLSchema().isEmpty() ) {
             XMLAdapter resolver = new XMLAdapter();
             resolver.setSystemId( configURL );
@@ -121,6 +124,10 @@ public class PostGISFeatureStoreProvider implements FeatureStoreProvider {
                     schemaURLs[i++] = resolver.resolve( jaxbSchemaURL.getValue().trim() ).toString();
                     // TODO what about different versions at the same time?
                     gmlVersionType = jaxbSchemaURL.getVersion();
+                }
+
+                for ( Entry<String, String> nsHint : getHintMap( config.getNamespaceHint() ).entrySet() ) {
+                    nsContext.addNamespace( nsHint.getKey(), nsHint.getValue() );
                 }
 
                 ApplicationSchemaXSDDecoder decoder = null;
@@ -142,8 +149,9 @@ public class PostGISFeatureStoreProvider implements FeatureStoreProvider {
 
         MappedApplicationSchema schema = null;
         try {
+
             schema = PostGISApplicationSchemaBuilder.build( appSchema, config.getFeatureType(), config.getJDBCConnId(),
-                                                            config.getDBSchemaQualifier(), storageSRS );
+                                                            config.getDBSchemaQualifier(), storageSRS, nsContext );
         } catch ( SQLException e ) {
             String msg = Messages.getMessage( "STORE_MANAGER_STORE_SETUP_ERROR", e.getMessage() );
             LOG.error( msg, e );

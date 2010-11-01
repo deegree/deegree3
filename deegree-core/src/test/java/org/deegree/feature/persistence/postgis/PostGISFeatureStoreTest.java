@@ -52,12 +52,15 @@ import javax.xml.stream.XMLStreamWriter;
 
 import org.deegree.commons.jdbc.ConnectionManager;
 import org.deegree.commons.utils.JDBCUtils;
+import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.commons.xml.stax.IndentingXMLStreamWriter;
 import org.deegree.cs.exceptions.TransformationException;
 import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.feature.FeatureCollection;
 import org.deegree.feature.persistence.FeatureStoreException;
 import org.deegree.feature.persistence.FeatureStoreManager;
+import org.deegree.feature.persistence.FeatureStoreTransaction;
+import org.deegree.feature.persistence.FeatureStoreTransaction.IDGenMode;
 import org.deegree.feature.persistence.mapping.FeatureTypeMapping;
 import org.deegree.feature.persistence.mapping.MappedApplicationSchema;
 import org.deegree.feature.persistence.mapping.property.Mapping;
@@ -73,7 +76,9 @@ import org.deegree.filter.expression.Literal;
 import org.deegree.filter.expression.PropertyName;
 import org.deegree.filter.xml.Filter110XMLDecoder;
 import org.deegree.geometry.Envelope;
+import org.deegree.gml.GMLInputFactory;
 import org.deegree.gml.GMLOutputFactory;
+import org.deegree.gml.GMLStreamReader;
 import org.deegree.gml.GMLStreamWriter;
 import org.deegree.gml.GMLVersion;
 import org.deegree.protocol.wfs.getfeature.TypeName;
@@ -167,6 +172,28 @@ public class PostGISFeatureStoreTest {
             } finally {
                 JDBCUtils.close( conn );
             }
+        }
+    }
+
+    @Test
+    public void testInsertInspireAddresses()
+                            throws FeatureStoreException, XMLStreamException, FactoryConfigurationError, IOException,
+                            XMLParsingException, UnknownCRSException {
+        if ( enable ) {
+            ConnectionManager.addConnection( "inspire", "jdbc:postgresql://macchiato:5432/inspire", "postgres",
+                                             "postgres", 1, 10 );
+            URL configURL = PostGISFeatureStoreTest.class.getResource( "inspire-hybrid.xml" );
+            PostGISFeatureStore fs = (PostGISFeatureStore) FeatureStoreManager.create( configURL );
+
+            URL datasetURL = PostGISFeatureStoreTest.class.getResource( "../../../gml/feature/testdata/features/inspire_addresses1.gml" );
+            GMLStreamReader gmlReader = GMLInputFactory.createGMLStreamReader( GMLVersion.GML_32, datasetURL );
+            gmlReader.setApplicationSchema( fs.getSchema() );
+            gmlReader.getIdContext().resolveLocalRefs();
+
+            FeatureCollection fc = gmlReader.readFeatureCollection();
+            FeatureStoreTransaction ta = fs.acquireTransaction();
+            ta.performInsert( fc, IDGenMode.GENERATE_NEW );
+            ta.commit();
         }
     }
 

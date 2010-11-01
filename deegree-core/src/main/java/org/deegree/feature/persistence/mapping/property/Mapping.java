@@ -38,6 +38,7 @@ package org.deegree.feature.persistence.mapping.property;
 import org.deegree.feature.persistence.mapping.JoinChain;
 import org.deegree.feature.persistence.mapping.MappingExpression;
 import org.deegree.feature.types.FeatureType;
+import org.deegree.filter.expression.PropertyName;
 
 /**
  * Defines the mapping of a particle of a {@link FeatureType} to a relational model (tables, columns).
@@ -49,19 +50,19 @@ import org.deegree.feature.types.FeatureType;
  */
 public abstract class Mapping {
 
-    private final String path;
+    private final PropertyName path;
 
     private final MappingExpression mapping;
 
     private final JoinChain joinedTable;
 
-    protected Mapping( String path, MappingExpression mapping, JoinChain joinedTable ) {
+    protected Mapping( PropertyName path, MappingExpression mapping, JoinChain joinedTable ) {
         this.path = path;
         this.mapping = mapping;
         this.joinedTable = joinedTable;
     }
 
-    public String getPath() {
+    public PropertyName getPath() {
         return path;
     }
 
