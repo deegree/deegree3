@@ -138,8 +138,10 @@ public class PostgreSQLReader {
 
     /**
      * @param connid
+     * @param baseSystemId
+     *            to resolve relative references in sld files
      */
-    public PostgreSQLReader( String connid ) {
+    public PostgreSQLReader( String connid, String baseSystemId ) {
         this.connid = connid;
     }
 

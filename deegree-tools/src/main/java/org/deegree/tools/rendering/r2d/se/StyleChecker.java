@@ -101,7 +101,7 @@ public class StyleChecker {
     }
 
     private static void check() {
-        PostgreSQLReader reader = new PostgreSQLReader( "style" );
+        PostgreSQLReader reader = new PostgreSQLReader( "style", null );
 
         Connection conn = null;
         PreparedStatement stmt = null;

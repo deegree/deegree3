@@ -91,12 +91,14 @@ public class PostGISUpdater extends LayerUpdater {
      * @param connId
      * @param parent
      * @param service
+     * @param baseSystemId
+     *            to resolve relative references in sld blobs
      */
-    public PostGISUpdater( String connId, Layer parent, MapService service ) {
+    public PostGISUpdater( String connId, Layer parent, MapService service, String baseSystemId ) {
         this.connId = connId;
         this.parent = parent;
         this.service = service;
-        this.styles = new PostgreSQLReader( connId );
+        this.styles = new PostgreSQLReader( connId, baseSystemId );
     }
 
     /**

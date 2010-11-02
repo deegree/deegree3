@@ -459,7 +459,7 @@ public class MapService {
                 }
             }
             if ( dyn.getPostGIS() != null ) {
-                dynamics.add( new PostGISUpdater( dyn.getPostGIS(), parent, this ) );
+                dynamics.add( new PostGISUpdater( dyn.getPostGIS(), parent, this, adapter.getSystemId() ) );
             }
         }
 
