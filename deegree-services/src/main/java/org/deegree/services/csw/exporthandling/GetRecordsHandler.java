@@ -254,7 +254,7 @@ public class GetRecordsHandler {
     private void searchResult( XMLStreamWriter writer, GetRecords getRec, Version version )
                             throws XMLStreamException, OWSException, MetadataStoreException {
         boolean isElementName = false;
-        if ( getRec.getElementName() != null ) {
+        if ( getRec.getElementName().length != 0 ) {
             isElementName = true;
         }
         String elementSetValue = getRec.getElementSetName() != null ? getRec.getElementSetName().name() : "custom";
