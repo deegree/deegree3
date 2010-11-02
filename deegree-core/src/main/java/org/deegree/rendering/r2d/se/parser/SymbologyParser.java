@@ -663,46 +663,56 @@ public class SymbologyParser {
             }
         }
 
-        if ( pair != null ) {
-            if ( pair.first != null && format != null && !format.equalsIgnoreCase( "image/svg" ) ) {
-                img = ImageIO.read( pair.first );
+        try {
+            if ( pair != null ) {
+                if ( pair.first != null && format != null && !format.equalsIgnoreCase( "image/svg" ) ) {
+                    img = ImageIO.read( pair.first );
+                }
+                url = pair.second;
+
+                final Continuation<StringBuffer> sbcontn = pair.third;
+
+                if ( pair.third != null ) {
+                    final LinkedHashMap<String, BufferedImage> cache = new LinkedHashMap<String, BufferedImage>( 256 ) {
+                        private static final long serialVersionUID = -6847956873232942891L;
+
+                        @Override
+                        protected boolean removeEldestEntry( Map.Entry<String, BufferedImage> eldest ) {
+                            return size() > 256; // yeah, hardcoded max size... TODO
+                        }
+                    };
+                    contn = new Continuation<List<BufferedImage>>() {
+                        @Override
+                        public void updateStep( List<BufferedImage> base, Feature f, XPathEvaluator<Feature> evaluator ) {
+                            StringBuffer sb = new StringBuffer();
+                            sbcontn.evaluate( sb, f, evaluator );
+                            String file = sb.toString();
+                            if ( cache.containsKey( file ) ) {
+                                base.add( cache.get( file ) );
+                                return;
+                            }
+                            try {
+                                BufferedImage i = ImageIO.read( resolve( file, in ) );
+                                base.add( i );
+                                cache.put( file, i );
+                            } catch ( MalformedURLException e ) {
+                                // TODO Auto-generated catch block
+                                e.printStackTrace();
+                            } catch ( IOException e ) {
+                                // TODO Auto-generated catch block
+                                e.printStackTrace();
+                            }
+                        }
+                    };
+                }
             }
-            url = pair.second;
-
-            final Continuation<StringBuffer> sbcontn = pair.third;
-
-            if ( pair.third != null ) {
-                final LinkedHashMap<String, BufferedImage> cache = new LinkedHashMap<String, BufferedImage>( 256 ) {
-                    private static final long serialVersionUID = -6847956873232942891L;
-
-                    @Override
-                    protected boolean removeEldestEntry( Map.Entry<String, BufferedImage> eldest ) {
-                        return size() > 256; // yeah, hardcoded max size... TODO
-                    }
-                };
-                contn = new Continuation<List<BufferedImage>>() {
-                    @Override
-                    public void updateStep( List<BufferedImage> base, Feature f, XPathEvaluator<Feature> evaluator ) {
-                        StringBuffer sb = new StringBuffer();
-                        sbcontn.evaluate( sb, f, evaluator );
-                        String file = sb.toString();
-                        if ( cache.containsKey( file ) ) {
-                            base.add( cache.get( file ) );
-                            return;
-                        }
-                        try {
-                            BufferedImage i = ImageIO.read( resolve( file, in ) );
-                            base.add( i );
-                            cache.put( file, i );
-                        } catch ( MalformedURLException e ) {
-                            // TODO Auto-generated catch block
-                            e.printStackTrace();
-                        } catch ( IOException e ) {
-                            // TODO Auto-generated catch block
-                            e.printStackTrace();
-                        }
-                    }
-                };
+        } finally {
+            if ( pair != null ) {
+                try {
+                    pair.first.close();
+                } catch ( Exception e ) {
+                    LOG.trace( "Stack trace when closing input stream:", e );
+                }
             }
         }
 
