@@ -96,6 +96,8 @@ import org.deegree.feature.types.FeatureType;
 import org.deegree.feature.utils.templating.TemplatingLexer;
 import org.deegree.feature.utils.templating.TemplatingParser;
 import org.deegree.feature.utils.templating.lang.PropertyTemplateCall;
+import org.deegree.gml.GMLOutputFactory;
+import org.deegree.gml.GMLStreamWriter;
 import org.deegree.gml.GMLVersion;
 import org.deegree.gml.feature.GMLFeatureWriter;
 import org.deegree.gml.feature.schema.ApplicationSchemaXSDEncoder;
@@ -532,7 +534,10 @@ public class WMSController extends AbstractOGCServiceController {
                 }
                 bindings.put( "http://www.opengis.net/wfs", "http://schemas.opengis.net/wfs/1.0.0/WFS-basic.xsd" );
 
-                new GMLFeatureWriter( GMLVersion.GML_2, xmlWriter, fi.getCoordinateSystem(), null, null, null, 0, -1,
+                // GMLStreamWriter gmlWriter = GMLOutputFactory.createGMLStreamWriter(GMLVersion.GML_2,xmlWriter );
+                // gmlWriter.setOutputCRS(fi.getCoordinateSystem() );
+                // gmlWriter.set
+                new GMLFeatureWriter( GMLVersion.GML_2, xmlWriter, fi.getCoordinateSystem(), null, "#{}", null, 0, -1,
                                       null, false, fi.returnGeometries(), null, null ).export( col, ns == null ? loc
                                                                                                               : null,
                                                                                                bindings );
