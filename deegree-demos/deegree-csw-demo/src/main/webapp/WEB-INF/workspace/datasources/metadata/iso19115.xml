@@ -2,13 +2,10 @@
 <ISOMetadataStore
 	connId="conn1"
 	configVersion="0.6.0"
-	validate="false"
 	xmlns="http://www.deegree.org/datasource/metadata/iso19115"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://www.deegree.org/datasource/metadata/iso19115 iso19115.xsd">
-	<IdentifierInspector name="DEFAULT">
-		<Param key="rejectEmptyFileIdentifier">true</Param>
-    </IdentifierInspector>
+	<IdentifierInspector rejectEmptyFileIdentifier="true"/> 
 	<!--<InspireInspector generateAutomatic="true"/> 
 	<CoupledResourceInspector throwConsistencyError="true" />-->
 		<AnyText>
