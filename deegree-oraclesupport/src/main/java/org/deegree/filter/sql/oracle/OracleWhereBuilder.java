@@ -241,7 +241,7 @@ public class OracleWhereBuilder extends AbstractWhereBuilder {
         PropertyNameMapping propMapping = mapping.getMapping( propName, aliasManager );
         if ( propMapping != null ) {
             sql = new SQLColumn( propMapping.getTargetField().getTable(), propMapping.getTargetField().getColumn(),
-                                 propMapping.isSpatial(), propMapping.getSQLType() );
+                                 propMapping.isSpatial(), propMapping.getSQLType(), null );
         } else {
             throw new UnmappableException( "Unable to map property '" + propName + "' to database column." );
         }
