@@ -1,4 +1,4 @@
-//$HeadURL: svn+ssh://lbuesching@svn.wald.intevation.de/deegree/base/trunk/resources/eclipse/files_template.xml $
+//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2010 by:
@@ -35,51 +35,43 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.client.generic;
 
-import java.io.Serializable;
+import java.util.Map;
 
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
+import javax.faces.context.FacesContext;
 
 /**
  * TODO add class documentation here
  * 
  * @author <a href="mailto:buesching@lat-lon.de">Lyn Buesching</a>
- * @author last edited by: $Author: lyn $
+ * @author last edited by: $Author$
  * 
- * @version $Revision: $, $Date: $
+ * @version $Revision$, $Date$
  */
 @ManagedBean
 @SessionScoped
-public class LogBean implements Serializable {
+public class MenuBean {
 
-    private static final long serialVersionUID = -4865071415988778817L;
+    private String selectedPage = "/console/jsf/version.xhtml";
 
-    private String password;
-
-    private boolean isLoggedIn;
-
-    public boolean isLoggedIn() {
-        return isLoggedIn;
+    public void setSelectedPage( String selectedPage ) {
+        this.selectedPage = selectedPage;
     }
 
-    public Object logIn() {
-        // TODO
-        if ( password != null ) {
-            isLoggedIn = true;
+    public String getSelectedPage() {
+        return selectedPage;
+    }
+
+    public Object updateContent() {
+        FacesContext fc = FacesContext.getCurrentInstance();
+        Map<String, String> requestMap = fc.getExternalContext().getRequestParameterMap();
+        for ( String key : requestMap.keySet() ) {
+            if ( "newPage".equalsIgnoreCase( key ) ) {
+                selectedPage = requestMap.get( key );
+            }
         }
         return "";
     }
 
-    public Object logOut() {
-        isLoggedIn = false;
-        return "";
-    }
-
-    public void setPassword( String password ) {
-        this.password = password;
-    }
-
-    public String getPassword() {
-        return password;
-    }
 }

@@ -1,0 +1,33 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core"
+				xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:dg="http://deegree.org/jsf"
+				xmlns:dgc="http://java.sun.com/jsf/composite/deegree">
+<h:head>
+				<title>deegree 3 services</title>
+				<h:outputStylesheet name="styles.css" />
+				<h:outputScript name="console.js" />
+</h:head>
+<h:body>
+				<div id="container">
+
+				<div id="header">
+					<div id="logo">	
+						<pre><h:outputText value="#{applicationBean.logo}" /></pre> 
+						<h:outputText value="...has been successfully installed on this server." />
+					</div>
+					<div id="login">
+						<ui:include src="/console/jsf/login.xhtml" />
+					</div>
+				</div>
+
+				<div id="main">
+				<div id="left"><ui:insert name="left" /></div>
+				<div id="center"><ui:insert name="center" /></div>
+				</div>
+
+				<div id="footer">
+						<h:outputText value="Hier ist der Footer" />
+				</div>
+
+				</div>
+</h:body>
+</html>

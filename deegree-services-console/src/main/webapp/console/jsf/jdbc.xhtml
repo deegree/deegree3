@@ -1,0 +1,34 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core"
+				xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:c="http://java.sun.com/jsp/jstl/core"
+				xmlns:fn="http://java.sun.com/jsp/jstl/functions" xmlns:dg="http://deegree.org/jsf"
+				xmlns:dgc="http://java.sun.com/jsf/composite/deegree">
+<h:head>
+				<title>deegree 3 services -version</title>
+</h:head>
+<h:body>
+       ------------------------------------------------------------------------------  
+	  <br />
+	   JDBC connections
+	  <br />
+	  ------------------------------------------------------------------------------
+      <h:form>
+								<table border="0">
+												<ui:repeat value="#{configManager.connManager.configs}" var="config">
+																<tr align="center">
+																				<td><h:outputText value="- #{config.id}" /></td>
+																				<td>&nbsp;<h:outputText value="#{config.connectionStatus}" />&nbsp;</td>
+																				<td><h:commandButton value="Edit" action="#{config.edit}" /></td>
+																				<td><h:commandButton value="Delete" action="#{config.delete}" /></td>
+																</tr>
+												</ui:repeat>
+								</table>
+								<br />
+				</h:form>
+				<h:form>
+								<h:outputLabel for="newJDBCBt" value="Name: " />
+								<h:inputText id="newJDBCBt" value="#{newConnectionConfig.id}" size="16" />
+								<h:commandButton value="Create new" action="#{newConnectionConfig.create}" />
+				</h:form>
+</h:body>
+</html>

@@ -7,6 +7,46 @@ body {
 	padding: 5pt;
 }
 
+/* BEGIN: layout*/
+#container {
+	
+}
+
+#header {
+	background-color: blue;
+}
+
+#logo {
+	width: 60%;
+	float: left;
+}
+
+#login {
+	width: 250%;
+}
+
+#main {
+	
+}
+
+#left {
+	width: 25%;
+	float: left;
+	background-color: green;
+}
+
+#center {
+	width: 70%;
+	background-color: yellow;
+}
+
+#footer {
+	width: 100%;
+	clear: both;
+	background-color: red;
+}
+
+/* END: layout*/
 a {
 	text-decoration: underline;
 	color: #000000;
@@ -39,6 +79,7 @@ a {
 }
 
 .statusPanel {
+	
 }
 
 #PLEASEWAIT_BG {
@@ -49,7 +90,7 @@ a {
 	height: 100%;
 	z-index: 10;
 	opacity: .20;
-	filter: alpha(opacity = 50);
+	filter: alpha(opacity =                   50);
 	-moz-opacity: 0.2;
 	background-color: gray;
 	display: none;
