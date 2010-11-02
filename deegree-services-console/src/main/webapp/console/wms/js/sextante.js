@@ -6,7 +6,6 @@ var WFS_GET_FEATURE = "?SERVICE=WFS&REQUEST=GetFeature&VERSION=1.0.0&OUTPUTFORMA
 // WFS URLs for init
 var wfsURLs = new Array();
 
-
 // WPS-Operations
 var WPS_GET_CAPABILITIES = "?SERVICE=WPS&REQUEST=GetCapabilities";
 var WPS_DESCRIBE_PROCESS = "?SERVICE=WPS&REQUEST=DescribeProcess&VERSION=1.0.0&IDENTIFIER=";
@@ -33,6 +32,8 @@ var selectWPS;
 var divInputValues;
 var selectLayers = new Array();
 var inputLiterals = new Array();
+var inputOutputLayers = new Array();
+var resultDisplay = document.createTextNode("");
 
 
 // increase reload attempts
@@ -72,39 +73,41 @@ function init() {
 
 	// ------------------------------------------------------------------------------------------------------
 	// add wms as layer
-	var wms2 = new OpenLayers.Layer.WMS("OpenLayers STATE LABEL",
-			"http://labs.metacarta.com/wms/vmap0", {
-				layers : 'statelabel',
-				format : "image/png",
-				transparent : "true",
-				crs : "EPSG:4326"
-			}, {
-				isBaseLayer : false,
-				visibility : false
-			});
-	map.addLayer(wms2);
+// var wms2 = new OpenLayers.Layer.WMS("OpenLayers STATE LABEL",
+// "http://labs.metacarta.com/wms/vmap0", {
+// layers : 'statelabel',
+// format : "image/png",
+// transparent : "true",
+// crs : "EPSG:4326"
+// }, {
+// isBaseLayer : false,
+// visibility : false
+// });
+// map.addLayer(wms2);
 
 	// ------------------------------------------------------------------------------------------------------
 	// add a marker
-	var vectorLayer = new OpenLayers.Layer.Vector("TEST Maker");
-	var feature = new OpenLayers.Feature.Vector(
-			new OpenLayers.Geometry.Point(-0.0014, -0.0024),
-			{
-				some : 'data'
-			},
-			{
-				externalGraphic : 'http://funmap.co.uk/cloudmade-examples/markers/marker.png',
-				graphicHeight : 37,
-				graphicWidth : 24
-			});
-	vectorLayer.addFeatures(feature);
-	map.addLayer(vectorLayer);
+	// var vectorLayer = new OpenLayers.Layer.Vector("TEST Maker");
+	// var feature = new OpenLayers.Feature.Vector(
+	// new OpenLayers.Geometry.Point(-0.0014, -0.0024),
+	// {
+	// some : 'data'
+	// },
+	// {
+	// externalGraphic :
+	// 'http://funmap.co.uk/cloudmade-examples/markers/marker.png',
+	// graphicHeight : 37,
+	// graphicWidth : 24
+	// });
+	// vectorLayer.addFeatures(feature);
+	// map.addLayer(vectorLayer);
 
 	// ------------------------------------------------------------------------------------------------------
 	// add gml files as layer (only gml2 without schema)
-	addGMLLayer("GML2 Polygon", "gml/GML2_FeatureCollection_Polygon.xml", "");
-	addGMLLayer("GML2 Buffered Polygon",
-			"gml/GML2_FeatureCollection_Polygon_Buffered.xml", "");
+	// addGMLLayer("GML2 Polygon", "gml/GML2_FeatureCollection_Polygon.xml",
+	// "");
+	// addGMLLayer("GML2 Buffered Polygon",
+	// "gml/GML2_FeatureCollection_Polygon_Buffered.xml", "");
 
 	// ------------------------------------------------------------------------------------------------------
 	// add web feature service (only gml2)
@@ -121,40 +124,60 @@ function init() {
 	addWPSURL( "http://flexigeoweb.lat-lon.de/deegree-wps-demo/services");
 	addWPSURL( "http://giv-wps.uni-muenster.de:8080/wps/WebProcessingService");
 	
-	// centroid algorithm
-	var data = new WPSInputData();
-	var wfsFeatureURL = "http://giv-wps.uni-muenster.de:8080/geoserver/wfs?SERVICE=WFS&REQUEST=GetFeature&VERSION=1.0.0&OUTPUTFORMAT=GML2&TYPENAME=topp:states";
-	data.addVectorLayer("LAYER", wfsFeatureURL, WPSInputData.VECTOR_LAYER_SCHEMA_GML2);
-	data.addOutputVectorLayerFormat("RESULT", WPSInputData.VECTOR_LAYER_SCHEMA_GML2);
-	addWPSLayer("WPS centroids", "http://flexigeoweb.lat-lon.de/deegree-wps-demo/services", "st_centroids", data);
-	
-	// transform algorithm
-	var data2 = new WPSInputData();
-	var wfsFeatureURL2 = "http://giv-wps.uni-muenster.de:8080/geoserver/wfs?SERVICE=WFS&REQUEST=GetFeature&VERSION=1.0.0&OUTPUTFORMAT=GML2&TYPENAME=topp:states";
-	data2.addVectorLayer("LAYER", wfsFeatureURL2, WPSInputData.VECTOR_LAYER_SCHEMA_GML2);
-	data2.addLiteral("DISTANCEX", WPSInputData.LITERAL_NUMERICAL_VALUE_TYPE, "-20");
-	data2.addLiteral("DISTANCEY", WPSInputData.LITERAL_NUMERICAL_VALUE_TYPE, "40");
-	data2.addLiteral("ANGLE", WPSInputData.LITERAL_NUMERICAL_VALUE_TYPE, "90");
-	data2.addLiteral("SCALEX", WPSInputData.LITERAL_NUMERICAL_VALUE_TYPE, "0.5");
-	data2.addLiteral("SCALEY", WPSInputData.LITERAL_NUMERICAL_VALUE_TYPE, "0.5");
-	data2.addLiteral("ANCHORX", WPSInputData.LITERAL_NUMERICAL_VALUE_TYPE, "-46");
-	data2.addLiteral("ANCHORY", WPSInputData.LITERAL_NUMERICAL_VALUE_TYPE, "35");
-	data2.addOutputVectorLayerFormat("RESULT", WPSInputData.VECTOR_LAYER_SCHEMA_GML2);
-	addWPSLayer("WPS transform", "http://flexigeoweb.lat-lon.de/deegree-wps-demo/services", "st_transform", data2);
-	
-	// fixeddistancebuffer algorithm
-	var data3 = new WPSInputData();
-	var wfsFeatureURL3 = "http://giv-wps.uni-muenster.de:8080/geoserver/wfs?SERVICE=WFS&REQUEST=GetFeature&VERSION=1.0.0&OUTPUTFORMAT=GML2&TYPENAME=ns1:tasmania_roads";
-	data3.addVectorLayer("LAYER", wfsFeatureURL3, WPSInputData.VECTOR_LAYER_SCHEMA_GML2);
-	data3.addLiteral("DISTANCE", WPSInputData.LITERAL_NUMERICAL_VALUE_TYPE, "0.05");
-	data3.addLiteral("TYPES", WPSInputData.LITERAL_SELECTION_TYPE, "0");
-	data3.addLiteral("RINGS", WPSInputData.LITERAL_SELECTION_TYPE, "0");
-	data3.addLiteral("NOTROUNDED", WPSInputData.LITERAL_BOOLEAN_TYPE, "false");
-	data3.addOutputVectorLayerFormat("RESULT", WPSInputData.VECTOR_LAYER_SCHEMA_GML2);
-	addWPSLayer("WPS fixeddistancebuffer", "http://flexigeoweb.lat-lon.de/deegree-wps-demo/services", "st_fixeddistancebuffer", data3);
-
-	
-	test = determineWPSProcessDescription("http://flexigeoweb.lat-lon.de/deegree-wps-demo/services","st_transform");
+// // centroid algorithm
+// var data = new WPSInputData();
+// var wfsFeatureURL =
+// "http://giv-wps.uni-muenster.de:8080/geoserver/wfs?SERVICE=WFS&REQUEST=GetFeature&VERSION=1.0.0&OUTPUTFORMAT=GML2&TYPENAME=topp:states";
+// data.addVectorLayer("LAYER", wfsFeatureURL,
+// WPSInputData.VECTOR_LAYER_SCHEMA_GML2);
+// data.addOutputVectorLayerFormat("RESULT",
+// WPSInputData.VECTOR_LAYER_SCHEMA_GML2);
+// addWPSLayer("WPS centroids",
+// "http://flexigeoweb.lat-lon.de/deegree-wps-demo/services", "st_centroids",
+// data);
+//	
+// // transform algorithm
+// var data2 = new WPSInputData();
+// var wfsFeatureURL2 =
+// "http://giv-wps.uni-muenster.de:8080/geoserver/wfs?SERVICE=WFS&REQUEST=GetFeature&VERSION=1.0.0&OUTPUTFORMAT=GML2&TYPENAME=topp:states";
+// data2.addVectorLayer("LAYER", wfsFeatureURL2,
+// WPSInputData.VECTOR_LAYER_SCHEMA_GML2);
+// data2.addLiteral("DISTANCEX", WPSInputData.LITERAL_NUMERICAL_VALUE_TYPE,
+// "-20");
+// data2.addLiteral("DISTANCEY", WPSInputData.LITERAL_NUMERICAL_VALUE_TYPE,
+// "40");
+// data2.addLiteral("ANGLE", WPSInputData.LITERAL_NUMERICAL_VALUE_TYPE, "90");
+// data2.addLiteral("SCALEX", WPSInputData.LITERAL_NUMERICAL_VALUE_TYPE, "0.5");
+// data2.addLiteral("SCALEY", WPSInputData.LITERAL_NUMERICAL_VALUE_TYPE, "0.5");
+// data2.addLiteral("ANCHORX", WPSInputData.LITERAL_NUMERICAL_VALUE_TYPE,
+// "-46");
+// data2.addLiteral("ANCHORY", WPSInputData.LITERAL_NUMERICAL_VALUE_TYPE, "35");
+// data2.addOutputVectorLayerFormat("RESULT",
+// WPSInputData.VECTOR_LAYER_SCHEMA_GML2);
+// addWPSLayer("WPS transform",
+// "http://flexigeoweb.lat-lon.de/deegree-wps-demo/services", "st_transform",
+// data2);
+//	
+// // fixeddistancebuffer algorithm
+// var data3 = new WPSInputData();
+// var wfsFeatureURL3 =
+// "http://giv-wps.uni-muenster.de:8080/geoserver/wfs?SERVICE=WFS&REQUEST=GetFeature&VERSION=1.0.0&OUTPUTFORMAT=GML2&TYPENAME=ns1:tasmania_roads";
+// data3.addVectorLayer("LAYER", wfsFeatureURL3,
+// WPSInputData.VECTOR_LAYER_SCHEMA_GML2);
+// data3.addLiteral("DISTANCE", WPSInputData.LITERAL_NUMERICAL_VALUE_TYPE,
+// "0.05");
+// data3.addLiteral("TYPES", WPSInputData.LITERAL_SELECTION_TYPE, "0");
+// data3.addLiteral("RINGS", WPSInputData.LITERAL_SELECTION_TYPE, "0");
+// data3.addLiteral("NOTROUNDED", WPSInputData.LITERAL_BOOLEAN_TYPE, "false");
+// data3.addOutputVectorLayerFormat("RESULT",
+// WPSInputData.VECTOR_LAYER_SCHEMA_GML2);
+// addWPSLayer("WPS fixeddistancebuffer",
+// "http://flexigeoweb.lat-lon.de/deegree-wps-demo/services",
+// "st_fixeddistancebuffer", data3);
+//
+//	
+// test =
+// determineWPSProcessDescription("http://flexigeoweb.lat-lon.de/deegree-wps-demo/services","st_transform");
 	
 	// ------------------------------------------------------------------------------------------------------
 	// add controls
@@ -183,6 +206,24 @@ function getStyleMap(){
 }
 
 /**
+ * This method determines an individual name of layer.
+ * 
+ * @param name
+ *            Raw layer name.
+ * 
+ * @return Modified layer name.
+ */
+function determineIndividualLayerName(name){
+	var newName = name;
+	
+	// check whether name available
+	if (layers[name] != null)
+		newName = determineIndividualLayerName(name + "_1");
+
+	return newName;
+}
+
+/**
  * This Method adds a GML file to the map.
  * 
  * @param gmlName
@@ -193,10 +234,8 @@ function getStyleMap(){
  *            Optional attribute like absolute URL of GML file.
  */
 function addGMLLayer(gmlName, gmlURL, attr) {
-
-	// check whether name available
-	if (layers[gmlName] != null)
-		gmlName += "_1"; // change name
+	
+	gmlName = determineIndividualLayerName(gmlName);
 
 	// create a GML layer
 	var layer = new OpenLayers.Layer.GML(gmlName, gmlURL, { styleMap: getStyleMap() });
@@ -216,9 +255,15 @@ function addGMLLayer(gmlName, gmlURL, attr) {
 	gmlArray[0] = layer;
 	gmlArray[1] = attr;
 	layers[gmlName] = gmlArray;
-
+	
 	// add layer to map
 	map.addLayer(layer);
+	
+	
+	if(gmlArray != null)
+		resultDisplay.data = "Added layer '" + gmlName + "'";
+	else
+		resultDisplay.data = "Execute failed!";
 }
 
 /**
@@ -234,10 +279,8 @@ function addGMLLayer(gmlName, gmlURL, attr) {
  *            visible=true.
  */
 function addWFSLayer(wfsName, wfsURL, wfsFeatureTypeWithPrefix, visible) {
-
-	// check whether name available
-	if (layers[wfsName] != null)
-		wfsName += "_1"; // change name
+	
+	wfsName = determineIndividualLayerName(wfsName);
 
 	// determine namespace
 	var ns = determineWFSFeatureTypeNamespace(wfsURL, wfsFeatureTypeWithPrefix);
@@ -742,6 +785,23 @@ function createVectorLayerHTMLElement(identifier, title, abstr, schema){
 	return p;
 }
 
+/**
+ * 
+ * @param identifier
+ * @param title
+ * @param abstr
+ * @param schema
+ * @return
+ */
+function createOutputVectorLayerHTMLElement(identifier, title, abstr, schema){
+	var input = document.createElement("input");
+	input.type = "hidden";
+	input.id = identifier;
+	input.value = schema;
+	inputOutputLayers[identifier] = input;
+	return input;
+}
+
 
 /**
  * This method load all input parameter as HTML form of the selected process.
@@ -753,6 +813,9 @@ function loadProcessInputForms(){
     
     // remove old input forms
     divInputValues.innerHTML="";
+    inputLiterals = new Array();
+    selectLayers = new Array();
+    inputOutputLayers = new Array();
     
     // add input forms
     for ( var i = 0; i < processDesc[0].length; i++) {
@@ -762,16 +825,35 @@ function loadProcessInputForms(){
 		else
 			divInputValues.appendChild(createLiteralHTMLElement(inputParam[0],inputParam[1],inputParam[2],inputParam[3]));
 	}
-    
+       
+    // add hidden output formats
+    for ( var i = 0; i < processDesc[1].length; i++) {
+		var outputParam = processDesc[1][i];		
+		if(outputParam[3] == WPSInputData.VECTOR_LAYER_SCHEMA_GML2)
+			divInputValues.appendChild(createOutputVectorLayerHTMLElement(outputParam[0],outputParam[1],outputParam[2],outputParam[3]));
+   }
+        
 }
 
 function createWPSInputData(){
 	var data = new WPSInputData();
 	
-	for ( var i = 0; i < selectLayers.length; i++) {
-		data.addVectorLayer(selectLayers[i].id, wfsFeatures, selectLayers[i].className);
+	// add input vector layers to data object
+	for ( var i in selectLayers) {
+		data.addVectorLayer(selectLayers[i].id, selectLayers[i].value, selectLayers[i].className);
 	}
 	
+	// add input literals to data object
+	for ( var i in inputLiterals) {	
+		data.addLiteral(inputLiterals[i].id, inputLiterals[i].className, inputLiterals[i].value);
+	}
+	
+	// add output vector layer schemas to data object
+	for ( var i in inputOutputLayers) {	
+		outputLayer = inputOutputLayers[i];
+		data.addOutputVectorLayerFormat(inputOutputLayers[i].id, inputOutputLayers[i].defaultValue);
+	}
+		
 	return data;
 }
 
@@ -1381,6 +1463,8 @@ var WPSSwitcher =
 	        
 	        // form
 	        var form = document.createElement("form");
+	        this.layersDiv.appendChild(form);
+	        this.div.appendChild(this.layersDiv);
 	        
 	        // create list of wps urls
 	        var p1 = document.createElement("p");
@@ -1394,6 +1478,7 @@ var WPSSwitcher =
 	        selectWPS = select1;
 	        
 	        select1.onchange = function(){
+	        	resultDisplay.data = "";
 	        	loadProcessList();
 	        	loadProcessInputForms();
 	        };
@@ -1420,23 +1505,14 @@ var WPSSwitcher =
 	        select2.size = "1";
 	        p2.appendChild(select2);
 	        select2.onchange = function(){
+	        	resultDisplay.data = "";
 	        	loadProcessInputForms();
 	        };
 	        selectProcesses = select2;
 	        loadProcessList(selectedWPSURL);
 	                
-	        // create layer list
-// var p3 = document.createElement("p");
-// form.appendChild(p3);
-//
-// var select3 = document.createElement("select");
-// select3.name = "layerlist";
-// select3.size = "1";
-// p3.appendChild(select3);
-// selectLayers = select3;
-// loadLayerList();
-	        this.layersDiv.appendChild(form);
-	        this.div.appendChild(this.layersDiv);
+
+
   
 	        // create input forms
 	        var p5 = document.createElement("p");
@@ -1458,25 +1534,29 @@ var WPSSwitcher =
 	        input.value = "Execute";
 	        input.onclick = function(){
 	        	
-	        	var data = createWPSInputData();
-	        
+	        	// create layer name
+	        	var layerName = "WPS ";
+	        	layerName += selectProcesses.value;
+	        	var name = null;
+	        	for ( var i in selectLayers) {
+	        		if(name == null)
+	        			name = selectLayers[i].options[selectLayers[i].selectedIndex].text;
+	        		else
+	        			name += "_" + selectLayers[i].options[selectLayers[i].selectedIndex].text;	
+	        	}
+	        	if(name != null){
+		        	layerName += " (";
+		        	layerName += name;
+		        	layerName +=  ")";
+	        	}
 	        	
-// data.addVectorLayer("LAYER", selectLayers.value,
-// WPSInputData.VECTOR_LAYER_SCHEMA_GML2);
-// data.addOutputVectorLayerFormat("RESULT",
-// WPSInputData.VECTOR_LAYER_SCHEMA_GML2);
-//	        	
-// addWPSLayer("WPS name", selectWPS.value, selectProcesses.value, data );
+	        	// add WPS layer
+	        	addWPSLayer(layerName, selectWPS.value, selectProcesses.value, createWPSInputData() );
 	        };
 	        p4.appendChild(input);
-	        
-	        
-	        
-	        
-	        	        
-	
-	        
-	        
+	        p4.appendChild(resultDisplay);
+	        resultDisplay.data = "";
+
 
 	        if(this.roundedCorner) {
 	            OpenLayers.Rico.Corner.round(this.div, {
