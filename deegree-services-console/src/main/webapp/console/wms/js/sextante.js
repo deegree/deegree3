@@ -115,7 +115,12 @@ function init() {
 	addWFSURL(  "http://www.dge.upd.edu.ph/geoserver/wfs");
 	
 	addWFSLayer("WFS topp:states", "http://giv-wps.uni-muenster.de:8080/geoserver/wfs","topp:states", true);
-	addWFSLayer("WFS ns1:tasmania_roads", "http://giv-wps.uni-muenster.de:8080/geoserver/wfs","ns1:tasmania_roads", true);
+	addWFSLayer("WFS ns1:tasmania_roads", "http://giv-wps.uni-muenster.de:8080/geoserver/wfs","ns1:tasmania_roads", false);
+	addWFSLayer("WFS tiger:poi", "http://giv-wps.uni-muenster.de:8080/geoserver/wfs","tiger:poi", false);
+	addWFSLayer("WFS tiger:tiger_roads", "http://giv-wps.uni-muenster.de:8080/geoserver/wfs","tiger:tiger_roads", false);
+	addWFSLayer("WFS tiger:poly_landmarks", "http://giv-wps.uni-muenster.de:8080/geoserver/wfs","tiger:poly_landmarks", false);
+	
+
 
 	
 	//
@@ -187,7 +192,7 @@ function init() {
 
 	// ------------------------------------------------------------------------------------------------------
 	// set center
-	map.setCenter(new OpenLayers.LonLat(0, 0), 2);
+	map.setCenter(new OpenLayers.LonLat(-75, 0), 3);
 }
 
 function getStyleMap(){
@@ -682,6 +687,7 @@ function loadProcessList(){
 	var option = document.createElement("option");
  	option.text = processes[i][1];
  	option.value = processes[i][0];
+ 	// option.style.width = "400px";
  	// select.appendChild( option );
  	 	
  	try
@@ -735,11 +741,45 @@ function createLiteralHTMLElement(identifier, title, abstr, type){
 	
 	var p = document.createElement("p");
 	p.innerHTML = title + " (" + type + "): ";
-	var input = document.createElement("input");
-	input.type = "text";
-	input.disabled='enabled'; 
-	input.id = identifier;
-	input.className = type;
+	
+	
+	var input = null;
+	if(type != "boolean"){// others
+		input = document.createElement("input");
+		input.type = "text";
+		input.id = identifier;
+		input.className = type;
+		input.onclick = function(){
+			input.focus();
+	    }
+	}else{// boolean
+		input = document.createElement("select");
+		input.id = identifier;
+		input.className = type;
+		
+		var yes = document.createElement("option");
+	 	yes.text = "yes";
+	 	yes.value = "true";
+	 	
+		var no = document.createElement("option");
+	 	no.text = "no";
+	 	no.value = "false";
+	 	 	
+	 	try
+	 	  {
+	 		input.add(yes,null); // standards compliant
+	 		input.add(no,null); // standards compliant
+	 	  }
+	 	catch(ex)
+	 	  {
+	 		input.add(yes); // IE only
+	 		input.add(no); // IE only
+	 	  }
+		
+	 	 	
+	}
+
+	
 	inputLiterals[identifier] = input;
 	p.appendChild(input);
 	
@@ -762,6 +802,7 @@ function createVectorLayerHTMLElement(identifier, title, abstr, schema){
 	var select = document.createElement("select");
 	select.id = identifier;
 	select.className = schema;
+	select.style.width = "400px";
 	selectLayers[identifier] = select;
 	p.appendChild(select);
 	
@@ -1444,8 +1485,9 @@ var WPSSwitcher =
                 fontFamily = "sans-serif";
                 fontWeight = "bold";
                 fontSize = "smaller";
-                marginTop = "3px";
-                marginLeft = "3px";
+                // marginTop = "3px";
+                // marginLeft = "3px";
+                padding = "10px";
                 color = "white";
                 backgroundColor = "darkblue";
 	        }
@@ -1456,10 +1498,13 @@ var WPSSwitcher =
 	        this.layersDiv = document.createElement("div");
 	        this.layersDiv.id = this.id + "_layersDiv";
 	        OpenLayers.Element.addClass(this.layersDiv, "layersDiv");
+
 	        
-	        var content = "Web Processing Service<br>";
-	        content += "-----------------------------------------<br>";
-        
+	        with(this.layersDiv.style) {
+              // backgroundColor = "red";
+               width = "600px";
+	        }
+	        
 	        
 	        // form
 	        var form = document.createElement("form");
@@ -1474,6 +1519,7 @@ var WPSSwitcher =
 	        var select1 = document.createElement("select");
 	        select1.name = "wpslist";
 	        select1.size = "1";
+	        select1.style.width = "400px";
 	        p1.appendChild(select1);
 	        selectWPS = select1;
 	        
@@ -1503,6 +1549,7 @@ var WPSSwitcher =
 	        var select2 = document.createElement("select");
 	        select2.name = "processlist";
 	        select2.size = "1";
+	        select2.style.width = "400px";
 	        p2.appendChild(select2);
 	        select2.onchange = function(){
 	        	resultDisplay.data = "";
@@ -1533,7 +1580,7 @@ var WPSSwitcher =
 	        input.type = "button";
 	        input.value = "Execute";
 	        input.onclick = function(){
-	        	
+	        		        	
 	        	// create layer name
 	        	var layerName = "WPS ";
 	        	layerName += selectProcesses.value;
@@ -1554,9 +1601,9 @@ var WPSSwitcher =
 	        	addWPSLayer(layerName, selectWPS.value, selectProcesses.value, createWPSInputData() );
 	        };
 	        p4.appendChild(input);
+	        p4.appendChild(document.createElement("br"));
 	        p4.appendChild(resultDisplay);
 	        resultDisplay.data = "";
-
 
 	        if(this.roundedCorner) {
 	            OpenLayers.Rico.Corner.round(this.div, {
