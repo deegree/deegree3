@@ -35,6 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.client.generic;
 
+import java.io.Serializable;
 import java.util.Map;
 
 import javax.faces.bean.ManagedBean;
@@ -51,7 +52,9 @@ import javax.faces.context.FacesContext;
  */
 @ManagedBean
 @SessionScoped
-public class MenuBean {
+public class MenuBean implements Serializable {
+
+    private static final long serialVersionUID = -1696341896075471706L;
 
     private String selectedPage = "/console/jsf/version.xhtml";
 

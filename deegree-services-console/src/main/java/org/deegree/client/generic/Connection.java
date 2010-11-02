@@ -32,15 +32,17 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 package org.deegree.client.generic;
+
+import java.io.Serializable;
 
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.RequestScoped;
 
-import org.deegree.commons.jdbc.ConnectionManager;
-
 import lombok.Getter;
+
+import org.deegree.commons.jdbc.ConnectionManager;
 
 /**
  * TODO add class documentation here
@@ -52,19 +54,21 @@ import lombok.Getter;
  */
 @ManagedBean
 @RequestScoped
-public class Connection {
-    
+public class Connection implements Serializable {
+
+    private static final long serialVersionUID = 6495856816506360039L;
+
     @Getter
     private String id;
-    
+
     @Getter
     private String status = "OK";
 
-    Connection (String id ) {
+    Connection( String id ) {
         try {
             this.id = id;
             ConnectionManager.getConnection( id ).close();
-        } catch (Exception e) {
+        } catch ( Exception e ) {
             status = "ERROR: " + e.getMessage();
         }
     }

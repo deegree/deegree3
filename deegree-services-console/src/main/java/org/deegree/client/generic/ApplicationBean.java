@@ -35,6 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.client.generic;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -62,7 +63,9 @@ import org.deegree.services.controller.OGCFrontController;
  */
 @ManagedBean
 @RequestScoped
-public class ApplicationBean {
+public class ApplicationBean implements Serializable {
+
+    private static final long serialVersionUID = 147824864885285227L;
 
     private String logo = DeegreeAALogoUtils.getAsString();
 
@@ -111,10 +114,10 @@ public class ApplicationBean {
         return FeatureStoreManager.getFeatureStoreIds();
     }
 
-    public boolean getPendingChanges () {
+    public boolean getPendingChanges() {
         return true;
     }
-    
+
     public void applyChanges()
                             throws Exception {
         try {
@@ -123,17 +126,20 @@ public class ApplicationBean {
             e.printStackTrace();
         }
 
-        ServiceConfigManager serviceConfigManager = (ServiceConfigManager) FacesContext.getCurrentInstance().getExternalContext().getApplicationMap().get( "serviceConfigManager" );
+        ServiceConfigManager serviceConfigManager = (ServiceConfigManager) FacesContext.getCurrentInstance().getExternalContext().getApplicationMap().get(
+                                                                                                                                                           "serviceConfigManager" );
         if ( serviceConfigManager != null ) {
             serviceConfigManager.scan();
         }
-        
-        FeatureStoreConfigManager fsConfigManager = (FeatureStoreConfigManager) FacesContext.getCurrentInstance().getExternalContext().getApplicationMap().get( "featureStoreConfigManager" );
+
+        FeatureStoreConfigManager fsConfigManager = (FeatureStoreConfigManager) FacesContext.getCurrentInstance().getExternalContext().getApplicationMap().get(
+                                                                                                                                                                "featureStoreConfigManager" );
         if ( fsConfigManager != null ) {
             fsConfigManager.scan();
         }
 
-        ConnectionConfigManager connConfigManager = (ConnectionConfigManager) FacesContext.getCurrentInstance().getExternalContext().getApplicationMap().get( "connectionConfigManager" );
+        ConnectionConfigManager connConfigManager = (ConnectionConfigManager) FacesContext.getCurrentInstance().getExternalContext().getApplicationMap().get(
+                                                                                                                                                              "connectionConfigManager" );
         if ( connConfigManager != null ) {
             connConfigManager.scan();
         }

@@ -36,6 +36,8 @@ package org.deegree.client.generic;
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
 
+import java.io.Serializable;
+
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.RequestScoped;
 
@@ -51,7 +53,9 @@ import org.deegree.services.controller.FrontControllerStats;
  */
 @ManagedBean
 @RequestScoped
-public class StatisticBean {
+public class StatisticBean implements Serializable {
+
+    private static final long serialVersionUID = 338849983308369306L;
 
     private long dispatchedRequests = FrontControllerStats.getDispatchedRequests();
 
