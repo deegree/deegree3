@@ -81,14 +81,10 @@ public class CoupledDataInspector implements RecordInspector {
 
     private final CoupledResourceInspector ci;
 
-    private CoupledDataInspector( CoupledResourceInspector ci ) {
+    public CoupledDataInspector( CoupledResourceInspector ci ) {
         this.ci = ci;
         this.a = new XMLAdapter();
         instance = this;
-    }
-
-    public static CoupledDataInspector newInstance( CoupledResourceInspector ci ) {
-        return new CoupledDataInspector( ci );
     }
 
     @Override

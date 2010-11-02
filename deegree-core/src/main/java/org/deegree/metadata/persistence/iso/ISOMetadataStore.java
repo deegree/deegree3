@@ -75,7 +75,6 @@ import org.deegree.metadata.persistence.iso.parsing.IdUtils;
 import org.deegree.metadata.persistence.iso.parsing.inspectation.CoupledDataInspector;
 import org.deegree.metadata.persistence.iso.parsing.inspectation.FileIdentifierInspector;
 import org.deegree.metadata.persistence.iso.parsing.inspectation.InspireComplianceInspector;
-import org.deegree.metadata.persistence.iso.parsing.inspectation.MetadataValidation;
 import org.deegree.metadata.persistence.iso.parsing.inspectation.RecordInspector;
 import org.deegree.metadata.persistence.iso.resulttypes.Hits;
 import org.deegree.metadata.persistence.iso19115.jaxb.AbstractInspector;
@@ -498,20 +497,21 @@ public class ISOMetadataStore implements MetadataStore {
             for ( JAXBElement<? extends AbstractInspector> jaxbElem : config.getAbstractInspector() ) {
                 AbstractInspector d = jaxbElem.getValue();
                 if ( d instanceof IdentifierInspector ) {
-                    ri.add( FileIdentifierInspector.newInstance( (IdentifierInspector) d ) );
+                    ri.add( new FileIdentifierInspector( (IdentifierInspector) d ) );
                 } else if ( d instanceof InspireInspector ) {
-                    ri.add( InspireComplianceInspector.newInstance( (InspireInspector) d ) );
+                    ri.add( new InspireComplianceInspector( (InspireInspector) d ) );
                 } else if ( d instanceof CoupledResourceInspector ) {
-                    ri.add( CoupledDataInspector.newInstance( (CoupledResourceInspector) d ) );
+                    ri.add( new CoupledDataInspector( (CoupledResourceInspector) d ) );
                 }
 
             }
-            if ( !ri.contains( FileIdentifierInspector.getInstance() ) ) {
-                ri.add( FileIdentifierInspector.newInstance( new IdentifierInspector() ) );
-            }
-            MetadataValidation validate = MetadataValidation.newInstance( config.isValidate() );
+            // if ( !ri.contains( FileIdentifierInspector.getInstance() ) ) {
+            // ri.add( FileIdentifierInspector.newInstance( new IdentifierInspector() ) );
+            // }
+            // MetadataSchemaValidationInspector validate = MetadataSchemaValidationInspector.newInstance(
+            // config.isValidate() );
 
-            ta = new ISOMetadataStoreTransaction( conn, ri, config.getAnyText(), validate, useLegacyPredicates );
+            ta = new ISOMetadataStoreTransaction( conn, ri, config.getAnyText(), useLegacyPredicates );
         } catch ( SQLException e ) {
             throw new MetadataStoreException( e.getMessage() );
         }

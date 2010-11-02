@@ -168,7 +168,7 @@ public class ISORecord implements MetadataRecord {
         this.anyText = anyText;
         this.root = new XMLAdapter( xmlStream ).getRootElement();
         this.pElem = new ISOQPParsing().parseAPISO( root );
-
+        root.declareDefaultNamespace( "http://www.isotc211.org/2005/gmd" );
         summaryFilterElementsXPath = removeElementsXPath( summaryLocalParts );
 
         briefFilterElementsXPath = removeElementsXPath( briefSummaryLocalParts );
@@ -421,7 +421,19 @@ public class ISORecord implements MetadataRecord {
 
     public byte[] getAsByteArray()
                             throws XMLStreamException, FactoryConfigurationError {
-
+        // XMLStreamReader reader = new WhitespaceElementFilter( getAsXMLStream() );
+        // XMLStreamReader reader = getAsXMLStream();
+        // XMLStreamWriter writer = null;
+        // try {
+        // writer = XMLOutputFactory.newInstance().createXMLStreamWriter(
+        // new FileOutputStream(
+        // "/home/thomas/Desktop/ztest.xml" ) );
+        // } catch ( FileNotFoundException e ) {
+        // // TODO Auto-generated catch block
+        // e.printStackTrace();
+        // }
+        // generateOutput( writer, reader );
+        root.declareDefaultNamespace( "http://www.isotc211.org/2005/gmd" );
         return root.toString().getBytes();
 
     }
@@ -564,7 +576,6 @@ public class ISORecord implements MetadataRecord {
 
     private void generateOutput( XMLStreamWriter writer, XMLStreamReader filter )
                             throws XMLStreamException {
-
         while ( filter.hasNext() ) {
 
             if ( filter.getEventType() == XMLStreamConstants.START_ELEMENT ) {

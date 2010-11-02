@@ -47,15 +47,9 @@ import javax.xml.bind.Unmarshaller;
 import org.deegree.metadata.persistence.MetadataInspectorProvider;
 import org.deegree.metadata.persistence.MetadataStoreException;
 import org.deegree.metadata.persistence.MetadataInspectorManager.InspectorKey;
-import org.deegree.metadata.persistence.iso.parsing.inspectation.CoupledDataInspector;
-import org.deegree.metadata.persistence.iso.parsing.inspectation.FileIdentifierInspector;
-import org.deegree.metadata.persistence.iso.parsing.inspectation.InspireComplianceInspector;
 import org.deegree.metadata.persistence.iso.parsing.inspectation.RecordInspector;
 import org.deegree.metadata.persistence.iso19115.jaxb.AbstractInspector;
-import org.deegree.metadata.persistence.iso19115.jaxb.CoupledResourceInspector;
 import org.deegree.metadata.persistence.iso19115.jaxb.ISOMetadataStoreConfig;
-import org.deegree.metadata.persistence.iso19115.jaxb.IdentifierInspector;
-import org.deegree.metadata.persistence.iso19115.jaxb.InspireInspector;
 import org.slf4j.Logger;
 
 /**
@@ -79,13 +73,13 @@ public class ISOMetadataInspectorProvider implements MetadataInspectorProvider {
 
         for ( JAXBElement<? extends AbstractInspector> jaxbElem : config.getAbstractInspector() ) {
             AbstractInspector d = jaxbElem.getValue();
-            if ( d instanceof IdentifierInspector ) {
-                return inspector = FileIdentifierInspector.newInstance( (IdentifierInspector) d );
-            } else if ( d instanceof InspireInspector ) {
-                return inspector = InspireComplianceInspector.newInstance( (InspireInspector) d );
-            } else if ( d instanceof CoupledResourceInspector ) {
-                return inspector = CoupledDataInspector.newInstance( (CoupledResourceInspector) d );
-            }
+            // if ( d instanceof IdentifierInspector ) {
+            // return inspector = FileIdentifierInspector.newInstance( (IdentifierInspector) d );
+            // } else if ( d instanceof InspireInspector ) {
+            // return inspector = InspireComplianceInspector.newInstance( (InspireInspector) d );
+            // } else if ( d instanceof CoupledResourceInspector ) {
+            // return inspector = CoupledDataInspector.newInstance( (CoupledResourceInspector) d );
+            // }
 
         }
 

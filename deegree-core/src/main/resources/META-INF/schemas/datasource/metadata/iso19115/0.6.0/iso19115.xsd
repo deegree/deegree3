@@ -62,12 +62,18 @@
 				<jaxb:class name="AbstractInspector" />
 			</appinfo>
 		</annotation>
-		<attribute name="name" type="string">
-			<annotation>
-				<documentation>Name of the inspector.</documentation>
-			</annotation>
-		</attribute>
 	</complexType>
+	<element name="MSVInspector" substitutionGroup="ds:AbstractInspector">
+	  <annotation>
+	    <documentation>Metadata Schema Validation Inspector.</documentation>
+      </annotation>
+      <complexType>
+			<complexContent>
+				<extension base="ds:AbstractInspectorType">
+				</extension>
+			</complexContent>
+		</complexType>
+	</element>
 	<element name="IdentifierInspector" substitutionGroup="ds:AbstractInspector">
 		<complexType>
 			<complexContent>
@@ -83,6 +89,11 @@
 							</complexType>
 						</element>
 					</sequence>
+					<attribute name="rejectEmptyFileIdentifier" type="boolean" use="required">
+					  <annotation>
+						<documentation>true, if the metadataRecord should be rejected if there is no fileIdentifier available. Otherwise false. </documentation>
+					  </annotation>
+					</attribute>
 				</extension>
 			</complexContent>
 		</complexType>

@@ -38,6 +38,7 @@ package org.deegree.metadata.persistence.iso.parsing.inspectation;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.io.StringWriter;
+import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -46,6 +47,9 @@ import javax.xml.stream.XMLStreamException;
 import org.apache.axiom.om.OMElement;
 import org.deegree.commons.xml.schema.SchemaValidator;
 import org.deegree.metadata.persistence.MetadataStoreException;
+import org.deegree.metadata.persistence.MetadataInspectorManager.InspectorKey;
+import org.deegree.metadata.persistence.iso19115.jaxb.AbstractInspector;
+import org.deegree.metadata.persistence.iso19115.jaxb.MSVInspector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -56,22 +60,18 @@ import org.slf4j.LoggerFactory;
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
+ * @param <MSVInspector>
  */
-public class MetadataValidation {
-    private static Logger LOG = LoggerFactory.getLogger( MetadataValidation.class );
+public class MetadataSchemaValidationInspector implements RecordInspector {
+    private static Logger LOG = LoggerFactory.getLogger( MetadataSchemaValidationInspector.class );
 
-    private final boolean isValidate;
+    private static MetadataSchemaValidationInspector instance;
 
-    private static MetadataValidation instance;
+    private final MSVInspector inspector;
 
-    private MetadataValidation( boolean isValidate ) {
-        this.isValidate = isValidate;
+    public MetadataSchemaValidationInspector( MSVInspector inspector ) {
+        this.inspector = inspector;
         instance = this;
-    }
-
-    public static MetadataValidation newInstance( boolean isValidate ) {
-
-        return new MetadataValidation( isValidate );
     }
 
     /**
@@ -86,7 +86,7 @@ public class MetadataValidation {
     private List<String> validate( OMElement elem )
                             throws MetadataStoreException {
         StringWriter s = new StringWriter();
-        if ( isValidate ) {
+        if ( checkAvailability( null ) ) {
             try {
                 elem.serialize( s );
             } catch ( XMLStreamException e ) {
@@ -105,7 +105,8 @@ public class MetadataValidation {
         return new ArrayList<String>();
     }
 
-    public OMElement inspect( OMElement record )
+    @Override
+    public OMElement inspect( OMElement record, Connection conn )
                             throws MetadataStoreException {
         List<String> errors = validate( record );
         if ( errors.isEmpty() ) {
@@ -114,7 +115,22 @@ public class MetadataValidation {
         return null;
     }
 
-    public static MetadataValidation getInstance() {
+    public static MetadataSchemaValidationInspector getInstance() {
         return instance;
     }
+
+    @Override
+    public boolean checkAvailability( AbstractInspector inspector ) {
+        if ( inspector != null ) {
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public InspectorKey getName() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
 }

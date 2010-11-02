@@ -68,13 +68,9 @@ public class InspireComplianceInspector implements RecordInspector {
 
     private Connection conn;
 
-    private InspireComplianceInspector( InspireInspector ric ) {
+    public InspireComplianceInspector( InspireInspector ric ) {
         this.ric = ric;
         instance = this;
-    }
-
-    public static InspireComplianceInspector newInstance( InspireInspector ric ) {
-        return new InspireComplianceInspector( ric );
     }
 
     @Override
@@ -97,7 +93,7 @@ public class InspireComplianceInspector implements RecordInspector {
         this.conn = conn;
         // TODO make it plugable.
         List<InspireCompliance> inspireList = new ArrayList<InspireCompliance>();
-        inspireList.add( ResourceIdentifier.newInstance( ric ) );
+        inspireList.add( new ResourceIdentifier( ric ) );
         for ( InspireCompliance c : inspireList ) {
             record = c.inspect( record, conn );
         }

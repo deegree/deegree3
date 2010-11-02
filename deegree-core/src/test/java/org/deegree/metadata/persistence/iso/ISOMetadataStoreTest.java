@@ -225,6 +225,46 @@ public class ISOMetadataStoreTest {
 
     }
 
+    @Test
+    public void testNamespaces()
+                            throws MetadataStoreException, XMLStreamException, FactoryConfigurationError, IOException {
+        LOG.info( "START Test: testNamespaces" );
+
+        if ( jdbcURL != null && jdbcUser != null && jdbcPass != null ) {
+            store = (ISOMetadataStore) new ISOMetadataStoreProvider().getMetadataStore( TstConstants.configURL );
+        }
+        if ( store == null ) {
+            LOG.warn( "Skipping test (needs configuration)." );
+            return;
+        }
+
+        MetadataStoreTransaction ta = store.acquireTransaction();
+        List<String> ids = insertMetadata( store, ta, TstConstants.tst_12 );
+        MetadataResultSet resultSet = store.getRecordsById( ids );
+
+        // create the is output
+        // String file = "/home/thomas/Desktop/zTestBrief.xml";
+        String file = null;
+        StringBuilder streamThat = stringBuilderFromResultSet( resultSet, ReturnableElement.brief, file,
+                                                               XMLStreamConstants.NAMESPACE );
+        if ( streamThat == null ) {
+            return;
+        }
+        StringBuilder streamThis = new StringBuilder();
+        streamThis.append( "null=http://www.isotc211.org/2005/gmd" ).append( ' ' );
+        streamThis.append( "gmd=http://www.isotc211.org/2005/gmd" ).append( ' ' );
+        streamThis.append( "gco=http://www.isotc211.org/2005/gco" ).append( ' ' );
+        streamThis.append( "srv=http://www.isotc211.org/2005/srv" ).append( ' ' );
+        streamThis.append( "gml=http://www.opengis.net/gml" ).append( ' ' );
+        streamThis.append( "gts=http://www.isotc211.org/2005/gts" ).append( ' ' );
+        streamThis.append( "xsi=http://www.w3.org/2001/XMLSchema-instance" ).append( ' ' );
+
+        LOG.info( "streamThis: " + streamThis.toString() );
+        LOG.info( "streamThat: " + streamThat.toString() );
+        Assert.assertEquals( streamThis.toString(), streamThat.toString() );
+
+    }
+
     /**
      * Tests if 3 records will be inserted and 2 delete so the output should be 1 <br>
      * The request-query tests after getAllRecords
@@ -456,7 +496,8 @@ public class ISOMetadataStoreTest {
         // create the is output
         // String file = "/home/thomas/Desktop/zTestBrief.xml";
         String file = null;
-        StringBuilder streamThat = stringBuilderFromResultSet( resultSet, ReturnableElement.brief, file );
+        StringBuilder streamThat = stringBuilderFromResultSet( resultSet, ReturnableElement.brief, file,
+                                                               XMLStreamConstants.START_ELEMENT );
         if ( streamThat == null ) {
             return;
         }
@@ -502,7 +543,8 @@ public class ISOMetadataStoreTest {
         // create the is output
         // String file = "/home/thomas/Desktop/zTestSummary.xml";
         String file = null;
-        StringBuilder streamThat = stringBuilderFromResultSet( resultSet, ReturnableElement.summary, file );
+        StringBuilder streamThat = stringBuilderFromResultSet( resultSet, ReturnableElement.summary, file,
+                                                               XMLStreamConstants.START_ELEMENT );
         if ( streamThat == null ) {
             return;
         }
@@ -936,7 +978,7 @@ public class ISOMetadataStoreTest {
     }
 
     private StringBuilder stringBuilderFromResultSet( MetadataResultSet resultSet, ReturnableElement returnableElement,
-                                                      String file )
+                                                      String file, int searchEvent )
                             throws XMLStreamException, FileNotFoundException {
         OutputStream fout = null;
         if ( file == null ) {
@@ -959,11 +1001,21 @@ public class ISOMetadataStoreTest {
         } else if ( fout instanceof ByteArrayOutputStream ) {
             InputStream in = new ByteArrayInputStream( ( (ByteArrayOutputStream) fout ).toByteArray() );
             XMLStreamReader xmlStreamThat = XMLInputFactory.newInstance().createXMLStreamReader( in );
-            xmlStreamThat.nextTag();
+            // xmlStreamThat.nextTag();
             while ( xmlStreamThat.hasNext() ) {
                 xmlStreamThat.next();
+
                 if ( xmlStreamThat.getEventType() == XMLStreamConstants.START_ELEMENT ) {
-                    streamThat.append( xmlStreamThat.getName() ).append( ' ' );
+                    if ( searchEvent == XMLStreamConstants.START_ELEMENT ) {
+                        streamThat.append( xmlStreamThat.getName() ).append( ' ' );
+                    } else if ( searchEvent == XMLStreamConstants.NAMESPACE ) {
+                        // copy all namespace bindings
+                        for ( int i = 0; i < xmlStreamThat.getNamespaceCount(); i++ ) {
+                            String nsPrefix = xmlStreamThat.getNamespacePrefix( i );
+                            String nsURI = xmlStreamThat.getNamespaceURI( i );
+                            streamThat.append( nsPrefix ).append( '=' ).append( nsURI ).append( ' ' );
+                        }
+                    }
                 }
             }
         }
@@ -974,7 +1026,6 @@ public class ISOMetadataStoreTest {
     private StringBuilder stringBuilderFromXMLStream( XMLStreamReader xmlStreamThis )
                             throws XMLStreamException {
         StringBuilder streamThis = new StringBuilder();
-        xmlStreamThis.nextTag();
         while ( xmlStreamThis.hasNext() ) {
             xmlStreamThis.next();
             if ( xmlStreamThis.getEventType() == XMLStreamConstants.START_ELEMENT ) {

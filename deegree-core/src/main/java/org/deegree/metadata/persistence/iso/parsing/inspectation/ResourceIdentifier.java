@@ -83,14 +83,10 @@ public class ResourceIdentifier implements InspireCompliance {
 
     private IdUtils util;
 
-    private ResourceIdentifier( InspireInspector ric ) {
+    public ResourceIdentifier( InspireInspector ric ) {
         this.ric = ric;
         this.a = new XMLAdapter();
         instance = this;
-    }
-
-    public static ResourceIdentifier newInstance( InspireInspector ric ) {
-        return new ResourceIdentifier( ric );
     }
 
     public boolean checkAvailability( AbstractInspector inspector ) {

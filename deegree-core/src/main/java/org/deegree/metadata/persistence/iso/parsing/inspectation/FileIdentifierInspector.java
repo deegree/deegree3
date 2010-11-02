@@ -53,7 +53,6 @@ import org.deegree.metadata.persistence.iso.generating.generatingelements.Genera
 import org.deegree.metadata.persistence.iso.parsing.IdUtils;
 import org.deegree.metadata.persistence.iso19115.jaxb.AbstractInspector;
 import org.deegree.metadata.persistence.iso19115.jaxb.IdentifierInspector;
-import org.deegree.metadata.persistence.iso19115.jaxb.IdentifierInspector.Param;
 import org.slf4j.Logger;
 
 /**
@@ -69,8 +68,6 @@ public class FileIdentifierInspector implements RecordInspector {
 
     private static final Logger LOG = getLogger( FileIdentifierInspector.class );
 
-    private static final String REJECT_EMPTY_FILE_IDENTIFIER = "rejectEmptyFileIdentifier";
-
     private static FileIdentifierInspector instance;
 
     private static final InspectorKey NAME = InspectorKey.IdentifierInspector;
@@ -81,14 +78,10 @@ public class FileIdentifierInspector implements RecordInspector {
 
     private final IdentifierInspector inspector;
 
-    private FileIdentifierInspector( IdentifierInspector inspector ) {
+    public FileIdentifierInspector( IdentifierInspector inspector ) {
         this.inspector = inspector;
         this.a = new XMLAdapter();
         instance = this;
-    }
-
-    public static FileIdentifierInspector newInstance( IdentifierInspector inspector ) {
-        return new FileIdentifierInspector( inspector );
     }
 
     @Override
@@ -97,21 +90,7 @@ public class FileIdentifierInspector implements RecordInspector {
         if ( fi == null ) {
             return false;
         } else {
-            List<Param> paramList = fi.getParam();
-
-            for ( Param p : paramList ) {
-                if ( p.getKey().equals( REJECT_EMPTY_FILE_IDENTIFIER ) ) {
-                    String value = p.getValue();
-                    if ( value.equalsIgnoreCase( "true" ) ) {
-                        return true;
-                    } else {
-                        return false;
-                    }
-
-                }
-            }
-
-            return false;
+            return fi.isRejectEmptyFileIdentifier();
         }
     }
 
