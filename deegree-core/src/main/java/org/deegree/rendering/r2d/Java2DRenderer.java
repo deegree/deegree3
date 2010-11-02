@@ -424,11 +424,13 @@ public class Java2DRenderer implements Renderer {
         }
 
         if ( g.image != null ) {
+            AffineTransform t = graphics.getTransform();
             if ( !isZero( g.rotation ) ) {
                 graphics.rotate( toRadians( g.rotation ) );
             }
             graphics.drawImage( g.image, round( rect.x ), round( rect.y ), round( rect.width ), round( rect.height ),
                                 null );
+            graphics.setTransform( t );
         }
     }
 
