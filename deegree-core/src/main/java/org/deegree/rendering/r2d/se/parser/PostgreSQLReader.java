@@ -136,6 +136,8 @@ public class PostgreSQLReader {
 
     private String connid;
 
+    private final String baseSystemId;
+
     /**
      * @param connid
      * @param baseSystemId
@@ -143,6 +145,7 @@ public class PostgreSQLReader {
      */
     public PostgreSQLReader( String connid, String baseSystemId ) {
         this.connid = connid;
+        this.baseSystemId = baseSystemId;
     }
 
     private Graphic getGraphic( int id, Connection conn )
@@ -807,7 +810,7 @@ public class PostgreSQLReader {
                 String sld = rs.getString( "sld" );
                 if ( sld != null ) {
                     try {
-                        Style res = new SymbologyParser().parse( fac.createXMLStreamReader( new StringReader( sld ) ) );
+                        Style res = new SymbologyParser().parse( fac.createXMLStreamReader( baseSystemId, new StringReader( sld ) ) );
                         if ( name != null ) {
                             res.setName( name );
                         }
