@@ -61,26 +61,24 @@ public class PropertyNameMapping {
 
     private final PrimitiveType pt;
 
-    public PropertyNameMapping( String table, String column, PrimitiveType pt ) {
-        this.valueField = new DBField( table, column );
-        this.joins = Collections.emptyList();
-        this.pt = pt;
-    }
+    private final String srid;
 
-    public PropertyNameMapping( String table, String column ) {
+    public PropertyNameMapping( String table, String column, String srid ) {
         this.valueField = new DBField( table, column );
         this.joins = Collections.emptyList();
         this.pt = STRING;
+        this.srid = srid;
     }
 
     /**
      * @param valueField
      * @param joins
      */
-    public PropertyNameMapping( TableAliasManager aliasManager, DBField valueField, List<Join> joins ) {
+    public PropertyNameMapping( TableAliasManager aliasManager, DBField valueField, List<Join> joins, String srid ) {
         this.valueField = valueField;
         this.joins = joins;
         this.pt = STRING;
+        this.srid = srid;
 
         String currentAlias = aliasManager.getRootTableAlias();
         if ( joins != null ) {
@@ -91,6 +89,10 @@ public class PropertyNameMapping {
             }
         }
         valueField.setAlias( currentAlias );
+    }
+
+    public String getSRID() {
+        return srid;
     }
 
     public DBField getTargetField() {

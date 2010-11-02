@@ -1,11 +1,10 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<PostGISFeatureStore configVersion="0.6.0" xmlns="http://www.deegree.org/datasource/feature/postgis"
+<PostGISFeatureStore configVersion="0.6.1" xmlns="http://www.deegree.org/datasource/feature/postgis"
   xmlns:app="http://www.deegree.org/app" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://www.deegree.org/datasource/feature/postgis http://schemas.deegree.org/datasource/feature/postgis/0.6.0/postgis.xsd">
-  <NamespaceHint prefix="app" namespaceURI="http://www.deegree.org/app" />
+  xsi:schemaLocation="http://www.deegree.org/datasource/feature/postgis http://schemas.deegree.org/datasource/feature/postgis/0.6.1/postgis.xsd">
   <StorageCRS>EPSG:4326</StorageCRS>
+  <NamespaceHint prefix="app" namespaceURI="http://www.deegree.org/app" />  
   <JDBCConnId>philosopher-db</JDBCConnId>
-  <FeatureType name="app:Philosopher" mapping="PHILOSOPHER" fidMapping="ID">
+  <!-- FeatureType name="app:Philosopher" table="PHILOSOPHER" fidMapping="ID">
     <SimpleProperty name="app:id" type="integer" />
     <SimpleProperty name="app:name" type="string" />
     <SimpleProperty name="app:sex" type="string" />
@@ -19,23 +18,25 @@
     <FeatureProperty name="app:placeOfDeath" mapping="PLACE_OF_DEATH" type="app:Place" />
     <FeatureProperty name="app:friend" mapping="ID->IS_FRIEND_OF.PHILOSOPHER1_ID->PHILOSOPHER2_ID" type="app:Philosopher" />
   </FeatureType>
-  <FeatureType name="app:Book" mapping="BOOK" fidMapping="ID">
+  <FeatureType name="app:Book" table="BOOK" fidMapping="ID">
     <SimpleProperty name="app:title" type="string" />
     <SimpleProperty name="app:publicationDate" minOccurs="0" mapping="PUB_DATE" type="date" />
   </FeatureType>
-  <FeatureType name="app:Place" mapping="PLACE" fidMapping="ID">
+  <FeatureType name="app:Place" table="PLACE" fidMapping="ID">
     <SimpleProperty name="app:name" type="string" />
     <FeatureProperty name="app:country" minOccurs="0" type="app:Country" mapping="COUNTRY_ID" />
-  </FeatureType>
-  <FeatureType name="app:Country" mapping="COUNTRY" fidMapping="ID">
-    <SimpleProperty name="app:name" type="string" />
-    <SimpleProperty name="app:upperName" minOccurs="0" mapping="UPPER(NAME)" type="string" />
+  </FeatureType-->
+
+  <FeatureType name="app:Country" table="COUNTRY" fidMapping="ID">
+    <SimpleProperty name="app:name" mapping="name" type="string" />
+    <!-- SimpleProperty name="app:upperName" minOccurs="0" mapping="UPPER(NAME)" type="string" />
     <SimpleProperty name="app:dataOrigin" minOccurs="0" mapping="'Imported from shapefile.'" type="string" />
-    <SimpleProperty name="app:area" minOccurs="0" mapping="AREA(GEOM)" type="double" />
+    <SimpleProperty name="app:area" minOccurs="0" mapping="AREA(GEOM)" type="double" /-->
     <!--
       SimpleProperty name="app:queryBBOXOverlap" minOccurs="0" mapping="AREA(INTERSECTION($QUERY_BBOX,
       GEOM))/(AREA(GEOM)/100)" type="double" /
     -->
-    <GeometryProperty name="app:geom" minOccurs="0" type="Geometry" srid="4326" />
+    <GeometryProperty name="app:geom" mapping="geom" minOccurs="0" type="Geometry" srid="4326" />
   </FeatureType>
+
 </PostGISFeatureStore>

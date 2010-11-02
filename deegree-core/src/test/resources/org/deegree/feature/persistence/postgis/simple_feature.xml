@@ -1,0 +1,13 @@
+<PostGISFeatureStore configVersion="0.6.1" xmlns="http://www.deegree.org/datasource/feature/postgis"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.deegree.org/datasource/feature/postgis http://schemas.deegree.org/datasource/feature/postgis/0.6.1/postgis.xsd">
+
+  <StorageCRS>EPSG:31467</StorageCRS>
+
+  <JDBCConnId>simple-feature</JDBCConnId>
+
+  <FeatureType table="Schleusen" />
+  <FeatureType table="SGID024_ElectricalLines" />
+  <FeatureType table="SGID024_ElectricalLines_NoSRS" />
+
+</PostGISFeatureStore>

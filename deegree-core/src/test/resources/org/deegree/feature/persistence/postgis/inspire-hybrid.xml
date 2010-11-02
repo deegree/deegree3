@@ -462,7 +462,9 @@
       <JoinedTable indexColumn="idx">id=ad_postaldescriptor_ad_situatedwithin.parentfk</JoinedTable>
     </FeatureProperty>
     <CustomProperty name="ad:postName" minOccurs="0" maxOccurs="unbounded">
+
       <JoinedTable indexColumn="idx">id=ad_postaldescriptor_ad_postname.parentfk</JoinedTable>
+
       <ComplexMapping path="gn:GeographicalName">
         <ComplexMapping path="gn:language">
           <PrimitiveMapping path="@nilReason" mapping="gn_geographicalname_gn_language_attr_nilreason" type="string"/>

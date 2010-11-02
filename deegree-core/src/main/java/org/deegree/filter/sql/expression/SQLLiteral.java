@@ -122,4 +122,9 @@ public class SQLLiteral implements SQLExpression {
     public CRS getSRS() {
         return isSpatial ? ((Geometry) value).getCoordinateSystem() : null;
     }
+
+    @Override
+    public String getSRID() {
+        return null;
+    }
 }

@@ -40,6 +40,7 @@ import java.util.List;
 
 import javax.xml.namespace.QName;
 
+import org.deegree.feature.persistence.mapping.property.GeometryMapping;
 import org.deegree.feature.persistence.mapping.property.Mapping;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.feature.types.property.FeaturePropertyType;
@@ -70,6 +71,8 @@ public class MappedXPath {
     private DBField valueField;
 
     private final List<Join> joins = new ArrayList<Join>();
+
+    private String srid;
 
     /**
      * @param schema
@@ -214,6 +217,11 @@ public class MappedXPath {
             String msg = "Property '" + propName + "' is not mapped.";
             throw new UnmappableException( msg );
         }
+
+        if ( mapping instanceof GeometryMapping ) {
+            srid = ( (GeometryMapping) mapping ).getSrid();
+        }
+
         MappingExpression propMapping = mapping.getMapping();
         if ( propMapping instanceof DBField ) {
             String table = rootFt.getFtTable();
@@ -272,6 +280,10 @@ public class MappedXPath {
 
     public DBField getValueField() {
         return valueField;
+    }
+
+    public String getSRID() {
+        return srid;
     }
 
     /**

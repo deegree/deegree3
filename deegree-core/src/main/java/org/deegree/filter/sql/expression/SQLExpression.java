@@ -70,6 +70,8 @@ public interface SQLExpression {
      * @return the SRS, can be <code>null</code> (unknown or not a spatial expression)
      */
     public CRS getSRS();
+    
+    public String getSRID();
 
     /**
      * Returns the corresponding SQL snippet, with question marks for every {@link SQLLiteral} argument.

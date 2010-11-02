@@ -35,15 +35,20 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.feature.persistence.postgis;
 
+import static javax.xml.XMLConstants.DEFAULT_NS_PREFIX;
+import static javax.xml.XMLConstants.NULL_NS_URI;
 import static org.deegree.feature.persistence.BlobCodec.Compression.NONE;
 import static org.deegree.feature.types.property.GeometryPropertyType.CoordinateDimension.DIM_2;
 import static org.deegree.feature.types.property.GeometryPropertyType.GeometryType.GEOMETRY;
 import static org.deegree.feature.types.property.ValueRepresentation.BOTH;
+import static org.deegree.feature.types.property.ValueRepresentation.INLINE;
 import static org.deegree.gml.GMLVersion.GML_32;
 
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -57,12 +62,15 @@ import org.antlr.runtime.CommonTokenStream;
 import org.antlr.runtime.RecognitionException;
 import org.deegree.commons.jdbc.ConnectionManager;
 import org.deegree.commons.tom.primitive.PrimitiveType;
+import org.deegree.commons.utils.JDBCUtils;
 import org.deegree.commons.utils.Pair;
 import org.deegree.commons.xml.NamespaceContext;
 import org.deegree.cs.CRS;
 import org.deegree.feature.persistence.BlobCodec;
+import org.deegree.feature.persistence.FeatureStoreException;
 import org.deegree.feature.persistence.mapping.BBoxTableMapping;
 import org.deegree.feature.persistence.mapping.BlobMapping;
+import org.deegree.feature.persistence.mapping.DBField;
 import org.deegree.feature.persistence.mapping.FeatureTypeMapping;
 import org.deegree.feature.persistence.mapping.JoinChain;
 import org.deegree.feature.persistence.mapping.MappedApplicationSchema;
@@ -96,7 +104,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Creates a {@link MappedApplicationSchema} from feature type declarations / relational mapping information.
+ * Creates {@link MappedApplicationSchema} instances from feature type declarations / relational mapping information.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
@@ -107,11 +115,17 @@ class PostGISApplicationSchemaBuilder {
 
     private static final Logger LOG = LoggerFactory.getLogger( PostGISApplicationSchemaBuilder.class );
 
+    private final String connId;
+
+    private final String dbSchema;
+
     private Map<QName, FeatureType> ftNameToFt = new HashMap<QName, FeatureType>();
 
     private Map<QName, FeatureTypeMapping> ftNameToMapping = new HashMap<QName, FeatureTypeMapping>();
 
     private NamespaceContext nsContext = null;
+
+    private Connection conn;
 
     private DatabaseMetaData md;
 
@@ -119,7 +133,7 @@ class PostGISApplicationSchemaBuilder {
      * Creates a new {@link MappedApplicationSchema} instance.
      * 
      * @param appSchema
-     *            application schema, can be <code>null</code> (for relational only mappings)
+     *            application schema, can be <code>null</code> (for relational-only mappings)
      * @param ftDecls
      *            feature type declarations, can be <code>null</code> (for BLOB-only mappings)
      * @param jdbcConnId
@@ -130,10 +144,11 @@ class PostGISApplicationSchemaBuilder {
      *            CRS used for storing geometries, must not be <code>null</code>
      * @return mapped application schema, never <code>null</code>
      * @throws SQLException
+     * @throws FeatureStoreException
      */
     static MappedApplicationSchema build( ApplicationSchema appSchema, List<FeatureTypeDecl> ftDecls,
                                           String jdbcConnId, String dbSchema, CRS storageCRS, NamespaceContext nsContext )
-                            throws SQLException {
+                            throws SQLException, FeatureStoreException {
 
         MappedApplicationSchema mappedSchema = null;
 
@@ -143,7 +158,8 @@ class PostGISApplicationSchemaBuilder {
 
             PostGISApplicationSchemaBuilder builder = new PostGISApplicationSchemaBuilder( ftDecls, jdbcConnId,
                                                                                            dbSchema, nsContext );
-            FeatureTypeMapping[] ftMappings = builder.ftNameToMapping.values().toArray( new FeatureTypeMapping[builder.ftNameToMapping.size()] );
+            FeatureTypeMapping[] ftMappings = builder.ftNameToMapping.values().toArray(
+                                                                                        new FeatureTypeMapping[builder.ftNameToMapping.size()] );
 
             mappedSchema = new MappedApplicationSchema( appSchema.getFeatureTypes(), appSchema.getFtToSuperFt(),
                                                         appSchema.getNamespaceBindings(), appSchema.getXSModel(),
@@ -153,7 +169,8 @@ class PostGISApplicationSchemaBuilder {
             PostGISApplicationSchemaBuilder builder = new PostGISApplicationSchemaBuilder( ftDecls, jdbcConnId,
                                                                                            dbSchema, nsContext );
             FeatureType[] fts = builder.ftNameToFt.values().toArray( new FeatureType[builder.ftNameToFt.size()] );
-            FeatureTypeMapping[] ftMappings = builder.ftNameToMapping.values().toArray( new FeatureTypeMapping[builder.ftNameToMapping.size()] );
+            FeatureTypeMapping[] ftMappings = builder.ftNameToMapping.values().toArray(
+                                                                                        new FeatureTypeMapping[builder.ftNameToMapping.size()] );
             mappedSchema = new MappedApplicationSchema( fts, null, null, null, ftMappings, storageCRS, null, null );
         }
 
@@ -161,37 +178,143 @@ class PostGISApplicationSchemaBuilder {
     }
 
     private PostGISApplicationSchemaBuilder( List<FeatureTypeDecl> ftDecls, String connId, String dbSchema,
-                                             NamespaceContext nsContext ) throws SQLException {
+                                             NamespaceContext nsContext ) throws SQLException, FeatureStoreException {
 
-        Connection conn = ConnectionManager.getConnection( connId );
-        md = conn.getMetaData();
+        this.connId = connId;
+        this.dbSchema = dbSchema;
         this.nsContext = nsContext;
 
-        for ( FeatureTypeDecl ftDecl : ftDecls ) {
-            process( ftDecl );
+        try {
+            for ( FeatureTypeDecl ftDecl : ftDecls ) {
+                process( ftDecl );
+            }
+        } finally {
+            JDBCUtils.close( conn );
         }
-        // schema = new ApplicationSchema( ftNameToFt.values().toArray( new FeatureType[ftNameToFt.size()] ), null );
     }
 
-    private void process( FeatureTypeDecl ftDecl ) {
+    private void process( FeatureTypeDecl ftDecl )
+                            throws FeatureStoreException, SQLException {
 
+        String table = ftDecl.getTable();
+        if ( table == null || table.isEmpty() ) {
+            String msg = "Feature type element without or with empty table attribute.";
+            throw new FeatureStoreException( msg );
+        }
+
+        LOG.debug( "Processing feature type mapping for table '" + table + "'." );
         QName ftName = ftDecl.getName();
-        LOG.debug( "Processing feature type '" + ftName + "'" );
+        if ( ftName == null ) {
+            LOG.debug( "Using table name for feature type." );
+            ftName = new QName( table );
+        }
+        ftName = makeFullyQualified( ftName, "app", "http://www.deegree.org/app" );
+        LOG.debug( "Feature type name: '" + ftName + "'." );
+
         boolean isAbstract = ftDecl.isAbstract() == null ? false : ftDecl.isAbstract();
 
-        String mapping = ftDecl.getTable();
-        if ( mapping == null ) {
-            mapping = ftName.getLocalPart().toUpperCase();
-            LOG.debug( "No explicit mapping for feature type " + ftName
-                       + " specified, defaulting to local feature type name '" + mapping + "'." );
+        QName parentFtName = ftDecl.getParent();
+        if ( parentFtName != null ) {
+            parentFtName = makeFullyQualified( parentFtName, "app", "http://www.deegree.org/app" );
         }
 
         String fidMapping = ftDecl.getFidMapping();
-        String backendSrs = "-1";
+
+        List<JAXBElement<? extends AbstractPropertyDecl>> propDecls = ftDecl.getAbstractProperty();
+        if ( propDecls != null && !propDecls.isEmpty() ) {
+            process( table, ftName, isAbstract, propDecls, fidMapping );
+        } else {
+            process( table, ftName, isAbstract, fidMapping );
+        }
+    }
+
+    private void process( String table, QName ftName, boolean isAbstract, String fidMapping )
+                            throws SQLException {
+
+        LOG.debug( "Determining properties for feature type '" + ftName + "' from table '" + table + "'" );
 
         List<PropertyType> pts = new ArrayList<PropertyType>();
+        String backendSrs = null;
         Map<QName, Mapping> propToColumn = new HashMap<QName, Mapping>();
-        for ( JAXBElement<? extends AbstractPropertyDecl> propDeclEl : ftDecl.getAbstractProperty() ) {
+
+        DatabaseMetaData md = getDBMetadata();
+        ResultSet rs = null;
+        try {
+            // TODO schema
+            rs = md.getColumns( null, "public", table.toLowerCase(), "%" );
+            while ( rs.next() ) {
+                String column = rs.getString( 4 );
+                int sqlType = rs.getInt( 5 );
+                String typeName = rs.getString( 6 );
+                String isNullable = rs.getString( 18 );
+                boolean isAutoincrement = "YES".equals( rs.getString( 23 ) );
+                LOG.debug( "Deriving property type for column '" + column + "', typeName: '" + typeName
+                           + "', typeCode: '" + sqlType + "', isNullable: '" + isNullable + "', isAutoincrement:' "
+                           + isAutoincrement + "'" );
+
+                if ( fidMapping == null && isAutoincrement ) {
+                    fidMapping = column;
+                } else {
+                    DBField dbField = new DBField( column );
+                    QName ptName = makeFullyQualified( new QName( column ), ftName.getPrefix(),
+                                                       ftName.getNamespaceURI() );
+                    if ( typeName.equals( "geometry" ) ) {
+                        GeometryPropertyType.GeometryType geomType = GeometryPropertyType.GeometryType.GEOMETRY;
+                        PropertyType pt = new GeometryPropertyType( ptName, 0, 1, false, false, null, geomType, DIM_2,
+                                                                    INLINE );
+                        pts.add( pt );
+                        PropertyName path = new PropertyName( ptName );
+
+                        String srid = null;
+                        Connection conn = getConnection();
+                        Statement stmt = null;
+                        ResultSet rs2 = null;
+                        try {
+                            stmt = conn.createStatement();
+                            String sql = "SELECT Find_SRID ('public', '" + table.toLowerCase() + "', '" + column + "')";
+                            rs2 = stmt.executeQuery( sql );
+                            rs2.next();
+                            srid = rs2.getString( 1 );
+                            LOG.debug( "Database returned SRID: " + srid);
+                        } finally {
+                            JDBCUtils.close( rs2, stmt, null, LOG );
+                        }
+
+                        GeometryMapping mapping = new GeometryMapping( path, dbField, geomType, DIM_2, srid, null );
+                        propToColumn.put( ptName, mapping );
+                    } else {
+                        try {
+                            PrimitiveType type = PrimitiveType.determinePrimitiveType( sqlType );
+                            PropertyType pt = new SimplePropertyType( ptName, 0, 1, type, false, false, null );
+                            pts.add( pt );
+                            PropertyName path = new PropertyName( ptName );
+                            PrimitiveMapping mapping = new PrimitiveMapping( path, dbField, type, null );
+                            propToColumn.put( ptName, mapping );
+                        } catch ( IllegalArgumentException e ) {
+                            LOG.warn( "Skipping column with type code '" + sqlType + "' from list of properties:"
+                                      + e.getMessage() );
+                        }
+                    }
+                }
+            }
+        } finally {
+            JDBCUtils.close( rs );
+        }
+
+        FeatureType ft = new GenericFeatureType( ftName, pts, isAbstract );
+        ftNameToFt.put( ftName, ft );
+
+        FeatureTypeMapping ftMapping = new FeatureTypeMapping( ftName, table, fidMapping, propToColumn, backendSrs );
+        ftNameToMapping.put( ftName, ftMapping );
+    }
+
+    private void process( String table, QName ftName, boolean isAbstract,
+                          List<JAXBElement<? extends AbstractPropertyDecl>> propDecls, String fidMapping ) {
+
+        List<PropertyType> pts = new ArrayList<PropertyType>();
+        String backendSrs = null;
+        Map<QName, Mapping> propToColumn = new HashMap<QName, Mapping>();
+        for ( JAXBElement<? extends AbstractPropertyDecl> propDeclEl : propDecls ) {
             AbstractPropertyDecl propDecl = propDeclEl.getValue();
             Pair<PropertyType, Mapping> pt = process( propDecl );
 
@@ -215,7 +338,7 @@ class PostGISApplicationSchemaBuilder {
         FeatureType ft = new GenericFeatureType( ftName, pts, isAbstract );
         ftNameToFt.put( ftName, ft );
 
-        FeatureTypeMapping ftMapping = new FeatureTypeMapping( ftName, mapping, fidMapping, propToColumn, backendSrs );
+        FeatureTypeMapping ftMapping = new FeatureTypeMapping( ftName, table, fidMapping, propToColumn, backendSrs );
         ftNameToMapping.put( ftName, ftMapping );
     }
 
@@ -353,5 +476,35 @@ class PostGISApplicationSchemaBuilder {
             }
         }
         return mapping;
+    }
+
+    private Connection getConnection()
+                            throws SQLException {
+        if ( conn == null ) {
+            conn = ConnectionManager.getConnection( connId );
+        }
+        return conn;
+    }
+
+    private DatabaseMetaData getDBMetadata()
+                            throws SQLException {
+        if ( md == null ) {
+            Connection conn = getConnection();
+            md = conn.getMetaData();
+        }
+        return md;
+    }
+
+    private QName makeFullyQualified( QName qName, String defaultPrefix, String defaultNamespace ) {
+        String prefix = qName.getPrefix();
+        String namespace = qName.getNamespaceURI();
+        String localPart = qName.getLocalPart();
+        if ( DEFAULT_NS_PREFIX.equals( prefix ) ) {
+            prefix = defaultPrefix;
+        }
+        if ( NULL_NS_URI.equals( namespace ) ) {
+            namespace = defaultNamespace;
+        }
+        return new QName( namespace, localPart, prefix );
     }
 }

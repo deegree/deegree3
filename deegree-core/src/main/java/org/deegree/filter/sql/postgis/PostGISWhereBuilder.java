@@ -163,13 +163,14 @@ public class PostGISWhereBuilder extends AbstractWhereBuilder {
         }
 
         CRS storageCRS = propNameExpr.getSRS();
+        int srid = propNameExpr.getSRID() != null ? Integer.parseInt( propNameExpr.getSRID() ) : -1;
 
         switch ( op.getSubType() ) {
         case BBOX: {
             BBOX bbox = (BBOX) op;
             builder.add( propNameExpr );
             builder.add( " && " );
-            builder.add( toProtoSQL( bbox.getBoundingBox(), storageCRS ) );
+            builder.add( toProtoSQL( bbox.getBoundingBox(), storageCRS, srid ) );
             break;
         }
         case BEYOND: {
@@ -181,7 +182,7 @@ public class PostGISWhereBuilder extends AbstractWhereBuilder {
             }
             builder.add( propNameExpr );
             builder.add( "," );
-            builder.add( toProtoSQL( beyond.getGeometry(), storageCRS ) );
+            builder.add( toProtoSQL( beyond.getGeometry(), storageCRS, srid ) );
             builder.add( "," );
             // TODO uom handling
             builder.add( new SQLLiteral( beyond.getDistance().getValue(), Types.NUMERIC ) );
@@ -197,7 +198,7 @@ public class PostGISWhereBuilder extends AbstractWhereBuilder {
             }
             builder.add( propNameExpr );
             builder.add( "," );
-            builder.add( toProtoSQL( contains.getGeometry(), storageCRS ) );
+            builder.add( toProtoSQL( contains.getGeometry(), storageCRS, srid ) );
             builder.add( ")" );
             break;
         }
@@ -210,7 +211,7 @@ public class PostGISWhereBuilder extends AbstractWhereBuilder {
             }
             builder.add( propNameExpr );
             builder.add( "," );
-            builder.add( toProtoSQL( crosses.getGeometry(), storageCRS ) );
+            builder.add( toProtoSQL( crosses.getGeometry(), storageCRS, srid ) );
             builder.add( ")" );
             break;
         }
@@ -223,7 +224,7 @@ public class PostGISWhereBuilder extends AbstractWhereBuilder {
             }
             builder.add( propNameExpr );
             builder.add( "," );
-            builder.add( toProtoSQL( disjoint.getGeometry(), storageCRS ) );
+            builder.add( toProtoSQL( disjoint.getGeometry(), storageCRS, srid ) );
             builder.add( ")" );
             break;
         }
@@ -236,7 +237,7 @@ public class PostGISWhereBuilder extends AbstractWhereBuilder {
             }
             builder.add( propNameExpr );
             builder.add( "," );
-            builder.add( toProtoSQL( dWithin.getGeometry(), storageCRS ) );
+            builder.add( toProtoSQL( dWithin.getGeometry(), storageCRS, srid ) );
             builder.add( "," );
             // TODO uom handling
             builder.add( new SQLLiteral( dWithin.getDistance().getValue(), Types.NUMERIC ) );
@@ -252,7 +253,7 @@ public class PostGISWhereBuilder extends AbstractWhereBuilder {
             }
             builder.add( propNameExpr );
             builder.add( "," );
-            builder.add( toProtoSQL( equals.getGeometry(), storageCRS ) );
+            builder.add( toProtoSQL( equals.getGeometry(), storageCRS, srid ) );
             builder.add( ")" );
             break;
         }
@@ -265,7 +266,7 @@ public class PostGISWhereBuilder extends AbstractWhereBuilder {
             }
             builder.add( propNameExpr );
             builder.add( "," );
-            builder.add( toProtoSQL( intersects.getGeometry(), storageCRS ) );
+            builder.add( toProtoSQL( intersects.getGeometry(), storageCRS, srid ) );
             builder.add( ")" );
             break;
         }
@@ -278,7 +279,7 @@ public class PostGISWhereBuilder extends AbstractWhereBuilder {
             }
             builder.add( propNameExpr );
             builder.add( "," );
-            builder.add( toProtoSQL( overlaps.getGeometry(), storageCRS ) );
+            builder.add( toProtoSQL( overlaps.getGeometry(), storageCRS, srid ) );
             builder.add( ")" );
             break;
         }
@@ -291,7 +292,7 @@ public class PostGISWhereBuilder extends AbstractWhereBuilder {
             }
             builder.add( propNameExpr );
             builder.add( "," );
-            builder.add( toProtoSQL( touches.getGeometry(), storageCRS ) );
+            builder.add( toProtoSQL( touches.getGeometry(), storageCRS, srid ) );
             builder.add( ")" );
             break;
         }
@@ -304,7 +305,7 @@ public class PostGISWhereBuilder extends AbstractWhereBuilder {
             }
             builder.add( propNameExpr );
             builder.add( "," );
-            builder.add( toProtoSQL( within.getGeometry(), storageCRS ) );
+            builder.add( toProtoSQL( within.getGeometry(), storageCRS, srid ) );
             builder.add( ")" );
             break;
         }
@@ -320,17 +321,18 @@ public class PostGISWhereBuilder extends AbstractWhereBuilder {
         if ( propMapping != null ) {
             propNameMappingList.add( propMapping );
             // TODO
-            sql = new SQLColumn(
-                                 propMapping.getTargetField().getAlias() != null ? propMapping.getTargetField().getAlias()
-                                                                                : propMapping.getTargetField().getTable(),
-                                 propMapping.getTargetField().getColumn(), true, -1 );
+            String table = propMapping.getTargetField().getAlias() != null ? propMapping.getTargetField().getAlias()
+                                                                          : propMapping.getTargetField().getTable();
+            String column = propMapping.getTargetField().getColumn();
+            String srid = propMapping.getSRID();
+            sql = new SQLColumn( table, column, true, -1, srid );
         } else {
             throw new UnmappableException( "Unable to map property '" + propName + "' to database column." );
         }
         return sql;
     }
 
-    private SQLExpression toProtoSQL( Geometry geom, CRS targetCRS )
+    private SQLExpression toProtoSQL( Geometry geom, CRS targetCRS, int srid )
                             throws FilterEvaluationException {
 
         Geometry transformedGeom = geom;
@@ -346,13 +348,13 @@ public class PostGISWhereBuilder extends AbstractWhereBuilder {
 
         SQLOperationBuilder builder = new SQLOperationBuilder();
         if ( useLegacyPredicates ) {
-            builder.add( "GeomFromText(" );
+            builder.add( "SetSRID(GeomFromText(" );
         } else {
-            builder.add( "ST_GeometryFromText(" );
+            builder.add( "SetSRID(ST_GeometryFromText(" );
         }
         String wkt = WKTWriter.write( transformedGeom );
         builder.add( new SQLLiteral( wkt, Types.VARCHAR ) );
-        builder.add( ")" );
+        builder.add( ")," + srid + ")" );
 
         // byte[] wkb = null;
         // try {

@@ -112,4 +112,9 @@ public class SQLOperation implements SQLExpression {
     public CRS getSRS() {
         return null;
     }
+
+    @Override
+    public String getSRID() {
+        return null;
+    }
 }

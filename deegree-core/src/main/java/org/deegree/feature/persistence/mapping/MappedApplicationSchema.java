@@ -97,9 +97,9 @@ public class MappedApplicationSchema extends ApplicationSchema {
      * @param storageSRS
      *            CRS used for storing geometries, must not be <code>null</code>
      * @param bboxMapping
-     *            BBOX mapping parameters, may be <code>null</code> (for RELATIONAL-only mappings)
+     *            BBOX mapping parameters, may be <code>null</code> (for relational-only mappings)
      * @param blobMapping
-     *            BLOB mapping parameters, may be <code>null</code> (for RELATIONAL-only mappings)
+     *            BLOB mapping parameters, may be <code>null</code> (for relational-only mappings)
      * @throws IllegalArgumentException
      *             if a feature type cannot be resolved (i.e. it is referenced in a property type, but not defined)
      */
