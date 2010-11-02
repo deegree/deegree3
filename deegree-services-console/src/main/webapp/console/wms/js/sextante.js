@@ -44,7 +44,7 @@ OpenLayers.IMAGE_RELOAD_ATTEMPTS = 3;
 // OpenLayers.Projection("EPSG:4326"))
 
 function init() {
-
+	
 	// ------------------------------------------------------------------------------------------------------
 	// map options
 	var options = {
@@ -264,11 +264,8 @@ function addGMLLayer(gmlName, gmlURL, attr) {
 	// add layer to map
 	map.addLayer(layer);
 	
-	
-	if(gmlArray != null)
-		resultDisplay.data = "Added layer '" + gmlName + "'";
-	else
-		resultDisplay.data = "Execute failed!";
+	resultDisplay.data = "Added layer '" + gmlName + "'";
+
 }
 
 /**
@@ -341,10 +338,23 @@ function addWFSLayers(wfsName, wfsURL){
 	}
 }
 
+
+/**
+ * This method adds a WFS URL.
+ * 
+ * @param url
+ *            WFS URL.
+ */
 function addWFSURL(url){
 	wfsURLs[url] = url;
 }
 
+/**
+ * This method removes a WFS URL.
+ * 
+ * @param url
+ *            WFS URL.
+ */
 function removeWFSURL(url){
 	wfsURLs[url] = null;
 }
@@ -360,16 +370,50 @@ function removeWFSURL(url){
  *            Process data, use class WPSInputData
  */
 function addWPSLayer(wpsName, wpsURL, wpsProcess, data){
+	resultDisplay.data = "Processing...";
+	
 	var gmlName = wpsName;
 	var attr = wpsURL + WPS_EXECUTE + wpsProcess + data.toString();
 	var gmlURL = OpenLayers.ProxyHost + escape(attr);	
-	addGMLLayer(gmlName, gmlURL, attr);
+	
+	
+	// check gml file for errors
+	var request = getXMLHttpRequest('text/xml');
+	request.open('GET', gmlURL, false);
+	request.send();
+	var xmlDoc = request.responseXML;
+	
+
+	if(xmlDoc.childNodes[0].localName == "ExceptionReport"){
+		var errorMsg = xmlDoc.childNodes[0].textContent.replace(/^\s*|\s*$/g,'');
+		
+		if(errorMsg == "")
+			resultDisplay.data = "Execution failed!";
+		else
+			resultDisplay.data = errorMsg;
+		
+	}else{
+		addGMLLayer(gmlName, gmlURL, attr);
+	}
+
 }
 
+/**
+ * This method adds a new WPS URL.
+ * 
+ * @param url
+ *            WPS URL.
+ */
 function addWPSURL(url){
 	wpsURLs[url] = url;
 }
 
+/**
+ * This method removes a WPS URL:
+ * 
+ * @param url
+ *            WPS URL.
+ */
 function removeWPSURL(url){
 	wpsURLs[url] = null;
 }
@@ -502,6 +546,15 @@ function determineWPSProcesses(wpsURL) {
 		}
 	else
 		 alert("Can't determine Processes of the WPS.");
+	
+	
+	// sort processes
+	arrayOfProcesses.sort(function sortByFirstName(a, b) {
+	    	var x = a[1].toLowerCase();
+	    	var y = b[1].toLowerCase();
+	    	return ((x < y) ? -1 : ((x > y) ? 1 : 0));
+		}
+	);
 	
 	return arrayOfProcesses;
 }
@@ -673,33 +726,45 @@ function getXMLHttpRequest(mimeType) {
 	return request;
 }
 
+
 function loadProcessList(){
 	
- // remove options
-	
+	// remove options
 	for ( var opt in selectProcesses.options) {
 		selectProcesses.remove(opt.index);
 	}
 
- // determine and load WPS processes
- var processes = determineWPSProcesses(selectWPS.value);
- for ( var i = 0; i < processes.length; i++) {
-	var option = document.createElement("option");
- 	option.text = processes[i][1];
- 	option.value = processes[i][0];
- 	// option.style.width = "400px";
- 	// select.appendChild( option );
- 	 	
- 	try
- 	  {
- 		selectProcesses.add(option,null); // standards compliant
- 	  }
- 	catch(ex)
- 	  {
- 		selectProcesses.add(option); // IE only
- 	  }
+	// determine and load WPS processes
+	var processes = determineWPSProcesses(selectWPS.value);
+ 
+	// add processes
+	for ( var i = 0; i < processes.length; i++) {
+		var option = document.createElement("option");
+		
+		// modify SEXTANTE process names
+		var text = processes[i][1];
+		var value = processes[i][0];
+		if(value.startsWith("st_"))
+			text += " (SEXTANTE)";
+		
+		option.text = text;
+		option.value = value;	
+		
+		try
+		{
+			selectProcesses.add(option,null); // standards compliant
+		}
+		catch(ex)
+		{
+			selectProcesses.add(option); // IE only
+		}
  }
+ 
+
+ 
 }
+
+
 
 // function loadLayerList(){
 //	
@@ -737,11 +802,10 @@ function loadProcessList(){
  * @return
  */
 function createLiteralHTMLElement(identifier, title, abstr, type){
-	
-	
+		
 	var p = document.createElement("p");
 	p.innerHTML = title + " (" + type + "): ";
-	
+		
 	
 	var input = null;
 	if(type != "boolean"){// others
@@ -783,6 +847,16 @@ function createLiteralHTMLElement(identifier, title, abstr, type){
 	inputLiterals[identifier] = input;
 	p.appendChild(input);
 	
+	// popup with abstract
+	var info = document.createElement("a");
+	info.innerHTML = "(i)";
+	info.style.color = "white";
+	info.href = "#";
+	info.onclick = function(){
+		showInputDataDescription(title, abstr, type);
+	};
+	p.appendChild(info);
+	
 	
 	return p;
 }
@@ -803,6 +877,7 @@ function createVectorLayerHTMLElement(identifier, title, abstr, schema){
 	select.id = identifier;
 	select.className = schema;
 	select.style.width = "400px";
+	select.onchange = function(){resultDisplay.data = ""};
 	selectLayers[identifier] = select;
 	p.appendChild(select);
 	
@@ -823,6 +898,16 @@ function createVectorLayerHTMLElement(identifier, title, abstr, schema){
  	  }
 	}
 		
+	// popup with abstract
+	var info = document.createElement("a");
+	info.innerHTML = "(i)";
+	info.style.color = "white";
+	info.href = "#";
+	info.onclick = function(){
+		showInputDataDescription(title, abstr, schema);
+	};
+	p.appendChild(info);
+	
 	return p;
 }
 
@@ -896,6 +981,19 @@ function createWPSInputData(){
 	}
 		
 	return data;
+}
+
+function showInputDataDescription(title, abstr, type) {
+
+	
+	var htmlMsg = "<h3>" + title + "</h3><hr />";
+	htmlMsg += "<h4>" + abstr + "</h4>";
+	
+	 var win = window.open("", "win", "width=360,height=270");
+	 win.document.open("text/html", "replace");
+	 win.document.write('<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><title></title></head><body>' + htmlMsg + '</body></html>');
+	 win.focus();
+	 win.document.close();
 }
 
 /**
