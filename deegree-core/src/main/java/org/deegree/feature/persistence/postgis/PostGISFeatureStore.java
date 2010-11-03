@@ -36,6 +36,7 @@
 package org.deegree.feature.persistence.postgis;
 
 import static org.deegree.commons.utils.JDBCUtils.close;
+import static org.deegree.feature.persistence.query.Query.QueryHint.HINT_LOOSE_BBOX;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -76,7 +77,6 @@ import org.deegree.feature.persistence.query.FilteredFeatureResultSet;
 import org.deegree.feature.persistence.query.IteratorResultSet;
 import org.deegree.feature.persistence.query.MemoryFeatureResultSet;
 import org.deegree.feature.persistence.query.Query;
-import org.deegree.feature.persistence.query.Query.QueryHint;
 import org.deegree.feature.persistence.sql.SQLFeatureStore;
 import org.deegree.feature.types.ApplicationSchema;
 import org.deegree.feature.types.FeatureType;
@@ -641,7 +641,7 @@ public class PostGISFeatureStore implements SQLFeatureStore {
         }
 
         // sort features
-        if ( sortCrit != null ) {
+        if ( sortCrit.length > 0 ) {
             result = new MemoryFeatureResultSet( Features.sortFc( result.toCollection(), sortCrit ) );
         }
         return result;
@@ -996,11 +996,12 @@ public class PostGISFeatureStore implements SQLFeatureStore {
 
         // check for most common case: multiple featuretypes, same bbox (WMS), no filter
         boolean wmsStyleQuery = false;
-        Envelope env = (Envelope) queries[0].getHint( QueryHint.HINT_LOOSE_BBOX );
-        if ( queries[0].getFilter() == null && queries[0].getSortProperties() == null ) {
+        Envelope env = (Envelope) queries[0].getHint( HINT_LOOSE_BBOX );
+        if ( schema.getBlobMapping() != null && queries[0].getFilter() == null
+             && queries[0].getSortProperties().length == 0 ) {
             wmsStyleQuery = true;
             for ( int i = 1; i < queries.length; i++ ) {
-                Envelope queryBBox = (Envelope) queries[i].getHint( QueryHint.HINT_LOOSE_BBOX );
+                Envelope queryBBox = (Envelope) queries[i].getHint( HINT_LOOSE_BBOX );
                 if ( queryBBox != env && queries[i].getFilter() != null && queries[i].getSortProperties() != null ) {
                     wmsStyleQuery = false;
                     break;

@@ -129,7 +129,6 @@ public class Query {
         this.filter = filter;
         this.featureVersion = null;
         this.srsName = null;
-        this.sortBy = null;
         this.maxFeatures = maxFeatures;
         hints.put( HINT_LOOSE_BBOX, looseBbox );
         if ( scale > 0 ) {
@@ -138,6 +137,7 @@ public class Query {
         if ( resolution > 0 ) {
             hints.put( HINT_RESOLUTION, resolution );
         }
+        this.sortBy = new SortProperty[0];
     }
 
     /**
@@ -159,7 +159,11 @@ public class Query {
         this.filter = filter;
         this.featureVersion = featureVersion;
         this.srsName = srsName;
-        this.sortBy = sortBy;
+        if (sortBy != null) {
+            this.sortBy = sortBy;            
+        } else {
+            this.sortBy = new SortProperty[0];
+        }
     }
 
     /**
@@ -179,7 +183,11 @@ public class Query {
         this.filter = filter;
         this.featureVersion = featureVersion;
         this.srsName = srsName;
-        this.sortBy = sortBy;
+        if (sortBy != null) {
+            this.sortBy = sortBy;            
+        } else {
+            this.sortBy = new SortProperty[0];
+        }
     }
 
     public Object getHint( QueryHint code ) {
@@ -194,8 +202,8 @@ public class Query {
      * <ul>
      * <li>If a loose bbox is available ({@link QueryHint#HINT_LOOSE_BBOX}), it is returned.</li>
      * <li>If no loose bbox is available, but the {@link Query} contains an {@link OperatorFilter}, it is attempted to
-     * extract an {@link Envelope} from it. TODO Note that the envelope is only used when the corresponding property name
-     * targets a property of the root feature (and not a property of a subfeature).</li>
+     * extract an {@link Envelope} from it. TODO Note that the envelope is only used when the corresponding property
+     * name targets a property of the root feature (and not a property of a subfeature).</li>
      * <li>If neither a loose bbox is available, nor a bbox can be extracted from the filter, <code>null</code> is
      * returned.</li>
      * </ul>
@@ -286,10 +294,20 @@ public class Query {
         return typeNames;
     }
 
+    /**
+     * Returns the {@link Filter}.
+     * 
+     * @return filter, may be <code>null</code>
+     */
     public Filter getFilter() {
         return filter;
     }
 
+    /**
+     * Returns the sort criteria.
+     * 
+     * @return the sort criteria, never <code>null</code> (but may be empty)
+     */
     public SortProperty[] getSortProperties() {
         return sortBy;
     }

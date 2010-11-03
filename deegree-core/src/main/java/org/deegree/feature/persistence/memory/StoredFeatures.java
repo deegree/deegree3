@@ -245,7 +245,7 @@ class StoredFeatures {
 
         // sort features
         SortProperty[] sortCrit = query.getSortProperties();
-        if ( sortCrit != null ) {
+        if ( sortCrit.length > 0 ) {
             fc = Features.sortFc( fc, sortCrit );
         }
 
