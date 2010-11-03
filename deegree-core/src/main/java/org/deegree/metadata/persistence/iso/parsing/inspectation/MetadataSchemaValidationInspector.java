@@ -45,12 +45,11 @@ import java.util.List;
 import javax.xml.stream.XMLStreamException;
 
 import org.apache.axiom.om.OMElement;
-import org.deegree.commons.xml.schema.SchemaValidator;
 import org.deegree.metadata.persistence.MetadataInspectorException;
 import org.deegree.metadata.persistence.MetadataStoreException;
 import org.deegree.metadata.persistence.MetadataInspectorManager.InspectorKey;
 import org.deegree.metadata.persistence.iso19115.jaxb.AbstractInspector;
-import org.deegree.metadata.persistence.iso19115.jaxb.MSVInspector;
+import org.deegree.metadata.persistence.iso19115.jaxb.SchemaValidator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -68,9 +67,9 @@ public class MetadataSchemaValidationInspector implements RecordInspector {
 
     private static MetadataSchemaValidationInspector instance;
 
-    private final MSVInspector inspector;
+    private final SchemaValidator inspector;
 
-    public MetadataSchemaValidationInspector( MSVInspector inspector ) {
+    public MetadataSchemaValidationInspector( SchemaValidator inspector ) {
         this.inspector = inspector;
         instance = this;
     }
@@ -98,10 +97,12 @@ public class MetadataSchemaValidationInspector implements RecordInspector {
             InputStream is = new ByteArrayInputStream( s.toString().getBytes() );
             if ( elem.getLocalName().equals( "MD_Metadata" ) ) {
                 // TODO use local copy of schema
-                return SchemaValidator.validate( is, "http://www.isotc211.org/2005/gmd/metadataEntity.xsd" );
+                return org.deegree.commons.xml.schema.SchemaValidator.validate( is,
+                                                                                "http://www.isotc211.org/2005/gmd/metadataEntity.xsd" );
 
             }
-            return SchemaValidator.validate( is, "http://schemas.opengis.net/csw/2.0.2/record.xsd" );
+            return org.deegree.commons.xml.schema.SchemaValidator.validate( is,
+                                                                            "http://schemas.opengis.net/csw/2.0.2/record.xsd" );
         }
         return new ArrayList<String>();
     }
@@ -122,8 +123,8 @@ public class MetadataSchemaValidationInspector implements RecordInspector {
 
     @Override
     public boolean checkAvailability( AbstractInspector inspector ) {
-        MSVInspector msv = (MSVInspector) inspector;
-        if ( msv != null ) {
+        SchemaValidator sv = (SchemaValidator) inspector;
+        if ( sv != null ) {
             return true;
         }
         return false;

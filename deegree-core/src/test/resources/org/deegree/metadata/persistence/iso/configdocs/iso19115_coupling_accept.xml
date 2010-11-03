@@ -5,5 +5,7 @@
 	xmlns="http://www.deegree.org/datasource/metadata/iso19115"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://www.deegree.org/datasource/metadata/iso19115 iso19115.xsd">
-	<CoupledResourceInspector throwConsistencyError="false" />
+	<Inspectors>
+	  <CoupledResourceInspector throwConsistencyError="false" />
+	</Inspectors>
 </ISOMetadataStore>

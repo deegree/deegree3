@@ -19,7 +19,13 @@
 		</annotation>
 		<complexType>
 			<sequence>
-				<element ref="ds:AbstractInspector" minOccurs="0" maxOccurs="unbounded" />
+			  <element name="Inspectors" minOccurs="0">
+			    <complexType>
+			      <sequence>
+			        <element ref="ds:AbstractInspector" minOccurs="0" maxOccurs="unbounded" />
+			      </sequence>
+			    </complexType>
+			  </element>
 				<element name="AnyText" minOccurs="0">
 					<annotation>
 						<documentation> If AnyText is specified there is a choice between
@@ -51,16 +57,6 @@
 			</sequence>
 			<attribute name="connId" type="string" use="required" />
 			<attribute name="configVersion" use="required" fixed="0.6.0" />
-			<attribute name="modifiable" type="boolean" use="optional" default="true">
-			  <annotation>
-			    <documentation>
-			      The metadatastore can be configured to have the state 'read-only' or 'read-write' for
-			      user. If 'read-only' the user is not able to change the data stored in the metadatastore. 
-			      In this case the transaction operation is disabled. The default state for the transaction
-			      operation of a metadatastore is enabled - 'read-write'. 			      
-			    </documentation>
-			  </annotation>
-			</attribute>
 		</complexType>
 	</element>
 	<element name="AbstractInspector" type="ds:AbstractInspectorType" abstract="true" />
@@ -72,7 +68,7 @@
 			</appinfo>
 		</annotation>
 	</complexType>
-	<element name="MSVInspector" substitutionGroup="ds:AbstractInspector">
+	<element name="SchemaValidator" substitutionGroup="ds:AbstractInspector">
 	  <annotation>
 	    <documentation>Metadata Schema Validation Inspector.</documentation>
       </annotation>
@@ -87,17 +83,6 @@
 		<complexType>
 			<complexContent>
 				<extension base="ds:AbstractInspectorType">
-					<sequence>
-						<element name="Param" minOccurs="0" maxOccurs="unbounded">
-							<complexType>
-								<simpleContent>
-									<extension base="string">
-										<attribute name="key" type="string" use="required" />
-									</extension>
-								</simpleContent>
-							</complexType>
-						</element>
-					</sequence>
 					<attribute name="rejectEmptyFileIdentifier" type="boolean" use="required">
 					  <annotation>
 						<documentation>true, if the metadataRecord should be rejected if there is no fileIdentifier available. Otherwise false. </documentation>

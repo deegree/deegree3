@@ -1059,10 +1059,4 @@ public class ISOMetadataStoreTest {
 
         return streamThis;
     }
-
-    // private MetadataRecord loadRecord( URL url )
-    // throws XMLStreamException, FactoryConfigurationError, IOException {
-    // XMLStreamReader xmlStream = XMLInputFactory.newInstance().createXMLStreamReader( url.openStream() );
-    // return new ISORecord( xmlStream );
-    // }
 }

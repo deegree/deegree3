@@ -71,7 +71,7 @@ public class ISOMetadataInspectorProvider implements MetadataInspectorProvider {
                             throws MetadataStoreException {
         ISOMetadataStoreConfig config = getConfig( configURL );
 
-        for ( JAXBElement<? extends AbstractInspector> jaxbElem : config.getAbstractInspector() ) {
+        for ( JAXBElement<? extends AbstractInspector> jaxbElem : config.getInspectors().getAbstractInspector() ) {
             AbstractInspector d = jaxbElem.getValue();
             // if ( d instanceof IdentifierInspector ) {
             // return inspector = FileIdentifierInspector.newInstance( (IdentifierInspector) d );

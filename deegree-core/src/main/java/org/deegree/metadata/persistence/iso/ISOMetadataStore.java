@@ -82,6 +82,7 @@ import org.deegree.metadata.persistence.iso19115.jaxb.CoupledResourceInspector;
 import org.deegree.metadata.persistence.iso19115.jaxb.ISOMetadataStoreConfig;
 import org.deegree.metadata.persistence.iso19115.jaxb.IdentifierInspector;
 import org.deegree.metadata.persistence.iso19115.jaxb.InspireInspector;
+import org.deegree.metadata.persistence.iso19115.jaxb.ISOMetadataStoreConfig.Inspectors;
 import org.deegree.protocol.csw.CSWConstants.ResultType;
 import org.slf4j.Logger;
 
@@ -488,12 +489,12 @@ public class ISOMetadataStore implements MetadataStore {
                             throws MetadataStoreException {
         ISOMetadataStoreTransaction ta = null;
         Connection conn = null;
-        if ( config.isModifiable() ) {
-            try {
-                conn = ConnectionManager.getConnection( connectionId );
-                List<RecordInspector> ri = new ArrayList<RecordInspector>();
-
-                for ( JAXBElement<? extends AbstractInspector> jaxbElem : config.getAbstractInspector() ) {
+        try {
+            conn = ConnectionManager.getConnection( connectionId );
+            List<RecordInspector> ri = new ArrayList<RecordInspector>();
+            Inspectors inspectors = config.getInspectors();
+            if ( inspectors != null ) {
+                for ( JAXBElement<? extends AbstractInspector> jaxbElem : inspectors.getAbstractInspector() ) {
                     AbstractInspector d = jaxbElem.getValue();
                     if ( d instanceof IdentifierInspector ) {
                         ri.add( new FileIdentifierInspector( (IdentifierInspector) d ) );
@@ -504,18 +505,14 @@ public class ISOMetadataStore implements MetadataStore {
                     }
 
                 }
-                if ( !ri.contains( FileIdentifierInspector.getInstance() ) ) {
-                    ri.add( new FileIdentifierInspector( new IdentifierInspector() ) );
-                }
-
-                ta = new ISOMetadataStoreTransaction( conn, ri, config.getAnyText(), useLegacyPredicates );
-            } catch ( SQLException e ) {
-                throw new MetadataStoreException( e.getMessage() );
             }
-        } else {
-            String msg = "The Transaction operation is not enable for this metadatastore!";
-            LOG.error( msg );
-            throw new MetadataStoreException( msg );
+            if ( !ri.contains( FileIdentifierInspector.getInstance() ) ) {
+                ri.add( new FileIdentifierInspector( new IdentifierInspector() ) );
+            }
+
+            ta = new ISOMetadataStoreTransaction( conn, ri, config.getAnyText(), useLegacyPredicates );
+        } catch ( SQLException e ) {
+            throw new MetadataStoreException( e.getMessage() );
         }
         return ta;
     }

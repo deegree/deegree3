@@ -5,19 +5,13 @@
 	xmlns="http://www.deegree.org/datasource/metadata/iso19115"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://www.deegree.org/datasource/metadata/iso19115 iso19115.xsd">
-    <!--<SchemaValidator/>-->
-	<IdentifierInspector rejectEmptyFileIdentifier="true">
-	 <!--<DeriveFileIdentifier>gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:citation/gmd:CI_Citation/gmd:identifier/gmd:RS_Identifier</DeriveFileIdentifier>-->
-		<Param key="rejectEmptyFileIdentifier">true</Param>
-		<Param key="deriveFileIdentifier">gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:citation/gmd:CI_Citation/gmd:identifier/gmd:RS_Identifier
-    </Param>
-		<Param key="deriveFileIdentifier">gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/@id</Param>
-	</IdentifierInspector>
-	<InspireInspector generateRIA="true"/>
-	<CoupledResourceInspector throwConsistencyError="true" />
-	<!--<CustomInspector name="">
-	 
-	</CustomInspector>-->
+    <Inspectors>
+	  <IdentifierInspector rejectEmptyFileIdentifier="true"/>
+	  <InspireInspector generateRIA="true"/>
+	  <CoupledResourceInspector throwConsistencyError="true" />
+	  <!--<CustomInspector name="">
+	  </CustomInspector>-->
+    </Inspectors>
 	
 	<!--
 	    If AnyText is specified there is a choice between storing all text found in the record, 
