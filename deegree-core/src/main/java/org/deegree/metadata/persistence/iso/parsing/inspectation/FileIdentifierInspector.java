@@ -117,7 +117,7 @@ public class FileIdentifierInspector implements RecordInspector {
             return idList;
         } else {
             // default behavior if there is no inspector provided
-            if ( checkAvailability( inspector ) == false ) {
+            if ( !checkAvailability( inspector ) ) {
                 if ( rsList.size() == 0 && id == null && uuid == null ) {
 
                     LOG.debug( "(DEFAULT) There is no Identifier available, so a new UUID will be generated..." );

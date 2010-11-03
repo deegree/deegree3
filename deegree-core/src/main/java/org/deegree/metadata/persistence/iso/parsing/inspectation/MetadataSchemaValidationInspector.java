@@ -86,7 +86,7 @@ public class MetadataSchemaValidationInspector implements RecordInspector {
     private List<String> validate( OMElement elem )
                             throws MetadataStoreException {
         StringWriter s = new StringWriter();
-        if ( checkAvailability( null ) ) {
+        if ( checkAvailability( inspector ) ) {
             try {
                 elem.serialize( s );
             } catch ( XMLStreamException e ) {
@@ -121,7 +121,8 @@ public class MetadataSchemaValidationInspector implements RecordInspector {
 
     @Override
     public boolean checkAvailability( AbstractInspector inspector ) {
-        if ( inspector != null ) {
+        MSVInspector msv = (MSVInspector) inspector;
+        if ( msv != null ) {
             return true;
         }
         return false;

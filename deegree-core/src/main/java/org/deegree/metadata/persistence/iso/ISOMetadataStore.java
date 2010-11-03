@@ -109,8 +109,6 @@ public class ISOMetadataStore implements MetadataStore {
 
     private ISOMetadataStoreConfig config;
 
-    private List<RecordInspector> ri;
-
     // TODO remove...just inside for getById
     private static final String datasets = PostGISMappingsISODC.DatabaseTables.datasets.name();
 
@@ -490,30 +488,34 @@ public class ISOMetadataStore implements MetadataStore {
                             throws MetadataStoreException {
         ISOMetadataStoreTransaction ta = null;
         Connection conn = null;
-        try {
-            conn = ConnectionManager.getConnection( connectionId );
-            List<RecordInspector> ri = new ArrayList<RecordInspector>();
+        if ( config.isModifiable() ) {
+            try {
+                conn = ConnectionManager.getConnection( connectionId );
+                List<RecordInspector> ri = new ArrayList<RecordInspector>();
 
-            for ( JAXBElement<? extends AbstractInspector> jaxbElem : config.getAbstractInspector() ) {
-                AbstractInspector d = jaxbElem.getValue();
-                if ( d instanceof IdentifierInspector ) {
-                    ri.add( new FileIdentifierInspector( (IdentifierInspector) d ) );
-                } else if ( d instanceof InspireInspector ) {
-                    ri.add( new InspireComplianceInspector( (InspireInspector) d ) );
-                } else if ( d instanceof CoupledResourceInspector ) {
-                    ri.add( new CoupledDataInspector( (CoupledResourceInspector) d ) );
+                for ( JAXBElement<? extends AbstractInspector> jaxbElem : config.getAbstractInspector() ) {
+                    AbstractInspector d = jaxbElem.getValue();
+                    if ( d instanceof IdentifierInspector ) {
+                        ri.add( new FileIdentifierInspector( (IdentifierInspector) d ) );
+                    } else if ( d instanceof InspireInspector ) {
+                        ri.add( new InspireComplianceInspector( (InspireInspector) d ) );
+                    } else if ( d instanceof CoupledResourceInspector ) {
+                        ri.add( new CoupledDataInspector( (CoupledResourceInspector) d ) );
+                    }
+
+                }
+                if ( !ri.contains( FileIdentifierInspector.getInstance() ) ) {
+                    ri.add( new FileIdentifierInspector( new IdentifierInspector() ) );
                 }
 
+                ta = new ISOMetadataStoreTransaction( conn, ri, config.getAnyText(), useLegacyPredicates );
+            } catch ( SQLException e ) {
+                throw new MetadataStoreException( e.getMessage() );
             }
-            // if ( !ri.contains( FileIdentifierInspector.getInstance() ) ) {
-            // ri.add( FileIdentifierInspector.newInstance( new IdentifierInspector() ) );
-            // }
-            // MetadataSchemaValidationInspector validate = MetadataSchemaValidationInspector.newInstance(
-            // config.isValidate() );
-
-            ta = new ISOMetadataStoreTransaction( conn, ri, config.getAnyText(), useLegacyPredicates );
-        } catch ( SQLException e ) {
-            throw new MetadataStoreException( e.getMessage() );
+        } else {
+            String msg = "The Transaction operation is not enable for this metadatastore!";
+            LOG.error( msg );
+            throw new MetadataStoreException( msg );
         }
         return ta;
     }
