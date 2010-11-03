@@ -51,7 +51,16 @@
 			</sequence>
 			<attribute name="connId" type="string" use="required" />
 			<attribute name="configVersion" use="required" fixed="0.6.0" />
-			<attribute name="validate" type="boolean" use="optional" default="true" />
+			<attribute name="modifiable" type="boolean" use="optional" default="true">
+			  <annotation>
+			    <documentation>
+			      The metadatastore can be configured to have the state 'read-only' or 'read-write' for
+			      user. If 'read-only' the user is not able to change the data stored in the metadatastore. 
+			      In this case the transaction operation is disabled. The default state for the transaction
+			      operation of a metadatastore is enabled - 'read-write'. 			      
+			    </documentation>
+			  </annotation>
+			</attribute>
 		</complexType>
 	</element>
 	<element name="AbstractInspector" type="ds:AbstractInspectorType" abstract="true" />
