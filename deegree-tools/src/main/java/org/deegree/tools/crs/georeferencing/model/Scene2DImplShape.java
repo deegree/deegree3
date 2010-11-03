@@ -78,8 +78,6 @@ public class Scene2DImplShape implements Scene2D {
 
     private Scene2DValues sceneValues;
 
-    private CRS srs;
-
     private BufferedImage generatedImage;
 
     private BufferedImage predictedImage;
@@ -109,8 +107,8 @@ public class Scene2DImplShape implements Scene2D {
         try {
             FeatureStore fs = FeatureStoreManager.get( "MyFeatureType" );
             if ( fs == null ) {
-                store = new ShapeFeatureStore( filePath, null, null, "http://www.deegree.org/app", "MyFeatureType", "app",
-                                               true, null );
+                store = new ShapeFeatureStore( filePath, null, null, "http://www.deegree.org/app", "MyFeatureType",
+                                               "app", true, null );
 
                 FeatureStoreManager.registerAndInit( store, "MyFeatureType" );
             } else {
@@ -120,9 +118,6 @@ public class Scene2DImplShape implements Scene2D {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
-
-        srs = store.getStorageSRS();
-
     }
 
     /**
@@ -141,13 +136,14 @@ public class Scene2DImplShape implements Scene2D {
 
         g = i.createGraphics();
         schema = store.getSchema();
+        CRS crs = CRS.EPSG_4326;
         try {
             if ( imageBoundingbox == null ) {
                 imageBoundingbox = store.getEnvelope( schema.getFeatureTypes()[0].getName() );
-                imageBoundingbox.setCoordinateSystem( srs );
                 sceneValues.setEnvelopeGeoref( imageBoundingbox );
                 sceneValues.transformAspectRatioGeorefPartial( imageBoundingbox );
                 imageBoundingbox = sceneValues.getEnvelopeGeoref();
+                crs = imageBoundingbox.getCoordinateSystem();
             }
         } catch ( FeatureStoreException e1 ) {
             // TODO Auto-generated catch block
@@ -169,7 +165,7 @@ public class Scene2DImplShape implements Scene2D {
                 Layer.render( f, evaluator, null, renderer, textRenderer, Utils.calcScaleWMS130( imageWidth,
                                                                                                  imageHeight,
                                                                                                  imageBoundingbox,
-                                                                                                 srs.getWrappedCRS() ),
+                                                                                                 crs.getWrappedCRS() ),
                               resolution );
             }
         } catch ( FeatureStoreException e ) {
