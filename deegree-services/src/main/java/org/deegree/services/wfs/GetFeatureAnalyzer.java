@@ -400,6 +400,12 @@ public class GetFeatureAnalyzer {
                 validatePropertyName( sortProperty.getSortProperty(), typeNames );
             }
         }
+
+        // superimpose default query CRS
+        if ( filter != null ) {
+            Filters.setDefaultCRS( filter, controller.getDefaultQueryCrs() );
+        }
+
         return new Query( typeNames, filter, wfsQuery.getFeatureVersion(), wfsQuery.getSrsName(), sortProps );
     }
 

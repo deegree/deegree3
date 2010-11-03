@@ -92,6 +92,7 @@ import org.deegree.feature.types.ApplicationSchema;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.feature.types.property.PropertyType;
 import org.deegree.filter.Filter;
+import org.deegree.filter.Filters;
 import org.deegree.filter.IdFilter;
 import org.deegree.filter.OperatorFilter;
 import org.deegree.geometry.GeometryFactory;
@@ -306,14 +307,18 @@ class TransactionHandler {
 
         FeatureStoreTransaction ta = acquireTransaction( fs );
 
+        Filter filter = delete.getFilter();
+        // superimpose default query CRS        
+        Filters.setDefaultCRS( filter, master.getDefaultQueryCrs() );
+
         try {
-            switch ( delete.getFilter().getType() ) {
+            switch ( filter.getType() ) {
             case ID_FILTER: {
-                deleted += ta.performDelete( (IdFilter) delete.getFilter(), lock );
+                deleted += ta.performDelete( (IdFilter) filter, lock );
                 break;
             }
             case OPERATOR_FILTER: {
-                deleted += ta.performDelete( ftName, (OperatorFilter) delete.getFilter(), lock );
+                deleted += ta.performDelete( ftName, (OperatorFilter) filter, lock );
                 break;
             }
             }
@@ -494,6 +499,8 @@ class TransactionHandler {
         Filter filter = null;
         try {
             filter = update.getFilter();
+            // superimpose default query CRS
+            Filters.setDefaultCRS( filter, master.getDefaultQueryCrs() );
         } catch ( Exception e ) {
             throw new OWSException( e.getMessage(), OWSException.INVALID_PARAMETER_VALUE );
         }
