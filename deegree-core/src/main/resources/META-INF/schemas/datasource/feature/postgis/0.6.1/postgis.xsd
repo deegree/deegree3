@@ -11,34 +11,50 @@
   </annotation>
   <element name="PostGISFeatureStore">
     <annotation>
-      <documentation>FeatureStore that is backed by a PostgreSQL/PostGIS database.</documentation>
+      <documentation>FeatureStore that is backed by a PostgreSQL / PostGIS database</documentation>
       <appinfo>
         <jaxb:class name="PostGISFeatureStoreConfig" />
       </appinfo>
     </annotation>
     <complexType>
       <sequence>
-        <element name="StorageCRS" type="string" />
-        <element name="NamespaceHint" minOccurs="0" maxOccurs="unbounded">
-          <complexType>
-            <attribute name="prefix" type="string" use="required" />
-            <attribute name="namespaceURI" type="string" use="required" />
-          </complexType>
-        </element>
-        <element name="JDBCConnId" type="string" />
-        <element name="DBSchemaQualifier" type="string" minOccurs="0" />
-        <element name="GMLSchema" minOccurs="0" maxOccurs="unbounded">
+        <element name="JDBCConnId">
           <complexType>
             <simpleContent>
               <extension base="string">
-                <attribute name="version" type="postgisfs:GMLVersionType" use="required" />
+                <attribute name="schema" type="string" default="public" />
               </extension>
             </simpleContent>
           </complexType>
         </element>
-        <element ref="postgisfs:FeatureType" minOccurs="0" maxOccurs="unbounded" />
+        <choice>
+          <element ref="postgisfs:FeatureType" minOccurs="0" maxOccurs="unbounded" />        
+          <element name="BLOBMapping">
+            <complexType>
+              <sequence>
+                <element name="StorageCRS" type="string" />
+                <element name="GMLSchema" minOccurs="1" maxOccurs="unbounded">
+                  <complexType>
+                    <simpleContent>
+                      <extension base="string">
+                        <attribute name="version" type="postgisfs:GMLVersionType" use="required" />
+                      </extension>
+                    </simpleContent>
+                  </complexType>
+                </element>
+                <element name="NamespaceHint" minOccurs="0" maxOccurs="unbounded">
+                  <complexType>
+                    <attribute name="prefix" type="string" use="required" />
+                    <attribute name="namespaceURI" type="string" use="required" />
+                  </complexType>
+                </element>
+                <element ref="postgisfs:FeatureType" minOccurs="0" maxOccurs="unbounded" />
+              </sequence>
+            </complexType>
+          </element>
+        </choice>
       </sequence>
-      <attribute name="configVersion" use="required" fixed="0.6.1" />
+      <attribute name="configVersion" use="required" fixed="0.6.2" />
     </complexType>
   </element>
   <simpleType name="GMLVersionType">
@@ -53,7 +69,7 @@
   <element name="FeatureType">
     <complexType>
       <annotation>
-        <documentation>Declaration of a feature type of the schema.</documentation>
+        <documentation>Declaration of a feature type of the schema</documentation>
         <appinfo>
           <jaxb:class name="FeatureTypeDecl" />
         </appinfo>
@@ -63,30 +79,13 @@
       </sequence>
       <attribute name="name" type="QName">
         <annotation>
-          <documentation>Qualified name of the feature type.</documentation>
-        </annotation>
-      </attribute>
-      <attribute name="table" type="string" use="optional">
-        <annotation>
-          <documentation>Table that the feature type is mapped to.</documentation>
-        </annotation>
-      </attribute>
-      <attribute name="fidMapping" type="string" use="optional">
-        <annotation>
-          <documentation>Mapping of the feature id (currently, this can only be the name of a column).</documentation>
-        </annotation>
-      </attribute>
-      <attribute name="abstract" type="boolean" use="optional">
-        <annotation>
-          <documentation>If true, the feature type is abstract and cannot be instantiated.</documentation>
-        </annotation>
-      </attribute>
-      <attribute name="parent" type="QName" use="optional">
-        <annotation>
-          <documentation>
-            Name of the feature type that this feature type derives, i.e. features of this type may be used
-            wherever the other type is requested.
+          <documentation>Qualified name of the feature type (if omitted, it is derived from the table name)
           </documentation>
+        </annotation>
+      </attribute>
+      <attribute name="table" type="string" use="required">
+        <annotation>
+          <documentation>Table that the feature type is mapped to</documentation>
         </annotation>
       </attribute>
     </complexType>
@@ -105,17 +104,18 @@
     </sequence>
     <attribute name="name" type="QName">
       <annotation>
-        <documentation>Qualified name of the property.</documentation>
+        <documentation>Qualified name of the property (if omitted, it is derived from the mapping column)
+        </documentation>
       </annotation>
     </attribute>
-    <attribute name="minOccurs" type="nonNegativeInteger" use="optional">
+    <attribute name="minOccurs" type="nonNegativeInteger">
       <annotation>
-        <documentation>The minimum number of times that this property is required in feature instances.</documentation>
+        <documentation>The minimum number of times that this property is required in feature instances</documentation>
       </annotation>
     </attribute>
-    <attribute name="maxOccurs" use="optional">
+    <attribute name="maxOccurs">
       <annotation>
-        <documentation>The maximum number of times that this property is permitted in feature instances.</documentation>
+        <documentation>The maximum number of times that this property is permitted in feature instances</documentation>
       </annotation>
       <simpleType>
         <union memberTypes="positiveInteger">
@@ -129,12 +129,12 @@
     </attribute>
     <attribute name="mapping" type="string" use="optional">
       <annotation>
-        <documentation>Mapping of the property (currently, this can only be the name of a column).</documentation>
+        <documentation>Mapping of the property (currently, this can only be the name of a column)</documentation>
       </annotation>
     </attribute>
     <attribute name="nilMapping" type="string" use="optional">
       <annotation>
-        <documentation>Boolean column that stores whether the property is nilled.</documentation>
+        <documentation>Boolean column that stores whether the property is nilled</documentation>
       </annotation>
     </attribute>
   </complexType>
@@ -151,7 +151,8 @@
         <extension base="postgisfs:AbstractPropertyType">
           <attribute name="type" type="postgisfs:PrimitiveType">
             <annotation>
-              <documentation>Type of the property.</documentation>
+              <documentation>Primitive type of the property (if omitted, it is automatically determined from column)
+              </documentation>
             </annotation>
           </attribute>
         </extension>
@@ -206,7 +207,7 @@
   <element name="GeometryProperty" substitutionGroup="postgisfs:AbstractProperty">
     <complexType>
       <annotation>
-        <documentation>Definition of a geometry-valued property of a feature type.</documentation>
+        <documentation>Definition of a geometry-valued property of a feature type</documentation>
         <appinfo>
           <jaxb:class name="GeometryPropertyDecl" />
         </appinfo>
@@ -215,23 +216,31 @@
         <extension base="postgisfs:AbstractPropertyType">
           <attribute name="type" type="postgisfs:GeometryType">
             <annotation>
-              <documentation>Allowed geometry type.</documentation>
+              <documentation>Geometry type (if omitted, it is automatically determined from table geometry_columns)
+              </documentation>
             </annotation>
           </attribute>
-          <attribute name="srid" type="integer" default="-1">
+          <attribute name="crs" type="string">
             <annotation>
-              <documentation>Oracle SRID of the column</documentation>
+              <documentation>deegree CRS identifier used for the geometry property, e.g. 'EPSG:4326' (if omitted, it is
+                automatically derived from the PostGIS srid)</documentation>
             </annotation>
           </attribute>
-          <attribute name="coordinateDimension" use="optional">
+          <attribute name="srid" type="integer">
             <annotation>
-              <documentation>Dimensionality of the geometry coordinates.</documentation>
+              <documentation>PostGIS SRID of the column (if omitted, it is automatically determined from table
+                geometry_columns)</documentation>
+            </annotation>
+          </attribute>
+          <attribute name="dim">
+            <annotation>
+              <documentation>Dimensionality of the geometry coordinates (if omitted, it is automatically determined from
+                table geometry_columns)</documentation>
             </annotation>
             <simpleType>
               <restriction base="NMTOKENS">
                 <enumeration value="2D" />
                 <enumeration value="3D" />
-                <enumeration value="2D or 3D" />
               </restriction>
             </simpleType>
           </attribute>
