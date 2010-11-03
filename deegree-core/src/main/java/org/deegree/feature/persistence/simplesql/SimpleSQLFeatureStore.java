@@ -410,8 +410,12 @@ public class SimpleSQLFeatureStore implements FeatureStore {
         return query( queries ).toCollection().size();
     }
 
-    @Override
-    public CRS getStorageSRS() {
+    /**
+     * Returns the CRS of the geometry column.
+     * 
+     * @return the CRS of the geometry column, never <code>null</code>
+     */
+    public CRS getStorageCRS() {
         return crs;
     }
 }

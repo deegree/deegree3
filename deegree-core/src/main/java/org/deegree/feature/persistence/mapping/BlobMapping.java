@@ -35,12 +35,13 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.feature.persistence.mapping;
 
+import org.deegree.cs.CRS;
 import org.deegree.feature.persistence.BlobCodec;
-import org.deegree.gml.GMLVersion;
 
 /**
- * Encapsulates BLOB mapping parameters for a {@link FeatureTypeMapping}.
+ * Encapsulates the BLOB mapping parameters for a {@link MappedApplicationSchema}.
  * 
+ * @see MappedApplicationSchema
  * @see FeatureTypeMapping
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
@@ -52,6 +53,8 @@ public class BlobMapping {
 
     private final String table;
 
+    private final CRS storageCRS;
+
     private final BlobCodec codec;
 
     /**
@@ -59,11 +62,14 @@ public class BlobMapping {
      * 
      * @param table
      *            the name of the table that stores the BLOBs, must not be <code>null</code>
+     * @param storageCRS
+     *            crs used for storing geometries / envelopes, must not be <code>null</code>
      * @param codec
      *            the decoder / encoder used for the BLOBs, must not be <code>null</code>
      */
-    public BlobMapping( String table, BlobCodec codec ) {
+    public BlobMapping( String table, CRS storageCRS, BlobCodec codec ) {
         this.table = table;
+        this.storageCRS = storageCRS;
         this.codec = codec;
     }
 
@@ -77,19 +83,30 @@ public class BlobMapping {
     }
 
     /**
+     * Returns the {@link CRS} used for storing the geometries / envelopes.
      * 
-     * @return
+     * @return the crs, never <code>null</code>
+     */
+    public CRS getCRS() {
+        return storageCRS;
+    }
+
+    /**
+     * Returns the {@link BlobCodec} for encoding and decoding features / geometries.
+     * 
+     * @return the codec, never <code>null</code>
      */
     public BlobCodec getCodec() {
         return codec;
     }
 
     /**
+     * Returns the name of the column that stores the gml ids.
      * 
-     * @return
+     * @return the name of the column, never <code>null</code>
      */
     public String getGMLIdColumn() {
-        return "GML_ID";
+        return "gml_id";
     }
 
     /**
@@ -97,7 +114,7 @@ public class BlobMapping {
      * @return
      */
     public String getDataColumn() {
-        return "BINARY_OBJECT";
+        return "binary_object";
     }
 
     /**
@@ -105,7 +122,7 @@ public class BlobMapping {
      * @return
      */
     public String getBBoxColumn() {
-        return "GML_BOUNDED_BY";
+        return "gml_bounded_by";
     }
 
     /**
@@ -113,10 +130,10 @@ public class BlobMapping {
      * @return
      */
     public String getTypeColumn() {
-        return "FT_TYPE";
+        return "ft_type";
     }
 
-    public String getInternalFIDColumn() {
-        return "ID";
+    public String getInternalIdColumn() {
+        return "id";
     }
 }

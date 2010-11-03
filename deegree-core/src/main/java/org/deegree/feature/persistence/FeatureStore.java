@@ -55,9 +55,8 @@ import org.deegree.gml.GMLObject;
  * Note that a {@link FeatureStore} instance is always associated with exactly one {@link ApplicationSchema} instance.
  * </p>
  * <p>
- * <h4>Implementation requirements</h4>
- * Implementations must be thread-safe, because {@link FeatureStore} instances are usually used in multiple threads
- * concurrently.
+ * NOTE: Implementations must be thread-safe, as {@link FeatureStore} instances are usually used in multiple
+ * threads concurrently.
  * </p>
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
@@ -96,22 +95,16 @@ public interface FeatureStore {
     public ApplicationSchema getSchema();
 
     /**
-     * Returns the CRS used for storing geometries.
-     * 
-     * @return the CRS used for storing geometries, can be <code>null</code>
-     */
-    public CRS getStorageSRS();
-
-    /**
      * Returns the envelope for all stored features of the given type.
      * 
      * @param ftName
      *            name of the feature type, must not be <code>null</code> and must be served by this store
      * @return the envelope (using the storage CRS), or <code>null</code> if the feature type does not have an envelope
      *         (no geometry properties or no instances)
-     * @throws FeatureStoreException 
+     * @throws FeatureStoreException
      */
-    public Envelope getEnvelope( QName ftName ) throws FeatureStoreException;
+    public Envelope getEnvelope( QName ftName )
+                            throws FeatureStoreException;
 
     /**
      * Performs the given query and returns the matching features as a {@link FeatureResultSet}.
@@ -174,8 +167,8 @@ public interface FeatureStore {
      * 
      * @param id
      *            identifier of the object to be retrieved
-     * @return the stored object (currently either a {@link Feature} or a {@link Geometry}) or <code>null</code> if no object with
-     *         the given id is known
+     * @return the stored object (currently either a {@link Feature} or a {@link Geometry}) or <code>null</code> if no
+     *         object with the given id is known
      * @throws FeatureStoreException
      *             if the query could not be performed
      */

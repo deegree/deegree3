@@ -177,7 +177,7 @@ public class ShapeFeatureStore implements FeatureStore {
         if ( localFtName.endsWith( ".shp" ) ) {
             localFtName = localFtName.substring( 0, localFtName.length() - 4 );
         }
-        
+
         // TODO make this configurable
         fidPrefix = localFtName.toUpperCase() + "_";
 
@@ -619,8 +619,12 @@ public class ShapeFeatureStore implements FeatureStore {
         return schema;
     }
 
-    @Override
-    public CRS getStorageSRS() {
+    /**
+     * Returns the CRS used by the shape file.
+     * 
+     * @return the CRS used by the shape file, never <code>null</code>
+     */
+    public CRS getStorageCRS() {
         return crs;
     }
 

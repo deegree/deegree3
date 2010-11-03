@@ -353,15 +353,14 @@ public class PostGISFeatureStoreTransaction implements FeatureStoreTransaction {
             throw new FeatureStoreException( "Cannot insert feature '" + feature.getName()
                                              + "': feature type is not served by this feature store." );
         }
-        CRS storageCRS = fs.getStorageSRS();
-
+        CRS crs = fs.blobMapping.getCRS();
         stmt.setString( 1, feature.getId() );
         stmt.setShort( 2, fs.getFtId( feature.getName() ) );
 
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         try {
             BlobCodec codec = fs.getSchema().getBlobMapping().getCodec();
-            codec.encode( feature, bos, storageCRS );
+            codec.encode( feature, bos, crs );
         } catch ( Exception e ) {
             String msg = "Error encoding feature for BLOB: " + e.getMessage();
             LOG.error( msg, e.getMessage() );
@@ -373,7 +372,7 @@ public class PostGISFeatureStoreTransaction implements FeatureStoreTransaction {
         Envelope bbox = feature.getEnvelope();
         if ( bbox != null ) {
             try {
-                GeometryTransformer bboxTransformer = new GeometryTransformer( storageCRS.getWrappedCRS() );
+                GeometryTransformer bboxTransformer = new GeometryTransformer( crs.getWrappedCRS() );
                 bbox = (Envelope) bboxTransformer.transform( bbox );
             } catch ( Exception e ) {
                 throw new SQLException( e.getMessage(), e );

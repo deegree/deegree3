@@ -39,8 +39,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import org.deegree.feature.Feature;
-import org.deegree.feature.persistence.FeatureStoreGMLIdResolver;
 import org.deegree.feature.persistence.BlobCodec;
+import org.deegree.feature.persistence.FeatureStoreGMLIdResolver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -86,7 +86,7 @@ class FeatureBuilderBlob implements FeatureBuilder {
             feature = (Feature) fs.getCache().get( gmlId );
             if ( feature == null ) {
                 LOG.debug( "Cache miss. Recreating object '" + gmlId + "' from blob." );
-                feature = (Feature) codec.decode( rs.getBinaryStream( 2 ), fs.getSchema(), fs.getStorageSRS(),
+                feature = (Feature) codec.decode( rs.getBinaryStream( 2 ), fs.getSchema(), fs.blobMapping.getCRS(),
                                                   new FeatureStoreGMLIdResolver( fs ) );
                 fs.getCache().add( feature );
             } else {

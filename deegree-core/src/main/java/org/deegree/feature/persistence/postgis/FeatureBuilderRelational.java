@@ -53,6 +53,7 @@ import org.deegree.feature.persistence.mapping.DBField;
 import org.deegree.feature.persistence.mapping.FeatureTypeMapping;
 import org.deegree.feature.persistence.mapping.JoinChain;
 import org.deegree.feature.persistence.mapping.MappingExpression;
+import org.deegree.feature.persistence.mapping.property.GeometryMapping;
 import org.deegree.feature.persistence.mapping.property.Mapping;
 import org.deegree.feature.property.GenericProperty;
 import org.deegree.feature.property.Property;
@@ -209,12 +210,13 @@ class FeatureBuilderRelational implements FeatureBuilder {
                     }
                 }
             } else if ( pt instanceof GeometryPropertyType ) {
+                GeometryMapping mapping = (GeometryMapping) ftMapping.getMapping( pt.getName() );
                 while ( rs2.next() ) {
                     byte[] wkb = rs2.getBytes( 1 );
                     if ( wkb != null ) {
                         try {
                             Geometry geom = WKBReader.read( wkb );
-                            geom.setCoordinateSystem( fs.getStorageSRS() );
+                            geom.setCoordinateSystem( mapping.getCRS() );
                             props.add( new GenericProperty( pt, geom ) );
                         } catch ( ParseException e ) {
                             throw new SQLException( "Error parsing WKB from PostGIS: " + e.getMessage(), e );
@@ -253,11 +255,12 @@ class FeatureBuilderRelational implements FeatureBuilder {
                 props.add( new GenericProperty( pt, pv ) );
             }
         } else if ( pt instanceof GeometryPropertyType ) {
+            GeometryMapping mapping = (GeometryMapping) ftMapping.getMapping( pt.getName() );
             byte[] wkb = rs.getBytes( rsIdx );
             if ( wkb != null ) {
                 try {
                     Geometry geom = WKBReader.read( wkb );
-                    geom.setCoordinateSystem( fs.getStorageSRS() );
+                    geom.setCoordinateSystem( mapping.getCRS() );
                     props.add( new GenericProperty( pt, geom ) );
                 } catch ( ParseException e ) {
                     throw new SQLException( "Error parsing WKB from PostGIS: " + e.getMessage(), e );

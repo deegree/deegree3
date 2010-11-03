@@ -163,8 +163,8 @@ class PostGISApplicationSchemaBuilder {
         MappedApplicationSchema mappedSchema = null;
 
         if ( appSchema != null ) {
-            BBoxTableMapping bboxMapping = new BBoxTableMapping();
-            BlobMapping blobMapping = new BlobMapping( "GML_OBJECTS", new BlobCodec( GML_32, NONE ) );
+            BBoxTableMapping bboxMapping = new BBoxTableMapping( storageCRS );
+            BlobMapping blobMapping = new BlobMapping( "GML_OBJECTS", storageCRS, new BlobCodec( GML_32, NONE ) );
 
             PostGISApplicationSchemaBuilder builder = new PostGISApplicationSchemaBuilder( ftDecls, jdbcConnId,
                                                                                            dbSchema, nsContext );
@@ -270,6 +270,7 @@ class PostGISApplicationSchemaBuilder {
                                                        ftName.getNamespaceURI() );
                     if ( typeName.equals( "geometry" ) ) {
                         String srid = "-1";
+                        CRS crs = new CRS( "EPSG:4326", true );
                         CoordinateDimension dim = DIM_2;
                         GeometryPropertyType.GeometryType geomType = GeometryType.GEOMETRY;
                         Connection conn = getConnection();
@@ -288,6 +289,9 @@ class PostGISApplicationSchemaBuilder {
                                 dim = DIM_3;
                             }
                             srid = "" + rs2.getInt( 2 );
+                            if ( rs2.getInt( 2 ) != -1 ) {
+                                crs = new CRS( "EPSG:" + srid, true );
+                            }
                             geomType = getGeometryType( rs2.getString( 3 ) );
                             LOG.debug( "Derived geometry type: " + geomType + ", srid: " + srid + ", dim: " + dim + "" );
                         } catch ( Exception e ) {
@@ -301,7 +305,7 @@ class PostGISApplicationSchemaBuilder {
                                                                     INLINE );
                         pts.add( pt );
                         PropertyName path = new PropertyName( ptName );
-                        GeometryMapping mapping = new GeometryMapping( path, dbField, geomType, dim, srid, null );
+                        GeometryMapping mapping = new GeometryMapping( path, dbField, geomType, dim, crs, srid, null );
                         propToColumn.put( ptName, mapping );
                     } else {
                         try {
@@ -395,7 +399,7 @@ class PostGISApplicationSchemaBuilder {
         } else if ( propDecl instanceof GeometryPropertyDecl ) {
             GeometryPropertyDecl gpt = (GeometryPropertyDecl) propDecl;
             pt = new GeometryPropertyType( ptName, minOccurs, maxOccurs, false, false, null, GEOMETRY, DIM_2, BOTH );
-            m = new GeometryMapping( path, mapping, GEOMETRY, DIM_2, "-1", joinedTable );
+            m = new GeometryMapping( path, mapping, GEOMETRY, DIM_2, new CRS( "EPSG:4326", true ), "-1", joinedTable );
         } else if ( propDecl instanceof FeaturePropertyDecl ) {
             FeaturePropertyDecl fpt = (FeaturePropertyDecl) propDecl;
             pt = new FeaturePropertyType( ptName, minOccurs, maxOccurs, false, false, null, fpt.getType(), BOTH );
@@ -441,7 +445,8 @@ class PostGISApplicationSchemaBuilder {
                                                     null ) );
             } else if ( customMapping instanceof org.deegree.feature.persistence.postgis.jaxb.GeometryMapping ) {
                 org.deegree.feature.persistence.postgis.jaxb.GeometryMapping geometryMapping = (org.deegree.feature.persistence.postgis.jaxb.GeometryMapping) customMapping;
-                mappings.add( new GeometryMapping( propName, mapping, GEOMETRY, DIM_2, "-1", null ) );
+                mappings.add( new GeometryMapping( propName, mapping, GEOMETRY, DIM_2, new CRS( "EPSG:4326", true ),
+                                                   "-1", null ) );
             } else if ( customMapping instanceof org.deegree.feature.persistence.postgis.jaxb.FeatureMapping ) {
                 org.deegree.feature.persistence.postgis.jaxb.FeatureMapping featureMapping = (org.deegree.feature.persistence.postgis.jaxb.FeatureMapping) customMapping;
                 mappings.add( new FeatureMapping( propName, mapping, featureMapping.getType(), null ) );

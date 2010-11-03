@@ -504,7 +504,7 @@ public class StyledGeometryTTProvider implements TextureTileProvider {
 
     @Override
     public CRS getCRS() {
-        return featureStore.getStorageSRS();
+        // TODO does this make sense?
+        return wpvsCRS;
     }
-
 }

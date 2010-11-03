@@ -111,7 +111,7 @@ class MemoryFeatureStoreTransaction implements FeatureStoreTransaction {
      */
     MemoryFeatureStoreTransaction( MemoryFeatureStore fs ) {
         this.fs = fs;
-        this.sf = new StoredFeatures( fs.getSchema(), fs.getStorageSRS(), fs.storedFeatures );
+        this.sf = new StoredFeatures( fs.getSchema(), fs.getStorageCRS(), fs.storedFeatures );
     }
 
     @Override
@@ -210,8 +210,8 @@ class MemoryFeatureStoreTransaction implements FeatureStoreTransaction {
                             throws FeatureStoreException {
 
         long begin = System.currentTimeMillis();
-        if ( fs.getStorageSRS() != null ) {
-            LOG.debug( "Transforming incoming feature collection to '" + fs.getStorageSRS() + "'" );
+        if ( fs.getStorageCRS() != null ) {
+            LOG.debug( "Transforming incoming feature collection to '" + fs.getStorageCRS() + "'" );
             try {
                 fc = transformGeometries( fc );
             } catch ( Exception e ) {
@@ -368,7 +368,7 @@ class MemoryFeatureStoreTransaction implements FeatureStoreTransaction {
                             throws IllegalArgumentException, UnknownCRSException, TransformationException {
 
         FeatureCollection transformedFc = new GenericFeatureCollection();
-        GeometryTransformer transformer = new GeometryTransformer( fs.getStorageSRS() );
+        GeometryTransformer transformer = new GeometryTransformer( fs.getStorageCRS() );
         for ( Feature feature : fc ) {
             transformedFc.add( transformGeometries( feature, transformer ) );
         }
@@ -480,7 +480,8 @@ class MemoryFeatureStoreTransaction implements FeatureStoreTransaction {
                                 // check compatibility (geometry type) for geometry replacements (CITE
                                 // wfs:wfs-1.1.0-Transaction-tc10.1)
                                 if ( !( geom instanceof Surface )
-                                     && replacement.getName().equals( new QName(
+                                     && replacement.getName().equals(
+                                                                      new QName(
                                                                                  "http://cite.opengeospatial.org/gmlsf",
                                                                                  "surfaceProperty" ) ) ) {
                                     throw new InvalidParameterValueException(
