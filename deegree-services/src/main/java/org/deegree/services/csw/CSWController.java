@@ -210,7 +210,11 @@ public class CSWController extends AbstractOGCServiceController {
         }
 
         enableTransactions = jaxbConfig.isEnableTransactions() == null ? false : jaxbConfig.isEnableTransactions();
-
+        if ( enableTransactions ) {
+            LOG.info( "Transactions are enabled. " );
+        } else {
+            LOG.info( "Transactions are disabled! " );
+        }
         describeRecordHandler = new DescribeRecordHandler( service );
         getRecordsHandler = new GetRecordsHandler( service );
         transactionHandler = new TransactionHandler( service );
