@@ -116,9 +116,9 @@ function init() {
 	// addGMLLayer("GML2 Polygon", "gml/GML2_FeatureCollection_Polygon.xml", "");
 	// addGMLLayer("GML2 Buffered Polygon", "gml/GML2_FeatureCollection_Polygon_Buffered.xml", "");
 	
-	//http://giv-wps.uni-muenster.de:8080/geoserver/wfs?SERVICE=WFS&REQUEST=GetFeature&VERSION=1.0.0&OUTPUTFORMAT=GML2&TYPENAME=topp:states
+	// http://giv-wps.uni-muenster.de:8080/geoserver/wfs?SERVICE=WFS&REQUEST=GetFeature&VERSION=1.0.0&OUTPUTFORMAT=GML2&TYPENAME=topp:states
 
-	//addGMLLayer("GML2 Buffered Polygon", "http://giv-wps.uni-muenster.de:8080/geoserver/wfs?SERVICE=WFS&REQUEST=GetFeature&VERSION=1.0.0&OUTPUTFORMAT=GML2&TYPENAME=topp:states", "");
+	// addGMLLayer("GML2 Buffered Polygon", "http://giv-wps.uni-muenster.de:8080/geoserver/wfs?SERVICE=WFS&REQUEST=GetFeature&VERSION=1.0.0&OUTPUTFORMAT=GML2&TYPENAME=topp:states", "");
 	
 	// ------------------------------------------------------------------------------------------------------
 	// add web feature service (only gml2)
@@ -197,7 +197,7 @@ function init() {
  *            URL of GML file (local or external).
  * @param attr
  *            External URL of GML file.
- *            
+ * 
  * @return OpenLayers.Vector
  */
 function addGMLLayer(gmlName, gmlURL, attr) {
@@ -229,6 +229,7 @@ function addGMLLayer(gmlName, gmlURL, attr) {
 	// add layer to map
 	map.addLayer(layer);
 		
+
 	return layer;
 }
 
@@ -250,34 +251,34 @@ function addWFSLayer(wfsName, wfsURL, wfsFeatureTypeWithPrefix) {
 	// INFO message
 	resultDisplayWFS.data = "Loading...";
 	
-//	// Layer name
-//	var wfsNameArray = determineIndividualLayerName(wfsName);
+// // Layer name
+// var wfsNameArray = determineIndividualLayerName(wfsName);
 //	
-//	// determine namespace
-//	var ns = determineWFSFeatureTypeNamespace(wfsURL, wfsFeatureTypeWithPrefix);
+// // determine namespace
+// var ns = determineWFSFeatureTypeNamespace(wfsURL, wfsFeatureTypeWithPrefix);
 //	
-//	// check namespace
-//	if(ns == null)
-//		return;
+// // check namespace
+// if(ns == null)
+// return;
 //		
-//	// check name
-//	var ftArray = wfsFeatureTypeWithPrefix.split(":");
-//	if(ftArray.length != 2){
-//		var name = new Array();
-//		name[0] = "";
-//		name[1] = wfsFeatureTypeWithPrefix;
-//		ftArray = name;
-//	}
+// // check name
+// var ftArray = wfsFeatureTypeWithPrefix.split(":");
+// if(ftArray.length != 2){
+// var name = new Array();
+// name[0] = "";
+// name[1] = wfsFeatureTypeWithPrefix;
+// ftArray = name;
+// }
 //	
-//	// create wfs layer
-//	var wfs = new OpenLayers.Layer.Vector(wfsNameArray[1], {
-//		strategies : [ new OpenLayers.Strategy.BBOX() ],
-//		protocol : new OpenLayers.Protocol.WFS( {
-//			url : wfsURL,
-//			featureType : ftArray[1],
-//			featureNS : ns
-//		}), visibility : visible, styleMap: getStyleMap()
-//	});
+// // create wfs layer
+// var wfs = new OpenLayers.Layer.Vector(wfsNameArray[1], {
+// strategies : [ new OpenLayers.Strategy.BBOX() ],
+// protocol : new OpenLayers.Protocol.WFS( {
+// url : wfsURL,
+// featureType : ftArray[1],
+// featureNS : ns
+// }), visibility : visible, styleMap: getStyleMap()
+// });
 	
 	
 	var sourceURL = wfsURL + WFS_GET_FEATURE + wfsFeatureTypeWithPrefix;
@@ -288,16 +289,16 @@ function addWFSLayer(wfsName, wfsURL, wfsFeatureTypeWithPrefix) {
 	resultDisplayWFS.data = "Added layer '" + name + "'";
 	return layer;
 	
-//	// add wfs layer to map
-//	var wfsArray = new Array();
-//	wfsArray[0] = wfs;
-//	wfsArray[1] = wfsURL + WFS_GET_FEATURE + wfsFeatureTypeWithPrefix;
-//	layers[wfsNameArray[0]] = wfsArray;
-//	map.addLayer(wfs);
+// // add wfs layer to map
+// var wfsArray = new Array();
+// wfsArray[0] = wfs;
+// wfsArray[1] = wfsURL + WFS_GET_FEATURE + wfsFeatureTypeWithPrefix;
+// layers[wfsNameArray[0]] = wfsArray;
+// map.addLayer(wfs);
 //	
-//	resultDisplayWFS.data = "Added layer '" + wfsNameArray[0] + "'";
+// resultDisplayWFS.data = "Added layer '" + wfsNameArray[0] + "'";
 //	
-//	return wfs;
+// return wfs;
 }
 
 /**
@@ -1122,6 +1123,7 @@ function showInputDataDescription(title, abstr, type) {
 	 win.focus();
 	 win.document.close();
 }
+
 
 /**
  * This class manage all input parameter for execute a process of a WPS.
@@ -2252,8 +2254,8 @@ var WFSSwitcher =
 	        	// reload input layers
 	        	loadProcessInputForms();
 
-	        	var bounds = wfsLayer.getDataExtent();
-	        	//alert(bounds);
+	        	// bounds = wfsLayer;
+	        	// alert(bounds);
 	        	// map.setCenter(new OpenLayers.LonLat(0, 0), 3);
 	        };
 	        p2.appendChild(document.createTextNode(" "));
