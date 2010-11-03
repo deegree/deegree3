@@ -456,7 +456,7 @@ public class WFSController extends AbstractOGCServiceController {
                                      response );
         }
     }
-
+    
     private void checkTransactionsEnabled( String requestName )
                             throws OWSException {
         if ( !enableTransactions ) {
