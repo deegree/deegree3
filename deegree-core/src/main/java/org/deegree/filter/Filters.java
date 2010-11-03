@@ -39,6 +39,7 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.deegree.cs.CRS;
 import org.deegree.filter.comparison.ComparisonOperator;
 import org.deegree.filter.expression.PropertyName;
 import org.deegree.filter.logical.LogicalOperator;
@@ -49,6 +50,7 @@ import org.deegree.geometry.Geometry;
  * Various static methods for performing standard tasks on {@link Filter} objects.
  * 
  * @see Filter
+ * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
  * 
@@ -159,6 +161,23 @@ public class Filters {
         case COMPARISON:
             // nothing to do
             break;
+        }
+    }
+
+    /**
+     * Sets the {@link CRS} for all geometries contained in the given {@link Filter} that do not have crs information.
+     * 
+     * @param filter
+     *            filter to process, must not be <code>null</code>
+     * @param crs
+     *            crs to set, must not be <code>null</code>
+     */
+    public static void setDefaultCRS( Filter filter, CRS crs ) {
+        for ( Geometry geom : getGeometries( filter ) ) {
+            if ( geom.getCoordinateSystem() == null ) {
+                // TODO propagate to deeper levels / change behavior of setCoordinateSystem()
+                geom.setCoordinateSystem( crs );
+            }
         }
     }
 }

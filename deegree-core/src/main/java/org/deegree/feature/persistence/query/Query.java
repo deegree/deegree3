@@ -116,7 +116,8 @@ public class Query {
      *            bounding box used for pre-filtering the features, can be <code>null</code> (no pre-filtering)
      *            {@link QueryHint#HINT_LOOSE_BBOX}
      * @param filter
-     *            additional filter constraints, may be <code>null</code>
+     *            additional filter constraints, may be <code>null</code>, if not <code>null</code>, all contained
+     *            geometry operands must have a non-null {@link CRS}
      * @param scale
      *            if scale is positive, a scale query hint will be used
      * @param maxFeatures
@@ -146,7 +147,8 @@ public class Query {
      * @param typeNames
      *            feature type names to be queried, must not be <code>null</code> and contain at least one entry
      * @param filter
-     *            filter to be applied, can be <code>null</code>
+     *            filter to be applied, can be <code>null</code>, if not <code>null</code>, all contained geometry
+     *            operands must have a non-null {@link CRS}
      * @param featureVersion
      *            specific feature version to be returned, can be <code>null</code>
      * @param srsName
@@ -159,8 +161,8 @@ public class Query {
         this.filter = filter;
         this.featureVersion = featureVersion;
         this.srsName = srsName;
-        if (sortBy != null) {
-            this.sortBy = sortBy;            
+        if ( sortBy != null ) {
+            this.sortBy = sortBy;
         } else {
             this.sortBy = new SortProperty[0];
         }
@@ -183,8 +185,8 @@ public class Query {
         this.filter = filter;
         this.featureVersion = featureVersion;
         this.srsName = srsName;
-        if (sortBy != null) {
-            this.sortBy = sortBy;            
+        if ( sortBy != null ) {
+            this.sortBy = sortBy;
         } else {
             this.sortBy = new SortProperty[0];
         }

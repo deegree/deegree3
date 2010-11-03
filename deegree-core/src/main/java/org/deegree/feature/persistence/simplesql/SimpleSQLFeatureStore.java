@@ -87,7 +87,6 @@ import org.deegree.geometry.GeometryTransformer;
 import org.deegree.geometry.io.WKBReader;
 import org.deegree.geometry.io.WKTReader;
 import org.deegree.geometry.io.WKTWriter;
-import org.deegree.geometry.multi.MultiGeometry;
 import org.deegree.gml.GMLObject;
 import org.slf4j.Logger;
 
@@ -204,8 +203,7 @@ public class SimpleSQLFeatureStore implements FeatureStore {
                         LOG.info( "Could not determine envelope of database table, using world bbox instead." );
                         return fac.createEnvelope( -180, -90, 180, 90, EPSG_4326 );
                     }
-                    Geometry g = new WKTReader( EPSG_4326 ).read( bboxString );
-                    g.setCoordinateSystem( crs );
+                    Geometry g = new WKTReader( crs ).read( bboxString );
                     cachedEnvelope.first = current;
                     cachedEnvelope.second = g.getEnvelope();
                     return cachedEnvelope.second;
@@ -357,11 +355,6 @@ public class SimpleSQLFeatureStore implements FeatureStore {
                                 if ( bs != null ) {
                                     try {
                                         Geometry geom = WKBReader.read( bs, crs );
-                                        if ( geom instanceof MultiGeometry<?> ) {
-                                            for ( Geometry g : (MultiGeometry<?>) geom ) {
-                                                g.setCoordinateSystem( crs );
-                                            }
-                                        }
                                         props.add( new GenericProperty( pt, geom ) );
                                     } catch ( ParseException e ) {
                                         LOG.info( "WKB from the DB could not be parsed: '{}'.", e.getLocalizedMessage() );
