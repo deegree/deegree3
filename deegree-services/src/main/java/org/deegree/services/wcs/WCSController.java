@@ -52,8 +52,6 @@ import java.util.Set;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Unmarshaller;
 import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
@@ -92,8 +90,8 @@ import org.deegree.services.jaxb.main.ServiceProviderType;
 import org.deegree.services.jaxb.wcs.PublishedInformation;
 import org.deegree.services.jaxb.wcs.PublishedInformation.AllowedOperations;
 import org.deegree.services.wcs.capabilities.Capabilities100XMLAdapter;
-import org.deegree.services.wcs.capabilities.GetCapabilities100XMLAdapter;
 import org.deegree.services.wcs.capabilities.Capabilities100XMLAdapter.Sections;
+import org.deegree.services.wcs.capabilities.GetCapabilities100XMLAdapter;
 import org.deegree.services.wcs.coverages.WCSCoverage;
 import org.deegree.services.wcs.describecoverage.CoverageDescription100XMLAdapter;
 import org.deegree.services.wcs.describecoverage.DescribeCoverage;
@@ -151,8 +149,10 @@ public class WCSController extends AbstractOGCServiceController {
     public void init( XMLAdapter controllerConf, DeegreeServicesMetadataType serviceMetadata,
                       DeegreeServiceControllerType mainConf )
                             throws ControllerInitException {
-        UPDATE_SEQUENCE++;
+
+        LOG.info( "Initializing WCS." );
         init( serviceMetadata, mainConf, IMPLEMENTATION_METADATA, controllerConf );
+        UPDATE_SEQUENCE++;
 
         NamespaceContext nsContext = new NamespaceContext();
         nsContext.addNamespace( WCSConstants.WCS_100_PRE, WCS_100_NS );
@@ -214,30 +214,24 @@ public class WCSController extends AbstractOGCServiceController {
                             throws ControllerInitException {
 
         PublishedInformation pubInf = null;
-        try {
-            Unmarshaller u = getUnmarshaller( "org.deegree.services.jaxb.wcs", PUBLISHED_SCHEMA_FILE );
-            XPath xp = new XPath( CONFIG_PRE + ":PublishedInformation", nsContext );
-            OMElement elem = controllerConf.getElement( controllerConf.getRootElement(), xp );
-            if ( elem != null ) {
-                pubInf = (PublishedInformation) u.unmarshal( elem.getXMLStreamReaderWithoutCaching() );
-                if ( pubInf != null ) {
-                    // mandatory
-                    allowedOperations.add( WCSRequestType.GetCapabilities.name() );
-                    AllowedOperations configuredOperations = pubInf.getAllowedOperations();
-                    if ( configuredOperations != null ) {
-                        // if ( configuredOperations.getDescribeCoverage() != null ) {
-                        // if
-                        // }
-                        LOG.info( "WCS specification implies support for all three Operations." );
-                    }
-                    allowedOperations.add( WCSRequestType.DescribeCoverage.name() );
-                    allowedOperations.add( WCSRequestType.GetCoverage.name() );
+        XPath xp = new XPath( CONFIG_PRE + ":PublishedInformation", nsContext );
+        OMElement elem = controllerConf.getElement( controllerConf.getRootElement(), xp );
+        if ( elem != null ) {
+            pubInf = (PublishedInformation) unmarshallConfig( "org.deegree.services.jaxb.wcs", PUBLISHED_SCHEMA_FILE,
+                                                              elem );
+            if ( pubInf != null ) {
+                // mandatory
+                allowedOperations.add( WCSRequestType.GetCapabilities.name() );
+                AllowedOperations configuredOperations = pubInf.getAllowedOperations();
+                if ( configuredOperations != null ) {
+                    // if ( configuredOperations.getDescribeCoverage() != null ) {
+                    // if
+                    // }
+                    LOG.info( "WCS specification implies support for all three operations." );
                 }
+                allowedOperations.add( WCSRequestType.DescribeCoverage.name() );
+                allowedOperations.add( WCSRequestType.GetCoverage.name() );
             }
-        } catch ( JAXBException e ) {
-            throw new ControllerInitException(
-                                               "Error while unmarshalling the published information from the configuration file: "
-                                                                       + e.getLocalizedMessage(), e );
         }
         return pubInf;
     }

@@ -75,8 +75,6 @@ import java_cup.runtime.Symbol;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Unmarshaller;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
@@ -96,8 +94,6 @@ import org.deegree.feature.types.FeatureType;
 import org.deegree.feature.utils.templating.TemplatingLexer;
 import org.deegree.feature.utils.templating.TemplatingParser;
 import org.deegree.feature.utils.templating.lang.PropertyTemplateCall;
-import org.deegree.gml.GMLOutputFactory;
-import org.deegree.gml.GMLStreamWriter;
 import org.deegree.gml.GMLVersion;
 import org.deegree.gml.feature.GMLFeatureWriter;
 import org.deegree.gml.feature.schema.ApplicationSchemaXSDEncoder;
@@ -116,8 +112,8 @@ import org.deegree.services.jaxb.main.DeegreeServicesMetadataType;
 import org.deegree.services.jaxb.main.ServiceIdentificationType;
 import org.deegree.services.jaxb.main.ServiceProviderType;
 import org.deegree.services.jaxb.wms.DeegreeWMS;
-import org.deegree.services.jaxb.wms.ServiceConfigurationType;
 import org.deegree.services.jaxb.wms.FeatureInfoFormatsType.GetFeatureInfoFormat;
+import org.deegree.services.jaxb.wms.ServiceConfigurationType;
 import org.deegree.services.wms.MapService;
 import org.deegree.services.wms.WMSException.InvalidDimensionValue;
 import org.deegree.services.wms.WMSException.MissingDimensionValue;
@@ -143,7 +139,9 @@ public class WMSController extends AbstractOGCServiceController {
 
     private static final Logger LOG = getLogger( WMSController.class );
 
-    private final static String CONFIG_SCHEMA_FILE = "/META-INF/schemas/wms/0.6.0/wms_configuration.xsd";
+    private static final String CONFIG_JAXB_PACKAGE = "org.deegree.services.jaxb.wms";
+
+    private static final String CONFIG_SCHEMA = "/META-INF/schemas/wms/0.6.0/wms_configuration.xsd";
 
     private static final ImplementationMetadata<WMSRequestType> IMPLEMENTATION_METADATA = new ImplementationMetadata<WMSRequestType>() {
         {
@@ -220,10 +218,9 @@ public class WMSController extends AbstractOGCServiceController {
         NamespaceContext nsContext = new NamespaceContext();
         nsContext.addNamespace( "wms", "http://www.deegree.org/services/wms" );
 
-        try {
-            String additionalClasspath = "org.deegree.services.jaxb.wms";
-            Unmarshaller u = getUnmarshaller( additionalClasspath, CONFIG_SCHEMA_FILE );
+        DeegreeWMS conf = (DeegreeWMS) unmarshallConfig( CONFIG_JAXB_PACKAGE, CONFIG_SCHEMA, controllerConf );
 
+        try {
             // put in the default formats
             supportedFeatureInfoFormats.put( "application/vnd.ogc.gml", "" );
             supportedFeatureInfoFormats.put( "text/xml", "" );
@@ -238,14 +235,11 @@ public class WMSController extends AbstractOGCServiceController {
             supportedImageFormats.add( "image/tiff" );
             supportedImageFormats.add( "image/x-ms-bmp" );
 
-            DeegreeWMS conf = (DeegreeWMS) u.unmarshal( controllerConf.getRootElement().getXMLStreamReaderWithoutCaching() );
-
             if ( conf.getFeatureInfoFormats() != null ) {
                 for ( GetFeatureInfoFormat t : conf.getFeatureInfoFormats().getGetFeatureInfoFormat() ) {
                     String format = t.getFormat();
                     if ( t.getFile() != null ) {
-                        supportedFeatureInfoFormats.put(
-                                                         format,
+                        supportedFeatureInfoFormats.put( format,
                                                          new File( controllerConf.resolve( t.getFile() ).toURI() ).toString() );
                         // } else {
                         // instantiateSerializer( featureInfoSerializers, format, t.getClazz(),
@@ -303,10 +297,6 @@ public class WMSController extends AbstractOGCServiceController {
                                                             : "There is no securityManager specified. Now, there should be no credentials needed and every operation can be requested anonymous.";
             LOG.debug( securityLogging );
 
-        } catch ( JAXBException e ) {
-            // whyever they use the linked exception here...
-            // http://www.jaxb.com/how/to/hide/important/information/from/the/user/of/the/api/unknown_xml_format.xml
-            throw new ControllerInitException( e.getLinkedException().getMessage(), e );
         } catch ( MalformedURLException e ) {
             throw new ControllerInitException( e.getMessage(), e );
         } catch ( URISyntaxException e ) {
@@ -334,14 +324,12 @@ public class WMSController extends AbstractOGCServiceController {
         try {
             req = IMPLEMENTATION_METADATA.getRequestTypeByName( map.get( "REQUEST" ) );
         } catch ( IllegalArgumentException e ) {
-            controllers.get( version ).sendException(
-                                                      new OWSException( get( "WMS.OPERATION_NOT_KNOWN",
+            controllers.get( version ).sendException( new OWSException( get( "WMS.OPERATION_NOT_KNOWN",
                                                                              map.get( "REQUEST" ) ),
                                                                         OPERATION_NOT_SUPPORTED ), response );
             return;
         } catch ( NullPointerException e ) {
-            controllers.get( version ).sendException(
-                                                      new OWSException( get( "WMS.PARAM_MISSING", "REQUEST" ),
+            controllers.get( version ).sendException( new OWSException( get( "WMS.PARAM_MISSING", "REQUEST" ),
                                                                         OPERATION_NOT_SUPPORTED ), response );
             return;
         }
@@ -433,8 +421,7 @@ public class WMSController extends AbstractOGCServiceController {
     private void getLegendGraphic( Map<String, String> map, HttpResponseBuffer response )
                             throws OWSException, IOException {
         GetLegendGraphic glg = securityManager == null ? new GetLegendGraphic( map, service )
-                                                      : securityManager.preprocess(
-                                                                                    new GetLegendGraphic( map, service ),
+                                                      : securityManager.preprocess( new GetLegendGraphic( map, service ),
                                                                                     OGCFrontController.getContext().getCredentials() );
 
         if ( !supportedImageFormats.contains( glg.getFormat() ) ) {
@@ -459,7 +446,7 @@ public class WMSController extends AbstractOGCServiceController {
 
             Symbol s = new TemplatingParser( new TemplatingLexer( in ) ).parse();
             @SuppressWarnings(value = "unchecked")
-            HashMap<String, Object> tmpl = (HashMap) s.value;
+            HashMap<String, Object> tmpl = (HashMap<String, Object>) s.value;
             StringBuilder sb = new StringBuilder();
             new PropertyTemplateCall( "start", singletonList( "*" ), false ).eval( sb, tmpl, col, fi.returnGeometries() );
             out.println( sb.toString() );
@@ -480,8 +467,7 @@ public class WMSController extends AbstractOGCServiceController {
     private void getFeatureInfo( Map<String, String> map, HttpResponseBuffer response, Version version )
                             throws OWSException, IOException, MissingDimensionValue, InvalidDimensionValue {
         GetFeatureInfo fi = securityManager == null ? new GetFeatureInfo( map, version, service )
-                                                   : securityManager.preprocess(
-                                                                                 new GetFeatureInfo( map, version,
+                                                   : securityManager.preprocess( new GetFeatureInfo( map, version,
                                                                                                      service ),
                                                                                  OGCFrontController.getContext().getCredentials() );
         checkGetFeatureInfo( fi );
@@ -574,8 +560,7 @@ public class WMSController extends AbstractOGCServiceController {
     private void getFeatureInfoSchema( Map<String, String> map, HttpResponseBuffer response )
                             throws IOException {
         GetFeatureInfoSchema fis = securityManager == null ? new GetFeatureInfoSchema( map )
-                                                          : securityManager.preprocess(
-                                                                                        new GetFeatureInfoSchema( map ),
+                                                          : securityManager.preprocess( new GetFeatureInfoSchema( map ),
                                                                                         OGCFrontController.getContext().getCredentials() );
         List<FeatureType> schema = service.getSchema( fis );
         try {
@@ -655,8 +640,7 @@ public class WMSController extends AbstractOGCServiceController {
             version = map.get( "WMTVER" );
         }
         GetCapabilities req = securityManager == null ? new GetCapabilities( version )
-                                                     : securityManager.preprocess(
-                                                                                   new GetCapabilities( version ),
+                                                     : securityManager.preprocess( new GetCapabilities( version ),
                                                                                    OGCFrontController.getContext().getCredentials() );
 
         Version myVersion = negotiateVersion( req );

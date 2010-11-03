@@ -53,8 +53,6 @@ import javax.imageio.ImageIO;
 import javax.imageio.ImageWriter;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Unmarshaller;
 import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
@@ -90,8 +88,8 @@ import org.deegree.services.jaxb.main.DeegreeServicesMetadataType;
 import org.deegree.services.jaxb.main.ServiceIdentificationType;
 import org.deegree.services.jaxb.main.ServiceProviderType;
 import org.deegree.services.jaxb.wpvs.PublishedInformation;
-import org.deegree.services.jaxb.wpvs.ServiceConfiguration;
 import org.deegree.services.jaxb.wpvs.PublishedInformation.AllowedOperations;
+import org.deegree.services.jaxb.wpvs.ServiceConfiguration;
 import org.deegree.services.wpvs.PerspectiveViewService;
 import org.deegree.services.wpvs.controller.capabilities.CapabilitiesXMLAdapter;
 import org.deegree.services.wpvs.controller.getview.GetView;
@@ -118,6 +116,12 @@ public class WPVSController extends AbstractOGCServiceController {
 
     private final static Logger LOG = LoggerFactory.getLogger( WPVSController.class );
 
+    private static final String CONFIG_JAXB_PACKAGE = "org.deegree.services.jaxb.wpvs";
+
+    private static final String CONFIG_SCHEMA = "/META-INF/schemas/wpvs/0.5.0/wpvs_service_configuration.xsd";
+
+    private static final String PUBLISHED_SCHEMA = "/META-INF/schemas/wpvs/0.5.0/wpvs_published_information.xsd";
+
     private PerspectiveViewService service;
 
     private ServiceIdentificationType identification;
@@ -125,10 +129,6 @@ public class WPVSController extends AbstractOGCServiceController {
     private ServiceProviderType provider;
 
     private PublishedInformation publishedInformation;
-
-    private final static String CONFIG_SCHEMA_FILE = "/META-INF/schemas/wpvs/0.5.0/wpvs_service_configuration.xsd";
-
-    private final static String PUBLISHED_SCHEMA_FILE = "/META-INF/schemas/wpvs/0.5.0/wpvs_published_information.xsd";
 
     private List<String> allowedOperations = new LinkedList<String>();
 
@@ -161,24 +161,19 @@ public class WPVSController extends AbstractOGCServiceController {
             publishedInformation = parsePublishedInformation( nsContext, controllerConf );
             ServiceConfiguration sc = parseServerConfiguration( nsContext, controllerConf );
             service = new PerspectiveViewService( controllerConf, sc, getServiceWorkspace() );
-        } catch ( JAXBException e ) {
-            e.printStackTrace();
-            throw new ControllerInitException( e.getMessage(), e );
         } catch ( ServiceInitException e ) {
             throw new ControllerInitException( e.getMessage(), e );
         }
-
     }
 
     private PublishedInformation parsePublishedInformation( NamespaceContext nsContext, XMLAdapter controllerConf )
-                            throws JAXBException {
-        Unmarshaller u = getUnmarshaller( "org.deegree.services.jaxb.wpvs", PUBLISHED_SCHEMA_FILE );
+                            throws ControllerInitException {
 
         XPath xp = new XPath( "wpvs:PublishedInformation", nsContext );
         OMElement elem = controllerConf.getElement( controllerConf.getRootElement(), xp );
         PublishedInformation result = null;
         if ( elem != null ) {
-            result = (PublishedInformation) u.unmarshal( elem.getXMLStreamReaderWithoutCaching() );
+            result = (PublishedInformation) unmarshallConfig( CONFIG_JAXB_PACKAGE, PUBLISHED_SCHEMA, elem );
             if ( result != null ) {
                 // mandatory
                 allowedOperations.add( WPVSRequestType.GetCapabilities.name() );
@@ -199,21 +194,11 @@ public class WPVSController extends AbstractOGCServiceController {
         return result;
     }
 
-    /**
-     * @param nsContext
-     * @param controllerConf
-     * @throws JAXBException
-     */
     private ServiceConfiguration parseServerConfiguration( NamespaceContext nsContext, XMLAdapter controllerConf )
-                            throws JAXBException {
-
-        Unmarshaller u = getUnmarshaller( "org.deegree.services.jaxb.wpvs", CONFIG_SCHEMA_FILE );
-
+                            throws ControllerInitException {
         XPath xp = new XPath( "wpvs:ServiceConfiguration", nsContext );
         OMElement elem = controllerConf.getRequiredElement( controllerConf.getRootElement(), xp );
-
-        return (ServiceConfiguration) u.unmarshal( elem.getXMLStreamReaderWithoutCaching() );
-
+        return (ServiceConfiguration) unmarshallConfig( CONFIG_JAXB_PACKAGE, CONFIG_SCHEMA, elem );
     }
 
     @Override

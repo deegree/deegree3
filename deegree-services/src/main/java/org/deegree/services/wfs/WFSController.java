@@ -67,8 +67,6 @@ import java.util.TreeSet;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.xml.bind.JAXBElement;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Unmarshaller;
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
@@ -131,9 +129,9 @@ import org.deegree.services.jaxb.main.ServiceProviderType;
 import org.deegree.services.jaxb.wfs.AbstractFormatType;
 import org.deegree.services.jaxb.wfs.CustomFormat;
 import org.deegree.services.jaxb.wfs.DeegreeWFS;
+import org.deegree.services.jaxb.wfs.DeegreeWFS.SupportedVersions;
 import org.deegree.services.jaxb.wfs.FeatureTypeMetadata;
 import org.deegree.services.jaxb.wfs.GMLFormat;
-import org.deegree.services.jaxb.wfs.DeegreeWFS.SupportedVersions;
 import org.deegree.services.wfs.format.Format;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -161,6 +159,10 @@ import org.slf4j.LoggerFactory;
 public class WFSController extends AbstractOGCServiceController {
 
     private static final Logger LOG = LoggerFactory.getLogger( WFSController.class );
+
+    private static final String CONFIG_JAXB_PACKAGE = "org.deegree.services.jaxb.wfs";
+
+    private static final String CONFIG_SCHEMA = "/META-INF/schemas/wfs/0.6.0/wfs_configuration.xsd";
 
     private static final ImplementationMetadata<WFSRequestType> IMPLEMENTATION_METADATA = new ImplementationMetadata<WFSRequestType>() {
         {
@@ -202,33 +204,14 @@ public class WFSController extends AbstractOGCServiceController {
                       DeegreeServiceControllerType mainConf )
                             throws ControllerInitException {
 
-        LOG.info( "Initializing WFS controller." );
+        LOG.info( "Initializing WFS." );
         init( serviceMetadata, mainConf, IMPLEMENTATION_METADATA, controllerConf );
 
         // TODO merge with WFS configuration
         serviceId = serviceMetadata.getServiceIdentification();
         serviceProvider = serviceMetadata.getServiceProvider();
 
-        // unmarshal ServiceConfiguration and PublishedInformation
-        DeegreeWFS jaxbConfig = null;
-        try {
-            Unmarshaller u = getUnmarshaller( "org.deegree.services.jaxb.wfs",
-                                              "/META-INF/schemas/wfs/0.6.0/wfs_configuration.xsd" );
-            // turn the application schema location into an absolute URL
-            jaxbConfig = (DeegreeWFS) u.unmarshal( controllerConf.getRootElement().getXMLStreamReaderWithoutCaching() );
-        } catch ( XMLParsingException e ) {
-            LOG.error( "Could not load WFS configuration: '{}'", e.getMessage() );
-            LOG.trace( "Stack trace:", e );
-            throw new ControllerInitException( "Error parsing WFS configuration: " + e.getMessage(), e );
-        } catch ( JAXBException e ) {
-            LOG.error( "Could not load WFS configuration: '{}'", e.getLinkedException().getMessage() );
-            LOG.trace( "Stack trace:", e );
-            // whyever they use the linked exception here...
-            // http://www.jaxb.com/how/to/hide/important/information/from/the/user/of/the/api/unknown_xml_format.xml
-            throw new ControllerInitException( "Error parsing WFS configuration: "
-                                               + e.getLinkedException().getMessage(), e );
-        }
-
+        DeegreeWFS jaxbConfig = (DeegreeWFS) unmarshallConfig( CONFIG_JAXB_PACKAGE, CONFIG_SCHEMA, controllerConf );
         initOfferedVersions( jaxbConfig.getSupportedVersions() );
 
         enableTransactions = jaxbConfig.isEnableTransactions() == null ? false : jaxbConfig.isEnableTransactions();
@@ -456,7 +439,7 @@ public class WFSController extends AbstractOGCServiceController {
                                      response );
         }
     }
-    
+
     private void checkTransactionsEnabled( String requestName )
                             throws OWSException {
         if ( !enableTransactions ) {

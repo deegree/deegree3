@@ -36,7 +36,6 @@
 package org.deegree.services.controller;
 
 import java.io.IOException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -50,15 +49,13 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.XMLConstants;
-import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
-import javax.xml.bind.Unmarshaller;
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
-import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 
+import org.apache.axiom.om.OMElement;
 import org.apache.axiom.soap.SOAPEnvelope;
 import org.apache.axiom.soap.SOAPFactory;
 import org.apache.axiom.soap.SOAPHeader;
@@ -68,6 +65,7 @@ import org.deegree.commons.tom.ows.Version;
 import org.deegree.commons.utils.Pair;
 import org.deegree.commons.utils.kvp.InvalidParameterValueException;
 import org.deegree.commons.xml.XMLAdapter;
+import org.deegree.commons.xml.jaxb.JAXBUtils;
 import org.deegree.protocol.ows.capabilities.GetCapabilities;
 import org.deegree.services.OWS;
 import org.deegree.services.authentication.SecurityException;
@@ -89,10 +87,8 @@ import org.deegree.services.jaxb.main.DeegreeServicesMetadataType;
 import org.deegree.services.jaxb.main.ServiceContactType;
 import org.deegree.services.jaxb.main.ServiceIdentificationType;
 import org.deegree.services.jaxb.main.ServiceProviderType;
-import org.deegree.services.wpvs.controller.WPVSController;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.xml.sax.SAXException;
 
 /**
  * Each concrete extension of this class is responsible for handling requests to a specific OGC web service (WPS, WMS,
@@ -332,10 +328,14 @@ public abstract class AbstractOGCServiceController implements OWS {
      */
     protected void checkConfigVersion( String confFileURL, String configVersionString )
                             throws ControllerInitException {
+
         Version configVersion = Version.parseVersion( configVersionString );
         if ( !implementationMetadata.getSupportedConfigVersions().contains( configVersion ) ) {
-            String msg = "Configuration file '" + confFileURL + " uses configuration format version " + configVersion
-                         + ", but this deegree version only supports version(s): ";
+            LOG.error( "" );
+            LOG.error( "*** Configuration version mismatch ***", confFileURL );
+            LOG.error( "" );
+            String msg = "File uses config version " + configVersion
+                         + ", but this deegree build only supports version(s): ";
             boolean separatorNeeded = false;
             for ( Version supportedVersion : implementationMetadata.getSupportedConfigVersions() ) {
                 msg += supportedVersion;
@@ -346,6 +346,23 @@ public abstract class AbstractOGCServiceController implements OWS {
             }
             msg += " for this file type. Information on resolving this issue can be found at 'http://wiki.deegree.org/deegreeWiki/deegree3/ConfigurationVersions'. ";
             throw new ControllerInitException( msg );
+        }
+    }
+
+    protected Object unmarshallConfig( String jaxbPackage, String schemaLocation, OMElement element )
+                            throws ControllerInitException {
+        XMLAdapter adapter = new XMLAdapter( element );
+        return unmarshallConfig( jaxbPackage, schemaLocation, adapter );
+    }
+
+    protected Object unmarshallConfig( String jaxbPackage, String schemaLocation, XMLAdapter xmlAdapter )
+                            throws ControllerInitException {
+        try {
+            return JAXBUtils.unmarshall( jaxbPackage, schemaLocation, xmlAdapter );
+        } catch ( JAXBException e ) {
+            LOG.error( "Could not load service configuration: '{}'", e.getLinkedException().getMessage() );
+            throw new ControllerInitException( "Error parsing service configuration: "
+                                               + e.getLinkedException().getMessage(), e );
         }
     }
 
@@ -412,8 +429,7 @@ public abstract class AbstractOGCServiceController implements OWS {
                 }
             }
             if ( agreedVersion == null ) {
-                String versionsString = Version.getVersionsString( request.getAcceptVersionsAsVersions().toArray(
-                                                                                                                  new Version[request.getAcceptVersions().size()] ) );
+                String versionsString = Version.getVersionsString( request.getAcceptVersionsAsVersions().toArray( new Version[request.getAcceptVersions().size()] ) );
                 throw new OWSException( "Version negotiation failed. No support for version(s): " + versionsString,
                                         OWSException.VERSION_NEGOTIATION_FAILED );
             }
@@ -565,8 +581,7 @@ public abstract class AbstractOGCServiceController implements OWS {
      *            to be synchronized with the main configuration
      * @return the configured service provider, with missing values filled from the main configuration.
      */
-    protected ServiceProviderType synchronizeServiceProviderWithMainControllerConf(
-                                                                                    ServiceProviderType configuredServiceProvider ) {
+    protected ServiceProviderType synchronizeServiceProviderWithMainControllerConf( ServiceProviderType configuredServiceProvider ) {
         ServiceProviderType mainProvider = mainMetadataConf.getServiceProvider();
         ServiceProviderType result = configuredServiceProvider;
         if ( configuredServiceProvider == null ) {
@@ -588,8 +603,7 @@ public abstract class AbstractOGCServiceController implements OWS {
      * @return the service identification with all missing values filled in from the main controller service
      *         identification.
      */
-    protected ServiceIdentificationType synchronizeServiceIdentificationWithMainController(
-                                                                                            ServiceIdentificationType serviceIdentification ) {
+    protected ServiceIdentificationType synchronizeServiceIdentificationWithMainController( ServiceIdentificationType serviceIdentification ) {
         ServiceIdentificationType mainID = mainMetadataConf.getServiceIdentification();
         ServiceIdentificationType result = serviceIdentification;
         if ( mainID != null ) {
@@ -688,59 +702,6 @@ public abstract class AbstractOGCServiceController implements OWS {
             LOG.info( "Using main controller's value:" + controllerValue );
         }
         return useController ? controllerValue : localValue;
-    }
-
-    /**
-     * Tries to load a schema file from the given location, which might be useful for the validation of configuration
-     * files with JAXB.
-     * 
-     * @param schemaFile
-     *            location like: "/META-INF/schemas/[SERVICE_NAME]/[VERSION]/[SERVICE_NAME]_service_configuration.xsd"
-     * @return the schema for the given url or <code>null</code> if no schema could be loaded from the given url.
-     */
-    public Schema getSchemaForUrl( String schemaFile ) {
-        URL url = WPVSController.class.getResource( schemaFile );
-        Schema result = null;
-        if ( url != null ) {
-            try {
-                result = sf.newSchema( url );
-            } catch ( SAXException e ) {
-                LOG.error( "No schema could be loaded from file: " + schemaFile + " because: "
-                           + e.getLocalizedMessage(), e );
-            }
-        }
-        return result;
-    }
-
-    /**
-     * Create a JAXB {@link Unmarshaller} which is instantiated with the given classpath (as well as the common
-     * configuration classpath). If the given schemalocation is not <code>null</code>, the unmarshaller will validate
-     * against the schema file loaded from the given location.
-     * 
-     * @param jaxbPackage
-     *            used for instantiating the unmarshaller
-     * @param schemaLocation
-     *            if not <code>null</code> this method will try to load the schema from location and set the validation
-     *            in the unmarshaller. This location could be:
-     *            "/META-INF/schemas/[SERVICE_NAME]/[VERSION]/[SERVICE_NAME]_service_configuration.xsd"
-     * @return an unmarshaller which can be used to unmarshall a document with jaxb
-     * @throws JAXBException
-     *             if the {@link Unmarshaller} could not be created.
-     */
-    public Unmarshaller getUnmarshaller( String jaxbPackage, String schemaLocation )
-                            throws JAXBException {
-        JAXBContext jc = JAXBContext.newInstance( jaxbPackage );
-        Unmarshaller u = jc.createUnmarshaller();
-
-        if ( schemaLocation != null ) {
-            Schema configSchema = getSchemaForUrl( schemaLocation );
-            if ( configSchema != null ) {
-                u.setSchema( configSchema );
-            } else {
-                LOG.info( "Not using jaxb schema validation, because the schema could not be loaded." );
-            }
-        }
-        return u;
     }
 
     /**

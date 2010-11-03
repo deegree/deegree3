@@ -54,9 +54,6 @@ import java.util.Map;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Unmarshaller;
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
@@ -75,7 +72,6 @@ import org.deegree.commons.utils.kvp.KVPUtils;
 import org.deegree.commons.utils.kvp.MissingParameterException;
 import org.deegree.commons.xml.NamespaceContext;
 import org.deegree.commons.xml.XMLAdapter;
-import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.commons.xml.XPath;
 import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.protocol.ows.capabilities.GetCapabilities;
@@ -139,6 +135,10 @@ public class WPService extends AbstractOGCServiceController {
 
     private static final Logger LOG = LoggerFactory.getLogger( WPService.class );
 
+    private static final String CONFIG_JAXB_PACKAGE = "org.deegree.services.jaxb.wps";
+
+    private static final String CONFIG_SCHEMA = "/META-INF/schemas/wps/0.5.0/wps_configuration.xsd";
+
     private static final ImplementationMetadata<WPSRequestType> IMPLEMENTATION_METADATA = new ImplementationMetadata<WPSRequestType>() {
         {
             supportedVersions = new Version[] { VERSION_100 };
@@ -167,6 +167,7 @@ public class WPService extends AbstractOGCServiceController {
                       DeegreeServiceControllerType mainConf )
                             throws ControllerInitException {
 
+        LOG.info( "Initializing WPS." );
         init( serviceMetadata, mainConf, IMPLEMENTATION_METADATA, controllerConf );
 
         storageManager = new StorageManager( TempFileManager.getBaseDir() );
@@ -174,21 +175,9 @@ public class WPService extends AbstractOGCServiceController {
         NamespaceContext nsContext = new NamespaceContext();
         nsContext.addNamespace( "wps", "http://www.deegree.org/services/wps" );
 
-        // Get ServiceConfiguration from configFile
-        try {
-            JAXBContext jc = JAXBContext.newInstance( "org.deegree.services.jaxb.wps" );
-            Unmarshaller u = jc.createUnmarshaller();
-            OMElement serviceConfigurationElement = controllerConf.getRequiredElement(
-                                                                                       controllerConf.getRootElement(),
-                                                                                       new XPath(
-                                                                                                  "wps:ServiceConfiguration",
-                                                                                                  nsContext ) );
-            sc = (ServiceConfiguration) u.unmarshal( serviceConfigurationElement.getXMLStreamReaderWithoutCaching() );
-        } catch ( XMLParsingException e ) {
-            throw new ControllerInitException( "TODO", e );
-        } catch ( JAXBException e ) {
-            throw new ControllerInitException( "TODO", e );
-        }
+        OMElement configEl = controllerConf.getRequiredElement( controllerConf.getRootElement(),
+                                                                new XPath( "wps:ServiceConfiguration", nsContext ) );
+        sc = (ServiceConfiguration) unmarshallConfig( CONFIG_JAXB_PACKAGE, CONFIG_SCHEMA, configEl );
 
         URL controllerConfURL;
         try {
