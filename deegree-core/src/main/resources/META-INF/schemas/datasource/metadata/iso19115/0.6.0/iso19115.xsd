@@ -51,7 +51,7 @@
 			</sequence>
 			<attribute name="connId" type="string" use="required" />
 			<attribute name="configVersion" use="required" fixed="0.6.0" />
-			<attribute name="validate" type="boolean" use="optional" default="true" />
+			<attribute name="modifiable" type="boolean" use="optional" default="true"/>
 		</complexType>
 	</element>
 	<element name="AbstractInspector" type="ds:AbstractInspectorType" abstract="true" />
