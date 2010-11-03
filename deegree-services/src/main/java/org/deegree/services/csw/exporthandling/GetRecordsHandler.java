@@ -62,6 +62,7 @@ import org.deegree.commons.utils.kvp.InvalidParameterValueException;
 import org.deegree.commons.utils.time.DateUtils;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.schema.SchemaValidator;
+import org.deegree.commons.xml.stax.SchemaLocationXMLStreamWriter;
 import org.deegree.commons.xml.stax.TrimmingXMLStreamWriter;
 import org.deegree.metadata.DCRecord;
 import org.deegree.metadata.MetadataRecord;
@@ -187,7 +188,6 @@ public class GetRecordsHandler {
                             throws XMLStreamException, OWSException, MetadataStoreException {
         Version version = new Version( 2, 0, 2 );
 
-        writer.setDefaultNamespace( CSW_202_NS );
         writer.setPrefix( CSW_PREFIX, CSW_202_NS );
         if ( getRec.getResultType() != ResultType.validate ) {
             writer.writeStartElement( CSW_202_NS, "GetRecordsResponse" );
@@ -337,8 +337,8 @@ public class GetRecordsHandler {
         if ( schemaLocation == null ) {
             return writer.getXMLWriter();
         }
-        return new TrimmingXMLStreamWriter( writer.getXMLWriter() );
-        // return new SchemaLocationXMLStreamWriter( writer.getXMLWriter(), schemaLocation );
+        XMLStreamWriter fWriter = new TrimmingXMLStreamWriter( writer.getXMLWriter() );
+        return new SchemaLocationXMLStreamWriter( fWriter, schemaLocation );
     }
 
     /**

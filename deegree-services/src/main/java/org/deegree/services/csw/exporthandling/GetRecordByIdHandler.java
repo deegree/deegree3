@@ -49,6 +49,7 @@ import javax.xml.stream.XMLStreamWriter;
 import org.deegree.commons.tom.ows.Version;
 import org.deegree.commons.utils.kvp.InvalidParameterValueException;
 import org.deegree.commons.xml.stax.SchemaLocationXMLStreamWriter;
+import org.deegree.commons.xml.stax.TrimmingXMLStreamWriter;
 import org.deegree.metadata.DCRecord;
 import org.deegree.metadata.MetadataRecord;
 import org.deegree.metadata.persistence.MetadataResultSet;
@@ -165,7 +166,6 @@ public class GetRecordByIdHandler {
     private void export202( XMLStreamWriter writer, GetRecordById getRecBI, boolean isSoap )
                             throws XMLStreamException, OWSException, MetadataStoreException {
 
-        writer.setDefaultNamespace( CSW_202_NS );
         writer.setPrefix( CSW_PREFIX, CSW_202_NS );
         writer.writeStartElement( CSW_202_NS, "GetRecordByIdResponse" );
 
@@ -211,7 +211,9 @@ public class GetRecordByIdHandler {
         if ( schemaLocation == null ) {
             return writer.getXMLWriter();
         }
-        return new SchemaLocationXMLStreamWriter( writer.getXMLWriter(), schemaLocation );
+        XMLStreamWriter fWriter = new TrimmingXMLStreamWriter( writer.getXMLWriter() );
+        return new SchemaLocationXMLStreamWriter( fWriter, schemaLocation );
+        // return new TrimmingXMLStreamWriter( writer.getXMLWriter() );
     }
 
 }
