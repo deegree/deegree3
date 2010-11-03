@@ -40,12 +40,11 @@ import static org.deegree.commons.utils.CollectionUtils.map;
 import java.net.URL;
 import java.util.LinkedList;
 
-import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
-import javax.xml.bind.Unmarshaller;
 
-import org.deegree.commons.utils.Pair;
 import org.deegree.commons.utils.CollectionUtils.Mapper;
+import org.deegree.commons.utils.Pair;
+import org.deegree.commons.xml.jaxb.JAXBUtils;
 import org.deegree.feature.persistence.FeatureStore;
 import org.deegree.feature.persistence.FeatureStoreException;
 import org.deegree.feature.persistence.FeatureStoreProvider;
@@ -66,6 +65,14 @@ public class SimpleSQLFeatureStoreProvider implements FeatureStoreProvider {
 
     private static final Logger LOG = LoggerFactory.getLogger( SimpleSQLFeatureStoreProvider.class );
 
+    private static final String CONFIG_NS = "http://www.deegree.org/datasource/feature/simplesql";
+
+    private static final String CONFIG_JAXB_PACKAGE = "org.deegree.feature.persistence.simplesql.jaxb";
+
+    private static final String CONFIG_SCHEMA = "/META-INF/schemas/datasource/feature/simplesql/0.6.0/simplesql.xsd";
+
+    private static final String CONFIG_TEMPLATE = "/META-INF/schemas/datasource/feature/simplesql/0.6.0/example.xml";
+
     private static Mapper<Pair<Integer, String>, LODStatement> lodMapper = new Mapper<Pair<Integer, String>, LODStatement>() {
         public Pair<Integer, String> apply( LODStatement u ) {
             return new Pair<Integer, String>( u.getAboveScale(), u.getValue() );
@@ -74,17 +81,17 @@ public class SimpleSQLFeatureStoreProvider implements FeatureStoreProvider {
 
     @Override
     public String getConfigNamespace() {
-        return "http://www.deegree.org/datasource/feature/simplesql";
+        return CONFIG_NS;
     }
 
     @Override
     public URL getConfigSchema() {
-        return SimpleSQLFeatureStoreProvider.class.getResource( "/META-INF/schemas/datasource/feature/simplesql/0.6.0/simpleqsl.xsd" );
+        return SimpleSQLFeatureStoreProvider.class.getResource( CONFIG_SCHEMA );
     }
 
     @Override
     public URL getConfigTemplate() {
-        return SimpleSQLFeatureStoreProvider.class.getResource( "/META-INF/schemas/datasource/feature/simplesql/0.6.0/example.xml" );
+        return SimpleSQLFeatureStoreProvider.class.getResource( CONFIG_TEMPLATE );
     }
 
     @Override
@@ -93,10 +100,9 @@ public class SimpleSQLFeatureStoreProvider implements FeatureStoreProvider {
 
         SimpleSQLFeatureStore fs = null;
         try {
-            JAXBContext jc = JAXBContext.newInstance( "org.deegree.feature.persistence.simplesql.jaxb" );
-            Unmarshaller u = jc.createUnmarshaller();
-            SimpleSQLFeatureStoreConfig config = (SimpleSQLFeatureStoreConfig) u.unmarshal( configURL );
-
+            SimpleSQLFeatureStoreConfig config = (SimpleSQLFeatureStoreConfig) JAXBUtils.unmarshall( CONFIG_JAXB_PACKAGE,
+                                                                                                     CONFIG_SCHEMA,
+                                                                                                     configURL );
             String connId = config.getConnectionPoolId();
             String srs = config.getStorageCRS();
             String stmt = config.getSQLStatement();

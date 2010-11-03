@@ -43,12 +43,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
-import javax.xml.bind.Unmarshaller;
 
 import org.deegree.commons.xml.NamespaceContext;
 import org.deegree.commons.xml.XMLAdapter;
+import org.deegree.commons.xml.jaxb.JAXBUtils;
 import org.deegree.cs.CRS;
 import org.deegree.feature.i18n.Messages;
 import org.deegree.feature.persistence.FeatureStore;
@@ -77,19 +76,27 @@ public class PostGISFeatureStoreProvider implements FeatureStoreProvider {
 
     private static final Logger LOG = LoggerFactory.getLogger( PostGISFeatureStoreProvider.class );
 
+    private static final String CONFIG_NS = "http://www.deegree.org/datasource/feature/postgis";
+    
+    private static final String CONFIG_JAXB_PACKAGE = "org.deegree.feature.persistence.postgis.jaxb";
+
+    private static final String CONFIG_SCHEMA = "/META-INF/schemas/datasource/feature/postgis/0.6.1/postgis.xsd";
+
+    private static final String CONFIG_TEMPLATE = "/META-INF/schemas/datasource/feature/postgis/0.6.1/example.xml";
+
     @Override
     public String getConfigNamespace() {
-        return "http://www.deegree.org/datasource/feature/postgis";
+        return CONFIG_NS;
     }
 
     @Override
     public URL getConfigSchema() {
-        return PostGISFeatureStoreProvider.class.getResource( "/META-INF/schemas/datasource/feature/postgis/0.6.0/postgis.xsd" );
+        return PostGISFeatureStoreProvider.class.getResource( CONFIG_SCHEMA );
     }
 
     @Override
     public URL getConfigTemplate() {
-        return PostGISFeatureStoreProvider.class.getResource( "/META-INF/schemas/datasource/feature/postgis/0.6.0/example.xml" );
+        return PostGISFeatureStoreProvider.class.getResource( CONFIG_TEMPLATE );
     }
 
     @Override
@@ -162,18 +169,12 @@ public class PostGISFeatureStoreProvider implements FeatureStoreProvider {
 
     private PostGISFeatureStoreConfig parseConfig( URL configURL )
                             throws FeatureStoreException {
-
-        PostGISFeatureStoreConfig config = null;
         try {
-            JAXBContext jc = JAXBContext.newInstance( "org.deegree.feature.persistence.postgis.jaxb" );
-            Unmarshaller u = jc.createUnmarshaller();
-            config = (PostGISFeatureStoreConfig) u.unmarshal( configURL );
+            return (PostGISFeatureStoreConfig) JAXBUtils.unmarshall( CONFIG_JAXB_PACKAGE, CONFIG_SCHEMA, configURL );
         } catch ( JAXBException e ) {
             String msg = Messages.getMessage( "STORE_MANAGER_STORE_SETUP_ERROR", e.getMessage() );
-            LOG.error( msg, e );
             throw new FeatureStoreException( msg, e );
         }
-        return config;
     }
 
     private static Map<String, String> getHintMap( List<NamespaceHint> hints ) {

@@ -41,11 +41,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
-import javax.xml.bind.Unmarshaller;
 
 import org.deegree.commons.xml.XMLAdapter;
+import org.deegree.commons.xml.jaxb.JAXBUtils;
 import org.deegree.cs.CRS;
 import org.deegree.feature.FeatureCollection;
 import org.deegree.feature.i18n.Messages;
@@ -79,19 +78,27 @@ public class MemoryFeatureStoreProvider implements FeatureStoreProvider {
 
     private static final Logger LOG = LoggerFactory.getLogger( MemoryFeatureStoreProvider.class );
 
+    private static final String CONFIG_NS = "http://www.deegree.org/datasource/feature/memory";
+
+    private static final String CONFIG_JAXB_PACKAGE = "org.deegree.feature.persistence.memory.jaxb";
+
+    private static final String CONFIG_SCHEMA = "/META-INF/schemas/datasource/feature/memory/0.6.0/memory.xsd";
+
+    private static final String CONFIG_TEMPLATE = "/META-INF/schemas/datasource/feature/postgis/0.6.0/example.xml";
+
     @Override
     public String getConfigNamespace() {
-        return "http://www.deegree.org/datasource/feature/memory";
+        return CONFIG_NS;
     }
 
     @Override
     public URL getConfigSchema() {
-        return MemoryFeatureStoreProvider.class.getResource( "/META-INF/schemas/datasource/0.5.0/feature/memory.xsd" );
+        return MemoryFeatureStoreProvider.class.getResource( CONFIG_SCHEMA );
     }
 
     @Override
     public URL getConfigTemplate() {
-        return MemoryFeatureStoreProvider.class.getResource( "/META-INF/schemas/datasource/0.5.0/feature/example_memory.xml" );
+        return MemoryFeatureStoreProvider.class.getResource( CONFIG_TEMPLATE );
     }
 
     @Override
@@ -101,9 +108,8 @@ public class MemoryFeatureStoreProvider implements FeatureStoreProvider {
         MemoryFeatureStore fs = null;
         CRS storageSRS = null;
         try {
-            JAXBContext jc = JAXBContext.newInstance( "org.deegree.feature.persistence.memory.jaxb" );
-            Unmarshaller u = jc.createUnmarshaller();
-            MemoryFeatureStoreConfig config = (MemoryFeatureStoreConfig) u.unmarshal( configURL );
+            MemoryFeatureStoreConfig config = (MemoryFeatureStoreConfig) JAXBUtils.unmarshall( CONFIG_JAXB_PACKAGE,
+                                                                                               CONFIG_SCHEMA, configURL );
 
             ApplicationSchema schema = null;
             XMLAdapter resolver = new XMLAdapter();

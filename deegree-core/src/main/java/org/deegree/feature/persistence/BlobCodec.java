@@ -79,8 +79,9 @@ import com.sun.xml.fastinfoset.stax.StAXDocumentSerializer;
 /**
  * Provides methods for storing / retrieving {@link GMLObject} instances in binary form, e.g. in BLOBs.
  * 
- * TODO improve namespace handling (should not be done for every single blob) TODO get FAST_INFOSET to work TODO
- * FAST_INFOSET with external vocabulary
+ * TODO improve namespace handling (should not be done for every single blob)
+ * TODO get FAST_INFOSET to work
+ * TODO FAST_INFOSET with external vocabulary
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$

@@ -41,11 +41,10 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.charset.Charset;
 
-import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
-import javax.xml.bind.Unmarshaller;
 
 import org.deegree.commons.xml.XMLAdapter;
+import org.deegree.commons.xml.jaxb.JAXBUtils;
 import org.deegree.cs.CRS;
 import org.deegree.feature.i18n.Messages;
 import org.deegree.feature.persistence.FeatureStore;
@@ -67,19 +66,27 @@ public class ShapeFeatureStoreProvider implements FeatureStoreProvider {
 
     private static final Logger LOG = LoggerFactory.getLogger( ShapeFeatureStoreProvider.class );
 
+    private static final String CONFIG_NS = "http://www.deegree.org/datasource/feature/shape";
+
+    private static final String CONFIG_JAXB_PACKAGE = "org.deegree.feature.persistence.shape.jaxb";
+
+    private static final String CONFIG_SCHEMA = "/META-INF/schemas/datasource/feature/shape/0.6.1/shape.xsd";
+
+    private static final String CONFIG_TEMPLATE = "/META-INF/schemas/datasource/feature/shape/0.6.1/example.xml";
+
     @Override
     public String getConfigNamespace() {
-        return "http://www.deegree.org/datasource/feature/shape";
+        return CONFIG_NS;
     }
 
     @Override
     public URL getConfigSchema() {
-        return ShapeFeatureStoreProvider.class.getResource( "/META-INF/schemas/datasource/feature/shape/0.6.1/shape.xsd" );
+        return ShapeFeatureStoreProvider.class.getResource( CONFIG_SCHEMA );
     }
 
     @Override
     public URL getConfigTemplate() {
-        return ShapeFeatureStoreProvider.class.getResource( "/META-INF/schemas/datasource/feature/shape/0.6.1/example.xml" );
+        return ShapeFeatureStoreProvider.class.getResource( CONFIG_TEMPLATE );
     }
 
     @Override
@@ -88,9 +95,9 @@ public class ShapeFeatureStoreProvider implements FeatureStoreProvider {
 
         ShapeFeatureStore fs = null;
         try {
-            JAXBContext jc = JAXBContext.newInstance( "org.deegree.feature.persistence.shape.jaxb" );
-            Unmarshaller u = jc.createUnmarshaller();
-            ShapeFeatureStoreConfig config = (ShapeFeatureStoreConfig) u.unmarshal( configURL );
+            ShapeFeatureStoreConfig config = (ShapeFeatureStoreConfig) JAXBUtils.unmarshall( CONFIG_JAXB_PACKAGE,
+                                                                                             CONFIG_SCHEMA, configURL );
+
             XMLAdapter resolver = new XMLAdapter();
             resolver.setSystemId( configURL.toString() );
 

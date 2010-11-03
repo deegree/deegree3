@@ -44,11 +44,9 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.util.Properties;
 
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.Unmarshaller;
-
 import org.apache.axiom.om.util.Base64;
 import org.deegree.commons.proxy.jaxb.ProxyConfiguration;
+import org.deegree.commons.xml.jaxb.JAXBUtils;
 import org.slf4j.Logger;
 
 /**
@@ -68,6 +66,10 @@ import org.slf4j.Logger;
 public final class ProxyUtils {
 
     private static final Logger LOG = getLogger( ProxyUtils.class );
+
+    private static final String CONFIG_JAXB_PACKAGE = "org.deegree.commons.proxy.jaxb";
+
+    private static final String CONFIG_SCHEMA = "/META-INF/schemas/proxy/0.5.0/proxy.xsd";
 
     private static final String PROXY_HOST = "proxyHost";
 
@@ -117,10 +119,9 @@ public final class ProxyUtils {
         LOG.info( "Proxy configuration." );
         LOG.info( "--------------------------------------------------------------------------------" );
         try {
-            String contextName = "org.deegree.commons.proxy.jaxb";
-            JAXBContext jc = JAXBContext.newInstance( contextName );
-            Unmarshaller unmarshaller = jc.createUnmarshaller();
-            ProxyConfiguration proxyConfig = (ProxyConfiguration) unmarshaller.unmarshal( proxyConfigFile );
+            ProxyConfiguration proxyConfig = (ProxyConfiguration) JAXBUtils.unmarshall( CONFIG_JAXB_PACKAGE,
+                                                                                        CONFIG_SCHEMA,
+                                                                                        proxyConfigFile.toURI().toURL() );
             if ( proxyConfig != null ) {
                 setupProxyParameters( proxyConfig );
             }
