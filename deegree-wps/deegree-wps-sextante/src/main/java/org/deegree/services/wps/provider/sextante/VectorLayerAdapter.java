@@ -44,6 +44,7 @@ import java.util.List;
 import java.util.Set;
 
 import javax.xml.namespace.QName;
+
 import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.commons.tom.primitive.PrimitiveType;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
@@ -69,7 +70,9 @@ import org.deegree.geometry.standard.AbstractDefaultGeometry;
 import org.deegree.gml.GMLVersion;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import com.vividsolutions.jts.geom.PrecisionModel;
+
 import es.unex.sextante.dataObjects.FeatureImpl;
 import es.unex.sextante.dataObjects.IFeature;
 import es.unex.sextante.dataObjects.IFeatureIterator;
@@ -421,7 +424,7 @@ public class VectorLayerAdapter {
         AbstractDefaultGeometry gDefault = (AbstractDefaultGeometry) gFactory.createPoint( null, 0, 0,
                                                                                            new CRS( crsName ) );
 
-        Geometry g = gDefault.createFromJTS( gJTS );
+        Geometry g = gDefault.createFromJTS( gJTS, new CRS( crsName ) );
 
         return g;
     }
