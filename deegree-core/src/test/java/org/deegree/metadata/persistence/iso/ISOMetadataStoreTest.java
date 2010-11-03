@@ -243,25 +243,25 @@ public class ISOMetadataStoreTest {
         MetadataResultSet resultSet = store.getRecordsById( ids );
 
         // create the is output
-        // String file = "/home/thomas/Desktop/zTestBrief.xml";
-        String file = null;
-        StringBuilder streamThat = stringBuilderFromResultSet( resultSet, ReturnableElement.brief, file,
-                                                               XMLStreamConstants.NAMESPACE );
-        if ( streamThat == null ) {
+        String file = "/home/thomas/Desktop/zTestBrief.xml";
+        // String file = null;
+        StringBuilder streamActual = stringBuilderFromResultSet( resultSet, ReturnableElement.brief, file,
+                                                                 XMLStreamConstants.NAMESPACE );
+        if ( streamActual == null ) {
             return;
         }
-        StringBuilder streamThis = new StringBuilder();
-        streamThis.append( "null=http://www.isotc211.org/2005/gmd" ).append( ' ' );
-        streamThis.append( "gmd=http://www.isotc211.org/2005/gmd" ).append( ' ' );
-        streamThis.append( "gco=http://www.isotc211.org/2005/gco" ).append( ' ' );
-        streamThis.append( "srv=http://www.isotc211.org/2005/srv" ).append( ' ' );
-        streamThis.append( "gml=http://www.opengis.net/gml" ).append( ' ' );
-        streamThis.append( "gts=http://www.isotc211.org/2005/gts" ).append( ' ' );
-        streamThis.append( "xsi=http://www.w3.org/2001/XMLSchema-instance" ).append( ' ' );
+        StringBuilder streamExpected = new StringBuilder();
+        streamExpected.append( "null=http://www.isotc211.org/2005/gmd" ).append( ' ' );
+        streamExpected.append( "gmd=http://www.isotc211.org/2005/gmd" ).append( ' ' );
+        streamExpected.append( "gco=http://www.isotc211.org/2005/gco" ).append( ' ' );
+        streamExpected.append( "srv=http://www.isotc211.org/2005/srv" ).append( ' ' );
+        streamExpected.append( "gml=http://www.opengis.net/gml" ).append( ' ' );
+        streamExpected.append( "gts=http://www.isotc211.org/2005/gts" ).append( ' ' );
+        streamExpected.append( "xsi=http://www.w3.org/2001/XMLSchema-instance" ).append( ' ' );
 
-        LOG.info( "streamThis: " + streamThis.toString() );
-        LOG.info( "streamThat: " + streamThat.toString() );
-        Assert.assertEquals( streamThis.toString(), streamThat.toString() );
+        LOG.info( "streamThis: " + streamExpected.toString() );
+        LOG.info( "streamThat: " + streamActual.toString() );
+        Assert.assertEquals( streamExpected.toString(), streamActual.toString() );
 
     }
 
@@ -487,23 +487,23 @@ public class ISOMetadataStoreTest {
         List<String> ids = insertMetadata( store, ta, TstConstants.fullRecord );
         MetadataResultSet resultSet = store.getRecordsById( ids );
 
-        XMLStreamReader xmlStreamThis = XMLInputFactory.newInstance().createXMLStreamReader(
+        XMLStreamReader xmlStreamActual = XMLInputFactory.newInstance().createXMLStreamReader(
                                                                                              TstConstants.briefRecord.openStream() );
 
         // create the should be output
-        StringBuilder streamThis = stringBuilderFromXMLStream( xmlStreamThis );
+        StringBuilder streamActual = stringBuilderFromXMLStream( xmlStreamActual );
 
         // create the is output
         // String file = "/home/thomas/Desktop/zTestBrief.xml";
         String file = null;
-        StringBuilder streamThat = stringBuilderFromResultSet( resultSet, ReturnableElement.brief, file,
+        StringBuilder streamExpected = stringBuilderFromResultSet( resultSet, ReturnableElement.brief, file,
                                                                XMLStreamConstants.START_ELEMENT );
-        if ( streamThat == null ) {
+        if ( streamExpected == null ) {
             return;
         }
-        LOG.info( "streamThis: " + streamThis.toString() );
-        LOG.info( "streamThat: " + streamThat.toString() );
-        Assert.assertEquals( streamThis.toString(), streamThat.toString() );
+        LOG.info( "streamThis: " + streamActual.toString() );
+        LOG.info( "streamThat: " + streamExpected.toString() );
+        Assert.assertEquals( streamActual.toString(), streamExpected.toString() );
 
     }
 
@@ -534,23 +534,23 @@ public class ISOMetadataStoreTest {
         List<String> ids = insertMetadata( store, ta, TstConstants.fullRecord );
         MetadataResultSet resultSet = store.getRecordsById( ids );
 
-        XMLStreamReader xmlStreamThis = XMLInputFactory.newInstance().createXMLStreamReader(
+        XMLStreamReader xmlStreamActual = XMLInputFactory.newInstance().createXMLStreamReader(
                                                                                              TstConstants.summaryRecord.openStream() );
 
         // create the should be output
-        StringBuilder streamThis = stringBuilderFromXMLStream( xmlStreamThis );
+        StringBuilder streamActual = stringBuilderFromXMLStream( xmlStreamActual );
 
         // create the is output
         // String file = "/home/thomas/Desktop/zTestSummary.xml";
         String file = null;
-        StringBuilder streamThat = stringBuilderFromResultSet( resultSet, ReturnableElement.summary, file,
+        StringBuilder streamExpected = stringBuilderFromResultSet( resultSet, ReturnableElement.summary, file,
                                                                XMLStreamConstants.START_ELEMENT );
-        if ( streamThat == null ) {
+        if ( streamExpected == null ) {
             return;
         }
-        LOG.debug( "streamThis: " + streamThis.toString() );
-        LOG.debug( "streamThat: " + streamThat.toString() );
-        Assert.assertEquals( streamThis.toString(), streamThat.toString() );
+        LOG.debug( "streamThis: " + streamActual.toString() );
+        LOG.debug( "streamThat: " + streamExpected.toString() );
+        Assert.assertEquals( streamActual.toString(), streamExpected.toString() );
 
     }
 
