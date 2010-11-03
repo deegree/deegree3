@@ -83,6 +83,22 @@ public class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
 
     private static LinkedList<String> parameterValues;
 
+    private final boolean isTransactionEnabled;
+
+    private final XMLStreamWriter writer;
+
+    private final DeegreeServicesMetadataType mainControllerConf;
+
+    private final DeegreeServiceControllerType mainConf;
+
+    private final Set<Sections> sections;
+
+    private final ServiceIdentificationType identification;
+
+    private final Version version;
+
+    private boolean isSoap;
+
     /**
      * additional queryable properties in ISO
      */
@@ -120,6 +136,20 @@ public class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
 
     }
 
+    public GetCapabilitiesHandler( XMLStreamWriter writer, DeegreeServicesMetadataType mainControllerConf,
+                                   DeegreeServiceControllerType mainConf, Set<Sections> sections,
+                                   ServiceIdentificationType identification, Version version,
+                                   boolean isTransactionEnabled, boolean isSoap ) {
+        this.writer = writer;
+        this.mainControllerConf = mainControllerConf;
+        this.mainConf = mainConf;
+        this.sections = sections;
+        this.identification = identification;
+        this.version = version;
+        this.isSoap = isSoap;
+        this.isTransactionEnabled = isTransactionEnabled;
+    }
+
     /**
      * Prepocessing for the xml export. Checks which version is requested and delegates it to the right versionexport.
      * In this case, version 2.0.2 of CSW is leaned on the 1.0.0 of the OGC specification.
@@ -133,9 +163,7 @@ public class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
      * @param isSoap
      * @throws XMLStreamException
      */
-    public static void export( XMLStreamWriter writer, DeegreeServicesMetadataType mainControllerConf,
-                               DeegreeServiceControllerType mainConf, Set<Sections> sections,
-                               ServiceIdentificationType identification, Version version, boolean isSoap )
+    public void export()
                             throws XMLStreamException {
 
         if ( VERSION_202.equals( version ) ) {
@@ -146,10 +174,9 @@ public class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
         }
     }
 
-    private static void export202( XMLStreamWriter writer, Set<Sections> sections,
-                                   ServiceIdentificationType identification,
-                                   DeegreeServicesMetadataType mainControllerConf,
-                                   DeegreeServiceControllerType mainConf, boolean isSoap )
+    private void export202( XMLStreamWriter writer, Set<Sections> sections, ServiceIdentificationType identification,
+                            DeegreeServicesMetadataType mainControllerConf, DeegreeServiceControllerType mainConf,
+                            boolean isSoap )
                             throws XMLStreamException {
         writer.setPrefix( CSW_PREFIX, CSW_202_NS );
         writer.setPrefix( "ows", OWS_NS );
@@ -185,7 +212,7 @@ public class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
         writer.writeEndDocument();
     }
 
-    private static void exportOperationsMetadata( XMLStreamWriter writer, DCPType dcp, String owsNS )
+    private void exportOperationsMetadata( XMLStreamWriter writer, DCPType dcp, String owsNS )
                             throws XMLStreamException {
         writer.writeStartElement( owsNS, "OperationsMetadata" );
 
@@ -219,11 +246,13 @@ public class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
                 writer.writeEndElement();// Operation
                 continue;
             } else if ( name.equals( CSWRequestType.Transaction.name() ) ) {
+                if ( isTransactionEnabled ) {
+                    // because there is the same output like for GetRecordById
+                    writeGetRecordById( writer, owsNS );
 
-                // because there is the same output like for GetRecordById
-                writeGetRecordById( writer, owsNS );
+                    writer.writeEndElement();// Operation
 
-                writer.writeEndElement();// Operation
+                }
                 continue;
             }
 
@@ -282,7 +311,7 @@ public class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
      * "updateSequence", Integer.toString( updateSequence ) ); }
      */
 
-    private static void exportServiceIdentification( XMLStreamWriter writer, ServiceIdentificationType identification )
+    private void exportServiceIdentification( XMLStreamWriter writer, ServiceIdentificationType identification )
                             throws XMLStreamException {
         writer.writeStartElement( "http://www.opengis.net/ows", Sections.ServiceIdentification.toString() );
 
@@ -317,7 +346,7 @@ public class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
         writer.writeEndElement();
     }
 
-    private final static boolean isEmpty( String value ) {
+    private final boolean isEmpty( String value ) {
         return value == null || "".equals( value );
     }
 
@@ -328,7 +357,7 @@ public class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
      * @param keywords
      * @throws XMLStreamException
      */
-    public static void exportKeywords( XMLStreamWriter writer, List<KeywordsType> keywords )
+    private void exportKeywords( XMLStreamWriter writer, List<KeywordsType> keywords )
                             throws XMLStreamException {
         if ( !keywords.isEmpty() ) {
             for ( KeywordsType kwt : keywords ) {
@@ -354,14 +383,14 @@ public class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
      * @param lst
      * @throws XMLStreamException
      */
-    public static void exportKeyword( XMLStreamWriter writer, LanguageStringType lst )
+    private void exportKeyword( XMLStreamWriter writer, LanguageStringType lst )
                             throws XMLStreamException {
         if ( lst != null ) {
             writeElement( writer, "http://www.opengis.net/ows", "Keyword", lst.getValue() );
         }
     }
 
-    private static void exportAccessConstraints( XMLStreamWriter writer, ServiceIdentificationType identification )
+    private void exportAccessConstraints( XMLStreamWriter writer, ServiceIdentificationType identification )
                             throws XMLStreamException {
         List<String> accessConstraints = identification.getAccessConstraints();
 
@@ -387,7 +416,7 @@ public class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
      *            the OWS namespace
      * @throws XMLStreamException
      */
-    private static void writeGetCapabilities( XMLStreamWriter writer, String owsNS )
+    private void writeGetCapabilities( XMLStreamWriter writer, String owsNS )
                             throws XMLStreamException {
 
         writer.writeStartElement( owsNS, "Parameter" );
@@ -419,7 +448,7 @@ public class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
      *            the OWS namespace
      * @throws XMLStreamException
      */
-    private static void writeDescribeRecord( XMLStreamWriter writer, String owsNS )
+    private void writeDescribeRecord( XMLStreamWriter writer, String owsNS )
                             throws XMLStreamException {
 
         writer.writeStartElement( owsNS, "Parameter" );
@@ -460,7 +489,7 @@ public class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
         // Constraints...[0..*]
     }
 
-    private static void writeOutputFormat( XMLStreamWriter writer, String owsNS )
+    private void writeOutputFormat( XMLStreamWriter writer, String owsNS )
                             throws XMLStreamException {
         writer.writeStartElement( owsNS, "Parameter" );
         writer.writeAttribute( "name", "outputFormat" );
@@ -490,7 +519,7 @@ public class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
      *            the OWS namespace
      * @throws XMLStreamException
      */
-    private static void writeGetRecords( XMLStreamWriter writer, String owsNS )
+    private void writeGetRecords( XMLStreamWriter writer, String owsNS )
                             throws XMLStreamException {
 
         writer.writeStartElement( owsNS, "Parameter" );
@@ -595,7 +624,7 @@ public class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
      *            the OWS namespace
      * @throws XMLStreamException
      */
-    private static void writeGetRecordById( XMLStreamWriter writer, String owsNS )
+    private void writeGetRecordById( XMLStreamWriter writer, String owsNS )
                             throws XMLStreamException {
 
         writeOutputFormat( writer, owsNS );

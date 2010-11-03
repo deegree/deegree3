@@ -106,6 +106,7 @@ import org.deegree.services.csw.security.CSWSecurityManager;
 import org.deegree.services.csw.transaction.Transaction;
 import org.deegree.services.csw.transaction.TransactionKVPAdapter;
 import org.deegree.services.csw.transaction.TransactionXMLAdapter;
+import org.deegree.services.i18n.Messages;
 import org.deegree.services.jaxb.csw.DeegreeCSW;
 import org.deegree.services.jaxb.main.DeegreeServiceControllerType;
 import org.deegree.services.jaxb.main.DeegreeServicesMetadataType;
@@ -137,6 +138,8 @@ public class CSWController extends AbstractOGCServiceController {
     private static final Logger LOG = LoggerFactory.getLogger( CSWController.class );
 
     private CSWService service;
+
+    private boolean enableTransactions;
 
     private CSWSecurityManager securityManager;
 
@@ -205,6 +208,8 @@ public class CSWController extends AbstractOGCServiceController {
         } else {
             validateAndSetOfferedVersions( jaxbConfig.getSupportedVersions().getVersion() );
         }
+
+        enableTransactions = jaxbConfig.isEnableTransactions() == null ? false : jaxbConfig.isEnableTransactions();
 
         describeRecordHandler = new DescribeRecordHandler( service );
         getRecordsHandler = new GetRecordsHandler( service );
@@ -279,7 +284,7 @@ public class CSWController extends AbstractOGCServiceController {
                 getRecordByIdHandler.doGetRecordById( getRecBI, response, false );
                 break;
             case Transaction:
-
+                checkTransactionsEnabled( rootElement );
                 Transaction trans = securityManager == null ? TransactionKVPAdapter.parse( normalizedKVPParams )
                                                            : securityManager.preprocess(
                                                                                          TransactionKVPAdapter.parse( normalizedKVPParams ),
@@ -381,6 +386,7 @@ public class CSWController extends AbstractOGCServiceController {
                 getRecordByIdHandler.doGetRecordById( cswGRBIRequest, response, false );
                 break;
             case Transaction:
+                checkTransactionsEnabled( rootElement );
                 TransactionXMLAdapter transAdapter = new TransactionXMLAdapter();
                 transAdapter.setRootElement( requestDoc.getRootElement() );
 
@@ -484,6 +490,7 @@ public class CSWController extends AbstractOGCServiceController {
                 getRecordByIdHandler.doGetRecordById( cswGRBIRequest, response, true );
                 break;
             case Transaction:
+                checkTransactionsEnabled( rootElement );
                 TransactionXMLAdapter transAdapter = new TransactionXMLAdapter();
                 transAdapter.setRootElement( requestElement );
 
@@ -533,6 +540,14 @@ public class CSWController extends AbstractOGCServiceController {
 
     }
 
+    private void checkTransactionsEnabled( String requestName )
+                            throws OWSException {
+        if ( !enableTransactions ) {
+            throw new OWSException( Messages.get( "CSW_TRANSACTIONS_DISABLED", requestName ),
+                                    OWSException.OPERATION_NOT_SUPPORTED );
+        }
+    }
+
     /**
      * Method for mapping the request operation to the implemented operations located in {@link CSWConstants}
      * 
@@ -580,8 +595,10 @@ public class CSWController extends AbstractOGCServiceController {
         response.setContentType( "text/xml; charset=UTF-8" );
 
         XMLStreamWriter xmlWriter = getXMLResponseWriter( response, null );
-        GetCapabilitiesHandler.export( xmlWriter, mainMetadataConf, mainControllerConf, sections,
-                                       mainMetadataConf.getServiceIdentification(), negotiatedVersion, isSoap );
+        GetCapabilitiesHandler gce = new GetCapabilitiesHandler( xmlWriter, mainMetadataConf, mainControllerConf,
+                                                                 sections, mainMetadataConf.getServiceIdentification(),
+                                                                 negotiatedVersion, enableTransactions, isSoap );
+        gce.export();
         xmlWriter.flush();
 
     }

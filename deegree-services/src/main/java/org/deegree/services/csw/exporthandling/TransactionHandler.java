@@ -51,6 +51,7 @@ import org.deegree.commons.tom.ows.Version;
 import org.deegree.commons.xml.stax.SchemaLocationXMLStreamWriter;
 import org.deegree.metadata.DCRecord;
 import org.deegree.metadata.MetadataRecord;
+import org.deegree.metadata.persistence.MetadataInspectorException;
 import org.deegree.metadata.persistence.MetadataResultSet;
 import org.deegree.metadata.persistence.MetadataStore;
 import org.deegree.metadata.persistence.MetadataStoreException;
@@ -268,14 +269,14 @@ public class TransactionHandler {
     }
 
     private int doUpdate( MetadataStoreTransaction ta, UpdateTransaction update )
-                            throws MetadataStoreException {
+                            throws MetadataStoreException, MetadataInspectorException {
         int i = ta.performUpdate( update );
         LOG.info( "Update done!" );
         return i;
     }
 
     private List<String> doInsert( MetadataStoreTransaction ta, InsertTransaction insert )
-                            throws MetadataStoreException, OWSException {
+                            throws MetadataStoreException, OWSException, MetadataInspectorException {
         // TODO the first element determines the metadataStore
         String uri = insert.getElements().get( 0 ).getNamespace().getNamespaceURI();
         String localName = insert.getElements().get( 0 ).getLocalName();
