@@ -1,6 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<ISORecordStore connId="conn1" configVersion="0.5.0" xmlns="http://www.deegree.org/datasource/record/iso19115" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://www.deegree.org/datasource/record/iso19115 http://schemas.deegree.org/datasource/0.5.0/record/iso19115.xsd">
-  <RequireInspireCompliance>false</RequireInspireCompliance>  
-  <GenerateFileIdentifiers>false</GenerateFileIdentifiers>
-</ISORecordStore>
