@@ -38,6 +38,13 @@
     </dependency>
     <dependency>
       <groupId>org.deegree</groupId>
+      <artifactId>deegree-catalogue-manager</artifactId>
+      <version>2.5-SNAPSHOT</version>
+      <type>war</type>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.deegree</groupId>
       <artifactId>deegree-tomcat</artifactId>
       <version>3.0-SNAPSHOT</version>
       <type>zip</type>
@@ -97,6 +104,19 @@
               <includeGroupIds>org.deegree</includeGroupIds>
               <includeArtifactIds>deegree-tomcat</includeArtifactIds>
               <outputDirectory>target</outputDirectory>
+            </configuration>
+          </execution>
+          <execution>
+            <id>unzip-catman</id>
+            <phase>package</phase>
+            <goals>
+              <goal>unpack-dependencies</goal>
+            </goals>
+            <configuration>
+              <type>war</type>
+              <includeGroupIds>org.deegree</includeGroupIds>
+              <includeArtifactIds>deegree-catalogue-manager</includeArtifactIds>
+              <outputDirectory>target/deegree-catalogue-manager</outputDirectory>
             </configuration>
           </execution>
         </executions>

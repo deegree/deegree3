@@ -19,13 +19,37 @@
 		</annotation>
 		<complexType>
 			<sequence>
-			  <element name="Inspectors" minOccurs="0">
-			    <complexType>
-			      <sequence>
-			        <element ref="ds:AbstractInspector" minOccurs="0" maxOccurs="unbounded" />
-			      </sequence>
-			    </complexType>
-			  </element>
+				<element name="IdentifierInspector" minOccurs="0">
+					<complexType>
+						<sequence>
+							<element name="Param" minOccurs="0" maxOccurs="unbounded">
+								<complexType>
+									<simpleContent>
+										<extension base="string">
+											<attribute name="key" type="string" use="required" />
+										</extension>
+									</simpleContent>
+								</complexType>
+							</element>
+						</sequence>
+						<attribute name="name" type="string" use="required" />
+					</complexType>
+				</element>
+				<element name="RequireInspireCompliance" minOccurs="0">
+					<complexType>
+						<attribute name="generateAutomatic" type="boolean" use="required" />
+					</complexType>
+				</element>
+				<element name="CoupledResourceInspector" minOccurs="0">
+					<complexType>
+						<attribute name="throwConsistencyError" type="boolean" use="required">
+							<annotation>
+								<documentation>true, if there should be thrown an exception and
+									the metadata should not be inserted.</documentation>
+							</annotation>
+						</attribute>
+					</complexType>
+				</element>
 				<element name="AnyText" minOccurs="0">
 					<annotation>
 						<documentation> If AnyText is specified there is a choice between
@@ -57,66 +81,7 @@
 			</sequence>
 			<attribute name="connId" type="string" use="required" />
 			<attribute name="configVersion" use="required" fixed="0.6.0" />
-		</complexType>
-	</element>
-	<element name="AbstractInspector" type="ds:AbstractInspectorType" abstract="true" />
-	<complexType name="AbstractInspectorType" abstract="true">
-		<annotation>
-			<documentation>Declaration of an inspector.</documentation>
-			<appinfo>
-				<jaxb:class name="AbstractInspector" />
-			</appinfo>
-		</annotation>
-	</complexType>
-	<element name="SchemaValidator" substitutionGroup="ds:AbstractInspector">
-	  <annotation>
-	    <documentation>Metadata Schema Validation Inspector.</documentation>
-      </annotation>
-      <complexType>
-			<complexContent>
-				<extension base="ds:AbstractInspectorType">
-				</extension>
-			</complexContent>
-		</complexType>
-	</element>
-	<element name="IdentifierInspector" substitutionGroup="ds:AbstractInspector">
-		<complexType>
-			<complexContent>
-				<extension base="ds:AbstractInspectorType">
-					<attribute name="rejectEmptyFileIdentifier" type="boolean" use="required">
-					  <annotation>
-						<documentation>true, if the metadataRecord should be rejected if there is no fileIdentifier available. Otherwise false. </documentation>
-					  </annotation>
-					</attribute>
-				</extension>
-			</complexContent>
-		</complexType>
-	</element>
-	<element name="InspireInspector" substitutionGroup="ds:AbstractInspector">
-		<complexType>
-			<complexContent>
-				<extension base="ds:AbstractInspectorType">
-					<attribute name="generateRIA" type="boolean" use="required">
-					  <annotation>
-						<documentation>(generateResourceIdentifierAutomatic)If the generating of the resourceIdentifier is automaticaly done by the service</documentation>
-					  </annotation>
-					</attribute>
-				</extension>
-			</complexContent>
-		</complexType>
-	</element>
-	<element name="CoupledResourceInspector" substitutionGroup="ds:AbstractInspector">
-		<complexType>
-			<complexContent>
-				<extension base="ds:AbstractInspectorType">
-					<attribute name="throwConsistencyError" type="boolean" use="required">
-						<annotation>
-							<documentation>true, if there should be thrown an exception and
-									the metadata should not be inserted.</documentation>
-						</annotation>
-					</attribute>
-				</extension>
-			</complexContent>
+			<attribute name="validate" type="boolean" use="optional" default="true" />
 		</complexType>
 	</element>
 </schema>

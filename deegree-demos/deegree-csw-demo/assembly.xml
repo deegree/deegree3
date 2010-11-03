@@ -14,7 +14,6 @@
       <excludes>
         <exclude>*.sh</exclude>
         <exclude>bin/*.sh</exclude>
-        <exclude>webapps/ROOT/**</exclude>
       </excludes>
     </fileSet>
     <fileSet>
@@ -28,7 +27,11 @@
     </fileSet>
     <fileSet>
       <directory>target/${project.build.finalName}</directory>
-      <outputDirectory>/${project.build.finalName}/webapps/ROOT</outputDirectory>
+      <outputDirectory>/${project.build.finalName}/webapps/deegree-csw-demo/</outputDirectory>
+    </fileSet>
+    <fileSet>
+      <directory>target/deegree-catalogue-manager</directory>
+      <outputDirectory>/${project.build.finalName}/webapps/deegree-catalogue-manager/</outputDirectory>
     </fileSet>
   </fileSets>
 </assembly>
