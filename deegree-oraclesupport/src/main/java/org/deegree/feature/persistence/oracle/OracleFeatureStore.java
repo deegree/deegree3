@@ -350,7 +350,7 @@ public class OracleFeatureStore implements FeatureStore {
                 public PropertyNameMapping getMapping( PropertyName propName, TableAliasManager aliasManager )
                                         throws FilterEvaluationException, UnmappableException {
                     LOG.debug( "Mapping " + propName.getPropertyName() + " to DB." );
-                    return new PropertyNameMapping( "X1", propName.getAsQName().getLocalPart(), null );
+                    return new PropertyNameMapping( "X1", propName.getAsQName().getLocalPart(), null, null );
                 }
             };
 

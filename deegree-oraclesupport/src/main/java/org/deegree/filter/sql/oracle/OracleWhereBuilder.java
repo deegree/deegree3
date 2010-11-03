@@ -122,7 +122,7 @@ public class OracleWhereBuilder extends AbstractWhereBuilder {
         // throw new FilterEvaluationException( msg );
         // }
 
-        CRS storageCRS = propNameExpr.getSRS();
+        CRS storageCRS = propNameExpr.getCRS();
 
         switch ( op.getSubType() ) {
         case BBOX: {
@@ -241,7 +241,7 @@ public class OracleWhereBuilder extends AbstractWhereBuilder {
         PropertyNameMapping propMapping = mapping.getMapping( propName, aliasManager );
         if ( propMapping != null ) {
             sql = new SQLColumn( propMapping.getTargetField().getTable(), propMapping.getTargetField().getColumn(),
-                                 propMapping.isSpatial(), propMapping.getSQLType(), null );
+                                 propMapping.isSpatial(), propMapping.getSQLType(), null, null );
         } else {
             throw new UnmappableException( "Unable to map property '" + propName + "' to database column." );
         }
