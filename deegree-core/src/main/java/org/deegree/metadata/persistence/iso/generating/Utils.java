@@ -57,12 +57,20 @@ import org.deegree.commons.xml.XMLAdapter;
  */
 public class Utils {
 
+    /**
+     * This method skips the first tag.
+     * 
+     * @param reader
+     * @param file
+     * @throws XMLStreamException
+     * @throws FileNotFoundException
+     */
     public static void writeIntoFile( XMLStreamReader reader, String file )
                             throws XMLStreamException, FileNotFoundException {
         OutputStream fout = new FileOutputStream( file );
 
         XMLStreamWriter writer = XMLOutputFactory.newInstance().createXMLStreamWriter( fout );
-
+        reader.nextTag();
         XMLAdapter.writeElement( writer, reader );
 
     }
