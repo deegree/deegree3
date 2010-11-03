@@ -44,6 +44,7 @@ import org.deegree.feature.persistence.mapping.property.GeometryMapping;
 import org.deegree.feature.persistence.mapping.property.Mapping;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.feature.types.property.FeaturePropertyType;
+import org.deegree.feature.types.property.GeometryPropertyType;
 import org.deegree.feature.types.property.PropertyType;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.expression.PropertyName;
@@ -88,7 +89,17 @@ public class MappedXPath {
 
         List<QName> steps = new ArrayList<QName>();
 
-        if ( propName.isSimple() ) {
+        if ( propName == null || propName.getPropertyName().isEmpty() ) {
+            LOG.debug( "Null / empty property name (=targets default geometry property)." );
+            FeatureType ft = schema.getFeatureType( ftMapping.getFeatureType() );
+            GeometryPropertyType pt = ft.getDefaultGeometryPropertyDeclaration();
+            if ( pt == null ) {
+                String msg = "Feature type '" + ft.getName()
+                             + "' does not have a geometry property and PropertyName is missing / empty.";
+                throw new UnmappableException( msg );
+            }
+            steps.add( pt.getName() );
+        } else if ( propName.isSimple() ) {
             LOG.debug( "Simple property name (=QName)." );
             steps.add( propName.getAsQName() );
         } else {
