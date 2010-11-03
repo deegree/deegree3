@@ -3,46 +3,52 @@ var WFS_GET_CAPABILITIES = "?SERVICE=WFS&REQUEST=GetCapabilities";
 var WFS_DESCRIBE_FEATURE_TYPE_WFS = "?SERVICE=WFS&REQUEST=DescribeFeatureType&VERSION=1.0.0&TYPENAME=";
 var WFS_GET_FEATURE = "?SERVICE=WFS&REQUEST=GetFeature&VERSION=1.0.0&OUTPUTFORMAT=GML2&TYPENAME=";
 
-// WFS URLs for init
-var wfsURLs = new Array();
-
 // WPS-Operations
 var WPS_GET_CAPABILITIES = "?SERVICE=WPS&REQUEST=GetCapabilities";
 var WPS_DESCRIBE_PROCESS = "?SERVICE=WPS&REQUEST=DescribeProcess&VERSION=1.0.0&IDENTIFIER=";
 var WPS_EXECUTE = "?SERVICE=WPS&REQUEST=Execute&VERSION=1.0.0&IDENTIFIER=";
 
+// WFS URLs for init
+var wfsURLs = new Array();
+
 // WPS URLs for init
 var wpsURLs = new Array();
 
-// make map available for easy debugging
+// OpenLayers map element
 var map;
 
 // proxy for external data sources
-OpenLayers.ProxyHost = "cgi-bin/proxy.py?url="; // saved:
-												// /usr/lib/cgi-bin/proxy.py
+OpenLayers.ProxyHost = "cgi-bin/proxy.py?url="; // saved: /usr/lib/cgi-bin/proxy.py
 
-
-// Array of layer array (layer, attr1, attr2, ...)
+// Array of layers {layer, sourceURL}
 var layers = new Array();
 
-
-// HTML-Elemente
-var selectProcesses;
-var selectWPS;
-var divInputValues;
-var selectLayers = new Array();
-var inputLiterals = new Array();
-var inputOutputLayers = new Array();
-var resultDisplay = document.createTextNode("");
-
+// HTML elements
+var selectWPSProcesses; // select element with WPS processes
+var selectWPS; // select element with WPS URLs
+var selectWFS; // select element with WFS URLs
+var selectWFSLayers; // select element with WFS layers
+var divInputValues; // div element with input parameter of a process
+var selectLayers = new Array(); // select elements of input layers
+var inputLiterals = new Array(); // input elements with input literals
+var inputOutputLayers = new Array(); // hidden input elements with output layer formats
+var resultDisplayWPS = document.createTextNode(""); // textnode for infos and errors of WPS
+var resultDisplayWFS = document.createTextNode(""); // textnode for infos and errors of WFS
+var aProcessDesc = document.createElement("a");
+aProcessDesc.innerHTML = "(i)";
+aProcessDesc.style.color = "white";
+aProcessDesc.href = "#";
 
 // increase reload attempts
 OpenLayers.IMAGE_RELOAD_ATTEMPTS = 3;
 
-// new OpenLayers.Geometry.Point(0, 52).transform(new
-// OpenLayers.Projection("EPSG:900913"),new
-// OpenLayers.Projection("EPSG:4326"))
+// ------------------------------------------------------------------------------------------------------
+// INFO: Transform features
+// var pTrans = new OpenLayers.Geometry.Point(0, 52).transform(new OpenLayers.Projection("EPSG:900913"),new OpenLayers.Projection("EPSG:4326"));
 
+/**
+ * This method initialize the map-div with OpenLayers.
+ */
 function init() {
 	
 	// ------------------------------------------------------------------------------------------------------
@@ -52,10 +58,10 @@ function init() {
 		// projection : new OpenLayers.Projection("EPSG:900913"),
 		// displayProjection : new OpenLayers.Projection("EPSG:4326"),
 		// units : "m"
-	// numZoomLevels : 18,
-	// maxResolution : 156543.0339,
-	// maxExtent : new OpenLayers.Bounds(-20037508, -20037508, 20037508,
-	// 20037508.34)
+		// numZoomLevels : 18,
+		// maxResolution : 156543.0339,
+		// maxExtent : new OpenLayers.Bounds(-20037508, -20037508, 20037508,
+		// 20037508.34)
 	};
 
 	// ------------------------------------------------------------------------------------------------------
@@ -73,20 +79,22 @@ function init() {
 
 	// ------------------------------------------------------------------------------------------------------
 	// add wms as layer
-// var wms2 = new OpenLayers.Layer.WMS("OpenLayers STATE LABEL",
-// "http://labs.metacarta.com/wms/vmap0", {
-// layers : 'statelabel',
-// format : "image/png",
-// transparent : "true",
-// crs : "EPSG:4326"
-// }, {
-// isBaseLayer : false,
-// visibility : false
-// });
-// map.addLayer(wms2);
+	//
+	// var wms2 = new OpenLayers.Layer.WMS("OpenLayers STATE LABEL",
+	// "http://labs.metacarta.com/wms/vmap0", {
+	// layers : 'statelabel',
+	// format : "image/png",
+	// transparent : "true",
+	// crs : "EPSG:4326"
+	// }, {
+	// isBaseLayer : false,
+	// visibility : false
+	// });
+	// map.addLayer(wms2);
 
 	// ------------------------------------------------------------------------------------------------------
 	// add a marker
+	//
 	// var vectorLayer = new OpenLayers.Layer.Vector("TEST Maker");
 	// var feature = new OpenLayers.Feature.Vector(
 	// new OpenLayers.Geometry.Point(-0.0014, -0.0024),
@@ -104,88 +112,69 @@ function init() {
 
 	// ------------------------------------------------------------------------------------------------------
 	// add gml files as layer (only gml2 without schema)
-	// addGMLLayer("GML2 Polygon", "gml/GML2_FeatureCollection_Polygon.xml",
-	// "");
-	// addGMLLayer("GML2 Buffered Polygon",
-	// "gml/GML2_FeatureCollection_Polygon_Buffered.xml", "");
+	//
+	// addGMLLayer("GML2 Polygon", "gml/GML2_FeatureCollection_Polygon.xml", "");
+	// addGMLLayer("GML2 Buffered Polygon", "gml/GML2_FeatureCollection_Polygon_Buffered.xml", "");
 
 	// ------------------------------------------------------------------------------------------------------
 	// add web feature service (only gml2)
 	addWFSURL( "http://giv-wps.uni-muenster.de:8080/geoserver/wfs");
 	addWFSURL(  "http://www.dge.upd.edu.ph/geoserver/wfs");
 	
-	addWFSLayer("WFS topp:states", "http://giv-wps.uni-muenster.de:8080/geoserver/wfs","topp:states", true);
-	addWFSLayer("WFS ns1:tasmania_roads", "http://giv-wps.uni-muenster.de:8080/geoserver/wfs","ns1:tasmania_roads", false);
-	addWFSLayer("WFS tiger:poi", "http://giv-wps.uni-muenster.de:8080/geoserver/wfs","tiger:poi", false);
-	addWFSLayer("WFS tiger:tiger_roads", "http://giv-wps.uni-muenster.de:8080/geoserver/wfs","tiger:tiger_roads", false);
-	addWFSLayer("WFS tiger:poly_landmarks", "http://giv-wps.uni-muenster.de:8080/geoserver/wfs","tiger:poly_landmarks", false);
-	
-
-
+	addWFSLayer('WFS topp:states', "http://giv-wps.uni-muenster.de:8080/geoserver/wfs","topp:states", true);
+	// addWFSLayer("WFS ns1:tasmania_roads", "http://giv-wps.uni-muenster.de:8080/geoserver/wfs","ns1:tasmania_roads", false);
+	// addWFSLayer("WFS tiger:poi", "http://giv-wps.uni-muenster.de:8080/geoserver/wfs","tiger:poi", false);
+	// addWFSLayer("WFS tiger:tiger_roads", "http://giv-wps.uni-muenster.de:8080/geoserver/wfs","tiger:tiger_roads", false);
+	// addWFSLayer("WFS tiger:poly_landmarks", "http://giv-wps.uni-muenster.de:8080/geoserver/wfs","tiger:poly_landmarks", false);
 	
 	//
 	// ------------------------------------------------------------------------------------------------------
-	// add WPS
+	// add WPS URL
 	addWPSURL( "http://flexigeoweb.lat-lon.de/deegree-wps-demo/services");
 	addWPSURL( "http://giv-wps.uni-muenster.de:8080/wps/WebProcessingService");
 	
-// // centroid algorithm
-// var data = new WPSInputData();
-// var wfsFeatureURL =
-// "http://giv-wps.uni-muenster.de:8080/geoserver/wfs?SERVICE=WFS&REQUEST=GetFeature&VERSION=1.0.0&OUTPUTFORMAT=GML2&TYPENAME=topp:states";
-// data.addVectorLayer("LAYER", wfsFeatureURL,
-// WPSInputData.VECTOR_LAYER_SCHEMA_GML2);
-// data.addOutputVectorLayerFormat("RESULT",
-// WPSInputData.VECTOR_LAYER_SCHEMA_GML2);
-// addWPSLayer("WPS centroids",
-// "http://flexigeoweb.lat-lon.de/deegree-wps-demo/services", "st_centroids",
-// data);
-//	
-// // transform algorithm
-// var data2 = new WPSInputData();
-// var wfsFeatureURL2 =
-// "http://giv-wps.uni-muenster.de:8080/geoserver/wfs?SERVICE=WFS&REQUEST=GetFeature&VERSION=1.0.0&OUTPUTFORMAT=GML2&TYPENAME=topp:states";
-// data2.addVectorLayer("LAYER", wfsFeatureURL2,
-// WPSInputData.VECTOR_LAYER_SCHEMA_GML2);
-// data2.addLiteral("DISTANCEX", WPSInputData.LITERAL_NUMERICAL_VALUE_TYPE,
-// "-20");
-// data2.addLiteral("DISTANCEY", WPSInputData.LITERAL_NUMERICAL_VALUE_TYPE,
-// "40");
-// data2.addLiteral("ANGLE", WPSInputData.LITERAL_NUMERICAL_VALUE_TYPE, "90");
-// data2.addLiteral("SCALEX", WPSInputData.LITERAL_NUMERICAL_VALUE_TYPE, "0.5");
-// data2.addLiteral("SCALEY", WPSInputData.LITERAL_NUMERICAL_VALUE_TYPE, "0.5");
-// data2.addLiteral("ANCHORX", WPSInputData.LITERAL_NUMERICAL_VALUE_TYPE,
-// "-46");
-// data2.addLiteral("ANCHORY", WPSInputData.LITERAL_NUMERICAL_VALUE_TYPE, "35");
-// data2.addOutputVectorLayerFormat("RESULT",
-// WPSInputData.VECTOR_LAYER_SCHEMA_GML2);
-// addWPSLayer("WPS transform",
-// "http://flexigeoweb.lat-lon.de/deegree-wps-demo/services", "st_transform",
-// data2);
-//	
-// // fixeddistancebuffer algorithm
-// var data3 = new WPSInputData();
-// var wfsFeatureURL3 =
-// "http://giv-wps.uni-muenster.de:8080/geoserver/wfs?SERVICE=WFS&REQUEST=GetFeature&VERSION=1.0.0&OUTPUTFORMAT=GML2&TYPENAME=ns1:tasmania_roads";
-// data3.addVectorLayer("LAYER", wfsFeatureURL3,
-// WPSInputData.VECTOR_LAYER_SCHEMA_GML2);
-// data3.addLiteral("DISTANCE", WPSInputData.LITERAL_NUMERICAL_VALUE_TYPE,
-// "0.05");
-// data3.addLiteral("TYPES", WPSInputData.LITERAL_SELECTION_TYPE, "0");
-// data3.addLiteral("RINGS", WPSInputData.LITERAL_SELECTION_TYPE, "0");
-// data3.addLiteral("NOTROUNDED", WPSInputData.LITERAL_BOOLEAN_TYPE, "false");
-// data3.addOutputVectorLayerFormat("RESULT",
-// WPSInputData.VECTOR_LAYER_SCHEMA_GML2);
-// addWPSLayer("WPS fixeddistancebuffer",
-// "http://flexigeoweb.lat-lon.de/deegree-wps-demo/services",
-// "st_fixeddistancebuffer", data3);
-//
-//	
-// test =
-// determineWPSProcessDescription("http://flexigeoweb.lat-lon.de/deegree-wps-demo/services","st_transform");
+	//
+	// ------------------------------------------------------------------------------------------------------
+	// add WPS Layer
+	//
+	// // centroid algorithm
+	// var data = new WPSInputData();
+	// var wfsFeatureURL = "http://giv-wps.uni-muenster.de:8080/geoserver/wfs?SERVICE=WFS&REQUEST=GetFeature&VERSION=1.0.0&OUTPUTFORMAT=GML2&TYPENAME=topp:states";
+	// data.addVectorLayer("LAYER", wfsFeatureURL,WPSInputData.VECTOR_LAYER_SCHEMA_GML2);
+	// data.addOutputVectorLayerFormat("RESULT",
+	// WPSInputData.VECTOR_LAYER_SCHEMA_GML2);
+	// addWPSLayer("WPS centroids", "http://flexigeoweb.lat-lon.de/deegree-wps-demo/services", "st_centroids", data);
+	//	
+	// // transform algorithm
+	// var data2 = new WPSInputData();
+	// var wfsFeatureURL2 =
+	// "http://giv-wps.uni-muenster.de:8080/geoserver/wfs?SERVICE=WFS&REQUEST=GetFeature&VERSION=1.0.0&OUTPUTFORMAT=GML2&TYPENAME=topp:states";
+	// data2.addVectorLayer("LAYER", wfsFeatureURL2, WPSInputData.VECTOR_LAYER_SCHEMA_GML2);
+	// data2.addLiteral("DISTANCEX", WPSInputData.LITERAL_NUMERICAL_VALUE_TYPE, "-20");
+	// data2.addLiteral("DISTANCEY", WPSInputData.LITERAL_NUMERICAL_VALUE_TYPE, "40");
+	// data2.addLiteral("ANGLE", WPSInputData.LITERAL_NUMERICAL_VALUE_TYPE, "90");
+	// data2.addLiteral("SCALEX", WPSInputData.LITERAL_NUMERICAL_VALUE_TYPE, "0.5");
+	// data2.addLiteral("SCALEY", WPSInputData.LITERAL_NUMERICAL_VALUE_TYPE, "0.5");
+	// data2.addLiteral("ANCHORX", WPSInputData.LITERAL_NUMERICAL_VALUE_TYPE, "-46");
+	// data2.addLiteral("ANCHORY", WPSInputData.LITERAL_NUMERICAL_VALUE_TYPE, "35");
+	// data2.addOutputVectorLayerFormat("RESULT",
+	// WPSInputData.VECTOR_LAYER_SCHEMA_GML2);
+	// addWPSLayer("WPS transform", "http://flexigeoweb.lat-lon.de/deegree-wps-demo/services", "st_transform", data2);
+	//	
+	// // fixeddistancebuffer algorithm
+	// var data3 = new WPSInputData();
+	// var wfsFeatureURL3 = "http://giv-wps.uni-muenster.de:8080/geoserver/wfs?SERVICE=WFS&REQUEST=GetFeature&VERSION=1.0.0&OUTPUTFORMAT=GML2&TYPENAME=ns1:tasmania_roads";
+	// data3.addVectorLayer("LAYER", wfsFeatureURL3, WPSInputData.VECTOR_LAYER_SCHEMA_GML2);
+	// data3.addLiteral("DISTANCE", WPSInputData.LITERAL_NUMERICAL_VALUE_TYPE, "0.05");
+	// data3.addLiteral("TYPES", WPSInputData.LITERAL_SELECTION_TYPE, "0");
+	// data3.addLiteral("RINGS", WPSInputData.LITERAL_SELECTION_TYPE, "0");
+	// data3.addLiteral("NOTROUNDED", WPSInputData.LITERAL_BOOLEAN_TYPE, "false");
+	// data3.addOutputVectorLayerFormat("RESULT", WPSInputData.VECTOR_LAYER_SCHEMA_GML2);
+	// addWPSLayer("WPS fixeddistancebuffer", "http://flexigeoweb.lat-lon.de/deegree-wps-demo/services", "st_fixeddistancebuffer", data3);
 	
 	// ------------------------------------------------------------------------------------------------------
 	// add controls
+	map.addControl(new WFSSwitcher());
 	map.addControl(new WPSSwitcher());
 	map.addControl(new OpenLayers.Control.LayerSwitcher());
 	map.addControl(new OpenLayers.Control.MousePosition());
@@ -195,55 +184,23 @@ function init() {
 	map.setCenter(new OpenLayers.LonLat(-75, 0), 3);
 }
 
-function getStyleMap(){
-
-	var color1="#FF8A14";
-	
-	var styleMap = new OpenLayers.StyleMap({ 
-		strokeColor: color1, 
-		fillColor : color1, 
-		strokeWidth: 2, 
-		pointRadius : 2,
-		fillOpacity: 0.4
-	});
-		
-	return styleMap;
-}
-
-/**
- * This method determines an individual name of layer.
- * 
- * @param name
- *            Raw layer name.
- * 
- * @return Modified layer name.
- */
-function determineIndividualLayerName(name){
-	var newName = name;
-	
-	// check whether name available
-	if (layers[name] != null)
-		newName = determineIndividualLayerName(name + "_1");
-
-	return newName;
-}
-
 /**
  * This Method adds a GML file to the map.
  * 
  * @param gmlName
  *            Layer name.
  * @param gmlURL
- *            URL of GML file.
+ *            URL of GML file (local or external).
  * @param attr
- *            Optional attribute like absolute URL of GML file.
+ *            External URL of GML file.
  */
 function addGMLLayer(gmlName, gmlURL, attr) {
 	
-	gmlName = determineIndividualLayerName(gmlName);
+	// Layer name
+	var gmlNameArray = determineIndividualLayerName(gmlName);
 
 	// create a GML layer
-	var layer = new OpenLayers.Layer.GML(gmlName, gmlURL, { styleMap: getStyleMap() });
+	var layer = new OpenLayers.Layer.GML(gmlNameArray[1], gmlURL, { styleMap: getStyleMap() });
 
 	// var layerProtocol = new OpenLayers.Protocol.HTTP( {
 	// url : url,
@@ -259,13 +216,12 @@ function addGMLLayer(gmlName, gmlURL, attr) {
 	var gmlArray = new Array();
 	gmlArray[0] = layer;
 	gmlArray[1] = attr;
-	layers[gmlName] = gmlArray;
+	layers[gmlNameArray[0]] = gmlArray;
 	
 	// add layer to map
 	map.addLayer(layer);
 	
-	resultDisplay.data = "Added layer '" + gmlName + "'";
-
+	resultDisplayWPS.data = "Added layer '" + gmlNameArray[0] + "'";
 }
 
 /**
@@ -282,15 +238,19 @@ function addGMLLayer(gmlName, gmlURL, attr) {
  */
 function addWFSLayer(wfsName, wfsURL, wfsFeatureTypeWithPrefix, visible) {
 	
-	wfsName = determineIndividualLayerName(wfsName);
-
+	// INFO message
+	resultDisplayWFS.data = "Loading...";
+	
+	// Layer name
+	var wfsNameArray = determineIndividualLayerName(wfsName);
+	
 	// determine namespace
 	var ns = determineWFSFeatureTypeNamespace(wfsURL, wfsFeatureTypeWithPrefix);
 	
 	// check namespace
 	if(ns == null)
 		return;
-	
+		
 	// check name
 	var ftArray = wfsFeatureTypeWithPrefix.split(":");
 	if(ftArray.length != 2){
@@ -298,11 +258,10 @@ function addWFSLayer(wfsName, wfsURL, wfsFeatureTypeWithPrefix, visible) {
 		name[0] = "";
 		name[1] = wfsFeatureTypeWithPrefix;
 		ftArray = name;
-		// alert("FeatureType isn't in the correct format like 'prefix:name'.");
 	}
 	
 	// create wfs layer
-	var wfs = new OpenLayers.Layer.Vector(wfsName, {
+	var wfs = new OpenLayers.Layer.Vector(wfsNameArray[1], {
 		strategies : [ new OpenLayers.Strategy.BBOX() ],
 		protocol : new OpenLayers.Protocol.WFS( {
 			url : wfsURL,
@@ -315,8 +274,10 @@ function addWFSLayer(wfsName, wfsURL, wfsFeatureTypeWithPrefix, visible) {
 	var wfsArray = new Array();
 	wfsArray[0] = wfs;
 	wfsArray[1] = wfsURL + WFS_GET_FEATURE + wfsFeatureTypeWithPrefix;
-	layers[wfsName] = wfsArray;
+	layers[wfsNameArray[0]] = wfsArray;
 	map.addLayer(wfs);
+	
+	resultDisplayWFS.data = "Added layer '" + wfsNameArray[0] + "'";
 }
 
 /**
@@ -349,15 +310,6 @@ function addWFSURL(url){
 	wfsURLs[url] = url;
 }
 
-/**
- * This method removes a WFS URL.
- * 
- * @param url
- *            WFS URL.
- */
-function removeWFSURL(url){
-	wfsURLs[url] = null;
-}
 
 /**
  * This method adds a layer by WPS.
@@ -370,11 +322,13 @@ function removeWFSURL(url){
  *            Process data, use class WPSInputData
  */
 function addWPSLayer(wpsName, wpsURL, wpsProcess, data){
-	resultDisplay.data = "Processing...";
 	
-	var gmlName = wpsName;
-	var attr = wpsURL + WPS_EXECUTE + wpsProcess + data.toString();
-	var gmlURL = OpenLayers.ProxyHost + escape(attr);	
+	// INFO message
+	resultDisplayWPS.data = "Processing...";
+	
+	var gmlName = wpsName; // Layer name
+	var attr = wpsURL + WPS_EXECUTE + wpsProcess + data.toString(); // external URL of executed GML file
+	var gmlURL = OpenLayers.ProxyHost + escape(attr); // external URL of executed GML file with proxy
 	
 	
 	// check gml file for errors
@@ -382,16 +336,12 @@ function addWPSLayer(wpsName, wpsURL, wpsProcess, data){
 	request.open('GET', gmlURL, false);
 	request.send();
 	var xmlDoc = request.responseXML;
-	
-
 	if(xmlDoc.childNodes[0].localName == "ExceptionReport"){
 		var errorMsg = xmlDoc.childNodes[0].textContent.replace(/^\s*|\s*$/g,'');
-		
 		if(errorMsg == "")
-			resultDisplay.data = "Execution failed!";
+			resultDisplayWPS.data = "Execution failed!";
 		else
-			resultDisplay.data = errorMsg;
-		
+			resultDisplayWPS.data = errorMsg;
 	}else{
 		addGMLLayer(gmlName, gmlURL, attr);
 	}
@@ -409,13 +359,27 @@ function addWPSURL(url){
 }
 
 /**
- * This method removes a WPS URL:
+ * This method determines an individual name of layer and adds a link to remove this layer.
  * 
- * @param url
- *            WPS URL.
+ * @param name
+ *            Raw layer name.
+ * 
+ * @return Modified layer name [0] = name, [1] = name with link to remove.
  */
-function removeWPSURL(url){
-	wpsURLs[url] = null;
+function determineIndividualLayerName(name){
+	var newName = name;
+	
+	// check whether name available
+	if (layers[name] != null)
+		newName = determineIndividualLayerName(name + "_1")[0];
+	
+	var display = newName + ' <a href="#" onclick="removeLayerByName(' + "'" + newName + "'" + ');" style="color:white;" title="Remove">(x)</a>';
+
+	var names = new Array();
+	names[0] = newName;
+	names[1] = display;
+	
+	return names;
 }
 
 /**
@@ -449,8 +413,8 @@ function determineWFSFeatureTypeNames(wfsURL) {
 		alert("Can't determine feature type names of the WFS.");
 
 	// for debugging
-	determineWFSFeatureTypeNames_XML = xmlDoc;
-	determineWFSFeatureTypeNames_ARRAY = arrayOfFeatureTypes;
+	// determineWFSFeatureTypeNames_XML = xmlDoc;
+	// determineWFSFeatureTypeNames_ARRAY = arrayOfFeatureTypes;
 	
 	return arrayOfFeatureTypes;
 }
@@ -480,7 +444,7 @@ function determineWFSFeatureTypeNamespace(wfsURL, featureTypeName) {
 	var xmlDoc = request.responseXML;
 
 	// for debugging
-	determineWFSFeatureTypeNS_XML = xmlDoc;
+	// determineWFSFeatureTypeNS_XML = xmlDoc;
 		
 	// determine namespace and return
 	var atts = xmlDoc.childNodes[0].attributes;
@@ -528,11 +492,8 @@ function determineWPSProcesses(wpsURL) {
 			
 			// determine process properties
 			var processProperties = collectionOfProcesses[int].childNodes;
-
 			for ( var i = 0; i < processProperties.length; i++) {
-				
 				var prob = processProperties[i];
-				// alert(prob.localName + " " + prob.textContent);
 				if(prob.localName == "Identifier")
 					process[0] = prob.textContent;
 				else if(prob.localName == "Title")
@@ -549,7 +510,7 @@ function determineWPSProcesses(wpsURL) {
 	
 	
 	// sort processes
-	arrayOfProcesses.sort(function sortByFirstName(a, b) {
+	arrayOfProcesses.sort(function sortByName(a, b) {
 	    	var x = a[1].toLowerCase();
 	    	var y = b[1].toLowerCase();
 	    	return ((x < y) ? -1 : ((x > y) ? 1 : 0));
@@ -561,16 +522,14 @@ function determineWPSProcesses(wpsURL) {
 
 
 /**
- * This method returns an array of all input and output parameter of the
- * process.
+ * This method returns an array of all input and output parameter of the process.
  * 
  * @param wpsURL
  *            URL of WPS.
  * @param identifier
  *            Identifier of process.
  * 
- * @return Array with all input and output parameters. [0]: input parameter, [1]
- *         output parameter with identifier, title, abstract and format.
+ * @return Array with all input and output parameters. [0]: input parameter, [1] output parameter with identifier, title, abstract and format.
  */
 function determineWPSProcessDescription(wpsURL, identifier){
 	
@@ -608,8 +567,7 @@ function determineWPSProcessDescription(wpsURL, identifier){
 
 					}else{
 						if(prob.tagName == "LiteralData"){
-							input[3] = prob.textContent.replace(/^\s*|\s*$/g,''); // remove
-																				// whitespace
+							input[3] = prob.textContent.replace(/^\s*|\s*$/g,''); // remove whitespace
 						}else{
 							// identifier, title, abstract
 							input[j++] = prob.textContent;
@@ -617,8 +575,6 @@ function determineWPSProcessDescription(wpsURL, identifier){
 					}
 				}
 			}
-			
-		
 			
 			// notice process
 			arrayOfInputs[k] = input;
@@ -656,8 +612,6 @@ function determineWPSProcessDescription(wpsURL, identifier){
 				}
 			}
 			
-	
-			
 			// notice process
 			arrayOfOutputs[k] = output;
 		}
@@ -670,30 +624,31 @@ function determineWPSProcessDescription(wpsURL, identifier){
 	inputOutput[1] = arrayOfOutputs;
 	
 	// only for debuging
-	arraysOfinputOutput = inputOutput;
+	// arraysOfinputOutput = inputOutput;
 	
 	return inputOutput;
 }
 
 
 /**
- * This method removes a GML file form the map.
+ * This method creates a styleMap for vector data of map.
  * 
- * @param layerName
- *            Layer name.
+ * @return OpenLayers.StyleMap.
  */
-function removeLayerByName(layerName) {
+function getStyleMap(){
 
-	// get layer by name
-	var layer = layers[layerName];
-
-	// check whether layer is available
-	if (layer != null) {
-		map.removeLayer(layer[0]); // remove layer from map
-		layers[layerName] = null; // remove layer from array
-	}
+	var color1="#FF8A14";
+	
+	var styleMap = new OpenLayers.StyleMap({ 
+		strokeColor: color1, 
+		fillColor : color1, 
+		strokeWidth: 2, 
+		pointRadius : 2,
+		fillOpacity: 0.4
+	});
+		
+	return styleMap;
 }
-
 
 /**
  * This method creates the XMLHttpRequests for the use of Ajax.
@@ -726,12 +681,71 @@ function getXMLHttpRequest(mimeType) {
 	return request;
 }
 
+/**
+ * This method removes a GML file form the map.
+ * 
+ * @param layerName
+ *            Layer name.
+ */
+function removeLayerByName(layerName) {
 
-function loadProcessList(){
+	// get layer by name
+	var layer = layers[layerName];
+
+	// check whether layer is available
+	if (layer != null) {
+		map.removeLayer(layer[0]); // remove layer from map
+		layers[layerName] = null; // remove layer from array
+	}
+}
+
+/**
+ * This method removes a WFS URL.
+ * 
+ * @param url
+ *            WFS URL.
+ */
+function removeWFSURL(url){
+	wfsURLs[url] = null;
+}
+
+/**
+ * This method removes a WPS URL:
+ * 
+ * @param url
+ *            WPS URL.
+ */
+function removeWPSURL(url){
+	wpsURLs[url] = null;
+}
+
+/**
+ * This method removes a GML file form the map.
+ * 
+ * @param layerName
+ *            Layer name.
+ */
+function removeLayerByName(layerName) {
+	
+	// get layer by name
+	var layer = layers[layerName];
+
+	// check whether layer is available
+	if (layer != null) {
+		map.removeLayer(layer[0]); // remove layer from map
+		layers[layerName] = null; // remove layer from array
+	}
+	loadProcessInputForms();
+}
+
+/**
+ * This method loads the list of processes of the selected WPS to the select element "selectWPSProcesses".
+ */
+function loadWPSProcessList(){
 	
 	// remove options
-	for ( var opt in selectProcesses.options) {
-		selectProcesses.remove(opt.index);
+	for ( var opt in selectWPSProcesses.options) {
+		selectWPSProcesses.remove(opt.index);
 	}
 
 	// determine and load WPS processes
@@ -747,65 +761,154 @@ function loadProcessList(){
 		if(value.startsWith("st_"))
 			text += " (SEXTANTE)";
 		
+		// add process
 		option.text = text;
-		option.value = value;	
+		option.value = value;
+		option.title =  processes[i][2];
 		
 		try
 		{
-			selectProcesses.add(option,null); // standards compliant
+			selectWPSProcesses.add(option,null); // standards compliant
 		}
 		catch(ex)
 		{
-			selectProcesses.add(option); // IE only
+			selectWPSProcesses.add(option); // IE only
 		}
- }
- 
+	}
+}
 
+/**
+ * This method loads the list of processes of the selected WPS to the select element "selectWPSProcesses".
+ */
+function loadWFSLayerList(){
+
+	// remove options
+	for ( var opt in selectWFSLayers.options) {
+		selectWFSLayers.remove(opt.index);
+	}
+
+	// determine and load WFS layers
+	var layers = determineWFSFeatureTypeNames(selectWFS.value);
  
+	// add layers
+	for ( var i = 0; i < layers.length; i++) {
+		var option = document.createElement("option");
+		
+		// add layer
+		option.text = layers[i];
+		option.value = layers[i];
+		
+		try
+		{
+			selectWFSLayers.add(option,null); // standards compliant
+		}
+		catch(ex)
+		{
+			selectWFSLayers.add(option); // IE only
+		}
+	}
 }
 
 
+function loadWFSURLs(){
+	
+	// remove options
+	for ( var opt in selectWFS.options) {
+		selectWFS.remove(opt.index);
+	}
+	
+    var selectedWFSURL = null;
+    for ( var url in wfsURLs) {
+    	if(url != null){
+    		var option = document.createElement("option");
+    		option.text  = url;
+    		option.value = url;
+    		selectWFS.appendChild(option);
+    		if(selectedWFSURL == null)
+    			selectedWFSURL = url;
+    	}
+	} 
 
-// function loadLayerList(){
-//	
-// // remove options
-// for ( var opt in selectLayers.options) {
-// selectLayers.remove(opt.index);
-// }
-//
-// // determine and load WPS processes
-// for ( var i in layers) {
-//		
-//	
-// var option = document.createElement("option");
-// option.text = i;
-// option.value = layers[i][1];
-//	 	 	
-// try
-// {
-// selectLayers.add(option,null); // standards compliant
-// }
-// catch(ex)
-// {
-// selectLayers.add(option); // IE only
-// }
-// }
-// }
+    return selectedWFSURL;
+}
 
+function loadWPSURLs(){
+	
+	// remove options
+	for ( var opt in selectWPS.options) {
+		selectWPS.remove(opt.index);
+	}
+	
+    var selectedWPSURL = null;
+    for ( var url in wpsURLs) {
+    	if(url != null){
+    		var option = document.createElement("option");
+    		option.text  = url;
+    		option.value = url;
+    		selectWPS.appendChild(option);
+    		if(selectedWPSURL == null)
+    			selectedWPSURL = url;
+    	}
+	} 
+
+    return selectedWPSURL;
+}
 
 /**
+ * This method load all input parameter as HTML form of the selected process.
+ */
+function loadProcessInputForms(){
+	
+	// determine process description
+    var processDesc = determineWPSProcessDescription(selectWPS.value, selectWPSProcesses.value);
+    
+    // remove old input forms
+    divInputValues.innerHTML="";
+    inputLiterals = new Array();
+    selectLayers = new Array();
+    inputOutputLayers = new Array();
+    
+    // add input forms
+    for ( var i = 0; i < processDesc[0].length; i++) {
+		var inputParam = processDesc[0][i];		
+		if(inputParam[3] == WPSInputData.VECTOR_LAYER_SCHEMA_GML2)
+			divInputValues.appendChild(createVectorLayerHTMLElement(inputParam[0],inputParam[1],inputParam[2],inputParam[3]));
+		else
+			divInputValues.appendChild(createLiteralHTMLElement(inputParam[0],inputParam[1],inputParam[2],inputParam[3]));
+	}
+       
+    // add hidden output formats
+    for ( var i = 0; i < processDesc[1].length; i++) {
+		var outputParam = processDesc[1][i];		
+		if(outputParam[3] == WPSInputData.VECTOR_LAYER_SCHEMA_GML2)
+			divInputValues.appendChild(createOutputVectorLayerHTMLElement(outputParam[0],outputParam[1],outputParam[2],outputParam[3]));
+   }
+        
+}
+
+/**
+ * This method creates a HTML input element for a literal input parameter.
  * 
  * @param identifier
+ *            Parameter identifier
  * @param title
+ *            Parameter title
  * @param abstr
+ *            Parameter abstract
  * @param type
- * @return
+ *            Parameter type like "double", "string", "boolean" or "integer"
+ * 
+ * @return HTML input element for a literal input parameter.
  */
 function createLiteralHTMLElement(identifier, title, abstr, type){
 		
 	var p = document.createElement("p");
-	p.innerHTML = title + " (" + type + "): ";
-		
+	p.innerHTML = title;
+	
+	if(type != null && type != "")
+		p.innerHTML += " (" + type + "): ";
+	else
+		p.innerHTML += ": ";
 	
 	var input = null;
 	if(type != "boolean"){// others
@@ -839,35 +942,34 @@ function createLiteralHTMLElement(identifier, title, abstr, type){
 	 		input.add(yes); // IE only
 	 		input.add(no); // IE only
 	 	  }
-		
-	 	 	
 	}
 
-	
 	inputLiterals[identifier] = input;
 	p.appendChild(input);
+
 	
 	// popup with abstract
-	var info = document.createElement("a");
-	info.innerHTML = "(i)";
-	info.style.color = "white";
-	info.href = "#";
-	info.onclick = function(){
-		showInputDataDescription(title, abstr, type);
-	};
-	p.appendChild(info);
-	
-	
+	p.appendChild(document.createTextNode(" "));
+	p.appendChild(getHyperlinkForPopup(title, abstr, type));
+		
 	return p;
 }
 
+
+
 /**
+ * This method creates a HTML input element for a vector layer input parameter.
  * 
  * @param identifier
+ *            Parameter identifier
  * @param title
+ *            Parameter title
  * @param abstr
+ *            Parameter abstract
  * @param schema
- * @return
+ *            Schema of GML vector layer
+ * 
+ * @return HTML input element for a vector layer input parameter
  */
 function createVectorLayerHTMLElement(identifier, title, abstr, schema){
 	
@@ -877,47 +979,50 @@ function createVectorLayerHTMLElement(identifier, title, abstr, schema){
 	select.id = identifier;
 	select.className = schema;
 	select.style.width = "400px";
-	select.onchange = function(){resultDisplay.data = ""};
+	select.onchange = function(){resultDisplayWPS.data = ""};
 	selectLayers[identifier] = select;
 	p.appendChild(select);
+	
 	
 	// determine and load WPS processes
 	for ( var i in layers) {
 	
-	var option = document.createElement("option");
- 	option.text = i;
- 	option.value = layers[i][1];
- 	 	
- 	try
- 	  {
- 		select.add(option,null); // standards compliant
- 	  }
- 	catch(ex)
- 	  {
- 		select.add(option); // IE only
- 	  }
+		if(layers[i] != null){
+			var option = document.createElement("option");
+		 	option.text = i;
+		 	option.value = layers[i][1];
+		 	 	
+		 	try
+		 	  {
+		 		select.add(option,null); // standards compliant
+		 	  }
+		 	catch(ex)
+		 	  {
+		 		select.add(option); // IE only
+		 	  }
+		}
 	}
 		
 	// popup with abstract
-	var info = document.createElement("a");
-	info.innerHTML = "(i)";
-	info.style.color = "white";
-	info.href = "#";
-	info.onclick = function(){
-		showInputDataDescription(title, abstr, schema);
-	};
-	p.appendChild(info);
+	p.appendChild(document.createTextNode(" "));
+	p.appendChild(getHyperlinkForPopup(title, abstr, schema));
 	
 	return p;
 }
 
 /**
+ * This method creates a hidden HTML input element for a vector layer output parameter.
  * 
  * @param identifier
+ *            Parameter identifier
  * @param title
+ *            Parameter title
  * @param abstr
+ *            Parameter abstract
  * @param schema
- * @return
+ *            Schema of GML vector layer
+ * 
+ * @return Hidden HTML input element for a vector layer output parameter
  */
 function createOutputVectorLayerHTMLElement(identifier, title, abstr, schema){
 	var input = document.createElement("input");
@@ -928,39 +1033,11 @@ function createOutputVectorLayerHTMLElement(identifier, title, abstr, schema){
 	return input;
 }
 
-
 /**
- * This method load all input parameter as HTML form of the selected process.
+ * This method creates a WPSInputData object with all input data from GUI.
+ * 
+ * @return WPSInputData object with all input data from GUI.
  */
-function loadProcessInputForms(){
-	
-	// determine process description
-    var processDesc = determineWPSProcessDescription(selectWPS.value, selectProcesses.value);
-    
-    // remove old input forms
-    divInputValues.innerHTML="";
-    inputLiterals = new Array();
-    selectLayers = new Array();
-    inputOutputLayers = new Array();
-    
-    // add input forms
-    for ( var i = 0; i < processDesc[0].length; i++) {
-		var inputParam = processDesc[0][i];		
-		if(inputParam[3] == WPSInputData.VECTOR_LAYER_SCHEMA_GML2)
-			divInputValues.appendChild(createVectorLayerHTMLElement(inputParam[0],inputParam[1],inputParam[2],inputParam[3]));
-		else
-			divInputValues.appendChild(createLiteralHTMLElement(inputParam[0],inputParam[1],inputParam[2],inputParam[3]));
-	}
-       
-    // add hidden output formats
-    for ( var i = 0; i < processDesc[1].length; i++) {
-		var outputParam = processDesc[1][i];		
-		if(outputParam[3] == WPSInputData.VECTOR_LAYER_SCHEMA_GML2)
-			divInputValues.appendChild(createOutputVectorLayerHTMLElement(outputParam[0],outputParam[1],outputParam[2],outputParam[3]));
-   }
-        
-}
-
 function createWPSInputData(){
 	var data = new WPSInputData();
 	
@@ -983,13 +1060,40 @@ function createWPSInputData(){
 	return data;
 }
 
-function showInputDataDescription(title, abstr, type) {
+function getHyperlinkForPopup(title, abstr, type){
 
+	// popup with abstract
+	var info = document.createElement("a");
+	info.innerHTML = "(i)";
+	info.title = abstr;
+	info.style.color = "white";
+	info.href = "#";
+	info.onclick = function(){
+		showInputDataDescription(title, abstr, type);
+	};
+	
+	return info;
+}
+
+/**
+ * This method shows a popup with a input parameter descripton.
+ * 
+ * @param title
+ *            Parameter title
+ * @param abstr
+ *            Parameter abstract
+ * @param type
+ *            Parameter type
+ */
+function showInputDataDescription(title, abstr, type) {
+	
+	if(abstr == null || abstr == "" || abstr == "undefined")
+		abstr = "No description available!";
 	
 	var htmlMsg = "<h3>" + title + "</h3><hr />";
 	htmlMsg += "<h4>" + abstr + "</h4>";
 	
-	 var win = window.open("", "win", "width=360,height=270");
+	 var win = window.open("", "win", "width=450,height=270,scrollbars=yes");
 	 win.document.open("text/html", "replace");
 	 win.document.write('<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><title></title></head><body>' + htmlMsg + '</body></html>');
 	 win.focus();
@@ -1057,8 +1161,7 @@ WPSInputData.prototype.addVectorLayer = function(identifier, wfsFeatures, schema
  * @param identifier
  *            Identifier of literal.
  * @param type
- *            LITERAL_BOOLEAN_TYPE, LITERAL_BOOLEAN_TYPE, LITERAL_STRING_TYPE or
- *            LITERAL_NUMERICAL_VALUE_TYPE.
+ *            LITERAL_BOOLEAN_TYPE, LITERAL_BOOLEAN_TYPE, LITERAL_STRING_TYPE or LITERAL_NUMERICAL_VALUE_TYPE.
  * @param value
  *            Value of literal.
  * @return
@@ -1108,8 +1211,7 @@ WPSInputData.prototype.addOutputVectorLayerFormat = function(identifier, schema)
 };
 
 /**
- * This method returns the managed input parameter as query string to execute a
- * WPS over HTTP GET.
+ * This method returns the managed input parameter as query string to execute a WPS over HTTP GET.
  */
 WPSInputData.prototype.toString = function(){
 	var data =  "";
@@ -1128,53 +1230,33 @@ var WPSSwitcher =
 	  OpenLayers.Class(OpenLayers.Control, {
 
 	    /**
-		 * APIProperty: roundedCorner {Boolean} If true the Rico library is used
-		 * for rounding the corners of the layer switcher div, defaults to true.
+		 * APIProperty: roundedCorner {Boolean} If true the Rico library is used for rounding the corners of the layer switcher div, defaults to true.
 		 */
 	    roundedCorner: true,
 
 	    /**
-		 * APIProperty: roundedCornerColor {String} The color of the rounded
-		 * corners, only applies if roundedCorner is true, defaults to
-		 * "darkblue".
+		 * APIProperty: roundedCornerColor {String} The color of the rounded corners, only applies if roundedCorner is true, defaults to "darkblue".
 		 */
 	    roundedCornerColor: "darkblue",
 	    
 	    /**
-		 * Property: layerStates {Array(Object)} Basically a copy of the "state"
-		 * of the map's layers the last time the control was drawn. We have this
-		 * in order to avoid unnecessarily redrawing the control.
+		 * Property: layerStates {Array(Object)} Basically a copy of the "state" of the map's layers the last time the control was drawn. We have this in order to avoid unnecessarily redrawing the control.
 		 */
 	    layerStates: null,
 	    
 
-	  // DOM Elements
+	    // DOM Elements
 	  
 	    /**
 		 * Property: layersDiv {DOMElement}
 		 */
 	    layersDiv: null,
 	    
-// /**
-// * Property: baseLayersDiv {DOMElement}
-// */
-// baseLayersDiv: null,
-
 	    /**
 		 * Property: baseLayers {Array(<OpenLayers.Layer>)}
 		 */
 	    baseLayers: null,
 	    
-	    
-// /**
-// * Property: dataLbl {DOMElement}
-// */
-// dataLbl: null,
-	    
-// /**
-// * Property: dataLayersDiv {DOMElement}
-// */
-// dataLayersDiv: null,
 
 	    /**
 		 * Property: dataLayers {Array(<OpenLayers.Layer>)}
@@ -1252,8 +1334,7 @@ var WPSSwitcher =
 	    /**
 		 * Method: draw
 		 * 
-		 * Returns: {DOMElement} A reference to the DIV DOMElement containing
-		 * the switcher tabs.
+		 * Returns: {DOMElement} A reference to the DIV DOMElement containing the switcher tabs.
 		 */  
 	    draw: function() {
 	        OpenLayers.Control.prototype.draw.apply(this);
@@ -1273,9 +1354,7 @@ var WPSSwitcher =
 	    },
 
 	    /**
-		 * Method: clearLayersArray User specifies either "base" or "data". we
-		 * then clear all the corresponding listeners, the div, and reinitialize
-		 * a new array.
+		 * Method: clearLayersArray User specifies either "base" or "data". we then clear all the corresponding listeners, the div, and reinitialize a new array.
 		 * 
 		 * Parameters: layersType - {String}
 		 */
@@ -1294,11 +1373,9 @@ var WPSSwitcher =
 
 
 	    /**
-		 * Method: checkRedraw Checks if the layer state has changed since the
-		 * last redraw() call.
+		 * Method: checkRedraw Checks if the layer state has changed since the last redraw() call.
 		 * 
-		 * Returns: {Boolean} The layer state changed since the last redraw()
-		 * call.
+		 * Returns: {Boolean} The layer state changed since the last redraw() call.
 		 */
 	    checkRedraw: function() {
 	        var redraw = false;
@@ -1322,12 +1399,9 @@ var WPSSwitcher =
 	    },
 	    
 	    /**
-		 * Method: redraw Goes through and takes the current state of the Map
-		 * and rebuilds the control to display that state. Groups base layers
-		 * into a radio-button group and lists each data layer with a checkbox.
+		 * Method: redraw Goes through and takes the current state of the Map and rebuilds the control to display that state. Groups base layers into a radio-button group and lists each data layer with a checkbox.
 		 * 
-		 * Returns: {DOMElement} A reference to the DIV DOMElement containing
-		 * the control
+		 * Returns: {DOMElement} A reference to the DIV DOMElement containing the control
 		 */  
 	    redraw: function() {
 	        // if the state hasn't changed since last redraw, no need
@@ -1336,124 +1410,15 @@ var WPSSwitcher =
 	            return this.div; 
 	        } 
 
-// // clear out previous layers
-// this.clearLayersArray("base");
-// this.clearLayersArray("data");
-//	        
-// var containsOverlays = false;
-// var containsBaseLayers = false;
-//	        
-// // Save state -- for checking layer if the map state changed.
-// // We save this before redrawing, because in the process of
-// // redrawing
-// // we will trigger more visibility changes, and we want to not
-// // redraw
-// // and enter an infinite loop.
-// var len = this.map.layers.length;
-// this.layerStates = new Array(len);
-// for (var i=0; i <len; i++) {
-// var layer = this.map.layers[i];
-// this.layerStates[i] = {
-// 'name': layer.name,
-// 'visibility': layer.visibility,
-// 'inRange': layer.inRange,
-// 'id': layer.id
-// };
-// }
-//
-// var layers = this.map.layers.slice();
-// if (!this.ascending) { layers.reverse(); }
-// for(var i=0, len=layers.length; i<len; i++) {
-// var layer = layers[i];
-// var baseLayer = layer.isBaseLayer;
-//
-// if (layer.displayInLayerSwitcher) {
-//
-// if (baseLayer) {
-// containsBaseLayers = true;
-// } else {
-// containsOverlays = true;
-// }
-//
-// // only check a baselayer if it is *the* baselayer, check
-// // data
-// // layers if they are visible
-// var checked = (baseLayer) ? (layer == this.map.baseLayer)
-// : layer.getVisibility();
-//	    
-// // create input element
-// var inputElem = document.createElement("input");
-// inputElem.id = this.id + "_input_" + layer.name;
-// inputElem.name = (baseLayer) ? this.id + "_baseLayers" : layer.name;
-// inputElem.type = (baseLayer) ? "radio" : "checkbox";
-// inputElem.value = layer.name;
-// inputElem.checked = checked;
-// inputElem.defaultChecked = checked;
-//
-// if (!baseLayer && !layer.inRange) {
-// inputElem.disabled = true;
-// }
-// var context = {
-// 'inputElem': inputElem,
-// 'layer': layer,
-// 'layerSwitcher': this
-// };
-// OpenLayers.Event.observe(inputElem, "mouseup",
-// OpenLayers.Function.bindAsEventListener(this.onInputClick,
-// context)
-// );
-//	                
-// // create span
-// var labelSpan = document.createElement("span");
-// OpenLayers.Element.addClass(labelSpan, "labelSpan");
-// if (!baseLayer && !layer.inRange) {
-// labelSpan.style.color = "gray";
-// }
-// labelSpan.innerHTML = layer.name;
-// labelSpan.style.verticalAlign = (baseLayer) ? "bottom"
-// : "baseline";
-// OpenLayers.Event.observe(labelSpan, "click",
-// OpenLayers.Function.bindAsEventListener(this.onInputClick,
-// context)
-// );
-// // create line break
-// var br = document.createElement("br");
-//	    
-//	                
-// var groupArray = (baseLayer) ? this.baseLayers
-// : this.dataLayers;
-// groupArray.push({
-// 'layer': layer,
-// 'inputElem': inputElem,
-// 'labelSpan': labelSpan
-// });
-//	                                                     
-//	    
-// var groupDiv = this.baseLayersDiv
-// //this.dataLayersDiv;
-// groupDiv.appendChild(inputElem);
-// groupDiv.appendChild(labelSpan);
-// groupDiv.appendChild(br);
-// }
-// }
-
-	        // if no overlays, dont display the overlay label
-	        // this.dataLbl.style.display = (containsOverlays) ? "" : "none";
-	        
-	        // if no baselayers, dont display the baselayer label
-	        // this.baseLbl.style.display = (containsBaseLayers) ? "" : "none";
-
 	        return this.div;
 	    },
 
 	    /**
-		 * Method: A label has been clicked, check or uncheck its corresponding
-		 * input
+		 * Method: A label has been clicked, check or uncheck its corresponding input
 		 * 
 		 * Parameters: e - {Event}
 		 * 
-		 * Context: - {DOMElement} inputElem - {<OpenLayers.Control.LayerSwitcher>}
-		 * layerSwitcher - {<OpenLayers.Layer>} layer
+		 * Context: - {DOMElement} inputElem - {<OpenLayers.Control.LayerSwitcher>} layerSwitcher - {<OpenLayers.Layer>} layer
 		 */
 
 	    onInputClick: function(e) {
@@ -1471,8 +1436,7 @@ var WPSSwitcher =
 	    },
 	    
 	    /**
-		 * Method: onLayerClick Need to update the map accordingly whenever user
-		 * clicks in either of the layers.
+		 * Method: onLayerClick Need to update the map accordingly whenever user clicks in either of the layers.
 		 * 
 		 * Parameters: e - {Event}
 		 */
@@ -1482,10 +1446,7 @@ var WPSSwitcher =
 
 
 	    /**
-		 * Method: updateMap Cycles through the loaded data and base layer input
-		 * arrays and makes the necessary calls to the Map object such that that
-		 * the map's visual state corresponds to what the user has selected in
-		 * the control.
+		 * Method: updateMap Cycles through the loaded data and base layer input arrays and makes the necessary calls to the Map object such that that the map's visual state corresponds to what the user has selected in the control.
 		 */
 	    updateMap: function() {
 
@@ -1525,8 +1486,7 @@ var WPSSwitcher =
 	    },
 	    
 	    /**
-		 * Method: minimizeControl Hide all the contents of the control, shrink
-		 * the size, add the maximize icon
+		 * Method: minimizeControl Hide all the contents of the control, shrink the size, add the maximize icon
 		 * 
 		 * Parameters: e - {Event}
 		 */
@@ -1547,8 +1507,7 @@ var WPSSwitcher =
 	    },
 
 	    /**
-		 * Method: showControls Hide/Show all LayerSwitcher controls depending
-		 * on whether we are minimized or not
+		 * Method: showControls Hide/Show all LayerSwitcher controls depending on whether we are minimized or not
 		 * 
 		 * Parameters: minimize - {Boolean}
 		 */
@@ -1577,9 +1536,9 @@ var WPSSwitcher =
 	        // style of main div
 	        with(this.div.style) {
                 position = "absolute";
-                top = "0px";
+                top = "10px";
                 // right = "";
-                left = "100px";
+                left = "70px";
                 fontFamily = "sans-serif";
                 fontWeight = "bold";
                 fontSize = "smaller";
@@ -1615,29 +1574,21 @@ var WPSSwitcher =
 	        form.appendChild(p1);
 
 	        var select1 = document.createElement("select");
+	        selectWPS = select1;
 	        select1.name = "wpslist";
 	        select1.size = "1";
 	        select1.style.width = "400px";
 	        p1.appendChild(select1);
-	        selectWPS = select1;
+	        
 	        
 	        select1.onchange = function(){
-	        	resultDisplay.data = "";
-	        	loadProcessList();
+	        	resultDisplayWPS.data = "";
+	        	loadWPSProcessList();
 	        	loadProcessInputForms();
 	        };
 	        
-	        var selectedWPSURL = null;
-	        for ( var url in wpsURLs) {
-	        	if(url != null){
-	        		var option = document.createElement("option");
-	        		option.text  = url;
-	        		option.value = url;
-	        		select1.appendChild(option);
-	        		if(selectedWPSURL == null)
-	        			selectedWPSURL = url;
-	        	}
-			} 
+	        // load wps urls
+	        var selectedWPSURL = loadWPSURLs();
 	        
 	        // create process list
 	        var p2 = document.createElement("p");
@@ -1649,15 +1600,23 @@ var WPSSwitcher =
 	        select2.size = "1";
 	        select2.style.width = "400px";
 	        p2.appendChild(select2);
+	        p2.appendChild(document.createTextNode(" "));
+	        p2.appendChild(aProcessDesc); // process description
+        	aProcessDesc.onclick = function(){
+        		var opt = select2.options[select2.selectedIndex];
+        		showInputDataDescription(opt.text, opt.title, opt.value);
+        	};
 	        select2.onchange = function(){
-	        	resultDisplay.data = "";
+	        	aProcessDesc.onclick = function(){
+	        		var opt = select2.options[select2.selectedIndex];
+	        		showInputDataDescription(opt.text, opt.title, opt.value);
+	        	};
+	        	resultDisplayWPS.data = "";
 	        	loadProcessInputForms();
 	        };
-	        selectProcesses = select2;
-	        loadProcessList(selectedWPSURL);
+	        selectWPSProcesses = select2;
+	        loadWPSProcessList();
 	                
-
-
   
 	        // create input forms
 	        var p5 = document.createElement("p");
@@ -1681,7 +1640,7 @@ var WPSSwitcher =
 	        		        	
 	        	// create layer name
 	        	var layerName = "WPS ";
-	        	layerName += selectProcesses.value;
+	        	layerName += selectWPSProcesses.value;
 	        	var name = null;
 	        	for ( var i in selectLayers) {
 	        		if(name == null)
@@ -1696,12 +1655,12 @@ var WPSSwitcher =
 	        	}
 	        	
 	        	// add WPS layer
-	        	addWPSLayer(layerName, selectWPS.value, selectProcesses.value, createWPSInputData() );
+	        	addWPSLayer(layerName, selectWPS.value, selectWPSProcesses.value, createWPSInputData() );
 	        };
 	        p4.appendChild(input);
 	        p4.appendChild(document.createElement("br"));
-	        p4.appendChild(resultDisplay);
-	        resultDisplay.data = "";
+	        p4.appendChild(resultDisplayWPS);
+	        resultDisplayWPS.data = "";
 
 	        if(this.roundedCorner) {
 	            OpenLayers.Rico.Corner.round(this.div, {
@@ -1714,15 +1673,16 @@ var WPSSwitcher =
 	        }
 
 	        var imgLocation = OpenLayers.Util.getImagesLocation();
-	        var sz = new OpenLayers.Size(18,18);        
+	        var sz = new OpenLayers.Size(44,22);        
 
 	        // maximize button div
 	        var img = imgLocation + 'layer-switcher-maximize.png';
+	        var wpsIcon = 'images/wps-icon.png';
 	        this.maximizeDiv = OpenLayers.Util.createAlphaImageDiv(
 	                                    "OpenLayers_Control_MaximizeDiv", 
-	                                    new OpenLayers.Pixel(180,0), 
+	                                    new OpenLayers.Pixel(0,0), 
 	                                    sz, 
-	                                    img, 
+	                                    wpsIcon, 
 	                                    "absolute");
 	        OpenLayers.Element.addClass(this.maximizeDiv, "maximizeDiv");
 	        this.maximizeDiv.style.display = "none";
@@ -1737,7 +1697,7 @@ var WPSSwitcher =
 	        var sz = new OpenLayers.Size(18,18);        
 	        this.minimizeDiv = OpenLayers.Util.createAlphaImageDiv(
 	                                    "OpenLayers_Control_MinimizeDiv", 
-	                                    new OpenLayers.Pixel(180,0), 
+	                                    new OpenLayers.Pixel(0,0), 
 	                                    sz, 
 	                                    img, 
 	                                    "absolute");
@@ -1760,8 +1720,7 @@ var WPSSwitcher =
 	    },
 
 	    /**
-		 * Method: mouseDown Register a local 'mouseDown' flag so that we'll
-		 * know whether or not to ignore a mouseUp event
+		 * Method: mouseDown Register a local 'mouseDown' flag so that we'll know whether or not to ignore a mouseUp event
 		 * 
 		 * Parameters: evt - {Event}
 		 */
@@ -1771,9 +1730,7 @@ var WPSSwitcher =
 	    },
 
 	    /**
-		 * Method: mouseUp If the 'isMouseDown' flag has been set, that means
-		 * that the drag was started from within the LayerSwitcher control, and
-		 * thus we can ignore the mouseup. Otherwise, let the Event continue.
+		 * Method: mouseUp If the 'isMouseDown' flag has been set, that means that the drag was started from within the LayerSwitcher control, and thus we can ignore the mouseup. Otherwise, let the Event continue.
 		 * 
 		 * Parameters: evt - {Event}
 		 */
@@ -1785,6 +1742,493 @@ var WPSSwitcher =
 	    },
 
 	    CLASS_NAME: "WPSSwitcher"
-	});
+});
+
+var WFSSwitcher = 
+	  OpenLayers.Class(OpenLayers.Control, {
+
+	    /**
+		 * APIProperty: roundedCorner {Boolean} If true the Rico library is used for rounding the corners of the layer switcher div, defaults to true.
+		 */
+	    roundedCorner: true,
+
+	    /**
+		 * APIProperty: roundedCornerColor {String} The color of the rounded corners, only applies if roundedCorner is true, defaults to "darkblue".
+		 */
+	    roundedCornerColor: "darkblue",
+	    
+	    /**
+		 * Property: layerStates {Array(Object)} Basically a copy of the "state" of the map's layers the last time the control was drawn. We have this in order to avoid unnecessarily redrawing the control.
+		 */
+	    layerStates: null,
+	    
+
+	    // DOM Elements
+	  
+	    /**
+		 * Property: layersDiv {DOMElement}
+		 */
+	    layersDiv: null,
+	    
+	    /**
+		 * Property: baseLayers {Array(<OpenLayers.Layer>)}
+		 */
+	    baseLayers: null,
+	    
+
+	    /**
+		 * Property: dataLayers {Array(<OpenLayers.Layer>)}
+		 */
+	    dataLayers: null,
 
 
+	    /**
+		 * Property: minimizeDiv {DOMElement}
+		 */
+	    minimizeDiv: null,
+
+	    /**
+		 * Property: maximizeDiv {DOMElement}
+		 */
+	    maximizeDiv: null,
+	    
+	    /**
+		 * APIProperty: ascending {Boolean}
+		 */
+	    ascending: true,
+	 
+	    /**
+		 * Constructor: OpenLayers.Control.LayerSwitcher
+		 * 
+		 * Parameters: options - {Object}
+		 */
+	    initialize: function(options) {
+	        OpenLayers.Control.prototype.initialize.apply(this, arguments);
+	        this.layerStates = [];
+	    },
+
+	    /**
+		 * APIMethod: destroy
+		 */    
+	    destroy: function() {
+	        
+	        OpenLayers.Event.stopObservingElement(this.div);
+
+	        OpenLayers.Event.stopObservingElement(this.minimizeDiv);
+	        OpenLayers.Event.stopObservingElement(this.maximizeDiv);
+
+	        // clear out layers info and unregister their events
+	        this.clearLayersArray("base");
+	        this.clearLayersArray("data");
+	        
+	        this.map.events.un({
+	            "addlayer": this.redraw,
+	            "changelayer": this.redraw,
+	            "removelayer": this.redraw,
+	            "changebaselayer": this.redraw,
+	            scope: this
+	        });
+	        
+	        OpenLayers.Control.prototype.destroy.apply(this, arguments);
+	    },
+
+	    /**
+		 * Method: setMap
+		 * 
+		 * Properties: map - {<OpenLayers.Map>}
+		 */
+	    setMap: function(map) {
+	        OpenLayers.Control.prototype.setMap.apply(this, arguments);
+
+	        this.map.events.on({
+	            "addlayer": this.redraw,
+	            "changelayer": this.redraw,
+	            "removelayer": this.redraw,
+	            "changebaselayer": this.redraw,
+	            scope: this
+	        });
+	    },
+
+	    /**
+		 * Method: draw
+		 * 
+		 * Returns: {DOMElement} A reference to the DIV DOMElement containing the switcher tabs.
+		 */  
+	    draw: function() {
+	        OpenLayers.Control.prototype.draw.apply(this);
+
+	        // create layout divs
+	        this.loadContents();
+
+	        // set mode to minimize
+	        if(!this.outsideViewport) {
+	            this.minimizeControl();
+	        }
+
+	        // populate div with current info
+	        this.redraw();    
+
+	        return this.div;
+	    },
+
+	    /**
+		 * Method: clearLayersArray User specifies either "base" or "data". we then clear all the corresponding listeners, the div, and reinitialize a new array.
+		 * 
+		 * Parameters: layersType - {String}
+		 */
+	    clearLayersArray: function(layersType) {
+	        var layers = this[layersType + "Layers"];
+	        if (layers) {
+	            for(var i=0, len=layers.length; i<len ; i++) {
+	                var layer = layers[i];
+	                OpenLayers.Event.stopObservingElement(layer.inputElem);
+	                OpenLayers.Event.stopObservingElement(layer.labelSpan);
+	            }
+	        }
+	        this[layersType + "LayersDiv"].innerHTML = "";
+	        this[layersType + "Layers"] = [];
+	    },
+
+
+	    /**
+		 * Method: checkRedraw Checks if the layer state has changed since the last redraw() call.
+		 * 
+		 * Returns: {Boolean} The layer state changed since the last redraw() call.
+		 */
+	    checkRedraw: function() {
+	        var redraw = false;
+	        if ( !this.layerStates.length ||
+	             (this.map.layers.length != this.layerStates.length) ) {
+	            redraw = true;
+	        } else {
+	            for (var i=0, len=this.layerStates.length; i<len; i++) {
+	                var layerState = this.layerStates[i];
+	                var layer = this.map.layers[i];
+	                if ( (layerState.name != layer.name) || 
+	                     (layerState.inRange != layer.inRange) || 
+	                     (layerState.id != layer.id) || 
+	                     (layerState.visibility != layer.visibility) ) {
+	                    redraw = true;
+	                    break;
+	                }    
+	            }
+	        }    
+	        return redraw;
+	    },
+	    
+	    /**
+		 * Method: redraw Goes through and takes the current state of the Map and rebuilds the control to display that state. Groups base layers into a radio-button group and lists each data layer with a checkbox.
+		 * 
+		 * Returns: {DOMElement} A reference to the DIV DOMElement containing the control
+		 */  
+	    redraw: function() {
+	        // if the state hasn't changed since last redraw, no need
+	        // to do anything. Just return the existing div.
+	        if (!this.checkRedraw()) { 
+	            return this.div; 
+	        } 
+
+	        return this.div;
+	    },
+
+	    /**
+		 * Method: A label has been clicked, check or uncheck its corresponding input
+		 * 
+		 * Parameters: e - {Event}
+		 * 
+		 * Context: - {DOMElement} inputElem - {<OpenLayers.Control.LayerSwitcher>} layerSwitcher - {<OpenLayers.Layer>} layer
+		 */
+
+	    onInputClick: function(e) {
+
+	        if (!this.inputElem.disabled) {
+	            if (this.inputElem.type == "radio") {
+	                this.inputElem.checked = true;
+	                this.layer.map.setBaseLayer(this.layer);
+	            } else {
+	                this.inputElem.checked = !this.inputElem.checked;
+	                this.layerSwitcher.updateMap();
+	            }
+	        }
+	        OpenLayers.Event.stop(e);
+	    },
+	    
+	    /**
+		 * Method: onLayerClick Need to update the map accordingly whenever user clicks in either of the layers.
+		 * 
+		 * Parameters: e - {Event}
+		 */
+	    onLayerClick: function(e) {
+	        this.updateMap();
+	    },
+
+
+	    /**
+		 * Method: updateMap Cycles through the loaded data and base layer input arrays and makes the necessary calls to the Map object such that that the map's visual state corresponds to what the user has selected in the control.
+		 */
+	    updateMap: function() {
+
+	        // set the newly selected base layer
+	        for(var i=0, len=this.baseLayers.length; i<len; i++) {
+	            var layerEntry = this.baseLayers[i];
+	            if (layerEntry.inputElem.checked) {
+	                this.map.setBaseLayer(layerEntry.layer, false);
+	            }
+	        }
+
+	        // set the correct visibilities for the overlays
+	        for(var i=0, len=this.dataLayers.length; i<len; i++) {
+	            var layerEntry = this.dataLayers[i];   
+	            layerEntry.layer.setVisibility(layerEntry.inputElem.checked);
+	        }
+
+	    },
+
+	    /**
+		 * Method: maximizeControl Set up the labels and divs for the control
+		 * 
+		 * Parameters: e - {Event}
+		 */
+	    maximizeControl: function(e) {
+
+	        // set the div's width and height to empty values, so
+	        // the div dimensions can be controlled by CSS
+	        this.div.style.width = "";
+	        this.div.style.height = "";
+
+	        this.showControls(false);
+
+	        if (e != null) {
+	            OpenLayers.Event.stop(e);                                            
+	        }
+	    },
+	    
+	    /**
+		 * Method: minimizeControl Hide all the contents of the control, shrink the size, add the maximize icon
+		 * 
+		 * Parameters: e - {Event}
+		 */
+	    minimizeControl: function(e) {
+
+	        // to minimize the control we set its div's width
+	        // and height to 0px, we cannot just set "display"
+	        // to "none" because it would hide the maximize
+	        // div
+	        this.div.style.width = "0px";
+	        this.div.style.height = "0px";
+
+	        this.showControls(true);
+
+	        if (e != null) {
+	            OpenLayers.Event.stop(e);                                            
+	        }
+	    },
+
+	    /**
+		 * Method: showControls Hide/Show all LayerSwitcher controls depending on whether we are minimized or not
+		 * 
+		 * Parameters: minimize - {Boolean}
+		 */
+	    showControls: function(minimize) {
+
+	        this.maximizeDiv.style.display = minimize ? "" : "none";
+	        this.minimizeDiv.style.display = minimize ? "none" : "";
+
+	        this.layersDiv.style.display = minimize ? "none" : "";
+	    },
+	    
+	    /**
+		 * Method: loadContents Set up the labels and divs for the control
+		 */
+	    loadContents: function() {
+
+	        // configure main div
+	        OpenLayers.Event.observe(this.div, "mouseup", 
+	            OpenLayers.Function.bindAsEventListener(this.mouseUp, this));
+	        OpenLayers.Event.observe(this.div, "click",
+	                      this.ignoreEvent);
+	        OpenLayers.Event.observe(this.div, "mousedown",
+	            OpenLayers.Function.bindAsEventListener(this.mouseDown, this));
+	        OpenLayers.Event.observe(this.div, "dblclick", this.ignoreEvent);
+      
+	        // style of main div
+	        with(this.div.style) {
+              position = "absolute";
+              top = "42px";
+              // right = "";
+              left = "70px";
+              fontFamily = "sans-serif";
+              fontWeight = "bold";
+              fontSize = "smaller";
+              // marginTop = "3px";
+              // marginLeft = "3px";
+              padding = "10px";
+              color = "white";
+              backgroundColor = "darkblue";
+	        }
+
+	        
+	        
+	        // layers list div
+	        this.layersDiv = document.createElement("div");
+	        this.layersDiv.id = this.id + "_layersDiv";
+	        OpenLayers.Element.addClass(this.layersDiv, "layersDiv");
+
+	        
+	        with(this.layersDiv.style) {
+            // backgroundColor = "red";
+             width = "600px";
+	        }
+	        
+	        
+	        // form
+	        var form = document.createElement("form");
+	        this.layersDiv.appendChild(form);
+	        this.div.appendChild(this.layersDiv);
+	        
+	        // create list of wfs urls
+	        var p1 = document.createElement("p");
+	        p1.innerHTML = "WFS: ";
+	        form.appendChild(p1);
+
+	        var select1 = document.createElement("select");
+	        selectWFS = select1;
+	        select1.name = "wpslist";
+	        select1.size = "1";
+	        select1.style.width = "400px";
+	        p1.appendChild(select1);
+	        selectWFS = select1;
+	        
+	        select1.onchange = function(){
+	        	resultDisplayWPS.data = "";
+	        	loadWFSLayerList();
+	        };
+	        
+	        
+	        // load wfs urls
+	        var selectedWFSURL = loadWFSURLs();
+	        	        
+	        // create layer list
+	        var p2 = document.createElement("p");
+	        p2.innerHTML = "Layer: ";
+	        form.appendChild(p2);
+
+	        var select2 = document.createElement("select");
+	        select2.name = "layerlist";
+	        select2.size = "1";
+	        select2.style.width = "400px";
+	        p2.appendChild(select2);
+	        select2.onchange = function(){
+	        	resultDisplayWFS.data = "";
+	        };
+	     
+	        selectWFSLayers = select2;
+	        loadWFSLayerList();
+
+	                     
+	        // create add layer button
+	        var p4 = document.createElement("p");
+	        p4.innerHTML = "<hr>";
+	        form.appendChild(p4);
+	       
+	        var input = document.createElement("input");
+	        input.type = "button";
+	        input.value = "Add Layer";
+	        input.onclick = function(){
+	        	
+	        	// create layer name
+	        	var layerName = "WFS ";
+	        	layerName += selectWFSLayers.value;
+  	        	
+	        	// add WFS layer
+	        	addWFSLayer(layerName, selectWFS.value,selectWFSLayers.value, true);
+	        	
+	        	// reload input layers
+	        	loadProcessInputForms();
+	        };
+	        p4.appendChild(input);
+	        p4.appendChild(document.createElement("br"));
+	        p4.appendChild(resultDisplayWFS);
+	        resultDisplayWFS.data = "";
+
+	        if(this.roundedCorner) {
+	            OpenLayers.Rico.Corner.round(this.div, {
+	                corners: "tl bl",
+	                bgColor: "darkblue",
+	                color: this.roundedCornerColor,
+	                blend: false
+	            });
+	            OpenLayers.Rico.Corner.changeOpacity(this.layersDiv, 0.75);
+	        }
+
+	        var imgLocation = OpenLayers.Util.getImagesLocation();
+	        var sz = new OpenLayers.Size(44,22);        
+
+	        // maximize button div
+	        var img = imgLocation + 'layer-switcher-maximize.png';
+	        var wfsIcon = 'images/wfs-icon.png';
+	        this.maximizeDiv = OpenLayers.Util.createAlphaImageDiv(
+	                                    "OpenLayers_Control_MaximizeDiv", 
+	                                    new OpenLayers.Pixel(0,0), 
+	                                    sz, 
+	                                    wfsIcon, 
+	                                    "absolute");
+	        OpenLayers.Element.addClass(this.maximizeDiv, "maximizeDiv");
+	        this.maximizeDiv.style.display = "none";
+	        OpenLayers.Event.observe(this.maximizeDiv, "click", 
+	            OpenLayers.Function.bindAsEventListener(this.maximizeControl, this)
+	        );
+	        
+	        this.div.appendChild(this.maximizeDiv);
+
+	        // minimize button div
+	        var img = imgLocation + 'layer-switcher-minimize.png';
+	        var sz = new OpenLayers.Size(18,18);        
+	        this.minimizeDiv = OpenLayers.Util.createAlphaImageDiv(
+	                                    "OpenLayers_Control_MinimizeDiv", 
+	                                    new OpenLayers.Pixel(0,0), 
+	                                    sz, 
+	                                    img, 
+	                                    "absolute");
+	        OpenLayers.Element.addClass(this.minimizeDiv, "minimizeDiv");
+	        this.minimizeDiv.style.display = "none";
+	        OpenLayers.Event.observe(this.minimizeDiv, "click", 
+	            OpenLayers.Function.bindAsEventListener(this.minimizeControl, this)
+	        );
+
+	        this.div.appendChild(this.minimizeDiv);
+	    },
+	    
+	    /**
+		 * Method: ignoreEvent
+		 * 
+		 * Parameters: evt - {Event}
+		 */
+	    ignoreEvent: function(evt) {
+	        OpenLayers.Event.stop(evt);
+	    },
+
+	    /**
+		 * Method: mouseDown Register a local 'mouseDown' flag so that we'll know whether or not to ignore a mouseUp event
+		 * 
+		 * Parameters: evt - {Event}
+		 */
+	    mouseDown: function(evt) {
+	        this.isMouseDown = true;
+	        this.ignoreEvent(evt);
+	    },
+
+	    /**
+		 * Method: mouseUp If the 'isMouseDown' flag has been set, that means that the drag was started from within the LayerSwitcher control, and thus we can ignore the mouseup. Otherwise, let the Event continue.
+		 * 
+		 * Parameters: evt - {Event}
+		 */
+	    mouseUp: function(evt) {
+	        if (this.isMouseDown) {
+	            this.isMouseDown = false;
+	            this.ignoreEvent(evt);
+	        }
+	    },
+
+	    CLASS_NAME: "WFSSwitcher"
+});
