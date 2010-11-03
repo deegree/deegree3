@@ -265,7 +265,6 @@ public class OracleFeatureStore implements FeatureStore {
         return schema;
     }
 
-    @Override
     public CRS getStorageSRS() {
         return storageCRS;
     }
