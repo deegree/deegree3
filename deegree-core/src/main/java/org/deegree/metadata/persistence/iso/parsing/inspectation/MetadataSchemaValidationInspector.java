@@ -46,6 +46,7 @@ import javax.xml.stream.XMLStreamException;
 
 import org.apache.axiom.om.OMElement;
 import org.deegree.commons.xml.schema.SchemaValidator;
+import org.deegree.metadata.persistence.MetadataInspectorException;
 import org.deegree.metadata.persistence.MetadataStoreException;
 import org.deegree.metadata.persistence.MetadataInspectorManager.InspectorKey;
 import org.deegree.metadata.persistence.iso19115.jaxb.AbstractInspector;
@@ -84,7 +85,7 @@ public class MetadataSchemaValidationInspector implements RecordInspector {
      * @throws MetadataStoreException
      */
     private List<String> validate( OMElement elem )
-                            throws MetadataStoreException {
+                            throws MetadataInspectorException {
         StringWriter s = new StringWriter();
         if ( checkAvailability( inspector ) ) {
             try {
@@ -92,7 +93,7 @@ public class MetadataSchemaValidationInspector implements RecordInspector {
             } catch ( XMLStreamException e ) {
 
                 LOG.debug( "error: " + e.getMessage(), e );
-                throw new MetadataStoreException( e.getMessage() );
+                throw new MetadataInspectorException( e.getMessage() );
             }
             InputStream is = new ByteArrayInputStream( s.toString().getBytes() );
             if ( elem.getLocalName().equals( "MD_Metadata" ) ) {
@@ -107,7 +108,7 @@ public class MetadataSchemaValidationInspector implements RecordInspector {
 
     @Override
     public OMElement inspect( OMElement record, Connection conn )
-                            throws MetadataStoreException {
+                            throws MetadataInspectorException {
         List<String> errors = validate( record );
         if ( errors.isEmpty() ) {
             return record;

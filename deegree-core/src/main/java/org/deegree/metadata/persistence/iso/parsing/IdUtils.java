@@ -46,6 +46,7 @@ import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.deegree.metadata.persistence.MetadataInspectorException;
 import org.deegree.metadata.persistence.MetadataStoreException;
 import org.deegree.metadata.persistence.iso.PostGISMappingsISODC;
 import org.slf4j.Logger;
@@ -83,7 +84,7 @@ public class IdUtils {
      * @throws MetadataStoreException
      */
     public String generateUUID()
-                            throws MetadataStoreException {
+                            throws MetadataInspectorException {
 
         ResultSet rs = null;
         PreparedStatement stm = null;
@@ -126,7 +127,7 @@ public class IdUtils {
             }
         } catch ( SQLException e ) {
             LOG.debug( "Error while generating a new UUID for the metadata: {}", e.getMessage() );
-            throw new MetadataStoreException( "Error while generating a new UUID for the metadata: {}", e );
+            throw new MetadataInspectorException( "Error while generating a new UUID for the metadata: {}", e );
         } finally {
             close( rs );
             close( stm );

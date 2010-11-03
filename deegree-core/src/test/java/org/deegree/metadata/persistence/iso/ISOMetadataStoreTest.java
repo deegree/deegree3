@@ -72,6 +72,7 @@ import org.deegree.filter.Filter;
 import org.deegree.filter.xml.Filter110XMLDecoder;
 import org.deegree.geometry.Envelope;
 import org.deegree.metadata.MetadataRecord;
+import org.deegree.metadata.persistence.MetadataInspectorException;
 import org.deegree.metadata.persistence.MetadataQuery;
 import org.deegree.metadata.persistence.MetadataResultSet;
 import org.deegree.metadata.persistence.MetadataStoreException;
@@ -187,7 +188,8 @@ public class ISOMetadataStoreTest {
 
     @Test
     public void testInsert()
-                            throws MetadataStoreException, XMLStreamException, FactoryConfigurationError, IOException {
+                            throws MetadataStoreException, XMLStreamException, FactoryConfigurationError, IOException,
+                            MetadataInspectorException {
         LOG.info( "START Test: testInsert" );
 
         if ( jdbcURL != null && jdbcUser != null && jdbcPass != null ) {
@@ -227,7 +229,8 @@ public class ISOMetadataStoreTest {
 
     @Test
     public void testNamespaces()
-                            throws MetadataStoreException, XMLStreamException, FactoryConfigurationError, IOException {
+                            throws MetadataStoreException, XMLStreamException, FactoryConfigurationError, IOException,
+                            MetadataInspectorException {
         LOG.info( "START Test: testNamespaces" );
 
         if ( jdbcURL != null && jdbcUser != null && jdbcPass != null ) {
@@ -274,10 +277,12 @@ public class ISOMetadataStoreTest {
      * @throws XMLStreamException
      * @throws FactoryConfigurationError
      * @throws IOException
+     * @throws MetadataInspectorException
      */
     @Test
     public void testDelete()
-                            throws MetadataStoreException, XMLStreamException, FactoryConfigurationError, IOException {
+                            throws MetadataStoreException, XMLStreamException, FactoryConfigurationError, IOException,
+                            MetadataInspectorException {
         LOG.info( "START Test: testDelete" );
 
         if ( jdbcURL != null && jdbcUser != null && jdbcPass != null ) {
@@ -320,11 +325,12 @@ public class ISOMetadataStoreTest {
      * 2.xml has a fileIdentifier
      * 
      * @throws MetadataStoreException
+     * @throws MetadataInspectorException
      */
 
     @Test
     public void testIdentifierRejectFalse()
-                            throws MetadataStoreException {
+                            throws MetadataStoreException, MetadataInspectorException {
         LOG.info( "START Test: test if the configuration generates the identifier automaticaly. (Reject FALSE)" );
         if ( jdbcURL != null && jdbcUser != null && jdbcPass != null ) {
             store = (ISOMetadataStore) new ISOMetadataStoreProvider().getMetadataStore( TstConstants.configURL_REJECT_FI_FALSE );
@@ -344,7 +350,7 @@ public class ISOMetadataStoreTest {
 
     @Test
     public void testCouplingConsistencyErrorFALSE()
-                            throws MetadataStoreException {
+                            throws MetadataStoreException, MetadataInspectorException {
         LOG.info( "START Test: test if the the coupling of data and service metadata is correct and no exception will be thrown. " );
         if ( jdbcURL != null && jdbcUser != null && jdbcPass != null ) {
             store = (ISOMetadataStore) new ISOMetadataStoreProvider().getMetadataStore( TstConstants.configURL_COUPLING_ACCEPT );
@@ -364,7 +370,7 @@ public class ISOMetadataStoreTest {
 
     @Test
     public void testCouplingConsistencyErrorFALSE_NO_CONSISTENCY()
-                            throws MetadataStoreException {
+                            throws MetadataStoreException, MetadataInspectorException {
         LOG.info( "START Test: test if the the coupled service metadata will be inserted without any coupling but no exception will be thrown. " );
         if ( jdbcURL != null && jdbcUser != null && jdbcPass != null ) {
             store = (ISOMetadataStore) new ISOMetadataStoreProvider().getMetadataStore( TstConstants.configURL_COUPLING_ACCEPT );
@@ -384,7 +390,7 @@ public class ISOMetadataStoreTest {
 
     @Test
     public void testCouplingConsistencyErrorTRUE_NO_Exception()
-                            throws MetadataStoreException {
+                            throws MetadataStoreException, MetadataInspectorException {
         LOG.info( "START Test: test if the the coupling of data and service metadata is correct and no exception will be thrown. " );
         if ( jdbcURL != null && jdbcUser != null && jdbcPass != null ) {
             store = (ISOMetadataStore) new ISOMetadataStoreProvider().getMetadataStore( TstConstants.configURL_COUPLING_Ex_AWARE );
@@ -409,11 +415,12 @@ public class ISOMetadataStoreTest {
      * 2.xml has a fileIdentifier -> insert Output: 2 because 1.xml has a resourceIdentifier which can be taken
      * 
      * @throws MetadataStoreException
+     * @throws MetadataInspectorException
      */
 
     @Test
     public void testIdentifierRejectTrue()
-                            throws MetadataStoreException {
+                            throws MetadataStoreException, MetadataInspectorException {
         LOG.info( "START Test: test if the configuration rejects the insert of the missing identifier. (Reject TRUE)" );
 
         if ( jdbcURL != null && jdbcUser != null && jdbcPass != null ) {
@@ -439,11 +446,12 @@ public class ISOMetadataStoreTest {
      * Output should be 1
      * 
      * @throws MetadataStoreException
+     * @throws MetadataInspectorException
      */
 
     @Test
     public void testResourceIdentifierGenerateFALSE_With_ID_Attrib_RSID_Equals()
-                            throws MetadataStoreException {
+                            throws MetadataStoreException, MetadataInspectorException {
         LOG.info( "START Test: test if the configuration inserts the right ResourceIdentifier-combination while there is no automatic generating." );
 
         if ( jdbcURL != null && jdbcUser != null && jdbcPass != null ) {
@@ -470,10 +478,12 @@ public class ISOMetadataStoreTest {
      * @throws FactoryConfigurationError
      * @throws XMLStreamException
      * @throws IOException
+     * @throws MetadataInspectorException
      */
     @Test
     public void testOutputBrief()
-                            throws MetadataStoreException, XMLStreamException, FactoryConfigurationError, IOException {
+                            throws MetadataStoreException, XMLStreamException, FactoryConfigurationError, IOException,
+                            MetadataInspectorException {
         LOG.info( "START Test: is output ISO brief? " );
 
         if ( jdbcURL != null && jdbcUser != null && jdbcPass != null ) {
@@ -488,7 +498,7 @@ public class ISOMetadataStoreTest {
         MetadataResultSet resultSet = store.getRecordsById( ids );
 
         XMLStreamReader xmlStreamActual = XMLInputFactory.newInstance().createXMLStreamReader(
-                                                                                             TstConstants.briefRecord.openStream() );
+                                                                                               TstConstants.briefRecord.openStream() );
 
         // create the should be output
         StringBuilder streamActual = stringBuilderFromXMLStream( xmlStreamActual );
@@ -497,7 +507,7 @@ public class ISOMetadataStoreTest {
         // String file = "/home/thomas/Desktop/zTestBrief.xml";
         String file = null;
         StringBuilder streamExpected = stringBuilderFromResultSet( resultSet, ReturnableElement.brief, file,
-                                                               XMLStreamConstants.START_ELEMENT );
+                                                                   XMLStreamConstants.START_ELEMENT );
         if ( streamExpected == null ) {
             return;
         }
@@ -516,11 +526,13 @@ public class ISOMetadataStoreTest {
      * @throws FactoryConfigurationError
      * @throws XMLStreamException
      * @throws IOException
+     * @throws MetadataInspectorException
      */
 
     @Test
     public void testOutputSummary()
-                            throws MetadataStoreException, XMLStreamException, FactoryConfigurationError, IOException {
+                            throws MetadataStoreException, XMLStreamException, FactoryConfigurationError, IOException,
+                            MetadataInspectorException {
         LOG.info( "START Test: is output ISO summary? " );
 
         if ( jdbcURL != null && jdbcUser != null && jdbcPass != null ) {
@@ -535,7 +547,7 @@ public class ISOMetadataStoreTest {
         MetadataResultSet resultSet = store.getRecordsById( ids );
 
         XMLStreamReader xmlStreamActual = XMLInputFactory.newInstance().createXMLStreamReader(
-                                                                                             TstConstants.summaryRecord.openStream() );
+                                                                                               TstConstants.summaryRecord.openStream() );
 
         // create the should be output
         StringBuilder streamActual = stringBuilderFromXMLStream( xmlStreamActual );
@@ -544,7 +556,7 @@ public class ISOMetadataStoreTest {
         // String file = "/home/thomas/Desktop/zTestSummary.xml";
         String file = null;
         StringBuilder streamExpected = stringBuilderFromResultSet( resultSet, ReturnableElement.summary, file,
-                                                               XMLStreamConstants.START_ELEMENT );
+                                                                   XMLStreamConstants.START_ELEMENT );
         if ( streamExpected == null ) {
             return;
         }
@@ -556,7 +568,8 @@ public class ISOMetadataStoreTest {
 
     @Test
     public void testAnyTextElement_ALL()
-                            throws MetadataStoreException, XMLStreamException, FactoryConfigurationError, IOException {
+                            throws MetadataStoreException, XMLStreamException, FactoryConfigurationError, IOException,
+                            MetadataInspectorException {
         LOG.info( "START Test: test anyText element 'ALL' for one metadataRecord " );
 
         if ( jdbcURL != null && jdbcUser != null && jdbcPass != null ) {
@@ -588,7 +601,8 @@ public class ISOMetadataStoreTest {
 
     @Test
     public void testAnyTextElement_CORE()
-                            throws MetadataStoreException, XMLStreamException, FactoryConfigurationError, IOException {
+                            throws MetadataStoreException, XMLStreamException, FactoryConfigurationError, IOException,
+                            MetadataInspectorException {
         LOG.info( "START Test: test anyText element 'CORE' for one metadataRecord " );
 
         if ( jdbcURL != null && jdbcUser != null && jdbcPass != null ) {
@@ -620,7 +634,8 @@ public class ISOMetadataStoreTest {
 
     @Test
     public void testAnyTextElement_CUSTOM()
-                            throws MetadataStoreException, XMLStreamException, FactoryConfigurationError, IOException {
+                            throws MetadataStoreException, XMLStreamException, FactoryConfigurationError, IOException,
+                            MetadataInspectorException {
         LOG.info( "START Test: test anyText element 'CUSTOM' for one metadataRecord " );
 
         if ( jdbcURL != null && jdbcUser != null && jdbcPass != null ) {
@@ -652,7 +667,8 @@ public class ISOMetadataStoreTest {
 
     @Test
     public void testVariousElements()
-                            throws MetadataStoreException, XMLStreamException, FactoryConfigurationError, IOException {
+                            throws MetadataStoreException, XMLStreamException, FactoryConfigurationError, IOException,
+                            MetadataInspectorException {
         LOG.info( "START Test: test various elements for one metadataRecord " );
 
         if ( jdbcURL != null && jdbcUser != null && jdbcPass != null ) {
@@ -748,10 +764,11 @@ public class ISOMetadataStoreTest {
      * Output should be 5 valid metadataRecords in backend
      * 
      * @throws MetadataStoreException
+     * @throws MetadataInspectorException
      */
     @Test
     public void testResourceIdentifierGenerateTRUE()
-                            throws MetadataStoreException {
+                            throws MetadataStoreException, MetadataInspectorException {
         LOG.info( "START Test: test for automaticaly generated ResourceIdentifier-combination." );
 
         if ( jdbcURL != null && jdbcUser != null && jdbcPass != null ) {
@@ -778,10 +795,11 @@ public class ISOMetadataStoreTest {
      * Output should be generate a MetadataStoreException
      * 
      * @throws MetadataStoreException
+     * @throws MetadataInspectorException
      */
-    @Test(expected = MetadataStoreException.class)
+    @Test(expected = MetadataInspectorException.class)
     public void testResourceIdentifierGenerateFALSE_NO_RS_ID()
-                            throws MetadataStoreException {
+                            throws MetadataStoreException, MetadataInspectorException {
         LOG.info( "START Test: test if the configuration throws an exception because of the wrong ResourceIdentifier-combination while there is no automatic generating." );
 
         if ( jdbcURL != null && jdbcUser != null && jdbcPass != null ) {
@@ -803,10 +821,11 @@ public class ISOMetadataStoreTest {
      * Output should be generate a MetadataStoreException
      * 
      * @throws MetadataStoreException
+     * @throws MetadataInspectorException
      */
-    @Test(expected = MetadataStoreException.class)
+    @Test(expected = MetadataInspectorException.class)
     public void testResourceIdentifierGenerateFALSE_With_ID_Attrib()
-                            throws MetadataStoreException {
+                            throws MetadataStoreException, MetadataInspectorException {
         LOG.info( "START Test: test if the configuration throws an exception because of the wrong ResourceIdentifier-combination while there is no automatic generating." );
 
         if ( jdbcURL != null && jdbcUser != null && jdbcPass != null ) {
@@ -828,10 +847,11 @@ public class ISOMetadataStoreTest {
      * Output should be generate a MetadataStoreException
      * 
      * @throws MetadataStoreException
+     * @throws MetadataInspectorException
      */
-    @Test(expected = MetadataStoreException.class)
+    @Test(expected = MetadataInspectorException.class)
     public void testResourceIdentifierGenerateFALSE_With_ID_UUID_Attrib()
-                            throws MetadataStoreException {
+                            throws MetadataStoreException, MetadataInspectorException {
         LOG.info( "START Test: test if the configuration throws an exception because of the wrong ResourceIdentifier-combination while there is no automatic generating." );
 
         if ( jdbcURL != null && jdbcUser != null && jdbcPass != null ) {
@@ -854,10 +874,11 @@ public class ISOMetadataStoreTest {
      * Output should be a MetadataStoreException
      * 
      * @throws MetadataStoreException
+     * @throws MetadataInspectorException
      */
-    @Test(expected = MetadataStoreException.class)
+    @Test(expected = MetadataInspectorException.class)
     public void testIdentifierRejectTrue2()
-                            throws MetadataStoreException {
+                            throws MetadataStoreException, MetadataInspectorException {
         LOG.info( "START Test: test if the configuration rejects the insert of the missing identifier. (Reject TRUE)" );
 
         if ( jdbcURL != null && jdbcUser != null && jdbcPass != null ) {
@@ -879,10 +900,11 @@ public class ISOMetadataStoreTest {
      * Output should be generate a MetadataStoreException
      * 
      * @throws MetadataStoreException
+     * @throws MetadataInspectorException
      */
-    @Test(expected = MetadataStoreException.class)
+    @Test(expected = MetadataInspectorException.class)
     public void testResourceIdentifierGenerateFALSE_With_ID_Attrib_RSID_NOT_Equals_NO_UUID()
-                            throws MetadataStoreException {
+                            throws MetadataStoreException, MetadataInspectorException {
         if ( jdbcURL != null && jdbcUser != null && jdbcPass != null ) {
             store = (ISOMetadataStore) new ISOMetadataStoreProvider().getMetadataStore( TstConstants.configURL_RS_GEN_FALSE );
         }
@@ -902,10 +924,11 @@ public class ISOMetadataStoreTest {
      * Output should be generate a MetadataStoreException
      * 
      * @throws MetadataStoreException
+     * @throws MetadataInspectorException
      */
-    @Test(expected = MetadataStoreException.class)
+    @Test(expected = MetadataInspectorException.class)
     public void testResourceIdentifierGenerateFALSE_With_ID_Attrib_RSID_NOT_Equals()
-                            throws MetadataStoreException {
+                            throws MetadataStoreException, MetadataInspectorException {
         LOG.info( "START Test: test if the configuration throws an exception because of the wrong ResourceIdentifier-combination while there is no automatic generating." );
 
         if ( jdbcURL != null && jdbcUser != null && jdbcPass != null ) {
@@ -921,9 +944,9 @@ public class ISOMetadataStoreTest {
     }
 
     @Ignore
-    @Test(expected = MetadataStoreException.class)
+    @Test(expected = MetadataInspectorException.class)
     public void testCouplingConsistencyErrorTRUE_WITH_Exception()
-                            throws MetadataStoreException {
+                            throws MetadataStoreException, MetadataInspectorException {
         LOG.info( "START Test: test if an exception will be thrown if there is an insert of the service metadata. " );
         if ( jdbcURL != null && jdbcUser != null && jdbcPass != null ) {
             store = (ISOMetadataStore) new ISOMetadataStoreProvider().getMetadataStore( TstConstants.configURL_COUPLING_Ex_AWARE );
@@ -938,7 +961,7 @@ public class ISOMetadataStoreTest {
     }
 
     private List<String> insertMetadata( ISOMetadataStore store, MetadataStoreTransaction ta, URL... URLInput )
-                            throws MetadataStoreException {
+                            throws MetadataStoreException, MetadataInspectorException {
 
         List<OMElement> records = new ArrayList<OMElement>();
 
@@ -957,6 +980,7 @@ public class ISOMetadataStoreTest {
 
         InsertTransaction insert = new InsertTransaction( records, records.get( 0 ).getQName(), "insert" );
         ids = ta.performInsert( insert );
+
         ta.commit();
 
         if ( !ids.isEmpty() ) {

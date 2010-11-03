@@ -52,6 +52,7 @@ import org.deegree.commons.utils.JDBCUtils;
 import org.deegree.commons.xml.NamespaceContext;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.XPath;
+import org.deegree.metadata.persistence.MetadataInspectorException;
 import org.deegree.metadata.persistence.MetadataStoreException;
 import org.deegree.metadata.persistence.MetadataInspectorManager.InspectorKey;
 import org.deegree.metadata.persistence.iso19115.jaxb.AbstractInspector;
@@ -103,7 +104,7 @@ public class CoupledDataInspector implements RecordInspector {
      * @throws MetadataStoreException
      */
     private boolean determineCoupling( List<String> operatesOnStringUuIdAttribute )
-                            throws MetadataStoreException {
+                            throws MetadataInspectorException {
         // consistencyCheck( operatesOnStringUuIdAttribute );
         boolean isCoupled = false;
 
@@ -115,7 +116,7 @@ public class CoupledDataInspector implements RecordInspector {
     }
 
     private boolean checkConsistency( List<String> o, List<String> i )
-                            throws MetadataStoreException {
+                            throws MetadataInspectorException {
         boolean isConsistent = true;
 
         while ( !i.isEmpty() ) {
@@ -135,7 +136,7 @@ public class CoupledDataInspector implements RecordInspector {
     }
 
     private void consistencyCheck( List<String> operatesOnList )
-                            throws MetadataStoreException {
+                            throws MetadataInspectorException {
         if ( ci.isThrowConsistencyError() ) {
             for ( String operatesOnString : operatesOnList ) {
                 if ( !getCoupledDataMetadatasets( operatesOnString ) ) {
@@ -143,7 +144,7 @@ public class CoupledDataInspector implements RecordInspector {
                                  + operatesOnString
                                  + " found in the data metadata. So there is no coupling possible and an exception has to be thrown in conformity with configuration. ";
                     LOG.info( msg );
-                    throw new MetadataStoreException( msg );
+                    throw new MetadataInspectorException( msg );
                 }
             }
         }
@@ -158,7 +159,7 @@ public class CoupledDataInspector implements RecordInspector {
      * @throws MetadataStoreException
      */
     private boolean getCoupledDataMetadatasets( String resourceIdentifier )
-                            throws MetadataStoreException {
+                            throws MetadataInspectorException {
 
         boolean gotOneDataset = false;
         ResultSet rs = null;
@@ -175,8 +176,8 @@ public class CoupledDataInspector implements RecordInspector {
             }
         } catch ( SQLException e ) {
             LOG.debug( "Error while proving the ID for the coupled resources: {}", e.getMessage() );
-            throw new MetadataStoreException( "Error while proving the ID for the coupled resources: {}"
-                                              + e.getMessage() );
+            throw new MetadataInspectorException( "Error while proving the ID for the coupled resources: {}"
+                                                  + e.getMessage() );
         } finally {
             close( rs );
             close( stm );
@@ -187,7 +188,7 @@ public class CoupledDataInspector implements RecordInspector {
 
     @Override
     public OMElement inspect( OMElement record, Connection conn )
-                            throws MetadataStoreException {
+                            throws MetadataInspectorException {
         this.conn = conn;
         a.setRootElement( record );
 
@@ -269,7 +270,7 @@ public class CoupledDataInspector implements RecordInspector {
                         String msg = "Error while processing the coupling!";
                         JDBCUtils.close( conn );
                         LOG.debug( msg );
-                        throw new MetadataStoreException( msg );
+                        throw new MetadataInspectorException( msg );
                     }
                 }
 

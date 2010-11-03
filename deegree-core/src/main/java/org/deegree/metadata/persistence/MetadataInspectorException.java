@@ -33,24 +33,54 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.metadata.persistence.iso.parsing.inspectation;
-
-import java.sql.Connection;
-
-import org.apache.axiom.om.OMElement;
-import org.deegree.metadata.persistence.MetadataInspectorException;
+package org.deegree.metadata.persistence;
 
 /**
- * TODO add class documentation here
+ * Indicates an exception that occured in the metadata inspectation.
  * 
  * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
  */
-public interface InspireCompliance {
+public class MetadataInspectorException extends Exception {
 
-    OMElement inspect( OMElement record, Connection conn )
-                            throws MetadataInspectorException;
+    /**
+     * 
+     */
+    private static final long serialVersionUID = -3833594286729370830L;
+
+    public MetadataInspectorException() {
+        super();
+    }
+
+    /**
+     * Creates a new {@link MetadataInspectorException} with detail message.
+     * 
+     * @param message
+     *            detail message
+     */
+    public MetadataInspectorException( String message ) {
+        super( message );
+    }
+
+    /**
+     * Creates a new {@link MetadataInspectorException} which wraps the causing exception.
+     * 
+     * @param cause
+     */
+    public MetadataInspectorException( Throwable cause ) {
+        super( cause );
+    }
+
+    /**
+     * Creates a new {@link MetadataInspectorException} which wraps the causing exception and provides a detail message.
+     * 
+     * @param message
+     * @param cause
+     */
+    public MetadataInspectorException( String message, Throwable cause ) {
+        super( message, cause );
+    }
 
 }

@@ -51,6 +51,7 @@ import org.deegree.commons.utils.JDBCUtils;
 import org.deegree.commons.xml.NamespaceContext;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.XPath;
+import org.deegree.metadata.persistence.MetadataInspectorException;
 import org.deegree.metadata.persistence.MetadataStoreException;
 import org.deegree.metadata.persistence.iso.generating.generatingelements.GenerateOMElement;
 import org.deegree.metadata.persistence.iso.parsing.IdUtils;
@@ -111,7 +112,7 @@ public class ResourceIdentifier implements InspireCompliance {
      * @throws MetadataStoreException
      */
     private List<String> determineResourceIdentifier( List<String> rsList, String id )
-                            throws MetadataStoreException {
+                            throws MetadataInspectorException {
 
         if ( checkAvailability( ric ) ) {
             boolean generateAutomatic = ric.isGenerateRIA();
@@ -126,7 +127,8 @@ public class ResourceIdentifier implements InspireCompliance {
                 }
                 LOG.debug( "There was no match between resourceIdentifier and the id-attribute! Without any automatic guarantee this metadata has to be rejected! " );
                 JDBCUtils.close( conn );
-                throw new MetadataStoreException( "There was no match between resourceIdentifier and the id-attribute!" );
+                throw new MetadataInspectorException(
+                                                      "There was no match between resourceIdentifier and the id-attribute!" );
             }
             if ( checkRSListAgainstID( rsList, id ) ) {
                 LOG.info( "The resourceIdentifier has been accepted without any automatic creation. " );
@@ -185,7 +187,7 @@ public class ResourceIdentifier implements InspireCompliance {
 
     @Override
     public OMElement inspect( OMElement record, Connection conn )
-                            throws MetadataStoreException {
+                            throws MetadataInspectorException {
         this.conn = conn;
         a.setRootElement( record );
         this.util = IdUtils.newInstance( conn );

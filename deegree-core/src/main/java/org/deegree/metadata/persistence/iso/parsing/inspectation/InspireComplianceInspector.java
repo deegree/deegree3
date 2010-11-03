@@ -42,7 +42,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.axiom.om.OMElement;
-import org.deegree.metadata.persistence.MetadataStoreException;
+import org.deegree.metadata.persistence.MetadataInspectorException;
 import org.deegree.metadata.persistence.MetadataInspectorManager.InspectorKey;
 import org.deegree.metadata.persistence.iso19115.jaxb.AbstractInspector;
 import org.deegree.metadata.persistence.iso19115.jaxb.InspireInspector;
@@ -89,7 +89,7 @@ public class InspireComplianceInspector implements RecordInspector {
 
     @Override
     public OMElement inspect( OMElement record, Connection conn )
-                            throws MetadataStoreException {
+                            throws MetadataInspectorException {
         this.conn = conn;
         // TODO make it plugable.
         List<InspireCompliance> inspireList = new ArrayList<InspireCompliance>();

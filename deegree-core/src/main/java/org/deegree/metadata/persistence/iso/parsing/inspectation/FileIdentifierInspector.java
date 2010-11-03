@@ -47,6 +47,7 @@ import org.apache.axiom.om.OMElement;
 import org.deegree.commons.xml.NamespaceContext;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.XPath;
+import org.deegree.metadata.persistence.MetadataInspectorException;
 import org.deegree.metadata.persistence.MetadataStoreException;
 import org.deegree.metadata.persistence.MetadataInspectorManager.InspectorKey;
 import org.deegree.metadata.persistence.iso.generating.generatingelements.GenerateOMElement;
@@ -110,7 +111,7 @@ public class FileIdentifierInspector implements RecordInspector {
      * @throws MetadataStoreException
      */
     private List<String> determineFileIdentifier( String[] fi, List<String> rsList, String id, String uuid )
-                            throws MetadataStoreException {
+                            throws MetadataInspectorException {
         List<String> idList = new ArrayList<String>();
         if ( fi.length != 0 ) {
             LOG.info( "There is a fileIdentifier available with id: '{}' so everything is fine.", fi );
@@ -139,8 +140,8 @@ public class FileIdentifierInspector implements RecordInspector {
             } else {
                 if ( rsList.size() == 0 ) {
                     LOG.debug( "This file must be rejected because the configuration-file requires at least a fileIdentifier or one resourceIdentifier!" );
-                    throw new MetadataStoreException(
-                                                      "The configuration-file requires at least a fileIdentifier or one resourceIdentifier!" );
+                    throw new MetadataInspectorException(
+                                                          "The configuration-file requires at least a fileIdentifier or one resourceIdentifier!" );
                 } else {
                     LOG.debug( "(DEFAULT) The ResourseIdentifier will be taken: {}", rsList.get( 0 ) );
                     idList.add( rsList.get( 0 ) );
@@ -153,7 +154,7 @@ public class FileIdentifierInspector implements RecordInspector {
 
     @Override
     public OMElement inspect( OMElement record, Connection conn )
-                            throws MetadataStoreException {
+                            throws MetadataInspectorException {
         this.conn = conn;
         a.setRootElement( record );
 

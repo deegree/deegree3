@@ -86,7 +86,7 @@ public interface MetadataStoreTransaction {
      *             if the insertion failed
      */
     public List<String> performInsert( InsertTransaction insert )
-                            throws MetadataStoreException;
+                            throws MetadataStoreException, MetadataInspectorException;
 
     /**
      * Performs the given {@link DeleteTransaction}.
@@ -110,5 +110,5 @@ public interface MetadataStoreTransaction {
      *             if the update failed
      */
     public int performUpdate( UpdateTransaction update )
-                            throws MetadataStoreException;
+                            throws MetadataStoreException, MetadataInspectorException;
 }

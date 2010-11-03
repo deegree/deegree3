@@ -13,6 +13,7 @@ import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.OperatorFilter;
 import org.deegree.filter.sql.postgis.PostGISWhereBuilder;
 import org.deegree.metadata.ISORecord;
+import org.deegree.metadata.persistence.MetadataInspectorException;
 import org.deegree.metadata.persistence.MetadataStoreException;
 import org.deegree.metadata.persistence.MetadataStoreTransaction;
 import org.deegree.metadata.persistence.iso.generating.GenerateQueryableProperties;
@@ -87,7 +88,7 @@ public class ISOMetadataStoreTransaction implements MetadataStoreTransaction {
 
     @Override
     public List<String> performInsert( InsertTransaction insert )
-                            throws MetadataStoreException {
+                            throws MetadataStoreException, MetadataInspectorException {
 
         List<String> identifierList = new ArrayList<String>();
         for ( OMElement element : insert.getElements() ) {
@@ -117,7 +118,7 @@ public class ISOMetadataStoreTransaction implements MetadataStoreTransaction {
 
     @Override
     public int performUpdate( UpdateTransaction update )
-                            throws MetadataStoreException {
+                            throws MetadataStoreException, MetadataInspectorException {
         int result = 0;
         if ( update.getElement() != null ) {
 
