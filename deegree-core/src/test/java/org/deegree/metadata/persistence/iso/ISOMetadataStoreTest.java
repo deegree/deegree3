@@ -246,8 +246,8 @@ public class ISOMetadataStoreTest {
         MetadataResultSet resultSet = store.getRecordsById( ids );
 
         // create the is output
-        String file = "/home/thomas/Desktop/zTestBrief.xml";
-        // String file = null;
+        // String file = "/home/thomas/Desktop/zTestBrief.xml";
+        String file = null;
         StringBuilder streamActual = stringBuilderFromResultSet( resultSet, ReturnableElement.brief, file,
                                                                  XMLStreamConstants.NAMESPACE );
         if ( streamActual == null ) {
