@@ -115,13 +115,17 @@ function init() {
 	//
 	// addGMLLayer("GML2 Polygon", "gml/GML2_FeatureCollection_Polygon.xml", "");
 	// addGMLLayer("GML2 Buffered Polygon", "gml/GML2_FeatureCollection_Polygon_Buffered.xml", "");
+	
+	//http://giv-wps.uni-muenster.de:8080/geoserver/wfs?SERVICE=WFS&REQUEST=GetFeature&VERSION=1.0.0&OUTPUTFORMAT=GML2&TYPENAME=topp:states
 
+	//addGMLLayer("GML2 Buffered Polygon", "http://giv-wps.uni-muenster.de:8080/geoserver/wfs?SERVICE=WFS&REQUEST=GetFeature&VERSION=1.0.0&OUTPUTFORMAT=GML2&TYPENAME=topp:states", "");
+	
 	// ------------------------------------------------------------------------------------------------------
 	// add web feature service (only gml2)
 	addWFSURL( "http://giv-wps.uni-muenster.de:8080/geoserver/wfs");
 	addWFSURL(  "http://www.dge.upd.edu.ph/geoserver/wfs");
 	
-	addWFSLayer('WFS topp:states', "http://giv-wps.uni-muenster.de:8080/geoserver/wfs","topp:states", true);
+	addWFSLayer('WFS topp:states', "http://giv-wps.uni-muenster.de:8080/geoserver/wfs","topp:states");
 	// addWFSLayer("WFS ns1:tasmania_roads", "http://giv-wps.uni-muenster.de:8080/geoserver/wfs","ns1:tasmania_roads", false);
 	// addWFSLayer("WFS tiger:poi", "http://giv-wps.uni-muenster.de:8080/geoserver/wfs","tiger:poi", false);
 	// addWFSLayer("WFS tiger:tiger_roads", "http://giv-wps.uni-muenster.de:8080/geoserver/wfs","tiger:tiger_roads", false);
@@ -181,7 +185,7 @@ function init() {
 
 	// ------------------------------------------------------------------------------------------------------
 	// set center
-	map.setCenter(new OpenLayers.LonLat(-75, 0), 3);
+	map.setCenter(new OpenLayers.LonLat(-30, 25), 3);
 }
 
 /**
@@ -193,12 +197,16 @@ function init() {
  *            URL of GML file (local or external).
  * @param attr
  *            External URL of GML file.
+ *            
+ * @return OpenLayers.Vector
  */
 function addGMLLayer(gmlName, gmlURL, attr) {
 	
 	// Layer name
 	var gmlNameArray = determineIndividualLayerName(gmlName);
 
+	
+	
 	// create a GML layer
 	var layer = new OpenLayers.Layer.GML(gmlNameArray[1], gmlURL, { styleMap: getStyleMap() });
 
@@ -220,8 +228,8 @@ function addGMLLayer(gmlName, gmlURL, attr) {
 	
 	// add layer to map
 	map.addLayer(layer);
-	
-	resultDisplayWPS.data = "Added layer '" + gmlNameArray[0] + "'";
+		
+	return layer;
 }
 
 /**
@@ -235,49 +243,61 @@ function addGMLLayer(gmlName, gmlURL, attr) {
  *            FeatureTypeName with prefix.
  * @param visible
  *            visible=true.
+ * @return OpenLayers.Layer
  */
-function addWFSLayer(wfsName, wfsURL, wfsFeatureTypeWithPrefix, visible) {
+function addWFSLayer(wfsName, wfsURL, wfsFeatureTypeWithPrefix) {
 	
 	// INFO message
 	resultDisplayWFS.data = "Loading...";
 	
-	// Layer name
-	var wfsNameArray = determineIndividualLayerName(wfsName);
+//	// Layer name
+//	var wfsNameArray = determineIndividualLayerName(wfsName);
+//	
+//	// determine namespace
+//	var ns = determineWFSFeatureTypeNamespace(wfsURL, wfsFeatureTypeWithPrefix);
+//	
+//	// check namespace
+//	if(ns == null)
+//		return;
+//		
+//	// check name
+//	var ftArray = wfsFeatureTypeWithPrefix.split(":");
+//	if(ftArray.length != 2){
+//		var name = new Array();
+//		name[0] = "";
+//		name[1] = wfsFeatureTypeWithPrefix;
+//		ftArray = name;
+//	}
+//	
+//	// create wfs layer
+//	var wfs = new OpenLayers.Layer.Vector(wfsNameArray[1], {
+//		strategies : [ new OpenLayers.Strategy.BBOX() ],
+//		protocol : new OpenLayers.Protocol.WFS( {
+//			url : wfsURL,
+//			featureType : ftArray[1],
+//			featureNS : ns
+//		}), visibility : visible, styleMap: getStyleMap()
+//	});
 	
-	// determine namespace
-	var ns = determineWFSFeatureTypeNamespace(wfsURL, wfsFeatureTypeWithPrefix);
 	
-	// check namespace
-	if(ns == null)
-		return;
-		
-	// check name
-	var ftArray = wfsFeatureTypeWithPrefix.split(":");
-	if(ftArray.length != 2){
-		var name = new Array();
-		name[0] = "";
-		name[1] = wfsFeatureTypeWithPrefix;
-		ftArray = name;
-	}
+	var sourceURL = wfsURL + WFS_GET_FEATURE + wfsFeatureTypeWithPrefix;
+	var name = "WFS " + wfsFeatureTypeWithPrefix;
 	
-	// create wfs layer
-	var wfs = new OpenLayers.Layer.Vector(wfsNameArray[1], {
-		strategies : [ new OpenLayers.Strategy.BBOX() ],
-		protocol : new OpenLayers.Protocol.WFS( {
-			url : wfsURL,
-			featureType : ftArray[1],
-			featureNS : ns
-		}), visibility : visible, styleMap: getStyleMap()
-	});
 	
-	// add wfs layer to map
-	var wfsArray = new Array();
-	wfsArray[0] = wfs;
-	wfsArray[1] = wfsURL + WFS_GET_FEATURE + wfsFeatureTypeWithPrefix;
-	layers[wfsNameArray[0]] = wfsArray;
-	map.addLayer(wfs);
+	var layer = addGMLLayer(name, OpenLayers.ProxyHost + escape(sourceURL), sourceURL);
+	resultDisplayWFS.data = "Added layer '" + name + "'";
+	return layer;
 	
-	resultDisplayWFS.data = "Added layer '" + wfsNameArray[0] + "'";
+//	// add wfs layer to map
+//	var wfsArray = new Array();
+//	wfsArray[0] = wfs;
+//	wfsArray[1] = wfsURL + WFS_GET_FEATURE + wfsFeatureTypeWithPrefix;
+//	layers[wfsNameArray[0]] = wfsArray;
+//	map.addLayer(wfs);
+//	
+//	resultDisplayWFS.data = "Added layer '" + wfsNameArray[0] + "'";
+//	
+//	return wfs;
 }
 
 /**
@@ -295,7 +315,7 @@ function addWFSLayers(wfsName, wfsURL){
 	
 	// add all layers
 	for ( var i = 0; i < types.length; i++) {	
-		addWFSLayer(wfsURL, wfsName +" " + types[i], types[i] , false);
+		addWFSLayer(wfsURL, wfsName +" " + types[i], types[i]);
 	}
 }
 
@@ -326,7 +346,7 @@ function addWPSLayer(wpsName, wpsURL, wpsProcess, data){
 	// INFO message
 	resultDisplayWPS.data = "Processing...";
 	
-	var gmlName = wpsName; // Layer name
+
 	var attr = wpsURL + WPS_EXECUTE + wpsProcess + data.toString(); // external URL of executed GML file
 	var gmlURL = OpenLayers.ProxyHost + escape(attr); // external URL of executed GML file with proxy
 	
@@ -342,8 +362,11 @@ function addWPSLayer(wpsName, wpsURL, wpsProcess, data){
 			resultDisplayWPS.data = "Execution failed!";
 		else
 			resultDisplayWPS.data = errorMsg;
+		return null;
 	}else{
-		addGMLLayer(gmlName, gmlURL, attr);
+		var layer = addGMLLayer(wpsName, gmlURL, attr);
+		resultDisplayWPS.data = "Added layer '" + wpsName + "'";
+		return layer;
 	}
 
 }
@@ -819,13 +842,13 @@ function loadWFSURLs(){
 	
     var selectedWFSURL = null;
     for ( var url in wfsURLs) {
-    	if(url != null){
+    	if(wfsURLs[url] != null){
     		var option = document.createElement("option");
-    		option.text  = url;
-    		option.value = url;
+    		option.text  = wfsURLs[url];
+    		option.value = wfsURLs[url];
     		selectWFS.appendChild(option);
     		if(selectedWFSURL == null)
-    			selectedWFSURL = url;
+    			selectedWFSURL = wfsURLs[url];
     	}
 	} 
 
@@ -841,13 +864,13 @@ function loadWPSURLs(){
 	
     var selectedWPSURL = null;
     for ( var url in wpsURLs) {
-    	if(url != null){
+    	if(wpsURLs[url] != null){
     		var option = document.createElement("option");
-    		option.text  = url;
-    		option.value = url;
+    		option.text  = wpsURLs[url];
+    		option.value = wpsURLs[url];
     		selectWPS.appendChild(option);
     		if(selectedWPSURL == null)
-    			selectedWPSURL = url;
+    			selectedWPSURL = wpsURLs[url];
     	}
 	} 
 
@@ -1568,9 +1591,50 @@ var WPSSwitcher =
 	        this.layersDiv.appendChild(form);
 	        this.div.appendChild(this.layersDiv);
 	        
+	        
+	        // add wps textfield
+	        var p0 = document.createElement("p");
+	        p0.innerHTML = "WPS: ";
+	        form.appendChild(p0);
+	        var wpsInputText = document.createElement("input");
+	        wpsInputText.type = "text";
+	        wpsInputText.style.width = "400px";
+	        wpsInputText.onclick = function(){
+	        	wpsInputText.focus();
+	        }
+	        
+	        p0.appendChild(wpsInputText);
+	        p0.appendChild(document.createTextNode(" "));
+	        
+	        // add wps button
+	        var addButton = document.createElement("input");
+	        addButton.type = "button";
+	        addButton.value = "Add URL";
+	        addButton.onclick = function(){
+	        	addWPSURL(wpsInputText.value);
+	        	loadWPSURLs();
+	        	wpsInputText.value = "";
+	        	resultDisplayWPS.data = "Added new WPS URL.";
+	        };
+	        p0.appendChild(addButton);
+	        
+	        // wps remove button
+	        var removeButton = document.createElement("input");
+	        removeButton.type = "button";
+	        removeButton.value = "Remove URL";
+	        removeButton.onclick = function(){
+	        	removeWPSURL(selectWPS.value);
+	        	loadWPSURLs();
+	        	loadWPSProcessList();
+	        	loadProcessInputForms();
+	        	resultDisplayWPS.data = "Removed WPS URL.";
+	        };
+
+	        
+	        
 	        // create list of wps urls
 	        var p1 = document.createElement("p");
-	        p1.innerHTML = "WPS: ";
+	        p1.innerHTML = "<hr />WPS: ";
 	        form.appendChild(p1);
 
 	        var select1 = document.createElement("select");
@@ -1579,6 +1643,8 @@ var WPSSwitcher =
 	        select1.size = "1";
 	        select1.style.width = "400px";
 	        p1.appendChild(select1);
+	        p1.appendChild(document.createTextNode(" "));
+	        p1.appendChild(removeButton);
 	        
 	        
 	        select1.onchange = function(){
@@ -1600,8 +1666,6 @@ var WPSSwitcher =
 	        select2.size = "1";
 	        select2.style.width = "400px";
 	        p2.appendChild(select2);
-	        p2.appendChild(document.createTextNode(" "));
-	        p2.appendChild(aProcessDesc); // process description
         	aProcessDesc.onclick = function(){
         		var opt = select2.options[select2.selectedIndex];
         		showInputDataDescription(opt.text, opt.title, opt.value);
@@ -1629,10 +1693,6 @@ var WPSSwitcher =
 
        
 	        // create execute button
-	        var p4 = document.createElement("p");
-	        p4.innerHTML = "<hr>";
-	        form.appendChild(p4);
-	       
 	        var input = document.createElement("input");
 	        input.type = "button";
 	        input.value = "Execute";
@@ -1657,10 +1717,17 @@ var WPSSwitcher =
 	        	// add WPS layer
 	        	addWPSLayer(layerName, selectWPS.value, selectWPSProcesses.value, createWPSInputData() );
 	        };
-	        p4.appendChild(input);
-	        p4.appendChild(document.createElement("br"));
+	        p2.appendChild(document.createTextNode(" "));
+	        p2.appendChild(input); // execute button
+	        p2.appendChild(document.createTextNode(" "));
+	        p2.appendChild(aProcessDesc); // process description
+	        
+	        var p4 = document.createElement("p");
+	        p4.innerHTML = "<hr>";
+	        form.appendChild(p4);
 	        p4.appendChild(resultDisplayWPS);
 	        resultDisplayWPS.data = "";
+
 
 	        if(this.roundedCorner) {
 	            OpenLayers.Rico.Corner.round(this.div, {
@@ -2081,14 +2148,54 @@ var WFSSwitcher =
 	        }
 	        
 	        
+	                
 	        // form
 	        var form = document.createElement("form");
 	        this.layersDiv.appendChild(form);
 	        this.div.appendChild(this.layersDiv);
 	        
+	                
+	        
+	        // add wps textfield
+	        var p0 = document.createElement("p");
+	        p0.innerHTML = "WFS: ";
+	        form.appendChild(p0);
+	        var wfsInputText = document.createElement("input");
+	        wfsInputText.type = "text";
+	        wfsInputText.style.width = "400px";
+	        wfsInputText.onclick = function(){
+	        	wfsInputText.focus();
+	        }
+	        p0.appendChild(wfsInputText);
+	        p0.appendChild(document.createTextNode(" "));
+	        
+	        // add wfs add button
+	        var addButton = document.createElement("input");
+	        addButton.type = "button";
+	        addButton.value = "Add URL";
+	        addButton.onclick = function(){
+	        	addWFSURL(wfsInputText.value);
+	        	loadWFSURLs();
+	        	wfsInputText.value = "";
+	        	resultDisplayWFS.data = "Added new WFS URL.";
+	        };
+	        p0.appendChild(addButton);
+	        
+	        // add wfs remove sbutton
+	        var removeButton = document.createElement("input");
+	        removeButton.type = "button";
+	        removeButton.value = "Remove URL";
+	        removeButton.onclick = function(){
+	        	removeWFSURL(selectWFS.value);
+	        	loadWFSURLs();
+	        	loadWFSLayerList();
+	        	resultDisplayWFS.data = "Removed WFS URL.";
+	        };
+
+	        
 	        // create list of wfs urls
 	        var p1 = document.createElement("p");
-	        p1.innerHTML = "WFS: ";
+	        p1.innerHTML = "<hr />WFS: ";
 	        form.appendChild(p1);
 
 	        var select1 = document.createElement("select");
@@ -2097,6 +2204,8 @@ var WFSSwitcher =
 	        select1.size = "1";
 	        select1.style.width = "400px";
 	        p1.appendChild(select1);
+	        p1.appendChild(document.createTextNode(" "));
+	        p1.appendChild(removeButton);
 	        selectWFS = select1;
 	        
 	        select1.onchange = function(){
@@ -2126,10 +2235,7 @@ var WFSSwitcher =
 	        loadWFSLayerList();
 
 	                     
-	        // create add layer button
-	        var p4 = document.createElement("p");
-	        p4.innerHTML = "<hr>";
-	        form.appendChild(p4);
+
 	       
 	        var input = document.createElement("input");
 	        input.type = "button";
@@ -2141,16 +2247,26 @@ var WFSSwitcher =
 	        	layerName += selectWFSLayers.value;
   	        	
 	        	// add WFS layer
-	        	addWFSLayer(layerName, selectWFS.value,selectWFSLayers.value, true);
-	        	
+	        	var wfsLayer = addWFSLayer(layerName, selectWFS.value,selectWFSLayers.value);
+	        	       	
 	        	// reload input layers
 	        	loadProcessInputForms();
-	        };
-	        p4.appendChild(input);
-	        p4.appendChild(document.createElement("br"));
-	        p4.appendChild(resultDisplayWFS);
-	        resultDisplayWFS.data = "";
 
+	        	var bounds = wfsLayer.getDataExtent();
+	        	//alert(bounds);
+	        	// map.setCenter(new OpenLayers.LonLat(0, 0), 3);
+	        };
+	        p2.appendChild(document.createTextNode(" "));
+	        p2.appendChild(input);
+
+	        
+	        // create info panel
+	        var p4 = document.createElement("p");
+	        p4.innerHTML = "<hr>";
+	        form.appendChild(p4);
+	        resultDisplayWFS.data = "";
+	        p4.appendChild(resultDisplayWFS);
+	        
 	        if(this.roundedCorner) {
 	            OpenLayers.Rico.Corner.round(this.div, {
 	                corners: "tl bl",
