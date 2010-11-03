@@ -39,7 +39,15 @@ import static javax.xml.XMLConstants.DEFAULT_NS_PREFIX;
 import static javax.xml.XMLConstants.NULL_NS_URI;
 import static org.deegree.feature.persistence.BlobCodec.Compression.NONE;
 import static org.deegree.feature.types.property.GeometryPropertyType.CoordinateDimension.DIM_2;
+import static org.deegree.feature.types.property.GeometryPropertyType.CoordinateDimension.DIM_3;
 import static org.deegree.feature.types.property.GeometryPropertyType.GeometryType.GEOMETRY;
+import static org.deegree.feature.types.property.GeometryPropertyType.GeometryType.LINE_STRING;
+import static org.deegree.feature.types.property.GeometryPropertyType.GeometryType.MULTI_GEOMETRY;
+import static org.deegree.feature.types.property.GeometryPropertyType.GeometryType.MULTI_LINE_STRING;
+import static org.deegree.feature.types.property.GeometryPropertyType.GeometryType.MULTI_POINT;
+import static org.deegree.feature.types.property.GeometryPropertyType.GeometryType.MULTI_POLYGON;
+import static org.deegree.feature.types.property.GeometryPropertyType.GeometryType.POINT;
+import static org.deegree.feature.types.property.GeometryPropertyType.GeometryType.POLYGON;
 import static org.deegree.feature.types.property.ValueRepresentation.BOTH;
 import static org.deegree.feature.types.property.ValueRepresentation.INLINE;
 import static org.deegree.gml.GMLVersion.GML_32;
@@ -99,6 +107,8 @@ import org.deegree.feature.types.property.FeaturePropertyType;
 import org.deegree.feature.types.property.GeometryPropertyType;
 import org.deegree.feature.types.property.PropertyType;
 import org.deegree.feature.types.property.SimplePropertyType;
+import org.deegree.feature.types.property.GeometryPropertyType.CoordinateDimension;
+import org.deegree.feature.types.property.GeometryPropertyType.GeometryType;
 import org.deegree.filter.expression.PropertyName;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -259,28 +269,39 @@ class PostGISApplicationSchemaBuilder {
                     QName ptName = makeFullyQualified( new QName( column ), ftName.getPrefix(),
                                                        ftName.getNamespaceURI() );
                     if ( typeName.equals( "geometry" ) ) {
-                        GeometryPropertyType.GeometryType geomType = GeometryPropertyType.GeometryType.GEOMETRY;
-                        PropertyType pt = new GeometryPropertyType( ptName, 0, 1, false, false, null, geomType, DIM_2,
-                                                                    INLINE );
-                        pts.add( pt );
-                        PropertyName path = new PropertyName( ptName );
-
-                        String srid = null;
+                        String srid = "-1";
+                        CoordinateDimension dim = DIM_2;
+                        GeometryPropertyType.GeometryType geomType = GeometryType.GEOMETRY;
                         Connection conn = getConnection();
                         Statement stmt = null;
                         ResultSet rs2 = null;
                         try {
                             stmt = conn.createStatement();
-                            String sql = "SELECT Find_SRID ('public', '" + table.toLowerCase() + "', '" + column + "')";
+                            String sql = "SELECT coord_dimension,srid,type FROM public.geometry_columns WHERE f_table_schema='"
+                                         + "public"
+                                         + "' AND f_table_name='"
+                                         + table.toLowerCase()
+                                         + "' AND f_geometry_column='" + column.toLowerCase() + "'";
                             rs2 = stmt.executeQuery( sql );
                             rs2.next();
-                            srid = rs2.getString( 1 );
-                            LOG.debug( "Database returned SRID: " + srid);
+                            if ( rs2.getInt( 1 ) == 3 ) {
+                                dim = DIM_3;
+                            }
+                            srid = "" + rs2.getInt( 2 );
+                            geomType = getGeometryType( rs2.getString( 3 ) );
+                            LOG.debug( "Derived geometry type: " + geomType + ", srid: " + srid + ", dim: " + dim + "" );
+                        } catch ( Exception e ) {
+                            LOG.warn( "Unable to determine actual geometry column details: " + e.getMessage()
+                                      + ". Using defaults." );
                         } finally {
                             JDBCUtils.close( rs2, stmt, null, LOG );
                         }
 
-                        GeometryMapping mapping = new GeometryMapping( path, dbField, geomType, DIM_2, srid, null );
+                        PropertyType pt = new GeometryPropertyType( ptName, 0, 1, false, false, null, geomType, dim,
+                                                                    INLINE );
+                        pts.add( pt );
+                        PropertyName path = new PropertyName( ptName );
+                        GeometryMapping mapping = new GeometryMapping( path, dbField, geomType, dim, srid, null );
                         propToColumn.put( ptName, mapping );
                     } else {
                         try {
@@ -460,6 +481,28 @@ class PostGISApplicationSchemaBuilder {
             return PrimitiveType.TIME;
         }
         throw new RuntimeException( "Internal error: Unhandled JAXB primitive type: " + type );
+    }
+
+    private GeometryType getGeometryType( String pgType ) {
+        if ( "GEOMETRY".equals( pgType ) ) {
+            return GEOMETRY;
+        } else if ( "POINT".equals( pgType ) ) {
+            return POINT;
+        } else if ( "LINESTRING".equals( pgType ) ) {
+            return LINE_STRING;
+        } else if ( "POLYGON".equals( pgType ) ) {
+            return POLYGON;
+        } else if ( "MULTIPOINT".equals( pgType ) ) {
+            return MULTI_POINT;
+        } else if ( "MULTILINESTRING".equals( pgType ) ) {
+            return MULTI_LINE_STRING;
+        } else if ( "MULTIPOLYGON".equals( pgType ) ) {
+            return MULTI_POLYGON;
+        } else if ( "GEOMETRYCOLLECTION".equals( pgType ) ) {
+            return MULTI_GEOMETRY;
+        }
+        LOG.warn( "Unknown PostGIS geometry type '" + pgType + "'. Interpreting as generic geometry." );
+        return GEOMETRY;
     }
 
     private MappingExpression parseMappingExpression( String s ) {
