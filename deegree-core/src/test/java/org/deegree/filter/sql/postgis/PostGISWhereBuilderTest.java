@@ -155,25 +155,25 @@ public class PostGISWhereBuilderTest {
         public PropertyNameMapping getMapping( PropertyName propName, TableAliasManager aliasManager )
                                 throws FilterEvaluationException, UnmappableException {
             if ( propName.getPropertyName().equals( "app:name" ) ) {
-                return new PropertyNameMapping( "PHILOSOPHER", "NAME", "-1" );
+                return new PropertyNameMapping( "PHILOSOPHER", "NAME", null, "-1" );
             }
             if ( propName.getPropertyName().equals( "app:id" ) ) {
-                return new PropertyNameMapping( "PHILOSOPHER", "ID", "-1" );
+                return new PropertyNameMapping( "PHILOSOPHER", "ID", null, "-1" );
             }
             if ( propName.getPropertyName().equals( "app:subject" ) ) {
-                return new PropertyNameMapping( "SUBJECT", "NAME", "-1" );
+                return new PropertyNameMapping( "SUBJECT", "NAME", null, "-1" );
             }
             if ( propName.getPropertyName().equals( "app:dateOfBirth" ) ) {
-                return new PropertyNameMapping( "PHILOSOPHER", "DATE_OF_BIRTH", "-1" );
+                return new PropertyNameMapping( "PHILOSOPHER", "DATE_OF_BIRTH", null, "-1" );
             }
             if ( propName.getPropertyName().equals( "app:placeOfBirth/app:Place/app:country/app:Country/app:name" ) ) {
-                return new PropertyNameMapping( "COUNTRY", "NAME", "-1" );
+                return new PropertyNameMapping( "COUNTRY", "NAME", null, "-1" );
             }
             if ( propName.getPropertyName().equals( "app:placeOfBirth/app:Place/app:country/app:Country/app:geom" ) ) {
-                return new PropertyNameMapping( "COUNTRY", "GEOM", "-1" );
+                return new PropertyNameMapping( "COUNTRY", "GEOM", null, "-1" );
             }
             if ( propName.getPropertyName().equals( "app:placeOfDeath/app:Place/app:country/app:Country/app:geom" ) ) {
-                return new PropertyNameMapping( "COUNTRY", "GEOM", "-1" );
+                return new PropertyNameMapping( "COUNTRY", "GEOM", null, "-1" );
             }
             throw new UnmappableException( "Property '" + propName + "' is not mappable." );
         }

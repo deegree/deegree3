@@ -65,12 +65,17 @@ public interface SQLExpression {
     public boolean isSpatial();
 
     /**
-     * Returns the SRS of the expression (only for spatial ones).
+     * Returns the CRS of the expression (only for spatial ones).
      * 
-     * @return the SRS, can be <code>null</code> (unknown or not a spatial expression)
+     * @return the CRS, can be <code>null</code> (unknown or not a spatial expression)
      */
-    public CRS getSRS();
-    
+    public CRS getCRS();
+
+    /**
+     * Returns the databases' SRID of the expression (only for spatial ones).
+     * 
+     * @return the SRID, can be <code>null</code> (unknown or not a spatial expression)
+     */
     public String getSRID();
 
     /**

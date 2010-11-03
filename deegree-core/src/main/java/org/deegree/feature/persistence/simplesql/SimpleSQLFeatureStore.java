@@ -356,8 +356,7 @@ public class SimpleSQLFeatureStore implements FeatureStore {
                                 byte[] bs = rs.getBytes( pt.getName().getLocalPart() );
                                 if ( bs != null ) {
                                     try {
-                                        Geometry geom = WKBReader.read( bs );
-                                        geom.setCoordinateSystem( crs );
+                                        Geometry geom = WKBReader.read( bs, crs );
                                         if ( geom instanceof MultiGeometry<?> ) {
                                             for ( Geometry g : (MultiGeometry<?>) geom ) {
                                                 g.setCoordinateSystem( crs );

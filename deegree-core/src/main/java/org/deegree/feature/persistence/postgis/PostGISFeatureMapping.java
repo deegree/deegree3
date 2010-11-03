@@ -37,6 +37,7 @@ package org.deegree.feature.persistence.postgis;
 
 import java.util.List;
 
+import org.deegree.cs.CRS;
 import org.deegree.feature.persistence.mapping.DBField;
 import org.deegree.feature.persistence.mapping.FeatureTypeMapping;
 import org.deegree.feature.persistence.mapping.Join;
@@ -104,9 +105,10 @@ class PostGISFeatureMapping implements PostGISMapping {
 
         DBField valueField = mapping.getValueField();
         List<Join> joins = mapping.getJoins();
+        CRS crs = mapping.getCRS();
         String srid = mapping.getSRID();
 
-        PropertyNameMapping propMapping = new PropertyNameMapping( aliasManager, valueField, joins, srid );
+        PropertyNameMapping propMapping = new PropertyNameMapping( aliasManager, valueField, joins, crs, srid );
         return propMapping;
     }
 

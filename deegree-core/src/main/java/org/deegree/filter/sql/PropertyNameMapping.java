@@ -41,6 +41,7 @@ import java.util.Collections;
 import java.util.List;
 
 import org.deegree.commons.tom.primitive.PrimitiveType;
+import org.deegree.cs.CRS;
 import org.deegree.feature.persistence.mapping.DBField;
 import org.deegree.feature.persistence.mapping.Join;
 import org.deegree.filter.expression.PropertyName;
@@ -61,23 +62,31 @@ public class PropertyNameMapping {
 
     private final PrimitiveType pt;
 
+    private final CRS crs;
+
     private final String srid;
 
-    public PropertyNameMapping( String table, String column, String srid ) {
+    public PropertyNameMapping( String table, String column, CRS crs, String srid ) {
         this.valueField = new DBField( table, column );
         this.joins = Collections.emptyList();
         this.pt = STRING;
+        this.crs = crs;
         this.srid = srid;
     }
 
     /**
+     * @param aliasManager
      * @param valueField
      * @param joins
+     * @param crs
+     * @param srid
      */
-    public PropertyNameMapping( TableAliasManager aliasManager, DBField valueField, List<Join> joins, String srid ) {
+    public PropertyNameMapping( TableAliasManager aliasManager, DBField valueField, List<Join> joins, CRS crs,
+                                String srid ) {
         this.valueField = valueField;
         this.joins = joins;
         this.pt = STRING;
+        this.crs = crs;
         this.srid = srid;
 
         String currentAlias = aliasManager.getRootTableAlias();
@@ -89,6 +98,10 @@ public class PropertyNameMapping {
             }
         }
         valueField.setAlias( currentAlias );
+    }
+
+    public CRS getCRS() {
+        return crs;
     }
 
     public String getSRID() {

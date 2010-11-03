@@ -162,7 +162,7 @@ public class PostGISWhereBuilder extends AbstractWhereBuilder {
             throw new FilterEvaluationException( msg );
         }
 
-        CRS storageCRS = propNameExpr.getSRS();
+        CRS storageCRS = propNameExpr.getCRS();
         int srid = propNameExpr.getSRID() != null ? Integer.parseInt( propNameExpr.getSRID() ) : -1;
 
         switch ( op.getSubType() ) {
@@ -324,8 +324,9 @@ public class PostGISWhereBuilder extends AbstractWhereBuilder {
             String table = propMapping.getTargetField().getAlias() != null ? propMapping.getTargetField().getAlias()
                                                                           : propMapping.getTargetField().getTable();
             String column = propMapping.getTargetField().getColumn();
+            CRS crs = propMapping.getCRS();
             String srid = propMapping.getSRID();
-            sql = new SQLColumn( table, column, true, -1, srid );
+            sql = new SQLColumn( table, column, true, -1, crs, srid );
         } else {
             throw new UnmappableException( "Unable to map property '" + propName + "' to database column." );
         }

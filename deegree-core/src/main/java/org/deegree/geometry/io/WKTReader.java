@@ -65,17 +65,16 @@ public class WKTReader {
 
     public WKTReader( CRS crs ) {
         this.crs = crs;
-        // currently necessary to ensure that created (sub-) geometries have the correct CRS
         this.defaultGeom = new DefaultPoint( null, crs, null, new double[] { 0.0, 0.0 } );
     }
 
     public Geometry read( Reader reader )
                             throws ParseException {
-        return defaultGeom.createFromJTS( jtsReader.read( reader ) );
+        return defaultGeom.createFromJTS( jtsReader.read( reader ), crs );
     }
 
     public Geometry read( String wkt )
                             throws ParseException {
-        return defaultGeom.createFromJTS( jtsReader.read( wkt ) );
+        return defaultGeom.createFromJTS( jtsReader.read( wkt ), crs );
     }
 }

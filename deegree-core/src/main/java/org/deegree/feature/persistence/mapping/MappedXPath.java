@@ -40,6 +40,7 @@ import java.util.List;
 
 import javax.xml.namespace.QName;
 
+import org.deegree.cs.CRS;
 import org.deegree.feature.persistence.mapping.property.GeometryMapping;
 import org.deegree.feature.persistence.mapping.property.Mapping;
 import org.deegree.feature.types.FeatureType;
@@ -74,6 +75,8 @@ public class MappedXPath {
     private final List<Join> joins = new ArrayList<Join>();
 
     private String srid;
+
+    private CRS crs;
 
     /**
      * @param schema
@@ -230,6 +233,7 @@ public class MappedXPath {
         }
 
         if ( mapping instanceof GeometryMapping ) {
+            crs = ( (GeometryMapping) mapping ).getCRS();
             srid = ( (GeometryMapping) mapping ).getSrid();
         }
 
@@ -291,6 +295,10 @@ public class MappedXPath {
 
     public DBField getValueField() {
         return valueField;
+    }
+
+    public CRS getCRS() {
+        return crs;
     }
 
     public String getSRID() {

@@ -215,8 +215,7 @@ class FeatureBuilderRelational implements FeatureBuilder {
                     byte[] wkb = rs2.getBytes( 1 );
                     if ( wkb != null ) {
                         try {
-                            Geometry geom = WKBReader.read( wkb );
-                            geom.setCoordinateSystem( mapping.getCRS() );
+                            Geometry geom = WKBReader.read( wkb, mapping.getCRS() );
                             props.add( new GenericProperty( pt, geom ) );
                         } catch ( ParseException e ) {
                             throw new SQLException( "Error parsing WKB from PostGIS: " + e.getMessage(), e );
@@ -259,8 +258,7 @@ class FeatureBuilderRelational implements FeatureBuilder {
             byte[] wkb = rs.getBytes( rsIdx );
             if ( wkb != null ) {
                 try {
-                    Geometry geom = WKBReader.read( wkb );
-                    geom.setCoordinateSystem( mapping.getCRS() );
+                    Geometry geom = WKBReader.read( wkb, mapping.getCRS() );
                     props.add( new GenericProperty( pt, geom ) );
                 } catch ( ParseException e ) {
                     throw new SQLException( "Error parsing WKB from PostGIS: " + e.getMessage(), e );

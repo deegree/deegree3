@@ -124,7 +124,7 @@ import org.slf4j.LoggerFactory;
  * 
  * <ul>
  * <li>the v1.1.0 element 'Envelope' was in v1.0.0 called 'Box'</li>
- * <li>TODO add here more differences</li>
+ * <li>TODO add here missing differences</li>
  * </ul>
  * 
  * All the v1.0.0 elements are parsed with {@link GML2GeometryReader}.

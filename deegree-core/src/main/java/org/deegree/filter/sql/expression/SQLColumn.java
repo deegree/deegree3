@@ -60,6 +60,8 @@ public class SQLColumn implements SQLExpression {
 
     private String srid;
 
+    private CRS crs;
+
     public SQLColumn( String column ) {
         this.column = column;
         isSpatial = true;
@@ -70,18 +72,18 @@ public class SQLColumn implements SQLExpression {
         this.sqlType = sqlType;
     }
 
-    public SQLColumn( String table, String column, boolean spatial, int sqlType, String srid ) {
+    public SQLColumn( String table, String column, boolean spatial, int sqlType, CRS crs, String srid ) {
         this.table = table;
         this.column = column;
         this.sqlType = sqlType;
         this.isSpatial = spatial;
+        this.crs = crs;
         this.srid = srid;
     }
 
     @Override
-    public CRS getSRS() {
-        // TODO Auto-generated method stub
-        return null;
+    public CRS getCRS() {
+        return crs;
     }
 
     @Override

@@ -119,7 +119,7 @@ public class SQLLiteral implements SQLExpression {
     }
 
     @Override
-    public CRS getSRS() {
+    public CRS getCRS() {
         return isSpatial ? ((Geometry) value).getCoordinateSystem() : null;
     }
 

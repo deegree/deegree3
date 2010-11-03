@@ -285,15 +285,17 @@ class PostGISApplicationSchemaBuilder {
                                          + "' AND f_geometry_column='" + column.toLowerCase() + "'";
                             rs2 = stmt.executeQuery( sql );
                             rs2.next();
+                            if ( rs2.getInt( 2 ) != -1 ) {
+                                crs = new CRS( "EPSG:" + rs2.getInt( 2 ), true );
+                                crs.getWrappedCRS();
+                            }
                             if ( rs2.getInt( 1 ) == 3 ) {
                                 dim = DIM_3;
                             }
                             srid = "" + rs2.getInt( 2 );
-                            if ( rs2.getInt( 2 ) != -1 ) {
-                                crs = new CRS( "EPSG:" + srid, true );
-                            }
                             geomType = getGeometryType( rs2.getString( 3 ) );
-                            LOG.debug( "Derived geometry type: " + geomType + ", srid: " + srid + ", dim: " + dim + "" );
+                            LOG.debug( "Derived geometry type: " + geomType + ", crs: " + crs + ", srid: " + srid
+                                       + ", dim: " + dim + "" );
                         } catch ( Exception e ) {
                             LOG.warn( "Unable to determine actual geometry column details: " + e.getMessage()
                                       + ". Using defaults." );

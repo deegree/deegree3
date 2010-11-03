@@ -109,7 +109,7 @@ public class SQLOperation implements SQLExpression {
     }
 
     @Override
-    public CRS getSRS() {
+    public CRS getCRS() {
         return null;
     }
 

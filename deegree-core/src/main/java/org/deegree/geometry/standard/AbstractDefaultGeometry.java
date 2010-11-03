@@ -211,7 +211,7 @@ public abstract class AbstractDefaultGeometry implements Geometry {
 
     @Override
     public Point getCentroid() {
-        return (Point) createFromJTS( getJTSGeometry().getCentroid() );
+        return (Point) createFromJTS( getJTSGeometry().getCentroid(), crs );
     }
 
     @Override
@@ -225,21 +225,21 @@ public abstract class AbstractDefaultGeometry implements Geometry {
     public Geometry getIntersection( Geometry geometry ) {
         JTSGeometryPair jtsGeoms = JTSGeometryPair.createCompatiblePair( this, geometry );
         com.vividsolutions.jts.geom.Geometry jtsGeom = jtsGeoms.first.intersection( jtsGeoms.second );
-        return createFromJTS( jtsGeom );
+        return createFromJTS( jtsGeom, crs );
     }
 
     @Override
     public Geometry getUnion( Geometry geometry ) {
         JTSGeometryPair jtsGeoms = JTSGeometryPair.createCompatiblePair( this, geometry );
         com.vividsolutions.jts.geom.Geometry jtsGeom = jtsGeoms.first.union( jtsGeoms.second );
-        return createFromJTS( jtsGeom );
+        return createFromJTS( jtsGeom, crs );
     }
 
     @Override
     public Geometry getDifference( Geometry geometry ) {
         JTSGeometryPair jtsGeoms = JTSGeometryPair.createCompatiblePair( this, geometry );
         com.vividsolutions.jts.geom.Geometry jtsGeom = jtsGeoms.first.difference( jtsGeoms.second );
-        return createFromJTS( jtsGeom );
+        return createFromJTS( jtsGeom, crs );
     }
 
     @Override
@@ -247,13 +247,13 @@ public abstract class AbstractDefaultGeometry implements Geometry {
         // TODO get double in CRS units
         double crsDistance = distance.getValueAsDouble();
         com.vividsolutions.jts.geom.Geometry jtsGeom = getJTSGeometry().buffer( crsDistance );
-        return createFromJTS( jtsGeom );
+        return createFromJTS( jtsGeom, crs );
     }
 
     @Override
     public Geometry getConvexHull() {
         com.vividsolutions.jts.geom.Geometry jtsGeom = getJTSGeometry().convexHull();
-        return createFromJTS( jtsGeom );
+        return createFromJTS( jtsGeom, crs );
     }
 
     @Override
@@ -299,11 +299,12 @@ public abstract class AbstractDefaultGeometry implements Geometry {
      * geometry by JTS spatial analysis methods.
      * 
      * @param jtsGeom
+     * @param crs
      * @return geometry with precision model and CRS information that are identical to the ones of this geometry, or
      *         null if the given geometry is an empty collection
      */
     @SuppressWarnings("unchecked")
-    public AbstractDefaultGeometry createFromJTS( com.vividsolutions.jts.geom.Geometry jtsGeom ) {
+    public AbstractDefaultGeometry createFromJTS( com.vividsolutions.jts.geom.Geometry jtsGeom, CRS crs ) {
 
         AbstractDefaultGeometry geom = null;
         if ( jtsGeom instanceof com.vividsolutions.jts.geom.Point ) {
@@ -311,17 +312,17 @@ public abstract class AbstractDefaultGeometry implements Geometry {
             geom = new DefaultPoint( null, crs, pm, new double[] { jtsPoint.getX(), jtsPoint.getY() } );
         } else if ( jtsGeom instanceof com.vividsolutions.jts.geom.LinearRing ) {
             com.vividsolutions.jts.geom.LinearRing jtsLinearRing = (com.vividsolutions.jts.geom.LinearRing) jtsGeom;
-            geom = new DefaultLinearRing( null, crs, pm, getAsPoints( jtsLinearRing.getCoordinateSequence() ) );
+            geom = new DefaultLinearRing( null, crs, pm, getAsPoints( jtsLinearRing.getCoordinateSequence(), crs ) );
         } else if ( jtsGeom instanceof com.vividsolutions.jts.geom.LineString ) {
             com.vividsolutions.jts.geom.LineString jtsLineString = (com.vividsolutions.jts.geom.LineString) jtsGeom;
-            geom = new DefaultLineString( null, crs, pm, getAsPoints( jtsLineString.getCoordinateSequence() ) );
+            geom = new DefaultLineString( null, crs, pm, getAsPoints( jtsLineString.getCoordinateSequence(), crs ) );
         } else if ( jtsGeom instanceof com.vividsolutions.jts.geom.Polygon ) {
             com.vividsolutions.jts.geom.Polygon jtsPolygon = (com.vividsolutions.jts.geom.Polygon) jtsGeom;
-            Points exteriorPoints = getAsPoints( jtsPolygon.getExteriorRing().getCoordinateSequence() );
+            Points exteriorPoints = getAsPoints( jtsPolygon.getExteriorRing().getCoordinateSequence(), crs );
             LinearRing exteriorRing = new DefaultLinearRing( null, crs, pm, exteriorPoints );
             List<Ring> interiorRings = new ArrayList<Ring>( jtsPolygon.getNumInteriorRing() );
             for ( int i = 0; i < jtsPolygon.getNumInteriorRing(); i++ ) {
-                Points interiorPoints = getAsPoints( jtsPolygon.getInteriorRingN( i ).getCoordinateSequence() );
+                Points interiorPoints = getAsPoints( jtsPolygon.getInteriorRingN( i ).getCoordinateSequence(), crs );
                 interiorRings.add( new DefaultLinearRing( null, crs, pm, interiorPoints ) );
             }
             geom = new DefaultPolygon( null, crs, pm, exteriorRing, interiorRings );
@@ -330,7 +331,7 @@ public abstract class AbstractDefaultGeometry implements Geometry {
             if ( jtsMultiPoint.getNumGeometries() > 0 ) {
                 List<Point> members = new ArrayList<Point>( jtsMultiPoint.getNumGeometries() );
                 for ( int i = 0; i < jtsMultiPoint.getNumGeometries(); i++ ) {
-                    members.add( (Point) createFromJTS( jtsMultiPoint.getGeometryN( i ) ) );
+                    members.add( (Point) createFromJTS( jtsMultiPoint.getGeometryN( i ), crs ) );
                 }
                 geom = new DefaultMultiPoint( null, crs, pm, members );
             }
@@ -339,7 +340,7 @@ public abstract class AbstractDefaultGeometry implements Geometry {
             if ( jtsMultiLineString.getNumGeometries() > 0 ) {
                 List<LineString> members = new ArrayList<LineString>( jtsMultiLineString.getNumGeometries() );
                 for ( int i = 0; i < jtsMultiLineString.getNumGeometries(); i++ ) {
-                    Curve curve = (Curve) createFromJTS( jtsMultiLineString.getGeometryN( i ) );
+                    Curve curve = (Curve) createFromJTS( jtsMultiLineString.getGeometryN( i ), crs );
                     members.add( curve.getAsLineString() );
                 }
                 geom = new DefaultMultiLineString( null, crs, pm, members );
@@ -349,7 +350,7 @@ public abstract class AbstractDefaultGeometry implements Geometry {
             if ( jtsMultiPolygon.getNumGeometries() > 0 ) {
                 List<Polygon> members = new ArrayList<Polygon>( jtsMultiPolygon.getNumGeometries() );
                 for ( int i = 0; i < jtsMultiPolygon.getNumGeometries(); i++ ) {
-                    members.add( (Polygon) createFromJTS( jtsMultiPolygon.getGeometryN( i ) ) );
+                    members.add( (Polygon) createFromJTS( jtsMultiPolygon.getGeometryN( i ), crs ) );
                 }
                 geom = new DefaultMultiPolygon( null, crs, pm, members );
             }
@@ -358,7 +359,7 @@ public abstract class AbstractDefaultGeometry implements Geometry {
             if ( jtsGeometryCollection.getNumGeometries() > 0 ) {
                 List<Geometry> members = new ArrayList<Geometry>( jtsGeometryCollection.getNumGeometries() );
                 for ( int i = 0; i < jtsGeometryCollection.getNumGeometries(); i++ ) {
-                    members.add( createFromJTS( jtsGeometryCollection.getGeometryN( i ) ) );
+                    members.add( createFromJTS( jtsGeometryCollection.getGeometryN( i ), crs ) );
                 }
                 geom = new DefaultMultiGeometry( null, crs, pm, members );
             }
@@ -382,7 +383,7 @@ public abstract class AbstractDefaultGeometry implements Geometry {
         throw new RuntimeException( "Cannot convert Geometry to AbstractDefaultGeometry." );
     }
 
-    private Points getAsPoints( CoordinateSequence seq ) {
+    private Points getAsPoints( CoordinateSequence seq, CRS crs ) {
         return new JTSPoints( crs, seq );
     }
 
