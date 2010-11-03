@@ -267,13 +267,7 @@ class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
 
             // wfs:SRS (minOccurs=1, maxOccurs=1)
             writer.writeStartElement( WFS_NS, "SRS" );
-            FeatureStore fs = service.getStore( ftName );
-            if ( fs.getStorageSRS() == null ) {
-                LOG.warn( "No default CRS for feature type '" + ftName + "' defined, using 'EPSG:4326'." );
-                writer.writeCharacters( "EPSG:4326" );
-            } else {
-                writer.writeCharacters( fs.getStorageSRS().getName() );
-            }
+            writer.writeCharacters( querySRS.get( 0 ).getName() );
             writer.writeEndElement();
 
             // wfs:Operations (minOccurs=0, maxOccurs=1)
@@ -282,13 +276,14 @@ class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
             // wfs:LatLongBoundingBox (minOccurs=0, maxOccurs=unbounded)
             Envelope env = null;
             try {
+                FeatureStore fs = service.getStore( ftName );
                 env = fs.getEnvelope( ftName );
             } catch ( FeatureStoreException e ) {
                 LOG.error( "Error retrieving envelope from FeatureStore: " + e.getMessage(), e );
             }
             if ( env != null ) {
                 try {
-                    env = (Envelope) transformer.transform( env );
+                    env = transformer.transform( env );
                     Point min = env.getMin();
                     Point max = env.getMax();
                     double minX = min.get0();
@@ -510,13 +505,13 @@ class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
             params = new ArrayList<Pair<String, List<String>>>();
             params.add( new Pair<String, List<String>>( "AcceptVersions", master.getOfferedVersions() ) );
             params.add( new Pair<String, List<String>>( "AcceptFormats", Collections.singletonList( "text/xml" ) ) );
-//            List<String> sections = new ArrayList<String>();
-//            sections.add( "ServiceIdentification" );
-//            sections.add( "ServiceProvider" );
-//            sections.add( "OperationsMetadata" );
-//            sections.add( "FeatureTypeList" );
-//            sections.add( "Filter_Capabilities" );
-//            params.add( new Pair<String, List<String>>( "Sections", sections ) );
+            // List<String> sections = new ArrayList<String>();
+            // sections.add( "ServiceIdentification" );
+            // sections.add( "ServiceProvider" );
+            // sections.add( "OperationsMetadata" );
+            // sections.add( "FeatureTypeList" );
+            // sections.add( "Filter_Capabilities" );
+            // params.add( new Pair<String, List<String>>( "Sections", sections ) );
             constraints = new ArrayList<Pair<String, List<String>>>();
             operations.add( new OWSOperation( WFSRequestType.GetCapabilities.name(), dcp, params, constraints ) );
 
@@ -612,16 +607,7 @@ class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
 
                 // wfs:DefaultSRS / wfs:NoSRS
                 FeatureStore fs = service.getStore( ftName );
-                if ( querySRS.isEmpty() ) {
-                    if ( fs.getStorageSRS() == null ) {
-                        LOG.warn( "No default CRS for feature type '" + ftName + "' defined, using 'EPSG:4326'." );
-                        writeElement( writer, WFS_NS, "DefaultSRS", "EPSG:4326" );
-                    } else {
-                        writeElement( writer, WFS_NS, "DefaultSRS", fs.getStorageSRS().getName() );
-                    }
-                } else {
-                    writeElement( writer, WFS_NS, "DefaultSRS", querySRS.get( 0 ).getName() );
-                }
+                writeElement( writer, WFS_NS, "DefaultSRS", querySRS.get( 0 ).getName() );
 
                 // wfs:OtherSRS
                 for ( int i = 1; i < querySRS.size(); i++ ) {
@@ -640,7 +626,7 @@ class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
 
                 if ( env != null ) {
                     try {
-                        env = (Envelope) transformer.transform( env );
+                        env = transformer.transform( env );
                     } catch ( Exception e ) {
                         LOG.error( "Cannot transform feature type envelope to WGS84." );
                     }

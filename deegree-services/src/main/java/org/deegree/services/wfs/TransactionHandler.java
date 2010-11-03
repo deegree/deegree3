@@ -530,8 +530,7 @@ class TransactionHandler {
                     gmlReader.setGeometryFactory( geomFac );
                     GMLFeatureReader featureReader = gmlReader.getFeatureReader();
 
-                    FeatureStore fs = service.getStore( ft.getName() );
-                    CRS crs = fs.getStorageSRS();
+                    CRS crs = master.getDefaultQueryCrs();
                     Property prop = featureReader.parseProperty( new XMLStreamReaderWrapper( xmlStream, null ), pt,
                                                                  crs, 1 );
                     newProperties.add( prop );

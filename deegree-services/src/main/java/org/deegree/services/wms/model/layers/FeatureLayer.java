@@ -172,18 +172,17 @@ public class FeatureLayer extends Layer {
         }
         if ( !datastore.isAvailable() ) {
             LOG.error( "Layer could not be loaded, because the feature store is not available." );
+            return;
         }
-        CRS crs = datastore.getStorageSRS();
-        if ( crs != null ) {
-            try {
-                LinkedList<CRS> ss = getSrs();
-                if ( !ss.contains( crs ) && !crs.getWrappedCRS().getCode().equals( getUndefined() ) ) {
-                    ss.addFirst( crs );
-                }
-            } catch ( UnknownCRSException e ) {
-                LOG.warn( "SRS '{}' of shape datastore '{}' is not known.", crs.getName(), file );
-                LOG.trace( "Stack trace:", e );
+        CRS crs = ( (ShapeFeatureStore) datastore ).getStorageCRS();
+        try {
+            LinkedList<CRS> ss = getSrs();
+            if ( !ss.contains( crs ) && !crs.getWrappedCRS().getCode().equals( getUndefined() ) ) {
+                ss.addFirst( crs );
             }
+        } catch ( UnknownCRSException e ) {
+            LOG.warn( "SRS '{}' of shape datastore '{}' is not known.", crs.getName(), file );
+            LOG.trace( "Stack trace:", e );
         }
     }
 
@@ -296,21 +295,23 @@ public class FeatureLayer extends Layer {
             int max = maxFeats == null ? -1 : maxFeats;
             int cnt = 0;
             double resolution = gm.getResolution();
-            if ( !gm.getCoordinateSystem().equals( datastore.getStorageSRS() ) ) {
-                try {
-                    Envelope b = new GeometryTransformer( datastore.getStorageSRS() ).transform( gm.getBoundingBox() );
-                    resolution = Utils.calcResolution( b, gm.getWidth(), gm.getHeight() );
-                } catch ( IllegalArgumentException e ) {
-                    LOG.warn( "Calculating the resolution failed: '{}'", e.getLocalizedMessage() );
-                    LOG.trace( "Stack trace:", e );
-                } catch ( TransformationException e ) {
-                    LOG.warn( "Calculating the resolution failed: '{}'", e.getLocalizedMessage() );
-                    LOG.trace( "Stack trace:", e );
-                } catch ( UnknownCRSException e ) {
-                    LOG.warn( "Calculating the resolution failed: '{}'", e.getLocalizedMessage() );
-                    LOG.trace( "Stack trace:", e );
-                }
-            }
+            
+            // TODO get rid of resolution handling on this code level completely
+//            if ( !gm.getCoordinateSystem().equals( datastore.getStorageSRS() ) ) {
+//                try {
+//                    Envelope b = new GeometryTransformer( datastore.getStorageSRS() ).transform( gm.getBoundingBox() );
+//                    resolution = Utils.calcResolution( b, gm.getWidth(), gm.getHeight() );
+//                } catch ( IllegalArgumentException e ) {
+//                    LOG.warn( "Calculating the resolution failed: '{}'", e.getLocalizedMessage() );
+//                    LOG.trace( "Stack trace:", e );
+//                } catch ( TransformationException e ) {
+//                    LOG.warn( "Calculating the resolution failed: '{}'", e.getLocalizedMessage() );
+//                    LOG.trace( "Stack trace:", e );
+//                } catch ( UnknownCRSException e ) {
+//                    LOG.warn( "Calculating the resolution failed: '{}'", e.getLocalizedMessage() );
+//                    LOG.trace( "Stack trace:", e );
+//                }
+//            }
             for ( Feature f : rs ) {
                 try {
                     render( f, evaluator, style, renderer, textRenderer, gm.getScale(), resolution );
@@ -408,16 +409,16 @@ public class FeatureLayer extends Layer {
             FeatureCollection col;
             if ( featureType == null ) {
                 List<Query> queries = map( datastore.getSchema().getFeatureTypes( null, false, false ),
-                                                       new Mapper<Query, FeatureType>() {
-                                                           public Query apply( FeatureType u ) {
-                                                               if ( u.getDefaultGeometryPropertyDeclaration() == null ) {
-                                                                   return null;
-                                                               }
-                                                               return new Query( u.getName(), clickBox,
-                                                                                 buildFilter( operator, u, clickBox ),
-                                                                                 -1, fi.getFeatureCount(), -1 );
-                                                           }
-                                                       } );
+                                           new Mapper<Query, FeatureType>() {
+                                               public Query apply( FeatureType u ) {
+                                                   if ( u.getDefaultGeometryPropertyDeclaration() == null ) {
+                                                       return null;
+                                                   }
+                                                   return new Query( u.getName(), clickBox, buildFilter( operator, u,
+                                                                                                         clickBox ),
+                                                                     -1, fi.getFeatureCount(), -1 );
+                                               }
+                                           } );
                 clearNulls( queries );
                 col = clearDuplicates( datastore.query( queries.toArray( new Query[queries.size()] ) ) );
             } else {

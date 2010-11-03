@@ -183,7 +183,7 @@ public class WFSController extends AbstractOGCServiceController {
 
     private CRS defaultQueryCRS = EPSG_4326;
 
-    private List<CRS> querySRS = new ArrayList<CRS>();
+    private List<CRS> queryCRS = new ArrayList<CRS>();
 
     private final Map<String, Format> mimeTypeToFormat = new LinkedHashMap<String, Format>();
 
@@ -282,16 +282,18 @@ public class WFSController extends AbstractOGCServiceController {
                     LOG.debug( "Query CRS: " + srs );
                     CRS crs = new CRS( srs );
                     crs.getWrappedCRS();
-                    this.querySRS.add( crs );
+                    this.queryCRS.add( crs );
                 }
             }
         } catch ( UnknownCRSException e ) {
             String msg = "Invalid QuerySRS parameter: " + e.getMessage();
             throw new ControllerInitException( msg );
         }
-        if ( !querySRS.isEmpty() ) {
-            defaultQueryCRS = this.querySRS.get( 0 );
+        if ( queryCRS.isEmpty() ) {
+            LOG.info( "No query CRS defined, defaulting to EPSG:4326." );
+            queryCRS.add( CRS.EPSG_4326 );
         }
+        defaultQueryCRS = this.queryCRS.get( 0 );
     }
 
     private void initFormats( List<JAXBElement<? extends AbstractFormatType>> formatList )
@@ -759,7 +761,7 @@ public class WFSController extends AbstractOGCServiceController {
         GetCapabilitiesHandler adapter = new GetCapabilitiesHandler( this, service, negotiatedVersion, xmlWriter,
                                                                      serviceId, serviceProvider, sortedFts,
                                                                      ftNameToFtMetadata, sectionsUC,
-                                                                     enableTransactions, querySRS );
+                                                                     enableTransactions, queryCRS );
         adapter.export();
         xmlWriter.flush();
     }
