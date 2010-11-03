@@ -807,7 +807,7 @@ public class ISOMetadataStoreTest {
         }
         if ( store == null ) {
             LOG.warn( "Skipping test (needs configuration)." );
-            throw new MetadataStoreException( "skipping test (needs configuration)" );
+            throw new MetadataInspectorException( "skipping test (needs configuration)" );
         }
         MetadataStoreTransaction ta = store.acquireTransaction();
         List<String> ids = insertMetadata( store, ta, TstConstants.tst_2 );
@@ -833,7 +833,7 @@ public class ISOMetadataStoreTest {
         }
         if ( store == null ) {
             LOG.warn( "Skipping test (needs configuration)." );
-            throw new MetadataStoreException( "skipping test (needs configuration)" );
+            throw new MetadataInspectorException( "skipping test (needs configuration)" );
         }
         MetadataStoreTransaction ta = store.acquireTransaction();
         List<String> ids = insertMetadata( store, ta, TstConstants.tst_4 );
@@ -859,7 +859,7 @@ public class ISOMetadataStoreTest {
         }
         if ( store == null ) {
             LOG.warn( "Skipping test (needs configuration)." );
-            throw new MetadataStoreException( "skipping test (needs configuration)" );
+            throw new MetadataInspectorException( "skipping test (needs configuration)" );
         }
         MetadataStoreTransaction ta = store.acquireTransaction();
         List<String> ids = insertMetadata( store, ta, TstConstants.tst_5 );
@@ -886,7 +886,7 @@ public class ISOMetadataStoreTest {
         }
         if ( store == null ) {
             LOG.warn( "Skipping test (needs configuration)." );
-            throw new MetadataStoreException( "skipping test (needs configuration)" );
+            throw new MetadataInspectorException( "skipping test (needs configuration)" );
         }
         MetadataStoreTransaction ta = store.acquireTransaction();
         List<String> ids = insertMetadata( store, ta, TstConstants.tst_1, TstConstants.tst_3 );
@@ -910,7 +910,7 @@ public class ISOMetadataStoreTest {
         }
         if ( store == null ) {
             LOG.warn( "Skipping test (needs configuration)." );
-            throw new MetadataStoreException( "skipping test (needs configuration)" );
+            throw new MetadataInspectorException( "skipping test (needs configuration)" );
         }
         MetadataStoreTransaction ta = store.acquireTransaction();
         List<String> ids = insertMetadata( store, ta, TstConstants.tst_8 );
@@ -936,7 +936,7 @@ public class ISOMetadataStoreTest {
         }
         if ( store == null ) {
             LOG.warn( "Skipping test (needs configuration)." );
-            throw new MetadataStoreException( "skipping test (needs configuration)" );
+            throw new MetadataInspectorException( "skipping test (needs configuration)" );
         }
         MetadataStoreTransaction ta = store.acquireTransaction();
         List<String> ids = insertMetadata( store, ta, TstConstants.tst_7 );
@@ -953,7 +953,7 @@ public class ISOMetadataStoreTest {
         }
         if ( store == null ) {
             LOG.warn( "Skipping test (needs configuration)." );
-            return;
+            throw new MetadataInspectorException( "skipping test (needs configuration)" );
         }
         MetadataStoreTransaction ta = store.acquireTransaction();
         List<String> ids = insertMetadata( store, ta, TstConstants.tst_11, TstConstants.tst_13 );
