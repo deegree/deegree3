@@ -75,6 +75,8 @@ import static org.deegree.commons.xml.CommonNamespaces.XMLNS;
 import static org.deegree.commons.xml.CommonNamespaces.XSNS;
 import static org.deegree.commons.xml.schema.SchemaUtils.writeWrapperDoc;
 import static org.deegree.gml.GMLVersion.GML_2;
+import static org.deegree.gml.GMLVersion.GML_30;
+import static org.deegree.gml.GMLVersion.GML_31;
 import static org.deegree.gml.schema.GMLSchemaInfoSet.isGMLNamespace;
 
 import java.util.ArrayList;
@@ -117,6 +119,7 @@ import org.deegree.feature.types.property.GeometryPropertyType;
 import org.deegree.feature.types.property.MeasurePropertyType;
 import org.deegree.feature.types.property.PropertyType;
 import org.deegree.feature.types.property.SimplePropertyType;
+import org.deegree.feature.types.property.GeometryPropertyType.GeometryType;
 import org.deegree.gml.GMLVersion;
 import org.deegree.gml.schema.GMLSchemaInfoSet;
 import org.slf4j.Logger;
@@ -642,8 +645,133 @@ public class ApplicationSchemaXSDEncoder {
 
     private void export( XMLStreamWriter writer, GeometryPropertyType pt )
                             throws XMLStreamException {
-        writer.writeAttribute( "type", "gml:GeometryPropertyType" );
-        writer.writeComment( "TODO: Export geometry type restriction" );
+
+        GeometryType type = pt.getGeometryType();
+        if ( version.equals( GMLVersion.GML_2 ) ) {
+            switch ( type ) {
+            case POINT:
+                writer.writeAttribute( "type", "gml:PointPropertyType" );
+                break;
+            case CURVE:
+            case LINE_STRING:
+            case LINEAR_RING:
+            case ORIENTABLE_CURVE:
+            case RING:
+                writer.writeAttribute( "type", "gml:LineStringPropertyType" );
+                break;
+            case POLYGON:
+            case SURFACE:
+            case ORIENTABLE_SURFACE:
+                writer.writeAttribute( "type", "gml:PolygonPropertyType" );
+                break;
+            case MULTI_POINT:
+                writer.writeAttribute( "type", "gml:MultiPointPropertyType" );
+                break;
+            case MULTI_LINE_STRING:
+            case MULTI_CURVE:
+            case COMPOSITE_CURVE:
+                writer.writeAttribute( "type", "gml:MultiLineStringPropertyType" );
+                break;
+            case COMPOSITE_SURFACE:
+            case MULTI_POLYGON:
+            case MULTI_SURFACE:
+                writer.writeAttribute( "type", "gml:MultiPolygonPropertyType" );
+                break;
+            case COMPOSITE:
+            case MULTI_GEOMETRY:
+                writer.writeAttribute( "type", "gml:MultiGeometryPropertyType" );
+                break;
+            case COMPOSITE_SOLID:
+            case GEOMETRY:
+            case MULTI_SOLID:
+            case POLYHEDRAL_SURFACE:
+            case PRIMITIVE:
+            case SOLID:
+            case TIN:
+            case TRIANGULATED_SURFACE:
+                writer.writeAttribute( "type", "gml:GeometryPropertyType" );
+                break;
+            }
+        } else {
+            switch ( type ) {
+            case POINT:
+                writer.writeAttribute( "type", "gml:PointPropertyType" );
+                break;
+            case LINE_STRING:
+                if ( version.equals( GML_30 ) || version.equals( GML_31 ) ) {
+                    writer.writeAttribute( "type", "gml:LineStringPropertyType" );
+                } else {
+                    writer.writeAttribute( "type", "gml:CurvePropertyType" );
+                }
+                break;
+            case CURVE:
+            case ORIENTABLE_CURVE:
+                writer.writeAttribute( "type", "gml:CurvePropertyType" );
+                break;
+            case POLYGON:
+                if ( version.equals( GML_30 ) || version.equals( GML_31 ) ) {
+                    writer.writeAttribute( "type", "gml:PolygonPropertyType" );
+                } else {
+                    writer.writeAttribute( "type", "gml:SurfacePropertyType" );
+                }
+                break;
+            case SURFACE:
+            case ORIENTABLE_SURFACE:
+                writer.writeAttribute( "type", "gml:SurfacePropertyType" );
+                break;
+            case SOLID:
+                writer.writeAttribute( "type", "gml:SolidPropertyType" );
+                break;
+            case MULTI_POINT:
+                writer.writeAttribute( "type", "gml:MultiPointPropertyType" );
+                break;
+            case MULTI_LINE_STRING:
+                if ( version.equals( GML_30 ) || version.equals( GML_31 ) ) {
+                    writer.writeAttribute( "type", "gml:MultiLineStringPropertyType" );
+                } else {
+                    writer.writeAttribute( "type", "gml:MultiCurvePropertyType" );
+                }
+                break;
+            case MULTI_CURVE:
+                writer.writeAttribute( "type", "gml:MultiCurvePropertyType" );
+                break;
+            case MULTI_POLYGON:
+                if ( version.equals( GML_30 ) || version.equals( GML_31 ) ) {
+                    writer.writeAttribute( "type", "gml:MultiPolygonPropertyType" );
+                } else {
+                    writer.writeAttribute( "type", "gml:MultiSurfacePropertyType" );
+                }
+                break;
+            case MULTI_SURFACE:
+                writer.writeAttribute( "type", "gml:MultiSurfacePropertyType" );
+                break;
+            case MULTI_SOLID:
+                writer.writeAttribute( "type", "gml:MultiSolidPropertyType" );
+                break;
+            case MULTI_GEOMETRY:
+                writer.writeAttribute( "type", "gml:MultiGeometryPropertyType" );
+                break;
+            case COMPOSITE:
+            case COMPOSITE_CURVE:
+            case COMPOSITE_SURFACE:
+            case COMPOSITE_SOLID:
+                writer.writeAttribute( "type", "gml:GeometricComplexPropertyType" );
+                break;
+            case LINEAR_RING:
+                writer.writeAttribute( "type", "gml:LinearRingPropertyType" );
+                break;
+            case RING:
+                writer.writeAttribute( "type", "gml:RingPropertyType" );
+                break;
+            case POLYHEDRAL_SURFACE:
+            case PRIMITIVE:
+            case TIN:
+            case TRIANGULATED_SURFACE:
+            case GEOMETRY:
+                writer.writeAttribute( "type", "gml:GeometryPropertyType" );
+                break;
+            }
+        }
     }
 
     private void export( XMLStreamWriter writer, FeaturePropertyType pt )
