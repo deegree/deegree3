@@ -85,7 +85,8 @@
 				<extension base="ds:AbstractInspectorType">
 					<attribute name="rejectEmptyFileIdentifier" type="boolean" use="required">
 					  <annotation>
-						<documentation>true, if the metadataRecord should be rejected if there is no fileIdentifier available. Otherwise false. </documentation>
+						<documentation>true, if the metadataRecord should be rejected if there is 
+						no fileIdentifier available. Otherwise false. </documentation>
 					  </annotation>
 					</attribute>
 				</extension>
@@ -98,7 +99,8 @@
 				<extension base="ds:AbstractInspectorType">
 					<attribute name="generateRIA" type="boolean" use="required">
 					  <annotation>
-						<documentation>(generateResourceIdentifierAutomatic)If the generating of the resourceIdentifier is automaticaly done by the service</documentation>
+						<documentation>(generateResourceIdentifierAutomatic)If the generating of the
+						resourceIdentifier is automatically done by the metadataStore</documentation>
 					  </annotation>
 					</attribute>
 				</extension>
