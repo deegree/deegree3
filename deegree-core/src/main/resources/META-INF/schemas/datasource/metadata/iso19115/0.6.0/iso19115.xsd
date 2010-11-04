@@ -97,10 +97,11 @@
 		<complexType>
 			<complexContent>
 				<extension base="ds:AbstractInspectorType">
-					<attribute name="generateRIA" type="boolean" use="required">
+					<attribute name="generateMissingResourceIdentifier" type="boolean" use="required">
 					  <annotation>
-						<documentation>(generateResourceIdentifierAutomatic)If the generating of the
-						resourceIdentifier is automatically done by the metadataStore</documentation>
+						<documentation>True if the metadataStore should generate the resourceIdentifier 
+						automatically while there is no one provided by the metadata, otherwise there 
+						is no automatic generating. </documentation>
 					  </annotation>
 					</attribute>
 				</extension>

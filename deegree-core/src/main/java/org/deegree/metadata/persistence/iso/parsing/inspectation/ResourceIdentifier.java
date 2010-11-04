@@ -115,7 +115,7 @@ public class ResourceIdentifier implements InspireCompliance {
                             throws MetadataInspectorException {
 
         if ( checkAvailability( ric ) ) {
-            boolean generateAutomatic = ric.isGenerateRIA();
+            boolean generateAutomatic = ric.isGenerateMissingResourceIdentifier();
             if ( generateAutomatic == false ) {
                 if ( id != null ) {
                     if ( util.checkUUIDCompliance( id ) ) {
