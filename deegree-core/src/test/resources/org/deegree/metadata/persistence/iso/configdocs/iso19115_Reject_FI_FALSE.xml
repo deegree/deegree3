@@ -7,7 +7,5 @@
 	xsi:schemaLocation="http://www.deegree.org/datasource/metadata/iso19115 iso19115.xsd">
 	<Inspectors>
 	  <IdentifierInspector rejectEmptyFileIdentifier="false"/>
-	  <!--<InspireInspector generateAutomatic="true"/>--> 
-	  <!--<CoupledResourceInspector throwConsistencyError="true" />-->
 	</Inspectors>
 </ISOMetadataStore>

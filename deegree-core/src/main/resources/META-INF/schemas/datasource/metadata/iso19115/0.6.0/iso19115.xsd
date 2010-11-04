@@ -62,7 +62,9 @@
 	<element name="AbstractInspector" type="ds:AbstractInspectorType" abstract="true" />
 	<complexType name="AbstractInspectorType" abstract="true">
 		<annotation>
-			<documentation>Declaration of an inspector.</documentation>
+			<documentation>The AbstractInspector is the base class of providing a check of 
+			the metadata while writing it to the metadataStore (this will affect the 
+			transaction operation by inserting or updating the metadata). </documentation>
 			<appinfo>
 				<jaxb:class name="AbstractInspector" />
 			</appinfo>
@@ -70,7 +72,8 @@
 	</complexType>
 	<element name="SchemaValidator" substitutionGroup="ds:AbstractInspector">
 	  <annotation>
-	    <documentation>Metadata Schema Validation Inspector.</documentation>
+	    <documentation>If provided this element the validation of the schema conformity of the 
+	    metadata will be checked.</documentation>
       </annotation>
       <complexType>
 			<complexContent>
@@ -85,8 +88,8 @@
 				<extension base="ds:AbstractInspectorType">
 					<attribute name="rejectEmptyFileIdentifier" type="boolean" use="required">
 					  <annotation>
-						<documentation>true, if the metadataRecord should be rejected if there is 
-						no fileIdentifier available. Otherwise false. </documentation>
+						<documentation>True if the metadata should be rejected if there is 
+						no fileIdentifier available, otherwise there is no rejection. </documentation>
 					  </annotation>
 					</attribute>
 				</extension>
@@ -114,7 +117,7 @@
 				<extension base="ds:AbstractInspectorType">
 					<attribute name="throwConsistencyError" type="boolean" use="required">
 						<annotation>
-							<documentation>true, if there should be thrown an exception and
+							<documentation>True, if there should be thrown an exception and
 									the metadata should not be inserted.</documentation>
 						</annotation>
 					</attribute>
