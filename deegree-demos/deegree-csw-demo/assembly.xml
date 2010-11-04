@@ -14,6 +14,7 @@
       <excludes>
         <exclude>*.sh</exclude>
         <exclude>bin/*.sh</exclude>
+        <exclude>webapps/ROOT/**</exclude>
       </excludes>
     </fileSet>
     <fileSet>
@@ -31,7 +32,7 @@
     </fileSet>
     <fileSet>
       <directory>target/deegree-catalogue-manager</directory>
-      <outputDirectory>/${project.build.finalName}/webapps/deegree-catalogue-manager/</outputDirectory>
+      <outputDirectory>/${project.build.finalName}/webapps/ROOT/</outputDirectory>
     </fileSet>
   </fileSets>
 </assembly>

@@ -4,16 +4,26 @@
 	configVersion="0.6.0"
 	xmlns="http://www.deegree.org/datasource/metadata/iso19115"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://www.deegree.org/datasource/metadata/iso19115 http://www.schemas.deegree.org/metadata/0.6.0/iso19115.xsd">
-	<IdentifierInspector rejectEmptyFileIdentifier="true"/>
-	<!--<RequireInspireCompliance generateAutomatic="true"/> 
-	<CoupledResourceInspector throwConsistencyError="true" />-->
-		<AnyText>
-		<Core/>
-	  <!--<Custom>
-	  	<XPath>/gmd:MD_Metadata/gmd:fileIdentifier/gco:CharacterString</XPath>
-	  	<XPath>/gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:descriptiveKeywords/gmd:MD_Keywords/gmd:keyword/gco:CharacterString</XPath>
+	xsi:schemaLocation="http://www.deegree.org/datasource/metadata/iso19115 iso19115.xsd">
+
+    <Inspectors>
+	  <IdentifierInspector rejectEmptyFileIdentifier="true"/>
+	  <InspireInspector generateMissingResourceIdentifier="true"/>
+	  <CoupledResourceInspector throwConsistencyError="true" />
+	  <!--<CustomInspector name="">
+	  </CustomInspector>-->
+    </Inspectors>
+	
+	<!--
+	    If AnyText is specified there is a choice between storing all text found in the record, 
+	    or just the core queryable properties or store a custom set of properties into the 
+	    anyText-queryable property, otherwise the core queryable properties will be stored in 
+	    in the backend.    
+	 -->
+	<AnyText>
+	  <Custom>
+	    <XPath>/gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:descriptiveKeywords/gmd:MD_Keywords/gmd:keyword/gco:CharacterString</XPath>
 	    <XPath>/gmd:MD_Metadata/gmd:contact/gmd:CI_ResponsibleParty/gmd:individualName/gco:CharacterString</XPath>
 	  </Custom>
-	--></AnyText>
+	</AnyText>
 </ISOMetadataStore>
