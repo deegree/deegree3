@@ -48,16 +48,17 @@ import javax.xml.bind.JAXBException;
 import org.deegree.commons.xml.NamespaceContext;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.jaxb.JAXBUtils;
-import org.deegree.cs.CRS;
 import org.deegree.feature.i18n.Messages;
 import org.deegree.feature.persistence.FeatureStore;
 import org.deegree.feature.persistence.FeatureStoreException;
 import org.deegree.feature.persistence.FeatureStoreProvider;
 import org.deegree.feature.persistence.mapping.MappedApplicationSchema;
+import org.deegree.feature.persistence.postgis.jaxb.FeatureTypeDecl;
 import org.deegree.feature.persistence.postgis.jaxb.GMLVersionType;
 import org.deegree.feature.persistence.postgis.jaxb.PostGISFeatureStoreConfig;
-import org.deegree.feature.persistence.postgis.jaxb.PostGISFeatureStoreConfig.GMLSchema;
-import org.deegree.feature.persistence.postgis.jaxb.PostGISFeatureStoreConfig.NamespaceHint;
+import org.deegree.feature.persistence.postgis.jaxb.PostGISFeatureStoreConfig.BLOBMapping;
+import org.deegree.feature.persistence.postgis.jaxb.PostGISFeatureStoreConfig.BLOBMapping.GMLSchema;
+import org.deegree.feature.persistence.postgis.jaxb.PostGISFeatureStoreConfig.BLOBMapping.NamespaceHint;
 import org.deegree.feature.types.ApplicationSchema;
 import org.deegree.gml.GMLVersion;
 import org.deegree.gml.feature.schema.ApplicationSchemaXSDDecoder;
@@ -77,12 +78,12 @@ public class PostGISFeatureStoreProvider implements FeatureStoreProvider {
     private static final Logger LOG = LoggerFactory.getLogger( PostGISFeatureStoreProvider.class );
 
     private static final String CONFIG_NS = "http://www.deegree.org/datasource/feature/postgis";
-    
+
     private static final String CONFIG_JAXB_PACKAGE = "org.deegree.feature.persistence.postgis.jaxb";
 
-    private static final String CONFIG_SCHEMA = "/META-INF/schemas/datasource/feature/postgis/0.6.1/postgis.xsd";
+    private static final String CONFIG_SCHEMA = "/META-INF/schemas/datasource/feature/postgis/0.6.2/postgis.xsd";
 
-    private static final String CONFIG_TEMPLATE = "/META-INF/schemas/datasource/feature/postgis/0.6.1/example.xml";
+    private static final String CONFIG_TEMPLATE = "/META-INF/schemas/datasource/feature/postgis/0.6.2/example.xml";
 
     @Override
     public String getConfigNamespace() {
@@ -104,7 +105,9 @@ public class PostGISFeatureStoreProvider implements FeatureStoreProvider {
                             throws FeatureStoreException {
         PostGISFeatureStoreConfig config = parseConfig( configURL );
         MappedApplicationSchema schema = getSchema( configURL.toString(), config );
-        return new PostGISFeatureStore( schema, config.getJDBCConnId() );
+        String jdbcConnId = config.getJDBCConnId().getValue();
+        String dbSchema = config.getJDBCConnId().getSchema();
+        return new PostGISFeatureStore( schema, jdbcConnId, dbSchema );
     }
 
     public String[] getDDL( URL configURL )
@@ -117,23 +120,38 @@ public class PostGISFeatureStoreProvider implements FeatureStoreProvider {
     private MappedApplicationSchema getSchema( String configURL, PostGISFeatureStoreConfig config )
                             throws FeatureStoreException {
 
-        ApplicationSchema appSchema = null;
-        CRS storageSRS = new CRS( config.getStorageCRS() );
-        NamespaceContext nsContext = new NamespaceContext();
-        if ( !config.getGMLSchema().isEmpty() ) {
+        String jdbcConnId = config.getJDBCConnId().getValue();
+        String dbSchema = config.getJDBCConnId().getSchema();
+
+        MappedApplicationSchema schema = null;
+        if ( config.getBLOBMapping() == null ) {
+            LOG.debug( "Building mapped application schema (relational mode)" );
+            try {
+                List<FeatureTypeDecl> ftDecls = config.getFeatureType();
+                SchemaBuilderRelational schemaBuilder = new SchemaBuilderRelational( jdbcConnId, dbSchema, ftDecls );
+                schema = schemaBuilder.getMappedSchema();
+            } catch ( SQLException e ) {
+                LOG.error( e.getMessage(), e );
+                throw new FeatureStoreException( e.getMessage(), e );
+            }
+        } else {
+            LOG.debug( "Building mapped application schema (BLOB mode)" );
+            ApplicationSchema appSchema = null;
+            NamespaceContext nsContext = new NamespaceContext();
+            BLOBMapping blobMapping = config.getBLOBMapping();
             XMLAdapter resolver = new XMLAdapter();
             resolver.setSystemId( configURL );
             try {
-                String[] schemaURLs = new String[config.getGMLSchema().size()];
+                String[] schemaURLs = new String[blobMapping.getGMLSchema().size()];
                 int i = 0;
                 GMLVersionType gmlVersionType = null;
-                for ( GMLSchema jaxbSchemaURL : config.getGMLSchema() ) {
+                for ( GMLSchema jaxbSchemaURL : blobMapping.getGMLSchema() ) {
                     schemaURLs[i++] = resolver.resolve( jaxbSchemaURL.getValue().trim() ).toString();
                     // TODO what about different versions at the same time?
                     gmlVersionType = jaxbSchemaURL.getVersion();
                 }
 
-                for ( Entry<String, String> nsHint : getHintMap( config.getNamespaceHint() ).entrySet() ) {
+                for ( Entry<String, String> nsHint : getHintMap( blobMapping.getNamespaceHint() ).entrySet() ) {
                     nsContext.addNamespace( nsHint.getKey(), nsHint.getValue() );
                 }
 
@@ -141,10 +159,10 @@ public class PostGISFeatureStoreProvider implements FeatureStoreProvider {
                 if ( schemaURLs.length == 1 && schemaURLs[0].startsWith( "file:" ) ) {
                     File file = new File( new URL( schemaURLs[0] ).toURI() );
                     decoder = new ApplicationSchemaXSDDecoder( GMLVersion.valueOf( gmlVersionType.name() ),
-                                                               getHintMap( config.getNamespaceHint() ), file );
+                                                               getHintMap( blobMapping.getNamespaceHint() ), file );
                 } else {
                     decoder = new ApplicationSchemaXSDDecoder( GMLVersion.valueOf( gmlVersionType.name() ),
-                                                               getHintMap( config.getNamespaceHint() ), schemaURLs );
+                                                               getHintMap( blobMapping.getNamespaceHint() ), schemaURLs );
                 }
                 appSchema = decoder.extractFeatureTypeSchema();
             } catch ( Exception e ) {
@@ -153,17 +171,18 @@ public class PostGISFeatureStoreProvider implements FeatureStoreProvider {
                 throw new FeatureStoreException( msg, e );
             }
         }
-
-        MappedApplicationSchema schema = null;
-        try {
-
-            schema = PostGISApplicationSchemaBuilder.build( appSchema, config.getFeatureType(), config.getJDBCConnId(),
-                                                            config.getDBSchemaQualifier(), storageSRS, nsContext );
-        } catch ( SQLException e ) {
-            String msg = Messages.getMessage( "STORE_MANAGER_STORE_SETUP_ERROR", e.getMessage() );
-            LOG.error( msg, e );
-            throw new FeatureStoreException( msg, e );
-        }
+        //
+        // MappedApplicationSchema schema = null;
+        // try {
+        // String jdbcConnId = config.getJDBCConnId().getValue();
+        // String dbSchema = config.getJDBCConnId().getSchema();
+        // schema = RelationalSchemaBuilder.build( appSchema, config.getFeatureType(), jdbcConnId, dbSchema,
+        // nsContext );
+        // } catch ( SQLException e ) {
+        // String msg = Messages.getMessage( "STORE_MANAGER_STORE_SETUP_ERROR", e.getMessage() );
+        // LOG.error( msg, e );
+        // throw new FeatureStoreException( msg, e );
+        // }
         return schema;
     }
 

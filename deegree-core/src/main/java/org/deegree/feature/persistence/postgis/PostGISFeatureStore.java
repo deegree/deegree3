@@ -148,8 +148,10 @@ public class PostGISFeatureStore implements SQLFeatureStore {
      *            schema information, must not be <code>null</code>
      * @param jdbcConnId
      *            id of the deegree DB connection pool, must not be <code>null</code>
+     * @param dbSchema
+     *           default database schema, can be <code>null</code>
      */
-    PostGISFeatureStore( MappedApplicationSchema schema, String jdbcConnId ) {
+    PostGISFeatureStore( MappedApplicationSchema schema, String jdbcConnId, String dbSchema ) {
         this.schema = schema;
         this.blobMapping = schema.getBlobMapping();
         this.jdbcConnId = jdbcConnId;

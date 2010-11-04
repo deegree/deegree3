@@ -37,7 +37,6 @@ package org.deegree.feature.persistence.postgis;
 
 import static javax.xml.XMLConstants.DEFAULT_NS_PREFIX;
 import static javax.xml.XMLConstants.NULL_NS_URI;
-import static org.deegree.feature.persistence.BlobCodec.Compression.NONE;
 import static org.deegree.feature.types.property.GeometryPropertyType.CoordinateDimension.DIM_2;
 import static org.deegree.feature.types.property.GeometryPropertyType.CoordinateDimension.DIM_3;
 import static org.deegree.feature.types.property.GeometryPropertyType.GeometryType.GEOMETRY;
@@ -50,7 +49,6 @@ import static org.deegree.feature.types.property.GeometryPropertyType.GeometryTy
 import static org.deegree.feature.types.property.GeometryPropertyType.GeometryType.POLYGON;
 import static org.deegree.feature.types.property.ValueRepresentation.BOTH;
 import static org.deegree.feature.types.property.ValueRepresentation.INLINE;
-import static org.deegree.gml.GMLVersion.GML_32;
 
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
@@ -74,10 +72,7 @@ import org.deegree.commons.utils.JDBCUtils;
 import org.deegree.commons.utils.Pair;
 import org.deegree.commons.xml.NamespaceContext;
 import org.deegree.cs.CRS;
-import org.deegree.feature.persistence.BlobCodec;
 import org.deegree.feature.persistence.FeatureStoreException;
-import org.deegree.feature.persistence.mapping.BBoxTableMapping;
-import org.deegree.feature.persistence.mapping.BlobMapping;
 import org.deegree.feature.persistence.mapping.DBField;
 import org.deegree.feature.persistence.mapping.FeatureTypeMapping;
 import org.deegree.feature.persistence.mapping.JoinChain;
@@ -99,7 +94,6 @@ import org.deegree.feature.persistence.postgis.jaxb.FeatureTypeDecl;
 import org.deegree.feature.persistence.postgis.jaxb.GeometryPropertyDecl;
 import org.deegree.feature.persistence.postgis.jaxb.MeasurePropertyDecl;
 import org.deegree.feature.persistence.postgis.jaxb.SimplePropertyDecl;
-import org.deegree.feature.types.ApplicationSchema;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.feature.types.GenericFeatureType;
 import org.deegree.feature.types.property.CustomPropertyType;
@@ -114,16 +108,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Creates {@link MappedApplicationSchema} instances from feature type declarations / relational mapping information.
+ * Creates a {@link MappedApplicationSchema} instances from feature type declarations / relational mapping information.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
  */
-class PostGISApplicationSchemaBuilder {
+class SchemaBuilderRelational {
 
-    private static final Logger LOG = LoggerFactory.getLogger( PostGISApplicationSchemaBuilder.class );
+    private static final Logger LOG = LoggerFactory.getLogger( SchemaBuilderRelational.class );
 
     private final String connId;
 
@@ -140,60 +134,19 @@ class PostGISApplicationSchemaBuilder {
     private DatabaseMetaData md;
 
     /**
-     * Creates a new {@link MappedApplicationSchema} instance.
+     * Creates a new {@link SchemaBuilderRelational} instance.
      * 
-     * @param appSchema
-     *            application schema, can be <code>null</code> (for relational-only mappings)
-     * @param ftDecls
-     *            feature type declarations, can be <code>null</code> (for BLOB-only mappings)
      * @param jdbcConnId
-     *            identifier of the JDBC connection, must not be <code>null</code>
      * @param dbSchema
-     *            PostgreSQL database schema, can be <code>null</code>
-     * @param storageCRS
-     *            CRS used for storing geometries, must not be <code>null</code>
-     * @return mapped application schema, never <code>null</code>
+     * @param ftDecls
      * @throws SQLException
      * @throws FeatureStoreException
      */
-    static MappedApplicationSchema build( ApplicationSchema appSchema, List<FeatureTypeDecl> ftDecls,
-                                          String jdbcConnId, String dbSchema, CRS storageCRS, NamespaceContext nsContext )
-                            throws SQLException, FeatureStoreException {
+    SchemaBuilderRelational( String jdbcConnId, String dbSchema, List<FeatureTypeDecl> ftDecls ) throws SQLException,
+                            FeatureStoreException {
 
-        MappedApplicationSchema mappedSchema = null;
-
-        if ( appSchema != null ) {
-            BBoxTableMapping bboxMapping = new BBoxTableMapping( storageCRS );
-            BlobMapping blobMapping = new BlobMapping( "GML_OBJECTS", storageCRS, new BlobCodec( GML_32, NONE ) );
-
-            PostGISApplicationSchemaBuilder builder = new PostGISApplicationSchemaBuilder( ftDecls, jdbcConnId,
-                                                                                           dbSchema, nsContext );
-            FeatureTypeMapping[] ftMappings = builder.ftNameToMapping.values().toArray(
-                                                                                        new FeatureTypeMapping[builder.ftNameToMapping.size()] );
-
-            mappedSchema = new MappedApplicationSchema( appSchema.getFeatureTypes(), appSchema.getFtToSuperFt(),
-                                                        appSchema.getNamespaceBindings(), appSchema.getXSModel(),
-                                                        ftMappings, storageCRS, bboxMapping, blobMapping );
-        } else {
-            // relational mode
-            PostGISApplicationSchemaBuilder builder = new PostGISApplicationSchemaBuilder( ftDecls, jdbcConnId,
-                                                                                           dbSchema, nsContext );
-            FeatureType[] fts = builder.ftNameToFt.values().toArray( new FeatureType[builder.ftNameToFt.size()] );
-            FeatureTypeMapping[] ftMappings = builder.ftNameToMapping.values().toArray(
-                                                                                        new FeatureTypeMapping[builder.ftNameToMapping.size()] );
-            mappedSchema = new MappedApplicationSchema( fts, null, null, null, ftMappings, storageCRS, null, null );
-        }
-
-        return mappedSchema;
-    }
-
-    private PostGISApplicationSchemaBuilder( List<FeatureTypeDecl> ftDecls, String connId, String dbSchema,
-                                             NamespaceContext nsContext ) throws SQLException, FeatureStoreException {
-
-        this.connId = connId;
+        this.connId = jdbcConnId;
         this.dbSchema = dbSchema;
-        this.nsContext = nsContext;
-
         try {
             for ( FeatureTypeDecl ftDecl : ftDecls ) {
                 process( ftDecl );
@@ -201,6 +154,13 @@ class PostGISApplicationSchemaBuilder {
         } finally {
             JDBCUtils.close( conn );
         }
+    }
+
+    MappedApplicationSchema getMappedSchema() {
+        FeatureType[] fts = ftNameToFt.values().toArray( new FeatureType[ftNameToFt.size()] );
+        FeatureTypeMapping[] ftMappings = ftNameToMapping.values().toArray(
+                                                                            new FeatureTypeMapping[ftNameToMapping.size()] );
+        return new MappedApplicationSchema( fts, null, null, null, ftMappings, null, null, null );
     }
 
     private void process( FeatureTypeDecl ftDecl )
@@ -221,24 +181,15 @@ class PostGISApplicationSchemaBuilder {
         ftName = makeFullyQualified( ftName, "app", "http://www.deegree.org/app" );
         LOG.debug( "Feature type name: '" + ftName + "'." );
 
-        boolean isAbstract = ftDecl.isAbstract() == null ? false : ftDecl.isAbstract();
-
-        QName parentFtName = ftDecl.getParent();
-        if ( parentFtName != null ) {
-            parentFtName = makeFullyQualified( parentFtName, "app", "http://www.deegree.org/app" );
-        }
-
-        String fidMapping = ftDecl.getFidMapping();
-
         List<JAXBElement<? extends AbstractPropertyDecl>> propDecls = ftDecl.getAbstractProperty();
         if ( propDecls != null && !propDecls.isEmpty() ) {
-            process( table, ftName, isAbstract, propDecls, fidMapping );
+            process( table, ftName, propDecls );
         } else {
-            process( table, ftName, isAbstract, fidMapping );
+            process( table, ftName );
         }
     }
 
-    private void process( String table, QName ftName, boolean isAbstract, String fidMapping )
+    private void process( String table, QName ftName )
                             throws SQLException {
 
         LOG.debug( "Determining properties for feature type '" + ftName + "' from table '" + table + "'" );
@@ -246,6 +197,8 @@ class PostGISApplicationSchemaBuilder {
         List<PropertyType> pts = new ArrayList<PropertyType>();
         String backendSrs = null;
         Map<QName, Mapping> propToColumn = new HashMap<QName, Mapping>();
+
+        String fidMapping = null;
 
         DatabaseMetaData md = getDBMetadata();
         ResultSet rs = null;
@@ -328,15 +281,16 @@ class PostGISApplicationSchemaBuilder {
             JDBCUtils.close( rs );
         }
 
-        FeatureType ft = new GenericFeatureType( ftName, pts, isAbstract );
+        FeatureType ft = new GenericFeatureType( ftName, pts, false );
         ftNameToFt.put( ftName, ft );
 
         FeatureTypeMapping ftMapping = new FeatureTypeMapping( ftName, table, fidMapping, propToColumn, backendSrs );
         ftNameToMapping.put( ftName, ftMapping );
     }
 
-    private void process( String table, QName ftName, boolean isAbstract,
-                          List<JAXBElement<? extends AbstractPropertyDecl>> propDecls, String fidMapping ) {
+    private void process( String table, QName ftName, List<JAXBElement<? extends AbstractPropertyDecl>> propDecls ) {
+
+        String fidMapping = null;
 
         List<PropertyType> pts = new ArrayList<PropertyType>();
         String backendSrs = null;
@@ -362,7 +316,7 @@ class PostGISApplicationSchemaBuilder {
             }
         }
 
-        FeatureType ft = new GenericFeatureType( ftName, pts, isAbstract );
+        FeatureType ft = new GenericFeatureType( ftName, pts, false );
         ftNameToFt.put( ftName, ft );
 
         FeatureTypeMapping ftMapping = new FeatureTypeMapping( ftName, table, fidMapping, propToColumn, backendSrs );

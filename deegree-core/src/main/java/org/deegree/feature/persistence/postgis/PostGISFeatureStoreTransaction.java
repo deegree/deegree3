@@ -112,16 +112,6 @@ public class PostGISFeatureStoreTransaction implements FeatureStoreTransaction {
 
     private final Connection conn;
 
-    private static GeometryTransformer ftBBoxTransformer;
-
-    static {
-        try {
-            ftBBoxTransformer = new GeometryTransformer( CRS.EPSG_4326.getWrappedCRS() );
-        } catch ( Exception e ) {
-            e.printStackTrace();
-        }
-    }
-
     /**
      * Creates a new {@link PostGISFeatureStoreTransaction} instance.
      * 

@@ -95,7 +95,7 @@ public class MappedApplicationSchema extends ApplicationSchema {
      *            relational mapping information for the feature types, can be <code>null</code> (for BLOB-only
      *            mappings)
      * @param storageSRS
-     *            CRS used for storing geometries, must not be <code>null</code>
+     *            CRS used for storing geometries (BLOB mode), must not be <code>null</code>
      * @param bboxMapping
      *            BBOX mapping parameters, may be <code>null</code> (for relational-only mappings)
      * @param blobMapping
