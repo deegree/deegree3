@@ -43,8 +43,6 @@ import java.util.List;
 
 import org.apache.axiom.om.OMElement;
 import org.deegree.metadata.persistence.MetadataInspectorException;
-import org.deegree.metadata.persistence.MetadataInspectorManager.InspectorKey;
-import org.deegree.metadata.persistence.iso19115.jaxb.AbstractInspector;
 import org.deegree.metadata.persistence.iso19115.jaxb.InspireInspector;
 import org.slf4j.Logger;
 
@@ -60,27 +58,12 @@ public class InspireComplianceInspector implements RecordInspector {
 
     private static final Logger LOG = getLogger( InspireComplianceInspector.class );
 
-    private static InspireComplianceInspector instance;
-
     private final InspireInspector ric;
-
-    private static final InspectorKey NAME = InspectorKey.InspireInspector;
 
     private Connection conn;
 
     public InspireComplianceInspector( InspireInspector ric ) {
         this.ric = ric;
-        instance = this;
-    }
-
-    @Override
-    public boolean checkAvailability( AbstractInspector inspector ) {
-        InspireInspector ric = (InspireInspector) inspector;
-        if ( ric == null ) {
-            return false;
-        } else {
-            return true;
-        }
     }
 
     public InspireInspector getRic() {
@@ -100,14 +83,4 @@ public class InspireComplianceInspector implements RecordInspector {
 
         return record;
     }
-
-    public static InspireComplianceInspector getInstance() {
-        return instance;
-    }
-
-    @Override
-    public InspectorKey getName() {
-        return NAME;
-    }
-
 }

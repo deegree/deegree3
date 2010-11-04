@@ -53,7 +53,6 @@ import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamReader;
 
 import org.deegree.commons.xml.stax.StAXParsingHelper;
-import org.deegree.metadata.persistence.iso.parsing.inspectation.FileIdentifierInspector;
 import org.deegree.metadata.persistence.iso.parsing.inspectation.RecordInspector;
 import org.slf4j.Logger;
 
@@ -157,11 +156,11 @@ public class MetadataInspectorManager {
             ri.add( provider.getInspector( configURL ) );
         }
 
-        if ( !ri.contains( FileIdentifierInspector.getInstance() ) ) {
-            LOG.info( "No IdentifierInspector configured. A default instance will be added. " );
-            LOG.warn( "NOT IMPLEMENTED YET" );
-            // ri.add( FileIdentifierInspector.newInstance( new IdentifierInspector() ) );
-        }
+        // if ( !ri.contains( FileIdentifierInspector.getInstance() ) ) {
+        // LOG.info( "No IdentifierInspector configured. A default instance will be added. " );
+        // LOG.warn( "NOT IMPLEMENTED YET" );
+        // // ri.add( FileIdentifierInspector.newInstance( new IdentifierInspector() ) );
+        // }
         recInsp.addAll( ri );
 
     }

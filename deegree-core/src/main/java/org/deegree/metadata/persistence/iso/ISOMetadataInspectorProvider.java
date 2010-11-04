@@ -113,16 +113,17 @@ public class ISOMetadataInspectorProvider implements MetadataInspectorProvider {
     @Override
     public InspectorKey getInspectorKey() {
         int l = "Inspector".length();
-        String prefix = inspector.getName().name().substring( 0, inspector.getName().name().length() - l );
-        if ( prefix.equals( InspectorKey.CoupledResourceInspector.name() ) ) {
-            return InspectorKey.CoupledResourceInspector;
-        } else if ( prefix.equals( InspectorKey.IdentifierInspector.name() ) ) {
-            return InspectorKey.IdentifierInspector;
-        } else if ( prefix.equals( InspectorKey.InspireInspector.name() ) ) {
-            return InspectorKey.InspireInspector;
-        } else {
-            return null;
-        }
+        // String prefix = inspector.getName().name().substring( 0, inspector.getName().name().length() - l );
+        // if ( prefix.equals( InspectorKey.CoupledResourceInspector.name() ) ) {
+        // return InspectorKey.CoupledResourceInspector;
+        // } else if ( prefix.equals( InspectorKey.IdentifierInspector.name() ) ) {
+        // return InspectorKey.IdentifierInspector;
+        // } else if ( prefix.equals( InspectorKey.InspireInspector.name() ) ) {
+        // return InspectorKey.InspireInspector;
+        // } else {
+        // return null;
+        // }
+        return null;
 
     }
 

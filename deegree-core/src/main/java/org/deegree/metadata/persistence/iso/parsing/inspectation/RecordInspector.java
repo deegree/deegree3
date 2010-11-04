@@ -40,8 +40,6 @@ import java.sql.Connection;
 import org.apache.axiom.om.OMElement;
 import org.deegree.metadata.persistence.MetadataInspectorException;
 import org.deegree.metadata.persistence.MetadataStoreException;
-import org.deegree.metadata.persistence.MetadataInspectorManager.InspectorKey;
-import org.deegree.metadata.persistence.iso19115.jaxb.AbstractInspector;
 
 /**
  * Abstract base class for all inspector implementations.
@@ -62,20 +60,5 @@ public interface RecordInspector {
      */
     public OMElement inspect( OMElement record, Connection conn )
                             throws MetadataInspectorException;
-
-    /**
-     * Proves the availability of the specific inspector. If there is no inspector available there should be run a
-     * default action.
-     * 
-     * @param inspector
-     * @return
-     */
-    public boolean checkAvailability( AbstractInspector inspector );
-
-    /**
-     * 
-     * @return the name of the inspector
-     */
-    public InspectorKey getName();
 
 }

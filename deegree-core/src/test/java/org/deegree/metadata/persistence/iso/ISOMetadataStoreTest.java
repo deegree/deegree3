@@ -766,6 +766,7 @@ public class ISOMetadataStoreTest {
      * @throws MetadataStoreException
      * @throws MetadataInspectorException
      */
+    @Ignore
     @Test
     public void testResourceIdentifierGenerateTRUE()
                             throws MetadataStoreException, MetadataInspectorException {

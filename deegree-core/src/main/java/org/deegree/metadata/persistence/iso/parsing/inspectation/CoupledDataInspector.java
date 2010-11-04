@@ -54,8 +54,6 @@ import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.XPath;
 import org.deegree.metadata.persistence.MetadataInspectorException;
 import org.deegree.metadata.persistence.MetadataStoreException;
-import org.deegree.metadata.persistence.MetadataInspectorManager.InspectorKey;
-import org.deegree.metadata.persistence.iso19115.jaxb.AbstractInspector;
 import org.deegree.metadata.persistence.iso19115.jaxb.CoupledResourceInspector;
 import org.deegree.metadata.persistence.types.OperatesOnData;
 import org.slf4j.Logger;
@@ -72,29 +70,15 @@ public class CoupledDataInspector implements RecordInspector {
 
     private static final Logger LOG = getLogger( CoupledDataInspector.class );
 
-    private static CoupledDataInspector instance;
-
     private final XMLAdapter a;
 
     private Connection conn;
-
-    private static final InspectorKey NAME = InspectorKey.CoupledResourceInspector;
 
     private final CoupledResourceInspector ci;
 
     public CoupledDataInspector( CoupledResourceInspector ci ) {
         this.ci = ci;
         this.a = new XMLAdapter();
-        instance = this;
-    }
-
-    @Override
-    public boolean checkAvailability( AbstractInspector inspector ) {
-        CoupledResourceInspector ci = (CoupledResourceInspector) inspector;
-        if ( ci == null ) {
-            return false;
-        }
-        return true;
     }
 
     /**
@@ -265,7 +249,7 @@ public class CoupledDataInspector implements RecordInspector {
                 } else {
                     throwException = true;
                 }
-                if ( checkAvailability( ci ) ) {
+                if ( ci != null ) {
                     if ( throwException && ci.isThrowConsistencyError() ) {
                         String msg = "Error while processing the coupling!";
                         JDBCUtils.close( conn );
@@ -283,14 +267,4 @@ public class CoupledDataInspector implements RecordInspector {
     public CoupledResourceInspector getCi() {
         return ci;
     }
-
-    public static CoupledDataInspector getInstance() {
-        return instance;
-    }
-
-    @Override
-    public InspectorKey getName() {
-        return NAME;
-    }
-
 }

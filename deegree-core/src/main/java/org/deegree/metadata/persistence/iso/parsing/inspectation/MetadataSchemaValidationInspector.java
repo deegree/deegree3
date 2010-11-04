@@ -47,8 +47,6 @@ import javax.xml.stream.XMLStreamException;
 import org.apache.axiom.om.OMElement;
 import org.deegree.metadata.persistence.MetadataInspectorException;
 import org.deegree.metadata.persistence.MetadataStoreException;
-import org.deegree.metadata.persistence.MetadataInspectorManager.InspectorKey;
-import org.deegree.metadata.persistence.iso19115.jaxb.AbstractInspector;
 import org.deegree.metadata.persistence.iso19115.jaxb.SchemaValidator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -65,13 +63,13 @@ import org.slf4j.LoggerFactory;
 public class MetadataSchemaValidationInspector implements RecordInspector {
     private static Logger LOG = LoggerFactory.getLogger( MetadataSchemaValidationInspector.class );
 
-    private static MetadataSchemaValidationInspector instance;
+    private boolean isValidate = false;
 
-    private final SchemaValidator inspector;
+    public MetadataSchemaValidationInspector( SchemaValidator config ) {
+        if ( config != null ) {
+            this.isValidate = true;
+        }
 
-    public MetadataSchemaValidationInspector( SchemaValidator inspector ) {
-        this.inspector = inspector;
-        instance = this;
     }
 
     /**
@@ -86,11 +84,10 @@ public class MetadataSchemaValidationInspector implements RecordInspector {
     private List<String> validate( OMElement elem )
                             throws MetadataInspectorException {
         StringWriter s = new StringWriter();
-        if ( checkAvailability( inspector ) ) {
+        if ( isValidate ) {
             try {
                 elem.serialize( s );
             } catch ( XMLStreamException e ) {
-
                 LOG.debug( "error: " + e.getMessage(), e );
                 throw new MetadataInspectorException( e.getMessage() );
             }
@@ -113,27 +110,12 @@ public class MetadataSchemaValidationInspector implements RecordInspector {
         List<String> errors = validate( record );
         if ( errors.isEmpty() ) {
             return record;
+        } else {
+            String msg = "The metadata is not valide against the schema";
+            LOG.debug( msg );
+            throw new MetadataInspectorException( msg );
         }
-        return null;
-    }
 
-    public static MetadataSchemaValidationInspector getInstance() {
-        return instance;
-    }
-
-    @Override
-    public boolean checkAvailability( AbstractInspector inspector ) {
-        SchemaValidator sv = (SchemaValidator) inspector;
-        if ( sv != null ) {
-            return true;
-        }
-        return false;
-    }
-
-    @Override
-    public InspectorKey getName() {
-        // TODO Auto-generated method stub
-        return null;
     }
 
 }

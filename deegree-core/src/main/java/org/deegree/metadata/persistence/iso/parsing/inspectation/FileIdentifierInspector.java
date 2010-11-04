@@ -49,10 +49,7 @@ import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.XPath;
 import org.deegree.metadata.persistence.MetadataInspectorException;
 import org.deegree.metadata.persistence.MetadataStoreException;
-import org.deegree.metadata.persistence.MetadataInspectorManager.InspectorKey;
 import org.deegree.metadata.persistence.iso.generating.generatingelements.GenerateOMElement;
-import org.deegree.metadata.persistence.iso.parsing.IdUtils;
-import org.deegree.metadata.persistence.iso19115.jaxb.AbstractInspector;
 import org.deegree.metadata.persistence.iso19115.jaxb.IdentifierInspector;
 import org.slf4j.Logger;
 
@@ -69,30 +66,15 @@ public class FileIdentifierInspector implements RecordInspector {
 
     private static final Logger LOG = getLogger( FileIdentifierInspector.class );
 
-    private static FileIdentifierInspector instance;
-
-    private static final InspectorKey NAME = InspectorKey.IdentifierInspector;
-
     private Connection conn;
 
     private final XMLAdapter a;
 
-    private final IdentifierInspector inspector;
+    private final IdentifierInspector config;
 
     public FileIdentifierInspector( IdentifierInspector inspector ) {
-        this.inspector = inspector;
+        this.config = inspector;
         this.a = new XMLAdapter();
-        instance = this;
-    }
-
-    @Override
-    public boolean checkAvailability( AbstractInspector inspector ) {
-        IdentifierInspector fi = (IdentifierInspector) inspector;
-        if ( fi == null ) {
-            return false;
-        } else {
-            return fi.isRejectEmptyFileIdentifier();
-        }
     }
 
     /**
@@ -117,37 +99,17 @@ public class FileIdentifierInspector implements RecordInspector {
             LOG.info( "There is a fileIdentifier available with id: '{}' so everything is fine.", fi );
             return idList;
         } else {
-            // default behavior if there is no inspector provided
-            if ( !checkAvailability( inspector ) ) {
-                if ( rsList.size() == 0 && id == null && uuid == null ) {
 
-                    LOG.debug( "(DEFAULT) There is no Identifier available, so a new UUID will be generated..." );
-                    idList.add( IdUtils.newInstance( conn ).generateUUID() );
-                    LOG.debug( "(DEFAULT) The new FileIdentifier: " + idList );
-                } else {
-                    if ( rsList.size() == 0 && id != null ) {
-                        LOG.debug( "(DEFAULT) The id attribute will be taken: {}", id );
-                        idList.add( id );
-                    } else if ( rsList.size() == 0 && uuid != null ) {
-                        LOG.debug( "(DEFAULT) The uuid attribute will be taken: {}", uuid );
-                        idList.add( uuid );
-                    } else {
-                        LOG.debug( "(DEFAULT) The ResourseIdentifier will be taken: {}", rsList.get( 0 ) );
-                        idList.add( rsList.get( 0 ) );
-                    }
-                }
-                return idList;
+            if ( rsList.size() == 0 ) {
+                LOG.debug( "This file must be rejected because the configuration-file requires at least one fileIdentifier or one resourceIdentifier!" );
+                throw new MetadataInspectorException(
+                                                      "The configuration-file requires at least a fileIdentifier or one resourceIdentifier!" );
             } else {
-                if ( rsList.size() == 0 ) {
-                    LOG.debug( "This file must be rejected because the configuration-file requires at least a fileIdentifier or one resourceIdentifier!" );
-                    throw new MetadataInspectorException(
-                                                          "The configuration-file requires at least a fileIdentifier or one resourceIdentifier!" );
-                } else {
-                    LOG.debug( "(DEFAULT) The ResourseIdentifier will be taken: {}", rsList.get( 0 ) );
-                    idList.add( rsList.get( 0 ) );
-                    return idList;
-                }
+                LOG.debug( "(DEFAULT) The ResourceIdentifier will be taken: {}", rsList.get( 0 ) );
+                idList.add( rsList.get( 0 ) );
+                return idList;
             }
+
         }
 
     }
@@ -203,16 +165,6 @@ public class FileIdentifierInspector implements RecordInspector {
             }
         }
         return record;
-    }
-
-    public static FileIdentifierInspector getInstance() {
-        return instance;
-    }
-
-    @Override
-    public InspectorKey getName() {
-
-        return NAME;
     }
 
 }
