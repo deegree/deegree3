@@ -280,7 +280,7 @@ public class Java2DRenderer implements Renderer {
                 Shape shape = getShapeFromSvg( stroke.stroke.imageURL, considerUOM( stroke.stroke.size, uom ),
                                                stroke.stroke.rotation );
                 graphics.setStroke( new ShapeStroke( shape, considerUOM( stroke.strokeGap + stroke.stroke.size, uom ),
-                                                     stroke.positionPercentage ) );
+                                                     stroke.positionPercentage, stroke.strokeInitialGap ) );
             } else if ( stroke.stroke.mark != null ) {
                 double poff = considerUOM( perpendicularOffset, uom );
                 Shape transed = object;
@@ -291,7 +291,7 @@ public class Java2DRenderer implements Renderer {
                                                 stroke.stroke.size <= 0 ? 6 : considerUOM( stroke.stroke.size, uom ),
                                                 stroke.stroke.rotation );
                 ShapeStroke s = new ShapeStroke( shape, considerUOM( stroke.strokeGap + stroke.stroke.size, uom ),
-                                                 stroke.positionPercentage );
+                                                 stroke.positionPercentage, stroke.strokeInitialGap );
                 transed = s.createStrokedShape( transed );
                 if ( stroke.stroke.mark.fill != null ) {
                     applyFill( stroke.stroke.mark.fill, uom );

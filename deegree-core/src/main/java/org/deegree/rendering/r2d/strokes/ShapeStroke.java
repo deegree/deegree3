@@ -80,27 +80,32 @@ public class ShapeStroke implements Stroke {
 
     private double positionPercentage;
 
+    private double initialGap;
+
     private static final float FLATNESS = 1;
 
     /**
      * @param shapes
      * @param advance
      * @param positionPercentage
+     * @param initialGap
      */
-    public ShapeStroke( Shape shapes, double advance, double positionPercentage ) {
-        this( new Shape[] { shapes }, advance, positionPercentage );
+    public ShapeStroke( Shape shapes, double advance, double positionPercentage, double initialGap ) {
+        this( new Shape[] { shapes }, advance, positionPercentage, initialGap );
     }
 
     /**
      * @param shapes
      * @param advance
      * @param positionPercentage
+     * @param initialGap
      */
-    public ShapeStroke( Shape shapes[], double advance, double positionPercentage ) {
+    public ShapeStroke( Shape shapes[], double advance, double positionPercentage, double initialGap ) {
         this.advance = advance;
         this.shapes = new Shape[shapes.length];
         this.positionPercentage = positionPercentage;
         this.repeat = positionPercentage < 0;
+        this.initialGap = initialGap;
 
         for ( int i = 0; i < this.shapes.length; i++ ) {
             Rectangle2D bounds = shapes[i].getBounds2D();
@@ -148,7 +153,7 @@ public class ShapeStroke implements Stroke {
         float thisX = 0, thisY = 0;
         int type = 0;
         float next = 0;
-        float minLength = 0;
+        float minLength = (float) initialGap;
         if ( positionPercentage >= 0 ) {
             minLength = (float) ( totalLength * ( positionPercentage / 100 ) );
             next = minLength;
