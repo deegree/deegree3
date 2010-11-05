@@ -156,33 +156,59 @@ public class OutputXMLRenderer extends Renderer {
                     writer.write( ( prefix != null && prefix.length() > 0 ? prefix + ":" : "" ) + reader.getLocalName() );
                     writer.endElement( "span" );
 
-                    if ( reader.getAttributeCount() > 0 ) {
-                        for ( int i = 0; i < reader.getAttributeCount(); i++ ) {
-                            writer.startElement( "span", null );
-                            writer.writeAttribute( "class", "attributeName", null );
-                            writer.write( "&#160;" );
-                            String attributePrefix = reader.getAttributePrefix( i );
-                            writer.write( ( attributePrefix != null && attributePrefix.length() > 0 ? attributePrefix
-                                                                                                      + ":" : "" )
-                                          + reader.getAttributeName( i ) );
-                            writer.endElement( "span" );
+                    for ( int i = 0; i < reader.getAttributeCount(); i++ ) {
+                        writer.startElement( "span", null );
+                        writer.writeAttribute( "class", "attributeName", null );
+                        writer.write( "&#160;" );
+                        String attributePrefix = reader.getAttributePrefix( i );
+                        writer.write( ( attributePrefix != null && attributePrefix.length() > 0 ? attributePrefix + ":"
+                                                                                               : "" )
+                                      + reader.getAttributeLocalName( i ) );
+                        writer.endElement( "span" );
 
-                            writer.startElement( "span", null );
-                            writer.writeAttribute( "class", "sign", null );
-                            writer.write( "=\"" );
-                            writer.endElement( "span" );
+                        writer.startElement( "span", null );
+                        writer.writeAttribute( "class", "sign", null );
+                        writer.write( "=\"" );
+                        writer.endElement( "span" );
 
-                            writer.startElement( "span", null );
-                            writer.writeAttribute( "class", "text", null );
-                            writer.write( reader.getAttributeValue( i ) );
-                            writer.endElement( "span" );
+                        writer.startElement( "span", null );
+                        writer.writeAttribute( "class", "text", null );
+                        writer.write( reader.getAttributeValue( i ) );
+                        writer.endElement( "span" );
 
-                            writer.startElement( "span", null );
-                            writer.writeAttribute( "class", "sign", null );
-                            writer.write( "\"" );
-                            writer.endElement( "span" );
-                        }
+                        writer.startElement( "span", null );
+                        writer.writeAttribute( "class", "sign", null );
+                        writer.write( "\"" );
+                        writer.endElement( "span" );
                     }
+
+                    for ( int i = 0; i < reader.getNamespaceCount(); i++ ) {
+                        writer.startElement( "span", null );
+                        writer.writeAttribute( "class", "attributeName", null );
+                        writer.write( "&#160;" );
+                        String nsPrefix = reader.getNamespacePrefix( i );
+                        writer.write( "xmlns" );
+                        if ( nsPrefix != null ) {
+                            writer.write( ":" + nsPrefix );
+                        }
+                        writer.endElement( "span" );
+
+                        writer.startElement( "span", null );
+                        writer.writeAttribute( "class", "sign", null );
+                        writer.write( "=\"" );
+                        writer.endElement( "span" );
+
+                        writer.startElement( "span", null );
+                        writer.writeAttribute( "class", "text", null );
+                        writer.write( reader.getNamespaceURI( i ) );
+                        writer.endElement( "span" );
+
+                        writer.startElement( "span", null );
+                        writer.writeAttribute( "class", "sign", null );
+                        writer.write( "\"" );
+                        writer.endElement( "span" );
+                    }
+
                     writer.startElement( "span", null );
                     writer.writeAttribute( "class", "sign", null );
                     writer.write( "&gt;" );
@@ -216,7 +242,8 @@ public class OutputXMLRenderer extends Renderer {
 
                     writer.startElement( "span", null );
                     writer.writeAttribute( "class", "tag", null );
-                    writer.write( reader.getLocalName() );
+                    prefix = reader.getPrefix();
+                    writer.write( ( prefix != null && prefix.length() > 0 ? prefix + ":" : "" ) + reader.getLocalName() );
                     writer.endElement( "span" );
 
                     writer.startElement( "span", null );
