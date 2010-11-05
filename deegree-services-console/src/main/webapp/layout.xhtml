@@ -10,23 +10,47 @@
 				<div id="container">
 
 				<div id="header">
-					<div id="logo">	
-						<pre><h:outputText value="#{applicationBean.logo}" /></pre> 
-						<h:outputText value="...has been successfully installed on this server." />
-					</div>
-					<div id="login">
-						<ui:include src="/console/jsf/login.xhtml" />
-					</div>
+				<div id="logo"><pre><h:outputText value="#{applicationBean.logo}" /></pre> <h:outputText
+								value="...has been successfully installed on this server." /></div>
+				<div id="login"><h:panelGroup rendered="#{!logBean.loggedIn}">
+								<ui:include src="/console/jsf/login.xhtml" />
+				</h:panelGroup> <h:panelGroup rendered="#{logBean.loggedIn}">
+								<ui:include src="/console/jsf/logout.xhtml" />
+				</h:panelGroup></div>
+				<div class="clear" />
 				</div>
 
 				<div id="main">
-				<div id="left"><ui:insert name="left" /></div>
+				<div id="left"><h:panelGrid id="menuPG" columns="1">
+								<h:link value="version" outcome="/console/jsf/version.xhtml" />
+								<h:link value="workspace" outcome="/console/jsf/workspace.xhtml" />
+								<h:link value="webservices" outcome="/console/jsf/webservices.xhtml" disabled="#{!logBean.loggedIn}" />
+								<h:link value="render" outcome="/console/jsf/render.xhtml" disabled="#{!logBean.loggedIn}" />
+								<h:link value="featureStore" outcome="/console/jsf/featureStore.xhtml" disabled="#{!logBean.loggedIn}" />
+								<h:link value="observationStores" outcome="/console/jsf/observationStores.xhtml" disabled="#{!logBean.loggedIn}" />
+								<h:link value="jdbc" outcome="/console/jsf/jdbc.xhtml" disabled="#{!logBean.loggedIn}" />
+				</h:panelGrid></div>
 				<div id="center"><ui:insert name="center" /></div>
+				<div id="right"><h:panelGrid columns="1">
+								<h:link outcome="/console/client/client.html" target="_blank" value="#{labels.link_genericClient}" />
+								<h:link outcome="/console/wms/wms.html" target="_blank" value="#{labels.link_wmsClient}" />
+								<dg:externalLink target="_blank" href="http://wiki.deegree.org" title="#{labels.link_wiki}" />
+				</h:panelGrid> <h:panelGroup class="margin-top: 10px;">
+								<h:form id="reloadForm">
+												<h:panelGrid rendered="#{configManager.pendingChanges}">
+																<h:outputText value="#{configManager.lastMessage}" styleClass="attention" />
+																<h:commandButton value="#{labels.apply_changes}" style="margin:0px 10px;"
+																				action="#{configManager.applyChanges}" onclick="show();" />
+												</h:panelGrid>
+												<h:panelGroup rendered="#{!configManager.pendingChanges}">
+																<h:outputText value="#{configManager.lastMessage}" />
+												</h:panelGroup>
+								</h:form>
+				</h:panelGroup></div>
+				<div class="clear" />
 				</div>
 
-				<div id="footer">
-						<h:outputText value="Hier ist der Footer" />
-				</div>
+				<div id="footer"><h:outputText value="Hier ist der Footer" /></div>
 
 				</div>
 </h:body>

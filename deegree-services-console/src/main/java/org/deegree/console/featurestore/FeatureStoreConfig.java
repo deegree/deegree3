@@ -90,12 +90,12 @@ public class FeatureStoreConfig extends ManagedXMLConfig {
         SQLExecution execution = new SQLExecution( connId, sql );
 
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put( "execution", execution );
-        return "console/generic/sql.jsf?faces-redirect=true";
+        return "/console/generic/sql.jsf?faces-redirect=true";
     }
 
     public String showInfo() {
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put( "editConfig", this );
-        return "console/feature/index";
+        return "/console/feature/index";
     }
 
     public List<NamespaceBinding> getNamespaces() {
@@ -216,4 +216,10 @@ public class FeatureStoreConfig extends ManagedXMLConfig {
             appendFtInfo( childType, store, sb, indent + "&nbsp;&nbsp;" );
         }
     }
+
+    @Override
+    public String getOutcome() {
+        return "featureStore";
+    }
+
 }

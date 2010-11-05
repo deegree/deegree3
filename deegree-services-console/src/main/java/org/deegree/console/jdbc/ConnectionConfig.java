@@ -75,4 +75,9 @@ public class ConnectionConfig extends ManagedXMLConfig {
         }
         return "OK";
     }
+
+    @Override
+    public String getOutcome() {
+        return "jdbc";
+    }
 }

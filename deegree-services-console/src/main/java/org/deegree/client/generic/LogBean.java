@@ -56,23 +56,23 @@ public class LogBean implements Serializable {
 
     private String password;
 
-    private boolean isLoggedIn;
+    private boolean loggedIn = false;
 
     public boolean isLoggedIn() {
-        return isLoggedIn;
+        return loggedIn;
     }
 
     public Object logIn() {
         // TODO
         if ( password != null ) {
-            isLoggedIn = true;
+            loggedIn = true;
         }
-        return "";
+        return "/console";
     }
 
     public Object logOut() {
-        isLoggedIn = false;
-        return "";
+        loggedIn = false;
+        return "/console";
     }
 
     public void setPassword( String password ) {

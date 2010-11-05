@@ -37,6 +37,7 @@ package org.deegree.console.services;
 
 import java.net.URL;
 
+import org.deegree.client.util.FacesUtil;
 import org.deegree.console.ManagedXMLConfig;
 
 /**
@@ -64,6 +65,12 @@ public class ServiceConfig extends ManagedXMLConfig {
     }
 
     public String getCapabilitiesURL() {
-        return "services?service=" + getId().toUpperCase() + "&request=GetCapabilities";
+        return FacesUtil.getServerURL() + "services?service=" + getId().toUpperCase() + "&request=GetCapabilities";
     }
+
+    @Override
+    public String getOutcome() {
+        return "services";
+    }
+
 }

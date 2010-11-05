@@ -13,16 +13,17 @@ body {
 }
 
 #header {
-	background-color: blue;
+	margin-bottom: 10px;
 }
 
 #logo {
-	width: 60%;
 	float: left;
+	margin-left: 10px;
 }
 
 #login {
-	width: 250%;
+	float: right;
+	margin-right: 10px;
 }
 
 #main {
@@ -30,23 +31,77 @@ body {
 }
 
 #left {
-	width: 25%;
+	margin-left: 20 px;
 	float: left;
-	background-color: green;
+	width: 20%;
 }
 
 #center {
-	width: 70%;
-	background-color: yellow;
+	margin: 10px 0px;
+	float: left;
+	width: 55%;
+}
+
+#right {
+	float: left;
+	width: 20%;
 }
 
 #footer {
-	width: 100%;
+	border-top: 1px solid black;
+	font-size: small;
+	margin-top: 10px;
 	clear: both;
-	background-color: red;
+	text-align: right;
+	margin-top: 10px;
 }
 
-/* END: layout*/
+.clear {
+	clear: both;
+}
+
+/** START: menu **/
+a.menuEntry:link {
+	color: black;
+	text-decoration: none
+}
+
+a.menuEntry:visited {
+	color: black;
+	text-decoration: none
+}
+
+a.menuEntry:active {
+	color: black;
+	text-decoration: none
+}
+
+a.menuEntry:hover {
+	color: black;
+	text-decoration: underline
+}
+
+a.selectedMenuEntry:link {
+	color: gray;
+	text-decoration: none
+}
+
+a.selectedMenuEntry:visited {
+	color: gray;
+	text-decoration: none
+}
+
+a.selectedMenuEntry:active {
+	color: gray;
+	text-decoration: none
+}
+
+a.selectedMenuEntry:hover {
+	color: gray;
+	text-decoration: underline
+}
+
+/** END: menu **/ /* END: layout*/
 a {
 	text-decoration: underline;
 	color: #000000;
@@ -90,7 +145,7 @@ a {
 	height: 100%;
 	z-index: 10;
 	opacity: .20;
-	filter: alpha(opacity =                   50);
+	filter: alpha(opacity =                                         50);
 	-moz-opacity: 0.2;
 	background-color: gray;
 	display: none;

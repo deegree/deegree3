@@ -199,7 +199,7 @@ public class XMLConfig implements Serializable {
         adapter.getRootElement().serialize( os );
         os.close();
         modified = true;
-        return "/console?faces-redirect=true";
+        return getOutcome();
     }
 
     public void create()
@@ -229,7 +229,7 @@ public class XMLConfig implements Serializable {
 
     public String edit() {
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put( "editConfig", this );
-        return "console/generic/xmleditor?faces-redirect=true";
+        return "/console/generic/xmleditor?faces-redirect=true";
     }
 
     public void reinit( AjaxBehaviorEvent event )
@@ -247,7 +247,7 @@ public class XMLConfig implements Serializable {
 
     public Object cancel() {
         reloadContent();
-        return "/console?faces-redirect=true";
+        return getOutcome();
 
     }
 
@@ -263,5 +263,9 @@ public class XMLConfig implements Serializable {
         } catch ( Exception e ) {
             LOG.debug( "Could not reload content: " + e.getMessage() );
         }
+    }
+
+    public String getOutcome(){
+        return "";
     }
 }

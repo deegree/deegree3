@@ -60,4 +60,10 @@ public class StyleConfig extends ManagedXMLConfig {
     public StyleConfig( String id, StyleConfigManager manager, URL schemaURL ) {
         this( id, false, false, manager, schemaURL );
     }
+
+    @Override
+    public String getOutcome() {
+        return "styles";
+    }
+
 }

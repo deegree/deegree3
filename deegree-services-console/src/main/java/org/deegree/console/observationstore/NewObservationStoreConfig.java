@@ -76,6 +76,6 @@ public class NewObservationStoreConfig {
         configManager.add( config );
         config.create();
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put( "editConfig", config );
-        return "console/generic/xmleditor.jsf?faces-redirect=true";
+        return "/console/generic/xmleditor.jsf?faces-redirect=true";
     }
 }

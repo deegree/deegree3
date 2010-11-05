@@ -54,7 +54,7 @@ import org.deegree.services.controller.OGCFrontController;
  * 
  * @version $Revision: $, $Date: $
  */
-public class ManagedXMLConfig extends XMLConfig {
+public abstract class ManagedXMLConfig extends XMLConfig {
 
     private static final long serialVersionUID = 1161707801237264353L;
 
@@ -109,11 +109,12 @@ public class ManagedXMLConfig extends XMLConfig {
                             throws XMLStreamException, IOException {
         super.save();
         manager.switchState( this );
-        return "/console?faces-redirect=true";
+        return getOutcome();
     }
 
     public void delete() {
         super.delete();
         manager.remove( this );
     }
+
 }

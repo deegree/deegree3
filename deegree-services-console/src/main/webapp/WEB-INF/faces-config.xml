@@ -15,6 +15,30 @@
         </resource-bundle>
     </application>
 
+    <navigation-rule>
+        <from-view-id>/console/generic/xmleditor.xhtml</from-view-id>
+        <navigation-case>
+            <from-outcome>styles</from-outcome>
+            <to-view-id>/console/jsf/render.xhtml</to-view-id>
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>featureStore</from-outcome>
+            <to-view-id>/console/jsf/featureStore.xhtml</to-view-id>
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>observationStore</from-outcome>
+            <to-view-id>/console/jsf/observationStores.xhtml</to-view-id>
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>services</from-outcome>
+            <to-view-id>/console/jsf/webservices.xhtml</to-view-id>
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>jdbc</from-outcome>
+            <to-view-id>/console/jsf/jdbc.xhtml</to-view-id>
+        </navigation-case>
+    </navigation-rule>
+
     <!-- PhaseListener -->
     <lifecycle>
         <phase-listener>org.deegree.client.core.debug.DebugPhaseListener</phase-listener>

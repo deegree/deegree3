@@ -5,10 +5,4 @@
 
     <name>stupidname</name>
 
-    <!-- PhaseListener -->
-    <lifecycle>
-        <phase-listener>org.deegree.client.debug.DebugPhaseListener</phase-listener>
-        <phase-listener>org.deegree.client.debug.ParameterPhaseListener</phase-listener>
-    </lifecycle>
-
 </faces-config>

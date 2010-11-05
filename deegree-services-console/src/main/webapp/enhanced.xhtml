@@ -8,47 +8,8 @@
 </h:head>
 <h:body>
 				<ui:composition template="layout.xhtml">
-								<ui:define name="left">
-												<h:form id="menu">
-																<h:panelGrid id="menuPG" columns="1" style="float: left; width: 25%;">
-																				<h:commandLink value="version">
-																								<f:ajax render=":content" execute="@this" listener="#{menuBean.updateContent}" event="action" />
-																								<f:param name="newPage" value="/console/jsf/version.xhtml" />
-																				</h:commandLink>
-																				<h:commandLink value="workspace">
-																								<f:ajax render=":content" execute="@this" listener="#{menuBean.updateContent}" event="action" />
-																								<f:param name="newPage" value="/console/jsf/workspace.xhtml" />
-																				</h:commandLink>
-																				<h:commandLink value="webservices">
-																								<f:ajax render=":content" execute="@this" listener="#{menuBean.updateContent}" event="action" />
-																								<f:param name="newPage" value="/console/jsf/webservices.xhtml" />
-																				</h:commandLink>
-																				<h:commandLink value="render">
-																								<f:ajax render=":content" execute="@this" listener="#{menuBean.updateContent}" event="action" />
-																								<f:param name="newPage" value="/console/jsf/render.xhtml" />
-																				</h:commandLink>
-																				<h:commandLink value="featureStore">
-																								<f:ajax render=":content" execute="@this" listener="#{menuBean.updateContent}" event="action" />
-																								<f:param name="newPage" value="/console/jsf/featureStore.xhtml" />
-																				</h:commandLink>
-																				<h:commandLink value="observationStores">
-																								<f:ajax render=":content" execute="@this" listener="#{menuBean.updateContent}" event="action" />
-																								<f:param name="newPage" value="/console/jsf/observationStores.xhtml" />
-																				</h:commandLink>
-																				<h:commandLink value="jdbc">
-																								<f:ajax render=":content" execute="@this" listener="#{menuBean.updateContent}" event="action" />
-																								<f:param name="newPage" value="/console/jsf/jdbc.xhtml" />
-																				</h:commandLink>
-																</h:panelGrid>
-												</h:form>
-								</ui:define>
-
 								<ui:define name="center">
-												<h:panelGroup id="content" style="width:70%;">
-																<h:panelGroup rendered="#{menuBean.selectedPage != null}">
-																				<ui:include src="#{menuBean.selectedPage}" />
-																</h:panelGroup>
-												</h:panelGroup>
+												<h:outputText value="#{labels.welcome}" />
 								</ui:define>
 				</ui:composition>
 </h:body>

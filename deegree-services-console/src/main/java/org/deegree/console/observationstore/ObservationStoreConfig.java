@@ -66,5 +66,11 @@ public class ObservationStoreConfig extends ManagedXMLConfig {
         throw new RuntimeException(
                                     "Currently this feature has no definition for an observation store. Please check back soon!" );
     }
+    
+    @Override
+    public String getOutcome() {
+        return "observationStore";
+    }
+
 
 }

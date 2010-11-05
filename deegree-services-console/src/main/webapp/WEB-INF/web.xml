@@ -67,6 +67,7 @@
     </servlet-mapping>
 
     <welcome-file-list>
+        <welcome-file>console.xhtml</welcome-file>
         <welcome-file>index.xhtml</welcome-file>
         <welcome-file>index.jsf</welcome-file>
         <welcome-file>index.jsp</welcome-file>
