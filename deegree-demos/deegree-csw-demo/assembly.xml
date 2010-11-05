@@ -28,11 +28,11 @@
     </fileSet>
     <fileSet>
       <directory>target/${project.build.finalName}</directory>
-      <outputDirectory>/${project.build.finalName}/webapps/deegree-csw-demo/</outputDirectory>
+      <outputDirectory>/${project.build.finalName}/webapps/deegree-csw-demo</outputDirectory>
     </fileSet>
     <fileSet>
       <directory>target/deegree-catalogue-manager</directory>
-      <outputDirectory>/${project.build.finalName}/webapps/ROOT/</outputDirectory>
+      <outputDirectory>/${project.build.finalName}/webapps/ROOT</outputDirectory>
     </fileSet>
   </fileSets>
 </assembly>
