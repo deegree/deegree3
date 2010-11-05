@@ -50,6 +50,7 @@ import org.deegree.commons.xml.XPath;
 import org.deegree.metadata.persistence.MetadataInspectorException;
 import org.deegree.metadata.persistence.MetadataStoreException;
 import org.deegree.metadata.persistence.iso.generating.generatingelements.GenerateOMElement;
+import org.deegree.metadata.persistence.iso.parsing.IdUtils;
 import org.deegree.metadata.persistence.iso19115.jaxb.IdentifierInspector;
 import org.slf4j.Logger;
 
@@ -96,18 +97,38 @@ public class FileIdentifierInspector implements RecordInspector {
                             throws MetadataInspectorException {
         List<String> idList = new ArrayList<String>();
         if ( fi.length != 0 ) {
-            LOG.info( "There is a fileIdentifier available with id: '{}' so everything is fine.", fi );
+            LOG.info( "There is at least one fileIdentifier available with id: '{}' so everything is fine.", fi );
             return idList;
         } else {
+            if ( config != null && !config.isRejectEmptyFileIdentifier() ) {
+                if ( rsList.size() == 0 && id == null && uuid == null ) {
 
-            if ( rsList.size() == 0 ) {
-                LOG.debug( "This file must be rejected because the configuration-file requires at least one fileIdentifier or one resourceIdentifier!" );
-                throw new MetadataInspectorException(
-                                                      "The configuration-file requires at least a fileIdentifier or one resourceIdentifier!" );
-            } else {
-                LOG.debug( "(DEFAULT) The ResourceIdentifier will be taken: {}", rsList.get( 0 ) );
-                idList.add( rsList.get( 0 ) );
+                    LOG.debug( "(DEFAULT) There is no Identifier available, so a new UUID will be generated..." );
+                    idList.add( IdUtils.newInstance( conn ).generateUUID() );
+                    LOG.debug( "(DEFAULT) The new FileIdentifier: " + idList );
+                } else {
+                    if ( rsList.size() == 0 && id != null ) {
+                        LOG.debug( "(DEFAULT) The id attribute will be taken: {}", id );
+                        idList.add( id );
+                    } else if ( rsList.size() == 0 && uuid != null ) {
+                        LOG.debug( "(DEFAULT) The uuid attribute will be taken: {}", uuid );
+                        idList.add( uuid );
+                    } else {
+                        LOG.debug( "(DEFAULT) The ResourseIdentifier will be taken: {}", rsList.get( 0 ) );
+                        idList.add( rsList.get( 0 ) );
+                    }
+                }
                 return idList;
+            } else {
+                if ( rsList.size() == 0 ) {
+                    LOG.debug( "This file must be rejected because the configuration-file requires at least a fileIdentifier or one resourceIdentifier!" );
+                    throw new MetadataInspectorException(
+                                                          "The configuration-file requires at least a fileIdentifier or one resourceIdentifier!" );
+                } else {
+                    LOG.debug( "(DEFAULT) The ResourseIdentifier will be taken: {}", rsList.get( 0 ) );
+                    idList.add( rsList.get( 0 ) );
+                    return idList;
+                }
             }
 
         }
