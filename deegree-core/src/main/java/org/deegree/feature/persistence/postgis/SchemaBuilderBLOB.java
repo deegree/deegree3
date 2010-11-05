@@ -52,6 +52,11 @@ import static org.deegree.feature.types.property.ValueRepresentation.BOTH;
 import static org.deegree.feature.types.property.ValueRepresentation.INLINE;
 import static org.deegree.gml.GMLVersion.GML_32;
 
+import java.io.File;
+import java.io.UnsupportedEncodingException;
+import java.net.MalformedURLException;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
@@ -61,6 +66,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
@@ -73,6 +79,7 @@ import org.deegree.commons.tom.primitive.PrimitiveType;
 import org.deegree.commons.utils.JDBCUtils;
 import org.deegree.commons.utils.Pair;
 import org.deegree.commons.xml.NamespaceContext;
+import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.cs.CRS;
 import org.deegree.feature.persistence.BlobCodec;
 import org.deegree.feature.persistence.FeatureStoreException;
@@ -96,9 +103,13 @@ import org.deegree.feature.persistence.postgis.jaxb.CustomMapping;
 import org.deegree.feature.persistence.postgis.jaxb.CustomPropertyDecl;
 import org.deegree.feature.persistence.postgis.jaxb.FeaturePropertyDecl;
 import org.deegree.feature.persistence.postgis.jaxb.FeatureTypeDecl;
+import org.deegree.feature.persistence.postgis.jaxb.GMLVersionType;
 import org.deegree.feature.persistence.postgis.jaxb.GeometryPropertyDecl;
 import org.deegree.feature.persistence.postgis.jaxb.MeasurePropertyDecl;
 import org.deegree.feature.persistence.postgis.jaxb.SimplePropertyDecl;
+import org.deegree.feature.persistence.postgis.jaxb.PostGISFeatureStoreConfig.BLOBMapping;
+import org.deegree.feature.persistence.postgis.jaxb.PostGISFeatureStoreConfig.BLOBMapping.GMLSchema;
+import org.deegree.feature.persistence.postgis.jaxb.PostGISFeatureStoreConfig.BLOBMapping.NamespaceHint;
 import org.deegree.feature.types.ApplicationSchema;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.feature.types.GenericFeatureType;
@@ -110,11 +121,13 @@ import org.deegree.feature.types.property.SimplePropertyType;
 import org.deegree.feature.types.property.GeometryPropertyType.CoordinateDimension;
 import org.deegree.feature.types.property.GeometryPropertyType.GeometryType;
 import org.deegree.filter.expression.PropertyName;
+import org.deegree.gml.GMLVersion;
+import org.deegree.gml.feature.schema.ApplicationSchemaXSDDecoder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Creates {@link MappedApplicationSchema} instances from feature type declarations / relational mapping information.
+ * Creates a {@link MappedApplicationSchema} instances from GML application schemas and optional relational mapping.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
@@ -139,68 +152,73 @@ class SchemaBuilderBLOB {
 
     private DatabaseMetaData md;
 
-    /**
-     * Creates a new {@link MappedApplicationSchema} instance.
-     * 
-     * @param appSchema
-     *            application schema, can be <code>null</code> (for relational-only mappings)
-     * @param ftDecls
-     *            feature type declarations, can be <code>null</code> (for BLOB-only mappings)
-     * @param jdbcConnId
-     *            identifier of the JDBC connection, must not be <code>null</code>
-     * @param dbSchema
-     *            PostgreSQL database schema, can be <code>null</code>
-     * @param storageCRS
-     *            CRS used for storing geometries, must not be <code>null</code>
-     * @return mapped application schema, never <code>null</code>
-     * @throws SQLException
-     * @throws FeatureStoreException
-     */
-    static MappedApplicationSchema build( ApplicationSchema appSchema, List<FeatureTypeDecl> ftDecls,
-                                          String jdbcConnId, String dbSchema, CRS storageCRS, NamespaceContext nsContext )
-                            throws SQLException, FeatureStoreException {
+    private final MappedApplicationSchema mappedSchema;
 
-        MappedApplicationSchema mappedSchema = null;
+    public SchemaBuilderBLOB( String jdbcConnId, String dbSchema, BLOBMapping blobMappingConf, String configURL )
+                            throws MalformedURLException, ClassCastException, UnsupportedEncodingException,
+                            ClassNotFoundException, InstantiationException, IllegalAccessException, URISyntaxException,
+                            FeatureStoreException, SQLException {
 
-        if ( appSchema != null ) {
-            BBoxTableMapping bboxMapping = new BBoxTableMapping( storageCRS );
-            BlobMapping blobMapping = new BlobMapping( "GML_OBJECTS", storageCRS, new BlobCodec( GML_32, NONE ) );
+        connId = jdbcConnId;
+        this.dbSchema = dbSchema;
 
-            SchemaBuilderBLOB builder = new SchemaBuilderBLOB( ftDecls, jdbcConnId,
-                                                                                           dbSchema, nsContext );
-            FeatureTypeMapping[] ftMappings = builder.ftNameToMapping.values().toArray(
-                                                                                        new FeatureTypeMapping[builder.ftNameToMapping.size()] );
+        XMLAdapter resolver = new XMLAdapter();
+        resolver.setSystemId( configURL );
+        String[] schemaURLs = new String[blobMappingConf.getGMLSchema().size()];
 
-            mappedSchema = new MappedApplicationSchema( appSchema.getFeatureTypes(), appSchema.getFtToSuperFt(),
-                                                        appSchema.getNamespaceBindings(), appSchema.getXSModel(),
-                                                        ftMappings, storageCRS, bboxMapping, blobMapping );
-        } else {
-            // relational mode
-            SchemaBuilderBLOB builder = new SchemaBuilderBLOB( ftDecls, jdbcConnId,
-                                                                                           dbSchema, nsContext );
-            FeatureType[] fts = builder.ftNameToFt.values().toArray( new FeatureType[builder.ftNameToFt.size()] );
-            FeatureTypeMapping[] ftMappings = builder.ftNameToMapping.values().toArray(
-                                                                                        new FeatureTypeMapping[builder.ftNameToMapping.size()] );
-            mappedSchema = new MappedApplicationSchema( fts, null, null, null, ftMappings, storageCRS, null, null );
+        GMLVersionType gmlVersionType = null;
+        int i = 0;
+        for ( GMLSchema jaxbSchemaURL : blobMappingConf.getGMLSchema() ) {
+            schemaURLs[i++] = resolver.resolve( jaxbSchemaURL.getValue().trim() ).toString();
+            // TODO what about different versions at the same time?
+            gmlVersionType = jaxbSchemaURL.getVersion();
         }
 
-        return mappedSchema;
-    }
+        for ( Entry<String, String> nsHint : getHintMap( blobMappingConf.getNamespaceHint() ).entrySet() ) {
+            nsContext.addNamespace( nsHint.getKey(), nsHint.getValue() );
+        }
 
-    private SchemaBuilderBLOB( List<FeatureTypeDecl> ftDecls, String connId, String dbSchema,
-                                             NamespaceContext nsContext ) throws SQLException, FeatureStoreException {
+        ApplicationSchemaXSDDecoder decoder = null;
+        if ( schemaURLs.length == 1 && schemaURLs[0].startsWith( "file:" ) ) {
+            File file = new File( new URL( schemaURLs[0] ).toURI() );
+            decoder = new ApplicationSchemaXSDDecoder( GMLVersion.valueOf( gmlVersionType.name() ),
+                                                       getHintMap( blobMappingConf.getNamespaceHint() ), file );
+        } else {
+            decoder = new ApplicationSchemaXSDDecoder( GMLVersion.valueOf( gmlVersionType.name() ),
+                                                       getHintMap( blobMappingConf.getNamespaceHint() ), schemaURLs );
+        }
 
-        this.connId = connId;
-        this.dbSchema = dbSchema;
-        this.nsContext = nsContext;
+        CRS storageCRS = new CRS( blobMappingConf.getStorageCRS(), true );
+        ApplicationSchema appSchema = decoder.extractFeatureTypeSchema();
+        BBoxTableMapping bboxMapping = new BBoxTableMapping( storageCRS );
+        BlobMapping blobMapping = new BlobMapping( "GML_OBJECTS", storageCRS, new BlobCodec( GML_32, NONE ) );
+
+        FeatureTypeMapping[] ftMappings = ftNameToMapping.values().toArray(
+                                                                            new FeatureTypeMapping[ftNameToMapping.size()] );
 
         try {
-            for ( FeatureTypeDecl ftDecl : ftDecls ) {
+            for ( FeatureTypeDecl ftDecl : blobMappingConf.getFeatureType() ) {
                 process( ftDecl );
             }
         } finally {
             JDBCUtils.close( conn );
         }
+
+        mappedSchema = new MappedApplicationSchema( appSchema.getFeatureTypes(), appSchema.getFtToSuperFt(),
+                                                    appSchema.getNamespaceBindings(), appSchema.getXSModel(),
+                                                    ftMappings, storageCRS, bboxMapping, blobMapping );
+    }
+
+    public MappedApplicationSchema getMappedSchema() {
+        return mappedSchema;
+    }
+
+    private Map<String, String> getHintMap( List<NamespaceHint> hints ) {
+        Map<String, String> prefixToNs = new HashMap<String, String>();
+        for ( NamespaceHint namespaceHint : hints ) {
+            prefixToNs.put( namespaceHint.getPrefix(), namespaceHint.getNamespaceURI() );
+        }
+        return prefixToNs;
     }
 
     private void process( FeatureTypeDecl ftDecl )

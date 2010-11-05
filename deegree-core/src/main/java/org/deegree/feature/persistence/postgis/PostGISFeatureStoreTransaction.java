@@ -376,6 +376,7 @@ public class PostGISFeatureStoreTransaction implements FeatureStoreTransaction {
 
         ResultSet rs = null;
         try {
+            // TODO only supported for PostgreSQL >= 8.2
             rs = stmt.getGeneratedKeys();
             rs.next();
             internalId = rs.getInt( 1 );
