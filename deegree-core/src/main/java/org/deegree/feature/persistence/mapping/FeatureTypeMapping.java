@@ -60,8 +60,6 @@ public class FeatureTypeMapping {
 
     private final FIDMapping fidMapping;
 
-    private final String backendSrs;
-
     private final Map<QName, Mapping> propToMapping;
 
     /**
@@ -70,23 +68,17 @@ public class FeatureTypeMapping {
      * @param ftName
      *            name of the mapped feature type, must not be <code>null</code>
      * @param table
-     *            name of the database table that the feature type is mapped to, may be <code>null</code> (for BLOB-only
-     *            mappings)
+     *            name of the database table that the feature type is mapped to, must not be <code>null</code>
      * @param fidMapping
-     *            mapping for the feature id, may be <code>null</code> (for BLOB-only mappings)
+     *            mapping for the feature id, must not be <code>null</code>
      * @param propToMapping
-     *            mapping parameters for the properties of the feature type, may be <code>null</code> (for BLOB-only
-     *            mappings)
-     * @param backendSrs
-     *            the native SRS identifier used by the backend, may be <code>null</code> (for BLOB-only mappings)
+     *            mapping parameters for the properties of the feature type, must not be <code>null</code>
      */
-    public FeatureTypeMapping( QName ftName, QTableName table, FIDMapping fidMapping,
-                               Map<QName, Mapping> propToMapping, String backendSrs ) {
+    public FeatureTypeMapping( QName ftName, QTableName table, FIDMapping fidMapping, Map<QName, Mapping> propToMapping ) {
         this.ftName = ftName;
         this.table = table;
         this.fidMapping = fidMapping;
         this.propToMapping = propToMapping;
-        this.backendSrs = backendSrs;
     }
 
     /**
@@ -101,7 +93,7 @@ public class FeatureTypeMapping {
     /**
      * Returns the identifier of the table that the feature type is mapped to.
      * 
-     * @return the identifier of the table, may be <code>null</code> (for BLOB-only mappings)
+     * @return the identifier of the table, never <code>null</code>
      */
     public QTableName getFtTable() {
         return table;
@@ -110,7 +102,7 @@ public class FeatureTypeMapping {
     /**
      * Returns the feature id mapping.
      * 
-     * @return mapping for the feature id, may be <code>null</code> (for BLOB-only mappings)
+     * @return mapping for the feature id, never <code>null</code>
      */
     public FIDMapping getFidMapping() {
         return fidMapping;

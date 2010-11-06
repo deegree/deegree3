@@ -253,7 +253,6 @@ class SchemaBuilderBLOB {
         LOG.debug( "Determining properties for feature type '" + ftName + "' from table '" + table + "'" );
 
         List<PropertyType> pts = new ArrayList<PropertyType>();
-        String backendSrs = null;
         Map<QName, Mapping> propToColumn = new HashMap<QName, Mapping>();
 
         FIDMapping fidMapping = null;
@@ -346,7 +345,7 @@ class SchemaBuilderBLOB {
         ftNameToFt.put( ftName, ft );
 
         FeatureTypeMapping ftMapping = new FeatureTypeMapping( ftName, new QTableName( table ), fidMapping,
-                                                               propToColumn, backendSrs );
+                                                               propToColumn );
         ftNameToMapping.put( ftName, ftMapping );
     }
 
@@ -382,7 +381,7 @@ class SchemaBuilderBLOB {
         ftNameToFt.put( ftName, ft );
 
         FeatureTypeMapping ftMapping = new FeatureTypeMapping( ftName, new QTableName( table ), fidMapping,
-                                                               propToColumn, backendSrs );
+                                                               propToColumn );
         ftNameToMapping.put( ftName, ftMapping );
     }
 

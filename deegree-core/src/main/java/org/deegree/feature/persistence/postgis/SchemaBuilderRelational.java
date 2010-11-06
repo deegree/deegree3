@@ -288,7 +288,7 @@ class SchemaBuilderRelational {
         FeatureType ft = new GenericFeatureType( ftName, pts, false );
         ftNameToFt.put( ftName, ft );
 
-        FeatureTypeMapping ftMapping = new FeatureTypeMapping( ftName, qTable, fidMapping, propToColumn, backendSrs );
+        FeatureTypeMapping ftMapping = new FeatureTypeMapping( ftName, qTable, fidMapping, propToColumn );
         ftNameToMapping.put( ftName, ftMapping );
     }
 
@@ -323,7 +323,7 @@ class SchemaBuilderRelational {
         FeatureType ft = new GenericFeatureType( ftName, pts, false );
         ftNameToFt.put( ftName, ft );
 
-        FeatureTypeMapping ftMapping = new FeatureTypeMapping( ftName, qTable, fidMapping, propToColumn, backendSrs );
+        FeatureTypeMapping ftMapping = new FeatureTypeMapping( ftName, qTable, fidMapping, propToColumn );
         ftNameToMapping.put( ftName, ftMapping );
     }
 
