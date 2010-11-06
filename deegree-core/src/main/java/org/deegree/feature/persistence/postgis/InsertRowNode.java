@@ -40,6 +40,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.deegree.commons.jdbc.QTableName;
 import org.deegree.feature.persistence.mapping.DBField;
 import org.deegree.feature.persistence.mapping.JoinChain;
 
@@ -51,7 +52,7 @@ public class InsertRowNode {
 
     private final List<InsertRowNode> relatedRows = new ArrayList<InsertRowNode>();
 
-    public InsertRowNode( String table, JoinChain parentRelation ) {
+    public InsertRowNode( QTableName table, JoinChain parentRelation ) {
         this.row = new InsertRow( table );
         this.parentRelation = parentRelation;
     }
@@ -94,12 +95,12 @@ public class InsertRowNode {
     public String toString() {
         StringBuffer sb = new StringBuffer();
         sb.append( row );
-        sb.append( ";" );        
+        sb.append( ";" );
         for ( InsertRowNode child : relatedRows ) {
             sb.append( "\n" );
             sb.append( child.getRow() );
             sb.append( ";" );
         }
-        return sb.toString ();
+        return sb.toString();
     }
 }

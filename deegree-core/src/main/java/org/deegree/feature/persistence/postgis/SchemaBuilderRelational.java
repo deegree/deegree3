@@ -67,6 +67,7 @@ import org.antlr.runtime.ANTLRStringStream;
 import org.antlr.runtime.CommonTokenStream;
 import org.antlr.runtime.RecognitionException;
 import org.deegree.commons.jdbc.ConnectionManager;
+import org.deegree.commons.jdbc.QTableName;
 import org.deegree.commons.tom.primitive.PrimitiveType;
 import org.deegree.commons.utils.JDBCUtils;
 import org.deegree.commons.utils.Pair;
@@ -99,10 +100,10 @@ import org.deegree.feature.types.GenericFeatureType;
 import org.deegree.feature.types.property.CustomPropertyType;
 import org.deegree.feature.types.property.FeaturePropertyType;
 import org.deegree.feature.types.property.GeometryPropertyType;
-import org.deegree.feature.types.property.PropertyType;
-import org.deegree.feature.types.property.SimplePropertyType;
 import org.deegree.feature.types.property.GeometryPropertyType.CoordinateDimension;
 import org.deegree.feature.types.property.GeometryPropertyType.GeometryType;
+import org.deegree.feature.types.property.PropertyType;
+import org.deegree.feature.types.property.SimplePropertyType;
 import org.deegree.filter.expression.PropertyName;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -121,8 +122,6 @@ class SchemaBuilderRelational {
 
     private final String connId;
 
-    private final String dbSchema;
-
     private Map<QName, FeatureType> ftNameToFt = new HashMap<QName, FeatureType>();
 
     private Map<QName, FeatureTypeMapping> ftNameToMapping = new HashMap<QName, FeatureTypeMapping>();
@@ -137,16 +136,14 @@ class SchemaBuilderRelational {
      * Creates a new {@link SchemaBuilderRelational} instance.
      * 
      * @param jdbcConnId
-     * @param dbSchema
      * @param ftDecls
      * @throws SQLException
      * @throws FeatureStoreException
      */
-    SchemaBuilderRelational( String jdbcConnId, String dbSchema, List<FeatureTypeDecl> ftDecls ) throws SQLException,
+    SchemaBuilderRelational( String jdbcConnId, List<FeatureTypeDecl> ftDecls ) throws SQLException,
                             FeatureStoreException {
 
         this.connId = jdbcConnId;
-        this.dbSchema = dbSchema;
         try {
             for ( FeatureTypeDecl ftDecl : ftDecls ) {
                 process( ftDecl );
@@ -158,25 +155,25 @@ class SchemaBuilderRelational {
 
     MappedApplicationSchema getMappedSchema() {
         FeatureType[] fts = ftNameToFt.values().toArray( new FeatureType[ftNameToFt.size()] );
-        FeatureTypeMapping[] ftMappings = ftNameToMapping.values().toArray(
-                                                                            new FeatureTypeMapping[ftNameToMapping.size()] );
+        FeatureTypeMapping[] ftMappings = ftNameToMapping.values().toArray( new FeatureTypeMapping[ftNameToMapping.size()] );
         return new MappedApplicationSchema( fts, null, null, null, ftMappings, null, null, null );
     }
 
     private void process( FeatureTypeDecl ftDecl )
                             throws FeatureStoreException, SQLException {
 
-        String table = ftDecl.getTable();
-        if ( table == null || table.isEmpty() ) {
+        if ( ftDecl.getTable() == null || ftDecl.getTable().isEmpty() ) {
             String msg = "Feature type element without or with empty table attribute.";
             throw new FeatureStoreException( msg );
         }
+
+        QTableName table = new QTableName( ftDecl.getTable() );
 
         LOG.debug( "Processing feature type mapping for table '" + table + "'." );
         QName ftName = ftDecl.getName();
         if ( ftName == null ) {
             LOG.debug( "Using table name for feature type." );
-            ftName = new QName( table );
+            ftName = new QName( table.getTable() );
         }
         ftName = makeFullyQualified( ftName, "app", "http://www.deegree.org/app" );
         LOG.debug( "Feature type name: '" + ftName + "'." );
@@ -189,10 +186,10 @@ class SchemaBuilderRelational {
         }
     }
 
-    private void process( String table, QName ftName )
+    private void process( QTableName qTable, QName ftName )
                             throws SQLException {
 
-        LOG.debug( "Determining properties for feature type '" + ftName + "' from table '" + table + "'" );
+        LOG.debug( "Determining properties for feature type '" + ftName + "' from table '" + qTable + "'" );
 
         List<PropertyType> pts = new ArrayList<PropertyType>();
         String backendSrs = null;
@@ -203,8 +200,9 @@ class SchemaBuilderRelational {
         DatabaseMetaData md = getDBMetadata();
         ResultSet rs = null;
         try {
-            // TODO schema
-            rs = md.getColumns( null, "public", table.toLowerCase(), "%" );
+            String dbSchema = qTable.getSchema() != null ? qTable.getSchema() : "public";
+            String table = qTable.getTable();
+            rs = md.getColumns( null, dbSchema, table.toLowerCase(), "%" );
             while ( rs.next() ) {
                 String column = rs.getString( 4 );
                 int sqlType = rs.getInt( 5 );
@@ -232,7 +230,7 @@ class SchemaBuilderRelational {
                         try {
                             stmt = conn.createStatement();
                             String sql = "SELECT coord_dimension,srid,type FROM public.geometry_columns WHERE f_table_schema='"
-                                         + "public"
+                                         + dbSchema.toLowerCase()
                                          + "' AND f_table_name='"
                                          + table.toLowerCase()
                                          + "' AND f_geometry_column='" + column.toLowerCase() + "'";
@@ -284,11 +282,11 @@ class SchemaBuilderRelational {
         FeatureType ft = new GenericFeatureType( ftName, pts, false );
         ftNameToFt.put( ftName, ft );
 
-        FeatureTypeMapping ftMapping = new FeatureTypeMapping( ftName, table, fidMapping, propToColumn, backendSrs );
+        FeatureTypeMapping ftMapping = new FeatureTypeMapping( ftName, qTable, fidMapping, propToColumn, backendSrs );
         ftNameToMapping.put( ftName, ftMapping );
     }
 
-    private void process( String table, QName ftName, List<JAXBElement<? extends AbstractPropertyDecl>> propDecls ) {
+    private void process( QTableName qTable, QName ftName, List<JAXBElement<? extends AbstractPropertyDecl>> propDecls ) {
 
         String fidMapping = null;
 
@@ -319,7 +317,7 @@ class SchemaBuilderRelational {
         FeatureType ft = new GenericFeatureType( ftName, pts, false );
         ftNameToFt.put( ftName, ft );
 
-        FeatureTypeMapping ftMapping = new FeatureTypeMapping( ftName, table, fidMapping, propToColumn, backendSrs );
+        FeatureTypeMapping ftMapping = new FeatureTypeMapping( ftName, qTable, fidMapping, propToColumn, backendSrs );
         ftNameToMapping.put( ftName, ftMapping );
     }
 

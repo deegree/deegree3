@@ -40,6 +40,7 @@ import java.util.List;
 
 import javax.xml.namespace.QName;
 
+import org.deegree.commons.jdbc.QTableName;
 import org.deegree.cs.CRS;
 import org.deegree.feature.persistence.mapping.property.GeometryMapping;
 import org.deegree.feature.persistence.mapping.property.Mapping;
@@ -239,16 +240,17 @@ public class MappedXPath {
 
         MappingExpression propMapping = mapping.getMapping();
         if ( propMapping instanceof DBField ) {
-            String table = rootFt.getFtTable();
+            QTableName table = rootFt.getFtTable();
             if ( !joins.isEmpty() ) {
-                table = joins.get( joins.size() - 1 ).getTo().getTable();
+                table = new QTableName( joins.get( joins.size() - 1 ).getTo().getTable() );
             }
-            valueField = new DBField( table, ( (DBField) propMapping ).getColumn() );
+            valueField = new DBField( table.toString(), ( (DBField) propMapping ).getColumn() );
         } else if ( propMapping instanceof JoinChain ) {
             JoinChain chain = (JoinChain) propMapping;
             add( chain );
-            String table = getCurrentTable();
-            valueField = new DBField( table, chain.getFields().get( chain.getFields().size() - 1 ).getColumn() );
+            QTableName table = getCurrentTable();
+            valueField = new DBField( table.toString(),
+                                      chain.getFields().get( chain.getFields().size() - 1 ).getColumn() );
         } else {
             throw new UnmappableException( "Unhandled mapping expression: " + propMapping.getClass() );
         }
@@ -259,15 +261,16 @@ public class MappedXPath {
 
         if ( prop instanceof DBField ) {
             DBField dbField = (DBField) prop;
-            DBField from = new DBField( source.getFtTable(), dbField.getColumn() );
-            DBField to = new DBField( target.getFtTable(), target.getFidColumn() );
+            DBField from = new DBField( source.getFtTable().toString(), dbField.getColumn() );
+            DBField to = new DBField( target.getFtTable().toString(), target.getFidColumn() );
             joins.add( new Join( from, to, null, -1 ) );
         } else if ( prop instanceof JoinChain ) {
             JoinChain chain = (JoinChain) prop;
             add( chain );
-            String table = getCurrentTable();
-            DBField from = new DBField( table, chain.getFields().get( chain.getFields().size() - 1 ).getColumn() );
-            DBField to = new DBField( target.getFtTable(), target.getFidColumn() );
+            QTableName table = getCurrentTable();
+            DBField from = new DBField( table.toString(),
+                                        chain.getFields().get( chain.getFields().size() - 1 ).getColumn() );
+            DBField to = new DBField( target.getFtTable().toString(), target.getFidColumn() );
             joins.add( new Join( from, to, null, -1 ) );
         } else {
             throw new UnmappableException( "Unhandled mapping expression: " + prop.getClass() );
@@ -275,20 +278,20 @@ public class MappedXPath {
     }
 
     private void add( JoinChain chain ) {
-        String table = getCurrentTable();
+        QTableName table = getCurrentTable();
         for ( int i = 0; i < chain.getFields().size() - 2; i += 2 ) {
-            DBField from = new DBField( table, chain.getFields().get( i ).getColumn() );
+            DBField from = new DBField( table.toString(), chain.getFields().get( i ).getColumn() );
             DBField to = new DBField( chain.getFields().get( i + 1 ).getTable(),
                                       chain.getFields().get( i + 1 ).getColumn() );
             joins.add( new Join( from, to, null, -1 ) );
-            table = chain.getFields().get( i + 1 ).getTable();
+            table = new QTableName( chain.getFields().get( i + 1 ).getTable() );
         }
     }
 
-    private String getCurrentTable() {
-        String table = rootFt.getFtTable();
+    private QTableName getCurrentTable() {
+        QTableName table = rootFt.getFtTable();
         if ( !joins.isEmpty() ) {
-            table = joins.get( joins.size() - 1 ).getTo().getTable();
+            table = new QTableName( joins.get( joins.size() - 1 ).getTo().getTable() );
         }
         return table;
     }

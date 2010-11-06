@@ -44,6 +44,7 @@ import java.sql.SQLException;
 import java.util.LinkedHashMap;
 import java.util.Map.Entry;
 
+import org.deegree.commons.jdbc.QTableName;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.io.WKBWriter;
 import org.slf4j.Logger;
@@ -64,11 +65,11 @@ public class InsertRow {
 
     private static Logger LOG = LoggerFactory.getLogger( InsertRow.class );
 
-    private final String table;
+    private final QTableName table;
 
     private final LinkedHashMap<String, Object> columnsToValues;
 
-    public InsertRow( String table ) {
+    public InsertRow( QTableName table ) {
         this.table = table;
         this.columnsToValues = new LinkedHashMap<String, Object>();
     }

@@ -75,6 +75,7 @@ import org.antlr.runtime.ANTLRStringStream;
 import org.antlr.runtime.CommonTokenStream;
 import org.antlr.runtime.RecognitionException;
 import org.deegree.commons.jdbc.ConnectionManager;
+import org.deegree.commons.jdbc.QTableName;
 import org.deegree.commons.tom.primitive.PrimitiveType;
 import org.deegree.commons.utils.JDBCUtils;
 import org.deegree.commons.utils.Pair;
@@ -106,20 +107,20 @@ import org.deegree.feature.persistence.postgis.jaxb.FeatureTypeDecl;
 import org.deegree.feature.persistence.postgis.jaxb.GMLVersionType;
 import org.deegree.feature.persistence.postgis.jaxb.GeometryPropertyDecl;
 import org.deegree.feature.persistence.postgis.jaxb.MeasurePropertyDecl;
-import org.deegree.feature.persistence.postgis.jaxb.SimplePropertyDecl;
 import org.deegree.feature.persistence.postgis.jaxb.PostGISFeatureStoreConfig.BLOBMapping;
 import org.deegree.feature.persistence.postgis.jaxb.PostGISFeatureStoreConfig.BLOBMapping.GMLSchema;
 import org.deegree.feature.persistence.postgis.jaxb.PostGISFeatureStoreConfig.BLOBMapping.NamespaceHint;
+import org.deegree.feature.persistence.postgis.jaxb.SimplePropertyDecl;
 import org.deegree.feature.types.ApplicationSchema;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.feature.types.GenericFeatureType;
 import org.deegree.feature.types.property.CustomPropertyType;
 import org.deegree.feature.types.property.FeaturePropertyType;
 import org.deegree.feature.types.property.GeometryPropertyType;
-import org.deegree.feature.types.property.PropertyType;
-import org.deegree.feature.types.property.SimplePropertyType;
 import org.deegree.feature.types.property.GeometryPropertyType.CoordinateDimension;
 import org.deegree.feature.types.property.GeometryPropertyType.GeometryType;
+import org.deegree.feature.types.property.PropertyType;
+import org.deegree.feature.types.property.SimplePropertyType;
 import org.deegree.filter.expression.PropertyName;
 import org.deegree.gml.GMLVersion;
 import org.deegree.gml.feature.schema.ApplicationSchemaXSDDecoder;
@@ -140,8 +141,6 @@ class SchemaBuilderBLOB {
 
     private final String connId;
 
-    private final String dbSchema;
-
     private Map<QName, FeatureType> ftNameToFt = new HashMap<QName, FeatureType>();
 
     private Map<QName, FeatureTypeMapping> ftNameToMapping = new HashMap<QName, FeatureTypeMapping>();
@@ -154,13 +153,12 @@ class SchemaBuilderBLOB {
 
     private final MappedApplicationSchema mappedSchema;
 
-    public SchemaBuilderBLOB( String jdbcConnId, String dbSchema, BLOBMapping blobMappingConf, String configURL )
+    public SchemaBuilderBLOB( String jdbcConnId, BLOBMapping blobMappingConf, String configURL )
                             throws MalformedURLException, ClassCastException, UnsupportedEncodingException,
                             ClassNotFoundException, InstantiationException, IllegalAccessException, URISyntaxException,
                             FeatureStoreException, SQLException {
 
         connId = jdbcConnId;
-        this.dbSchema = dbSchema;
 
         XMLAdapter resolver = new XMLAdapter();
         resolver.setSystemId( configURL );
@@ -193,8 +191,7 @@ class SchemaBuilderBLOB {
         BBoxTableMapping bboxMapping = new BBoxTableMapping( storageCRS );
         BlobMapping blobMapping = new BlobMapping( "GML_OBJECTS", storageCRS, new BlobCodec( GML_32, NONE ) );
 
-        FeatureTypeMapping[] ftMappings = ftNameToMapping.values().toArray(
-                                                                            new FeatureTypeMapping[ftNameToMapping.size()] );
+        FeatureTypeMapping[] ftMappings = ftNameToMapping.values().toArray( new FeatureTypeMapping[ftNameToMapping.size()] );
 
         try {
             for ( FeatureTypeDecl ftDecl : blobMappingConf.getFeatureType() ) {
@@ -342,7 +339,8 @@ class SchemaBuilderBLOB {
         FeatureType ft = new GenericFeatureType( ftName, pts, false );
         ftNameToFt.put( ftName, ft );
 
-        FeatureTypeMapping ftMapping = new FeatureTypeMapping( ftName, table, fidMapping, propToColumn, backendSrs );
+        FeatureTypeMapping ftMapping = new FeatureTypeMapping( ftName, new QTableName( table ), fidMapping,
+                                                               propToColumn, backendSrs );
         ftNameToMapping.put( ftName, ftMapping );
     }
 
@@ -377,7 +375,8 @@ class SchemaBuilderBLOB {
         FeatureType ft = new GenericFeatureType( ftName, pts, false );
         ftNameToFt.put( ftName, ft );
 
-        FeatureTypeMapping ftMapping = new FeatureTypeMapping( ftName, table, fidMapping, propToColumn, backendSrs );
+        FeatureTypeMapping ftMapping = new FeatureTypeMapping( ftName, new QTableName( table ), fidMapping,
+                                                               propToColumn, backendSrs );
         ftNameToMapping.put( ftName, ftMapping );
     }
 

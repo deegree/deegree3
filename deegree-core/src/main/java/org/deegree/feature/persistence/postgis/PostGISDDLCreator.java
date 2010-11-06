@@ -40,6 +40,7 @@ import java.util.List;
 
 import javax.xml.namespace.QName;
 
+import org.deegree.commons.jdbc.QTableName;
 import org.deegree.commons.tom.primitive.PrimitiveType;
 import org.deegree.feature.persistence.mapping.DBField;
 import org.deegree.feature.persistence.mapping.FeatureTypeMapping;
@@ -147,7 +148,7 @@ public class PostGISDDLCreator {
         return ddls;
     }
 
-    private List<StringBuffer> process( StringBuffer sql, String table, Mapping propMapping ) {
+    private List<StringBuffer> process( StringBuffer sql, QTableName table, Mapping propMapping ) {
 
         List<StringBuffer> ddls = new ArrayList<StringBuffer>();
 
@@ -156,7 +157,7 @@ public class PostGISDDLCreator {
         JoinChain jc = propMapping.getJoinedTable();
         if ( jc != null ) {
             sql = createJoinedTable( table, jc );
-            table = jc.getFields().get( 1 ).getTable();
+            table = new QTableName( jc.getFields().get( 1 ).getTable() );
             ddls.add( sql );
         }
 
@@ -196,7 +197,7 @@ public class PostGISDDLCreator {
         return ddls;
     }
 
-    private List<StringBuffer> process( StringBuffer sb, String table, CompoundMapping cm ) {
+    private List<StringBuffer> process( StringBuffer sb, QTableName table, CompoundMapping cm ) {
 
         List<StringBuffer> ddls = new ArrayList<StringBuffer>();
         for ( Mapping mapping : cm.getParticles() ) {
@@ -221,7 +222,7 @@ public class PostGISDDLCreator {
                     StringBuffer newSb = createJoinedTable( table, jc );
                     ddls.add( newSb );
                     for ( Mapping particle : compoundMapping.getParticles() ) {
-                        ddls.addAll( process( newSb, jc.getFields().get( 1 ).getTable(), particle ) );
+                        ddls.addAll( process( newSb, new QTableName( jc.getFields().get( 1 ).getTable() ), particle ) );
                     }
                 } else {
                     for ( Mapping particle : compoundMapping.getParticles() ) {
@@ -235,7 +236,7 @@ public class PostGISDDLCreator {
         return ddls;
     }
 
-    private StringBuffer createJoinedTable( String fromTable, JoinChain jc ) {
+    private StringBuffer createJoinedTable( QTableName fromTable, JoinChain jc ) {
 
         DBField to = jc.getFields().get( 1 );
 

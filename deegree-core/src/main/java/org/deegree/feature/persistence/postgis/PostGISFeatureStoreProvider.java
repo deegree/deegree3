@@ -92,9 +92,7 @@ public class PostGISFeatureStoreProvider implements FeatureStoreProvider {
                             throws FeatureStoreException {
         PostGISFeatureStoreConfig config = parseConfig( configURL );
         MappedApplicationSchema schema = getSchema( configURL.toString(), config );
-        String jdbcConnId = config.getJDBCConnId().getValue();
-        String dbSchema = config.getJDBCConnId().getSchema();
-        return new PostGISFeatureStore( schema, jdbcConnId, dbSchema );
+        return new PostGISFeatureStore( schema, config.getJDBCConnId() );
     }
 
     /**
@@ -115,15 +113,12 @@ public class PostGISFeatureStoreProvider implements FeatureStoreProvider {
     private MappedApplicationSchema getSchema( String configURL, PostGISFeatureStoreConfig config )
                             throws FeatureStoreException {
 
-        String jdbcConnId = config.getJDBCConnId().getValue();
-        String dbSchema = config.getJDBCConnId().getSchema();
-
         MappedApplicationSchema schema = null;
         if ( config.getBLOBMapping() == null ) {
             LOG.debug( "Building mapped application schema (relational mode)" );
             try {
                 List<FeatureTypeDecl> ftDecls = config.getFeatureType();
-                SchemaBuilderRelational schemaBuilder = new SchemaBuilderRelational( jdbcConnId, dbSchema, ftDecls );
+                SchemaBuilderRelational schemaBuilder = new SchemaBuilderRelational( config.getJDBCConnId(), ftDecls );
                 schema = schemaBuilder.getMappedSchema();
             } catch ( SQLException e ) {
                 String msg = Messages.getMessage( "STORE_MANAGER_STORE_SETUP_ERROR", e.getMessage() );
@@ -133,8 +128,8 @@ public class PostGISFeatureStoreProvider implements FeatureStoreProvider {
         } else {
             LOG.debug( "Building mapped application schema (BLOB mode)" );
             try {
-                SchemaBuilderBLOB schemaBuilder = new SchemaBuilderBLOB( jdbcConnId, dbSchema, config.getBLOBMapping(),
-                                                                         configURL );
+                SchemaBuilderBLOB schemaBuilder = new SchemaBuilderBLOB( config.getJDBCConnId(),
+                                                                         config.getBLOBMapping(), configURL );
                 schema = schemaBuilder.getMappedSchema();
             } catch ( Exception e ) {
                 String msg = Messages.getMessage( "STORE_MANAGER_STORE_SETUP_ERROR", e.getMessage() );

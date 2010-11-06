@@ -18,15 +18,7 @@
     </annotation>
     <complexType>
       <sequence>
-        <element name="JDBCConnId">
-          <complexType>
-            <simpleContent>
-              <extension base="string">
-                <attribute name="schema" type="string" default="public" />
-              </extension>
-            </simpleContent>
-          </complexType>
-        </element>
+        <element name="JDBCConnId" type="string" />
         <choice>
           <element ref="postgisfs:FeatureType" minOccurs="0" maxOccurs="unbounded" />
           <element name="BLOBMapping">

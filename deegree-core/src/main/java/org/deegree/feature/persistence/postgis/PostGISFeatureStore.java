@@ -148,10 +148,8 @@ public class PostGISFeatureStore implements SQLFeatureStore {
      *            schema information, must not be <code>null</code>
      * @param jdbcConnId
      *            id of the deegree DB connection pool, must not be <code>null</code>
-     * @param dbSchema
-     *           default database schema, can be <code>null</code>
      */
-    PostGISFeatureStore( MappedApplicationSchema schema, String jdbcConnId, String dbSchema ) {
+    PostGISFeatureStore( MappedApplicationSchema schema, String jdbcConnId ) {
         this.schema = schema;
         this.blobMapping = schema.getBlobMapping();
         this.jdbcConnId = jdbcConnId;
@@ -542,21 +540,6 @@ public class PostGISFeatureStore implements SQLFeatureStore {
         return version;
     }
 
-    /**
-     * Returns the given table name qualified with the db schema.
-     * 
-     * @param tableName
-     *            name of the table to be qualified
-     * @return dbSchema + "." + tableName, or tableName if dbSchema is <code>null</code>
-     */
-    String qualifyTableName( String tableName ) {
-        // if ( dbSchema == null ) {
-        // return tableName;
-        // }
-        // return dbSchema + "." + tableName;
-        return tableName;
-    }
-
     @Override
     public boolean isAvailable() {
         return true;
@@ -617,7 +600,7 @@ public class PostGISFeatureStore implements SQLFeatureStore {
             insertFid.executeBatch();
 
             stmt = conn.createStatement();
-            rs = stmt.executeQuery( "SELECT gml_id,binary_object FROM " + qualifyTableName( "gml_objects" )
+            rs = stmt.executeQuery( "SELECT gml_id,binary_object FROM " + blobMapping.getTable()
                                     + " A, temp_ids B WHERE A.gml_id=b.fid" );
 
             FeatureBuilder builder = new FeatureBuilderBlob( this, schema.getBlobMapping().getCodec() );
@@ -887,7 +870,7 @@ public class PostGISFeatureStore implements SQLFeatureStore {
         ResultSet rs = null;
         try {
             conn = ConnectionManager.getConnection( jdbcConnId );
-            StringBuffer sql = new StringBuffer( "SELECT gml_id,binary_object FROM " + qualifyTableName( "gml_objects" )
+            StringBuffer sql = new StringBuffer( "SELECT gml_id,binary_object FROM " + blobMapping.getTable()
                                                  + " WHERE " );
             if ( looseBBox != null ) {
                 sql.append( "gml_bounded_by && ? AND " );

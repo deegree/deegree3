@@ -53,6 +53,7 @@ import java.util.UUID;
 
 import javax.xml.namespace.QName;
 
+import org.deegree.commons.jdbc.QTableName;
 import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.commons.tom.genericxml.GenericXMLElement;
 import org.deegree.commons.tom.genericxml.GenericXMLElementContent;
@@ -187,7 +188,8 @@ public class PostGISFeatureStoreTransaction implements FeatureStoreTransaction {
         int deleted = 0;
         PreparedStatement stmt = null;
         try {
-            stmt = conn.prepareStatement( "DELETE FROM " + fs.qualifyTableName( "gml_objects" ) + " WHERE gml_id=?" );
+            stmt = conn.prepareStatement( "DELETE FROM " + fs.getSchema().getBlobMapping().getTable()
+                                          + " WHERE gml_id=?" );
             for ( String id : filter.getMatchingIds() ) {
                 stmt.setString( 1, id );
                 stmt.addBatch();
@@ -391,7 +393,7 @@ public class PostGISFeatureStoreTransaction implements FeatureStoreTransaction {
     private void insertFeatureRelational( int internalId, Feature feature, FeatureTypeMapping ftMapping )
                             throws SQLException, FeatureStoreException, FilterEvaluationException {
 
-        InsertRowNode node = new InsertRowNode( fs.qualifyTableName( ftMapping.getFtTable() ), null );
+        InsertRowNode node = new InsertRowNode( ftMapping.getFtTable(), null );
         node.getRow().add( "id", internalId );
         buildInsertRows( feature, ftMapping, node );
         node.performInsert( conn );
@@ -438,7 +440,7 @@ public class PostGISFeatureStoreTransaction implements FeatureStoreTransaction {
                 throw new FeatureStoreException( "Handling of joins with " + jc.getFields().size()
                                                  + " steps is not implemented." );
             }
-            String tableName = fs.qualifyTableName( jc.getFields().get( 1 ).getTable() );
+            QTableName tableName = new QTableName( jc.getFields().get( 1 ).getTable() );
             InsertRowNode child = new InsertRowNode( tableName, jc );
             node.getRelatedRows().add( child );
 

@@ -39,6 +39,7 @@ import java.util.Map;
 
 import javax.xml.namespace.QName;
 
+import org.deegree.commons.jdbc.QTableName;
 import org.deegree.feature.persistence.mapping.property.Mapping;
 import org.deegree.feature.types.FeatureType;
 
@@ -54,7 +55,7 @@ public class FeatureTypeMapping {
 
     private final QName ftName;
 
-    private final String table;
+    private final QTableName table;
 
     private final String fidColumn;
 
@@ -78,7 +79,7 @@ public class FeatureTypeMapping {
      * @param backendSrs
      *            the native SRS identifier used by the backend, may be <code>null</code> (for BLOB-only mappings)
      */
-    public FeatureTypeMapping( QName ftName, String table, String fidColumn, Map<QName, Mapping> propToMapping,
+    public FeatureTypeMapping( QName ftName, QTableName table, String fidColumn, Map<QName, Mapping> propToMapping,
                                String backendSrs ) {
         this.ftName = ftName;
         this.table = table;
@@ -97,11 +98,11 @@ public class FeatureTypeMapping {
     }
 
     /**
-     * Returns the name of the table that the feature type is mapped to.
+     * Returns the identifier of the table that the feature type is mapped to.
      * 
-     * @return the name of the table, may be <code>null</code> (for BLOB-only mappings)
+     * @return the identifier of the table, may be <code>null</code> (for BLOB-only mappings)
      */
-    public String getFtTable() {
+    public QTableName getFtTable() {
         return table;
     }
 
