@@ -45,7 +45,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Builds {@link Feature} instances from SQL result sets for the {@link PostGISFeatureStore}.
+ * Builds {@link Feature} instances from SQL result set rows for the {@link PostGISFeatureStore}.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author: mschneider $
@@ -85,7 +85,7 @@ class FeatureBuilderBlob implements FeatureBuilder {
             String gmlId = rs.getString( 1 );
             feature = (Feature) fs.getCache().get( gmlId );
             if ( feature == null ) {
-                LOG.debug( "Cache miss. Recreating object '" + gmlId + "' from blob." );
+                LOG.debug( "Cache miss. Recreating object '" + gmlId + "' from db (BLOB/hybrid mode)." );
                 feature = (Feature) codec.decode( rs.getBinaryStream( 2 ), fs.getSchema(), fs.blobMapping.getCRS(),
                                                   new FeatureStoreGMLIdResolver( fs ) );
                 fs.getCache().add( feature );

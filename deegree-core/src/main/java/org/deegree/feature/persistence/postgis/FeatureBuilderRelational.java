@@ -71,7 +71,7 @@ import org.slf4j.LoggerFactory;
 import com.vividsolutions.jts.io.ParseException;
 
 /**
- * Builds {@link Feature} instances from SQL result sets for the {@link PostGISFeatureStore}.
+ * Builds {@link Feature} instances from SQL result set rows for the {@link PostGISFeatureStore}.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
@@ -113,10 +113,10 @@ class FeatureBuilderRelational implements FeatureBuilder {
     public Feature buildFeature( ResultSet rs )
                             throws SQLException {
 
-        String gmlId = ft.getName().getLocalPart().toUpperCase() + "_" + rs.getString( 1 );
+        String gmlId = ftMapping.getFidMapping().getPrefix() + rs.getObject( 1 );
         Feature feature = (Feature) fs.getCache().get( gmlId );
         if ( feature == null ) {
-            LOG.debug( "Cache miss. Recreating feature '" + gmlId + "' from relational model." );
+            LOG.debug( "Cache miss. Recreating feature '" + gmlId + "' from db (relational mode)." );
             List<Property> props = new ArrayList<Property>();
             int i = 2;
             for ( PropertyType pt : ft.getPropertyDeclarations() ) {

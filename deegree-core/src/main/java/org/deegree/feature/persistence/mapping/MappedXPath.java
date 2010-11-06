@@ -262,7 +262,8 @@ public class MappedXPath {
         if ( prop instanceof DBField ) {
             DBField dbField = (DBField) prop;
             DBField from = new DBField( source.getFtTable().toString(), dbField.getColumn() );
-            DBField to = new DBField( target.getFtTable().toString(), target.getFidColumn() );
+            // TODO
+            DBField to = new DBField( target.getFtTable().toString(), target.getFidMapping().getColumn() );
             joins.add( new Join( from, to, null, -1 ) );
         } else if ( prop instanceof JoinChain ) {
             JoinChain chain = (JoinChain) prop;
@@ -270,7 +271,8 @@ public class MappedXPath {
             QTableName table = getCurrentTable();
             DBField from = new DBField( table.toString(),
                                         chain.getFields().get( chain.getFields().size() - 1 ).getColumn() );
-            DBField to = new DBField( target.getFtTable().toString(), target.getFidColumn() );
+            // TODO            
+            DBField to = new DBField( target.getFtTable().toString(), target.getFidMapping().getColumn() );
             joins.add( new Join( from, to, null, -1 ) );
         } else {
             throw new UnmappableException( "Unhandled mapping expression: " + prop.getClass() );

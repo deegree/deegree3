@@ -81,6 +81,9 @@ import org.deegree.feature.persistence.mapping.MappedApplicationSchema;
 import org.deegree.feature.persistence.mapping.MappingExpression;
 import org.deegree.feature.persistence.mapping.antlr.FMLLexer;
 import org.deegree.feature.persistence.mapping.antlr.FMLParser;
+import org.deegree.feature.persistence.mapping.id.AutoIDGenerator;
+import org.deegree.feature.persistence.mapping.id.FIDMapping;
+import org.deegree.feature.persistence.mapping.id.IDGenerator;
 import org.deegree.feature.persistence.mapping.property.CompoundMapping;
 import org.deegree.feature.persistence.mapping.property.FeatureMapping;
 import org.deegree.feature.persistence.mapping.property.GeometryMapping;
@@ -195,7 +198,7 @@ class SchemaBuilderRelational {
         String backendSrs = null;
         Map<QName, Mapping> propToColumn = new HashMap<QName, Mapping>();
 
-        String fidMapping = null;
+        FIDMapping fidMapping = null;
 
         DatabaseMetaData md = getDBMetadata();
         ResultSet rs = null;
@@ -214,7 +217,10 @@ class SchemaBuilderRelational {
                            + isAutoincrement + "'" );
 
                 if ( fidMapping == null && isAutoincrement ) {
-                    fidMapping = column;
+                    String prefix = ftName.getLocalPart().toUpperCase() + "_";
+                    IDGenerator generator = new AutoIDGenerator();
+                    fidMapping = new FIDMapping( prefix, column, PrimitiveType.determinePrimitiveType( sqlType ),
+                                                 generator );
                 } else {
                     DBField dbField = new DBField( column );
                     QName ptName = makeFullyQualified( new QName( column ), ftName.getPrefix(),
@@ -288,7 +294,7 @@ class SchemaBuilderRelational {
 
     private void process( QTableName qTable, QName ftName, List<JAXBElement<? extends AbstractPropertyDecl>> propDecls ) {
 
-        String fidMapping = null;
+        FIDMapping fidMapping = null;
 
         List<PropertyType> pts = new ArrayList<PropertyType>();
         String backendSrs = null;

@@ -394,7 +394,7 @@ public class PostGISFeatureStore implements SQLFeatureStore {
         ResultSet rs = null;
         try {
             StringBuilder sql = new StringBuilder( "SELECT " );
-            sql.append( mapping.getFidColumn() );
+            sql.append( mapping.getFidMapping().getColumn() );
             for ( PropertyType pt : ft.getPropertyDeclarations() ) {
                 // append every (mapped) property to SELECT list
                 // TODO columns in related tables with 1:1 relation
@@ -428,7 +428,7 @@ public class PostGISFeatureStore implements SQLFeatureStore {
             sql.append( " FROM " );
             sql.append( mapping.getFtTable() );
             sql.append( " WHERE " );
-            sql.append( mapping.getFidColumn() );
+            sql.append( mapping.getFidMapping().getColumn() );
             sql.append( "=?" );
 
             LOG.debug( "Preparing SELECT: " + sql );
@@ -677,7 +677,7 @@ public class PostGISFeatureStore implements SQLFeatureStore {
             } else {
                 sql.append( ftTableAlias );
                 sql.append( '.' );
-                sql.append( ftMapping.getFidColumn() );
+                sql.append( ftMapping.getFidMapping().getColumn() );
                 for ( PropertyType pt : ft.getPropertyDeclarations() ) {
                     // append every (mapped) property to SELECT list
                     // TODO columns in related tables
@@ -745,7 +745,7 @@ public class PostGISFeatureStore implements SQLFeatureStore {
                 sql.append( "=" );
                 sql.append( ftTableAlias );
                 sql.append( "." );
-                sql.append( ftMapping.getFidColumn() );
+                sql.append( ftMapping.getFidMapping().getColumn() );
             }
 
             for ( PropertyNameMapping mappedPropName : wb.getMappedPropertyNames() ) {

@@ -40,11 +40,12 @@ import java.util.Map;
 import javax.xml.namespace.QName;
 
 import org.deegree.commons.jdbc.QTableName;
+import org.deegree.feature.persistence.mapping.id.FIDMapping;
 import org.deegree.feature.persistence.mapping.property.Mapping;
 import org.deegree.feature.types.FeatureType;
 
 /**
- * Defines the mapping between a {@link FeatureType} and a relational database.
+ * Defines the mapping between a {@link FeatureType} and a table in a relational database.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
@@ -57,7 +58,7 @@ public class FeatureTypeMapping {
 
     private final QTableName table;
 
-    private final String fidColumn;
+    private final FIDMapping fidMapping;
 
     private final String backendSrs;
 
@@ -71,19 +72,19 @@ public class FeatureTypeMapping {
      * @param table
      *            name of the database table that the feature type is mapped to, may be <code>null</code> (for BLOB-only
      *            mappings)
-     * @param fidColumn
-     *            name of the columns where the feature id is stored, may be <code>null</code> (for BLOB-only mappings)
+     * @param fidMapping
+     *            mapping for the feature id, may be <code>null</code> (for BLOB-only mappings)
      * @param propToMapping
      *            mapping parameters for the properties of the feature type, may be <code>null</code> (for BLOB-only
      *            mappings)
      * @param backendSrs
      *            the native SRS identifier used by the backend, may be <code>null</code> (for BLOB-only mappings)
      */
-    public FeatureTypeMapping( QName ftName, QTableName table, String fidColumn, Map<QName, Mapping> propToMapping,
-                               String backendSrs ) {
+    public FeatureTypeMapping( QName ftName, QTableName table, FIDMapping fidMapping,
+                               Map<QName, Mapping> propToMapping, String backendSrs ) {
         this.ftName = ftName;
         this.table = table;
-        this.fidColumn = fidColumn;
+        this.fidMapping = fidMapping;
         this.propToMapping = propToMapping;
         this.backendSrs = backendSrs;
     }
@@ -107,13 +108,12 @@ public class FeatureTypeMapping {
     }
 
     /**
-     * Returns the names of the column that stores the id of the feature.
+     * Returns the feature id mapping.
      * 
-     * @return the names of the columns that stores the id of the feature, may be <code>null</code> (for BLOB-only
-     *         mappings)
+     * @return mapping for the feature id, may be <code>null</code> (for BLOB-only mappings)
      */
-    public String getFidColumn() {
-        return fidColumn;
+    public FIDMapping getFidMapping() {
+        return fidMapping;
     }
 
     /**
@@ -125,14 +125,5 @@ public class FeatureTypeMapping {
      */
     public Mapping getMapping( QName propName ) {
         return propToMapping.get( propName );
-    }
-
-    /**
-     * Returns the native CRS identifier used by the backend.
-     * 
-     * @return the native CRS identifier used by the backend, may be <code>null</code> (for BLOB-only mappings)
-     */
-    public String getBackendCrs() {
-        return backendSrs;
     }
 }
