@@ -84,11 +84,14 @@ import org.deegree.feature.persistence.mapping.antlr.FMLParser;
 import org.deegree.feature.persistence.mapping.id.AutoIDGenerator;
 import org.deegree.feature.persistence.mapping.id.FIDMapping;
 import org.deegree.feature.persistence.mapping.id.IDGenerator;
+import org.deegree.feature.persistence.mapping.id.SequenceIDGenerator;
+import org.deegree.feature.persistence.mapping.id.UUIDGenerator;
 import org.deegree.feature.persistence.mapping.property.CompoundMapping;
 import org.deegree.feature.persistence.mapping.property.FeatureMapping;
 import org.deegree.feature.persistence.mapping.property.GeometryMapping;
 import org.deegree.feature.persistence.mapping.property.Mapping;
 import org.deegree.feature.persistence.mapping.property.PrimitiveMapping;
+import org.deegree.feature.persistence.postgis.jaxb.AbstractIDGeneratorType;
 import org.deegree.feature.persistence.postgis.jaxb.AbstractPropertyDecl;
 import org.deegree.feature.persistence.postgis.jaxb.CodePropertyDecl;
 import org.deegree.feature.persistence.postgis.jaxb.CustomMapping;
@@ -181,24 +184,26 @@ class SchemaBuilderRelational {
         ftName = makeFullyQualified( ftName, "app", "http://www.deegree.org/app" );
         LOG.debug( "Feature type name: '" + ftName + "'." );
 
+        FIDMapping fidMapping = null;
+        if ( ftDecl.getFIDMapping() != null ) {
+            fidMapping = buildFIDMapping( table, ftDecl.getFIDMapping() );
+        }
+
         List<JAXBElement<? extends AbstractPropertyDecl>> propDecls = ftDecl.getAbstractProperty();
         if ( propDecls != null && !propDecls.isEmpty() ) {
-            process( table, ftName, propDecls );
+            process( table, ftName, fidMapping, propDecls );
         } else {
-            process( table, ftName );
+            process( table, ftName, fidMapping );
         }
     }
 
-    private void process( QTableName qTable, QName ftName )
+    private void process( QTableName qTable, QName ftName, FIDMapping fidMapping )
                             throws SQLException {
 
-        LOG.debug( "Determining properties for feature type '" + ftName + "' from table '" + qTable + "'" );
+        LOG.debug( "Determining properties and mapping for feature type '" + ftName + "' from table '" + qTable + "'" );
 
         List<PropertyType> pts = new ArrayList<PropertyType>();
-        String backendSrs = null;
         Map<QName, Mapping> propToColumn = new HashMap<QName, Mapping>();
-
-        FIDMapping fidMapping = null;
 
         DatabaseMetaData md = getDBMetadata();
         ResultSet rs = null;
@@ -208,6 +213,12 @@ class SchemaBuilderRelational {
             rs = md.getColumns( null, dbSchema, table.toLowerCase(), "%" );
             while ( rs.next() ) {
                 String column = rs.getString( 4 );
+
+                if ( fidMapping != null && fidMapping.getColumn().equalsIgnoreCase( column ) ) {
+                    LOG.debug( "Omitting column '" + column + "' from properties. Used in FIDMapping." );
+                    continue;
+                }
+
                 int sqlType = rs.getInt( 5 );
                 String typeName = rs.getString( 6 );
                 String isNullable = rs.getString( 18 );
@@ -292,12 +303,10 @@ class SchemaBuilderRelational {
         ftNameToMapping.put( ftName, ftMapping );
     }
 
-    private void process( QTableName qTable, QName ftName, List<JAXBElement<? extends AbstractPropertyDecl>> propDecls ) {
-
-        FIDMapping fidMapping = null;
+    private void process( QTableName qTable, QName ftName, FIDMapping fidMapping,
+                          List<JAXBElement<? extends AbstractPropertyDecl>> propDecls ) {
 
         List<PropertyType> pts = new ArrayList<PropertyType>();
-        String backendSrs = null;
         Map<QName, Mapping> propToColumn = new HashMap<QName, Mapping>();
         for ( JAXBElement<? extends AbstractPropertyDecl> propDeclEl : propDecls ) {
             AbstractPropertyDecl propDecl = propDeclEl.getValue();
@@ -311,12 +320,8 @@ class SchemaBuilderRelational {
             pts.add( pt.first );
             propToColumn.put( pt.first.getName(), pt.second );
 
-            // TODO what about different srids for multiple geometry properties?
             if ( propDecl instanceof GeometryPropertyDecl ) {
                 GeometryPropertyDecl geoPropDecl = (GeometryPropertyDecl) propDecl;
-                if ( geoPropDecl.getSrid() != null ) {
-                    backendSrs = geoPropDecl.getSrid().toString();
-                }
             }
         }
 
@@ -377,6 +382,26 @@ class SchemaBuilderRelational {
         }
 
         return new Pair<PropertyType, Mapping>( pt, m );
+    }
+
+    private FIDMapping buildFIDMapping( QTableName table, org.deegree.feature.persistence.postgis.jaxb.FIDMapping config ) {
+        String prefix = config.getPrefix();
+        String column = config.getColumn().getName();
+        PrimitiveType pt = getPrimitiveType( config.getColumn().getType() );
+        IDGenerator generator = buildGenerator( config.getAbstractIDGenerator().getValue() );
+        return new FIDMapping( prefix, column, pt, generator );
+    }
+
+    private IDGenerator buildGenerator( AbstractIDGeneratorType config ) {
+        if ( config instanceof org.deegree.feature.persistence.postgis.jaxb.AutoIdGenerator ) {
+            return new AutoIDGenerator();
+        } else if ( config instanceof org.deegree.feature.persistence.postgis.jaxb.SequenceIDGenerator ) {
+            String sequence = ( (org.deegree.feature.persistence.postgis.jaxb.SequenceIDGenerator) config ).getSequence();
+            return new SequenceIDGenerator( sequence );
+        } else if ( config instanceof org.deegree.feature.persistence.postgis.jaxb.UUIDGenerator ) {
+            return new UUIDGenerator();
+        }
+        throw new RuntimeException( "Internal error. Unhandled JAXB config bean: " + config.getClass() );
     }
 
     private List<Mapping> process( List<JAXBElement<? extends CustomMapping>> customMappings ) {

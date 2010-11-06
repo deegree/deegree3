@@ -98,12 +98,31 @@
       <attribute name="prefix" type="string" />
     </complexType>
   </element>
-  <element name="AbstractIDGenerator" abstract="true" />
-  <element name="AutoIdGenerator" substitutionGroup="postgisfs:AbstractIDGenerator" />
-  <element name="UUIDGenerator" substitutionGroup="postgisfs:AbstractIDGenerator" />
+  <element name="AbstractIDGenerator" abstract="true" type="postgisfs:AbstractIDGeneratorType" />
+  <complexType name="AbstractIDGeneratorType" abstract="true">
+    <sequence />
+  </complexType>
+  <element name="AutoIdGenerator" substitutionGroup="postgisfs:AbstractIDGenerator">
+    <complexType>
+      <complexContent>
+        <extension base="postgisfs:AbstractIDGeneratorType" />
+      </complexContent>
+    </complexType>
+  </element>
+  <element name="UUIDGenerator" substitutionGroup="postgisfs:AbstractIDGenerator">
+    <complexType>
+      <complexContent>
+        <extension base="postgisfs:AbstractIDGeneratorType" />
+      </complexContent>
+    </complexType>
+  </element>
   <element name="SequenceIDGenerator" substitutionGroup="postgisfs:AbstractIDGenerator">
     <complexType>
-      <attribute name="sequence" type="string" use="required" />
+      <complexContent>
+        <extension base="postgisfs:AbstractIDGeneratorType">
+          <attribute name="sequence" type="string" use="required" />
+        </extension>
+      </complexContent>
     </complexType>
   </element>
   <!-- === Abstract property definition === -->

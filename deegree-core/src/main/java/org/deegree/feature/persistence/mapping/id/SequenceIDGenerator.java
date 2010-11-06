@@ -45,4 +45,9 @@ package org.deegree.feature.persistence.mapping.id;
  */
 public class SequenceIDGenerator implements IDGenerator {
 
+    private final String sequence;
+
+    public SequenceIDGenerator( String sequence ) {
+        this.sequence = sequence;
+    }
 }
