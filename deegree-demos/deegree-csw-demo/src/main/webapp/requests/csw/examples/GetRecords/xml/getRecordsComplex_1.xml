@@ -36,7 +36,7 @@
                   <ogc:Literal>2004-03-01</ogc:Literal>
                </ogc:PropertyIsGreaterThanOrEqualTo>
                <ogc:Intersects>
-                  <ogc:PropertyName>boundingBox</ogc:PropertyName>
+                  <ogc:PropertyName>ows:boundingBox</ogc:PropertyName>
                   <gml:Envelope>
                      <gml:lowerCorner>8.00 49.00</gml:lowerCorner>
                      <gml:upperCorner>9.00 50.00</gml:upperCorner>
