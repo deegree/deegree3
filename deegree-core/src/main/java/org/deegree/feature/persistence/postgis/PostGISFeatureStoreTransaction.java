@@ -59,6 +59,7 @@ import org.deegree.commons.tom.genericxml.GenericXMLElement;
 import org.deegree.commons.tom.genericxml.GenericXMLElementContent;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.commons.tom.primitive.SQLValueMangler;
+import org.deegree.commons.utils.JDBCUtils;
 import org.deegree.cs.CRS;
 import org.deegree.feature.Feature;
 import org.deegree.feature.FeatureCollection;
@@ -70,8 +71,11 @@ import org.deegree.feature.persistence.lock.Lock;
 import org.deegree.feature.persistence.mapping.BlobMapping;
 import org.deegree.feature.persistence.mapping.DBField;
 import org.deegree.feature.persistence.mapping.FeatureTypeMapping;
+import org.deegree.feature.persistence.mapping.IdAnalysis;
 import org.deegree.feature.persistence.mapping.JoinChain;
+import org.deegree.feature.persistence.mapping.MappedApplicationSchema;
 import org.deegree.feature.persistence.mapping.MappingExpression;
+import org.deegree.feature.persistence.mapping.id.FIDMapping;
 import org.deegree.feature.persistence.mapping.property.CompoundMapping;
 import org.deegree.feature.persistence.mapping.property.FeatureMapping;
 import org.deegree.feature.persistence.mapping.property.GeometryMapping;
@@ -109,6 +113,10 @@ public class PostGISFeatureStoreTransaction implements FeatureStoreTransaction {
 
     private final PostGISFeatureStore fs;
 
+    private final MappedApplicationSchema schema;
+
+    private final BlobMapping blobMapping;
+
     private final TransactionManager taManager;
 
     private final Connection conn;
@@ -122,11 +130,15 @@ public class PostGISFeatureStoreTransaction implements FeatureStoreTransaction {
      * @param conn
      *            JDBC connection associated with the transaction, never <code>null</code> and has
      *            <code>autocommit</code> set to <code>false</code>
+     * @param schema
      */
-    PostGISFeatureStoreTransaction( PostGISFeatureStore store, TransactionManager taManager, Connection conn ) {
+    PostGISFeatureStoreTransaction( PostGISFeatureStore store, TransactionManager taManager, Connection conn,
+                                    MappedApplicationSchema schema ) {
         this.fs = store;
         this.taManager = taManager;
         this.conn = conn;
+        this.schema = schema;
+        blobMapping = schema.getBlobMapping();
     }
 
     @Override
@@ -164,17 +176,22 @@ public class PostGISFeatureStoreTransaction implements FeatureStoreTransaction {
     public int performDelete( QName ftName, OperatorFilter filter, Lock lock )
                             throws FeatureStoreException {
 
-        // TODO implement this properly
+        // TODO implement this more efficiently
+
         Set<String> ids = new HashSet<String>();
         Query query = new Query( ftName, null, filter, -1, -1, -1 );
+        FeatureResultSet rs = null;
         try {
-            FeatureResultSet rs = fs.query( query );
+            rs = fs.query( query );
             for ( Feature feature : rs ) {
                 ids.add( feature.getId() );
             }
-            rs.close();
         } catch ( FilterEvaluationException e ) {
             throw new FeatureStoreException( e );
+        } finally {
+            if ( rs != null ) {
+                rs.close();
+            }
         }
         return performDelete( new IdFilter( ids ), lock );
     }
@@ -183,13 +200,26 @@ public class PostGISFeatureStoreTransaction implements FeatureStoreTransaction {
     public int performDelete( IdFilter filter, Lock lock )
                             throws FeatureStoreException {
 
-        LOG.debug( "performDelete()" );
+        int deleted = 0;
+        if ( blobMapping != null ) {
+            deleted = performDeleteBlob( filter, lock );
+            // TODO delete entries from hybrid tables
+        } else {
+            deleted = performDeleteRelational( filter, lock );
+        }
+        return deleted;
+    }
+
+    private int performDeleteBlob( IdFilter filter, Lock lock )
+                            throws FeatureStoreException {
+
+        // TODO implement this more efficiently (using IN / temporary tables)
 
         int deleted = 0;
         PreparedStatement stmt = null;
         try {
-            stmt = conn.prepareStatement( "DELETE FROM " + fs.getSchema().getBlobMapping().getTable()
-                                          + " WHERE gml_id=?" );
+            stmt = conn.prepareStatement( "DELETE FROM " + blobMapping.getTable() + " WHERE "
+                                          + blobMapping.getGMLIdColumn() + "=?" );
             for ( String id : filter.getMatchingIds() ) {
                 stmt.setString( 1, id );
                 stmt.addBatch();
@@ -202,15 +232,41 @@ public class PostGISFeatureStoreTransaction implements FeatureStoreTransaction {
             LOG.debug( e.getMessage(), e );
             throw new FeatureStoreException( e.getMessage(), e );
         } finally {
-            if ( stmt != null ) {
-                try {
-                    stmt.close();
-                } catch ( SQLException e ) {
-                    e.printStackTrace();
-                }
-            }
+            JDBCUtils.close( stmt );
         }
         LOG.debug( "Deleted " + deleted + " features." );
+        return deleted;
+    }
+
+    private int performDeleteRelational( IdFilter filter, Lock lock )
+                            throws FeatureStoreException {
+        int deleted = 0;
+        for ( String id : filter.getMatchingIds() ) {
+            LOG.debug( "Analyzing id: " + id );
+            IdAnalysis analysis = null;
+            try {
+                analysis = schema.analyzeId( id );
+                LOG.debug( "Analysis: " + analysis );
+                FeatureTypeMapping ftMapping = schema.getMapping( analysis.getFeatureType().getName() );
+                FIDMapping fidMapping = ftMapping.getFidMapping();
+                PreparedStatement stmt = null;
+                try {
+                    stmt = conn.prepareStatement( "DELETE FROM " + ftMapping.getFtTable() + " WHERE "
+                                                  + fidMapping.getColumn() + "=?" );
+                    PrimitiveValue value = new PrimitiveValue( analysis.getIdKernel(), fidMapping.getColumnType() );
+                    Object sqlValue = SQLValueMangler.internalToSQL( value );
+                    stmt.setObject( 1, sqlValue );
+                    deleted += stmt.executeUpdate();
+                } catch ( SQLException e ) {
+                    LOG.debug( e.getMessage(), e );
+                    throw new FeatureStoreException( e.getMessage(), e );
+                } finally {
+                    JDBCUtils.close( stmt );
+                }
+            } catch ( IllegalArgumentException e ) {
+                throw new FeatureStoreException( "Unable to determine feature type for id '" + id + "'." );
+            }
+        }
         return deleted;
     }
 
@@ -345,7 +401,7 @@ public class PostGISFeatureStoreTransaction implements FeatureStoreTransaction {
             throw new FeatureStoreException( "Cannot insert feature '" + feature.getName()
                                              + "': feature type is not served by this feature store." );
         }
-        CRS crs = fs.blobMapping.getCRS();
+        CRS crs = blobMapping.getCRS();
         stmt.setString( 1, feature.getId() );
         stmt.setShort( 2, fs.getFtId( feature.getName() ) );
 

@@ -534,6 +534,7 @@ class SchemaBuilderRelational {
         String localPart = qName.getLocalPart();
         if ( DEFAULT_NS_PREFIX.equals( prefix ) ) {
             prefix = defaultPrefix;
+            namespace = defaultNamespace;
         }
         if ( NULL_NS_URI.equals( namespace ) ) {
             namespace = defaultNamespace;

@@ -76,4 +76,9 @@ public class IdAnalysis {
     public boolean isFid() {
         return isFid;
     }
+
+    @Override
+    public String toString() {
+        return "ft=" + ft.getName() + ",idKernel=" + idKernel;
+    }
 }

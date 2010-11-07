@@ -125,7 +125,7 @@ public class PostGISFeatureStore implements SQLFeatureStore {
 
     private final MappedApplicationSchema schema;
 
-    final BlobMapping blobMapping;
+    private final BlobMapping blobMapping;
 
     private final LockManager lockManager;
 
@@ -603,7 +603,7 @@ public class PostGISFeatureStore implements SQLFeatureStore {
             rs = stmt.executeQuery( "SELECT gml_id,binary_object FROM " + blobMapping.getTable()
                                     + " A, temp_ids B WHERE A.gml_id=b.fid" );
 
-            FeatureBuilder builder = new FeatureBuilderBlob( this, schema.getBlobMapping().getCodec() );
+            FeatureBuilder builder = new FeatureBuilderBlob( this, blobMapping );
             result = new IteratorResultSet( new PostGISResultSetIterator( builder, rs, conn, stmt ) );
         } catch ( Exception e ) {
             close( rs, stmt, conn, LOG );
@@ -827,7 +827,7 @@ public class PostGISFeatureStore implements SQLFeatureStore {
 
             FeatureBuilder builder = null;
             if ( blobMapping != null ) {
-                builder = new FeatureBuilderBlob( this, blobMapping.getCodec() );
+                builder = new FeatureBuilderBlob( this, blobMapping );
             } else {
                 builder = new FeatureBuilderRelational( this, ft, ftMapping, conn );
             }
@@ -898,7 +898,7 @@ public class PostGISFeatureStore implements SQLFeatureStore {
             LOG.debug( "Query {}", stmt );
 
             rs = stmt.executeQuery();
-            FeatureBuilder builder = new FeatureBuilderBlob( this, schema.getBlobMapping().getCodec() );
+            FeatureBuilder builder = new FeatureBuilderBlob( this, blobMapping );
             result = new IteratorResultSet( new PostGISResultSetIterator( builder, rs, conn, stmt ) );
         } catch ( Exception e ) {
             close( rs, stmt, conn, LOG );

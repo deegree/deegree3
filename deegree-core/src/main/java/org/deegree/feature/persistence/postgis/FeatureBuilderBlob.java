@@ -38,9 +38,11 @@ package org.deegree.feature.persistence.postgis;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+import org.deegree.cs.CRS;
 import org.deegree.feature.Feature;
 import org.deegree.feature.persistence.BlobCodec;
 import org.deegree.feature.persistence.FeatureStoreGMLIdResolver;
+import org.deegree.feature.persistence.mapping.BlobMapping;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -60,9 +62,12 @@ class FeatureBuilderBlob implements FeatureBuilder {
 
     private final BlobCodec codec;
 
-    FeatureBuilderBlob( PostGISFeatureStore fs, BlobCodec codec ) {
+    private final CRS crs;
+
+    FeatureBuilderBlob( PostGISFeatureStore fs, BlobMapping blobMapping ) {
         this.fs = fs;
-        this.codec = codec;
+        this.codec = blobMapping.getCodec();
+        this.crs = blobMapping.getCRS();
     }
 
     /**
@@ -86,7 +91,7 @@ class FeatureBuilderBlob implements FeatureBuilder {
             feature = (Feature) fs.getCache().get( gmlId );
             if ( feature == null ) {
                 LOG.debug( "Cache miss. Recreating object '" + gmlId + "' from db (BLOB/hybrid mode)." );
-                feature = (Feature) codec.decode( rs.getBinaryStream( 2 ), fs.getSchema(), fs.blobMapping.getCRS(),
+                feature = (Feature) codec.decode( rs.getBinaryStream( 2 ), fs.getSchema(), crs,
                                                   new FeatureStoreGMLIdResolver( fs ) );
                 fs.getCache().add( feature );
             } else {

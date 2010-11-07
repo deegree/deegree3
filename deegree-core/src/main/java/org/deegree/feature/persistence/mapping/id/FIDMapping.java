@@ -84,4 +84,8 @@ public class FIDMapping {
     public String getColumn() {
         return column;
     }
+
+    public PrimitiveType getColumnType() {
+        return pt;
+    }
 }

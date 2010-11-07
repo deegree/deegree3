@@ -36,7 +36,6 @@
 package org.deegree.commons.utils;
 
 import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -85,23 +84,12 @@ public final class JDBCUtils {
      * @param stmt
      */
     public static void close( Statement stmt ) {
-        try {
-            stmt.close();
-        } catch ( Exception ex ) {
-            //
-        }
-    }
-
-    /**
-     * Close the object, suppress all errors/exceptions. Useful for finally clauses.
-     * 
-     * @param stmt
-     */
-    public static void close( PreparedStatement stmt ) {
-        try {
-            stmt.close();
-        } catch ( Exception ex ) {
-            //
+        if ( stmt != null ) {
+            try {
+                stmt.close();
+            } catch ( Exception ex ) {
+                //
+            }
         }
     }
 
@@ -147,49 +135,4 @@ public final class JDBCUtils {
             }
         }
     }
-
-    /**
-     * Tries to close each object from a <code>ResultSet</code>, <code>PreparedStatement</code>, <code>Connection</code>
-     * triple. Useful for cleaning up in <code>finally</code> clauses.
-     * 
-     * @param rs
-     *            <code>ResultSet</code> to be closed
-     * @param pstmt
-     *            <code>PreparedStatement</code> to be closed
-     * @param conn
-     *            <code>Connection</code> to be closed
-     * @param log
-     *            used to log error messages, may be null
-     */
-    public static void close( ResultSet rs, PreparedStatement pstmt, Connection conn, Logger log ) {
-        if ( rs != null ) {
-            try {
-                rs.close();
-            } catch ( SQLException e ) {
-                if ( log != null ) {
-                    log.error( "Unable to close ResultSet: " + e.getMessage() );
-                }
-            }
-        }
-        if ( pstmt != null ) {
-            try {
-                pstmt.close();
-            } catch ( SQLException e ) {
-                if ( log != null ) {
-                    log.error( "Unable to close PreparedStatement: " + e.getMessage() );
-                }
-            }
-        }
-        if ( conn != null ) {
-            try {
-                conn.close();
-            } catch ( SQLException e ) {
-                if ( log != null ) {
-                    log.error( "Unable to close Connection: " + e.getMessage() );
-                }
-            }
-        }
-
-    }
-
 }

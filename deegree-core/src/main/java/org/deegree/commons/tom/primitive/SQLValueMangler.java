@@ -75,7 +75,47 @@ public class SQLValueMangler {
                 break;
             case DATE_TIME:
                 sqlValue = new Timestamp( ( (DateTime) value ).getValue().getTime() );
-                break;                
+                break;
+            case DECIMAL:
+                sqlValue = ( (BigDecimal) value ).doubleValue();
+                break;
+            case DOUBLE:
+                sqlValue = value;
+                break;
+            case INTEGER:
+                sqlValue = Integer.parseInt( value.toString() );
+                break;
+            case STRING:
+                sqlValue = value;
+                break;
+            case TIME:
+                throw new IllegalArgumentException( "SQL type conversion for '" + pt + "' is not implemented yet." );
+            }
+        }
+        return sqlValue;
+    }
+
+    /**
+     * Converts the given {@link PrimitiveValue} value to the corresponding SQL object type.
+     * 
+     * @param value
+     * @return
+     */
+    public static Object internalToSQL( PrimitiveValue pv ) {
+        Object sqlValue = null;
+        Object value = pv.getValue();
+        if ( value != null ) {
+            PrimitiveType pt = pv.getType();
+            switch ( pt ) {
+            case BOOLEAN:
+                sqlValue = value;
+                break;
+            case DATE:
+                sqlValue = new java.sql.Date( ( (Date) value ).getDate().getTime() );
+                break;
+            case DATE_TIME:
+                sqlValue = new Timestamp( ( (DateTime) value ).getValue().getTime() );
+                break;
             case DECIMAL:
                 sqlValue = ( (BigDecimal) value ).doubleValue();
                 break;

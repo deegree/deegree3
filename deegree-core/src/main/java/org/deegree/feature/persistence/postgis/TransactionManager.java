@@ -96,7 +96,7 @@ class TransactionManager {
 
         try {
             conn.setAutoCommit( false );
-            this.activeTransaction = new PostGISFeatureStoreTransaction( fs, this, conn );
+            this.activeTransaction = new PostGISFeatureStoreTransaction( fs, this, conn, fs.getSchema() );
         } catch ( SQLException e ) {
             throw new FeatureStoreException( "Unable to disable auto commit on JDBC connection for transaction: "
                                              + e.getMessage(), e );
@@ -133,7 +133,7 @@ class TransactionManager {
         try {
             Connection conn = ConnectionManager.getConnection( jdbcConnId );
             conn.setAutoCommit( false );
-            this.activeTransaction = new PostGISFeatureStoreTransaction( fs, this, conn );
+            this.activeTransaction = new PostGISFeatureStoreTransaction( fs, this, conn, fs.getSchema() );
         } catch ( SQLException e ) {
             throw new FeatureStoreException( "Unable to acquire JDBC connection for transaction: " + e.getMessage(), e );
         }

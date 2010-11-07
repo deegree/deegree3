@@ -38,7 +38,10 @@ package org.deegree.feature.persistence.mapping;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.deegree.feature.persistence.mapping.id.FIDMapping;
 import org.deegree.feature.types.FeatureType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Helper class for analyzing if a given feature or geometry id can be attributed to a certain feature type.
@@ -50,6 +53,8 @@ import org.deegree.feature.types.FeatureType;
  */
 class IdAnalyzer {
 
+    private static Logger LOG = LoggerFactory.getLogger( IdAnalyzer.class );
+    
     private final Map<String, FeatureType> prefixToFt = new HashMap<String, FeatureType>();
 
     /**
@@ -61,25 +66,33 @@ class IdAnalyzer {
     IdAnalyzer( MappedApplicationSchema schema ) {
         for ( FeatureType ft : schema.getFeatureTypes() ) {
             if ( !ft.isAbstract() ) {
-                String prefix = ft.getName().getLocalPart().toUpperCase();
-                prefixToFt.put( prefix, ft );
+                FeatureTypeMapping ftMapping = schema.getMapping( ft.getName() );
+                if ( ftMapping != null ) {
+                    FIDMapping fidMapping = ftMapping.getFidMapping();
+                    if ( fidMapping != null ) {
+                        LOG.debug( fidMapping.getPrefix() + " -> " + ft.getName() );
+                        prefixToFt.put( fidMapping.getPrefix(), ft );
+                    }
+                }
             }
         }
     }
 
     public IdAnalysis analyze( String featureOrGeomId ) {
+        
+        // TODO make this failproof       
         int delimPos = featureOrGeomId.indexOf( '_' );
         if ( delimPos == -1 ) {
             throw new IllegalArgumentException();
         }
-        String prefix = featureOrGeomId.substring( 0, delimPos );
+        String prefix = featureOrGeomId.substring( 0, delimPos + 1 );
         FeatureType ft = prefixToFt.get( prefix );
         if ( ft == null ) {
             throw new IllegalArgumentException();
         }
 
         String idRemainder = featureOrGeomId.substring( delimPos + 1 );
-        
+
         // TODO geometry ids (e.g. PLACE_GEOM_1)
 
         return new IdAnalysis( ft, idRemainder, true );
