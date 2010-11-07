@@ -39,6 +39,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.xml.bind.JAXBException;
@@ -52,6 +53,7 @@ import org.apache.commons.cli.PosixParser;
 import org.deegree.commons.jdbc.ConnectionManager;
 import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.cs.exceptions.UnknownCRSException;
+import org.deegree.feature.Feature;
 import org.deegree.feature.FeatureCollection;
 import org.deegree.feature.persistence.FeatureStore;
 import org.deegree.feature.persistence.FeatureStoreException;
@@ -128,7 +130,10 @@ public class FeatureStoreLoader {
         try {
             ta = fs.acquireTransaction();
             System.out.print( "- Inserting features..." );
-            List<String> fids = ta.performInsert( fc, mode );
+            List<String> fids = new ArrayList<String>();
+            for ( Feature feature : fc ) {
+                fids.addAll( ta.performInsert( feature, mode ) );
+            }
             System.out.println( "done." );
             for ( String fid : fids ) {
                 System.out.println( "- Inserted: " + fid );
