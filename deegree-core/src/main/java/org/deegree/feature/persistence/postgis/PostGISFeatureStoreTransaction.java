@@ -44,6 +44,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
@@ -84,6 +85,7 @@ import org.deegree.feature.persistence.mapping.property.PrimitiveMapping;
 import org.deegree.feature.persistence.query.FeatureResultSet;
 import org.deegree.feature.persistence.query.Query;
 import org.deegree.feature.property.Property;
+import org.deegree.feature.types.FeatureType;
 import org.deegree.feature.xpath.FeatureXPathEvaluator;
 import org.deegree.filter.Filter;
 import org.deegree.filter.FilterEvaluationException;
@@ -188,7 +190,6 @@ public class PostGISFeatureStoreTransaction implements FeatureStoreTransaction {
         int deleted = 0;
         if ( blobMapping != null ) {
             deleted = performDeleteBlob( filter, lock );
-            // TODO delete entries from hybrid tables
         } else {
             deleted = performDeleteRelational( filter, lock );
         }
@@ -266,63 +267,60 @@ public class PostGISFeatureStoreTransaction implements FeatureStoreTransaction {
         Set<String> gids = new LinkedHashSet<String>();
         findFeaturesAndGeometries( f, geometries, features, fids, gids );
 
-        switch ( mode ) {
-        case GENERATE_NEW: {
-            // TODO don't change incoming features / geometries
-            for ( Feature feature : features ) {
-                String newFid = "FEATURE_" + generateNewId();
-                String oldFid = feature.getId();
-                if ( oldFid != null ) {
-                    fids.remove( oldFid );
-                }
-                fids.add( newFid );
-                feature.setId( newFid );
-            }
-
-            for ( Geometry geometry : geometries ) {
-                String newGid = "GEOMETRY_" + generateNewId();
-                String oldGid = geometry.getId();
-                if ( oldGid != null ) {
-                    gids.remove( oldGid );
-                }
-                gids.add( newGid );
-                geometry.setId( newGid );
-            }
-            break;
-        }
-        case REPLACE_DUPLICATE: {
-            throw new FeatureStoreException( "REPLACE_DUPLICATE is not available yet." );
-        }
-        case USE_EXISTING: {
-            // TODO don't change incoming features / geometries
-            for ( Feature feature : features ) {
-                if ( feature.getId() == null ) {
-                    String newFid = "FEATURE_" + generateNewId();
-                    feature.setId( newFid );
-                    fids.add( newFid );
-                }
-            }
-
-            for ( Geometry geometry : geometries ) {
-                if ( geometry.getId() == null ) {
-                    String newGid = "GEOMETRY_" + generateNewId();
-                    geometry.setId( newGid );
-                    gids.add( newGid );
-                }
-            }
-            break;
-        }
-        }
-
         LOG.debug( features.size() + " features / " + geometries.size() + " geometries" );
 
         long begin = System.currentTimeMillis();
 
         String fid = null;
-        BlobMapping blobMapping = fs.getSchema().getBlobMapping();
         try {
             PreparedStatement blobInsertStmt = null;
             if ( blobMapping != null ) {
+                switch ( mode ) {
+                case GENERATE_NEW: {
+                    // TODO don't change incoming features / geometries
+                    for ( Feature feature : features ) {
+                        String newFid = "FEATURE_" + generateNewId();
+                        String oldFid = feature.getId();
+                        if ( oldFid != null ) {
+                            fids.remove( oldFid );
+                        }
+                        fids.add( newFid );
+                        feature.setId( newFid );
+                    }
+                    for ( Geometry geometry : geometries ) {
+                        String newGid = "GEOMETRY_" + generateNewId();
+                        String oldGid = geometry.getId();
+                        if ( oldGid != null ) {
+                            gids.remove( oldGid );
+                        }
+                        gids.add( newGid );
+                        geometry.setId( newGid );
+                    }
+                    break;
+                }
+                case REPLACE_DUPLICATE: {
+                    throw new FeatureStoreException( "REPLACE_DUPLICATE is not available yet." );
+                }
+                case USE_EXISTING: {
+                    // TODO don't change incoming features / geometries
+                    for ( Feature feature : features ) {
+                        if ( feature.getId() == null ) {
+                            String newFid = "FEATURE_" + generateNewId();
+                            feature.setId( newFid );
+                            fids.add( newFid );
+                        }
+                    }
+
+                    for ( Geometry geometry : geometries ) {
+                        if ( geometry.getId() == null ) {
+                            String newGid = "GEOMETRY_" + generateNewId();
+                            geometry.setId( newGid );
+                            gids.add( newGid );
+                        }
+                    }
+                    break;
+                }
+                }
                 StringBuilder sql = new StringBuilder( "INSERT INTO " );
                 sql.append( blobMapping.getTable() );
                 sql.append( " (" );
@@ -335,20 +333,31 @@ public class PostGISFeatureStoreTransaction implements FeatureStoreTransaction {
                 sql.append( blobMapping.getBBoxColumn() );
                 sql.append( ") VALUES(?,?,?,?)" );
                 blobInsertStmt = conn.prepareStatement( sql.toString(), RETURN_GENERATED_KEYS );
-            }
-            for ( Feature feature : features ) {
-                fid = feature.getId();
-                int internalId = -1;
+                for ( Feature feature : features ) {
+                    fid = feature.getId();
+                    int internalId = -1;
+                    if ( blobInsertStmt != null ) {
+                        internalId = insertFeatureBlob( blobInsertStmt, feature );
+                    }
+                    FeatureTypeMapping ftMapping = fs.getMapping( feature.getName() );
+                    if ( ftMapping != null ) {
+                        insertFeatureRelational( internalId, feature, ftMapping );
+                    }
+                }
                 if ( blobInsertStmt != null ) {
-                    internalId = insertFeatureBlob( blobInsertStmt, feature );
+                    blobInsertStmt.close();
                 }
-                FeatureTypeMapping ftMapping = fs.getMapping( feature.getName() );
-                if ( ftMapping != null ) {
-                    insertFeatureRelational( internalId, feature, ftMapping );
+            } else {
+                // pure relational mode
+                for ( Feature feature : features ) {
+                    fid = feature.getId();
+                    FeatureTypeMapping ftMapping = fs.getMapping( feature.getName() );
+                    if ( ftMapping == null ) {
+                        throw new FeatureStoreException( "Cannot insert feature of type '" + feature.getName()
+                                                         + "'. No mapping defined and BLOB mode is off." );
+                    }
+                    fids.add( insertFeatureRelational( feature, ftMapping, mode ) );
                 }
-            }
-            if ( blobInsertStmt != null ) {
-                blobInsertStmt.close();
             }
         } catch ( SQLException e ) {
             String msg = "Error inserting feature '" + fid + "':" + e.getMessage();
@@ -363,6 +372,92 @@ public class PostGISFeatureStoreTransaction implements FeatureStoreTransaction {
         long elapsed = System.currentTimeMillis() - begin;
         LOG.debug( "Insertion of " + features.size() + " features: " + elapsed + " [ms]" );
         return new ArrayList<String>( fids );
+    }
+
+    private String insertFeatureRelational( Feature feature, FeatureTypeMapping ftMapping, IDGenMode mode )
+                            throws FeatureStoreException {
+
+        FIDMapping fidMapping = ftMapping.getFidMapping();
+        FeatureType ft = feature.getType();
+        List<Object> sqlObjects = new ArrayList<Object>( ft.getPropertyDeclarations().size() );
+
+        StringBuilder values = new StringBuilder( "VALUES(" );
+        StringBuilder sql = new StringBuilder( "INSERT INTO " );
+        sql.append( ftMapping.getFtTable() );
+        sql.append( " (" );
+        boolean first = true;
+        for ( Property prop : feature.getProperties() ) {
+            QName propName = prop.getName();
+            Mapping mapping = ftMapping.getMapping( propName );
+            if ( mapping != null ) {
+                String column = null;
+                MappingExpression me = mapping.getMapping();
+                if ( !( me instanceof DBField ) ) {
+                    LOG.debug( "Property '" + propName + "' is not mapped to column. Skipping it." );
+                    continue;
+                }
+                column = ( (DBField) me ).getColumn();
+                if ( mapping instanceof PrimitiveMapping ) {
+                    PrimitiveValue value = (PrimitiveValue) prop.getValue();
+                    sqlObjects.add( SQLValueMangler.internalToSQL( value ) );
+                    if ( !first ) {
+                        sql.append( "," );
+                        values.append( "," );
+                    } else {
+                        first = false;
+                    }
+                    sql.append( column );
+                    values.append( "?" );
+                } else if ( mapping instanceof GeometryMapping ) {
+                    String srid = ( (GeometryMapping) mapping ).getSrid();
+                    CRS storageCRS = ( (GeometryMapping) mapping ).getCRS();
+                    Geometry value = (Geometry) prop.getValue();
+                    try {
+                        Geometry compatible = fs.getCompatibleGeometry( value, storageCRS );
+                        sqlObjects.add( WKBWriter.write( compatible ) );
+                    } catch ( Exception e ) {
+                        throw new FeatureStoreException( e.getMessage(), e );
+                    }
+                    if ( !first ) {
+                        sql.append( "," );
+                        values.append( "," );
+                    } else {
+                        first = false;
+                    }
+                    sql.append( column );
+                    values.append( fs.getWKBParamTemplate( srid ) );
+                } else {
+                    LOG.warn( "Updating of " + mapping.getClass() + " is currently not implemented. Omitting." );
+                    continue;
+                }
+            } else {
+                LOG.warn( "No column mapping for property '" + propName + "'. Omitting." );
+            }
+        }
+        sql.append( ") " );
+        sql.append( values );
+        sql.append( ")" );
+
+        LOG.debug( "SQL: " + sql );
+
+        String fid = null;
+        PreparedStatement stmt = null;
+        try {
+            stmt = conn.prepareStatement( sql.toString(), RETURN_GENERATED_KEYS );
+            int i = 1;
+            for ( Object param : sqlObjects ) {
+                stmt.setObject( i++, param );
+            }
+            stmt.execute();
+            // TODO what about other id generation policies?
+            fid = getAutoIncrementFID( fidMapping, stmt );
+        } catch ( SQLException e ) {
+            LOG.debug( e.getMessage(), e );
+            throw new FeatureStoreException( e.getMessage(), e );
+        } finally {
+            JDBCUtils.close( stmt );
+        }
+        return fid;
     }
 
     private String generateNewId() {
@@ -432,7 +527,6 @@ public class PostGISFeatureStoreTransaction implements FeatureStoreTransaction {
 
     private void insertFeatureRelational( int internalId, Feature feature, FeatureTypeMapping ftMapping )
                             throws SQLException, FeatureStoreException, FilterEvaluationException {
-
         InsertRowNode node = new InsertRowNode( ftMapping.getFtTable(), null );
         node.getRow().add( "id", internalId );
         buildInsertRows( feature, ftMapping, node );
@@ -789,6 +883,24 @@ public class PostGISFeatureStoreTransaction implements FeatureStoreTransaction {
             }
         }
         return new IdFilter( ids );
+    }
+
+    private String getAutoIncrementFID( FIDMapping fidMapping, Statement stmt )
+                            throws SQLException {
+        // TODO check for PostgreSQL >= 8.2 first
+        String fid = null;
+        ResultSet rs = null;
+        try {
+            rs = stmt.getGeneratedKeys();
+            rs.next();
+            Object idKernel = rs.getObject( fidMapping.getColumn() );
+            fid = fidMapping.getPrefix() + idKernel;
+        } finally {
+            if ( rs != null ) {
+                rs.close();
+            }
+        }
+        return fid;
     }
 
     @Override

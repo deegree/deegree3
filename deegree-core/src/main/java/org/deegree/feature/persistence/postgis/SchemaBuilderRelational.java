@@ -115,7 +115,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Creates a {@link MappedApplicationSchema} instances from feature type declarations / relational mapping information.
+ * Creates {@link MappedApplicationSchema} instances from feature type declarations / relational mapping information.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
@@ -261,7 +261,7 @@ class SchemaBuilderRelational {
                                 dim = DIM_3;
                             }
                             srid = "" + rs2.getInt( 2 );
-                            geomType = getGeometryType( rs2.getString( 3 ) );
+                            // geomType = getGeometryType( rs2.getString( 3 ) );
                             LOG.debug( "Derived geometry type: " + geomType + ", crs: " + crs + ", srid: " + srid
                                        + ", dim: " + dim + "" );
                         } catch ( Exception e ) {
