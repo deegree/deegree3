@@ -93,6 +93,7 @@ import org.deegree.filter.expression.PropertyName;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.GeometryTransformer;
+import org.deegree.geometry.io.WKBWriter;
 import org.deegree.gml.feature.FeatureReference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -177,23 +178,7 @@ public class PostGISFeatureStoreTransaction implements FeatureStoreTransaction {
                             throws FeatureStoreException {
 
         // TODO implement this more efficiently
-
-        Set<String> ids = new HashSet<String>();
-        Query query = new Query( ftName, null, filter, -1, -1, -1 );
-        FeatureResultSet rs = null;
-        try {
-            rs = fs.query( query );
-            for ( Feature feature : rs ) {
-                ids.add( feature.getId() );
-            }
-        } catch ( FilterEvaluationException e ) {
-            throw new FeatureStoreException( e );
-        } finally {
-            if ( rs != null ) {
-                rs.close();
-            }
-        }
-        return performDelete( new IdFilter( ids ), lock );
+        return performDelete( getIdFilter( ftName, filter ), lock );
     }
 
     @Override
@@ -214,7 +199,6 @@ public class PostGISFeatureStoreTransaction implements FeatureStoreTransaction {
                             throws FeatureStoreException {
 
         // TODO implement this more efficiently (using IN / temporary tables)
-
         int deleted = 0;
         PreparedStatement stmt = null;
         try {
@@ -659,8 +643,152 @@ public class PostGISFeatureStoreTransaction implements FeatureStoreTransaction {
     @Override
     public int performUpdate( QName ftName, List<Property> replacementProps, Filter filter, Lock lock )
                             throws FeatureStoreException {
-        // TODO Auto-generated method stub
-        return 0;
+        LOG.debug( "Updating feature type '" + ftName + "', filter: " + filter + ", replacement properties: "
+                   + replacementProps.size() );
+        // TODO implement update more efficiently
+        IdFilter idFilter = null;
+        try {
+            if ( filter instanceof IdFilter ) {
+                idFilter = (IdFilter) filter;
+            } else {
+                idFilter = getIdFilter( ftName, (OperatorFilter) filter );
+            }
+        } catch ( Exception e ) {
+            LOG.debug( e.getMessage(), e );
+        }
+        return performUpdate( ftName, replacementProps, idFilter );
+    }
+
+    private int performUpdate( QName ftName, List<Property> replacementProps, IdFilter filter )
+                            throws FeatureStoreException {
+        int updated = 0;
+        if ( blobMapping != null ) {
+            throw new FeatureStoreException(
+                                             "Updates in PostGISFeatureStore (BLOB mode) are currently not implemented." );
+        } else {
+            try {
+                updated = performUpdateRelational( ftName, replacementProps, filter );
+                for ( String id : filter.getMatchingIds() ) {
+                    fs.getCache().remove( id );
+                }
+            } catch ( Exception e ) {
+                LOG.debug( e.getMessage(), e );
+            }
+        }
+        return updated;
+    }
+
+    private int performUpdateRelational( QName ftName, List<Property> replacementProps, IdFilter filter )
+                            throws FeatureStoreException {
+
+        FeatureTypeMapping ftMapping = schema.getMapping( ftName );
+        FIDMapping fidMapping = ftMapping.getFidMapping();
+
+        List<Object> sqlObjects = new ArrayList<Object>( replacementProps.size() );
+
+        StringBuffer sql = new StringBuffer( "UPDATE " );
+        sql.append( ftMapping.getFtTable() );
+        sql.append( " SET " );
+        boolean first = true;
+        for ( Property replacementProp : replacementProps ) {
+            QName propName = replacementProp.getType().getName();
+            Mapping mapping = ftMapping.getMapping( propName );
+            if ( mapping != null ) {
+                String column = null;
+                MappingExpression me = mapping.getMapping();
+                if ( !( me instanceof DBField ) ) {
+                    continue;
+                }
+                column = ( (DBField) me ).getColumn();
+                if ( mapping instanceof PrimitiveMapping ) {
+                    PrimitiveValue value = (PrimitiveValue) replacementProp.getValue();
+                    sqlObjects.add( SQLValueMangler.internalToSQL( value ) );
+                    if ( !first ) {
+                        sql.append( "," );
+                    } else {
+                        first = false;
+                    }
+                    sql.append( column );
+                    sql.append( "=?" );
+                } else if ( mapping instanceof GeometryMapping ) {
+                    String srid = ( (GeometryMapping) mapping ).getSrid();
+                    CRS storageCRS = ( (GeometryMapping) mapping ).getCRS();
+                    Geometry value = (Geometry) replacementProp.getValue();
+                    try {
+                        Geometry compatible = fs.getCompatibleGeometry( value, storageCRS );
+                        sqlObjects.add( WKBWriter.write( compatible ) );
+                    } catch ( Exception e ) {
+                        throw new FeatureStoreException( e.getMessage(), e );
+                    }
+                    if ( !first ) {
+                        sql.append( "," );
+                    } else {
+                        first = false;
+                    }
+                    sql.append( column );
+                    sql.append( "=" );
+                    sql.append( fs.getWKBParamTemplate( srid ) );
+                } else {
+                    LOG.warn( "Updating of " + mapping.getClass() + " is currently not implemented. Omitting." );
+                    continue;
+                }
+            } else {
+                LOG.warn( "No mapping for update property '" + propName + "'. Omitting." );
+            }
+        }
+        sql.append( " WHERE " );
+        sql.append( fidMapping.getColumn() );
+        sql.append( "=?" );
+
+        LOG.debug( "Update: " + sql );
+
+        int updated = 0;
+        PreparedStatement stmt = null;
+        try {
+            stmt = conn.prepareStatement( sql.toString() );
+            int i = 1;
+            for ( Object param : sqlObjects ) {
+                stmt.setObject( i++, param );
+            }
+            for ( String id : filter.getMatchingIds() ) {
+                IdAnalysis analysis = schema.analyzeId( id );
+                PrimitiveValue value = new PrimitiveValue( analysis.getIdKernel(), fidMapping.getColumnType() );
+                Object sqlValue = SQLValueMangler.internalToSQL( value );
+                stmt.setObject( i, sqlValue );
+                stmt.addBatch();
+            }
+            int[] updates = stmt.executeBatch();
+            for ( int noUpdated : updates ) {
+                updated += noUpdated;
+            }
+        } catch ( SQLException e ) {
+            LOG.debug( e.getMessage(), e );
+            throw new FeatureStoreException( e.getMessage(), e );
+        } finally {
+            JDBCUtils.close( stmt );
+        }
+        LOG.debug( "Updated" + updated + " features." );
+        return updated;
+    }
+
+    private IdFilter getIdFilter( QName ftName, OperatorFilter filter )
+                            throws FeatureStoreException {
+        Set<String> ids = new HashSet<String>();
+        Query query = new Query( ftName, null, filter, -1, -1, -1 );
+        FeatureResultSet rs = null;
+        try {
+            rs = fs.query( query );
+            for ( Feature feature : rs ) {
+                ids.add( feature.getId() );
+            }
+        } catch ( FilterEvaluationException e ) {
+            throw new FeatureStoreException( e );
+        } finally {
+            if ( rs != null ) {
+                rs.close();
+            }
+        }
+        return new IdFilter( ids );
     }
 
     @Override

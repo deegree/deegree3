@@ -43,13 +43,18 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.NoSuchElementException;
 
 import javax.xml.namespace.QName;
 
 import org.deegree.commons.jdbc.ConnectionManager;
 import org.deegree.commons.jdbc.ResultSetIterator;
+import org.deegree.commons.tom.primitive.PrimitiveValue;
+import org.deegree.commons.tom.primitive.SQLValueMangler;
 import org.deegree.cs.CRS;
 import org.deegree.feature.Feature;
 import org.deegree.feature.Features;
@@ -70,6 +75,7 @@ import org.deegree.feature.persistence.mapping.Join;
 import org.deegree.feature.persistence.mapping.JoinChain;
 import org.deegree.feature.persistence.mapping.MappedApplicationSchema;
 import org.deegree.feature.persistence.mapping.MappingExpression;
+import org.deegree.feature.persistence.mapping.id.FIDMapping;
 import org.deegree.feature.persistence.mapping.property.GeometryMapping;
 import org.deegree.feature.persistence.mapping.property.Mapping;
 import org.deegree.feature.persistence.query.CombinedResultSet;
@@ -578,6 +584,14 @@ public class PostGISFeatureStore implements SQLFeatureStore {
 
     private FeatureResultSet queryByIdFilter( IdFilter filter, SortProperty[] sortCrit )
                             throws FeatureStoreException {
+        if ( blobMapping != null ) {
+            return queryByIdFilterBlob( filter, sortCrit );
+        }
+        return queryByIdFilterRelational( filter, sortCrit );
+    }
+
+    private FeatureResultSet queryByIdFilterBlob( IdFilter filter, SortProperty[] sortCrit )
+                            throws FeatureStoreException {
 
         FeatureResultSet result = null;
         Connection conn = null;
@@ -627,6 +641,113 @@ public class PostGISFeatureStore implements SQLFeatureStore {
         // sort features
         if ( sortCrit.length > 0 ) {
             result = new MemoryFeatureResultSet( Features.sortFc( result.toCollection(), sortCrit ) );
+        }
+        return result;
+    }
+
+    private FeatureResultSet queryByIdFilterRelational( IdFilter filter, SortProperty[] sortCrit )
+                            throws FeatureStoreException {
+
+        LinkedHashMap<QName, List<String>> ftNameToIdKernels = new LinkedHashMap<QName, List<String>>();
+        try {
+            for ( String fid : filter.getMatchingIds() ) {
+                IdAnalysis analysis = schema.analyzeId( fid );
+                FeatureType ft = analysis.getFeatureType();
+                String idKernel = analysis.getIdKernel();
+                List<String> idKernels = ftNameToIdKernels.get( ft.getName() );
+                if ( idKernels == null ) {
+                    idKernels = new ArrayList<String>();
+                    ftNameToIdKernels.put( ft.getName(), idKernels );
+                }
+                idKernels.add( idKernel );
+            }
+        } catch ( IllegalArgumentException e ) {
+            throw new FeatureStoreException( e.getMessage(), e );
+        }
+
+        if ( ftNameToIdKernels.size() != 1 ) {
+            throw new FeatureStoreException(
+                                             "Currently, only relational id queries are supported that target single feature types." );
+        }
+
+        QName ftName = ftNameToIdKernels.keySet().iterator().next();
+        FeatureType ft = schema.getFeatureType( ftName );
+        FeatureTypeMapping ftMapping = schema.getMapping( ftName );
+        FIDMapping fidMapping = ftMapping.getFidMapping();
+        List<String> idKernels = ftNameToIdKernels.get( ftName );
+
+        StringBuilder sql = new StringBuilder( "SELECT " );
+        sql.append( fidMapping.getColumn() );
+        for ( PropertyType pt : ft.getPropertyDeclarations() ) {
+            // append every (mapped) property to SELECT list
+            // TODO columns in related tables
+            Mapping mapping = ftMapping.getMapping( pt.getName() );
+            MappingExpression column = mapping == null ? null : mapping.getMapping();
+            if ( column != null ) {
+                sql.append( ',' );
+                if ( column instanceof JoinChain ) {
+                    JoinChain jc = (JoinChain) column;
+                    sql.append( jc.getFields().get( 0 ) );
+                } else {
+                    if ( pt instanceof SimplePropertyType ) {
+                        sql.append( column );
+                    } else if ( pt instanceof GeometryPropertyType ) {
+                        if ( useLegacyPredicates ) {
+                            sql.append( "AsBinary(" );
+                        } else {
+                            sql.append( "ST_AsBinary(" );
+                        }
+                        sql.append( column );
+                        sql.append( ')' );
+                    } else if ( pt instanceof FeaturePropertyType ) {
+                        sql.append( column );
+                    } else {
+                        LOG.warn( "Skipping property '" + pt.getName() + "' -- type '" + pt.getClass()
+                                  + "' not handled in PostGISFeatureStore." );
+                    }
+                }
+            }
+        }
+
+        sql.append( " FROM " );
+        sql.append( ftMapping.getFtTable() );
+        sql.append( " WHERE " );
+        sql.append( fidMapping.getColumn() );
+        sql.append( " IN (?" );
+        for ( int i = 1; i < idKernels.size(); i++ ) {
+            sql.append( ",?" );
+        }
+        sql.append( ")" );
+
+        LOG.debug( "SQL: {}", sql );
+
+        FeatureResultSet result = null;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        Connection conn = null;
+        try {
+            long begin = System.currentTimeMillis();
+            conn = ConnectionManager.getConnection( jdbcConnId );
+            stmt = conn.prepareStatement( sql.toString() );
+            LOG.debug( "Preparing SELECT took {} [ms] ", System.currentTimeMillis() - begin );
+
+            int i = 1;
+            for ( String idKernel : idKernels ) {
+                PrimitiveValue value = new PrimitiveValue( idKernel, fidMapping.getColumnType() );
+                Object sqlValue = SQLValueMangler.internalToSQL( value );
+                stmt.setObject( i++, sqlValue );
+            }
+
+            begin = System.currentTimeMillis();
+            rs = stmt.executeQuery();
+            LOG.debug( "Executing SELECT took {} [ms] ", System.currentTimeMillis() - begin );
+            FeatureBuilder builder = new FeatureBuilderRelational( this, ft, ftMapping, conn );
+            result = new IteratorResultSet( new PostGISResultSetIterator( builder, rs, conn, stmt ) );
+        } catch ( Exception e ) {
+            close( rs, stmt, conn, LOG );
+            String msg = "Error performing query by id filter (relational mode): " + e.getMessage();
+            LOG.error( msg, e );
+            throw new FeatureStoreException( msg, e );
         }
         return result;
     }
@@ -1116,6 +1237,18 @@ public class PostGISFeatureStore implements SQLFeatureStore {
 
     GMLReferenceResolver getResolver() {
         return resolver;
+    }
+
+    String getWKBParamTemplate( String srid ) {
+        StringBuilder sb = new StringBuilder();
+        if ( useLegacyPredicates ) {
+            sb.append( "SetSRID(GeomFromWKB(?)," );
+        } else {
+            sb.append( "SetSRID(ST_GeomFromWKB(?)," );
+        }
+        sb.append( srid );
+        sb.append( ")" );
+        return sb.toString();
     }
 
     private class PostGISResultSetIterator extends ResultSetIterator<Feature> {
