@@ -18,14 +18,14 @@
 																												action="#{config.activate}" /></td>
 																								<td><h:commandButton value="#{labels.webservices_edit}" action="#{config.edit}" /></td>
 																								<td><h:panelGroup rendered="#{config.active}">
-																												<h:link value="[#{labels.webservices_cap}]" outcome="#{config.capabilitiesURL}" />
+																								<dg:externalLink target="_blank" href="#{config.capabilitiesURL}" title="[#{labels.webservices_cap}]" />
 																								</h:panelGroup></td>
 																				</tr>
 																</ui:repeat>
 												</table>
 												<br />
-												<h:commandButton value="Edit metadata" action="#{configManager.serviceMetadataConfig.edit}" />
-												<h:commandButton value="Edit global config" action="#{configManager.serviceMainConfig.edit}" />
+												<h:commandButton value="#{labels.webservices_edit_md}" action="#{configManager.serviceMetadataConfig.edit}" />
+												<h:commandButton value="#{labels.webservices_edit_global}" action="#{configManager.serviceMainConfig.edit}" />
 								</h:form></fieldset>
 				</ui:define>
 </ui:composition>

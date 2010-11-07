@@ -35,8 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.console.featurestore;
 
-import java.io.IOException;
-
+import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.RequestScoped;
 import javax.faces.context.FacesContext;
@@ -44,6 +43,7 @@ import javax.faces.context.FacesContext;
 import lombok.Getter;
 import lombok.Setter;
 
+import org.deegree.client.core.utils.MessageUtils;
 import org.deegree.console.ConfigManager;
 import org.deegree.feature.persistence.FeatureStoreProvider;
 
@@ -67,15 +67,20 @@ public class NewFeatureStoreConfig {
     @Setter
     private String type;
 
-    public String create()
-                            throws IOException {
-
+    public String create() {
         FeatureStoreConfigManager configManager = ConfigManager.getApplicationInstance().getFsManager();
         FeatureStoreProvider provider = configManager.getProvider( type );
         FeatureStoreConfig config = new FeatureStoreConfig( id, false, false, configManager, provider );
         configManager.add( config );
-        config.create();
-        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put( "editConfig", config );
-        return "/console/generic/xmleditor.jsf?faces-redirect=true";
+        try {
+            config.create();
+            FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put( "editConfig", config );
+            return "/console/generic/xmleditor.jsf?faces-redirect=true";
+        } catch ( Exception e ) {
+            FacesMessage fm = MessageUtils.getFacesMessage( FacesMessage.SEVERITY_ERROR,
+                                                            "FAILED_CREATE_NEW_FEATURESTORE", e.getMessage() );
+            FacesContext.getCurrentInstance().addMessage( "ERROR_NEW_FEAT_STORE", fm );
+            return "featureStore";
+        }
     }
 }

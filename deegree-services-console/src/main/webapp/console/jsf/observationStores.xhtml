@@ -25,13 +25,18 @@
 																</ui:repeat>
 												</table>
 												<br />
-								</h:form> <h:form>
+								</h:form> 
+								<h:form>
+								<div>
 												<h:outputLabel for="newOSBt" value="#{labels.obsStores_name}" />
-												<h:inputText id="newOSBt" value="#{newObservationStoreConfig.id}" size="16" />
+												<h:inputText id="newOSBt" value="#{newObservationStoreConfig.id}" size="16" required="true" requiredMessage="#{labels.obsStores_name_req}"/>
 												<h:selectOneMenu value="#{newObservationStoreConfig.type}">
 																<f:selectItems value="#{configManager.osManager.osTypes}" />
 												</h:selectOneMenu>
-												<h:commandButton value="#{labels.obsStores_new}" action="#{newObservationStoreConfig.create}" />
-								</h:form></fieldset>
+												<h:commandButton value="#{labels.obsStores_new}" action="#{newObservationStoreConfig.create}"  />
+											</div>	
+												<h:message for="newOSBt" errorClass="consoleError" style="mergin-top: 10px;"/>
+								</h:form>
+								</fieldset>
 				</ui:define>
 </ui:composition>

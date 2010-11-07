@@ -35,8 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.console.jdbc;
 
-import java.io.IOException;
-
+import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.RequestScoped;
 import javax.faces.context.FacesContext;
@@ -44,6 +43,7 @@ import javax.faces.context.FacesContext;
 import lombok.Getter;
 import lombok.Setter;
 
+import org.deegree.client.core.utils.MessageUtils;
 import org.deegree.console.ConfigManager;
 
 /**
@@ -62,14 +62,19 @@ public class NewConnectionConfig {
     @Setter
     private String id;
 
-    public String create()
-                            throws IOException {
-
+    public String create() {
         ConnectionConfigManager configManager = ConfigManager.getApplicationInstance().getConnManager();
         ConnectionConfig config = new ConnectionConfig( id, configManager );
         configManager.add( config );
-        config.create();
-        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put( "editConfig", config );
-        return "/console/generic/xmleditor.jsf?faces-redirect=true";
+        try {
+            config.create();
+            FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put( "editConfig", config );
+            return "/console/generic/xmleditor.jsf?faces-redirect=true";
+        } catch ( Exception e ) {
+            FacesMessage fm = MessageUtils.getFacesMessage( FacesMessage.SEVERITY_ERROR,
+                                                            "FAILED_CREATE_NEW_CONNECTION", e.getMessage() );
+            FacesContext.getCurrentInstance().addMessage( "ERROR_NEW_CONNECTION", fm );
+            return "jdbc";
+        }
     }
 }

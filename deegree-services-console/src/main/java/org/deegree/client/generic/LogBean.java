@@ -35,10 +35,17 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.client.generic;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.Serializable;
 
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
+
+import org.deegree.services.controller.OGCFrontController;
 
 /**
  * TODO add class documentation here
@@ -63,11 +70,34 @@ public class LogBean implements Serializable {
     }
 
     public Object logIn() {
-        // TODO
-        if ( password != null ) {
-            loggedIn = true;
+        String correctPw = null;
+        try {
+            File workspace = OGCFrontController.getServiceWorkspace().getLocation();
+            BufferedReader in = new BufferedReader(
+                                                    new InputStreamReader( new FileInputStream( new File( workspace,
+                                                                                                          "user.txt" ) ) ) );
+
+            try {
+                String line;
+                while ( ( line = in.readLine() ) != null ) {
+                    if ( !line.startsWith( "#" ) ) {
+                        correctPw = line;
+                        break;
+                    }
+                }
+            } finally {
+                in.close();
+            }
+        } catch ( IOException e ) {
+            e.printStackTrace();
         }
-        return "/console";
+        if ( password != null && password.equals( correctPw ) ) {
+            loggedIn = true;
+            return "success";
+        } else {
+            return "failed";
+        }
+
     }
 
     public Object logOut() {

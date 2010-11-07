@@ -30,12 +30,17 @@
 								<h:link value="observationStores" outcome="/console/jsf/observationStores.xhtml" disabled="#{!logBean.loggedIn}" />
 								<h:link value="jdbc" outcome="/console/jsf/jdbc.xhtml" disabled="#{!logBean.loggedIn}" />
 				</h:panelGrid></div>
-				<div id="center"><ui:insert name="center" /></div>
+				<div id="center">
+						<ui:insert name="center" />
+						<h:panelGroup><h:messages errorClass="consoleError"/>
+						</h:panelGroup>
+				</div>
 				<div id="right"><h:panelGrid columns="1">
 								<h:link outcome="/console/client/client.html" target="_blank" value="#{labels.link_genericClient}" />
 								<h:link outcome="/console/wms/wms.html" target="_blank" value="#{labels.link_wmsClient}" />
 								<dg:externalLink target="_blank" href="http://wiki.deegree.org" title="#{labels.link_wiki}" />
-				</h:panelGrid> <h:panelGroup class="margin-top: 10px;">
+				</h:panelGrid> 
+				<h:panelGroup class="margin-top: 10px;">
 								<h:form id="reloadForm">
 												<h:panelGrid rendered="#{configManager.pendingChanges}">
 																<h:outputText value="#{configManager.lastMessage}" styleClass="attention" />

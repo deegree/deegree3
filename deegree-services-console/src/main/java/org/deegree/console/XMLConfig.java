@@ -204,10 +204,8 @@ public class XMLConfig implements Serializable {
 
     public void create()
                             throws IOException {
-
         File location = getLocation();
         OutputStream os = new FileOutputStream( location );
-
         InputStream is = template.openStream();
         byte[] buffer = new byte[1024];
         int read = -1;
@@ -265,7 +263,7 @@ public class XMLConfig implements Serializable {
         }
     }
 
-    public String getOutcome(){
-        return "";
+    public String getOutcome() {
+        return "services";
     }
 }

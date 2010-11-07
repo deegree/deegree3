@@ -7,7 +7,7 @@
 								<fieldset><legend><h:outputText value="#{labels.jdbc_title}" /></legend> <h:form>
 												<table border="0">
 																<ui:repeat value="#{configManager.connManager.configs}" var="config">
-																				<tr align="center">
+																				<tr>
 																								<td><h:outputFormat value="#{labels.jdbc_id}">
 																												<f:param value="#{config.id}" />
 																								</h:outputFormat></td>
@@ -19,9 +19,13 @@
 												</table>
 												<br />
 								</h:form> <h:form>
+								<div>
 												<h:outputLabel for="newJDBCBt" value="#{labels.jdbc_name}" />
-												<h:inputText id="newJDBCBt" value="#{newConnectionConfig.id}" size="16" />
+												<h:inputText id="newJDBCBt" value="#{newConnectionConfig.id}" size="16" required="true" requiredMessage="#{labels.jdbc_name_req}"/>
 												<h:commandButton value="#{labels.jdbc_new}" action="#{newConnectionConfig.create}" />
+												
+												</div>	
+												<h:message for="newJDBCBt" errorClass="consoleError" style="mergin-top: 10px;"/>
 								</h:form></fieldset>
 				</ui:define>
 </ui:composition>

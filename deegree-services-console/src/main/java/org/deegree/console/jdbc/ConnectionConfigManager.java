@@ -35,9 +35,6 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.console.jdbc;
 
-import javax.faces.bean.ApplicationScoped;
-import javax.faces.bean.ManagedBean;
-
 import org.deegree.commons.jdbc.ConnectionManager;
 import org.deegree.console.XMLConfigManager;
 

@@ -35,8 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.console.observationstore;
 
-import java.io.IOException;
-
+import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.RequestScoped;
 import javax.faces.context.FacesContext;
@@ -44,6 +43,7 @@ import javax.faces.context.FacesContext;
 import lombok.Getter;
 import lombok.Setter;
 
+import org.deegree.client.core.utils.MessageUtils;
 import org.deegree.console.ConfigManager;
 import org.deegree.observation.persistence.ObservationStoreProvider;
 
@@ -67,15 +67,21 @@ public class NewObservationStoreConfig {
     @Setter
     private String type;
 
-    public String create()
-                            throws IOException {
+    public String create() {
         ObservationStoreConfigManager configManager = ConfigManager.getApplicationInstance().getOsManager();
         ObservationStoreProvider provider = configManager.getProvider( type );
         provider.getConfigTemplate();
         ObservationStoreConfig config = new ObservationStoreConfig( id, false, false, configManager, provider );
         configManager.add( config );
-        config.create();
-        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put( "editConfig", config );
-        return "/console/generic/xmleditor.jsf?faces-redirect=true";
+        try {
+            config.create();
+            FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put( "editConfig", config );
+            return "/console/generic/xmleditor.jsf?faces-redirect=true";
+        } catch ( Exception e ) {
+            FacesMessage fm = MessageUtils.getFacesMessage( FacesMessage.SEVERITY_ERROR,
+                                                            "FAILED_CREATE_NEW_OBSERVATIONSTORE", e.getMessage() );
+            FacesContext.getCurrentInstance().addMessage( "ERROR_NEW_OBS_STORE", fm );
+            return "observationStore";
+        }
     }
 }

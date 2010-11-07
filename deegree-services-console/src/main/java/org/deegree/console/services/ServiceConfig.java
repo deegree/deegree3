@@ -68,9 +68,4 @@ public class ServiceConfig extends ManagedXMLConfig {
         return FacesUtil.getServerURL() + "services?service=" + getId().toUpperCase() + "&request=GetCapabilities";
     }
 
-    @Override
-    public String getOutcome() {
-        return "services";
-    }
-
 }

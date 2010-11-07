@@ -102,6 +102,10 @@ a.selectedMenuEntry:hover {
 }
 
 /** END: menu **/ /* END: layout*/
+.consoleError {
+	color: red;
+}
+
 a {
 	text-decoration: underline;
 	color: #000000;
