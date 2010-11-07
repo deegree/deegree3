@@ -215,7 +215,7 @@ public class PostGISFeatureStoreTransaction implements FeatureStoreTransaction {
     }
 
     @Override
-    public List<String> performInsert( FeatureCollection fc, IDGenMode mode )
+    public List<String> performInsert( Feature f, IDGenMode mode )
                             throws FeatureStoreException {
 
         LOG.debug( "performInsert()" );
@@ -224,7 +224,7 @@ public class PostGISFeatureStoreTransaction implements FeatureStoreTransaction {
         Set<Feature> features = new LinkedHashSet<Feature>();
         Set<String> fids = new LinkedHashSet<String>();
         Set<String> gids = new LinkedHashSet<String>();
-        findFeaturesAndGeometries( fc, geometries, features, fids, gids );
+        findFeaturesAndGeometries( f, geometries, features, fids, gids );
 
         switch ( mode ) {
         case GENERATE_NEW: {

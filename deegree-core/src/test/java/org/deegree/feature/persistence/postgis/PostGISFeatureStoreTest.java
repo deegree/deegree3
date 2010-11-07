@@ -57,7 +57,9 @@ import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.commons.xml.stax.IndentingXMLStreamWriter;
 import org.deegree.cs.exceptions.TransformationException;
 import org.deegree.cs.exceptions.UnknownCRSException;
+import org.deegree.feature.Feature;
 import org.deegree.feature.FeatureCollection;
+import org.deegree.feature.StreamFeatureCollection;
 import org.deegree.feature.persistence.FeatureStoreException;
 import org.deegree.feature.persistence.FeatureStoreManager;
 import org.deegree.feature.persistence.FeatureStoreTransaction;
@@ -191,9 +193,12 @@ public class PostGISFeatureStoreTest {
             gmlReader.setApplicationSchema( fs.getSchema() );
             gmlReader.getIdContext().resolveLocalRefs();
 
-            FeatureCollection fc = gmlReader.readFeatureCollection();
+            StreamFeatureCollection fc = gmlReader.readStreamFeatureCollection();
             FeatureStoreTransaction ta = fs.acquireTransaction();
-            ta.performInsert( fc, IDGenMode.GENERATE_NEW );
+            Feature f = null;
+            while ((f = fc.read()) != null) { 
+                ta.performInsert( f, IDGenMode.GENERATE_NEW );
+            }
             ta.commit();
         }
     }

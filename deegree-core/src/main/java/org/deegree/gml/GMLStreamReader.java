@@ -170,8 +170,7 @@ public class GMLStreamReader {
     }
 
     /**
-     * Sets the {@link GMLReferenceResolver} that the generated {@link GMLReference}s will use for resolving
-     * themselves.
+     * Sets the {@link GMLReferenceResolver} that the generated {@link GMLReference}s will use for resolving themselves.
      * 
      * @param resolver
      */
@@ -205,6 +204,7 @@ public class GMLStreamReader {
     /**
      * Returns the deegree model representation for the GML feature element event that the cursor of the underlying xml
      * stream points to.
+     * 
      * @return deegree model representation for the current GML feature element, never <code>null</code>
      * @throws XMLStreamException
      * @throws XMLParsingException
@@ -248,7 +248,7 @@ public class GMLStreamReader {
      */
     public StreamFeatureCollection readStreamFeatureCollection()
                             throws XMLStreamException, XMLParsingException, UnknownCRSException {
-        return null;
+        return getFeatureReader().getFeatureStream( xmlStream, defaultCRS );
     }
 
     /**

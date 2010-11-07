@@ -46,6 +46,7 @@ import javax.xml.bind.JAXBException;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.jaxb.JAXBUtils;
 import org.deegree.cs.CRS;
+import org.deegree.feature.Feature;
 import org.deegree.feature.FeatureCollection;
 import org.deegree.feature.i18n.Messages;
 import org.deegree.feature.persistence.FeatureStore;
@@ -157,8 +158,11 @@ public class MemoryFeatureStoreProvider implements FeatureStoreProvider {
                         gmlStream.getIdContext().resolveLocalRefs();
 
                         FeatureStoreTransaction ta = fs.acquireTransaction();
-                        List<String> fids = ta.performInsert( fc, IDGenMode.USE_EXISTING );
-                        LOG.info( "Inserted " + fids.size() + " features." );
+                        int fids = 0;
+                        for ( Feature feature : fc ) {
+                            fids += ta.performInsert( feature, IDGenMode.USE_EXISTING ).size();
+                        }
+                        LOG.info( "Inserted " + fids + " features." );
                         ta.commit();
                     } catch ( Exception e ) {
                         String msg = Messages.getMessage( "STORE_MANAGER_STORE_SETUP_ERROR", e.getMessage() );

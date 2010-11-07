@@ -35,13 +35,13 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.feature;
 
+import java.io.Closeable;
 import java.io.IOException;
 
 /**
- * Allows stream access to {@link Feature} objects provide by a source.
+ * Provides stream access to {@link Feature} objects provide by a source.
  * <p>
- * The concrete source is implementation dependent, important use cases are GML files containing features or a SQL
- * results sets that are used to generate {@link Feature} instances.
+ * NOTE: After use, {@link #close()} <b>must</b> be called to free underlying resources.
  * </p>
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
@@ -49,20 +49,13 @@ import java.io.IOException;
  * 
  * @version $Revision$, $Date$
  */
-public interface FeatureInputStream extends Iterable<Feature> {
+public interface FeatureInputStream extends Closeable {
 
     /**
      * Reads the next {@link Feature} instance from the stream.
      * 
      * @return the next {@link Feature} or <code>null</code> if the end of the stream has been reached
      */
-    public Feature readFeature();
-
-    /**
-     * Closes the input stream.
-     * 
-     * @throws IOException
-     */
-    public void close()
+    public Feature read()
                             throws IOException;
 }

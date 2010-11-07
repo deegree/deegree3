@@ -41,8 +41,6 @@ import static org.deegree.gml.GMLVersion.GML_31;
 import static org.deegree.gml.GMLVersion.GML_32;
 import static org.slf4j.LoggerFactory.getLogger;
 
-import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.net.URL;
 
@@ -50,10 +48,8 @@ import javax.xml.bind.JAXBException;
 import javax.xml.namespace.QName;
 import javax.xml.stream.FactoryConfigurationError;
 import javax.xml.stream.XMLInputFactory;
-import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
-import javax.xml.stream.XMLStreamWriter;
 
 import junit.framework.Assert;
 
@@ -61,14 +57,13 @@ import org.apache.xerces.xs.XSComplexTypeDefinition;
 import org.deegree.CoreTstProperties;
 import org.deegree.commons.tom.genericxml.GenericXMLElementContent;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
-import org.deegree.commons.xml.CommonNamespaces;
 import org.deegree.commons.xml.XMLParsingException;
-import org.deegree.commons.xml.stax.IndentingXMLStreamWriter;
 import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;
 import org.deegree.cs.exceptions.TransformationException;
 import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.feature.Feature;
 import org.deegree.feature.FeatureCollection;
+import org.deegree.feature.StreamFeatureCollection;
 import org.deegree.feature.property.Property;
 import org.deegree.feature.types.ApplicationSchema;
 import org.deegree.gml.GMLInputFactory;
@@ -80,7 +75,8 @@ import org.junit.Test;
 import org.slf4j.Logger;
 
 /**
- * Tests that check the correct reading of {@link Feature} / {@link FeatureCollection} objects from GML instance documents.
+ * Tests that check the correct reading of {@link Feature} / {@link FeatureCollection} objects from GML instance
+ * documents.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
@@ -107,6 +103,22 @@ public class GMLFeatureReaderTest {
         FeatureCollection fc = (FeatureCollection) decoder.parseFeature( wrapper, null );
         decoder.getDocumentIdContext().resolveLocalRefs();
         Assert.assertEquals( 7, fc.size() );
+    }
+
+    @Test
+    public void testParsingPhilosopherFeatureCollectionStream()
+                            throws XMLStreamException, FactoryConfigurationError, IOException, XMLParsingException,
+                            UnknownCRSException, ReferenceResolvingException {
+
+        URL docURL = GMLFeatureReaderTest.class.getResource( BASE_DIR + "Philosopher_FeatureCollection.xml" );
+        GMLStreamReader gmlReader = GMLInputFactory.createGMLStreamReader( GMLVersion.GML_31, docURL );
+        StreamFeatureCollection fc = gmlReader.readStreamFeatureCollection();
+
+        int i = 0;
+        while ( fc.read() != null ) {
+            i++;
+        }
+        Assert.assertEquals( 7, i );
     }
 
     @Test(expected = XMLParsingException.class)
@@ -144,6 +156,21 @@ public class GMLFeatureReaderTest {
         Assert.assertEquals( 16, fc.size() );
     }
 
+    @Test
+    public void testParsingCiteSF0Stream()
+                            throws XMLStreamException, FactoryConfigurationError, IOException, XMLParsingException,
+                            UnknownCRSException, ReferenceResolvingException {
+
+        URL docURL = GMLFeatureReaderTest.class.getResource( BASE_DIR + "dataset-sf0.xml" );
+        GMLStreamReader gmlReader = GMLInputFactory.createGMLStreamReader( GMLVersion.GML_31, docURL );
+        StreamFeatureCollection fc = gmlReader.readStreamFeatureCollection();
+        int i = 0;
+        while ( fc.read() != null ) {
+            i++;
+        }
+        Assert.assertEquals( 16, i );
+    }
+
     /**
      * @throws XMLStreamException
      * @throws FactoryConfigurationError
@@ -160,27 +187,22 @@ public class GMLFeatureReaderTest {
         URL docURL = GMLFeatureReaderTest.class.getResource( BASE_DIR + "dataset-sf1.xml" );
         GMLStreamReader gmlReader = GMLInputFactory.createGMLStreamReader( GMLVersion.GML_31, docURL );
         FeatureCollection fc = (FeatureCollection) gmlReader.readFeature();
+        Assert.assertEquals( 3, fc.size() );
+    }
 
-        for ( Feature feature : fc ) {
-            LOG.debug( feature.getId() );
-            for ( Property prop : feature.getProperties( GMLVersion.GML_31 ) ) {
-                LOG.debug( "prop name: " + prop.getName() );
-            }
-            break;
+    @Test
+    public void testParsingCiteSF1Stream()
+                            throws XMLStreamException, FactoryConfigurationError, IOException, XMLParsingException,
+                            UnknownCRSException, ReferenceResolvingException {
+
+        URL docURL = GMLFeatureReaderTest.class.getResource( BASE_DIR + "dataset-sf1.xml" );
+        GMLStreamReader gmlReader = GMLInputFactory.createGMLStreamReader( GMLVersion.GML_31, docURL );
+        StreamFeatureCollection fc = gmlReader.readStreamFeatureCollection();
+        int i = 0;
+        while ( fc.read() != null ) {
+            i++;
         }
-
-        gmlReader.getIdContext().resolveLocalRefs();
-        XMLStreamWriter writer = new IndentingXMLStreamWriter(
-                                                               XMLOutputFactory.newInstance().createXMLStreamWriter( new FileWriter(
-                                                                                                                                     System.getProperty( "java.io.tmpdir" )
-                                                                                                                                                             + File.separatorChar
-                                                                                                                                                             + "out.xml" ) ) );
-        writer.setPrefix( "xlink", CommonNamespaces.XLNNS );
-        writer.setPrefix( "sf", "http://cite.opengeospatial.org/gmlsf" );
-        writer.setPrefix( "gml", "http://www.opengis.net/gml" );
-        GMLFeatureWriter encoder = new GMLFeatureWriter( writer, null );
-        encoder.export( fc );
-        writer.close();
+        Assert.assertEquals( 3, i );
     }
 
     @Test
@@ -194,17 +216,22 @@ public class GMLFeatureReaderTest {
         GMLStreamReader gmlReader = GMLInputFactory.createGMLStreamReader( GMLVersion.GML_31, docURL );
         FeatureCollection fc = (FeatureCollection) gmlReader.readFeature();
         gmlReader.getIdContext().resolveLocalRefs();
+        Assert.assertEquals( 29, fc.size() );
+    }
 
-        // XMLStreamWriter writer = new FormattingXMLStreamWriter(
-        // XMLOutputFactory.newInstance().createXMLStreamWriter(
-        // new FileWriter(
-        // "/tmp/out.xml" ) ) );
-        // writer.setPrefix( "xlink", CommonNamespaces.XLNNS );
-        // writer.setPrefix( "sf", "http://cite.opengeospatial.org/gmlsf" );
-        // writer.setPrefix( "gml", "http://www.opengis.net/gml" );
-        // GML_311FeatureEncoder encoder = new GML_311FeatureEncoder( writer, null );
-        // encoder.export( fc );
-        // writer.close();
+    @Test
+    public void testParsingCiteSF2Stream()
+                            throws XMLStreamException, FactoryConfigurationError, IOException, XMLParsingException,
+                            UnknownCRSException, ReferenceResolvingException {
+
+        URL docURL = GMLFeatureReaderTest.class.getResource( BASE_DIR + "dataset-sf2.xml" );
+        GMLStreamReader gmlReader = GMLInputFactory.createGMLStreamReader( GMLVersion.GML_31, docURL );
+        StreamFeatureCollection fc = gmlReader.readStreamFeatureCollection();
+        int i = 0;
+        while ( fc.read() != null ) {
+            i++;
+        }
+        Assert.assertEquals( 29, i );
     }
 
     @Test
@@ -215,22 +242,21 @@ public class GMLFeatureReaderTest {
         GMLStreamReader gmlReader = GMLInputFactory.createGMLStreamReader( GMLVersion.GML_2, docURL );
         FeatureCollection fc = (FeatureCollection) gmlReader.readFeature();
         gmlReader.getIdContext().resolveLocalRefs();
+        Assert.assertEquals( 106, fc.size() );
+    }
 
-        // XMLStreamWriter writer = new FormattingXMLStreamWriter(
-        // XMLOutputFactory.newInstance().createXMLStreamWriter(
-        // new FileWriter(
-        // "/tmp/out.xml" ) ) );
-        // writer.setPrefix( "xlink", CommonNamespaces.XLNNS );
-        // writer.setPrefix( "sf", "http://cite.opengeospatial.org/gmlsf" );
-        // writer.setPrefix( "gml", "http://www.opengis.net/gml" );
-        // writer.setPrefix( "wfs", "http://www.opengis.net/wfs" );
-        // writer.setPrefix( "cgf", "http://www.opengis.net/cite/geometry" );
-        // writer.setPrefix( "ccf", "http://www.opengis.net/cite/complex" );
-        // writer.setPrefix( "uri", "http://www.opengis.net/cite/data" );
-        // writer.setPrefix( "xsi", "http://www.w3.org/2001/XMLSchema-instance" );
-        // GML2FeatureEncoder encoder = new GML2FeatureEncoder( writer, null );
-        // encoder.export( fc );
-        // writer.close();
+    @Test
+    public void testParsingCite100Stream()
+                            throws FactoryConfigurationError, Exception {
+
+        URL docURL = GMLFeatureReaderTest.class.getResource( BASE_DIR + "dataset.xml" );
+        GMLStreamReader gmlReader = GMLInputFactory.createGMLStreamReader( GMLVersion.GML_2, docURL );
+        StreamFeatureCollection fc = gmlReader.readStreamFeatureCollection();
+        int i = 0;
+        while ( fc.read() != null ) {
+            i++;
+        }
+        Assert.assertEquals( 106, i );
     }
 
     // @Test
@@ -355,6 +381,31 @@ public class GMLFeatureReaderTest {
     }
 
     @Test
+    public void testINSPIREAddresses1Stream()
+                            throws XMLStreamException, FactoryConfigurationError, IOException, ClassCastException,
+                            ClassNotFoundException, InstantiationException, IllegalAccessException,
+                            XMLParsingException, UnknownCRSException, JAXBException, TransformationException,
+                            ReferenceResolvingException {
+
+        String schemaURL = CoreTstProperties.getProperty( "schema_inspire_addresses" );
+        if ( schemaURL == null ) {
+            return;
+        }
+        ApplicationSchemaXSDDecoder adapter = new ApplicationSchemaXSDDecoder( GML_32, null, schemaURL );
+        ApplicationSchema schema = adapter.extractFeatureTypeSchema();
+
+        URL docURL = GMLFeatureReaderTest.class.getResource( BASE_DIR + "inspire_addresses1.gml" );
+        GMLStreamReader gmlReader = GMLInputFactory.createGMLStreamReader( GML_32, docURL );
+        gmlReader.setApplicationSchema( schema );
+        StreamFeatureCollection fc = gmlReader.readStreamFeatureCollection();
+        int i = 0;
+        while ( fc.read() != null ) {
+            i++;
+        }
+        Assert.assertEquals( 4, i );
+    }
+
+    @Test
     public void testINSPIREAddresses2()
                             throws XMLStreamException, FactoryConfigurationError, IOException, ClassCastException,
                             ClassNotFoundException, InstantiationException, IllegalAccessException,
@@ -378,6 +429,31 @@ public class GMLFeatureReaderTest {
     }
 
     @Test
+    public void testINSPIREAddresses2Stream()
+                            throws XMLStreamException, FactoryConfigurationError, IOException, ClassCastException,
+                            ClassNotFoundException, InstantiationException, IllegalAccessException,
+                            XMLParsingException, UnknownCRSException, JAXBException, TransformationException,
+                            ReferenceResolvingException {
+
+        String schemaURL = CoreTstProperties.getProperty( "schema_inspire_addresses" );
+        if ( schemaURL == null ) {
+            return;
+        }
+        ApplicationSchemaXSDDecoder adapter = new ApplicationSchemaXSDDecoder( GML_32, null, schemaURL );
+        ApplicationSchema schema = adapter.extractFeatureTypeSchema();
+
+        URL docURL = GMLFeatureReaderTest.class.getResource( BASE_DIR + "inspire_addresses2.gml" );
+        GMLStreamReader gmlReader = GMLInputFactory.createGMLStreamReader( GML_32, docURL );
+        gmlReader.setApplicationSchema( schema );
+        StreamFeatureCollection fc = gmlReader.readStreamFeatureCollection();
+        int i = 0;
+        while ( fc.read() != null ) {
+            i++;
+        }
+        Assert.assertEquals( 4, i );
+    }
+
+    @Test
     public void testGeoServerWFS100FC()
                             throws XMLStreamException, FactoryConfigurationError, IOException, ClassCastException,
                             ClassNotFoundException, InstantiationException, IllegalAccessException,
@@ -392,6 +468,23 @@ public class GMLFeatureReaderTest {
     }
 
     @Test
+    public void testGeoServerWFS100FCStream()
+                            throws XMLStreamException, FactoryConfigurationError, IOException, ClassCastException,
+                            ClassNotFoundException, InstantiationException, IllegalAccessException,
+                            XMLParsingException, UnknownCRSException, JAXBException, TransformationException,
+                            ReferenceResolvingException {
+
+        URL docURL = GMLFeatureReaderTest.class.getResource( BASE_DIR + "GeoServer_FC_WFS100.xml" );
+        GMLStreamReader gmlReader = GMLInputFactory.createGMLStreamReader( GMLVersion.GML_2, docURL );
+        StreamFeatureCollection fc = gmlReader.readStreamFeatureCollection();
+        int i = 0;
+        while ( fc.read() != null ) {
+            i++;
+        }
+        Assert.assertEquals( 4, i );
+    }
+
+    @Test
     public void testGeoServerWFS110FC()
                             throws XMLStreamException, FactoryConfigurationError, IOException, ClassCastException,
                             ClassNotFoundException, InstantiationException, IllegalAccessException,
@@ -403,5 +496,22 @@ public class GMLFeatureReaderTest {
         FeatureCollection fc = (FeatureCollection) gmlReader.readFeature();
         gmlReader.getIdContext().resolveLocalRefs();
         Assert.assertEquals( 4, fc.size() );
+    }
+
+    @Test
+    public void testGeoServerWFS110FCStream()
+                            throws XMLStreamException, FactoryConfigurationError, IOException, ClassCastException,
+                            ClassNotFoundException, InstantiationException, IllegalAccessException,
+                            XMLParsingException, UnknownCRSException, JAXBException, TransformationException,
+                            ReferenceResolvingException {
+
+        URL docURL = GMLFeatureReaderTest.class.getResource( BASE_DIR + "GeoServer_FC_WFS110.xml" );
+        GMLStreamReader gmlReader = GMLInputFactory.createGMLStreamReader( GML_31, docURL );
+        StreamFeatureCollection fc = gmlReader.readStreamFeatureCollection();
+        int i = 0;
+        while ( fc.read() != null ) {
+            i++;
+        }
+        Assert.assertEquals( 4, i );
     }
 }

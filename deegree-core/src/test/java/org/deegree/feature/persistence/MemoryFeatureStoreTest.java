@@ -93,7 +93,8 @@ public class MemoryFeatureStoreTest {
     public void setUp()
                             throws XMLParsingException, XMLStreamException, UnknownCRSException,
                             FactoryConfigurationError, IOException, JAXBException, FeatureStoreException,
-                            ReferenceResolvingException, ClassCastException, ClassNotFoundException, InstantiationException, IllegalAccessException {
+                            ReferenceResolvingException, ClassCastException, ClassNotFoundException,
+                            InstantiationException, IllegalAccessException {
 
         String schemaURL = this.getClass().getResource( "/org/deegree/gml/feature/testdata/schema/Philosopher.xsd" ).toString();
         ApplicationSchemaXSDDecoder adapter = new ApplicationSchemaXSDDecoder( GMLVersion.GML_31, null, schemaURL );

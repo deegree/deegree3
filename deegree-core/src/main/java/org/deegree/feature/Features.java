@@ -37,7 +37,10 @@ package org.deegree.feature;
 
 import static org.deegree.gml.GMLVersion.GML_31;
 
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
@@ -64,6 +67,15 @@ public class Features {
 
     private static final Logger LOG = LoggerFactory.getLogger( Features.class );
 
+    public static FeatureCollection toCollection( FeatureInputStream is ) throws IOException {
+        List<Feature> members = new ArrayList<Feature>();
+        Feature feature = null;
+        while ((feature = is.read()) != null) {
+            members.add (feature);
+        }
+        return new GenericFeatureCollection( null, members );
+    }
+
     /**
      * Returns a sorted {@link FeatureCollection}.
      * 
@@ -81,7 +93,7 @@ public class Features {
         FeatureCollection sortedFc = fc;
         if ( sortCrits != null && sortCrits.length > 0 ) {
             SortedSet<Feature> sortedFeatures = new TreeSet<Feature>( new Comparator<Feature>() {
-                @SuppressWarnings( { "unchecked", "synthetic-access" })
+                @SuppressWarnings({ "unchecked", "synthetic-access" })
                 @Override
                 public int compare( Feature f1, Feature f2 ) {
                     int order = 0;

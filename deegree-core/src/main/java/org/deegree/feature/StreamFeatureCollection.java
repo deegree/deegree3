@@ -46,10 +46,8 @@ package org.deegree.feature;
  * 
  * @version $Revision$, $Date$
  */
-public interface StreamFeatureCollection extends FeatureCollection {
+public interface StreamFeatureCollection extends FeatureInputStream {
 
-    /**
-     * Closes the underlying {@link FeatureInputStream} and associated resources.
-     */
-    public void close();
+    // TODO define methods that go beyond FeatureInputStream
+
 }

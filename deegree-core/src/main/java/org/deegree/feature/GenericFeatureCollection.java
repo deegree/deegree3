@@ -37,6 +37,7 @@ package org.deegree.feature;
 
 import static org.deegree.gml.feature.schema.DefaultGMLTypes.GML311_FEATURECOLLECTION;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -278,5 +279,26 @@ public class GenericFeatureCollection extends AbstractFeatureCollection {
             }
         }
         return geoProps.toArray( new Property[geoProps.size()] );
+    }
+    
+    public FeatureInputStream getFeatureStream() {
+        final Iterator<Feature> iter = iterator();
+        return new FeatureInputStream() {
+            
+            @Override
+            public void close()
+                                    throws IOException {
+                // nothing to do
+            }
+            
+            @Override
+            public Feature read()
+                                    throws IOException {
+                if (iter.hasNext()) {
+                    return iter.next();
+                }
+                return null;
+            }
+        };
     }
 }

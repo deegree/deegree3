@@ -48,6 +48,7 @@ import javax.xml.stream.XMLStreamException;
 import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.cs.CRS;
 import org.deegree.cs.exceptions.UnknownCRSException;
+import org.deegree.feature.Feature;
 import org.deegree.feature.FeatureCollection;
 import org.deegree.feature.i18n.Messages;
 import org.deegree.feature.persistence.FeatureStore;
@@ -138,7 +139,9 @@ public class MemoryFeatureStore implements FeatureStore {
         idContext.resolveLocalRefs();
 
         FeatureStoreTransaction ta = acquireTransaction();
-        ta.performInsert( fc, IDGenMode.USE_EXISTING );
+        for ( Feature member : fc ) {
+            ta.performInsert( member, IDGenMode.USE_EXISTING );
+        }
         ta.commit();
     }
 

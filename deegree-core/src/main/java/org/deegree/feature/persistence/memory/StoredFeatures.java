@@ -126,6 +126,9 @@ class StoredFeatures {
      */
     void addFeatures( Collection<Feature> features ) {
         for ( Feature feature : features ) {
+            if (feature.getId().equals( "PHILOSOPHER_2" )) {
+                System.out.println ("ARGH");
+            }
             FeatureType ft = feature.getType();
             // TODO check if served
             FeatureCollection fc = ftToFeatures.get( ft );

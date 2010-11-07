@@ -40,7 +40,7 @@ import java.util.List;
 
 import javax.xml.namespace.QName;
 
-import org.deegree.feature.FeatureCollection;
+import org.deegree.feature.Feature;
 import org.deegree.feature.persistence.lock.Lock;
 import org.deegree.feature.property.Property;
 import org.deegree.filter.Filter;
@@ -85,7 +85,7 @@ public interface FeatureStoreTransaction {
     /**
      * Returns the underlying {@link FeatureStore} instance.
      * 
-     * @return the underlying {@link FeatureStore} instance
+     * @return the underlying {@link FeatureStore} instance, never <code>null</code>
      */
     public FeatureStore getStore();
 
@@ -110,29 +110,31 @@ public interface FeatureStoreTransaction {
                             throws FeatureStoreException;
 
     /**
-     * Inserts the member features of the given {@link FeatureCollection} into the {@link FeatureStore}.
+     * Inserts the given feature into the {@link FeatureStore} (including subfeatures).
+     * <p>
+     * Implementations must expect to encounter non-resolved sub-feature references.
+     * </p>
      * 
-     * @param fc
-     *            contains the member features to be inserted, their types must be served by the feature store and must
-     *            not be null
+     * @param feature
+     *            feature to be inserted, must not be <code>null</code>
      * @param mode
-     *            mode for deriving the ids of the inserted objects
-     * @return feature ids of the inserted (root) features
+     *            mode for deriving the ids of the inserted objects, must not be <code>null</code>
+     * @return effective ids of the inserted feature and subfeatures (in document order)
      * @throws FeatureStoreException
      *             if the insertion fails
      */
-    public List<String> performInsert( FeatureCollection fc, IDGenMode mode )
+    public List<String> performInsert( Feature feature, IDGenMode mode )
                             throws FeatureStoreException;
 
     /**
      * Performs an update operation against the {@link FeatureStore}.
      * 
      * @param ftName
-     *            name of the feature type of the features to be updated, must not be null and served by the store
+     *            feature type of the features to be updated, must not be <code>null</code>
      * @param replacementProps
-     *            properties and their replacement values
+     *            properties and their replacement values, must not be <code>null</code>
      * @param filter
-     *            selects the feature instances that are to be updated
+     *            selects the feature instances that are to be updated, must not be <code>null</code>
      * @param lock
      *            optional lock object, may be <code>null</code>
      * @return number of updated feature instances
@@ -146,9 +148,9 @@ public interface FeatureStoreTransaction {
      * Deletes the features from the {@link FeatureStore} that are matched by the given filter and type.
      * 
      * @param ftName
-     *            feature type of the features to be deleted, must not be null and served by the store
+     *            feature type of the features to be deleted, must not be <code>null</code>
      * @param filter
-     *            filter that determines the features to be deleted
+     *            filter that determines the features to be deleted, must not be <code>null</code>
      * @param lock
      *            optional lock object, may be <code>null</code>
      * @return number of deleted feature instances
@@ -162,7 +164,7 @@ public interface FeatureStoreTransaction {
      * Deletes the features from the {@link FeatureStore} that are matched by the given filter.
      * 
      * @param filter
-     *            filter that determines the features to be deleted
+     *            filter that determines the features to be deleted, must not be <code>null</code>
      * @param lock
      *            optional lock object, may be <code>null</code>
      * @return number of deleted feature instances

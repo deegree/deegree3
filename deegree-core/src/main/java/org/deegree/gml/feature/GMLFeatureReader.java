@@ -89,11 +89,13 @@ import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;
 import org.deegree.cs.CRS;
 import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.feature.Feature;
+import org.deegree.feature.StreamFeatureCollection;
 import org.deegree.feature.i18n.Messages;
 import org.deegree.feature.property.GenericProperty;
 import org.deegree.feature.property.Property;
 import org.deegree.feature.property.SimpleProperty;
 import org.deegree.feature.types.ApplicationSchema;
+import org.deegree.feature.types.FeatureCollectionType;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.feature.types.property.ArrayPropertyType;
 import org.deegree.feature.types.property.CodePropertyType;
@@ -148,7 +150,7 @@ public class GMLFeatureReader extends XMLAdapter {
 
     private GMLReferenceResolver specialResolver;
 
-    private final GMLVersion version;
+    final GMLVersion version;
 
     /**
      * Creates a new {@link GMLFeatureReader} instance that is configured for building features with the specified
@@ -275,7 +277,6 @@ public class GMLFeatureReader extends XMLAdapter {
 
         // parse properties
         Iterator<PropertyType> declIter = ft.getPropertyDeclarations( version ).iterator();
-
         PropertyType activeDecl = declIter.next();
         int propOccurences = 0;
 
@@ -356,6 +357,28 @@ public class GMLFeatureReader extends XMLAdapter {
         return feature;
     }
 
+    /**
+     * Returns a {@link StreamFeatureCollection} for iterating over the members of the feature collection that the
+     * cursor of the given <code>XMLStreamReader</code> points at.
+     * 
+     * @param xmlStream
+     *            cursor must point at the <code>START_ELEMENT</code> event of a feature collection element
+     * @param crs
+     * @return
+     * @throws XMLStreamException
+     */
+    public StreamFeatureCollection getFeatureStream( XMLStreamReaderWrapper xmlStream, CRS crs )
+                            throws XMLStreamException {
+
+        if ( schema == null ) {
+            schema = buildApplicationSchema( xmlStream );
+        }
+        String fid = parseFeatureId( xmlStream );
+        QName featureName = xmlStream.getName();
+        FeatureCollectionType ft = (FeatureCollectionType) lookupFeatureType( xmlStream, featureName );
+        return new GMLStreamFeatureCollection( fid, ft, this, xmlStream, crs );
+    }
+
     private ApplicationSchema buildApplicationSchema( XMLStreamReaderWrapper xmlStream )
                             throws XMLParsingException {
         String schemaLocation = xmlStream.getAttributeValue( XSINS, "schemaLocation" );
@@ -399,7 +422,7 @@ public class GMLFeatureReader extends XMLAdapter {
         return schema;
     }
 
-    private PropertyType findConcretePropertyType( QName elemName, PropertyType pt ) {
+    PropertyType findConcretePropertyType( QName elemName, PropertyType pt ) {
         LOG.debug( "Checking if '" + elemName + "' is a valid substitution for '" + pt.getName() + "'" );
 
         for ( PropertyType substitutionPt : pt.getSubstitutions() ) {
