@@ -108,9 +108,9 @@ import org.deegree.protocol.wfs.transaction.Insert;
 import org.deegree.protocol.wfs.transaction.Native;
 import org.deegree.protocol.wfs.transaction.PropertyReplacement;
 import org.deegree.protocol.wfs.transaction.Transaction;
+import org.deegree.protocol.wfs.transaction.Transaction.ReleaseAction;
 import org.deegree.protocol.wfs.transaction.TransactionOperation;
 import org.deegree.protocol.wfs.transaction.Update;
-import org.deegree.protocol.wfs.transaction.Transaction.ReleaseAction;
 import org.deegree.services.controller.exception.ControllerException;
 import org.deegree.services.controller.ows.OWSException;
 import org.deegree.services.controller.utils.HttpResponseBuffer;
@@ -308,7 +308,7 @@ class TransactionHandler {
         FeatureStoreTransaction ta = acquireTransaction( fs );
 
         Filter filter = delete.getFilter();
-        // superimpose default query CRS        
+        // superimpose default query CRS
         Filters.setDefaultCRS( filter, master.getDefaultQueryCrs() );
 
         try {
@@ -356,7 +356,11 @@ class TransactionHandler {
             if ( mode == null ) {
                 mode = IDGenMode.GENERATE_NEW;
             }
-            List<String> newFids = ta.performInsert( fc, mode );
+            List<String> newFids = new ArrayList<String>();
+            for ( Feature f : fc ) {
+                newFids.addAll( ta.performInsert( f, mode ) );
+            }
+            ta.performInsert( fc, mode );
             inserted += newFids.size();
             if ( insert.getHandle() != null ) {
                 if ( insertHandleToFids.containsKey( insert.getHandle() ) ) {
