@@ -360,7 +360,6 @@ class TransactionHandler {
             for ( Feature f : fc ) {
                 newFids.addAll( ta.performInsert( f, mode ) );
             }
-            ta.performInsert( fc, mode );
             inserted += newFids.size();
             if ( insert.getHandle() != null ) {
                 if ( insertHandleToFids.containsKey( insert.getHandle() ) ) {
