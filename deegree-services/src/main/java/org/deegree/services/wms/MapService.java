@@ -391,7 +391,8 @@ public class MapService {
                     return null;
                 }
             } else if ( aLayer.getCoverageStoreId() != null ) {
-                res = new RasterLayer( aLayer, parent );
+                res = RasterLayer.createRasterLayer( aLayer, parent );
+                // res = new RasterLayer( aLayer, parent );
                 // }else if(aLayer.getWMSStoreId() != null){
             } else {
                 res = new EmptyLayer( aLayer, parent );

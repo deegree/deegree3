@@ -36,7 +36,6 @@
 
 package org.deegree.services.wms.model.layers;
 
-import static java.util.Arrays.asList;
 import static org.deegree.commons.utils.math.MathUtils.round;
 import static org.deegree.coverage.raster.geom.RasterGeoReference.OriginLocation.OUTER;
 import static org.deegree.coverage.raster.interpolation.InterpolationType.BILINEAR;
@@ -51,15 +50,15 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.util.LinkedList;
-import java.util.ListIterator;
+import java.util.List;
 import java.util.TreeSet;
 
 import org.deegree.commons.utils.Pair;
 import org.deegree.commons.utils.log.LoggingNotes;
-import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.coverage.raster.RasterTransformer;
 import org.deegree.coverage.raster.SimpleRaster;
 import org.deegree.coverage.raster.data.RasterData;
+import org.deegree.coverage.raster.data.nio.ByteBufferRasterData;
 import org.deegree.coverage.raster.geom.RasterGeoReference;
 import org.deegree.cs.CRS;
 import org.deegree.cs.exceptions.TransformationException;
@@ -70,7 +69,8 @@ import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryTransformer;
 import org.deegree.protocol.wms.Utils;
 import org.deegree.protocol.wms.client.WMSClient111;
-import org.deegree.protocol.wms.raster.jaxb.WMSDataSourceType;
+import org.deegree.protocol.wms.raster.WMSRaster;
+import org.deegree.protocol.wms.raster.WMSReader;
 import org.deegree.rendering.r2d.se.unevaluated.Style;
 import org.deegree.services.jaxb.wms.AbstractLayerType;
 import org.deegree.services.wms.controller.ops.GetFeatureInfo;
@@ -92,7 +92,7 @@ public class RemoteWMSLayer extends Layer {
 
     private WMSClient111 client;
 
-    private LinkedList<String> layers;
+    private List<String> layers;
 
     private TreeSet<String> commonSRS;
 
@@ -101,23 +101,15 @@ public class RemoteWMSLayer extends Layer {
     /**
      * @param layer
      * @param parent
-     * @param datasource
-     * @param adapter
+     * @param raster
      * @throws MalformedURLException
      */
-    public RemoteWMSLayer( AbstractLayerType layer, Layer parent, WMSDataSourceType datasource, XMLAdapter adapter )
-                            throws MalformedURLException {
+    public RemoteWMSLayer( AbstractLayerType layer, Layer parent, WMSRaster raster ) throws MalformedURLException {
         super( layer, parent );
-        client = new WMSClient111( adapter.resolve( datasource.getCapabilitiesDocumentLocation().getLocation() ) );
-        if ( datasource.getCapabilitiesDocumentLocation().getRefreshTime() != -1 ) {
-            client.refreshCapabilities();
-        }
-
-        layers = new LinkedList<String>( asList( datasource.getRequestedLayers().split( "," ) ) );
-        ListIterator<String> i = layers.listIterator();
-        while ( i.hasNext() ) {
-            i.set( i.next().trim() );
-        }
+        // hack to extract configuration from the raster for now
+        WMSReader reader = (WMSReader) ( (ByteBufferRasterData) raster.getRasterData() ).getReader();
+        client = reader.getClient();
+        layers = reader.getLayers();
 
         setBbox( client.getLatLonBoundingBox( layers ) );
 
@@ -131,7 +123,7 @@ public class RemoteWMSLayer extends Layer {
         }
         LOG.debug( "Requestable srs common to all cascaded layers: " + commonSRS );
 
-        defaultSRS = datasource.getDefaultSRS();
+        defaultSRS = reader.getCRS().getName();
         defaultSRS = defaultSRS == null ? "EPSG:4326" : defaultSRS;
         if ( !commonSRS.contains( defaultSRS ) ) {
             defaultSRS = commonSRS.first();
