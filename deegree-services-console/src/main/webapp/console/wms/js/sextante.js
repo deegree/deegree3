@@ -1,7 +1,7 @@
 // WFS-Operations
-var WFS_GET_CAPABILITIES = "?SERVICE=WFS&REQUEST=GetCapabilities";
+var WFS_GET_CAPABILITIES = "?SERVICE=WFS&REQUEST=GetCapabilities&VERSION=1.0.0";
 var WFS_DESCRIBE_FEATURE_TYPE_WFS = "?SERVICE=WFS&REQUEST=DescribeFeatureType&VERSION=1.0.0&TYPENAME=";
-var WFS_GET_FEATURE = "?SERVICE=WFS&REQUEST=GetFeature&VERSION=1.0.0&OUTPUTFORMAT=GML2&TYPENAME=";
+var WFS_GET_FEATURE = "?SERVICE=WFS&REQUEST=GetFeature&VERSION=1.1.0&OUTPUTFORMAT=GML2&SRSNAME=EPSG:4326&TYPENAME=";
 
 // WPS-Operations
 var WPS_GET_CAPABILITIES = "?SERVICE=WPS&REQUEST=GetCapabilities";
@@ -124,10 +124,10 @@ function init() {
 	// add web feature service (only gml2)
 	addWFSURL( "http://giv-wps.uni-muenster.de:8080/geoserver/wfs");
 	addWFSURL(  "http://www.dge.upd.edu.ph/geoserver/wfs");
-	addWFSURL("http://127.0.0.1:8080/deegree-utah-demo-3.0-SNAPSHOT/services");
+	addWFSURL("http://deegree3-testing.deegree.org/deegree-utah-demo/services");
 	
-	//http://127.0.0.1:8080/deegree-utah-demo-3.0-SNAPSHOT/services?service=WFS&version=1.0.0&request=GetFeature&typeName=app:SGID024_StateBoundary
-	//http://127.0.0.1:8080/deegree-utah-demo-3.0-SNAPSHOT/services?service=WFS&version=1.0.0&request=GetCapabilities
+	// http://127.0.0.1:8080/deegree-utah-demo-3.0-SNAPSHOT/services?service=WFS&version=1.0.0&request=GetFeature&typeName=app:SGID024_StateBoundary
+	// http://127.0.0.1:8080/deegree-utah-demo-3.0-SNAPSHOT/services?service=WFS&version=1.0.0&request=GetCapabilities
 	
 	addWFSLayer('WFS topp:states', "http://giv-wps.uni-muenster.de:8080/geoserver/wfs","topp:states");
 	// addWFSLayer("WFS ns1:tasmania_roads", "http://giv-wps.uni-muenster.de:8080/geoserver/wfs","ns1:tasmania_roads", false);
@@ -135,18 +135,18 @@ function init() {
 	// addWFSLayer("WFS tiger:tiger_roads", "http://giv-wps.uni-muenster.de:8080/geoserver/wfs","tiger:tiger_roads", false);
 	// addWFSLayer("WFS tiger:poly_landmarks", "http://giv-wps.uni-muenster.de:8080/geoserver/wfs","tiger:poly_landmarks", false);
 	//
-//		// create wfs layer
-//		var wfs = new OpenLayers.Layer.Vector("WFS name", {
-//		strategies : [ new OpenLayers.Strategy.BBOX() ],
-//		protocol : new OpenLayers.Protocol.WFS( {
-//		        url : "http://127.0.0.1:8080/deegree-utah-demo-3.0-SNAPSHOT/services",
-//		        featureType : "SGID024_StateBoundary",
-//		        featureNS : "http://www.deegree.org/app"
-//		     })
-//		});
+// // create wfs layer
+// var wfs = new OpenLayers.Layer.Vector("WFS name", {
+// strategies : [ new OpenLayers.Strategy.BBOX() ],
+// protocol : new OpenLayers.Protocol.WFS( {
+// url : "http://127.0.0.1:8080/deegree-utah-demo-3.0-SNAPSHOT/services",
+// featureType : "SGID024_StateBoundary",
+// featureNS : "http://www.deegree.org/app"
+// })
+// });
 //			
-//		// add wfs layer to map
-//		map.addLayer(wfs);
+// // add wfs layer to map
+// map.addLayer(wfs);
 	
 	
 	
@@ -438,9 +438,13 @@ function determineIndividualLayerName(name){
 function determineWFSFeatureTypeNames(wfsURL) {
 
 	// url of xml file
-	var url = OpenLayers.ProxyHost + wfsURL;
-	url += escape(WFS_GET_CAPABILITIES);
+	var url = OpenLayers.ProxyHost;
+	// url + = wfsURL;
+	url += escape(wfsURL + WFS_GET_CAPABILITIES);
 
+	
+	// alert(url);
+	
 	// parse xml file
 	var request = getXMLHttpRequest('text/xml');
 	request.open('GET', url, false);
@@ -451,10 +455,22 @@ function determineWFSFeatureTypeNames(wfsURL) {
 	
 	// determine FeatureTypes
 	var collectionOfFeatureTypes = xmlDoc.getElementsByTagName("FeatureType");
+	if (collectionOfFeatureTypes.length == 0)
+		collectionOfFeatureTypes = xmlDoc.getElementsByTagName("wfs:FeatureType");
+	
+	// search names
 	var arrayOfFeatureTypes = new Array();
 	if (collectionOfFeatureTypes.length > 0)
 		for ( var int = 0; int < collectionOfFeatureTypes.length; int++) {
-			arrayOfFeatureTypes[int] = collectionOfFeatureTypes[int].childNodes[0].firstChild.nodeValue;
+			
+			var childs = collectionOfFeatureTypes[int].childNodes;
+			for ( var j = 0; j < childs.length; j++) {
+				if(childs[j].localName == "Name" || childs[j].localName == "name" ){
+					arrayOfFeatureTypes[int] = childs[j].firstChild.nodeValue;
+					break;
+				}
+			}
+
 		}
 	else
 		alert("Can't determine feature type names of the WFS.");
