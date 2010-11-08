@@ -209,7 +209,7 @@ public class OracleFeatureStore implements FeatureStore {
             Statement stmt = null;
             try {
                 conn = ConnectionManager.getConnection( connId );
-                String table = ftMapping.getFtTable();
+                String table = ftMapping.getFtTable().toString();
                 GeometryPropertyType geomPt = ft.getDefaultGeometryPropertyDeclaration();
                 if ( geomPt != null ) {
                     // TODO handle non-trivial mappings
@@ -359,7 +359,7 @@ public class OracleFeatureStore implements FeatureStore {
             SQLExpression orderBy = wb.getOrderBy();
 
             StringBuilder sql = new StringBuilder( "SELECT " );
-            sql.append( ftMapping.getFidColumn() );
+            sql.append( ftMapping.getFidMapping().getColumn() );
             for ( PropertyType pt : ft.getPropertyDeclarations() ) {
                 sql.append( ',' );
                 // TODO handle non-trivial mappings
@@ -500,7 +500,7 @@ public class OracleFeatureStore implements FeatureStore {
     }
 
     int getSrid( QName ftName, QName propName ) {
-        return Integer.parseInt( schema.getMapping( ftName ).getBackendCrs() );
+        return -1; // Integer.parseInt( schema.getMapping( ftName ).getBackendCrs() );
     }
 
     JGeometryAdapter getJGeometryAdapter( QName ftName, QName ptName ) {

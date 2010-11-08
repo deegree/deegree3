@@ -52,7 +52,6 @@ import org.deegree.commons.tom.primitive.PrimitiveType;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.commons.utils.JDBCUtils;
 import org.deegree.feature.Feature;
-import org.deegree.feature.FeatureCollection;
 import org.deegree.feature.persistence.FeatureStore;
 import org.deegree.feature.persistence.FeatureStoreException;
 import org.deegree.feature.persistence.FeatureStoreTransaction;
@@ -150,7 +149,7 @@ class OracleFeatureStoreTransaction implements FeatureStoreTransaction {
             StringBuilder sql = new StringBuilder( "DELETE FROM " );
             sql.append( ftMapping.getFtTable() );
             sql.append( " WHERE " );
-            sql.append( ftMapping.getFidColumn() );
+            sql.append( ftMapping.getFidMapping().getColumn() );
             sql.append( " IN(?" );
             for ( int i = 1; i < filter.getMatchingIds().size(); i++ ) {
                 sql.append( ",?" );
@@ -179,13 +178,11 @@ class OracleFeatureStoreTransaction implements FeatureStoreTransaction {
     }
 
     @Override
-    public List<String> performInsert( FeatureCollection fc, IDGenMode mode )
+    public List<String> performInsert( Feature f, IDGenMode mode )
                             throws FeatureStoreException {
 
-        List<String> fids = new ArrayList<String>( fc.size() );
-        for ( Feature f : fc ) {
-            fids.add( insertFeature( f, mode ) );
-        }
+        List<String> fids = new ArrayList<String>();
+        fids.add( insertFeature( f, mode ) );
         return fids;
     }
 
@@ -205,7 +202,7 @@ class OracleFeatureStoreTransaction implements FeatureStoreTransaction {
         StringBuilder sql = new StringBuilder( "INSERT INTO " );
         sql.append( ftMapping.getFtTable() );
         sql.append( " (" );
-        sql.append( ftMapping.getFidColumn() );
+        sql.append( ftMapping.getFidMapping().getColumn() );
         StringBuffer qMarks = new StringBuffer( "?" );
         for ( Property prop : f.getProperties() ) {
             if ( prop.getValue() != null ) {
@@ -268,7 +265,7 @@ class OracleFeatureStoreTransaction implements FeatureStoreTransaction {
             PreparedStatement stmt = null;
             ResultSet rs = null;
             try {
-                stmt = conn.prepareStatement( "SELECT MAX(" + ftMapping.getFidColumn() + ") + 1 FROM "
+                stmt = conn.prepareStatement( "SELECT MAX(" + ftMapping.getFidMapping().getColumn() + ") + 1 FROM "
                                               + ftMapping.getFtTable() );
                 rs = stmt.executeQuery();
                 rs.next();
@@ -386,7 +383,7 @@ class OracleFeatureStoreTransaction implements FeatureStoreTransaction {
                     sql.append( ',' );
                 }
                 first = false;
-                //  TODO handle non-trivial mapping
+                // TODO handle non-trivial mapping
                 String column = "" + ftMapping.getMapping( replacementProp.getType().getName() );
                 if ( column == null ) {
                     String msg = "Cannot update property '" + replacementProp.getName() + "' not mapped to a column!?";
@@ -396,7 +393,7 @@ class OracleFeatureStoreTransaction implements FeatureStoreTransaction {
                 sql.append( "=?" );
             }
             sql.append( " WHERE " );
-            sql.append( ftMapping.getFidColumn() );
+            sql.append( ftMapping.getFidMapping().getColumn() );
             sql.append( " IN(?" );
             for ( int i = 1; i < filter.getMatchingIds().size(); i++ ) {
                 sql.append( ",?" );
