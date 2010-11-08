@@ -108,9 +108,9 @@ import org.deegree.protocol.wfs.transaction.Insert;
 import org.deegree.protocol.wfs.transaction.Native;
 import org.deegree.protocol.wfs.transaction.PropertyReplacement;
 import org.deegree.protocol.wfs.transaction.Transaction;
-import org.deegree.protocol.wfs.transaction.Transaction.ReleaseAction;
 import org.deegree.protocol.wfs.transaction.TransactionOperation;
 import org.deegree.protocol.wfs.transaction.Update;
+import org.deegree.protocol.wfs.transaction.Transaction.ReleaseAction;
 import org.deegree.services.controller.exception.ControllerException;
 import org.deegree.services.controller.ows.OWSException;
 import org.deegree.services.controller.utils.HttpResponseBuffer;
@@ -323,8 +323,7 @@ class TransactionHandler {
             }
             }
         } catch ( FeatureStoreException e ) {
-            throw new OWSException( Messages.get( "WFS_ERROR_PERFORMING_DELETE", e.getMessage() ),
-                                    ControllerException.NO_APPLICABLE_CODE );
+            throw new OWSException( Messages.get( "WFS_ERROR_PERFORMING_DELETE", e.getMessage() ), NO_APPLICABLE_CODE );
         }
     }
 
@@ -332,6 +331,17 @@ class TransactionHandler {
                             throws OWSException {
 
         LOG.debug( "doInsert: " + insert );
+
+        if ( service.getStores().length == 0 ) {
+            throw new OWSException( "Cannot perform  insert. No feature store defined.", NO_APPLICABLE_CODE );
+        }
+
+        // TODO deal with this problem
+        if ( service.getStores().length > 1 ) {
+            throw new OWSException(
+                                    "Cannot perform  insert. More than one feature store is active -- this is currently not supported.",
+                                    NO_APPLICABLE_CODE );
+        }
 
         CRS defaultCRS = new CRS( insert.getSRSName() );
         if ( insert.getSRSName() != null ) {
@@ -349,7 +359,6 @@ class TransactionHandler {
         FeatureStoreTransaction ta = null;
         try {
             FeatureCollection fc = parseFeaturesOrCollection( insert.getFeatures(), inputFormat, defaultCRS );
-            // TODO determine correct store
             FeatureStore fs = service.getStores()[0];
             ta = acquireTransaction( fs );
             IDGenMode mode = insert.getIdGen();
