@@ -41,7 +41,6 @@ import java.util.Set;
 import org.deegree.coverage.raster.io.RasterIOProvider;
 import org.deegree.coverage.raster.io.RasterReader;
 import org.deegree.coverage.raster.io.RasterWriter;
-import org.deegree.protocol.wms.raster.WMSReader.WMSVersion;
 
 /**
  * Supplies the information needed to create WMS based coverage
@@ -57,7 +56,7 @@ public class WMSIOProvider implements RasterIOProvider {
     public RasterReader getRasterReader( String type ) {
         for ( String s : WMSReader.supportedFormats ) {
             if ( s.equalsIgnoreCase( type ) ) {
-                return new WMSReader( WMSVersion.valueOf( s ) );
+                return new WMSReader();
             }
         }
         return null;
@@ -71,7 +70,6 @@ public class WMSIOProvider implements RasterIOProvider {
     @Override
     public RasterWriter getRasterWriter( String type ) {
         return null;
-        // throw new UnsupportedOperationException( "Transactional wms is currently not supported." );
     }
 
     @Override

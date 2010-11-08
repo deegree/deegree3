@@ -35,8 +35,6 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.protocol.wms.raster;
 
-import static org.slf4j.LoggerFactory.getLogger;
-
 import java.util.LinkedList;
 
 import org.deegree.commons.utils.Pair;
@@ -50,7 +48,6 @@ import org.deegree.feature.FeatureCollection;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.geometry.Envelope;
 import org.deegree.rendering.r2d.se.unevaluated.Style;
-import org.slf4j.Logger;
 
 /**
  * TODO add class documentation here
@@ -61,8 +58,6 @@ import org.slf4j.Logger;
  * @version $Revision$, $Date$
  */
 public class WMSRaster extends SimpleRaster {
-
-    private static final Logger LOG = getLogger( WMSRaster.class );
 
     /**
      * @param raster
@@ -144,6 +139,9 @@ public class WMSRaster extends SimpleRaster {
         return null;
     }
 
+    /**
+     * @return null
+     */
     public FeatureType getFeatureType() {
         return null;
     }

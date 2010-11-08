@@ -582,12 +582,6 @@ public class WMSClient111 {
             return res;
         }
 
-        /**
-         * @param width2
-         * @param height2
-         * @param i
-         * @return
-         */
         private BufferedImage createErrorImage( String error, int width, int height, int type ) {
 
             BufferedImage result = new BufferedImage( width, height, type );

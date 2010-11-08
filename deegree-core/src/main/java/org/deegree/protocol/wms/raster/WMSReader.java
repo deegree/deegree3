@@ -42,8 +42,6 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.nio.ByteBuffer;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -133,8 +131,6 @@ public class WMSReader implements RasterReader {
 
     private RasterGeoReference geoRef;
 
-    private WMSVersion wmsVersion;
-
     private int width;
 
     private int height;
@@ -158,14 +154,6 @@ public class WMSReader implements RasterReader {
     private int timeout;
 
     private CRS crs;
-
-    /**
-     * @param version
-     *            of the wms
-     */
-    public WMSReader( WMSVersion version ) {
-        this.wmsVersion = version;
-    }
 
     @Override
     public boolean canLoad( File filename ) {
@@ -349,7 +337,8 @@ public class WMSReader implements RasterReader {
         SimpleRaster result = cache.createFromCache( this, this.dataLocationId );
         if ( result == null ) {
             Envelope env = this.geoRef.getEnvelope( new RasterRect( 1, 1, 2, 2 ), null );
-            Pair<BufferedImage, String> imageResponse = this.client.getMap( layers, maxWidth, maxHeight, env, crs,
+            Pair<BufferedImage, String> imageResponse = this.client.getMap( layers, maxWidth < 0 ? 1 : maxWidth,
+                                                                            maxHeight < 0 ? 1 : maxHeight, env, crs,
                                                                             format, transparent, true, timeout, false,
                                                                             null );
             if ( imageResponse.first != null ) {
@@ -385,7 +374,6 @@ public class WMSReader implements RasterReader {
 
     /**
      * @param opts
-     * @return
      */
     private boolean enableTransparency( RasterIOOptions opts ) {
         return opts.get( RIO_WMS_ENABLE_TRANSPARENT ) != null;
@@ -393,7 +381,6 @@ public class WMSReader implements RasterReader {
 
     /**
      * @param opts
-     * @return
      */
     private String getFormat( RasterIOOptions opts ) {
         String format = opts.get( RIO_WMS_DEFAULT_FORMAT );
@@ -451,7 +438,6 @@ public class WMSReader implements RasterReader {
 
     /**
      * @param options
-     * @return
      */
     private double getScale( RasterIOOptions options ) {
         String scale = options.get( RIO_WMS_MAX_SCALE );
@@ -509,59 +495,25 @@ public class WMSReader implements RasterReader {
         return false;
     }
 
-    public static void main( String[] args )
-                            throws MalformedURLException {
-        RasterIOOptions options = new RasterIOOptions();
-        options.add( RIO_WMS_SYS_ID,
-                     "http://www.wms.nrw.de/geobasis/adv_nrw500?REQUEST=GetCapabilities&VERSION=1.1.1&SERVICE=WMS" );
-
-        options.add( RasterIOOptions.CRS, "EPSG:31466" );
-        /** Defines the maximum width of a GetMap request. */
-        options.add( RIO_WMS_MAX_WIDTH, "1001" );
-
-        /** Defines the maximum height of a GetMap request. */
-        options.add( RIO_WMS_MAX_HEIGHT, "1001" );
-
-        /** Defines the maximum height of a GetMap request. */
-        options.add( RIO_WMS_LAYERS, "NRW500" );
-
-        /** Defines the maximum scale of a WMS. */
-        options.add( RIO_WMS_MAX_SCALE, "0.1" );
-
-        /** Defines the default (image) format of a get map request to a WMS. */
-        options.add( RIO_WMS_DEFAULT_FORMAT, "png" );
-
-        /** Defines the key to set the GetMap retrieval to transparent. */
-        options.add( RIO_WMS_ENABLE_TRANSPARENT, "true" );
-
-        /** Defines the key to set the GetMap retrieval timeout. */
-        options.add( RIO_WMS_TIMEOUT, "1000" );
-
-        options.add( RasterIOOptions.OPT_FORMAT, WMSReader.WMSVersion.WMS_111.name() );
-
-        URL url = new URL(
-                           "http://www.wms.nrw.de/geobasis/adv_nrw500?REQUEST=GetCapabilities&VERSION=1.1.1&SERVICE=WMS" );
-
-        try {
-            InputStream in = url.openStream();
-            AbstractRaster raster = RasterFactory.loadRasterFromStream( in, options );
-            in.close();
-            System.out.println( raster.getEnvelope() );
-            System.out.println( raster.getRasterDataInfo() );
-            System.out.println( "c: " + raster.getColumns() );
-            System.out.println( "r: " + raster.getRows() );
-            Envelope env = raster.getRasterReference().getEnvelope( new RasterRect( 1520, 1520, 1000, 1000 ), null );
-            System.out.println( "env: " + env );
-            AbstractRaster subRaster = raster.getSubRaster( env );
-            RasterFactory.saveRasterToFile( subRaster, new File( "/tmp/out.png" ) );
-
-        } catch ( IOException e ) {
-            if ( LOG.isDebugEnabled() ) {
-                LOG.debug( "(Stack) Exception occurred: " + e.getLocalizedMessage(), e );
-            } else {
-                LOG.error( "Exception occurred: " + e.getLocalizedMessage() );
-            }
-        }
-
+    /**
+     * @return the wms client
+     */
+    public WMSClient111 getClient() {
+        return client;
     }
+
+    /**
+     * @return the layers the reader is requesting
+     */
+    public List<String> getLayers() {
+        return layers;
+    }
+
+    /**
+     * @return the default crs
+     */
+    public CRS getCRS() {
+        return crs;
+    }
+
 }
