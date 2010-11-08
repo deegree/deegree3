@@ -4,6 +4,11 @@
 				xmlns:c="http://java.sun.com/jsp/jstl/core" xmlns:fn="http://java.sun.com/jsp/jstl/functions"
 				xmlns:dg="http://deegree.org/jsf" xmlns:dgc="http://java.sun.com/jsf/composite/deegree">
 				<ui:define name="center">
+				
+						<h:panelGroup rendered="#{!logBean.loggedIn}">
+							<ui:include src="accessForbidden.xhtml" />
+						</h:panelGroup>
+						<h:panelGroup rendered="#{logBean.loggedIn}">
 								<fieldset><legend><h:outputText value="#{labels.render_title}" /></legend> <h:form>
 												<table border="0">
 																<ui:repeat value="#{configManager.styleManager.configs}" var="config">
@@ -18,5 +23,6 @@
 												<br />
 												<h:outputText value="#{labels.render_note}" />
 								</h:form></fieldset>
+								</h:panelGroup>
 				</ui:define>
 </ui:composition>

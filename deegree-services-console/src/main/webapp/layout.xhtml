@@ -7,9 +7,20 @@
 				<h:outputScript name="console.js" />
 </h:head>
 <h:body>
+
+				<div id="PLEASEWAIT">
+				<div class="curved"><b class="b1"></b><b class="b2"></b><b class="b3"></b><b class="b4"></b>
+				<div class="boxcontent">
+				<p>Applying changes.<br />
+				Please wait.</p>
+				</div>
+				<b class="b4"></b><b class="b3"></b><b class="b2"></b><b class="b1"></b></div>
+				</div>
+				<div id="PLEASEWAIT_BG"></div>
+
 				<div id="container">
 
-                <div id="header">
+				<div id="header">
 				<div id="logo"><pre><h:outputText value="#{applicationBean.logo}" /></pre> <h:outputText
 								value="...has been successfully installed on this server." /></div>
 				<div id="login"><h:panelGroup rendered="#{!logBean.loggedIn}">
@@ -30,18 +41,15 @@
 								<h:link value="observationStores" outcome="/console/jsf/observationStores.xhtml" disabled="#{!logBean.loggedIn}" />
 								<h:link value="jdbc" outcome="/console/jsf/jdbc.xhtml" disabled="#{!logBean.loggedIn}" />
 				</h:panelGrid></div>
-				<div id="center">
-						<ui:insert name="center" />
-						<h:panelGroup><h:messages errorClass="consoleError"/>
-						</h:panelGroup>
-				</div>
+				<div id="center"><ui:insert name="center" /> <h:panelGroup>
+								<h:messages errorClass="consoleError" />
+				</h:panelGroup></div>
 				<div id="right"><h:panelGrid columns="1">
 								<h:link outcome="/console/client/client.xhtml" target="_blank" value="#{labels.link_genericClient}" />
-                                <a href="console/wms/wms.html" target="_blank">OpenLayers WMS client</a>
+								<a href="console/wms/wms.html" target="_blank">OpenLayers WMS client</a>
 								<!-- h:link outcome="/console/wms/wms.html" target="_blank" value="#{labels.link_wmsClient}" /-->
 								<dg:externalLink target="_blank" href="http://wiki.deegree.org" title="#{labels.link_wiki}" />
-				</h:panelGrid> 
-				<h:panelGroup class="margin-top: 10px;">
+				</h:panelGrid> <h:panelGroup class="margin-top: 10px;">
 								<h:form id="reloadForm">
 												<h:panelGrid rendered="#{configManager.pendingChanges}">
 																<h:outputText value="#{configManager.lastMessage}" styleClass="attention" />
@@ -56,7 +64,7 @@
 				<div class="clear" />
 				</div>
 
-				<div id="footer"><h:outputText value="Hier ist der Footer" /></div>
+				<div id="footer"><h:outputText value="#{labels.footer}" /></div>
 
 				</div>
 </h:body>

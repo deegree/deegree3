@@ -4,6 +4,11 @@
 				xmlns:c="http://java.sun.com/jsp/jstl/core" xmlns:fn="http://java.sun.com/jsp/jstl/functions"
 				xmlns:dg="http://deegree.org/jsf" xmlns:dgc="http://java.sun.com/jsf/composite/deegree">
 				<ui:define name="center">
+				
+						<h:panelGroup rendered="#{!logBean.loggedIn}">
+							<ui:include src="accessForbidden.xhtml" />
+						</h:panelGroup>
+						<h:panelGroup rendered="#{logBean.loggedIn}">
 								<fieldset><legend><h:outputText value="#{labels.webservices_title}" /></legend> <h:form>
 												<table border="0">
 																<ui:repeat value="#{configManager.serviceManager.configs}" var="config">
@@ -27,5 +32,6 @@
 												<h:commandButton value="#{labels.webservices_edit_md}" action="#{configManager.serviceMetadataConfig.edit}" />
 												<h:commandButton value="#{labels.webservices_edit_global}" action="#{configManager.serviceMainConfig.edit}" />
 								</h:form></fieldset>
+								</h:panelGroup>
 				</ui:define>
 </ui:composition>
