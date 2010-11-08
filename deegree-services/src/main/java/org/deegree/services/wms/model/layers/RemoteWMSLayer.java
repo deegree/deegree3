@@ -178,17 +178,18 @@ public class RemoteWMSLayer extends Layer {
 
             int width = gm.getWidth();
             int height = gm.getHeight();
-            double scale = Utils.calcScaleWMS111( width, height, gm.getBoundingBox(), null );
-            double newScale = Utils.calcScaleWMS111( width, height, bbox, null );
+            double scale = Utils.calcScaleWMS111( width, height, gm.getBoundingBox(),
+                                                  gm.getCoordinateSystem().getWrappedCRS() );
+            double newScale = Utils.calcScaleWMS111( width, height, bbox, new CRS( defaultSRS ).getWrappedCRS() );
             double ratio = scale / newScale;
 
             width = round( ratio * width );
             height = round( ratio * height );
 
             LinkedList<String> errors = new LinkedList<String>();
-            Pair<BufferedImage, String> pair = client.getMap( layers, width, height, bbox,
-                                                              new CRS( trans.getTargetCRS() ), gm.getFormat(),
-                                                              gm.getTransparent(), false, -1, true, errors );
+            Pair<BufferedImage, String> pair = client.getMap( layers, width, height, bbox, new CRS( defaultSRS ),
+                                                              gm.getFormat(), gm.getTransparent(), false, -1, true,
+                                                              errors );
 
             LOG.debug( "Parameters that have been replaced for this request: " + errors );
             if ( pair.first == null ) {
