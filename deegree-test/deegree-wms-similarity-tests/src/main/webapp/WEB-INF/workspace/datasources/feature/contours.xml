@@ -1,4 +1,4 @@
-<ShapeFeatureStore xmlns="http://www.deegree.org/datasource/feature/shape">
-  <File>../../../utah/SGID500_Contours500Ft.shp</File>
+<ShapeFeatureStore xmlns="http://www.deegree.org/datasource/feature/shape" configVersion="0.6.1">
   <FeatureTypeNamespace>http://www.deegree.org/app</FeatureTypeNamespace>
+  <File>../../../utah/SGID500_Contours500Ft.shp</File>
 </ShapeFeatureStore>
