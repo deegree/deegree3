@@ -338,9 +338,10 @@ class TransactionHandler {
 
         // TODO deal with this problem
         if ( service.getStores().length > 1 ) {
-            throw new OWSException(
-                                    "Cannot perform  insert. More than one feature store is active -- this is currently not supported.",
-                                    NO_APPLICABLE_CODE );
+            String msg = "Cannot perform  insert. More than one feature store is active -- "
+                         + "this is currently not supported. Please deactivate all feature stores, "
+                         + "but one in order to make Insert transactions work.";
+            throw new OWSException( msg, NO_APPLICABLE_CODE );
         }
 
         CRS defaultCRS = new CRS( insert.getSRSName() );
