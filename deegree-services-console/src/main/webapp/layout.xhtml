@@ -9,7 +9,7 @@
 <h:body>
 				<div id="container">
 
-				<div id="header">
+                <div id="header">
 				<div id="logo"><pre><h:outputText value="#{applicationBean.logo}" /></pre> <h:outputText
 								value="...has been successfully installed on this server." /></div>
 				<div id="login"><h:panelGroup rendered="#{!logBean.loggedIn}">
@@ -36,8 +36,9 @@
 						</h:panelGroup>
 				</div>
 				<div id="right"><h:panelGrid columns="1">
-								<h:link outcome="/console/client/client.html" target="_blank" value="#{labels.link_genericClient}" />
-								<h:link outcome="/console/wms/wms.html" target="_blank" value="#{labels.link_wmsClient}" />
+								<h:link outcome="/console/client/client.xhtml" target="_blank" value="#{labels.link_genericClient}" />
+                                <a href="console/wms/wms.html" target="_blank">OpenLayers WMS client</a>
+								<!-- h:link outcome="/console/wms/wms.html" target="_blank" value="#{labels.link_wmsClient}" /-->
 								<dg:externalLink target="_blank" href="http://wiki.deegree.org" title="#{labels.link_wiki}" />
 				</h:panelGrid> 
 				<h:panelGroup class="margin-top: 10px;">
