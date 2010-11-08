@@ -46,6 +46,8 @@ import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
 
 import org.deegree.services.controller.OGCFrontController;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * TODO add class documentation here
@@ -59,6 +61,11 @@ import org.deegree.services.controller.OGCFrontController;
 @SessionScoped
 public class LogBean implements Serializable {
 
+    private static final Logger LOG = LoggerFactory.getLogger( LogBean.class );
+
+    // location of password file (relative to workspace root)
+    private static final String PASSWORD_FILE = "manager/password.txt";
+
     private static final long serialVersionUID = -4865071415988778817L;
 
     private String password;
@@ -71,17 +78,16 @@ public class LogBean implements Serializable {
 
     public Object logIn() {
         String correctPw = null;
+        File pwFile = null;
         try {
             File workspace = OGCFrontController.getServiceWorkspace().getLocation();
-            BufferedReader in = new BufferedReader(
-                                                    new InputStreamReader( new FileInputStream( new File( workspace,
-                                                                                                          "user.txt" ) ) ) );
-
+            pwFile = new File( workspace, PASSWORD_FILE );
+            BufferedReader in = new BufferedReader( new InputStreamReader( new FileInputStream( pwFile ) ) );
             try {
                 String line;
                 while ( ( line = in.readLine() ) != null ) {
                     if ( !line.startsWith( "#" ) ) {
-                        correctPw = line;
+                        correctPw = line.trim();
                         break;
                     }
                 }
@@ -89,7 +95,7 @@ public class LogBean implements Serializable {
                 in.close();
             }
         } catch ( IOException e ) {
-            e.printStackTrace();
+            LOG.warn( "Error reading password from file '{}': {}", pwFile, e.getMessage() );
         }
         if ( password != null && password.equals( correctPw ) ) {
             loggedIn = true;
@@ -97,7 +103,6 @@ public class LogBean implements Serializable {
         } else {
             return "failed";
         }
-
     }
 
     public Object logOut() {
