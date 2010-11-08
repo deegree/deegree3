@@ -216,6 +216,9 @@ public class PostGISFeatureStore implements SQLFeatureStore {
         String column = null;
         FeatureType ft = schema.getFeatureType( ftMapping.getFeatureType() );
         GeometryPropertyType pt = ft.getDefaultGeometryPropertyDeclaration();
+        if (pt == null) {
+            return null;
+        }
         GeometryMapping propMapping = (GeometryMapping) ftMapping.getMapping( pt.getName() );
         MappingExpression me = propMapping.getMapping();
         if ( me == null || !( me instanceof DBField ) ) {

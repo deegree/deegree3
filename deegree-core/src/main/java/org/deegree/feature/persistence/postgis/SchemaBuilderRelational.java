@@ -37,6 +37,7 @@ package org.deegree.feature.persistence.postgis;
 
 import static javax.xml.XMLConstants.DEFAULT_NS_PREFIX;
 import static javax.xml.XMLConstants.NULL_NS_URI;
+import static org.deegree.commons.tom.primitive.PrimitiveType.determinePrimitiveType;
 import static org.deegree.feature.types.property.GeometryPropertyType.CoordinateDimension.DIM_2;
 import static org.deegree.feature.types.property.GeometryPropertyType.CoordinateDimension.DIM_3;
 import static org.deegree.feature.types.property.GeometryPropertyType.GeometryType.GEOMETRY;
@@ -47,7 +48,6 @@ import static org.deegree.feature.types.property.GeometryPropertyType.GeometryTy
 import static org.deegree.feature.types.property.GeometryPropertyType.GeometryType.MULTI_POLYGON;
 import static org.deegree.feature.types.property.GeometryPropertyType.GeometryType.POINT;
 import static org.deegree.feature.types.property.GeometryPropertyType.GeometryType.POLYGON;
-import static org.deegree.feature.types.property.ValueRepresentation.BOTH;
 import static org.deegree.feature.types.property.ValueRepresentation.INLINE;
 
 import java.sql.Connection;
@@ -57,6 +57,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -93,23 +94,18 @@ import org.deegree.feature.persistence.mapping.property.Mapping;
 import org.deegree.feature.persistence.mapping.property.PrimitiveMapping;
 import org.deegree.feature.persistence.postgis.jaxb.AbstractIDGeneratorType;
 import org.deegree.feature.persistence.postgis.jaxb.AbstractPropertyDecl;
-import org.deegree.feature.persistence.postgis.jaxb.CodePropertyDecl;
 import org.deegree.feature.persistence.postgis.jaxb.CustomMapping;
-import org.deegree.feature.persistence.postgis.jaxb.CustomPropertyDecl;
-import org.deegree.feature.persistence.postgis.jaxb.FeaturePropertyDecl;
 import org.deegree.feature.persistence.postgis.jaxb.FeatureTypeDecl;
 import org.deegree.feature.persistence.postgis.jaxb.GeometryPropertyDecl;
-import org.deegree.feature.persistence.postgis.jaxb.MeasurePropertyDecl;
 import org.deegree.feature.persistence.postgis.jaxb.SimplePropertyDecl;
+import org.deegree.feature.persistence.postgis.jaxb.FIDMapping.Column;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.feature.types.GenericFeatureType;
-import org.deegree.feature.types.property.CustomPropertyType;
-import org.deegree.feature.types.property.FeaturePropertyType;
 import org.deegree.feature.types.property.GeometryPropertyType;
-import org.deegree.feature.types.property.GeometryPropertyType.CoordinateDimension;
-import org.deegree.feature.types.property.GeometryPropertyType.GeometryType;
 import org.deegree.feature.types.property.PropertyType;
 import org.deegree.feature.types.property.SimplePropertyType;
+import org.deegree.feature.types.property.GeometryPropertyType.CoordinateDimension;
+import org.deegree.feature.types.property.GeometryPropertyType.GeometryType;
 import org.deegree.filter.expression.PropertyName;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -138,11 +134,16 @@ class SchemaBuilderRelational {
 
     private DatabaseMetaData md;
 
+    // caches the column information
+    private Map<String, LinkedHashMap<String, ColumnMetadata>> tableNameToColumns = new HashMap<String, LinkedHashMap<String, ColumnMetadata>>();
+
     /**
      * Creates a new {@link SchemaBuilderRelational} instance.
      * 
      * @param jdbcConnId
+     *            identifier of JDBC connection, must not be <code>null</code>
      * @param ftDecls
+     *            JAXB feature type declarations, must not be <code>null</code>
      * @throws SQLException
      * @throws FeatureStoreException
      */
@@ -159,9 +160,15 @@ class SchemaBuilderRelational {
         }
     }
 
+    /**
+     * Returns the {@link MappedApplicationSchema} derived from configuration / tables.
+     * 
+     * @return mapped application schema, never <code>null</code>
+     */
     MappedApplicationSchema getMappedSchema() {
         FeatureType[] fts = ftNameToFt.values().toArray( new FeatureType[ftNameToFt.size()] );
-        FeatureTypeMapping[] ftMappings = ftNameToMapping.values().toArray( new FeatureTypeMapping[ftNameToMapping.size()] );
+        FeatureTypeMapping[] ftMappings = ftNameToMapping.values().toArray(
+                                                                            new FeatureTypeMapping[ftNameToMapping.size()] );
         return new MappedApplicationSchema( fts, null, null, null, ftMappings, null, null, null );
     }
 
@@ -184,10 +191,7 @@ class SchemaBuilderRelational {
         ftName = makeFullyQualified( ftName, "app", "http://www.deegree.org/app" );
         LOG.debug( "Feature type name: '" + ftName + "'." );
 
-        FIDMapping fidMapping = null;
-        if ( ftDecl.getFIDMapping() != null ) {
-            fidMapping = buildFIDMapping( table, ftDecl.getFIDMapping() );
-        }
+        FIDMapping fidMapping = buildFIDMapping( table, ftName, ftDecl.getFIDMapping() );
 
         List<JAXBElement<? extends AbstractPropertyDecl>> propDecls = ftDecl.getAbstractProperty();
         if ( propDecls != null && !propDecls.isEmpty() ) {
@@ -197,203 +201,195 @@ class SchemaBuilderRelational {
         }
     }
 
-    private void process( QTableName qTable, QName ftName, FIDMapping fidMapping )
+    private void process( QTableName table, QName ftName, FIDMapping fidMapping )
                             throws SQLException {
 
-        LOG.debug( "Determining properties and mapping for feature type '" + ftName + "' from table '" + qTable + "'" );
+        LOG.debug( "Deriving properties and mapping for feature type '" + ftName + "' from table '" + table + "'" );
 
         List<PropertyType> pts = new ArrayList<PropertyType>();
         Map<QName, Mapping> propToColumn = new HashMap<QName, Mapping>();
 
-        DatabaseMetaData md = getDBMetadata();
-        ResultSet rs = null;
-        try {
-            String dbSchema = qTable.getSchema() != null ? qTable.getSchema() : "public";
-            String table = qTable.getTable();
-            rs = md.getColumns( null, dbSchema, table.toLowerCase(), "%" );
-            while ( rs.next() ) {
-                String column = rs.getString( 4 );
-
-                if ( fidMapping != null && fidMapping.getColumn().equalsIgnoreCase( column ) ) {
-                    LOG.debug( "Omitting column '" + column + "' from properties. Used in FIDMapping." );
-                    continue;
-                }
-
-                int sqlType = rs.getInt( 5 );
-                String typeName = rs.getString( 6 );
-                String isNullable = rs.getString( 18 );
-                boolean isAutoincrement = "YES".equals( rs.getString( 23 ) );
-                LOG.debug( "Deriving property type for column '" + column + "', typeName: '" + typeName
-                           + "', typeCode: '" + sqlType + "', isNullable: '" + isNullable + "', isAutoincrement:' "
-                           + isAutoincrement + "'" );
-
-                if ( fidMapping == null && isAutoincrement ) {
-                    String prefix = ftName.getLocalPart().toUpperCase() + "_";
-                    IDGenerator generator = new AutoIDGenerator();
-                    fidMapping = new FIDMapping( prefix, column, PrimitiveType.determinePrimitiveType( sqlType ),
-                                                 generator );
-                } else {
-                    DBField dbField = new DBField( column );
-                    QName ptName = makeFullyQualified( new QName( column ), ftName.getPrefix(),
-                                                       ftName.getNamespaceURI() );
-                    if ( typeName.equals( "geometry" ) ) {
-                        String srid = "-1";
-                        CRS crs = new CRS( "EPSG:4326", true );
-                        CoordinateDimension dim = DIM_2;
-                        GeometryPropertyType.GeometryType geomType = GeometryType.GEOMETRY;
-                        Connection conn = getConnection();
-                        Statement stmt = null;
-                        ResultSet rs2 = null;
-                        try {
-                            stmt = conn.createStatement();
-                            String sql = "SELECT coord_dimension,srid,type FROM public.geometry_columns WHERE f_table_schema='"
-                                         + dbSchema.toLowerCase()
-                                         + "' AND f_table_name='"
-                                         + table.toLowerCase()
-                                         + "' AND f_geometry_column='" + column.toLowerCase() + "'";
-                            rs2 = stmt.executeQuery( sql );
-                            rs2.next();
-                            if ( rs2.getInt( 2 ) != -1 ) {
-                                crs = new CRS( "EPSG:" + rs2.getInt( 2 ), true );
-                                crs.getWrappedCRS();
-                            }
-                            if ( rs2.getInt( 1 ) == 3 ) {
-                                dim = DIM_3;
-                            }
-                            srid = "" + rs2.getInt( 2 );
-                            // geomType = getGeometryType( rs2.getString( 3 ) );
-                            LOG.debug( "Derived geometry type: " + geomType + ", crs: " + crs + ", srid: " + srid
-                                       + ", dim: " + dim + "" );
-                        } catch ( Exception e ) {
-                            LOG.warn( "Unable to determine actual geometry column details: " + e.getMessage()
-                                      + ". Using defaults." );
-                        } finally {
-                            JDBCUtils.close( rs2, stmt, null, LOG );
-                        }
-
-                        PropertyType pt = new GeometryPropertyType( ptName, 0, 1, false, false, null, geomType, dim,
-                                                                    INLINE );
-                        pts.add( pt );
-                        PropertyName path = new PropertyName( ptName );
-                        GeometryMapping mapping = new GeometryMapping( path, dbField, geomType, dim, crs, srid, null );
-                        propToColumn.put( ptName, mapping );
-                    } else {
-                        try {
-                            PrimitiveType type = PrimitiveType.determinePrimitiveType( sqlType );
-                            PropertyType pt = new SimplePropertyType( ptName, 0, 1, type, false, false, null );
-                            pts.add( pt );
-                            PropertyName path = new PropertyName( ptName );
-                            PrimitiveMapping mapping = new PrimitiveMapping( path, dbField, type, null );
-                            propToColumn.put( ptName, mapping );
-                        } catch ( IllegalArgumentException e ) {
-                            LOG.warn( "Skipping column with type code '" + sqlType + "' from list of properties:"
-                                      + e.getMessage() );
-                        }
-                    }
-                }
-            }
-        } finally {
-            JDBCUtils.close( rs );
-        }
-
-        FeatureType ft = new GenericFeatureType( ftName, pts, false );
-        ftNameToFt.put( ftName, ft );
-
-        FeatureTypeMapping ftMapping = new FeatureTypeMapping( ftName, qTable, fidMapping, propToColumn );
-        ftNameToMapping.put( ftName, ftMapping );
-    }
-
-    private void process( QTableName qTable, QName ftName, FIDMapping fidMapping,
-                          List<JAXBElement<? extends AbstractPropertyDecl>> propDecls ) {
-
-        List<PropertyType> pts = new ArrayList<PropertyType>();
-        Map<QName, Mapping> propToColumn = new HashMap<QName, Mapping>();
-        for ( JAXBElement<? extends AbstractPropertyDecl> propDeclEl : propDecls ) {
-            AbstractPropertyDecl propDecl = propDeclEl.getValue();
-            Pair<PropertyType, Mapping> pt = process( propDecl );
-
-            if ( pt.first == null ) {
-                // TODO
+        for ( ColumnMetadata md : getColumns( table ).values() ) {
+            if ( md.column.equalsIgnoreCase( fidMapping.getColumn() ) ) {
+                LOG.debug( "Omitting column '" + md.column + "' from properties. Used in FIDMapping." );
                 continue;
             }
 
-            pts.add( pt.first );
-            propToColumn.put( pt.first.getName(), pt.second );
-
-            if ( propDecl instanceof GeometryPropertyDecl ) {
-                GeometryPropertyDecl geoPropDecl = (GeometryPropertyDecl) propDecl;
+            DBField dbField = new DBField( md.column );
+            QName ptName = makeFullyQualified( new QName( md.column ), ftName.getPrefix(), ftName.getNamespaceURI() );
+            if ( md.geomType == null ) {
+                try {
+                    PrimitiveType type = PrimitiveType.determinePrimitiveType( md.sqlType );
+                    PropertyType pt = new SimplePropertyType( ptName, 0, 1, type, false, false, null );
+                    pts.add( pt );
+                    PropertyName path = new PropertyName( ptName );
+                    PrimitiveMapping mapping = new PrimitiveMapping( path, dbField, type, null );
+                    propToColumn.put( ptName, mapping );
+                } catch ( IllegalArgumentException e ) {
+                    LOG.warn( "Skipping column with type code '" + md.sqlType + "' from list of properties:"
+                              + e.getMessage() );
+                }
+            } else {
+                PropertyType pt = new GeometryPropertyType( ptName, 0, 1, false, false, null, md.geomType, md.dim,
+                                                            INLINE );
+                pts.add( pt );
+                PropertyName path = new PropertyName( ptName );
+                GeometryMapping mapping = new GeometryMapping( path, dbField, md.geomType, md.dim, md.crs, md.srid,
+                                                               null );
+                propToColumn.put( ptName, mapping );
             }
         }
 
         FeatureType ft = new GenericFeatureType( ftName, pts, false );
         ftNameToFt.put( ftName, ft );
 
-        FeatureTypeMapping ftMapping = new FeatureTypeMapping( ftName, qTable, fidMapping, propToColumn );
+        FeatureTypeMapping ftMapping = new FeatureTypeMapping( ftName, table, fidMapping, propToColumn );
         ftNameToMapping.put( ftName, ftMapping );
     }
 
-    private Pair<PropertyType, Mapping> process( AbstractPropertyDecl propDecl ) {
+    private void process( QTableName table, QName ftName, FIDMapping fidMapping,
+                          List<JAXBElement<? extends AbstractPropertyDecl>> propDecls )
+                            throws FeatureStoreException, SQLException {
 
-        QName ptName = propDecl.getName();
+        List<PropertyType> pts = new ArrayList<PropertyType>();
+        Map<QName, Mapping> propToColumn = new HashMap<QName, Mapping>();
 
-        int minOccurs = propDecl.getMinOccurs() == null ? 1 : propDecl.getMinOccurs().intValue();
-        int maxOccurs = 1;
-
-        if ( propDecl.getMaxOccurs() != null ) {
-            if ( propDecl.getMaxOccurs().equals( "unbounded" ) ) {
-                maxOccurs = -1;
-            } else {
-                maxOccurs = Integer.parseInt( propDecl.getMaxOccurs() );
-            }
+        for ( JAXBElement<? extends AbstractPropertyDecl> propDeclEl : propDecls ) {
+            AbstractPropertyDecl propDecl = propDeclEl.getValue();
+            Pair<PropertyType, Mapping> pt = process( table, propDecl );
+            pts.add( pt.first );
+            propToColumn.put( pt.first.getName(), pt.second );
         }
+
+        FeatureType ft = new GenericFeatureType( ftName, pts, false );
+        ftNameToFt.put( ftName, ft );
+
+        FeatureTypeMapping ftMapping = new FeatureTypeMapping( ftName, table, fidMapping, propToColumn );
+        ftNameToMapping.put( ftName, ftMapping );
+    }
+
+    private Pair<PropertyType, Mapping> process( QTableName table, AbstractPropertyDecl propDecl )
+                            throws FeatureStoreException, SQLException {
 
         MappingExpression mapping = parseMappingExpression( propDecl.getMapping() );
-        JoinChain joinedTable = null;
-        if ( propDecl.getJoinedTable() != null ) {
-            joinedTable = (JoinChain) parseMappingExpression( propDecl.getJoinedTable().getValue() );
+        if ( !( mapping instanceof DBField ) ) {
+            throw new FeatureStoreException( "Unhandled mapping type '" + mapping.getClass()
+                                             + "'. Currently, only DBFields are supported." );
         }
+
+        String columnName = ( (DBField) mapping ).getColumn();
+        QName propName = propDecl.getName();
+        if ( propName == null ) {
+            LOG.debug( "Using column name for feature type." );
+            propName = new QName( columnName );
+        }
+        propName = makeFullyQualified( propName, "app", "http://www.deegree.org/app" );
+        PropertyName path = new PropertyName( propName );
+        ColumnMetadata md = getColumn( table, columnName.toLowerCase() );
+        int minOccurs = md.isNullable ? 0 : 1;
 
         PropertyType pt = null;
         Mapping m = null;
-        PropertyName path = new PropertyName( ptName.toString(), nsContext );
         if ( propDecl instanceof SimplePropertyDecl ) {
-            SimplePropertyDecl spt = (SimplePropertyDecl) propDecl;
-            PrimitiveType primType = getPrimitiveType( spt.getType() );
-            pt = new SimplePropertyType( ptName, minOccurs, maxOccurs, primType, false, false, null );
-            m = new PrimitiveMapping( path, mapping, primType, joinedTable );
+            SimplePropertyDecl simpleDecl = (SimplePropertyDecl) propDecl;
+            PrimitiveType primType = null;
+            if ( simpleDecl.getType() != null ) {
+                primType = getPrimitiveType( simpleDecl.getType() );
+            } else {
+                primType = determinePrimitiveType( md.sqlType );
+            }
+            pt = new SimplePropertyType( propName, minOccurs, 1, primType, false, false, null );
+            m = new PrimitiveMapping( path, mapping, primType, null );
         } else if ( propDecl instanceof GeometryPropertyDecl ) {
-            GeometryPropertyDecl gpt = (GeometryPropertyDecl) propDecl;
-            pt = new GeometryPropertyType( ptName, minOccurs, maxOccurs, false, false, null, GEOMETRY, DIM_2, BOTH );
-            m = new GeometryMapping( path, mapping, GEOMETRY, DIM_2, new CRS( "EPSG:4326", true ), "-1", joinedTable );
-        } else if ( propDecl instanceof FeaturePropertyDecl ) {
-            FeaturePropertyDecl fpt = (FeaturePropertyDecl) propDecl;
-            pt = new FeaturePropertyType( ptName, minOccurs, maxOccurs, false, false, null, fpt.getType(), BOTH );
-            m = new FeatureMapping( path, mapping, fpt.getType(), joinedTable );
-        } else if ( propDecl instanceof CustomPropertyDecl ) {
-            CustomPropertyDecl cpt = (CustomPropertyDecl) propDecl;
-            pt = new CustomPropertyType( ptName, minOccurs, maxOccurs, null, false, false, null );
-            m = new CompoundMapping( path, mapping, process( cpt.getAbstractCustomMapping() ), joinedTable );
-        } else if ( propDecl instanceof CodePropertyDecl ) {
-            LOG.warn( "TODO: CodePropertyDecl " );
-        } else if ( propDecl instanceof MeasurePropertyDecl ) {
-            LOG.warn( "TODO: MeasurePropertyDecl " );
+            GeometryPropertyDecl geomDecl = (GeometryPropertyDecl) propDecl;
+            GeometryType type = null;
+            if ( geomDecl.getType() != null ) {
+                type = GeometryType.fromGMLTypeName( geomDecl.getType().name() );
+            } else {
+                type = md.geomType;
+            }
+            CRS crs = null;
+            if ( geomDecl.getCrs() != null ) {
+                crs = new CRS( geomDecl.getCrs() );
+            } else {
+                crs = md.crs;
+            }
+            String srid = null;
+            if ( geomDecl.getSrid() != null ) {
+                srid = geomDecl.getSrid().toString();
+            } else {
+                srid = md.srid;
+            }
+            CoordinateDimension dim = null;
+            if ( geomDecl.getDim() != null ) {
+                // TODO why does JAXB return a list here?
+                dim = DIM_2;
+            } else {
+                dim = md.dim;
+            }
+            pt = new GeometryPropertyType( propName, minOccurs, 1, false, false, null, type, dim, INLINE );
+            m = new GeometryMapping( path, mapping, type, dim, crs, srid, null );
         } else {
-            throw new RuntimeException( "Internal error: Unhandled property JAXB property type: " + propDecl.getClass() );
+            throw new FeatureStoreException( "Unhandled property declaration '" + propDecl.getClass()
+                                             + "'. Currently, only simple / geometry properties are supported." );
         }
-
         return new Pair<PropertyType, Mapping>( pt, m );
     }
 
-    private FIDMapping buildFIDMapping( QTableName table, org.deegree.feature.persistence.postgis.jaxb.FIDMapping config ) {
-        String prefix = config.getPrefix();
-        String column = config.getColumn().getName();
-        PrimitiveType pt = getPrimitiveType( config.getColumn().getType() );
-        IDGenerator generator = buildGenerator( config.getAbstractIDGenerator().getValue() );
-        return new FIDMapping( prefix, column, pt, generator );
+    private FIDMapping buildFIDMapping( QTableName table, QName ftName,
+                                        org.deegree.feature.persistence.postgis.jaxb.FIDMapping config )
+                            throws FeatureStoreException, SQLException {
+
+        String prefix = ftName.getPrefix().toUpperCase() + "_" + ftName.getLocalPart().toUpperCase() + "_";
+        Column column = null;
+        if ( config != null ) {
+            column = config.getColumn();
+        }
+
+        String columnName = null;
+        IDGenerator generator = buildGenerator( config );
+        if ( generator instanceof AutoIDGenerator ) {
+            if ( column != null && column.getName() != null ) {
+                columnName = column.getName();
+            } else {
+                // determine autoincrement column automatically
+                for ( ColumnMetadata md : getColumns( table ).values() ) {
+                    if ( md.isAutoincrement ) {
+                        columnName = md.column;
+                        break;
+                    }
+                }
+                if ( columnName == null ) {
+                    throw new FeatureStoreException( "No autoincrement column in table '" + table
+                                                     + "' found. Please specify in FIDMapping." );
+                }
+            }
+        } else {
+            if ( column == null || column.getName() == null ) {
+                throw new FeatureStoreException( "No FIDMapping column for table '" + table
+                                                 + "' specified. This is only possible for AutoIDGenerator." );
+            }
+            columnName = column.getName();
+        }
+
+        PrimitiveType pt = null;
+        if ( config != null && config.getColumn().getType() != null ) {
+            pt = getPrimitiveType( config.getColumn().getType() );
+        } else {
+            ColumnMetadata md = getColumn( table, columnName.toLowerCase() );
+            pt = PrimitiveType.determinePrimitiveType( md.sqlType );
+        }
+        return new FIDMapping( prefix, columnName, pt, generator );
     }
 
-    private IDGenerator buildGenerator( AbstractIDGeneratorType config ) {
-        if ( config instanceof org.deegree.feature.persistence.postgis.jaxb.AutoIdGenerator ) {
+    private IDGenerator buildGenerator( org.deegree.feature.persistence.postgis.jaxb.FIDMapping fidMappingConfig ) {
+
+        AbstractIDGeneratorType config = null;
+        if ( fidMappingConfig != null ) {
+            config = fidMappingConfig.getAbstractIDGenerator().getValue();
+        }
+
+        if ( config == null || config instanceof org.deegree.feature.persistence.postgis.jaxb.AutoIdGenerator ) {
             return new AutoIDGenerator();
         } else if ( config instanceof org.deegree.feature.persistence.postgis.jaxb.SequenceIDGenerator ) {
             String sequence = ( (org.deegree.feature.persistence.postgis.jaxb.SequenceIDGenerator) config ).getSequence();
@@ -511,6 +507,20 @@ class SchemaBuilderRelational {
         return mapping;
     }
 
+    private QName makeFullyQualified( QName qName, String defaultPrefix, String defaultNamespace ) {
+        String prefix = qName.getPrefix();
+        String namespace = qName.getNamespaceURI();
+        String localPart = qName.getLocalPart();
+        if ( DEFAULT_NS_PREFIX.equals( prefix ) ) {
+            prefix = defaultPrefix;
+            namespace = defaultNamespace;
+        }
+        if ( NULL_NS_URI.equals( namespace ) ) {
+            namespace = defaultNamespace;
+        }
+        return new QName( namespace, localPart, prefix );
+    }
+
     private Connection getConnection()
                             throws SQLException {
         if ( conn == null ) {
@@ -528,17 +538,128 @@ class SchemaBuilderRelational {
         return md;
     }
 
-    private QName makeFullyQualified( QName qName, String defaultPrefix, String defaultNamespace ) {
-        String prefix = qName.getPrefix();
-        String namespace = qName.getNamespaceURI();
-        String localPart = qName.getLocalPart();
-        if ( DEFAULT_NS_PREFIX.equals( prefix ) ) {
-            prefix = defaultPrefix;
-            namespace = defaultNamespace;
+    private ColumnMetadata getColumn( QTableName qTable, String columnName )
+                            throws SQLException, FeatureStoreException {
+        ColumnMetadata md = getColumns( qTable ).get( columnName.toLowerCase() );
+        if ( md == null ) {
+            throw new FeatureStoreException( "Table '" + qTable + "' does not have a column with name '" + columnName
+                                             + "'" );
         }
-        if ( NULL_NS_URI.equals( namespace ) ) {
-            namespace = defaultNamespace;
+        return md;
+    }
+
+    private LinkedHashMap<String, ColumnMetadata> getColumns( QTableName qTable )
+                            throws SQLException {
+
+        LinkedHashMap<String, ColumnMetadata> columnNameToMD = tableNameToColumns.get( qTable.toString().toLowerCase() );
+
+        if ( columnNameToMD == null ) {
+            DatabaseMetaData md = getDBMetadata();
+            columnNameToMD = new LinkedHashMap<String, ColumnMetadata>();
+            ResultSet rs = null;
+            try {
+                LOG.debug( "Analyzing metadata for table {}", qTable );
+                String dbSchema = qTable.getSchema() != null ? qTable.getSchema() : "public";
+                String table = qTable.getTable();
+                rs = md.getColumns( null, dbSchema, table.toLowerCase(), "%" );
+                while ( rs.next() ) {
+                    String column = rs.getString( 4 );
+                    int sqlType = rs.getInt( 5 );
+                    String sqlTypeName = rs.getString( 6 );
+                    boolean isNullable = "YES".equals( rs.getString( 18 ) );
+                    boolean isAutoincrement = "YES".equals( rs.getString( 23 ) );
+                    LOG.debug( "Found column '" + column + "', typeName: '" + sqlTypeName + "', typeCode: '" + sqlType
+                               + "', isNullable: '" + isNullable + "', isAutoincrement:' " + isAutoincrement + "'" );
+
+                    if ( sqlTypeName.equals( "geometry" ) ) {
+                        String srid = "-1";
+                        CRS crs = new CRS( "EPSG:4326", true );
+                        CoordinateDimension dim = DIM_2;
+                        GeometryPropertyType.GeometryType geomType = GeometryType.GEOMETRY;
+                        Connection conn = getConnection();
+                        Statement stmt = null;
+                        ResultSet rs2 = null;
+                        try {
+                            stmt = conn.createStatement();
+                            String sql = "SELECT coord_dimension,srid,type FROM public.geometry_columns WHERE f_table_schema='"
+                                         + dbSchema.toLowerCase()
+                                         + "' AND f_table_name='"
+                                         + table.toLowerCase()
+                                         + "' AND f_geometry_column='" + column.toLowerCase() + "'";
+                            rs2 = stmt.executeQuery( sql );
+                            rs2.next();
+                            if ( rs2.getInt( 2 ) != -1 ) {
+                                crs = new CRS( "EPSG:" + rs2.getInt( 2 ), true );
+                                crs.getWrappedCRS();
+                            }
+                            if ( rs2.getInt( 1 ) == 3 ) {
+                                dim = DIM_3;
+                            }
+                            srid = "" + rs2.getInt( 2 );
+                            geomType = getGeometryType( rs2.getString( 3 ) );
+                            LOG.debug( "Derived geometry type: " + geomType + ", crs: " + crs + ", srid: " + srid
+                                       + ", dim: " + dim + "" );
+                        } catch ( Exception e ) {
+                            LOG.warn( "Unable to determine geometry column details: " + e.getMessage()
+                                      + ". Using defaults." );
+                        } finally {
+                            JDBCUtils.close( rs2, stmt, null, LOG );
+                        }
+                        ColumnMetadata columnMd = new ColumnMetadata( column, sqlType, sqlTypeName, isNullable,
+                                                                      geomType, dim, crs, srid );
+                        columnNameToMD.put( column.toLowerCase(), columnMd );
+                    } else {
+                        ColumnMetadata columnMd = new ColumnMetadata( column, sqlType, sqlTypeName, isNullable,
+                                                                      isAutoincrement );
+                        columnNameToMD.put( column.toLowerCase(), columnMd );
+                    }
+                }
+                tableNameToColumns.put( qTable.toString().toLowerCase(), columnNameToMD );
+            } finally {
+                JDBCUtils.close( rs );
+            }
         }
-        return new QName( namespace, localPart, prefix );
+        return columnNameToMD;
+    }
+}
+
+class ColumnMetadata {
+
+    String column;
+
+    int sqlType;
+
+    String sqlTypeName;
+
+    boolean isNullable;
+
+    boolean isAutoincrement;
+
+    GeometryType geomType;
+
+    CoordinateDimension dim;
+
+    CRS crs;
+
+    String srid;
+
+    ColumnMetadata( String column, int sqlType, String sqlTypeName, boolean isNullable, boolean isAutoincrement ) {
+        this.column = column;
+        this.sqlType = sqlType;
+        this.sqlTypeName = sqlTypeName;
+        this.isNullable = isNullable;
+        this.isAutoincrement = isAutoincrement;
+    }
+
+    public ColumnMetadata( String column, int sqlType, String sqlTypeName, boolean isNullable, GeometryType geomType,
+                           CoordinateDimension dim, CRS crs, String srid ) {
+        this.column = column;
+        this.sqlType = sqlType;
+        this.sqlTypeName = sqlTypeName;
+        this.isNullable = isNullable;
+        this.geomType = geomType;
+        this.dim = dim;
+        this.crs = crs;
+        this.srid = srid;
     }
 }

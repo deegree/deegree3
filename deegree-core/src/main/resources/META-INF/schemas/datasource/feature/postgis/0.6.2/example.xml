@@ -1,17 +1,22 @@
-<PostGISFeatureStore configVersion="0.6.1" xmlns="http://www.deegree.org/datasource/feature/postgis"
+<PostGISFeatureStore configVersion="0.6.2" xmlns="http://www.deegree.org/datasource/feature/postgis"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://www.deegree.org/datasource/feature/postgis http://schemas.deegree.org/datasource/feature/postgis/0.6.1/postgis.xsd">
-
-  <!-- [1] CRS for storing geometries -->
-  <StorageCRS>EPSG:4326</StorageCRS>
-
-  <!-- [0...n] Prefixes to use for exporting qualified elements (features / properties) -->
-  <NamespaceHint namespaceURI="http://www.deegree.org/app" prefix="app" />
+  xsi:schemaLocation="http://www.deegree.org/datasource/feature/postgis http://schemas.deegree.org/datasource/feature/postgis/0.6.2/postgis.xsd">
 
   <!-- [1] Identifier of JDBC connection -->
   <JDBCConnId>postgis</JDBCConnId>
 
-  <!-- [0...n] GML schema file / directory to be used -->
-  <GMLSchema version="GML_32">...</GMLSchema>
+  <!-- [0...n] Definitions of feature types (derived from tables) -->
+
+  <!-- Minimal configuration (just table) -->
+  <FeatureType table="country" />
+
+  <!-- Configuration based on table and explicit name -->
+  <FeatureType table="country2" name="Country" />
+
+  <!-- Configuration based on table and explicit name with namespace-->
+  <FeatureType xmlns:app="http://www.deegree.org/app" table="country2" name="app:Country" />
+  
+  <!-- Configuration based on table and explicit name with namespace-->
+  <FeatureType xmlns:app="http://www.deegree.org/app" table="country2" name="app:Country" />
 
 </PostGISFeatureStore>

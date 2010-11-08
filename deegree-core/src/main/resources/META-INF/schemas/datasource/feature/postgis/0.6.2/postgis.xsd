@@ -95,7 +95,6 @@
         </element>
         <element ref="postgisfs:AbstractIDGenerator" />
       </sequence>
-      <attribute name="prefix" type="string" />
     </complexType>
   </element>
   <element name="AbstractIDGenerator" abstract="true" type="postgisfs:AbstractIDGeneratorType" />
