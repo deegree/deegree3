@@ -70,6 +70,13 @@ public class PrimitiveValue implements TypedObjectNode, Comparable<PrimitiveValu
 
     private final PrimitiveType type;
 
+    public PrimitiveValue( Object value, PrimitiveType type ) throws IllegalArgumentException {
+        this.textValue = XMLValueMangler.internalToXML( value );
+        this.xsdType = null;
+        this.type = type;
+        this.value = value;
+    }
+
     /**
      * @param value
      * @param type

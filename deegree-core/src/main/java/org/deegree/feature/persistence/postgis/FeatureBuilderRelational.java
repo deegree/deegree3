@@ -47,6 +47,7 @@ import java.util.Map;
 import javax.xml.namespace.QName;
 
 import org.deegree.commons.tom.primitive.PrimitiveValue;
+import org.deegree.commons.tom.primitive.SQLValueMangler;
 import org.deegree.commons.utils.JDBCUtils;
 import org.deegree.feature.Feature;
 import org.deegree.feature.persistence.mapping.DBField;
@@ -248,10 +249,10 @@ class FeatureBuilderRelational implements FeatureBuilder {
                             throws SQLException {
 
         if ( pt instanceof SimplePropertyType ) {
-            String value = rs.getString( rsIdx );
+            PrimitiveValue value = null;
+            value = SQLValueMangler.sqlToInternal( rs, rsIdx, ( (SimplePropertyType) pt ).getPrimitiveType() );
             if ( value != null ) {
-                PrimitiveValue pv = new PrimitiveValue( value, ( (SimplePropertyType) pt ).getPrimitiveType() );
-                props.add( new GenericProperty( pt, pv ) );
+                props.add( new GenericProperty( pt, value ) );
             }
         } else if ( pt instanceof GeometryPropertyType ) {
             GeometryMapping mapping = (GeometryMapping) ftMapping.getMapping( pt.getName() );

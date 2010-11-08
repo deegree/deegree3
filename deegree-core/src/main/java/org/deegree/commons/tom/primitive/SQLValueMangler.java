@@ -36,11 +36,16 @@
 package org.deegree.commons.tom.primitive;
 
 import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.text.ParseException;
 
 import org.deegree.commons.tom.datetime.Date;
 import org.deegree.commons.tom.datetime.DateTime;
-import org.deegree.commons.utils.Pair;
+import org.deegree.commons.tom.datetime.Time;
+import org.deegree.commons.utils.time.DateUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -139,7 +144,75 @@ public class SQLValueMangler {
         throw new UnsupportedOperationException( "Not implemented yet" );
     }
 
-    public static Pair<Object, Integer> sqlToInternal( Object o, PrimitiveType pt ) {
-        throw new UnsupportedOperationException( "Not implemented yet" );
+    /**
+     * @param rs
+     * @param columnIndex
+     * @param pt
+     * @return corresponding primitive value, can be <code>null</code>
+     * @throws SQLException
+     */
+    public static PrimitiveValue sqlToInternal( ResultSet rs, int columnIndex, PrimitiveType pt )
+                            throws SQLException {
+        Object o = null;
+        switch ( pt ) {
+        case BOOLEAN:
+            o = rs.getBoolean( columnIndex );
+            break;
+        case DATE:
+            java.sql.Date sqlDate = rs.getDate( columnIndex );
+            if ( sqlDate != null ) {
+                try {
+                    o = new Date( DateUtils.formatISO8601DateWOTime( sqlDate ) );
+                } catch ( ParseException e ) {
+                    throw new SQLException( e.getMessage(), e );
+                }
+            }
+            break;
+        case DATE_TIME:
+            Timestamp sqlTimeStamp = rs.getTimestamp( columnIndex );
+            if ( sqlTimeStamp != null ) {
+                try {
+                    o = new DateTime( DateUtils.formatISO8601DateWOMS( sqlTimeStamp ) );
+                } catch ( ParseException e ) {
+                    throw new SQLException( e.getMessage(), e );
+                }
+            }
+            break;
+        case DECIMAL:
+            o = rs.getObject( columnIndex );
+            // needed to avoid rounding problems observed for PostgreSQL double columns...
+            if ( o != null && !( o instanceof BigDecimal ) ) {
+                o = new BigDecimal( o.toString() );
+            }
+            break;
+        case DOUBLE:
+            o = rs.getObject( columnIndex );
+            if ( o != null && !( o instanceof Double ) ) {
+                o = new Double( o.toString() );
+            }
+            break;
+        case INTEGER:
+            if ( rs.getObject( columnIndex ) != null ) {
+                o = new BigInteger( rs.getString( columnIndex ) );
+            }
+            break;
+        case STRING:
+            o = rs.getString( columnIndex );
+            break;
+        case TIME:
+            java.sql.Time sqlTime = rs.getTime( columnIndex );
+            if ( sqlTime != null ) {
+                try {
+                    o = new Time( DateUtils.formatISO8601Time( sqlTime ) );
+                } catch ( ParseException e ) {
+                    throw new SQLException( e.getMessage(), e );
+                }
+            }
+            break;
+        }
+        if ( o != null ) {
+            return new PrimitiveValue( o );
+        }
+        return null;
     }
 }

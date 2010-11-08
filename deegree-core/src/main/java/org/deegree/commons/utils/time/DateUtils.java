@@ -84,7 +84,11 @@ public final class DateUtils {
 
     private static final String ISO_8601_2004_FORMAT_GMT = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
 
+    private static final String ISO_8601_2004_FORMAT_GMT_WO_TIME = "yyyy-MM-dd";
+
     private static final String ISO_8601_2004_FORMAT_GMT_WO_MS = "yyyy-MM-dd'T'HH:mm:ss'Z'";
+
+    private static final String ISO_8601_2004_FORMAT_GMT_TIME = "HH:mm:ss";
 
     private static final String JDBC_TIMESTAMP_FORMAT = "yyyy-MM-dd HH:mm:ss.SSS";
 
@@ -351,6 +355,29 @@ public final class DateUtils {
      */
     public static String formatISO8601DateWOMS( final java.util.Date date ) {
         SimpleDateFormat sdf = new SimpleDateFormat( ISO_8601_2004_FORMAT_GMT_WO_MS );
+        sdf.setTimeZone( GMT );
+        return sdf.format( date );
+    }
+
+    /**
+     * @param date
+     * @return the date string without time
+     */
+    public static String formatISO8601DateWOTime( final java.util.Date date ) {
+        SimpleDateFormat sdf = new SimpleDateFormat( ISO_8601_2004_FORMAT_GMT_WO_TIME );
+        sdf.setTimeZone( GMT );
+        return sdf.format( date );
+    }
+
+    /**
+     * Obtain an ISO 8601:2004 string representation of the supplied date.
+     * 
+     * @param date
+     *            the date
+     * @return the string representation (only time)
+     */
+    public static String formatISO8601Time( final java.util.Date date ) {
+        SimpleDateFormat sdf = new SimpleDateFormat( ISO_8601_2004_FORMAT_GMT_TIME );
         sdf.setTimeZone( GMT );
         return sdf.format( date );
     }

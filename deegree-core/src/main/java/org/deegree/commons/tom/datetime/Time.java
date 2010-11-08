@@ -84,5 +84,4 @@ public class Time implements Comparable<Time> {
     public String toString() {
         return isoDate;
     }
-
 }
