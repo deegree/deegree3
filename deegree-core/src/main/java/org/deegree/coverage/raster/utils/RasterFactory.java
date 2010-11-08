@@ -426,22 +426,6 @@ public class RasterFactory {
             sm = new PixelInterleavedSampleModel( DataType.toDataBufferType( type ), width, height, pixelStride,
                                                   lineStride, bandOffsets );
             outputRaster = Raster.createWritableRaster( sm, null );
-            // if the number of bands is original, use line copying (it's faster)
-            // if ( pixelStride == raster.getPixelStride() && bands >= 3 ) {
-            // byte[] buf = new byte[raster.getPixelStride() * width];
-            // ByteBuffer src = raster.getByteBuffer();
-            // for ( int i = 0; i < height; i++ ) {
-            // int pos = raster.calculatePos( 0, i );
-            // if ( pos == -1 ) {// outside the buffer.
-            // raster.getNullPixel( buf );
-            // } else {
-            // src.position( pos );
-            // src.get( buf );
-            // }
-            // outputRaster.setDataElements( 0, i, width, 1, buf );
-            // }
-            // } else {
-            // the view has changed the bands, so copy pixel for pixel.
 
             byte[] buf = new byte[bandOffset * bands];
             byte[] output = new byte[outputBands];
@@ -451,7 +435,7 @@ public class RasterFactory {
                     outputRaster.setDataElements( x, y, mapToRGB( output, buf, view.bandInfo ) );
                 }
             }
-            // }
+
             break;
         case DOUBLE:
             sm = new BandedSampleModel( DataBuffer.TYPE_DOUBLE, width, height, bands );
@@ -522,8 +506,6 @@ public class RasterFactory {
         return result;
     }
 
-    static int count = 0;
-
     /**
      * @param bandsFromRaster
      * @param bandInfo
@@ -532,25 +514,44 @@ public class RasterFactory {
         if ( bandInfo.length == 1 ) {
             outputBands[0] = bandsFromRaster[0];
         } else {
-            int add = outputBands.length == 4 ? 1 : 0;
-            // ABGR
-            for ( int i = 0; i < bandInfo.length; ++i ) {
-                byte value = bandsFromRaster[i];
-                switch ( bandInfo[i] ) {
-                case ALPHA:
-                    outputBands[0] = value;
-                    break;
-                case RED:
-                    outputBands[add] = value;
-                    break;
-                case GREEN:
-                    outputBands[1 + add] = value;
-                    break;
-                case BLUE:
-                    outputBands[2 + add] = value;
-                    break;
-                default:
-                    outputBands[i] = value;
+            if ( outputBands.length == 4 ) {
+                // ABGR
+                for ( int i = 0; i < bandInfo.length; ++i ) {
+                    byte value = bandsFromRaster[i];
+                    switch ( bandInfo[i] ) {
+                    case ALPHA:
+                        outputBands[0] = value;
+                        break;
+                    case RED:
+                        outputBands[2] = value;
+                        break;
+                    case GREEN:
+                        outputBands[1] = value;
+                        break;
+                    case BLUE:
+                        outputBands[0] = value;
+                        break;
+                    default:
+                        outputBands[i] = value;
+                    }
+                }
+            } else {
+                // RGB
+                for ( int i = 0; i < bandInfo.length; ++i ) {
+                    byte value = bandsFromRaster[i];
+                    switch ( bandInfo[i] ) {
+                    case RED:
+                        outputBands[0] = value;
+                        break;
+                    case GREEN:
+                        outputBands[1] = value;
+                        break;
+                    case BLUE:
+                        outputBands[2] = value;
+                        break;
+                    default:
+                        outputBands[i] = value;
+                    }
                 }
             }
         }
@@ -593,7 +594,6 @@ public class RasterFactory {
             int height = raster.getHeight();
 
             BandType[] bandTypes = determineBandTypes( img );
-
             int imgDataType = raster.getSampleModel().getDataType();
 
             DataType type = DataType.fromDataBufferType( imgDataType );
@@ -774,7 +774,12 @@ public class RasterFactory {
         }
         ColorModel cm = img.getColorModel();
         WritableRaster raster = cm.createCompatibleWritableRaster( (byte) 1, (byte) 1 );
-        int imageType = new BufferedImage( cm, raster, cm.isAlphaPremultiplied(), properties ).getType();
+        int imageType;
+        if ( img instanceof BufferedImage ) {
+            imageType = ( (BufferedImage) img ).getType();
+        } else {
+            imageType = new BufferedImage( cm, raster, cm.isAlphaPremultiplied(), properties ).getType();
+        }
 
         if ( imageType == BufferedImage.TYPE_CUSTOM ) {
             int numBands = raster.getNumBands();
