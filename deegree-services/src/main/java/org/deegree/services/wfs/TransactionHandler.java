@@ -333,12 +333,12 @@ class TransactionHandler {
         LOG.debug( "doInsert: " + insert );
 
         if ( service.getStores().length == 0 ) {
-            throw new OWSException( "Cannot perform  insert. No feature store defined.", NO_APPLICABLE_CODE );
+            throw new OWSException( "Cannot perform insert. No feature store defined.", NO_APPLICABLE_CODE );
         }
 
         // TODO deal with this problem
         if ( service.getStores().length > 1 ) {
-            String msg = "Cannot perform  insert. More than one feature store is active -- "
+            String msg = "Cannot perform insert. More than one feature store is active -- "
                          + "this is currently not supported. Please deactivate all feature stores, "
                          + "but one in order to make Insert transactions work.";
             throw new OWSException( msg, NO_APPLICABLE_CODE );
