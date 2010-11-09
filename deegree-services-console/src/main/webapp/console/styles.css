@@ -1,13 +1,13 @@
 body {
 	background-color: #ffffff;
-	color: #000000;
+	color: grey;
 	font-family: "Courier New", Courier, monospace;
 	font-weight: normal;
-	font-size: 12pt;
+	font-size: small;
 	padding: 5pt;
 }
 
 a {
-	text-decoration: underline;
-	color: #000000;
+	text-decoration: none;
+	color: grey;
 }

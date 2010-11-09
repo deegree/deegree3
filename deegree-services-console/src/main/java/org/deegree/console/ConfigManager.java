@@ -200,6 +200,6 @@ public class ConfigManager {
         osManager.scan();
         connManager.scan();
         lastMessage = "Workspace changes have been applied.";
-        return "/console";
+        return FacesContext.getCurrentInstance().getViewRoot().getViewId();
     }
 }

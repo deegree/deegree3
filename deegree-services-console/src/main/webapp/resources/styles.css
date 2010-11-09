@@ -1,15 +1,23 @@
 body {
 	background-color: #ffffff;
-	color: #000000;
+	color: grey;
 	font-family: "Courier New", Courier, monospace;
 	font-weight: normal;
-	font-size: 12pt;
+	font-size: small;
 	padding: 5pt;
 }
 
 /* BEGIN: layout*/
 #container {
-	
+	height:734px;
+	left:10px;
+	margin:0 auto;
+	position:relative;
+	text-align:justify;
+	text-decoration:none;
+	top:0;
+	width:1000px;
+	z-index:1;
 }
 
 #header {
@@ -33,17 +41,21 @@ body {
 #left {
 	margin-left: 20 px;
 	float: left;
-	width: 20%;
+	width: 160px;
 }
 
 #center {
+	background-image: url("images/bg.png");
 	margin: 10px 0px;
 	float: left;
-	width: 55%;
+	width: 600px;
+	font-size: small;
+	text-align: left;
 }
 
+
 #right {
-	float: left;
+	float: right;
 	width: 20%;
 }
 
@@ -63,42 +75,39 @@ body {
 /** START: menu **/
 a.menuEntry:link {
 	color: black;
-	text-decoration: none
 }
 
 a.menuEntry:visited {
 	color: black;
-	text-decoration: none
 }
 
 a.menuEntry:active {
 	color: black;
-	text-decoration: none
 }
 
 a.menuEntry:hover {
 	color: black;
-	text-decoration: underline
+	
 }
 
 a.selectedMenuEntry:link {
 	color: gray;
-	text-decoration: none
+	
 }
 
 a.selectedMenuEntry:visited {
 	color: gray;
-	text-decoration: none
+	
 }
 
 a.selectedMenuEntry:active {
 	color: gray;
-	text-decoration: none
+	
 }
 
 a.selectedMenuEntry:hover {
 	color: gray;
-	text-decoration: underline
+	
 }
 
 /** END: menu **/ /* END: layout*/
@@ -107,8 +116,9 @@ a.selectedMenuEntry:hover {
 }
 
 a {
-	text-decoration: underline;
-	color: #000000;
+	color: green;
+	text-decoration: none;
+	font-size: small;
 }
 
 .textarea {
@@ -166,7 +176,7 @@ a {
 	z-index: 11;
 	background-color: transparent;
 	text-align: center;
-	font-size: 12pt;
+	font-size: small;
 	display: none;
 }
 
@@ -230,3 +240,4 @@ a {
 	border-width: 0 1px;
 }
 /* end curved div */
+

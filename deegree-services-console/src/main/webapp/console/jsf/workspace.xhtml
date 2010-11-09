@@ -5,10 +5,10 @@
 				<ui:define name="center">
 								<fieldset><legend><h:outputText value="#{labels.workspace_title}" /></legend> <h:panelGrid
 												columns="1" id="workspace">
-												<h:outputFormat value="#{labels.workspace_name}" style="margin: 10px 0px;">
+												<h:outputFormat value="#{labels.workspace_name}" style="margin: 10px 0px; font-size:small">
 																<f:param value="#{applicationBean.workspaceName}" />
 												</h:outputFormat>
-												<h:outputFormat value="#{labels.workspace_dir}">
+												<h:outputFormat value="#{labels.workspace_dir}" style="margin: 10px 0px; font-size:small">
 																<f:param value="#{applicationBean.workspaceDirectory}" />
 												</h:outputFormat>
 								</h:panelGrid></fieldset>

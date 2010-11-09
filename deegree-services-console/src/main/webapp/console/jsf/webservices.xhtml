@@ -10,7 +10,7 @@
 						</h:panelGroup>
 						<h:panelGroup rendered="#{logBean.loggedIn}">
 								<fieldset><legend><h:outputText value="#{labels.webservices_title}" /></legend> <h:form>
-												<table border="0">
+												<table style="font-size:small" border="0">
 																<ui:repeat value="#{configManager.serviceManager.configs}" var="config">
 																				<tr align="center">
 																								<td><h:outputFormat value="#{labels.webservices_id}">

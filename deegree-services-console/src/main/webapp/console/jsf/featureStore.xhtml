@@ -10,9 +10,9 @@
 						</h:panelGroup>
 						<h:panelGroup rendered="#{logBean.loggedIn}">
 								<fieldset><legend><h:outputText value="#{labels.featureStores_title}" /></legend> <h:form>
-												<table border="0">
+												<table style="font-size:small" border="0">
 																<ui:repeat value="#{configManager.fsManager.configs}" var="config">
-																				<tr align="center">
+																				<tr align="left">
 																								<td><h:outputFormat value="#{labels.featureStores_id}">
 																												<f:param value="#{config.id}" />
 																								</h:outputFormat></td>
