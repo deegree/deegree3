@@ -1,4 +1,0 @@
-<Filter xmlns="http://www.opengis.net/ogc" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://www.opengis.net/ogc http://schemas.opengis.net/filter/1.0.0/filter.xsd">
-	<FeatureId fid="TREESA_1M.1234" />
-</Filter>

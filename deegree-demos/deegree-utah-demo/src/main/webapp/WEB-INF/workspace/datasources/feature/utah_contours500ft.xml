@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<ShapeFeatureStore configVersion="0.6.1" xmlns="http://www.deegree.org/datasource/feature/shape"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://www.deegree.org/datasource/feature/shape http://schemas.deegree.org/datasource/feature/shape/0.6.1/shape.xsd">
-  <StorageCRS>EPSG:26912</StorageCRS>
-  <File>../../data/data/utah/vector/SGID500_Contours2500Ft</File>
-</ShapeFeatureStore>
