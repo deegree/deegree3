@@ -52,6 +52,22 @@ import org.slf4j.Logger;
  */
 public final class JDBCUtils {
 
+    public static void log( SQLException e, Logger log ) {
+        while ( e != null ) {
+            log.debug( e.getMessage(), e );
+            e = e.getNextException();
+        }
+    }
+
+    public static String getMessage( SQLException e ) {
+        StringBuffer sb = new StringBuffer();
+        while ( e != null ) {
+            sb.append( e.getMessage() );
+            e = e.getNextException();
+        }
+        return sb.toString();
+    }
+
     /**
      * Close the object, suppress all errors/exceptions. Useful for finally clauses.
      * 

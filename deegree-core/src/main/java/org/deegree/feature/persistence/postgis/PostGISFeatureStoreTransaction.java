@@ -769,6 +769,7 @@ public class PostGISFeatureStoreTransaction implements FeatureStoreTransaction {
                 }
             } catch ( Exception e ) {
                 LOG.debug( e.getMessage(), e );
+                throw new FeatureStoreException( e.getMessage(), e );
             }
         }
         return updated;
@@ -858,8 +859,8 @@ public class PostGISFeatureStoreTransaction implements FeatureStoreTransaction {
                 updated += noUpdated;
             }
         } catch ( SQLException e ) {
-            LOG.debug( e.getMessage(), e );
-            throw new FeatureStoreException( e.getMessage(), e );
+            JDBCUtils.log( e, LOG );
+            throw new FeatureStoreException( JDBCUtils.getMessage( e ), e );
         } finally {
             JDBCUtils.close( stmt );
         }
