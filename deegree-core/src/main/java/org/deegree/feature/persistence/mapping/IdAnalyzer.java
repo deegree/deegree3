@@ -54,7 +54,7 @@ import org.slf4j.LoggerFactory;
 class IdAnalyzer {
 
     private static Logger LOG = LoggerFactory.getLogger( IdAnalyzer.class );
-    
+
     private final Map<String, FeatureType> prefixToFt = new HashMap<String, FeatureType>();
 
     /**
@@ -79,9 +79,9 @@ class IdAnalyzer {
     }
 
     public IdAnalysis analyze( String featureOrGeomId ) {
-        
-        // TODO make this failproof       
-        int delimPos = featureOrGeomId.indexOf( '_' );
+
+        // TODO make this failproof
+        int delimPos = featureOrGeomId.lastIndexOf( '_' );
         if ( delimPos == -1 ) {
             throw new IllegalArgumentException();
         }
