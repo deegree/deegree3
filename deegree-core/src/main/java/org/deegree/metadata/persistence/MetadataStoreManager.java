@@ -47,8 +47,8 @@ import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamReader;
 
 import org.deegree.commons.xml.stax.StAXParsingHelper;
-import org.deegree.feature.i18n.Messages;
 import org.deegree.feature.persistence.FeatureStore;
+import org.deegree.metadata.i18n.Messages;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -137,7 +137,7 @@ public class MetadataStoreManager {
             StAXParsingHelper.nextElement( xmlReader );
             namespace = xmlReader.getNamespaceURI();
         } catch ( Exception e ) {
-            String msg = "Error determining configuration namespace for file '" + configURL + "'";
+            String msg = Messages.getMessage( "WRONG_CONFIG", configURL );
             LOG.error( msg );
             throw new MetadataStoreException( msg );
         }

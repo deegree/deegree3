@@ -65,6 +65,7 @@ import org.deegree.filter.OperatorFilter;
 import org.deegree.filter.sql.postgis.PostGISWhereBuilder;
 import org.deegree.metadata.ISORecord;
 import org.deegree.metadata.MetadataResultType;
+import org.deegree.metadata.i18n.Messages;
 import org.deegree.metadata.persistence.MetadataCollection;
 import org.deegree.metadata.persistence.MetadataQuery;
 import org.deegree.metadata.persistence.MetadataResultSet;
@@ -244,6 +245,8 @@ public class ISOMetadataStore implements MetadataStore {
     public MetadataResultSet getRecords( MetadataQuery query )
                             throws MetadataStoreException {
 
+        String operationName = "getRecords";
+
         PostGISMappingsISODC mapping = new PostGISMappingsISODC();
         PostGISWhereBuilder builder = null;
         Connection conn = null;
@@ -269,11 +272,13 @@ public class ISOMetadataStore implements MetadataStore {
                 // TODO
             }
         } catch ( FilterEvaluationException e ) {
-            LOG.error( e.getLocalizedMessage() );
-            throw new MetadataStoreException( e.getMessage(), e );
+            String msg = Messages.getMessage( "ERROR_OPERATION", operationName, e.getLocalizedMessage() );
+            LOG.debug( msg );
+            throw new MetadataStoreException( msg );
         } catch ( SQLException e ) {
-            LOG.debug( e.getMessage(), e );
-            throw new MetadataStoreException( e.getMessage(), e );
+            String msg = Messages.getMessage( "ERROR_OPERATION", operationName, e.getMessage() );
+            LOG.debug( msg );
+            throw new MetadataStoreException( msg );
         } finally {
             close( conn );
         }
@@ -299,7 +304,8 @@ public class ISOMetadataStore implements MetadataStore {
     private MetadataResultType doHitsOnGetRecord( MetadataQuery recOpt, ResultType resultType,
                                                   PostGISWhereBuilder builder, Connection conn, ExecuteStatements exe )
                             throws MetadataStoreException {
-        LOG.info( "Performing 'hits': " );
+        String resultTypeName = "hits";
+        LOG.info( "Performing '" + resultTypeName + "': " );
         ResultSet rs = null;
         PreparedStatement ps = null;
         MetadataResultType result = null;
@@ -332,8 +338,9 @@ public class ISOMetadataStore implements MetadataStore {
             }
 
         } catch ( Exception e ) {
-            LOG.debug( "Error while perfoming hits on the metadata: {}", e.getMessage() );
-            throw new MetadataStoreException( e.getMessage(), e );
+            String msg = Messages.getMessage( "ERROR_REQUEST_TYPE", resultTypeName, e.getMessage() );
+            LOG.debug( msg );
+            throw new MetadataStoreException( msg );
         } finally {
             close( rs );
             close( ps );
@@ -396,8 +403,9 @@ public class ISOMetadataStore implements MetadataStore {
                 rs.close();
             }
         } catch ( SQLException e ) {
-            LOG.debug( "Error while perfoming results on the metadata: {}", e.getMessage() );
-            throw new MetadataStoreException( e.getMessage(), e );
+            String msg = Messages.getMessage( "ERROR_REQUEST_TYPE", ResultType.results.name(), e.getMessage() );
+            LOG.debug( msg );
+            throw new MetadataStoreException( msg );
         } finally {
             close( rs );
             close( rsOut );
@@ -413,6 +421,8 @@ public class ISOMetadataStore implements MetadataStore {
     public MetadataResultSet getRecordsById( List<String> idList )
                             throws MetadataStoreException {
 
+        String operationName = "getRecordsById";
+
         ResultSet rs = null;
         Connection conn = null;
         PreparedStatement stmt = null;
@@ -424,7 +434,7 @@ public class ISOMetadataStore implements MetadataStore {
 
             for ( String identifier : idList ) {
                 if ( IdUtils.newInstance( conn ).proveIdExistence( identifier ) ) {
-                    String msg = "No Metadata found with ID: '" + identifier + "'";
+                    String msg = Messages.getMessage( "NO_IDENTIFIER_FOUND", identifier );
                     LOG.info( msg );
                     throw new MetadataStoreException( msg );
                 }
@@ -455,8 +465,9 @@ public class ISOMetadataStore implements MetadataStore {
             }
 
         } catch ( SQLException e ) {
-            LOG.debug( "Error while performing the getRecordById request: {}", e.getMessage() );
-            throw new MetadataStoreException( "Error while performing the getRecordById request: {}", e );
+            String msg = Messages.getMessage( "ERROR_OPERATION", operationName, e.getMessage() );
+            LOG.debug( msg );
+            throw new MetadataStoreException( msg );
         } finally {
             JDBCUtils.close( rs, stmt, conn, LOG );
 
@@ -477,7 +488,7 @@ public class ISOMetadataStore implements MetadataStore {
                 xmlReader = XMLInputFactory.newInstance().createXMLStreamReader( isr );
             } catch ( Exception e ) {
 
-                LOG.debug( "error while writing the result: {}", e.getMessage() );
+                LOG.debug( "Error while writing the result: {}", e.getMessage() );
                 throw new MetadataStoreException( e.getMessage() );
             } catch ( FactoryConfigurationError e ) {
                 throw new MetadataStoreException( e.getMessage() );
