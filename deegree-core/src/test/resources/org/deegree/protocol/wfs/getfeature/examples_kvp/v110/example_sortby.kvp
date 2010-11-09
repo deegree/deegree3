@@ -1,0 +1,9 @@
+SERVICE=WFS
+VERSION=1.1.0
+REQUEST=GetFeature
+FEATUREVERSION=ALL
+MAXFEATURES=1000000
+SRSNAME=EPSG:4326
+PROPERTYNAME=ands/dsalw,dsad/assdsa,dsda/asdasda,erewr/sdasd/dasda
+SORTBY=ands/dsalw A,dsad/assdsa A,dsda/asdasda,erewr/sdasd/dasda
+TYPENAME=georgia
