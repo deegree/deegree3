@@ -1,9 +1,0 @@
-<?xml-stylesheet type='text/xsl' href='./ShapeChangeDefinitionsType.xsl'?><TypeDefinition xmlns="http://www.interactive-instruments.de/ShapeChange/Definitions/0.5" xmlns:def="http://www.interactive-instruments.de/ShapeChange/Definitions/0.5" xmlns:gml="http://www.opengis.net/gml/3.2" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" gml:id="S.164.1805.45.143" xsi:schemaLocation="http://www.interactive-instruments.de/ShapeChange/Definitions/0.5 ShapeChangeDefinitions.xsd">
-  <description xmlns="http://www.opengis.net/gml/3.2">"AU_ObjektMitUnabhaengigerGeometrie" ist die Oberklasse zu den fünf Klassen mit unabhängiger Geometrie.
-Ein  "AU_ObjektMitUnabhaengigerGeometrie" ist ein Raumbezogenes Elementarobjekt (AA_REO), dessen Subklassen sich auf der Ebene der Instanzen  keine Geometrie teilen dürfen.
-Die Klasse ist nicht direkt instanziierbar.</description>
-  <identifier xmlns="http://www.opengis.net/gml/3.2" codeSpace="http://www.interactive-instruments.de/ShapeChange/Definitions/0.5">urn:x-shapechange:def:featureType:GeoInfoDok::adv:6.0.1:AU_ObjektMitUnabhaengigerGeometrie</identifier>
-  <name xmlns="http://www.opengis.net/gml/3.2" codeSpace="http://www.interactive-instruments.de/ShapeChange/Definitions/0.5/name">AU_ObjektMitUnabhaengigerGeometrie</name>
-  <classification>featureType</classification>
-  <supertypeRef xlink:href="urn:x-shapechange:def:featureType:GeoInfoDok::adv:6.0.1:AA_REO"/>
-</TypeDefinition>
