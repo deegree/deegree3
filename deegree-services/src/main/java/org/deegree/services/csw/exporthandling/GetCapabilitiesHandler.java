@@ -132,7 +132,6 @@ public class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
         supportedOperations.add( CSWRequestType.DescribeRecord.name() );
         supportedOperations.add( CSWRequestType.GetRecords.name() );
         supportedOperations.add( CSWRequestType.GetRecordById.name() );
-        supportedOperations.add( CSWRequestType.Transaction.name() );
 
     }
 
@@ -216,6 +215,10 @@ public class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
                             throws XMLStreamException {
         writer.writeStartElement( owsNS, "OperationsMetadata" );
 
+        if ( isTransactionEnabled ) {
+            supportedOperations.add( CSWRequestType.Transaction.name() );
+        }
+
         for ( String name : supportedOperations ) {
             writer.writeStartElement( owsNS, "Operation" );
             writer.writeAttribute( "name", name );
@@ -246,13 +249,10 @@ public class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
                 writer.writeEndElement();// Operation
                 continue;
             } else if ( name.equals( CSWRequestType.Transaction.name() ) ) {
-                if ( isTransactionEnabled ) {
-                    // because there is the same output like for GetRecordById
-                    writeGetRecordById( writer, owsNS );
+                // because there is the same output like for GetRecordById
+                writeGetRecordById( writer, owsNS );
 
-                    writer.writeEndElement();// Operation
-
-                }
+                writer.writeEndElement();// Operation
                 continue;
             }
 
