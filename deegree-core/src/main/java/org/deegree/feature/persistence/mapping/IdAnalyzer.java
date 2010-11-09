@@ -80,11 +80,16 @@ class IdAnalyzer {
 
     public IdAnalysis analyze( String featureOrGeomId ) {
 
-        // TODO make this failproof
-        int delimPos = featureOrGeomId.lastIndexOf( '_' );
+        int delimPos = featureOrGeomId.indexOf( '_' );
         if ( delimPos == -1 ) {
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException( "Cannot determine feature type for id '" + featureOrGeomId
+                                                + "': contains no underscore." );
         }
+        delimPos = featureOrGeomId.indexOf( '_', delimPos + 1 );
+        if ( delimPos == -1 ) {
+            throw new IllegalArgumentException( "Cannot determine feature type for id '" + featureOrGeomId
+                                                + "': must contain two underscores." );
+        }        
         String prefix = featureOrGeomId.substring( 0, delimPos + 1 );
         FeatureType ft = prefixToFt.get( prefix );
         if ( ft == null ) {
