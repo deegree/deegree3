@@ -52,6 +52,7 @@ import org.deegree.commons.tom.primitive.PrimitiveType;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.commons.utils.JDBCUtils;
 import org.deegree.feature.Feature;
+import org.deegree.feature.FeatureCollection;
 import org.deegree.feature.persistence.FeatureStore;
 import org.deegree.feature.persistence.FeatureStoreException;
 import org.deegree.feature.persistence.FeatureStoreTransaction;
@@ -178,11 +179,11 @@ class OracleFeatureStoreTransaction implements FeatureStoreTransaction {
     }
 
     @Override
-    public List<String> performInsert( Feature f, IDGenMode mode )
+    public List<String> performInsert( FeatureCollection fc, IDGenMode mode )
                             throws FeatureStoreException {
 
         List<String> fids = new ArrayList<String>();
-        fids.add( insertFeature( f, mode ) );
+        //        fids.add( insertFeature( f, mode ) );
         return fids;
     }
 
