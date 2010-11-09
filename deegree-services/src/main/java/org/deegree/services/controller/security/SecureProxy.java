@@ -376,7 +376,17 @@ public class SecureProxy extends HttpServlet {
                         continue;
                     }
 
-                    if ( nsURI == null ) {
+                    if ( localName.equals( "schemaLocation" ) ) {
+                        String link = value.replace( ":80", "" ); // again, normalization would be nice
+                        if ( link.indexOf( proxiedUrl ) != -1 ) {
+                            link = link.replace( proxiedUrl, serverUrl );
+                        }
+                        if ( nsURI == null ) {
+                            writer.writeAttribute( localName, link );
+                        } else {
+                            writer.writeAttribute( nsPrefix, nsURI, localName, link );
+                        }
+                    } else if ( nsURI == null ) {
                         writer.writeAttribute( localName, value );
                     } else {
                         if ( nsURI.equals( "http://www.w3.org/1999/xlink" ) ) {
@@ -390,6 +400,7 @@ public class SecureProxy extends HttpServlet {
                             } else if ( elementName.equals( "Post" ) ) {
                                 link = serverUrl;
                             }
+
                             writer.writeAttribute( nsPrefix, nsURI, localName, link );
                         } else {
                             writer.writeAttribute( nsPrefix, nsURI, localName, value );
