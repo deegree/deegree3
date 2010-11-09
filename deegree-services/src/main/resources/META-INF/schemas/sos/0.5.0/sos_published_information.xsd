@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema xmlns="http://www.w3.org/2001/XMLSchema" xmlns:sos="http://www.deegree.org/services/sos" xmlns:xlink="http://www.w3.org/1999/xlink"
+  xmlns:md="http://www.deegree.org/webservices" targetNamespace="http://www.deegree.org/services/sos"
+  elementFormDefault="qualified" attributeFormDefault="unqualified">
+  <import namespace="http://www.deegree.org/webservices" schemaLocation="../../webservices/0.6.0/metadata.xsd" />
+  <element name="PublishedInformation">
+    <complexType>
+      <sequence>
+        <element ref="md:ServiceIdentification" minOccurs="0" />
+        <element ref="md:ServiceProvider" minOccurs="0" />
+        <element name="SupportedVersions">
+          <complexType>
+            <sequence>
+              <element name="Version" type="string" maxOccurs="unbounded" />
+            </sequence>
+          </complexType>
+        </element>
+        <element name="OWSOptions">
+          <complexType>
+            <sequence>
+              <element name="HTTPStatusCodeForExceptions" type="int" default="400" minOccurs="0" />
+            </sequence>
+          </complexType>
+        </element>
+      </sequence>
+    </complexType>
+  </element>
+</schema>
