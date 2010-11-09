@@ -1,0 +1,14 @@
+.multipleComponent {
+	/*background-color: yellow;*/
+}
+
+div.multipleComponent>div {
+	border: 2px solid black;
+	margin: 2px;
+}
+
+div.multipleComponent div div.menu {
+	/*background-color: green;*/
+	text-align: right;
+	border-bottom: 1px solid black;
+}
