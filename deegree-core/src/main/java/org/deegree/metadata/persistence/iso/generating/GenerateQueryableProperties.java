@@ -55,6 +55,7 @@ import org.deegree.commons.utils.JDBCUtils;
 import org.deegree.commons.utils.time.DateUtils;
 import org.deegree.cs.CRSCodeType;
 import org.deegree.metadata.ISORecord;
+import org.deegree.metadata.i18n.Messages;
 import org.deegree.metadata.persistence.MetadataStoreException;
 import org.deegree.metadata.persistence.iso.PostGISMappingsISODC;
 import org.deegree.metadata.persistence.iso.parsing.QueryableProperties;
@@ -110,6 +111,7 @@ public class GenerateQueryableProperties {
         boolean isCaseSensitive = true;
         PreparedStatement stm = null;
         int operatesOnId = 0;
+        String time = null;
         try {
 
             operatesOnId = getLastDatasetId( connection, databaseTable );
@@ -128,7 +130,7 @@ public class GenerateQueryableProperties {
             stm.setString( 4, rec.getAnyText() );
             if ( rec.getModified() != null && rec.getModified().length != 0 ) {
                 // TODO think of more than one date
-                String time = rec.getModified()[0].toString();
+                time = rec.getModified()[0].toString();
                 stm.setTimestamp(
                                   5,
                                   Timestamp.valueOf( DateUtils.formatJDBCTimeStamp( DateUtils.parseISO8601Date( time ) ) ) );
@@ -147,11 +149,13 @@ public class GenerateQueryableProperties {
             stm.close();
 
         } catch ( SQLException e ) {
-
-            LOG.debug( "error: " + e.getMessage(), e );
-            throw new MetadataStoreException( e.getMessage() );
+            String msg = Messages.getMessage( "ERROR_SQL", sqlStatement.toString(), e.getMessage() );
+            LOG.debug( msg );
+            throw new MetadataStoreException( msg );
         } catch ( ParseException e ) {
-            throw new MetadataStoreException( e.getMessage() );
+            String msg = Messages.getMessage( "ERROR_PARSING", time, e.getMessage() );
+            LOG.debug( msg );
+            throw new MetadataStoreException( msg );
         }
 
         return operatesOnId;
@@ -165,7 +169,7 @@ public class GenerateQueryableProperties {
         ResultSet rs = null;
 
         StringBuilder sqlStatementUpdate = new StringBuilder( 500 );
-
+        String time = null;
         int requestedId = 0;
 
         try {
@@ -212,7 +216,7 @@ public class GenerateQueryableProperties {
                     stm.setString( 3, rec.getAnyText() );
                     if ( rec.getModified() != null ) {
                         // TODO think of more than one date
-                        String time = rec.getModified()[0].toString();
+                        time = rec.getModified()[0].toString();
                         stm.setTimestamp(
                                           4,
                                           Timestamp.valueOf( DateUtils.formatJDBCTimeStamp( DateUtils.parseISO8601Date( time ) ) ) );
@@ -234,11 +238,13 @@ public class GenerateQueryableProperties {
             }
 
         } catch ( SQLException e ) {
-            LOG.debug( "error: " + e.getMessage(), e );
-            throw new MetadataStoreException( e.getMessage() );
+            String msg = Messages.getMessage( "ERROR_SQL", sqlStatementUpdate.toString(), e.getMessage() );
+            LOG.debug( msg );
+            throw new MetadataStoreException( msg );
         } catch ( ParseException e ) {
-            LOG.debug( "error: " + e.getMessage(), e );
-            throw new MetadataStoreException( e.getMessage() );
+            String msg = Messages.getMessage( "ERROR_PARSING", time, e.getMessage() );
+            LOG.debug( msg );
+            throw new MetadataStoreException( msg );
         } catch ( XMLStreamException e ) {
             LOG.debug( "error: " + e.getMessage(), e );
             throw new MetadataStoreException( e.getMessage() );
@@ -480,9 +486,9 @@ public class GenerateQueryableProperties {
             buf.setLength( 0 );
 
         } catch ( SQLException e ) {
-
-            LOG.debug( "error: " + e.getMessage(), e );
-            throw new MetadataStoreException( e.getMessage() );
+            String msg = Messages.getMessage( "ERROR_SQL", sqlStatement.toString(), e.getMessage() );
+            LOG.debug( msg );
+            throw new MetadataStoreException( msg );
         }
 
     }
@@ -1236,9 +1242,9 @@ public class GenerateQueryableProperties {
                 counter++;
 
             } catch ( SQLException e ) {
-
-                LOG.debug( "error: " + e.getMessage(), e );
-                throw new MetadataStoreException( e.getMessage() );
+                String msg = Messages.getMessage( "ERROR_SQL", sqlStatement.toString(), e.getMessage() );
+                LOG.debug( msg );
+                throw new MetadataStoreException( msg );
             }
 
         }

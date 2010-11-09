@@ -36,7 +36,7 @@
 package org.deegree.metadata.persistence.iso.resulttypes;
 
 /**
- * The <Code>validate</Code> resulttype. TODO implement!
+ * The <Code>validate</Code> resulttype. This is handled in the protocol layer.
  * 
  * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
  * @author last edited by: $Author$

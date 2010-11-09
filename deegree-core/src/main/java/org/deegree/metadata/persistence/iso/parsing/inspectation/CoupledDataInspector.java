@@ -52,6 +52,7 @@ import org.deegree.commons.utils.JDBCUtils;
 import org.deegree.commons.xml.NamespaceContext;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.XPath;
+import org.deegree.metadata.i18n.Messages;
 import org.deegree.metadata.persistence.MetadataInspectorException;
 import org.deegree.metadata.persistence.MetadataStoreException;
 import org.deegree.metadata.persistence.iso19115.jaxb.CoupledResourceInspector;
@@ -124,9 +125,7 @@ public class CoupledDataInspector implements RecordInspector {
         if ( ci.isThrowConsistencyError() ) {
             for ( String operatesOnString : operatesOnList ) {
                 if ( !getCoupledDataMetadatasets( operatesOnString ) ) {
-                    String msg = "No resourceIdentifier "
-                                 + operatesOnString
-                                 + " found in the data metadata. So there is no coupling possible and an exception has to be thrown in conformity with configuration. ";
+                    String msg = Messages.getMessage( "ERROR_INSPECT_NO_RSID", operatesOnString );
                     LOG.info( msg );
                     throw new MetadataInspectorException( msg );
                 }
@@ -159,9 +158,9 @@ public class CoupledDataInspector implements RecordInspector {
                 break;
             }
         } catch ( SQLException e ) {
-            LOG.debug( "Error while proving the ID for the coupled resources: {}", e.getMessage() );
-            throw new MetadataInspectorException( "Error while proving the ID for the coupled resources: {}"
-                                                  + e.getMessage() );
+            String msg = Messages.getMessage( "ERROR_SQL", s, e.getMessage() );
+            LOG.debug( msg );
+            throw new MetadataInspectorException( msg );
         } finally {
             close( rs );
             close( stm );
@@ -251,7 +250,7 @@ public class CoupledDataInspector implements RecordInspector {
                 }
                 if ( ci != null ) {
                     if ( throwException && ci.isThrowConsistencyError() ) {
-                        String msg = "Error while processing the coupling!";
+                        String msg = Messages.getMessage( "ERROR_COUPLING" );
                         JDBCUtils.close( conn );
                         LOG.debug( msg );
                         throw new MetadataInspectorException( msg );

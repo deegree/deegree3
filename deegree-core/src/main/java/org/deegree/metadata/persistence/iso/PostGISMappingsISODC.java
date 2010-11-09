@@ -66,6 +66,7 @@ import org.deegree.filter.sql.TableAliasManager;
 import org.deegree.filter.sql.postgis.PostGISMapping;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.io.WKBWriter;
+import org.deegree.metadata.i18n.Messages;
 import org.jaxen.expr.Expr;
 import org.jaxen.expr.LocationPath;
 import org.jaxen.expr.NameStep;
@@ -440,7 +441,7 @@ public class PostGISMappingsISODC implements PostGISMapping {
 
         QName qName = propName.getAsQName();
         if ( qName == null ) {
-            String msg = "Cannot map property name '" + propName + "'. Not a simple QName.";
+            String msg = Messages.getMessage( "WARN_PROPNAME_MAPPING", propName );
             LOG.debug( msg );
         } else {
             Triple<String, String, PrimitiveType> tableColumn = propToTableAndCol.get( qName );
@@ -459,8 +460,8 @@ public class PostGISMappingsISODC implements PostGISMapping {
                 mapping = new PropertyNameMapping( aliasManager, valueField, joins, null, "-1" );
             } else {
 
-                String msg = "Error while mapping the propertyName '" + qName + "'";
-                LOG.debug( "Error while mapping the propertyName '{}'", qName );
+                String msg = Messages.getMessage( "ERROR_PROPNAME_MAPPING", qName );
+                LOG.debug( msg );
                 throw new FilterEvaluationException( msg );
             }
         }
@@ -562,7 +563,7 @@ public class PostGISMappingsISODC implements PostGISMapping {
             String column = getMapping( new PropertyName( requestedProperty ), null ).getTargetField().getColumn();
 
             if ( column == null ) {
-                throw new FilterEvaluationException( column + " doesn't exist!" );
+                throw new FilterEvaluationException( Messages.getMessage( "ERROR_COLUMN_NOT_EXISTS", column ) );
                 // pgValue = literal.getValue().toString();
             }
 
@@ -655,7 +656,7 @@ public class PostGISMappingsISODC implements PostGISMapping {
         String column = getMapping( new PropertyName( requestedProperty ), null ).getTargetField().getColumn();
 
         if ( column == null ) {
-            throw new FilterEvaluationException( column + " doesn't exist!" );
+            throw new FilterEvaluationException( Messages.getMessage( "ERROR_COLUMN_NOT_EXISTS", column ) );
             // pgValue = literal.getValue().toString();
         }
 

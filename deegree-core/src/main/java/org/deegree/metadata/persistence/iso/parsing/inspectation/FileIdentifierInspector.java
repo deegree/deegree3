@@ -47,6 +47,7 @@ import org.apache.axiom.om.OMElement;
 import org.deegree.commons.xml.NamespaceContext;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.XPath;
+import org.deegree.metadata.i18n.Messages;
 import org.deegree.metadata.persistence.MetadataInspectorException;
 import org.deegree.metadata.persistence.MetadataStoreException;
 import org.deegree.metadata.persistence.iso.generating.generatingelements.GenerateOMElement;
@@ -97,35 +98,38 @@ public class FileIdentifierInspector implements RecordInspector {
                             throws MetadataInspectorException {
         List<String> idList = new ArrayList<String>();
         if ( fi.length != 0 ) {
-            LOG.info( "There is at least one fileIdentifier available with id: '{}' so everything is fine.", fi );
+            for ( String f : fi ) {
+                LOG.info( Messages.getMessage( "INFO_FI_AVAILABLE", f ) );
+                idList.add( f );
+            }
             return idList;
         } else {
             if ( config != null && !config.isRejectEmptyFileIdentifier() ) {
                 if ( rsList.size() == 0 && id == null && uuid == null ) {
 
-                    LOG.debug( "(DEFAULT) There is no Identifier available, so a new UUID will be generated..." );
+                    LOG.debug( Messages.getMessage( "INFO_FI_GENERATE_NEW" ) );
                     idList.add( IdUtils.newInstance( conn ).generateUUID() );
-                    LOG.debug( "(DEFAULT) The new FileIdentifier: " + idList );
+                    LOG.debug( Messages.getMessage( "INFO_FI_NEW", idList ) );
                 } else {
                     if ( rsList.size() == 0 && id != null ) {
-                        LOG.debug( "(DEFAULT) The id attribute will be taken: {}", id );
+                        LOG.debug( Messages.getMessage( "INFO_FI_DEFAULT_ID", id ) );
                         idList.add( id );
                     } else if ( rsList.size() == 0 && uuid != null ) {
-                        LOG.debug( "(DEFAULT) The uuid attribute will be taken: {}", uuid );
+                        LOG.debug( Messages.getMessage( "INFO_FI_DEFAULT_UUID", uuid ) );
                         idList.add( uuid );
                     } else {
-                        LOG.debug( "(DEFAULT) The ResourseIdentifier will be taken: {}", rsList.get( 0 ) );
+                        LOG.debug( Messages.getMessage( "INFO_FI_DEFAULT_RSID", rsList.get( 0 ) ) );
                         idList.add( rsList.get( 0 ) );
                     }
                 }
                 return idList;
             } else {
                 if ( rsList.size() == 0 ) {
-                    LOG.debug( "This file must be rejected because the configuration-file requires at least a fileIdentifier or one resourceIdentifier!" );
-                    throw new MetadataInspectorException(
-                                                          "The configuration-file requires at least a fileIdentifier or one resourceIdentifier!" );
+                    String msg = Messages.getMessage( "ERROR_REJECT_FI" );
+                    LOG.debug( msg );
+                    throw new MetadataInspectorException( msg );
                 } else {
-                    LOG.debug( "(DEFAULT) The ResourseIdentifier will be taken: {}", rsList.get( 0 ) );
+                    LOG.debug( Messages.getMessage( "INFO_FI_DEFAULT_RSID", rsList.get( 0 ) ) );
                     idList.add( rsList.get( 0 ) );
                     return idList;
                 }

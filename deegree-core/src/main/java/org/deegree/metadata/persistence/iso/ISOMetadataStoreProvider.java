@@ -49,6 +49,7 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 
+import org.deegree.metadata.i18n.Messages;
 import org.deegree.metadata.persistence.MetadataStore;
 import org.deegree.metadata.persistence.MetadataStoreException;
 import org.deegree.metadata.persistence.MetadataStoreProvider;
@@ -133,14 +134,14 @@ public class ISOMetadataStoreProvider implements MetadataStoreProvider {
 
         ISOMetadataStoreConfig config = null;
         if ( configURL == null ) {
-            LOG.warn( "No metadata store configuration found!" );
+            LOG.warn( Messages.getMessage( "WARN_NO_CONFIG" ) );
         } else {
             try {
                 JAXBContext jc = JAXBContext.newInstance( "org.deegree.metadata.persistence.iso19115.jaxb" );
                 Unmarshaller u = jc.createUnmarshaller();
                 config = (ISOMetadataStoreConfig) u.unmarshal( configURL );
             } catch ( JAXBException e ) {
-                String msg = "Error in metadata store configuration file '" + configURL + "': " + e.getMessage();
+                String msg = Messages.getMessage( "ERROR_IN_CONFIG_FILE", configURL, e.getMessage() );
                 LOG.error( msg );
                 throw new MetadataStoreException( msg, e );
             }

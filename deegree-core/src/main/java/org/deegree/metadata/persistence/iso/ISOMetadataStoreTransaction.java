@@ -13,6 +13,7 @@ import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.OperatorFilter;
 import org.deegree.filter.sql.postgis.PostGISWhereBuilder;
 import org.deegree.metadata.ISORecord;
+import org.deegree.metadata.i18n.Messages;
 import org.deegree.metadata.persistence.MetadataInspectorException;
 import org.deegree.metadata.persistence.MetadataStoreException;
 import org.deegree.metadata.persistence.MetadataStoreTransaction;
@@ -59,13 +60,13 @@ public class ISOMetadataStoreTransaction implements MetadataStoreTransaction {
     @Override
     public void commit()
                             throws MetadataStoreException {
-        LOG.debug( "Committing transaction." );
+        LOG.debug( Messages.getMessage( "INFO_TA_COMMIT" ) );
         try {
             conn.commit();
         } catch ( SQLException e ) {
-            LOG.debug( e.getMessage(), e );
-            LOG.debug( e.getMessage(), e.getNextException() );
-            throw new MetadataStoreException( "Unable to commit SQL transaction: " + e.getMessage() );
+            String msg = Messages.getMessage( "ERROR_TA_COMMIT", e.getMessage() );
+            LOG.debug( msg );
+            throw new MetadataStoreException( msg );
         }
     }
 
@@ -174,12 +175,13 @@ public class ISOMetadataStoreTransaction implements MetadataStoreTransaction {
     @Override
     public void rollback()
                             throws MetadataStoreException {
-        LOG.debug( "Performing rollback of transaction." );
+        LOG.debug( Messages.getMessage( "INFO_TA_ROLLBACK" ) );
         try {
             conn.rollback();
         } catch ( SQLException e ) {
-            LOG.debug( e.getMessage(), e );
-            throw new MetadataStoreException( "Unable to rollback SQL transaction: " + e.getMessage() );
+            String msg = Messages.getMessage( "ERROR_TA_ROLLBACK", e.getMessage() );
+            LOG.debug( msg );
+            throw new MetadataStoreException( msg );
         }
     }
 }

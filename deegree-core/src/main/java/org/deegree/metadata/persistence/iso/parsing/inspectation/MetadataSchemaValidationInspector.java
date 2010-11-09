@@ -45,6 +45,7 @@ import java.util.List;
 import javax.xml.stream.XMLStreamException;
 
 import org.apache.axiom.om.OMElement;
+import org.deegree.metadata.i18n.Messages;
 import org.deegree.metadata.persistence.MetadataInspectorException;
 import org.deegree.metadata.persistence.MetadataStoreException;
 import org.deegree.metadata.persistence.iso19115.jaxb.SchemaValidator;
@@ -111,7 +112,7 @@ public class MetadataSchemaValidationInspector implements RecordInspector {
         if ( errors.isEmpty() ) {
             return record;
         } else {
-            String msg = "The metadata is not valide against the schema";
+            String msg = Messages.getMessage( "ERROR_VALIDATE" );
             LOG.debug( msg );
             throw new MetadataInspectorException( msg );
         }

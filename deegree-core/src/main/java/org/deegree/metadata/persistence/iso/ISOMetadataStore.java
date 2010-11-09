@@ -170,10 +170,10 @@ public class ISOMetadataStore implements MetadataStore {
             String version = determinePostGISVersion( conn );
             if ( version.startsWith( "0." ) || version.startsWith( "1.0" ) || version.startsWith( "1.1" )
                  || version.startsWith( "1.2" ) ) {
-                LOG.debug( "PostGIS version is " + version + " -- using legacy (pre-SQL-MM) predicates." );
+                LOG.debug( Messages.getMessage( "DET_POSTGIS_PREDICATES_LEGACY", version ) );
                 useLegacyPredicates = true;
             } else {
-                LOG.debug( "PostGIS version is " + version + " -- using modern (SQL-MM) predicates." );
+                LOG.debug( Messages.getMessage( "DET_POSTGIS_PREDICATES_MODERN", version ) );
             }
 
         } catch ( SQLException e ) {
@@ -201,11 +201,12 @@ public class ISOMetadataStore implements MetadataStore {
             rs = stmt.executeQuery( "SHOW server_encoding" );
             rs.next();
             encodingPostGRES = rs.getString( 1 );
-            LOG.debug( "PostGRES encoding: {}", encodingPostGRES );
+            LOG.debug( Messages.getMessage( "DET_POSTGRES_ENCODING", encodingPostGRES ) );
             stmt.close();
             rs.close();
         } catch ( Exception e ) {
-            LOG.warn( "Could not determine PostGRES encoding: {} -- defaulting to UTF-8", e.getMessage() );
+            String msg = Messages.getMessage( "WARN_DET_POSTGRES_ENCODING", e.getMessage() );
+            LOG.warn( msg );
         } finally {
             close( rs );
             close( stmt );
@@ -227,7 +228,8 @@ public class ISOMetadataStore implements MetadataStore {
             LOG.debug( "PostGIS version: {}", version );
 
         } catch ( Exception e ) {
-            LOG.warn( "Could not determine PostGIS version: {} -- defaulting to 1.0.0", e.getMessage() );
+            String msg = Messages.getMessage( "DET_POSTGIS_VERSION", e.getMessage() );
+            LOG.warn( msg );
         } finally {
             close( rs );
             close( stmt );
@@ -246,7 +248,7 @@ public class ISOMetadataStore implements MetadataStore {
                             throws MetadataStoreException {
 
         String operationName = "getRecords";
-
+        LOG.info( Messages.getMessage( "INFO_EXEC", operationName ) );
         PostGISMappingsISODC mapping = new PostGISMappingsISODC();
         PostGISWhereBuilder builder = null;
         Connection conn = null;
@@ -269,7 +271,7 @@ public class ISOMetadataStore implements MetadataStore {
                 result = new ISOMetadataResultSet( col, resultType );
                 break;
             case validate:
-                // TODO
+                // is handled by the protocol layer
             }
         } catch ( FilterEvaluationException e ) {
             String msg = Messages.getMessage( "ERROR_OPERATION", operationName, e.getLocalizedMessage() );
@@ -305,7 +307,7 @@ public class ISOMetadataStore implements MetadataStore {
                                                   PostGISWhereBuilder builder, Connection conn, ExecuteStatements exe )
                             throws MetadataStoreException {
         String resultTypeName = "hits";
-        LOG.info( "Performing '" + resultTypeName + "': " );
+        LOG.info( Messages.getMessage( "INFO_EXEC", "do " + resultTypeName + " on getRecords" ) );
         ResultSet rs = null;
         PreparedStatement ps = null;
         MetadataResultType result = null;
@@ -370,6 +372,7 @@ public class ISOMetadataStore implements MetadataStore {
     private MetadataResultSet doResultsOnGetRecord( MetadataQuery recordStoreOptions, PostGISWhereBuilder builder,
                                                     Connection conn )
                             throws MetadataStoreException {
+        LOG.info( Messages.getMessage( "INFO_EXEC", "do results on getRecords" ) );
         MetadataResultType type = null;
         MetadataCollection col = new ISOCollection();
         ResultSet rs = null;
@@ -422,6 +425,8 @@ public class ISOMetadataStore implements MetadataStore {
                             throws MetadataStoreException {
 
         String operationName = "getRecordsById";
+
+        LOG.info( Messages.getMessage( "INFO_EXEC", operationName ) );
 
         ResultSet rs = null;
         Connection conn = null;
@@ -487,9 +492,9 @@ public class ISOMetadataStore implements MetadataStore {
                 isr = new InputStreamReader( bais, charset );
                 xmlReader = XMLInputFactory.newInstance().createXMLStreamReader( isr );
             } catch ( Exception e ) {
-
-                LOG.debug( "Error while writing the result: {}", e.getMessage() );
-                throw new MetadataStoreException( e.getMessage() );
+                String msg = Messages.getMessage( "ERROR_WRITING_RESULT", e.getMessage() );
+                LOG.debug( msg );
+                throw new MetadataStoreException( msg );
             } catch ( FactoryConfigurationError e ) {
                 throw new MetadataStoreException( e.getMessage() );
             }

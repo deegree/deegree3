@@ -56,6 +56,7 @@ import org.deegree.feature.persistence.mapping.Join;
 import org.deegree.filter.sql.PropertyNameMapping;
 import org.deegree.filter.sql.expression.SQLLiteral;
 import org.deegree.filter.sql.postgis.PostGISWhereBuilder;
+import org.deegree.metadata.i18n.Messages;
 import org.deegree.metadata.persistence.GenericDatabaseExecution;
 import org.deegree.metadata.persistence.MetadataQuery;
 import org.deegree.metadata.persistence.MetadataStoreException;
@@ -81,57 +82,15 @@ public class ExecuteStatements implements GenericDatabaseExecution {
     public int executeDeleteStatement( Connection connection, PostGISWhereBuilder builder )
                             throws MetadataStoreException {
 
-        StringBuilder getDatasetIDs = new StringBuilder( 300 );
+        LOG.info( Messages.getMessage( "INFO_EXEC", "delete-statement" ) );
         PreparedStatement preparedStatement = null;
         ResultSet rs = null;
         List<Integer> deletableDatasets;
         try {
 
-            String rootTableAlias = builder.getAliasManager().getRootTableAlias();
-
-            getDatasetIDs.append( "SELECT " );
-
-            getDatasetIDs.append( rootTableAlias );
-            getDatasetIDs.append( '.' );
-            getDatasetIDs.append( id );
-
-            getDatasetIDs.append( " FROM " );
-            getDatasetIDs.append( PostGISMappingsISODC.DatabaseTables.datasets.name() );
-            getDatasetIDs.append( " " );
-            getDatasetIDs.append( rootTableAlias );
-
-            for ( PropertyNameMapping mappedPropName : builder.getMappedPropertyNames() ) {
-                String currentAlias = rootTableAlias;
-                for ( Join join : mappedPropName.getJoins() ) {
-                    DBField from = join.getFrom();
-                    DBField to = join.getTo();
-                    getDatasetIDs.append( " LEFT OUTER JOIN " );
-                    getDatasetIDs.append( to.getTable() );
-                    getDatasetIDs.append( " AS " );
-                    getDatasetIDs.append( to.getAlias() );
-                    getDatasetIDs.append( " ON " );
-                    getDatasetIDs.append( currentAlias );
-                    getDatasetIDs.append( "." );
-                    getDatasetIDs.append( from.getColumn() );
-                    getDatasetIDs.append( "=" );
-                    currentAlias = to.getAlias();
-                    getDatasetIDs.append( currentAlias );
-                    getDatasetIDs.append( "." );
-                    getDatasetIDs.append( to.getColumn() );
-                }
-            }
-
-            getDatasetIDs.append( " WHERE " );
-
-            if ( builder.getWhere() != null ) {
-                getDatasetIDs.append( builder.getWhere().getSQL() );
-            }
-
-            preparedStatement = connection.prepareStatement( getDatasetIDs.toString() );
+            preparedStatement = getPreparedStatementDatasetIDs( null, false, connection, builder );
 
             int i = 1;
-            LOG.debug( "Delete statement: " + preparedStatement );
-
             if ( builder.getWhere() != null ) {
                 for ( SQLLiteral o : builder.getWhere().getLiterals() ) {
                     preparedStatement.setObject( i++, o.getValue() );
@@ -143,7 +102,7 @@ public class ExecuteStatements implements GenericDatabaseExecution {
                 }
             }
 
-            LOG.debug( "Find records with expression: " + preparedStatement.toString() );
+            LOG.debug( Messages.getMessage( "INFO_TA_DELETE_FIND", preparedStatement.toString() ) );
 
             rs = preparedStatement.executeQuery();
 
@@ -165,16 +124,17 @@ public class ExecuteStatements implements GenericDatabaseExecution {
 
                     preparedStatement = connection.prepareStatement( stringBuilder.toString() );
                     preparedStatement.setInt( 1, d );
-                    LOG.debug( "Delete records with expression:" + preparedStatement.toString() );
+
+                    LOG.debug( Messages.getMessage( "INFO_TA_DELETE_DEL", preparedStatement.toString() ) );
                     preparedStatement.executeUpdate();
 
                 }
             }
 
         } catch ( SQLException e ) {
-
-            LOG.debug( "Error while generating the SELECT statement: {}", e.getMessage() );
-            throw new MetadataStoreException( "Error while generating the SELECT statement: {}", e );
+            String msg = Messages.getMessage( "ERROR_SQL", preparedStatement.toString(), e.getMessage() );
+            LOG.debug( msg );
+            throw new MetadataStoreException( msg );
         } finally {
             JDBCUtils.close( rs, preparedStatement, null, LOG );
 
@@ -182,6 +142,85 @@ public class ExecuteStatements implements GenericDatabaseExecution {
 
         return deletableDatasets.size();
 
+    }
+
+    private PreparedStatement getPreparedStatementDatasetIDs( MetadataQuery query, boolean setCount,
+                                                              Connection connection, PostGISWhereBuilder builder )
+                            throws MetadataStoreException {
+        String orderByclause = null;
+        StringBuilder getDatasetIDs = new StringBuilder( 300 );
+        if ( builder.getOrderBy() != null ) {
+            int length = builder.getOrderBy().getSQL().length();
+            orderByclause = builder.getOrderBy().getSQL().toString().substring( 0, length - 4 );
+        }
+
+        String rootTableAlias = builder.getAliasManager().getRootTableAlias();
+
+        getDatasetIDs.append( "SELECT " );
+        if ( setCount ) {
+            getDatasetIDs.append( "COUNT( DISTINCT " );
+            getDatasetIDs.append( rootTableAlias );
+            getDatasetIDs.append( '.' );
+            getDatasetIDs.append( id );
+            getDatasetIDs.append( ')' );
+        } else {
+            getDatasetIDs.append( " DISTINCT " );
+            getDatasetIDs.append( rootTableAlias );
+            getDatasetIDs.append( '.' );
+            getDatasetIDs.append( id );
+            if ( orderByclause != null ) {
+                getDatasetIDs.append( ',' );
+                getDatasetIDs.append( orderByclause );
+            }
+        }
+        getDatasetIDs.append( " FROM " );
+        getDatasetIDs.append( databaseTable );
+        getDatasetIDs.append( " " );
+        getDatasetIDs.append( rootTableAlias );
+
+        for ( PropertyNameMapping mappedPropName : builder.getMappedPropertyNames() ) {
+            String currentAlias = rootTableAlias;
+            for ( Join join : mappedPropName.getJoins() ) {
+                DBField from = join.getFrom();
+                DBField to = join.getTo();
+                getDatasetIDs.append( " LEFT OUTER JOIN " );
+                getDatasetIDs.append( to.getTable() );
+                getDatasetIDs.append( " AS " );
+                getDatasetIDs.append( to.getAlias() );
+                getDatasetIDs.append( " ON " );
+                getDatasetIDs.append( currentAlias );
+                getDatasetIDs.append( "." );
+                getDatasetIDs.append( from.getColumn() );
+                getDatasetIDs.append( "=" );
+                currentAlias = to.getAlias();
+                getDatasetIDs.append( currentAlias );
+                getDatasetIDs.append( "." );
+                getDatasetIDs.append( to.getColumn() );
+            }
+        }
+
+        if ( builder.getWhere() != null ) {
+            getDatasetIDs.append( " WHERE " );
+            getDatasetIDs.append( builder.getWhere().getSQL() );
+        }
+
+        if ( builder.getOrderBy() != null && !setCount ) {
+            getDatasetIDs.append( " ORDER BY " );
+            getDatasetIDs.append( builder.getOrderBy().getSQL() );
+        }
+
+        if ( !setCount && query != null ) {
+            getDatasetIDs.append( " OFFSET " ).append( Integer.toString( query.getStartPosition() - 1 ) );
+            getDatasetIDs.append( " LIMIT " ).append( query.getMaxRecords() );
+        }
+
+        try {
+            return connection.prepareStatement( getDatasetIDs.toString() );
+        } catch ( SQLException e ) {
+            String msg = Messages.getMessage( "ERROR_SQL", getDatasetIDs.toString(), e.getMessage() );
+            LOG.debug( msg );
+            throw new MetadataStoreException( msg );
+        }
     }
 
     private void updatePrecondition( PostGISMappingsISODC mapping, PostGISWhereBuilder builder ) {
@@ -327,86 +366,19 @@ public class ExecuteStatements implements GenericDatabaseExecution {
     public PreparedStatement executeGetRecords( MetadataQuery query, boolean setCount, PostGISWhereBuilder builder,
                                                 Connection conn )
                             throws MetadataStoreException {
-
-        StringBuilder getDatasetIDs = new StringBuilder( 300 );
         PreparedStatement preparedStatement = null;
-        String orderByclause = null;
-        // TODO remove workaround because of distinct and order by
-        if ( builder.getOrderBy() != null ) {
-            int length = builder.getOrderBy().getSQL().length();
-            orderByclause = builder.getOrderBy().getSQL().toString().substring( 0, length - 4 );
-        }
+        java.util.Date date = null;
         try {
 
-            LOG.debug( "Execute GetRecords: " );
+            LOG.debug( Messages.getMessage( "INFO_EXEC", "getRecords-statement" ) );
 
-            String rootTableAlias = builder.getAliasManager().getRootTableAlias();
-
-            getDatasetIDs.append( "SELECT " );
-            if ( setCount ) {
-                getDatasetIDs.append( "COUNT( DISTINCT " );
-                getDatasetIDs.append( rootTableAlias );
-                getDatasetIDs.append( '.' );
-                getDatasetIDs.append( id );
-                getDatasetIDs.append( ')' );
-            } else {
-                getDatasetIDs.append( " DISTINCT " );
-                getDatasetIDs.append( rootTableAlias );
-                getDatasetIDs.append( '.' );
-                getDatasetIDs.append( id );
-                if ( orderByclause != null ) {
-                    getDatasetIDs.append( ',' );
-                    getDatasetIDs.append( orderByclause );
-                }
-            }
-            getDatasetIDs.append( " FROM " );
-            getDatasetIDs.append( databaseTable );
-            getDatasetIDs.append( " " );
-            getDatasetIDs.append( rootTableAlias );
-
-            for ( PropertyNameMapping mappedPropName : builder.getMappedPropertyNames() ) {
-                String currentAlias = rootTableAlias;
-                for ( Join join : mappedPropName.getJoins() ) {
-                    DBField from = join.getFrom();
-                    DBField to = join.getTo();
-                    getDatasetIDs.append( " LEFT OUTER JOIN " );
-                    getDatasetIDs.append( to.getTable() );
-                    getDatasetIDs.append( " AS " );
-                    getDatasetIDs.append( to.getAlias() );
-                    getDatasetIDs.append( " ON " );
-                    getDatasetIDs.append( currentAlias );
-                    getDatasetIDs.append( "." );
-                    getDatasetIDs.append( from.getColumn() );
-                    getDatasetIDs.append( "=" );
-                    currentAlias = to.getAlias();
-                    getDatasetIDs.append( currentAlias );
-                    getDatasetIDs.append( "." );
-                    getDatasetIDs.append( to.getColumn() );
-                }
-            }
-
-            if ( builder.getWhere() != null ) {
-                getDatasetIDs.append( " WHERE " );
-                getDatasetIDs.append( builder.getWhere().getSQL() );
-            }
-
-            if ( builder.getOrderBy() != null && !setCount ) {
-                getDatasetIDs.append( " ORDER BY " );
-                getDatasetIDs.append( builder.getOrderBy().getSQL() );
-            }
-
-            if ( !setCount && query != null ) {
-                getDatasetIDs.append( " OFFSET " ).append( Integer.toString( query.getStartPosition() - 1 ) );
-                getDatasetIDs.append( " LIMIT " ).append( query.getMaxRecords() );
-            }
-
-            preparedStatement = conn.prepareStatement( getDatasetIDs.toString() );
+            preparedStatement = getPreparedStatementDatasetIDs( query, setCount, conn, builder );
 
             int i = 1;
             if ( builder.getWhere() != null ) {
                 for ( SQLLiteral o : builder.getWhere().getLiterals() ) {
                     if ( o.getSQLType() == Types.TIMESTAMP ) {
-                        java.util.Date date = DateUtils.parseISO8601Date( o.getValue().toString() );
+                        date = DateUtils.parseISO8601Date( o.getValue().toString() );
                         Timestamp d = new Timestamp( date.getTime() );
                         preparedStatement.setTimestamp( i++, d );
                     } else if ( o.getSQLType() == Types.BOOLEAN ) {
@@ -429,11 +401,13 @@ public class ExecuteStatements implements GenericDatabaseExecution {
 
             LOG.debug( preparedStatement.toString() );
         } catch ( SQLException e ) {
-            LOG.debug( "Error while generating the SELECT statement: {}", e.getMessage() );
-            throw new MetadataStoreException( "Error while generating the SELECT statement: {}", e );
+            String msg = Messages.getMessage( "ERROR_SQL", preparedStatement.toString(), e.getMessage() );
+            LOG.debug( msg );
+            throw new MetadataStoreException( msg );
         } catch ( ParseException e ) {
-            LOG.debug( "Error while pasring the date: {}", e.getMessage() );
-            throw new MetadataStoreException( "Error while pasring the date: {}", e );
+            String msg = Messages.getMessage( "ERROR_PARSING", date, e.getMessage() );
+            LOG.debug( msg );
+            throw new MetadataStoreException( msg );
         }
         return preparedStatement;
 

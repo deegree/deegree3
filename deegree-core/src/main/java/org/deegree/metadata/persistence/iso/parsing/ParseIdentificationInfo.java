@@ -52,6 +52,7 @@ import org.deegree.commons.tom.datetime.Date;
 import org.deegree.commons.xml.NamespaceContext;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.XPath;
+import org.deegree.metadata.i18n.Messages;
 import org.deegree.metadata.persistence.MetadataStoreException;
 import org.deegree.metadata.persistence.types.BoundingBox;
 import org.deegree.metadata.persistence.types.Keyword;
@@ -123,7 +124,7 @@ public class ParseIdentificationInfo extends XMLAdapter {
              * Citation
              * 
              *---------------------------------------------------------------*/
-            LOG.debug( "Parsing of citation element..." );
+            LOG.debug( "Citation element..." );
             OMElement citation = getElement( sv_service_OR_md_dataIdentification, new XPath( "./gmd:citation",
                                                                                              nsContextParseII ) );
 
@@ -197,7 +198,6 @@ public class ParseIdentificationInfo extends XMLAdapter {
                 resourceIdentifierList.add( resourceIdentifier );
 
             }
-            LOG.debug( "Creating a resourceIdentifierList... is not implemented yet!!" );
 
             qp.setResourceIdentifier( resourceIdentifierList );
 
@@ -650,8 +650,10 @@ public class ParseIdentificationInfo extends XMLAdapter {
                         tempEnd = new Date( temporalExtentEnd );
                     }
                 } catch ( ParseException e ) {
-                    LOG.debug( "Parsing of Date failed. " );
-                    throw new MetadataStoreException( "Parsing of Date failed. " + e.getMessage() );
+                    String msg = Messages.getMessage( "ERROR_PARSING_TEMP_EXTENT", temporalExtentBegin,
+                                                      temporalExtentEnd, e.getMessage() );
+                    LOG.debug( msg );
+                    throw new MetadataStoreException( msg );
                 }
 
                 List<OMElement> geographicElement = getElements( extentElem,
@@ -732,7 +734,7 @@ public class ParseIdentificationInfo extends XMLAdapter {
              * Setting all the KEYWORDS found in the metadata 
              * 
              *---------------------------------------------------------------*/
-            LOG.debug( "setting all the keywords found in metadata..." );
+            LOG.debug( "keywords..." );
 
             List<OMElement> commonKeywords = new ArrayList<OMElement>();
 
@@ -782,7 +784,7 @@ public class ParseIdentificationInfo extends XMLAdapter {
              * Setting the COUPLINGTYPE
              * 
              *---------------------------------------------------------------*/
-            LOG.debug( "setting the couplingType..." );
+            LOG.debug( "CouplingType..." );
 
             List<String> operatesOnList = new ArrayList<String>();
             List<OperatesOnData> operatesOnDataList = new ArrayList<OperatesOnData>();

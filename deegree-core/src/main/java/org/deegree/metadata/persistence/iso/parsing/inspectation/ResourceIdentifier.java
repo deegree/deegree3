@@ -51,6 +51,7 @@ import org.deegree.commons.utils.JDBCUtils;
 import org.deegree.commons.xml.NamespaceContext;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.XPath;
+import org.deegree.metadata.i18n.Messages;
 import org.deegree.metadata.persistence.MetadataInspectorException;
 import org.deegree.metadata.persistence.MetadataStoreException;
 import org.deegree.metadata.persistence.iso.generating.generatingelements.GenerateOMElement;
@@ -120,18 +121,18 @@ public class ResourceIdentifier implements InspireCompliance {
                 if ( id != null ) {
                     if ( util.checkUUIDCompliance( id ) ) {
                         if ( checkRSListAgainstID( rsList, id ) ) {
-                            LOG.info( "The resourceIdentifier has been accepted." );
+                            LOG.info( Messages.getMessage( "INFO_RI_ACCEPTED" ) );
                             return rsList;
                         }
                     }
                 }
-                LOG.debug( "There was no match between resourceIdentifier and the id-attribute! Without any automatic guarantee this metadata has to be rejected! " );
+                String msg = Messages.getMessage( "ERROR_RI_ID" );
+                LOG.debug( msg );
                 JDBCUtils.close( conn );
-                throw new MetadataInspectorException(
-                                                      "There was no match between resourceIdentifier and the id-attribute!" );
+                throw new MetadataInspectorException( msg );
             }
             if ( checkRSListAgainstID( rsList, id ) ) {
-                LOG.info( "The resourceIdentifier has been accepted without any automatic creation. " );
+                LOG.info( Messages.getMessage( "INFO_RI_ACCEPTED" ) );
                 return rsList;
             }
             /**
@@ -144,24 +145,24 @@ public class ResourceIdentifier implements InspireCompliance {
              * if nothing exists: generate it for id and resourceIdentifier
              */
             if ( rsList.size() == 0 && id == null ) {
-                LOG.info( "Neither an id nor a resourceIdentifier exists...so this creates a new one. " );
+                LOG.info( Messages.getMessage( "INFO_RI_NEW" ) );
                 rsList.add( util.generateUUID() );
                 return rsList;
             } else if ( rsList.size() == 0 && id != null ) {
-                LOG.info( "An id exists but not a resourceIdentifier...so adapting resourceIdentifier with id. " );
-                LOG.debug( "check uuid compliance of id. " );
+                LOG.info( Messages.getMessage( "INFO_RI_ADAPT_FROM_ID" ) );
+                LOG.debug( Messages.getMessage( "INFO_UUID_COMPLIANCE", id ) );
                 if ( util.checkUUIDCompliance( id ) ) {
-                    LOG.debug( "true...so take it" );
+                    LOG.debug( "Take the id" );
 
                     rsList.add( id );
                 } else {
-                    LOG.debug( "false...so generate a new one" );
+                    LOG.debug( Messages.getMessage( "INFO_RI_NEW" ) );
                     rsList.add( util.generateUUID() );
                 }
                 return rsList;
             }
         }
-        LOG.info( "No modification happened, so the resourceIdentifierList will be passed through. " );
+        LOG.info( Messages.getMessage( "INFO_RI_NO_MODIFICATION" ) );
         rsList.clear();
         return rsList;
     }
@@ -229,22 +230,22 @@ public class ResourceIdentifier implements InspireCompliance {
         }
         List<String> rsList = determineResourceIdentifier( resourceIdentifierList, dataIdentificationId );
 
-        LOG.debug( "Creating of resourceIdentifierList finished: " + rsList );
+        LOG.debug( Messages.getMessage( "INFO_RI_FINISHED", rsList ) );
         if ( rsList.isEmpty() ) {
-            LOG.debug( "ResourceIdentifier compliance test is not activated so skip it." );
+            LOG.debug( Messages.getMessage( "INFO_RI_SKIP" ) );
         }
         if ( !rsList.isEmpty() ) {
             if ( dataIdentificationUuId == null ) {
-                LOG.debug( "No uuid attribute found, set it from the resourceIdentifier..." );
+                LOG.debug( Messages.getMessage( "INFO_RI_NO_UUID" ) );
 
             } else {
-                LOG.debug( "uuid attribute found, but anyway, set it from the resourceIdentifier..." );
+                LOG.debug( Messages.getMessage( "INFO_RI_SET_IT", "uuid attribute" ) );
                 sv_service_OR_md_dataIdentification.getAttribute( new QName( "uuid" ) );
             }
             sv_service_OR_md_dataIdentification.addAttribute( new OMAttributeImpl( "uuid", null, rsList.get( 0 ),
                                                                                    OMAbstractFactory.getOMFactory() ) );
 
-            LOG.debug( "Setting id attribute from the resourceIdentifier..." );
+            LOG.debug( Messages.getMessage( "INFO_RI_SET_IT", "id attribute" ) );
             OMAttribute attribute_id = sv_service_OR_md_dataIdentification.getAttribute( new QName( "id" ) );
 
             if ( attribute_id != null ) {
@@ -267,13 +268,13 @@ public class ResourceIdentifier implements InspireCompliance {
         if ( identifier.isEmpty() && !rsList.isEmpty() ) {
             OMElement resourceID = GenerateOMElement.newInstance().createMD_ResourceIdentifier( rsList.get( 0 ) );
             if ( editionDate != null ) {
-                LOG.debug( "Set resourceIdentifier '" + rsList.get( 0 ) + "' after the 'editionDate-element'." );
+                LOG.debug( Messages.getMessage( "INFO_RI_INSERT_NEW", rsList.get( 0 ), "editionDate" ) );
                 editionDate.insertSiblingAfter( resourceID );
             } else if ( edition != null ) {
-                LOG.debug( "Set resourceIdentifier '" + rsList.get( 0 ) + "' after the 'edition-element'." );
+                LOG.debug( Messages.getMessage( "INFO_RI_INSERT_NEW", rsList.get( 0 ), "edition" ) );
                 edition.insertSiblingAfter( resourceID );
             } else {
-                LOG.debug( "Set resourceIdentifier '" + rsList.get( 0 ) + "' after the last 'date-element'." );
+                LOG.debug( Messages.getMessage( "INFO_RI_INSERT_NEW", rsList.get( 0 ), "date" ) );
                 CI_Citation_date.get( CI_Citation_date.size() - 1 ).insertSiblingAfter( resourceID );
             }
         }

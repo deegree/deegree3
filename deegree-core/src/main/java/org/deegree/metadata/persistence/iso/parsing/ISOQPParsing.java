@@ -52,6 +52,7 @@ import org.deegree.commons.xml.NamespaceContext;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.XPath;
 import org.deegree.cs.CRSCodeType;
+import org.deegree.metadata.i18n.Messages;
 import org.deegree.metadata.persistence.MetadataStoreException;
 import org.deegree.metadata.persistence.types.Format;
 import org.slf4j.Logger;
@@ -216,9 +217,9 @@ public final class ISOQPParsing extends XMLAdapter {
                 }
             }
         } catch ( ParseException e ) {
-
-            LOG.debug( "error: " + e.getMessage(), e );
-            throw new MetadataStoreException( e.getMessage() );
+            String msg = Messages.getMessage( "ERROR_PARSING", dateString[0], e.getMessage() );
+            LOG.debug( msg );
+            throw new MetadataStoreException( msg );
         }
 
         qp.setModified( date );
@@ -469,8 +470,11 @@ public final class ISOQPParsing extends XMLAdapter {
 
     /**
      * DataQualityInfo
+     * 
+     * @throws MetadataStoreException
      */
-    private void parseDataQualityInfo() {
+    private void parseDataQualityInfo()
+                            throws MetadataStoreException {
         String source = getNodeAsString(
                                          rootElement,
                                          new XPath(
@@ -531,7 +535,9 @@ public final class ISOQPParsing extends XMLAdapter {
             }
         } catch ( ParseException e ) {
 
-            LOG.debug( "error: " + e.getMessage(), e );
+            String msg = Messages.getMessage( "ERROR_PARSING", specificationDateString, e.getMessage() );
+            LOG.debug( msg );
+            throw new MetadataStoreException( msg );
 
         }
         if ( dateSpecificationDate != null ) {
