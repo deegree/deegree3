@@ -1,0 +1,55 @@
+<schema xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.w3.org/2001/XMLSchema"
+  xmlns:sql="http://www.deegree.org/datasource/observation/contsql" targetNamespace="http://www.deegree.org/datasource/observation/contsql"
+  elementFormDefault="qualified" xmlns:jaxb="http://java.sun.com/xml/ns/jaxb" jaxb:version="2.1">
+  <annotation>
+    <appinfo>
+      <jaxb:schemaBindings>
+        <jaxb:package name="org.deegree.observation.persistence.contsql.jaxb" />
+      </jaxb:schemaBindings>
+    </appinfo>
+  </annotation>
+  <element name="ContinuousObservationStore">
+    <annotation>
+      <documentation>SQL Observation Store that is configured by an SQL statement/connection. This type of store records
+        observations at fixed time intervals.</documentation>
+      <appinfo>
+        <jaxb:class name="ContinuousObservationStore" />
+      </appinfo>
+    </annotation>
+    <complexType>
+      <sequence>
+        <element name="JDBCConnId" type="string" />
+        <element name="Table" type="string" />
+        <element name="TimeInterval">
+          <complexType>
+            <simpleContent>
+              <extension base="double">
+                <attribute name="uom" type="string"/>
+              </extension>
+            </simpleContent>
+          </complexType>
+        </element>
+        <element name="Column" minOccurs="0" maxOccurs="unbounded" type="sql:ColumnType" />
+        <element name="Option" minOccurs="0" maxOccurs="unbounded" type="sql:OptionType" />
+        <element name="Property" maxOccurs="unbounded">
+          <complexType>
+            <sequence>
+              <element name="Column" type="sql:ColumnType" />
+              <element name="Option" maxOccurs="unbounded" type="sql:OptionType" />
+            </sequence>
+            <attribute name="href" type="string" />
+          </complexType>
+        </element>
+      </sequence>
+      <attribute name="configVersion" use="required" fixed="0.6.0" />
+    </complexType>
+  </element>
+  <complexType name="OptionType">
+    <attribute name="name" type="string" />
+    <attribute name="value" type="string" />
+  </complexType>
+  <complexType name="ColumnType">
+    <attribute name="type" type="string" />
+    <attribute name="name" type="string" />
+  </complexType>
+</schema>
