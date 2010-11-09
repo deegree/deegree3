@@ -263,7 +263,7 @@ public class Executor {
      * @author last edited by: $Author: apoth $
      * @version $Revision: 9339 $
      */
-    private class AsyncPerformer<T> implements Runnable {
+    private static class AsyncPerformer<T> implements Runnable {
 
         private Callable<T> task;
 
