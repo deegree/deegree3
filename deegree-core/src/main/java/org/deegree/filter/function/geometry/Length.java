@@ -47,6 +47,7 @@ import org.deegree.filter.XPathEvaluator;
 import org.deegree.filter.expression.Function;
 import org.deegree.filter.function.FunctionProvider;
 import org.deegree.geometry.Geometry;
+import org.deegree.geometry.primitive.Curve;
 import org.deegree.geometry.primitive.Surface;
 
 /**
@@ -92,6 +93,9 @@ public class Length implements FunctionProvider {
                     Geometry geom = getGeomValue( val );
                     if ( geom != null && geom instanceof Surface ) {
                         lengths.add( new PrimitiveValue( ( (Surface) geom ).getPerimeter( null ).getValue() ) );
+                    }
+                    if ( geom != null && geom instanceof Curve ) {
+                        lengths.add( new PrimitiveValue( ( (Curve) geom ).getLength( null ).getValue() ) );
                     }
                 }
                 return lengths.toArray( new TypedObjectNode[lengths.size()] );
