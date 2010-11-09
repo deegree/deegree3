@@ -52,6 +52,8 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.deegree.commons.jdbc.ConnectionManager;
+import org.deegree.commons.tom.datetime.Date;
+import org.deegree.commons.tom.genericxml.GenericXMLElementContent;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.commons.utils.Pair;
 import org.deegree.feature.property.Property;
@@ -203,8 +205,7 @@ public class DBFIndex {
                     case DATE:
                     case DATE_TIME:
                     case TIME:
-                        // unknown whether this works, test data!
-                        stmt.setLong( ++idx, ( (java.util.Date) primVal.getValue() ).getTime() );
+                        stmt.setDate( ++idx, new java.sql.Date( ( (Date) primVal.getValue() ).getDate().getTime() ) );
                         break;
                     case DECIMAL:
                     case DOUBLE:
@@ -287,7 +288,11 @@ public class DBFIndex {
                 if ( o instanceof PrimitiveValue ) {
                     o = ( (PrimitiveValue) o ).getValue();
                 }
-                stmt.setObject( i++, o );
+                if ( o instanceof GenericXMLElementContent ) {
+                    stmt.setString( i++, o.toString() );
+                } else {
+                    stmt.setObject( i++, o );
+                }
 
             }
 
