@@ -11,7 +11,7 @@
         <gco:CharacterString>0C12204F-5626-4A2E-94F4-514424F093A1</gco:CharacterString>
       </fileIdentifier>
       <language>
-        <gco:CharacterString>ger</gco:CharacterString>
+        <gco:CharacterString>de</gco:CharacterString>
       </language>
       <characterSet>
         <MD_CharacterSetCode codeList="http://www.tc211.org/ISO19139/resources/codeList.xml?MD_CharacterSetCode"
@@ -24,7 +24,7 @@
       <contact>
         <CI_ResponsibleParty>
           <organisationName>
-            <gco:CharacterString>Landesamt für Wasserschutz</gco:CharacterString>
+            <gco:CharacterString>Landesamt für Wasserschutzgebiete</gco:CharacterString>
           </organisationName>
           <contactInfo>
             <CI_Contact>
@@ -420,6 +420,13 @@
         </MD_PortrayalCatalogueReference>
       </portrayalCatalogueInfo>
     </MD_Metadata>
-    
+    <csw:Constraint version="1.1.0">
+      <ogc:Filter>
+        <ogc:PropertyIsLike wildCard="%" singleChar="_" escapeChar="/">
+          <ogc:PropertyName>apiso:identifier</ogc:PropertyName>
+          <ogc:Literal>0C12204F-5626-4A2E-94F4-514424F093A1</ogc:Literal>
+        </ogc:PropertyIsLike>
+      </ogc:Filter>
+    </csw:Constraint>
       </csw:Update>
 </csw:Transaction>
