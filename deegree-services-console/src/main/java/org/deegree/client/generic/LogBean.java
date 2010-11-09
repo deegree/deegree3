@@ -44,6 +44,7 @@ import java.io.Serializable;
 
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
+import javax.faces.context.FacesContext;
 
 import org.deegree.services.controller.OGCFrontController;
 import org.slf4j.Logger;
@@ -97,12 +98,12 @@ public class LogBean implements Serializable {
         } catch ( IOException e ) {
             LOG.warn( "Error reading password from file '{}': {}", pwFile, e.getMessage() );
         }
+        String view = FacesContext.getCurrentInstance().getViewRoot().getViewId();
         if ( password != null && password.equals( correctPw ) ) {
             loggedIn = true;
-            return "success";
-        } else {
-            return "failed";
+            return view;
         }
+        return "failed";
     }
 
     public Object logOut() {
