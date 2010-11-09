@@ -1,15 +1,124 @@
 body {
 	background-color: #ffffff;
-	color: #000000;
+	color: grey;
 	font-family: "Courier New", Courier, monospace;
 	font-weight: normal;
-	font-size: 12pt;
+	font-size: small;
 	padding: 5pt;
 }
 
+/* BEGIN: layout*/
+#container {
+	height:734px;
+	left:10px;
+	margin:0 auto;
+	position:relative;
+	text-align:justify;
+	text-decoration:none;
+	top:0;
+	width:1000px;
+	z-index:1;
+}
+
+#header {
+	margin-bottom: 10px;
+}
+
+#logo {
+	float: left;
+	margin-left: 10px;
+}
+
+#login {
+	float: right;
+	margin-right: 10px;
+}
+
+#main {
+	
+}
+
+#left {
+	margin-left: 20 px;
+	float: left;
+	width: 160px;
+}
+
+#center {
+	background-image: url("images/bg.png");
+	margin: 10px 0px;
+	float: left;
+	width: 600px;
+	font-size: small;
+	text-align: left;
+}
+
+
+#right {
+	float: right;
+	width: 20%;
+}
+
+#footer {
+	border-top: 1px solid black;
+	font-size: small;
+	margin-top: 10px;
+	clear: both;
+	text-align: right;
+	margin-top: 10px;
+}
+
+.clear {
+	clear: both;
+}
+
+/** START: menu **/
+a.menuEntry:link {
+	color: black;
+}
+
+a.menuEntry:visited {
+	color: black;
+}
+
+a.menuEntry:active {
+	color: black;
+}
+
+a.menuEntry:hover {
+	color: black;
+	
+}
+
+a.selectedMenuEntry:link {
+	color: gray;
+	
+}
+
+a.selectedMenuEntry:visited {
+	color: gray;
+	
+}
+
+a.selectedMenuEntry:active {
+	color: gray;
+	
+}
+
+a.selectedMenuEntry:hover {
+	color: gray;
+	
+}
+
+/** END: menu **/ /* END: layout*/
+.consoleError {
+	color: red;
+}
+
 a {
-	text-decoration: underline;
-	color: #000000;
+	color: green;
+	text-decoration: none;
+	font-size: small;
 }
 
 .textarea {
@@ -39,6 +148,7 @@ a {
 }
 
 .statusPanel {
+	
 }
 
 #PLEASEWAIT_BG {
@@ -49,7 +159,7 @@ a {
 	height: 100%;
 	z-index: 10;
 	opacity: .20;
-	filter: alpha(opacity = 50);
+	filter: alpha(opacity =                                         50);
 	-moz-opacity: 0.2;
 	background-color: gray;
 	display: none;
@@ -66,7 +176,7 @@ a {
 	z-index: 11;
 	background-color: transparent;
 	text-align: center;
-	font-size: 12pt;
+	font-size: small;
 	display: none;
 }
 
@@ -130,3 +240,4 @@ a {
 	border-width: 0 1px;
 }
 /* end curved div */
+
