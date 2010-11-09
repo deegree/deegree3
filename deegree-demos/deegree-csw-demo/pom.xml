@@ -7,13 +7,13 @@
   <groupId>org.deegree</groupId>
   <artifactId>deegree-csw-demo</artifactId>
   <packaging>war</packaging>
-  <version>3.0-SNAPSHOT</version>
+  <version>3.0-rc2</version>
   <name>deegree 3 CSW Demo</name>
   <url>http://maven.apache.org</url>
   <parent>
     <groupId>org.deegree</groupId>
     <artifactId>deegree-demos</artifactId>
-    <version>3.0-SNAPSHOT</version>
+    <version>3.0-rc2</version>
   </parent>
   <repositories>
     <repository>
@@ -28,13 +28,13 @@
     <dependency>
       <groupId>org.deegree</groupId>
       <artifactId>deegree-services-console</artifactId>
-      <version>3.0-SNAPSHOT</version>
+      <version>3.0-rc2</version>
       <scope>runtime</scope>
     </dependency>
     <dependency>
       <groupId>org.deegree</groupId>
       <artifactId>deegree-services-console</artifactId>
-      <version>3.0-SNAPSHOT</version>
+      <version>3.0-rc2</version>
       <type>zip</type>
       <classifier>webapp-template</classifier>
       <scope>compile</scope>
@@ -49,7 +49,7 @@
     <dependency>
       <groupId>org.deegree</groupId>
       <artifactId>deegree-tomcat</artifactId>
-      <version>3.0-SNAPSHOT</version>
+      <version>3.0-rc2</version>
       <type>zip</type>
       <scope>compile</scope>
     </dependency>
