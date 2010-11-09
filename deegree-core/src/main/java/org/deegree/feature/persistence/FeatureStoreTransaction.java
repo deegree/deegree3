@@ -40,7 +40,7 @@ import java.util.List;
 
 import javax.xml.namespace.QName;
 
-import org.deegree.feature.Feature;
+import org.deegree.feature.FeatureCollection;
 import org.deegree.feature.persistence.lock.Lock;
 import org.deegree.feature.property.Property;
 import org.deegree.filter.Filter;
@@ -110,20 +110,17 @@ public interface FeatureStoreTransaction {
                             throws FeatureStoreException;
 
     /**
-     * Inserts the given feature into the {@link FeatureStore} (including subfeatures).
-     * <p>
-     * Implementations must expect to encounter non-resolved sub-feature references.
-     * </p>
+     * Inserts the given {@link FeaureCollection} into the {@link FeatureStore} (including subfeatures).
      * 
-     * @param feature
-     *            feature to be inserted, must not be <code>null</code>
+     * @param fc
+     *            features to be inserted, must not be <code>null</code>
      * @param mode
      *            mode for deriving the ids of the inserted objects, must not be <code>null</code>
      * @return effective ids of the inserted feature and subfeatures (in document order)
      * @throws FeatureStoreException
      *             if the insertion fails
      */
-    public List<String> performInsert( Feature feature, IDGenMode mode )
+    public List<String> performInsert( FeatureCollection fc, IDGenMode mode )
                             throws FeatureStoreException;
 
     /**

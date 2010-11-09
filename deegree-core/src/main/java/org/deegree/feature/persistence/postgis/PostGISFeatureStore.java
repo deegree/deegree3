@@ -36,6 +36,9 @@
 package org.deegree.feature.persistence.postgis;
 
 import static org.deegree.commons.utils.JDBCUtils.close;
+import static org.deegree.commons.xml.CommonNamespaces.OGCNS;
+import static org.deegree.commons.xml.CommonNamespaces.XLNNS;
+import static org.deegree.commons.xml.CommonNamespaces.XSINS;
 import static org.deegree.feature.persistence.query.Query.QueryHint.HINT_LOOSE_BBOX;
 
 import java.sql.Connection;
@@ -44,9 +47,11 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.NoSuchElementException;
 
 import javax.xml.namespace.QName;
@@ -147,6 +152,8 @@ public class PostGISFeatureStore implements SQLFeatureStore {
     // if true, use old-style for spatial predicates (intersects instead of ST_Intersecs)
     private boolean useLegacyPredicates;
 
+    private Map<String, String> nsContext;
+
     /**
      * Creates a new {@link PostGISFeatureStore} for the given {@link ApplicationSchema}.
      * 
@@ -216,7 +223,7 @@ public class PostGISFeatureStore implements SQLFeatureStore {
         String column = null;
         FeatureType ft = schema.getFeatureType( ftMapping.getFeatureType() );
         GeometryPropertyType pt = ft.getDefaultGeometryPropertyDeclaration();
-        if (pt == null) {
+        if ( pt == null ) {
             return null;
         }
         GeometryMapping propMapping = (GeometryMapping) ftMapping.getMapping( pt.getName() );
@@ -485,8 +492,8 @@ public class PostGISFeatureStore implements SQLFeatureStore {
             if ( rs.next() ) {
                 LOG.debug( "Recreating object '" + id + "' from bytea." );
                 BlobCodec codec = blobMapping.getCodec();
-                geomOrFeature = codec.decode( rs.getBinaryStream( 1 ), schema, blobMapping.getCRS(),
-                                              new FeatureStoreGMLIdResolver( this ) );
+                geomOrFeature = codec.decode( rs.getBinaryStream( 1 ), getNamespaceContext(), schema,
+                                              blobMapping.getCRS(), new FeatureStoreGMLIdResolver( this ) );
                 cache.add( geomOrFeature );
             }
         } catch ( Exception e ) {
@@ -1252,6 +1259,16 @@ public class PostGISFeatureStore implements SQLFeatureStore {
         sb.append( srid );
         sb.append( ")" );
         return sb.toString();
+    }
+
+    Map<String, String> getNamespaceContext() {
+        if ( nsContext == null ) {
+            nsContext = new HashMap<String, String>(schema.getNamespaceBindings());
+            nsContext.put ("xlink", XLNNS);
+            nsContext.put ("xsi", XSINS);
+            nsContext.put ("ogc", OGCNS);
+        }
+        return nsContext;
     }
 
     private class PostGISResultSetIterator extends ResultSetIterator<Feature> {

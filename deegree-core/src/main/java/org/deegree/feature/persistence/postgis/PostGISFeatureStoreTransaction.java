@@ -256,7 +256,7 @@ public class PostGISFeatureStoreTransaction implements FeatureStoreTransaction {
     }
 
     @Override
-    public List<String> performInsert( Feature f, IDGenMode mode )
+    public List<String> performInsert( FeatureCollection fc, IDGenMode mode )
                             throws FeatureStoreException {
 
         LOG.debug( "performInsert()" );
@@ -265,7 +265,7 @@ public class PostGISFeatureStoreTransaction implements FeatureStoreTransaction {
         Set<Feature> features = new LinkedHashSet<Feature>();
         Set<String> fids = new LinkedHashSet<String>();
         Set<String> gids = new LinkedHashSet<String>();
-        findFeaturesAndGeometries( f, geometries, features, fids, gids );
+        findFeaturesAndGeometries( fc, geometries, features, fids, gids );
 
         LOG.debug( features.size() + " features / " + geometries.size() + " geometries" );
 
@@ -476,6 +476,8 @@ public class PostGISFeatureStoreTransaction implements FeatureStoreTransaction {
     private int insertFeatureBlob( PreparedStatement stmt, Feature feature )
                             throws SQLException, FeatureStoreException {
 
+        LOG.debug( "Inserting feature with id '" + feature.getId() + "' (BLOB)" );
+
         if ( fs.getSchema().getFeatureType( feature.getName() ) == null ) {
             throw new FeatureStoreException( "Cannot insert feature '" + feature.getName()
                                              + "': feature type is not served by this feature store." );
@@ -487,7 +489,7 @@ public class PostGISFeatureStoreTransaction implements FeatureStoreTransaction {
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         try {
             BlobCodec codec = fs.getSchema().getBlobMapping().getCodec();
-            codec.encode( feature, bos, crs );
+            codec.encode( feature, fs.getNamespaceContext(), bos, crs );
         } catch ( Exception e ) {
             String msg = "Error encoding feature for BLOB: " + e.getMessage();
             LOG.error( msg, e.getMessage() );

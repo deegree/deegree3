@@ -45,6 +45,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Map;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
@@ -56,7 +57,6 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
 
-import org.deegree.commons.xml.CommonNamespaces;
 import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.cs.CRS;
 import org.deegree.cs.exceptions.TransformationException;
@@ -79,9 +79,8 @@ import com.sun.xml.fastinfoset.stax.StAXDocumentSerializer;
 /**
  * Provides methods for storing / retrieving {@link GMLObject} instances in binary form, e.g. in BLOBs.
  * 
- * TODO improve namespace handling (should not be done for every single blob)
- * TODO get FAST_INFOSET to work
- * TODO FAST_INFOSET with external vocabulary
+ * TODO improve namespace handling (should not be done for every single blob) TODO get FAST_INFOSET to work TODO
+ * FAST_INFOSET with external vocabulary
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
@@ -126,6 +125,7 @@ public class BlobCodec {
      * 
      * @param object
      *            object to be encoded, must not be <code>null</code>
+     * @param nsContext
      * @param os
      *            output stream to write to, must not be <code>null</code>
      * @param crs
@@ -136,14 +136,14 @@ public class BlobCodec {
      * @throws TransformationException
      * @throws IOException
      */
-    public void encode( GMLObject object, OutputStream os, CRS crs )
+    public void encode( GMLObject object, Map<String, String> nsContext, OutputStream os, CRS crs )
                             throws FeatureStoreException, XMLStreamException, FactoryConfigurationError,
                             UnknownCRSException, TransformationException, IOException {
 
         long begin = System.currentTimeMillis();
         XMLStreamWriter xmlWriter = getXMLWriter( os );
-        xmlWriter.setPrefix( CommonNamespaces.XSI_PREFIX, CommonNamespaces.XSINS );
         GMLStreamWriter gmlWriter = GMLOutputFactory.createGMLStreamWriter( gmlVersion, xmlWriter );
+        gmlWriter.setNamespaceBindings( nsContext );
         gmlWriter.setOutputCRS( crs );
         gmlWriter.setLocalXLinkTemplate( "#{}" );
         gmlWriter.setXLinkDepth( 0 );
@@ -193,6 +193,7 @@ public class BlobCodec {
      * 
      * @param is
      *            input stream to read from, must not be <code>null</code>
+     * @param nsContext
      * @param schema
      *            application schema, must not be <code>null</code>
      * @param crs
@@ -204,13 +205,14 @@ public class BlobCodec {
      * @throws FactoryConfigurationError
      * @throws IOException
      */
-    public GMLObject decode( InputStream is, ApplicationSchema schema, CRS crs, GMLReferenceResolver idResolver )
+    public GMLObject decode( InputStream is, Map<String, String> nsContext, ApplicationSchema schema, CRS crs,
+                             GMLReferenceResolver idResolver )
                             throws XMLParsingException, XMLStreamException, UnknownCRSException,
                             FactoryConfigurationError, IOException {
 
         long begin = System.currentTimeMillis();
         BufferedInputStream bis = new BufferedInputStream( is );
-        XMLStreamReader xmlStream = getXMLReader( bis );
+        XMLStreamReader xmlStream = getXMLReader( bis, nsContext );
         GMLStreamReader gmlReader = GMLInputFactory.createGMLStreamReader( gmlVersion, xmlStream );
         gmlReader.setResolver( idResolver );
         gmlReader.setApplicationSchema( schema );
@@ -220,7 +222,7 @@ public class BlobCodec {
         return feature;
     }
 
-    private XMLStreamReader getXMLReader( InputStream is )
+    private XMLStreamReader getXMLReader( InputStream is, Map<String, String> nsContext )
                             throws XMLStreamException, IOException {
         XMLStreamReader reader = null;
         switch ( compression ) {

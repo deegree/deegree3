@@ -39,9 +39,7 @@ package org.deegree.feature.persistence.memory;
 import static org.deegree.feature.i18n.Messages.getMessage;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.UUID;
 
 import javax.xml.namespace.QName;
@@ -54,6 +52,7 @@ import org.deegree.cs.exceptions.TransformationException;
 import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.feature.Feature;
 import org.deegree.feature.FeatureCollection;
+import org.deegree.feature.GenericFeatureCollection;
 import org.deegree.feature.persistence.FeatureStore;
 import org.deegree.feature.persistence.FeatureStoreException;
 import org.deegree.feature.persistence.FeatureStoreTransaction;
@@ -104,27 +103,15 @@ class MemoryFeatureStoreTransaction implements FeatureStoreTransaction {
 
     private final StoredFeatures sf;
 
-    private GeometryTransformer transformer;
-
-    private final Set<Feature> addedFeatures = new HashSet<Feature>();
-
     /**
      * Creates a new {@link MemoryFeatureStoreTransaction} instance.
      * 
      * @param fs
      *            invoking feature store instance, never <code>null</code>
-     * @throws FeatureStoreException
      */
-    MemoryFeatureStoreTransaction( MemoryFeatureStore fs ) throws FeatureStoreException {
+    MemoryFeatureStoreTransaction( MemoryFeatureStore fs ) {
         this.fs = fs;
         this.sf = new StoredFeatures( fs.getSchema(), fs.getStorageCRS(), fs.storedFeatures );
-        if ( fs.getStorageCRS() != null ) {
-            try {
-                transformer = new GeometryTransformer( fs.getStorageCRS() );
-            } catch ( UnknownCRSException e ) {
-                throw new FeatureStoreException( e.getMessage(), e );
-            }
-        }
     }
 
     @Override
@@ -219,28 +206,28 @@ class MemoryFeatureStoreTransaction implements FeatureStoreTransaction {
     }
 
     @Override
-    public List<String> performInsert( Feature feature, IDGenMode mode )
+    public List<String> performInsert( FeatureCollection fc, IDGenMode mode )
                             throws FeatureStoreException {
 
         long begin = System.currentTimeMillis();
-        if ( transformer != null ) {
-            LOG.debug( "Transforming incoming feature to '" + fs.getStorageCRS() + "'" );
+        if ( fs.getStorageCRS() != null ) {
+            LOG.debug( "Transforming incoming feature collection to '" + fs.getStorageCRS() + "'" );
             try {
-                feature = transformGeometries( feature );
+                fc = transformGeometries( fc );
             } catch ( Exception e ) {
                 e.printStackTrace();
                 String msg = "Unable to transform geometries: " + e.getMessage();
                 throw new FeatureStoreException( msg );
             }
         } else {
-            LOG.debug( "Checking CRS use in feature" );
-            checkCRS( feature );
+            LOG.debug( "Checking CRS use in feature collection" );
+            checkCRS( fc );
         }
         long elapsed = System.currentTimeMillis() - begin;
         LOG.debug( "Transforming / checking geometries took {} [ms]", elapsed );
 
         begin = System.currentTimeMillis();
-        List<Feature> features = assignIds( feature, mode );
+        List<Feature> features = assignIds( fc, mode );
         elapsed = System.currentTimeMillis() - begin;
         LOG.debug( "Assigning ids / finding features and geometries took {} [ms]", elapsed );
 
@@ -256,7 +243,7 @@ class MemoryFeatureStoreTransaction implements FeatureStoreTransaction {
         return new ArrayList<String>( fids );
     }
 
-    private void checkCRS( Feature feature )
+    private void checkCRS( FeatureCollection fc )
                             throws FeatureStoreException {
         GMLObjectVisitor visitor = new GMLObjectVisitor() {
             @Override
@@ -277,24 +264,24 @@ class MemoryFeatureStoreTransaction implements FeatureStoreTransaction {
             }
         };
         try {
-            new GMLObjectWalker( visitor ).traverse( feature );
+            new GMLObjectWalker( visitor ).traverse( fc );
         } catch ( IllegalArgumentException e ) {
             throw new FeatureStoreException( e.getMessage() );
         }
     }
 
     /**
-     * Assigns an id to every {@link Feature} / {@link Geometry} in the given feature.
+     * Assigns an id to every {@link Feature} / {@link Geometry} in the given collection.
      * 
-     * @param rootFeature
-     *            root feature, must not be <code>null</code>
+     * @param fc
+     *            feature collection, must not be <code>null</code>
      * @param mode
      *            id generation mode, must not be <code>null</code>
      * @return list of all features (including nested features) from the input collection, with ids
      */
-    private List<Feature> assignIds( final Feature rootFeature, final IDGenMode mode )
+    private List<Feature> assignIds( final FeatureCollection fc, final IDGenMode mode )
                             throws FeatureStoreException {
-        final List<Feature> features = new ArrayList<Feature>();
+        final List<Feature> features = new ArrayList<Feature>( fc.size() );
         GMLObjectVisitor visitor = new GMLObjectVisitor() {
             @SuppressWarnings("synthetic-access")
             @Override
@@ -312,23 +299,21 @@ class MemoryFeatureStoreTransaction implements FeatureStoreTransaction {
             @SuppressWarnings("synthetic-access")
             @Override
             public boolean visitFeature( Feature feature ) {
-                if ( addedFeatures.contains( feature ) ) {
-                    return false;
-                }
                 String id = getFeatureId( feature, mode );
                 if ( sf.getObjectById( id ) != null ) {
                     String msg = "Cannot insert feature '" + id
                                  + "'. This feature already exists in the feature store.";
                     throw new IllegalArgumentException( msg );
                 }
-                feature.setId( id );
-                features.add( feature );
-                addedFeatures.add( feature );
+                if ( feature != fc ) {
+                    feature.setId( id );
+                    features.add( feature );
+                }
                 return true;
             }
         };
         try {
-            new GMLObjectWalker( visitor ).traverse( rootFeature );
+            new GMLObjectWalker( visitor ).traverse( fc );
         } catch ( IllegalArgumentException e ) {
             throw new FeatureStoreException( e.getMessage() );
         }
@@ -379,7 +364,18 @@ class MemoryFeatureStoreTransaction implements FeatureStoreTransaction {
         return gid;
     }
 
-    private Feature transformGeometries( Feature feature )
+    private FeatureCollection transformGeometries( FeatureCollection fc )
+                            throws IllegalArgumentException, UnknownCRSException, TransformationException {
+
+        FeatureCollection transformedFc = new GenericFeatureCollection();
+        GeometryTransformer transformer = new GeometryTransformer( fs.getStorageCRS() );
+        for ( Feature feature : fc ) {
+            transformedFc.add( transformGeometries( feature, transformer ) );
+        }
+        return transformedFc;
+    }
+
+    private Feature transformGeometries( Feature feature, GeometryTransformer transformer )
                             throws IllegalArgumentException, TransformationException, UnknownCRSException {
 
         // TODO Do not modify the incoming feature, but create a new one.
@@ -484,7 +480,8 @@ class MemoryFeatureStoreTransaction implements FeatureStoreTransaction {
                                 // check compatibility (geometry type) for geometry replacements (CITE
                                 // wfs:wfs-1.1.0-Transaction-tc10.1)
                                 if ( !( geom instanceof Surface )
-                                     && replacement.getName().equals( new QName(
+                                     && replacement.getName().equals(
+                                                                      new QName(
                                                                                  "http://cite.opengeospatial.org/gmlsf",
                                                                                  "surfaceProperty" ) ) ) {
                                     throw new InvalidParameterValueException(

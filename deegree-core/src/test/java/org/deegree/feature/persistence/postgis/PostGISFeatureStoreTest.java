@@ -196,9 +196,9 @@ public class PostGISFeatureStoreTest {
             StreamFeatureCollection fc = gmlReader.readStreamFeatureCollection();
             FeatureStoreTransaction ta = fs.acquireTransaction();
             Feature f = null;
-            while ((f = fc.read()) != null) { 
-                ta.performInsert( f, IDGenMode.GENERATE_NEW );
-            }
+//            while ((f = fc.read()) != null) { 
+//                ta.performInsert( f, IDGenMode.GENERATE_NEW );
+//            }
             ta.commit();
         }
     }

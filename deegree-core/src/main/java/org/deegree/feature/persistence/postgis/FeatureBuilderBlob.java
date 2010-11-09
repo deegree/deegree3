@@ -91,8 +91,8 @@ class FeatureBuilderBlob implements FeatureBuilder {
             feature = (Feature) fs.getCache().get( gmlId );
             if ( feature == null ) {
                 LOG.debug( "Cache miss. Recreating object '" + gmlId + "' from db (BLOB/hybrid mode)." );
-                feature = (Feature) codec.decode( rs.getBinaryStream( 2 ), fs.getSchema(), crs,
-                                                  new FeatureStoreGMLIdResolver( fs ) );
+                feature = (Feature) codec.decode( rs.getBinaryStream( 2 ), fs.getNamespaceContext(), fs.getSchema(),
+                                                  crs, new FeatureStoreGMLIdResolver( fs ) );
                 fs.getCache().add( feature );
             } else {
                 LOG.debug( "Cache hit." );
