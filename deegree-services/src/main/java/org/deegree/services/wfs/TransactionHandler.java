@@ -357,6 +357,7 @@ class TransactionHandler {
 
         GMLVersion inputFormat = determineFormat( request.getVersion(), insert.getInputFormat() );
 
+        // TODO streaming
         FeatureStoreTransaction ta = null;
         try {
             FeatureCollection fc = parseFeaturesOrCollection( insert.getFeatures(), inputFormat, defaultCRS );
@@ -366,10 +367,7 @@ class TransactionHandler {
             if ( mode == null ) {
                 mode = IDGenMode.GENERATE_NEW;
             }
-            List<String> newFids = new ArrayList<String>();
-            for ( Feature f : fc ) {
-                newFids.addAll( ta.performInsert( f, mode ) );
-            }
+            List<String> newFids = ta.performInsert( fc, mode );
             inserted += newFids.size();
             if ( insert.getHandle() != null ) {
                 if ( insertHandleToFids.containsKey( insert.getHandle() ) ) {
