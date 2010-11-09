@@ -10,29 +10,32 @@
 </h:head>
 <h:body>
 
-  <div id="PLEASEWAIT">
-  <div class="curved"><b class="b1"></b><b class="b2"></b><b class="b3"></b><b class="b4"></b>
-  <div class="boxcontent">
-  <p>Applying changes.<br />
-  Please wait.</p>
-  </div>
-  <b class="b4"></b><b class="b3"></b><b class="b2"></b><b class="b1"></b></div>
-  </div>
-  <div id="PLEASEWAIT_BG"></div>
+    <div id="PLEASEWAIT">
+    <div class="curved"><b class="b1"></b><b class="b2"></b><b class="b3"></b><b class="b4"></b>
+    <div class="boxcontent">
+    <p>Applying changes.<br />
+    Please wait.</p>
+    </div>
+    <b class="b4"></b><b class="b3"></b><b class="b2"></b><b class="b1"></b></div>
+    </div>
+    <div id="PLEASEWAIT_BG"></div>
 
     <pre><h:outputText value="#{applicationBean.logo}" /></pre>
     <h:outputText value="...has been successfully installed on this server." />
     <br />
     <br />
-      <h:form id="downloadForm">
+    <h:form id="downloadForm">
   [<dg:externalLink target="_blank" href="http://wiki.deegree.org" title="deegree Wiki" />]  
 
-      <h:panelGroup rendered="#{logBean.loggedIn}">
+      <div id="login"><h:panelGroup rendered="#{!logBean.loggedIn}">
+            <ui:include src="/console/jsf/login.xhtml" />
+        </h:panelGroup></div>
+        <h:panelGroup rendered="#{logBean.loggedIn}">
       [<a href="console.jsf" target="_blank">Administration console</a>]
       <h:panelGroup rendered="#{!downloadBean.dataDownloaded}">
-        [<h:commandButton value="Download data"  action="#{downloadBean.download}" onclick="show();" />]
+        [<h:commandButton value="Download data" action="#{downloadBean.download}" onclick="show();" />]
       </h:panelGroup>
-    </h:panelGroup>
-      </h:form>
-  </h:body>
+        </h:panelGroup>
+    </h:form>
+</h:body>
 </html>
