@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:dgws="http://www.deegree.org/webservices" xmlns:xs="http://www.w3.org/2001/XMLSchema"
+  targetNamespace="http://www.deegree.org/webservices" elementFormDefault="qualified">
+
+  <xs:complexType name="deegreeServiceControllerType">
+    <xs:annotation>
+      <xs:documentation>
+        The root node of the OGCFrontController configuration.
+        </xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="DCP" type="dgws:DCPType" minOccurs="0" />
+      <xs:element name="ConfiguredServices" type="dgws:ConfiguredServicesType" minOccurs="0" />
+      <xs:element name="FrontControllerOptions" type="dgws:FrontControllerOptionsType" minOccurs="0" />
+    </xs:sequence>
+    <xs:attribute name="configVersion" fixed="0.6.0" use="required" />
+  </xs:complexType>
+
+  <xs:complexType name="FrontControllerOptionsType">
+    <xs:sequence>
+
+      <xs:element name="RequestLogging" minOccurs="0">
+        <xs:complexType>
+          <xs:annotation>
+            <xs:documentation>
+              If included in the configuration, requests will be logged.
+            </xs:documentation>
+          </xs:annotation>
+          <xs:sequence>
+            <!-- Default is the java temp directory -->
+            <xs:element name="OutputDirectory" type="xs:string" minOccurs="0" />
+            <!-- Default is true -->
+            <xs:element name="OnlySuccessful" type="xs:boolean" minOccurs="0" />
+            <!--
+              Default is the internal logger, logging only to the output directory and the $HOME/.deegree/requests.txt
+              for kvp.
+            -->
+            <xs:element name="RequestLogger" minOccurs="0">
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:element name="Class" type="xs:string" />
+                  <xs:element name="Configuration" type="xs:anyType" minOccurs="0" />
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+
+      <xs:element name="ValidateResponses" type="xs:boolean" minOccurs="0" />
+
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="DCPType">
+    <xs:sequence>
+      <xs:element name="HTTPGet" type="xs:anyURI" minOccurs="0" />
+      <xs:element name="HTTPPost" type="xs:anyURI" minOccurs="0" />
+      <xs:element name="SOAP" type="xs:anyURI" minOccurs="0" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="ConfiguredServicesType">
+    <xs:annotation>
+      <xs:documentation>
+        The ConfiguredServices Type defines the services which will have a FrontController installed for
+        them. If this type is present in the
+        service-meta-data element, the loading of the default Services using the
+        conf/directory structure will be skipped.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="Service" type="dgws:ServiceType" maxOccurs="unbounded" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="ServiceType">
+    <xs:annotation>
+      <xs:appinfo />
+      <xs:documentation>
+        Defines the service for which a sub-controller will be installed by the frontcontroller. The
+        Configuration location may point to an absolute
+        file or a relative file, starting from the
+        service_configuration.xml
+      </xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="ServiceName" type="dgws:AllowedServices" />
+      <xs:element name="ConfigurationLocation" type="xs:anyURI" />
+      <xs:element name="ControllerClass" type="xs:string" minOccurs="0" />
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:simpleType name="AllowedServices">
+    <xs:annotation>
+      <xs:documentation>A simple type defining the possible services having a sub controller</xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="CSW" />
+      <xs:enumeration value="SOS" />
+      <xs:enumeration value="WAS" />
+      <xs:enumeration value="WCS" />
+      <xs:enumeration value="WCTS" />
+      <xs:enumeration value="WFS" />
+      <xs:enumeration value="WMPS" />
+      <xs:enumeration value="WMS" />
+      <xs:enumeration value="WPS" />
+      <xs:enumeration value="WPVS" />
+      <xs:enumeration value="WSS" />
+    </xs:restriction>
+  </xs:simpleType>
+</xs:schema>

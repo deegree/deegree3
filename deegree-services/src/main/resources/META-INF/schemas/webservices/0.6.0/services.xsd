@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:ws="http://www.deegree.org/webservices" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xs="http://www.w3.org/2001/XMLSchema"
+  targetNamespace="http://www.deegree.org/webservices" elementFormDefault="qualified" xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
+  jaxb:version="2.1">
+
+  <xs:annotation>
+    <xs:appinfo>
+      <jaxb:schemaBindings>
+        <jaxb:package name="org.deegree.services.jaxb.main" />
+      </jaxb:schemaBindings>
+    </xs:appinfo>
+  </xs:annotation>
+
+  <xs:include schemaLocation="main.xsd" />
+  <xs:include schemaLocation="metadata.xsd" />
+
+  <xs:element name="deegreeServiceController" type="ws:deegreeServiceControllerType" />
+  <xs:element name="deegreeServicesMetadata" type="ws:deegreeServicesMetadataType" />
+
+</xs:schema>
