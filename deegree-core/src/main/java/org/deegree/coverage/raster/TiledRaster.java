@@ -114,6 +114,12 @@ public class TiledRaster extends AbstractRaster {
     }
 
     @Override
+    public void setCoordinateSystem( CRS crs ) {
+        super.setCoordinateSystem( crs ); // unknown if needed
+        tileContainer.getEnvelope().setCoordinateSystem( crs );
+    }
+
+    @Override
     public CRS getCoordinateSystem() {
         return tileContainer.getEnvelope().getCoordinateSystem();
     }
