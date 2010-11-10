@@ -87,6 +87,7 @@ body {
 	background-color: white;
 	border-color: #62AA2A ;
 	border: 1px;
+	font-weight: bold;
 	
 }
 
@@ -95,6 +96,7 @@ body {
 	font:80% Verdana,Arial,Helvetica,sans-serif;
 	background-color: white;
 	border: 1px;
+	
 }
 .buttonInfo {
 	color: #7279D8;
@@ -148,6 +150,18 @@ body {
 	font:100% Verdana,Arial,Helvetica,sans-serif;
 	background-color: white;
 	border: 1px;
+}
+
+.buttonLogin {
+	color: grey;
+	font:80% Verdana,Arial,Helvetica,sans-serif;
+	background-color: white;
+}
+
+.buttonLogout {
+	color: grey;
+	font:80% Verdana,Arial,Helvetica,sans-serif;
+	background-color: white;
 }
 
 .linkWiki {
@@ -211,7 +225,8 @@ a.active {
 }
 
 .attention {
-	color: red;
+	font:70% Verdana,Arial,Helvetica,sans-serif;
+	color: #FA6666;
 }
 
 .collapsiblePanel {

@@ -19,20 +19,15 @@
 				<table style="font-size: small" border="0">
 					<ui:repeat value="#{configManager.fsManager.configs}" var="config">
 						<tr align="left">
-							<td><h:commandButton styleClass="buttonDeactivate"
+							<td><h:commandButton styleClass="buttonActivate"
 								rendered="#{!config.deactivated}"
 								value="#{labels.featureStores_deactivate}"
 								action="#{config.deactivate}" /> 
 								<h:commandButton
-								styleClass="buttonActivate" rendered="#{config.deactivated}"
+								styleClass="buttonDeactivate" rendered="#{config.deactivated}"
 								value="#{labels.featureStores_activate}"
 								action="#{config.activate}" /></td>
 							<td><h:outputFormat styleClass="StatusDeactivated"
-								rendered="#{config.deactivated}"
-								value="#{labels.featureStores_id}">
-								<f:param value="#{config.id}" />
-							</h:outputFormat> <h:outputFormat styleClass="StatusActivated"
-								rendered="#{!config.deactivated}"
 								value="#{labels.featureStores_id}">
 								<f:param value="#{config.id}" />
 							</h:outputFormat></td>

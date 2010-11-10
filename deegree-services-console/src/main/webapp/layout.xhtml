@@ -40,7 +40,6 @@
 								<h:link value="webservices" outcome="/console/jsf/webservices.xhtml" disabled="#{!logBean.loggedIn}" />
 								<h:link value="render" outcome="/console/jsf/render.xhtml" disabled="#{!logBean.loggedIn}" />
 								<h:link value="featureStore" outcome="/console/jsf/featureStore.xhtml" disabled="#{!logBean.loggedIn}" />
-								<h:link value="metadataStore" outcome="/console/jsf/metadataStore.xhtml" disabled="#{!logBean.loggedIn}" />
 								<h:link value="observationStores" outcome="/console/jsf/observationStores.xhtml" disabled="#{!logBean.loggedIn}" />
 								<h:link value="jdbc" outcome="/console/jsf/jdbc.xhtml" disabled="#{!logBean.loggedIn}" />
                                 <h:link value="proxy" outcome="/console/jsf/proxy.xhtml" disabled="#{!logBean.loggedIn}" />
@@ -60,11 +59,11 @@
 				</h:panelGrid> <h:panelGroup class="margin-top: 10px;">
 								<h:form id="reloadForm">
 									<h:panelGrid >
-										<h:commandButton value="#{labels.apply_changes}" styleClass="button" action="#{configManager.applyChanges}" onclick="show();" />
 										<h:outputText value="#{configManager.lastMessage}" styleClass="attention" rendered="#{configManager.pendingChanges}"/>
+									    <h:commandButton value="#{labels.apply_changes}" styleClass="button" action="#{configManager.applyChanges}" onclick="show();" />
 									</h:panelGrid>
 									<h:panelGroup rendered="#{!configManager.pendingChanges}">
-															<h:outputText value="#{configManager.lastMessage}" />
+											<h:outputText value="#{configManager.lastMessage}" />
 									</h:panelGroup>
 								</h:form>
 				</h:panelGroup></div>
