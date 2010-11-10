@@ -1,9 +1,0 @@
-<SimpleSQLFeatureStore  configVersion="0.5.0" xmlns="http://www.deegree.org/datasource/feature/simplesql" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://www.deegree.org/datasource/feature/simplesql http://schemas.deegree.org/datasource/0.5.0/feature/simplesql.xsd">
-    <StorageSRS>EPSG:31468</StorageSRS>
-    <ConnectionPoolId>oracle1</ConnectionPoolId>
-    <SQLStatement>select  sdo_util.to_wkbgeometry(POSITION) as GEOM, NAME, TITLE from my_geometry_table  WHERE SDO_RELATE(mygeometrycolumn,SDO_GEOMETRY(?),'mask=anyinteract querytype=WINDOW') = 'TRUE'</SQLStatement>
-    <BBoxStatement>select sdo_util.to_wktgeometry(sdo_root_mbr) as bbox from USER_SDO_INDEX_METADATA where sdo_index_name = 'myspatialindex'</BBoxStatement>
-    <Namespace>http://www.deegree.org/app</Namespace>
-    <FeatureTypeName>SomeFeatureType</FeatureTypeName>
-</SimpleSQLFeatureStore>
