@@ -85,6 +85,12 @@ public class ISOMetadataStoreProvider implements MetadataStoreProvider {
     @Override
     public String[] getCreateStatements( URL configURL )
                             throws UnsupportedEncodingException, IOException {
+        return getDefaultCreateStatements();
+    }
+
+    @Override
+    public String[] getDefaultCreateStatements()
+                            throws UnsupportedEncodingException, IOException {
         List<String> creates = new ArrayList<String>();
         URL script = ISOMetadataStoreProvider.class.getResource( "postgis/create.sql" );
         creates.addAll( readStatements( new BufferedReader( new InputStreamReader( script.openStream(), "UTF-8" ) ) ) );

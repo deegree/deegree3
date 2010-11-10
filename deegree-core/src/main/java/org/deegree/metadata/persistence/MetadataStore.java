@@ -68,6 +68,13 @@ public interface MetadataStore {
     public void destroy();
 
     /**
+     * Returns the JDBC connection id.
+     * 
+     * @return the JDBC connection id, never <code>null</code>
+     */
+    public String getConnId();
+
+    /**
      * 
      * Exports the XML for the requested records.
      * 

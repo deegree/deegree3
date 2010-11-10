@@ -85,6 +85,9 @@ public interface MetadataStoreProvider {
     public String[] getCreateStatements( URL configURL )
                             throws UnsupportedEncodingException, IOException;
 
+    public String[] getDefaultCreateStatements()
+                            throws UnsupportedEncodingException, IOException;
+
     public String[] getDropStatements( URL configURL )
                             throws UnsupportedEncodingException, IOException;
 }

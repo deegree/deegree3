@@ -148,6 +148,11 @@ public class ISOMetadataStore implements MetadataStore {
 
     }
 
+    @Override
+    public String getConnId() {
+        return connectionId;
+    }
+
     /*
      * (non-Javadoc)
      * 
