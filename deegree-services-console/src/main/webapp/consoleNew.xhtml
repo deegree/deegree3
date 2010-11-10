@@ -194,11 +194,11 @@
       </h:form>
       <h:form>
         <h:outputLabel for="newMSBt" value="Name: " />
-        <h:inputText id="newMSBt" value="#{newMetadataStoreConfig.id}" size="16" />
-        <h:selectOneMenu value="#{newMetadataStoreConfig.type}">
+        <h:inputText id="newMSBt" value="#{newmetadataStoreConfig.id}" size="16" />
+        <h:selectOneMenu value="#{newmetadataStoreConfig.type}">
           <f:selectItems value="#{configManager.msManager.msTypes}" />
         </h:selectOneMenu>
-        <h:commandButton value="Create new" action="#{newMetadataStoreConfig.create}" />
+        <h:commandButton value="Create new" action="#{newmetadataStoreConfig.create}" />
       </h:form>
     </dgc:collapsiblePanel>
     
