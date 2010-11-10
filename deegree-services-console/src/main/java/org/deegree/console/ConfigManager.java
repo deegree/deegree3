@@ -44,6 +44,7 @@ import javax.faces.context.FacesContext;
 
 import org.deegree.console.featurestore.FeatureStoreConfigManager;
 import org.deegree.console.jdbc.ConnectionConfigManager;
+import org.deegree.console.metadatastore.MetadataStoreConfigManager;
 import org.deegree.console.observationstore.ObservationStoreConfigManager;
 import org.deegree.console.services.ServiceConfigManager;
 import org.deegree.console.styles.StyleConfigManager;
@@ -85,6 +86,8 @@ public class ConfigManager {
 
     private final ObservationStoreConfigManager osManager;
 
+    private final MetadataStoreConfigManager msManager;
+
     private final ConnectionConfigManager connManager;
 
     private final XMLConfig proxyConfig;
@@ -94,7 +97,8 @@ public class ConfigManager {
     public ConfigManager() {
         File serviceMainConfigFile = new File( OGCFrontController.getServiceWorkspace().getLocation(),
                                                "services/main.xml" );
-        serviceMainConfig = new XMLConfig( true, false, serviceMainConfigFile, MAIN_SCHEMA_URL, MAIN_TEMPLATE, false, null );
+        serviceMainConfig = new XMLConfig( true, false, serviceMainConfigFile, MAIN_SCHEMA_URL, MAIN_TEMPLATE, false,
+                                           null );
         File serviceMetadataConfigFile = new File( OGCFrontController.getServiceWorkspace().getLocation(),
                                                    "services/metadata.xml" );
         serviceMetadataConfig = new XMLConfig( true, false, serviceMetadataConfigFile, METADATA_SCHEMA_URL,
@@ -104,8 +108,10 @@ public class ConfigManager {
         this.fsManager = new FeatureStoreConfigManager();
         this.osManager = new ObservationStoreConfigManager();
         this.connManager = new ConnectionConfigManager();
+        this.msManager = new MetadataStoreConfigManager();
         File proxyFile = new File( OGCFrontController.getServiceWorkspace().getLocation(), "proxy.xml" );
-        this.proxyConfig = new XMLConfig( true, false, proxyFile, PROXY_SCHEMA_URL, PROXY_TEMPLATE, true, "/console/jsf/proxy.xhtml" );
+        this.proxyConfig = new XMLConfig( true, false, proxyFile, PROXY_SCHEMA_URL, PROXY_TEMPLATE, true,
+                                          "/console/jsf/proxy.xhtml" );
     }
 
     public boolean getPendingChanges() {
@@ -126,6 +132,10 @@ public class ConfigManager {
             return true;
         }
         if ( osManager.needsReloading() ) {
+            lastMessage = "Workspace has been changed.";
+            return true;
+        }
+        if ( msManager.needsReloading() ) {
             lastMessage = "Workspace has been changed.";
             return true;
         }
@@ -181,6 +191,10 @@ public class ConfigManager {
         return osManager;
     }
 
+    public MetadataStoreConfigManager getMsManager() {
+        return msManager;
+    }
+
     /**
      * @return the connManager
      */
@@ -207,6 +221,7 @@ public class ConfigManager {
         styleManager.scan();
         fsManager.scan();
         osManager.scan();
+        msManager.scan();
         connManager.scan();
         lastMessage = "Workspace changes have been applied.";
         return FacesContext.getCurrentInstance().getViewRoot().getViewId();
