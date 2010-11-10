@@ -443,7 +443,8 @@ public class ISOMetadataStore implements MetadataStore {
             conn = ConnectionManager.getConnection( connectionId );
 
             for ( String identifier : idList ) {
-                if ( IdUtils.newInstance( conn ).proveIdExistence( identifier ) ) {
+                String provedID = IdUtils.newInstance( conn ).proveIdExistence( identifier );
+                if ( provedID == null ) {
                     String msg = Messages.getMessage( "NO_IDENTIFIER_FOUND", identifier );
                     LOG.info( msg );
                     throw new MetadataStoreException( msg );

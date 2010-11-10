@@ -100,12 +100,17 @@ public class ISOMetadataStoreTransaction implements MetadataStoreTransaction {
                 }
                 if ( element != null ) {
                     ISORecord rec = new ISORecord( element, anyText );
+                    String id = IdUtils.newInstance( conn ).proveIdExistence( rec.getIdentifier() );
 
-                    if ( IdUtils.newInstance( conn ).proveIdExistence( rec.getIdentifier() ) ) {
+                    if ( id == null ) {
                         GenerateQueryableProperties generateQP = new GenerateQueryableProperties();
                         int operatesOnId = generateQP.generateMainDatabaseDataset( conn, rec );
                         generateQP.executeQueryableProperties( false, conn, operatesOnId, rec );
                         identifierList.addAll( Arrays.asList( rec.getIdentifier() ) );
+                    } else {
+                        String msg = Messages.getMessage( "ERROR_DUPLICATE_INSERT", id );
+                        LOG.debug( msg );
+                        throw new MetadataStoreException( msg );
                     }
                 }
 

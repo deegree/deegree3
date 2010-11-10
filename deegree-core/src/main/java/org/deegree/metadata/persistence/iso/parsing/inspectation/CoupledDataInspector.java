@@ -48,7 +48,6 @@ import java.util.List;
 import javax.xml.namespace.QName;
 
 import org.apache.axiom.om.OMElement;
-import org.deegree.commons.utils.JDBCUtils;
 import org.deegree.commons.xml.NamespaceContext;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.XPath;
@@ -251,7 +250,7 @@ public class CoupledDataInspector implements RecordInspector {
                 if ( ci != null ) {
                     if ( throwException && ci.isThrowConsistencyError() ) {
                         String msg = Messages.getMessage( "ERROR_COUPLING" );
-                        JDBCUtils.close( conn );
+                        // JDBCUtils.close( conn );
                         LOG.debug( msg );
                         throw new MetadataInspectorException( msg );
                     }

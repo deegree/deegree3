@@ -163,7 +163,7 @@ public class ResourceIdentifier implements InspireCompliance {
             }
         }
         LOG.info( Messages.getMessage( "INFO_RI_NO_MODIFICATION" ) );
-        rsList.clear();
+        // rsList.clear();
         return rsList;
     }
 
@@ -176,7 +176,7 @@ public class ResourceIdentifier implements InspireCompliance {
 
             if ( util.checkUUIDCompliance( rsList.get( 0 ) ) ) {
 
-                if ( util.checkUUIDCompliance( id ) ) {
+                if ( id != null && util.checkUUIDCompliance( id ) ) {
                     return rsList.get( 0 ).equals( id );
                 }
 
