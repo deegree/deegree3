@@ -162,14 +162,14 @@ public class WFSController extends AbstractOGCServiceController {
 
     private static final String CONFIG_JAXB_PACKAGE = "org.deegree.services.jaxb.wfs";
 
-    private static final String CONFIG_SCHEMA = "/META-INF/schemas/wfs/0.6.0/wfs_configuration.xsd";
+    private static final String CONFIG_SCHEMA = "/META-INF/schemas/wfs/3.0.0/wfs_configuration.xsd";
 
     private static final ImplementationMetadata<WFSRequestType> IMPLEMENTATION_METADATA = new ImplementationMetadata<WFSRequestType>() {
         {
             supportedVersions = new Version[] { VERSION_100, VERSION_110 };
             handledNamespaces = new String[] { WFS_NS, WFS_200_NS };
             handledRequests = WFSRequestType.class;
-            supportedConfigVersions = new Version[] { Version.parseVersion( "0.6.0" ) };
+            supportedConfigVersions = new Version[] { Version.parseVersion( "3.0.0" ) };
         }
     };
 

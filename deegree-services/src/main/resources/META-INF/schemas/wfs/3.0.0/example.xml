@@ -1,0 +1,52 @@
+<deegreeWFS xmlns="http://www.deegree.org/services/wfs" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  configVersion="3.0.0" xsi:schemaLocation="http://www.deegree.org/services/wfs http://schemas.deegree.org/wfs/3.0.0/wfs_configuration.xsd">
+
+  <!-- [0...1] Activated OGC protocol versions, default: activate all implemented versions -->
+  <SupportedVersions>
+    <Version>1.0.0</Version>
+    <Version>1.1.0</Version>
+  </SupportedVersions>
+
+  <!-- [0...1] Enable transactions (WFS-T operations), default: disabled -->
+  <EnableTransactions>true</EnableTransactions>
+
+  <!--
+    [0...1] Disable response buffering (allows rollback for generating clean exception reports, but hinders streaming),
+    default: true
+  -->
+  <DisableResponseBuffering>true</DisableResponseBuffering>
+
+  <!-- [0...n] Announced CRS, default: EPSG:4326 -->
+  <QueryCRS>EPSG:4326</QueryCRS>
+  <QueryCRS>EPSG:4258</QueryCRS>
+  <QueryCRS>EPSG:900913</QueryCRS>
+
+  <!-- [0...n] Output / input format configuration, default: GML 2.1, 3.0, 3.1, 3.2 -->
+  <GMLFormat gmlVersion="GML_32">
+
+    <!-- [1] Mime type handled by this format configuration -->
+    <MimeType>text/xml; subtype=gml/3.2.1</MimeType>
+
+    <!-- [0...1] Customization for GetFeature responses -->
+    <GetFeatureResponse xmlns:gml="http://www.opengis.net/gml/3.2">
+
+      <!-- [0...1] Qualified root element name for GetFeature response -->
+      <ContainerElement>gml:FeatureCollection</ContainerElement>
+
+      <!-- [0...1] Feature member element name for GetFeature response -->
+      <FeatureMemberElement>gml:featureMember</FeatureMemberElement>
+
+      <!-- [0...1] Value to add to xsi:schemaLocation attribute (to define the container element) -->
+      <SchemaLocation>>http://www.opengis.net/gml/3.2 http://schemas.opengis.net/gml/3.2.1/deprecatedTypes.xsd</SchemaLocation>
+
+      <!--
+        [0...1] Disable output streaming (positive effect: numberOfFeature attribute / gml:boundedBy can be included in
+        GetFeature responses)
+      -->
+      <DisableStreaming>false</DisableStreaming>
+
+    </GetFeatureResponse>
+
+  </GMLFormat>
+
+</deegreeWFS>

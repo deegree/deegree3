@@ -147,12 +147,14 @@ public class GMLFormat implements Format {
     private CoordinateFormatter formatter;
 
     private DescribeFeatureTypeHandler dftHandler;
+    
+    private boolean exportOriginalSchema;
 
     public GMLFormat( WFSController master, GMLVersion gmlVersion ) {
 
         this.master = master;
         this.service = master.getService();
-        this.dftHandler = new DescribeFeatureTypeHandler( service );
+        this.dftHandler = new DescribeFeatureTypeHandler( service, exportOriginalSchema );
 
         this.featureLimit = master.getMaxFeatures();
         this.checkAreaOfUse = master.getCheckAreaOfUse();
@@ -165,7 +167,6 @@ public class GMLFormat implements Format {
 
         this.master = master;
         this.service = master.getService();
-        this.dftHandler = new DescribeFeatureTypeHandler( service );
 
         GetFeatureResponse responseConfig = formatDef.getGetFeatureResponse();
         if ( responseConfig != null ) {
@@ -178,11 +179,15 @@ public class GMLFormat implements Format {
             if ( responseConfig.getFeatureMemberElement() != null ) {
                 responseFeatureMemberEl = responseConfig.getFeatureMemberElement();
             }
-            if ( responseConfig.getSchemaLocation() != null ) {
-                schemaLocation = responseConfig.getSchemaLocation();
+            if ( responseConfig.getAdditionalSchemaLocation() != null ) {
+                schemaLocation = responseConfig.getAdditionalSchemaLocation();
+            }
+            if (responseConfig.isDisableDynamicSchema() != null) {
+                exportOriginalSchema = responseConfig.isDisableDynamicSchema();
             }
         }
 
+        this.dftHandler = new DescribeFeatureTypeHandler( service, exportOriginalSchema );
         this.featureLimit = master.getMaxFeatures();
         this.checkAreaOfUse = master.getCheckAreaOfUse();
 

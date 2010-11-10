@@ -112,14 +112,17 @@ class DescribeFeatureTypeHandler {
 
     private String ogcSchemaJarBaseURL;
 
+    private final boolean exportOriginalSchema;
+
     /**
      * Creates a new {@link DescribeFeatureTypeHandler} instance that uses the given service to lookup requested
      * {@link FeatureType}s.
      * 
      * @param service
      *            WFS instance used to lookup the feature types
+     * @param exportOriginalSchema
      */
-    DescribeFeatureTypeHandler( WFService service ) {
+    DescribeFeatureTypeHandler( WFService service, boolean exportOriginalSchema ) {
         this.service = service;
         try {
             this.wsBaseURL = OGCFrontController.getServiceWorkspace().getLocation().toURI().toURL().toString();
@@ -130,6 +133,7 @@ class DescribeFeatureTypeHandler {
         if ( baseUrl != null ) {
             this.ogcSchemaJarBaseURL = baseUrl.toString();
         }
+        this.exportOriginalSchema = exportOriginalSchema;
     }
 
     /**
@@ -175,12 +179,9 @@ class DescribeFeatureTypeHandler {
         } else {
             Collection<String> namespaces = determineRequiredNamespaces( request );
             String targetNs = namespaces.iterator().next();
-
-            // TODO fix CITE tests to cope with wrapper schemas
-            if ( targetNs.equals( "http://cite.opengeospatial.org/gmlsf" ) ) {
-                reencodeSchema( request, writer, targetNs, namespaces, version );
-            } else if ( service.getStores().length == 1 && service.getStores()[0].getSchema().getXSModel() != null
-                        && service.getStores()[0].getSchema().getXSModel().getVersion() == version ) {
+            if ( exportOriginalSchema && service.getStores().length == 1
+                 && service.getStores()[0].getSchema().getXSModel() != null
+                 && service.getStores()[0].getSchema().getXSModel().getVersion() == version ) {
                 exportOriginalInfoSet( writer, service.getStores()[0].getSchema().getXSModel(), targetNs );
             } else {
                 reencodeSchema( request, writer, targetNs, namespaces, version );
@@ -443,7 +444,7 @@ class DescribeFeatureTypeHandler {
             if ( request.getNsBindings() == null ) {
                 LOG.debug( "Adding all namespaces." );
                 for ( FeatureStore fs : service.getStores() ) {
-                    set.addAll( fs.getSchema().getNamespaceBindings().values() );
+                    set.addAll( fs.getSchema().getAppNamespaces() );
                 }
             } else {
                 LOG.debug( "Adding requested namespaces." );
@@ -521,7 +522,8 @@ class DescribeFeatureTypeHandler {
             } else {
                 String ns = request.getNsBindings().values().iterator().next();
                 LOG.debug( "Describing all feature types in namespace '" + ns + "'." );
-                List<FeatureType> nsFts = service.getFeatureTypes().iterator().next().getSchema().getFeatureTypes( ns,
+                List<FeatureType> nsFts = service.getFeatureTypes().iterator().next().getSchema().getFeatureTypes(
+                                                                                                                   ns,
                                                                                                                    true,
                                                                                                                    false );
                 for ( FeatureType ft : nsFts ) {
