@@ -271,7 +271,7 @@ public class RasterTreeBuilder {
             dstRaster = createRasterLevel( tmpRaster, i );
             tmpRaster = dstRaster;
             i++;
-        } while ( tmpRaster.getColumns() > tileSize || tmpRaster.getRows() > tileSize );
+        } while ( tmpRaster.getColumns() - 1 > tileSize || tmpRaster.getRows() - 1 > tileSize );
     }
 
     /**
