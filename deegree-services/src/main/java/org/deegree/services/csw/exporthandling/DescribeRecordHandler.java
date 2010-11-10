@@ -37,7 +37,14 @@ package org.deegree.services.csw.exporthandling;
 
 import static org.deegree.protocol.csw.CSWConstants.CSW_202_DISCOVERY_SCHEMA;
 import static org.deegree.protocol.csw.CSWConstants.CSW_202_NS;
+import static org.deegree.protocol.csw.CSWConstants.CSW_202_RECORD;
 import static org.deegree.protocol.csw.CSWConstants.CSW_PREFIX;
+import static org.deegree.protocol.csw.CSWConstants.DC_LOCAL_PART;
+import static org.deegree.protocol.csw.CSWConstants.DC_NS;
+import static org.deegree.protocol.csw.CSWConstants.DC_PREFIX;
+import static org.deegree.protocol.csw.CSWConstants.GMD_LOCAL_PART;
+import static org.deegree.protocol.csw.CSWConstants.GMD_NS;
+import static org.deegree.protocol.csw.CSWConstants.GMD_PREFIX;
 import static org.deegree.protocol.csw.CSWConstants.VERSION_202;
 
 import java.io.BufferedInputStream;
@@ -178,12 +185,17 @@ public class DescribeRecordHandler {
         writer.writeAttribute( "xsi", CommonNamespaces.XSINS, "schemaLocation", CSW_202_NS + " "
                                                                                 + CSW_202_DISCOVERY_SCHEMA );
 
-        for ( QName typeName : typeNames ) {
+        URLConnection urlConn = null;
+        String baseURL = "http://schemas.opengis.net/iso/19139/20060504/gmd/";
+        try {
+            if ( typeNames.length == 0 ) {
+                urlConn = new URL( CSWConstants.CSW_202_RECORD ).openConnection();
+                exportSchemaFile( writer, new QName( DC_NS, DC_LOCAL_PART, DC_PREFIX ), urlConn );
+                urlConn = new URL( "http://www.isotc211.org/2005/gmd/gmd.xsd" ).openConnection();
+                exportSchemaFile( writer, new QName( GMD_NS, GMD_LOCAL_PART, GMD_PREFIX ), urlConn );
+            }
+            for ( QName typeName : typeNames ) {
 
-            try {
-
-                BufferedInputStream bais;
-                URLConnection urlConn = null;
                 // InputStream in = null;
 
                 /*
@@ -191,7 +203,7 @@ public class DescribeRecordHandler {
                  */
                 if ( OutputSchema.determineByTypeName( typeName ) == OutputSchema.DC ) {
 
-                    urlConn = new URL( CSWConstants.CSW_202_RECORD ).openConnection();
+                    urlConn = new URL( CSW_202_RECORD ).openConnection();
 
                 }
 
@@ -200,9 +212,7 @@ public class DescribeRecordHandler {
                  */
                 else if ( OutputSchema.determineByTypeName( typeName ) == OutputSchema.ISO_19115 ) {
 
-                    String baseURL = "http://schemas.opengis.net/iso/19139/20060504/gmd/";
-
-                    urlConn = new URL( "http://www.isotc211.org/2005/gmd/gmd.xsd" ).openConnection();
+                    urlConn = new URL( CSWConstants.GMD_NS + "/gmd.xsd" ).openConnection();
                     // in = new FileInputStream( ISO );
                     // writer.writeAttribute( "parentSchema", "http://www.isotc211.org/2005/gmd/gmd.xsd" );
 
@@ -215,27 +225,30 @@ public class DescribeRecordHandler {
                     LOG.debug( errorMessage );
                     throw new InvalidParameterValueException( errorMessage );
                 }
-
-                // urlConn.setDoInput( true );
-                bais = new BufferedInputStream( urlConn.getInputStream() );
-
-                // Charset charset = encoding == null ? Charset.defaultCharset() : Charset.forName( encoding );
-                InputStreamReader isr = new InputStreamReader( bais, "UTF-8" );
-
-                exportSchemaComponent( writer, typeName, isr );
-
-            } catch ( IOException e ) {
-
-                LOG.debug( "error: " + e.getMessage(), e );
-                throw new MetadataStoreException( e.getMessage() );
-            } catch ( Exception e ) {
-
-                LOG.debug( "error: " + e.getMessage(), e );
+                exportSchemaFile( writer, typeName, urlConn );
             }
+        } catch ( IOException e ) {
+
+            LOG.debug( "error: " + e.getMessage(), e );
+            throw new MetadataStoreException( e.getMessage() );
+        } catch ( Exception e ) {
+
+            LOG.debug( "error: " + e.getMessage(), e );
         }
 
         writer.writeEndElement();// DescribeRecordResponse
         writer.writeEndDocument();
+    }
+
+    private static void exportSchemaFile( XMLStreamWriter writer, QName typeName, URLConnection urlConn )
+                            throws IOException, XMLStreamException {
+        // urlConn.setDoInput( true );
+        BufferedInputStream bais = new BufferedInputStream( urlConn.getInputStream() );
+
+        // Charset charset = encoding == null ? Charset.defaultCharset() : Charset.forName( encoding );
+        InputStreamReader isr = new InputStreamReader( bais, "UTF-8" );
+
+        exportSchemaComponent( writer, typeName, isr );
     }
 
     /**

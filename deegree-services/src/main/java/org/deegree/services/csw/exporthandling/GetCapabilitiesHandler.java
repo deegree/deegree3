@@ -120,12 +120,18 @@ public class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
         isoQueryables.add( "TopicCategory" );
         isoQueryables.add( "ResourceLanguage" );
         isoQueryables.add( "GeographicDescriptionCode" );
-        isoQueryables.add( "SpatialResolution" );
-        isoQueryables.add( "TemporalExtent" );
+        isoQueryables.add( "Denominator" );
+        isoQueryables.add( "DistanceValue" );
+        isoQueryables.add( "DistanceUOM" );
+        isoQueryables.add( "Denominator" );
+        isoQueryables.add( "TempExtent_begin" );
+        isoQueryables.add( "TempExtent_end" );
         isoQueryables.add( "ServiceType" );
         isoQueryables.add( "ServiceTypeVersion" );
         isoQueryables.add( "Operation" );
-        isoQueryables.add( "OperatesOnData" );
+        isoQueryables.add( "OperatesOn" );
+        isoQueryables.add( "OperatesOnIdentifier" );
+        isoQueryables.add( "OperatesOnName" );
         isoQueryables.add( "CouplingType" );
 
         supportedOperations.add( CSWRequestType.GetCapabilities.name() );
