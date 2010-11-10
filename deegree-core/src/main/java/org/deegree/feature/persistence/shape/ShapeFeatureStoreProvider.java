@@ -70,9 +70,9 @@ public class ShapeFeatureStoreProvider implements FeatureStoreProvider {
 
     private static final String CONFIG_JAXB_PACKAGE = "org.deegree.feature.persistence.shape.jaxb";
 
-    private static final String CONFIG_SCHEMA = "/META-INF/schemas/datasource/feature/shape/0.6.1/shape.xsd";
+    private static final String CONFIG_SCHEMA = "/META-INF/schemas/datasource/feature/shape/3.0.0/shape.xsd";
 
-    private static final String CONFIG_TEMPLATE = "/META-INF/schemas/datasource/feature/shape/0.6.1/example.xml";
+    private static final String CONFIG_TEMPLATE = "/META-INF/schemas/datasource/feature/shape/3.0.0/example.xml";
 
     @Override
     public String getConfigNamespace() {

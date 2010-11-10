@@ -45,6 +45,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeSet;
 import java.util.Map.Entry;
 
 import javax.xml.namespace.QName;
@@ -102,6 +103,8 @@ public class ApplicationSchema {
 
     private final Map<String, List<String>> nsToDependencies = new HashMap<String, List<String>>();
 
+    private final Set<String> appNamespaces = new TreeSet<String>();
+
     /**
      * Creates a new {@link ApplicationSchema} instance from the given {@link FeatureType}s and their derivation
      * hierarchy.
@@ -127,6 +130,7 @@ public class ApplicationSchema {
         for ( FeatureType ft : fts ) {
             ftNameToFt.put( ft.getName(), ft );
             ft.setSchema( this );
+            appNamespaces.add( ft.getName().getNamespaceURI() );
         }
 
         // build substitution group lookup maps
@@ -493,6 +497,18 @@ public class ApplicationSchema {
                 LOG.warn( "Unhandled term type: " + term.getClass() );
             }
         }
+    }
+
+    /**
+     * Returns the application namespaces.
+     * <p>
+     * NOTE: This excludes the GML core namespaces.
+     * </p>
+     * 
+     * @return the application namespaces
+     */
+    public Set<String> getAppNamespaces() {
+        return appNamespaces;
     }
 
     /**
