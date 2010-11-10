@@ -171,12 +171,12 @@ public class PostGISMappingsISODC implements PostGISMapping {
         // addDateProp( APISO_NS, "RevisionDate", "isoqp_revisiondate", "revisiondate" );
         addDateProp( APISO_NS, "PublicationDate", DatabaseTables.isoqp_publicationdate, "publicationdate" );
         addStringProp( APISO_NS, "OrganisationName", DatabaseTables.isoqp_organisationname, "organisationname" );
-        addBooleanProp( APISO_NS, "HasSecurityConstraint", DatabaseTables.datasets, "hassecurityconstraint" );
+        addBooleanProp( APISO_NS, "HasSecurityConstraints", DatabaseTables.datasets, "hassecurityconstraint" );
         addStringProp( APISO_NS, "ResourceIdentifier", DatabaseTables.isoqp_resourceidentifier, "resourceidentifier" );
         addStringProp( APISO_NS, "ParentIdentifier", DatabaseTables.datasets, "parentidentifier" );
         addStringProp( APISO_NS, "KeywordType", DatabaseTables.isoqp_keyword, "keywordType" );
         addStringProp( APISO_NS, "TopicCategory", DatabaseTables.isoqp_topiccategory, "topiccategory" );
-        addStringProp( APISO_NS, "ResourceLanguage", DatabaseTables.datasets, "resourcelanguage" );
+        addStringProp( APISO_NS, "ResourceLanguage", DatabaseTables.isoqp_resourcelanguage, "resourcelanguage" );
         addStringProp( APISO_NS, "GeographicDescriptionCode", DatabaseTables.isoqp_geographicdescriptioncode,
                        "geographicdescriptioncode" );
         addStringProp( APISO_NS, "Denominator", DatabaseTables.isoqp_spatialresolution, "denominator" );
