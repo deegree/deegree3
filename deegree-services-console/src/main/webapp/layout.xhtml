@@ -33,8 +33,10 @@
 
 				<div id="main">
 				<div id="left"><h:panelGrid id="menuPG" columns="1">
+								<br/>
 								<h:link value="version" outcome="/console/jsf/version.xhtml" />
 								<h:link value="workspace" outcome="/console/jsf/workspace.xhtml" />
+								<br/>
 								<h:link value="webservices" outcome="/console/jsf/webservices.xhtml" disabled="#{!logBean.loggedIn}" />
 								<h:link value="render" outcome="/console/jsf/render.xhtml" disabled="#{!logBean.loggedIn}" />
 								<h:link value="featureStore" outcome="/console/jsf/featureStore.xhtml" disabled="#{!logBean.loggedIn}" />
@@ -46,7 +48,8 @@
 								<h:link outcome="/console/client/client.xhtml" target="_blank" value="#{labels.link_genericClient}" />
 								<a href="console/wms/wms.html" target="_blank">OpenLayers WMS client</a>
 								<!-- h:link outcome="/console/wms/wms.html" target="_blank" value="#{labels.link_wmsClient}" /-->
-								<dg:externalLink target="_blank" href="http://wiki.deegree.org" title="#{labels.link_wiki}" />
+								<br/><br/>
+								<dg:externalLink styleClass="linkWiki" target="_blank" href="http://wiki.deegree.org" title="#{labels.link_wiki}" />
 				</h:panelGrid></div>
 				
 				<div id="center"><ui:insert name="center" /> <h:panelGroup>
@@ -57,7 +60,7 @@
 				</h:panelGrid> <h:panelGroup class="margin-top: 10px;">
 								<h:form id="reloadForm">
 									<h:panelGrid >
-										<h:commandButton value="#{labels.apply_changes}" styleClass="button" style="margin:0px 10px;" action="#{configManager.applyChanges}" onclick="show();" />
+										<h:commandButton value="#{labels.apply_changes}" styleClass="button" action="#{configManager.applyChanges}" onclick="show();" />
 										<h:outputText value="#{configManager.lastMessage}" styleClass="attention" rendered="#{configManager.pendingChanges}"/>
 									</h:panelGrid>
 									<h:panelGroup rendered="#{!configManager.pendingChanges}">

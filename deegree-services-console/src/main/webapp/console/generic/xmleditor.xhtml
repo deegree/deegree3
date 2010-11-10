@@ -18,10 +18,10 @@
 								</h:panelGroup> <br />
 								<h:form id="xmlForm">
 												<dg:inputConfigurationXML id="inputXML" value="${editConfig.content}" schemaURLS="${editConfig.schemaURL}"
-																cols="80" rows="30" />
+																cols="90" rows="30" />
 												<br />
-												<h:commandButton value="#{labels.xmlEditor_save}" action="${editConfig.save}" />
-												<h:commandButton value="#{labels.xmlEditor_cancel}" action="${editConfig.cancel}" />
+												<h:commandButton styleClass="buttonSave" value="#{labels.xmlEditor_save}" action="${editConfig.save}" />
+												<h:commandButton styleClass="buttonCancel" value="#{labels.xmlEditor_cancel}" action="${editConfig.cancel}" />
 												<br />
 												<br />
 												<h:message for="inputXML" />

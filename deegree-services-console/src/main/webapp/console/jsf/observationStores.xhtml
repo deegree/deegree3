@@ -33,12 +33,12 @@
 								</h:form> 
 								<h:form>
 								<div>
-												<h:outputLabel for="newOSBt" value="#{labels.obsStores_name}" />
-												<h:inputText id="newOSBt" value="#{newObservationStoreConfig.id}" size="16" required="true" requiredMessage="#{labels.obsStores_name_req}"/>
-												<h:selectOneMenu value="#{newObservationStoreConfig.type}">
+												<h:outputLabel styleClass="label" for="newOSBt" value="#{labels.obsStores_name}" />
+												<h:inputText styleClass="liste" id="newOSBt" value="#{newObservationStoreConfig.id}" size="16" required="true" requiredMessage="#{labels.obsStores_name_req}"/>
+												<h:selectOneMenu styleClass="liste" value="#{newObservationStoreConfig.type}">
 																<f:selectItems value="#{configManager.osManager.osTypes}" />
 												</h:selectOneMenu>
-												<h:commandButton value="#{labels.obsStores_new}" action="#{newObservationStoreConfig.create}"  />
+												<h:commandButton styleClass="buttonCreateNew" value="#{labels.obsStores_new}" action="#{newObservationStoreConfig.create}"  />
 											</div>	
 												<h:message for="newOSBt" errorClass="consoleError" style="mergin-top: 10px;"/>
 								</h:form>

@@ -32,10 +32,11 @@
 				</table>
 				<br />
 			</h:form> <h:form>
-				<div><h:outputLabel for="newJDBCBt"
-					value="#{labels.jdbc_name}" /> <h:inputText id="newJDBCBt"
+				<div><h:outputLabel styleClass="label" for="newJDBCBt"
+					value="#{labels.jdbc_name}" /> <h:inputText styleClass="liste" id="newJDBCBt"
 					value="#{newConnectionConfig.id}" size="16" required="true"
-					requiredMessage="#{labels.jdbc_name_req}" /> <h:commandButton
+					requiredMessage="#{labels.jdbc_name_req}" /> 
+					<h:commandButton styleClass="buttonCreateNew"
 					value="#{labels.jdbc_new}" action="#{newConnectionConfig.create}" />
 
 				</div>

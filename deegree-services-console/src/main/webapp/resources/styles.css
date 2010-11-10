@@ -75,7 +75,10 @@ body {
 /** START: button **/
 
 .button {
-	background-color: red;
+	color: red;
+	font:80% Verdana,Arial,Helvetica,sans-serif;
+	background-color: white;
+	border: 1px;
 	}
 
 .buttonActivate {
@@ -117,13 +120,50 @@ body {
 	border: 1px;
 }
 
+.buttonEdit2 {
+	color:#52A529;
+	font:90% Verdana,Arial,Helvetica,sans-serif;
+	background-color: white;
+	border-color:#52A529 ;
+	border: 1px;
+}
+
 .buttonCreateNew {
 	color:#409300 ;
-	font:80% Verdana,Arial,Helvetica,sans-serif;
+	font:90% Verdana,Arial,Helvetica,sans-serif;
 	background-color: white;
 	border-color: #62AA2A ;
 	border: 1px;
-	
+}
+
+.buttonSave {
+	color:#409300 ;
+	font:100% Verdana,Arial,Helvetica,sans-serif;
+	background-color: white;
+	border: 1px;
+}
+
+.buttonCancel {
+	color:#FCB32B;
+	font:100% Verdana,Arial,Helvetica,sans-serif;
+	background-color: white;
+	border: 1px;
+}
+
+.linkWiki {
+	color: orange;
+}
+.label {
+	color: grey;
+	font:90% Verdana,Arial,Helvetica,sans-serif;
+	margin-right:10px; 
+	margin-left: 10px;
+}
+
+.liste {
+	color: grey;
+	font:80% Verdana,Arial,Helvetica,sans-serif;
+	border-color: lightgrey;
 }
 
 .StatusActivated {
@@ -137,50 +177,24 @@ body {
 
 /** END: button **/
 
-/** START: menu **/
-a.menuEntry:link {
-	color: black;
-}
-
-a.menuEntry:visited {
-	color: black;
-}
-
-a.menuEntry:active {
-	color: black;
-}
-
-a.menuEntry:hover {
-	color: black;
-	
-}
-
-a.selectedMenuEntry:link {
-	color: gray;
-	
-}
-
-a.selectedMenuEntry:visited {
-	color: gray;
-	
-}
-
-a.selectedMenuEntry:active {
-	color: gray;
-	
-}
-
-a.selectedMenuEntry:hover {
-	color: gray;
-	
-}
-
-/** END: menu **/ /* END: layout*/
+/* END: layout*/
 .consoleError {
 	color: red;
 }
 
 a {
+	color: gray;
+	text-decoration: none;
+	font-size: small;
+}
+
+a.hover {
+	color: green;
+	text-decoration: none;
+	font-size: small;
+}
+
+a.active {
 	color: green;
 	text-decoration: none;
 	font-size: small;
