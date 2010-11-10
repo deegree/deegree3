@@ -36,6 +36,7 @@
 package org.deegree.services.demo.jsf;
 
 import static org.deegree.commons.utils.io.Zip.unzip;
+import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.File;
 import java.io.IOException;
@@ -47,9 +48,9 @@ import javax.faces.bean.ApplicationScoped;
 import javax.faces.bean.ManagedBean;
 import javax.faces.context.FacesContext;
 
+import org.deegree.commons.utils.ProxyUtils;
 import org.deegree.console.ConfigManager;
-
-import lombok.Getter;
+import org.slf4j.Logger;
 
 /**
  * 
@@ -62,6 +63,10 @@ import lombok.Getter;
 @ApplicationScoped
 public class DownloadBean {
 
+    private static final Logger LOG = getLogger( DownloadBean.class );
+
+    @SuppressWarnings("unused")
+    // for the love of jsf
     private boolean dataDownloaded;
 
     private File dataDir;
@@ -85,24 +90,23 @@ public class DownloadBean {
      * @return '/index'
      */
     public String download() {
+
         InputStream is = null;
         try {
             dataDir.mkdirs();
-            is = new URL( "http://download.deegree.org/data/deegree3/wms/wms.zip" ).openStream();
+            is = ProxyUtils.openURLConnection( new URL( "http://download.deegree.org/data/deegree3/wms/wms.zip" ) ).getInputStream();
             unzip( is, dataDir );
         } catch ( MalformedURLException e ) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            LOG.trace( "Malformed url:", e );
         } catch ( IOException e ) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            LOG.warn( "Trouble when downloading the data: {}", e.getLocalizedMessage() );
+            LOG.trace( "Stack trace:", e );
         } finally {
             if ( is != null ) {
                 try {
                     is.close();
                 } catch ( IOException e ) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
+                    LOG.trace( "Stack trace:", e );
                 }
             }
         }
