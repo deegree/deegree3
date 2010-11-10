@@ -64,7 +64,7 @@ public abstract class ManagedXMLConfig extends XMLConfig {
 
     protected ManagedXMLConfig( String id, boolean active, boolean ignore, XMLConfigManager manager, URL schema,
                                 URL template ) {
-        super( active, ignore, null, schema, template );
+        super( active, ignore, null, schema, template, false, null );
         this.id = id;
         this.manager = manager;
         reloadContent();

@@ -67,6 +67,10 @@ public class ConfigManager {
 
     private static URL METADATA_TEMPLATE = ConnectionConfigManager.class.getResource( "metadata_template.xml" );
 
+    private static URL PROXY_SCHEMA_URL = ConnectionConfigManager.class.getResource( "/META-INF/schemas/proxy/0.5.0/proxy.xsd" );
+
+    private static URL PROXY_TEMPLATE = ConnectionConfigManager.class.getResource( "/META-INF/schemas/proxy/0.5.0/example.xml" );
+
     private static URL METADATA_SCHEMA_URL = ConnectionConfigManager.class.getResource( "/META-INF/schemas/webservices/0.6.0/services.xsd" );
 
     private final XMLConfig serviceMainConfig;
@@ -83,29 +87,29 @@ public class ConfigManager {
 
     private final ConnectionConfigManager connManager;
 
+    private final XMLConfig proxyConfig;
+
     private String lastMessage = "Workspace initialized.";
 
     public ConfigManager() {
         File serviceMainConfigFile = new File( OGCFrontController.getServiceWorkspace().getLocation(),
                                                "services/main.xml" );
-        serviceMainConfig = new XMLConfig( true, false, serviceMainConfigFile, MAIN_SCHEMA_URL, MAIN_TEMPLATE );
+        serviceMainConfig = new XMLConfig( true, false, serviceMainConfigFile, MAIN_SCHEMA_URL, MAIN_TEMPLATE, false, null );
         File serviceMetadataConfigFile = new File( OGCFrontController.getServiceWorkspace().getLocation(),
                                                    "services/metadata.xml" );
         serviceMetadataConfig = new XMLConfig( true, false, serviceMetadataConfigFile, METADATA_SCHEMA_URL,
-                                               METADATA_TEMPLATE );
+                                               METADATA_TEMPLATE, false, null );
         this.serviceManager = new ServiceConfigManager();
         this.styleManager = new StyleConfigManager();
         this.fsManager = new FeatureStoreConfigManager();
         this.osManager = new ObservationStoreConfigManager();
         this.connManager = new ConnectionConfigManager();
+        File proxyFile = new File( OGCFrontController.getServiceWorkspace().getLocation(), "proxy.xml" );
+        this.proxyConfig = new XMLConfig( true, false, proxyFile, PROXY_SCHEMA_URL, PROXY_TEMPLATE, true, "/console/jsf/proxy.xhtml" );
     }
 
     public boolean getPendingChanges() {
-        if ( serviceMetadataConfig.isModified() ) {
-            lastMessage = "Workspace has been changed.";
-            return true;
-        }
-        if ( serviceMainConfig.isModified() ) {
+        if ( serviceMetadataConfig.isModified() || serviceMainConfig.isModified() || proxyConfig.isModified() ) {
             lastMessage = "Workspace has been changed.";
             return true;
         }
@@ -143,6 +147,10 @@ public class ConfigManager {
 
     public XMLConfig getServiceMetadataConfig() {
         return serviceMetadataConfig;
+    }
+
+    public XMLConfig getProxyConfig() {
+        return proxyConfig;
     }
 
     /**
@@ -193,6 +201,7 @@ public class ConfigManager {
 
         serviceMainConfig.setModified( false );
         serviceMetadataConfig.setModified( false );
+        proxyConfig.setModified( false );
 
         serviceManager.scan();
         styleManager.scan();

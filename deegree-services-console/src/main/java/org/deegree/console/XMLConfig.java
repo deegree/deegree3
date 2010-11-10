@@ -82,12 +82,19 @@ public class XMLConfig implements Serializable {
 
     private boolean deactivated;
 
-    protected XMLConfig( boolean active, boolean ignore, File location, URL schema, URL template ) {
+    private final boolean createIfNotExists;
+
+    private final String outcome;
+
+    protected XMLConfig( boolean active, boolean ignore, File location, URL schema, URL template,
+                         boolean createIfNotExists, String outcome ) {
         this.active = active;
         this.deactivated = ignore;
         this.location = location;
         this.schema = schema;
         this.template = template;
+        this.createIfNotExists = createIfNotExists;
+        this.outcome = outcome;
         reloadContent();
     }
 
@@ -225,7 +232,11 @@ public class XMLConfig implements Serializable {
         }
     }
 
-    public String edit() {
+    public String edit()
+                            throws IOException {
+        if ( createIfNotExists && !location.exists() ) {
+            create();
+        }
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put( "editConfig", this );
         return "/console/generic/xmleditor?faces-redirect=true";
     }
@@ -264,6 +275,6 @@ public class XMLConfig implements Serializable {
     }
 
     public String getOutcome() {
-        return "services";
+        return outcome == null ? "services" : outcome;
     }
 }
