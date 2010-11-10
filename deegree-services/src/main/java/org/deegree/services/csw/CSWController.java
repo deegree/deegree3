@@ -174,7 +174,7 @@ public class CSWController extends AbstractOGCServiceController {
         try {
             service = new CSWService( jaxbConfig, controllerConf.getSystemId() );
         } catch ( MetadataStoreException e ) {
-            LOG.error( "Could no instantiate CSWService: '{}' " + e.getMessage() );
+            LOG.error( "Could not instantiate CSWService: '{}' " + e.getMessage() );
             throw new ControllerInitException( "Could not instantiate CSWService: " + e.getMessage(), e );
         }
         if ( jaxbConfig.getSupportedVersions() == null ) {
@@ -515,8 +515,7 @@ public class CSWController extends AbstractOGCServiceController {
 
     @Override
     public void destroy() {
-        // TODO Auto-generated method stub
-
+        LOG.debug( "destroy" );
     }
 
     private void checkTransactionsEnabled( String requestName )

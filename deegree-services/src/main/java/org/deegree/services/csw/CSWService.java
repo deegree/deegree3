@@ -50,6 +50,8 @@ import org.slf4j.LoggerFactory;
 /**
  * Specifies the Service-Layer. <br>
  * Initial class to register all configured {@link MetadataStore}s that are specified in the Service-Configuration.
+ * <p>
+ * NOTE: If there is an implementation of other/new MetadataStores please reimplement the {@link #getStore()}-method.
  * 
  * 
  * @author <a href="mailto:thomas@deegree.org">Steffen Thomas</a>
@@ -88,7 +90,7 @@ public class CSWService {
     public void addToStore( MetadataStore rs ) {
         synchronized ( this ) {
             if ( recordStore.contains( rs ) ) {
-                String msg = get( "CSW_RECORDSTORE_ALREADY_REGISTERED", rs );
+                String msg = get( "CSW_METADATASTORE_ALREADY_REGISTERED", rs );
                 LOG.error( msg );
                 throw new IllegalArgumentException( msg );
             }
@@ -101,14 +103,18 @@ public class CSWService {
      * Unregisters the specified {@link MetadataStore} from the CSW.
      * 
      * @param rs
-     *            store to be registered
+     *            store to be unregistered
      */
     public void removeStore( MetadataStore rs ) {
         synchronized ( this ) {
-            // TODO
+            // should be handled by the store
         }
     }
 
+    /**
+     * 
+     * @return <i>one<i> {@link MetadataStore}
+     */
     public MetadataStore getStore() {
         if ( recordStore.isEmpty() ) {
             return null;
