@@ -35,6 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.gml.schema;
 
+import static org.apache.xerces.xs.XSTypeDefinition.SIMPLE_TYPE;
 import static org.deegree.commons.xml.CommonNamespaces.GML3_2_NS;
 import static org.deegree.commons.xml.CommonNamespaces.GMLNS;
 import static org.deegree.commons.xml.CommonNamespaces.ISOAP10GMDNS;
@@ -44,16 +45,24 @@ import static org.deegree.commons.xml.CommonNamespaces.ISO_2005_GSS_NS;
 import static org.deegree.commons.xml.CommonNamespaces.ISO_2005_GTS_NS;
 import static org.deegree.commons.xml.CommonNamespaces.XLNNS;
 import static org.deegree.commons.xml.CommonNamespaces.XSNS;
+import static org.deegree.feature.types.property.ValueRepresentation.BOTH;
+import static org.deegree.feature.types.property.ValueRepresentation.REMOTE;
 
+import java.io.StringReader;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
+import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
 import javax.xml.namespace.QName;
 
 import org.apache.xerces.impl.xs.XSComplexTypeDecl;
+import org.apache.xerces.xs.XSAnnotation;
+import org.apache.xerces.xs.XSAttributeDeclaration;
+import org.apache.xerces.xs.XSAttributeUse;
+import org.apache.xerces.xs.XSComplexTypeDefinition;
 import org.apache.xerces.xs.XSConstants;
 import org.apache.xerces.xs.XSElementDeclaration;
 import org.apache.xerces.xs.XSModelGroup;
@@ -62,7 +71,17 @@ import org.apache.xerces.xs.XSParticle;
 import org.apache.xerces.xs.XSTerm;
 import org.apache.xerces.xs.XSTypeDefinition;
 import org.deegree.commons.xml.CommonNamespaces;
+import org.deegree.commons.xml.NamespaceContext;
+import org.deegree.commons.xml.XMLAdapter;
+import org.deegree.commons.xml.XPath;
 import org.deegree.commons.xml.schema.XMLSchemaInfoSet;
+import org.deegree.feature.types.property.FeaturePropertyType;
+import org.deegree.feature.types.property.GMLObjectPropertyType;
+import org.deegree.feature.types.property.GeometryPropertyType;
+import org.deegree.feature.types.property.PropertyType;
+import org.deegree.feature.types.property.ValueRepresentation;
+import org.deegree.feature.types.property.GeometryPropertyType.CoordinateDimension;
+import org.deegree.feature.types.property.GeometryPropertyType.GeometryType;
 import org.deegree.gml.GMLVersion;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -130,19 +149,11 @@ public class GMLSchemaInfoSet extends XMLSchemaInfoSet {
 
     private List<XSElementDeclaration> ftDecls;
 
-    private List<XSElementDeclaration> concreteFtDecls;
-
     private List<XSElementDeclaration> fcDecls;
 
-    private List<XSElementDeclaration> concreteFcDecls;
+    private Set<QName> geomElementNames = new HashSet<QName>();
 
-    private Map<String, List<XSElementDeclaration>> nsToFtDecls;
-
-    private Map<String, List<XSElementDeclaration>> nsToConcreteFtDecls;
-
-    private Map<String, List<XSElementDeclaration>> nsToFcDecls;
-
-    private Map<String, List<XSElementDeclaration>> nsToConcreteFcDecls;
+    private Set<QName> featureElementNames = new HashSet<QName>();
 
     private SortedSet<String> appNamespaces;
 
@@ -211,11 +222,13 @@ public class GMLSchemaInfoSet extends XMLSchemaInfoSet {
             // TODO do this the right way
             fcDecls = new ArrayList<XSElementDeclaration>();
             if ( xmlSchema.getElementDeclaration( "_FeatureCollection", GML_PRE_32_NS ) != null ) {
-                fcDecls.addAll( getSubstitutions( xmlSchema.getElementDeclaration( "_FeatureCollection", GML_PRE_32_NS ),
+                fcDecls.addAll( getSubstitutions(
+                                                  xmlSchema.getElementDeclaration( "_FeatureCollection", GML_PRE_32_NS ),
                                                   null, true, false ) );
             }
             if ( xmlSchema.getElementDeclaration( "FeatureCollection", GML_PRE_32_NS ) != null ) {
-                fcDecls.addAll( getSubstitutions( xmlSchema.getElementDeclaration( "FeatureCollection", GML_PRE_32_NS ),
+                fcDecls.addAll( getSubstitutions(
+                                                  xmlSchema.getElementDeclaration( "FeatureCollection", GML_PRE_32_NS ),
                                                   null, true, false ) );
             }
 
@@ -231,10 +244,16 @@ public class GMLSchemaInfoSet extends XMLSchemaInfoSet {
             }
             break;
         }
-    }
 
-    private void collectFtDecls() {
-        this.ftDecls = getSubstitutions( abstractFeatureElementDecl, null, true, false );
+        for ( XSElementDeclaration elemDecl : ftDecls ) {
+            QName name = new QName( elemDecl.getNamespace(), elemDecl.getName() );
+            featureElementNames.add( name );
+        }
+
+        for ( XSElementDeclaration elemDecl : getGeometryElementDeclarations( null, false ) ) {
+            QName name = new QName( elemDecl.getNamespace(), elemDecl.getName() );
+            geomElementNames.add( name );
+        }
     }
 
     /**
@@ -491,5 +510,459 @@ public class GMLSchemaInfoSet extends XMLSchemaInfoSet {
             }
         }
         return null;
+    }
+
+    /**
+     * Checks the given element declaration and returns a {@link GMLObjectPropertyType} if it defines a GML object
+     * property or GML reference property.
+     * 
+     * @param elDecl
+     * @param ptName
+     * @param minOccurs
+     * @param maxOccurs
+     * @param ptSubstitutions
+     * @return corresponding {@link GMLObjectPropertyType} or <code>null</code> if it's not a GML object property
+     */
+    public GMLObjectPropertyType getGMLPropertyDecl( XSElementDeclaration elDecl, QName ptName, int minOccurs,
+                                                     int maxOccurs, List<PropertyType> ptSubstitutions ) {
+        if ( elDecl.getType() == SIMPLE_TYPE ) {
+            return null;
+        }
+        XSComplexTypeDefinition typeDef = (XSComplexTypeDefinition) elDecl.getTypeDefinition();
+        GMLObjectPropertyType pt = buildGeometryPropertyType( ptName, elDecl, typeDef, minOccurs, maxOccurs,
+                                                              ptSubstitutions );
+        if ( pt == null ) {
+            pt = buildFeaturePropertyType( ptName, elDecl, typeDef, minOccurs, maxOccurs, ptSubstitutions );
+        }
+        if ( pt == null ) {
+            if ( allowsXLink( (XSComplexTypeDefinition) elDecl.getTypeDefinition() ) ) {
+                pt = new GMLObjectPropertyType( ptName, minOccurs, maxOccurs, elDecl.getAbstract(),
+                                                elDecl.getNillable(), ptSubstitutions, REMOTE );
+            }
+        }
+        return pt;
+    }
+
+    private boolean allowsXLink( XSComplexTypeDefinition typeDef ) {
+        XSObjectList xsObjectList = typeDef.getAttributeUses();
+        for ( int i = 0; i < xsObjectList.getLength(); i++ ) {
+            XSAttributeDeclaration attr = ( (XSAttributeUse) xsObjectList.item( i ) ).getAttrDeclaration();
+            if ( "href".equals( attr.getName() ) && XLNNS.equals( attr.getNamespace() ) ) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Analyzes the given complex type definition and returns a {@link FeaturePropertyType} if it defines a feature
+     * property.
+     * 
+     * @param elementDecl
+     * @param typeDef
+     * @param minOccurs
+     * @param maxOccurs
+     * @return corresponding {@link FeaturePropertyType} or null, if declaration does not define a feature property
+     */
+    private FeaturePropertyType buildFeaturePropertyType( QName ptName, XSElementDeclaration elementDecl,
+                                                          XSComplexTypeDefinition typeDef, int minOccurs,
+                                                          int maxOccurs, List<PropertyType> ptSubstitutions ) {
+
+        LOG.trace( "Checking if element declaration '" + ptName + "' defines a feature property type." );
+        FeaturePropertyType pt = null;
+
+        XMLAdapter annotationXML = null;
+        XSObjectList annotations = elementDecl.getAnnotations();
+        if ( annotations.getLength() > 0 ) {
+            XSAnnotation annotation = (XSAnnotation) annotations.item( 0 );
+            String s = annotation.getAnnotationString();
+            annotationXML = new XMLAdapter( new StringReader( s ) );
+        }
+
+        if ( annotationXML != null ) {
+            pt = buildFeaturePropertyTypeGML32( ptName, elementDecl, typeDef, minOccurs, maxOccurs, ptSubstitutions,
+                                                annotationXML );
+            if ( pt != null ) {
+                return pt;
+            }
+            pt = buildFeaturePropertyTypeXGml( ptName, elementDecl, typeDef, minOccurs, maxOccurs, ptSubstitutions,
+                                               annotationXML );
+            if ( pt != null ) {
+                return pt;
+            }
+            pt = buildFeaturePropertyTypeAdv( ptName, elementDecl, typeDef, minOccurs, maxOccurs, ptSubstitutions,
+                                              annotationXML );
+            if ( pt != null ) {
+                return pt;
+            }
+        }
+
+        boolean allowsXLink = allowsXLink( typeDef );
+
+        switch ( typeDef.getContentType() ) {
+        case XSComplexTypeDefinition.CONTENTTYPE_EMPTY: {
+            pt = new FeaturePropertyType( ptName, minOccurs, maxOccurs, elementDecl.getAbstract(),
+                                          elementDecl.getNillable(), ptSubstitutions, null, ValueRepresentation.REMOTE );
+            return pt;
+        }
+        case XSComplexTypeDefinition.CONTENTTYPE_ELEMENT: {
+            LOG.trace( "CONTENTTYPE_ELEMENT" );
+            XSParticle particle = typeDef.getParticle();
+            XSTerm term = particle.getTerm();
+            switch ( term.getType() ) {
+            case XSConstants.MODEL_GROUP: {
+                XSModelGroup modelGroup = (XSModelGroup) term;
+                switch ( modelGroup.getCompositor() ) {
+                case XSModelGroup.COMPOSITOR_ALL: {
+                    LOG.debug( "Unhandled model group: COMPOSITOR_ALL" );
+                    break;
+                }
+                case XSModelGroup.COMPOSITOR_CHOICE: {
+                    LOG.debug( "Unhandled model group: COMPOSITOR_CHOICE" );
+                    break;
+                }
+                case XSModelGroup.COMPOSITOR_SEQUENCE: {
+                    LOG.trace( "Found sequence." );
+                    XSObjectList sequence = modelGroup.getParticles();
+                    if ( sequence.getLength() != 1 ) {
+                        LOG.trace( "Length = '" + sequence.getLength() + "' -> cannot be a feature property." );
+                        return null;
+                    }
+                    XSParticle particle2 = (XSParticle) sequence.item( 0 );
+                    switch ( particle2.getTerm().getType() ) {
+                    case XSConstants.ELEMENT_DECLARATION: {
+                        XSElementDeclaration elementDecl2 = (XSElementDeclaration) particle2.getTerm();
+                        QName elementName = new QName( elementDecl2.getNamespace(), elementDecl2.getName() );
+                        if ( featureElementNames.contains( elementName ) ) {
+                            LOG.trace( "Identified a feature property." );
+                            pt = null;
+                            if ( version.getNamespace().equals( elementName.getNamespaceURI() ) ) {
+                                if ( allowsXLink ) {
+                                    pt = new FeaturePropertyType( ptName, minOccurs, maxOccurs,
+                                                                  elementDecl.getAbstract(), elementDecl.getNillable(),
+                                                                  ptSubstitutions, null, ValueRepresentation.BOTH );
+                                } else {
+                                    pt = new FeaturePropertyType( ptName, minOccurs, maxOccurs,
+                                                                  elementDecl.getAbstract(), elementDecl.getNillable(),
+                                                                  ptSubstitutions, null, ValueRepresentation.INLINE );
+                                }
+                            } else {
+                                if ( allowsXLink ) {
+                                    pt = new FeaturePropertyType( ptName, minOccurs, maxOccurs,
+                                                                  elementDecl.getAbstract(), elementDecl.getNillable(),
+                                                                  ptSubstitutions, elementName,
+                                                                  ValueRepresentation.BOTH );
+                                } else {
+                                    pt = new FeaturePropertyType( ptName, minOccurs, maxOccurs,
+                                                                  elementDecl.getAbstract(), elementDecl.getNillable(),
+                                                                  ptSubstitutions, null, ValueRepresentation.INLINE );
+                                }
+                            }
+                            return pt;
+                        }
+                    }
+                    case XSConstants.WILDCARD: {
+                        LOG.debug( "Unhandled particle: WILDCARD" );
+                        break;
+                    }
+                    case XSConstants.MODEL_GROUP: {
+                        LOG.debug( "Unhandled particle: MODEL_GROUP" );
+                        break;
+                    }
+                    }
+                    break;
+                }
+                default: {
+                    assert false;
+                }
+                }
+                break;
+            }
+            case XSConstants.WILDCARD: {
+                LOG.debug( "Unhandled particle: WILDCARD" );
+                break;
+            }
+            case XSConstants.ELEMENT_DECLARATION: {
+                LOG.debug( "Unhandled particle: ELEMENT_DECLARATION" );
+                break;
+            }
+            default: {
+                assert false;
+            }
+            }
+            break;
+        }
+        default: {
+            LOG.debug( "Unhandled content type in buildFeaturePropertyType(...) encountered." );
+        }
+        }
+        return null;
+    }
+
+    private FeaturePropertyType buildFeaturePropertyTypeXGml( QName ptName, XSElementDeclaration elementDecl,
+                                                              XSComplexTypeDefinition typeDef, int minOccurs,
+                                                              int maxOccurs, List<PropertyType> ptSubstitutions,
+                                                              XMLAdapter annotationXML ) {
+
+        // handle schemas that use a source="urn:x-gml:targetElement" attribute
+        // for defining the referenced feature type
+        // inside the annotation element (e.g. CITE examples for WFS 1.1.0)
+        NamespaceContext nsContext = new NamespaceContext();
+        nsContext.addNamespace( "xs", CommonNamespaces.XSNS );
+        QName refElement = annotationXML.getNodeAsQName(
+                                                         annotationXML.getRootElement(),
+                                                         new XPath(
+                                                                    "xs:appinfo[@source='urn:x-gml:targetElement']/text()",
+                                                                    nsContext ), null );
+        if ( refElement != null ) {
+            LOG.debug( "Identified a feature property (urn:x-gml:targetElement)." );
+            FeaturePropertyType pt = new FeaturePropertyType( ptName, minOccurs, maxOccurs, elementDecl.getAbstract(),
+                                                              elementDecl.getNillable(), ptSubstitutions, refElement,
+                                                              ValueRepresentation.BOTH );
+            return pt;
+        }
+        return null;
+    }
+
+    private FeaturePropertyType buildFeaturePropertyTypeAdv( QName ptName, XSElementDeclaration elementDecl,
+                                                             XSComplexTypeDefinition typeDef, int minOccurs,
+                                                             int maxOccurs, List<PropertyType> ptSubstitutions,
+                                                             XMLAdapter annotationXML ) {
+
+        // handle adv schemas (referenced feature type inside annotation
+        // element)
+        NamespaceContext nsContext = new NamespaceContext();
+        nsContext.addNamespace( "xs", CommonNamespaces.XSNS );
+        nsContext.addNamespace( "adv", "http://www.adv-online.de/nas" );
+        QName refElement = annotationXML.getNodeAsQName( annotationXML.getRootElement(),
+                                                         new XPath( "xs:appinfo/adv:referenziertesElement/text()",
+                                                                    nsContext ), null );
+        if ( refElement != null ) {
+            LOG.trace( "Identified a feature property (adv style)." );
+            FeaturePropertyType pt = new FeaturePropertyType( ptName, minOccurs, maxOccurs, elementDecl.getAbstract(),
+                                                              elementDecl.getNillable(), ptSubstitutions, refElement,
+                                                              ValueRepresentation.BOTH );
+            return pt;
+        }
+        return null;
+    }
+
+    private FeaturePropertyType buildFeaturePropertyTypeGML32( QName ptName, XSElementDeclaration elementDecl,
+                                                               XSComplexTypeDefinition typeDef, int minOccurs,
+                                                               int maxOccurs, List<PropertyType> ptSubstitutions,
+                                                               XMLAdapter annotationXML ) {
+        // handle GML 3.2 schemas (referenced feature type inside annotation
+        // element)
+        NamespaceContext nsContext = new NamespaceContext();
+        nsContext.addNamespace( "xs", CommonNamespaces.XSNS );
+        nsContext.addNamespace( "gml", GML3_2_NS );
+        QName refElement = annotationXML.getNodeAsQName( annotationXML.getRootElement(),
+                                                         new XPath( "xs:appinfo/gml:targetElement/text()", nsContext ),
+                                                         null );
+        if ( refElement != null ) {
+            LOG.trace( "Identified a feature property (GML 3.2 style)." );
+            // TODO determine this properly
+            ValueRepresentation vp = ValueRepresentation.REMOTE;
+            FeaturePropertyType pt = new FeaturePropertyType( ptName, minOccurs, maxOccurs, elementDecl.getAbstract(),
+                                                              elementDecl.getNillable(), ptSubstitutions, refElement,
+                                                              vp );
+            return pt;
+        }
+        return null;
+    }
+
+    /**
+     * Analyzes the given complex type definition and returns a {@link GeometryPropertyType} if it defines a geometry
+     * property.
+     * 
+     * @param elementDecl
+     * @param typeDef
+     * @param minOccurs
+     * @param maxOccurs
+     * @return corresponding {@link GeometryPropertyType} or null, if declaration does not define a geometry property
+     */
+    private GeometryPropertyType buildGeometryPropertyType( QName ptName, XSElementDeclaration elementDecl,
+                                                            XSComplexTypeDefinition typeDef, int minOccurs,
+                                                            int maxOccurs, List<PropertyType> ptSubstitutions ) {
+
+        switch ( typeDef.getContentType() ) {
+        case XSComplexTypeDefinition.CONTENTTYPE_ELEMENT: {
+            LOG.trace( "CONTENTTYPE_ELEMENT" );
+            XSParticle particle = typeDef.getParticle();
+            XSTerm term = particle.getTerm();
+            switch ( term.getType() ) {
+            case XSConstants.MODEL_GROUP: {
+                XSModelGroup modelGroup = (XSModelGroup) term;
+                switch ( modelGroup.getCompositor() ) {
+                case XSModelGroup.COMPOSITOR_ALL: {
+                    LOG.debug( "Unhandled model group: COMPOSITOR_ALL" );
+                    break;
+                }
+                case XSModelGroup.COMPOSITOR_CHOICE: {
+                    LOG.trace( "Found choice." );
+                    XSObjectList geomChoice = modelGroup.getParticles();
+                    int length = geomChoice.getLength();
+                    Set<GeometryType> allowedTypes = new HashSet<GeometryType>();
+                    for ( int i = 0; i < length; ++i ) {
+                        XSParticle geomChoiceParticle = (XSParticle) geomChoice.item( i );
+                        XSTerm geomChoiceTerm = geomChoiceParticle.getTerm();
+                        if ( geomChoiceTerm.getType() == XSConstants.ELEMENT_DECLARATION ) {
+                            // other types are not supported
+                            XSElementDeclaration geomChoiceElement = (XSElementDeclaration) geomChoiceTerm;
+                            // min occurs check should be done, in regards to the xlinking.
+                            int minOccurs3 = geomChoiceParticle.getMinOccurs();
+                            int maxOccurs3 = geomChoiceParticle.getMaxOccursUnbounded() ? -1
+                                                                                       : geomChoiceParticle.getMaxOccurs();
+                            if ( minOccurs3 != 1 || maxOccurs3 != 1 ) {
+                                LOG.debug( "Only single geometries are currently supported, ignoring in choice (property '"
+                                           + ptName + "')." );
+                                return null;
+                            }
+                            QName elementName = new QName( geomChoiceElement.getNamespace(),
+                                                           geomChoiceElement.getName() );
+                            if ( geomElementNames.contains( elementName ) ) {
+                                LOG.trace( "Identified a geometry property." );
+                                GeometryType geometryType = getGeometryType( elementName );
+                                allowedTypes.add( geometryType );
+                            } else {
+                                LOG.debug( "Unknown geometry type '" + elementName + "'." );
+                            }
+                        } else {
+                            LOG.warn( "Unsupported type particle type." );
+                        }
+                    }
+                    if ( !allowedTypes.isEmpty() ) {
+                        return new GeometryPropertyType( ptName, minOccurs, maxOccurs, elementDecl.getAbstract(),
+                                                         elementDecl.getNillable(), ptSubstitutions, allowedTypes,
+                                                         CoordinateDimension.DIM_2_OR_3, BOTH );
+                    }
+                    break;
+                }
+                case XSModelGroup.COMPOSITOR_SEQUENCE: {
+                    LOG.trace( "Found sequence." );
+                    XSObjectList sequence = modelGroup.getParticles();
+                    if ( sequence.getLength() != 1 ) {
+                        LOG.trace( "Length = '" + sequence.getLength() + "' -> cannot be a geometry property." );
+                        return null;
+                    }
+                    XSParticle particle2 = (XSParticle) sequence.item( 0 );
+                    XSTerm geomTerm = particle2.getTerm();
+                    switch ( geomTerm.getType() ) {
+                    case XSConstants.ELEMENT_DECLARATION: {
+                        XSElementDeclaration elementDecl2 = (XSElementDeclaration) geomTerm;
+                        // min occurs check should be done, in regards to the xlinking.
+                        int maxOccurs2 = particle2.getMaxOccursUnbounded() ? -1 : particle2.getMaxOccurs();
+                        if ( maxOccurs2 > 1 ) {
+                            LOG.debug( "Only single geometries are currently supported." );
+                            return null;
+                        }
+                        QName elementName = new QName( elementDecl2.getNamespace(), elementDecl2.getName() );
+                        if ( geomElementNames.contains( elementName ) ) {
+                            LOG.trace( "Identified a geometry property." );
+                            GeometryType geometryType = getGeometryType( elementName );
+                            return new GeometryPropertyType( ptName, minOccurs, maxOccurs, elementDecl.getAbstract(),
+                                                             elementDecl.getNillable(), ptSubstitutions, geometryType,
+                                                             CoordinateDimension.DIM_2_OR_3, BOTH );
+                        }
+                    }
+                    case XSConstants.WILDCARD: {
+                        LOG.debug( "Unhandled particle: WILDCARD" );
+                        break;
+                    }
+                    case XSConstants.MODEL_GROUP: {
+                        // more then one kind of geometries allowed
+                        XSModelGroup geomModelGroup = (XSModelGroup) geomTerm;
+                        switch ( geomModelGroup.getType() ) {
+                        case XSModelGroup.COMPOSITOR_ALL: {
+                            // all geometries?, lets make it a custom property
+                            LOG.debug( "Unhandled model group: COMPOSITOR_ALL" );
+                            break;
+                        }
+                        case XSModelGroup.COMPOSITOR_CHOICE: {
+                            XSObjectList geomChoice = geomModelGroup.getParticles();
+                            int length = geomChoice.getLength();
+                            Set<GeometryType> allowedTypes = new HashSet<GeometryType>();
+                            for ( int i = 0; i < length; ++i ) {
+                                XSParticle geomChoiceParticle = (XSParticle) sequence.item( i );
+                                XSTerm geomChoiceTerm = geomChoiceParticle.getTerm();
+                                if ( geomChoiceTerm.getType() == XSConstants.ELEMENT_DECLARATION ) {
+                                    // other types are not supported
+                                    XSElementDeclaration geomChoiceElement = (XSElementDeclaration) geomChoiceTerm;
+                                    // min occurs check should be done, in regards to the xlinking.
+                                    int minOccurs3 = geomChoiceParticle.getMinOccurs();
+                                    int maxOccurs3 = geomChoiceParticle.getMaxOccursUnbounded() ? -1
+                                                                                               : particle2.getMaxOccurs();
+                                    if ( maxOccurs3 > 1 ) {
+                                        LOG.warn( "Only single geometries are currently supported, ignoring in choice." );
+                                        // return null;
+                                    }
+                                    QName elementName = new QName( geomChoiceElement.getNamespace(),
+                                                                   geomChoiceElement.getName() );
+                                    if ( geomElementNames.contains( elementName ) ) {
+                                        LOG.trace( "Identified a geometry property." );
+                                        GeometryType geometryType = getGeometryType( elementName );
+                                        allowedTypes.add( geometryType );
+                                    } else {
+                                        LOG.debug( "Unknown geometry type '" + elementName + "'." );
+                                    }
+                                } else {
+                                    LOG.warn( "Unsupported type particle type." );
+                                }
+                            }
+                            if ( !allowedTypes.isEmpty() ) {
+                                return new GeometryPropertyType( ptName, minOccurs, maxOccurs,
+                                                                 elementDecl.getAbstract(), elementDecl.getNillable(),
+                                                                 ptSubstitutions, allowedTypes,
+                                                                 CoordinateDimension.DIM_2_OR_3, BOTH );
+                            }
+                            break;
+                        }
+                        case XSModelGroup.COMPOSITOR_SEQUENCE: {
+                            // sequence of geometries?, lets make it a custom property
+                            LOG.debug( "Unhandled model group: COMPOSITOR_SEQUENCE" );
+                            break;
+                        }
+                        }
+                        LOG.debug( "Unhandled particle: MODEL_GROUP" );
+                        break;
+                    }
+                    }
+                    break;
+                }
+                default: {
+                    assert false;
+                }
+                }
+                break;
+            }
+            case XSConstants.WILDCARD: {
+                LOG.debug( "Unhandled particle: WILDCARD" );
+                break;
+            }
+            case XSConstants.ELEMENT_DECLARATION: {
+                LOG.debug( "Unhandled particle: ELEMENT_DECLARATION" );
+                break;
+            }
+            default: {
+                assert false;
+            }
+            }
+            break;
+        }
+        }
+        return null;
+    }
+
+    private GeometryType getGeometryType( QName gmlGeometryName ) {
+        String localPart = gmlGeometryName.getLocalPart();
+        GeometryType result = GeometryType.GEOMETRY;
+        try {
+            result = GeometryType.fromGMLTypeName( localPart );
+        } catch ( Exception e ) {
+            LOG.debug( "Unmappable geometry type: " + gmlGeometryName.toString()
+                       + " (currently not supported by geometry model)" );
+        }
+        LOG.trace( "Mapping '" + gmlGeometryName + "' -> " + result );
+        return result;
     }
 }

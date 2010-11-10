@@ -102,16 +102,19 @@ import org.deegree.feature.types.property.CodePropertyType;
 import org.deegree.feature.types.property.CustomPropertyType;
 import org.deegree.feature.types.property.EnvelopePropertyType;
 import org.deegree.feature.types.property.FeaturePropertyType;
+import org.deegree.feature.types.property.GMLObjectPropertyType;
 import org.deegree.feature.types.property.GeometryPropertyType;
-import org.deegree.feature.types.property.GeometryPropertyType.GeometryType;
 import org.deegree.feature.types.property.MeasurePropertyType;
 import org.deegree.feature.types.property.PropertyType;
 import org.deegree.feature.types.property.SimplePropertyType;
 import org.deegree.feature.types.property.StringOrRefPropertyType;
+import org.deegree.feature.types.property.GeometryPropertyType.GeometryType;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.GeometryFactory;
 import org.deegree.gml.GMLDocumentIdContext;
+import org.deegree.gml.GMLObject;
+import org.deegree.gml.GMLReference;
 import org.deegree.gml.GMLReferenceResolver;
 import org.deegree.gml.GMLVersion;
 import org.deegree.gml.feature.schema.ApplicationSchemaXSDDecoder;
@@ -415,6 +418,8 @@ public class GMLFeatureReader extends XMLAdapter {
         try {
             ApplicationSchemaXSDDecoder decoder = new ApplicationSchemaXSDDecoder( version, null, schemaUrls );
             schema = decoder.extractFeatureTypeSchema();
+            FeatureType ft = schema.getFeatureType( QName.valueOf( "{http://www.opengis.net/cite/complex}Complex" ) );
+            System.out.println( ft );
         } catch ( Exception e ) {
             e.printStackTrace();
             throw new XMLParsingException( xmlStream, "Error parsing application schema: " + e.getMessage() );
@@ -472,6 +477,8 @@ public class GMLFeatureReader extends XMLAdapter {
             property = parseGeometryProperty( xmlStream, (GeometryPropertyType) propDecl, crs, isNilled );
         } else if ( propDecl instanceof FeaturePropertyType ) {
             property = parseFeatureProperty( xmlStream, (FeaturePropertyType) propDecl, crs, isNilled );
+        } else if ( propDecl instanceof GMLObjectPropertyType ) {
+            property = parseGMLObjectProperty( xmlStream, (GMLObjectPropertyType) propDecl, crs, isNilled );
         } else if ( propDecl instanceof CustomPropertyType ) {
             property = parseCustomProperty( xmlStream, (CustomPropertyType) propDecl, crs, isNilled );
         } else if ( propDecl instanceof EnvelopePropertyType ) {
@@ -485,6 +492,7 @@ public class GMLFeatureReader extends XMLAdapter {
         } else if ( propDecl instanceof ArrayPropertyType ) {
             property = parseArrayProperty( xmlStream, (ArrayPropertyType) propDecl, crs, isNilled );
         } else {
+            System.out.println( "ARGH: " + xmlStream.getCurrentEventInfo() );
             throw new RuntimeException( "Internal error in GMLFeatureReader: property type " + propDecl.getClass()
                                         + " not handled." );
         }
@@ -507,6 +515,38 @@ public class GMLFeatureReader extends XMLAdapter {
             StAXParsingHelper.nextElement( xmlStream );
         } else {
             property = createSimpleProperty( xmlStream, propDecl, xmlStream.getElementText().trim() );
+        }
+        return property;
+    }
+
+    private Property parseGMLObjectProperty( XMLStreamReaderWrapper xmlStream, GMLObjectPropertyType propDecl, CRS crs,
+                                             boolean isNilled )
+                            throws XMLStreamException {
+
+        QName propName = xmlStream.getName();
+        Property property = null;
+
+        String href = xmlStream.getAttributeValue( XLNNS, "href" );
+        if ( href != null ) {
+            GMLReference<?> ref = null;
+            if ( specialResolver != null ) {
+                ref = new GMLReference<GMLObject>( specialResolver, href, xmlStream.getSystemId() );
+            } else {
+                ref = new GMLReference<GMLObject>( idContext, href, xmlStream.getSystemId() );
+            }
+            idContext.addReference( ref );
+            property = new GenericProperty( propDecl, propName, ref, isNilled );
+            xmlStream.nextTag();
+        } else {
+            // inline object
+            if ( xmlStream.nextTag() == START_ELEMENT ) {
+                property = new GenericProperty( propDecl, propName, null, isNilled );
+                LOG.warn( "Parsing of inlined generic GML object properties is not implemented." );
+                xmlStream.skipElement();
+            } else {
+                // yes, empty object property elements are actually valid
+                property = new GenericProperty( propDecl, propName, null, isNilled );
+            }
         }
         return property;
     }
@@ -686,14 +726,35 @@ public class GMLFeatureReader extends XMLAdapter {
         return new GenericProperty( propDecl, propName, value, isNilled );
     }
 
-    private TypedObjectNode parseGenericXMLElement( XMLStreamReaderWrapper xmlStream, XSTypeDefinition xsdValueType,
+    private TypedObjectNode parseGenericXMLElement( XMLStreamReaderWrapper xmlStream, XSElementDeclaration elDecl,
                                                     CRS crs )
                             throws NoSuchElementException, XMLStreamException, XMLParsingException, UnknownCRSException {
+
         TypedObjectNode node = null;
+        XSTypeDefinition xsdValueType = elDecl.getTypeDefinition();
         if ( xsdValueType.getTypeCategory() == SIMPLE_TYPE ) {
             node = parseGenericXMLElement( xmlStream, (XSSimpleTypeDefinition) xsdValueType );
         } else {
-            node = parseGenericXMLElement( xmlStream, (XSComplexTypeDefinition) xsdValueType, crs );
+            GMLObjectPropertyType propDecl = schema.getCustomElDecl( elDecl );
+            if ( propDecl != null ) {
+                boolean isNilled = false;
+                if ( propDecl.isNillable() ) {
+                    isNilled = StAXParsingHelper.getAttributeValueAsBoolean( xmlStream, XSINS, "nil", false );
+                }
+                Property prop = null;
+                if ( propDecl instanceof GeometryPropertyType ) {
+                    prop = parseGeometryProperty( xmlStream, (GeometryPropertyType) propDecl, crs, isNilled );
+                } else if ( propDecl instanceof FeaturePropertyType ) {
+                    prop = parseFeatureProperty( xmlStream, (FeaturePropertyType) propDecl, crs, isNilled );
+                } else {
+                    prop = parseGMLObjectProperty( xmlStream, propDecl, crs, isNilled );
+                }
+                // TODO maybe we should really add Property to the TypedObjectNode hierarchy
+                List<TypedObjectNode> children = Collections.singletonList( prop.getValue() );
+                node = new GenericXMLElement( prop.getName(), xsdValueType, null, children );
+            } else {
+                node = parseGenericXMLElement( xmlStream, (XSComplexTypeDefinition) xsdValueType, crs );
+            }
         }
         return node;
     }
@@ -722,19 +783,14 @@ public class GMLFeatureReader extends XMLAdapter {
             while ( ( eventType = xmlStream.next() ) != END_ELEMENT ) {
                 if ( eventType == START_ELEMENT ) {
                     QName childElName = xmlStream.getName();
-                    if ( geomReader.isGeometryElement( xmlStream ) ) {
-                        children.add( geomReader.parse( xmlStream, crs ) );
-                    } else {
-                        if ( !childElementDecls.containsKey( childElName ) ) {
-                            String msg = "Element '" + childElName + "' is not allowed at this position.";
-                            throw new XMLParsingException( xmlStream, msg );
-                        }
-                        TypedObjectNode child = parseGenericXMLElement( xmlStream,
-                                                                        childElementDecls.get( childElName ).getTypeDefinition(),
-                                                                        crs );
-                        // LOG.debug( "adding: " + childElName + ", " + child.getClass().getName() );
-                        children.add( child );
+                    if ( !childElementDecls.containsKey( childElName ) ) {
+                        String msg = "Element '" + childElName + "' is not allowed at this position.";
+                        throw new XMLParsingException( xmlStream, msg );
                     }
+                    TypedObjectNode child = parseGenericXMLElement( xmlStream, childElementDecls.get( childElName ),
+                                                                    crs );
+                    // LOG.debug( "adding: " + childElName + ", " + child.getClass().getName() );
+                    children.add( child );
                 }
             }
             break;
@@ -760,18 +816,14 @@ public class GMLFeatureReader extends XMLAdapter {
             while ( ( eventType = xmlStream.next() ) != END_ELEMENT ) {
                 if ( eventType == START_ELEMENT ) {
                     QName childElName = xmlStream.getName();
-                    if ( geomReader.isGeometryElement( xmlStream ) ) {
-                        children.add( geomReader.parse( xmlStream, crs ) );
-                    } else {
-                        if ( !childElementDecls.containsKey( childElName ) ) {
-                            String msg = "Element '" + childElName + "' is not allowed at this position.";
-                            throw new XMLParsingException( xmlStream, msg );
-                        }
-                        TypedObjectNode child = parseGenericXMLElement( xmlStream,
-                                                                        childElementDecls.get( childElName ).getTypeDefinition(),
-                                                                        crs );
-                        children.add( child );
+
+                    if ( !childElementDecls.containsKey( childElName ) ) {
+                        String msg = "Element '" + childElName + "' is not allowed at this position.";
+                        throw new XMLParsingException( xmlStream, msg );
                     }
+                    TypedObjectNode child = parseGenericXMLElement( xmlStream, childElementDecls.get( childElName ),
+                                                                    crs );
+                    children.add( child );
                 } else if ( eventType == CDATA || eventType == CHARACTERS ) {
                     // mixed content -> use string as primitive type
                     String s = xmlStream.getText();

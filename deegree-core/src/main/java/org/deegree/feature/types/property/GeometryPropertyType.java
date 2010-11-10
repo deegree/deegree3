@@ -71,14 +71,14 @@ import org.deegree.geometry.primitive.Tin;
 import org.deegree.geometry.primitive.TriangulatedSurface;
 
 /**
- * {@link PropertyType} that defines a property with a {@link Geometry} value.
+ * {@link GMLObjectPropertyType} that defines a property with a {@link Geometry} value.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
  * 
  * @version $Revision:$, $Date:$
  */
-public class GeometryPropertyType extends AbstractPropertyType {
+public class GeometryPropertyType extends GMLObjectPropertyType {
 
     /** The flattened geometry hierarchy supported by deegree's ISO geometry model. */
     public enum GeometryType {
@@ -335,19 +335,16 @@ public class GeometryPropertyType extends AbstractPropertyType {
 
     private CoordinateDimension dim;
 
-    private final ValueRepresentation representation;
-
     private final Set<GeometryType> allowedGeometryTypes;
 
     public GeometryPropertyType( QName name, int minOccurs, int maxOccurs, boolean isAbstract,
                                  boolean isNillable, List<PropertyType> substitutions, GeometryType geomType,
                                  CoordinateDimension dim, ValueRepresentation representation ) {
-        super( name, minOccurs, maxOccurs, isAbstract, isNillable, substitutions );
+        super( name, minOccurs, maxOccurs, isAbstract, isNillable, substitutions, representation );
         this.geomType = geomType;
         this.allowedGeometryTypes = new HashSet<GeometryType>();
         this.allowedGeometryTypes.add( this.geomType );
         this.dim = dim;
-        this.representation = representation;
     }
 
     /**
@@ -365,11 +362,10 @@ public class GeometryPropertyType extends AbstractPropertyType {
     public GeometryPropertyType( QName name, int minOccurs, int maxOccurs, boolean isAbstract,
                                  boolean isNillable, List<PropertyType> substitutions, Set<GeometryType> geomTypes,
                                  CoordinateDimension dim, ValueRepresentation representation ) {
-        super( name, minOccurs, maxOccurs, isAbstract, isNillable, substitutions );
+        super( name, minOccurs, maxOccurs, isAbstract, isNillable, substitutions, representation );
         this.allowedGeometryTypes = geomTypes;
         this.geomType = GeometryType.determineMinimalBaseGeometry( geomTypes );
         this.dim = dim;
-        this.representation = representation;
     }
 
     /**
@@ -393,15 +389,6 @@ public class GeometryPropertyType extends AbstractPropertyType {
 
     public CoordinateDimension getCoordinateDimension() {
         return dim;
-    }
-
-    /**
-     * Returns the allowed representation form of the value object.
-     * 
-     * @return the allowed representation form, never <code>null</code>
-     */
-    public ValueRepresentation getAllowedRepresentation() {
-        return representation;
     }
 
     @Override

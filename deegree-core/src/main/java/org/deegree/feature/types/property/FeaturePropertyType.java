@@ -46,14 +46,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * {@link PropertyType} that defines a property with a {@link Feature} value.
+ * {@link GMLObjectPropertyType} that defines a property with a {@link Feature} value.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
  * 
  * @version $Revision:$, $Date:$
  */
-public class FeaturePropertyType extends AbstractPropertyType {
+public class FeaturePropertyType extends GMLObjectPropertyType {
 
     private static final Logger LOG = LoggerFactory.getLogger( FeaturePropertyType.class );
 
@@ -65,8 +65,7 @@ public class FeaturePropertyType extends AbstractPropertyType {
 
     public FeaturePropertyType( QName name, int minOccurs, int maxOccurs, boolean isAbstract, boolean isNillable,
                                 List<PropertyType> substitutions, QName valueFtName, ValueRepresentation representation ) {
-        super( name, minOccurs, maxOccurs, isAbstract, isNillable, substitutions );
-        this.valueFtName = valueFtName;
+        super( name, minOccurs, maxOccurs, isAbstract, isNillable, substitutions, representation );
         this.representation = representation;
     }
 
@@ -104,15 +103,6 @@ public class FeaturePropertyType extends AbstractPropertyType {
         // throw new IllegalArgumentException( msg );
         // }
         this.valueFt = valueFt;
-    }
-
-    /**
-     * Returns the allowed representation form of the value object.
-     * 
-     * @return the allowed representation form, never <code>null</code>
-     */
-    public ValueRepresentation getAllowedRepresentation() {
-        return representation;
     }
 
     @Override
