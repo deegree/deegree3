@@ -35,7 +35,7 @@
       </Address>
       <OnlineResource>http://www.deegree.org</OnlineResource>
       <HoursOfService>24x7</HoursOfService>
-      <ContactInstructions>Don't hesitate to call</ContactInstructions>
+      <ContactInstructions>Do not hesitate to call</ContactInstructions>
       <Role>PointOfContact</Role>
     </ServiceContact>
   </ServiceProvider>
