@@ -17,11 +17,12 @@
 																												<f:param value="#{config.id}" />
 																								</h:outputFormat></td>
 																								<td><h:outputText value="#{config.status}" /></td>
-																								<td><h:commandButton rendered="#{!config.deactivated}"
-																												value="#{labels.webservices_deactivate}" action="#{config.deactivate}" /> <h:commandButton
+																								<td><h:commandButton styleClass="buttonDeactivate" rendered="#{!config.deactivated}"
+																												value="#{labels.webservices_deactivate}" action="#{config.deactivate}" /> 
+																												<h:commandButton styleClass="buttonActivate"
 																												rendered="#{config.deactivated}" value="#{labels.webservices_activate}"
 																												action="#{config.activate}" /></td>
-																								<td><h:commandButton value="#{labels.webservices_edit}" action="#{config.edit}" /></td>
+																								<td><h:commandButton styleClass="buttonEdit" value="#{labels.webservices_edit}" action="#{config.edit}" /></td>
 																								<td><h:panelGroup rendered="#{config.active}">
 																								<dg:externalLink target="_blank" href="#{config.capabilitiesURL}" title="[#{labels.webservices_cap}]" />
 																								</h:panelGroup></td>

@@ -72,6 +72,71 @@ body {
 	clear: both;
 }
 
+/** START: button **/
+
+.button {
+	background-color: red;
+	}
+
+.buttonActivate {
+	color:#409300 ;
+	font:80% Verdana,Arial,Helvetica,sans-serif;
+	background-color: white;
+	border-color: #62AA2A ;
+	border: 1px;
+	
+}
+
+.buttonDeactivate {
+	color: grey;
+	font:80% Verdana,Arial,Helvetica,sans-serif;
+	background-color: white;
+	border: 1px;
+}
+.buttonInfo {
+	color: #7279D8;
+	font:80% Verdana,Arial,Helvetica,sans-serif;
+	background-color: white;
+	border-color: blue;
+	border: 1px;
+}
+
+.buttonDelete {
+	color:#FCB32B;
+	font:80% Verdana,Arial,Helvetica,sans-serif;
+	background-color: white;
+	border-color:#BF3030;
+	border: 1px;
+}
+
+.buttonEdit {
+	color:#A6D400;
+	font:80% Verdana,Arial,Helvetica,sans-serif;
+	background-color: white;
+	border-color:#52A529 ;
+	border: 1px;
+}
+
+.buttonCreateNew {
+	color:#409300 ;
+	font:80% Verdana,Arial,Helvetica,sans-serif;
+	background-color: white;
+	border-color: #62AA2A ;
+	border: 1px;
+	
+}
+
+.StatusActivated {
+	color: green;
+}
+
+.StatusDeactivated {
+	color: grey;
+}
+
+
+/** END: button **/
+
 /** START: menu **/
 a.menuEntry:link {
 	color: black;

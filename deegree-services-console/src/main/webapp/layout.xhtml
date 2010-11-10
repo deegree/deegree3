@@ -40,27 +40,30 @@
 								<h:link value="featureStore" outcome="/console/jsf/featureStore.xhtml" disabled="#{!logBean.loggedIn}" />
 								<h:link value="observationStores" outcome="/console/jsf/observationStores.xhtml" disabled="#{!logBean.loggedIn}" />
 								<h:link value="jdbc" outcome="/console/jsf/jdbc.xhtml" disabled="#{!logBean.loggedIn}" />
-				</h:panelGrid></div>
-				<div id="center"><ui:insert name="center" /> <h:panelGroup>
-								<h:messages errorClass="consoleError" />
-				</h:panelGroup></div>
-				<div id="right"><h:panelGrid columns="1">
+								<br/>
 								<h:link outcome="/console/client/client.xhtml" target="_blank" value="#{labels.link_genericClient}" />
 								<a href="console/wms/wms.html" target="_blank">OpenLayers WMS client</a>
 								<!-- h:link outcome="/console/wms/wms.html" target="_blank" value="#{labels.link_wmsClient}" /-->
 								<dg:externalLink target="_blank" href="http://wiki.deegree.org" title="#{labels.link_wiki}" />
+				</h:panelGrid></div>
+				
+				<div id="center"><ui:insert name="center" /> <h:panelGroup>
+								<h:messages errorClass="consoleError" />
+				</h:panelGroup></div>
+				
+				<div id="right"><h:panelGrid columns="1">
 				</h:panelGrid> <h:panelGroup class="margin-top: 10px;">
 								<h:form id="reloadForm">
-												<h:panelGrid rendered="#{configManager.pendingChanges}">
-																<h:outputText value="#{configManager.lastMessage}" styleClass="attention" />
-																<h:commandButton value="#{labels.apply_changes}" style="margin:0px 10px;"
-																				action="#{configManager.applyChanges}" onclick="show();" />
-												</h:panelGrid>
-												<h:panelGroup rendered="#{!configManager.pendingChanges}">
-																<h:outputText value="#{configManager.lastMessage}" />
-												</h:panelGroup>
+									<h:panelGrid >
+										<h:commandButton value="#{labels.apply_changes}" styleClass="button" style="margin:0px 10px;" action="#{configManager.applyChanges}" onclick="show();" />
+										<h:outputText value="#{configManager.lastMessage}" styleClass="attention" rendered="#{configManager.pendingChanges}"/>
+									</h:panelGrid>
+									<h:panelGroup rendered="#{!configManager.pendingChanges}">
+															<h:outputText value="#{configManager.lastMessage}" />
+									</h:panelGroup>
 								</h:form>
 				</h:panelGroup></div>
+				
 				<div class="clear" />
 				</div>
 
