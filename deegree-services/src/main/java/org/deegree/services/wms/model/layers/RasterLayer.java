@@ -194,7 +194,7 @@ public class RasterLayer extends Layer {
                 raster = multiraster.getRaster( bbox.getSpan0() );
             }
             SimpleRaster res = CoverageTransform.transform( raster, fi.getClickBox(),
-                                                            Grid.fromSize( 2, 2, MAX_VALUE, bbox ),
+                                                            Grid.fromSize( 1, 1, MAX_VALUE, bbox ),
                                                             InterpolationType.NEAREST_NEIGHBOR.toString() ).getAsSimpleRaster();
             RasterData data = res.getRasterData();
             GenericFeatureCollection col = new GenericFeatureCollection();
@@ -202,19 +202,19 @@ public class RasterLayer extends Layer {
             DataType dataType = data.getDataType();
             switch ( dataType ) {
             case SHORT:
-            case USHORT:
-                props.add( new GenericProperty(
-                                                featureType.getPropertyDeclarations().get( 0 ),
-                                                new PrimitiveValue( new BigDecimal( 0xffff & data.getShortSample( 0, 0,
-                                                                                                                  0 ) ) ) ) );
+            case USHORT: {
+                PrimitiveValue val = new PrimitiveValue( new BigDecimal( 0xffff & data.getShortSample( 0, 0, 0 ) ) );
+                props.add( new GenericProperty( featureType.getPropertyDeclarations().get( 0 ), val ) );
                 break;
-            case BYTE:
-                byte[] bs = data.getPixel( 0, 0, null );
-                float val = Float.intBitsToFloat( ( ( 0xff & bs[3] ) << 24 ) + ( ( 0xff & bs[0] ) << 16 )
-                                                  + ( ( 0xff & bs[1] ) << 8 ) + ( 0xff & bs[2] ) );
-                props.add( new GenericProperty( featureType.getPropertyDeclarations().get( 0 ),
-                                                new PrimitiveValue( new BigDecimal( val ) ) ) );
+            }
+            case BYTE: {
+                // TODO unknown why this always yields 0 values for eg. satellite images/RGB/ARGB
+                for ( int i = 0; i < data.getBands(); ++i ) {
+                    PrimitiveValue val = new PrimitiveValue( new BigDecimal( 0xff & data.getByteSample( 0, 0, i ) ) );
+                    props.add( new GenericProperty( featureType.getPropertyDeclarations().get( 0 ), val ) );
+                }
                 break;
+            }
             case DOUBLE:
             case INT:
             case UNDEFINED:
