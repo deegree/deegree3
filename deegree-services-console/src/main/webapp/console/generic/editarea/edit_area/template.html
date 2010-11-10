@@ -39,7 +39,7 @@
 						{$line_abbr} <span id='nbLine'>0</span>, {$char_abbr} <span id='nbChar'>0</span>
 					</td>
 					<td class='resize'>
-						<span id='resize_area'><img src='[__BASEURL__]images/statusbar_resize.gif' alt='resize' selec='none'></span>
+						<span id='resize_area'><img src='[__BASEURL__]images/statusbar_resize.gif' alt='resize' selec='none'></img></span>
 					</td>
 				</tr>
 			</table>
@@ -58,7 +58,7 @@
 				<td><input type='text' id='area_search' /></td>
 				<td id='close_area_search_replace'>
 					<a onclick='Javascript:editArea.execCommand("hidden_search")'><img selec='none' src='[__BASEURL__]images/close.gif' alt='{$close_popup}' title='{$close_popup}' /></a><br />
-			</tr><tr>
+			</td></tr><tr>
 				<td selec='none'>{$replace}</td>
 				<td><input type='text' id='area_replace' /></td>
 				<td><img id='move_area_search_replace' onmousedown='return parent.start_move_element(event,"area_search_replace", parent.frames["frame_"+editArea.id]);'  src='[__BASEURL__]images/move.gif' alt='{$move_popup}' title='{$move_popup}' /></td>
