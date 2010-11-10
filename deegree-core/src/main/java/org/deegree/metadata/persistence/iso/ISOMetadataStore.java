@@ -144,7 +144,7 @@ public class ISOMetadataStore implements MetadataStore {
      */
     @Override
     public void destroy() {
-        // TODO Auto-generated method stub
+        LOG.debug( "destroy" );
 
     }
 

@@ -261,6 +261,7 @@ public class DeegreeWorkspace {
     public synchronized void destroyAll() {
         getCoverageBuilderManager().destroy();
         FeatureStoreManager.destroy();
+        MetadataStoreManager.destroy();
         ConnectionManager.destroy();
     }
 }

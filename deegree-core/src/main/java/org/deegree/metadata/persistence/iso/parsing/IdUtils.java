@@ -200,8 +200,9 @@ public class IdUtils {
             }
 
         } catch ( SQLException e ) {
-            LOG.debug( "Error while proving the IDs stored in the backend: {}", e.getMessage() );
-            throw new MetadataStoreException( "Error while proving the IDs stored in the backend: {}" + e.getMessage() );
+            String msg = Messages.getMessage( "ERROR_SQL", stm.toString(), e.getMessage() );
+            LOG.debug( msg );
+            throw new MetadataStoreException( msg );
         } finally {
             close( stm );
             close( rs );

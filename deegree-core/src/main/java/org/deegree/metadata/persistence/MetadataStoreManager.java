@@ -200,4 +200,14 @@ public class MetadataStoreManager {
         }
         LOG.info( "" );
     }
+
+    /**
+     * 
+     */
+    public static void destroy() {
+        for ( MetadataStore ms : idToRs.values() ) {
+            ms.destroy();
+        }
+        idToRs.clear();
+    }
 }
