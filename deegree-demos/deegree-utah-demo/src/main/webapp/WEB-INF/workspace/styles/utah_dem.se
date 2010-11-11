@@ -3,6 +3,8 @@
   xmlns:deegreeogc="http://www.deegree.org/ogc" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://www.opengis.net/se http://schemas.opengis.net/se/1.1.0/FeatureStyle.xsd http://www.deegree.org/se http://schemas.deegree.org/se/1.1.0/Symbolizer-deegree.xsd">
   <Name>DEM</Name>
+  
+  <!-- This rule shows the use of interpolation with rasterdata -->
   <Rule>
     <Name>DEM 90m Raster</Name>
     <Description>
@@ -47,6 +49,7 @@
       </ColorMap>
     </RasterSymbolizer>
   </Rule>
+  <!-- This rule shows the use of the SE ShadedRelief feature -->
   <Rule>
     <Name>DEM 90m Raster</Name>
     <Description>

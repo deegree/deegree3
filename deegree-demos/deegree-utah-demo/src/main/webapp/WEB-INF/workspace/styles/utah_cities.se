@@ -4,6 +4,7 @@
     xsi:schemaLocation="http://www.opengis.net/se http://schemas.opengis.net/se/1.1.0/FeatureStyle.xsd http://www.deegree.org/se http://schemas.deegree.org/se/1.1.0/Symbolizer-deegree.xsd">
  <Name>Cities</Name>
  <FeatureTypeName>app:SGID93_LOCATION_UDOTMap_CityLocations</FeatureTypeName>
+ <!-- The following rule shows the use of interpolation of a vector layer -->
  <Rule>
     <Name>Cities</Name>
     <Description>

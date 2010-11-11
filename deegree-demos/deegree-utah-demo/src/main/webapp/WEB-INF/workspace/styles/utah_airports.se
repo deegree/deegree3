@@ -3,6 +3,7 @@
     xmlns:deegreeogc="http://www.deegree.org/ogc" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://www.opengis.net/se http://schemas.opengis.net/se/1.1.0/FeatureStyle.xsd http://www.deegree.org/se http://schemas.deegree.org/se/1.1.0/Symbolizer-deegree.xsd">
   <Name>Airports</Name>
+  <!-- The following rules show the use of PerpendicularOffsets within LineSymbolizers -->
   <Rule>
     <Name>Airports</Name>
     <Description>
