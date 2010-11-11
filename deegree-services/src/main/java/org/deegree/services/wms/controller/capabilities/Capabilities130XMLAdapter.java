@@ -141,8 +141,11 @@ public class Capabilities130XMLAdapter extends XMLAdapter {
         writer.writeAttribute( "version", "1.3.0" );
         writer.writeAttribute( "updateSequence", "" + service.updateSequence );
 
-        writer.writeAttribute( XSINS, "schemaLocation",
-                               "http://www.opengis.net/wms http://schemas.opengis.net/wms/1.3.0/capabilities_1_3_0.xsd" );
+        writer.writeAttribute(
+                               XSINS,
+                               "schemaLocation",
+                               "http://www.opengis.net/wms http://schemas.opengis.net/wms/1.3.0/capabilities_1_3_0.xsd "
+                                                       + "http://www.opengis.net/sld http://schemas.opengis.net/sld/1.1.0/sld_capabilities.xsd" );
 
         writeService( writer );
 
@@ -439,7 +442,7 @@ public class Capabilities130XMLAdapter extends XMLAdapter {
                             throws XMLStreamException {
         writer.writeStartElement( WMSNS, "Service" );
 
-        writeElement( writer, WMSNS, "Name", "OGC:WMS" );
+        writeElement( writer, WMSNS, "Name", "WMS" );
 
         List<String> titles = identification == null ? null : identification.getTitle();
         String title = ( titles != null && !titles.isEmpty() ) ? titles.get( 0 ) : "deegree 3 WMS";
