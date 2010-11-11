@@ -8,8 +8,10 @@
 							<ui:include src="accessForbidden.xhtml" />
 						</h:panelGroup>
 						<h:panelGroup rendered="#{logBean.loggedIn}">
-								<fieldset><legend><h:outputText value="#{labels.obsStores_title}" /></legend> <h:form>
+								<fieldset><legend><h:outputText styleClass="titel" value="#{labels.obsStores_title}" /></legend> <h:form>
 												<table border="0">
+					<tr><td /></tr>
+					<tr><td /></tr>
 																<ui:repeat value="#{configManager.osManager.configs}" var="config">
 																				<tr align="center">
 																								<td><h:outputFormat value="#{labels.obsStores_id}">

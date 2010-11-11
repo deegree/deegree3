@@ -13,9 +13,11 @@
 			<ui:include src="accessForbidden.xhtml" />
 		</h:panelGroup>
 		<h:panelGroup rendered="#{logBean.loggedIn}">
-			<fieldset><legend><h:outputText
+			<fieldset><legend><h:outputText styleClass="titel"
 				value="#{labels.jdbc_title}" /></legend> <h:form>
 				<table style="font-size: small">
+					<tr><td /></tr>
+					<tr><td /></tr>
 					<ui:repeat value="#{configManager.connManager.configs}"
 						var="config">
 						<tr>

@@ -71,6 +71,31 @@ body {
 .clear {
 	clear: both;
 }
+/** Navigation **/
+
+.navi:hover {
+	color: green;
+}
+
+.navi:active {
+	color: green;
+}
+
+.naviExtern:hover {
+	color: blue;
+}
+
+.naviExtern:active {
+	color: blue;
+}
+
+.linkWiki:hover {
+	color: orange;
+}
+
+.linkWiki:active {
+	color: orange;
+}
 
 /** START: button **/
 
@@ -164,9 +189,7 @@ body {
 	background-color: white;
 }
 
-.linkWiki {
-	color: orange;
-}
+
 .label {
 	color: grey;
 	font:90% Verdana,Arial,Helvetica,sans-serif;
@@ -175,9 +198,14 @@ body {
 }
 
 .liste {
-	color: grey;
-	font:80% Verdana,Arial,Helvetica,sans-serif;
+	color: darkgrey;
+	font:100% Verdana,Arial,Helvetica,sans-serif;
 	border-color: lightgrey;
+}
+
+.titel {
+	color: #409300 ;
+	font: Verdana,Arial,Helvetica,sans-serif;
 }
 
 .StatusActivated {
@@ -191,7 +219,7 @@ body {
 
 /** END: button **/
 
-/* END: layout*/
+
 .consoleError {
 	color: red;
 }
@@ -202,17 +230,6 @@ a {
 	font-size: small;
 }
 
-a.hover {
-	color: green;
-	text-decoration: none;
-	font-size: small;
-}
-
-a.active {
-	color: green;
-	text-decoration: none;
-	font-size: small;
-}
 
 .textarea {
 	width: 850px;

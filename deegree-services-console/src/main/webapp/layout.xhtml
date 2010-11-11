@@ -34,19 +34,19 @@
 				<div id="main">
 				<div id="left"><h:panelGrid id="menuPG" columns="1">
 								<br/>
-								<h:link value="version" outcome="/console/jsf/version.xhtml" />
-								<h:link value="workspace" outcome="/console/jsf/workspace.xhtml" />
+								<h:link styleClass="navi" value="version" outcome="/console/jsf/version.xhtml" />
+								<h:link styleClass="navi" value="workspace" outcome="/console/jsf/workspace.xhtml" />
 								<br/>
-								<h:link value="webservices" outcome="/console/jsf/webservices.xhtml" disabled="#{!logBean.loggedIn}" />
-								<h:link value="render" outcome="/console/jsf/render.xhtml" disabled="#{!logBean.loggedIn}" />
-								<h:link value="featureStore" outcome="/console/jsf/featureStore.xhtml" disabled="#{!logBean.loggedIn}" />
-				                <h:link value="metadataStore" outcome="/console/jsf/metadataStore.xhtml" disabled="#{!logBean.loggedIn}" />				
-                                <h:link value="observationStores" outcome="/console/jsf/observationStores.xhtml" disabled="#{!logBean.loggedIn}" />
-								<h:link value="jdbc" outcome="/console/jsf/jdbc.xhtml" disabled="#{!logBean.loggedIn}" />
-                                <h:link value="proxy" outcome="/console/jsf/proxy.xhtml" disabled="#{!logBean.loggedIn}" />
+								<h:link styleClass="navi" value="webservices" outcome="/console/jsf/webservices.xhtml" disabled="#{!logBean.loggedIn}" />
+								<h:link styleClass="navi" value="render" outcome="/console/jsf/render.xhtml" disabled="#{!logBean.loggedIn}" />
+								<h:link styleClass="navi" value="featureStore" outcome="/console/jsf/featureStore.xhtml" disabled="#{!logBean.loggedIn}" />
+				                <h:link styleClass="navi" value="metadataStore" outcome="/console/jsf/metadataStore.xhtml" disabled="#{!logBean.loggedIn}" />				
+								<h:link styleClass="navi" value="observationStores" outcome="/console/jsf/observationStores.xhtml" disabled="#{!logBean.loggedIn}" />
+								<h:link styleClass="navi" value="jdbc" outcome="/console/jsf/jdbc.xhtml" disabled="#{!logBean.loggedIn}" />
+                                <h:link styleClass="navi" value="proxy" outcome="/console/jsf/proxy.xhtml" disabled="#{!logBean.loggedIn}" />
 								<br/>
-								<h:link outcome="/console/client/client.xhtml" target="_blank" value="#{labels.link_genericClient}" />
-								<a href="console/wms/wms.html" target="_blank">OpenLayers WMS client</a>
+								<h:link styleClass="naviExtern" outcome="/console/client/client.xhtml" target="_blank" value="#{labels.link_genericClient}" />
+								<a class="naviExtern" href="console/wms/wms.html" target="_blank" >OpenLayers WMS client</a>
 								<!-- h:link outcome="/console/wms/wms.html" target="_blank" value="#{labels.link_wmsClient}" /-->
 								<br/><br/>
 								<dg:externalLink styleClass="linkWiki" target="_blank" href="http://wiki.deegree.org" title="#{labels.link_wiki}" />

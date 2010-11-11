@@ -15,24 +15,23 @@
 		</h:panelGroup>
 		<h:panelGroup rendered="#{logBean.loggedIn}">
 			<fieldset><legend><h:outputText
-				value="#{labels.webservices_title}" /></legend> <h:form>
+				styleClass="titel" value="#{labels.webservices_title}" /></legend> <h:form>
 				<table style="font-size: small" border="0">
+					<tr><td /></tr>
+					<tr><td /></tr>
 					<ui:repeat value="#{configManager.serviceManager.configs}"
 						var="config">
 						<tr align="center">
-							<td><h:commandButton styleClass="buttonDeactivate"
+							<td><h:commandButton styleClass="buttonActivate"
 								rendered="#{!config.deactivated}"
 								value="#{labels.webservices_deactivate}"
 								action="#{config.deactivate}" /> <h:commandButton
-								styleClass="buttonActivate" rendered="#{config.deactivated}"
+								styleClass="buttonDeactivate" rendered="#{config.deactivated}"
 								value="#{labels.webservices_activate}"
 								action="#{config.activate}" /></td>
-							<td><h:outputFormat styleClass="StatusDeactivated" rendered="#{config.deactivated}" value="#{labels.webservices_id}">
+							<td><h:outputFormat styleClass="StatusDeactivated" value="#{labels.webservices_id}">
 								<f:param value="#{config.id}" />
-							</h:outputFormat><h:outputFormat styleClass="StatusActivated" rendered="#{!config.deactivated}" value="#{labels.webservices_id}">
-								<f:param value="#{config.id}" />
-							</h:outputFormat></td>
-							<td><h:commandButton styleClass="buttonEdit"
+							</h:outputFormat></td><td><h:commandButton styleClass="buttonEdit"
 								value="#{labels.webservices_edit}" action="#{config.edit}" /></td>
 							<td><h:panelGroup rendered="#{config.active}">
 								<dg:externalLink target="_blank"

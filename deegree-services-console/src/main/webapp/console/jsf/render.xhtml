@@ -9,8 +9,10 @@
 							<ui:include src="accessForbidden.xhtml" />
 						</h:panelGroup>
 						<h:panelGroup rendered="#{logBean.loggedIn}">
-								<fieldset><legend><h:outputText value="#{labels.render_title}" /></legend> <h:form>
+								<fieldset><legend><h:outputText styleClass="titel" value="#{labels.render_title}" /></legend> <h:form>
 												<table border="0">
+					<tr><td /></tr>
+					<tr><td /></tr>
 																<ui:repeat value="#{configManager.styleManager.configs}" var="config">
 																				<tr>
 																								<td><h:outputFormat value="#{labels.render_id}">

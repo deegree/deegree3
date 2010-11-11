@@ -14,9 +14,11 @@
 			<ui:include src="accessForbidden.xhtml" />
 		</h:panelGroup>
 		<h:panelGroup rendered="#{logBean.loggedIn}">
-			<fieldset><legend><h:outputText
+			<fieldset><legend><h:outputText styleClass="titel"
 				value="#{labels.featureStores_title}" /></legend> <h:form>
 				<table style="font-size: small" border="0">
+					<tr><td /></tr>
+					<tr><td /></tr>
 					<ui:repeat value="#{configManager.fsManager.configs}" var="config">
 						<tr align="left">
 							<td><h:commandButton styleClass="buttonActivate"
