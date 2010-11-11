@@ -79,4 +79,10 @@ public class GMLObjectPropertyType extends AbstractPropertyType {
     public ValueRepresentation getAllowedRepresentation() {
         return representation;
     }
+    
+    @Override
+    public String toString() {
+        String s = "- generic GML object property type: '" + name + "', minOccurs=" + minOccurs + ", maxOccurs=" + maxOccurs;
+        return s;
+    }
 }
