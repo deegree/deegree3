@@ -46,7 +46,6 @@ import static org.deegree.commons.xml.CommonNamespaces.ISO_2005_GTS_NS;
 import static org.deegree.commons.xml.CommonNamespaces.XLNNS;
 import static org.deegree.commons.xml.CommonNamespaces.XSNS;
 import static org.deegree.feature.types.property.ValueRepresentation.BOTH;
-import static org.deegree.feature.types.property.ValueRepresentation.REMOTE;
 
 import java.io.StringReader;
 import java.util.ArrayList;
@@ -77,6 +76,7 @@ import org.deegree.commons.xml.XPath;
 import org.deegree.commons.xml.schema.XMLSchemaInfoSet;
 import org.deegree.feature.types.property.FeaturePropertyType;
 import org.deegree.feature.types.property.GMLObjectPropertyType;
+import org.deegree.feature.types.property.GenericGMLObjectPropertyType;
 import org.deegree.feature.types.property.GeometryPropertyType;
 import org.deegree.feature.types.property.PropertyType;
 import org.deegree.feature.types.property.ValueRepresentation;
@@ -536,8 +536,9 @@ public class GMLSchemaInfoSet extends XMLSchemaInfoSet {
         }
         if ( pt == null ) {
             if ( allowsXLink( (XSComplexTypeDefinition) elDecl.getTypeDefinition() ) ) {
-                pt = new GMLObjectPropertyType( ptName, minOccurs, maxOccurs, elDecl.getAbstract(),
-                                                elDecl.getNillable(), ptSubstitutions, REMOTE );
+                // TODO actually determine allowed value representations
+                pt = new GenericGMLObjectPropertyType( ptName, minOccurs, maxOccurs, elDecl.getAbstract(),
+                                                       elDecl.getNillable(), ptSubstitutions, BOTH, typeDef );
             }
         }
         return pt;
