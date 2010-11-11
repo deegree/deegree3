@@ -54,8 +54,11 @@ import org.deegree.commons.utils.ConfigManager;
 import org.deegree.commons.utils.Pair;
 import org.deegree.commons.utils.kvp.KVPUtils;
 import org.deegree.cs.CRS;
+import org.deegree.cs.exceptions.TransformationException;
+import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryFactory;
+import org.deegree.geometry.GeometryTransformer;
 import org.slf4j.Logger;
 
 /**
@@ -79,6 +82,8 @@ public class FrontControllerStats {
     private static double maxResponseTime;
 
     private static Envelope bbox;
+
+    private static GeometryTransformer trans;
 
     private static final GeometryFactory fac = new GeometryFactory();
 
@@ -128,9 +133,15 @@ public class FrontControllerStats {
                     double[] ds = splitAsDoubles( map.get( "BBOX" ), "," );
                     Envelope newBox = fac.createEnvelope( ds[0], ds[1], ds[2], ds[3], new CRS( map.get( "SRS" ) ) );
                     if ( bbox != null ) {
-                        bbox.merge( newBox );
+                        bbox.merge( trans.transform( newBox ) );
                     }
                 } catch ( UnsupportedEncodingException e ) {
+                    LOG.trace( "Stack trace:", e );
+                } catch ( IllegalArgumentException e ) {
+                    LOG.trace( "Stack trace:", e );
+                } catch ( TransformationException e ) {
+                    LOG.trace( "Stack trace:", e );
+                } catch ( UnknownCRSException e ) {
                     LOG.trace( "Stack trace:", e );
                 }
             }
@@ -275,10 +286,17 @@ public class FrontControllerStats {
                     Envelope newBox = fac.createEnvelope( ds[0], ds[1], ds[2], ds[3], new CRS( map.get( "SRS" ) ) );
                     if ( bbox == null ) {
                         bbox = newBox;
+                        trans = new GeometryTransformer( bbox.getCoordinateSystem().getWrappedCRS() );
                     } else {
-                        bbox.merge( newBox );
+                        bbox.merge( trans.transform( newBox ) );
                     }
                 } catch ( UnsupportedEncodingException e ) {
+                    LOG.trace( "Stack trace:", e );
+                } catch ( IllegalArgumentException e ) {
+                    LOG.trace( "Stack trace:", e );
+                } catch ( UnknownCRSException e ) {
+                    LOG.trace( "Stack trace:", e );
+                } catch ( TransformationException e ) {
                     LOG.trace( "Stack trace:", e );
                 }
             }
