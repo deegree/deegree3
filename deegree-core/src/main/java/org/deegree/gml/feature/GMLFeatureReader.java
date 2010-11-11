@@ -46,6 +46,8 @@ import static org.apache.xerces.xs.XSComplexTypeDefinition.CONTENTTYPE_SIMPLE;
 import static org.apache.xerces.xs.XSTypeDefinition.SIMPLE_TYPE;
 import static org.deegree.commons.xml.CommonNamespaces.XLNNS;
 import static org.deegree.commons.xml.CommonNamespaces.XSINS;
+import static org.deegree.commons.xml.stax.StAXParsingHelper.nextElement;
+import static org.deegree.commons.xml.stax.StAXParsingHelper.skipElement;
 import static org.deegree.gml.feature.StandardGMLFeatureProps.PT_BOUNDED_BY_GML31;
 import static org.deegree.gml.feature.StandardGMLFeatureProps.PT_BOUNDED_BY_GML32;
 import static org.deegree.gml.feature.schema.DefaultGMLTypes.GML311_FEATURECOLLECTION;
@@ -539,10 +541,11 @@ public class GMLFeatureReader extends XMLAdapter {
             StAXParsingHelper.skipElement( xmlStream );
         } else {
             // inline object
-            if ( xmlStream.nextTag() == START_ELEMENT ) {
+            if ( nextElement( xmlStream ) == START_ELEMENT ) {
                 property = new GenericProperty( propDecl, propName, null, isNilled );
-                LOG.warn( "Parsing of inlined generic GML object properties is not implemented. Omitting value." );
-                xmlStream.skipElement();
+                LOG.warn( "Parsing of inlined generic GML object properties is not implemented. Omitting value of property '"
+                          + propName + "'." );
+                skipElement( xmlStream );
             } else {
                 // yes, empty object property elements are actually valid
                 property = new GenericProperty( propDecl, propName, null, isNilled );
