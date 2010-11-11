@@ -49,6 +49,7 @@ import static org.deegree.protocol.csw.CSWConstants.VERSION_202;
 
 import java.io.BufferedInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.URLConnection;
@@ -96,12 +97,7 @@ public class DescribeRecordHandler {
 
     private static final Logger LOG = LoggerFactory.getLogger( DescribeRecordHandler.class );
 
-    // private static Map<QName, MetadataStore> requestedTypeNames;
-
-    private CSWService service;
-
-    private static final String ISO = DescribeRecordHandler.class.getResource(
-                                                                               "/org/deegree/services/csw/exporthandling/iso.xml" ).toString();
+    private final CSWService service;
 
     /**
      * Creates a new {@link DescribeRecordHandler} instance that uses the given service to lookup the
@@ -186,17 +182,19 @@ public class DescribeRecordHandler {
                                                                                 + CSW_202_DISCOVERY_SCHEMA );
 
         URLConnection urlConn = null;
-        String baseURL = "http://schemas.opengis.net/iso/19139/20060504/gmd/";
         try {
             if ( typeNames.length == 0 ) {
                 urlConn = new URL( CSWConstants.CSW_202_RECORD ).openConnection();
                 exportSchemaFile( writer, new QName( DC_NS, DC_LOCAL_PART, DC_PREFIX ), urlConn );
-                urlConn = new URL( "http://www.isotc211.org/2005/gmd/gmd.xsd" ).openConnection();
-                exportSchemaFile( writer, new QName( GMD_NS, GMD_LOCAL_PART, GMD_PREFIX ), urlConn );
+                InputStream in = DescribeRecordHandler.class.getResourceAsStream( "iso_data.xml" );
+                InputStreamReader isr = new InputStreamReader( in, "UTF-8" );
+                exportSchemaComponent( writer, new QName( GMD_NS, GMD_LOCAL_PART, GMD_PREFIX ), isr );
+                in = DescribeRecordHandler.class.getResourceAsStream( "iso_service.xml" );
+                isr = new InputStreamReader( in, "UTF-8" );
+                exportSchemaComponent( writer, new QName( CSWConstants.SRV_NS, CSWConstants.SRV_LOCAL_PART,
+                                                          CSWConstants.SRV_PREFIX ), isr );
             }
             for ( QName typeName : typeNames ) {
-
-                // InputStream in = null;
 
                 /*
                  * if typeName is csw:Record
@@ -204,6 +202,7 @@ public class DescribeRecordHandler {
                 if ( OutputSchema.determineByTypeName( typeName ) == OutputSchema.DC ) {
 
                     urlConn = new URL( CSW_202_RECORD ).openConnection();
+                    exportSchemaFile( writer, typeName, urlConn );
 
                 }
 
@@ -211,11 +210,13 @@ public class DescribeRecordHandler {
                  * if typeName is gmd:MD_Metadata
                  */
                 else if ( OutputSchema.determineByTypeName( typeName ) == OutputSchema.ISO_19115 ) {
-
-                    urlConn = new URL( CSWConstants.GMD_NS + "/gmd.xsd" ).openConnection();
-                    // in = new FileInputStream( ISO );
-                    // writer.writeAttribute( "parentSchema", "http://www.isotc211.org/2005/gmd/gmd.xsd" );
-
+                    InputStream in = DescribeRecordHandler.class.getResourceAsStream( "iso_data.xml" );
+                    InputStreamReader isr = new InputStreamReader( in, "UTF-8" );
+                    exportSchemaComponent( writer, new QName( GMD_NS, GMD_LOCAL_PART, GMD_PREFIX ), isr );
+                    in = DescribeRecordHandler.class.getResourceAsStream( "iso_service.xml" );
+                    isr = new InputStreamReader( in, "UTF-8" );
+                    exportSchemaComponent( writer, new QName( CSWConstants.SRV_NS, CSWConstants.SRV_LOCAL_PART,
+                                                              CSWConstants.SRV_PREFIX ), isr );
                 }
                 /*
                  * if the typeName is no registered in this recordprofile
@@ -225,7 +226,7 @@ public class DescribeRecordHandler {
                     LOG.debug( errorMessage );
                     throw new InvalidParameterValueException( errorMessage );
                 }
-                exportSchemaFile( writer, typeName, urlConn );
+
             }
         } catch ( IOException e ) {
 
