@@ -227,6 +227,13 @@ public class Capabilities130XMLAdapter extends XMLAdapter {
                     if ( crs.getName().startsWith( "AUTO" ) ) {
                         continue;
                     }
+                    try {
+                        crs.getWrappedCRS();
+                    } catch ( UnknownCRSException e ) {
+                        LOG.warn( "Cannot find: {}", e.getLocalizedMessage() );
+                        LOG.trace( "Stack trace:", e );
+                        continue;
+                    }
                     Envelope envelope;
                     CoordinateSystem srs = crs.getWrappedCRS();
                     try {
@@ -262,7 +269,13 @@ public class Capabilities130XMLAdapter extends XMLAdapter {
                     }
 
                     // check for srs with northing as first axis
-                    srs = WMSController130.getCRS( crs.getName() ).getWrappedCRS();
+                    try {
+                        srs = WMSController130.getCRS( crs.getName() ).getWrappedCRS();
+                    } catch ( UnknownCRSException e ) {
+                        // may fail if CRS is determined eg. from .prj
+                        LOG.warn( "Cannot find: {}", e.getLocalizedMessage() );
+                        LOG.trace( "Stack trace:", e );
+                    }
                     switch ( srs.getAxis()[0].getOrientation() ) {
                     case Axis.AO_NORTH:
                         writer.writeAttribute( "miny", Double.toString( min.get0() ) );

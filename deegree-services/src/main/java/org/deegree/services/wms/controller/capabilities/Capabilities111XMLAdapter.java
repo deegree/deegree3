@@ -204,6 +204,13 @@ public class Capabilities111XMLAdapter extends XMLAdapter {
                     if ( crs.getName().startsWith( "AUTO" ) ) {
                         continue;
                     }
+                    try {
+                        crs.getWrappedCRS();
+                    } catch ( UnknownCRSException e ) {
+                        LOG.warn( "Cannot find: {}", e.getLocalizedMessage() );
+                        LOG.trace( "Stack trace:", e );
+                        continue;
+                    }
                     Envelope envelope;
                     try {
                         if ( layerEnv.getCoordinateSystem() == null ) {
