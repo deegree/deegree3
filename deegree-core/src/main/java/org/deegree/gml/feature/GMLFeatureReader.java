@@ -751,7 +751,12 @@ public class GMLFeatureReader extends XMLAdapter {
                 }
                 // TODO maybe we should really add Property to the TypedObjectNode hierarchy
                 List<TypedObjectNode> children = Collections.singletonList( prop.getValue() );
-                node = new GenericXMLElement( prop.getName(), xsdValueType, null, children );
+                Map<QName, PrimitiveValue> attrs = null;
+                if ( isNilled ) {
+                    attrs = new HashMap<QName, PrimitiveValue>();
+                    attrs.put( new QName( XSINS, "nil" ), new PrimitiveValue( true ) );
+                }
+                node = new GenericXMLElement( prop.getName(), xsdValueType, attrs, children );
             } else {
                 node = parseGenericXMLElement( xmlStream, (XSComplexTypeDefinition) xsdValueType, crs );
             }
@@ -770,6 +775,8 @@ public class GMLFeatureReader extends XMLAdapter {
     private GenericXMLElement parseGenericXMLElement( XMLStreamReaderWrapper xmlStream,
                                                       XSComplexTypeDefinition xsdValueType, CRS crs )
                             throws NoSuchElementException, XMLStreamException, XMLParsingException, UnknownCRSException {
+
+        LOG.debug( "Parsing generic XML element " + xmlStream.getName() );
 
         Map<QName, PrimitiveValue> attrs = parseAttributes( xmlStream, xsdValueType );
         List<TypedObjectNode> children = new ArrayList<TypedObjectNode>();
@@ -835,6 +842,9 @@ public class GMLFeatureReader extends XMLAdapter {
             break;
         }
         case CONTENTTYPE_EMPTY: {
+            if ( StAXParsingHelper.nextElement( xmlStream ) != END_ELEMENT ) {
+                throw new XMLParsingException( xmlStream, "Empty element type doesn't allow content." );
+            }
             break;
         }
         }
