@@ -16,7 +16,7 @@ body {
 	text-align:justify;
 	text-decoration:none;
 	top:0;
-	width:1000px;
+	width:850px;
 	z-index:1;
 }
 
@@ -45,19 +45,15 @@ body {
 }
 
 #center {
-	background-image: url("images/bg.png");
 	margin: 10px 0px;
-	float: left;
+	float: right;
 	width: 600px;
 	font-size: small;
 	text-align: left;
 }
 
 
-#right {
-	float: right;
-	width: 20%;
-}
+
 
 #footer {
 	border-top: 1px solid black;
@@ -172,14 +168,14 @@ body {
 
 .buttonSave {
 	color:#409300 ;
-	font:100% Verdana,Arial,Helvetica,sans-serif;
+	font:90% Verdana,Arial,Helvetica,sans-serif;
 	background-color: white;
 	border: 1px;
 }
 
 .buttonCancel {
 	color:#FCB32B;
-	font:100% Verdana,Arial,Helvetica,sans-serif;
+	font:90% Verdana,Arial,Helvetica,sans-serif;
 	background-color: white;
 	border: 1px;
 }
@@ -196,6 +192,10 @@ body {
 	background-color: white;
 }
 
+.schema {
+	color: #7279D8;
+	font:90% Verdana,Arial,Helvetica,sans-serif;
+}
 
 .label {
 	color: grey;
