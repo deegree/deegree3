@@ -53,8 +53,7 @@
                                 <h:link styleClass="navi" value="proxy" outcome="/console/jsf/proxy.xhtml" disabled="#{!logBean.loggedIn}" />
 								<br/>
 								<h:link styleClass="naviExtern" outcome="/console/client/client.xhtml" target="_blank" value="#{labels.link_genericClient}" />
-								<!-- a class="naviExtern" href="console/wms/wms.html" target="_blank" >OpenLayers WMS client</a-->
-								<h:outputLink value="#{facesContext.externalContext.requestContextPath}/console/wms/wms.html" target="_blank">
+								<h:outputLink styleClass="naviExtern" value="#{facesContext.externalContext.requestContextPath}/console/wms/wms.html" target="_blank">
                                     <h:outputText value="#{labels.link_wmsClient}"/>
                                 </h:outputLink>
 								<br/><br/>
