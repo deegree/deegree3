@@ -21,8 +21,15 @@
 				<div id="container">
 
 				<div id="header">
-				<div id="logo"><pre><h:outputText value="#{applicationBean.logo}" /></pre> <h:outputText
-								value="...has been successfully installed on this server." /></div>
+				<div id="logo"><pre><h:outputText value="#{applicationBean.logo}" /></pre>
+                <h:form>
+                <h:commandButton value="#{labels.apply_changes}" styleClass="button" action="#{configManager.applyChanges}" onclick="show();" rendered="#{configManager.pendingChanges}"/>
+                <h:commandButton value="#{labels.apply_changes}" styleClass="buttongray" action="#{configManager.applyChanges}" onclick="show();" rendered="#{!configManager.pendingChanges}"/>
+                <h:outputText value="#{configManager.lastMessage}" styleClass="attention" rendered="#{configManager.pendingChanges}"/>
+                <h:outputText value="#{configManager.lastMessage}" styleClass="noattention" rendered="#{!configManager.pendingChanges}"/>
+                </h:form>
+
+                </div>
 				<div id="login"><h:panelGroup rendered="#{!logBean.loggedIn}">
 								<ui:include src="/console/jsf/login.xhtml" />
 				</h:panelGroup> <h:panelGroup rendered="#{logBean.loggedIn}">
@@ -57,16 +64,7 @@
 				</h:panelGroup></div>
 				
 				<div id="right"><h:panelGrid columns="1">
-				</h:panelGrid> <h:panelGroup class="margin-top: 10px;">
-								<h:form id="reloadForm">
-									<h:panelGrid >
-									    <h:commandButton value="#{labels.apply_changes}" styleClass="button" action="#{configManager.applyChanges}" onclick="show();" rendered="#{configManager.pendingChanges}"/>
-									    <h:commandButton value="#{labels.apply_changes}" styleClass="button" action="#{configManager.applyChanges}" onclick="show();" rendered="#{!configManager.pendingChanges}"/>
-										<h:outputText value="#{configManager.lastMessage}" styleClass="attention" rendered="#{configManager.pendingChanges}"/>
-										<h:outputText value="#{configManager.lastMessage}" rendered="#{!configManager.pendingChanges}"/>
-									</h:panelGrid>
-								</h:form>
-				</h:panelGroup></div>
+				</h:panelGrid> </div>
 				
 				<div class="clear" />
 				</div>

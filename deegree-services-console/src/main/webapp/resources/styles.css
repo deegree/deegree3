@@ -106,6 +106,13 @@ body {
 	border: 1px;
 	}
 
+.buttongray {
+	color: gray;
+	font:80% Verdana,Arial,Helvetica,sans-serif;
+	background-color: white;
+	border: 1px;
+	}
+
 .buttonActivate {
 	color:#409300 ;
 	font:80% Verdana,Arial,Helvetica,sans-serif;
@@ -244,6 +251,11 @@ a {
 .attention {
 	font:70% Verdana,Arial,Helvetica,sans-serif;
 	color: #FA6666;
+}
+
+.noattention {
+	font:70% Verdana,Arial,Helvetica,sans-serif;
+	color: gray;
 }
 
 .collapsiblePanel {
