@@ -14,7 +14,7 @@
       <ui:include src="accessForbidden.xhtml" />
     </h:panelGroup>
     <h:panelGroup rendered="#{logBean.loggedIn}">
-      <fieldset><legend><h:outputText
+      <fieldset><legend><h:outputText styleClass="titel"
         value="#{labels.metadataStores_title}" /></legend> <h:form>
         <table style="font-size: small" border="0">
 					<tr><td /></tr>
@@ -22,25 +22,26 @@
           <ui:repeat value="#{configManager.msManager.configs}"
             var="config">
             <tr align="left">
-              <td><h:outputFormat
+			  <td><h:commandButton styleClass="buttonActivate"
+                rendered="#{!config.deactivated}"
+                value="#{labels.metadataStores_deactivate}"
+                action="#{config.deactivate}" /> 
+                <h:commandButton styleClass="buttonDeactivate"
+                rendered="#{config.deactivated}"
+                value="#{labels.metadataStores_activate}"
+                action="#{config.activate}" /></td>            
+              <td><h:outputFormat styleClass="StatusDeactivated"
                 value="#{labels.metadataStores_id}">
                 <f:param value="#{config.id}" />
               </h:outputFormat></td>
-              <td><h:outputText value="#{config.status}" /></td>
-              <td><h:commandButton
-                rendered="#{!config.deactivated}"
-                value="#{labels.metadataStores_deactivate}"
-                action="#{config.deactivate}" /> <h:commandButton
-                rendered="#{config.deactivated}"
-                value="#{labels.metadataStores_activate}"
-                action="#{config.activate}" /></td>
-              <td><h:commandButton
+              <td><h:commandButton styleClass="buttonEdit"
                 value="#{labels.metadataStores_edit}"
                 action="#{config.edit}" /></td>
-              <td><h:commandButton
+              <td><h:commandButton styleClass="buttonDelete"
                 value="#{labels.metadataStores_delete}"
                 action="#{config.delete}" /></td>
-              <td><h:commandButton rendered="#{config.active}"
+              <td><h:commandButton styleClass="buttonInfo" 
+                rendered="#{config.active}"
                 value="#{labels.metadataStores_info}"
                 action="#{config.showInfo}" /></td>
               <td><h:commandButton
@@ -52,14 +53,14 @@
         </table>
         <br />
       </h:form> <h:form>
-        <div><h:outputLabel for="newMSBt"
-          value="#{labels.metadataStores_name}" /> <h:inputText
+        <div><h:outputLabel styleClass="label" for="newMSBt"
+          value="#{labels.metadataStores_name}" /> <h:inputText styleClass="liste"
           id="newMSBt" value="#{newmetadataStoreConfig.id}" size="16"
           required="true"
-          requiredMessage="#{labels.metadataStores_name_req}" /> <h:selectOneMenu
+          requiredMessage="#{labels.metadataStores_name_req}" /> <h:selectOneMenu styleClass="liste"
           value="#{newmetadataStoreConfig.type}">
           <f:selectItems value="#{configManager.msManager.msTypes}" />
-        </h:selectOneMenu> <h:commandButton value="#{labels.metadataStores_new}"
+        </h:selectOneMenu> <h:commandButton styleClass="buttonCreateNew" value="#{labels.metadataStores_new}"
           action="#{newmetadataStoreConfig.create}" /></div>
         <h:message for="newMSBt" errorClass="consoleError"
           style="margin-top: 10px;" />

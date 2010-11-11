@@ -14,17 +14,17 @@
 					<tr><td /></tr>
 																<ui:repeat value="#{configManager.osManager.configs}" var="config">
 																				<tr align="center">
+																				<td><h:commandButton styleClass="buttonActivate" rendered="#{!config.deactivated}"
+																												value="#{labels.obsStores_deactivate}" action="#{config.deactivate}" /> 
+																												<h:commandButton styleClass="buttonDeactivate" 
+																												rendered="#{config.deactivated}" value="#{labels.obsStores_activate}"
+																												action="#{config.activate}" /></td>
 																								<td><h:outputFormat value="#{labels.obsStores_id}">
 																												<f:param value="#{config.id}" />
 																								</h:outputFormat></td>
-																								<td><h:outputText value="#{config.status}" /></td>
-																								<td><h:commandButton rendered="#{!config.deactivated}"
-																												value="#{labels.obsStores_deactivate}" action="#{config.deactivate}" /> <h:commandButton
-																												rendered="#{config.deactivated}" value="#{labels.obsStores_activate}"
-																												action="#{config.activate}" /></td>
-																								<td><h:commandButton value="#{labels.obsStores_edit}" action="#{config.edit}" /></td>
-																								<td><h:commandButton value="#{labels.obsStores_delete}" action="#{config.delete}" /></td>
-																								<td><h:commandButton rendered="#{config.active}" value="#{labels.obsStores_info}"
+																								<td><h:commandButton styleClass="buttonEdit" value="#{labels.obsStores_edit}" action="#{config.edit}" /></td>
+																								<td><h:commandButton styleClass="buttonDelete" value="#{labels.obsStores_delete}" action="#{config.delete}" /></td>
+																								<td><h:commandButton styleClass="buttonInfo" rendered="#{config.active}" value="#{labels.obsStores_info}"
 																												action="#{config.showInfo}" /></td>
 																								<td><h:commandButton rendered="#{config.active}" value="#{labels.obsStores_setup}"
 																												action="#{config.createTables}" /></td>
