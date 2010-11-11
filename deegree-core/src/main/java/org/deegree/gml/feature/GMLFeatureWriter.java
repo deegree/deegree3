@@ -77,6 +77,7 @@ import org.deegree.feature.types.property.CodePropertyType;
 import org.deegree.feature.types.property.CustomPropertyType;
 import org.deegree.feature.types.property.EnvelopePropertyType;
 import org.deegree.feature.types.property.FeaturePropertyType;
+import org.deegree.feature.types.property.GenericGMLObjectPropertyType;
 import org.deegree.feature.types.property.GeometryPropertyType;
 import org.deegree.feature.types.property.LengthPropertyType;
 import org.deegree.feature.types.property.MeasurePropertyType;
@@ -569,6 +570,15 @@ public class GMLFeatureWriter {
                 // TODO make sure that only attributes are exported and nothing else
                 export( property.getValue(), currentLevel, maxInlineLevels );
                 writer.writeEndElement();
+            } else {
+                writer.writeStartElement( propName.getNamespaceURI(), propName.getLocalPart() );
+                export( property.getValue(), currentLevel, maxInlineLevels );
+                writer.writeEndElement();
+            }
+        } else if ( propertyType instanceof GenericGMLObjectPropertyType ) {
+            if ( property.isNilled() ) {
+                writeEmptyElementWithNS( propName.getNamespaceURI(), propName.getLocalPart() );
+                writer.writeAttribute( XSINS, "nil", "true" );
             } else {
                 writer.writeStartElement( propName.getNamespaceURI(), propName.getLocalPart() );
                 export( property.getValue(), currentLevel, maxInlineLevels );
