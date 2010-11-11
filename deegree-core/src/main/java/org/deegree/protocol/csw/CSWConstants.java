@@ -97,6 +97,12 @@ public final class CSWConstants {
     public static final String GMD_NS = "http://www.isotc211.org/2005/gmd";
 
     /**
+     * Namespace for elements from the ISO AP 1.0 specification <br>
+     * Namespace="http://www.isotc211.org/2005/srv"
+     * */
+    public static final String SRV_NS = "http://www.isotc211.org/2005/srv";
+
+    /**
      * Location of the schema <br>
      * "http://schemas.opengis.net/csw/2.0.2/CSW-discovery.xsd"
      */
@@ -123,6 +129,11 @@ public final class CSWConstants {
      */
     public static final String GMD_PREFIX = "gmd";
 
+    /**
+     * Common namespace prefix for elements from the ISO AP specification for the types "Service"
+     */
+    public static final String SRV_PREFIX = "srv";
+
     /** Common namespace prefix for elements from the ISO AP specification */
     public static final String APISO_PREFIX = "apiso";
 
@@ -142,6 +153,12 @@ public final class CSWConstants {
      * LOCAL_PART = "MD_Metadata"
      */
     public static final String GMD_LOCAL_PART = "MD_Metadata";
+
+    /**
+     * Common local part of a qualified name for elements from the ISO AP specification <br>
+     * LOCAL_PART = "Service"
+     */
+    public static final String SRV_LOCAL_PART = "Service";
 
     /** CSW protocol version 2.0.2 */
     public static final Version VERSION_202 = Version.parseVersion( "2.0.2" );
