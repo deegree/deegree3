@@ -545,12 +545,17 @@ public class GMLFeatureReader extends XMLAdapter {
                 property = new GenericProperty( propDecl, propName, null, isNilled );
                 LOG.warn( "Parsing of inlined generic GML object properties is not implemented. Omitting value of property '"
                           + propName + "'." );
-                skipElement( xmlStream );
+                // skip to end of contained element
+                while ( !xmlStream.isEndElement() ) {
+                    skipElement( xmlStream );
+                    StAXParsingHelper.nextElement( xmlStream );
+                }
             } else {
                 // yes, empty object property elements are actually valid
                 property = new GenericProperty( propDecl, propName, null, isNilled );
             }
         }
+        xmlStream.require( END_ELEMENT, propName.getNamespaceURI(), propName.getLocalPart() );
         return property;
     }
 
@@ -729,9 +734,17 @@ public class GMLFeatureReader extends XMLAdapter {
         return new GenericProperty( propDecl, propName, value, isNilled );
     }
 
+    /**
+     * <ul>
+     * <li>Precondition: cursor must point at <code>START_ELEMENT</code> event</li>
+     * <li>Postcondition: cursor points at the corresponding <code>END_ELEMENT</code> event</li>
+     * </ul>
+     */
     private TypedObjectNode parseGenericXMLElement( XMLStreamReaderWrapper xmlStream, XSElementDeclaration elDecl,
                                                     CRS crs )
                             throws NoSuchElementException, XMLStreamException, XMLParsingException, UnknownCRSException {
+
+        QName startElName = xmlStream.getName();
 
         TypedObjectNode node = null;
         XSTypeDefinition xsdValueType = elDecl.getTypeDefinition();
@@ -764,6 +777,7 @@ public class GMLFeatureReader extends XMLAdapter {
                 node = parseGenericXMLElement( xmlStream, (XSComplexTypeDefinition) xsdValueType, crs );
             }
         }
+        xmlStream.require( END_ELEMENT, startElName.getNamespaceURI(), startElName.getLocalPart() );
         return node;
     }
 
