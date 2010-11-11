@@ -55,13 +55,13 @@
       </h:form> <h:form>
         <div><h:outputLabel styleClass="label" for="newMSBt"
           value="#{labels.metadataStores_name}" /> <h:inputText styleClass="liste"
-          id="newMSBt" value="#{newmetadataStoreConfig.id}" size="16"
+          id="newMSBt" value="#{newMetadataStoreConfig.id}" size="16"
           required="true"
           requiredMessage="#{labels.metadataStores_name_req}" /> <h:selectOneMenu styleClass="liste"
-          value="#{newmetadataStoreConfig.type}">
+          value="#{newMetadataStoreConfig.type}">
           <f:selectItems value="#{configManager.msManager.msTypes}" />
         </h:selectOneMenu> <h:commandButton styleClass="buttonCreateNew" value="#{labels.metadataStores_new}"
-          action="#{newmetadataStoreConfig.create}" /></div>
+          action="#{newMetadataStoreConfig.create}" /></div>
         <h:message for="newMSBt" errorClass="consoleError"
           style="margin-top: 10px;" />
       </h:form></fieldset>
