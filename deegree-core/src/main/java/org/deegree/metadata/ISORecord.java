@@ -64,7 +64,6 @@ import org.deegree.metadata.persistence.MetadataStoreException;
 import org.deegree.metadata.persistence.iso.parsing.ISOQPParsing;
 import org.deegree.metadata.persistence.iso.parsing.ParsedProfileElement;
 import org.deegree.metadata.persistence.iso19115.jaxb.ISOMetadataStoreConfig.AnyText;
-import org.deegree.metadata.persistence.iso19115.jaxb.ISOMetadataStoreConfig.AnyText.Custom;
 import org.deegree.metadata.persistence.types.BoundingBox;
 import org.deegree.metadata.persistence.types.Format;
 import org.deegree.metadata.persistence.types.Keyword;
@@ -272,12 +271,12 @@ public class ISORecord implements MetadataRecord {
             anyTextString = sb.toString();
 
         } else if ( anyText.getCustom() != null ) {
-            List<Custom.XPath> xpathList = anyText.getCustom().getXPath();
+            List<String> xpathList = anyText.getCustom().getXPath();
             if ( xpathList != null && !xpathList.isEmpty() ) {
                 XPath[] path = new XPath[xpathList.size()];
                 int counter = 0;
-                for ( Custom.XPath x : xpathList ) {
-                    path[counter++] = new XPath( x.getValue(), ns );
+                for ( String x : xpathList ) {
+                    path[counter++] = new XPath( x, ns );
                 }
                 anyTextString = generateAnyText( path ).toString();
             }

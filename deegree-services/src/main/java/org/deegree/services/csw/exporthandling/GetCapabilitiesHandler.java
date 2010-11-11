@@ -35,17 +35,28 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.services.csw.exporthandling;
 
+import static javax.xml.XMLConstants.DEFAULT_NS_PREFIX;
+import static javax.xml.XMLConstants.NULL_NS_URI;
+import static javax.xml.stream.XMLStreamConstants.CDATA;
+import static javax.xml.stream.XMLStreamConstants.CHARACTERS;
+import static javax.xml.stream.XMLStreamConstants.END_ELEMENT;
+import static javax.xml.stream.XMLStreamConstants.START_ELEMENT;
 import static org.deegree.protocol.csw.CSWConstants.CSW_202_DISCOVERY_SCHEMA;
 import static org.deegree.protocol.csw.CSWConstants.CSW_202_NS;
 import static org.deegree.protocol.csw.CSWConstants.CSW_PREFIX;
 import static org.deegree.protocol.csw.CSWConstants.VERSION_202;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
+import javax.xml.XMLConstants;
+import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
 
 import org.deegree.commons.tom.ows.Version;
@@ -55,6 +66,7 @@ import org.deegree.filter.xml.FilterCapabilitiesExporter;
 import org.deegree.protocol.csw.CSWConstants;
 import org.deegree.protocol.csw.CSWConstants.CSWRequestType;
 import org.deegree.protocol.csw.CSWConstants.Sections;
+import org.deegree.services.controller.OGCFrontController;
 import org.deegree.services.controller.ows.capabilities.OWSCapabilitiesXMLAdapter;
 import org.deegree.services.jaxb.main.DCPType;
 import org.deegree.services.jaxb.main.DeegreeServiceControllerType;
@@ -77,10 +89,6 @@ public class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
 
     private static final String OGC_PREFIX = "ogc";
 
-    private static final String ISO_NS = "http://www.isotc211.org/2005/gmd";
-
-    private static final String ISO_PREFIX = "gmd";
-
     private static LinkedList<String> parameterValues;
 
     private final boolean isTransactionEnabled;
@@ -99,6 +107,10 @@ public class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
 
     private boolean isSoap;
 
+    private boolean exportInspireExtensions;
+
+    private static List<String> additionalQueryables = new ArrayList<String>();
+
     /**
      * additional queryable properties in ISO
      */
@@ -106,7 +118,17 @@ public class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
 
     private static LinkedList<String> supportedOperations = new LinkedList<String>();
 
+    private Map<String, String> varToValue = new HashMap<String, String>();
+
     static {
+        isoQueryables.add( "Format" );
+        isoQueryables.add( "Type" );
+        isoQueryables.add( "AnyText" );
+        isoQueryables.add( "Modified" );
+        isoQueryables.add( "Identifier" );
+        isoQueryables.add( "Subject" );
+        isoQueryables.add( "Title" );
+        isoQueryables.add( "Abstract" );
         isoQueryables.add( "RevisionDate" );
         isoQueryables.add( "AlternateTitle" );
         isoQueryables.add( "CreationDate" );
@@ -123,7 +145,6 @@ public class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
         isoQueryables.add( "Denominator" );
         isoQueryables.add( "DistanceValue" );
         isoQueryables.add( "DistanceUOM" );
-        isoQueryables.add( "Denominator" );
         isoQueryables.add( "TempExtent_begin" );
         isoQueryables.add( "TempExtent_end" );
         isoQueryables.add( "ServiceType" );
@@ -133,6 +154,17 @@ public class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
         isoQueryables.add( "OperatesOnIdentifier" );
         isoQueryables.add( "OperatesOnName" );
         isoQueryables.add( "CouplingType" );
+
+        additionalQueryables.add( "AccessConstraints" );
+        additionalQueryables.add( "Classification" );
+        additionalQueryables.add( "ConditionApplyingToAccessAndUse" );
+        additionalQueryables.add( "Degree" );
+        additionalQueryables.add( "Lineage" );
+        additionalQueryables.add( "MetadataPointOfContact" );
+        additionalQueryables.add( "OtherConstraints" );
+        additionalQueryables.add( "SpecificationTitle" );
+        additionalQueryables.add( "SpecificationDate" );
+        additionalQueryables.add( "SpecificationDateType" );
 
         supportedOperations.add( CSWRequestType.GetCapabilities.name() );
         supportedOperations.add( CSWRequestType.DescribeRecord.name() );
@@ -153,6 +185,17 @@ public class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
         this.version = version;
         this.isSoap = isSoap;
         this.isTransactionEnabled = isTransactionEnabled;
+
+        // TODO fill map
+        Map<String, String> varToValue = new HashMap<String, String>();
+        String serverAddress = OGCFrontController.getHttpGetURL();
+        varToValue.put( "${SERVER_ADDRESS}", serverAddress );
+        String systemStartDate = "2010-11-16";
+        String organizationName = mainControllerConf.getServiceProvider().getProviderName();
+        List<String> emailAddresses = mainControllerConf.getServiceProvider().getServiceContact().getElectronicMailAddress();
+        if ( emailAddresses.isEmpty() ) {
+            emailAddresses.get( 0 );
+        }
     }
 
     /**
@@ -278,7 +321,7 @@ public class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
         writer.writeAttribute( "name", "IsoProfiles" );
 
         writer.writeStartElement( owsNS, "Value" );
-        writer.writeCharacters( ISO_NS );
+        writer.writeCharacters( CSWConstants.GMD_NS );
         writer.writeEndElement();// Value
 
         writer.writeEndElement();// Constraint
@@ -297,18 +340,99 @@ public class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
         writer.writeEndElement();// Constraint
 
         // additional inspire queryables
-        writer.writeStartElement( owsNS, "Constraint" );
-        writer.writeAttribute( "name", "AdditionalQueryables" );
-
-        for ( String val : new String[] { "Degree", "AccessConstraints", "OtherConstraints", "Classification",
-                                         "ConditionApplyingToAccessAndUse", "Lineage", "SpecificationTitle",
-                                         "SpecificationDate", "SpecificationDateType" } ) {
-            writeElement( writer, owsNS, "Value", val );
+        if ( exportInspireExtensions ) {
+            exportExtendedCapabilities( writer, owsNS );
         }
 
-        writer.writeEndElement();// Constraint
-
         writer.writeEndElement();// OperationsMetadata
+    }
+
+    private void exportExtendedCapabilities( XMLStreamWriter writer, String owsNS )
+                            throws XMLStreamException {
+
+        writer.writeStartElement( owsNS, "ExtendedCapabilities" );
+
+        // TODO
+        XMLStreamReader reader = null;
+        writeTemplateElement( writer, reader );
+        writer.writeEndElement();
+    }
+
+    private void writeTemplateElement( XMLStreamWriter writer, XMLStreamReader inStream )
+                            throws XMLStreamException {
+
+        if ( inStream.getEventType() != XMLStreamConstants.START_ELEMENT ) {
+            throw new XMLStreamException( "Input stream does not point to a START_ELEMENT event." );
+        }
+        int openElements = 0;
+        boolean firstRun = true;
+        while ( firstRun || openElements > 0 ) {
+            firstRun = false;
+            int eventType = inStream.getEventType();
+
+            switch ( eventType ) {
+            case CDATA: {
+                writer.writeCData( inStream.getText() );
+                break;
+            }
+            case CHARACTERS: {
+                String s = new String( inStream.getTextCharacters() );
+                // TODO optimize
+                for ( String param : varToValue.keySet() ) {
+                    String value = varToValue.get( param );
+                    s = s.replace( param, value );
+                }
+                writer.writeCharacters( s );
+                break;
+            }
+            case END_ELEMENT: {
+                writer.writeEndElement();
+                openElements--;
+                break;
+            }
+            case START_ELEMENT: {
+                if ( inStream.getNamespaceURI() == NULL_NS_URI || inStream.getPrefix() == DEFAULT_NS_PREFIX
+                     || inStream.getPrefix() == null ) {
+                    writer.writeStartElement( inStream.getLocalName() );
+                } else {
+                    if ( writer.getNamespaceContext().getPrefix( inStream.getPrefix() ) == XMLConstants.NULL_NS_URI ) {
+                        // TODO handle special cases for prefix binding, see
+                        // http://download.oracle.com/docs/cd/E17409_01/javase/6/docs/api/javax/xml/namespace/NamespaceContext.html#getNamespaceURI(java.lang.String)
+                        writer.setPrefix( inStream.getPrefix(), inStream.getNamespaceURI() );
+                    }
+                    writer.writeStartElement( inStream.getPrefix(), inStream.getLocalName(), inStream.getNamespaceURI() );
+                }
+                // copy all namespace bindings
+                for ( int i = 0; i < inStream.getNamespaceCount(); i++ ) {
+                    String nsPrefix = inStream.getNamespacePrefix( i );
+                    String nsURI = inStream.getNamespaceURI( i );
+                    writer.writeNamespace( nsPrefix, nsURI );
+                }
+
+                // copy all attributes
+                for ( int i = 0; i < inStream.getAttributeCount(); i++ ) {
+                    String localName = inStream.getAttributeLocalName( i );
+                    String nsPrefix = inStream.getAttributePrefix( i );
+                    String value = inStream.getAttributeValue( i );
+                    String nsURI = inStream.getAttributeNamespace( i );
+                    if ( nsURI == null ) {
+                        writer.writeAttribute( localName, value );
+                    } else {
+                        writer.writeAttribute( nsPrefix, nsURI, localName, value );
+                    }
+                }
+
+                openElements++;
+                break;
+            }
+            default: {
+                break;
+            }
+            }
+            if ( openElements > 0 ) {
+                inStream.next();
+            }
+        }
     }
 
     /*
@@ -536,7 +660,7 @@ public class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
         writer.writeEndElement();// Value
 
         writer.writeStartElement( owsNS, "Value" );
-        writer.writeCharacters( ISO_PREFIX + ":MD_Metadata" );
+        writer.writeCharacters( CSWConstants.GMD_PREFIX + ":MD_Metadata" );
         writer.writeEndElement();// Value
 
         // writer.writeStartElement( owsNS, "Value" );
@@ -555,7 +679,7 @@ public class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
         writer.writeEndElement();// Value
 
         writer.writeStartElement( owsNS, "Value" );
-        writer.writeCharacters( ISO_NS );
+        writer.writeCharacters( CSWConstants.GMD_NS );
         writer.writeEndElement();// Value
 
         writer.writeEndElement();// Parameter
@@ -616,6 +740,15 @@ public class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
             writer.writeEndElement();// Value
         }
 
+        writer.writeStartElement( owsNS, "Constraint" );
+        writer.writeAttribute( "name", "AdditionalQueryables" );
+
+        for ( String val : additionalQueryables ) {
+            writeElement( writer, owsNS, "Value", val );
+        }
+
+        writer.writeEndElement();// Constraint
+
         writer.writeEndElement();// Constraint
 
     }
@@ -643,7 +776,7 @@ public class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
         writer.writeEndElement();// Value
 
         writer.writeStartElement( owsNS, "Value" );
-        writer.writeCharacters( ISO_NS );
+        writer.writeCharacters( CSWConstants.GMD_NS );
         writer.writeEndElement();// Value
 
         writer.writeEndElement(); // Parameter

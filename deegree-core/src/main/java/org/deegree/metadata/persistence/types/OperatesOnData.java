@@ -45,11 +45,11 @@ package org.deegree.metadata.persistence.types;
  */
 public class OperatesOnData {
 
-    private String scopedName;
+    private final String operatesOnId;
 
-    private String operatesOnIdentifier;
+    private final String operatesOnIdentifier;
 
-    private String operationName;
+    private final String operationName;
 
     /**
      * Creates a new {@link OperatesOnData} instance.
@@ -63,8 +63,8 @@ public class OperatesOnData {
      *            name of an operation with which the service operates on a tightly coupled dataset.
      * 
      */
-    public OperatesOnData( String scopedName, String operatesOnIdentifier, String operatesOnName ) {
-        this.scopedName = scopedName;
+    public OperatesOnData( String operatesOnId, String operatesOnIdentifier, String operatesOnName ) {
+        this.operatesOnId = operatesOnId;
         this.operatesOnIdentifier = operatesOnIdentifier;
         this.operationName = operatesOnName;
     }
@@ -72,8 +72,8 @@ public class OperatesOnData {
     /**
      * @return the operatesOn
      */
-    public String getScopedName() {
-        return scopedName;
+    public String getOperatesOnId() {
+        return operatesOnId;
     }
 
     /**

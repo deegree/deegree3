@@ -52,7 +52,7 @@ import org.deegree.metadata.persistence.MetadataInspectorException;
 import org.deegree.metadata.persistence.MetadataStoreException;
 import org.deegree.metadata.persistence.iso.generating.generatingelements.GenerateOMElement;
 import org.deegree.metadata.persistence.iso.parsing.IdUtils;
-import org.deegree.metadata.persistence.iso19115.jaxb.IdentifierInspector;
+import org.deegree.metadata.persistence.iso19115.jaxb.FileIdentifierInspector;
 import org.slf4j.Logger;
 
 /**
@@ -64,17 +64,17 @@ import org.slf4j.Logger;
  * 
  * @version $Revision$, $Date$
  */
-public class FileIdentifierInspector implements RecordInspector {
+public class FIInspector implements RecordInspector {
 
-    private static final Logger LOG = getLogger( FileIdentifierInspector.class );
+    private static final Logger LOG = getLogger( FIInspector.class );
 
     private Connection conn;
 
     private final XMLAdapter a;
 
-    private final IdentifierInspector config;
+    private final FileIdentifierInspector config;
 
-    public FileIdentifierInspector( IdentifierInspector inspector ) {
+    public FIInspector( FileIdentifierInspector inspector ) {
         this.config = inspector;
         this.a = new XMLAdapter();
     }
@@ -104,7 +104,7 @@ public class FileIdentifierInspector implements RecordInspector {
             }
             return idList;
         } else {
-            if ( config != null && !config.isRejectEmptyFileIdentifier() ) {
+            if ( config != null && !config.isRejectEmpty() ) {
                 if ( rsList.size() == 0 && id == null && uuid == null ) {
 
                     LOG.debug( Messages.getMessage( "INFO_FI_GENERATE_NEW" ) );

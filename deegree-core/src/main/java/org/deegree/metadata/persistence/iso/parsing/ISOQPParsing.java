@@ -55,6 +55,7 @@ import org.deegree.cs.CRSCodeType;
 import org.deegree.metadata.i18n.Messages;
 import org.deegree.metadata.persistence.MetadataStoreException;
 import org.deegree.metadata.persistence.types.Format;
+import org.deegree.protocol.csw.CSWConstants;
 import org.slf4j.Logger;
 
 /**
@@ -80,7 +81,7 @@ public final class ISOQPParsing extends XMLAdapter {
     private ReturnableProperties rp;
 
     static {
-        nsContextISOParsing.addNamespace( "srv", "http://www.isotc211.org/2005/srv" );
+        nsContextISOParsing.addNamespace( CSWConstants.SRV_PREFIX, CSWConstants.SRV_NS );
     }
 
     public ISOQPParsing() {

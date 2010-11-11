@@ -74,12 +74,12 @@ public class ISOMetadataStoreProvider implements MetadataStoreProvider {
 
     @Override
     public URL getConfigSchema() {
-        return ISOMetadataStoreProvider.class.getResource( "/META-INF/schemas/datasource/metadata/iso19115/0.6.0/iso19115.xsd" );
+        return ISOMetadataStoreProvider.class.getResource( "/META-INF/schemas/datasource/metadata/iso19115/3.0.0/iso19115.xsd" );
     }
 
     @Override
     public URL getConfigTemplate() {
-        return ISOMetadataStoreProvider.class.getResource( "/META-INF/schemas/datasource/metadata/iso19115/0.6.0/example_iso19115.xml" );
+        return ISOMetadataStoreProvider.class.getResource( "/META-INF/schemas/datasource/metadata/iso19115/3.0.0/example_iso19115.xml" );
     }
 
     @Override

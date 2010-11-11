@@ -74,15 +74,15 @@ import org.deegree.metadata.persistence.MetadataStoreException;
 import org.deegree.metadata.persistence.MetadataStoreTransaction;
 import org.deegree.metadata.persistence.iso.parsing.IdUtils;
 import org.deegree.metadata.persistence.iso.parsing.inspectation.CoupledDataInspector;
-import org.deegree.metadata.persistence.iso.parsing.inspectation.FileIdentifierInspector;
+import org.deegree.metadata.persistence.iso.parsing.inspectation.FIInspector;
 import org.deegree.metadata.persistence.iso.parsing.inspectation.InspireComplianceInspector;
 import org.deegree.metadata.persistence.iso.parsing.inspectation.MetadataSchemaValidationInspector;
 import org.deegree.metadata.persistence.iso.parsing.inspectation.RecordInspector;
 import org.deegree.metadata.persistence.iso.resulttypes.Hits;
 import org.deegree.metadata.persistence.iso19115.jaxb.AbstractInspector;
 import org.deegree.metadata.persistence.iso19115.jaxb.CoupledResourceInspector;
+import org.deegree.metadata.persistence.iso19115.jaxb.FileIdentifierInspector;
 import org.deegree.metadata.persistence.iso19115.jaxb.ISOMetadataStoreConfig;
-import org.deegree.metadata.persistence.iso19115.jaxb.IdentifierInspector;
 import org.deegree.metadata.persistence.iso19115.jaxb.InspireInspector;
 import org.deegree.metadata.persistence.iso19115.jaxb.SchemaValidator;
 import org.deegree.metadata.persistence.iso19115.jaxb.ISOMetadataStoreConfig.Inspectors;
@@ -521,8 +521,8 @@ public class ISOMetadataStore implements MetadataStore {
             if ( inspectors != null ) {
                 for ( JAXBElement<? extends AbstractInspector> jaxbElem : inspectors.getAbstractInspector() ) {
                     AbstractInspector d = jaxbElem.getValue();
-                    if ( d instanceof IdentifierInspector ) {
-                        ri.add( new FileIdentifierInspector( (IdentifierInspector) d ) );
+                    if ( d instanceof FileIdentifierInspector ) {
+                        ri.add( new FIInspector( (FileIdentifierInspector) d ) );
                     } else if ( d instanceof InspireInspector ) {
                         ri.add( new InspireComplianceInspector( (InspireInspector) d ) );
                     } else if ( d instanceof CoupledResourceInspector ) {

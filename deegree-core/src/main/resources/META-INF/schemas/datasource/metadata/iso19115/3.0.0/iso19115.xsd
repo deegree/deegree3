@@ -50,7 +50,7 @@
 				</element>
 			</sequence>
 			<attribute name="connId" type="string" use="required" />
-			<attribute name="configVersion" use="required" fixed="0.6.0" />
+			<attribute name="configVersion" use="required" fixed="3.0.0" />
 		</complexType>
 	</element>
 	<element name="AbstractInspector" type="ds:AbstractInspectorType" abstract="true" />
@@ -77,11 +77,11 @@
 			</complexContent>
 		</complexType>
 	</element>
-	<element name="IdentifierInspector" substitutionGroup="ds:AbstractInspector">
+	<element name="FileIdentifierInspector" substitutionGroup="ds:AbstractInspector">
 		<complexType>
 			<complexContent>
 				<extension base="ds:AbstractInspectorType">
-					<attribute name="rejectEmptyFileIdentifier" type="boolean" use="required">
+					<attribute name="rejectEmpty" type="boolean" use="required">
 					  <annotation>
 						<documentation>True if the metadata should be rejected if there is 
 						no fileIdentifier available, otherwise there is no rejection. </documentation>
