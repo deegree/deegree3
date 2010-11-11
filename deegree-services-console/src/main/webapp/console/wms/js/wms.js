@@ -15,17 +15,31 @@ var WMSUtils = {
       return lays
     }
 
-    // IE
-    var doc = new ActiveXObject("Microsoft.XMLDOM")
-    doc.async = false
+    if(window.ActiveXObject){
+      // IE
+      var doc = new ActiveXObject("Microsoft.XMLDOM")
+      doc.async = false
 
+      var xml = OpenLayers.Request.GET({url: url, async: false, params: {request: 'GetCapabilities', service: 'WMS', version: '1.1.1'}}).responseText
+      doc.loadXML(xml)
+      xml = doc
+      xml.setProperty('SelectionLanguage','XPath')
+      var res = xml.documentElement.selectNodes(xpath)
+      var lays = []
+      for(var i = 0; i < res.length; ++i) lays[i] = res[i].firstChild.nodeValue
+      return lays
+    }
+
+    // for some reason chrome 7 does not have responseXML as well
     var xml = OpenLayers.Request.GET({url: url, async: false, params: {request: 'GetCapabilities', service: 'WMS', version: '1.1.1'}}).responseText
-    doc.loadXML(xml)
-    xml = doc
-    xml.setProperty('SelectionLanguage','XPath')
-    var res = xml.documentElement.selectNodes(xpath)
+    xml = new DOMParser().parseFromString( xml, "text/xml" )
+    var res = xml.evaluate(xpath, xml.documentElement, null, 0, null)
+    var next = res.iterateNext()
     var lays = []
-    for(var i = 0; i < res.length; ++i) lays[i] = res[i].firstChild.nodeValue
+    while(next){
+      lays[lays.length] = next.textContent
+      next = res.iterateNext()
+    }
     return lays
   },
 
