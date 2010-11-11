@@ -35,8 +35,10 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.client.generic;
 
+import static java.util.Collections.sort;
 import static org.deegree.commons.utils.CollectionUtils.unzipPair;
 import static org.deegree.commons.utils.JavaUtils.generateToString;
+import static org.deegree.commons.utils.net.HttpUtils.UTF8STRING;
 import static org.deegree.services.controller.FrontControllerStats.getKVPRequests;
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -69,7 +71,10 @@ import lombok.Getter;
 import lombok.Setter;
 
 import org.apache.commons.httpclient.HttpException;
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.io.input.BoundedInputStream;
 import org.deegree.commons.utils.net.HttpUtils;
+import org.deegree.commons.utils.net.HttpUtils.Worker;
 import org.deegree.commons.xml.XMLAdapter;
 import org.slf4j.Logger;
 
@@ -142,7 +147,6 @@ public class RequestBean implements Serializable {
 
     @PostConstruct
     public void init() {
-
         ExternalContext ctx = FacesContext.getCurrentInstance().getExternalContext();
         URL url;
         try {
@@ -164,7 +168,7 @@ public class RequestBean implements Serializable {
         if ( services.size() > 0 )
             this.selectedService = services.get( 0 );
 
-        setReqestProfiles();
+        setRequestProfiles();
         if ( requestProfiles.size() > 0 )
             this.selectedReqProfile = requestProfiles.get( 0 );
 
@@ -188,19 +192,26 @@ public class RequestBean implements Serializable {
             Map<String, String> header = new HashMap<String, String>();
             InputStream is = new ByteArrayInputStream( request.getBytes() );
             try {
-                this.response = HttpUtils.post( HttpUtils.UTF8STRING, targetUrl, is, header );
+                this.response = HttpUtils.post( new Worker<String>() {
+                    public String work( InputStream in )
+                                            throws IOException {
+                        in = new BoundedInputStream( in, 1024 * 512 );
+                        return UTF8STRING.work( in );
+                    }
+                }, targetUrl, is, header );
             } catch ( HttpException e ) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
             } catch ( IOException e ) {
-                // TODO Auto-generated catch block
                 e.printStackTrace();
+            } finally {
+                IOUtils.closeQuietly( is );
             }
         }
     }
 
     public List<String> getRequestProfiles() {
-        setReqestProfiles();
+        setRequestProfiles();
         return requestProfiles;
     }
 
@@ -284,7 +295,7 @@ public class RequestBean implements Serializable {
         return name.endsWith( "CVS" ) || name.startsWith( ".svn" );
     }
 
-    private void setReqestProfiles() {
+    private void setRequestProfiles() {
         List<String> profiles = new ArrayList<String>();
         if ( selectedService != null ) {
             for ( String s : allRequests.keySet() ) {
@@ -295,6 +306,7 @@ public class RequestBean implements Serializable {
                 }
             }
         }
+        sort( profiles );
         this.requestProfiles = profiles;
     }
 
