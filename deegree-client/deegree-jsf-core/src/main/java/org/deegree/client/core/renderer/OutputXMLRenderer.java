@@ -132,9 +132,9 @@ public class OutputXMLRenderer extends Renderer {
 
     private void encodeXML( ResponseWriter writer, String value )
                             throws IOException {
+        int depth = 0;
         try {
             XMLStreamReader reader = XMLInputFactory.newInstance().createXMLStreamReader( new StringReader( value ) );
-            int depth = 0;
             boolean lastWasEndElement = false;
             boolean lastWasComment = false;
             while ( reader.hasNext() ) {
@@ -269,7 +269,11 @@ public class OutputXMLRenderer extends Renderer {
             }
             reader.close();
         } catch ( XMLStreamException e ) {
-            writer.writeText( value, null );
+            if ( depth == 0 ) {
+                writer.writeText( value, null );
+            } else {
+                writer.writeText( "... (if you want the complete document, please click the download button)", null );
+            }
         }
     }
 
