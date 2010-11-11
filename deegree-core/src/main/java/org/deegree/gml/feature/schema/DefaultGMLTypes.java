@@ -38,6 +38,7 @@ package org.deegree.gml.feature.schema;
 import static org.deegree.commons.xml.CommonNamespaces.GML3_2_NS;
 import static org.deegree.commons.xml.CommonNamespaces.GMLNS;
 import static org.deegree.feature.types.property.ValueRepresentation.BOTH;
+import static org.deegree.protocol.wfs.WFSConstants.WFS_NS;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -70,11 +71,16 @@ public class DefaultGMLTypes {
      */
     public static final FeatureCollectionType GML321_FEATURECOLLECTION;
 
+    /**
+     * 
+     */
+    public static final FeatureCollectionType WFS110_FEATURECOLLECTION;
+
     static {
         QName name = new QName( GMLNS, "FeatureCollection", "gml" );
         List<PropertyType> props = new ArrayList<PropertyType>();
-        props.add( new FeaturePropertyType( new QName( GMLNS, "featureMember", "gml" ), 0, -1, false, false, null, null,
-                                            BOTH ) );
+        props.add( new FeaturePropertyType( new QName( GMLNS, "featureMember", "gml" ), 0, -1, false, false, null,
+                                            null, BOTH ) );
         props.add( new ArrayPropertyType( new QName( GMLNS, "featureMembers", "gml" ), 0, -1, false, false, null ) );
         GML311_FEATURECOLLECTION = new GenericFeatureCollectionType( name, props, false );
 
@@ -84,6 +90,12 @@ public class DefaultGMLTypes {
                                             null, BOTH ) );
         props.add( new ArrayPropertyType( new QName( GML3_2_NS, "featureMembers", "gml" ), 0, -1, false, false, null ) );
         GML321_FEATURECOLLECTION = new GenericFeatureCollectionType( name, props, false );
-    }
 
+        name = new QName( WFS_NS, "FeatureCollection", "wfs" );
+        props = new ArrayList<PropertyType>();
+        props.add( new FeaturePropertyType( new QName( GMLNS, "featureMember", "gml" ), 0, -1, false, false, null,
+                                            null, BOTH ) );
+        props.add( new ArrayPropertyType( new QName( GMLNS, "featureMembers", "gml" ), 0, -1, false, false, null ) );
+        WFS110_FEATURECOLLECTION = new GenericFeatureCollectionType( name, props, false );
+    }
 }

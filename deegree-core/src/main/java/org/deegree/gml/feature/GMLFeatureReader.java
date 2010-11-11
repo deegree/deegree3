@@ -50,6 +50,7 @@ import static org.deegree.gml.feature.StandardGMLFeatureProps.PT_BOUNDED_BY_GML3
 import static org.deegree.gml.feature.StandardGMLFeatureProps.PT_BOUNDED_BY_GML32;
 import static org.deegree.gml.feature.schema.DefaultGMLTypes.GML311_FEATURECOLLECTION;
 import static org.deegree.gml.feature.schema.DefaultGMLTypes.GML321_FEATURECOLLECTION;
+import static org.deegree.gml.feature.schema.DefaultGMLTypes.WFS110_FEATURECOLLECTION;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -492,7 +493,6 @@ public class GMLFeatureReader extends XMLAdapter {
         } else if ( propDecl instanceof ArrayPropertyType ) {
             property = parseArrayProperty( xmlStream, (ArrayPropertyType) propDecl, crs, isNilled );
         } else {
-            System.out.println( "ARGH: " + xmlStream.getCurrentEventInfo() );
             throw new RuntimeException( "Internal error in GMLFeatureReader: property type " + propDecl.getClass()
                                         + " not handled." );
         }
@@ -536,12 +536,12 @@ public class GMLFeatureReader extends XMLAdapter {
             }
             idContext.addReference( ref );
             property = new GenericProperty( propDecl, propName, ref, isNilled );
-            xmlStream.nextTag();
+            StAXParsingHelper.skipElement( xmlStream );
         } else {
             // inline object
             if ( xmlStream.nextTag() == START_ELEMENT ) {
                 property = new GenericProperty( propDecl, propName, null, isNilled );
-                LOG.warn( "Parsing of inlined generic GML object properties is not implemented." );
+                LOG.warn( "Parsing of inlined generic GML object properties is not implemented. Omitting value." );
                 xmlStream.skipElement();
             } else {
                 // yes, empty object property elements are actually valid
@@ -568,7 +568,7 @@ public class GMLFeatureReader extends XMLAdapter {
             }
             idContext.addReference( refFeature );
             property = new GenericProperty( propDecl, propName, refFeature, isNilled );
-            xmlStream.nextTag();
+            StAXParsingHelper.skipElement( xmlStream );
         } else {
             // inline feature
             if ( xmlStream.nextTag() == START_ELEMENT ) {
@@ -612,7 +612,7 @@ public class GMLFeatureReader extends XMLAdapter {
             }
             idContext.addReference( refGeometry );
             property = new GenericProperty( propDecl, propName, refGeometry, isNilled );
-            xmlStream.nextTag();
+            StAXParsingHelper.skipElement( xmlStream );
         } else {
             if ( xmlStream.nextTag() == START_ELEMENT ) {
                 Geometry geometry = geomReader.parse( xmlStream, crs );
@@ -843,7 +843,7 @@ public class GMLFeatureReader extends XMLAdapter {
         }
         case CONTENTTYPE_EMPTY: {
             if ( StAXParsingHelper.nextElement( xmlStream ) != END_ELEMENT ) {
-                throw new XMLParsingException( xmlStream, "Empty element type doesn't allow content." );
+                throw new XMLParsingException( xmlStream, "Empty element types don't allow content." );
             }
             break;
         }
@@ -927,17 +927,19 @@ public class GMLFeatureReader extends XMLAdapter {
     protected FeatureType lookupFeatureType( XMLStreamReaderWrapper xmlStreamReader, QName ftName )
                             throws XMLParsingException {
 
-        // TODO implement this less hacky
-        if ( ftName.equals( GML311_FEATURECOLLECTION.getName() ) ) {
-            return GML311_FEATURECOLLECTION;
-        }
-        if ( ftName.equals( GML321_FEATURECOLLECTION.getName() ) ) {
-            return GML321_FEATURECOLLECTION;
-        }
-
         FeatureType ft = null;
         ft = schema.getFeatureType( ftName );
         if ( ft == null ) {
+            // TODO implement this less hacky
+            if ( ftName.equals( GML311_FEATURECOLLECTION.getName() ) ) {
+                return GML311_FEATURECOLLECTION;
+            }
+            if ( ftName.equals( GML321_FEATURECOLLECTION.getName() ) ) {
+                return GML321_FEATURECOLLECTION;
+            }
+            if ( ftName.equals( WFS110_FEATURECOLLECTION.getName() ) ) {
+                return WFS110_FEATURECOLLECTION;
+            }
             String msg = Messages.getMessage( "ERROR_SCHEMA_FEATURE_TYPE_UNKNOWN", ftName );
             throw new XMLParsingException( xmlStreamReader, msg );
         }
