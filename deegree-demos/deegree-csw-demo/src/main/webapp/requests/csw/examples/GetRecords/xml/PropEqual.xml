@@ -6,7 +6,7 @@
   startPosition="1"
   resultType="results"
   outputFormat="application/xml"
-  outputSchema="http://www.opengis.net/cat/csw/2.0.2"
+  outputSchema="http://www.isotc211.org/2005/gmd"
   xmlns="http://www.opengis.net/cat/csw/2.0.2"
   xmlns:csw="http://www.opengis.net/cat/csw/2.0.2"
   xmlns:ogc="http://www.opengis.net/ogc"
