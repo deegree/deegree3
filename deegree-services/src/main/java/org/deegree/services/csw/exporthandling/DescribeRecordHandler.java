@@ -46,11 +46,13 @@ import static org.deegree.protocol.csw.CSWConstants.GMD_LOCAL_PART;
 import static org.deegree.protocol.csw.CSWConstants.GMD_NS;
 import static org.deegree.protocol.csw.CSWConstants.GMD_PREFIX;
 import static org.deegree.protocol.csw.CSWConstants.VERSION_202;
+import static org.deegree.services.i18n.Messages.get;
 
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.net.URLConnection;
 
@@ -186,13 +188,7 @@ public class DescribeRecordHandler {
             if ( typeNames.length == 0 ) {
                 urlConn = new URL( CSWConstants.CSW_202_RECORD ).openConnection();
                 exportSchemaFile( writer, new QName( DC_NS, DC_LOCAL_PART, DC_PREFIX ), urlConn );
-                InputStream in = DescribeRecordHandler.class.getResourceAsStream( "iso_data.xml" );
-                InputStreamReader isr = new InputStreamReader( in, "UTF-8" );
-                exportSchemaComponent( writer, new QName( GMD_NS, GMD_LOCAL_PART, GMD_PREFIX ), isr );
-                in = DescribeRecordHandler.class.getResourceAsStream( "iso_service.xml" );
-                isr = new InputStreamReader( in, "UTF-8" );
-                exportSchemaComponent( writer, new QName( CSWConstants.SRV_NS, CSWConstants.SRV_LOCAL_PART,
-                                                          CSWConstants.SRV_PREFIX ), isr );
+                exportISO( writer );
             }
             for ( QName typeName : typeNames ) {
 
@@ -210,13 +206,7 @@ public class DescribeRecordHandler {
                  * if typeName is gmd:MD_Metadata
                  */
                 else if ( OutputSchema.determineByTypeName( typeName ) == OutputSchema.ISO_19115 ) {
-                    InputStream in = DescribeRecordHandler.class.getResourceAsStream( "iso_data.xml" );
-                    InputStreamReader isr = new InputStreamReader( in, "UTF-8" );
-                    exportSchemaComponent( writer, new QName( GMD_NS, GMD_LOCAL_PART, GMD_PREFIX ), isr );
-                    in = DescribeRecordHandler.class.getResourceAsStream( "iso_service.xml" );
-                    isr = new InputStreamReader( in, "UTF-8" );
-                    exportSchemaComponent( writer, new QName( CSWConstants.SRV_NS, CSWConstants.SRV_LOCAL_PART,
-                                                              CSWConstants.SRV_PREFIX ), isr );
+                    exportISO( writer );
                 }
                 /*
                  * if the typeName is no registered in this recordprofile
@@ -239,6 +229,31 @@ public class DescribeRecordHandler {
 
         writer.writeEndElement();// DescribeRecordResponse
         writer.writeEndDocument();
+    }
+
+    private static void exportISO( XMLStreamWriter writer )
+                            throws XMLStreamException, UnsupportedEncodingException {
+        InputStream in_data = DescribeRecordHandler.class.getResourceAsStream( "iso_data.xml" );
+        InputStream in_service = DescribeRecordHandler.class.getResourceAsStream( "iso_service.xml" );
+        InputStreamReader isr = null;
+
+        if ( in_data != null ) {
+            isr = new InputStreamReader( in_data, "UTF-8" );
+            exportSchemaComponent( writer, new QName( GMD_NS, GMD_LOCAL_PART, GMD_PREFIX ), isr );
+        } else {
+            String msg = get( "CSW_NO_FILE", "iso_data.xml" );
+            LOG.debug( msg );
+        }
+
+        if ( in_service != null ) {
+            isr = new InputStreamReader( in_service, "UTF-8" );
+            exportSchemaComponent( writer, new QName( CSWConstants.SRV_NS, CSWConstants.SRV_LOCAL_PART,
+                                                      CSWConstants.SRV_PREFIX ), isr );
+        } else {
+            String msg = get( "CSW_NO_FILE", "iso_service.xml" );
+            LOG.debug( msg );
+        }
+
     }
 
     private static void exportSchemaFile( XMLStreamWriter writer, QName typeName, URLConnection urlConn )
