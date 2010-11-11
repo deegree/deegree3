@@ -10,21 +10,24 @@
 	  id : "xmlForm:inputXML",syntax: "xml",start_highlight: true
     });
   </script>
-								<div style="width: 630px;">Editing: ${editConfig.location} <h:panelGroup
-												rendered="${editConfig.schemaURL != null}">
-												<br />
-  [<h:link value="#{labels.xmlEditor_schema}" outcome="schema" target="_blank" />]
-  <br />
-								</h:panelGroup> <br />
-								<h:form id="xmlForm">
-												<dg:inputConfigurationXML id="inputXML" value="${editConfig.content}" schemaURLS="${editConfig.schemaURL}"
-																cols="90" rows="30" />
-												<br />
-												<h:commandButton styleClass="buttonSave" value="#{labels.xmlEditor_save}" action="${editConfig.save}" />
-												<h:commandButton styleClass="buttonCancel" value="#{labels.xmlEditor_cancel}" action="${editConfig.cancel}" />
-												<br />
-												<br />
-												<h:message for="inputXML" />
-								</h:form></div>
-				</ui:define>
+  <br/>
+	<div style="width: 580px;">Editing: <br/> ${editConfig.location}
+	<h:panelGroup rendered="${editConfig.schemaURL != null}">
+	<br /><br/>
+  
+  <h:panelGroup>
+  <h:form>
+  <h:link styleClass="schema" value="#{labels.xmlEditor_schema}" outcome="schema" target="_blank" />
+  <h:commandButton styleClass="buttonSave" value="#{labels.xmlEditor_save}" action="${editConfig.save}" />
+  <h:commandButton styleClass="buttonCancel" value="#{labels.xmlEditor_cancel}" action="${editConfig.cancel}" />
+  </h:form>
+  </h:panelGroup>
+  
+	</h:panelGroup> 
+			<h:form id="xmlForm">
+			<dg:inputConfigurationXML id="inputXML" value="${editConfig.content}" schemaURLS="${editConfig.schemaURL}"
+																cols="70" rows="28" />
+				<h:message for="inputXML" />
+			</h:form></div>
+	</ui:define>
 </ui:composition>
