@@ -617,12 +617,9 @@ public class GMLSchemaInfoSet extends XMLSchemaInfoSet {
                     LOG.debug( "Unhandled model group: COMPOSITOR_ALL" );
                     break;
                 }
-                case XSModelGroup.COMPOSITOR_CHOICE: {
-                    LOG.debug( "Unhandled model group: COMPOSITOR_CHOICE" );
-                    break;
-                }
+                case XSModelGroup.COMPOSITOR_CHOICE:
                 case XSModelGroup.COMPOSITOR_SEQUENCE: {
-                    LOG.trace( "Found sequence." );
+                    LOG.trace( "Found sequence / choice." );
                     XSObjectList sequence = modelGroup.getParticles();
                     if ( sequence.getLength() != 1 ) {
                         LOG.trace( "Length = '" + sequence.getLength() + "' -> cannot be a feature property." );
