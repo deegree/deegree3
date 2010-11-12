@@ -38,15 +38,18 @@ package org.deegree.client.generic;
 import static java.util.Collections.sort;
 import static org.deegree.commons.utils.CollectionUtils.unzipPair;
 import static org.deegree.commons.utils.JavaUtils.generateToString;
-import static org.deegree.commons.utils.net.HttpUtils.UTF8STRING;
 import static org.deegree.services.controller.FrontControllerStats.getKVPRequests;
 import static org.slf4j.LoggerFactory.getLogger;
 
+import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.Serializable;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -74,7 +77,6 @@ import org.apache.commons.httpclient.HttpException;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.input.BoundedInputStream;
 import org.deegree.commons.utils.net.HttpUtils;
-import org.deegree.commons.utils.net.HttpUtils.Worker;
 import org.deegree.commons.xml.XMLAdapter;
 import org.slf4j.Logger;
 
@@ -145,6 +147,9 @@ public class RequestBean implements Serializable {
     // --------REQUEST
     private HashMap<String, Map<String, Map<String, List<String>>>> allRequests = new HashMap<String, Map<String, Map<String, List<String>>>>();
 
+    @Getter
+    private String responseFile;
+
     @PostConstruct
     public void init() {
         ExternalContext ctx = FacesContext.getCurrentInstance().getExternalContext();
@@ -192,13 +197,29 @@ public class RequestBean implements Serializable {
             Map<String, String> header = new HashMap<String, String>();
             InputStream is = new ByteArrayInputStream( request.getBytes() );
             try {
-                this.response = HttpUtils.post( new Worker<String>() {
-                    public String work( InputStream in )
-                                            throws IOException {
-                        in = new BoundedInputStream( in, 1024 * 512 );
-                        return UTF8STRING.work( in );
+                InputStream in = HttpUtils.post( HttpUtils.STREAM, targetUrl, is, header );
+                File file = File.createTempFile( "genericclient", ".xml" );
+                responseFile = file.toString();
+                FileOutputStream out = new FileOutputStream( file );
+                try {
+                    IOUtils.copy( in, out );
+                } finally {
+                    IOUtils.closeQuietly( out );
+                    IOUtils.closeQuietly( in );
+                }
+                BufferedReader reader = null;
+                try {
+                    in = new BoundedInputStream( new FileInputStream( file ), 1024 * 256 );
+                    reader = new BufferedReader( new InputStreamReader( in, "UTF-8" ) );
+                    StringBuilder sb = new StringBuilder();
+                    String s;
+                    while ( ( s = reader.readLine() ) != null ) {
+                        sb.append( s );
                     }
-                }, targetUrl, is, header );
+                    response = sb.toString();
+                } finally {
+                    IOUtils.closeQuietly( reader );
+                }
             } catch ( HttpException e ) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
