@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xs:schema xmlns:dgws="http://www.deegree.org/webservices" xmlns:xs="http://www.w3.org/2001/XMLSchema"
-  targetNamespace="http://www.deegree.org/webservices" elementFormDefault="qualified" xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
+<xs:schema xmlns:controller="http://www.deegree.org/services/controller" xmlns:xs="http://www.w3.org/2001/XMLSchema"
+  targetNamespace="http://www.deegree.org/services/controller" elementFormDefault="qualified" xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
   jaxb:version="2.1">
 
   <xs:annotation>
@@ -11,6 +11,7 @@
     </xs:appinfo>
   </xs:annotation>
 
+  <xs:element name="deegreeServiceController" type="controller:deegreeServiceControllerType"/>
   <xs:complexType name="deegreeServiceControllerType">
     <xs:annotation>
       <xs:documentation>
@@ -18,8 +19,8 @@
         </xs:documentation>
     </xs:annotation>
     <xs:sequence>
-      <xs:element name="DCP" type="dgws:DCPType" minOccurs="0" />
-      <xs:element name="ConfiguredServices" type="dgws:ConfiguredServicesType" minOccurs="0" />
+      <xs:element name="DCP" type="controller:DCPType" minOccurs="0" />
+      <xs:element name="ConfiguredServices" type="controller:ConfiguredServicesType" minOccurs="0" />
       <xs:element name="RequestLogging" minOccurs="0">
         <xs:complexType>
           <xs:annotation>
@@ -71,7 +72,7 @@
       </xs:documentation>
     </xs:annotation>
     <xs:sequence>
-      <xs:element name="Service" type="dgws:ServiceType" maxOccurs="unbounded" />
+      <xs:element name="Service" type="controller:ServiceType" maxOccurs="unbounded" />
     </xs:sequence>
   </xs:complexType>
   <xs:complexType name="ServiceType">
@@ -85,7 +86,7 @@
       </xs:documentation>
     </xs:annotation>
     <xs:sequence>
-      <xs:element name="ServiceName" type="dgws:AllowedServices" />
+      <xs:element name="ServiceName" type="controller:AllowedServices" />
       <xs:element name="ConfigurationLocation" type="xs:anyURI" />
       <xs:element name="ControllerClass" type="xs:string" minOccurs="0" />
     </xs:sequence>
