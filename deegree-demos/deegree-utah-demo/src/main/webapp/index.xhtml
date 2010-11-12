@@ -30,13 +30,7 @@
         value="...has been successfully installed on this server." />
     <br />
     <br />
-    <h:outputText value="#{customlabels.intro1}" />
-    <br />
-    <h:outputText value="#{customlabels.intro2}" />
-    <br />
-    <h:outputText value="#{customlabels.intro3}" />
-    <br />
-    <h:outputText value="#{customlabels.intro4}" />
+    <h:outputText value="#{customlabels.intro}" />
     <br />
     <br />
     <h:outputText value="#{customlabels.info}" />
@@ -54,6 +48,9 @@
         <h:outputText value="#{customlabels.download_intro1}"
             rendered="#{!downloadBean.dataDownloaded}" />
         <br />
+        <h:outputText value="#{customlabels.download_intro2}"
+            rendered="#{!downloadBean.dataDownloaded}" />
+        <br />
         <h:panelGroup rendered="#{!downloadBean.dataDownloaded}">
         [<h:commandButton value="Download data"
                 action="#{downloadBean.download}" onclick="show();" />]
@@ -68,21 +65,14 @@
             rendered="#{!downloadBean.dataDownloaded}" />
     </h:form>
     <br />
-    <h:outputText value="#{customlabels.admin_info}" />
+     [<a href="console.jsf" target="_blank">Administration console</a>]
     <br />
-      [<a href="console.jsf" target="_blank">Administration console</a>]
-      <br />
-    <br />
-    <h:outputText value="#{customlabels.congrats}" />
-    <br />
-    <h:outputText value="#{customlabels.use_intro}" />
     <br />
      [<a href="console/client/client.html" target="_blank">Generic
     OGC client</a>]
-     <h:outputText value="#{customlabels.generic_client}" />
+    <br />
     <br />
      [<a href="console/wms/wms.html" target="_blank">OpenLayers WMS
     client</a>]
-     <h:outputText value="#{customlabels.openlayers}" />
 </h:body>
 </html>
