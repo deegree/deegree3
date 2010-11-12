@@ -1,0 +1,16 @@
+<ui:composition template="/layout.xhtml" xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html"
+				xmlns:f="http://java.sun.com/jsf/core" xmlns:ui="http://java.sun.com/jsf/facelets"
+				xmlns:c="http://java.sun.com/jsp/jstl/core" xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+				xmlns:dg="http://deegree.org/jsf" xmlns:dgc="http://java.sun.com/jsf/composite/deegree">
+				<ui:define name="center">
+								<fieldset><legend><h:outputText styleClass="titel" value="#{labels.workspace_title}" /></legend> <h:panelGrid
+												columns="1" id="workspace">
+												<h:outputFormat value="#{labels.workspace_name}" style="margin: 10px 0px; font-size:small">
+																<f:param value="#{applicationBean.workspaceName}" />
+												</h:outputFormat>
+												<h:outputFormat value="#{labels.workspace_dir}" style="margin: 10px 0px; font-size:small">
+																<f:param value="#{applicationBean.workspaceDirectory}" />
+												</h:outputFormat>
+								</h:panelGrid></fieldset>
+				</ui:define>
+</ui:composition>
