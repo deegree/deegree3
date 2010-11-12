@@ -64,15 +64,15 @@ public class ConfigManager {
 
     private static URL MAIN_TEMPLATE = ConnectionConfigManager.class.getResource( "main_template.xml" );
 
-    private static URL MAIN_SCHEMA_URL = ConnectionConfigManager.class.getResource( "/META-INF/schemas/webservices/0.6.0/services.xsd" );
+    private static URL MAIN_SCHEMA_URL = ConnectionConfigManager.class.getResource( "/META-INF/schemas/controller/3.0.0/controller.xsd" );
 
     private static URL METADATA_TEMPLATE = ConnectionConfigManager.class.getResource( "metadata_template.xml" );
 
-    private static URL PROXY_SCHEMA_URL = ConnectionConfigManager.class.getResource( "/META-INF/schemas/proxy/0.5.0/proxy.xsd" );
+    private static URL PROXY_SCHEMA_URL = ConnectionConfigManager.class.getResource( "/META-INF/schemas/proxy/3.0.0/proxy.xsd" );
 
-    private static URL PROXY_TEMPLATE = ConnectionConfigManager.class.getResource( "/META-INF/schemas/proxy/0.5.0/example.xml" );
+    private static URL PROXY_TEMPLATE = ConnectionConfigManager.class.getResource( "/META-INF/schemas/proxy/3.0.0/example.xml" );
 
-    private static URL METADATA_SCHEMA_URL = ConnectionConfigManager.class.getResource( "/META-INF/schemas/webservices/0.6.0/services.xsd" );
+    private static URL METADATA_SCHEMA_URL = ConnectionConfigManager.class.getResource( "/META-INF/schemas/metadata/3.0.0/metadata.xsd" );
 
     private final XMLConfig serviceMainConfig;
 

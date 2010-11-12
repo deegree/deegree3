@@ -54,7 +54,7 @@ public class ConnectionConfig extends ManagedXMLConfig {
 
     private static URL CONFIG_TEMPLATE = ConnectionConfigManager.class.getResource( "template.xml" );
 
-    private static URL SCHEMA_URL = ConnectionConfigManager.class.getResource( "/META-INF/schemas/jdbc/0.5.0/jdbc.xsd" );
+    private static URL SCHEMA_URL = ConnectionConfigManager.class.getResource( "/META-INF/schemas/jdbc/3.0.0/jdbc.xsd" );
 
     public ConnectionConfig( String id, boolean active, boolean ignore, ConnectionConfigManager manager ) {
         super( id, active, ignore, manager, SCHEMA_URL, CONFIG_TEMPLATE );

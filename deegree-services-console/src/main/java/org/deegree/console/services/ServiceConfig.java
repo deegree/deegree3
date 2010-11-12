@@ -54,7 +54,7 @@ public class ServiceConfig extends ManagedXMLConfig {
 
     private static URL CONFIG_TEMPLATE = ServiceConfigManager.class.getResource( "template.xml" );
 
-    private static URL SCHEMA_URL = ServiceConfigManager.class.getResource( "/META-INF/schemas/jdbc/0.5.0/jdbc.xsd" );
+    private static URL SCHEMA_URL = ServiceConfigManager.class.getResource( "/META-INF/schemas/jdbc/3.0.0/jdbc.xsd" );
 
     public ServiceConfig( String id, boolean active, boolean ignore, ServiceConfigManager manager ) {
         super( id, active, ignore, manager, SCHEMA_URL, CONFIG_TEMPLATE );
