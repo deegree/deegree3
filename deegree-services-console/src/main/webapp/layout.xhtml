@@ -41,8 +41,10 @@
 				<div id="main">
 				<div id="left"><h:panelGrid id="menuPG" columns="1">
 								<br/>
-								<h:link styleClass="navi" value="version" outcome="/console/jsf/version.xhtml" />
-								<h:link styleClass="navi" value="workspace" outcome="/console/jsf/workspace.xhtml" />
+								<h:link styleClass="naviactive" value="version" outcome="/console/jsf/version.xhtml" rendered="#{facesContext.viewRoot.viewId == '/console/jsf/version.xhtml'}"/>
+                                <h:link styleClass="navi" value="version" outcome="/console/jsf/version.xhtml" rendered="#{facesContext.viewRoot.viewId != '/console/jsf/version.xhtml'}"/>
+								<h:link styleClass="naviactive" value="workspace" outcome="/console/jsf/workspace.xhtml" rendered="#{facesContext.viewRoot.viewId == '/console/jsf/workspace.xhtml'}"/>
+                                <h:link styleClass="navi" value="workspace" outcome="/console/jsf/workspace.xhtml" rendered="#{facesContext.viewRoot.viewId != '/console/jsf/workspace.xhtml'}"/>
 								<br/>
 								<h:link styleClass="naviactive" value="webservices" outcome="/console/jsf/webservices.xhtml" disabled="#{!logBean.loggedIn}" rendered="#{facesContext.viewRoot.viewId == '/console/jsf/webservices.xhtml'}"/>
                                 <h:link styleClass="navi" value="webservices" outcome="/console/jsf/webservices.xhtml" disabled="#{!logBean.loggedIn}" rendered="#{facesContext.viewRoot.viewId != '/console/jsf/webservices.xhtml'}"/>
