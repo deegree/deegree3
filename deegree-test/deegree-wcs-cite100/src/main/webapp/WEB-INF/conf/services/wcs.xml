@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<deegreeWCS configVersion="0.5.0" xmlns:ds="http://www.deegree.org/datasource" xmlns="http://www.deegree.org/services/wcs"
-  xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:md="http://www.deegree.org/webservices"
-  xsi:schemaLocation="http://www.deegree.org/services/wcs http://schemas.deegree.org/wcs/0.5.0/wcs_configuration.xsd">
+<deegreeWCS configVersion="3.0.0" xmlns="http://www.deegree.org/services/wcs" xmlns:xlink="http://www.w3.org/1999/xlink"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:md="http://www.deegree.org/webservices"
+  xsi:schemaLocation="http://www.deegree.org/services/wcs http://schemas.deegree.org/services/wcs/3.0.0/wcs_configuration.xsd">
   <ServiceConfiguration>
     <SupportOptions>
       <OutputFormat>tiff</OutputFormat>
@@ -39,17 +39,6 @@
     </Coverage>
   </ServiceConfiguration>
   <PublishedInformation>
-    <md:ServiceIdentification>
-      <md:Title>The deegree Web Coverage Service</md:Title>
-      <md:Abstract>A web service used for delivering Coverage information</md:Abstract>
-      <md:Keywords>
-        <md:Keyword>No validating schemas</md:Keyword>
-        <md:Keyword>Using deegree3 Coverage API</md:Keyword>
-        <md:Keyword>Fast</md:Keyword>
-      </md:Keywords>
-      <md:Fees>None, it's free</md:Fees>
-      <md:AccessConstraints>Open to all</md:AccessConstraints>
-    </md:ServiceIdentification>
     <SupportedVersions>
       <Version>1.0.0</Version>
     </SupportedVersions>
