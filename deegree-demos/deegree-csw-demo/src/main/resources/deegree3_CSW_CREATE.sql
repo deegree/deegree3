@@ -270,7 +270,7 @@ COMMENT ON COLUMN ISOQP_Type.Type
 CREATE TABLE QP_Identifier ( 
 ID integer NOT NULL,
 fk_datasets integer NOT NULL,
-identifier varchar(50) NOT NULL    -- MD_Metadata.fileIdentifier
+identifier varchar(150) NOT NULL    -- MD_Metadata.fileIdentifier
 );
 COMMENT ON TABLE QP_Identifier
     IS 'common queryable property (ISO AP 1.0)';
@@ -539,9 +539,7 @@ COMMENT ON COLUMN datasets.association IS 'common queryable property in DC, but 
 --Geospatial column in isoqp_boundingbox
 SELECT AddGeometryColumn('public','isoqp_boundingbox','bbox','-1','POLYGON','2');
 
-
 --INSPIRE
-
 
 CREATE TABLE ADDQP_Degree ( 
 	ID integer NOT NULL,
@@ -574,7 +572,7 @@ COMMENT ON COLUMN ADDQP_Specification.SpecificationDate
 CREATE TABLE ADDQP_Limitation ( 
 	ID integer NOT NULL,
 	fk_datasets integer NOT NULL,
-	limitation character varying(200)  -- MD_Metadata.identificationInfo.MD_DataIdentification.resourceConstraints.MD_Constraints.useLimitation
+	limitation character varying(500)  -- MD_Metadata.identificationInfo.MD_DataIdentification.resourceConstraints.MD_Constraints.useLimitation
 
 );
 COMMENT ON TABLE ADDQP_Limitation
@@ -700,5 +698,4 @@ ALTER TABLE ADDQP_OtherConstraint ADD CONSTRAINT FK_ADDQP_OtherConstraint
 
 ALTER TABLE ADDQP_Classification ADD CONSTRAINT FK_ADDQP_Classification 
 	FOREIGN KEY (fk_datasets) REFERENCES Datasets (ID) ON DELETE CASCADE;
-
 
