@@ -21,10 +21,17 @@
 					<ui:repeat value="#{configManager.connManager.configs}"
 						var="config">
 						<tr>
+                            <td><h:commandButton styleClass="buttonActivate"
+                                rendered="#{!config.deactivated}"
+                                value="#{labels.jdbc_deactivate}"
+                                action="#{config.deactivate}" /> 
+                                <h:commandButton
+                                styleClass="buttonDeactivate" rendered="#{config.deactivated}"
+                                value="#{labels.jdbc_activate}"
+                                action="#{config.activate}" /></td>
 							<td><h:outputFormat value="#{labels.jdbc_id}">
 								<f:param value="#{config.id}" />
 							</h:outputFormat></td>
-							<td><h:outputText value="#{config.connectionStatus}" /></td>
 							<td><h:commandButton styleClass="buttonEdit" value="#{labels.jdbc_edit}"
 								action="#{config.edit}" /></td>
 							<td><h:commandButton styleClass="buttonDelete" value="#{labels.jdbc_delete}"

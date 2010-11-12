@@ -212,6 +212,7 @@ public class XMLConfig implements Serializable {
     public void create()
                             throws IOException {
         File location = getLocation();
+        location.getParentFile().mkdirs();
         OutputStream os = new FileOutputStream( location );
         InputStream is = template.openStream();
         byte[] buffer = new byte[1024];
@@ -221,7 +222,7 @@ public class XMLConfig implements Serializable {
         }
         os.close();
         reloadContent();
-        System.out.println( "Wrote " + location );
+        LOG.debug( "Wrote {}", location );
         modified = true;
     }
 
