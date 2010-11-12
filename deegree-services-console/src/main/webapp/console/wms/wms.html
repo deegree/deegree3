@@ -11,8 +11,9 @@
         if(loc.lastIndexOf("/") != loc.length - 1) loc = loc.substring(0, loc.lastIndexOf("/") + 1)
         loc = loc + '../../services'
 
-        var layers = WMSUtils.layerNames(loc, true)
-        WMSUtils.createOpenlayersMap(layers, loc)
+        var capas = WMSUtils.getCapabilities(loc)
+        var layers = WMSUtils.layerNames(capas, true)
+        WMSUtils.createOpenlayersMap(capas, layers, loc)
       }
     </script>
   </head>
