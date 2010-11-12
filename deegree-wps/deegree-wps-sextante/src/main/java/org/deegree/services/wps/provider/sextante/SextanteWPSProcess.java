@@ -38,25 +38,29 @@ package org.deegree.services.wps.provider.sextante;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+
 import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
-import org.deegree.services.jaxb.wps.ComplexFormatType;
-import org.deegree.services.jaxb.wps.ComplexInputDefinition;
-import org.deegree.services.jaxb.wps.ComplexOutputDefinition;
-import org.deegree.services.jaxb.wps.LanguageStringType;
-import org.deegree.services.jaxb.wps.LiteralInputDefinition;
-import org.deegree.services.jaxb.wps.ProcessDefinition;
-import org.deegree.services.jaxb.wps.ProcessletInputDefinition;
-import org.deegree.services.jaxb.wps.ProcessletOutputDefinition;
-import org.deegree.services.jaxb.wps.LiteralInputDefinition.DataType;
-import org.deegree.services.jaxb.wps.ProcessDefinition.InputParameters;
-import org.deegree.services.jaxb.wps.ProcessDefinition.OutputParameters;
+
+import org.deegree.process.jaxb.java.CodeType;
+import org.deegree.process.jaxb.java.ComplexFormatType;
+import org.deegree.process.jaxb.java.ComplexInputDefinition;
+import org.deegree.process.jaxb.java.ComplexOutputDefinition;
+import org.deegree.process.jaxb.java.LanguageStringType;
+import org.deegree.process.jaxb.java.LiteralInputDefinition;
+import org.deegree.process.jaxb.java.ProcessDefinition;
+import org.deegree.process.jaxb.java.ProcessletInputDefinition;
+import org.deegree.process.jaxb.java.ProcessletOutputDefinition;
+import org.deegree.process.jaxb.java.LiteralInputDefinition.DataType;
+import org.deegree.process.jaxb.java.ProcessDefinition.InputParameters;
+import org.deegree.process.jaxb.java.ProcessDefinition.OutputParameters;
 import org.deegree.services.wps.ExceptionCustomizer;
 import org.deegree.services.wps.Processlet;
 import org.deegree.services.wps.WPSProcess;
 import org.deegree.services.wps.provider.sextante.jaxb.SextanteProcesses;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import es.unex.sextante.core.GeoAlgorithm;
 import es.unex.sextante.core.OutputObjectsSet;
 import es.unex.sextante.core.ParametersSet;
@@ -274,7 +278,7 @@ public class SextanteWPSProcess implements WPSProcess {
 
         // identifier
         String identifierStr = createIdentifier( alg );
-        org.deegree.services.jaxb.wps.CodeType identifier = new org.deegree.services.jaxb.wps.CodeType();
+        CodeType identifier = new CodeType();
         identifier.setValue( identifierStr );
         processDefinition.setIdentifier( identifier );
 
@@ -450,7 +454,7 @@ public class SextanteWPSProcess implements WPSProcess {
                                                                                                     ComplexInputDefinition.class,
                                                                                                     complexInputValue );
         // ComplexInput - Identifier
-        org.deegree.services.jaxb.wps.CodeType complexInputIdentifier = new org.deegree.services.jaxb.wps.CodeType();
+        CodeType complexInputIdentifier = new CodeType();
         complexInputIdentifier.setValue( param.getParameterName() );
         complexInputValue.setIdentifier( complexInputIdentifier );
 
@@ -484,7 +488,7 @@ public class SextanteWPSProcess implements WPSProcess {
                                                                                                     LiteralInputDefinition.class,
                                                                                                     literalInputValue );
         // LiteralInput - Identifier
-        org.deegree.services.jaxb.wps.CodeType literalInputIdentifier = new org.deegree.services.jaxb.wps.CodeType();
+        CodeType literalInputIdentifier = new CodeType();
         literalInputIdentifier.setValue( param.getParameterName() );
         literalInputValue.setIdentifier( literalInputIdentifier );
 
@@ -519,7 +523,7 @@ public class SextanteWPSProcess implements WPSProcess {
                                                                                                     LiteralInputDefinition.class,
                                                                                                     literalInputValue );
         // LiteralInput - Identifier
-        org.deegree.services.jaxb.wps.CodeType literalInputIdentifier = new org.deegree.services.jaxb.wps.CodeType();
+        CodeType literalInputIdentifier = new CodeType();
         literalInputIdentifier.setValue( param.getParameterName() );
         literalInputValue.setIdentifier( literalInputIdentifier );
 
@@ -568,7 +572,7 @@ public class SextanteWPSProcess implements WPSProcess {
                                                                                                     LiteralInputDefinition.class,
                                                                                                     literalInputValue );
         // LiteralInput - Identifier
-        org.deegree.services.jaxb.wps.CodeType literalInputIdentifier = new org.deegree.services.jaxb.wps.CodeType();
+        CodeType literalInputIdentifier = new CodeType();
         literalInputIdentifier.setValue( param.getParameterName() );
         literalInputValue.setIdentifier( literalInputIdentifier );
 
@@ -639,7 +643,7 @@ public class SextanteWPSProcess implements WPSProcess {
                                                                                                     LiteralInputDefinition.class,
                                                                                                     literalInputValue );
         // LiteralInput - Identifier
-        org.deegree.services.jaxb.wps.CodeType literalInputIdentifier = new org.deegree.services.jaxb.wps.CodeType();
+        CodeType literalInputIdentifier = new CodeType();
         literalInputIdentifier.setValue( param.getParameterName() );
         literalInputValue.setIdentifier( literalInputIdentifier );
 
@@ -759,7 +763,7 @@ public class SextanteWPSProcess implements WPSProcess {
                                                                                                        ComplexOutputDefinition.class,
                                                                                                        complexOutputValue );
         // ComplexOutput - Identifier
-        org.deegree.services.jaxb.wps.CodeType complexOutputIdentifier = new org.deegree.services.jaxb.wps.CodeType();
+        CodeType complexOutputIdentifier = new CodeType();
         complexOutputIdentifier.setValue( out.getName() );
         complexOutputValue.setIdentifier( complexOutputIdentifier );
 

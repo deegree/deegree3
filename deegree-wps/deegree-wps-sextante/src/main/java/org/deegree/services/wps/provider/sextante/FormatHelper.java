@@ -36,8 +36,9 @@
 package org.deegree.services.wps.provider.sextante;
 
 import java.util.LinkedList;
+
 import org.deegree.gml.GMLVersion;
-import org.deegree.services.jaxb.wps.ComplexFormatType;
+import org.deegree.process.jaxb.java.ComplexFormatType;
 import org.deegree.services.wps.ProcessletInputs;
 import org.deegree.services.wps.ProcessletOutputs;
 import org.deegree.services.wps.input.ComplexInput;
