@@ -38,7 +38,8 @@ package org.deegree.client.core.renderer;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.File;
-import java.io.FileWriter;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.StringReader;
 import java.net.URL;
@@ -54,6 +55,7 @@ import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
+import org.apache.commons.io.IOUtils;
 import org.deegree.client.core.component.HtmlOutputXML;
 import org.deegree.client.core.utils.FacesUtils;
 import org.slf4j.Logger;
@@ -102,18 +104,22 @@ public class OutputXMLRenderer extends Renderer {
 
     private void encodeDownload( ResponseWriter writer, HtmlOutputXML xmlComponent )
                             throws IOException {
-        String downloadDir = xmlComponent.getDownloadDir();
+        File dir = new File( "downloads" );
+        new File( FacesUtils.getAbsolutePath( "downloads", null ) ).mkdirs();
+        String src = xmlComponent.getDownloadFile();
         String fileName = "file_" + UUID.randomUUID() + ".xml";
-        URL webAccessibleUrl = FacesUtils.getWebAccessibleUrl( downloadDir, fileName );
+        URL webAccessibleUrl = FacesUtils.getWebAccessibleUrl( dir.toString(), fileName );
         try {
-            File f = new File( FacesUtils.getAbsolutePath( downloadDir, fileName ) );
-            if ( !f.createNewFile() ) {
-                LOG.info( "Could not create file for download" );
-                return;
+            File f = new File( FacesUtils.getAbsolutePath( dir.toString(), fileName ) );
+            FileInputStream is = new FileInputStream( src );
+            FileOutputStream os = new FileOutputStream( f );
+            try {
+                IOUtils.copy( is, os );
+            } finally {
+                IOUtils.closeQuietly( is );
+                IOUtils.closeQuietly( os );
+                new File( src ).delete();
             }
-            FileWriter fw = new FileWriter( f );
-            fw.write( xmlComponent.getValue() );
-            fw.close();
             DeleteThread thread = new DeleteThread( f, xmlComponent.getMinutesUntilDelete() * 3600 );
             thread.start();
         } catch ( Exception e ) {

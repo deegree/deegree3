@@ -59,7 +59,7 @@ public class HtmlOutputXML extends UIOutput {
     }
 
     private static enum AdditionalPropertyKeys {
-        downloadable, downloadLabel, downloadDir, minutesUntilDelete, styleClass
+        downloadable, downloadLabel, downloadFile, minutesUntilDelete, styleClass
     }
 
     /**
@@ -95,18 +95,18 @@ public class HtmlOutputXML extends UIOutput {
     }
 
     /**
-     * @param downloadDir
+     * @param downloadFile
      *            The name of the directory in the web app directory, where the files should be stored. Can be null.
      */
-    public void setDownloadDir( String downloadDir ) {
-        getStateHelper().put( AdditionalPropertyKeys.downloadDir, downloadDir );
+    public void setDownloadFile( String downloadFile ) {
+        getStateHelper().put( AdditionalPropertyKeys.downloadFile, downloadFile );
     }
 
     /**
      * @return The name of the directory in the web app directory, where the files should be stored. Can be null.
      */
-    public String getDownloadDir() {
-        return (String) getStateHelper().eval( AdditionalPropertyKeys.downloadDir, null );
+    public String getDownloadFile() {
+        return (String) getStateHelper().eval( AdditionalPropertyKeys.downloadFile, null );
     }
 
     /**
