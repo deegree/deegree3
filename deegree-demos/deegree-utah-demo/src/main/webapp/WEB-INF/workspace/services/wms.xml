@@ -254,7 +254,8 @@
         <ShapefileDirectory>../data/data/utah/vector/busroutes</ShapefileDirectory>
       </DynamicLayer>
 
-      <StatisticsLayer />
+      <!-- This turns on a statistics layer which displays blue rectangles of all GetMap requests that came in. -->
+      <!-- <StatisticsLayer /> -->
 
     </UnrequestableLayer>
 
