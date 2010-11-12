@@ -4,4 +4,5 @@
   <Url>jdbc:derby:classpath:utah_climate_2004</Url>
   <User />
   <Password />
+  <ReadOnly>true</ReadOnly>
 </JDBCConnection>
