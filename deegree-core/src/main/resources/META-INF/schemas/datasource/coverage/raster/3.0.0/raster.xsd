@@ -20,7 +20,7 @@
     <complexType>
       <complexContent>
         <extension base="raster:AbstractRasterType">
-          <attribute name="configVersion" use="required" fixed="0.6.0" />
+          <attribute name="configVersion" use="required" fixed="3.0.0" />
         </extension>
       </complexContent>
     </complexType>
