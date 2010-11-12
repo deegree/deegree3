@@ -30,38 +30,58 @@
         value="...has been successfully installed on this server." />
     <br />
     <br />
-    <h:outputText value="#{customlabels.intro}" />
+    <h:outputText value="#{customlabels.intro1}" />
+    <br />
+    <h:outputText value="#{customlabels.intro2}" />
+    <br />
+    <h:outputText value="#{customlabels.intro3}" />
+    <br />
+    <h:outputText value="#{customlabels.intro4}" />
+    <br />
+    <h:outputText value="#{customlabels.info}" />
+    <br />
     [<dg:externalLink target="_blank"
         href="http://wiki.deegree.org/deegreeWiki/deegree3/UtahDemo"
         title="Wiki: Utah demo" />]  
+        <br />
     [<dg:externalLink target="_blank"
         href="http://wiki.deegree.org/deegreeWiki/deegree3"
         title="Wiki: deegree 3" />] 
     <br />
     <br />
     <h:form id="downloadForm">
-        <h:outputText value="#{customlabels.download_intro}" rendered="#{!downloadBean.dataDownloaded}"/>
+        <h:outputText value="#{customlabels.download_intro1}"
+            rendered="#{!downloadBean.dataDownloaded}" />
+        <br />
         <h:panelGroup rendered="#{!downloadBean.dataDownloaded}">
         [<h:commandButton value="Download data"
                 action="#{downloadBean.download}" onclick="show();" />]
-        <h:outputText value="#{customlabels.download_size}" rendered="#{!downloadBean.dataDownloaded}"/>
+        <h:outputText value="#{customlabels.download_size}"
+                rendered="#{!downloadBean.dataDownloaded}" />
         </h:panelGroup>
-        <h:outputText value="#{customlabels.download_outro}" rendered="#{!downloadBean.dataDownloaded}"/>
         <br />
-        <br />
-        <h:outputText value="#{customlabels.admin_info}" />
+        <h:outputText value="#{customlabels.download_outro1}"
+            rendered="#{!downloadBean.dataDownloaded}" />
+            <br />
+        <h:outputText value="#{customlabels.download_outro2}"
+            rendered="#{!downloadBean.dataDownloaded}" />
+    </h:form>
+    <br />
+    <h:outputText value="#{customlabels.admin_info}" />
+    <br />
       [<a href="console.jsf" target="_blank">Administration console</a>]
       <br />
-        <br />
-        <h:outputText value="#{customlabels.congrats}" />
-        <h:outputText value="#{customlabels.use_intro}" />
+    <br />
+    <h:outputText value="#{customlabels.congrats}" />
+    <br />
+    <h:outputText value="#{customlabels.use_intro}" />
+    <br />
      [<a href="console/client/client.html" target="_blank">Generic
-        OGC client</a>]
+    OGC client</a>]
      <h:outputText value="#{customlabels.generic_client}" />
+    <br />
      [<a href="console/wms/wms.html" target="_blank">OpenLayers WMS
-        client</a>]
+    client</a>]
      <h:outputText value="#{customlabels.openlayers}" />
-
-    </h:form>
 </h:body>
 </html>
