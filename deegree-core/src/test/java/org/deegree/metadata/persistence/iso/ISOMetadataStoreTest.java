@@ -199,7 +199,8 @@ public class ISOMetadataStoreTest {
             LOG.warn( "Skipping test (needs configuration)." );
             return;
         }
-        String test_folder = "/home/thomas/inserts_bkg/";// CoreTstProperties.getProperty(
+        String test_folder = "/home/thomas/Dokumente/metadata/testCases/";
+        // String test_folder = "/home/thomas/Dokumente/metadata/test/";// CoreTstProperties.getProperty(
         // "iso_metadata_insert_test_folder"
         // );
         if ( test_folder == null ) {

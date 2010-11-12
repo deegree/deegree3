@@ -270,7 +270,7 @@ COMMENT ON COLUMN ISOQP_Type.Type
 CREATE TABLE QP_Identifier ( 
 ID integer NOT NULL,
 fk_datasets integer NOT NULL,
-identifier varchar(50) NOT NULL    -- MD_Metadata.fileIdentifier
+identifier varchar(150) NOT NULL    -- MD_Metadata.fileIdentifier
 );
 COMMENT ON TABLE QP_Identifier
     IS 'common queryable property (ISO AP 1.0)';

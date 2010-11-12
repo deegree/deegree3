@@ -108,9 +108,9 @@ public class ISOMetadataStoreTransaction implements MetadataStoreTransaction {
                         generateQP.executeQueryableProperties( false, conn, operatesOnId, rec );
                         identifierList.addAll( Arrays.asList( rec.getIdentifier() ) );
                     } else {
-                        String msg = Messages.getMessage( "ERROR_DUPLICATE_INSERT", id );
-                        LOG.debug( msg );
-                        throw new MetadataStoreException( msg );
+                         String msg = Messages.getMessage( "ERROR_DUPLICATE_INSERT", id );
+                         LOG.debug( msg );
+                         throw new MetadataStoreException( msg );
                     }
                 }
 

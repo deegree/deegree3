@@ -30,7 +30,7 @@ COMMENT ON COLUMN ADDQP_Specification.SpecificationDate
 CREATE TABLE ADDQP_Limitation ( 
 	ID integer NOT NULL,
 	fk_datasets integer NOT NULL,
-	limitation character varying(200)  -- MD_Metadata.identificationInfo.MD_DataIdentification.resourceConstraints.MD_Constraints.useLimitation
+	limitation character varying(500)  -- MD_Metadata.identificationInfo.MD_DataIdentification.resourceConstraints.MD_Constraints.useLimitation
 
 );
 COMMENT ON TABLE ADDQP_Limitation

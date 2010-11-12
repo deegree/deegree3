@@ -45,6 +45,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -363,6 +364,8 @@ public class GenerateQueryableProperties {
             generateISOQP_CouplingTypeStatement( isUpdate, connection, operatesOnId,
                                                  rec.getParsedElement().getQueryableProperties() );
         }
+//        if ( rec.getIdentifier() != null && rec.getIdentifier().length != 0 )
+//            LOG.debug( "elem: " + rec.getIdentifier()[0] );
         LOG.debug( "Boundingbox = " + rec.getParsedElement().getQueryableProperties().getBoundingBox() );
         if ( rec.getParsedElement().getQueryableProperties().getBoundingBox() != null ) {
             generateISOQP_BoundingBoxStatement( isUpdate, connection, operatesOnId,
@@ -420,7 +423,7 @@ public class GenerateQueryableProperties {
         for ( String identifierString : qp.getIdentifier() ) {
             s_PRE.append( "INSERT INTO " + databaseTable + " (" + id + ", " + fk_datasets + ", identifier)" );
 
-            s_POST.append( "'" + identifierString + "');" );
+            s_POST.append( "'" + stringInspectation( identifierString ) + "');" );
 
             executeQueryablePropertiesDatabasetables( isUpdate, connection, operatesOnId, databaseTable, s_PRE, s_POST );
 
@@ -509,7 +512,7 @@ public class GenerateQueryableProperties {
 
         s_PRE.append( "INSERT INTO " + databaseTable + " (" + id + ", " + fk_datasets + ", organisationname)" );
 
-        s_POST.append( "'" + qp.getOrganisationName() + "');" );
+        s_POST.append( "'" + stringInspectation( qp.getOrganisationName() ) + "');" );
 
         executeQueryablePropertiesDatabasetables( isUpdate, connection, operatesOnId, databaseTable, s_PRE, s_POST );
 
@@ -558,7 +561,8 @@ public class GenerateQueryableProperties {
         s_PRE.append( "INSERT INTO " + databaseTable + " (" + id + ", " + fk_datasets
                       + ", denominator, distancevalue, distanceuom)" );
 
-        s_POST.append( qp.getDenominator() + "," + qp.getDistanceValue() + ",'" + qp.getDistanceUOM() + "');" );
+        s_POST.append( qp.getDenominator() + "," + qp.getDistanceValue() + ",'"
+                       + stringInspectation( qp.getDistanceUOM() ) + "');" );
 
         executeQueryablePropertiesDatabasetables( isUpdate, connection, operatesOnId, databaseTable, s_PRE, s_POST );
 
@@ -580,7 +584,7 @@ public class GenerateQueryableProperties {
 
         s_PRE.append( "INSERT INTO " + databaseTable + " (" + id + ", " + fk_datasets + ", couplingtype)" );
 
-        s_POST.append( "'" + qp.getCouplingType() + "');" );
+        s_POST.append( "'" + stringInspectation( qp.getCouplingType() ) + "');" );
 
         executeQueryablePropertiesDatabasetables( isUpdate, connection, operatesOnId, databaseTable, s_PRE, s_POST );
 
@@ -605,8 +609,9 @@ public class GenerateQueryableProperties {
             s_PRE.append( "INSERT INTO " + databaseTable + " (" + id + ", " + fk_datasets
                           + ", operateson, operatesonidentifier, operatesonname)" );
 
-            s_POST.append( "'" + operatesOnData.getOperatesOnId() + "','" + operatesOnData.getOperatesOnIdentifier()
-                           + "','" + operatesOnData.getOperatesOnName() + "');" );
+            s_POST.append( "'" + stringInspectation( operatesOnData.getOperatesOnId() ) + "','"
+                           + stringInspectation( operatesOnData.getOperatesOnIdentifier() ) + "','"
+                           + stringInspectation( operatesOnData.getOperatesOnName() ) + "');" );
 
             executeQueryablePropertiesDatabasetables( isUpdate, connection, operatesOnId, databaseTable, s_PRE, s_POST );
         }
@@ -630,7 +635,7 @@ public class GenerateQueryableProperties {
         for ( String operation : qp.getOperation() ) {
             s_PRE.append( "INSERT INTO " + databaseTable + " (" + id + ", " + fk_datasets + ", operation)" );
 
-            s_POST.append( "'" + operation + "');" );
+            s_POST.append( "'" + stringInspectation( operation ) + "');" );
 
             executeQueryablePropertiesDatabasetables( isUpdate, connection, operatesOnId, databaseTable, s_PRE, s_POST );
         }
@@ -656,7 +661,7 @@ public class GenerateQueryableProperties {
             s_PRE.append( "INSERT INTO " + databaseTable + " (" + id + ", " + fk_datasets
                           + ", geographicdescriptioncode)" );
 
-            s_POST.append( "'" + geoDescCode + "');" );
+            s_POST.append( "'" + stringInspectation( geoDescCode ) + "');" );
 
             executeQueryablePropertiesDatabasetables( isUpdate, connection, operatesOnId, databaseTable, s_PRE, s_POST );
         }
@@ -678,7 +683,7 @@ public class GenerateQueryableProperties {
 
         s_PRE.append( "INSERT INTO " + databaseTable + " (" + id + ", " + fk_datasets + ", servicetypeversion)" );
 
-        s_POST.append( "'" + qp.getServiceTypeVersion() + "');" );
+        s_POST.append( "'" + stringInspectation( qp.getServiceTypeVersion() ) + "');" );
 
         executeQueryablePropertiesDatabasetables( isUpdate, connection, operatesOnId, databaseTable, s_PRE, s_POST );
 
@@ -700,7 +705,7 @@ public class GenerateQueryableProperties {
 
         s_PRE.append( "INSERT INTO " + databaseTable + " (" + id + ", " + fk_datasets + ", servicetype)" );
 
-        s_POST.append( "'" + qp.getServiceType() + "');" );
+        s_POST.append( "'" + stringInspectation( qp.getServiceType() ) + "');" );
 
         executeQueryablePropertiesDatabasetables( isUpdate, connection, operatesOnId, databaseTable, s_PRE, s_POST );
 
@@ -722,7 +727,7 @@ public class GenerateQueryableProperties {
 
         s_PRE.append( "INSERT INTO " + databaseTable + " (" + id + ", " + fk_datasets + ", resourcelanguage)" );
 
-        s_POST.append( "'" + qp.getResourceLanguage() + "');" );
+        s_POST.append( "'" + stringInspectation( qp.getResourceLanguage() ) + "');" );
 
         executeQueryablePropertiesDatabasetables( isUpdate, connection, operatesOnId, databaseTable, s_PRE, s_POST );
 
@@ -820,7 +825,7 @@ public class GenerateQueryableProperties {
         for ( String resourceId : qp.getResourceIdentifier() ) {
             s_PRE.append( "INSERT INTO " + databaseTable + " (" + id + ", " + fk_datasets + ", resourceidentifier)" );
 
-            s_POST.append( "'" + resourceId + "');" );
+            s_POST.append( "'" + stringInspectation( resourceId ) + "');" );
 
             executeQueryablePropertiesDatabasetables( isUpdate, connection, operatesOnId, databaseTable, s_PRE, s_POST );
         }
@@ -844,7 +849,7 @@ public class GenerateQueryableProperties {
         for ( String alternateTitle : qp.getAlternateTitle() ) {
             s_PRE.append( "INSERT INTO " + databaseTable + " (" + id + ", " + fk_datasets + ", alternatetitle)" );
 
-            s_POST.append( "'" + alternateTitle + "');" );
+            s_POST.append( "'" + stringInspectation( alternateTitle ) + "');" );
 
             executeQueryablePropertiesDatabasetables( isUpdate, connection, operatesOnId, databaseTable, s_PRE, s_POST );
         }
@@ -868,7 +873,7 @@ public class GenerateQueryableProperties {
         for ( String title : qp.getTitle() ) {
             s_PRE.append( "INSERT INTO " + databaseTable + " (" + id + ", " + fk_datasets + ", title)" );
 
-            s_POST.append( "'" + title + "');" );
+            s_POST.append( "'" + stringInspectation( title ) + "');" );
 
             executeQueryablePropertiesDatabasetables( isUpdate, connection, operatesOnId, databaseTable, s_PRE, s_POST );
         }
@@ -891,7 +896,7 @@ public class GenerateQueryableProperties {
 
         s_PRE.append( "INSERT INTO " + databaseTable + " (" + id + ", " + fk_datasets + ", type)" );
 
-        s_POST.append( "'" + qp.getType() + "');" );
+        s_POST.append( "'" + stringInspectation( qp.getType() ) + "');" );
 
         executeQueryablePropertiesDatabasetables( isUpdate, connection, operatesOnId, databaseTable, s_PRE, s_POST );
 
@@ -917,8 +922,9 @@ public class GenerateQueryableProperties {
                 s_PRE.append( "INSERT INTO " + databaseTable + " (" + id + ", " + fk_datasets
                               + ", keywordtype, keyword, thesaurus)" );
 
-                s_POST.append( "'" + keyword.getKeywordType() + "','" + keywordString + "','" + keyword.getThesaurus()
-                               + "');" );
+                s_POST.append( "'" + stringInspectation( keyword.getKeywordType() ) + "','"
+                               + stringInspectation( keywordString ) + "','"
+                               + stringInspectation( keyword.getThesaurus() ) + "');" );
 
                 executeQueryablePropertiesDatabasetables( isUpdate, connection, operatesOnId, databaseTable, s_PRE,
                                                           s_POST );
@@ -944,7 +950,7 @@ public class GenerateQueryableProperties {
         for ( String topicCategory : qp.getTopicCategory() ) {
             s_PRE.append( "INSERT INTO " + databaseTable + " (" + id + ", " + fk_datasets + ", topiccategory)" );
 
-            s_POST.append( "'" + topicCategory + "');" );
+            s_POST.append( "'" + stringInspectation( topicCategory ) + "');" );
 
             executeQueryablePropertiesDatabasetables( isUpdate, connection, operatesOnId, databaseTable, s_PRE, s_POST );
         }
@@ -969,7 +975,7 @@ public class GenerateQueryableProperties {
             s_PRE.append( "INSERT INTO " + databaseTable + " (" + id + ", " + fk_datasets + ", "
                           + PostGISMappingsISODC.CommonColumnNames.format.name() + ")" );
 
-            s_POST.append( "'" + format.getName() + "');" );
+            s_POST.append( "'" + stringInspectation( format.getName() ) + "');" );
 
             executeQueryablePropertiesDatabasetables( isUpdate, connection, operatesOnId, databaseTable, s_PRE, s_POST );
         }
@@ -993,7 +999,7 @@ public class GenerateQueryableProperties {
         for ( String _abstract : qp.get_abstract() ) {
             s_PRE.append( "INSERT INTO " + databaseTable + " (" + id + ", " + fk_datasets + ", abstract)" );
 
-            s_POST.append( "'" + _abstract + "');" );
+            s_POST.append( "'" + stringInspectation( _abstract ) + "');" );
 
             executeQueryablePropertiesDatabasetables( isUpdate, connection, operatesOnId, databaseTable, s_PRE, s_POST );
         }
@@ -1046,7 +1052,7 @@ public class GenerateQueryableProperties {
 
         s_PRE.append( "INSERT INTO " + databaseTable + " (" + id + ", " + fk_datasets + ", lineage)" );
 
-        s_POST.append( "'" + qp.getLineage() + "');" );
+        s_POST.append( "'" + stringInspectation( qp.getLineage() ) + "');" );
 
         executeQueryablePropertiesDatabasetables( isUpdate, connection, operatesOnId, databaseTable, s_PRE, s_POST );
 
@@ -1072,7 +1078,8 @@ public class GenerateQueryableProperties {
                 s_PRE.append( "INSERT INTO " + databaseTable + " (" + id + ", " + fk_datasets
                               + ", specificationTitle, specificationDateType, specificationDate)" );
 
-                s_POST.append( "'" + specificationTitle + "','" + qp.getSpecificationDateType() + "','"
+                s_POST.append( "'" + stringInspectation( specificationTitle ) + "','"
+                               + stringInspectation( qp.getSpecificationDateType() ) + "','"
                                + qp.getSpecificationDate() + "');" );
 
                 executeQueryablePropertiesDatabasetables( isUpdate, connection, operatesOnId, databaseTable, s_PRE,
@@ -1099,7 +1106,7 @@ public class GenerateQueryableProperties {
         for ( String accessConstraint : qp.getAccessConstraints() ) {
             s_PRE.append( "INSERT INTO " + databaseTable + " (" + id + ", " + fk_datasets + ", accessconstraint)" );
 
-            s_POST.append( "'" + accessConstraint + "');" );
+            s_POST.append( "'" + stringInspectation( accessConstraint ) + "');" );
 
             executeQueryablePropertiesDatabasetables( isUpdate, connection, operatesOnId, databaseTable, s_PRE, s_POST );
         }
@@ -1123,7 +1130,7 @@ public class GenerateQueryableProperties {
         for ( String limitation : qp.getLimitation() ) {
             s_PRE.append( "INSERT INTO " + databaseTable + " (" + id + ", " + fk_datasets + ", limitation)" );
 
-            s_POST.append( "'" + limitation + "');" );
+            s_POST.append( "'" + stringInspectation( limitation ) + "');" );
 
             executeQueryablePropertiesDatabasetables( isUpdate, connection, operatesOnId, databaseTable, s_PRE, s_POST );
         }
@@ -1147,7 +1154,7 @@ public class GenerateQueryableProperties {
         for ( String otherConstraint : qp.getOtherConstraints() ) {
             s_PRE.append( "INSERT INTO " + databaseTable + " (" + id + ", " + fk_datasets + ", otherConstraint)" );
 
-            s_POST.append( "'" + otherConstraint + "');" );
+            s_POST.append( "'" + stringInspectation( otherConstraint ) + "');" );
 
             executeQueryablePropertiesDatabasetables( isUpdate, connection, operatesOnId, databaseTable, s_PRE, s_POST );
         }
@@ -1171,7 +1178,7 @@ public class GenerateQueryableProperties {
         for ( String classification : qp.getClassification() ) {
             s_PRE.append( "INSERT INTO " + databaseTable + " (" + id + ", " + fk_datasets + ", classification)" );
 
-            s_POST.append( "'" + classification + "');" );
+            s_POST.append( "'" + stringInspectation( classification ) + "');" );
 
             executeQueryablePropertiesDatabasetables( isUpdate, connection, operatesOnId, databaseTable, s_PRE, s_POST );
 
@@ -1301,6 +1308,30 @@ public class GenerateQueryableProperties {
         rsBrief.close();
         return result;
 
+    }
+
+    private String stringInspectation( String input ) {
+        if ( input != null ) {
+            input = input.replace( "\'", "\'\'" );
+        }
+        return input;
+    }
+
+    private List<String> stringInspectation( List<String> input ) {
+        List<String> output = new ArrayList<String>();
+        if ( input != null ) {
+
+            for ( String s : input ) {
+                if ( s != null ) {
+                    s = s.replace( "\'", "\'\'" );
+                    output.add( s );
+                }
+            }
+        } else {
+
+        }
+
+        return output;
     }
 
 }

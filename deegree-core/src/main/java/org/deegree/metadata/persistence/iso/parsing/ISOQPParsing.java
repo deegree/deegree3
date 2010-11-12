@@ -207,6 +207,9 @@ public final class ISOQPParsing extends XMLAdapter {
         String[] dateString = getNodesAsStrings( rootElement,
                                                  new XPath( "./gmd:dateStamp/gco:Date | ./gmd:dateStamp/gco:DateTime",
                                                             nsContextISOParsing ) );
+//        OMElement es = getElement( rootElement, new XPath( "./gmd:fileIdentifier", nsContextISOParsing ) );
+//
+//        LOG.debug( "elem: " + es );
         Date[] date = new Date[dateString.length];
         try {
             int counter = 0;
@@ -280,20 +283,32 @@ public final class ISOQPParsing extends XMLAdapter {
 
         List<CRSCodeType> crsList = new LinkedList<CRSCodeType>();
         for ( OMElement crsElement : crsElements ) {
-            String crsIdentification = getNodeAsString( crsElement, new XPath( "./gmd:code/gco:CharacterString",
-                                                                               nsContextISOParsing ), null );
-
-            String crsAuthority = getNodeAsString( crsElement, new XPath( "./gmd:codeSpace/gco:CharacterString",
+            String nilReasonCRS = getNodeAsString( crsElement, new XPath( "./gmd:code/@gco:nilReason",
                                                                           nsContextISOParsing ), null );
 
-            String crsVersion = getNodeAsString( crsElement, new XPath( "./gmd:version/gco:CharacterString",
-                                                                        nsContextISOParsing ), null );
+            String nilReasonAuth = getNodeAsString( crsElement, new XPath( "./gmd:codeSpace/@gco:nilReason",
+                                                                           nsContextISOParsing ), null );
 
-            String crs = crsIdentification;
-            if ( crsAuthority != null ) {
-                crsList.add( new CRSCodeType( crs, crsAuthority ) );
-            } else {
-                crsList.add( new CRSCodeType( crs ) );
+            // OMElement e = getElement( rootElement, new XPath( "./gmd:fileIdentifier", nsContextISOParsing ) );
+            //
+            // LOG.debug( "elem: " + e );
+
+            if ( nilReasonCRS == null && nilReasonAuth == null ) {
+                String crs = getNodeAsString( crsElement, new XPath( "./gmd:code/gco:CharacterString",
+                                                                     nsContextISOParsing ), null );
+
+                String crsAuthority = getNodeAsString( crsElement, new XPath( "./gmd:codeSpace/gco:CharacterString",
+                                                                              nsContextISOParsing ), null );
+
+                String crsVersion = getNodeAsString( crsElement, new XPath( "./gmd:version/gco:CharacterString",
+                                                                            nsContextISOParsing ), null );
+
+                if ( crsAuthority != null ) {
+                    crsList.add( new CRSCodeType( crs, crsAuthority ) );
+                } else if ( crs != null ) {
+
+                    crsList.add( new CRSCodeType( crs ) );
+                }
             }
         }
 
@@ -506,7 +521,9 @@ public final class ISOQPParsing extends XMLAdapter {
                                                                "./gmd:PT_FreeText/gmd:textGroup/gmd:LocalisedCharacterString",
                                                                nsContextISOParsing ) );
             if ( title != null ) {
-                titleStringList.add( title );
+                if ( !title.equals( "" ) ) {
+                    titleStringList.add( title );
+                }
             }
             if ( titleList.length > 0 ) {
                 titleStringList.addAll( Arrays.asList( titleList ) );
