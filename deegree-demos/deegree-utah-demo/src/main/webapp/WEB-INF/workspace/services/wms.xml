@@ -21,7 +21,7 @@
           <Title>Municipalities of Utah</Title>
           <FeatureStoreId>utah_municipalities</FeatureStoreId>
           <DirectStyle>
-            <File>../styles/utah_municipalities.se</File>
+            <File>../styles/utah_municipalities.xml</File>
           </DirectStyle>
         </RequestableLayer>
         <RequestableLayer>
@@ -32,7 +32,7 @@
             <Title>Counties of Utah</Title>
             <FeatureStoreId>utah_counties</FeatureStoreId>
             <DirectStyle>
-              <File>../styles/utah_counties.se</File>
+              <File>../styles/utah_counties.xml</File>
             </DirectStyle>
           </RequestableLayer>
           <RequestableLayer queryable="0">
@@ -41,7 +41,7 @@
             <ScaleUntil>5000000</ScaleUntil>
             <FeatureStoreId>utah_counties</FeatureStoreId>
             <DirectStyle>
-              <File>../styles/utah_countynames.se</File>
+              <File>../styles/utah_countynames.xml</File>
             </DirectStyle>
           </RequestableLayer>
         </RequestableLayer>
@@ -50,7 +50,7 @@
           <Title>Zipcodes of Utah</Title>
           <FeatureStoreId>utah_zipcodes</FeatureStoreId>
           <DirectStyle>
-            <File>../styles/utah_zipcodes.se</File>
+            <File>../styles/utah_zipcodes.xml</File>
           </DirectStyle>
         </RequestableLayer>
         <RequestableLayer>
@@ -58,7 +58,7 @@
           <Title>State of Utah</Title>
           <FeatureStoreId>utah_stateboundary</FeatureStoreId>
           <DirectStyle>
-            <File>../styles/utah_stateboundary.se</File>
+            <File>../styles/utah_stateboundary.xml</File>
           </DirectStyle>
         </RequestableLayer>
       </RequestableLayer>
@@ -71,7 +71,7 @@
           <Title>Railroads of Utah</Title>
           <FeatureStoreId>utah_railroads</FeatureStoreId>
           <DirectStyle>
-            <File>../styles/utah_railroads.se</File>
+            <File>../styles/utah_railroads.xml</File>
           </DirectStyle>
         </RequestableLayer>
         <RequestableLayer>
@@ -79,7 +79,7 @@
           <Title>Roads of Utah</Title>
           <FeatureStoreId>utah_roads</FeatureStoreId>
           <DirectStyle>
-            <File>../styles/utah_roads.se</File>
+            <File>../styles/utah_roads.xml</File>
           </DirectStyle>
           <LayerOptions>
             <MaxFeatures>10000000</MaxFeatures>
@@ -90,7 +90,7 @@
           <Title>Airports in Utah</Title>
           <FeatureStoreId>utah_airports</FeatureStoreId>
           <DirectStyle>
-            <File>../styles/utah_airports.se</File>
+            <File>../styles/utah_airports.xml</File>
           </DirectStyle>
         </RequestableLayer>
       </RequestableLayer>
@@ -103,7 +103,7 @@
           <Title>DEM 90m Raster of Utah</Title>
           <CoverageStoreId>utah_dem</CoverageStoreId>
           <DirectStyle>
-            <File>../styles/utah_dem.se</File>
+            <File>../styles/utah_dem.xml</File>
           </DirectStyle>
         </RequestableLayer>
         <RequestableLayer>
@@ -118,7 +118,7 @@
           </Dimension>
           <CoverageStoreId>utah_dem30</CoverageStoreId>
           <DirectStyle>
-            <File>../styles/utah_dem30.se</File>
+            <File>../styles/utah_dem30.xml</File>
           </DirectStyle>
         </RequestableLayer>
         <RequestableLayer>
@@ -127,7 +127,7 @@
           <LogicalLayer>
             <FeatureStoreId>utah_contours500ft</FeatureStoreId>
             <SLDStyle>
-              <File>../styles/utah_contours.sld</File>
+              <File>../styles/utah_contours.xml</File>
               <NamedLayer>ElevationContours</NamedLayer>
               <Name>ElevationContours</Name>
               <UserStyle>default:ElevationContours</UserStyle>
@@ -137,7 +137,7 @@
           <LogicalLayer>
             <FeatureStoreId>utah_contours1000ft</FeatureStoreId>
             <SLDStyle>
-              <File>../styles/utah_contours.sld</File>
+              <File>../styles/utah_contours.xml</File>
               <NamedLayer>ElevationContours</NamedLayer>
               <Name>ElevationContours</Name>
               <UserStyle>default:ElevationContours</UserStyle>
@@ -147,7 +147,7 @@
           <LogicalLayer>
             <FeatureStoreId>utah_contours2500ft</FeatureStoreId>
             <SLDStyle>
-              <File>../styles/utah_contours.sld</File>
+              <File>../styles/utah_contours.xml</File>
               <NamedLayer>ElevationContours</NamedLayer>
               <Name>ElevationContours</Name>
               <UserStyle>default:ElevationContours</UserStyle>
@@ -165,7 +165,7 @@
           <Title>Rivers in Utah County</Title>
           <FeatureStoreId>utah_rivers</FeatureStoreId>
           <DirectStyle>
-            <File>../styles/utah_rivers.se</File>
+            <File>../styles/utah_rivers.xml</File>
           </DirectStyle>
         </RequestableLayer>
         <RequestableLayer>
@@ -173,7 +173,7 @@
           <Title>Groundwater in Utah County</Title>
           <FeatureStoreId>utah_groundwater</FeatureStoreId>
           <DirectStyle>
-            <File>../styles/utah_groundwater.se</File>
+            <File>../styles/utah_groundwater.xml</File>
           </DirectStyle>
         </RequestableLayer>
         <RequestableLayer>
@@ -181,7 +181,7 @@
           <Title>Lakes in Utah</Title>
           <FeatureStoreId>utah_lakes</FeatureStoreId>
           <DirectStyle>
-            <File>../styles/utah_lakes.se</File>
+            <File>../styles/utah_lakes.xml</File>
           </DirectStyle>
         </RequestableLayer>
         <RequestableLayer>
@@ -189,7 +189,7 @@
           <Title>Springs in Utah</Title>
           <FeatureStoreId>utah_springs</FeatureStoreId>
           <DirectStyle>
-            <File>../styles/utah_springs.se</File>
+            <File>../styles/utah_springs.xml</File>
           </DirectStyle>
         </RequestableLayer>
       </RequestableLayer>
@@ -205,7 +205,7 @@
         <Title>Dominant vegetation in Utah</Title>
         <FeatureStoreId>utah_dominantvegetation</FeatureStoreId>
         <DirectStyle>
-          <File>../styles/utah_dominantvegetation.se</File>
+          <File>../styles/utah_dominantvegetation.xml</File>
         </DirectStyle>
       </RequestableLayer>
 
@@ -214,7 +214,7 @@
         <Title>Energyresources in Utah</Title>
         <FeatureStoreId>utah_energyresources</FeatureStoreId>
         <DirectStyle>
-          <File>../styles/utah_energyresources.se</File>
+          <File>../styles/utah_energyresources.xml</File>
         </DirectStyle>
         <LayerOptions>
           <AntiAliasing>NONE</AntiAliasing>
@@ -226,7 +226,7 @@
         <Title>Cities in Utah County</Title>
         <FeatureStoreId>utah_cities</FeatureStoreId>
         <DirectStyle>
-          <File>../styles/utah_cities.se</File>
+          <File>../styles/utah_cities.xml</File>
         </DirectStyle>
       </RequestableLayer>
       <!--
@@ -246,7 +246,7 @@
         </Dimension>
         <FeatureStoreId>utah_weather</FeatureStoreId>
         <DirectStyle>
-          <File>../styles/utah_weather.se</File>
+          <File>../styles/utah_weather.xml</File>
         </DirectStyle>
       </RequestableLayer>
 

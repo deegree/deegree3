@@ -40,13 +40,13 @@
     <br />
     <br />
     <h:form id="downloadForm">
-        <h:outputText value="#{customlabels.download_intro}" />
+        <h:outputText value="#{customlabels.download_intro}" rendered="#{!downloadBean.dataDownloaded}"/>
         <h:panelGroup rendered="#{!downloadBean.dataDownloaded}">
         [<h:commandButton value="Download data"
                 action="#{downloadBean.download}" onclick="show();" />]
-        <h:outputText value="#{customlabels.download_size}" />
+        <h:outputText value="#{customlabels.download_size}" rendered="#{!downloadBean.dataDownloaded}"/>
         </h:panelGroup>
-        <h:outputText value="#{customlabels.download_outro}" />
+        <h:outputText value="#{customlabels.download_outro}" rendered="#{!downloadBean.dataDownloaded}"/>
         <br />
         <br />
         <h:outputText value="#{customlabels.admin_info}" />
