@@ -46,6 +46,7 @@ import static org.deegree.protocol.csw.CSWConstants.CSW_202_NS;
 import static org.deegree.protocol.csw.CSWConstants.CSW_PREFIX;
 import static org.deegree.protocol.csw.CSWConstants.VERSION_202;
 
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -54,6 +55,7 @@ import java.util.Map;
 import java.util.Set;
 
 import javax.xml.XMLConstants;
+import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
@@ -74,6 +76,8 @@ import org.deegree.services.jaxb.main.DeegreeServicesMetadataType;
 import org.deegree.services.jaxb.main.KeywordsType;
 import org.deegree.services.jaxb.main.LanguageStringType;
 import org.deegree.services.jaxb.main.ServiceIdentificationType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Does the exportHandling for the Capabilities. This is a very static handling for explanation.
@@ -84,6 +88,8 @@ import org.deegree.services.jaxb.main.ServiceIdentificationType;
  * @version $Revision: $, $Date: $
  */
 public class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
+
+    private static Logger LOG = LoggerFactory.getLogger( GetCapabilitiesHandler.class );
 
     private static final String OGC_NS = "http://www.opengis.net/ogc";
 
@@ -107,7 +113,7 @@ public class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
 
     private boolean isSoap;
 
-    private boolean exportInspireExtensions;
+    private final boolean isEnabledInspireExtension;
 
     private static List<String> additionalQueryables = new ArrayList<String>();
 
@@ -118,7 +124,7 @@ public class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
 
     private static LinkedList<String> supportedOperations = new LinkedList<String>();
 
-    private Map<String, String> varToValue = new HashMap<String, String>();
+    private final Map<String, String> varToValue;
 
     static {
         isoQueryables.add( "Format" );
@@ -176,7 +182,7 @@ public class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
     public GetCapabilitiesHandler( XMLStreamWriter writer, DeegreeServicesMetadataType mainControllerConf,
                                    DeegreeServiceControllerType mainConf, Set<Sections> sections,
                                    ServiceIdentificationType identification, Version version,
-                                   boolean isTransactionEnabled, boolean isSoap ) {
+                                   boolean isTransactionEnabled, boolean isEnabledInspireExtension, boolean isSoap ) {
         this.writer = writer;
         this.mainControllerConf = mainControllerConf;
         this.mainConf = mainConf;
@@ -185,17 +191,29 @@ public class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
         this.version = version;
         this.isSoap = isSoap;
         this.isTransactionEnabled = isTransactionEnabled;
+        this.isEnabledInspireExtension = isEnabledInspireExtension;
 
-        // TODO fill map
-        Map<String, String> varToValue = new HashMap<String, String>();
+        this.varToValue = new HashMap<String, String>();
         String serverAddress = OGCFrontController.getHttpGetURL();
-        varToValue.put( "${SERVER_ADDRESS}", serverAddress );
         String systemStartDate = "2010-11-16";
-        String organizationName = mainControllerConf.getServiceProvider().getProviderName();
-        List<String> emailAddresses = mainControllerConf.getServiceProvider().getServiceContact().getElectronicMailAddress();
-        if ( emailAddresses.isEmpty() ) {
-            emailAddresses.get( 0 );
+        String organizationName = null;
+        String emailAddress = null;
+        try {
+            organizationName = mainControllerConf.getServiceProvider().getProviderName();
+            List<String> emailAddresses = mainControllerConf.getServiceProvider().getServiceContact().getElectronicMailAddress();
+            if ( !emailAddresses.isEmpty() ) {
+                emailAddress = emailAddresses.get( 0 ).trim();
+            }
+            varToValue.put( "${SERVER_ADDRESS}", serverAddress );
+            varToValue.put( "${SYSTEM_START_DATE}", systemStartDate );
+            varToValue.put( "${ORGANIZATION_NAME}", organizationName );
+            varToValue.put( "${CI_EMAIL_ADDRESS}", emailAddress );
+        } catch ( NullPointerException e ) {
+            String msg = "There is somewhere a null?!?";
+            LOG.debug( msg );
+            throw new NullPointerException( msg );
         }
+
     }
 
     /**
@@ -338,13 +356,12 @@ public class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
         writer.writeEndElement();// Value
 
         writer.writeEndElement();// Constraint
-
         // additional inspire queryables
-        if ( exportInspireExtensions ) {
+        if ( this.isEnabledInspireExtension ) {
             exportExtendedCapabilities( writer, owsNS );
         }
-
         writer.writeEndElement();// OperationsMetadata
+
     }
 
     private void exportExtendedCapabilities( XMLStreamWriter writer, String owsNS )
@@ -352,8 +369,9 @@ public class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
 
         writer.writeStartElement( owsNS, "ExtendedCapabilities" );
 
-        // TODO
-        XMLStreamReader reader = null;
+        InputStream in = GetCapabilitiesHandler.class.getResourceAsStream( "extendedCapInspire.xml" );
+        XMLStreamReader reader = XMLInputFactory.newInstance().createXMLStreamReader( in );
+        reader.nextTag();
         writeTemplateElement( writer, reader );
         writer.writeEndElement();
     }
@@ -376,13 +394,19 @@ public class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
                 break;
             }
             case CHARACTERS: {
-                String s = new String( inStream.getTextCharacters() );
-                // TODO optimize
-                for ( String param : varToValue.keySet() ) {
-                    String value = varToValue.get( param );
-                    s = s.replace( param, value );
+                if ( inStream.isWhiteSpace() ) {
+                    // skip
+                } else {
+
+                    String s = new String( inStream.getTextCharacters(), inStream.getTextStart(),
+                                           inStream.getTextLength() );
+                    // TODO optimize
+                    for ( String param : varToValue.keySet() ) {
+                        String value = varToValue.get( param );
+                        s = s.replace( param, value );
+                    }
+                    writer.writeCharacters( s );
                 }
-                writer.writeCharacters( s );
                 break;
             }
             case END_ELEMENT: {
@@ -733,22 +757,18 @@ public class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
 
         writer.writeStartElement( owsNS, "Constraint" );
         writer.writeAttribute( "name", "SupportedISOQueryables" );
-
         for ( String s : isoQueryables ) {
             writer.writeStartElement( owsNS, "Value" );
             writer.writeCharacters( s );
             writer.writeEndElement();// Value
         }
+        writer.writeEndElement();// Constraint
 
         writer.writeStartElement( owsNS, "Constraint" );
         writer.writeAttribute( "name", "AdditionalQueryables" );
-
         for ( String val : additionalQueryables ) {
             writeElement( writer, owsNS, "Value", val );
         }
-
-        writer.writeEndElement();// Constraint
-
         writer.writeEndElement();// Constraint
 
     }

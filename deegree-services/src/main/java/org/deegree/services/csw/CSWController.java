@@ -1,4 +1,4 @@
-//$HeadURL$ svn+ssh://sthomas@svn.wald.intevation.org/deegree/deegree3/services/trunk/src/org/deegree/services/controller/csw/CSWController.java $
+//$HeadURL$ svn+ssh://sthomas@svn.wald.intevation.org/deegree/deegree3/services/trunk/src/org/deegree/servicescontroller/csw/CSWController.java $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -135,11 +135,13 @@ public class CSWController extends AbstractOGCServiceController {
 
     private static final String CONFIG_JAXB_PACKAGE = "org.deegree.services.jaxb.csw";
 
-    private static final String CONFIG_SCHEMA = "/META-INF/schemas/csw/0.6.0/csw_configuration.xsd";
+    private static final String CONFIG_SCHEMA = "/META-INF/schemas/csw/3.0.0/csw_configuration.xsd";
 
     private CSWService service;
 
     private boolean enableTransactions;
+
+    private boolean enableInspireExtensions;
 
     private CSWSecurityManager securityManager;
 
@@ -156,7 +158,7 @@ public class CSWController extends AbstractOGCServiceController {
             supportedVersions = new Version[] { VERSION_202 };
             handledNamespaces = new String[] { CSW_202_NS };
             handledRequests = CSWRequestType.class;
-            supportedConfigVersions = new Version[] { Version.parseVersion( "0.6.0" ) };
+            supportedConfigVersions = new Version[] { Version.parseVersion( "3.0.0" ) };
 
         }
     };
@@ -191,6 +193,13 @@ public class CSWController extends AbstractOGCServiceController {
             LOG.info( "Transactions are enabled." );
         } else {
             LOG.info( "Transactions are disabled!" );
+        }
+        if ( jaxbConfig.getEnableInspireExtensions() != null ) {
+            enableInspireExtensions = true;
+            LOG.info( "Inspire is activated" );
+        } else {
+            enableInspireExtensions = false;
+            LOG.info( "Inspire is de-activated" );
         }
         describeRecordHandler = new DescribeRecordHandler( service );
         getRecordsHandler = new GetRecordsHandler( service );
@@ -573,9 +582,11 @@ public class CSWController extends AbstractOGCServiceController {
         response.setContentType( "text/xml; charset=UTF-8" );
 
         XMLStreamWriter xmlWriter = getXMLResponseWriter( response, null );
+
         GetCapabilitiesHandler gce = new GetCapabilitiesHandler( xmlWriter, mainMetadataConf, mainControllerConf,
                                                                  sections, mainMetadataConf.getServiceIdentification(),
-                                                                 negotiatedVersion, enableTransactions, isSoap );
+                                                                 negotiatedVersion, enableTransactions,
+                                                                 enableInspireExtensions, isSoap );
         gce.export();
         xmlWriter.flush();
 
