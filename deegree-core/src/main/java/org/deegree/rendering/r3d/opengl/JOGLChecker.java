@@ -82,7 +82,7 @@ public class JOGLChecker {
                     sb.append( " Hint: set your systems's LD_LIBRARY_PATH environment variable to include the directory that contains libgluegen-rt.so, libjogl_awt.so, libjogl_cg.so, libjogl.so. This can be achieved by exporting the LD_LIBRARY_PATH (export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:/path/to/jogl/libs/)." );
                 }
             }
-            sb.append( " See http://wiki.deegree.org/deegreeWiki/deegree3/jogl for more information." );
+            sb.append( " See http://wiki.deegree.org/deegreeWiki/deegree3/SystemRequirements for more information." );
 
             String msg = sb.toString();
             LOG.error( msg );
