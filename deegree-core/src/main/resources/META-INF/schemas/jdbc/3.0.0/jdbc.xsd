@@ -20,6 +20,7 @@
         <element name="Url" type="string" />
         <element name="User" type="string" />
         <element name="Password" type="string" />
+        <element name="ReadOnly" type="boolean" minOccurs="0" default="false"/>
       </sequence>
       <attribute name="configVersion" use="required" fixed="3.0.0" />
     </complexType>
