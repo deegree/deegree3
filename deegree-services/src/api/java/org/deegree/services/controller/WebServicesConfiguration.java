@@ -48,14 +48,11 @@ import java.util.List;
 import java.util.Map;
 
 import javax.servlet.ServletException;
-import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Unmarshaller;
 
 import org.deegree.commons.config.DeegreeWorkspace;
-import org.deegree.commons.tom.ows.Version;
 import org.deegree.commons.xml.XMLAdapter;
+import org.deegree.commons.xml.jaxb.JAXBUtils;
 import org.deegree.services.controller.utils.StandardRequestLogger;
 import org.deegree.services.csw.CSWController;
 import org.deegree.services.jaxb.controller.AllowedServices;
@@ -83,7 +80,13 @@ public class WebServicesConfiguration {
 
     private static final Logger LOG = getLogger( WebServicesConfiguration.class );
 
-    private static final Version SUPPORTED_CONFIG_VERSION = Version.parseVersion( "0.6.0" );
+    private static final String CONTROLLER_JAXB_PACKAGE = "org.deegree.services.jaxb.controller";
+
+    private static final String CONTROLLER_CONFIG_SCHEMA = "/META-INF/schemas/controller/3.0.0/controller.xsd";
+
+    private static final String METADATA_JAXB_PACKAGE = "org.deegree.services.jaxb.metadata";
+
+    private static final String METADATA_CONFIG_SCHEMA = "/META-INF/schemas/metadata/3.0.0/metadata.xsd";
 
     // maps service names (e.g. 'WMS', 'WFS', ...) to responsible subcontrollers
     private final Map<AllowedServices, AbstractOGCServiceController> serviceNameToController = new HashMap<AllowedServices, AbstractOGCServiceController>();
@@ -135,34 +138,25 @@ public class WebServicesConfiguration {
         }
 
         try {
-            String contextName = "org.deegree.services.jaxb.main";
-            JAXBContext jc = JAXBContext.newInstance( contextName );
-            Unmarshaller unmarshaller = jc.createUnmarshaller();
-            metadataConfig = (DeegreeServicesMetadataType) ( (JAXBElement<?>) unmarshaller.unmarshal( metadata ) ).getValue();
+            metadataConfig = (DeegreeServicesMetadataType) ( (JAXBElement<?>) JAXBUtils.unmarshall(
+                                                                                                    METADATA_JAXB_PACKAGE,
+                                                                                                    METADATA_CONFIG_SCHEMA,
+                                                                                                    metadata.toURI().toURL() ) ).getValue();
             try {
-                mainConfig = (DeegreeServiceControllerType) ( (JAXBElement<?>) unmarshaller.unmarshal( main ) ).getValue();
-            } catch ( JAXBException e ) {
+                mainConfig = (DeegreeServiceControllerType) ( (JAXBElement<?>) JAXBUtils.unmarshall(
+                                                                                                     CONTROLLER_JAXB_PACKAGE,
+                                                                                                     CONTROLLER_CONFIG_SCHEMA,
+                                                                                                     main.toURI().toURL() ) ).getValue();
+            } catch ( Exception e ) {
                 mainConfig = new DeegreeServiceControllerType();
                 LOG.info( "main.xml could not be loaded. Proceeding with defaults." );
                 LOG.debug( "Error was: '{}'.", e.getLocalizedMessage() );
                 LOG.trace( "Stack trace:", e );
             }
-        } catch ( JAXBException e ) {
+        } catch ( Exception e ) {
             String msg = "Could not unmarshall frontcontroller configuration: " + e.getMessage();
             LOG.error( msg );
             throw new ServletException( msg, e );
-        }
-
-        Version configVersion = Version.parseVersion( metadataConfig.getConfigVersion() );
-        if ( !configVersion.equals( SUPPORTED_CONFIG_VERSION ) ) {
-            String msg = "The service metadata file '" + metadata + " uses configuration format version "
-                         + metadataConfig.getConfigVersion() + ", but this deegree version only supports version "
-                         + SUPPORTED_CONFIG_VERSION + ". Information on resolving this issue can be found at "
-                         + "'http://wiki.deegree.org/deegreeWiki/deegree3/ConfigurationVersions'. ";
-            LOG.debug( "********************************************************************************" );
-            LOG.error( msg );
-            LOG.debug( "********************************************************************************" );
-            throw new ServletException( msg );
         }
 
         initRequestLogger();
@@ -550,5 +544,4 @@ public class WebServicesConfiguration {
     public boolean logOnlySuccessful() {
         return logOnlySuccessful;
     }
-
 }
