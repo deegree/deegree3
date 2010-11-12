@@ -44,13 +44,20 @@
 								<h:link styleClass="navi" value="version" outcome="/console/jsf/version.xhtml" />
 								<h:link styleClass="navi" value="workspace" outcome="/console/jsf/workspace.xhtml" />
 								<br/>
-								<h:link styleClass="navi" value="webservices" outcome="/console/jsf/webservices.xhtml" disabled="#{!logBean.loggedIn}" />
-								<h:link styleClass="navi" value="render" outcome="/console/jsf/render.xhtml" disabled="#{!logBean.loggedIn}" />
-								<h:link styleClass="navi" value="featureStore" outcome="/console/jsf/featureStore.xhtml" disabled="#{!logBean.loggedIn}" />
-				                <h:link styleClass="navi" value="metadataStore" outcome="/console/jsf/metadataStore.xhtml" disabled="#{!logBean.loggedIn}" />				
-								<h:link styleClass="navi" value="observationStores" outcome="/console/jsf/observationStores.xhtml" disabled="#{!logBean.loggedIn}" />
-								<h:link styleClass="navi" value="jdbc" outcome="/console/jsf/jdbc.xhtml" disabled="#{!logBean.loggedIn}" />
-                                <h:link styleClass="navi" value="proxy" outcome="/console/jsf/proxy.xhtml" disabled="#{!logBean.loggedIn}" />
+								<h:link styleClass="naviactive" value="webservices" outcome="/console/jsf/webservices.xhtml" disabled="#{!logBean.loggedIn}" rendered="#{facesContext.viewRoot.viewId == '/console/jsf/webservices.xhtml'}"/>
+                                <h:link styleClass="navi" value="webservices" outcome="/console/jsf/webservices.xhtml" disabled="#{!logBean.loggedIn}" rendered="#{facesContext.viewRoot.viewId != '/console/jsf/webservices.xhtml'}"/>
+								<h:link styleClass="naviactive" value="render" outcome="/console/jsf/render.xhtml" disabled="#{!logBean.loggedIn}" rendered="#{facesContext.viewRoot.viewId == '/console/jsf/render.xhtml'}"/>
+                                <h:link styleClass="navi" value="render" outcome="/console/jsf/render.xhtml" disabled="#{!logBean.loggedIn}" rendered="#{facesContext.viewRoot.viewId != '/console/jsf/render.xhtml'}"/>
+								<h:link styleClass="naviactive" value="featureStore" outcome="/console/jsf/featureStore.xhtml" disabled="#{!logBean.loggedIn}" rendered="#{facesContext.viewRoot.viewId == '/console/jsf/featureStore.xhtml'}"/>
+                                <h:link styleClass="navi" value="featureStore" outcome="/console/jsf/featureStore.xhtml" disabled="#{!logBean.loggedIn}" rendered="#{facesContext.viewRoot.viewId != '/console/jsf/featureStore.xhtml'}"/>
+				                <h:link styleClass="naviactive" value="metadataStore" outcome="/console/jsf/metadataStore.xhtml" disabled="#{!logBean.loggedIn}" rendered="#{facesContext.viewRoot.viewId == '/console/jsf/metadataStore.xhtml'}"/>				
+                                <h:link styleClass="navi" value="metadataStore" outcome="/console/jsf/metadataStore.xhtml" disabled="#{!logBean.loggedIn}" rendered="#{facesContext.viewRoot.viewId != '/console/jsf/metadataStore.xhtml'}"/>               
+								<h:link styleClass="naviactive" value="observationStores" outcome="/console/jsf/observationStores.xhtml" disabled="#{!logBean.loggedIn}" rendered="#{facesContext.viewRoot.viewId == '/console/jsf/observationStores.xhtml'}"/>
+                                <h:link styleClass="navi" value="observationStores" outcome="/console/jsf/observationStores.xhtml" disabled="#{!logBean.loggedIn}" rendered="#{facesContext.viewRoot.viewId != '/console/jsf/observationStores.xhtml'}"/>
+								<h:link styleClass="naviactive" value="jdbc" outcome="/console/jsf/jdbc.xhtml" disabled="#{!logBean.loggedIn}" rendered="#{facesContext.viewRoot.viewId == '/console/jsf/jdbc.xhtml'}"/>
+                                <h:link styleClass="navi" value="jdbc" outcome="/console/jsf/jdbc.xhtml" disabled="#{!logBean.loggedIn}" rendered="#{facesContext.viewRoot.viewId != '/console/jsf/jdbc.xhtml'}"/>
+                                <h:link styleClass="naviactive" value="proxy" outcome="/console/jsf/proxy.xhtml" disabled="#{!logBean.loggedIn}" rendered="#{facesContext.viewRoot.viewId == '/console/jsf/proxy.xhtml'}"/>
+                                <h:link styleClass="navi" value="proxy" outcome="/console/jsf/proxy.xhtml" disabled="#{!logBean.loggedIn}" rendered="#{facesContext.viewRoot.viewId != '/console/jsf/proxy.xhtml'}"/>
 								<br/>
 								<h:link styleClass="naviExtern" outcome="/console/client/client.xhtml" target="_blank" value="#{labels.link_genericClient}" />
 								<h:outputLink styleClass="naviExtern" value="#{facesContext.externalContext.requestContextPath}/console/wms/wms.html" target="_blank">

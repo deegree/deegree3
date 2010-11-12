@@ -81,6 +81,19 @@ body {
 	color: green;
 }
 
+.naviactive {
+	font-size: large;
+	font-style: bold;
+}
+
+.naviactive:hover {
+	color: green;
+}
+
+.naviactive:active {
+	color: green;
+}
+
 .naviExtern:hover {
 	color: blue;
 }
