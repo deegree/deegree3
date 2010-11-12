@@ -586,6 +586,13 @@ public class OGCFrontController extends HttpServlet {
             // 1.0.0)
             String service = normalizedKVPParams.get( "SERVICE" );
             String request = normalizedKVPParams.get( "REQUEST" );
+
+            if ( request != null && request.equalsIgnoreCase( "getlogo" ) ) {
+                response.setContentType( "text/plain" );
+                DeegreeAALogoUtils.print( response.getWriter() );
+                return;
+            }
+
             if ( service != null ) {
 
                 try {
