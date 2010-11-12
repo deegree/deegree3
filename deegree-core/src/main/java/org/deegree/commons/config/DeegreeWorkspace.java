@@ -262,6 +262,7 @@ public class DeegreeWorkspace {
         getCoverageBuilderManager().destroy();
         FeatureStoreManager.destroy();
         MetadataStoreManager.destroy();
+        ObservationStoreManager.destroy();
         ConnectionManager.destroy();
     }
 }

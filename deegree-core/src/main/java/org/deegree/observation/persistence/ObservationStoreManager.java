@@ -41,7 +41,6 @@ import java.net.URL;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.ServiceLoader;
 
@@ -50,7 +49,6 @@ import javax.xml.stream.XMLStreamReader;
 
 import org.deegree.commons.xml.stax.StAXParsingHelper;
 import org.deegree.feature.i18n.Messages;
-import org.deegree.observation.persistence.contsql.jaxb.ContinuousObservationStore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -202,34 +200,36 @@ public class ObservationStoreManager {
     /**
      * @param contStore
      */
-    private static DatastoreConfiguration getContStoreConfig( ContinuousObservationStore contStore ) {
-        String jdbcId = contStore.getJDBCConnId();
-        String tableName = contStore.getTable();
-
-        DatastoreConfiguration dsConf = new DatastoreConfiguration( jdbcId, tableName );
-        List<org.deegree.observation.persistence.contsql.jaxb.ColumnType> columns = contStore.getColumn();
-        for ( org.deegree.observation.persistence.contsql.jaxb.ColumnType col : columns ) {
-            dsConf.addToColumnMap( col.getType(), col.getName() );
-        }
-
-        List<org.deegree.observation.persistence.contsql.jaxb.OptionType> optionTypes = contStore.getOption();
-        for ( org.deegree.observation.persistence.contsql.jaxb.OptionType opt : optionTypes ) {
-            dsConf.addToGenOptionsMap( opt.getName(), opt.getValue() );
-        }
-
-        List<org.deegree.observation.persistence.contsql.jaxb.ContinuousObservationStore.Property> properties = contStore.getProperty();
-        for ( org.deegree.observation.persistence.contsql.jaxb.ContinuousObservationStore.Property propType : properties ) {
-            org.deegree.observation.model.Property prop = new org.deegree.observation.model.Property(
-                                                                                                      propType.getHref(),
-                                                                                                      propType.getColumn().getName() );
-            for ( org.deegree.observation.persistence.contsql.jaxb.OptionType propOpType : propType.getOption() ) {
-                prop.addToOption( propOpType.getName(), propOpType.getValue() );
-            }
-            dsConf.addToColumnMap( propType.getHref(), propType.getColumn().getName() );
-            dsConf.addToProperties( prop );
-        }
-        return dsConf;
-    }
+    // private static DatastoreConfiguration getContStoreConfig( ContinuousObservationStore contStore ) {
+    // String jdbcId = contStore.getJDBCConnId();
+    // String tableName = contStore.getTable();
+    //
+    // DatastoreConfiguration dsConf = new DatastoreConfiguration( jdbcId, tableName );
+    // List<org.deegree.observation.persistence.contsql.jaxb.ColumnType> columns = contStore.getColumn();
+    // for ( org.deegree.observation.persistence.contsql.jaxb.ColumnType col : columns ) {
+    // dsConf.addToColumnMap( col.getType(), col.getName() );
+    // }
+    //
+    // List<org.deegree.observation.persistence.contsql.jaxb.OptionType> optionTypes = contStore.getOption();
+    // for ( org.deegree.observation.persistence.contsql.jaxb.OptionType opt : optionTypes ) {
+    // dsConf.addToGenOptionsMap( opt.getName(), opt.getValue() );
+    // }
+    //
+    // List<org.deegree.observation.persistence.contsql.jaxb.ContinuousObservationStore.Property> properties =
+    // contStore.getProperty();
+    // for ( org.deegree.observation.persistence.contsql.jaxb.ContinuousObservationStore.Property propType : properties
+    // ) {
+    // org.deegree.observation.model.Property prop = new org.deegree.observation.model.Property(
+    // propType.getHref(),
+    // propType.getColumn().getName() );
+    // for ( org.deegree.observation.persistence.contsql.jaxb.OptionType propOpType : propType.getOption() ) {
+    // prop.addToOption( propOpType.getName(), propOpType.getValue() );
+    // }
+    // dsConf.addToColumnMap( propType.getHref(), propType.getColumn().getName() );
+    // dsConf.addToProperties( prop );
+    // }
+    // return dsConf;
+    // }
 
     /**
      * @param datastoreId
@@ -251,6 +251,11 @@ public class ObservationStoreManager {
      */
     public static boolean containsDatastore( String datastoreId ) {
         return idToOds.containsKey( datastoreId );
+    }
+
+    public static void destroy() {
+        // the stores do not have destroy yet
+        idToOds.clear();
     }
 
 }
