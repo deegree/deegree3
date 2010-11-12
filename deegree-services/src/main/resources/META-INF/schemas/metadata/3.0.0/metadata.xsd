@@ -23,7 +23,7 @@
       <xs:element ref="md:ServiceIdentification" minOccurs="0" />
       <xs:element ref="md:ServiceProvider" />
     </xs:sequence>
-    <xs:attribute name="configVersion" fixed="0.6.0" use="required" />
+    <xs:attribute name="configVersion" fixed="3.0.0" use="required" />
   </xs:complexType>
 
   <xs:element name="ServiceIdentification" type="md:ServiceIdentificationType" />
