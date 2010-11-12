@@ -44,12 +44,11 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
 
-import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
-import javax.xml.bind.Unmarshaller;
 
 import org.deegree.commons.jdbc.ConnectionManager;
 import org.deegree.commons.xml.XMLAdapter;
+import org.deegree.commons.xml.jaxb.JAXBUtils;
 import org.deegree.rendering.r3d.jaxb.renderable.RenderableSQLStoreConfig;
 import org.deegree.rendering.r3d.opengl.rendering.model.texture.TexturePool;
 import org.deegree.rendering.r3d.persistence.RenderableStore;
@@ -70,37 +69,40 @@ public class RenderableSQLStoreProvider implements RenderableStoreProvider {
 
     private static final Logger LOG = LoggerFactory.getLogger( RenderableSQLStoreProvider.class );
 
+    private static final String CONFIG_NS = "http://www.deegree.org/datasource/renderable/sql";
+
+    private static final String CONFIG_JAXB_PACKAGE = RenderableSQLStoreConfig.class.getPackage().getName();
+
+    private static final String CONFIG_SCHEMA = "/META-INF/schemas/datasource/3d/renderable/3.0.0/sql.xsd";
+
     @Override
     public String getConfigNamespace() {
-        return "http://www.deegree.org/datasource/renderable/sql";
+        return CONFIG_NS;
     }
 
     @Override
     public RenderableStore build( URL configURL ) {
         RenderableStore rs = null;
         try {
-            JAXBContext jc = JAXBContext.newInstance( "org.deegree.rendering.r3d.jaxb.renderable" );
-            Unmarshaller u = jc.createUnmarshaller();
-            RenderableSQLStoreConfig config = (RenderableSQLStoreConfig) u.unmarshal( configURL );
+            RenderableSQLStoreConfig config = (RenderableSQLStoreConfig) JAXBUtils.unmarshall( CONFIG_JAXB_PACKAGE,
+                                                                                               CONFIG_SCHEMA, configURL );
 
             XMLAdapter resolver = new XMLAdapter();
             resolver.setSystemId( configURL.toString() );
             String connId = config.getJDBCConnId();
             Connection connection = ConnectionManager.getConnection( connId );
             connection.close();
-            
-            
-            
-            rs = new PostgisBackend( connId, (config.isIsBillboard()?ModelBackend.Type.TREE:ModelBackend.Type.BUILDING));
-                // instantiate the texture dir
-                List<String> tDirs = config.getTextureDirectory();
-                for ( String tDir : tDirs ) {
-                    if ( tDir != null ) {
-                        File tD = resolveFile( tDir, resolver, false, null );
-                        TexturePool.addTexturesFromDirectory( tD );
-                    }
-                }
 
+            rs = new PostgisBackend( connId, ( config.isIsBillboard() ? ModelBackend.Type.TREE
+                                                                     : ModelBackend.Type.BUILDING ) );
+            // instantiate the texture dir
+            List<String> tDirs = config.getTextureDirectory();
+            for ( String tDir : tDirs ) {
+                if ( tDir != null ) {
+                    File tD = resolveFile( tDir, resolver, false, null );
+                    TexturePool.addTexturesFromDirectory( tD );
+                }
+            }
 
         } catch ( JAXBException e ) {
             String msg = "Error in RenderableStore configuration file '" + configURL + "': " + e.getMessage();
@@ -111,7 +113,6 @@ public class RenderableSQLStoreProvider implements RenderableStoreProvider {
         }
         return rs;
     }
-
 
     private File resolveFile( String fileName, XMLAdapter resolver, boolean required, String msg ) {
         URI resolve = resolveURI( fileName, resolver );

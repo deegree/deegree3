@@ -43,11 +43,10 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.List;
 
-import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
-import javax.xml.bind.Unmarshaller;
 
 import org.deegree.commons.xml.XMLAdapter;
+import org.deegree.commons.xml.jaxb.JAXBUtils;
 import org.deegree.rendering.r3d.jaxb.renderable.RenderableFileStoreConfig;
 import org.deegree.rendering.r3d.opengl.rendering.model.texture.TexturePool;
 import org.deegree.rendering.r3d.persistence.RenderableStore;
@@ -67,18 +66,24 @@ public class RenderableFileStoreProvider implements RenderableStoreProvider {
 
     private static final Logger LOG = LoggerFactory.getLogger( RenderableFileStoreProvider.class );
 
+    private static final String CONFIG_NS = "http://www.deegree.org/datasource/3d/renderable/file";
+
+    private static final String CONFIG_JAXB_PACKAGE = RenderableFileStoreConfig.class.getPackage().getName();
+
+    private static final String CONFIG_SCHEMA = "/META-INF/schemas/datasource/3d/renderable/3.0.0/file.xsd";
+
     @Override
     public String getConfigNamespace() {
-        return "http://www.deegree.org/datasource/renderable/file";
+        return CONFIG_NS;
     }
 
     @Override
     public RenderableStore build( URL configURL ) {
         RenderableStore rs = null;
         try {
-            JAXBContext jc = JAXBContext.newInstance( "org.deegree.rendering.r3d.jaxb.renderable" );
-            Unmarshaller u = jc.createUnmarshaller();
-            RenderableFileStoreConfig config = (RenderableFileStoreConfig) u.unmarshal( configURL );
+            RenderableFileStoreConfig config = (RenderableFileStoreConfig) JAXBUtils.unmarshall( CONFIG_JAXB_PACKAGE,
+                                                                                                 CONFIG_SCHEMA,
+                                                                                                 configURL );
 
             XMLAdapter resolver = new XMLAdapter();
             resolver.setSystemId( configURL.toString() );
