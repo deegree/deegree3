@@ -49,12 +49,11 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
-import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
-import javax.xml.bind.Unmarshaller;
 
 import org.deegree.commons.utils.FileUtils;
 import org.deegree.commons.xml.XMLAdapter;
+import org.deegree.commons.xml.jaxb.JAXBUtils;
 import org.deegree.coverage.AbstractCoverage;
 import org.deegree.coverage.persistence.CoverageBuilder;
 import org.deegree.coverage.raster.AbstractRaster;
@@ -74,6 +73,8 @@ import org.deegree.coverage.raster.io.jaxb.AbstractRasterType.RasterDirectory;
 import org.deegree.coverage.raster.io.jaxb.MultiResolutionRasterConfig.Resolution;
 import org.deegree.cs.CRS;
 import org.deegree.geometry.Envelope;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The <code>RasterBuilder</code> recursively enters a given directory and creates a {@link TiledRaster} from found
@@ -86,9 +87,13 @@ import org.deegree.geometry.Envelope;
  */
 public class RasterBuilder implements CoverageBuilder {
 
-    private final static String NS = "http://www.deegree.org/datasource/coverage/raster";
+    private static final String CONFIG_NS = "http://www.deegree.org/datasource/coverage/raster";
 
-    private final static org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger( RasterBuilder.class );
+    private static final String CONFIG_JAXB_PACKAGE = "org.deegree.coverage.raster.io.jaxb";
+
+    private static final String CONFIG_SCHEMA = "/META-INF/schemas/datasource/coverage/raster/3.0.0/raster.xsd";
+
+    private final static Logger LOG = LoggerFactory.getLogger( RasterBuilder.class );
 
     /**
      * Create a {@link MultiResolutionRaster} with the origin or the world coordinate of each raster file, defined by
@@ -163,7 +168,7 @@ public class RasterBuilder implements CoverageBuilder {
      * @see org.deegree.coverage.raster.utils.CoverageBuilder#getConfigNamespace()
      */
     public String getConfigNamespace() {
-        return NS;
+        return CONFIG_NS;
     }
 
     /*
@@ -174,9 +179,7 @@ public class RasterBuilder implements CoverageBuilder {
     public AbstractCoverage buildCoverage( URL configURL )
                             throws IOException {
         try {
-            JAXBContext jc = JAXBContext.newInstance( "org.deegree.coverage.raster.io.jaxb" );
-            Unmarshaller u = jc.createUnmarshaller();
-            Object config = u.unmarshal( configURL );
+            Object config = JAXBUtils.unmarshall( CONFIG_JAXB_PACKAGE, CONFIG_SCHEMA, configURL );
 
             XMLAdapter resolver = new XMLAdapter();
             resolver.setSystemId( configURL.toString() );
