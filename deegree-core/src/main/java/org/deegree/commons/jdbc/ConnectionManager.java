@@ -48,7 +48,7 @@ import java.util.Set;
 import javax.xml.bind.JAXBException;
 
 import org.deegree.commons.i18n.Messages;
-import org.deegree.commons.jdbc.jaxb.PooledConnection;
+import org.deegree.commons.jdbc.jaxb.JDBCConnection;
 import org.deegree.commons.utils.TempFileManager;
 import org.deegree.commons.xml.jaxb.JAXBUtils;
 import org.slf4j.Logger;
@@ -72,7 +72,7 @@ public class ConnectionManager {
 
     private static final String CONFIG_JAXB_PACKAGE = "org.deegree.commons.jdbc.jaxb";
 
-    private static final String CONFIG_SCHEMA = "/META-INF/schemas/jdbc/0.5.0/jdbc.xsd";
+    private static final String CONFIG_SCHEMA = "/META-INF/schemas/jdbc/3.0.0/jdbc.xsd";
 
     private static Map<String, ConnectionPool> idToPools = new HashMap<String, ConnectionPool>();
 
@@ -178,7 +178,8 @@ public class ConnectionManager {
     public static void addConnection( URL jdbcConfigUrl, String connId )
                             throws JAXBException {
         synchronized ( ConnectionManager.class ) {
-            PooledConnection pc = (PooledConnection) JAXBUtils.unmarshall( CONFIG_JAXB_PACKAGE, CONFIG_SCHEMA, jdbcConfigUrl );
+            JDBCConnection pc = (JDBCConnection) JAXBUtils.unmarshall( CONFIG_JAXB_PACKAGE, CONFIG_SCHEMA,
+                                                                       jdbcConfigUrl );
             addConnection( pc, connId );
         }
     }
@@ -189,7 +190,7 @@ public class ConnectionManager {
      * @param jaxbConn
      * @param connId
      */
-    public static void addConnection( PooledConnection jaxbConn, String connId ) {
+    public static void addConnection( JDBCConnection jaxbConn, String connId ) {
         synchronized ( ConnectionManager.class ) {
             String url = jaxbConn.getUrl();
 
@@ -204,9 +205,10 @@ public class ConnectionManager {
 
             String user = jaxbConn.getUser();
             String password = jaxbConn.getPassword();
-            int poolMinSize = jaxbConn.getPoolMinSize().intValue();
-            int poolMaxSize = jaxbConn.getPoolMaxSize().intValue();
-            boolean readOnly = jaxbConn.isReadOnly() == null ? false : jaxbConn.isReadOnly();
+            // TODO move this params
+            int poolMinSize = 5;
+            int poolMaxSize = 25;
+            boolean readOnly = false;
 
             LOG.debug( Messages.getMessage( "JDBC_SETTING_UP_CONNECTION_POOL", connId, url, user, poolMinSize,
                                             poolMaxSize ) );

@@ -77,12 +77,12 @@ public class SimpleObservationProvider implements ObservationStoreProvider {
 
     @Override
     public URL getConfigSchema() {
-        return SimpleObservationProvider.class.getResource( "/META-INF/schemas/datasource/observation/0.6.0/simplesql/simplesql.xsd" );
+        return SimpleObservationProvider.class.getResource( "/META-INF/schemas/datasource/observation/simplesql/3.0.0/simplesql.xsd" );
     }
 
     @Override
     public URL getConfigTemplate() {
-        return SimpleObservationProvider.class.getResource( "/META-INF/schemas/datasource/observation/0.6.0/simplesql/example.xml" );
+        return SimpleObservationProvider.class.getResource( "/META-INF/schemas/datasource/observation/simplesql/3.0.0/example.xml" );
     }
 
     @Override

@@ -37,10 +37,8 @@ package org.deegree.rendering.r3d.multiresolution.persistence;
 
 import java.net.URL;
 
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.Unmarshaller;
-
 import org.deegree.commons.xml.XMLAdapter;
+import org.deegree.commons.xml.jaxb.JAXBUtils;
 import org.deegree.cs.CRS;
 import org.deegree.rendering.r3d.jaxb.batchedmt.BatchedMTFileStoreConfig;
 import org.slf4j.Logger;
@@ -58,9 +56,15 @@ public class BatchedMTFileStoreProvider implements BatchedMTStoreProvider {
 
     private static final Logger LOG = LoggerFactory.getLogger( BatchedMTFileStoreProvider.class );
 
+    private static final String CONFIG_NS = "http://www.deegree.org/datasource/3d/batchedmt/file";
+
+    private static final String CONFIG_JAXB_PACKAGE = "org.deegree.rendering.r3d.jaxb.batchedmt";
+
+    private static final String CONFIG_SCHEMA = "/META-INF/schemas/datasource/3d/batchedmt/3.0.0/file.xsd";
+
     @Override
     public String getConfigNamespace() {
-        return "http://www.deegree.org/datasource/batchedmt/file";
+        return CONFIG_NS;
     }
 
     @Override
@@ -68,17 +72,16 @@ public class BatchedMTFileStoreProvider implements BatchedMTStoreProvider {
 
         BatchedMTStore bs = null;
         try {
-            JAXBContext jc = JAXBContext.newInstance( "org.deegree.rendering.r3d.jaxb.batchedmt" );
-            Unmarshaller u = jc.createUnmarshaller();
-            BatchedMTFileStoreConfig config = (BatchedMTFileStoreConfig) u.unmarshal( configURL );
+            BatchedMTFileStoreConfig config = (BatchedMTFileStoreConfig) JAXBUtils.unmarshall( CONFIG_JAXB_PACKAGE,
+                                                                                               CONFIG_SCHEMA, configURL );
 
             XMLAdapter resolver = new XMLAdapter();
             resolver.setSystemId( configURL.toString() );
 
             CRS crs = new CRS( config.getCrs() );
-            URL dir = resolver.resolve( config.getDirectory());
+            URL dir = resolver.resolve( config.getDirectory() );
             int maxDirectMem = config.getMaxDirectMemory().intValue();
-            bs = new BatchedMTFileStore(crs, dir, maxDirectMem);
+            bs = new BatchedMTFileStore( crs, dir, maxDirectMem );
 
         } catch ( Exception e ) {
             e.printStackTrace();

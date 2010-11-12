@@ -74,12 +74,12 @@ public class ContinuousObservationProvider implements ObservationStoreProvider {
 
     @Override
     public URL getConfigSchema() {
-        return ContinuousObservationProvider.class.getResource( "/META-INF/schemas/datasource/observation/0.6.0/contsql/contsql.xsd" );
+        return ContinuousObservationProvider.class.getResource( "/META-INF/schemas/datasource/observation/contsql/3.0.0/contsql.xsd" );
     }
 
     @Override
     public URL getConfigTemplate() {
-        return ContinuousObservationProvider.class.getResource( "/META-INF/schemas/datasource/observation/0.6.0/contsql/example.xml" );
+        return ContinuousObservationProvider.class.getResource( "/META-INF/schemas/datasource/observation/contsql/3.0.0/example.xml" );
     }
 
     @Override

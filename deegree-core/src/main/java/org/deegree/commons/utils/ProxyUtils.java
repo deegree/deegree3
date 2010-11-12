@@ -69,7 +69,7 @@ public final class ProxyUtils {
 
     private static final String CONFIG_JAXB_PACKAGE = "org.deegree.commons.proxy.jaxb";
 
-    private static final String CONFIG_SCHEMA = "/META-INF/schemas/proxy/0.5.0/proxy.xsd";
+    private static final String CONFIG_SCHEMA = "/META-INF/schemas/proxy/3.0.0/proxy.xsd";
 
     private static final String PROXY_HOST = "proxyHost";
 
