@@ -208,7 +208,7 @@ public class ConnectionManager {
             // TODO move this params
             int poolMinSize = 5;
             int poolMaxSize = 25;
-            boolean readOnly = false;
+            boolean readOnly = jaxbConn.isReadOnly() != null ? jaxbConn.isReadOnly() : false;
 
             LOG.debug( Messages.getMessage( "JDBC_SETTING_UP_CONNECTION_POOL", connId, url, user, poolMinSize,
                                             poolMaxSize ) );
