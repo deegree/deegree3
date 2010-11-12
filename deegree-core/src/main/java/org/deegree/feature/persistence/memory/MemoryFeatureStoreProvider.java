@@ -84,7 +84,7 @@ public class MemoryFeatureStoreProvider implements FeatureStoreProvider {
 
     private static final String CONFIG_SCHEMA = "/META-INF/schemas/datasource/feature/memory/3.0.0/memory.xsd";
 
-    private static final String CONFIG_TEMPLATE = "/META-INF/schemas/datasource/feature/postgis/3.0.0/example.xml";
+    private static final String CONFIG_TEMPLATE = "/META-INF/schemas/datasource/feature/memory/3.0.0/example.xml";
 
     @Override
     public String getConfigNamespace() {
