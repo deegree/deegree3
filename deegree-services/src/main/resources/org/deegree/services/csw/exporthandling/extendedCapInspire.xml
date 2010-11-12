@@ -1,10 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<inspire_ds:ExtendedCapabilities xmlns:inspire_ds="bla1" xmlns:gmd="bla2" xmlns:gml="bla3" xmlns:gco="bla4" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<inspire_ds:ExtendedCapabilities
+  xmlns:inspire_ds="http://inspire.europa.eu/networkservice/discovery"
+  xmlns:gmd="http://www.isotc211.org/2005/gmd"
+  xmlns:gml="http://www.opengis.net/gml/3.2"
+  xmlns:gco="http://www.isotc211.org/2005/gco"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <inspire_ds:ResourceLocator>
     <gmd:onLine>
       <gmd:CI_OnlineResource>
         <gmd:linkage>
-          <gmd:URL>${SERVER_ADDRESS}?REQUEST=GetCapabilities&amp;SERVICE=CSW&amp;VERSION=2.0.2</gmd:URL>
+          <gmd:URL>${SERVER_ADDRESS}REQUEST=GetCapabilities&amp;SERVICE=CSW&amp;VERSION=2.0.2</gmd:URL>
         </gmd:linkage>
       </gmd:CI_OnlineResource>
     </gmd:onLine>
@@ -17,8 +22,7 @@
   <inspire_ds:ResourceType>
     <gmd:MD_ScopeCode
       codeListValue="service"
-      codeList="http://standards.iso.org/ittf/ PubliclyAvailableStandards/ISO_19139_Schemas/ resources/Codelist/gmxCodelists.xml#MD_ScopeCode"
-    >service</gmd:MD_ScopeCode>
+      codeList="http://standards.iso.org/ittf/ PubliclyAvailableStandards/ISO_19139_Schemas/ resources/Codelist/gmxCodelists.xml#MD_ScopeCode">service</gmd:MD_ScopeCode>
   </inspire_ds:ResourceType>
   <inspire_ds:TemporalReference>
     <gmd:temporalElement>
@@ -38,7 +42,8 @@
     <gmd:specification>
       <gmd:CI_Citation>
         <gmd:title>
-          <gco:CharacterString>http://eur-lex.europa.eu/LexUriServ/LexUriServ.do?uri=CELEX:32009R0976:EN:NOT</gco:CharacterString>
+          <gco:CharacterString>http://eur-lex.europa.eu/LexUriServ/LexUriServ.do?uri=CELEX:32009R0976:EN:NOT
+          </gco:CharacterString>
         </gmd:title>
         <gmd:date>
           <gmd:CI_Date>
@@ -59,13 +64,14 @@
       <gco:CharacterString>See the referenced specification</gco:CharacterString>
     </gmd:explanation>
     <gmd:pass
-      gco:nilReason="template" />
+      gco:nilReason="template"/>
   </inspire_ds:Conformity>
   <inspire_ds:Conformity>
     <gmd:specification>
       <gmd:CI_Citation>
         <gmd:title>
-          <gco:CharacterString>http://eur-lex.europa.eu/LexUriServ/LexUriServ.do?uri=CELEX:32008R1205:EN:NOT</gco:CharacterString>
+          <gco:CharacterString>http://eur-lex.europa.eu/LexUriServ/LexUriServ.do?uri=CELEX:32008R1205:EN:NOT
+          </gco:CharacterString>
         </gmd:title>
         <gmd:date>
           <gmd:CI_Date>
@@ -75,8 +81,7 @@
             <gmd:dateType>
               <gmd:CI_DateTypeCode
                 codeListValue="publication"
-                codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/Codelist/ML_gmxCodelists.xml#CI_DateTypeCode"
-              >publication</gmd:CI_DateTypeCode>
+                codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/Codelist/ML_gmxCodelists.xml#CI_DateTypeCode">publication</gmd:CI_DateTypeCode>
             </gmd:dateType>
           </gmd:CI_Date>
         </gmd:date>
@@ -85,8 +90,7 @@
     <gmd:explanation>
       <gco:CharacterString>See referenced specification</gco:CharacterString>
     </gmd:explanation>
-    <gmd:pass
-      gco:nilReason="template" />
+    <gmd:pass gco:nilReason="template"/>
   </inspire_ds:Conformity>
   <inspire_ds:MetadataPointOfContact>
     <gmd:organisationName>
@@ -106,15 +110,12 @@
     <gmd:role>
       <gmd:CI_RoleCode
         codeListValue="pointOfContact"
-        codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/Codelist/ML_gmxCodelists.xml#CI_RoleCode"
-      >pointOfContact</gmd:CI_RoleCode>
+        codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/Codelist/ML_gmxCodelists.xml#CI_RoleCode">pointOfContact</gmd:CI_RoleCode>
     </gmd:role>
   </inspire_ds:MetadataPointOfContact>
   <inspire_ds:MetadataDate>${SYSTEM_START_DATE}</inspire_ds:MetadataDate>
   <inspire_ds:SpatialDataServiceType>
-    <gco:LocalName
-      codeSpace="INSPIRE"
-    >discovery</gco:LocalName>
+    <gco:LocalName codeSpace="INSPIRE">discovery</gco:LocalName>
   </inspire_ds:SpatialDataServiceType>
   <inspire_ds:InspireKeywords>
     <gmd:keyword>
@@ -122,9 +123,7 @@
     </gmd:keyword>
   </inspire_ds:InspireKeywords>
   <inspire_ds:Languages>
-    <inspire_ds:Language
-      default="true"
-    >eng</inspire_ds:Language>
+    <inspire_ds:Language default="true">eng</inspire_ds:Language>
   </inspire_ds:Languages>
   <inspire_ds:CurrentLanguage>eng</inspire_ds:CurrentLanguage>
 </inspire_ds:ExtendedCapabilities>

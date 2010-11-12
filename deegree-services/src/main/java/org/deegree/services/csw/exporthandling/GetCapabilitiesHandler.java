@@ -394,19 +394,14 @@ public class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
                 break;
             }
             case CHARACTERS: {
-                if ( inStream.isWhiteSpace() ) {
-                    // skip
-                } else {
-
-                    String s = new String( inStream.getTextCharacters(), inStream.getTextStart(),
-                                           inStream.getTextLength() );
-                    // TODO optimize
-                    for ( String param : varToValue.keySet() ) {
-                        String value = varToValue.get( param );
-                        s = s.replace( param, value );
-                    }
-                    writer.writeCharacters( s );
+                String s = new String( inStream.getTextCharacters(), inStream.getTextStart(), inStream.getTextLength() );
+                // TODO optimize
+                for ( String param : varToValue.keySet() ) {
+                    String value = varToValue.get( param );
+                    s = s.replace( param, value );
                 }
+                writer.writeCharacters( s );
+
                 break;
             }
             case END_ELEMENT: {
