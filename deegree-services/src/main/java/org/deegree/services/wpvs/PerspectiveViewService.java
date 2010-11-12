@@ -492,6 +492,7 @@ public class PerspectiveViewService {
         RenderContext context = new RenderContext( viewParams, request.getSceneParameters().getScale(),
                                                    this.maxTextureSize,
                                                    configuredOpenGLInitValues.getCompositingTextureShaderPrograms() );
+        context.setUpdateLOD( true );
         GetViewRenderer renderer = new GetViewRenderer( request, context, imageBuffer, demRenderer, colormap,
                                                         textureManagers, buildingRenders, this.copyrightKey,
                                                         this.copyrighScale, this.latitudeOfScene );
