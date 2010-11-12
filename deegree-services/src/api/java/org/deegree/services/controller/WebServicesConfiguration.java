@@ -58,13 +58,12 @@ import org.deegree.commons.tom.ows.Version;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.services.controller.utils.StandardRequestLogger;
 import org.deegree.services.csw.CSWController;
-import org.deegree.services.jaxb.main.AllowedServices;
-import org.deegree.services.jaxb.main.ConfiguredServicesType;
-import org.deegree.services.jaxb.main.DeegreeServiceControllerType;
-import org.deegree.services.jaxb.main.DeegreeServicesMetadataType;
-import org.deegree.services.jaxb.main.FrontControllerOptionsType;
-import org.deegree.services.jaxb.main.ServiceType;
-import org.deegree.services.jaxb.main.FrontControllerOptionsType.RequestLogging;
+import org.deegree.services.jaxb.controller.AllowedServices;
+import org.deegree.services.jaxb.controller.ConfiguredServicesType;
+import org.deegree.services.jaxb.controller.DeegreeServiceControllerType;
+import org.deegree.services.jaxb.controller.ServiceType;
+import org.deegree.services.jaxb.controller.DeegreeServiceControllerType.RequestLogging;
+import org.deegree.services.jaxb.metadata.DeegreeServicesMetadataType;
 import org.deegree.services.sos.SOSController;
 import org.deegree.services.wcs.WCSController;
 import org.deegree.services.wfs.WFSController;
@@ -486,17 +485,15 @@ public class WebServicesConfiguration {
     }
 
     private void initRequestLogger() {
-        FrontControllerOptionsType opts = mainConfig.getFrontControllerOptions();
-        RequestLogging requestLogging = opts == null ? null : opts.getRequestLogging();
+        RequestLogging requestLogging = mainConfig.getRequestLogging();
         if ( requestLogging != null ) {
-            org.deegree.services.jaxb.main.FrontControllerOptionsType.RequestLogging.RequestLogger logger = requestLogging.getRequestLogger();
+            org.deegree.services.jaxb.controller.DeegreeServiceControllerType.RequestLogging.RequestLogger logger = requestLogging.getRequestLogger();
             requestLogger = instantiateRequestLogger( logger );
             this.logOnlySuccessful = requestLogging.isOnlySuccessful() != null && requestLogging.isOnlySuccessful();
         }
     }
 
-    private static RequestLogger instantiateRequestLogger(
-                                                           org.deegree.services.jaxb.main.FrontControllerOptionsType.RequestLogging.RequestLogger conf ) {
+    private static RequestLogger instantiateRequestLogger( RequestLogging.RequestLogger conf ) {
         if ( conf != null ) {
             String cls = conf.getClazz();
             try {

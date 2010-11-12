@@ -51,8 +51,8 @@ import org.deegree.services.authentication.SecurityException;
 import org.deegree.services.controller.OGCFrontController;
 import org.deegree.services.controller.exception.ControllerInitException;
 import org.deegree.services.controller.utils.HttpResponseBuffer;
-import org.deegree.services.jaxb.main.DeegreeServiceControllerType;
-import org.deegree.services.jaxb.main.DeegreeServicesMetadataType;
+import org.deegree.services.jaxb.controller.DeegreeServiceControllerType;
+import org.deegree.services.jaxb.metadata.DeegreeServicesMetadataType;
 
 /**
  * Implementations are OGC web services that plug into the {@link OGCFrontController}.

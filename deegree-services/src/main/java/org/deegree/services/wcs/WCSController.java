@@ -83,15 +83,15 @@ import org.deegree.services.controller.exception.ControllerInitException;
 import org.deegree.services.controller.exception.serializer.XMLExceptionSerializer;
 import org.deegree.services.controller.ows.OWSException;
 import org.deegree.services.controller.utils.HttpResponseBuffer;
-import org.deegree.services.jaxb.main.DeegreeServiceControllerType;
-import org.deegree.services.jaxb.main.DeegreeServicesMetadataType;
-import org.deegree.services.jaxb.main.ServiceIdentificationType;
-import org.deegree.services.jaxb.main.ServiceProviderType;
+import org.deegree.services.jaxb.controller.DeegreeServiceControllerType;
+import org.deegree.services.jaxb.metadata.DeegreeServicesMetadataType;
+import org.deegree.services.jaxb.metadata.ServiceIdentificationType;
+import org.deegree.services.jaxb.metadata.ServiceProviderType;
 import org.deegree.services.jaxb.wcs.PublishedInformation;
 import org.deegree.services.jaxb.wcs.PublishedInformation.AllowedOperations;
 import org.deegree.services.wcs.capabilities.Capabilities100XMLAdapter;
-import org.deegree.services.wcs.capabilities.Capabilities100XMLAdapter.Sections;
 import org.deegree.services.wcs.capabilities.GetCapabilities100XMLAdapter;
+import org.deegree.services.wcs.capabilities.Capabilities100XMLAdapter.Sections;
 import org.deegree.services.wcs.coverages.WCSCoverage;
 import org.deegree.services.wcs.describecoverage.CoverageDescription100XMLAdapter;
 import org.deegree.services.wcs.describecoverage.DescribeCoverage;
@@ -134,14 +134,14 @@ public class WCSController extends AbstractOGCServiceController {
 
     private static final String CONFIG_NS = "http://www.deegree.org/services/wcs";
 
-    private final static String PUBLISHED_SCHEMA_FILE = "/META-INF/schemas/wcs/0.5.0/wcs_published_information.xsd";
+    private final static String PUBLISHED_SCHEMA_FILE = "/META-INF/schemas/wcs/3.0.0/wcs_published_information.xsd";
 
     private static final ImplementationMetadata<WCSRequestType> IMPLEMENTATION_METADATA = new ImplementationMetadata<WCSRequestType>() {
         {
             supportedVersions = new Version[] { VERSION_100, VERSION_110 };
             handledNamespaces = new String[] { WCS_100_NS };
             handledRequests = WCSRequestType.class;
-            supportedConfigVersions = new Version[] { Version.parseVersion( "0.5.0" ) };
+            supportedConfigVersions = new Version[] { Version.parseVersion( "3.0.0" ) };
         }
     };
 
@@ -176,22 +176,8 @@ public class WCSController extends AbstractOGCServiceController {
      * @param publishedInformation
      */
     private void syncWithMainController( PublishedInformation publishedInformation ) {
-        if ( identification == null ) {
-            if ( publishedInformation == null || publishedInformation.getServiceIdentification() == null ) {
-                LOG.info( "Using global service identification because no WCS specific service identification was defined." );
-                identification = mainMetadataConf.getServiceIdentification();
-            } else {
-                identification = synchronizeServiceIdentificationWithMainController( publishedInformation.getServiceIdentification() );
-            }
-        }
-        if ( provider == null ) {
-            if ( publishedInformation == null || publishedInformation.getServiceProvider() == null ) {
-                LOG.info( "Using global serviceProvider because no WCS specific service provider was defined." );
-                provider = mainMetadataConf.getServiceProvider();
-            } else {
-                provider = synchronizeServiceProviderWithMainControllerConf( publishedInformation.getServiceProvider() );
-            }
-        }
+        identification = mainMetadataConf.getServiceIdentification();
+        provider = mainMetadataConf.getServiceProvider();
     }
 
     @Override

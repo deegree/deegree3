@@ -106,8 +106,7 @@ import org.deegree.services.controller.security.SecurityConfiguration;
 import org.deegree.services.controller.utils.HttpResponseBuffer;
 import org.deegree.services.controller.utils.LoggingHttpResponseWrapper;
 import org.deegree.services.i18n.Messages;
-import org.deegree.services.jaxb.main.DeegreeServiceControllerType;
-import org.deegree.services.jaxb.main.FrontControllerOptionsType;
+import org.deegree.services.jaxb.controller.DeegreeServiceControllerType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -403,9 +402,8 @@ public class OGCFrontController extends HttpServlet {
             InputStream is = request.getInputStream();
             if ( multiParts == null ) {
                 // TODO log multiparts requests
-                FrontControllerOptionsType opts = mainConfig.getFrontControllerOptions();
                 if ( !isKVP && serviceConfiguration.getRequestLogger() != null ) {
-                    String dir = opts.getRequestLogging().getOutputDirectory();
+                    String dir = mainConfig.getRequestLogging().getOutputDirectory();
                     File file;
                     if ( dir == null ) {
                         file = createTempFile( "request", ".body" );
@@ -417,7 +415,7 @@ public class OGCFrontController extends HttpServlet {
                         file = createTempFile( "request", ".body", directory );
                     }
                     is = new LoggingInputStream( is, new FileOutputStream( file ) );
-                    Boolean conf = opts.getRequestLogging().isOnlySuccessful();
+                    Boolean conf = mainConfig.getRequestLogging().isOnlySuccessful();
                     boolean onlySuccessful = conf != null && conf;
                     response = logging = new LoggingHttpResponseWrapper( request.getRequestURL().toString(), response,
                                                                          file, onlySuccessful, entryTime, null,
@@ -560,7 +558,6 @@ public class OGCFrontController extends HttpServlet {
                                      HttpServletResponse response, List<FileItem> multiParts, long entryTime )
                             throws ServletException, IOException {
 
-        FrontControllerOptionsType opts = mainConfig.getFrontControllerOptions();
         LoggingHttpResponseWrapper logging = null;
 
         CredentialsProvider credentialsProvider = securityConfiguration == null ? null
@@ -577,7 +574,7 @@ public class OGCFrontController extends HttpServlet {
             bindContextToThread( requestWrapper, cred );
 
             if ( serviceConfiguration.getRequestLogger() != null ) {
-                Boolean conf = opts.getRequestLogging().isOnlySuccessful();
+                Boolean conf = mainConfig.getRequestLogging().isOnlySuccessful();
                 boolean onlySuccessful = conf != null && conf;
                 response = logging = new LoggingHttpResponseWrapper( response, requestWrapper.getQueryString(),
                                                                      onlySuccessful, entryTime, cred,
@@ -618,7 +615,7 @@ public class OGCFrontController extends HttpServlet {
                 } finally {
                     FrontControllerStats.requestFinished( dispatchTime );
                 }
-                if ( opts != null && opts.isValidateResponses() != null && opts.isValidateResponses() ) {
+                if ( mainConfig.isValidateResponses() != null && mainConfig.isValidateResponses() ) {
                     validateResponse( responseWrapper );
                 }
                 responseWrapper.flushBuffer();
@@ -702,9 +699,7 @@ public class OGCFrontController extends HttpServlet {
                 } finally {
                     FrontControllerStats.requestFinished( dispatchTime );
                 }
-                if ( mainConfig.getFrontControllerOptions() != null
-                     && mainConfig.getFrontControllerOptions().isValidateResponses() != null
-                     && mainConfig.getFrontControllerOptions().isValidateResponses() ) {
+                if ( mainConfig.isValidateResponses() != null && mainConfig.isValidateResponses() ) {
                     validateResponse( responseWrapper );
                 }
                 responseWrapper.flushBuffer();
@@ -809,9 +804,7 @@ public class OGCFrontController extends HttpServlet {
                 } finally {
                     FrontControllerStats.requestFinished( dispatchTime );
                 }
-                if ( mainConfig.getFrontControllerOptions() != null
-                     && mainConfig.getFrontControllerOptions().isValidateResponses() != null
-                     && mainConfig.getFrontControllerOptions().isValidateResponses() ) {
+                if ( mainConfig.isValidateResponses() != null && mainConfig.isValidateResponses() ) {
                     validateResponse( responseWrapper );
                 }
                 responseWrapper.flushBuffer();

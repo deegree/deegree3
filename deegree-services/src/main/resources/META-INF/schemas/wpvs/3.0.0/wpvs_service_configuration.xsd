@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<schema xmlns="http://www.w3.org/2001/XMLSchema" xmlns:wpvs="http://www.deegree.org/services/wpvs" xmlns:md="http://www.deegree.org/webservices"
+<schema xmlns="http://www.w3.org/2001/XMLSchema" xmlns:wpvs="http://www.deegree.org/services/wpvs"
   targetNamespace="http://www.deegree.org/services/wpvs" elementFormDefault="qualified" xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
   jaxb:version="2.1">
-  <import namespace="http://www.deegree.org/webservices" schemaLocation="../../webservices/0.6.0/metadata.xsd" />
   <element name="ServiceConfiguration">
     <annotation>
       <documentation>
@@ -99,7 +98,6 @@
       <element name="Name" type="string" minOccurs="0" />
       <element name="MetadataURL" type="string" minOccurs="0" maxOccurs="unbounded" />
       <element name="Abstract" type="string" minOccurs="0" />
-      <element ref="md:Keywords" minOccurs="0" maxOccurs="unbounded" />
     </sequence>
   </complexType>
   <element name="DatasetDefinitions">
@@ -112,7 +110,6 @@
         <element name="Title" type="string" />
         <element name="MetadataURL" type="string" minOccurs="0" maxOccurs="unbounded" />
         <element name="Abstract" type="string" minOccurs="0" />
-        <element ref="md:Keywords" minOccurs="0" />
         <element name="BaseCRS" type="string" />
         <element ref="wpvs:TranslationToLocalCRS" />
         <!--

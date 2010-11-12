@@ -19,7 +19,7 @@
         <!-- Top element of the protocol configuration -->
         <element ref="wpvs:PublishedInformation" minOccurs="0" />
       </sequence>
-      <attribute name="configVersion" use="required" fixed="0.5.0" />
+      <attribute name="configVersion" use="required" fixed="3.0.0" />
     </complexType>
   </element>
 </schema> 

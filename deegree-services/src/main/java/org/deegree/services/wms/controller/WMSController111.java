@@ -51,8 +51,8 @@ import org.deegree.services.controller.AbstractOGCServiceController;
 import org.deegree.services.controller.ows.NamespacelessOWSExceptionXMLAdapter;
 import org.deegree.services.controller.ows.OWSException;
 import org.deegree.services.controller.utils.HttpResponseBuffer;
-import org.deegree.services.jaxb.main.ServiceIdentificationType;
-import org.deegree.services.jaxb.main.ServiceProviderType;
+import org.deegree.services.jaxb.metadata.ServiceIdentificationType;
+import org.deegree.services.jaxb.metadata.ServiceProviderType;
 import org.deegree.services.wms.MapService;
 import org.deegree.services.wms.controller.capabilities.Capabilities111XMLAdapter;
 

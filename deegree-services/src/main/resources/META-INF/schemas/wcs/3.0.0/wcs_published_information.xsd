@@ -3,13 +3,9 @@
   xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:md="http://www.deegree.org/webservices" targetNamespace="http://www.deegree.org/services/wcs"
   elementFormDefault="qualified" attributeFormDefault="unqualified">
 
-  <xs:import namespace="http://www.deegree.org/webservices" schemaLocation="../../webservices/0.6.0/metadata.xsd" />
-
   <xs:element name="PublishedInformation">
     <xs:complexType>
       <xs:sequence>
-        <xs:element ref="md:ServiceIdentification" minOccurs="0" />
-        <xs:element ref="md:ServiceProvider" minOccurs="0" />
         <!-- define the versions allowed supported -->
         <xs:element name="SupportedVersions">
           <xs:complexType>

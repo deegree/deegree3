@@ -1,6 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xs:schema xmlns:dgws="http://www.deegree.org/webservices" xmlns:xs="http://www.w3.org/2001/XMLSchema"
-  targetNamespace="http://www.deegree.org/webservices" elementFormDefault="qualified">
+  targetNamespace="http://www.deegree.org/webservices" elementFormDefault="qualified" xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
+  jaxb:version="2.1">
+
+  <xs:annotation>
+    <xs:appinfo>
+      <jaxb:schemaBindings>
+        <jaxb:package name="org.deegree.services.jaxb.controller" />
+      </jaxb:schemaBindings>
+    </xs:appinfo>
+  </xs:annotation>
 
   <xs:complexType name="deegreeServiceControllerType">
     <xs:annotation>
@@ -11,14 +20,6 @@
     <xs:sequence>
       <xs:element name="DCP" type="dgws:DCPType" minOccurs="0" />
       <xs:element name="ConfiguredServices" type="dgws:ConfiguredServicesType" minOccurs="0" />
-      <xs:element name="FrontControllerOptions" type="dgws:FrontControllerOptionsType" minOccurs="0" />
-    </xs:sequence>
-    <xs:attribute name="configVersion" fixed="0.6.0" use="required" />
-  </xs:complexType>
-
-  <xs:complexType name="FrontControllerOptionsType">
-    <xs:sequence>
-
       <xs:element name="RequestLogging" minOccurs="0">
         <xs:complexType>
           <xs:annotation>
@@ -48,9 +49,10 @@
       </xs:element>
 
       <xs:element name="ValidateResponses" type="xs:boolean" minOccurs="0" />
-
     </xs:sequence>
+    <xs:attribute name="configVersion" fixed="3.0.0" use="required" />
   </xs:complexType>
+
 
   <xs:complexType name="DCPType">
     <xs:sequence>

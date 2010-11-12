@@ -37,7 +37,7 @@
       <FeatureMemberElement>gml:featureMember</FeatureMemberElement>
 
       <!-- [0...1] Value to add to xsi:schemaLocation attribute (to define the container element) -->
-      <SchemaLocation>>http://www.opengis.net/gml/3.2 http://schemas.opengis.net/gml/3.2.1/deprecatedTypes.xsd</SchemaLocation>
+      <AdditionalSchemaLocation>>http://www.opengis.net/gml/3.2 http://schemas.opengis.net/gml/3.2.1/deprecatedTypes.xsd</AdditionalSchemaLocation>
 
       <!--
         [0...1] Disable output streaming (positive effect: numberOfFeature attribute / gml:boundedBy can be included in

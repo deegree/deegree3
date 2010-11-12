@@ -69,12 +69,11 @@ import org.deegree.geometry.GeometryTransformer;
 import org.deegree.geometry.primitive.Point;
 import org.deegree.geometry.standard.primitive.DefaultPoint;
 import org.deegree.rendering.r2d.se.unevaluated.Style;
-import org.deegree.services.jaxb.main.AddressType;
-import org.deegree.services.jaxb.main.KeywordsType;
-import org.deegree.services.jaxb.main.LanguageStringType;
-import org.deegree.services.jaxb.main.ServiceContactType;
-import org.deegree.services.jaxb.main.ServiceIdentificationType;
-import org.deegree.services.jaxb.main.ServiceProviderType;
+import org.deegree.services.jaxb.metadata.AddressType;
+import org.deegree.services.jaxb.metadata.ServiceContactType;
+import org.deegree.services.jaxb.metadata.ServiceIdentificationType;
+import org.deegree.services.jaxb.metadata.ServiceProviderType;
+import org.deegree.services.jaxb.wms.LanguageStringType;
 import org.deegree.services.wms.MapService;
 import org.deegree.services.wms.controller.WMSController;
 import org.deegree.services.wms.controller.WMSController130;
@@ -466,12 +465,13 @@ public class Capabilities130XMLAdapter extends XMLAdapter {
             writeElement( writer, WMSNS, "Abstract", abstracts.get( 0 ) );
         }
 
-        List<KeywordsType> keywords = identification == null ? null : identification.getKeywords();
+        List<org.deegree.services.jaxb.metadata.KeywordsType> keywords = identification == null ? null
+                                                                                               : identification.getKeywords();
         if ( keywords != null && !keywords.isEmpty() ) {
             writer.writeStartElement( WMSNS, "KeywordList" );
 
-            for ( KeywordsType key : keywords ) {
-                for ( LanguageStringType lanString : key.getKeyword() ) {
+            for ( org.deegree.services.jaxb.metadata.KeywordsType key : keywords ) {
+                for ( org.deegree.services.jaxb.metadata.LanguageStringType lanString : key.getKeyword() ) {
                     writeElement( writer, WMSNS, "Keyword", lanString.getValue() );
                 }
             }

@@ -103,9 +103,9 @@ import org.deegree.services.csw.transaction.Transaction;
 import org.deegree.services.csw.transaction.TransactionKVPAdapter;
 import org.deegree.services.csw.transaction.TransactionXMLAdapter;
 import org.deegree.services.i18n.Messages;
+import org.deegree.services.jaxb.controller.DeegreeServiceControllerType;
 import org.deegree.services.jaxb.csw.DeegreeCSW;
-import org.deegree.services.jaxb.main.DeegreeServiceControllerType;
-import org.deegree.services.jaxb.main.DeegreeServicesMetadataType;
+import org.deegree.services.jaxb.metadata.DeegreeServicesMetadataType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

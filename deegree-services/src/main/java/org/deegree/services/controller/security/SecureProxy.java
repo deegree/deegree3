@@ -180,7 +180,7 @@ public class SecureProxy extends HttpServlet {
         try {
             File tmpFile = null;
             if ( serviceConfig.getRequestLogger() != null ) {
-                String dir = serviceConfig.getMainConfiguration().getFrontControllerOptions().getRequestLogging().getOutputDirectory();
+                String dir = serviceConfig.getMainConfiguration().getRequestLogging().getOutputDirectory();
                 if ( dir == null ) {
                     tmpFile = createTempFile( "request", ".body" );
                 } else {

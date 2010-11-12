@@ -1,7 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xs:schema xmlns:dgws="http://www.deegree.org/webservices" xmlns:xs="http://www.w3.org/2001/XMLSchema"
-  targetNamespace="http://www.deegree.org/webservices" elementFormDefault="qualified">
+<xs:schema xmlns:md="http://www.deegree.org/services/metadata" xmlns:xs="http://www.w3.org/2001/XMLSchema"
+  targetNamespace="http://www.deegree.org/services/metadata" elementFormDefault="qualified" xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
+  jaxb:version="2.1">
 
+  <xs:annotation>
+    <xs:appinfo>
+      <jaxb:schemaBindings>
+        <jaxb:package name="org.deegree.services.jaxb.metadata" />
+      </jaxb:schemaBindings>
+    </xs:appinfo>
+  </xs:annotation>
+
+  <xs:element name="deegreeServicesMetadata" type="md:deegreeServicesMetadataType" />
   <xs:complexType name="deegreeServicesMetadataType">
     <xs:annotation>
       <xs:documentation>
@@ -10,20 +20,20 @@
         </xs:documentation>
     </xs:annotation>
     <xs:sequence>
-      <xs:element ref="dgws:ServiceIdentification" minOccurs="0" />
-      <xs:element ref="dgws:ServiceProvider" />
+      <xs:element ref="md:ServiceIdentification" minOccurs="0" />
+      <xs:element ref="md:ServiceProvider" />
     </xs:sequence>
     <xs:attribute name="configVersion" fixed="0.6.0" use="required" />
   </xs:complexType>
 
-  <xs:element name="ServiceIdentification" type="dgws:ServiceIdentificationType" />
-  <xs:element name="ServiceProvider" type="dgws:ServiceProviderType" />
+  <xs:element name="ServiceIdentification" type="md:ServiceIdentificationType" />
+  <xs:element name="ServiceProvider" type="md:ServiceProviderType" />
 
   <xs:complexType name="ServiceIdentificationType">
     <xs:sequence>
       <xs:element name="Title" type="xs:string" minOccurs="0" maxOccurs="unbounded" />
       <xs:element name="Abstract" type="xs:string" minOccurs="0" maxOccurs="unbounded" />
-      <xs:element ref="dgws:Keywords" minOccurs="0" maxOccurs="unbounded" />
+      <xs:element ref="md:Keywords" minOccurs="0" maxOccurs="unbounded" />
       <xs:element name="Fees" type="xs:string" minOccurs="0" />
       <xs:element name="AccessConstraints" type="xs:string" minOccurs="0" maxOccurs="unbounded" />
     </xs:sequence>
@@ -32,7 +42,7 @@
     <xs:sequence>
       <xs:element name="ProviderName" type="xs:string" />
       <xs:element name="ProviderSite" type="xs:anyURI" />
-      <xs:element name="ServiceContact" type="dgws:ServiceContactType" />
+      <xs:element name="ServiceContact" type="md:ServiceContactType" />
     </xs:sequence>
   </xs:complexType>
   <xs:complexType name="ServiceContactType">
@@ -42,7 +52,7 @@
       <xs:element name="Phone" type="xs:string" minOccurs="0" />
       <xs:element name="Facsimile" type="xs:string" minOccurs="0" />
       <xs:element name="ElectronicMailAddress" type="xs:string" minOccurs="0" maxOccurs="unbounded" />
-      <xs:element name="Address" type="dgws:AddressType" />
+      <xs:element name="Address" type="md:AddressType" />
       <xs:element name="OnlineResource" type="xs:anyURI" />
       <xs:element name="HoursOfService" type="xs:string" minOccurs="0" />
       <xs:element name="ContactInstructions" type="xs:string" minOccurs="0" />
@@ -59,13 +69,12 @@
     </xs:sequence>
   </xs:complexType>
   <!-- ========================================================== -->
-  <xs:element name="Keywords" type="dgws:KeywordsType" />
+  <xs:element name="Keywords" type="md:KeywordsType" />
   <!-- ========================================================== -->
   <xs:complexType name="LanguageStringType">
     <xs:annotation>
       <xs:documentation>
-        Text string with the language of the string identified
-        as recommended in the XML 1.0 W3C
+        Text string with the language of the string identified as recommended in the XML 1.0 W3C
         Recommendation, section 2.12.
       </xs:documentation>
     </xs:annotation>
@@ -78,13 +87,12 @@
   <xs:complexType name="CodeType">
     <xs:annotation>
       <xs:documentation>
-        Name or code with an (optional) authority. If the
-        codeSpace attribute is present, its value shall
-        reference a dictionary,
-        thesaurus, or
-        authority for the name or code, such as the organisation
-        who assigned the
-        value, or the dictionary from which it is taken.
+        Name or code with an (optional) authority. If the codeSpace attribute is present, its value
+        shall reference a
+        dictionary, thesaurus, or authority for the name or code, such as the organisation who assigned
+        the value, or
+        the
+        dictionary from which it is taken.
       </xs:documentation>
       <xs:documentation>
         Type copied from basicTypes.xsd of GML 3 with
@@ -103,36 +111,21 @@
   <xs:complexType name="KeywordsType">
     <xs:annotation>
       <xs:documentation>
-        Unordered list of one or more commonly used or
-        formalised word(s) or phrase(s) used to describe
-        the subject. When
-        needed, the optional "type"
-        can name the type of the associated list of
-        keywords that shall all
-        have the same type. Also when needed, the
-        codeSpace attribute of that
-        "type" can reference the type name authority
-        and/or thesaurus. If the xml:lang attribute is not included in a Keyword
-        element, then no
-        language is specified
-        for that element unless specified
-        by another means. All Keyword elements in the same Keywords element that
-        share
-        the
-        same xml:lang attribute value represent different keywords in
-        that language.
+        Unordered list of one or more commonly used or formalised word(s) or phrase(s) used to describe
+        the subject. When needed, the optional "type" can name the type of the associated list of keywords that shall
+        all have the same type. Also when needed, the codeSpace attribute of that "type" can reference the type name
+        authority and/or thesaurus. If the xml:lang attribute is not included in a Keyword element, then no language is
+        specified for that element unless specified by another means. All Keyword elements in the same Keywords element
+        that share the same xml:lang attribute value represent different keywords in that language.
       </xs:documentation>
       <xs:documentation>
-        For OWS use, the optional thesaurusName element was
-        omitted as being complex information that
-        could be referenced by the
-        codeSpace attribute
-        of the Type element.
+        For OWS use, the optional thesaurusName element was omitted as being complex information that
+        could be referenced by the codeSpace attribute of the Type element.
       </xs:documentation>
     </xs:annotation>
     <xs:sequence>
-      <xs:element name="Keyword" type="dgws:LanguageStringType" maxOccurs="unbounded" />
-      <xs:element name="Type" type="dgws:CodeType" minOccurs="0" />
+      <xs:element name="Keyword" type="md:LanguageStringType" maxOccurs="unbounded" />
+      <xs:element name="Type" type="md:CodeType" minOccurs="0" />
     </xs:sequence>
   </xs:complexType>
 

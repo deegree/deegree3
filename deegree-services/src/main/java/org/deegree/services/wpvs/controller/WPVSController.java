@@ -82,14 +82,14 @@ import org.deegree.services.controller.ows.OWSException110XMLAdapter;
 import org.deegree.services.controller.ows.capabilities.OWSOperation;
 import org.deegree.services.controller.utils.HttpResponseBuffer;
 import org.deegree.services.exception.ServiceInitException;
-import org.deegree.services.jaxb.main.DCPType;
-import org.deegree.services.jaxb.main.DeegreeServiceControllerType;
-import org.deegree.services.jaxb.main.DeegreeServicesMetadataType;
-import org.deegree.services.jaxb.main.ServiceIdentificationType;
-import org.deegree.services.jaxb.main.ServiceProviderType;
+import org.deegree.services.jaxb.controller.DCPType;
+import org.deegree.services.jaxb.controller.DeegreeServiceControllerType;
+import org.deegree.services.jaxb.metadata.DeegreeServicesMetadataType;
+import org.deegree.services.jaxb.metadata.ServiceIdentificationType;
+import org.deegree.services.jaxb.metadata.ServiceProviderType;
 import org.deegree.services.jaxb.wpvs.PublishedInformation;
-import org.deegree.services.jaxb.wpvs.PublishedInformation.AllowedOperations;
 import org.deegree.services.jaxb.wpvs.ServiceConfiguration;
+import org.deegree.services.jaxb.wpvs.PublishedInformation.AllowedOperations;
 import org.deegree.services.wpvs.PerspectiveViewService;
 import org.deegree.services.wpvs.controller.capabilities.CapabilitiesXMLAdapter;
 import org.deegree.services.wpvs.controller.getview.GetView;
@@ -118,9 +118,9 @@ public class WPVSController extends AbstractOGCServiceController {
 
     private static final String CONFIG_JAXB_PACKAGE = "org.deegree.services.jaxb.wpvs";
 
-    private static final String CONFIG_SCHEMA = "/META-INF/schemas/wpvs/0.5.0/wpvs_service_configuration.xsd";
+    private static final String CONFIG_SCHEMA = "/META-INF/schemas/wpvs/3.0.0/wpvs_service_configuration.xsd";
 
-    private static final String PUBLISHED_SCHEMA = "/META-INF/schemas/wpvs/0.5.0/wpvs_published_information.xsd";
+    private static final String PUBLISHED_SCHEMA = "/META-INF/schemas/wpvs/3.0.0/wpvs_published_information.xsd";
 
     private PerspectiveViewService service;
 
@@ -137,7 +137,7 @@ public class WPVSController extends AbstractOGCServiceController {
             supportedVersions = new Version[] { VERSION_040 };
             handledNamespaces = new String[] { WPVS_NS };
             handledRequests = WPVSRequestType.class;
-            supportedConfigVersions = new Version[] { Version.parseVersion( "0.5.0" ) };
+            supportedConfigVersions = new Version[] { Version.parseVersion( "3.0.0" ) };
         }
     };
 

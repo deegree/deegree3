@@ -118,10 +118,10 @@ import org.deegree.services.controller.exception.serializer.XMLExceptionSerializ
 import org.deegree.services.controller.ows.OWSException;
 import org.deegree.services.controller.ows.OWSException110XMLAdapter;
 import org.deegree.services.controller.utils.HttpResponseBuffer;
-import org.deegree.services.jaxb.main.DeegreeServiceControllerType;
-import org.deegree.services.jaxb.main.DeegreeServicesMetadataType;
-import org.deegree.services.jaxb.main.ServiceIdentificationType;
-import org.deegree.services.jaxb.main.ServiceProviderType;
+import org.deegree.services.jaxb.controller.DeegreeServiceControllerType;
+import org.deegree.services.jaxb.metadata.DeegreeServicesMetadataType;
+import org.deegree.services.jaxb.metadata.ServiceIdentificationType;
+import org.deegree.services.jaxb.metadata.ServiceProviderType;
 import org.deegree.services.jaxb.sos.PublishedInformation;
 import org.deegree.services.sos.capabilities.Capabilities100XMLAdapter;
 import org.deegree.services.sos.capabilities.Capabilities100XMLAdapter.Sections;
@@ -166,7 +166,7 @@ public class SOSController extends AbstractOGCServiceController {
             supportedVersions = new Version[] { VERSION_100 };
             handledNamespaces = new String[] { SOS_100_NS };
             handledRequests = SOSRequestType.class;
-            supportedConfigVersions = new Version[] { Version.parseVersion( "0.5.0" ) };
+            supportedConfigVersions = new Version[] { Version.parseVersion( "3.0.0" ) };
         }
     };
 
@@ -229,7 +229,8 @@ public class SOSController extends AbstractOGCServiceController {
         nsContext.addNamespace( "xlink", "http://www.w3.org/1999/xlink" );
 
         XMLAdapter sensorXML = new XMLAdapter( sensorFile );
-        OMElement element = sensorXML.getElement( sensorXML.getRootElement(),
+        OMElement element = sensorXML.getElement(
+                                                  sensorXML.getRootElement(),
                                                   new XPath(
                                                              "/sml:SensorML/sml:identification/sml:IdentifierList/sml:identifier[@name=\"URN\"]/sml:Term/sml:value",
                                                              nsContext ) );
@@ -343,7 +344,8 @@ public class SOSController extends AbstractOGCServiceController {
                                   response );
         } catch ( XMLStreamException e ) {
             LOG.error( "an error occured while processing the request", e );
-            sendServiceException( new OWSException( "an error occured while processing the request", NO_APPLICABLE_CODE ),
+            sendServiceException(
+                                  new OWSException( "an error occured while processing the request", NO_APPLICABLE_CODE ),
                                   response );
         } catch ( XMLProcessingException e ) {
             LOG.error( "an error occured while processing the request", e );
@@ -671,22 +673,8 @@ public class SOSController extends AbstractOGCServiceController {
      * @param publishedInformation
      */
     private void syncWithMainController( PublishedInformation publishedInformation ) {
-        if ( identification == null ) {
-            if ( publishedInformation == null || publishedInformation.getServiceIdentification() == null ) {
-                LOG.info( "Using global service identification because no WCS specific service identification was defined." );
-                identification = mainMetadataConf.getServiceIdentification();
-            } else {
-                identification = synchronizeServiceIdentificationWithMainController( publishedInformation.getServiceIdentification() );
-            }
-        }
-        if ( provider == null ) {
-            if ( publishedInformation == null || publishedInformation.getServiceProvider() == null ) {
-                LOG.info( "Using gloval serviceProvider because no WCS specific service provider was defined." );
-                provider = mainMetadataConf.getServiceProvider();
-            } else {
-                provider = synchronizeServiceProviderWithMainControllerConf( publishedInformation.getServiceProvider() );
-            }
-        }
+        identification = mainMetadataConf.getServiceIdentification();
+        provider = mainMetadataConf.getServiceProvider();
     }
 
     @Override

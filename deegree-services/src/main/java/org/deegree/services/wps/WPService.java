@@ -91,8 +91,8 @@ import org.deegree.services.controller.ows.OWSException;
 import org.deegree.services.controller.ows.OWSException110XMLAdapter;
 import org.deegree.services.controller.utils.HttpResponseBuffer;
 import org.deegree.services.exception.ServiceInitException;
-import org.deegree.services.jaxb.main.DeegreeServiceControllerType;
-import org.deegree.services.jaxb.main.DeegreeServicesMetadataType;
+import org.deegree.services.jaxb.controller.DeegreeServiceControllerType;
+import org.deegree.services.jaxb.metadata.DeegreeServicesMetadataType;
 import org.deegree.services.jaxb.wps.ProcessDefinition;
 import org.deegree.services.jaxb.wps.PublishedInformation;
 import org.deegree.services.jaxb.wps.ServiceConfiguration;
@@ -137,14 +137,14 @@ public class WPService extends AbstractOGCServiceController {
 
     private static final String CONFIG_JAXB_PACKAGE = "org.deegree.services.jaxb.wps";
 
-    private static final String CONFIG_SCHEMA = "/META-INF/schemas/wps/0.5.0/wps_configuration.xsd";
+    private static final String CONFIG_SCHEMA = "/META-INF/schemas/wps/3.0.0/wps_configuration.xsd";
 
     private static final ImplementationMetadata<WPSRequestType> IMPLEMENTATION_METADATA = new ImplementationMetadata<WPSRequestType>() {
         {
             supportedVersions = new Version[] { VERSION_100 };
             handledNamespaces = new String[] { WPS_100_NS };
             handledRequests = WPSRequestType.class;
-            supportedConfigVersions = new Version[] { Version.parseVersion( "0.5.0" ) };
+            supportedConfigVersions = new Version[] { Version.parseVersion( "3.0.0" ) };
         }
     };
 

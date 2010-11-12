@@ -49,12 +49,12 @@ import org.deegree.observation.persistence.ObservationDatastoreException;
 import org.deegree.observation.persistence.ObservationStoreManager;
 import org.deegree.services.controller.OGCFrontController;
 import org.deegree.services.controller.ows.capabilities.OWSCapabilitiesXMLAdapter;
-import org.deegree.services.jaxb.main.CodeType;
-import org.deegree.services.jaxb.main.DCPType;
-import org.deegree.services.jaxb.main.DeegreeServicesMetadataType;
-import org.deegree.services.jaxb.main.KeywordsType;
-import org.deegree.services.jaxb.main.LanguageStringType;
-import org.deegree.services.jaxb.main.ServiceIdentificationType;
+import org.deegree.services.jaxb.controller.DCPType;
+import org.deegree.services.jaxb.metadata.CodeType;
+import org.deegree.services.jaxb.metadata.DeegreeServicesMetadataType;
+import org.deegree.services.jaxb.metadata.KeywordsType;
+import org.deegree.services.jaxb.metadata.LanguageStringType;
+import org.deegree.services.jaxb.metadata.ServiceIdentificationType;
 
 /**
  * This is an xml adapter for SOS 1.0.0 Capabilities documents.

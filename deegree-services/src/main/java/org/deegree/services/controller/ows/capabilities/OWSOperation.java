@@ -39,7 +39,7 @@ import java.util.Collections;
 import java.util.List;
 
 import org.deegree.commons.utils.Pair;
-import org.deegree.services.jaxb.main.DCPType;
+import org.deegree.services.jaxb.controller.DCPType;
 
 /**
  * Encapsulates the information required for exporting an OWS operation in a GetCapabilities response.
@@ -66,7 +66,7 @@ public class OWSOperation {
      * @param constraints
      */
     public OWSOperation( String name, DCPType dcp, List<Pair<String, List<String>>> params,
-                      List<Pair<String, List<String>>> constraints ) {
+                         List<Pair<String, List<String>>> constraints ) {
         this.name = name;
         this.dcp = dcp;
         if ( params != null ) {

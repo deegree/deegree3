@@ -70,12 +70,12 @@ import org.deegree.protocol.csw.CSWConstants.CSWRequestType;
 import org.deegree.protocol.csw.CSWConstants.Sections;
 import org.deegree.services.controller.OGCFrontController;
 import org.deegree.services.controller.ows.capabilities.OWSCapabilitiesXMLAdapter;
-import org.deegree.services.jaxb.main.DCPType;
-import org.deegree.services.jaxb.main.DeegreeServiceControllerType;
-import org.deegree.services.jaxb.main.DeegreeServicesMetadataType;
-import org.deegree.services.jaxb.main.KeywordsType;
-import org.deegree.services.jaxb.main.LanguageStringType;
-import org.deegree.services.jaxb.main.ServiceIdentificationType;
+import org.deegree.services.jaxb.controller.DCPType;
+import org.deegree.services.jaxb.controller.DeegreeServiceControllerType;
+import org.deegree.services.jaxb.metadata.DeegreeServicesMetadataType;
+import org.deegree.services.jaxb.metadata.KeywordsType;
+import org.deegree.services.jaxb.metadata.LanguageStringType;
+import org.deegree.services.jaxb.metadata.ServiceIdentificationType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

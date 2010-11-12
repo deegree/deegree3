@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xs:schema xmlns:sec="http://www.deegree.org/security" xmlns:xs="http://www.w3.org/2001/XMLSchema"
-  targetNamespace="http://www.deegree.org/security" elementFormDefault="qualified" xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
+<xs:schema xmlns:sec="http://www.deegree.org/services/security" xmlns:xs="http://www.w3.org/2001/XMLSchema"
+  targetNamespace="http://www.deegree.org/services/security" elementFormDefault="qualified" xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
   jaxb:version="2.1">
 
   <xs:annotation>
@@ -16,7 +16,7 @@
       <xs:sequence>
         <xs:element name="CredentialsProvider" type="sec:CredentialsProviderType" minOccurs="0" />
       </xs:sequence>
-      <xs:attribute name="configVersion" fixed="0.6.0" use="required" />
+      <xs:attribute name="configVersion" fixed="3.0.0" use="required" />
     </xs:complexType>
   </xs:element>
 
@@ -25,7 +25,7 @@
   <xs:complexType name="CredentialsProviderType">
     <xs:annotation>
       <xs:documentation>
-        Defines for the security layer the authentication method used for the service.
+        Defines credentials provider used for the services.
       </xs:documentation>
     </xs:annotation>
     <xs:sequence>
