@@ -64,20 +64,20 @@ import org.deegree.commons.xml.XPath;
 import org.deegree.cs.CRS;
 import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.geometry.Envelope;
+import org.deegree.process.jaxb.java.BoundingBoxInputDefinition;
+import org.deegree.process.jaxb.java.ComplexFormatType;
+import org.deegree.process.jaxb.java.ComplexInputDefinition;
+import org.deegree.process.jaxb.java.ComplexOutputDefinition;
+import org.deegree.process.jaxb.java.LiteralInputDefinition;
+import org.deegree.process.jaxb.java.ProcessDefinition;
+import org.deegree.process.jaxb.java.ProcessletInputDefinition;
+import org.deegree.process.jaxb.java.ProcessletOutputDefinition;
+import org.deegree.process.jaxb.java.LiteralInputDefinition.OtherUOM;
+import org.deegree.process.jaxb.java.ProcessDefinition.InputParameters;
+import org.deegree.process.jaxb.java.ProcessDefinition.OutputParameters;
 import org.deegree.protocol.ows.OWSCommonXMLAdapter;
 import org.deegree.protocol.wps.WPSConstants;
 import org.deegree.services.controller.ows.OWSException;
-import org.deegree.services.jaxb.wps.BoundingBoxInputDefinition;
-import org.deegree.services.jaxb.wps.ComplexFormatType;
-import org.deegree.services.jaxb.wps.ComplexInputDefinition;
-import org.deegree.services.jaxb.wps.ComplexOutputDefinition;
-import org.deegree.services.jaxb.wps.LiteralInputDefinition;
-import org.deegree.services.jaxb.wps.ProcessDefinition;
-import org.deegree.services.jaxb.wps.ProcessletInputDefinition;
-import org.deegree.services.jaxb.wps.ProcessletOutputDefinition;
-import org.deegree.services.jaxb.wps.LiteralInputDefinition.OtherUOM;
-import org.deegree.services.jaxb.wps.ProcessDefinition.InputParameters;
-import org.deegree.services.jaxb.wps.ProcessDefinition.OutputParameters;
 import org.deegree.services.wps.DefaultExceptionCustomizer;
 import org.deegree.services.wps.ExceptionCustomizer;
 import org.deegree.services.wps.ProcessletInputs;
@@ -889,7 +889,7 @@ public class ExecuteRequestXMLAdapter extends OWSCommonXMLAdapter {
         if ( inputParams != null ) {
             for ( JAXBElement<? extends ProcessletInputDefinition> el : inputParams.getProcessInput() ) {
                 LOG.trace( "Defined input type: " + el.getValue().getIdentifier().getValue() );
-                org.deegree.services.jaxb.wps.CodeType inputId = el.getValue().getIdentifier();
+                org.deegree.process.jaxb.java.CodeType inputId = el.getValue().getIdentifier();
                 if ( equals( identifier, inputId ) ) {
                     inputType = el.getValue();
                 }
@@ -909,7 +909,7 @@ public class ExecuteRequestXMLAdapter extends OWSCommonXMLAdapter {
         OutputParameters outputParams = processDef.getOutputParameters();
         if ( outputParams != null ) {
             for ( JAXBElement<? extends ProcessletOutputDefinition> el : outputParams.getProcessOutput() ) {
-                org.deegree.services.jaxb.wps.CodeType outputId = el.getValue().getIdentifier();
+                org.deegree.process.jaxb.java.CodeType outputId = el.getValue().getIdentifier();
                 if ( equals( identifier, outputId ) ) {
                     outputType = el.getValue();
                 }
@@ -921,7 +921,7 @@ public class ExecuteRequestXMLAdapter extends OWSCommonXMLAdapter {
         return outputType;
     }
 
-    private boolean equals( CodeType codeType, org.deegree.services.jaxb.wps.CodeType codeType2 ) {
+    private static boolean equals( CodeType codeType, org.deegree.process.jaxb.java.CodeType codeType2 ) {
         if ( codeType2.getValue().equals( codeType.getCode() ) ) {
             if ( codeType2.getCodeSpace() == null ) {
                 return codeType.getCodeSpace() == null;

@@ -40,7 +40,7 @@
           </execution>
         </executions>
         <configuration>
-          <schemaFiles>controller/3.0.0/controller.xsd,metadata/3.0.0/metadata.xsd,security/3.0.0/security.xsd,,csw/3.0.0/csw_configuration.xsd,sos/3.0.0/sos_configuration.xsd,wfs/3.0.0/wfs_configuration.xsd,wps/3.0.0/wps_configuration.xsd,wms/3.0.0/wms_configuration.xsd,wcs/3.0.0/wcs_configuration.xsd,wpvs/3.0.0/wpvs_configuration.xsd</schemaFiles>
+          <schemaFiles>controller/3.0.0/controller.xsd,metadata/3.0.0/metadata.xsd,security/3.0.0/security.xsd,,csw/3.0.0/csw_configuration.xsd,sos/3.0.0/sos_configuration.xsd,wfs/3.0.0/wfs_configuration.xsd,wps/3.0.0/wps_configuration.xsd,wms/3.0.0/wms_configuration.xsd,wcs/3.0.0/wcs_configuration.xsd,wpvs/3.0.0/wpvs_configuration.xsd,processes/java/3.0.0/java.xsd</schemaFiles>
           <schemaDirectory>src/main/resources/META-INF/schemas/</schemaDirectory>
         </configuration>
       </plugin>

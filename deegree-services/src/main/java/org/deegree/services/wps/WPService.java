@@ -74,6 +74,7 @@ import org.deegree.commons.xml.NamespaceContext;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.XPath;
 import org.deegree.cs.exceptions.UnknownCRSException;
+import org.deegree.process.jaxb.java.ProcessDefinition;
 import org.deegree.protocol.ows.capabilities.GetCapabilities;
 import org.deegree.protocol.ows.capabilities.GetCapabilitiesKVPParser;
 import org.deegree.protocol.wps.WPSConstants.WPSRequestType;
@@ -93,9 +94,7 @@ import org.deegree.services.controller.utils.HttpResponseBuffer;
 import org.deegree.services.exception.ServiceInitException;
 import org.deegree.services.jaxb.controller.DeegreeServiceControllerType;
 import org.deegree.services.jaxb.metadata.DeegreeServicesMetadataType;
-import org.deegree.services.jaxb.wps.ProcessDefinition;
-import org.deegree.services.jaxb.wps.PublishedInformation;
-import org.deegree.services.jaxb.wps.ServiceConfiguration;
+import org.deegree.services.jaxb.wps.DeegreeWPS;
 import org.deegree.services.wps.capabilities.CapabilitiesXMLWriter;
 import org.deegree.services.wps.describeprocess.DescribeProcessResponseXMLAdapter;
 import org.deegree.services.wps.execute.ExecuteRequest;
@@ -154,7 +153,7 @@ public class WPService extends AbstractOGCServiceController {
 
     private ProcessManager service;
 
-    private ServiceConfiguration sc;
+    private DeegreeWPS sc;
 
     private ExecutionManager executeHandler;
 
@@ -177,22 +176,15 @@ public class WPService extends AbstractOGCServiceController {
 
         OMElement configEl = controllerConf.getRequiredElement( controllerConf.getRootElement(),
                                                                 new XPath( "wps:ServiceConfiguration", nsContext ) );
-        sc = (ServiceConfiguration) unmarshallConfig( CONFIG_JAXB_PACKAGE, CONFIG_SCHEMA, configEl );
+        sc = (DeegreeWPS) unmarshallConfig( CONFIG_JAXB_PACKAGE, CONFIG_SCHEMA, configEl );
 
         URL controllerConfURL;
         try {
             controllerConfURL = new URL( controllerConf.getSystemId() );
-            File resolvedProcessesDir = FileUtils.getAsFile( new URL( controllerConfURL, sc.getProcessesDirectory() ) );
+            File resolvedProcessesDir = FileUtils.getAsFile( new URL( controllerConfURL, "../processes/" ) );
             this.service = new ProcessManager( resolvedProcessesDir );
 
-            OMElement piElement = controllerConf.getRequiredElement( controllerConf.getRootElement(),
-                                                                     new XPath( "wps:PublishedInformation", nsContext ) );
-
-            PublishedInformationXMLAdapter piXMLAdapter = new PublishedInformationXMLAdapter();
-            piXMLAdapter.setRootElement( piElement );
-            piXMLAdapter.setSystemId( controllerConf.getSystemId() );
-            PublishedInformation pi = piXMLAdapter.parse();
-            validateAndSetOfferedVersions( pi.getOfferedVersions().getVersion() );
+            validateAndSetOfferedVersions( sc.getSupportedVersions().getVersion() );
 
             executeHandler = new ExecutionManager( this, storageManager );
 

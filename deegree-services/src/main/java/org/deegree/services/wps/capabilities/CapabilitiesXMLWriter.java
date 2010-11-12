@@ -46,13 +46,13 @@ import javax.xml.stream.XMLStreamWriter;
 
 import org.deegree.commons.tom.ows.CodeType;
 import org.deegree.commons.utils.Pair;
+import org.deegree.process.jaxb.java.ProcessDefinition;
+import org.deegree.process.jaxb.java.ProcessDefinition.Metadata;
 import org.deegree.services.controller.OGCFrontController;
 import org.deegree.services.controller.ows.capabilities.OWSCapabilitiesXMLAdapter;
 import org.deegree.services.controller.ows.capabilities.OWSOperation;
 import org.deegree.services.jaxb.controller.DCPType;
 import org.deegree.services.jaxb.metadata.DeegreeServicesMetadataType;
-import org.deegree.services.jaxb.wps.ProcessDefinition;
-import org.deegree.services.jaxb.wps.ProcessDefinition.Metadata;
 import org.deegree.services.wps.WPSProcess;
 
 /**

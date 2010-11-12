@@ -9,16 +9,23 @@
       </jaxb:schemaBindings>
     </appinfo>
   </annotation>
-  <include schemaLocation="process_definition.xsd" />
-  <include schemaLocation="wps_published_information.xsd" />
-  <include schemaLocation="wps_service_configuration.xsd" />
   <element name="deegreeWPS">
     <complexType>
       <sequence>
-        <element ref="wps:PublishedInformation" />
-        <element ref="wps:ServiceConfiguration" />
+        <element name="SupportedVersions" minOccurs="0">
+          <complexType>
+            <sequence>
+              <element name="Version" type="wps:WPSVersionType" maxOccurs="unbounded" />
+            </sequence>
+          </complexType>
+        </element>
       </sequence>
       <attribute name="configVersion" use="required" fixed="3.0.0" />
     </complexType>
   </element>
+  <simpleType name="WPSVersionType">
+    <restriction base="string">
+      <enumeration value="1.0.0" />
+    </restriction>
+  </simpleType>
 </schema>

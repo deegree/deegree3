@@ -38,7 +38,7 @@ package org.deegree.services.wps.input;
 
 import org.deegree.commons.tom.ows.LanguageString;
 import org.deegree.geometry.Envelope;
-import org.deegree.services.jaxb.wps.BoundingBoxInputDefinition;
+import org.deegree.process.jaxb.java.BoundingBoxInputDefinition;
 
 /**
  * A {@link Process} input parameter with a bounding box value.

@@ -44,8 +44,8 @@ import javax.xml.stream.XMLStreamReader;
 
 import org.apache.axiom.om.OMElement;
 import org.deegree.commons.tom.ows.LanguageString;
-import org.deegree.services.jaxb.wps.ComplexFormatType;
-import org.deegree.services.jaxb.wps.ComplexInputDefinition;
+import org.deegree.process.jaxb.java.ComplexFormatType;
+import org.deegree.process.jaxb.java.ComplexInputDefinition;
 
 /**
  * A complex data structure {@link ProcessletInput} parameter, e.g. an object encoded in GML or a raw binary stream.

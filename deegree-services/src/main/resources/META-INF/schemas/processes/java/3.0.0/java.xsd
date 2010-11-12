@@ -1,7 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<schema xmlns="http://www.w3.org/2001/XMLSchema" xmlns:wps="http://www.deegree.org/services/wps" targetNamespace="http://www.deegree.org/services/wps"
+<schema xmlns="http://www.w3.org/2001/XMLSchema" xmlns:wps="http://www.deegree.org/processes/java" targetNamespace="http://www.deegree.org/processes/java"
   elementFormDefault="qualified" attributeFormDefault="unqualified" xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
   jaxb:version="2.1">
+  <annotation>
+    <appinfo>
+      <jaxb:schemaBindings>
+        <jaxb:package name="org.deegree.process.jaxb.java" />
+      </jaxb:schemaBindings>
+    </appinfo>
+  </annotation>  
   <!--
     === PROCESS DEFINITION ===
   -->

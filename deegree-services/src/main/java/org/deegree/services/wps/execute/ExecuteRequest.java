@@ -38,8 +38,8 @@ package org.deegree.services.wps.execute;
 
 import org.deegree.commons.tom.ows.CodeType;
 import org.deegree.commons.tom.ows.Version;
+import org.deegree.process.jaxb.java.ProcessDefinition;
 import org.deegree.protocol.wps.WPSRequest;
-import org.deegree.services.jaxb.wps.ProcessDefinition;
 import org.deegree.services.wps.ProcessletInputs;
 
 /**

@@ -38,7 +38,7 @@ package org.deegree.services.wps.execute;
 
 import org.deegree.commons.tom.ows.CodeType;
 import org.deegree.commons.tom.ows.LanguageString;
-import org.deegree.services.jaxb.wps.ProcessletOutputDefinition;
+import org.deegree.process.jaxb.java.ProcessletOutputDefinition;
 
 /**
  * Definition of a format, encoding, schema, and unit-of-measure for an output to be returned from a process as part of

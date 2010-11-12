@@ -39,7 +39,7 @@ package org.deegree.services.wps.input;
 import org.deegree.commons.tom.ows.CodeType;
 import org.deegree.commons.tom.ows.LanguageString;
 import org.deegree.geometry.Envelope;
-import org.deegree.services.jaxb.wps.ProcessletInputDefinition;
+import org.deegree.process.jaxb.java.ProcessletInputDefinition;
 import org.deegree.services.wps.Processlet;
 
 /**

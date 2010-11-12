@@ -45,7 +45,7 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
 import org.deegree.commons.xml.XMLAdapter;
-import org.deegree.services.jaxb.wps.ProcessDefinition;
+import org.deegree.process.jaxb.java.ProcessDefinition;
 import org.deegree.services.wps.annotations.ProcessDescription;
 import org.deegree.services.wps.annotations.commons.BBox;
 import org.deegree.services.wps.annotations.commons.ComplexFormat;

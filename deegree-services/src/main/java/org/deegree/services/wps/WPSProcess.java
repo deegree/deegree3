@@ -35,7 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.services.wps;
 
-import org.deegree.services.jaxb.wps.ProcessDefinition;
+import org.deegree.process.jaxb.java.ProcessDefinition;
 
 /**
  * Encapsulates the components that are needed by the {@link ProcessManager} to offer a process.

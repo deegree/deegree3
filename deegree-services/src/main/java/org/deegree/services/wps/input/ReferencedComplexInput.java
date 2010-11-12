@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,7 +32,7 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 
 package org.deegree.services.wps.input;
 
@@ -47,15 +47,15 @@ import org.apache.axiom.om.OMElement;
 import org.deegree.commons.tom.ows.LanguageString;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;
-import org.deegree.services.jaxb.wps.ComplexFormatType;
-import org.deegree.services.jaxb.wps.ComplexInputDefinition;
+import org.deegree.process.jaxb.java.ComplexFormatType;
+import org.deegree.process.jaxb.java.ComplexInputDefinition;
 
 /**
  * A {@link ComplexInputImpl} with a value that is given as a reference to a web-accessible resource.
- *
+ * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author: schneider $
- *
+ * 
  * @version $Revision: $, $Date: $
  */
 public class ReferencedComplexInput extends ComplexInputImpl {
@@ -64,7 +64,7 @@ public class ReferencedComplexInput extends ComplexInputImpl {
 
     /**
      * Creates a new {@link ComplexInputImpl} instance from a reference to a web-accessible URI.
-     *
+     * 
      * @param definition
      *            corresponding input definition from process description
      * @param title
@@ -109,7 +109,7 @@ public class ReferencedComplexInput extends ComplexInputImpl {
 
     /**
      * Returns the URL that provides the input.
-     *
+     * 
      * @return the URL that provides the input.
      */
     public URL getURL() {

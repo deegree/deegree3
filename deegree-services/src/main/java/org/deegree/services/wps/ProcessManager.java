@@ -51,12 +51,12 @@ import javax.xml.stream.XMLStreamReader;
 
 import org.deegree.commons.tom.ows.CodeType;
 import org.deegree.commons.xml.stax.StAXParsingHelper;
+import org.deegree.process.jaxb.java.ProcessDefinition;
+import org.deegree.process.jaxb.java.ProcessletInputDefinition;
+import org.deegree.process.jaxb.java.ProcessletOutputDefinition;
+import org.deegree.process.jaxb.java.ProcessDefinition.InputParameters;
+import org.deegree.process.jaxb.java.ProcessDefinition.OutputParameters;
 import org.deegree.services.exception.ServiceInitException;
-import org.deegree.services.jaxb.wps.ProcessDefinition;
-import org.deegree.services.jaxb.wps.ProcessletInputDefinition;
-import org.deegree.services.jaxb.wps.ProcessletOutputDefinition;
-import org.deegree.services.jaxb.wps.ProcessDefinition.InputParameters;
-import org.deegree.services.jaxb.wps.ProcessDefinition.OutputParameters;
 import org.deegree.services.wps.provider.ProcessProvider;
 import org.deegree.services.wps.provider.ProcessProviderProvider;
 import org.slf4j.Logger;

@@ -41,8 +41,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.deegree.commons.tom.ows.CodeType;
+import org.deegree.process.jaxb.java.ProcessDefinition;
 import org.deegree.services.exception.ServiceInitException;
-import org.deegree.services.jaxb.wps.ProcessDefinition;
 import org.deegree.services.wps.ExceptionAwareProcesslet;
 import org.deegree.services.wps.ExceptionCustomizer;
 import org.deegree.services.wps.GenericWPSProcess;

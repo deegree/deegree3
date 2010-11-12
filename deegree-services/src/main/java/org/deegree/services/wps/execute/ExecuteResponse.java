@@ -39,7 +39,7 @@ package org.deegree.services.wps.execute;
 import java.net.URL;
 import java.util.List;
 
-import org.deegree.services.jaxb.wps.ProcessDefinition;
+import org.deegree.process.jaxb.java.ProcessDefinition;
 import org.deegree.services.wps.ProcessExecution;
 import org.deegree.services.wps.ProcessletInputs;
 import org.deegree.services.wps.ProcessletOutputs;

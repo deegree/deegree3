@@ -41,7 +41,8 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 
-import org.deegree.services.jaxb.wps.ProcessDefinition;
+import org.deegree.commons.xml.jaxb.JAXBUtils;
+import org.deegree.process.jaxb.java.ProcessDefinition;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -57,11 +58,15 @@ public class JavaProcessProviderProvider implements ProcessProviderProvider {
 
     private static final Logger LOG = LoggerFactory.getLogger( JavaProcessProviderProvider.class );
 
-    private static final String CONFIG_NAMESPACE = "http://www.deegree.org/services/wps";
+    private static final String JAXB_CONFIG_PACKAGE = "org.deegree.process.jaxb.java";
+
+    private static final String JAXB_CONFIG_SCHEMA = "/META-INF/schemas/processes/java/3.0.0/java.xsd";
+
+    private static final String CONFIG_NS = "http://www.deegree.org/processes/java";
 
     @Override
     public String getConfigNamespace() {
-        return CONFIG_NAMESPACE;
+        return CONFIG_NS;
     }
 
     @Override
@@ -74,8 +79,9 @@ public class JavaProcessProviderProvider implements ProcessProviderProvider {
         try {
             JAXBContext jc = JAXBContext.newInstance( "org.deegree.services.jaxb.wps" );
             Unmarshaller unmarshaller = jc.createUnmarshaller();
-            ProcessDefinition processDef = (ProcessDefinition) unmarshaller.unmarshal( configURL );
-//            checkConfigVersion( definitionFile, processDef.getConfigVersion() );
+            ProcessDefinition processDef = (ProcessDefinition) JAXBUtils.unmarshall( JAXB_CONFIG_PACKAGE,
+                                                                                     JAXB_CONFIG_SCHEMA, configURL );
+            // checkConfigVersion( definitionFile, processDef.getConfigVersion() );
 
             // processDefinitions.add( processDef );
             //

@@ -35,7 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.services.wps;
 
-import org.deegree.services.jaxb.wps.ProcessDefinition;
+import org.deegree.process.jaxb.java.ProcessDefinition;
 
 /**
  * Generic {@link WPSProcess} implementation.

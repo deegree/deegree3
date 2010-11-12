@@ -47,22 +47,22 @@ import javax.xml.stream.XMLStreamWriter;
 
 import org.deegree.commons.utils.StringUtils;
 import org.deegree.commons.xml.XMLAdapter;
-import org.deegree.services.jaxb.wps.BoundingBoxInputDefinition;
-import org.deegree.services.jaxb.wps.BoundingBoxOutputDefinition;
-import org.deegree.services.jaxb.wps.ComplexFormatType;
-import org.deegree.services.jaxb.wps.ComplexInputDefinition;
-import org.deegree.services.jaxb.wps.ComplexOutputDefinition;
-import org.deegree.services.jaxb.wps.LiteralInputDefinition;
-import org.deegree.services.jaxb.wps.LiteralOutputDefinition;
-import org.deegree.services.jaxb.wps.ProcessDefinition;
-import org.deegree.services.jaxb.wps.ProcessletInputDefinition;
-import org.deegree.services.jaxb.wps.ProcessletOutputDefinition;
-import org.deegree.services.jaxb.wps.Range;
-import org.deegree.services.jaxb.wps.ValidValueReference;
-import org.deegree.services.jaxb.wps.LiteralOutputDefinition.DataType;
-import org.deegree.services.jaxb.wps.LiteralOutputDefinition.DefaultUOM;
-import org.deegree.services.jaxb.wps.LiteralOutputDefinition.OtherUOM;
-import org.deegree.services.jaxb.wps.ProcessDefinition.Metadata;
+import org.deegree.process.jaxb.java.BoundingBoxInputDefinition;
+import org.deegree.process.jaxb.java.BoundingBoxOutputDefinition;
+import org.deegree.process.jaxb.java.ComplexFormatType;
+import org.deegree.process.jaxb.java.ComplexInputDefinition;
+import org.deegree.process.jaxb.java.ComplexOutputDefinition;
+import org.deegree.process.jaxb.java.LiteralInputDefinition;
+import org.deegree.process.jaxb.java.LiteralOutputDefinition;
+import org.deegree.process.jaxb.java.ProcessDefinition;
+import org.deegree.process.jaxb.java.ProcessletInputDefinition;
+import org.deegree.process.jaxb.java.ProcessletOutputDefinition;
+import org.deegree.process.jaxb.java.Range;
+import org.deegree.process.jaxb.java.ValidValueReference;
+import org.deegree.process.jaxb.java.LiteralOutputDefinition.DataType;
+import org.deegree.process.jaxb.java.LiteralOutputDefinition.DefaultUOM;
+import org.deegree.process.jaxb.java.LiteralOutputDefinition.OtherUOM;
+import org.deegree.process.jaxb.java.ProcessDefinition.Metadata;
 import org.deegree.services.wps.WPSProcess;
 import org.deegree.services.wps.annotations.ProcessDescription;
 import org.slf4j.Logger;
@@ -140,8 +140,8 @@ public class DescribeProcessResponseXMLAdapter extends XMLAdapter {
                             throws XMLStreamException {
 
         ProcessDefinition processDef = process.getDescription();
-        
-        writer.writeStartElement( "ProcessDescription" );     
+
+        writer.writeStartElement( "ProcessDescription" );
         writer.writeAttribute( WPS_NS, "processVersion", processDef.getProcessVersion() );
         writer.writeAttribute( "storeSupported", Boolean.toString( processDef.isStoreSupported() ) );
         writer.writeAttribute( "statusSupported", Boolean.toString( processDef.isStatusSupported() ) );
@@ -286,7 +286,7 @@ public class DescribeProcessResponseXMLAdapter extends XMLAdapter {
 
             // "ows:DataType" (minOccurs="0", maxOccurs="1")
             if ( literalData.getDataType() != null ) {
-                org.deegree.services.jaxb.wps.LiteralInputDefinition.DataType dataType = literalData.getDataType();
+                org.deegree.process.jaxb.java.LiteralInputDefinition.DataType dataType = literalData.getDataType();
                 writer.writeStartElement( OWS_NS, "DataType" );
                 if ( dataType.getReference() != null ) {
                     writer.writeAttribute( OWS_NS, "reference", dataType.getReference() );
@@ -297,7 +297,7 @@ public class DescribeProcessResponseXMLAdapter extends XMLAdapter {
 
             // "UOMs" (minOccurs="0", maxOccurs="1")
             if ( literalData.getDefaultUOM() != null ) {
-                org.deegree.services.jaxb.wps.LiteralInputDefinition.DefaultUOM defaultUOM = literalData.getDefaultUOM();
+                org.deegree.process.jaxb.java.LiteralInputDefinition.DefaultUOM defaultUOM = literalData.getDefaultUOM();
                 writer.writeStartElement( "UOMs" );
 
                 // "Default" (minOccurs="1", maxOccurs="1")
