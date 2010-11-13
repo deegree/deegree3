@@ -36,7 +36,9 @@
 package org.deegree.gml;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
+import java.net.URLConnection;
 
 import javax.xml.stream.FactoryConfigurationError;
 import javax.xml.stream.XMLInputFactory;
@@ -44,6 +46,7 @@ import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
+import org.deegree.commons.utils.ProxyUtils;
 import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;
 
 /**
@@ -95,8 +98,10 @@ public class GMLInputFactory {
      */
     public static GMLStreamReader createGMLStreamReader( GMLVersion version, URL url )
                             throws XMLStreamException, FactoryConfigurationError, IOException {
-        XMLStreamReader xmlStream = XMLInputFactory.newInstance().createXMLStreamReader( url.toString(),
-                                                                                         url.openStream() );
+
+        URLConnection conn = ProxyUtils.openURLConnection( url );
+        InputStream is = conn.getInputStream();
+        XMLStreamReader xmlStream = XMLInputFactory.newInstance().createXMLStreamReader( is );
         // skip START_DOCUMENT event
         xmlStream.nextTag();
         return new GMLStreamReader( version, new XMLStreamReaderWrapper( xmlStream, url.toString() ) );
