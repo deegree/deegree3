@@ -34,9 +34,6 @@ body {
 	margin-right: 10px;
 }
 
-#main {
-	
-}
 
 #left {
 	margin-left: 20 px;
@@ -51,9 +48,6 @@ body {
 	font-size: small;
 	text-align: left;
 }
-
-
-
 
 #footer {
 	border-top: 1px solid black;
@@ -77,20 +71,7 @@ body {
 	color: green;
 }
 
-.navi:active {
-	color: green;
-}
-
 .naviactive {
-	font-size: large;
-	font-style: bold;
-}
-
-.naviactive:hover {
-	color: green;
-}
-
-.naviactive:active {
 	color: green;
 }
 
@@ -98,17 +79,10 @@ body {
 	color: blue;
 }
 
-.naviExtern:active {
-	color: blue;
-}
-
 .linkWiki:hover {
 	color: orange;
 }
 
-.linkWiki:active {
-	color: orange;
-}
 
 /** START: button **/
 
