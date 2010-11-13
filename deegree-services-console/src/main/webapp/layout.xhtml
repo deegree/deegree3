@@ -61,12 +61,12 @@
                                 <h:link styleClass="naviactive" value="proxy" outcome="/console/jsf/proxy.xhtml" disabled="#{!logBean.loggedIn}" rendered="#{facesContext.viewRoot.viewId == '/console/jsf/proxy.xhtml'}"/>
                                 <h:link styleClass="navi" value="proxy" outcome="/console/jsf/proxy.xhtml" disabled="#{!logBean.loggedIn}" rendered="#{facesContext.viewRoot.viewId != '/console/jsf/proxy.xhtml'}"/>
 								<br/>
-								<h:link styleClass="naviExtern" outcome="/console/client/client.xhtml" target="_blank" value="#{labels.link_genericClient}" />
-								<h:outputLink styleClass="naviExtern" value="#{facesContext.externalContext.requestContextPath}/console/wms/wms.html" target="_blank">
+								<h:link styleClass="naviExtern" outcome="/console/client/client.xhtml" value="#{labels.link_genericClient}" />
+								<h:outputLink styleClass="naviExtern" value="#{facesContext.externalContext.requestContextPath}/console/wms/wms.html">
                                     <h:outputText value="#{labels.link_wmsClient}"/>
                                 </h:outputLink>
 								<br/><br/>
-								<dg:externalLink styleClass="linkWiki" target="_blank" href="http://wiki.deegree.org" title="#{labels.link_wiki}" />
+								<dg:externalLink styleClass="linkWiki" href="http://wiki.deegree.org" title="#{labels.link_wiki}" />
 				</h:panelGrid></div>
 				
 				<div id="center"><ui:insert name="center" /> <h:panelGroup>
