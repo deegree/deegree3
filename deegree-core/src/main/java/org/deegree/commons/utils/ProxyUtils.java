@@ -295,6 +295,8 @@ public final class ProxyUtils {
             String userAndPass = Base64.encode( ( user + ":" + pass ).getBytes() );
             conn.setRequestProperty( "Proxy-Authorization", "Basic " + userAndPass );
         }
+        // TODO should this be a method parameter?
+        conn.setConnectTimeout( 5000 );
         return conn;
     }
 
