@@ -5,8 +5,19 @@
 <h:head>
   <title>Generic OGC Web Service Client</title>
   <h:outputStylesheet name="styles.css" />
+  <h:outputScript name="console.js" />  
 </h:head>
 <h:body>
+
+  <div id="PLEASEWAIT">
+  <div class="curved"><b class="b1"></b><b class="b2"></b><b class="b3"></b><b class="b4"></b>
+  <div class="boxcontent">
+  <p>Performing request.<br />
+  Please wait.</p>
+  </div>
+  <b class="b4"></b><b class="b3"></b><b class="b2"></b><b class="b1"></b></div>
+  </div>
+  <div id="PLEASEWAIT_BG"></div>
 
   <h:form id="requestForm">
     <h:panelGroup style="width: 95%; margin-left: 2%; margin-right: 2%;">
@@ -39,7 +50,7 @@
           </h:inputText>
 
           <h:commandButton id="sendBt" value="send" action="#{requestBean.sendRequest}" style="text-align: right;">
-            <f:ajax execute="url requestArea" render="sendMgs result" />
+            <f:ajax execute="url requestArea" render="sendMgs result" onevent="blockInput"/>
           </h:commandButton>
 
         </h:column>
