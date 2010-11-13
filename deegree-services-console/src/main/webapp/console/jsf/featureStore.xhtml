@@ -1,4 +1,3 @@
-
 <ui:composition template="/layout.xhtml"
 	xmlns="http://www.w3.org/1999/xhtml"
 	xmlns:h="http://java.sun.com/jsf/html"
@@ -40,7 +39,10 @@
 							<td><h:commandButton styleClass="buttonInfo"
 								rendered="#{config.active}" value="#{labels.featureStores_info}"
 								action="#{config.showInfo}" /></td>
-							<td><h:commandButton
+							<td><h:commandButton styleClass="buttonInfo"
+								rendered="#{config.active}" value="#{labels.featureStores_loader}"
+								action="#{config.openLoader}" /></td>								
+							<td><h:commandButton styleClass="buttonInfo"
 								rendered="#{config.active &amp;&amp; config.sql}"
 								value="#{labels.featureStores_setup}"
 								action="#{config.createTables}" /></td>

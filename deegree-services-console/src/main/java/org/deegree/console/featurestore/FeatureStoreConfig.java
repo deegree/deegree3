@@ -98,6 +98,18 @@ public class FeatureStoreConfig extends ManagedXMLConfig {
         return "/console/feature/index";
     }
 
+    public String openLoader()
+                            throws Exception {
+        FeatureStore fs = FeatureStoreManager.get( getId() );
+        if ( fs == null ) {
+            throw new Exception( "No feature store with id '" + getId() + "' known / active." );
+        }
+        FeatureStoreLoader fsLoader = new FeatureStoreLoader( fs );
+        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put( "fsConfig", this );        
+        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put( "fsLoader", fsLoader );
+        return "/console/feature/loader";
+    }
+
     public List<NamespaceBinding> getNamespaces() {
         Set<NamespaceBinding> namespaces = new TreeSet<NamespaceBinding>();
         FeatureStore fs = FeatureStoreManager.get( getId() );
