@@ -129,6 +129,10 @@ class StoredFeatures {
             FeatureType ft = feature.getType();
             // TODO check if served
             FeatureCollection fc = ftToFeatures.get( ft );
+            if ( fc == null ) {
+                fc = new GenericFeatureCollection();
+                ftToFeatures.put( ft, fc );
+            }
             fc.add( feature );
         }
     }
