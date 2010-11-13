@@ -52,10 +52,10 @@ import org.slf4j.LoggerFactory;
 
 /**
  * TODO add class documentation here
- * 
+ *
  * @author <a href="mailto:buesching@lat-lon.de">Lyn Buesching</a>
  * @author last edited by: $Author: lyn $
- * 
+ *
  * @version $Revision: $, $Date: $
  */
 @ManagedBean
@@ -101,7 +101,11 @@ public class LogBean implements Serializable {
         String view = FacesContext.getCurrentInstance().getViewRoot().getViewId();
         if ( password != null && password.equals( correctPw ) ) {
             loggedIn = true;
-            return view;
+            if(view.indexOf("Failed") == -1){
+                return view;
+            }else{
+                return "/console/jsf/welcome";
+            }
         }
         return "failed";
     }
