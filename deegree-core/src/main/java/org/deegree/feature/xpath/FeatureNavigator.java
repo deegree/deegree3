@@ -54,7 +54,6 @@ import org.deegree.commons.uom.Measure;
 import org.deegree.feature.Feature;
 import org.deegree.feature.property.Property;
 import org.deegree.gml.GMLObject;
-import org.deegree.gml.GMLReference;
 import org.deegree.gml.GMLVersion;
 import org.jaxen.DefaultNavigator;
 import org.jaxen.JaxenConstants;
@@ -238,11 +237,8 @@ class FeatureNavigator extends DefaultNavigator {
             Property prop = ( (PropertyNode) node ).getValue();
             Object propValue = prop.getValue();
             if ( propValue instanceof GMLObject ) {
-                // TODO clear strategy for GML object references (remote + local)
-                if ( !( propValue instanceof GMLReference ) || ( (GMLReference) propValue ).isResolved() ) {
-                    iter = new SingleObjectIterator( new GMLObjectNode( (PropertyNode) node, (GMLObject) propValue,
-                                                                        version ) );
-                }
+                iter = new SingleObjectIterator(
+                                                 new GMLObjectNode( (PropertyNode) node, (GMLObject) propValue, version ) );
             } else if ( propValue instanceof GenericXMLElementContent ) {
                 List<TypedObjectNode> xmlNodes = ( (GenericXMLElementContent) propValue ).getChildren();
                 List<XPathNode> xpathNodes = new ArrayList<XPathNode>( xmlNodes.size() );
