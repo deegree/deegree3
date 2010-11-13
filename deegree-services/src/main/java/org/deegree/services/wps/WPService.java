@@ -153,8 +153,6 @@ public class WPService extends AbstractOGCServiceController {
 
     private ProcessManager service;
 
-    private DeegreeWPS sc;
-
     private ExecutionManager executeHandler;
 
     private File serviceWSDLFile;
@@ -171,12 +169,7 @@ public class WPService extends AbstractOGCServiceController {
 
         storageManager = new StorageManager( TempFileManager.getBaseDir() );
 
-        NamespaceContext nsContext = new NamespaceContext();
-        nsContext.addNamespace( "wps", "http://www.deegree.org/services/wps" );
-
-        OMElement configEl = controllerConf.getRequiredElement( controllerConf.getRootElement(),
-                                                                new XPath( "wps:ServiceConfiguration", nsContext ) );
-        sc = (DeegreeWPS) unmarshallConfig( CONFIG_JAXB_PACKAGE, CONFIG_SCHEMA, configEl );
+        DeegreeWPS sc = (DeegreeWPS) unmarshallConfig( CONFIG_JAXB_PACKAGE, CONFIG_SCHEMA, controllerConf.getRootElement() );
 
         URL controllerConfURL;
         try {
