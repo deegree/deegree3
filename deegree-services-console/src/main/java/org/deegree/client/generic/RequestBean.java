@@ -76,6 +76,7 @@ import lombok.Setter;
 import org.apache.commons.httpclient.HttpException;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.input.BoundedInputStream;
+import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.utils.net.HttpUtils;
 import org.deegree.commons.xml.XMLAdapter;
 import org.slf4j.Logger;
@@ -251,9 +252,13 @@ public class RequestBean implements Serializable {
     }
 
     private void initRequestMap() {
-        // TODO: replace with user directory, if available
-        String realPath = FacesContext.getCurrentInstance().getExternalContext().getRealPath( "/requests" );
-        File requestsBaseDir = new File( realPath );
+
+        File wsBaseDir = DeegreeWorkspace.getInstance().getLocation();
+        File requestsBaseDir = new File( wsBaseDir, "manager/requests" );
+        if ( !requestsBaseDir.exists() ) {
+            String realPath = FacesContext.getCurrentInstance().getExternalContext().getRealPath( "/requests" );
+            requestsBaseDir = new File( realPath );
+        }
         String[] serviceTypes = requestsBaseDir.list();
         if ( serviceTypes != null && serviceTypes.length > 0 ) {
             Arrays.sort( serviceTypes );
