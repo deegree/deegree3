@@ -57,13 +57,15 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 import java.util.TreeSet;
 
 import javax.annotation.PostConstruct;
 import javax.faces.bean.ManagedBean;
-import javax.faces.bean.SessionScoped;
+import javax.faces.bean.RequestScoped;
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import javax.faces.event.AjaxBehaviorEvent;
@@ -76,13 +78,13 @@ import lombok.Setter;
 import org.apache.commons.httpclient.HttpException;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.input.BoundedInputStream;
-import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.utils.net.HttpUtils;
 import org.deegree.commons.xml.XMLAdapter;
+import org.deegree.services.controller.OGCFrontController;
 import org.slf4j.Logger;
 
 /**
- * A session scoped bean handling the requests.
+ * A request scoped bean handling the requests (MS: changed to request scope to cope with reload problems).
  * 
  * @author <a href="mailto:buesching@lat-lon.de">Lyn Buesching</a>
  * @author last edited by: $Author: lyn $
@@ -90,12 +92,14 @@ import org.slf4j.Logger;
  * @version $Revision: $, $Date: $
  */
 @ManagedBean
-@SessionScoped
+@RequestScoped
 public class RequestBean implements Serializable {
 
     private static final long serialVersionUID = 293894352421399345L;
 
     private static final Logger LOG = getLogger( RequestBean.class );
+
+    private File requestsBaseDir;
 
     @Getter
     @Setter
@@ -146,7 +150,7 @@ public class RequestBean implements Serializable {
     // ----REQUESTTYPE
     // --------xml
     // --------REQUEST
-    private HashMap<String, Map<String, Map<String, List<String>>>> allRequests = new HashMap<String, Map<String, Map<String, List<String>>>>();
+    private TreeMap<String, Map<String, Map<String, List<String>>>> allRequests = new TreeMap<String, Map<String, Map<String, List<String>>>>();
 
     @Getter
     private String responseFile;
@@ -253,12 +257,14 @@ public class RequestBean implements Serializable {
 
     private void initRequestMap() {
 
-        File wsBaseDir = DeegreeWorkspace.getInstance().getLocation();
-        File requestsBaseDir = new File( wsBaseDir, "manager/requests" );
+        File wsBaseDir = OGCFrontController.getServiceWorkspace().getLocation();
+        requestsBaseDir = new File( wsBaseDir, "manager/requests" );
         if ( !requestsBaseDir.exists() ) {
             String realPath = FacesContext.getCurrentInstance().getExternalContext().getRealPath( "/requests" );
             requestsBaseDir = new File( realPath );
         }
+
+        LOG.debug( "Using requests directory " + requestsBaseDir );
         String[] serviceTypes = requestsBaseDir.list();
         if ( serviceTypes != null && serviceTypes.length > 0 ) {
             Arrays.sort( serviceTypes );
@@ -269,7 +275,7 @@ public class RequestBean implements Serializable {
                 // for each service subdir (wfs, wms, etc.)
                 File serviceDir = new File( requestsBaseDir, serviceType );
                 String[] profileDirs = serviceDir.list();
-                Map<String, Map<String, List<String>>> requestProfiles = new HashMap<String, Map<String, List<String>>>();
+                Map<String, Map<String, List<String>>> requestProfiles = new LinkedHashMap<String, Map<String, List<String>>>();
                 if ( profileDirs != null && profileDirs.length > 0 ) {
                     Arrays.sort( profileDirs );
                     for ( String profile : profileDirs ) {
@@ -279,7 +285,7 @@ public class RequestBean implements Serializable {
                         // for each profile subdir (demo, philosopher, etc.)
                         File profileDir = new File( serviceDir, profile );
                         String[] requestTypeDirs = profileDir.list();
-                        Map<String, List<String>> requestTypes = new HashMap<String, List<String>>();
+                        Map<String, List<String>> requestTypes = new LinkedHashMap<String, List<String>>();
                         if ( requestTypeDirs != null && requestTypeDirs.length > 0 ) {
                             Arrays.sort( requestTypeDirs );
                             for ( String requestType : requestTypeDirs ) {
@@ -300,8 +306,8 @@ public class RequestBean implements Serializable {
                                 if ( requests != null && requests.length > 0 ) {
                                     Arrays.sort( requests );
                                     for ( int l = 0; l < requests.length; l++ ) {
-                                        String requestUrl = "requests/" + serviceType + "/" + profile + "/"
-                                                            + requestType + "/xml/" + requests[l];
+                                        String requestUrl = serviceType + "/" + profile + "/" + requestType + "/xml/"
+                                                            + requests[l];
                                         // for each request example
                                         requestUrls.add( requestUrl );
                                     }
@@ -366,8 +372,7 @@ public class RequestBean implements Serializable {
     private void loadExample() {
         if ( selectedRequest != null ) {
             LOG.debug( "load request " + selectedRequest );
-            String realPath = FacesContext.getCurrentInstance().getExternalContext().getRealPath( selectedRequest );
-            File file = new File( realPath );
+            File file = new File( requestsBaseDir, selectedRequest );
             if ( file != null && file.exists() ) {
                 XMLAdapter adapter = new XMLAdapter( file );
                 setRequest( adapter.toString() );
@@ -425,5 +430,4 @@ public class RequestBean implements Serializable {
     public String toString() {
         return generateToString( this );
     }
-
 }
