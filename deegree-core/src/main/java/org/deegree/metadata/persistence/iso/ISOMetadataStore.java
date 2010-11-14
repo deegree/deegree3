@@ -40,6 +40,7 @@ import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.BufferedInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.Charset;
 import java.sql.Connection;
@@ -57,6 +58,7 @@ import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
+import org.apache.axiom.om.OMElement;
 import org.deegree.commons.jdbc.ConnectionManager;
 import org.deegree.commons.utils.JDBCUtils;
 import org.deegree.commons.utils.time.DateUtils;
@@ -67,6 +69,7 @@ import org.deegree.metadata.ISORecord;
 import org.deegree.metadata.MetadataResultType;
 import org.deegree.metadata.i18n.Messages;
 import org.deegree.metadata.persistence.MetadataCollection;
+import org.deegree.metadata.persistence.MetadataInspectorException;
 import org.deegree.metadata.persistence.MetadataQuery;
 import org.deegree.metadata.persistence.MetadataResultSet;
 import org.deegree.metadata.persistence.MetadataStore;
@@ -86,6 +89,7 @@ import org.deegree.metadata.persistence.iso19115.jaxb.ISOMetadataStoreConfig;
 import org.deegree.metadata.persistence.iso19115.jaxb.InspireInspector;
 import org.deegree.metadata.persistence.iso19115.jaxb.SchemaValidator;
 import org.deegree.metadata.persistence.iso19115.jaxb.ISOMetadataStoreConfig.Inspectors;
+import org.deegree.metadata.publication.InsertTransaction;
 import org.deegree.protocol.csw.CSWConstants.ResultType;
 import org.slf4j.Logger;
 
@@ -126,6 +130,8 @@ public class ISOMetadataStore implements MetadataStore {
 
     private static final String recordfull = PostGISMappingsISODC.CommonColumnNames.recordfull.name();
 
+    // private final Map<String, String> varToValue;
+
     /**
      * Creates a new {@link ISOMetadataStore} instance from the given JAXB configuration object.
      * 
@@ -134,6 +140,9 @@ public class ISOMetadataStore implements MetadataStore {
     public ISOMetadataStore( ISOMetadataStoreConfig config ) {
         this.connectionId = config.getConnId();
         this.config = config;
+        // this.varToValue = new HashMap<String, String>();
+        // String systemStartDate = "2010-11-16";
+        // varToValue.put( "${SYSTEM_START_DATE}", systemStartDate );
 
     }
 
@@ -151,6 +160,35 @@ public class ISOMetadataStore implements MetadataStore {
     @Override
     public String getConnId() {
         return connectionId;
+    }
+
+    @Override
+    public void setupMetametadata()
+                            throws MetadataStoreException {
+
+        try {
+            InputStream in = ISOMetadataStore.class.getResourceAsStream( "metametadata.xml" );
+            XMLStreamReader inStream = XMLInputFactory.newInstance().createXMLStreamReader( in );
+            List<OMElement> om = new ArrayList<OMElement>();
+            ISORecord rec = new ISORecord( inStream, null );
+            om.add( rec.getAsOMElement() );
+            MetadataStoreTransaction ta = acquireTransaction();
+            InsertTransaction insert = new InsertTransaction( om, rec.getAsOMElement().getQName(), "insertMetametadata" );
+            ta.performInsert( insert );
+            ta.commit();
+        } catch ( XMLStreamException e ) {
+            LOG.debug( e.getMessage(), e );
+            throw new MetadataStoreException( e.getMessage(), e );
+        } catch ( FactoryConfigurationError e ) {
+            LOG.debug( e.getMessage(), e );
+            throw new MetadataStoreException( e.getMessage(), e );
+        } catch ( MetadataStoreException e ) {
+            LOG.debug( e.getMessage(), e );
+            throw new MetadataStoreException( e.getMessage(), e );
+        } catch ( MetadataInspectorException e ) {
+            LOG.debug( e.getMessage(), e );
+            throw new MetadataStoreException( e.getMessage(), e );
+        }
     }
 
     /*
