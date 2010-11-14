@@ -45,6 +45,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
@@ -143,7 +144,9 @@ public class BlobCodec {
         long begin = System.currentTimeMillis();
         XMLStreamWriter xmlWriter = getXMLWriter( os );
         GMLStreamWriter gmlWriter = GMLOutputFactory.createGMLStreamWriter( gmlVersion, xmlWriter );
-        gmlWriter.setNamespaceBindings( nsContext );
+        Map<String,String> bindings = new HashMap<String,String>(nsContext);
+        bindings.put ("gml", gmlVersion.getNamespace());
+        gmlWriter.setNamespaceBindings( bindings );
         gmlWriter.setOutputCRS( crs );
         gmlWriter.setLocalXLinkTemplate( "#{}" );
         gmlWriter.setXLinkDepth( 0 );
