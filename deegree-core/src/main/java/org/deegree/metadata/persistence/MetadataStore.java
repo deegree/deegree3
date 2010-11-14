@@ -74,6 +74,9 @@ public interface MetadataStore {
      */
     public String getConnId();
 
+    public void setupMetametadata()
+                            throws MetadataStoreException;
+
     /**
      * 
      * Exports the XML for the requested records.
