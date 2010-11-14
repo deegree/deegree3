@@ -630,98 +630,109 @@ public class ParseIdentificationInfo extends XMLAdapter {
             String[] geographicDescriptionCode_serviceOtherLang = null;
             List<BoundingBox> bboxList = new LinkedList<BoundingBox>();
 
-            for ( OMElement extentElem : extent ) {
+            if ( extent != null ) {
+                for ( OMElement extentElem : extent ) {
 
-                String temporalExtentBegin = getNodeAsString(
-                                                              extentElem,
-                                                              new XPath(
-                                                                         "./gmd:EX_Extent/gmd:temporalElement/gmd:EX_TemporalExtent/gmd:extent/gmd:TimePeriod/gmd:beginPosition",
-                                                                         nsContextParseII ), null );
+                    String temporalExtentBegin = getNodeAsString(
+                                                                  extentElem,
+                                                                  new XPath(
+                                                                             "./gmd:EX_Extent/gmd:temporalElement/gmd:EX_TemporalExtent/gmd:extent/gmd:TimePeriod/gmd:beginPosition",
+                                                                             nsContextParseII ), null );
 
-                String temporalExtentEnd = getNodeAsString(
-                                                            extentElem,
-                                                            new XPath(
-                                                                       "./gmd:EX_Extent/gmd:temporalElement/gmd:EX_TemporalExtent/gmd:extent/gmd:TimePeriod/gmd:endPosition",
-                                                                       nsContextParseII ), null );
+                    String temporalExtentEnd = getNodeAsString(
+                                                                extentElem,
+                                                                new XPath(
+                                                                           "./gmd:EX_Extent/gmd:temporalElement/gmd:EX_TemporalExtent/gmd:extent/gmd:TimePeriod/gmd:endPosition",
+                                                                           nsContextParseII ), null );
 
-                try {
-                    if ( temporalExtentBegin != null && temporalExtentEnd != null ) {
-                        tempBeg = new Date( temporalExtentBegin );
-                        tempEnd = new Date( temporalExtentEnd );
+                    try {
+                        if ( temporalExtentBegin != null && temporalExtentEnd != null ) {
+                            tempBeg = new Date( temporalExtentBegin );
+                            tempEnd = new Date( temporalExtentEnd );
+                        }
+                    } catch ( ParseException e ) {
+                        String msg = Messages.getMessage( "ERROR_PARSING_TEMP_EXTENT", temporalExtentBegin,
+                                                          temporalExtentEnd, e.getMessage() );
+                        LOG.debug( msg );
+                        throw new MetadataStoreException( msg );
                     }
-                } catch ( ParseException e ) {
-                    String msg = Messages.getMessage( "ERROR_PARSING_TEMP_EXTENT", temporalExtentBegin,
-                                                      temporalExtentEnd, e.getMessage() );
-                    LOG.debug( msg );
-                    throw new MetadataStoreException( msg );
+
+                    List<OMElement> geographicElement = getElements(
+                                                                     extentElem,
+                                                                     new XPath(
+                                                                                "./gmd:EX_Extent/gmd:geographicElement",
+                                                                                nsContextParseII ) );
+
+                    for ( OMElement geographicElem : geographicElement ) {
+
+                        double boundingBoxWestLongitude = 0.0;
+                        double boundingBoxEastLongitude = 0.0;
+                        double boundingBoxSouthLatitude = 0.0;
+                        double boundingBoxNorthLatitude = 0.0;
+
+                        OMElement bbox = getElement( geographicElem, new XPath( "./gmd:EX_GeographicBoundingBox",
+                                                                                nsContextParseII ) );
+                        if ( boundingBoxWestLongitude == 0.0 ) {
+                            boundingBoxWestLongitude = getNodeAsDouble(
+                                                                        bbox,
+                                                                        new XPath(
+                                                                                   "./gmd:westBoundLongitude/gco:Decimal",
+                                                                                   nsContextParseII ), 0.0 );
+
+                        }
+                        if ( boundingBoxEastLongitude == 0.0 ) {
+                            boundingBoxEastLongitude = getNodeAsDouble(
+                                                                        bbox,
+                                                                        new XPath(
+                                                                                   "./gmd:eastBoundLongitude/gco:Decimal",
+                                                                                   nsContextParseII ), 0.0 );
+
+                        }
+                        if ( boundingBoxSouthLatitude == 0.0 ) {
+                            boundingBoxSouthLatitude = getNodeAsDouble(
+                                                                        bbox,
+                                                                        new XPath(
+                                                                                   "./gmd:southBoundLatitude/gco:Decimal",
+                                                                                   nsContextParseII ), 0.0 );
+
+                        }
+                        if ( boundingBoxNorthLatitude == 0.0 ) {
+                            boundingBoxNorthLatitude = getNodeAsDouble(
+                                                                        bbox,
+                                                                        new XPath(
+                                                                                   "./gmd:northBoundLatitude/gco:Decimal",
+                                                                                   nsContextParseII ), 0.0 );
+
+                        }
+
+                        if ( geographicDescriptionCode_service == null ) {
+                            OMElement geographicDescriptionCode_serviceElem = getElement(
+                                                                                          geographicElem,
+                                                                                          new XPath(
+                                                                                                     "./gmd:EX_GeopraphicDescription/gmd:geographicIdentifier/gmd:MD_Identifier/gmd:code",
+                                                                                                     nsContextParseII ) );
+                            geographicDescriptionCode_service = getNodeAsString( geographicDescriptionCode_serviceElem,
+                                                                                 new XPath( "./gco:CharacterString",
+                                                                                            nsContextParseII ), null );
+                            geographicDescriptionCode_serviceOtherLang = getNodesAsStrings(
+                                                                                            geographicDescriptionCode_serviceElem,
+                                                                                            new XPath(
+                                                                                                       "./gmd:PT_FreeText/gmd:textGroup/gmd:LocalisedCharacterString",
+                                                                                                       nsContextParseII ) );
+                        }
+
+                        if ( bbox != null ) {
+                            bboxList.add( new BoundingBox( boundingBoxWestLongitude, boundingBoxSouthLatitude,
+                                                           boundingBoxEastLongitude, boundingBoxNorthLatitude ) );
+                        }
+                    }
+
                 }
 
-                List<OMElement> geographicElement = getElements( extentElem,
-                                                                 new XPath( "./gmd:EX_Extent/gmd:geographicElement",
-                                                                            nsContextParseII ) );
-
-                for ( OMElement geographicElem : geographicElement ) {
-
-                    double boundingBoxWestLongitude = 0.0;
-                    double boundingBoxEastLongitude = 0.0;
-                    double boundingBoxSouthLatitude = 0.0;
-                    double boundingBoxNorthLatitude = 0.0;
-
-                    OMElement bbox = getElement( geographicElem, new XPath( "./gmd:EX_GeographicBoundingBox",
-                                                                            nsContextParseII ) );
-                    if ( boundingBoxWestLongitude == 0.0 ) {
-                        boundingBoxWestLongitude = getNodeAsDouble( bbox,
-                                                                    new XPath( "./gmd:westBoundLongitude/gco:Decimal",
-                                                                               nsContextParseII ), 0.0 );
-
-                    }
-                    if ( boundingBoxEastLongitude == 0.0 ) {
-                        boundingBoxEastLongitude = getNodeAsDouble( bbox,
-                                                                    new XPath( "./gmd:eastBoundLongitude/gco:Decimal",
-                                                                               nsContextParseII ), 0.0 );
-
-                    }
-                    if ( boundingBoxSouthLatitude == 0.0 ) {
-                        boundingBoxSouthLatitude = getNodeAsDouble( bbox,
-                                                                    new XPath( "./gmd:southBoundLatitude/gco:Decimal",
-                                                                               nsContextParseII ), 0.0 );
-
-                    }
-                    if ( boundingBoxNorthLatitude == 0.0 ) {
-                        boundingBoxNorthLatitude = getNodeAsDouble( bbox,
-                                                                    new XPath( "./gmd:northBoundLatitude/gco:Decimal",
-                                                                               nsContextParseII ), 0.0 );
-
-                    }
-
-                    if ( geographicDescriptionCode_service == null ) {
-                        OMElement geographicDescriptionCode_serviceElem = getElement(
-                                                                                      geographicElem,
-                                                                                      new XPath(
-                                                                                                 "./gmd:EX_GeopraphicDescription/gmd:geographicIdentifier/gmd:MD_Identifier/gmd:code",
-                                                                                                 nsContextParseII ) );
-                        geographicDescriptionCode_service = getNodeAsString( geographicDescriptionCode_serviceElem,
-                                                                             new XPath( "./gco:CharacterString",
-                                                                                        nsContextParseII ), null );
-                        geographicDescriptionCode_serviceOtherLang = getNodesAsStrings(
-                                                                                        geographicDescriptionCode_serviceElem,
-                                                                                        new XPath(
-                                                                                                   "./gmd:PT_FreeText/gmd:textGroup/gmd:LocalisedCharacterString",
-                                                                                                   nsContextParseII ) );
-                    }
-
-                    if ( bbox != null ) {
-                        bboxList.add( new BoundingBox( boundingBoxWestLongitude, boundingBoxSouthLatitude,
-                                                       boundingBoxEastLongitude, boundingBoxNorthLatitude ) );
-                    }
-                }
-
+                qp.setTemporalExtentBegin( tempBeg );
+                qp.setTemporalExtentEnd( tempEnd );
+                qp.setBoundingBox( bboxList );
             }
-
-            qp.setTemporalExtentBegin( tempBeg );
-            qp.setTemporalExtentEnd( tempEnd );
-            qp.setBoundingBox( bboxList );
-
             List<String> geographicDescCode_serviceList = new ArrayList<String>();
             geographicDescCode_serviceList.addAll( Arrays.asList( geographicDescriptionCode_service ) );
             if ( geographicDescriptionCode_serviceOtherLang != null ) {
