@@ -35,7 +35,14 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.console.jdbc;
 
+import static javax.faces.application.FacesMessage.SEVERITY_ERROR;
+import static javax.faces.application.FacesMessage.SEVERITY_INFO;
+
 import java.net.URL;
+import java.sql.Connection;
+
+import javax.faces.application.FacesMessage;
+import javax.faces.context.FacesContext;
 
 import org.deegree.commons.jdbc.ConnectionManager;
 import org.deegree.console.ManagedXMLConfig;
@@ -74,6 +81,19 @@ public class ConnectionConfig extends ManagedXMLConfig {
             return "ERROR: " + e.getMessage();
         }
         return "OK";
+    }
+
+    public void test() {
+        try {
+            Connection con = ConnectionManager.getConnection( getId() );
+            con.close();
+            FacesMessage fm = new FacesMessage( SEVERITY_INFO, "Connection '" + getId() + "' ok", null );
+            FacesContext.getCurrentInstance().addMessage( null, fm );
+        } catch ( Throwable t ) {
+            FacesMessage fm = new FacesMessage( SEVERITY_ERROR, "Connection '" + getId() + "' unavailable: "
+                                                                + t.getMessage(), null );
+            FacesContext.getCurrentInstance().addMessage( null, fm );
+        }
     }
 
     @Override
