@@ -33,17 +33,6 @@
     <h:outputText value="#{customlabels.intro}" />
     <br />
     <br />
-    <h:outputText value="#{customlabels.info}" />
-    <br />
-    [<dg:externalLink target="_blank"
-        href="http://wiki.deegree.org/deegreeWiki/deegree3/UtahDemo"
-        title="Wiki: Utah demo" />]  
-        <br />
-    [<dg:externalLink target="_blank"
-        href="http://wiki.deegree.org/deegreeWiki/deegree3"
-        title="Wiki: deegree 3" />] 
-    <br />
-    <br />
     <h:form id="downloadForm">
         <h:outputText value="#{customlabels.download_intro1}"
             rendered="#{!downloadBean.dataDownloaded}" />
@@ -51,12 +40,14 @@
         <h:outputText value="#{customlabels.download_intro2}"
             rendered="#{!downloadBean.dataDownloaded}" />
         <br />
+        <br />
         <h:panelGroup rendered="#{!downloadBean.dataDownloaded}">
         [<h:commandButton value="Download data"
                 action="#{downloadBean.download}" onclick="show();" />]
         <h:outputText value="#{customlabels.download_size}"
                 rendered="#{!downloadBean.dataDownloaded}" />
         </h:panelGroup>
+        <br />
         <br />
         <h:outputText value="#{customlabels.download_outro1}"
             rendered="#{!downloadBean.dataDownloaded}" />
@@ -74,5 +65,16 @@
     <br />
      [<a href="console/wms/wms.html" target="_blank">OpenLayers WMS
     client</a>]
+    <br />
+    <br />
+    <h:outputText value="#{customlabels.info}" />
+    <br />
+    [<dg:externalLink target="_blank"
+        href="http://wiki.deegree.org/deegreeWiki/deegree3/UtahDemo"
+        title="Wiki: Utah demo" />]  
+        <br />
+    [<dg:externalLink target="_blank"
+        href="http://wiki.deegree.org/deegreeWiki/deegree3"
+        title="Wiki: deegree 3" />] 
 </h:body>
 </html>
