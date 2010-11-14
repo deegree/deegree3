@@ -35,6 +35,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.console.featurestore;
 
+import static javax.faces.application.FacesMessage.SEVERITY_ERROR;
+import static javax.faces.application.FacesMessage.SEVERITY_INFO;
 import static org.deegree.feature.persistence.FeatureStoreTransaction.IDGenMode.GENERATE_NEW;
 import static org.deegree.feature.persistence.FeatureStoreTransaction.IDGenMode.USE_EXISTING;
 
@@ -42,8 +44,10 @@ import java.io.Serializable;
 import java.net.URL;
 import java.util.List;
 
+import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.RequestScoped;
+import javax.faces.context.FacesContext;
 
 import org.deegree.feature.FeatureCollection;
 import org.deegree.feature.persistence.FeatureStore;
@@ -119,22 +123,17 @@ public class FeatureStoreLoader implements Serializable {
 
     public void importData()
                             throws Throwable {
-        System.out.println( "importData" );
-        System.out.println( "- idGenMode: " + idGenMode );
-        System.out.println( "- gmlVersion: " + gmlVersion );
-        System.out.println( "- url: " + url );
-
+        List<String> fids = null;
         FeatureStoreTransaction ta = null;
         try {
             GMLStreamReader gmlStream = GMLInputFactory.createGMLStreamReader( gmlVersion, new URL( url ) );
-            gmlStream.setApplicationSchema( fs.getSchema() );            
+            gmlStream.setApplicationSchema( fs.getSchema() );
             FeatureCollection fc = gmlStream.readFeatureCollection();
             gmlStream.getIdContext().resolveLocalRefs();
             gmlStream.close();
             ta = fs.acquireTransaction();
-            List<String> fids = ta.performInsert( fc, idGenMode );
+            fids = ta.performInsert( fc, idGenMode );
             ta.commit();
-            System.out.println( "Inserted " + fids.size() + " features" );
         } catch ( Throwable t ) {
             if ( ta != null ) {
                 try {
@@ -143,7 +142,12 @@ public class FeatureStoreLoader implements Serializable {
                     e.printStackTrace();
                 }
             }
-            throw t;
+            FacesMessage fm = new FacesMessage( SEVERITY_ERROR, "GML import failed: " + t.getMessage(), null );
+            FacesContext.getCurrentInstance().addMessage( null, fm );
+            return;
         }
+
+        FacesMessage fm = new FacesMessage( SEVERITY_INFO, "Imported " + fids.size() + " features", null );
+        FacesContext.getCurrentInstance().addMessage( null, fm );
     }
 }
