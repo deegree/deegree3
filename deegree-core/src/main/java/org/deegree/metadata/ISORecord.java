@@ -410,6 +410,10 @@ public class ISORecord implements MetadataRecord {
         return xmlStream;
     }
 
+    public OMElement getAsOMElement() {
+        return root;
+    }
+
     public byte[] getAsByteArray()
                             throws XMLStreamException, FactoryConfigurationError {
         // XMLStreamReader reader = new WhitespaceElementFilter( getAsXMLStream() );
