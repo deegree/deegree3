@@ -1,0 +1,2166 @@
+<?xml version="1.0"?>
+<crs:TransformationDefinitions configVersion="3.0.0" xmlns:crs="http://www.deegree.org/crs" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.deegree.org/crs http://schemas.deegree.org/crs/3.0.0/crsdefinition.xsd">
+  <crs:Helmert>
+    <crs:Id>epsg:1173</crs:Id>
+    <crs:Id>urn:opengis:def:crs:epsg::1173</crs:Id>
+    <crs:Id>urn:ogc:def:crs:epsg::1173</crs:Id>
+    <crs:Id>http://www.opengis.net/gml/srs/epsg.xml#1173</crs:Id>
+    <crs:Name>North_American_Datum_1983</crs:Name>
+    <crs:SourceCRS>epsg:4267</crs:SourceCRS>
+    <crs:TargetCRS>epsg:4326</crs:TargetCRS>
+    <crs:XAxisTranslation>-8.0</crs:XAxisTranslation>
+    <crs:YAxisTranslation>160.0</crs:YAxisTranslation>
+    <crs:ZAxisTranslation>176.0</crs:ZAxisTranslation>
+    <crs:XAxisRotation>0.0</crs:XAxisRotation>
+    <crs:YAxisRotation>0.0</crs:YAxisRotation>
+    <crs:ZAxisRotation>0.0</crs:ZAxisRotation>
+    <crs:ScaleDifference>0.0</crs:ScaleDifference>
+  </crs:Helmert>
+  <crs:Helmert>
+    <crs:Id>epsg:1775</crs:Id>
+    <crs:Name>Pulkovo 1942(83) to ETRS89 (2)</crs:Name>
+    <crs:Version>2007-03-22</crs:Version>
+    <crs:Description>
+      Derived at 35 points of the German GPS Network DREF. From 2001 replaces Pulkovo 1942(83) to ETRS89 (1) (code 1674) within Mecklenburg-Vorpommern
+      and Sachsen-Anhalt
+    </crs:Description>
+    <crs:SourceCRS>epsg:4178</crs:SourceCRS>
+    <crs:TargetCRS>epsg:4326</crs:TargetCRS>
+    <crs:XAxisTranslation>24.9</crs:XAxisTranslation>
+    <crs:YAxisTranslation>-126.4</crs:YAxisTranslation>
+    <crs:ZAxisTranslation>-93.2</crs:ZAxisTranslation>
+    <crs:XAxisRotation>-0.063</crs:XAxisRotation>
+    <crs:YAxisRotation>-0.247</crs:YAxisRotation>
+    <crs:ZAxisRotation>-0.041</crs:ZAxisRotation>
+    <crs:ScaleDifference>1.01</crs:ScaleDifference>
+  </crs:Helmert>
+  <crs:Helmert>
+    <crs:Id>finland_wgs84_conversion_info</crs:Id>
+    <crs:SourceCRS>epsg:4123</crs:SourceCRS>
+    <crs:TargetCRS>epsg:4326</crs:TargetCRS>
+    <crs:XAxisTranslation>-90.7</crs:XAxisTranslation>
+    <crs:YAxisTranslation>-106.1</crs:YAxisTranslation>
+    <crs:ZAxisTranslation>-119.2</crs:ZAxisTranslation>
+    <crs:XAxisRotation>4.09</crs:XAxisRotation>
+    <crs:YAxisRotation>0.218</crs:YAxisRotation>
+    <crs:ZAxisRotation>-1.05</crs:ZAxisRotation>
+    <crs:ScaleDifference>1.37</crs:ScaleDifference>
+  </crs:Helmert>
+  <crs:Helmert>
+    <crs:Id>http://www.opengis.net/gml/srs/epsg.xml#15955</crs:Id>
+    <crs:Id>urn:opengis:def:crs:epsg::15955</crs:Id>
+    <crs:Id>epsg:15955</crs:Id>
+    <crs:Id>urn:ogc:def:crs:epsg::15955</crs:Id>
+    <crs:Name>RD/83 to WGS 84 (1)</crs:Name>
+    <crs:Version>OGP-Deu BeTA2007</crs:Version>
+    <crs:Description>
+      These parameter values are taken from DHDN to ETRS89 (8) (code 15948) as RD/83 and ETRS89 may be considered equivalent to DHDN and WGS 84
+      respectively within the accuracy of the transformation.
+    </crs:Description>
+    <crs:SourceCRS>geo_crs_19</crs:SourceCRS>
+    <crs:TargetCRS>epsg:4326</crs:TargetCRS>
+    <crs:XAxisTranslation>606.0</crs:XAxisTranslation>
+    <crs:YAxisTranslation>23.0</crs:YAxisTranslation>
+    <crs:ZAxisTranslation>413.0</crs:ZAxisTranslation>
+    <crs:XAxisRotation>0.0</crs:XAxisRotation>
+    <crs:YAxisRotation>0.0</crs:YAxisRotation>
+    <crs:ZAxisRotation>0.0</crs:ZAxisRotation>
+    <crs:ScaleDifference>0.0</crs:ScaleDifference>
+  </crs:Helmert>
+  <crs:Helmert>
+    <crs:Id>proj4_no_conversion_info</crs:Id>
+    <crs:SourceCRS>epsg:4200</crs:SourceCRS>
+    <crs:TargetCRS>epsg:4326</crs:TargetCRS>
+    <crs:XAxisTranslation>0.0</crs:XAxisTranslation>
+    <crs:YAxisTranslation>0.0</crs:YAxisTranslation>
+    <crs:ZAxisTranslation>0.0</crs:ZAxisTranslation>
+    <crs:XAxisRotation>0.0</crs:XAxisRotation>
+    <crs:YAxisRotation>0.0</crs:YAxisRotation>
+    <crs:ZAxisRotation>0.0</crs:ZAxisRotation>
+    <crs:ScaleDifference>0.0</crs:ScaleDifference>
+  </crs:Helmert>
+  <crs:Helmert>
+    <crs:Id>towgs_1</crs:Id>
+    <crs:Name>Proj4 defined toWGS84 params</crs:Name>
+    <crs:Version>2008-1-16T9:49</crs:Version>
+    <crs:Description>Handmade proj4 towgs84 definition (parsed from nad/epsg) used by crs with id: null</crs:Description>
+    <crs:SourceCRS>epsg:4261</crs:SourceCRS>
+    <crs:TargetCRS>epsg:4326</crs:TargetCRS>
+    <crs:XAxisTranslation>31.0</crs:XAxisTranslation>
+    <crs:YAxisTranslation>146.0</crs:YAxisTranslation>
+    <crs:ZAxisTranslation>47.0</crs:ZAxisTranslation>
+    <crs:XAxisRotation>0.0</crs:XAxisRotation>
+    <crs:YAxisRotation>0.0</crs:YAxisRotation>
+    <crs:ZAxisRotation>0.0</crs:ZAxisRotation>
+    <crs:ScaleDifference>0.0</crs:ScaleDifference>
+  </crs:Helmert>
+  <crs:Helmert>
+    <crs:Id>towgs_102</crs:Id>
+    <crs:Name>Proj4 defined toWGS84 params</crs:Name>
+    <crs:Version>2008-1-16T9:49</crs:Version>
+    <crs:Description>Handmade proj4 towgs84 definition (parsed from nad/epsg) used by crs with id: null</crs:Description>
+    <crs:SourceCRS>epsg:4169</crs:SourceCRS>
+    <crs:TargetCRS>epsg:4326</crs:TargetCRS>
+    <crs:XAxisTranslation>-115.0</crs:XAxisTranslation>
+    <crs:YAxisTranslation>118.0</crs:YAxisTranslation>
+    <crs:ZAxisTranslation>426.0</crs:ZAxisTranslation>
+    <crs:XAxisRotation>0.0</crs:XAxisRotation>
+    <crs:YAxisRotation>0.0</crs:YAxisRotation>
+    <crs:ZAxisRotation>0.0</crs:ZAxisRotation>
+    <crs:ScaleDifference>0.0</crs:ScaleDifference>
+  </crs:Helmert>
+  <crs:Helmert>
+    <crs:Id>towgs_105</crs:Id>
+    <crs:Name>Proj4 defined toWGS84 params</crs:Name>
+    <crs:Version>2008-1-16T9:49</crs:Version>
+    <crs:Description>Handmade proj4 towgs84 definition (parsed from nad/epsg) used by crs with id: null</crs:Description>
+    <crs:SourceCRS>epsg:4631</crs:SourceCRS>
+    <crs:TargetCRS>epsg:4326</crs:TargetCRS>
+    <crs:XAxisTranslation>145.0</crs:XAxisTranslation>
+    <crs:YAxisTranslation>-187.0</crs:YAxisTranslation>
+    <crs:ZAxisTranslation>103.0</crs:ZAxisTranslation>
+    <crs:XAxisRotation>0.0</crs:XAxisRotation>
+    <crs:YAxisRotation>0.0</crs:YAxisRotation>
+    <crs:ZAxisRotation>0.0</crs:ZAxisRotation>
+    <crs:ScaleDifference>0.0</crs:ScaleDifference>
+  </crs:Helmert>
+  <crs:Helmert>
+    <crs:Id>towgs_108</crs:Id>
+    <crs:Name>Proj4 defined toWGS84 params</crs:Name>
+    <crs:Version>2008-1-16T9:49</crs:Version>
+    <crs:Description>Handmade proj4 towgs84 definition (parsed from nad/epsg) used by crs with id: null</crs:Description>
+    <crs:SourceCRS>epsg:4603</crs:SourceCRS>
+    <crs:TargetCRS>epsg:4326</crs:TargetCRS>
+    <crs:XAxisTranslation>72.0</crs:XAxisTranslation>
+    <crs:YAxisTranslation>213.7</crs:YAxisTranslation>
+    <crs:ZAxisTranslation>93.0</crs:ZAxisTranslation>
+    <crs:XAxisRotation>0.0</crs:XAxisRotation>
+    <crs:YAxisRotation>0.0</crs:YAxisRotation>
+    <crs:ZAxisRotation>0.0</crs:ZAxisRotation>
+    <crs:ScaleDifference>0.0</crs:ScaleDifference>
+  </crs:Helmert>
+  <crs:Helmert>
+    <crs:Id>towgs_111</crs:Id>
+    <crs:Name>Proj4 defined toWGS84 params</crs:Name>
+    <crs:Version>2008-1-16T9:49</crs:Version>
+    <crs:Description>Handmade proj4 towgs84 definition (parsed from nad/epsg) used by crs with id: null</crs:Description>
+    <crs:SourceCRS>epsg:4239</crs:SourceCRS>
+    <crs:TargetCRS>epsg:4326</crs:TargetCRS>
+    <crs:XAxisTranslation>217.0</crs:XAxisTranslation>
+    <crs:YAxisTranslation>823.0</crs:YAxisTranslation>
+    <crs:ZAxisTranslation>299.0</crs:ZAxisTranslation>
+    <crs:XAxisRotation>0.0</crs:XAxisRotation>
+    <crs:YAxisRotation>0.0</crs:YAxisRotation>
+    <crs:ZAxisRotation>0.0</crs:ZAxisRotation>
+    <crs:ScaleDifference>0.0</crs:ScaleDifference>
+  </crs:Helmert>
+  <crs:Helmert>
+    <crs:Id>towgs_114</crs:Id>
+    <crs:Name>Proj4 defined toWGS84 params</crs:Name>
+    <crs:Version>2008-1-16T9:49</crs:Version>
+    <crs:Description>Handmade proj4 towgs84 definition (parsed from nad/epsg) used by crs with id: null</crs:Description>
+    <crs:SourceCRS>epsg:4212</crs:SourceCRS>
+    <crs:TargetCRS>epsg:4326</crs:TargetCRS>
+    <crs:XAxisTranslation>31.95</crs:XAxisTranslation>
+    <crs:YAxisTranslation>300.99</crs:YAxisTranslation>
+    <crs:ZAxisTranslation>419.19</crs:ZAxisTranslation>
+    <crs:XAxisRotation>0.0</crs:XAxisRotation>
+    <crs:YAxisRotation>0.0</crs:YAxisRotation>
+    <crs:ZAxisRotation>0.0</crs:ZAxisRotation>
+    <crs:ScaleDifference>0.0</crs:ScaleDifference>
+  </crs:Helmert>
+  <crs:Helmert>
+    <crs:Id>towgs_115</crs:Id>
+    <crs:Name>Proj4 defined toWGS84 params</crs:Name>
+    <crs:Version>2008-1-16T9:49</crs:Version>
+    <crs:Description>Handmade proj4 towgs84 definition (parsed from nad/epsg) used by crs with id: null</crs:Description>
+    <crs:SourceCRS>epsg:4188</crs:SourceCRS>
+    <crs:TargetCRS>epsg:4326</crs:TargetCRS>
+    <crs:XAxisTranslation>482.5</crs:XAxisTranslation>
+    <crs:YAxisTranslation>-130.6</crs:YAxisTranslation>
+    <crs:ZAxisTranslation>564.6</crs:ZAxisTranslation>
+    <crs:XAxisRotation>-1.042</crs:XAxisRotation>
+    <crs:YAxisRotation>-0.214</crs:YAxisRotation>
+    <crs:ZAxisRotation>-0.631</crs:ZAxisRotation>
+    <crs:ScaleDifference>8.15</crs:ScaleDifference>
+  </crs:Helmert>
+  <crs:Helmert>
+    <crs:Id>towgs_117</crs:Id>
+    <crs:Name>Proj4 defined toWGS84 params</crs:Name>
+    <crs:Version>2008-1-16T9:49</crs:Version>
+    <crs:Description>Handmade proj4 towgs84 definition (parsed from nad/epsg) used by crs with id: null</crs:Description>
+    <crs:SourceCRS>epsg:4683</crs:SourceCRS>
+    <crs:TargetCRS>epsg:4326</crs:TargetCRS>
+    <crs:XAxisTranslation>-127.62</crs:XAxisTranslation>
+    <crs:YAxisTranslation>-67.24</crs:YAxisTranslation>
+    <crs:ZAxisTranslation>-47.04</crs:ZAxisTranslation>
+    <crs:XAxisRotation>-3.068</crs:XAxisRotation>
+    <crs:YAxisRotation>4.903</crs:YAxisRotation>
+    <crs:ZAxisRotation>1.578</crs:ZAxisRotation>
+    <crs:ScaleDifference>-1.06</crs:ScaleDifference>
+  </crs:Helmert>
+  <crs:Helmert>
+    <crs:Id>towgs_118</crs:Id>
+    <crs:Name>Proj4 defined toWGS84 params</crs:Name>
+    <crs:Version>2008-1-16T9:49</crs:Version>
+    <crs:Description>Handmade proj4 towgs84 definition (parsed from nad/epsg) used by crs with id: null</crs:Description>
+    <crs:SourceCRS>epsg:4729</crs:SourceCRS>
+    <crs:TargetCRS>epsg:4326</crs:TargetCRS>
+    <crs:XAxisTranslation>185.0</crs:XAxisTranslation>
+    <crs:YAxisTranslation>165.0</crs:YAxisTranslation>
+    <crs:ZAxisTranslation>42.0</crs:ZAxisTranslation>
+    <crs:XAxisRotation>0.0</crs:XAxisRotation>
+    <crs:YAxisRotation>0.0</crs:YAxisRotation>
+    <crs:ZAxisRotation>0.0</crs:ZAxisRotation>
+    <crs:ScaleDifference>0.0</crs:ScaleDifference>
+  </crs:Helmert>
+  <crs:Helmert>
+    <crs:Id>towgs_12</crs:Id>
+    <crs:Name>Proj4 defined toWGS84 params</crs:Name>
+    <crs:Version>2008-1-16T9:49</crs:Version>
+    <crs:Description>Handmade proj4 towgs84 definition (parsed from nad/epsg) used by crs with id: null</crs:Description>
+    <crs:SourceCRS>epsg:4146</crs:SourceCRS>
+    <crs:TargetCRS>epsg:4326</crs:TargetCRS>
+    <crs:XAxisTranslation>295.0</crs:XAxisTranslation>
+    <crs:YAxisTranslation>736.0</crs:YAxisTranslation>
+    <crs:ZAxisTranslation>257.0</crs:ZAxisTranslation>
+    <crs:XAxisRotation>0.0</crs:XAxisRotation>
+    <crs:YAxisRotation>0.0</crs:YAxisRotation>
+    <crs:ZAxisRotation>0.0</crs:ZAxisRotation>
+    <crs:ScaleDifference>0.0</crs:ScaleDifference>
+  </crs:Helmert>
+  <crs:Helmert>
+    <crs:Id>towgs_124</crs:Id>
+    <crs:Name>Proj4 defined toWGS84 params</crs:Name>
+    <crs:Version>2008-1-16T9:49</crs:Version>
+    <crs:Description>Handmade proj4 towgs84 definition (parsed from nad/epsg) used by crs with id: null</crs:Description>
+    <crs:SourceCRS>epsg:4168</crs:SourceCRS>
+    <crs:TargetCRS>epsg:4326</crs:TargetCRS>
+    <crs:XAxisTranslation>-199.0</crs:XAxisTranslation>
+    <crs:YAxisTranslation>32.0</crs:YAxisTranslation>
+    <crs:ZAxisTranslation>322.0</crs:ZAxisTranslation>
+    <crs:XAxisRotation>0.0</crs:XAxisRotation>
+    <crs:YAxisRotation>0.0</crs:YAxisRotation>
+    <crs:ZAxisRotation>0.0</crs:ZAxisRotation>
+    <crs:ScaleDifference>0.0</crs:ScaleDifference>
+  </crs:Helmert>
+  <crs:Helmert>
+    <crs:Id>towgs_129</crs:Id>
+    <crs:Name>Proj4 defined toWGS84 params</crs:Name>
+    <crs:Version>2008-1-16T9:49</crs:Version>
+    <crs:Description>Handmade proj4 towgs84 definition (parsed from nad/epsg) used by crs with id: null</crs:Description>
+    <crs:SourceCRS>epsg:4710</crs:SourceCRS>
+    <crs:TargetCRS>epsg:4326</crs:TargetCRS>
+    <crs:XAxisTranslation>-320.0</crs:XAxisTranslation>
+    <crs:YAxisTranslation>550.0</crs:YAxisTranslation>
+    <crs:ZAxisTranslation>-494.0</crs:ZAxisTranslation>
+    <crs:XAxisRotation>0.0</crs:XAxisRotation>
+    <crs:YAxisRotation>0.0</crs:YAxisRotation>
+    <crs:ZAxisRotation>0.0</crs:ZAxisRotation>
+    <crs:ScaleDifference>0.0</crs:ScaleDifference>
+  </crs:Helmert>
+  <crs:Helmert>
+    <crs:Id>towgs_13</crs:Id>
+    <crs:Name>Proj4 defined toWGS84 params</crs:Name>
+    <crs:Version>2008-1-16T9:49</crs:Version>
+    <crs:Description>Handmade proj4 towgs84 definition (parsed from nad/epsg) used by crs with id: null</crs:Description>
+    <crs:SourceCRS>epsg:4701</crs:SourceCRS>
+    <crs:TargetCRS>epsg:4326</crs:TargetCRS>
+    <crs:XAxisTranslation>-79.9</crs:XAxisTranslation>
+    <crs:YAxisTranslation>-158.0</crs:YAxisTranslation>
+    <crs:ZAxisTranslation>-168.9</crs:ZAxisTranslation>
+    <crs:XAxisRotation>0.0</crs:XAxisRotation>
+    <crs:YAxisRotation>0.0</crs:YAxisRotation>
+    <crs:ZAxisRotation>0.0</crs:ZAxisRotation>
+    <crs:ScaleDifference>0.0</crs:ScaleDifference>
+  </crs:Helmert>
+  <crs:Helmert>
+    <crs:Id>towgs_138</crs:Id>
+    <crs:Name>Proj4 defined toWGS84 params</crs:Name>
+    <crs:Version>2008-1-16T9:49</crs:Version>
+    <crs:Description>Handmade proj4 towgs84 definition (parsed from nad/epsg) used by crs with id: null</crs:Description>
+    <crs:SourceCRS>epsg:4743</crs:SourceCRS>
+    <crs:TargetCRS>epsg:4326</crs:TargetCRS>
+    <crs:XAxisTranslation>84.1</crs:XAxisTranslation>
+    <crs:YAxisTranslation>-320.1</crs:YAxisTranslation>
+    <crs:ZAxisTranslation>218.7</crs:ZAxisTranslation>
+    <crs:XAxisRotation>0.0</crs:XAxisRotation>
+    <crs:YAxisRotation>0.0</crs:YAxisRotation>
+    <crs:ZAxisRotation>0.0</crs:ZAxisRotation>
+    <crs:ScaleDifference>0.0</crs:ScaleDifference>
+  </crs:Helmert>
+  <crs:Helmert>
+    <crs:Id>towgs_139</crs:Id>
+    <crs:Name>Proj4 defined toWGS84 params</crs:Name>
+    <crs:Version>2008-1-16T9:49</crs:Version>
+    <crs:Description>Handmade proj4 towgs84 definition (parsed from nad/epsg) used by crs with id: null</crs:Description>
+    <crs:SourceCRS>epsg:4183</crs:SourceCRS>
+    <crs:TargetCRS>epsg:4326</crs:TargetCRS>
+    <crs:XAxisTranslation>-104.0</crs:XAxisTranslation>
+    <crs:YAxisTranslation>167.0</crs:YAxisTranslation>
+    <crs:ZAxisTranslation>-38.0</crs:ZAxisTranslation>
+    <crs:XAxisRotation>0.0</crs:XAxisRotation>
+    <crs:YAxisRotation>0.0</crs:YAxisRotation>
+    <crs:ZAxisRotation>0.0</crs:ZAxisRotation>
+    <crs:ScaleDifference>0.0</crs:ScaleDifference>
+  </crs:Helmert>
+  <crs:Helmert>
+    <crs:Id>towgs_141</crs:Id>
+    <crs:Name>Proj4 defined toWGS84 params</crs:Name>
+    <crs:Version>2008-1-16T9:49</crs:Version>
+    <crs:Description>Handmade proj4 towgs84 definition (parsed from nad/epsg) used by crs with id: null</crs:Description>
+    <crs:SourceCRS>epsg:4636</crs:SourceCRS>
+    <crs:TargetCRS>epsg:4326</crs:TargetCRS>
+    <crs:XAxisTranslation>365.0</crs:XAxisTranslation>
+    <crs:YAxisTranslation>194.0</crs:YAxisTranslation>
+    <crs:ZAxisTranslation>166.0</crs:ZAxisTranslation>
+    <crs:XAxisRotation>0.0</crs:XAxisRotation>
+    <crs:YAxisRotation>0.0</crs:YAxisRotation>
+    <crs:ZAxisRotation>0.0</crs:ZAxisRotation>
+    <crs:ScaleDifference>0.0</crs:ScaleDifference>
+  </crs:Helmert>
+  <crs:Helmert>
+    <crs:Id>towgs_142</crs:Id>
+    <crs:Name>Proj4 defined toWGS84 params</crs:Name>
+    <crs:Version>2008-1-16T9:49</crs:Version>
+    <crs:Description>Handmade proj4 towgs84 definition (parsed from nad/epsg) used by crs with id: null</crs:Description>
+    <crs:SourceCRS>epsg:4121</crs:SourceCRS>
+    <crs:TargetCRS>epsg:4326</crs:TargetCRS>
+    <crs:XAxisTranslation>-199.87</crs:XAxisTranslation>
+    <crs:YAxisTranslation>74.79</crs:YAxisTranslation>
+    <crs:ZAxisTranslation>246.62</crs:ZAxisTranslation>
+    <crs:XAxisRotation>0.0</crs:XAxisRotation>
+    <crs:YAxisRotation>0.0</crs:YAxisRotation>
+    <crs:ZAxisRotation>0.0</crs:ZAxisRotation>
+    <crs:ScaleDifference>0.0</crs:ScaleDifference>
+  </crs:Helmert>
+  <crs:Helmert>
+    <crs:Id>towgs_144</crs:Id>
+    <crs:Name>Proj4 defined toWGS84 params</crs:Name>
+    <crs:Version>2008-1-16T9:49</crs:Version>
+    <crs:Description>Handmade proj4 towgs84 definition (parsed from nad/epsg) used by crs with id: null</crs:Description>
+    <crs:SourceCRS>epsg:4250</crs:SourceCRS>
+    <crs:TargetCRS>epsg:4326</crs:TargetCRS>
+    <crs:XAxisTranslation>-130.0</crs:XAxisTranslation>
+    <crs:YAxisTranslation>29.0</crs:YAxisTranslation>
+    <crs:ZAxisTranslation>364.0</crs:ZAxisTranslation>
+    <crs:XAxisRotation>0.0</crs:XAxisRotation>
+    <crs:YAxisRotation>0.0</crs:YAxisRotation>
+    <crs:ZAxisRotation>0.0</crs:ZAxisRotation>
+    <crs:ScaleDifference>0.0</crs:ScaleDifference>
+  </crs:Helmert>
+  <crs:Helmert>
+    <crs:Id>towgs_153</crs:Id>
+    <crs:Name>Proj4 defined toWGS84 params</crs:Name>
+    <crs:Version>2008-1-16T9:49</crs:Version>
+    <crs:Description>Handmade proj4 towgs84 definition (parsed from nad/epsg) used by crs with id: null</crs:Description>
+    <crs:SourceCRS>epsg:4161</crs:SourceCRS>
+    <crs:TargetCRS>epsg:4326</crs:TargetCRS>
+    <crs:XAxisTranslation>27.5</crs:XAxisTranslation>
+    <crs:YAxisTranslation>14.0</crs:YAxisTranslation>
+    <crs:ZAxisTranslation>186.4</crs:ZAxisTranslation>
+    <crs:XAxisRotation>0.0</crs:XAxisRotation>
+    <crs:YAxisRotation>0.0</crs:YAxisRotation>
+    <crs:ZAxisRotation>0.0</crs:ZAxisRotation>
+    <crs:ScaleDifference>0.0</crs:ScaleDifference>
+  </crs:Helmert>
+  <crs:Helmert>
+    <crs:Id>towgs_154</crs:Id>
+    <crs:Name>Proj4 defined toWGS84 params</crs:Name>
+    <crs:Version>2008-1-16T9:49</crs:Version>
+    <crs:Description>Handmade proj4 towgs84 definition (parsed from nad/epsg) used by crs with id: null</crs:Description>
+    <crs:SourceCRS>epsg:4264</crs:SourceCRS>
+    <crs:TargetCRS>epsg:4326</crs:TargetCRS>
+    <crs:XAxisTranslation>-252.95</crs:XAxisTranslation>
+    <crs:YAxisTranslation>-4.11</crs:YAxisTranslation>
+    <crs:ZAxisTranslation>-96.38</crs:ZAxisTranslation>
+    <crs:XAxisRotation>0.0</crs:XAxisRotation>
+    <crs:YAxisRotation>0.0</crs:YAxisRotation>
+    <crs:ZAxisRotation>0.0</crs:ZAxisRotation>
+    <crs:ScaleDifference>0.0</crs:ScaleDifference>
+  </crs:Helmert>
+  <crs:Helmert>
+    <crs:Id>towgs_167</crs:Id>
+    <crs:Name>Proj4 defined toWGS84 params</crs:Name>
+    <crs:Version>2008-1-16T9:49</crs:Version>
+    <crs:Description>Handmade proj4 towgs84 definition (parsed from nad/epsg) used by crs with id: null</crs:Description>
+    <crs:SourceCRS>epsg:4125</crs:SourceCRS>
+    <crs:TargetCRS>epsg:4326</crs:TargetCRS>
+    <crs:XAxisTranslation>-404.78</crs:XAxisTranslation>
+    <crs:YAxisTranslation>685.68</crs:YAxisTranslation>
+    <crs:ZAxisTranslation>45.47</crs:ZAxisTranslation>
+    <crs:XAxisRotation>0.0</crs:XAxisRotation>
+    <crs:YAxisRotation>0.0</crs:YAxisRotation>
+    <crs:ZAxisRotation>0.0</crs:ZAxisRotation>
+    <crs:ScaleDifference>0.0</crs:ScaleDifference>
+  </crs:Helmert>
+  <crs:Helmert>
+    <crs:Id>towgs_171</crs:Id>
+    <crs:Name>Proj4 defined toWGS84 params</crs:Name>
+    <crs:Version>2008-1-16T9:49</crs:Version>
+    <crs:Description>Handmade proj4 towgs84 definition (parsed from nad/epsg) used by crs with id: null</crs:Description>
+    <crs:SourceCRS>epsg:4658</crs:SourceCRS>
+    <crs:TargetCRS>epsg:4326</crs:TargetCRS>
+    <crs:XAxisTranslation>-73.0</crs:XAxisTranslation>
+    <crs:YAxisTranslation>46.0</crs:YAxisTranslation>
+    <crs:ZAxisTranslation>-86.0</crs:ZAxisTranslation>
+    <crs:XAxisRotation>0.0</crs:XAxisRotation>
+    <crs:YAxisRotation>0.0</crs:YAxisRotation>
+    <crs:ZAxisRotation>0.0</crs:ZAxisRotation>
+    <crs:ScaleDifference>0.0</crs:ScaleDifference>
+  </crs:Helmert>
+  <crs:Helmert>
+    <crs:Id>towgs_173</crs:Id>
+    <crs:Name>Proj4 defined toWGS84 params</crs:Name>
+    <crs:Version>2008-1-16T9:49</crs:Version>
+    <crs:Description>Handmade proj4 towgs84 definition (parsed from nad/epsg) used by crs with id: null</crs:Description>
+    <crs:SourceCRS>epsg:4731</crs:SourceCRS>
+    <crs:TargetCRS>epsg:4326</crs:TargetCRS>
+    <crs:XAxisTranslation>51.0</crs:XAxisTranslation>
+    <crs:YAxisTranslation>391.0</crs:YAxisTranslation>
+    <crs:ZAxisTranslation>-36.0</crs:ZAxisTranslation>
+    <crs:XAxisRotation>0.0</crs:XAxisRotation>
+    <crs:YAxisRotation>0.0</crs:YAxisRotation>
+    <crs:ZAxisRotation>0.0</crs:ZAxisRotation>
+    <crs:ScaleDifference>0.0</crs:ScaleDifference>
+  </crs:Helmert>
+  <crs:Helmert>
+    <crs:Id>towgs_186</crs:Id>
+    <crs:Name>Proj4 defined toWGS84 params</crs:Name>
+    <crs:Version>2008-1-16T9:49</crs:Version>
+    <crs:Description>Handmade proj4 towgs84 definition (parsed from nad/epsg) used by crs with id: null</crs:Description>
+    <crs:SourceCRS>epsg:4635</crs:SourceCRS>
+    <crs:TargetCRS>epsg:4326</crs:TargetCRS>
+    <crs:XAxisTranslation>-122.383</crs:XAxisTranslation>
+    <crs:YAxisTranslation>-188.696</crs:YAxisTranslation>
+    <crs:ZAxisTranslation>103.344</crs:ZAxisTranslation>
+    <crs:XAxisRotation>3.5107</crs:XAxisRotation>
+    <crs:YAxisRotation>-4.9668</crs:YAxisRotation>
+    <crs:ZAxisRotation>-5.7047</crs:ZAxisRotation>
+    <crs:ScaleDifference>4.4798</crs:ScaleDifference>
+  </crs:Helmert>
+  <crs:Helmert>
+    <crs:Id>towgs_187</crs:Id>
+    <crs:Name>Proj4 defined toWGS84 params</crs:Name>
+    <crs:Version>2008-1-16T9:49</crs:Version>
+    <crs:Description>Handmade proj4 towgs84 definition (parsed from nad/epsg) used by crs with id: null</crs:Description>
+    <crs:SourceCRS>epsg:4711</crs:SourceCRS>
+    <crs:TargetCRS>epsg:4326</crs:TargetCRS>
+    <crs:XAxisTranslation>124.0</crs:XAxisTranslation>
+    <crs:YAxisTranslation>-234.0</crs:YAxisTranslation>
+    <crs:ZAxisTranslation>-25.0</crs:ZAxisTranslation>
+    <crs:XAxisRotation>0.0</crs:XAxisRotation>
+    <crs:YAxisRotation>0.0</crs:YAxisRotation>
+    <crs:ZAxisRotation>0.0</crs:ZAxisRotation>
+    <crs:ScaleDifference>0.0</crs:ScaleDifference>
+  </crs:Helmert>
+  <crs:Helmert>
+    <crs:Id>towgs_188</crs:Id>
+    <crs:Name>Proj4 defined toWGS84 params</crs:Name>
+    <crs:Version>2008-1-16T9:49</crs:Version>
+    <crs:Description>Handmade proj4 towgs84 definition (parsed from nad/epsg) used by crs with id: null</crs:Description>
+    <crs:SourceCRS>epsg:4292</crs:SourceCRS>
+    <crs:TargetCRS>epsg:4326</crs:TargetCRS>
+    <crs:XAxisTranslation>-355.0</crs:XAxisTranslation>
+    <crs:YAxisTranslation>21.0</crs:YAxisTranslation>
+    <crs:ZAxisTranslation>72.0</crs:ZAxisTranslation>
+    <crs:XAxisRotation>0.0</crs:XAxisRotation>
+    <crs:YAxisRotation>0.0</crs:YAxisRotation>
+    <crs:ZAxisRotation>0.0</crs:ZAxisRotation>
+    <crs:ScaleDifference>0.0</crs:ScaleDifference>
+  </crs:Helmert>
+  <crs:Helmert>
+    <crs:Id>towgs_19</crs:Id>
+    <crs:Name>Proj4 defined toWGS84 params</crs:Name>
+    <crs:Version>2008-1-16T9:49</crs:Version>
+    <crs:Description>Handmade proj4 towgs84 definition (parsed from nad/epsg) used by crs with id: null</crs:Description>
+    <crs:SourceCRS>epsg:4179</crs:SourceCRS>
+    <crs:TargetCRS>epsg:4326</crs:TargetCRS>
+    <crs:XAxisTranslation>33.4</crs:XAxisTranslation>
+    <crs:YAxisTranslation>-146.6</crs:YAxisTranslation>
+    <crs:ZAxisTranslation>-76.3</crs:ZAxisTranslation>
+    <crs:XAxisRotation>-0.359</crs:XAxisRotation>
+    <crs:YAxisRotation>-0.053</crs:YAxisRotation>
+    <crs:ZAxisRotation>0.844</crs:ZAxisRotation>
+    <crs:ScaleDifference>-0.84</crs:ScaleDifference>
+  </crs:Helmert>
+  <crs:Helmert>
+    <crs:Id>towgs_190</crs:Id>
+    <crs:Name>Proj4 defined toWGS84 params</crs:Name>
+    <crs:Version>2008-1-16T9:49</crs:Version>
+    <crs:Description>Handmade proj4 towgs84 definition (parsed from nad/epsg) used by crs with id: null</crs:Description>
+    <crs:SourceCRS>epsg:4699</crs:SourceCRS>
+    <crs:TargetCRS>epsg:4326</crs:TargetCRS>
+    <crs:XAxisTranslation>-770.1</crs:XAxisTranslation>
+    <crs:YAxisTranslation>158.4</crs:YAxisTranslation>
+    <crs:ZAxisTranslation>-498.2</crs:ZAxisTranslation>
+    <crs:XAxisRotation>0.0</crs:XAxisRotation>
+    <crs:YAxisRotation>0.0</crs:YAxisRotation>
+    <crs:ZAxisRotation>0.0</crs:ZAxisRotation>
+    <crs:ScaleDifference>0.0</crs:ScaleDifference>
+  </crs:Helmert>
+  <crs:Helmert>
+    <crs:Id>towgs_2</crs:Id>
+    <crs:Name>Proj4 defined toWGS84 params</crs:Name>
+    <crs:Version>2008-1-16T9:49</crs:Version>
+    <crs:Description>Handmade proj4 towgs84 definition (parsed from nad/epsg) used by crs with id: null</crs:Description>
+    <crs:SourceCRS>epsg:4637</crs:SourceCRS>
+    <crs:TargetCRS>epsg:4326</crs:TargetCRS>
+    <crs:XAxisTranslation>325.0</crs:XAxisTranslation>
+    <crs:YAxisTranslation>154.0</crs:YAxisTranslation>
+    <crs:ZAxisTranslation>172.0</crs:ZAxisTranslation>
+    <crs:XAxisRotation>0.0</crs:XAxisRotation>
+    <crs:YAxisRotation>0.0</crs:YAxisRotation>
+    <crs:ZAxisRotation>0.0</crs:ZAxisRotation>
+    <crs:ScaleDifference>0.0</crs:ScaleDifference>
+  </crs:Helmert>
+  <crs:Helmert>
+    <crs:Id>towgs_202</crs:Id>
+    <crs:Name>Proj4 defined toWGS84 params</crs:Name>
+    <crs:Version>2008-1-16T9:49</crs:Version>
+    <crs:Description>Handmade proj4 towgs84 definition (parsed from nad/epsg) used by crs with id: null</crs:Description>
+    <crs:SourceCRS>epsg:4247</crs:SourceCRS>
+    <crs:TargetCRS>epsg:4326</crs:TargetCRS>
+    <crs:XAxisTranslation>-273.5</crs:XAxisTranslation>
+    <crs:YAxisTranslation>110.6</crs:YAxisTranslation>
+    <crs:ZAxisTranslation>-357.9</crs:ZAxisTranslation>
+    <crs:XAxisRotation>0.0</crs:XAxisRotation>
+    <crs:YAxisRotation>0.0</crs:YAxisRotation>
+    <crs:ZAxisRotation>0.0</crs:ZAxisRotation>
+    <crs:ScaleDifference>0.0</crs:ScaleDifference>
+  </crs:Helmert>
+  <crs:Helmert>
+    <crs:Id>towgs_207</crs:Id>
+    <crs:Name>Proj4 defined toWGS84 params</crs:Name>
+    <crs:Version>2008-1-16T9:49</crs:Version>
+    <crs:Description>Handmade proj4 towgs84 definition (parsed from nad/epsg) used by crs with id: null</crs:Description>
+    <crs:SourceCRS>epsg:4750</crs:SourceCRS>
+    <crs:TargetCRS>epsg:4326</crs:TargetCRS>
+    <crs:XAxisTranslation>-56.263</crs:XAxisTranslation>
+    <crs:YAxisTranslation>16.136</crs:YAxisTranslation>
+    <crs:ZAxisTranslation>-22.856</crs:ZAxisTranslation>
+    <crs:XAxisRotation>0.0</crs:XAxisRotation>
+    <crs:YAxisRotation>0.0</crs:YAxisRotation>
+    <crs:ZAxisRotation>0.0</crs:ZAxisRotation>
+    <crs:ScaleDifference>0.0</crs:ScaleDifference>
+  </crs:Helmert>
+  <crs:Helmert>
+    <crs:Id>towgs_208</crs:Id>
+    <crs:Name>Proj4 defined toWGS84 params</crs:Name>
+    <crs:Version>2008-1-16T9:49</crs:Version>
+    <crs:Description>Handmade proj4 towgs84 definition (parsed from nad/epsg) used by crs with id: null</crs:Description>
+    <crs:SourceCRS>epsg:4224</crs:SourceCRS>
+    <crs:TargetCRS>epsg:4326</crs:TargetCRS>
+    <crs:XAxisTranslation>-134.0</crs:XAxisTranslation>
+    <crs:YAxisTranslation>229.0</crs:YAxisTranslation>
+    <crs:ZAxisTranslation>-29.0</crs:ZAxisTranslation>
+    <crs:XAxisRotation>0.0</crs:XAxisRotation>
+    <crs:YAxisRotation>0.0</crs:YAxisRotation>
+    <crs:ZAxisRotation>0.0</crs:ZAxisRotation>
+    <crs:ScaleDifference>0.0</crs:ScaleDifference>
+  </crs:Helmert>
+  <crs:Helmert>
+    <crs:Id>towgs_21</crs:Id>
+    <crs:Name>Proj4 defined toWGS84 params</crs:Name>
+    <crs:Version>2008-1-16T9:49</crs:Version>
+    <crs:Description>Handmade proj4 towgs84 definition (parsed from nad/epsg) used by crs with id: null</crs:Description>
+    <crs:SourceCRS>epsg:4606</crs:SourceCRS>
+    <crs:TargetCRS>epsg:4326</crs:TargetCRS>
+    <crs:XAxisTranslation>-149.0</crs:XAxisTranslation>
+    <crs:YAxisTranslation>128.0</crs:YAxisTranslation>
+    <crs:ZAxisTranslation>296.0</crs:ZAxisTranslation>
+    <crs:XAxisRotation>0.0</crs:XAxisRotation>
+    <crs:YAxisRotation>0.0</crs:YAxisRotation>
+    <crs:ZAxisRotation>0.0</crs:ZAxisRotation>
+    <crs:ScaleDifference>0.0</crs:ScaleDifference>
+  </crs:Helmert>
+  <crs:Helmert>
+    <crs:Id>towgs_216</crs:Id>
+    <crs:Name>Proj4 defined toWGS84 params</crs:Name>
+    <crs:Version>2008-1-16T9:49</crs:Version>
+    <crs:Description>Handmade proj4 towgs84 definition (parsed from nad/epsg) used by crs with id: null</crs:Description>
+    <crs:SourceCRS>epsg:4155</crs:SourceCRS>
+    <crs:TargetCRS>epsg:4326</crs:TargetCRS>
+    <crs:XAxisTranslation>-83.0</crs:XAxisTranslation>
+    <crs:YAxisTranslation>37.0</crs:YAxisTranslation>
+    <crs:ZAxisTranslation>124.0</crs:ZAxisTranslation>
+    <crs:XAxisRotation>0.0</crs:XAxisRotation>
+    <crs:YAxisRotation>0.0</crs:YAxisRotation>
+    <crs:ZAxisRotation>0.0</crs:ZAxisRotation>
+    <crs:ScaleDifference>0.0</crs:ScaleDifference>
+  </crs:Helmert>
+  <crs:Helmert>
+    <crs:Id>towgs_217</crs:Id>
+    <crs:Name>Proj4 defined toWGS84 params</crs:Name>
+    <crs:Version>2008-1-16T9:49</crs:Version>
+    <crs:Description>Handmade proj4 towgs84 definition (parsed from nad/epsg) used by crs with id: null</crs:Description>
+    <crs:SourceCRS>epsg:4164</crs:SourceCRS>
+    <crs:TargetCRS>epsg:4326</crs:TargetCRS>
+    <crs:XAxisTranslation>-76.0</crs:XAxisTranslation>
+    <crs:YAxisTranslation>-138.0</crs:YAxisTranslation>
+    <crs:ZAxisTranslation>67.0</crs:ZAxisTranslation>
+    <crs:XAxisRotation>0.0</crs:XAxisRotation>
+    <crs:YAxisRotation>0.0</crs:YAxisRotation>
+    <crs:ZAxisRotation>0.0</crs:ZAxisRotation>
+    <crs:ScaleDifference>0.0</crs:ScaleDifference>
+  </crs:Helmert>
+  <crs:Helmert>
+    <crs:Id>towgs_220</crs:Id>
+    <crs:Name>Proj4 defined toWGS84 params</crs:Name>
+    <crs:Version>2008-1-16T9:49</crs:Version>
+    <crs:Description>Handmade proj4 towgs84 definition (parsed from nad/epsg) used by crs with id: null</crs:Description>
+    <crs:SourceCRS>epsg:4289</crs:SourceCRS>
+    <crs:TargetCRS>epsg:4326</crs:TargetCRS>
+    <crs:XAxisTranslation>565.237</crs:XAxisTranslation>
+    <crs:YAxisTranslation>50.0087</crs:YAxisTranslation>
+    <crs:ZAxisTranslation>465.658</crs:ZAxisTranslation>
+    <crs:XAxisRotation>-0.406857</crs:XAxisRotation>
+    <crs:YAxisRotation>0.350733</crs:YAxisRotation>
+    <crs:ZAxisRotation>-1.87035</crs:ZAxisRotation>
+    <crs:ScaleDifference>4.0812</crs:ScaleDifference>
+  </crs:Helmert>
+  <crs:Helmert>
+    <crs:Id>towgs_222</crs:Id>
+    <crs:Name>Proj4 defined toWGS84 params</crs:Name>
+    <crs:Version>2008-1-16T9:49</crs:Version>
+    <crs:Description>Handmade proj4 towgs84 definition (parsed from nad/epsg) used by crs with id: null</crs:Description>
+    <crs:SourceCRS>epsg:4691</crs:SourceCRS>
+    <crs:TargetCRS>epsg:4326</crs:TargetCRS>
+    <crs:XAxisTranslation>215.525</crs:XAxisTranslation>
+    <crs:YAxisTranslation>149.593</crs:YAxisTranslation>
+    <crs:ZAxisTranslation>176.229</crs:ZAxisTranslation>
+    <crs:XAxisRotation>-3.2624</crs:XAxisRotation>
+    <crs:YAxisRotation>-1.692</crs:YAxisRotation>
+    <crs:ZAxisRotation>-1.1571</crs:ZAxisRotation>
+    <crs:ScaleDifference>10.4773</crs:ScaleDifference>
+  </crs:Helmert>
+  <crs:Helmert>
+    <crs:Id>towgs_223</crs:Id>
+    <crs:Name>Proj4 defined toWGS84 params</crs:Name>
+    <crs:Version>2008-1-16T9:49</crs:Version>
+    <crs:Description>Handmade proj4 towgs84 definition (parsed from nad/epsg) used by crs with id: null</crs:Description>
+    <crs:SourceCRS>epsg:4684</crs:SourceCRS>
+    <crs:TargetCRS>epsg:4326</crs:TargetCRS>
+    <crs:XAxisTranslation>-133.0</crs:XAxisTranslation>
+    <crs:YAxisTranslation>-321.0</crs:YAxisTranslation>
+    <crs:ZAxisTranslation>50.0</crs:ZAxisTranslation>
+    <crs:XAxisRotation>0.0</crs:XAxisRotation>
+    <crs:YAxisRotation>0.0</crs:YAxisRotation>
+    <crs:ZAxisRotation>0.0</crs:ZAxisRotation>
+    <crs:ScaleDifference>0.0</crs:ScaleDifference>
+  </crs:Helmert>
+  <crs:Helmert>
+    <crs:Id>towgs_224</crs:Id>
+    <crs:Name>Proj4 defined toWGS84 params</crs:Name>
+    <crs:Version>2008-1-16T9:49</crs:Version>
+    <crs:Description>Handmade proj4 towgs84 definition (parsed from nad/epsg) used by crs with id: null</crs:Description>
+    <crs:SourceCRS>epsg:4602</crs:SourceCRS>
+    <crs:TargetCRS>epsg:4326</crs:TargetCRS>
+    <crs:XAxisTranslation>725.0</crs:XAxisTranslation>
+    <crs:YAxisTranslation>685.0</crs:YAxisTranslation>
+    <crs:ZAxisTranslation>536.0</crs:ZAxisTranslation>
+    <crs:XAxisRotation>0.0</crs:XAxisRotation>
+    <crs:YAxisRotation>0.0</crs:YAxisRotation>
+    <crs:ZAxisRotation>0.0</crs:ZAxisRotation>
+    <crs:ScaleDifference>0.0</crs:ScaleDifference>
+  </crs:Helmert>
+  <crs:Helmert>
+    <crs:Id>towgs_227</crs:Id>
+    <crs:Name>Proj4 defined toWGS84 params</crs:Name>
+    <crs:Version>2008-1-16T9:49</crs:Version>
+    <crs:Description>Handmade proj4 towgs84 definition (parsed from nad/epsg) used by crs with id: null</crs:Description>
+    <crs:SourceCRS>epsg:4257</crs:SourceCRS>
+    <crs:TargetCRS>epsg:4326</crs:TargetCRS>
+    <crs:XAxisTranslation>-587.8</crs:XAxisTranslation>
+    <crs:YAxisTranslation>519.75</crs:YAxisTranslation>
+    <crs:ZAxisTranslation>145.76</crs:ZAxisTranslation>
+    <crs:XAxisRotation>0.0</crs:XAxisRotation>
+    <crs:YAxisRotation>0.0</crs:YAxisRotation>
+    <crs:ZAxisRotation>0.0</crs:ZAxisRotation>
+    <crs:ScaleDifference>0.0</crs:ScaleDifference>
+  </crs:Helmert>
+  <crs:Helmert>
+    <crs:Id>towgs_228</crs:Id>
+    <crs:Name>Proj4 defined toWGS84 params</crs:Name>
+    <crs:Version>2008-1-16T9:49</crs:Version>
+    <crs:Description>Handmade proj4 towgs84 definition (parsed from nad/epsg) used by crs with id: null</crs:Description>
+    <crs:SourceCRS>epsg:4716</crs:SourceCRS>
+    <crs:TargetCRS>epsg:4326</crs:TargetCRS>
+    <crs:XAxisTranslation>298.0</crs:XAxisTranslation>
+    <crs:YAxisTranslation>-304.0</crs:YAxisTranslation>
+    <crs:ZAxisTranslation>-375.0</crs:ZAxisTranslation>
+    <crs:XAxisRotation>0.0</crs:XAxisRotation>
+    <crs:YAxisRotation>0.0</crs:YAxisRotation>
+    <crs:ZAxisRotation>0.0</crs:ZAxisRotation>
+    <crs:ScaleDifference>0.0</crs:ScaleDifference>
+  </crs:Helmert>
+  <crs:Helmert>
+    <crs:Id>towgs_234</crs:Id>
+    <crs:Name>Proj4 defined toWGS84 params</crs:Name>
+    <crs:Version>2008-1-16T9:49</crs:Version>
+    <crs:Description>Handmade proj4 towgs84 definition (parsed from nad/epsg) used by crs with id: null</crs:Description>
+    <crs:SourceCRS>epsg:4245</crs:SourceCRS>
+    <crs:TargetCRS>epsg:4326</crs:TargetCRS>
+    <crs:XAxisTranslation>-11.0</crs:XAxisTranslation>
+    <crs:YAxisTranslation>851.0</crs:YAxisTranslation>
+    <crs:ZAxisTranslation>5.0</crs:ZAxisTranslation>
+    <crs:XAxisRotation>0.0</crs:XAxisRotation>
+    <crs:YAxisRotation>0.0</crs:YAxisRotation>
+    <crs:ZAxisRotation>0.0</crs:ZAxisRotation>
+    <crs:ScaleDifference>0.0</crs:ScaleDifference>
+  </crs:Helmert>
+  <crs:Helmert>
+    <crs:Id>towgs_236</crs:Id>
+    <crs:Name>Proj4 defined toWGS84 params</crs:Name>
+    <crs:Version>2008-1-16T9:49</crs:Version>
+    <crs:Description>Handmade proj4 towgs84 definition (parsed from nad/epsg) used by crs with id: null</crs:Description>
+    <crs:SourceCRS>epsg:4678</crs:SourceCRS>
+    <crs:TargetCRS>epsg:4326</crs:TargetCRS>
+    <crs:XAxisTranslation>44.585</crs:XAxisTranslation>
+    <crs:YAxisTranslation>-131.212</crs:YAxisTranslation>
+    <crs:ZAxisTranslation>-39.544</crs:ZAxisTranslation>
+    <crs:XAxisRotation>0.0</crs:XAxisRotation>
+    <crs:YAxisRotation>0.0</crs:YAxisRotation>
+    <crs:ZAxisRotation>0.0</crs:ZAxisRotation>
+    <crs:ScaleDifference>0.0</crs:ScaleDifference>
+  </crs:Helmert>
+  <crs:Helmert>
+    <crs:Id>towgs_24</crs:Id>
+    <crs:Name>Proj4 defined toWGS84 params</crs:Name>
+    <crs:Version>2008-1-16T9:49</crs:Version>
+    <crs:Description>Handmade proj4 towgs84 definition (parsed from nad/epsg) used by crs with id: null</crs:Description>
+    <crs:SourceCRS>epsg:4175</crs:SourceCRS>
+    <crs:TargetCRS>epsg:4326</crs:TargetCRS>
+    <crs:XAxisTranslation>-88.0</crs:XAxisTranslation>
+    <crs:YAxisTranslation>4.0</crs:YAxisTranslation>
+    <crs:ZAxisTranslation>101.0</crs:ZAxisTranslation>
+    <crs:XAxisRotation>0.0</crs:XAxisRotation>
+    <crs:YAxisRotation>0.0</crs:YAxisRotation>
+    <crs:ZAxisRotation>0.0</crs:ZAxisRotation>
+    <crs:ScaleDifference>0.0</crs:ScaleDifference>
+  </crs:Helmert>
+  <crs:Helmert>
+    <crs:Id>towgs_25</crs:Id>
+    <crs:Name>Proj4 defined toWGS84 params</crs:Name>
+    <crs:Version>2008-1-16T9:49</crs:Version>
+    <crs:Description>Handmade proj4 towgs84 definition (parsed from nad/epsg) used by crs with id: null</crs:Description>
+    <crs:SourceCRS>epsg:4315</crs:SourceCRS>
+    <crs:TargetCRS>epsg:4326</crs:TargetCRS>
+    <crs:XAxisTranslation>-23.0</crs:XAxisTranslation>
+    <crs:YAxisTranslation>259.0</crs:YAxisTranslation>
+    <crs:ZAxisTranslation>-9.0</crs:ZAxisTranslation>
+    <crs:XAxisRotation>0.0</crs:XAxisRotation>
+    <crs:YAxisRotation>0.0</crs:YAxisRotation>
+    <crs:ZAxisRotation>0.0</crs:ZAxisRotation>
+    <crs:ScaleDifference>0.0</crs:ScaleDifference>
+  </crs:Helmert>
+  <crs:Helmert>
+    <crs:Id>towgs_252</crs:Id>
+    <crs:Name>Proj4 defined toWGS84 params</crs:Name>
+    <crs:Version>2008-1-16T9:49</crs:Version>
+    <crs:Description>Handmade proj4 towgs84 definition (parsed from nad/epsg) used by crs with id: null</crs:Description>
+    <crs:SourceCRS>epsg:4297</crs:SourceCRS>
+    <crs:TargetCRS>epsg:4326</crs:TargetCRS>
+    <crs:XAxisTranslation>-189.0</crs:XAxisTranslation>
+    <crs:YAxisTranslation>-242.0</crs:YAxisTranslation>
+    <crs:ZAxisTranslation>-91.0</crs:ZAxisTranslation>
+    <crs:XAxisRotation>0.0</crs:XAxisRotation>
+    <crs:YAxisRotation>0.0</crs:YAxisRotation>
+    <crs:ZAxisRotation>0.0</crs:ZAxisRotation>
+    <crs:ScaleDifference>0.0</crs:ScaleDifference>
+  </crs:Helmert>
+  <crs:Helmert>
+    <crs:Id>towgs_253</crs:Id>
+    <crs:Name>Proj4 defined toWGS84 params</crs:Name>
+    <crs:Version>2008-1-16T9:49</crs:Version>
+    <crs:Description>Handmade proj4 towgs84 definition (parsed from nad/epsg) used by crs with id: null</crs:Description>
+    <crs:SourceCRS>epsg:4638</crs:SourceCRS>
+    <crs:TargetCRS>epsg:4326</crs:TargetCRS>
+    <crs:XAxisTranslation>30.0</crs:XAxisTranslation>
+    <crs:YAxisTranslation>430.0</crs:YAxisTranslation>
+    <crs:ZAxisTranslation>368.0</crs:ZAxisTranslation>
+    <crs:XAxisRotation>0.0</crs:XAxisRotation>
+    <crs:YAxisRotation>0.0</crs:YAxisRotation>
+    <crs:ZAxisRotation>0.0</crs:ZAxisRotation>
+    <crs:ScaleDifference>0.0</crs:ScaleDifference>
+  </crs:Helmert>
+  <crs:Helmert>
+    <crs:Id>towgs_263</crs:Id>
+    <crs:Name>Proj4 defined toWGS84 params</crs:Name>
+    <crs:Version>2008-1-16T9:49</crs:Version>
+    <crs:Description>Handmade proj4 towgs84 definition (parsed from nad/epsg) used by crs with id: null</crs:Description>
+    <crs:SourceCRS>epsg:4668</crs:SourceCRS>
+    <crs:TargetCRS>epsg:4326</crs:TargetCRS>
+    <crs:XAxisTranslation>-86.0</crs:XAxisTranslation>
+    <crs:YAxisTranslation>-98.0</crs:YAxisTranslation>
+    <crs:ZAxisTranslation>-119.0</crs:ZAxisTranslation>
+    <crs:XAxisRotation>0.0</crs:XAxisRotation>
+    <crs:YAxisRotation>0.0</crs:YAxisRotation>
+    <crs:ZAxisRotation>0.0</crs:ZAxisRotation>
+    <crs:ScaleDifference>0.0</crs:ScaleDifference>
+  </crs:Helmert>
+  <crs:Helmert>
+    <crs:Id>towgs_27</crs:Id>
+    <crs:Name>Proj4 defined toWGS84 params</crs:Name>
+    <crs:Version>2008-1-16T9:49</crs:Version>
+    <crs:Description>Handmade proj4 towgs84 definition (parsed from nad/epsg) used by crs with id: null</crs:Description>
+    <crs:SourceCRS>epsg:4275</crs:SourceCRS>
+    <crs:TargetCRS>epsg:4326</crs:TargetCRS>
+    <crs:XAxisTranslation>-168.0</crs:XAxisTranslation>
+    <crs:YAxisTranslation>-60.0</crs:YAxisTranslation>
+    <crs:ZAxisTranslation>320.0</crs:ZAxisTranslation>
+    <crs:XAxisRotation>0.0</crs:XAxisRotation>
+    <crs:YAxisRotation>0.0</crs:YAxisRotation>
+    <crs:ZAxisRotation>0.0</crs:ZAxisRotation>
+    <crs:ScaleDifference>0.0</crs:ScaleDifference>
+  </crs:Helmert>
+  <crs:Helmert>
+    <crs:Id>towgs_270</crs:Id>
+    <crs:Name>Proj4 defined toWGS84 params</crs:Name>
+    <crs:Version>2008-1-16T9:49</crs:Version>
+    <crs:Description>Handmade proj4 towgs84 definition (parsed from nad/epsg) used by crs with id: null</crs:Description>
+    <crs:SourceCRS>epsg:4255</crs:SourceCRS>
+    <crs:TargetCRS>epsg:4326</crs:TargetCRS>
+    <crs:XAxisTranslation>-333.0</crs:XAxisTranslation>
+    <crs:YAxisTranslation>-222.0</crs:YAxisTranslation>
+    <crs:ZAxisTranslation>114.0</crs:ZAxisTranslation>
+    <crs:XAxisRotation>0.0</crs:XAxisRotation>
+    <crs:YAxisRotation>0.0</crs:YAxisRotation>
+    <crs:ZAxisRotation>0.0</crs:ZAxisRotation>
+    <crs:ScaleDifference>0.0</crs:ScaleDifference>
+  </crs:Helmert>
+  <crs:Helmert>
+    <crs:Id>towgs_276</crs:Id>
+    <crs:Name>Proj4 defined toWGS84 params</crs:Name>
+    <crs:Version>2008-1-16T9:49</crs:Version>
+    <crs:Description>Handmade proj4 towgs84 definition (parsed from nad/epsg) used by crs with id: null</crs:Description>
+    <crs:SourceCRS>epsg:4717</crs:SourceCRS>
+    <crs:TargetCRS>epsg:4326</crs:TargetCRS>
+    <crs:XAxisTranslation>-2.0</crs:XAxisTranslation>
+    <crs:YAxisTranslation>151.0</crs:YAxisTranslation>
+    <crs:ZAxisTranslation>181.0</crs:ZAxisTranslation>
+    <crs:XAxisRotation>0.0</crs:XAxisRotation>
+    <crs:YAxisRotation>0.0</crs:YAxisRotation>
+    <crs:ZAxisRotation>0.0</crs:ZAxisRotation>
+    <crs:ScaleDifference>0.0</crs:ScaleDifference>
+  </crs:Helmert>
+  <crs:Helmert>
+    <crs:Id>towgs_281</crs:Id>
+    <crs:Name>Proj4 defined toWGS84 params</crs:Name>
+    <crs:Version>2008-1-16T9:49</crs:Version>
+    <crs:Description>Handmade proj4 towgs84 definition (parsed from nad/epsg) used by crs with id: null</crs:Description>
+    <crs:SourceCRS>epsg:4181</crs:SourceCRS>
+    <crs:TargetCRS>epsg:4326</crs:TargetCRS>
+    <crs:XAxisTranslation>-193.0</crs:XAxisTranslation>
+    <crs:YAxisTranslation>13.7</crs:YAxisTranslation>
+    <crs:ZAxisTranslation>-39.3</crs:ZAxisTranslation>
+    <crs:XAxisRotation>-0.41</crs:XAxisRotation>
+    <crs:YAxisRotation>-2.933</crs:YAxisRotation>
+    <crs:ZAxisRotation>2.688</crs:ZAxisRotation>
+    <crs:ScaleDifference>0.43</crs:ScaleDifference>
+  </crs:Helmert>
+  <crs:Helmert>
+    <crs:Id>towgs_287</crs:Id>
+    <crs:Name>Proj4 defined toWGS84 params</crs:Name>
+    <crs:Version>2008-1-16T9:49</crs:Version>
+    <crs:Description>Handmade proj4 towgs84 definition (parsed from nad/epsg) used by crs with id: null</crs:Description>
+    <crs:SourceCRS>epsg:4679</crs:SourceCRS>
+    <crs:TargetCRS>epsg:4326</crs:TargetCRS>
+    <crs:XAxisTranslation>-80.01</crs:XAxisTranslation>
+    <crs:YAxisTranslation>253.26</crs:YAxisTranslation>
+    <crs:ZAxisTranslation>291.19</crs:ZAxisTranslation>
+    <crs:XAxisRotation>0.0</crs:XAxisRotation>
+    <crs:YAxisRotation>0.0</crs:YAxisRotation>
+    <crs:ZAxisRotation>0.0</crs:ZAxisRotation>
+    <crs:ScaleDifference>0.0</crs:ScaleDifference>
+  </crs:Helmert>
+  <crs:Helmert>
+    <crs:Id>towgs_289</crs:Id>
+    <crs:Name>Proj4 defined toWGS84 params</crs:Name>
+    <crs:Version>2008-1-16T9:49</crs:Version>
+    <crs:Description>Handmade proj4 towgs84 definition (parsed from nad/epsg) used by crs with id: null</crs:Description>
+    <crs:SourceCRS>epsg:4739</crs:SourceCRS>
+    <crs:TargetCRS>epsg:4326</crs:TargetCRS>
+    <crs:XAxisTranslation>-156.0</crs:XAxisTranslation>
+    <crs:YAxisTranslation>-271.0</crs:YAxisTranslation>
+    <crs:ZAxisTranslation>-189.0</crs:ZAxisTranslation>
+    <crs:XAxisRotation>0.0</crs:XAxisRotation>
+    <crs:YAxisRotation>0.0</crs:YAxisRotation>
+    <crs:ZAxisRotation>0.0</crs:ZAxisRotation>
+    <crs:ScaleDifference>0.0</crs:ScaleDifference>
+  </crs:Helmert>
+  <crs:Helmert>
+    <crs:Id>towgs_29</crs:Id>
+    <crs:Name>Proj4 defined toWGS84 params</crs:Name>
+    <crs:Version>2008-1-16T9:49</crs:Version>
+    <crs:Description>Handmade proj4 towgs84 definition (parsed from nad/epsg) used by crs with id: null</crs:Description>
+    <crs:SourceCRS>epsg:4147</crs:SourceCRS>
+    <crs:TargetCRS>epsg:4326</crs:TargetCRS>
+    <crs:XAxisTranslation>-17.51</crs:XAxisTranslation>
+    <crs:YAxisTranslation>-108.32</crs:YAxisTranslation>
+    <crs:ZAxisTranslation>-62.39</crs:ZAxisTranslation>
+    <crs:XAxisRotation>0.0</crs:XAxisRotation>
+    <crs:YAxisRotation>0.0</crs:YAxisRotation>
+    <crs:ZAxisRotation>0.0</crs:ZAxisRotation>
+    <crs:ScaleDifference>0.0</crs:ScaleDifference>
+  </crs:Helmert>
+  <crs:Helmert>
+    <crs:Id>towgs_293</crs:Id>
+    <crs:Name>Proj4 defined toWGS84 params</crs:Name>
+    <crs:Version>2008-1-16T9:49</crs:Version>
+    <crs:Description>Handmade proj4 towgs84 definition (parsed from nad/epsg) used by crs with id: null</crs:Description>
+    <crs:SourceCRS>epsg:4244</crs:SourceCRS>
+    <crs:TargetCRS>epsg:4326</crs:TargetCRS>
+    <crs:XAxisTranslation>-97.0</crs:XAxisTranslation>
+    <crs:YAxisTranslation>787.0</crs:YAxisTranslation>
+    <crs:ZAxisTranslation>86.0</crs:ZAxisTranslation>
+    <crs:XAxisRotation>0.0</crs:XAxisRotation>
+    <crs:YAxisRotation>0.0</crs:YAxisRotation>
+    <crs:ZAxisRotation>0.0</crs:ZAxisRotation>
+    <crs:ScaleDifference>0.0</crs:ScaleDifference>
+  </crs:Helmert>
+  <crs:Helmert>
+    <crs:Id>towgs_299</crs:Id>
+    <crs:Name>Proj4 defined toWGS84 params</crs:Name>
+    <crs:Version>2008-1-16T9:49</crs:Version>
+    <crs:Description>Handmade proj4 towgs84 definition (parsed from nad/epsg) used by crs with id: null</crs:Description>
+    <crs:SourceCRS>epsg:4607</crs:SourceCRS>
+    <crs:TargetCRS>epsg:4326</crs:TargetCRS>
+    <crs:XAxisTranslation>195.671</crs:XAxisTranslation>
+    <crs:YAxisTranslation>332.517</crs:YAxisTranslation>
+    <crs:ZAxisTranslation>274.607</crs:ZAxisTranslation>
+    <crs:XAxisRotation>0.0</crs:XAxisRotation>
+    <crs:YAxisRotation>0.0</crs:YAxisRotation>
+    <crs:ZAxisRotation>0.0</crs:ZAxisRotation>
+    <crs:ScaleDifference>0.0</crs:ScaleDifference>
+  </crs:Helmert>
+  <crs:Helmert>
+    <crs:Id>towgs_30</crs:Id>
+    <crs:Name>Proj4 defined toWGS84 params</crs:Name>
+    <crs:Version>2008-1-16T9:49</crs:Version>
+    <crs:Description>Handmade proj4 towgs84 definition (parsed from nad/epsg) used by crs with id: null</crs:Description>
+    <crs:SourceCRS>epsg:4624</crs:SourceCRS>
+    <crs:TargetCRS>epsg:4326</crs:TargetCRS>
+    <crs:XAxisTranslation>2.0</crs:XAxisTranslation>
+    <crs:YAxisTranslation>2.0</crs:YAxisTranslation>
+    <crs:ZAxisTranslation>-2.0</crs:ZAxisTranslation>
+    <crs:XAxisRotation>0.0</crs:XAxisRotation>
+    <crs:YAxisRotation>0.0</crs:YAxisRotation>
+    <crs:ZAxisRotation>0.0</crs:ZAxisRotation>
+    <crs:ScaleDifference>0.0</crs:ScaleDifference>
+  </crs:Helmert>
+  <crs:Helmert>
+    <crs:Id>towgs_31</crs:Id>
+    <crs:Name>Proj4 defined toWGS84 params</crs:Name>
+    <crs:Version>2008-1-16T9:49</crs:Version>
+    <crs:Description>Handmade proj4 towgs84 definition (parsed from nad/epsg) used by crs with id: null</crs:Description>
+    <crs:SourceCRS>epsg:4143</crs:SourceCRS>
+    <crs:TargetCRS>epsg:4326</crs:TargetCRS>
+    <crs:XAxisTranslation>-124.76</crs:XAxisTranslation>
+    <crs:YAxisTranslation>53.0</crs:YAxisTranslation>
+    <crs:ZAxisTranslation>466.79</crs:ZAxisTranslation>
+    <crs:XAxisRotation>0.0</crs:XAxisRotation>
+    <crs:YAxisRotation>0.0</crs:YAxisRotation>
+    <crs:ZAxisRotation>0.0</crs:ZAxisRotation>
+    <crs:ScaleDifference>0.0</crs:ScaleDifference>
+  </crs:Helmert>
+  <crs:Helmert>
+    <crs:Id>towgs_319</crs:Id>
+    <crs:Name>Proj4 defined toWGS84 params</crs:Name>
+    <crs:Version>2008-1-16T9:49</crs:Version>
+    <crs:Description>Handmade proj4 towgs84 definition (parsed from nad/epsg) used by crs with id: null</crs:Description>
+    <crs:SourceCRS>epsg:4196</crs:SourceCRS>
+    <crs:TargetCRS>epsg:4326</crs:TargetCRS>
+    <crs:XAxisTranslation>-45.0</crs:XAxisTranslation>
+    <crs:YAxisTranslation>417.0</crs:YAxisTranslation>
+    <crs:ZAxisTranslation>-3.5</crs:ZAxisTranslation>
+    <crs:XAxisRotation>0.0</crs:XAxisRotation>
+    <crs:YAxisRotation>0.0</crs:YAxisRotation>
+    <crs:ZAxisRotation>0.814</crs:ZAxisRotation>
+    <crs:ScaleDifference>-0.6</crs:ScaleDifference>
+  </crs:Helmert>
+  <crs:Helmert>
+    <crs:Id>towgs_32</crs:Id>
+    <crs:Name>Proj4 defined toWGS84 params</crs:Name>
+    <crs:Version>2008-1-16T9:49</crs:Version>
+    <crs:Description>Handmade proj4 towgs84 definition (parsed from nad/epsg) used by crs with id: null</crs:Description>
+    <crs:SourceCRS>epsg:4706</crs:SourceCRS>
+    <crs:TargetCRS>epsg:4326</crs:TargetCRS>
+    <crs:XAxisTranslation>-146.21</crs:XAxisTranslation>
+    <crs:YAxisTranslation>112.63</crs:YAxisTranslation>
+    <crs:ZAxisTranslation>4.05</crs:ZAxisTranslation>
+    <crs:XAxisRotation>0.0</crs:XAxisRotation>
+    <crs:YAxisRotation>0.0</crs:YAxisRotation>
+    <crs:ZAxisRotation>0.0</crs:ZAxisRotation>
+    <crs:ScaleDifference>0.0</crs:ScaleDifference>
+  </crs:Helmert>
+  <crs:Helmert>
+    <crs:Id>towgs_321</crs:Id>
+    <crs:Name>Proj4 defined toWGS84 params</crs:Name>
+    <crs:Version>2008-1-16T9:49</crs:Version>
+    <crs:Description>Handmade proj4 towgs84 definition (parsed from nad/epsg) used by crs with id: null</crs:Description>
+    <crs:SourceCRS>epsg:4714</crs:SourceCRS>
+    <crs:TargetCRS>epsg:4326</crs:TargetCRS>
+    <crs:XAxisTranslation>-127.0</crs:XAxisTranslation>
+    <crs:YAxisTranslation>-769.0</crs:YAxisTranslation>
+    <crs:ZAxisTranslation>472.0</crs:ZAxisTranslation>
+    <crs:XAxisRotation>0.0</crs:XAxisRotation>
+    <crs:YAxisRotation>0.0</crs:YAxisRotation>
+    <crs:ZAxisRotation>0.0</crs:ZAxisRotation>
+    <crs:ScaleDifference>0.0</crs:ScaleDifference>
+  </crs:Helmert>
+  <crs:Helmert>
+    <crs:Id>towgs_327</crs:Id>
+    <crs:Name>Proj4 defined toWGS84 params</crs:Name>
+    <crs:Version>2008-1-16T9:49</crs:Version>
+    <crs:Description>Handmade proj4 towgs84 definition (parsed from nad/epsg) used by crs with id: null</crs:Description>
+    <crs:SourceCRS>epsg:4287</crs:SourceCRS>
+    <crs:TargetCRS>epsg:4326</crs:TargetCRS>
+    <crs:XAxisTranslation>164.0</crs:XAxisTranslation>
+    <crs:YAxisTranslation>138.0</crs:YAxisTranslation>
+    <crs:ZAxisTranslation>-189.0</crs:ZAxisTranslation>
+    <crs:XAxisRotation>0.0</crs:XAxisRotation>
+    <crs:YAxisRotation>0.0</crs:YAxisRotation>
+    <crs:ZAxisRotation>0.0</crs:ZAxisRotation>
+    <crs:ScaleDifference>0.0</crs:ScaleDifference>
+  </crs:Helmert>
+  <crs:Helmert>
+    <crs:Id>towgs_35</crs:Id>
+    <crs:Name>Proj4 defined toWGS84 params</crs:Name>
+    <crs:Version>2008-1-16T9:49</crs:Version>
+    <crs:Description>Handmade proj4 towgs84 definition (parsed from nad/epsg) used by crs with id: null</crs:Description>
+    <crs:SourceCRS>epsg:4712</crs:SourceCRS>
+    <crs:TargetCRS>epsg:4326</crs:TargetCRS>
+    <crs:XAxisTranslation>-205.0</crs:XAxisTranslation>
+    <crs:YAxisTranslation>107.0</crs:YAxisTranslation>
+    <crs:ZAxisTranslation>53.0</crs:ZAxisTranslation>
+    <crs:XAxisRotation>0.0</crs:XAxisRotation>
+    <crs:YAxisRotation>0.0</crs:YAxisRotation>
+    <crs:ZAxisRotation>0.0</crs:ZAxisRotation>
+    <crs:ScaleDifference>0.0</crs:ScaleDifference>
+  </crs:Helmert>
+  <crs:Helmert>
+    <crs:Id>towgs_36</crs:Id>
+    <crs:Name>Proj4 defined toWGS84 params</crs:Name>
+    <crs:Version>2008-1-16T9:49</crs:Version>
+    <crs:Description>Handmade proj4 towgs84 definition (parsed from nad/epsg) used by crs with id: null</crs:Description>
+    <crs:SourceCRS>epsg:4281</crs:SourceCRS>
+    <crs:TargetCRS>epsg:4326</crs:TargetCRS>
+    <crs:XAxisTranslation>-275.722</crs:XAxisTranslation>
+    <crs:YAxisTranslation>94.7824</crs:YAxisTranslation>
+    <crs:ZAxisTranslation>340.894</crs:ZAxisTranslation>
+    <crs:XAxisRotation>-8.001</crs:XAxisRotation>
+    <crs:YAxisRotation>-4.42</crs:YAxisRotation>
+    <crs:ZAxisRotation>-11.821</crs:ZAxisRotation>
+    <crs:ScaleDifference>1.0</crs:ScaleDifference>
+  </crs:Helmert>
+  <crs:Helmert>
+    <crs:Id>towgs_368</crs:Id>
+    <crs:Name>Proj4 defined toWGS84 params</crs:Name>
+    <crs:Version>2008-1-16T9:49</crs:Version>
+    <crs:Description>Handmade proj4 towgs84 definition (parsed from nad/epsg) used by crs with id: null</crs:Description>
+    <crs:SourceCRS>epsg:4165</crs:SourceCRS>
+    <crs:TargetCRS>epsg:4326</crs:TargetCRS>
+    <crs:XAxisTranslation>-173.0</crs:XAxisTranslation>
+    <crs:YAxisTranslation>253.0</crs:YAxisTranslation>
+    <crs:ZAxisTranslation>27.0</crs:ZAxisTranslation>
+    <crs:XAxisRotation>0.0</crs:XAxisRotation>
+    <crs:YAxisRotation>0.0</crs:YAxisRotation>
+    <crs:ZAxisRotation>0.0</crs:ZAxisRotation>
+    <crs:ScaleDifference>0.0</crs:ScaleDifference>
+  </crs:Helmert>
+  <crs:Helmert>
+    <crs:Id>towgs_372</crs:Id>
+    <crs:Name>Proj4 defined toWGS84 params</crs:Name>
+    <crs:Version>2008-1-16T9:49</crs:Version>
+    <crs:Description>Handmade proj4 towgs84 definition (parsed from nad/epsg) used by crs with id: null</crs:Description>
+    <crs:SourceCRS>epsg:4715</crs:SourceCRS>
+    <crs:TargetCRS>epsg:4326</crs:TargetCRS>
+    <crs:XAxisTranslation>-104.0</crs:XAxisTranslation>
+    <crs:YAxisTranslation>-129.0</crs:YAxisTranslation>
+    <crs:ZAxisTranslation>239.0</crs:ZAxisTranslation>
+    <crs:XAxisRotation>0.0</crs:XAxisRotation>
+    <crs:YAxisRotation>0.0</crs:YAxisRotation>
+    <crs:ZAxisRotation>0.0</crs:ZAxisRotation>
+    <crs:ScaleDifference>0.0</crs:ScaleDifference>
+  </crs:Helmert>
+  <crs:Helmert>
+    <crs:Id>towgs_38</crs:Id>
+    <crs:Name>Proj4 defined toWGS84 params</crs:Name>
+    <crs:Version>2008-1-16T9:49</crs:Version>
+    <crs:Description>Handmade proj4 towgs84 definition (parsed from nad/epsg) used by crs with id: null</crs:Description>
+    <crs:SourceCRS>epsg:4142</crs:SourceCRS>
+    <crs:TargetCRS>epsg:4326</crs:TargetCRS>
+    <crs:XAxisTranslation>-125.0</crs:XAxisTranslation>
+    <crs:YAxisTranslation>53.0</crs:YAxisTranslation>
+    <crs:ZAxisTranslation>467.0</crs:ZAxisTranslation>
+    <crs:XAxisRotation>0.0</crs:XAxisRotation>
+    <crs:YAxisRotation>0.0</crs:YAxisRotation>
+    <crs:ZAxisRotation>0.0</crs:ZAxisRotation>
+    <crs:ScaleDifference>0.0</crs:ScaleDifference>
+  </crs:Helmert>
+  <crs:Helmert>
+    <crs:Id>towgs_384</crs:Id>
+    <crs:Name>Proj4 defined toWGS84 params</crs:Name>
+    <crs:Version>2008-1-16T9:49</crs:Version>
+    <crs:Description>Handmade proj4 towgs84 definition (parsed from nad/epsg) used by crs with id: null</crs:Description>
+    <crs:SourceCRS>epsg:4246</crs:SourceCRS>
+    <crs:TargetCRS>epsg:4326</crs:TargetCRS>
+    <crs:XAxisTranslation>-294.7</crs:XAxisTranslation>
+    <crs:YAxisTranslation>-200.1</crs:YAxisTranslation>
+    <crs:ZAxisTranslation>525.5</crs:ZAxisTranslation>
+    <crs:XAxisRotation>0.0</crs:XAxisRotation>
+    <crs:YAxisRotation>0.0</crs:YAxisRotation>
+    <crs:ZAxisRotation>0.0</crs:ZAxisRotation>
+    <crs:ScaleDifference>0.0</crs:ScaleDifference>
+  </crs:Helmert>
+  <crs:Helmert>
+    <crs:Id>towgs_390</crs:Id>
+    <crs:Name>Proj4 defined toWGS84 params</crs:Name>
+    <crs:Version>2008-1-16T9:49</crs:Version>
+    <crs:Description>Handmade proj4 towgs84 definition (parsed from nad/epsg) used by crs with id: null</crs:Description>
+    <crs:SourceCRS>epsg:4736</crs:SourceCRS>
+    <crs:TargetCRS>epsg:4326</crs:TargetCRS>
+    <crs:XAxisTranslation>260.0</crs:XAxisTranslation>
+    <crs:YAxisTranslation>12.0</crs:YAxisTranslation>
+    <crs:ZAxisTranslation>-147.0</crs:ZAxisTranslation>
+    <crs:XAxisRotation>0.0</crs:XAxisRotation>
+    <crs:YAxisRotation>0.0</crs:YAxisRotation>
+    <crs:ZAxisRotation>0.0</crs:ZAxisRotation>
+    <crs:ScaleDifference>0.0</crs:ScaleDifference>
+  </crs:Helmert>
+  <crs:Helmert>
+    <crs:Id>towgs_398</crs:Id>
+    <crs:Name>Proj4 defined toWGS84 params</crs:Name>
+    <crs:Version>2008-1-16T9:49</crs:Version>
+    <crs:Description>Handmade proj4 towgs84 definition (parsed from nad/epsg) used by crs with id: null</crs:Description>
+    <crs:SourceCRS>epsg:4318</crs:SourceCRS>
+    <crs:TargetCRS>epsg:4326</crs:TargetCRS>
+    <crs:XAxisTranslation>-3.2</crs:XAxisTranslation>
+    <crs:YAxisTranslation>-5.7</crs:YAxisTranslation>
+    <crs:ZAxisTranslation>2.8</crs:ZAxisTranslation>
+    <crs:XAxisRotation>0.0</crs:XAxisRotation>
+    <crs:YAxisRotation>0.0</crs:YAxisRotation>
+    <crs:ZAxisRotation>0.0</crs:ZAxisRotation>
+    <crs:ScaleDifference>0.0</crs:ScaleDifference>
+  </crs:Helmert>
+  <crs:Helmert>
+    <crs:Id>towgs_4</crs:Id>
+    <crs:Name>Proj4 defined toWGS84 params</crs:Name>
+    <crs:Version>2008-1-16T9:49</crs:Version>
+    <crs:Description>Handmade proj4 towgs84 definition (parsed from nad/epsg) used by crs with id: null</crs:Description>
+    <crs:SourceCRS>epsg:4133</crs:SourceCRS>
+    <crs:TargetCRS>epsg:4326</crs:TargetCRS>
+    <crs:XAxisTranslation>0.055</crs:XAxisTranslation>
+    <crs:YAxisTranslation>-0.541</crs:YAxisTranslation>
+    <crs:ZAxisTranslation>-0.185</crs:ZAxisTranslation>
+    <crs:XAxisRotation>0.0183</crs:XAxisRotation>
+    <crs:YAxisRotation>-3.0E-4</crs:YAxisRotation>
+    <crs:ZAxisRotation>-0.0070</crs:ZAxisRotation>
+    <crs:ScaleDifference>-0.014</crs:ScaleDifference>
+  </crs:Helmert>
+  <crs:Helmert>
+    <crs:Id>towgs_401</crs:Id>
+    <crs:Name>Proj4 defined toWGS84 params</crs:Name>
+    <crs:Version>2008-1-16T9:49</crs:Version>
+    <crs:Description>Handmade proj4 towgs84 definition (parsed from nad/epsg) used by crs with id: null</crs:Description>
+    <crs:SourceCRS>epsg:4675</crs:SourceCRS>
+    <crs:TargetCRS>epsg:4326</crs:TargetCRS>
+    <crs:XAxisTranslation>-100.0</crs:XAxisTranslation>
+    <crs:YAxisTranslation>-248.0</crs:YAxisTranslation>
+    <crs:ZAxisTranslation>259.0</crs:ZAxisTranslation>
+    <crs:XAxisRotation>0.0</crs:XAxisRotation>
+    <crs:YAxisRotation>0.0</crs:YAxisRotation>
+    <crs:ZAxisRotation>0.0</crs:ZAxisRotation>
+    <crs:ScaleDifference>0.0</crs:ScaleDifference>
+  </crs:Helmert>
+  <crs:Helmert>
+    <crs:Id>towgs_405</crs:Id>
+    <crs:Name>Proj4 defined toWGS84 params</crs:Name>
+    <crs:Version>2008-1-16T9:49</crs:Version>
+    <crs:Description>Handmade proj4 towgs84 definition (parsed from nad/epsg) used by crs with id: null</crs:Description>
+    <crs:SourceCRS>epsg:4620</crs:SourceCRS>
+    <crs:TargetCRS>epsg:4326</crs:TargetCRS>
+    <crs:XAxisTranslation>-106.0</crs:XAxisTranslation>
+    <crs:YAxisTranslation>-129.0</crs:YAxisTranslation>
+    <crs:ZAxisTranslation>165.0</crs:ZAxisTranslation>
+    <crs:XAxisRotation>0.0</crs:XAxisRotation>
+    <crs:YAxisRotation>0.0</crs:YAxisRotation>
+    <crs:ZAxisRotation>0.0</crs:ZAxisRotation>
+    <crs:ScaleDifference>0.0</crs:ScaleDifference>
+  </crs:Helmert>
+  <crs:Helmert>
+    <crs:Id>towgs_406</crs:Id>
+    <crs:Name>Proj4 defined toWGS84 params</crs:Name>
+    <crs:Version>2008-1-16T9:49</crs:Version>
+    <crs:Description>Handmade proj4 towgs84 definition (parsed from nad/epsg) used by crs with id: null</crs:Description>
+    <crs:SourceCRS>epsg:4723</crs:SourceCRS>
+    <crs:TargetCRS>epsg:4326</crs:TargetCRS>
+    <crs:XAxisTranslation>67.8</crs:XAxisTranslation>
+    <crs:YAxisTranslation>106.1</crs:YAxisTranslation>
+    <crs:ZAxisTranslation>138.8</crs:ZAxisTranslation>
+    <crs:XAxisRotation>0.0</crs:XAxisRotation>
+    <crs:YAxisRotation>0.0</crs:YAxisRotation>
+    <crs:ZAxisRotation>0.0</crs:ZAxisRotation>
+    <crs:ScaleDifference>0.0</crs:ScaleDifference>
+  </crs:Helmert>
+  <crs:Helmert>
+    <crs:Id>towgs_409</crs:Id>
+    <crs:Name>Proj4 defined toWGS84 params</crs:Name>
+    <crs:Version>2008-1-16T9:49</crs:Version>
+    <crs:Description>Handmade proj4 towgs84 definition (parsed from nad/epsg) used by crs with id: null</crs:Description>
+    <crs:SourceCRS>epsg:4256</crs:SourceCRS>
+    <crs:TargetCRS>epsg:4326</crs:TargetCRS>
+    <crs:XAxisTranslation>41.0</crs:XAxisTranslation>
+    <crs:YAxisTranslation>-220.0</crs:YAxisTranslation>
+    <crs:ZAxisTranslation>-134.0</crs:ZAxisTranslation>
+    <crs:XAxisRotation>0.0</crs:XAxisRotation>
+    <crs:YAxisRotation>0.0</crs:YAxisRotation>
+    <crs:ZAxisRotation>0.0</crs:ZAxisRotation>
+    <crs:ScaleDifference>0.0</crs:ScaleDifference>
+  </crs:Helmert>
+  <crs:Helmert>
+    <crs:Id>towgs_413</crs:Id>
+    <crs:Name>Proj4 defined toWGS84 params</crs:Name>
+    <crs:Version>2008-1-16T9:49</crs:Version>
+    <crs:Description>Handmade proj4 towgs84 definition (parsed from nad/epsg) used by crs with id: null</crs:Description>
+    <crs:SourceCRS>epsg:4260</crs:SourceCRS>
+    <crs:TargetCRS>epsg:4326</crs:TargetCRS>
+    <crs:XAxisTranslation>-70.9</crs:XAxisTranslation>
+    <crs:YAxisTranslation>-151.8</crs:YAxisTranslation>
+    <crs:ZAxisTranslation>-41.4</crs:ZAxisTranslation>
+    <crs:XAxisRotation>0.0</crs:XAxisRotation>
+    <crs:YAxisRotation>0.0</crs:YAxisRotation>
+    <crs:ZAxisRotation>0.0</crs:ZAxisRotation>
+    <crs:ScaleDifference>0.0</crs:ScaleDifference>
+  </crs:Helmert>
+  <crs:Helmert>
+    <crs:Id>towgs_421</crs:Id>
+    <crs:Name>Proj4 defined toWGS84 params</crs:Name>
+    <crs:Version>2008-1-16T9:49</crs:Version>
+    <crs:Description>Handmade proj4 towgs84 definition (parsed from nad/epsg) used by crs with id: null</crs:Description>
+    <crs:SourceCRS>epsg:4643</crs:SourceCRS>
+    <crs:TargetCRS>epsg:4326</crs:TargetCRS>
+    <crs:XAxisTranslation>-480.26</crs:XAxisTranslation>
+    <crs:YAxisTranslation>-438.32</crs:YAxisTranslation>
+    <crs:ZAxisTranslation>-643.429</crs:ZAxisTranslation>
+    <crs:XAxisRotation>16.3119</crs:XAxisRotation>
+    <crs:YAxisRotation>20.1721</crs:YAxisRotation>
+    <crs:ZAxisRotation>-4.0349</crs:ZAxisRotation>
+    <crs:ScaleDifference>-111.7</crs:ScaleDifference>
+  </crs:Helmert>
+  <crs:Helmert>
+    <crs:Id>towgs_427</crs:Id>
+    <crs:Name>Proj4 defined toWGS84 params</crs:Name>
+    <crs:Version>2008-1-16T9:49</crs:Version>
+    <crs:Description>Handmade proj4 towgs84 definition (parsed from nad/epsg) used by crs with id: null</crs:Description>
+    <crs:SourceCRS>epsg:4735</crs:SourceCRS>
+    <crs:TargetCRS>epsg:4326</crs:TargetCRS>
+    <crs:XAxisTranslation>647.0</crs:XAxisTranslation>
+    <crs:YAxisTranslation>1777.0</crs:YAxisTranslation>
+    <crs:ZAxisTranslation>-1124.0</crs:ZAxisTranslation>
+    <crs:XAxisRotation>0.0</crs:XAxisRotation>
+    <crs:YAxisRotation>0.0</crs:YAxisRotation>
+    <crs:ZAxisRotation>0.0</crs:ZAxisRotation>
+    <crs:ScaleDifference>0.0</crs:ScaleDifference>
+  </crs:Helmert>
+  <crs:Helmert>
+    <crs:Id>towgs_428</crs:Id>
+    <crs:Name>Proj4 defined toWGS84 params</crs:Name>
+    <crs:Version>2008-1-16T9:49</crs:Version>
+    <crs:Description>Handmade proj4 towgs84 definition (parsed from nad/epsg) used by crs with id: null</crs:Description>
+    <crs:SourceCRS>epsg:4672</crs:SourceCRS>
+    <crs:TargetCRS>epsg:4326</crs:TargetCRS>
+    <crs:XAxisTranslation>175.0</crs:XAxisTranslation>
+    <crs:YAxisTranslation>-38.0</crs:YAxisTranslation>
+    <crs:ZAxisTranslation>113.0</crs:ZAxisTranslation>
+    <crs:XAxisRotation>0.0</crs:XAxisRotation>
+    <crs:YAxisRotation>0.0</crs:YAxisRotation>
+    <crs:ZAxisRotation>0.0</crs:ZAxisRotation>
+    <crs:ScaleDifference>0.0</crs:ScaleDifference>
+  </crs:Helmert>
+  <crs:Helmert>
+    <crs:Id>towgs_430</crs:Id>
+    <crs:Name>Proj4 defined toWGS84 params</crs:Name>
+    <crs:Version>2008-1-16T9:49</crs:Version>
+    <crs:Description>Handmade proj4 towgs84 definition (parsed from nad/epsg) used by crs with id: null</crs:Description>
+    <crs:SourceCRS>epsg:4236</crs:SourceCRS>
+    <crs:TargetCRS>epsg:4326</crs:TargetCRS>
+    <crs:XAxisTranslation>-637.0</crs:XAxisTranslation>
+    <crs:YAxisTranslation>-549.0</crs:YAxisTranslation>
+    <crs:ZAxisTranslation>-203.0</crs:ZAxisTranslation>
+    <crs:XAxisRotation>0.0</crs:XAxisRotation>
+    <crs:YAxisRotation>0.0</crs:YAxisRotation>
+    <crs:ZAxisRotation>0.0</crs:ZAxisRotation>
+    <crs:ScaleDifference>0.0</crs:ScaleDifference>
+  </crs:Helmert>
+  <crs:Helmert>
+    <crs:Id>towgs_443</crs:Id>
+    <crs:Name>Proj4 defined toWGS84 params</crs:Name>
+    <crs:Version>2008-1-16T9:49</crs:Version>
+    <crs:Description>Handmade proj4 towgs84 definition (parsed from nad/epsg) used by crs with id: null</crs:Description>
+    <crs:SourceCRS>epsg:4205</crs:SourceCRS>
+    <crs:TargetCRS>epsg:4326</crs:TargetCRS>
+    <crs:XAxisTranslation>-43.0</crs:XAxisTranslation>
+    <crs:YAxisTranslation>-163.0</crs:YAxisTranslation>
+    <crs:ZAxisTranslation>45.0</crs:ZAxisTranslation>
+    <crs:XAxisRotation>0.0</crs:XAxisRotation>
+    <crs:YAxisRotation>0.0</crs:YAxisRotation>
+    <crs:ZAxisRotation>0.0</crs:ZAxisRotation>
+    <crs:ScaleDifference>0.0</crs:ScaleDifference>
+  </crs:Helmert>
+  <crs:Helmert>
+    <crs:Id>towgs_445</crs:Id>
+    <crs:Name>Proj4 defined toWGS84 params</crs:Name>
+    <crs:Version>2008-1-16T9:49</crs:Version>
+    <crs:Description>Handmade proj4 towgs84 definition (parsed from nad/epsg) used by crs with id: null</crs:Description>
+    <crs:SourceCRS>epsg:4740</crs:SourceCRS>
+    <crs:TargetCRS>epsg:4326</crs:TargetCRS>
+    <crs:XAxisTranslation>0.0</crs:XAxisTranslation>
+    <crs:YAxisTranslation>0.0</crs:YAxisTranslation>
+    <crs:ZAxisTranslation>1.5</crs:ZAxisTranslation>
+    <crs:XAxisRotation>-0.0</crs:XAxisRotation>
+    <crs:YAxisRotation>-0.0</crs:YAxisRotation>
+    <crs:ZAxisRotation>0.076</crs:ZAxisRotation>
+    <crs:ScaleDifference>0.0</crs:ScaleDifference>
+  </crs:Helmert>
+  <crs:Helmert>
+    <crs:Id>towgs_45</crs:Id>
+    <crs:Name>Proj4 defined toWGS84 params</crs:Name>
+    <crs:Version>2008-1-16T9:49</crs:Version>
+    <crs:Description>Handmade proj4 towgs84 definition (parsed from nad/epsg) used by crs with id: null</crs:Description>
+    <crs:SourceCRS>epsg:4218</crs:SourceCRS>
+    <crs:TargetCRS>epsg:4326</crs:TargetCRS>
+    <crs:XAxisTranslation>307.0</crs:XAxisTranslation>
+    <crs:YAxisTranslation>304.0</crs:YAxisTranslation>
+    <crs:ZAxisTranslation>-318.0</crs:ZAxisTranslation>
+    <crs:XAxisRotation>0.0</crs:XAxisRotation>
+    <crs:YAxisRotation>0.0</crs:YAxisRotation>
+    <crs:ZAxisRotation>0.0</crs:ZAxisRotation>
+    <crs:ScaleDifference>0.0</crs:ScaleDifference>
+  </crs:Helmert>
+  <crs:Helmert>
+    <crs:Id>towgs_450</crs:Id>
+    <crs:Name>Proj4 defined toWGS84 params</crs:Name>
+    <crs:Version>2008-1-16T9:49</crs:Version>
+    <crs:Description>Handmade proj4 towgs84 definition (parsed from nad/epsg) used by crs with id: null</crs:Description>
+    <crs:SourceCRS>epsg:4192</crs:SourceCRS>
+    <crs:TargetCRS>epsg:4326</crs:TargetCRS>
+    <crs:XAxisTranslation>-206.1</crs:XAxisTranslation>
+    <crs:YAxisTranslation>-174.7</crs:YAxisTranslation>
+    <crs:ZAxisTranslation>-87.7</crs:ZAxisTranslation>
+    <crs:XAxisRotation>0.0</crs:XAxisRotation>
+    <crs:YAxisRotation>0.0</crs:YAxisRotation>
+    <crs:ZAxisRotation>0.0</crs:ZAxisRotation>
+    <crs:ScaleDifference>0.0</crs:ScaleDifference>
+  </crs:Helmert>
+  <crs:Helmert>
+    <crs:Id>towgs_458</crs:Id>
+    <crs:Name>Proj4 defined toWGS84 params</crs:Name>
+    <crs:Version>2008-1-16T9:49</crs:Version>
+    <crs:Description>Handmade proj4 towgs84 definition (parsed from nad/epsg) used by crs with id: null</crs:Description>
+    <crs:SourceCRS>epsg:4707</crs:SourceCRS>
+    <crs:TargetCRS>epsg:4326</crs:TargetCRS>
+    <crs:XAxisTranslation>114.0</crs:XAxisTranslation>
+    <crs:YAxisTranslation>-116.0</crs:YAxisTranslation>
+    <crs:ZAxisTranslation>-333.0</crs:ZAxisTranslation>
+    <crs:XAxisRotation>0.0</crs:XAxisRotation>
+    <crs:YAxisRotation>0.0</crs:YAxisRotation>
+    <crs:ZAxisRotation>0.0</crs:ZAxisRotation>
+    <crs:ScaleDifference>0.0</crs:ScaleDifference>
+  </crs:Helmert>
+  <crs:Helmert>
+    <crs:Id>towgs_46</crs:Id>
+    <crs:Name>Proj4 defined toWGS84 params</crs:Name>
+    <crs:Version>2008-1-16T9:49</crs:Version>
+    <crs:Description>Handmade proj4 towgs84 definition (parsed from nad/epsg) used by crs with id: null</crs:Description>
+    <crs:SourceCRS>epsg:4811</crs:SourceCRS>
+    <crs:TargetCRS>epsg:4326</crs:TargetCRS>
+    <crs:XAxisTranslation>-73.0</crs:XAxisTranslation>
+    <crs:YAxisTranslation>-247.0</crs:YAxisTranslation>
+    <crs:ZAxisTranslation>227.0</crs:ZAxisTranslation>
+    <crs:XAxisRotation>0.0</crs:XAxisRotation>
+    <crs:YAxisRotation>0.0</crs:YAxisRotation>
+    <crs:ZAxisRotation>0.0</crs:ZAxisRotation>
+    <crs:ScaleDifference>0.0</crs:ScaleDifference>
+  </crs:Helmert>
+  <crs:Helmert>
+    <crs:Id>towgs_466</crs:Id>
+    <crs:Name>Proj4 defined toWGS84 params</crs:Name>
+    <crs:Version>2008-1-16T9:49</crs:Version>
+    <crs:Description>Handmade proj4 towgs84 definition (parsed from nad/epsg) used by crs with id: null</crs:Description>
+    <crs:SourceCRS>epsg:4621</crs:SourceCRS>
+    <crs:TargetCRS>epsg:4326</crs:TargetCRS>
+    <crs:XAxisTranslation>137.0</crs:XAxisTranslation>
+    <crs:YAxisTranslation>248.0</crs:YAxisTranslation>
+    <crs:ZAxisTranslation>-430.0</crs:ZAxisTranslation>
+    <crs:XAxisRotation>0.0</crs:XAxisRotation>
+    <crs:YAxisRotation>0.0</crs:YAxisRotation>
+    <crs:ZAxisRotation>0.0</crs:ZAxisRotation>
+    <crs:ScaleDifference>0.0</crs:ScaleDifference>
+  </crs:Helmert>
+  <crs:Helmert>
+    <crs:Id>towgs_479</crs:Id>
+    <crs:Name>Proj4 defined toWGS84 params</crs:Name>
+    <crs:Version>2008-1-16T9:49</crs:Version>
+    <crs:Description>Handmade proj4 towgs84 definition (parsed from nad/epsg) used by crs with id: null</crs:Description>
+    <crs:SourceCRS>epsg:4673</crs:SourceCRS>
+    <crs:TargetCRS>epsg:4326</crs:TargetCRS>
+    <crs:XAxisTranslation>174.05</crs:XAxisTranslation>
+    <crs:YAxisTranslation>-25.49</crs:YAxisTranslation>
+    <crs:ZAxisTranslation>112.57</crs:ZAxisTranslation>
+    <crs:XAxisRotation>-0.0</crs:XAxisRotation>
+    <crs:YAxisRotation>-0.0</crs:YAxisRotation>
+    <crs:ZAxisRotation>0.554</crs:ZAxisRotation>
+    <crs:ScaleDifference>0.2263</crs:ScaleDifference>
+  </crs:Helmert>
+  <crs:Helmert>
+    <crs:Id>towgs_487</crs:Id>
+    <crs:Name>Proj4 defined toWGS84 params</crs:Name>
+    <crs:Version>2008-1-16T9:49</crs:Version>
+    <crs:Description>Handmade proj4 towgs84 definition (parsed from nad/epsg) used by crs with id: null</crs:Description>
+    <crs:SourceCRS>epsg:4153</crs:SourceCRS>
+    <crs:TargetCRS>epsg:4326</crs:TargetCRS>
+    <crs:XAxisTranslation>-133.63</crs:XAxisTranslation>
+    <crs:YAxisTranslation>-157.5</crs:YAxisTranslation>
+    <crs:ZAxisTranslation>-158.62</crs:ZAxisTranslation>
+    <crs:XAxisRotation>0.0</crs:XAxisRotation>
+    <crs:YAxisRotation>0.0</crs:YAxisRotation>
+    <crs:ZAxisRotation>0.0</crs:ZAxisRotation>
+    <crs:ScaleDifference>0.0</crs:ScaleDifference>
+  </crs:Helmert>
+  <crs:Helmert>
+    <crs:Id>towgs_496</crs:Id>
+    <crs:Name>Proj4 defined toWGS84 params</crs:Name>
+    <crs:Version>2008-1-16T9:49</crs:Version>
+    <crs:Description>Handmade proj4 towgs84 definition (parsed from nad/epsg) used by crs with id: null</crs:Description>
+    <crs:SourceCRS>epsg:4692</crs:SourceCRS>
+    <crs:TargetCRS>epsg:4326</crs:TargetCRS>
+    <crs:XAxisTranslation>217.037</crs:XAxisTranslation>
+    <crs:YAxisTranslation>86.959</crs:YAxisTranslation>
+    <crs:ZAxisTranslation>23.956</crs:ZAxisTranslation>
+    <crs:XAxisRotation>0.0</crs:XAxisRotation>
+    <crs:YAxisRotation>0.0</crs:YAxisRotation>
+    <crs:ZAxisRotation>0.0</crs:ZAxisRotation>
+    <crs:ScaleDifference>0.0</crs:ScaleDifference>
+  </crs:Helmert>
+  <crs:Helmert>
+    <crs:Id>towgs_499</crs:Id>
+    <crs:Name>Proj4 defined toWGS84 params</crs:Name>
+    <crs:Version>2008-1-16T9:49</crs:Version>
+    <crs:Description>Handmade proj4 towgs84 definition (parsed from nad/epsg) used by crs with id: null</crs:Description>
+    <crs:SourceCRS>epsg:4141</crs:SourceCRS>
+    <crs:TargetCRS>epsg:4326</crs:TargetCRS>
+    <crs:XAxisTranslation>-48.0</crs:XAxisTranslation>
+    <crs:YAxisTranslation>55.0</crs:YAxisTranslation>
+    <crs:ZAxisTranslation>52.0</crs:ZAxisTranslation>
+    <crs:XAxisRotation>0.0</crs:XAxisRotation>
+    <crs:YAxisRotation>0.0</crs:YAxisRotation>
+    <crs:ZAxisRotation>0.0</crs:ZAxisRotation>
+    <crs:ScaleDifference>0.0</crs:ScaleDifference>
+  </crs:Helmert>
+  <crs:Helmert>
+    <crs:Id>towgs_505</crs:Id>
+    <crs:Name>Proj4 defined toWGS84 params</crs:Name>
+    <crs:Version>2008-1-16T9:49</crs:Version>
+    <crs:Description>Handmade proj4 towgs84 definition (parsed from nad/epsg) used by crs with id: null</crs:Description>
+    <crs:SourceCRS>epsg:4309</crs:SourceCRS>
+    <crs:TargetCRS>epsg:4326</crs:TargetCRS>
+    <crs:XAxisTranslation>-155.0</crs:XAxisTranslation>
+    <crs:YAxisTranslation>171.0</crs:YAxisTranslation>
+    <crs:ZAxisTranslation>37.0</crs:ZAxisTranslation>
+    <crs:XAxisRotation>0.0</crs:XAxisRotation>
+    <crs:YAxisRotation>0.0</crs:YAxisRotation>
+    <crs:ZAxisRotation>0.0</crs:ZAxisRotation>
+    <crs:ScaleDifference>0.0</crs:ScaleDifference>
+  </crs:Helmert>
+  <crs:Helmert>
+    <crs:Id>towgs_51</crs:Id>
+    <crs:Name>Proj4 defined toWGS84 params</crs:Name>
+    <crs:Version>2008-1-16T9:49</crs:Version>
+    <crs:Description>Handmade proj4 towgs84 definition (parsed from nad/epsg) used by crs with id: null</crs:Description>
+    <crs:SourceCRS>epsg:4660</crs:SourceCRS>
+    <crs:TargetCRS>epsg:4326</crs:TargetCRS>
+    <crs:XAxisTranslation>982.609</crs:XAxisTranslation>
+    <crs:YAxisTranslation>552.753</crs:YAxisTranslation>
+    <crs:ZAxisTranslation>-540.873</crs:ZAxisTranslation>
+    <crs:XAxisRotation>32.3934</crs:XAxisRotation>
+    <crs:YAxisRotation>-153.257</crs:YAxisRotation>
+    <crs:ZAxisRotation>-96.2266</crs:ZAxisRotation>
+    <crs:ScaleDifference>16.805</crs:ScaleDifference>
+  </crs:Helmert>
+  <crs:Helmert>
+    <crs:Id>towgs_53</crs:Id>
+    <crs:Name>Proj4 defined toWGS84 params</crs:Name>
+    <crs:Version>2008-1-16T9:49</crs:Version>
+    <crs:Description>Handmade proj4 towgs84 definition (parsed from nad/epsg) used by crs with id: null</crs:Description>
+    <crs:SourceCRS>epsg:4273</crs:SourceCRS>
+    <crs:TargetCRS>epsg:4326</crs:TargetCRS>
+    <crs:XAxisTranslation>278.3</crs:XAxisTranslation>
+    <crs:YAxisTranslation>93.0</crs:YAxisTranslation>
+    <crs:ZAxisTranslation>474.5</crs:ZAxisTranslation>
+    <crs:XAxisRotation>7.889</crs:XAxisRotation>
+    <crs:YAxisRotation>0.05</crs:YAxisRotation>
+    <crs:ZAxisRotation>-6.61</crs:ZAxisRotation>
+    <crs:ScaleDifference>6.21</crs:ScaleDifference>
+  </crs:Helmert>
+  <crs:Helmert>
+    <crs:Id>towgs_532</crs:Id>
+    <crs:Name>Proj4 defined toWGS84 params</crs:Name>
+    <crs:Version>2008-1-16T9:49</crs:Version>
+    <crs:Description>Handmade proj4 towgs84 definition (parsed from nad/epsg) used by crs with id: null</crs:Description>
+    <crs:SourceCRS>epsg:4262</crs:SourceCRS>
+    <crs:TargetCRS>epsg:4326</crs:TargetCRS>
+    <crs:XAxisTranslation>639.0</crs:XAxisTranslation>
+    <crs:YAxisTranslation>405.0</crs:YAxisTranslation>
+    <crs:ZAxisTranslation>60.0</crs:ZAxisTranslation>
+    <crs:XAxisRotation>0.0</crs:XAxisRotation>
+    <crs:YAxisRotation>0.0</crs:YAxisRotation>
+    <crs:ZAxisRotation>0.0</crs:ZAxisRotation>
+    <crs:ScaleDifference>0.0</crs:ScaleDifference>
+  </crs:Helmert>
+  <crs:Helmert>
+    <crs:Id>towgs_533</crs:Id>
+    <crs:Name>Proj4 defined toWGS84 params</crs:Name>
+    <crs:Version>2008-1-16T9:49</crs:Version>
+    <crs:Description>Handmade proj4 towgs84 definition (parsed from nad/epsg) used by crs with id: null</crs:Description>
+    <crs:SourceCRS>epsg:4688</crs:SourceCRS>
+    <crs:TargetCRS>epsg:4326</crs:TargetCRS>
+    <crs:XAxisTranslation>347.103</crs:XAxisTranslation>
+    <crs:YAxisTranslation>1078.12</crs:YAxisTranslation>
+    <crs:ZAxisTranslation>2623.92</crs:ZAxisTranslation>
+    <crs:XAxisRotation>-33.8875</crs:XAxisRotation>
+    <crs:YAxisRotation>70.6773</crs:YAxisRotation>
+    <crs:ZAxisRotation>-9.3943</crs:ZAxisRotation>
+    <crs:ScaleDifference>186.074</crs:ScaleDifference>
+  </crs:Helmert>
+  <crs:Helmert>
+    <crs:Id>towgs_534</crs:Id>
+    <crs:Name>Proj4 defined toWGS84 params</crs:Name>
+    <crs:Version>2008-1-16T9:49</crs:Version>
+    <crs:Description>Handmade proj4 towgs84 definition (parsed from nad/epsg) used by crs with id: null</crs:Description>
+    <crs:SourceCRS>epsg:4708</crs:SourceCRS>
+    <crs:TargetCRS>epsg:4326</crs:TargetCRS>
+    <crs:XAxisTranslation>-491.0</crs:XAxisTranslation>
+    <crs:YAxisTranslation>-22.0</crs:YAxisTranslation>
+    <crs:ZAxisTranslation>435.0</crs:ZAxisTranslation>
+    <crs:XAxisRotation>0.0</crs:XAxisRotation>
+    <crs:YAxisRotation>0.0</crs:YAxisRotation>
+    <crs:ZAxisRotation>0.0</crs:ZAxisRotation>
+    <crs:ScaleDifference>0.0</crs:ScaleDifference>
+  </crs:Helmert>
+  <crs:Helmert>
+    <crs:Id>towgs_537</crs:Id>
+    <crs:Name>Proj4 defined toWGS84 params</crs:Name>
+    <crs:Version>2008-1-16T9:49</crs:Version>
+    <crs:Description>Handmade proj4 towgs84 definition (parsed from nad/epsg) used by crs with id: null</crs:Description>
+    <crs:SourceCRS>epsg:4657</crs:SourceCRS>
+    <crs:TargetCRS>epsg:4326</crs:TargetCRS>
+    <crs:XAxisTranslation>-28.0</crs:XAxisTranslation>
+    <crs:YAxisTranslation>199.0</crs:YAxisTranslation>
+    <crs:ZAxisTranslation>5.0</crs:ZAxisTranslation>
+    <crs:XAxisRotation>0.0</crs:XAxisRotation>
+    <crs:YAxisRotation>0.0</crs:YAxisRotation>
+    <crs:ZAxisRotation>0.0</crs:ZAxisRotation>
+    <crs:ScaleDifference>0.0</crs:ScaleDifference>
+  </crs:Helmert>
+  <crs:Helmert>
+    <crs:Id>towgs_548</crs:Id>
+    <crs:Name>Proj4 defined toWGS84 params</crs:Name>
+    <crs:Version>2008-1-16T9:49</crs:Version>
+    <crs:Description>Handmade proj4 towgs84 definition (parsed from nad/epsg) used by crs with id: null</crs:Description>
+    <crs:SourceCRS>epsg:4693</crs:SourceCRS>
+    <crs:TargetCRS>epsg:4326</crs:TargetCRS>
+    <crs:XAxisTranslation>0.0</crs:XAxisTranslation>
+    <crs:YAxisTranslation>-0.15</crs:YAxisTranslation>
+    <crs:ZAxisTranslation>0.68</crs:ZAxisTranslation>
+    <crs:XAxisRotation>0.0</crs:XAxisRotation>
+    <crs:YAxisRotation>0.0</crs:YAxisRotation>
+    <crs:ZAxisRotation>0.0</crs:ZAxisRotation>
+    <crs:ScaleDifference>0.0</crs:ScaleDifference>
+  </crs:Helmert>
+  <crs:Helmert>
+    <crs:Id>towgs_55</crs:Id>
+    <crs:Name>Proj4 defined toWGS84 params</crs:Name>
+    <crs:Version>2008-1-16T9:49</crs:Version>
+    <crs:Description>Handmade proj4 towgs84 definition (parsed from nad/epsg) used by crs with id: null</crs:Description>
+    <crs:SourceCRS>epsg:4604</crs:SourceCRS>
+    <crs:TargetCRS>epsg:4326</crs:TargetCRS>
+    <crs:XAxisTranslation>174.0</crs:XAxisTranslation>
+    <crs:YAxisTranslation>359.0</crs:YAxisTranslation>
+    <crs:ZAxisTranslation>365.0</crs:ZAxisTranslation>
+    <crs:XAxisRotation>0.0</crs:XAxisRotation>
+    <crs:YAxisRotation>0.0</crs:YAxisRotation>
+    <crs:ZAxisRotation>0.0</crs:ZAxisRotation>
+    <crs:ScaleDifference>0.0</crs:ScaleDifference>
+  </crs:Helmert>
+  <crs:Helmert>
+    <crs:Id>towgs_554</crs:Id>
+    <crs:Name>Proj4 defined toWGS84 params</crs:Name>
+    <crs:Version>2008-1-16T9:49</crs:Version>
+    <crs:Description>Handmade proj4 towgs84 definition (parsed from nad/epsg) used by crs with id: null</crs:Description>
+    <crs:SourceCRS>epsg:4719</crs:SourceCRS>
+    <crs:TargetCRS>epsg:4326</crs:TargetCRS>
+    <crs:XAxisTranslation>211.0</crs:XAxisTranslation>
+    <crs:YAxisTranslation>147.0</crs:YAxisTranslation>
+    <crs:ZAxisTranslation>111.0</crs:ZAxisTranslation>
+    <crs:XAxisRotation>0.0</crs:XAxisRotation>
+    <crs:YAxisRotation>0.0</crs:YAxisRotation>
+    <crs:ZAxisRotation>0.0</crs:ZAxisRotation>
+    <crs:ScaleDifference>0.0</crs:ScaleDifference>
+  </crs:Helmert>
+  <crs:Helmert>
+    <crs:Id>epsg:1672</crs:Id>
+    <crs:Name>Proj4 defined toWGS84 params</crs:Name>
+    <crs:Version>2008-1-16T9:49</crs:Version>
+    <crs:Description>Handmade proj4 towgs84 definition (parsed from nad/epsg) used by crs with id: null</crs:Description>
+    <crs:SourceCRS>epsg:4289</crs:SourceCRS>
+    <crs:TargetCRS>epsg:4326</crs:TargetCRS>
+    <crs:XAxisTranslation>565.04</crs:XAxisTranslation>
+    <crs:YAxisTranslation>49.91</crs:YAxisTranslation>
+    <crs:ZAxisTranslation>465.84</crs:ZAxisTranslation>
+    <crs:XAxisRotation>-0.40941295127179994</crs:XAxisRotation>
+    <crs:YAxisRotation>0.3608190255680464</crs:YAxisRotation>
+    <crs:ZAxisRotation>-1.8684910003505757</crs:ZAxisRotation>
+    <crs:ScaleDifference>4.0772</crs:ScaleDifference>
+  </crs:Helmert>
+  <crs:Helmert>
+    <crs:Id>towgs_565</crs:Id>
+    <crs:Name>Proj4 defined toWGS84 params</crs:Name>
+    <crs:Version>2008-1-16T9:49</crs:Version>
+    <crs:Description>Handmade proj4 towgs84 definition (parsed from nad/epsg) used by crs with id: null</crs:Description>
+    <crs:SourceCRS>epsg:4611</crs:SourceCRS>
+    <crs:TargetCRS>epsg:4326</crs:TargetCRS>
+    <crs:XAxisTranslation>-162.619</crs:XAxisTranslation>
+    <crs:YAxisTranslation>-276.959</crs:YAxisTranslation>
+    <crs:ZAxisTranslation>-161.764</crs:ZAxisTranslation>
+    <crs:XAxisRotation>0.067753</crs:XAxisRotation>
+    <crs:YAxisRotation>-2.24365</crs:YAxisRotation>
+    <crs:ZAxisRotation>-1.15883</crs:ZAxisRotation>
+    <crs:ScaleDifference>-1.09425</crs:ScaleDifference>
+  </crs:Helmert>
+  <crs:Helmert>
+    <crs:Id>towgs_568</crs:Id>
+    <crs:Name>Proj4 defined toWGS84 params</crs:Name>
+    <crs:Version>2008-1-16T9:49</crs:Version>
+    <crs:Description>Handmade proj4 towgs84 definition (parsed from nad/epsg) used by crs with id: null</crs:Description>
+    <crs:SourceCRS>epsg:4195</crs:SourceCRS>
+    <crs:TargetCRS>epsg:4326</crs:TargetCRS>
+    <crs:XAxisTranslation>105.0</crs:XAxisTranslation>
+    <crs:YAxisTranslation>326.0</crs:YAxisTranslation>
+    <crs:ZAxisTranslation>-102.5</crs:ZAxisTranslation>
+    <crs:XAxisRotation>0.0</crs:XAxisRotation>
+    <crs:YAxisRotation>0.0</crs:YAxisRotation>
+    <crs:ZAxisRotation>0.814</crs:ZAxisRotation>
+    <crs:ScaleDifference>-0.6</crs:ScaleDifference>
+  </crs:Helmert>
+  <crs:Helmert>
+    <crs:Id>towgs_599</crs:Id>
+    <crs:Name>Proj4 defined toWGS84 params</crs:Name>
+    <crs:Version>2008-1-16T9:49</crs:Version>
+    <crs:Description>Handmade proj4 towgs84 definition (parsed from nad/epsg) used by crs with id: null</crs:Description>
+    <crs:SourceCRS>epsg:4730</crs:SourceCRS>
+    <crs:TargetCRS>epsg:4326</crs:TargetCRS>
+    <crs:XAxisTranslation>170.0</crs:XAxisTranslation>
+    <crs:YAxisTranslation>42.0</crs:YAxisTranslation>
+    <crs:ZAxisTranslation>84.0</crs:ZAxisTranslation>
+    <crs:XAxisRotation>0.0</crs:XAxisRotation>
+    <crs:YAxisRotation>0.0</crs:YAxisRotation>
+    <crs:ZAxisRotation>0.0</crs:ZAxisRotation>
+    <crs:ScaleDifference>0.0</crs:ScaleDifference>
+  </crs:Helmert>
+  <crs:Helmert>
+    <crs:Id>towgs_6</crs:Id>
+    <crs:Name>Proj4 defined toWGS84 params</crs:Name>
+    <crs:Version>2008-1-16T9:49</crs:Version>
+    <crs:Description>Handmade proj4 towgs84 definition (parsed from nad/epsg) used by crs with id: null</crs:Description>
+    <crs:SourceCRS>epsg:4139</crs:SourceCRS>
+    <crs:TargetCRS>epsg:4326</crs:TargetCRS>
+    <crs:XAxisTranslation>11.0</crs:XAxisTranslation>
+    <crs:YAxisTranslation>72.0</crs:YAxisTranslation>
+    <crs:ZAxisTranslation>-101.0</crs:ZAxisTranslation>
+    <crs:XAxisRotation>0.0</crs:XAxisRotation>
+    <crs:YAxisRotation>0.0</crs:YAxisRotation>
+    <crs:ZAxisRotation>0.0</crs:ZAxisRotation>
+    <crs:ScaleDifference>0.0</crs:ScaleDifference>
+  </crs:Helmert>
+  <crs:Helmert>
+    <crs:Id>towgs_60</crs:Id>
+    <crs:Name>Proj4 defined toWGS84 params</crs:Name>
+    <crs:Version>2008-1-16T9:49</crs:Version>
+    <crs:Description>Handmade proj4 towgs84 definition (parsed from nad/epsg) used by crs with id: null</crs:Description>
+    <crs:SourceCRS>epsg:4728</crs:SourceCRS>
+    <crs:TargetCRS>epsg:4326</crs:TargetCRS>
+    <crs:XAxisTranslation>-307.0</crs:XAxisTranslation>
+    <crs:YAxisTranslation>-92.0</crs:YAxisTranslation>
+    <crs:ZAxisTranslation>127.0</crs:ZAxisTranslation>
+    <crs:XAxisRotation>0.0</crs:XAxisRotation>
+    <crs:YAxisRotation>0.0</crs:YAxisRotation>
+    <crs:ZAxisRotation>0.0</crs:ZAxisRotation>
+    <crs:ScaleDifference>0.0</crs:ScaleDifference>
+  </crs:Helmert>
+  <crs:Helmert>
+    <crs:Id>towgs_601</crs:Id>
+    <crs:Name>Proj4 defined toWGS84 params</crs:Name>
+    <crs:Version>2008-1-16T9:49</crs:Version>
+    <crs:Description>Handmade proj4 towgs84 definition (parsed from nad/epsg) used by crs with id: null</crs:Description>
+    <crs:SourceCRS>epsg:4732</crs:SourceCRS>
+    <crs:TargetCRS>epsg:4326</crs:TargetCRS>
+    <crs:XAxisTranslation>102.0</crs:XAxisTranslation>
+    <crs:YAxisTranslation>52.0</crs:YAxisTranslation>
+    <crs:ZAxisTranslation>-38.0</crs:ZAxisTranslation>
+    <crs:XAxisRotation>0.0</crs:XAxisRotation>
+    <crs:YAxisRotation>0.0</crs:YAxisRotation>
+    <crs:ZAxisRotation>0.0</crs:ZAxisRotation>
+    <crs:ScaleDifference>0.0</crs:ScaleDifference>
+  </crs:Helmert>
+  <crs:Helmert>
+    <crs:Id>towgs_62</crs:Id>
+    <crs:Name>Proj4 defined toWGS84 params</crs:Name>
+    <crs:Version>2008-1-16T9:49</crs:Version>
+    <crs:Description>Handmade proj4 towgs84 definition (parsed from nad/epsg) used by crs with id: null</crs:Description>
+    <crs:SourceCRS>epsg:4213</crs:SourceCRS>
+    <crs:TargetCRS>epsg:4326</crs:TargetCRS>
+    <crs:XAxisTranslation>-106.0</crs:XAxisTranslation>
+    <crs:YAxisTranslation>-87.0</crs:YAxisTranslation>
+    <crs:ZAxisTranslation>188.0</crs:ZAxisTranslation>
+    <crs:XAxisRotation>0.0</crs:XAxisRotation>
+    <crs:YAxisRotation>0.0</crs:YAxisRotation>
+    <crs:ZAxisRotation>0.0</crs:ZAxisRotation>
+    <crs:ScaleDifference>0.0</crs:ScaleDifference>
+  </crs:Helmert>
+  <crs:Helmert>
+    <crs:Id>towgs_63</crs:Id>
+    <crs:Name>Proj4 defined toWGS84 params</crs:Name>
+    <crs:Version>2008-1-16T9:49</crs:Version>
+    <crs:Description>Handmade proj4 towgs84 definition (parsed from nad/epsg) used by crs with id: null</crs:Description>
+    <crs:SourceCRS>epsg:4615</crs:SourceCRS>
+    <crs:TargetCRS>epsg:4326</crs:TargetCRS>
+    <crs:XAxisTranslation>-499.0</crs:XAxisTranslation>
+    <crs:YAxisTranslation>-249.0</crs:YAxisTranslation>
+    <crs:ZAxisTranslation>314.0</crs:ZAxisTranslation>
+    <crs:XAxisRotation>0.0</crs:XAxisRotation>
+    <crs:YAxisRotation>0.0</crs:YAxisRotation>
+    <crs:ZAxisRotation>0.0</crs:ZAxisRotation>
+    <crs:ScaleDifference>0.0</crs:ScaleDifference>
+  </crs:Helmert>
+  <crs:Helmert>
+    <crs:Id>towgs_630</crs:Id>
+    <crs:Name>Proj4 defined toWGS84 params</crs:Name>
+    <crs:Version>2008-1-16T9:49</crs:Version>
+    <crs:Description>Handmade proj4 towgs84 definition (parsed from nad/epsg) used by crs with id: null</crs:Description>
+    <crs:SourceCRS>epsg:4724</crs:SourceCRS>
+    <crs:TargetCRS>epsg:4326</crs:TargetCRS>
+    <crs:XAxisTranslation>208.0</crs:XAxisTranslation>
+    <crs:YAxisTranslation>-435.0</crs:YAxisTranslation>
+    <crs:ZAxisTranslation>-229.0</crs:ZAxisTranslation>
+    <crs:XAxisRotation>0.0</crs:XAxisRotation>
+    <crs:YAxisRotation>0.0</crs:YAxisRotation>
+    <crs:ZAxisRotation>0.0</crs:ZAxisRotation>
+    <crs:ScaleDifference>0.0</crs:ScaleDifference>
+  </crs:Helmert>
+  <crs:Helmert>
+    <crs:Id>towgs_643</crs:Id>
+    <crs:Name>Proj4 defined toWGS84 params</crs:Name>
+    <crs:Version>2008-1-16T9:49</crs:Version>
+    <crs:Description>Handmade proj4 towgs84 definition (parsed from nad/epsg) used by crs with id: null</crs:Description>
+    <crs:SourceCRS>epsg:4216</crs:SourceCRS>
+    <crs:TargetCRS>epsg:4326</crs:TargetCRS>
+    <crs:XAxisTranslation>-73.0</crs:XAxisTranslation>
+    <crs:YAxisTranslation>213.0</crs:YAxisTranslation>
+    <crs:ZAxisTranslation>296.0</crs:ZAxisTranslation>
+    <crs:XAxisRotation>0.0</crs:XAxisRotation>
+    <crs:YAxisRotation>0.0</crs:YAxisRotation>
+    <crs:ZAxisRotation>0.0</crs:ZAxisRotation>
+    <crs:ScaleDifference>0.0</crs:ScaleDifference>
+  </crs:Helmert>
+  <crs:Helmert>
+    <crs:Id>towgs_665</crs:Id>
+    <crs:Name>Proj4 defined toWGS84 params</crs:Name>
+    <crs:Version>2008-1-16T9:49</crs:Version>
+    <crs:Description>Handmade proj4 towgs84 definition (parsed from nad/epsg) used by crs with id: null</crs:Description>
+    <crs:SourceCRS>epsg:4709</crs:SourceCRS>
+    <crs:TargetCRS>epsg:4326</crs:TargetCRS>
+    <crs:XAxisTranslation>145.0</crs:XAxisTranslation>
+    <crs:YAxisTranslation>75.0</crs:YAxisTranslation>
+    <crs:ZAxisTranslation>-272.0</crs:ZAxisTranslation>
+    <crs:XAxisRotation>0.0</crs:XAxisRotation>
+    <crs:YAxisRotation>0.0</crs:YAxisRotation>
+    <crs:ZAxisRotation>0.0</crs:ZAxisRotation>
+    <crs:ScaleDifference>0.0</crs:ScaleDifference>
+  </crs:Helmert>
+  <crs:Helmert>
+    <crs:Id>towgs_672</crs:Id>
+    <crs:Name>Proj4 defined toWGS84 params</crs:Name>
+    <crs:Version>2008-1-16T9:49</crs:Version>
+    <crs:Description>Handmade proj4 towgs84 definition (parsed from nad/epsg) used by crs with id: null</crs:Description>
+    <crs:SourceCRS>epsg:4632</crs:SourceCRS>
+    <crs:TargetCRS>epsg:4326</crs:TargetCRS>
+    <crs:XAxisTranslation>-382.0</crs:XAxisTranslation>
+    <crs:YAxisTranslation>-59.0</crs:YAxisTranslation>
+    <crs:ZAxisTranslation>-262.0</crs:ZAxisTranslation>
+    <crs:XAxisRotation>0.0</crs:XAxisRotation>
+    <crs:YAxisRotation>0.0</crs:YAxisRotation>
+    <crs:ZAxisRotation>0.0</crs:ZAxisRotation>
+    <crs:ScaleDifference>0.0</crs:ScaleDifference>
+  </crs:Helmert>
+  <crs:Helmert>
+    <crs:Id>towgs_673</crs:Id>
+    <crs:Name>Proj4 defined toWGS84 params</crs:Name>
+    <crs:Version>2008-1-16T9:49</crs:Version>
+    <crs:Description>Handmade proj4 towgs84 definition (parsed from nad/epsg) used by crs with id: null</crs:Description>
+    <crs:SourceCRS>epsg:4725</crs:SourceCRS>
+    <crs:TargetCRS>epsg:4326</crs:TargetCRS>
+    <crs:XAxisTranslation>189.0</crs:XAxisTranslation>
+    <crs:YAxisTranslation>-79.0</crs:YAxisTranslation>
+    <crs:ZAxisTranslation>-202.0</crs:ZAxisTranslation>
+    <crs:XAxisRotation>0.0</crs:XAxisRotation>
+    <crs:YAxisRotation>0.0</crs:YAxisRotation>
+    <crs:ZAxisRotation>0.0</crs:ZAxisRotation>
+    <crs:ScaleDifference>0.0</crs:ScaleDifference>
+  </crs:Helmert>
+  <crs:Helmert>
+    <crs:Id>towgs_68</crs:Id>
+    <crs:Name>Proj4 defined toWGS84 params</crs:Name>
+    <crs:Version>2008-1-16T9:49</crs:Version>
+    <crs:Description>Handmade proj4 towgs84 definition (parsed from nad/epsg) used by crs with id: null</crs:Description>
+    <crs:SourceCRS>epsg:4311</crs:SourceCRS>
+    <crs:TargetCRS>epsg:4326</crs:TargetCRS>
+    <crs:XAxisTranslation>-265.0</crs:XAxisTranslation>
+    <crs:YAxisTranslation>120.0</crs:YAxisTranslation>
+    <crs:ZAxisTranslation>-358.0</crs:ZAxisTranslation>
+    <crs:XAxisRotation>0.0</crs:XAxisRotation>
+    <crs:YAxisRotation>0.0</crs:YAxisRotation>
+    <crs:ZAxisRotation>0.0</crs:ZAxisRotation>
+    <crs:ScaleDifference>0.0</crs:ScaleDifference>
+  </crs:Helmert>
+  <crs:Helmert>
+    <crs:Id>towgs_687</crs:Id>
+    <crs:Name>Proj4 defined toWGS84 params</crs:Name>
+    <crs:Version>2008-1-16T9:49</crs:Version>
+    <crs:Description>Handmade proj4 towgs84 definition (parsed from nad/epsg) used by crs with id: null</crs:Description>
+    <crs:SourceCRS>epsg:4734</crs:SourceCRS>
+    <crs:TargetCRS>epsg:4326</crs:TargetCRS>
+    <crs:XAxisTranslation>-632.0</crs:XAxisTranslation>
+    <crs:YAxisTranslation>438.0</crs:YAxisTranslation>
+    <crs:ZAxisTranslation>-609.0</crs:ZAxisTranslation>
+    <crs:XAxisRotation>0.0</crs:XAxisRotation>
+    <crs:YAxisRotation>0.0</crs:YAxisRotation>
+    <crs:ZAxisRotation>0.0</crs:ZAxisRotation>
+    <crs:ScaleDifference>0.0</crs:ScaleDifference>
+  </crs:Helmert>
+  <crs:Helmert>
+    <crs:Id>towgs_689</crs:Id>
+    <crs:Name>Proj4 defined toWGS84 params</crs:Name>
+    <crs:Version>2008-1-16T9:49</crs:Version>
+    <crs:Description>Handmade proj4 towgs84 definition (parsed from nad/epsg) used by crs with id: null</crs:Description>
+    <crs:SourceCRS>epsg:4219</crs:SourceCRS>
+    <crs:TargetCRS>epsg:4326</crs:TargetCRS>
+    <crs:XAxisTranslation>-384.0</crs:XAxisTranslation>
+    <crs:YAxisTranslation>664.0</crs:YAxisTranslation>
+    <crs:ZAxisTranslation>-48.0</crs:ZAxisTranslation>
+    <crs:XAxisRotation>0.0</crs:XAxisRotation>
+    <crs:YAxisRotation>0.0</crs:YAxisRotation>
+    <crs:ZAxisRotation>0.0</crs:ZAxisRotation>
+    <crs:ScaleDifference>0.0</crs:ScaleDifference>
+  </crs:Helmert>
+  <crs:Helmert>
+    <crs:Id>towgs_694</crs:Id>
+    <crs:Name>Proj4 defined toWGS84 params</crs:Name>
+    <crs:Version>2008-1-16T9:49</crs:Version>
+    <crs:Description>Handmade proj4 towgs84 definition (parsed from nad/epsg) used by crs with id: null</crs:Description>
+    <crs:SourceCRS>epsg:4680</crs:SourceCRS>
+    <crs:TargetCRS>epsg:4326</crs:TargetCRS>
+    <crs:XAxisTranslation>124.5</crs:XAxisTranslation>
+    <crs:YAxisTranslation>-63.5</crs:YAxisTranslation>
+    <crs:ZAxisTranslation>-281.0</crs:ZAxisTranslation>
+    <crs:XAxisRotation>0.0</crs:XAxisRotation>
+    <crs:YAxisRotation>0.0</crs:YAxisRotation>
+    <crs:ZAxisRotation>0.0</crs:ZAxisRotation>
+    <crs:ScaleDifference>0.0</crs:ScaleDifference>
+  </crs:Helmert>
+  <crs:Helmert>
+    <crs:Id>towgs_70</crs:Id>
+    <crs:Name>Proj4 defined toWGS84 params</crs:Name>
+    <crs:Version>2008-1-16T9:49</crs:Version>
+    <crs:Description>Handmade proj4 towgs84 definition (parsed from nad/epsg) used by crs with id: null</crs:Description>
+    <crs:SourceCRS>epsg:4149</crs:SourceCRS>
+    <crs:TargetCRS>epsg:4326</crs:TargetCRS>
+    <crs:XAxisTranslation>674.374</crs:XAxisTranslation>
+    <crs:YAxisTranslation>15.056</crs:YAxisTranslation>
+    <crs:ZAxisTranslation>405.346</crs:ZAxisTranslation>
+    <crs:XAxisRotation>0.0</crs:XAxisRotation>
+    <crs:YAxisRotation>0.0</crs:YAxisRotation>
+    <crs:ZAxisRotation>0.0</crs:ZAxisRotation>
+    <crs:ScaleDifference>0.0</crs:ScaleDifference>
+  </crs:Helmert>
+  <crs:Helmert>
+    <crs:Id>towgs_71</crs:Id>
+    <crs:Name>Proj4 defined toWGS84 params</crs:Name>
+    <crs:Version>2008-1-16T9:49</crs:Version>
+    <crs:Description>Handmade proj4 towgs84 definition (parsed from nad/epsg) used by crs with id: null</crs:Description>
+    <crs:SourceCRS>epsg:4251</crs:SourceCRS>
+    <crs:TargetCRS>epsg:4326</crs:TargetCRS>
+    <crs:XAxisTranslation>-90.0</crs:XAxisTranslation>
+    <crs:YAxisTranslation>40.0</crs:YAxisTranslation>
+    <crs:ZAxisTranslation>88.0</crs:ZAxisTranslation>
+    <crs:XAxisRotation>0.0</crs:XAxisRotation>
+    <crs:YAxisRotation>0.0</crs:YAxisRotation>
+    <crs:ZAxisRotation>0.0</crs:ZAxisRotation>
+    <crs:ScaleDifference>0.0</crs:ScaleDifference>
+  </crs:Helmert>
+  <crs:Helmert>
+    <crs:Id>towgs_717</crs:Id>
+    <crs:Name>Proj4 defined toWGS84 params</crs:Name>
+    <crs:Version>2008-1-16T9:49</crs:Version>
+    <crs:Description>Handmade proj4 towgs84 definition (parsed from nad/epsg) used by crs with id: null</crs:Description>
+    <crs:SourceCRS>epsg:4722</crs:SourceCRS>
+    <crs:TargetCRS>epsg:4326</crs:TargetCRS>
+    <crs:XAxisTranslation>-794.0</crs:XAxisTranslation>
+    <crs:YAxisTranslation>119.0</crs:YAxisTranslation>
+    <crs:ZAxisTranslation>-298.0</crs:ZAxisTranslation>
+    <crs:XAxisRotation>0.0</crs:XAxisRotation>
+    <crs:YAxisRotation>0.0</crs:YAxisRotation>
+    <crs:ZAxisRotation>0.0</crs:ZAxisRotation>
+    <crs:ScaleDifference>0.0</crs:ScaleDifference>
+  </crs:Helmert>
+  <crs:Helmert>
+    <crs:Id>towgs_727</crs:Id>
+    <crs:Name>Proj4 defined toWGS84 params</crs:Name>
+    <crs:Version>2008-1-16T9:49</crs:Version>
+    <crs:Description>Handmade proj4 towgs84 definition (parsed from nad/epsg) used by crs with id: null</crs:Description>
+    <crs:SourceCRS>epsg:4733</crs:SourceCRS>
+    <crs:TargetCRS>epsg:4326</crs:TargetCRS>
+    <crs:XAxisTranslation>276.0</crs:XAxisTranslation>
+    <crs:YAxisTranslation>-57.0</crs:YAxisTranslation>
+    <crs:ZAxisTranslation>149.0</crs:ZAxisTranslation>
+    <crs:XAxisRotation>0.0</crs:XAxisRotation>
+    <crs:YAxisRotation>0.0</crs:YAxisRotation>
+    <crs:ZAxisRotation>0.0</crs:ZAxisRotation>
+    <crs:ScaleDifference>0.0</crs:ScaleDifference>
+  </crs:Helmert>
+  <crs:Helmert>
+    <crs:Id>towgs_75</crs:Id>
+    <crs:Name>Proj4 defined toWGS84 params</crs:Name>
+    <crs:Version>2008-1-16T9:49</crs:Version>
+    <crs:Description>Handmade proj4 towgs84 definition (parsed from nad/epsg) used by crs with id: null</crs:Description>
+    <crs:SourceCRS>epsg:4184</crs:SourceCRS>
+    <crs:TargetCRS>epsg:4326</crs:TargetCRS>
+    <crs:XAxisTranslation>-203.0</crs:XAxisTranslation>
+    <crs:YAxisTranslation>141.0</crs:YAxisTranslation>
+    <crs:ZAxisTranslation>53.0</crs:ZAxisTranslation>
+    <crs:XAxisRotation>0.0</crs:XAxisRotation>
+    <crs:YAxisRotation>0.0</crs:YAxisRotation>
+    <crs:ZAxisRotation>0.0</crs:ZAxisRotation>
+    <crs:ScaleDifference>0.0</crs:ScaleDifference>
+  </crs:Helmert>
+  <crs:Helmert>
+    <crs:Id>towgs_77</crs:Id>
+    <crs:Name>Proj4 defined toWGS84 params</crs:Name>
+    <crs:Version>2008-1-16T9:49</crs:Version>
+    <crs:Description>Handmade proj4 towgs84 definition (parsed from nad/epsg) used by crs with id: null</crs:Description>
+    <crs:SourceCRS>epsg:4713</crs:SourceCRS>
+    <crs:TargetCRS>epsg:4326</crs:TargetCRS>
+    <crs:XAxisTranslation>-79.0</crs:XAxisTranslation>
+    <crs:YAxisTranslation>-129.0</crs:YAxisTranslation>
+    <crs:ZAxisTranslation>145.0</crs:ZAxisTranslation>
+    <crs:XAxisRotation>0.0</crs:XAxisRotation>
+    <crs:YAxisRotation>0.0</crs:YAxisRotation>
+    <crs:ZAxisRotation>0.0</crs:ZAxisRotation>
+    <crs:ScaleDifference>0.0</crs:ScaleDifference>
+  </crs:Helmert>
+  <crs:Helmert>
+    <crs:Id>towgs_8</crs:Id>
+    <crs:Name>Proj4 defined toWGS84 params</crs:Name>
+    <crs:Version>2008-1-16T9:49</crs:Version>
+    <crs:Description>Handmade proj4 towgs84 definition (parsed from nad/epsg) used by crs with id: null</crs:Description>
+    <crs:SourceCRS>epsg:4754</crs:SourceCRS>
+    <crs:TargetCRS>epsg:4326</crs:TargetCRS>
+    <crs:XAxisTranslation>-208.406</crs:XAxisTranslation>
+    <crs:YAxisTranslation>-109.878</crs:YAxisTranslation>
+    <crs:ZAxisTranslation>-2.5764</crs:ZAxisTranslation>
+    <crs:XAxisRotation>0.0</crs:XAxisRotation>
+    <crs:YAxisRotation>0.0</crs:YAxisRotation>
+    <crs:ZAxisRotation>0.0</crs:ZAxisRotation>
+    <crs:ScaleDifference>0.0</crs:ScaleDifference>
+  </crs:Helmert>
+  <crs:Helmert>
+    <crs:Id>towgs_81</crs:Id>
+    <crs:Name>Proj4 defined toWGS84 params</crs:Name>
+    <crs:Version>2008-1-16T9:49</crs:Version>
+    <crs:Description>Handmade proj4 towgs84 definition (parsed from nad/epsg) used by crs with id: null</crs:Description>
+    <crs:SourceCRS>epsg:4225</crs:SourceCRS>
+    <crs:TargetCRS>epsg:4326</crs:TargetCRS>
+    <crs:XAxisTranslation>-206.0</crs:XAxisTranslation>
+    <crs:YAxisTranslation>172.0</crs:YAxisTranslation>
+    <crs:ZAxisTranslation>-6.0</crs:ZAxisTranslation>
+    <crs:XAxisRotation>0.0</crs:XAxisRotation>
+    <crs:YAxisRotation>0.0</crs:YAxisRotation>
+    <crs:ZAxisRotation>0.0</crs:ZAxisRotation>
+    <crs:ScaleDifference>0.0</crs:ScaleDifference>
+  </crs:Helmert>
+  <crs:Helmert>
+    <crs:Id>towgs_85</crs:Id>
+    <crs:Name>Proj4 defined toWGS84 params</crs:Name>
+    <crs:Version>2008-1-16T9:49</crs:Version>
+    <crs:Description>Handmade proj4 towgs84 definition (parsed from nad/epsg) used by crs with id: null</crs:Description>
+    <crs:SourceCRS>epsg:4312</crs:SourceCRS>
+    <crs:TargetCRS>epsg:4326</crs:TargetCRS>
+    <crs:XAxisTranslation>577.326</crs:XAxisTranslation>
+    <crs:YAxisTranslation>90.129</crs:YAxisTranslation>
+    <crs:ZAxisTranslation>463.919</crs:ZAxisTranslation>
+    <crs:XAxisRotation>5.137</crs:XAxisRotation>
+    <crs:YAxisRotation>1.474</crs:YAxisRotation>
+    <crs:ZAxisRotation>5.297</crs:ZAxisRotation>
+    <crs:ScaleDifference>2.4232</crs:ScaleDifference>
+  </crs:Helmert>
+  <crs:Helmert>
+    <crs:Id>towgs_88</crs:Id>
+    <crs:Name>Proj4 defined toWGS84 params</crs:Name>
+    <crs:Version>2008-1-16T9:49</crs:Version>
+    <crs:Description>Handmade proj4 towgs84 definition (parsed from nad/epsg) used by crs with id: null</crs:Description>
+    <crs:SourceCRS>epsg:4623</crs:SourceCRS>
+    <crs:TargetCRS>epsg:4326</crs:TargetCRS>
+    <crs:XAxisTranslation>-186.0</crs:XAxisTranslation>
+    <crs:YAxisTranslation>230.0</crs:YAxisTranslation>
+    <crs:ZAxisTranslation>110.0</crs:ZAxisTranslation>
+    <crs:XAxisRotation>0.0</crs:XAxisRotation>
+    <crs:YAxisRotation>0.0</crs:YAxisRotation>
+    <crs:ZAxisRotation>0.0</crs:ZAxisRotation>
+    <crs:ScaleDifference>0.0</crs:ScaleDifference>
+  </crs:Helmert>
+  <crs:Helmert>
+    <crs:Id>towgs_9</crs:Id>
+    <crs:Name>Proj4 defined toWGS84 params</crs:Name>
+    <crs:Version>2008-1-16T9:49</crs:Version>
+    <crs:Description>Handmade proj4 towgs84 definition (parsed from nad/epsg) used by crs with id: null</crs:Description>
+    <crs:SourceCRS>epsg:4324</crs:SourceCRS>
+    <crs:TargetCRS>epsg:4326</crs:TargetCRS>
+    <crs:XAxisTranslation>0.0</crs:XAxisTranslation>
+    <crs:YAxisTranslation>0.0</crs:YAxisTranslation>
+    <crs:ZAxisTranslation>1.9</crs:ZAxisTranslation>
+    <crs:XAxisRotation>0.0</crs:XAxisRotation>
+    <crs:YAxisRotation>0.0</crs:YAxisRotation>
+    <crs:ZAxisRotation>0.814</crs:ZAxisRotation>
+    <crs:ScaleDifference>-0.38</crs:ScaleDifference>
+  </crs:Helmert>
+  <crs:Helmert>
+    <crs:Id>towgs_91</crs:Id>
+    <crs:Name>Proj4 defined toWGS84 params</crs:Name>
+    <crs:Version>2008-1-16T9:49</crs:Version>
+    <crs:Description>Handmade proj4 towgs84 definition (parsed from nad/epsg) used by crs with id: null</crs:Description>
+    <crs:SourceCRS>epsg:4628</crs:SourceCRS>
+    <crs:TargetCRS>epsg:4326</crs:TargetCRS>
+    <crs:XAxisTranslation>162.0</crs:XAxisTranslation>
+    <crs:YAxisTranslation>117.0</crs:YAxisTranslation>
+    <crs:ZAxisTranslation>154.0</crs:ZAxisTranslation>
+    <crs:XAxisRotation>0.0</crs:XAxisRotation>
+    <crs:YAxisRotation>0.0</crs:YAxisRotation>
+    <crs:ZAxisRotation>0.0</crs:ZAxisRotation>
+    <crs:ScaleDifference>0.0</crs:ScaleDifference>
+  </crs:Helmert>
+  <crs:Helmert>
+    <crs:Id>towgs_94</crs:Id>
+    <crs:Name>Proj4 defined toWGS84 params</crs:Name>
+    <crs:Version>2008-1-16T9:49</crs:Version>
+    <crs:Description>Handmade proj4 towgs84 definition (parsed from nad/epsg) used by crs with id: null</crs:Description>
+    <crs:SourceCRS>epsg:4614</crs:SourceCRS>
+    <crs:TargetCRS>epsg:4326</crs:TargetCRS>
+    <crs:XAxisTranslation>-119.425</crs:XAxisTranslation>
+    <crs:YAxisTranslation>-303.659</crs:YAxisTranslation>
+    <crs:ZAxisTranslation>-11.0006</crs:ZAxisTranslation>
+    <crs:XAxisRotation>1.1643</crs:XAxisRotation>
+    <crs:YAxisRotation>0.174458</crs:YAxisRotation>
+    <crs:ZAxisRotation>1.09626</crs:ZAxisRotation>
+    <crs:ScaleDifference>3.65706</crs:ScaleDifference>
+  </crs:Helmert>
+  <crs:Helmert>
+    <crs:Id>towgs_97</crs:Id>
+    <crs:Name>Proj4 defined toWGS84 params</crs:Name>
+    <crs:Version>2008-1-16T9:49</crs:Version>
+    <crs:Description>Handmade proj4 towgs84 definition (parsed from nad/epsg) used by crs with id: null</crs:Description>
+    <crs:SourceCRS>epsg:4721</crs:SourceCRS>
+    <crs:TargetCRS>epsg:4326</crs:TargetCRS>
+    <crs:XAxisTranslation>265.025</crs:XAxisTranslation>
+    <crs:YAxisTranslation>384.929</crs:YAxisTranslation>
+    <crs:ZAxisTranslation>-194.046</crs:ZAxisTranslation>
+    <crs:XAxisRotation>0.0</crs:XAxisRotation>
+    <crs:YAxisRotation>0.0</crs:YAxisRotation>
+    <crs:ZAxisRotation>0.0</crs:ZAxisRotation>
+    <crs:ScaleDifference>0.0</crs:ScaleDifference>
+  </crs:Helmert>
+  <crs:Helmert>
+    <crs:Id>urn:ogc:def:crs:epsg::1188</crs:Id>
+    <crs:Id>urn:opengis:def:crs:epsg::1188</crs:Id>
+    <crs:Id>epsg:1188</crs:Id>
+    <crs:Id>http://www.opengis.net/gml/srs/epsg.xml#1188</crs:Id>
+    <crs:Description>Derived at 312 stations.</crs:Description>
+    <crs:SourceCRS>google_maps_geographiccrs</crs:SourceCRS>
+    <crs:TargetCRS>epsg:4326</crs:TargetCRS>
+    <crs:XAxisTranslation>0.0</crs:XAxisTranslation>
+    <crs:YAxisTranslation>0.0</crs:YAxisTranslation>
+    <crs:ZAxisTranslation>0.0</crs:ZAxisTranslation>
+    <crs:XAxisRotation>0.0</crs:XAxisRotation>
+    <crs:YAxisRotation>0.0</crs:YAxisRotation>
+    <crs:ZAxisRotation>0.0</crs:ZAxisRotation>
+    <crs:ScaleDifference>0.0</crs:ScaleDifference>
+  </crs:Helmert>
+  <crs:Helmert>
+    <crs:Id>urn:ogc:def:crs:epsg::1564</crs:Id>
+    <crs:Id>urn:opengis:def:crs:epsg::1564</crs:Id>
+    <crs:Id>http://www.opengis.net/gml/srs/epsg.xml#1564</crs:Id>
+    <crs:Id>epsg:1564</crs:Id>
+    <crs:Name>NZGD49 to WGS 84 (2)</crs:Name>
+    <crs:Version>OSG-Nzl 4m</crs:Version>
+    <crs:Description>
+      hese parameter values are taken from NZGD49 to NZGD2000 (4) (code 1701) and assume that NZGD2000 and WGS 84 are coincident to within the
+      accuracy of the transformation. For improved accuracy use NZGD49 to WGS 84 (4) (code 1670).
+    </crs:Description>
+    <crs:SourceCRS>epsg:4272</crs:SourceCRS>
+    <crs:TargetCRS>epsg:4326</crs:TargetCRS>
+    <crs:XAxisTranslation>59.47</crs:XAxisTranslation>
+    <crs:YAxisTranslation>-5.04</crs:YAxisTranslation>
+    <crs:ZAxisTranslation>187.44</crs:ZAxisTranslation>
+    <crs:XAxisRotation>0.47</crs:XAxisRotation>
+    <crs:YAxisRotation>-0.1</crs:YAxisRotation>
+    <crs:ZAxisRotation>1.024</crs:ZAxisRotation>
+    <crs:ScaleDifference>-4.5993</crs:ScaleDifference>
+  </crs:Helmert>
+  <crs:Helmert>
+    <crs:Id>urn:ogc:def:crs:epsg::1777</crs:Id>
+    <crs:Id>urn:opengis:def:crs:epsg::1777</crs:Id>
+    <crs:Id>http://www.opengis.net/gml/srs/epsg.xml#1777</crs:Id>
+    <crs:Id>epsg:1777</crs:Id>
+    <crs:Name>DHDN to WGS 84</crs:Name>
+    <crs:Version>EPSG-Deu W 3m</crs:Version>
+    <crs:Description>
+      Parameter values from DHDN to ETRS89 (2) (code 1776) assuming that ETRS89 is equivalent to WGS 84 within the accuracy of the transformation.
+      Replaces DHDN to WGS 84 (1) (tfm code 1673).
+    </crs:Description>
+    <crs:SourceCRS>epsg:4314</crs:SourceCRS>
+    <crs:TargetCRS>epsg:4326</crs:TargetCRS>
+    <crs:XAxisTranslation>598.1</crs:XAxisTranslation>
+    <crs:YAxisTranslation>73.7</crs:YAxisTranslation>
+    <crs:ZAxisTranslation>418.2</crs:ZAxisTranslation>
+    <crs:XAxisRotation>0.202</crs:XAxisRotation>
+    <crs:YAxisRotation>0.045</crs:YAxisRotation>
+    <crs:ZAxisRotation>-2.455</crs:ZAxisRotation>
+    <crs:ScaleDifference>6.7</crs:ScaleDifference>
+  </crs:Helmert>
+  <crs:NTv2>
+    <crs:Id>urn:ogc:def:coordinateOperation:epsg::15948</crs:Id>
+    <crs:Description>A Nad based transformation, going from epsg:4314 (bessel) to etrs 89</crs:Description>    
+    <crs:AreaOfUse>5.75 47.27 15.03 55.03</crs:AreaOfUse>
+    <crs:SourceCRS>epsg:4314</crs:SourceCRS>
+    <crs:TargetCRS>epsg:4258</crs:TargetCRS>
+    <crs:Gridfile>ntv2/beta2007.gsb</crs:Gridfile>
+  </crs:NTv2>
+  <crs:NTv2>
+    <crs:Id>urn:ogc:def:coordinateOperation:epsg::15949</crs:Id>
+    <crs:Description>A Nad based transformation, going from epsg:4314 (bessel) to WGS 84</crs:Description>
+    <crs:AreaOfUse>5.75 47.27 15.03 55.03</crs:AreaOfUse>
+    <crs:SourceCRS>epsg:4314</crs:SourceCRS>
+    <crs:TargetCRS>epsg:4326</crs:TargetCRS>
+    <crs:Gridfile>ntv2/beta2007.gsb</crs:Gridfile>
+  </crs:NTv2>    
+</crs:TransformationDefinitions>
