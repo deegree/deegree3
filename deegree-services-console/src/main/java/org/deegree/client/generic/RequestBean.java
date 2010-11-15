@@ -64,6 +64,7 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 
 import javax.annotation.PostConstruct;
+import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
 import javax.faces.context.ExternalContext;
@@ -75,9 +76,15 @@ import javax.faces.model.SelectItemGroup;
 import lombok.Getter;
 import lombok.Setter;
 
+import org.apache.commons.httpclient.Header;
+import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpException;
+import org.apache.commons.httpclient.methods.InputStreamRequestEntity;
+import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.input.BoundedInputStream;
+import org.deegree.client.core.utils.MessageUtils;
+import org.deegree.commons.utils.net.DURL;
 import org.deegree.commons.utils.net.HttpUtils;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.services.controller.OGCFrontController;
@@ -199,10 +206,27 @@ public class RequestBean implements Serializable {
         }
         LOG.debug( "Try to send the following request to " + targetUrl + " : \n" + request );
         if ( targetUrl != null && targetUrl.length() > 0 && request != null && request.length() > 0 ) {
-            Map<String, String> header = new HashMap<String, String>();
             InputStream is = new ByteArrayInputStream( request.getBytes() );
             try {
-                InputStream in = HttpUtils.post( HttpUtils.STREAM, targetUrl, is, header );
+                DURL u = new DURL( targetUrl );
+                HttpClient client = HttpUtils.enableProxyUsage( new HttpClient(), u );
+                PostMethod post = new PostMethod( targetUrl );
+                post.setRequestEntity( new InputStreamRequestEntity( is ) );
+                client.executeMethod( post );
+                Header[] headers = post.getResponseHeaders( "Content-Type" );
+                if ( headers.length > 0 ) {
+                    String mimeType = headers[0].getValue();
+                    LOG.info( "Response mime type: " + mimeType );
+                    if ( !mimeType.toLowerCase().contains( "xml" ) ) {
+                        response = null;
+                        FacesMessage fm = MessageUtils.getFacesMessage( FacesMessage.SEVERITY_INFO,
+                                                                        "INFO_RESPONSE_NOT_XML" );
+                        FacesContext.getCurrentInstance().addMessage( null, fm );
+                        return;
+                    }
+                }
+
+                InputStream in = post.getResponseBodyAsStream();
                 File file = File.createTempFile( "genericclient", ".xml" );
                 responseFile = file.toString();
                 FileOutputStream out = new FileOutputStream( file );

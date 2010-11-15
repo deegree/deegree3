@@ -69,7 +69,7 @@ public class FeatureStoreConfig extends ManagedXMLConfig {
 
     public FeatureStoreConfig( String id, boolean active, boolean ignore, FeatureStoreConfigManager manager,
                                FeatureStoreProvider provider ) {
-        super( id, active, ignore, manager, provider.getConfigSchema(), provider.getConfigTemplate() );
+        super( id, active, ignore, manager, provider != null ? provider.getConfigSchema() : null, provider != null ? provider.getConfigTemplate() : null);
     }
 
     public boolean getSql() {
