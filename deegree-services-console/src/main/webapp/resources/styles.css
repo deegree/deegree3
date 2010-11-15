@@ -9,18 +9,28 @@ body {
 
 /* BEGIN: layout*/
 #container {
-	height:734px;
-	left:10px;
-	margin:0 auto;
-	position:relative;
-	text-align:justify;
-	text-decoration:none;
-	top:0;
-	width:850px;
+	background-image:url("#{resource['images:bg.png']}");
+	background-repeat: no-repeat;
+	text-align: justify;
+	margin-top: 0;
+	margin-right: auto;
+	margin-bottom: 0px;
+	margin-left: auto;
+	position: relative;
+	left: 0px;
+	top: 0px;
+	width:930px;
+	height:690px;
 	z-index:1;
+	top: 30px;
+	left: auto;
+	text-decoration: none;
 }
 
 #header {
+	width:860px;
+	padding-top: 100px;
+	margin-left:40px;
 	margin-bottom: 10px;
 }
 
@@ -34,6 +44,11 @@ body {
 	margin-right: 10px;
 }
 
+#main {
+	width:860px;
+	height:550px;
+	margin-left:40px;
+}
 
 #left {
 	margin-left: 20 px;

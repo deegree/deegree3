@@ -21,7 +21,11 @@
   <div id="container">
 
   <div id="header">
-  <div id="logo"><pre><h:outputText value="#{applicationBean.logo}" /></pre> <h:panelGroup
+  <div id="logo">
+  <!-- 
+  <pre><h:outputText value="#{applicationBean.logo}" /></pre> 
+  -->
+  <h:panelGroup
     rendered="#{logBean.loggedIn}">
     <h:form>
       <h:commandButton value="#{labels.apply_changes}" styleClass="button" action="#{configManager.applyChanges}"
@@ -53,30 +57,7 @@
       rendered="#{facesContext.viewRoot.viewId == '/console/jsf/workspace.xhtml'}" />
     <h:link styleClass="navi" value="workspace" outcome="/console/jsf/workspace.xhtml"
       rendered="#{facesContext.viewRoot.viewId != '/console/jsf/workspace.xhtml'}" />
-    <br />
-    <h:link styleClass="naviactive" value="webservices" outcome="/console/jsf/webservices.xhtml"
-      disabled="#{!logBean.loggedIn}" rendered="#{facesContext.viewRoot.viewId == '/console/jsf/webservices.xhtml'}" />
-    <h:link styleClass="navi" value="webservices" outcome="/console/jsf/webservices.xhtml"
-      disabled="#{!logBean.loggedIn}" rendered="#{facesContext.viewRoot.viewId != '/console/jsf/webservices.xhtml'}" />
-    <h:link styleClass="naviactive" value="render" outcome="/console/jsf/render.xhtml" disabled="#{!logBean.loggedIn}"
-      rendered="#{facesContext.viewRoot.viewId == '/console/jsf/render.xhtml'}" />
-    <h:link styleClass="navi" value="render" outcome="/console/jsf/render.xhtml" disabled="#{!logBean.loggedIn}"
-      rendered="#{facesContext.viewRoot.viewId != '/console/jsf/render.xhtml'}" />
-    <h:link styleClass="naviactive" value="featureStore" outcome="/console/jsf/featureStore.xhtml"
-      disabled="#{!logBean.loggedIn}" rendered="#{facesContext.viewRoot.viewId == '/console/jsf/featureStore.xhtml'}" />
-    <h:link styleClass="navi" value="featureStore" outcome="/console/jsf/featureStore.xhtml"
-      disabled="#{!logBean.loggedIn}" rendered="#{facesContext.viewRoot.viewId != '/console/jsf/featureStore.xhtml'}" />
-    <h:link styleClass="naviactive" value="metadataStore" outcome="/console/jsf/metadataStore.xhtml"
-      disabled="#{!logBean.loggedIn}" rendered="#{facesContext.viewRoot.viewId == '/console/jsf/metadataStore.xhtml'}" />
-    <h:link styleClass="navi" value="metadataStore" outcome="/console/jsf/metadataStore.xhtml"
-      disabled="#{!logBean.loggedIn}" rendered="#{facesContext.viewRoot.viewId != '/console/jsf/metadataStore.xhtml'}" />
-    <h:link styleClass="naviactive" value="observationStores" outcome="/console/jsf/observationStores.xhtml"
-      disabled="#{!logBean.loggedIn}"
-      rendered="#{facesContext.viewRoot.viewId == '/console/jsf/observationStores.xhtml'}" />
-    <h:link styleClass="navi" value="observationStores" outcome="/console/jsf/observationStores.xhtml"
-      disabled="#{!logBean.loggedIn}"
-      rendered="#{facesContext.viewRoot.viewId != '/console/jsf/observationStores.xhtml'}" />
-    <h:link styleClass="naviactive" value="jdbc" outcome="/console/jsf/jdbc.xhtml" disabled="#{!logBean.loggedIn}"
+       <h:link styleClass="naviactive" value="jdbc" outcome="/console/jsf/jdbc.xhtml" disabled="#{!logBean.loggedIn}"
       rendered="#{facesContext.viewRoot.viewId == '/console/jsf/jdbc.xhtml'}" />
     <h:link styleClass="navi" value="jdbc" outcome="/console/jsf/jdbc.xhtml" disabled="#{!logBean.loggedIn}"
       rendered="#{facesContext.viewRoot.viewId != '/console/jsf/jdbc.xhtml'}" />
@@ -84,6 +65,29 @@
       rendered="#{facesContext.viewRoot.viewId == '/console/jsf/proxy.xhtml'}" />
     <h:link styleClass="navi" value="proxy" outcome="/console/jsf/proxy.xhtml" disabled="#{!logBean.loggedIn}"
       rendered="#{facesContext.viewRoot.viewId != '/console/jsf/proxy.xhtml'}" />
+    <br />
+    <h:link styleClass="naviactive" value="web services" outcome="/console/jsf/webservices.xhtml"
+      disabled="#{!logBean.loggedIn}" rendered="#{facesContext.viewRoot.viewId == '/console/jsf/webservices.xhtml'}" />
+    <h:link styleClass="navi" value="web services" outcome="/console/jsf/webservices.xhtml"
+      disabled="#{!logBean.loggedIn}" rendered="#{facesContext.viewRoot.viewId != '/console/jsf/webservices.xhtml'}" />
+    <h:link styleClass="naviactive" value="render styles" outcome="/console/jsf/render.xhtml" disabled="#{!logBean.loggedIn}"
+      rendered="#{facesContext.viewRoot.viewId == '/console/jsf/render.xhtml'}" />
+    <h:link styleClass="navi" value="render styles" outcome="/console/jsf/render.xhtml" disabled="#{!logBean.loggedIn}"
+      rendered="#{facesContext.viewRoot.viewId != '/console/jsf/render.xhtml'}" />
+    <h:link styleClass="naviactive" value="feature stores" outcome="/console/jsf/featureStore.xhtml"
+      disabled="#{!logBean.loggedIn}" rendered="#{facesContext.viewRoot.viewId == '/console/jsf/featureStore.xhtml'}" />
+    <h:link styleClass="navi" value="feature stores" outcome="/console/jsf/featureStore.xhtml"
+      disabled="#{!logBean.loggedIn}" rendered="#{facesContext.viewRoot.viewId != '/console/jsf/featureStore.xhtml'}" />
+    <h:link styleClass="naviactive" value="metadata stores" outcome="/console/jsf/metadataStore.xhtml"
+      disabled="#{!logBean.loggedIn}" rendered="#{facesContext.viewRoot.viewId == '/console/jsf/metadataStore.xhtml'}" />
+    <h:link styleClass="navi" value="metadata stores" outcome="/console/jsf/metadataStore.xhtml"
+      disabled="#{!logBean.loggedIn}" rendered="#{facesContext.viewRoot.viewId != '/console/jsf/metadataStore.xhtml'}" />
+    <h:link styleClass="naviactive" value="observation stores" outcome="/console/jsf/observationStores.xhtml"
+      disabled="#{!logBean.loggedIn}"
+      rendered="#{facesContext.viewRoot.viewId == '/console/jsf/observationStores.xhtml'}" />
+    <h:link styleClass="navi" value="observation stores" outcome="/console/jsf/observationStores.xhtml"
+      disabled="#{!logBean.loggedIn}"
+      rendered="#{facesContext.viewRoot.viewId != '/console/jsf/observationStores.xhtml'}" />
     <br />
     <h:link styleClass="naviExtern" outcome="/console/client/client.xhtml" value="#{labels.link_genericClient}" />
     <h:outputLink styleClass="naviExtern"
@@ -104,8 +108,6 @@
 
   <div class="clear" />
   </div>
-
-  <div id="footer"><h:outputText value="#{labels.footer}" /></div>
 
   </div>
 </h:body>
