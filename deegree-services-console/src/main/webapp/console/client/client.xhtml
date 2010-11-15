@@ -5,7 +5,7 @@
 <h:head>
   <title>Generic OGC Web Service Client</title>
   <h:outputStylesheet name="styles.css" />
-  <h:outputScript name="console.js" />  
+  <h:outputScript name="console.js" />
 </h:head>
 <h:body>
 
@@ -50,27 +50,31 @@
           </h:inputText>
 
           <h:commandButton id="sendBt" value="send" action="#{requestBean.sendRequest}" style="text-align: right;">
-            <f:ajax execute="url requestArea" render="sendMgs result downloadLink" onevent="blockInput"/>
+            <f:ajax execute="url requestArea" render="sendMgs result downloadLink" onevent="blockInput" />
           </h:commandButton>
 
         </h:column>
-        <h:column >
-        	<h:messages id="sendMgs" errorClass="errorMsg" />
-				</h:column>
-				<h:column >
-				<h:panelGroup id="downloadLink">
-        	<h:link outcome="download.jsp" value="download response" rendered="#{requestBean.response != null}">
-        		<ui:param name="mt" value="#{requestBean.mimeType}" />
-        		<ui:param name="file" value="#{requestBean.id}" />
-        	</h:link>
-        	</h:panelGroup>
-				</h:column>
+        <h:column>
+          <h:messages id="sendMgs" errorClass="errorMsg" />
+        </h:column>
+        <h:column>
+          <h:panelGroup id="downloadLink">
+            <h:outputLink styleClass="naviExtern"
+              value="#{facesContext.externalContext.requestContextPath}/console/client/download.jsp?#{requestBean.dlparams}"
+              rendered="#{requestBean.response != null}">
+              <h:outputText value="download response" />
+            </h:outputLink>
+          </h:panelGroup>
+        </h:column>
         <h:column style="width: 95%; margin-top: 20px; border-top: 1px solid black; padding-top: 20px;">
-         <h:panelGroup id="result">
-          <h:panelGroup>
-	          <dg:outputXML id="response" value="#{requestBean.response}" downloadable="false" rendered="#{requestBean.response != null}"/>
-	          <h:outputText id="hint" value="Select or enter a request above and click the 'SEND' button. After processing, the service response will be displayed below." rendered="#{requestBean.response == null}"/>
-	        </h:panelGroup>
+          <h:panelGroup id="result">
+            <h:panelGroup>
+              <dg:outputXML id="response" value="#{requestBean.response}" downloadable="false"
+                rendered="#{requestBean.response != null}" />
+              <h:outputText id="hint"
+                value="Select or enter a request above and click the 'SEND' button. After processing, the service response will be displayed below."
+                rendered="#{requestBean.response == null}" />
+            </h:panelGroup>
           </h:panelGroup>
         </h:column>
         <h:column>

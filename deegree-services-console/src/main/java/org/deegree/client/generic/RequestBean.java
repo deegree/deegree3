@@ -45,14 +45,15 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.FileWriter;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Serializable;
+import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -62,7 +63,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.TreeSet;
-import java.util.UUID;
 
 import javax.annotation.PostConstruct;
 import javax.faces.application.FacesMessage;
@@ -124,9 +124,6 @@ public class RequestBean implements Serializable {
     @Getter
     @Setter
     private String selectedRequest;
-
-    @Getter
-    private String id;
 
     @Getter
     private String mimeType;
@@ -231,10 +228,13 @@ public class RequestBean implements Serializable {
                         FacesContext.getCurrentInstance().addMessage( null, fm );
                     }
                 }
+                if (mimeType == null) {
+                    mimeType = "text/plain";
+                }
 
                 InputStream in = post.getResponseBodyAsStream();
                 File file = File.createTempFile( "genericclient", ".xml" );
-                responseFile = file.toString();
+                responseFile = file.getName().toString();
                 FileOutputStream out = new FileOutputStream( file );
                 try {
                     IOUtils.copy( in, out );
@@ -252,17 +252,6 @@ public class RequestBean implements Serializable {
                         sb.append( s );
                     }
                     response = sb.toString();
-
-                    id = UUID.randomUUID().toString();
-                    File tempFile = File.createTempFile( "response_" + id, "" );
-                    id = tempFile.getName();
-                    FileWriter fw = new FileWriter( tempFile );
-                    fw.write( response );
-                    fw.close();
-
-                    FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put( "mt", mimeType );
-                    FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put( "file", tempFile );
-
                 } finally {
                     IOUtils.closeQuietly( reader );
                 }
@@ -467,6 +456,10 @@ public class RequestBean implements Serializable {
         }
     }
 
+    
+    public String getDlparams() throws UnsupportedEncodingException {
+        return "mt=" + URLEncoder.encode( mimeType, "UTF-8" ) + "&file=" + URLEncoder.encode( responseFile, "UTF-8" ); 
+    }
     // @Override
     // public String toString() {
     // return generateToString( this );
