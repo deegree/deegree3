@@ -11,6 +11,7 @@
 </h:head>
 <h:body>
 
+  <div id="PLEASEWAIT_BG"></div>
   <div id="PLEASEWAIT">
   <div class="curved"><b class="b1"></b><b class="b2"></b><b class="b3"></b><b class="b4"></b>
   <div class="boxcontent">
@@ -19,7 +20,6 @@
   </div>
   <b class="b4"></b><b class="b3"></b><b class="b2"></b><b class="b1"></b></div>
   </div>
-  <div id="PLEASEWAIT_BG"></div>
 
   <!-- <pre><h:outputText value="#{applicationBean.logo}" /></pre> -->
   <div id="wrapper" align="center">
@@ -37,17 +37,17 @@
     <p class="inline">OGC service address: <h:outputText styleClass="url"
       value="#{facesContext.externalContext.requestScheme}://#{facesContext.externalContext.requestServerName}:#{facesContext.externalContext.requestServerPort}#{facesContext.externalContext.requestContextPath}/services" /></p>
   </h:panelGroup> <br />
-  <p class="explain"><a href="http://wiki.deegree.org/deegreeWiki/deegree3/UtahDemo">Documentation</a><br />
+  <p class="explain"><a href="http://wiki.deegree.org/deegreeWiki/deegree3/UtahDemo">Documentation</a>&nbsp;<h:graphicImage styleClass="image" url="#{resource['images:link.png']}" /><br />
   Access the documentation pages with help on setup and usage.</p>
   <h:panelGroup rendered="#{downloadBean.dataDownloaded}">
     <p class="explain"><a href="#{facesContext.externalContext.requestContextPath}/console.jsf"> Administration
-    Console </a> <br />
+    Console</a>&nbsp;<h:graphicImage styleClass="image" url="#{resource['images:link.png']}" /><br />
     Configure the server settings such as web services and data access.</p>
     <p class="explain"><a href="#{facesContext.externalContext.requestContextPath}/console/wms/wms.html">View
-    Layers</a><br />
+    Layers</a>&nbsp;<h:graphicImage styleClass="image" url="#{resource['images:link.png']}" /><br />
     View the layers offered by the WMS in a simple web client.</p>
     <p class="explain"><a href="#{facesContext.externalContext.requestContextPath}/console/client/client.xhtml">Send
-    Example Requests</a><br />
+    Example Requests</a>&nbsp;<h:graphicImage styleClass="image" url="#{resource['images:link.png']}" /><br />
     Perform raw OGC services requests.</p>
   </h:panelGroup></div>
   <div id="apDivFooter"><a href="http://deegree.org/" target="_blank">deegree.org</a> &nbsp; &nbsp;<a

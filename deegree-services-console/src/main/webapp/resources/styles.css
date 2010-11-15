@@ -104,21 +104,21 @@ body {
 .button {
 	color: red;
 	font:80% Verdana,Arial,Helvetica,sans-serif;
-	background-color: white;
+	background-color: #fcfcfc;
 	border: 1px;
 	}
 
 .buttongray {
 	color: gray;
 	font:80% Verdana,Arial,Helvetica,sans-serif;
-	background-color: white;
+	background-color: #fcfcfc;
 	border: 1px;
 	}
 
 .buttonActivate {
 	color:#409300 ;
 	font:80% Verdana,Arial,Helvetica,sans-serif;
-	background-color: white;
+	background-color: #fcfcfc;
 	border-color: #62AA2A ;
 	border: 1px;
 	font-weight: bold;
@@ -128,14 +128,14 @@ body {
 .buttonDeactivate {
 	color: grey;
 	font:80% Verdana,Arial,Helvetica,sans-serif;
-	background-color: white;
+	background-color: #fcfcfc;
 	border: 1px;
 	
 }
 .buttonInfo {
 	color: #7279D8;
 	font:80% Verdana,Arial,Helvetica,sans-serif;
-	background-color: white;
+	background-color: #fcfcfc;
 	border-color: blue;
 	border: 1px;
 }
@@ -143,7 +143,7 @@ body {
 .buttonDelete {
 	color:#FCB32B;
 	font:80% Verdana,Arial,Helvetica,sans-serif;
-	background-color: white;
+	background-color: #fcfcfc;
 	border-color:#BF3030;
 	border: 1px;
 }
@@ -151,7 +151,7 @@ body {
 .buttonEdit {
 	color:#A6D400;
 	font:80% Verdana,Arial,Helvetica,sans-serif;
-	background-color: white;
+	background-color: #fcfcfc;
 	border-color:#52A529 ;
 	border: 1px;
 }
@@ -159,7 +159,7 @@ body {
 .buttonEdit2 {
 	color:#52A529;
 	font:90% Verdana,Arial,Helvetica,sans-serif;
-	background-color: white;
+	background-color: #fcfcfc;
 	border-color:#52A529 ;
 	border: 1px;
 }
@@ -167,7 +167,7 @@ body {
 .buttonCreateNew {
 	color:#409300 ;
 	font:90% Verdana,Arial,Helvetica,sans-serif;
-	background-color: white;
+	background-color: #fcfcfc;
 	border-color: #62AA2A ;
 	border: 1px;
 }
@@ -175,14 +175,14 @@ body {
 .buttonSave {
 	color:#409300 ;
 	font:90% Verdana,Arial,Helvetica,sans-serif;
-	background-color: white;
+	background-color: #fcfcfc;
 	border: 1px;
 }
 
 .buttonCancel {
 	color:#FCB32B;
 	font:90% Verdana,Arial,Helvetica,sans-serif;
-	background-color: white;
+	background-color: #fcfcfc;
 	border: 1px;
 }
 
@@ -307,6 +307,9 @@ a {
 	text-align: center;
 	font-size: small;
 	display: none;
+	color:grey;
+	font-family:"Courier New",Courier,monospace;
+	font-weight:normal;
 }
 
 /* begin curved div */
