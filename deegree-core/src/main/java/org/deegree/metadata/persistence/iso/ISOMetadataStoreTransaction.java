@@ -83,7 +83,7 @@ public class ISOMetadataStoreTransaction implements MetadataStoreTransaction {
             return execStm.executeDeleteStatement( conn, builder );
 
         } catch ( FilterEvaluationException e ) {
-            throw new MetadataStoreException( "The Filterexpression has thrown an error! " + e.getMessage() );
+            throw new MetadataStoreException( e.getMessage() );
         }
     }
 
@@ -108,9 +108,9 @@ public class ISOMetadataStoreTransaction implements MetadataStoreTransaction {
                         generateQP.executeQueryableProperties( false, conn, operatesOnId, rec );
                         identifierList.addAll( Arrays.asList( rec.getIdentifier() ) );
                     } else {
-                         String msg = Messages.getMessage( "ERROR_DUPLICATE_INSERT", id );
-                         LOG.debug( msg );
-                         throw new MetadataStoreException( msg );
+                        String msg = Messages.getMessage( "ERROR_DUPLICATE_INSERT", id );
+                        LOG.debug( msg );
+                        throw new MetadataStoreException( msg );
                     }
                 }
 

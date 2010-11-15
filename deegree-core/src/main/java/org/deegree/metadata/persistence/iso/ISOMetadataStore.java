@@ -52,7 +52,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import javax.xml.bind.JAXBElement;
 import javax.xml.stream.FactoryConfigurationError;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
@@ -82,7 +81,6 @@ import org.deegree.metadata.persistence.iso.parsing.inspectation.InspireComplian
 import org.deegree.metadata.persistence.iso.parsing.inspectation.MetadataSchemaValidationInspector;
 import org.deegree.metadata.persistence.iso.parsing.inspectation.RecordInspector;
 import org.deegree.metadata.persistence.iso.resulttypes.Hits;
-import org.deegree.metadata.persistence.iso19115.jaxb.AbstractInspector;
 import org.deegree.metadata.persistence.iso19115.jaxb.CoupledResourceInspector;
 import org.deegree.metadata.persistence.iso19115.jaxb.FileIdentifierInspector;
 import org.deegree.metadata.persistence.iso19115.jaxb.ISOMetadataStoreConfig;
@@ -138,7 +136,7 @@ public class ISOMetadataStore implements MetadataStore {
      * @param config
      */
     public ISOMetadataStore( ISOMetadataStoreConfig config ) {
-        this.connectionId = config.getConnId();
+        this.connectionId = config.getJDBCConnId();
         this.config = config;
         // this.varToValue = new HashMap<String, String>();
         // String systemStartDate = "2010-11-16";
@@ -557,19 +555,23 @@ public class ISOMetadataStore implements MetadataStore {
             Inspectors inspectors = config.getInspectors();
 
             if ( inspectors != null ) {
-                for ( JAXBElement<? extends AbstractInspector> jaxbElem : inspectors.getAbstractInspector() ) {
-                    AbstractInspector d = jaxbElem.getValue();
-                    if ( d instanceof FileIdentifierInspector ) {
-                        ri.add( new FIInspector( (FileIdentifierInspector) d ) );
-                    } else if ( d instanceof InspireInspector ) {
-                        ri.add( new InspireComplianceInspector( (InspireInspector) d ) );
-                    } else if ( d instanceof CoupledResourceInspector ) {
-                        ri.add( new CoupledDataInspector( (CoupledResourceInspector) d ) );
-                    } else if ( d instanceof SchemaValidator ) {
-                        ri.add( new MetadataSchemaValidationInspector( (SchemaValidator) d ) );
-                    }
-
+                FileIdentifierInspector fi = inspectors.getFileIdentifierInspector();
+                InspireInspector ii = inspectors.getInspireInspector();
+                CoupledResourceInspector cri = inspectors.getCoupledResourceInspector();
+                SchemaValidator sv = inspectors.getSchemaValidator();
+                if ( fi != null ) {
+                    ri.add( new FIInspector( fi ) );
                 }
+                if ( ii != null ) {
+                    ri.add( new InspireComplianceInspector( ii ) );
+                }
+                if ( cri != null ) {
+                    ri.add( new CoupledDataInspector( cri ) );
+                }
+                if ( sv != null ) {
+                    ri.add( new MetadataSchemaValidationInspector( sv ) );
+                }
+
             }
             ta = new ISOMetadataStoreTransaction( conn, ri, config.getAnyText(), useLegacyPredicates );
         } catch ( SQLException e ) {

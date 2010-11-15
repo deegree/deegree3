@@ -115,6 +115,9 @@ public class CoupledDataInspector implements RecordInspector {
             }
             i.remove( 0 );
         }
+        if ( !isConsistent ) {
+
+        }
 
         return isConsistent;
     }

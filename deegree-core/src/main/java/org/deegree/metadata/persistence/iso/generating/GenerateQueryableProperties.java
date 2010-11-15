@@ -109,7 +109,6 @@ public class GenerateQueryableProperties {
                             throws MetadataStoreException, XMLStreamException {
         final String databaseTable = PostGISMappingsISODC.DatabaseTables.datasets.name();
         StringWriter sqlStatement = new StringWriter( 1000 );
-        boolean isCaseSensitive = true;
         PreparedStatement stm = null;
         int operatesOnId = 0;
         String time = null;
@@ -364,8 +363,8 @@ public class GenerateQueryableProperties {
             generateISOQP_CouplingTypeStatement( isUpdate, connection, operatesOnId,
                                                  rec.getParsedElement().getQueryableProperties() );
         }
-//        if ( rec.getIdentifier() != null && rec.getIdentifier().length != 0 )
-//            LOG.debug( "elem: " + rec.getIdentifier()[0] );
+        // if ( rec.getIdentifier() != null && rec.getIdentifier().length != 0 )
+        // LOG.debug( "elem: " + rec.getIdentifier()[0] );
         LOG.debug( "Boundingbox = " + rec.getParsedElement().getQueryableProperties().getBoundingBox() );
         if ( rec.getParsedElement().getQueryableProperties().getBoundingBox() != null ) {
             generateISOQP_BoundingBoxStatement( isUpdate, connection, operatesOnId,
