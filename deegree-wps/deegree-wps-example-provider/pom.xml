@@ -55,6 +55,40 @@
           <target>1.6</target>
         </configuration>
       </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <version>2.0</version>
+        <executions>
+          <execution>
+            <id>unpack-dependencies-zip</id>
+            <phase>generate-resources</phase>
+            <goals>
+              <goal>unpack-dependencies</goal>
+            </goals>
+            <configuration>
+              <classifier>webapp-template</classifier>
+              <type>zip</type>
+              <includeGroupIds>org.deegree</includeGroupIds>
+              <includeArtifactIds>deegree-services-console</includeArtifactIds>
+              <outputDirectory>src/main/webapp</outputDirectory>
+            </configuration>
+          </execution>
+          <execution>
+            <id>package-tomcat</id>
+            <phase>package</phase>
+            <goals>
+              <goal>unpack-dependencies</goal>
+            </goals>
+            <configuration>
+              <type>zip</type>
+              <includeGroupIds>org.deegree</includeGroupIds>
+              <includeArtifactIds>deegree-tomcat</includeArtifactIds>
+              <outputDirectory>target</outputDirectory>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
     </plugins>
   </build>
 </project>
