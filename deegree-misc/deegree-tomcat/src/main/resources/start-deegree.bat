@@ -1,6 +1,7 @@
 @ECHO OFF
 
-java -classpath deegree-javacheck.jar org.deegree.JavaCheck
+if defined %JAVA_HOME% %JAVA_HOME%\bin\java -classpath deegree-javacheck.jar org.deegree.JavaCheck else java -classpath deegree-javacheck.jar org.deegree.JavaCheck
+
 IF ERRORLEVEL 5 GOTO End
 
 SET JAVA_OPTS=-Xmx1024M
