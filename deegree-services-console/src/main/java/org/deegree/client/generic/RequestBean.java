@@ -37,7 +37,6 @@ package org.deegree.client.generic;
 
 import static java.util.Collections.sort;
 import static org.deegree.commons.utils.CollectionUtils.unzipPair;
-import static org.deegree.commons.utils.JavaUtils.generateToString;
 import static org.deegree.services.controller.FrontControllerStats.getKVPRequests;
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -46,6 +45,7 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
@@ -62,6 +62,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.TreeSet;
+import java.util.UUID;
 
 import javax.annotation.PostConstruct;
 import javax.faces.application.FacesMessage;
@@ -123,6 +124,12 @@ public class RequestBean implements Serializable {
     @Getter
     @Setter
     private String selectedRequest;
+
+    @Getter
+    private String id;
+
+    @Getter
+    private String mimeType;
 
     @Getter
     private List<String> services;
@@ -215,14 +222,13 @@ public class RequestBean implements Serializable {
                 client.executeMethod( post );
                 Header[] headers = post.getResponseHeaders( "Content-Type" );
                 if ( headers.length > 0 ) {
-                    String mimeType = headers[0].getValue();
+                    mimeType = headers[0].getValue();
                     LOG.info( "Response mime type: " + mimeType );
                     if ( !mimeType.toLowerCase().contains( "xml" ) ) {
                         response = null;
                         FacesMessage fm = MessageUtils.getFacesMessage( FacesMessage.SEVERITY_INFO,
                                                                         "INFO_RESPONSE_NOT_XML" );
                         FacesContext.getCurrentInstance().addMessage( null, fm );
-                        return;
                     }
                 }
 
@@ -246,6 +252,17 @@ public class RequestBean implements Serializable {
                         sb.append( s );
                     }
                     response = sb.toString();
+
+                    id = UUID.randomUUID().toString();
+                    File tempFile = File.createTempFile( "response_" + id, "" );
+                    id = tempFile.getName();
+                    FileWriter fw = new FileWriter( tempFile );
+                    fw.write( response );
+                    fw.close();
+
+                    FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put( "mt", mimeType );
+                    FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put( "file", tempFile );
+
                 } finally {
                     IOUtils.closeQuietly( reader );
                 }
@@ -450,8 +467,8 @@ public class RequestBean implements Serializable {
         }
     }
 
-    @Override
-    public String toString() {
-        return generateToString( this );
-    }
+    // @Override
+    // public String toString() {
+    // return generateToString( this );
+    // }
 }
