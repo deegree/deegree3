@@ -22,11 +22,11 @@
                     <h:commandButton styleClass="buttonSave" value="#{labels.xmlEditor_save}"
                         action="${editConfig.save}" />
                     <h:commandButton styleClass="buttonCancel" value="#{labels.xmlEditor_cancel}"
-                        action="${editConfig.cancel}" />
+                        action="${editConfig.cancel}" /><br />
                 </h:panelGroup>
-
+				<br />
                 <dg:inputConfigurationXML id="inputXML" value="${editConfig.content}"
-                    schemaURLS="${editConfig.schemaURL}" cols="70" rows="28" />
+                    schemaURLS="${editConfig.schemaURL}" cols="70" rows="20" />
                 <!-- h:message for="inputXML" /-->
             </h:form>
         </h:panelGroup></div>
