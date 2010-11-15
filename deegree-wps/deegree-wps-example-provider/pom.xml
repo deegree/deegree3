@@ -5,7 +5,7 @@
   <artifactId>deegree-wps-example-provider</artifactId>
   <packaging>war</packaging>
   <version>3.0-SNAPSHOT</version>
-  <name>deegree 3 WPS Demo</name>
+  <name>deegree 3 WPS process provider demo</name>
   <url>http://maven.apache.org</url>
   <repositories>
     <repository>
@@ -19,8 +19,17 @@
   <dependencies>
     <dependency>
       <groupId>org.deegree</groupId>
-      <artifactId>deegree-services</artifactId>
+      <artifactId>deegree-services-console</artifactId>
       <version>3.0-SNAPSHOT</version>
+      <scope>runtime</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.deegree</groupId>
+      <artifactId>deegree-services-console</artifactId>
+      <version>3.0-SNAPSHOT</version>
+      <type>zip</type>
+      <classifier>webapp-template</classifier>
+      <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>javax.servlet</groupId>
@@ -36,7 +45,7 @@
     </dependency>
   </dependencies>
   <build>
-    <finalName>deegree-wps-demo</finalName>
+    <finalName>deegree-wps-example-provider</finalName>
     <plugins>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>

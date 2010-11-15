@@ -1,5 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<ExampleProvider xmlns="http://www.deegree.org/services/wps/example">
-  <Process id="Hello">Hello World!</Process>
-  <Process id="Answer">42</Process>
-</ExampleProvider>

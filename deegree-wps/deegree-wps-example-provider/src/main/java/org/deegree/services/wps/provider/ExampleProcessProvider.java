@@ -43,11 +43,11 @@ import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
 
 import org.deegree.commons.tom.ows.CodeType;
+import org.deegree.process.jaxb.java.LanguageStringType;
+import org.deegree.process.jaxb.java.LiteralOutputDefinition;
+import org.deegree.process.jaxb.java.ProcessDefinition;
+import org.deegree.process.jaxb.java.ProcessDefinition.OutputParameters;
 import org.deegree.services.exception.ServiceInitException;
-import org.deegree.services.jaxb.wps.LanguageStringType;
-import org.deegree.services.jaxb.wps.LiteralOutputDefinition;
-import org.deegree.services.jaxb.wps.ProcessDefinition;
-import org.deegree.services.jaxb.wps.ProcessDefinition.OutputParameters;
 import org.deegree.services.wps.GenericWPSProcess;
 import org.deegree.services.wps.WPSProcess;
 
@@ -91,7 +91,7 @@ public class ExampleProcessProvider implements ProcessProvider {
 
         ProcessDefinition definition = new ProcessDefinition();
 
-        org.deegree.services.jaxb.wps.CodeType id = new org.deegree.services.jaxb.wps.CodeType();
+        org.deegree.process.jaxb.java.CodeType id = new org.deegree.process.jaxb.java.CodeType();
         id.setValue( processId );
         definition.setIdentifier( id );
         definition.setProcessVersion( "0.0.1" );
@@ -103,7 +103,7 @@ public class ExampleProcessProvider implements ProcessProvider {
         definition.setTitle( title );
         OutputParameters outputs = new OutputParameters();
         LiteralOutputDefinition literalOutput = new LiteralOutputDefinition();
-        id = new org.deegree.services.jaxb.wps.CodeType();
+        id = new org.deegree.process.jaxb.java.CodeType();
         id.setValue( "LiteralOutput" );
         literalOutput.setIdentifier( id );
 
