@@ -58,7 +58,7 @@ public class ExampleProcessProviderProvider implements ProcessProviderProvider {
 
     private static final Logger LOG = LoggerFactory.getLogger( ExampleProcessProviderProvider.class );
 
-    private static final String CONFIG_NAMESPACE = "http://www.deegree.org/services/wps/example";
+    private static final String CONFIG_NAMESPACE = "http://www.deegree.org/processes/example";
 
     @Override
     public String getConfigNamespace() {
