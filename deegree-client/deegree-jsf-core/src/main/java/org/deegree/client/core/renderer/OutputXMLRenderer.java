@@ -179,7 +179,7 @@ public class OutputXMLRenderer extends Renderer {
 
                         writer.startElement( "span", null );
                         writer.writeAttribute( "class", "text", null );
-                        writer.write( reader.getAttributeValue( i ) );
+                        writer.write( encodeString( reader.getAttributeValue( i ) ) );
                         writer.endElement( "span" );
 
                         writer.startElement( "span", null );
@@ -228,7 +228,7 @@ public class OutputXMLRenderer extends Renderer {
                     if ( text.trim().length() > 0 ) {
                         writer.startElement( "span", null );
                         writer.writeAttribute( "class", "text", null );
-                        writer.write( text );
+                        writer.write( encodeString( text ) );
                         writer.endElement( "span" );
                         lastWasEndElement = false;
                         lastWasComment = false;
@@ -281,6 +281,29 @@ public class OutputXMLRenderer extends Renderer {
                 writer.writeText( "... (if you want the complete document, please click the download button)", null );
             }
         }
+    }
+
+    private static final char c[] = { '<', '>', '&', '\"' };
+
+    private static final String expansion[] = { "&lt;amp;", "&gt;amp;", "&amp;amp;", "&quot;amp;" };
+
+    private String encodeString( String s ) {
+        StringBuffer st = new StringBuffer();
+        for ( int i = 0; i < s.length(); i++ ) {
+            boolean copy = true;
+            char ch = s.charAt( i );
+            for ( int j = 0; j < c.length; j++ ) {
+                if ( c[j] == ch ) {
+                    st.append( expansion[j] );
+                    copy = false;
+                    break;
+                }
+            }
+            if ( copy ) {
+                st.append( ch );
+            }
+        }
+        return st.toString();
     }
 
     private String getSpaces( int depth ) {
