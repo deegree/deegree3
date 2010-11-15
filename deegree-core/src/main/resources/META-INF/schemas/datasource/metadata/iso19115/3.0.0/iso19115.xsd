@@ -19,10 +19,14 @@
 		</annotation>
 		<complexType>
 			<sequence>
+              <element name="JDBCConnId" type="string" />
 			  <element name="Inspectors" minOccurs="0">
 			    <complexType>
 			      <sequence>
-			        <element ref="ds:AbstractInspector" minOccurs="0" maxOccurs="unbounded" />
+			        <element ref="ds:FileIdentifierInspector" minOccurs="0" />
+                    <element ref="ds:InspireInspector" minOccurs="0" />
+                    <element ref="ds:CoupledResourceInspector" minOccurs="0" />
+                    <element ref="ds:SchemaValidator" minOccurs="0" />
 			      </sequence>
 			    </complexType>
 			  </element>
@@ -49,7 +53,6 @@
 					</complexType>
 				</element>
 			</sequence>
-			<attribute name="connId" type="string" use="required" />
 			<attribute name="configVersion" use="required" fixed="3.0.0" />
 		</complexType>
 	</element>
@@ -59,7 +62,7 @@
 			<documentation>The AbstractInspector is the base class of providing a check of 
 			the metadata while writing it to the metadataStore (this will affect the 
 			transaction operation by inserting or updating the metadata).
-</documentation>
+            </documentation>
 			<appinfo>
 				<jaxb:class name="AbstractInspector" />
 			</appinfo>
