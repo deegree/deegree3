@@ -34,6 +34,10 @@ body {
 	background-repeat: no-repeat;
 }
 
+.image {
+	
+}
+
 #apDivLogo {
 	position:absolute;
 	left:15px;
@@ -46,7 +50,7 @@ body {
 #apDivMain {
 	position:absolute;
 	left:83px;
-	top:92px;
+	top:120px;
 	width:770px;
 	height:490px;
 	z-index:2;
