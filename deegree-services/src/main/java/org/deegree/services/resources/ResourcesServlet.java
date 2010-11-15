@@ -74,6 +74,7 @@ public class ResourcesServlet extends HttpServlet {
      * {@link #doPost(HttpServletRequest, HttpServletResponse)} of this class (or has been spawned as a child thread by
      * such a thread).
      * </p>
+     * 
      * @param resourcePath
      * 
      * @return the HTTP URL (for GET requests)
@@ -92,6 +93,9 @@ public class ResourcesServlet extends HttpServlet {
         String resourcePath = request.getPathInfo();
         if ( !resourcePath.startsWith( "/" ) ) {
             throw new ServletException( "Requested resource path does not start with '/'." );
+        }
+        if ( !resourcePath.toLowerCase().endsWith( ".xsd" ) ) {
+            throw new ServletException( "Requested resource path does not end with '.xsd'." );
         }
         resourcePath = resourcePath.substring( 1 );
 
