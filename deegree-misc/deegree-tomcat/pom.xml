@@ -34,6 +34,14 @@
   </distributionManagement>
   <build>
     <finalName>deegree-tomcat</finalName>
+    <resources>
+      <resource>
+        <directory>src/main/resources/</directory>
+      </resource>
+      <resource>
+        <directory>target/generated-resources/</directory>
+      </resource>
+    </resources>
     <plugins>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -64,6 +72,41 @@
           </execution>
         </executions>
       </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>copy</id>
+            <phase>generate-resources</phase>
+            <goals>
+              <goal>copy</goal>
+            </goals>
+            <configuration>
+              <artifactItems>
+                <artifactItem>
+                  <groupId>org.deegree</groupId>
+                  <artifactId>deegree-javacheck</artifactId>
+                  <version>3.0-SNAPSHOT</version>
+                  <type>jar</type>
+                  <overWrite>true</overWrite>
+                  <outputDirectory>target/generated-resources/</outputDirectory>
+                  <destFileName>deegree-javacheck.jar</destFileName>
+                </artifactItem>
+              </artifactItems>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
     </plugins>
   </build>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.deegree</groupId>
+      <artifactId>deegree-javacheck</artifactId>
+      <version>3.0-SNAPSHOT</version>
+    </dependency>
+  </dependencies>
+
 </project>
