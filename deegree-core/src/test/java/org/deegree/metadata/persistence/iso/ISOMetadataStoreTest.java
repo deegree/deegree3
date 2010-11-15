@@ -229,6 +229,26 @@ public class ISOMetadataStoreTest {
     }
 
     @Test
+    public void testInsertMetametadata()
+                            throws MetadataStoreException, XMLStreamException, FactoryConfigurationError, IOException,
+                            MetadataInspectorException {
+        LOG.info( "START Test: testInsertMetametadata" );
+
+        if ( jdbcURL != null && jdbcUser != null && jdbcPass != null ) {
+            store = (ISOMetadataStore) new ISOMetadataStoreProvider().getMetadataStore( TstConstants.configURL );
+        }
+        if ( store == null ) {
+            LOG.warn( "Skipping test (needs configuration)." );
+            return;
+        }
+        store.setupMetametadata();
+        MetadataQuery query = new MetadataQuery( null, null, ResultType.results, 10, 1 );
+        MetadataResultSet resultSet = store.getRecords( query );
+        Assert.assertEquals( 1, resultSet.getMembers().size() );
+
+    }
+
+    @Test
     public void testNamespaces()
                             throws MetadataStoreException, XMLStreamException, FactoryConfigurationError, IOException,
                             MetadataInspectorException {
