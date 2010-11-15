@@ -65,7 +65,7 @@ import java.util.TreeSet;
 
 import javax.annotation.PostConstruct;
 import javax.faces.bean.ManagedBean;
-import javax.faces.bean.RequestScoped;
+import javax.faces.bean.SessionScoped;
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import javax.faces.event.AjaxBehaviorEvent;
@@ -92,7 +92,7 @@ import org.slf4j.Logger;
  * @version $Revision: $, $Date: $
  */
 @ManagedBean
-@RequestScoped
+@SessionScoped
 public class RequestBean implements Serializable {
 
     private static final long serialVersionUID = 293894352421399345L;
