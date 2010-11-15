@@ -56,6 +56,7 @@
     </dependency>
   </dependencies>
   <build>
+    <finalName>deegree-utah-demo</finalName>
     <plugins>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
