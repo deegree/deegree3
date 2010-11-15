@@ -10,6 +10,7 @@
 <h:head>
     <title>deegree 3 services</title>
     <h:outputStylesheet name="styles.css" />
+    <h:outputStylesheet name="indexstyle.css" />
     <h:outputScript name="console.js" />
 </h:head>
 <h:body>
@@ -25,56 +26,37 @@
     </div>
     <div id="PLEASEWAIT_BG"></div>
 
-    <pre><h:outputText value="#{applicationBean.logo}" /></pre>
-    <h:outputText
-        value="...has been successfully installed on this server." />
-    <br />
-    <br />
-    <h:outputText value="#{customlabels.intro}" />
-    <br />
-    <br />
+    <!-- <pre><h:outputText value="#{applicationBean.logo}" /></pre> -->
+    <div id="wrapper" align="center">
+<div id="apDivLogo"></div>
+
+  <div id="apDivMain">
+  <p class="welcome"> Welcome to the deegree utah demo.</p>
+  <p class="inline">Please note that this web interface is still in beta stage -- it's not a 
+stable component of the deegree 3.0 release. Currently, not all aspects 
+of the <a href="http://wiki.deegree.org/deegreeWiki/deegree3/WorkspaceConfiguration" target="_blank">service 
+configuration</a> can be configured using this interface and sometimes things may not work as expected. There are known issues with Chrome and 
+Safari browsers, it's best tested with Firefox. For information on manual configuration of deegree 3, please refer to the 
+<a href="http://wiki.deegree.org/deegreeWiki/deegree3/WorkspaceConfiguration" target="_blank">deegree wiki</a>.
+With that said, enjoy and <a href="http://tracker.deegree.org/deegree-services" target="_blank">let us know</a> if you encounter issues. <br/> Also, you may want to consider <a href="http://wiki.deegree.org/deegreeWiki/GettingInvolved" target="_blank">contributing</a> 
+to improve it.</p>
+<br/>
+ <p class="inline"> OGC Service Adress: <h:outputText styleClass="url" value="#{facesContext.externalContext.requestScheme}://#{facesContext.externalContext.requestServerName}:#{facesContext.externalContext.requestServerPort}#{facesContext.externalContext.requestContextPath}/services" /></p><br/>
+ <p class="explain"><a href="http://wiki.deegree.org/deegreeWiki/deegree3" target="_blank">Dokumentation</a> <br/>Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. </p> 
+ <p class="explain"> <a href="#{facesContext.externalContext.requestContextPath}/console.jsf" target="_blank"> Administration console </a> <br/>Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. </p>
+ <p class="explain"><a href="#{facesContext.externalContext.requestContextPath}/console/wms/wms.html" target="_blank"> See Layers </a> <br/> Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. </p> 
+ <p class="explain"> <a href="#{facesContext.externalContext.requestContextPath}/console/client/client.xhtml" target="_blank"> Send Example Requests </a> <br/>Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. </p> 
+
     <h:form id="downloadForm">
-        <h:outputText value="#{customlabels.download_intro1}"
-            rendered="#{!downloadBean.dataDownloaded}" />
-        <br />
-        <h:outputText value="#{customlabels.download_intro2}"
-            rendered="#{!downloadBean.dataDownloaded}" />
-        <br />
-        <br />
-        <h:panelGroup rendered="#{!downloadBean.dataDownloaded}">
-        [<h:commandButton value="Download data"
-                action="#{downloadBean.download}" onclick="show();" />]
-        <h:outputText value="#{customlabels.download_size}"
-                rendered="#{!downloadBean.dataDownloaded}" />
-        </h:panelGroup>
-        <br />
-        <br />
-        <h:outputText value="#{customlabels.download_outro1}"
-            rendered="#{!downloadBean.dataDownloaded}" />
-        <br />
-        <h:outputText value="#{customlabels.download_outro2}"
-            rendered="#{!downloadBean.dataDownloaded}" />
+      <h:panelGroup rendered="#{!downloadBean.dataDownloaded}">
+        <h:commandButton styleClass="buttonData" value="Download data" action="#{downloadBean.download}" onclick="show();" />
+      </h:panelGroup>
     </h:form>
-    <br />
-     [<a href="console.jsf" target="_blank">Administration console</a>]
-    <br />
-    <br />
-     [<a href="console/client/client.html" target="_blank">Generic
-    OGC client</a>]
-    <br />
-    <br />
-     [<a href="console/wms/wms.html" target="_blank">OpenLayers WMS
-    client</a>]
-    <br />
-    <br />
-    <h:outputText value="#{customlabels.info}" />
-    <br />
-    [<dg:externalLink target="_blank"
-        href="http://wiki.deegree.org/deegreeWiki/deegree3/UtahDemo"
-        title="Wiki: Utah demo" />]  
-        <br />
-    [<dg:externalLink target="_blank"
-        href="http://wiki.deegree.org/deegreeWiki/deegree3"
-        title="Wiki: deegree 3" />] 
+</div>
+<div id="apDivFooter">
+
+<a href="http://deegree.org/" target="_blank">deegree.org</a> &nbsp; &nbsp;<a href="http://www.osgeo.org/deegree" target="_blank">OSGeo.org</a>
+</div>
+</div>
 </h:body>
 </html>
