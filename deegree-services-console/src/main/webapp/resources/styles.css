@@ -98,6 +98,18 @@ body {
 	color: orange;
 }
 
+.welcomeText {
+	font:85% Verdana,Arial,Helvetica,sans-serif;
+	color: gray;
+	text-align: justify;
+	margin-right: 50px;
+}
+
+.welcomeLink {
+	font:95% Verdana,Arial,Helvetica,sans-serif;
+	color: orange;
+}
+
 
 /** START: button **/
 

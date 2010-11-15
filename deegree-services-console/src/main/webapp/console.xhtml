@@ -9,17 +9,17 @@
 <h:body>
   <ui:composition template="layout.xhtml">
     <ui:define name="center">
-      <h:outputText value="#{labels.welcome}" />
-      <p class="inline">Please note that this web interface is still in beta stage -- it's not a stable component of
-      the deegree 3.0 release. Currently, not all aspects of the <a
+      <h:outputText styleClass="welcomeText" value="#{labels.welcome}" />
+      <p class="welcomeText">Please note that this web interface is still in beta stage -- it's not a stable component of
+      the deegree 3.0 release.</p><p class="welcomeText"> Currently, not all aspects of the <a class="welcomeLink"
         href="http://wiki.deegree.org/deegreeWiki/deegree3/WorkspaceConfiguration" target="_blank">service
       configuration</a> can be configured using this interface and sometimes things may not work as expected. There are
       known issues with Chrome and Safari browsers, it's best tested with Firefox. For information on manual
       configuration of deegree 3, please refer to the <a
-        href="http://wiki.deegree.org/deegreeWiki/deegree3/WorkspaceConfiguration" target="_blank">deegree wiki</a>.
-      With that said, enjoy and <a href="http://tracker.deegree.org/deegree-services" target="_blank">let us know</a> if
-      you encounter issues. <br />
-      Also, you may want to consider <a href="http://wiki.deegree.org/deegreeWiki/GettingInvolved" target="_blank">contributing</a>
+        href="http://wiki.deegree.org/deegreeWiki/deegree3/WorkspaceConfiguration" target="_blank" class="welcomeLink">deegree wiki</a>.</p>
+      <p class="welcomeText">That said, enjoy and <a href="http://tracker.deegree.org/deegree-services" target="_blank" class="welcomeLink">let us know</a> if
+      you encounter issues. 
+      Also, you may want to consider <a href="http://wiki.deegree.org/deegreeWiki/GettingInvolved" target="_blank" class="welcomeLink">contributing</a>
       to improve it.</p>
     </ui:define>
   </ui:composition>
