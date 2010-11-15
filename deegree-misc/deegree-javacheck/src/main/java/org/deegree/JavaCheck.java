@@ -57,7 +57,7 @@ public class JavaCheck {
     private static void alert() {
 
         String msg = "You need to have Java SDK 1.6 (Update 4) or later installed in order to run this software.";
-        String msg2 = "See http://wiki.deegree.org/deegreeWiki/deegree3/users#Systemrequirements for details.";
+        String msg2 = "See http://wiki.deegree.org/deegreeWiki/deegree3/SystemRequirements for details.";
         System.err.println( msg );
 
         try {
