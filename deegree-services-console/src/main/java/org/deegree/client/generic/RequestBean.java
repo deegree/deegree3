@@ -220,7 +220,7 @@ public class RequestBean implements Serializable {
                 Header[] headers = post.getResponseHeaders( "Content-Type" );
                 if ( headers.length > 0 ) {
                     mimeType = headers[0].getValue();
-                    LOG.info( "Response mime type: " + mimeType );
+                    LOG.debug( "Response mime type: " + mimeType );
                     if ( !mimeType.toLowerCase().contains( "xml" ) ) {
                         response = null;
                         FacesMessage fm = MessageUtils.getFacesMessage( FacesMessage.SEVERITY_INFO,
