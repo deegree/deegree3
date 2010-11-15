@@ -39,7 +39,7 @@ import java.awt.Button;
 import java.awt.Dialog;
 import java.awt.Frame;
 import java.awt.GridLayout;
-import java.awt.Label;
+import java.awt.TextField;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -61,9 +61,7 @@ public class JavaCheck {
         System.err.println( msg );
 
         try {
-            Frame window = new Frame( "Invisible frame" );
-            window.pack();
-            Dialog d = new Dialog( window, "Incompatible Java installation", true );
+            Dialog d = new Dialog( new Frame(), "Incompatible Java installation", true );
             d.setLayout( new GridLayout( 3, 1 ) );
 
             // Create an OK button
@@ -74,8 +72,12 @@ public class JavaCheck {
                 }
             } );
 
-            d.add( new Label( msg, Label.CENTER ) );
-            d.add( new Label( msg2, Label.CENTER ) );
+            TextField field = new TextField( msg );
+            field.setBackground( d.getBackground() );
+            d.add( field );
+            field = new TextField( msg2 );
+            field.setBackground( d.getBackground() );
+            d.add( field );
             d.add( ok );
 
             // Show dialog
