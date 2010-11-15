@@ -1,0 +1,140 @@
+body {
+	font: 100% Verdana, Arial, Helvetica, sans-serif;
+	margin: 0;
+	padding: 0;
+	text-align: center;
+	color: #FFF;
+	position: relative;
+	background-color: #FFF;
+}
+
+.buttonData {
+	color: green;
+	font:100% Verdana,Arial,Helvetica,sans-serif;
+	background-color: white;
+	border: 1px;
+}
+	
+#wrapper {
+	text-align: justify;
+	margin-top: 0;
+	margin-right: auto;
+	margin-bottom: 0px;
+	margin-left: auto;
+	position: relative;
+	left: 0px;
+	top: 0px;
+	width:930px;
+	height:690px;
+	z-index:1;
+	top: 0px;
+	left: auto;
+	text-decoration: none;
+	background-image:url("#{resource['images:bg.png']}");
+	background-repeat: no-repeat;
+}
+
+#apDivLogo {
+	position:absolute;
+	left:15px;
+	top:16px;
+	width:208px;
+	height:60px;
+	z-index:2;
+}
+
+#apDivMain {
+	position:absolute;
+	left:83px;
+	top:92px;
+	width:770px;
+	height:490px;
+	z-index:2;
+	color: #888;
+	font-size: small;
+}
+
+#apDivFooter{
+	position:absolute;
+	left:83px;
+	top:613px;
+	width:770px;
+	height:33px;
+	color: #888;
+	font-size: x-small;
+	text-align:right;
+	z-index:2;
+}
+
+.content {
+	font-family: Verdana, Geneva, sans-serif;
+	font-size: small;
+	font-weight: normal;
+	color: #555;
+	text-decoration: none;
+	background-color: #FFF;
+	position: relative;
+	left: 20;
+	overflow: scroll;
+}
+.welcome {
+	font-size: medium;
+	font-weight: normal;
+	font-variant: normal;
+	color: #F90;
+	text-decoration: none;
+}
+
+.inline {
+	font-size:85%;
+}
+
+.explain {
+	font-size: smaller;
+	line-height: normal;
+	color: #AAA;
+}
+.dokumentation {
+	font-size: medium;
+	color: #69F;
+}
+
+.url{
+	color:#F90;
+}
+
+.console {
+	text-decoration: none;
+}
+
+a {
+	font-size: 130%;
+	color: #888;
+	text-decoration: none;
+	line-height: 25px;
+}
+
+a:hover {
+	color:#390;
+	font-size: 130%;
+	}
+	
+#wrapper #apDivFooter a {
+	font-size: x-small;
+	font-weight: normal;
+	font-variant: normal;
+	text-decoration: none;
+}
+
+#wrapper #apDivFooter a:hover {
+	color:#66F;
+}
+#wrapper #apDivMain .inline a {
+	font-size: small;
+	color: #666;
+}
+
+#wrapper #apDivMain .inline a:hover {
+	font-size: small;
+	color: #F90;
+}
