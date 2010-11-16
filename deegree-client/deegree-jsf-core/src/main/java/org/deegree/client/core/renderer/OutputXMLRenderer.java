@@ -274,9 +274,9 @@ public class OutputXMLRenderer extends Renderer {
 
             }
             reader.close();
-        } catch ( XMLStreamException e ) {
+        } catch ( Throwable e ) {
             if ( depth == 0 ) {
-                writer.writeText( value, null );
+                writer.writeText( "Response could not parsed as XML.", null );
             } else {
                 writer.writeText( "... (if you want the complete document, please click the download button)", null );
             }
