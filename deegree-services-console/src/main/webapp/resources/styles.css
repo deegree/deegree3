@@ -62,6 +62,9 @@ body {
 	width: 600px;
 	font-size: small;
 	text-align: left;
+	overflow-x: auto;
+	overflow-y: auto;
+	height: 500px;
 }
 
 #footer {
@@ -71,6 +74,12 @@ body {
 	clear: both;
 	text-align: right;
 	margin-top: 10px;
+}
+
+.fieldset {
+    border-color: #cccccc;                                                                                                                                                                                   
+    border-style: solid;                                                                                                                                                                                           
+    border-width: 1px;                                                                                                                                                                                            
 }
 
 .clear {
@@ -300,7 +309,7 @@ a {
 	height: 100%;
 	z-index: 10;
 	opacity: .20;
-	filter: alpha(opacity =                                         50);
+	filter: alpha(opacity = 50);
 	-moz-opacity: 0.2;
 	background-color: gray;
 	display: none;
