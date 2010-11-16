@@ -37,6 +37,7 @@ package org.deegree.client.generic;
 
 import static java.util.Collections.sort;
 import static org.deegree.commons.utils.CollectionUtils.unzipPair;
+import static org.deegree.commons.utils.net.HttpUtils.enableProxyUsage;
 import static org.deegree.services.controller.FrontControllerStats.getKVPRequests;
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -204,16 +205,17 @@ public class RequestBean implements Serializable {
         loadExample();
     }
 
-    public void sendRequest() {
+    public void sendRequest()
+                            throws UnsupportedEncodingException {
         if ( !request.startsWith( "<?xml" ) ) {
             request = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" + request;
         }
         LOG.debug( "Try to send the following request to " + targetUrl + " : \n" + request );
         if ( targetUrl != null && targetUrl.length() > 0 && request != null && request.length() > 0 ) {
-            InputStream is = new ByteArrayInputStream( request.getBytes() );
+            InputStream is = new ByteArrayInputStream( request.getBytes( "UTF-8" ) );
             try {
                 DURL u = new DURL( targetUrl );
-                HttpClient client = HttpUtils.enableProxyUsage( new HttpClient(), u );
+                HttpClient client = enableProxyUsage( new HttpClient(), u );
                 PostMethod post = new PostMethod( targetUrl );
                 post.setRequestEntity( new InputStreamRequestEntity( is ) );
                 client.executeMethod( post );
@@ -228,7 +230,7 @@ public class RequestBean implements Serializable {
                         FacesContext.getCurrentInstance().addMessage( null, fm );
                     }
                 }
-                if (mimeType == null) {
+                if ( mimeType == null ) {
                     mimeType = "text/plain";
                 }
 
@@ -403,7 +405,7 @@ public class RequestBean implements Serializable {
         if ( selectedRequest != null ) {
             LOG.debug( "load request " + selectedRequest );
             File file = new File( requestsBaseDir, selectedRequest );
-            if ( file != null && file.exists() ) {
+            if ( file.exists() ) {
                 XMLAdapter adapter = new XMLAdapter( file );
                 setRequest( adapter.toString() );
             }
@@ -456,9 +458,9 @@ public class RequestBean implements Serializable {
         }
     }
 
-    
-    public String getDlparams() throws UnsupportedEncodingException {
-        return "mt=" + URLEncoder.encode( mimeType, "UTF-8" ) + "&file=" + URLEncoder.encode( responseFile, "UTF-8" ); 
+    public String getDlparams()
+                            throws UnsupportedEncodingException {
+        return "mt=" + URLEncoder.encode( mimeType, "UTF-8" ) + "&file=" + URLEncoder.encode( responseFile, "UTF-8" );
     }
     // @Override
     // public String toString() {
