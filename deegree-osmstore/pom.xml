@@ -4,7 +4,7 @@
   <groupId>org.deegree</groupId>
   <artifactId>deegree-osmstore</artifactId>
   <packaging>jar</packaging>
-  <version>3.0-SNAPSHOT</version>
+  <version>3.1-SNAPSHOT</version>
   <name>deegree-osmstore</name>
   <url>http://www.deegree.org</url>
   <scm>
@@ -47,7 +47,7 @@
     <dependency>
       <groupId>org.deegree</groupId>
       <artifactId>deegree-core</artifactId>
-      <version>3.0-SNAPSHOT</version>
+      <version>3.1-SNAPSHOT</version>
     </dependency>
   </dependencies>
 </project>
