@@ -315,8 +315,7 @@ public class ISOMetadataStoreTest {
         }
 
         MetadataStoreTransaction ta = store.acquireTransaction();
-        List<String> ids = insertMetadata( store, ta, TstConstants.tst_9, TstConstants.tst_10, TstConstants.tst_11,
-                                           TstConstants.tst_1 );
+        List<String> ids = insertMetadata( store, ta, TstConstants.tst_9, TstConstants.tst_10, TstConstants.tst_1 );
 
         LOG.info( "Inserted records with ids: " + ids + ". Now: delete them..." );
         String fileString = TstConstants.propEqualToID.getFile();
@@ -818,7 +817,7 @@ public class ISOMetadataStoreTest {
      * @throws MetadataStoreException
      * @throws MetadataInspectorException
      */
-    @Test(expected = MetadataInspectorException.class)
+    @Test
     public void testResourceIdentifierGenerateFALSE_NO_RS_ID()
                             throws MetadataStoreException, MetadataInspectorException {
         LOG.info( "START Test: test if the configuration throws an exception because of the wrong ResourceIdentifier-combination while there is no automatic generating." );
@@ -832,6 +831,9 @@ public class ISOMetadataStoreTest {
         }
         MetadataStoreTransaction ta = store.acquireTransaction();
         List<String> ids = insertMetadata( store, ta, TstConstants.tst_2 );
+
+        MetadataResultSet resultSet = store.getRecordsById( ids );
+        Assert.assertEquals( 1, resultSet.getMembers().size() );
 
     }
 
