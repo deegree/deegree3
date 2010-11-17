@@ -118,22 +118,23 @@ public class ResourceIdentifier implements InspireCompliance {
         if ( checkAvailability( ric ) ) {
             boolean generateAutomatic = ric.isGenerateMissingResourceIdentifier();
             if ( generateAutomatic == false ) {
-                if ( id != null ) {
-                    if ( util.checkUUIDCompliance( id ) ) {
-                        if ( checkRSListAgainstID( rsList, id ) ) {
-                            LOG.info( Messages.getMessage( "INFO_RI_ACCEPTED" ) );
-                            return rsList;
-                        }
+                if ( rsList != null && !rsList.isEmpty() ) {
+                    if ( util.checkUUIDCompliance( rsList ) ) {
+
+                        LOG.info( Messages.getMessage( "INFO_RI_ACCEPTED" ) );
+                        return rsList;
+
+                    } else {
+                        String msg = Messages.getMessage( "ERROR_RI_NOT_UUID" );
+                        LOG.debug( msg );
+                        JDBCUtils.close( conn );
+                        throw new MetadataInspectorException( msg );
                     }
                 }
                 String msg = Messages.getMessage( "ERROR_RI_ID" );
                 LOG.debug( msg );
                 JDBCUtils.close( conn );
                 throw new MetadataInspectorException( msg );
-            }
-            if ( checkRSListAgainstID( rsList, id ) ) {
-                LOG.info( Messages.getMessage( "INFO_RI_ACCEPTED" ) );
-                return rsList;
             }
             /**
              * if both, id and resourceIdentifier exists but different: update id with resourceIdentifier
@@ -163,27 +164,7 @@ public class ResourceIdentifier implements InspireCompliance {
             }
         }
         LOG.info( Messages.getMessage( "INFO_RI_NO_MODIFICATION" ) );
-        // rsList.clear();
         return rsList;
-    }
-
-    private boolean checkRSListAgainstID( List<String> rsList, String id ) {
-
-        if ( rsList.size() == 0 ) {
-            return false;
-
-        } else {
-
-            if ( util.checkUUIDCompliance( rsList.get( 0 ) ) ) {
-
-                if ( id != null && util.checkUUIDCompliance( id ) ) {
-                    return rsList.get( 0 ).equals( id );
-                }
-
-            }
-
-        }
-        return false;
     }
 
     @Override
@@ -259,9 +240,6 @@ public class ResourceIdentifier implements InspireCompliance {
 
             LOG.info( "id attribute is now: '"
                       + sv_service_OR_md_dataIdentification.getAttributeValue( new QName( "id" ) ) + "' " );
-            // LOG.debug( "id attribute is now: '"
-            // + sv_service_OR_md_dataIdentification.getAttributeValue( new QName( nsContext.getURI( "gmd" ),
-            // "id", "gmd" ) ) + "' " );
         }
 
         // check where to set the resourceIdentifier element
