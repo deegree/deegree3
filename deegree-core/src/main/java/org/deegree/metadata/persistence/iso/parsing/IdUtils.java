@@ -227,4 +227,17 @@ public class IdUtils {
         return true;
     }
 
+    public boolean checkUUIDCompliance( List<String> list ) {
+
+        for ( String s : list ) {
+            boolean isUUID = checkUUIDCompliance( s );
+            if ( !isUUID ) {
+                return false;
+            }
+        }
+
+        return true;
+
+    }
+
 }
