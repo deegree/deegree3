@@ -99,7 +99,7 @@ public class Java2DTextRenderer implements TextRenderer {
                                                                                new Point2D.Double( p.get0(), p.get1() ),
                                                                                null );
         double x = pt.x + renderer.considerUOM( styling.displacementX, styling.uom );
-        double y = pt.y + renderer.considerUOM( styling.displacementY, styling.uom );
+        double y = pt.y - renderer.considerUOM( styling.displacementY, styling.uom );
         renderer.graphics.setFont( font );
         AffineTransform transform = renderer.graphics.getTransform();
         renderer.graphics.rotate( toRadians( styling.rotation ), x, y );
