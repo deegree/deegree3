@@ -230,7 +230,7 @@ public class Java2DRenderer implements Renderer {
         }
 
         double x0 = x - width * graphic.anchorPointX + considerUOM( graphic.displacementX, uom );
-        double y0 = y - height * graphic.anchorPointY + considerUOM( graphic.displacementY, uom );
+        double y0 = y - height * graphic.anchorPointY - considerUOM( graphic.displacementY, uom );
 
         return new Rectangle2D.Double( x0, y0, width, height );
     }
