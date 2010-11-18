@@ -17,13 +17,16 @@ import javax.xml.stream.XMLStreamWriter;
 public class OSMReader {
 
     String ndref ="";
+    String noderef = "";
+    String wayref = "";
+    String relationref = "";
     
     	public void getBounds () throws XMLStreamException, FileNotFoundException, IOException
     	{
-    		//FileWriter output= new FileWriter(new File("C:/Dokumente und Einstellungen/Besitzer/Desktop/test.gml"));
+    		//FileWriter output= new FileWriter(new File("/home/goerke/Desktop/test.gml"));
     		XMLOutputFactory outputFactory = XMLOutputFactory.newInstance();
             XMLStreamWriter writer = outputFactory.createXMLStreamWriter( System.out );
-    		InputStream in = new FileInputStream( "C:/Dokumente und Einstellungen/Besitzer/Desktop/map.osm" );
+    		InputStream in = new FileInputStream( "/home/goerke/Desktop/map.osm" );
             XMLInputFactory inputFactory = XMLInputFactory.newInstance();
             XMLStreamReader parser = inputFactory.createXMLStreamReader( in );
             
@@ -55,7 +58,7 @@ public class OSMReader {
     	{
     		XMLOutputFactory outputFactory = XMLOutputFactory.newInstance();
             XMLStreamWriter writer = outputFactory.createXMLStreamWriter( System.out );
-    		InputStream in = new FileInputStream( "C:/Dokumente und Einstellungen/Besitzer/Desktop/map.osm" );
+    		InputStream in = new FileInputStream( "/home/goerke/Desktop/map.osm" );
             XMLInputFactory inputFactory = XMLInputFactory.newInstance();
             XMLStreamReader parser = inputFactory.createXMLStreamReader( in );
             
@@ -64,7 +67,7 @@ public class OSMReader {
                 
                 if ( event == XMLStreamReader.START_ELEMENT && "node".equals( parser.getLocalName())) {
                 	
-                	
+                	noderef = parser.getAttributeValue( 0 ).toString();
                     writer.writeStartElement( "gml", "featureMember", "http://www.opengis.net/gml" );
                     writer.writeStartElement( "osm", "node", "http://www.openstreetmap.org/osm" );
                     String nodeid, lat, lon;
@@ -79,9 +82,11 @@ public class OSMReader {
                     writer.writeEndElement();
                     writer.writeEndElement();
                     writer.writeEndElement();
-                    parser.nextTag();
-
+                    parser.next();
+                    parser.next();
+                    parser.next();
                     this.getTags();
+                    
                     writer.writeEndElement();
                     writer.writeEndElement();
                 }  
@@ -93,7 +98,7 @@ public class OSMReader {
     	{
     		XMLOutputFactory outputFactory = XMLOutputFactory.newInstance();
             XMLStreamWriter writer = outputFactory.createXMLStreamWriter( System.out );
-    		InputStream in = new FileInputStream( "C:/Dokumente und Einstellungen/Besitzer/Desktop/map.osm" );
+    		InputStream in = new FileInputStream( "/home/goerke/Desktop/map.osm" );
             XMLInputFactory inputFactory = XMLInputFactory.newInstance();
             XMLStreamReader parser = inputFactory.createXMLStreamReader( in );
             
@@ -101,7 +106,7 @@ public class OSMReader {
                  int event = parser.next();
                  
                  if ( event == XMLStreamReader.START_ELEMENT && "way".equals( parser.getLocalName())) {
-                     
+                     wayref = parser.getAttributeValue( 0 ).toString();
                      String wayid;
                      wayid = "way" + parser.getAttributeValue( 0 ).toString();
 
@@ -111,7 +116,7 @@ public class OSMReader {
                      writer.writeStartElement( "osm", "geometry", "http://www.openstreetmap.org/osm" );
                      writer.writeStartElement( "gml", "LineString", "http://www.opengis.net/gml" );
                      parser.nextTag();
-
+                     
                      while ( event == XMLStreamReader.START_ELEMENT && "nd".equals(parser.getLocalName()) )
                      {
                     	 ndref = parser.getAttributeValue( 0 );
@@ -119,18 +124,23 @@ public class OSMReader {
                     	 parser.nextTag();
                     	 parser.nextTag();
                      }
-                     
+                     writer.writeEndElement();
+                     writer.writeEndElement();
                      this.getTags();
                      writer.writeEndElement();
                      writer.writeEndElement();
-                 }    
-    		}     
+                     }
+                     
+                
+                 }
+    		    
+    		
     	}
     	
     	public void getWayNodes() throws XMLStreamException, FileNotFoundException{
     		XMLOutputFactory outputFactory = XMLOutputFactory.newInstance();
             XMLStreamWriter writer = outputFactory.createXMLStreamWriter( System.out );
-    		InputStream in = new FileInputStream( "C:/Dokumente und Einstellungen/Besitzer/Desktop/map.osm" );
+    		InputStream in = new FileInputStream( "/home/goerke/Desktop/map.osm" );
             XMLInputFactory inputFactory = XMLInputFactory.newInstance();
             XMLStreamReader parser = inputFactory.createXMLStreamReader( in );
             
@@ -155,7 +165,7 @@ public class OSMReader {
     	{
     		XMLOutputFactory outputFactory = XMLOutputFactory.newInstance();
             XMLStreamWriter writer = outputFactory.createXMLStreamWriter( System.out );
-    		InputStream in = new FileInputStream( "C:/Dokumente und Einstellungen/Besitzer/Desktop/map.osm" );
+    		InputStream in = new FileInputStream( "/home/goerke/Desktop/map.osm" );
             XMLInputFactory inputFactory = XMLInputFactory.newInstance();
             XMLStreamReader parser = inputFactory.createXMLStreamReader( in );
             
@@ -164,6 +174,7 @@ public class OSMReader {
                  
                  if ( event == XMLStreamReader.START_ELEMENT && "relation".equals(parser.getLocalName())) {
                      String relationid;
+                     relationref = parser.getAttributeValue( 0 ).toString();
                      relationid = "relation" + parser.getAttributeValue( 0 ).toString();
                      
                      writer.writeStartElement( "gml", "featureMember", "http://www.opengis.net/gml" );
@@ -180,7 +191,18 @@ public class OSMReader {
                        parser.nextTag(); 
                        parser.nextTag();
                      }
-                     this.getTags();
+                     while ( event == XMLStreamReader.START_ELEMENT && "tag".equals( parser.getLocalName() ) ) {
+                         System.out.println("asasdasd");
+                         String key, value;
+                         key = parser.getAttributeValue( 0 ).toString();
+                         value = parser.getAttributeValue( 1 ).toString();
+                         writer.writeStartElement( "osm", key, "http://www.openstreetmap.org/osm" );
+                         writer.writeCharacters( value );
+                         parser.nextTag();
+                         parser.nextTag();
+                         writer.writeEndElement();
+
+                     }
                      parser.nextTag();
                      writer.writeEndElement();
                      writer.writeEndElement();
@@ -194,15 +216,18 @@ public class OSMReader {
     	{
     		XMLOutputFactory outputFactory = XMLOutputFactory.newInstance();
             XMLStreamWriter writer = outputFactory.createXMLStreamWriter( System.out );
-    		InputStream in = new FileInputStream( "C:/Dokumente und Einstellungen/Besitzer/Desktop/map.osm" );
+    		InputStream in = new FileInputStream( "/home/goerke/Desktop/map.osm" );
             XMLInputFactory inputFactory = XMLInputFactory.newInstance();
             XMLStreamReader parser = inputFactory.createXMLStreamReader( in );
-            
     		while ( parser.hasNext() ) {
                  int event = parser.next();
-                 if ( event == XMLStreamReader.START_ELEMENT && "node".equals( parser.getLocalName())) {
+
+                 
+                 
+                 if ( event == XMLStreamReader.START_ELEMENT && "node".equals( parser.getLocalName() ) && noderef.equals(parser.getAttributeValue(0)) ) {
+                   parser.nextTag();
+                   parser.nextTag();
                  while ( event == XMLStreamReader.START_ELEMENT && "tag".equals( parser.getLocalName() ) ) {
-                     
                      String key, value;
                      key = parser.getAttributeValue( 0 ).toString();
                      value = parser.getAttributeValue( 1 ).toString();
@@ -214,8 +239,14 @@ public class OSMReader {
 
                  }
                }
-               if ( event == XMLStreamReader.START_ELEMENT && "way".equals( parser.getLocalName())) {
-                     while ( event == XMLStreamReader.START_ELEMENT && "tag".equals( parser.getLocalName() ) ) {
+               while ( event == XMLStreamReader.START_ELEMENT && "way".equals( parser.getLocalName()) && wayref.equals(parser.getAttributeValue(0))) {
+                   parser.nextTag();
+                     if ( event == XMLStreamReader.START_ELEMENT && "nd".equals( parser.getLocalName() ) ) {
+                         
+                        //TODO FOR Schleife, die nd' s zaehlt und 2x nextTag ausfuehrt bis alle nd's weg sind
+                         System.out.println(parser.getLocation());
+                     }
+                     if ( event == XMLStreamReader.START_ELEMENT && "tag".equals( parser.getLocalName() ) ) {
                          
                          String key, value;
                          key = parser.getAttributeValue( 0 ).toString();
@@ -227,8 +258,11 @@ public class OSMReader {
                          writer.writeEndElement();
 
                      }
+                     
                    }
-               if ( event == XMLStreamReader.START_ELEMENT && "relation".equals( parser.getLocalName())) {
+               if ( event == XMLStreamReader.START_ELEMENT && "relation".equals( parser.getLocalName()) && relationref.equals(parser.getAttributeValue(0))) {
+                   parser.nextTag();
+                   parser.nextTag();
                      while ( event == XMLStreamReader.START_ELEMENT && "tag".equals( parser.getLocalName() ) ) {
                          
                          String key, value;

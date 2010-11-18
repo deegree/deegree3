@@ -37,8 +37,14 @@ package org.deegree.feature.persistence.osm;
 
 import static org.slf4j.LoggerFactory.getLogger;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import javax.xml.namespace.QName;
 
+import org.deegree.commons.tom.primitive.PrimitiveType;
 import org.deegree.feature.persistence.FeatureStore;
 import org.deegree.feature.persistence.FeatureStoreException;
 import org.deegree.feature.persistence.FeatureStoreTransaction;
@@ -47,6 +53,9 @@ import org.deegree.feature.persistence.query.FeatureResultSet;
 import org.deegree.feature.persistence.query.Query;
 import org.deegree.feature.types.ApplicationSchema;
 import org.deegree.feature.types.FeatureType;
+import org.deegree.feature.types.GenericFeatureType;
+import org.deegree.feature.types.property.PropertyType;
+import org.deegree.feature.types.property.SimplePropertyType;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.geometry.Envelope;
 import org.deegree.gml.GMLObject;
@@ -88,7 +97,14 @@ public class OSMFeatureStore implements FeatureStore {
 
     @Override
     public ApplicationSchema getSchema() {
-        return new ApplicationSchema( new FeatureType[0], null, null, null );
+        QName ftName = new QName( "http://www.deegree.org/osm", "OSMFeature", "osm" );
+        List<PropertyType> pts = new ArrayList<PropertyType>();
+        QName propName = new QName( "http://www.deegree.org/osm", "myprop", "osm" );
+        pts.add( new SimplePropertyType( propName, 1, 1, PrimitiveType.STRING, false, false, null ) );
+        FeatureType ft = new GenericFeatureType( ftName, pts, false );
+        Map<String, String> prefixToNS = new HashMap<String, String>();
+        prefixToNS.put( "osm", "http://www.deegree.org/osm" );
+        return new ApplicationSchema( new FeatureType[] { ft }, null, prefixToNS, null );
     }
 
     @Override

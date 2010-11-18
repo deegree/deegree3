@@ -14,9 +14,9 @@ public class OSMBuilder {
 	public static void main( String args[] )
     throws XMLStreamException, FileNotFoundException, IOException {
 	
-    FileWriter output=new FileWriter(new File("C:/Dokumente und Einstellungen/Besitzer/Desktop/test.gml"));
+   //FileWriter output=new FileWriter(new File("/home/goerke/Desktop/test.gml"));
     XMLOutputFactory outputFactory = XMLOutputFactory.newInstance();
-    XMLStreamWriter writer = outputFactory.createXMLStreamWriter( output );
+    XMLStreamWriter writer = outputFactory.createXMLStreamWriter( System.out );
     OSMReader OSMReader;
     OSMReader = new OSMReader();
     writer.setDefaultNamespace( "http://www.opengis.net/gml" );
@@ -25,8 +25,8 @@ public class OSMBuilder {
     writer.writeStartElement( "gml", "FeatureCollection", "http://www.opengis.net/gml" );
 
     OSMReader.getBounds();
-    OSMReader.getNodes();
-    //OSMReader.getWays();
+    //OSMReader.getNodes();
+    OSMReader.getWays();
     //OSMReader.getRelations();
     
     writer.writeEndDocument();
