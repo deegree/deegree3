@@ -609,7 +609,11 @@ public class MapService {
         }
     }
 
-    protected static final BufferedImage postprocessPng8bit( final BufferedImage img ) {
+    /**
+     * @param img
+     * @return a new 8bit image, quantized
+     */
+    public static final BufferedImage postprocessPng8bit( final BufferedImage img ) {
         RenderedOp torgb = BandSelectDescriptor.create( img, new int[] { 0, 1, 2 }, null );
 
         torgb = ColorQuantizerDescriptor.create( torgb, MEDIANCUT, 254, null, null, null, null, null );
@@ -927,7 +931,14 @@ public class MapService {
         return registry;
     }
 
-    protected static Polygon getLegendRect( int xpos, int ypos, int xsize, int ysize ) {
+    /**
+     * @param xpos
+     * @param ypos
+     * @param xsize
+     * @param ysize
+     * @return a made up rectangle to be used in a legend
+     */
+    public static Polygon getLegendRect( int xpos, int ypos, int xsize, int ysize ) {
         Point p1 = geofac.createPoint( null, xpos, ypos, null );
         Point p2 = geofac.createPoint( null, xpos + xsize, ypos, null );
         Point p3 = geofac.createPoint( null, xpos + xsize, ypos + ysize, null );
@@ -942,7 +953,14 @@ public class MapService {
         return geofac.createPolygon( null, null, geofac.createLinearRing( null, null, geofac.createPoints( ps ) ), null );
     }
 
-    protected static LineString getLegendLine( int xpos, int ypos, int xsz, int ysz ) {
+    /**
+     * @param xpos
+     * @param ypos
+     * @param xsz
+     * @param ysz
+     * @return a made up line string to be used in a legend
+     */
+    public static LineString getLegendLine( int xpos, int ypos, int xsz, int ysz ) {
         Point p1 = geofac.createPoint( null, xpos, ypos, null );
         Point p2 = geofac.createPoint( null, xpos + xsz / 3, ypos + ysz / 3 * 2, null );
         Point p3 = geofac.createPoint( null, xpos + xsz / 3 * 2, ypos + ysz / 3, null );
