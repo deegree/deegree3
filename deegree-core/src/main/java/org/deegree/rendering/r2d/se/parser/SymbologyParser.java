@@ -1939,7 +1939,7 @@ public class SymbologyParser {
         /** Contains description and so on. */
         public Common common;
 
-        FilterContinuation( Filter filter, LinkedList<Symbolizer<?>> syms, Common common ) {
+        public FilterContinuation( Filter filter, LinkedList<Symbolizer<?>> syms, Common common ) {
             this.filter = filter;
             this.syms = syms;
             this.common = common;
@@ -1969,6 +1969,10 @@ public class SymbologyParser {
      * @version $Revision$, $Date$
      */
     public static class Common {
+        public Common() {
+            // without location
+        }
+
         Common( Location loc ) {
             this.loc = loc.getSystemId();
             line = loc.getLineNumber();
