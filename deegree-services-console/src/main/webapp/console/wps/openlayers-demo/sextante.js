@@ -223,6 +223,22 @@ function init() {
  */
 function addGMLLayer(gmlName, gmlURL, attr) {
 		
+	// check file size error
+	var request = getXMLHttpRequest('text/xml');
+	request.open('GET', gmlURL, false);
+	request.send();
+	var xmlDoc = request.responseXML;
+	var msg = xmlDoc.documentElement.localName;
+	if(msg == "parsererror"){
+		var errorMsg = "File size of input data is to large!"
+		if(gmlURL.search("wps") != -1 || gmlURL.search("WPS") != -1 )
+			resultDisplayWPS.data = errorMsg;
+		else
+			resultDisplayWFS.data = errorMsg;
+		return null;
+	}
+
+		
 	// Layer name
 	var gmlNameArray = determineIndividualLayerName(gmlName);
 	
@@ -316,7 +332,10 @@ function addWFSLayer(wfsName, wfsURL, wfsFeatureTypeWithPrefix) {
 	
 	
 	var layer = addGMLLayer(name, OpenLayers.ProxyHost + escape(sourceURL), sourceURL);
-	resultDisplayWFS.data = "Added layer '" + name + "'";
+	
+	if(layer != null)
+		resultDisplayWFS.data = "Added layer '" + name + "'";
+	
 	return layer;
 	
 // // add wfs layer to map
@@ -398,7 +417,8 @@ function addWPSLayer(wpsName, wpsURL, wpsProcess, data){
 		return null;
 	}else{
 		var layer = addGMLLayer(wpsName, gmlURL, attr);
-		resultDisplayWPS.data = "Added layer '" + wpsName + "'";
+		if(layer != null)
+			resultDisplayWPS.data = "Added layer '" + wpsName + "'";
 		return layer;
 	}
 
@@ -841,6 +861,11 @@ function loadWPSProcessList(){
 		var value = processes[i][0];
 		if(value.startsWith("st_"))
 			text += " (SEXTANTE)";
+		else{
+			if(selectWPS.value == "http://flexigeoweb.lat-lon.de/deegree-wps-demo/services"){
+				continue;
+			}
+		}
 		
 		// add process
 		option.text = text;

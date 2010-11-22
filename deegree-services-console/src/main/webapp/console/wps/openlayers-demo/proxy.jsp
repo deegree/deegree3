@@ -1,43 +1,28 @@
-<%@ page language="java"
+<%@page import="java.net.URL"%><%@ page language="java"
     import="java.io.OutputStream,java.io.InputStream,org.apache.commons.httpclient.*,org.apache.commons.httpclient.methods.*,org.apache.commons.io.input.BoundedInputStream"
     pageEncoding="UTF-8"%><%
 
-            HttpClient client = new HttpClient();
-    
             // force character encoding to UTF-8
             request.setCharacterEncoding( "UTF-8" );
 
             //String url = "http://giv-wps.uni-muenster.de:8080/geoserver/wfs?SERVICE=WFS&REQUEST=GetFeature&VERSION=1.0.0&OUTPUTFORMAT=GML2&TYPENAME=topp:states";
-            String url = request.getParameter( "url" );
-            HttpMethodBase http = new GetMethod(url);
+            String urlStr = request.getParameter( "url" );
+            URL url = new URL(urlStr);
             
             long maxFileSize = 1024 * 1024;
- 
-            try {
-                client.executeMethod( http );
-                    if ( http.getResponseHeader( "Content-Type" ) != null ) {
-                        String contentType = http.getResponseHeader( "Content-Type" ).getValue();
-                        if ( contentType.contains( "xml" ) ) {
-                            contentType = "text/xml";
-                        }
-                        response.setContentType( contentType );        
-                    } else {
-                        response.setContentType( "text/plain" );
-                    }
+
+             String contentType ="text/xml;charset=UTF-8"; //text/xml; subtype=gml/2.1.2;charset=UTF-8
+             response.setContentType( contentType );        
+
+             OutputStream os = response.getOutputStream();                     
+             InputStream is = new BoundedInputStream (url.openStream(), maxFileSize);
+             byte [] buffer = new byte [4096];
+             int bytesRead = 0;
+             while ((bytesRead = is.read(buffer)) != -1) {
+               os.write(buffer, 0, bytesRead);
+             }
                     
-                    OutputStream os = response.getOutputStream();                     
-                    InputStream is = new BoundedInputStream (http.getResponseBodyAsStream(), maxFileSize);
-                    byte [] buffer = new byte [4096];
-                    int bytesRead = 0;
-                    while ((bytesRead = is.read(buffer)) != -1) {
-                        os.write(buffer, 0, bytesRead);
-                    }
-                    
-                    os.flush();
-                    is.close();
-  
-            } finally {
-                http.releaseConnection();
-            }
-            
+             os.flush();
+             is.close();
+        
 %>
