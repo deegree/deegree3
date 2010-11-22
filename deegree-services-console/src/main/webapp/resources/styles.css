@@ -128,6 +128,7 @@ body {
 	font:80% Verdana,Arial,Helvetica,sans-serif;
 	background-color: #fcfcfc;
 	border: 1px;
+	cursor: pointer;
 	}
 
 .buttongray {
@@ -135,6 +136,7 @@ body {
 	font:80% Verdana,Arial,Helvetica,sans-serif;
 	background-color: #fcfcfc;
 	border: 1px;
+	cursor: pointer;
 	}
 
 .buttonActivate {
@@ -144,6 +146,7 @@ body {
 	border-color: #62AA2A ;
 	border: 1px;
 	font-weight: bold;
+	cursor: pointer;
 	
 }
 
@@ -152,14 +155,16 @@ body {
 	font:80% Verdana,Arial,Helvetica,sans-serif;
 	background-color: #fcfcfc;
 	border: 1px;
-	
+	cursor: pointer;	
 }
+
 .buttonInfo {
 	color: #7279D8;
 	font:80% Verdana,Arial,Helvetica,sans-serif;
 	background-color: #fcfcfc;
 	border-color: blue;
 	border: 1px;
+	cursor: pointer;
 }
 
 .buttonDelete {
@@ -168,6 +173,7 @@ body {
 	background-color: #fcfcfc;
 	border-color:#BF3030;
 	border: 1px;
+	cursor: pointer;
 }
 
 .buttonEdit {
@@ -176,6 +182,7 @@ body {
 	background-color: #fcfcfc;
 	border-color:#52A529 ;
 	border: 1px;
+	cursor: pointer;
 }
 
 .buttonEdit2 {
@@ -184,6 +191,7 @@ body {
 	background-color: #fcfcfc;
 	border-color:#52A529 ;
 	border: 1px;
+	cursor: pointer;
 }
 
 .buttonCreateNew {
@@ -192,6 +200,7 @@ body {
 	background-color: #fcfcfc;
 	border-color: #62AA2A ;
 	border: 1px;
+	cursor: pointer;
 }
 
 .buttonSave {
@@ -199,6 +208,7 @@ body {
 	font:90% Verdana,Arial,Helvetica,sans-serif;
 	background-color: #fcfcfc;
 	border: 1px;
+	cursor: pointer;
 }
 
 .buttonCancel {
@@ -206,6 +216,7 @@ body {
 	font:90% Verdana,Arial,Helvetica,sans-serif;
 	background-color: #fcfcfc;
 	border: 1px;
+	cursor: pointer;
 }
 
 .buttonLogin {
