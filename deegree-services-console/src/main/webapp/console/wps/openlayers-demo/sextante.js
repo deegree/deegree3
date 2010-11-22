@@ -232,7 +232,7 @@ function addGMLLayer(gmlName, gmlURL, attr) {
 	var xmlDoc = request.responseXML;
 	var msg = xmlDoc.documentElement.localName;
 	if(msg == "parsererror"){
-		var errorMsg = "File size of input data is to large! / Parse error!"
+		var errorMsg = "Parse error / File size of input data is to large?"
 		if(gmlURL.search("wps") != -1 || gmlURL.search("WPS") != -1 )
 			resultDisplayWPS.data = errorMsg;
 		else
