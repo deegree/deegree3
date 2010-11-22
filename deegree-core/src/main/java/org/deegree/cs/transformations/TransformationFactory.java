@@ -759,7 +759,7 @@ public class TransformationFactory {
             }
         }
         // prepare the found transformation if it is a helmert transfomation
-        if ( result != null && "Helmert".equalsIgnoreCase( result.getImplementationName() )
+        if ( !isIdentity( result ) && "Helmert".equalsIgnoreCase( result.getImplementationName() )
              && this.preferredDSTransform.isPreferred( result ) ) {
             LOG.debug( "Creating geographic -> geographic transformation: from (source): " + sourceCRS.getCode()
                        + " to(target): " + targetCRS.getCode() + " based on a given Helmert transformation" );
