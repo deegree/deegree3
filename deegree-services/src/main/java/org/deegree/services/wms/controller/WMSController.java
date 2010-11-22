@@ -448,7 +448,7 @@ public class WMSController extends AbstractOGCServiceController {
                 in = new FileInputStream( fiFile );
             }
 
-            Symbol s = new TemplatingParser( new TemplatingLexer( in ) ).parse();
+            Symbol s = new TemplatingParser( new TemplatingLexer( new InputStreamReader( in, "UTF-8" ) ) ).parse();
             @SuppressWarnings(value = "unchecked")
             HashMap<String, Object> tmpl = (HashMap<String, Object>) s.value;
             StringBuilder sb = new StringBuilder();
