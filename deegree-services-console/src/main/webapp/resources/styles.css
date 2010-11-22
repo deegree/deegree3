@@ -1,7 +1,7 @@
 body {
 	background-color: #ffffff;
 	color: grey;
-	font-family: "Courier New", Courier, monospace;
+	font: Verdana,Arial,Helvetica,sans-serif;
 	font-weight: normal;
 	font-size: small;
 	padding: 5pt;
