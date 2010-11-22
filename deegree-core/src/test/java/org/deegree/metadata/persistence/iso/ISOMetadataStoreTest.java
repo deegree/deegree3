@@ -827,7 +827,7 @@ public class ISOMetadataStoreTest {
         }
         if ( store == null ) {
             LOG.warn( "Skipping test (needs configuration)." );
-            throw new MetadataInspectorException( "skipping test (needs configuration)" );
+            return;
         }
         MetadataStoreTransaction ta = store.acquireTransaction();
         List<String> ids = insertMetadata( store, ta, TstConstants.tst_2 );
