@@ -12,8 +12,12 @@
       var first
 
       function loaded() {
-        first()
         var sw = document.getElementById('theswitch')
+        var opt
+
+        <?feature *:options>
+
+        first()
         sw.value = sw.options[0].value // why're they counting from 0 here, and not from 1?
       }
 
@@ -40,7 +44,7 @@
       }
 
       function dotheswitch() {
-        this[document.getElementById('theswitch').value]()
+        this[document.getElementById('theswitch').value + "_switchfunction"]()
       }
       <?feature *:switchfunction>
     </script>
@@ -49,7 +53,6 @@
     </p>
     <form>
       <select id="theswitch" onchange="dotheswitch()">
-        <?feature *:options>
       </select>
     </form>
     <div id="table"></div>
@@ -57,20 +60,40 @@
 </html>
 
 <?template options>
-<option value="<?name>"><?name></option>
+opt = document.getElementById('<?name>')
+if(!opt){
+  opt = newnode(sw, 'option', '<?name>')
+  opt.setAttribute('id', '<?name>')
+  opt.setAttribute('value', '<?name>')
+}
 
 <?template switchfunction>
-function <?name>() {
-  var div = document.getElementById('table')
-  while(div.firstChild) div.removeChild(div.firstChild)
-  var table = this.tbody(this.table(div))
-  var row = tr(table)
-  th(row, "Field").style.cssText = headerStyle
-  th(row, "Value").style.cssText = headerStyle
+if(! this.<?name>_switchfunction){
+  this.<?name>_switchfunction = function(){
+    var div = document.getElementById('table')
+    while(div.firstChild) div.removeChild(div.firstChild)
+    var table = this.tbody(this.table(div))
+    var row = tr(table)
+    th(row, "Field").style.cssText = headerStyle
+    th(row, "Value").style.cssText = headerStyle
+    for(var i in <?name>){
+      row = tr(table)
+      td(row, 'GML ID').style.cssText = headerStyle
+      td(row, '<?gmlid>').style.cssText = headerStyle
+      <?name>[i](table)
+    }
+  }
+
+  <?name> = []
+}
+
+<?name>[<?name>.length] = function (table) {
   var odd = true
+  var row
   <?property *:properties>
 }
-if(!first) first = <?name>
+
+if(!first) first = <?name>_switchfunction
 
 <?template properties>
 row = tr(table)
