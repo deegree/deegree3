@@ -47,7 +47,7 @@ body {
 #main {
 	width:860px;
 	height:550px;
-	margin-left:40px;
+	margin-left:60px;
 }
 
 #left {
@@ -57,6 +57,7 @@ body {
 }
 
 #center {
+	padding-right:25px;
 	margin: 10px 0px;
 	float: right;
 	width: 600px;
