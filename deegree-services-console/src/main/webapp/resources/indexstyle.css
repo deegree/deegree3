@@ -1,11 +1,10 @@
 body {
+	background-color: #ffffff;
+	color: grey;
 	font: 100% Verdana, Arial, Helvetica, sans-serif;
-	margin: 0;
-	padding: 0;
-	text-align: center;
-	color: #FFF;
-	position: relative;
-	background-color: #FFF;
+	font-weight: normal;
+	font-size: small;
+	padding: 5pt;
 }
 
 .buttonData {
@@ -16,6 +15,8 @@ body {
 }
 	
 #wrapper {
+	background-image:url("#{resource['images:bg.png']}");
+	background-repeat: no-repeat;
 	text-align: justify;
 	margin-top: 0;
 	margin-right: auto;
@@ -27,11 +28,9 @@ body {
 	width:930px;
 	height:690px;
 	z-index:1;
-	top: 0px;
+	top: 30px;
 	left: auto;
 	text-decoration: none;
-	background-image:url("#{resource['images:bg.png']}");
-	background-repeat: no-repeat;
 }
 
 .image {
