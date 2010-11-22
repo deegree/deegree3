@@ -12,10 +12,7 @@
             HttpMethodBase http = new GetMethod(url);
             
             long maxFileSize = 1024 * 1024;
-            long filesize = http.getResponseContentLength();
-            
-            if(filesize < maxFileSize){
-
+ 
             try {
                 client.executeMethod( http );
                     if ( http.getResponseHeader( "Content-Type" ) != null ) {
@@ -35,12 +32,12 @@
                     while ((bytesRead = is.read(buffer)) != -1) {
                         os.write(buffer, 0, bytesRead);
                     }
+                    
                     os.flush();
-                    
-                    
-                      
+                    is.close();
+  
             } finally {
                 http.releaseConnection();
             }
-            }
+            
 %>
