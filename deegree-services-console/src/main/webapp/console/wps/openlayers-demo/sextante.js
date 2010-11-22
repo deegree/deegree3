@@ -482,7 +482,6 @@ function determineWFSFeatureTypeNames(wfsURL) {
 	request.send();
 	var xmlDoc = request.responseXML;
 	checkParseError(xmlDoc);
-	documentsFT = xmlDoc;
 	
 	// determine FeatureTypes
 	var collectionOfFeatureTypes = xmlDoc.getElementsByTagName("FeatureType");
