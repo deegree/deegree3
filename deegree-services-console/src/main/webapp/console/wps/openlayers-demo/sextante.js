@@ -38,6 +38,7 @@ var aProcessDesc = document.createElement("a");
 aProcessDesc.innerHTML = "(i)";
 aProcessDesc.style.color = "white";
 aProcessDesc.href = "#";
+var wfsClipByView = true;
 
 // increase reload attempts
 OpenLayers.IMAGE_RELOAD_ATTEMPTS = 3;
@@ -122,9 +123,10 @@ function init() {
 	
 	// ------------------------------------------------------------------------------------------------------
 	// add web feature service (only gml2)
+	addWFSURL("http://deegree3-testing.deegree.org/deegree-utah-demo/services");
 	addWFSURL( "http://giv-wps.uni-muenster.de:8080/geoserver/wfs");
 	addWFSURL(  "http://www.dge.upd.edu.ph/geoserver/wfs");
-	addWFSURL("http://deegree3-testing.deegree.org/deegree-utah-demo/services");
+
 	
 	// http://127.0.0.1:8080/deegree-utah-demo-3.0-SNAPSHOT/services?service=WFS&version=1.0.0&request=GetFeature&typeName=app:SGID024_StateBoundary
 	// http://127.0.0.1:8080/deegree-utah-demo-3.0-SNAPSHOT/services?service=WFS&version=1.0.0&request=GetCapabilities
@@ -230,14 +232,14 @@ function addGMLLayer(gmlName, gmlURL, attr) {
 	var xmlDoc = request.responseXML;
 	var msg = xmlDoc.documentElement.localName;
 	if(msg == "parsererror"){
-		var errorMsg = "File size of input data is to large!"
+		var errorMsg = "File size of input data is to large! / Parse error!"
 		if(gmlURL.search("wps") != -1 || gmlURL.search("WPS") != -1 )
 			resultDisplayWPS.data = errorMsg;
 		else
 			resultDisplayWFS.data = errorMsg;
 		return null;
 	}
-
+	
 		
 	// Layer name
 	var gmlNameArray = determineIndividualLayerName(gmlName);
@@ -327,10 +329,20 @@ function addWFSLayer(wfsName, wfsURL, wfsFeatureTypeWithPrefix) {
 // });
 	
 	
-	var sourceURL = wfsURL + WFS_GET_FEATURE + wfsFeatureTypeWithPrefix;
+	//determine view box
+	var bbox = "";
+	if(wfsClipByView){
+		var viewPort = map.getExtent();
+		if(viewPort != null){
+			bbox += "BBOX=" + viewPort.left + "," + viewPort.bottom + ","+ viewPort.right + ","+ viewPort.top + ",EPSG:4326";
+			//BBOX=<minX>, <minY>,<maxX>, <maxY>
+		}
+	}
+
+	
+	var sourceURL = wfsURL + WFS_GET_FEATURE + wfsFeatureTypeWithPrefix  + "&" + bbox;
 	var name = "WFS " + wfsFeatureTypeWithPrefix;
-	
-	
+		
 	var layer = addGMLLayer(name, OpenLayers.ProxyHost + escape(sourceURL), sourceURL);
 	
 	if(layer != null)
@@ -2308,7 +2320,7 @@ var WFSSwitcher =
 	        var select2 = document.createElement("select");
 	        select2.name = "layerlist";
 	        select2.size = "1";
-	        select2.style.width = "400px";
+	        select2.style.width = "300px";
 	        p2.appendChild(select2);
 	        select2.onchange = function(){
 	        	resultDisplayWFS.data = "";
@@ -2318,7 +2330,32 @@ var WFSSwitcher =
 	        loadWFSLayerList();
 
 	                     
-
+	        //clip by view
+	        var input2 = document.createElement("select");
+			var yes = document.createElement("option");
+		 	yes.text = "Clip by View";
+		 	yes.value = true;
+			var no = document.createElement("option");
+		 	no.text = "All Data";
+		 	no.value = false; 	
+		 	try
+		 	  {
+		 		input2.add(yes,null); // standards compliant
+		 		input2.add(no,null); // standards compliant
+		 	  }
+		 	catch(ex)
+		 	  {
+		 		input2.add(yes); // IE only
+		 		input2.add(no); // IE only
+		 	  }
+		 	input2.onchange = function(){
+		 		if(input2.value == "true")
+		 			wfsClipByView = true;
+		 		else
+		 			wfsClipByView = false;
+	        };
+	        p2.appendChild(document.createTextNode(" "));
+	        p2.appendChild(input2);
 	       
 	        var input = document.createElement("input");
 	        input.type = "button";
@@ -2341,6 +2378,8 @@ var WFSSwitcher =
 	        };
 	        p2.appendChild(document.createTextNode(" "));
 	        p2.appendChild(input);
+	        
+
 
 	        
 	        // create info panel
