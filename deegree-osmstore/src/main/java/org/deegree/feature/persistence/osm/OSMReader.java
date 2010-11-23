@@ -20,6 +20,7 @@ public class OSMReader {
     String noderef = "";
     String wayref = "";
     String relationref = "";
+    String firstndref = "";
     
     	public void getBounds () throws XMLStreamException, FileNotFoundException, IOException
     	{
@@ -114,9 +115,8 @@ public class OSMReader {
                      writer.writeStartElement( "osm", "way", "http://www.openstreetmap.org/osm" );
                      writer.writeAttribute( "gml", "http://www.opengis.net/gml", "id", wayid );
                      writer.writeStartElement( "osm", "geometry", "http://www.openstreetmap.org/osm" );
-                     writer.writeStartElement( "gml", "LineString", "http://www.opengis.net/gml" );
                      parser.nextTag();
-                     
+                     this.askLineOrPolygon();
                      while ( event == XMLStreamReader.START_ELEMENT && "nd".equals(parser.getLocalName()) )
                      {
                     	 ndref = parser.getAttributeValue( 0 );
@@ -125,8 +125,7 @@ public class OSMReader {
                     	 parser.nextTag();
                      }
                      writer.writeEndElement();
-                     writer.writeEndElement();
-                     this.getTags();
+                     //this.getTags();
                      writer.writeEndElement();
                      writer.writeEndElement();
                      }
@@ -160,6 +159,45 @@ public class OSMReader {
                  }
     		}
     	}
+    	
+    	public void askLineOrPolygon() throws XMLStreamException, FileNotFoundException
+        {
+            XMLOutputFactory outputFactory = XMLOutputFactory.newInstance();
+            XMLStreamWriter writer = outputFactory.createXMLStreamWriter( System.out );
+            InputStream in = new FileInputStream( "/home/goerke/Desktop/map.osm" );
+            XMLInputFactory inputFactory = XMLInputFactory.newInstance();
+            XMLStreamReader parser = inputFactory.createXMLStreamReader( in );
+            
+            while ( parser.hasNext() ) {
+                int event = parser.next();
+                while ( event == XMLStreamReader.START_ELEMENT && "way".equals( parser.getLocalName()) && wayref.equals(parser.getAttributeValue(0))) {
+                    parser.nextTag();
+                    System.out.println(parser.getLocation());
+                    if ( event == XMLStreamReader.START_ELEMENT && "node".equals(parser.getLocalName())) {
+                        firstndref = parser.getAttributeValue( 0 );
+                        parser.nextTag();
+                        parser.nextTag();
+                    while ( event == XMLStreamReader.START_ELEMENT && "nd".equals(parser.getLocalName()) && !firstndref.equals(parser.getAttributeValue( 0 ))) {
+                        ndref = parser.getAttributeValue( 0 );
+                        parser.nextTag();
+                        parser.nextTag();
+                        System.out.println("first "+firstndref +"next "+ndref );
+                        
+                    }
+                    if (firstndref.equals( ndref )){
+                        writer.writeStartElement( "gml", "Polygon", "http://www.opengis.net/gml" );
+                    }
+                    else {
+                           writer.writeStartElement( "gml", "LineString", "http://www.opengis.net/gml" ); 
+                           System.out.println("ending: "+ parser.getLocation());;
+                         }
+                    parser.nextTag();
+                    }
+                        
+                  }
+                
+                }
+        }
     	
     	public void getRelations() throws XMLStreamException, FileNotFoundException
     	{
@@ -244,7 +282,6 @@ public class OSMReader {
                      if ( event == XMLStreamReader.START_ELEMENT && "nd".equals( parser.getLocalName() ) ) {
                          
                         //TODO FOR Schleife, die nd' s zaehlt und 2x nextTag ausfuehrt bis alle nd's weg sind
-                         System.out.println(parser.getLocation());
                      }
                      if ( event == XMLStreamReader.START_ELEMENT && "tag".equals( parser.getLocalName() ) ) {
                          
