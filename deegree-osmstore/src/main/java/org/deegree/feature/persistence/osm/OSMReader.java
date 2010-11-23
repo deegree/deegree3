@@ -12,6 +12,7 @@ import java.io.OutputStream;
 import javax.xml.stream.*;
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLOutputFactory;
+import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
 public class OSMReader {
@@ -22,11 +23,18 @@ public class OSMReader {
     String relationref = "";
     String firstndref = "";
     
+   XMLStreamWriter writer;
+   
+   public OSMReader() throws XMLStreamException, IOException{
+
+       FileWriter output= new FileWriter(new File("/home/goerke/Desktop/test.gml"));
+       XMLOutputFactory outputFactory = XMLOutputFactory.newInstance();
+       writer = outputFactory.createXMLStreamWriter( output );
+
+   }
+   
     	public void getBounds () throws XMLStreamException, FileNotFoundException, IOException
     	{
-    		//FileWriter output= new FileWriter(new File("/home/goerke/Desktop/test.gml"));
-    		XMLOutputFactory outputFactory = XMLOutputFactory.newInstance();
-            XMLStreamWriter writer = outputFactory.createXMLStreamWriter( System.out );
     		InputStream in = new FileInputStream( "/home/goerke/Desktop/map.osm" );
             XMLInputFactory inputFactory = XMLInputFactory.newInstance();
             XMLStreamReader parser = inputFactory.createXMLStreamReader( in );
@@ -57,8 +65,7 @@ public class OSMReader {
     	}
     	public void getNodes() throws XMLStreamException, FileNotFoundException
     	{
-    		XMLOutputFactory outputFactory = XMLOutputFactory.newInstance();
-            XMLStreamWriter writer = outputFactory.createXMLStreamWriter( System.out );
+    		
     		InputStream in = new FileInputStream( "/home/goerke/Desktop/map.osm" );
             XMLInputFactory inputFactory = XMLInputFactory.newInstance();
             XMLStreamReader parser = inputFactory.createXMLStreamReader( in );
@@ -97,8 +104,7 @@ public class OSMReader {
     	
     	public void getWays() throws XMLStreamException, FileNotFoundException
     	{
-    		XMLOutputFactory outputFactory = XMLOutputFactory.newInstance();
-            XMLStreamWriter writer = outputFactory.createXMLStreamWriter( System.out );
+    		
     		InputStream in = new FileInputStream( "/home/goerke/Desktop/map.osm" );
             XMLInputFactory inputFactory = XMLInputFactory.newInstance();
             XMLStreamReader parser = inputFactory.createXMLStreamReader( in );
@@ -115,8 +121,9 @@ public class OSMReader {
                      writer.writeStartElement( "osm", "way", "http://www.openstreetmap.org/osm" );
                      writer.writeAttribute( "gml", "http://www.opengis.net/gml", "id", wayid );
                      writer.writeStartElement( "osm", "geometry", "http://www.openstreetmap.org/osm" );
+                     writer.writeStartElement( "gml", "LineString", "http://www.opengis.net/gml" );
                      parser.nextTag();
-                     this.askLineOrPolygon();
+                     //this.askLineOrPolygon();
                      while ( event == XMLStreamReader.START_ELEMENT && "nd".equals(parser.getLocalName()) )
                      {
                     	 ndref = parser.getAttributeValue( 0 );
@@ -124,6 +131,7 @@ public class OSMReader {
                     	 parser.nextTag();
                     	 parser.nextTag();
                      }
+                     writer.writeEndElement();
                      writer.writeEndElement();
                      //this.getTags();
                      writer.writeEndElement();
@@ -137,8 +145,7 @@ public class OSMReader {
     	}
     	
     	public void getWayNodes() throws XMLStreamException, FileNotFoundException{
-    		XMLOutputFactory outputFactory = XMLOutputFactory.newInstance();
-            XMLStreamWriter writer = outputFactory.createXMLStreamWriter( System.out );
+    		
     		InputStream in = new FileInputStream( "/home/goerke/Desktop/map.osm" );
             XMLInputFactory inputFactory = XMLInputFactory.newInstance();
             XMLStreamReader parser = inputFactory.createXMLStreamReader( in );
@@ -162,8 +169,7 @@ public class OSMReader {
     	
     	public void askLineOrPolygon() throws XMLStreamException, FileNotFoundException
         {
-            XMLOutputFactory outputFactory = XMLOutputFactory.newInstance();
-            XMLStreamWriter writer = outputFactory.createXMLStreamWriter( System.out );
+            
             InputStream in = new FileInputStream( "/home/goerke/Desktop/map.osm" );
             XMLInputFactory inputFactory = XMLInputFactory.newInstance();
             XMLStreamReader parser = inputFactory.createXMLStreamReader( in );
@@ -201,8 +207,7 @@ public class OSMReader {
     	
     	public void getRelations() throws XMLStreamException, FileNotFoundException
     	{
-    		XMLOutputFactory outputFactory = XMLOutputFactory.newInstance();
-            XMLStreamWriter writer = outputFactory.createXMLStreamWriter( System.out );
+    		
     		InputStream in = new FileInputStream( "/home/goerke/Desktop/map.osm" );
             XMLInputFactory inputFactory = XMLInputFactory.newInstance();
             XMLStreamReader parser = inputFactory.createXMLStreamReader( in );
@@ -252,8 +257,7 @@ public class OSMReader {
     	}
     	public void getTags() throws XMLStreamException, FileNotFoundException
     	{
-    		XMLOutputFactory outputFactory = XMLOutputFactory.newInstance();
-            XMLStreamWriter writer = outputFactory.createXMLStreamWriter( System.out );
+    		
     		InputStream in = new FileInputStream( "/home/goerke/Desktop/map.osm" );
             XMLInputFactory inputFactory = XMLInputFactory.newInstance();
             XMLStreamReader parser = inputFactory.createXMLStreamReader( in );
