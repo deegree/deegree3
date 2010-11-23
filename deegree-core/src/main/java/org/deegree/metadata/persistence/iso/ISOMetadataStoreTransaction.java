@@ -109,7 +109,7 @@ public class ISOMetadataStoreTransaction implements MetadataStoreTransaction {
                         identifierList.addAll( Arrays.asList( rec.getIdentifier() ) );
                     } else {
                         String msg = Messages.getMessage( "ERROR_DUPLICATE_INSERT", id );
-                        LOG.debug( msg );
+                        LOG.info( msg );
                         throw new MetadataStoreException( msg );
                     }
                 }
@@ -183,6 +183,7 @@ public class ISOMetadataStoreTransaction implements MetadataStoreTransaction {
         LOG.debug( Messages.getMessage( "INFO_TA_ROLLBACK" ) );
         try {
             conn.rollback();
+            conn.close();
         } catch ( SQLException e ) {
             String msg = Messages.getMessage( "ERROR_TA_ROLLBACK", e.getMessage() );
             LOG.debug( msg );
