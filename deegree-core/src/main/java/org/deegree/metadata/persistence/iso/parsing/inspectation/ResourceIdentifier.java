@@ -47,7 +47,6 @@ import org.apache.axiom.om.OMAbstractFactory;
 import org.apache.axiom.om.OMAttribute;
 import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.impl.llom.OMAttributeImpl;
-import org.deegree.commons.utils.JDBCUtils;
 import org.deegree.commons.xml.NamespaceContext;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.XPath;
@@ -127,13 +126,11 @@ public class ResourceIdentifier implements InspireCompliance {
                     } else {
                         String msg = Messages.getMessage( "ERROR_RI_NOT_UUID" );
                         LOG.debug( msg );
-                        JDBCUtils.close( conn );
                         throw new MetadataInspectorException( msg );
                     }
                 }
                 String msg = Messages.getMessage( "ERROR_RI_ID" );
                 LOG.debug( msg );
-                JDBCUtils.close( conn );
                 throw new MetadataInspectorException( msg );
             }
             /**
