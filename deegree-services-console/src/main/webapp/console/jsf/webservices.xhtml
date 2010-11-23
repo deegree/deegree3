@@ -25,7 +25,8 @@
 							<td><h:commandButton styleClass="buttonActivate"
 								rendered="#{!config.deactivated}"
 								value="#{labels.webservices_deactivate}"
-								action="#{config.deactivate}" /> <h:commandButton
+								action="#{config.deactivate}" /> 
+								<h:commandButton
 								styleClass="buttonDeactivate" rendered="#{config.deactivated}"
 								value="#{labels.webservices_activate}"
 								action="#{config.activate}" /></td>
@@ -34,9 +35,9 @@
 							</h:outputFormat></td><td><h:commandButton styleClass="buttonEdit"
 								value="#{labels.webservices_edit}" action="#{config.edit}" /></td>
 							<td><h:panelGroup rendered="#{config.active}">
-								<dg:externalLink target="_blank"
+								<dg:externalLink styleClass="buttonInfo" target="_blank"
 									href="#{config.capabilitiesURL}"
-									title="[#{labels.webservices_cap}]" />
+									title="#{labels.webservices_cap}" />
 							</h:panelGroup></td>
 						</tr>
 					</ui:repeat>

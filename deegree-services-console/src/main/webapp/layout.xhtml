@@ -53,9 +53,9 @@
       rendered="#{facesContext.viewRoot.viewId == '/console/jsf/version.xhtml'}" />
     <h:link styleClass="navi" value="version" outcome="/console/jsf/version.xhtml"
       rendered="#{facesContext.viewRoot.viewId != '/console/jsf/version.xhtml'}" />
-    <h:link styleClass="naviactive" value="workspace" outcome="/console/jsf/workspace.xhtml"
+    <h:link styleClass="naviactive" value="workspace" outcome="/console/jsf/workspace.xhtml" disabled="#{!logBean.loggedIn}"
       rendered="#{facesContext.viewRoot.viewId == '/console/jsf/workspace.xhtml'}" />
-    <h:link styleClass="navi" value="workspace" outcome="/console/jsf/workspace.xhtml"
+    <h:link styleClass="navi" value="workspace" outcome="/console/jsf/workspace.xhtml" disabled="#{!logBean.loggedIn}"
       rendered="#{facesContext.viewRoot.viewId != '/console/jsf/workspace.xhtml'}" />
        <h:link styleClass="naviactive" value="jdbc" outcome="/console/jsf/jdbc.xhtml" disabled="#{!logBean.loggedIn}"
       rendered="#{facesContext.viewRoot.viewId == '/console/jsf/jdbc.xhtml'}" />
