@@ -265,7 +265,7 @@ public class GMLFeatureWriter {
 
         writer.setPrefix( "gml", gmlNs );
         writer.setPrefix( "wfs", WFS_NS );
-        writer.writeStartElement( WFS_NS, "FeatureCollection" );
+        writeStartElementWithNS( WFS_NS, "FeatureCollection" );
 
         if ( fc.getId() != null ) {
             if ( fidAttr.getNamespaceURI() == NULL_NS_URI ) {
@@ -293,18 +293,18 @@ public class GMLFeatureWriter {
             writer.writeAttribute( XSINS, "schemaLocation", locs );
         }
 
-        writer.writeStartElement( gmlNs, "boundedBy" );
+        writeStartElementWithNS( gmlNs, "boundedBy" );
         Envelope fcEnv = fc.getEnvelope();
         if ( fcEnv != null ) {
             geometryWriter.exportEnvelope( fc.getEnvelope() );
         } else {
-            writer.writeStartElement( gmlNs, gmlNull );
+            writeStartElementWithNS( gmlNs, gmlNull );
             writer.writeCharacters( "missing" );
             writer.writeEndElement();
         }
         writer.writeEndElement();
         for ( Feature f : fc ) {
-            writer.writeStartElement( gmlNs, "featureMember" );
+            writeStartElementWithNS( gmlNs, "featureMember" );
             export( f );
             writer.writeEndElement();
         }
@@ -328,7 +328,7 @@ public class GMLFeatureWriter {
         }
 
         writer.setPrefix( "gml", gmlNs );
-        writer.writeStartElement( name.getNamespaceURI(), name.getLocalPart() );
+        writeStartElementWithNS( name.getNamespaceURI(), name.getLocalPart() );
 
         if ( fc.getId() != null ) {
             if ( fidAttr.getNamespaceURI() == NULL_NS_URI ) {
@@ -344,7 +344,7 @@ public class GMLFeatureWriter {
         if ( fcEnv != null ) {
             geometryWriter.exportEnvelope( fc.getEnvelope() );
         } else {
-            writer.writeStartElement( gmlNs, gmlNull );
+            writeStartElementWithNS( gmlNs, gmlNull );
             writer.writeCharacters( "missing" );
             writer.writeEndElement();
         }
@@ -352,7 +352,7 @@ public class GMLFeatureWriter {
 
         for ( Feature member : fc ) {
             String memberFid = member.getId();
-            writer.writeStartElement( gmlNs, "featureMember" );
+            writeStartElementWithNS( gmlNs, "featureMember" );
             if ( memberFid != null && exportedIds.contains( memberFid ) ) {
                 writer.writeAttribute( XLNNS, "href", "#" + memberFid );
             } else {
@@ -371,7 +371,7 @@ public class GMLFeatureWriter {
         }
         if ( feature instanceof GenericFeatureCollection ) {
             LOG.debug( "Exporting generic feature collection." );
-            writer.writeStartElement( "gml", "FeatureCollection", gmlNs );
+            writeStartElementWithNS( "gml", "FeatureCollection" );
             if ( feature.getId() != null ) {
                 if ( fidAttr.getNamespaceURI() == NULL_NS_URI ) {
                     writer.writeAttribute( fidAttr.getLocalPart(), feature.getId() );
@@ -381,7 +381,7 @@ public class GMLFeatureWriter {
             }
             for ( Feature member : ( (FeatureCollection) feature ) ) {
                 String memberFid = member.getId();
-                writer.writeStartElement( gmlNs, "featureMember" );
+                writeStartElementWithNS( gmlNs, "featureMember" );
                 if ( memberFid != null && exportedIds.contains( memberFid ) ) {
                     writer.writeAttribute( XLNNS, "href", "#" + memberFid );
                 } else {
@@ -512,7 +512,7 @@ public class GMLFeatureWriter {
                 if ( value != null ) {
                     geometryWriter.exportEnvelope( (Envelope) value );
                 } else {
-                    writer.writeStartElement( gmlNs, gmlNull );
+                    writeStartElementWithNS( gmlNs, gmlNull );
                     writer.writeCharacters( "missing" );
                     writer.writeEndElement();
                 }
@@ -565,13 +565,13 @@ public class GMLFeatureWriter {
             }
         } else if ( propertyType instanceof CustomPropertyType ) {
             if ( property.isNilled() ) {
-                writer.writeStartElement( propName.getNamespaceURI(), propName.getLocalPart() );
+                writeStartElementWithNS( propName.getNamespaceURI(), propName.getLocalPart() );
                 writer.writeAttribute( XSINS, "nil", "true" );
                 // TODO make sure that only attributes are exported and nothing else
                 export( property.getValue(), currentLevel, maxInlineLevels );
                 writer.writeEndElement();
             } else {
-                writer.writeStartElement( propName.getNamespaceURI(), propName.getLocalPart() );
+                writeStartElementWithNS( propName.getNamespaceURI(), propName.getLocalPart() );
                 export( property.getValue(), currentLevel, maxInlineLevels );
                 writer.writeEndElement();
             }
@@ -580,7 +580,7 @@ public class GMLFeatureWriter {
                 writeEmptyElementWithNS( propName.getNamespaceURI(), propName.getLocalPart() );
                 writer.writeAttribute( XSINS, "nil", "true" );
             } else {
-                writer.writeStartElement( propName.getNamespaceURI(), propName.getLocalPart() );
+                writeStartElementWithNS( propName.getNamespaceURI(), propName.getLocalPart() );
                 export( property.getValue(), currentLevel, maxInlineLevels );
                 writer.writeEndElement();
             }
@@ -589,7 +589,7 @@ public class GMLFeatureWriter {
                 writer.writeEmptyElement( propName.getNamespaceURI(), propName.getLocalPart() );
                 writer.writeAttribute( XSINS, "nil", "true" );
             } else {
-                writer.writeStartElement( propName.getNamespaceURI(), propName.getLocalPart() );
+                writeStartElementWithNS( propName.getNamespaceURI(), propName.getLocalPart() );
                 export( property.getValue(), currentLevel, maxInlineLevels );
                 writer.writeEndElement();
             }
@@ -713,7 +713,7 @@ public class GMLFeatureWriter {
                     throw new UnsupportedOperationException(
                                                              "Inlining of remote feature references is not implemented yet." );
                     // LOG.warn( "Inlining of remote feature references is not implemented yet." );
-                    // writer.writeStartElement( propName.getNamespaceURI(), propName.getLocalPart() );
+                    // writeStartElementWithNS( propName.getNamespaceURI(), propName.getLocalPart() );
                     // writer.writeAttribute( XLNNS, "href", ref.getURI() );
                     // writer.writeComment( "Reference to remote feature '"
                     // + ref.getURI()
@@ -733,7 +733,7 @@ public class GMLFeatureWriter {
         //
         // if ( subFid != null && exportedIds.contains( subFid ) ) {
         // // put an xlink to an already exported feature instance
-        // writer.writeStartElement( propName.getNamespaceURI(),
+        // writeStartElementWithNS( propName.getNamespaceURI(),
         // propName.getLocalPart() );
         // writer.writeAttribute( XLNNS, "href", "#" + subFid );
         // writer.writeComment( "Reference to feature '" + subFid + "'" );
@@ -741,7 +741,7 @@ public class GMLFeatureWriter {
         // } else {
         // if ( ( subFeature instanceof FeatureReference ) && !(
         // (FeatureReference) subFeature ).isLocal() ) {
-        // writer.writeStartElement( propName.getNamespaceURI(),
+        // writeStartElementWithNS( propName.getNamespaceURI(),
         // propName.getLocalPart() );
         // writer.writeAttribute( XLNNS, "href", ( (FeatureReference) subFeature
         // ).getHref() );
@@ -758,7 +758,7 @@ public class GMLFeatureWriter {
         // export( subFeature, inlineLevels + 1 );
         // writer.writeEndElement();
         // } else {
-        // writer.writeStartElement( propName.getNamespaceURI(),
+        // writeStartElementWithNS( propName.getNamespaceURI(),
         // propName.getLocalPart() );
         // String uri = referenceTemplate.replace( "{}", subFid );
         // writer.writeAttribute( XLNNS, "href", uri );
