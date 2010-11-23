@@ -1,7 +1,7 @@
 body {
 	background-color: #ffffff;
 	color: grey;
-	font: Verdana,Arial,Helvetica,sans-serif;
+	font-family: Verdana, Arial, Helvetica, sans-serif;
 	font-weight: normal;
 	font-size: small;
 	padding: 5pt;
@@ -57,15 +57,15 @@ body {
 }
 
 #center {
-	padding-right:25px;
-	margin: 10px 0px;
+	padding-right:55px;
 	float: right;
-	width: 600px;
+	width: 550px;
+	height: 485px;
 	font-size: small;
 	text-align: left;
 	overflow-x: auto;
 	overflow-y: auto;
-	height: 500px;
+	
 }
 
 #footer {
@@ -80,7 +80,12 @@ body {
 .fieldset {
     border-color: #cccccc;                                                                                                                                                                                   
     border-style: solid;                                                                                                                                                                                           
-    border-width: 1px;                                                                                                                                                                                            
+    border-width: 1px; 
+    padding-left: 20px;
+    padding-right: 20px;
+    padding-top: 10px;
+    padding-bottom: 10px; 
+    margin-top: 10px;                                                                                                                                                                                           
 }
 
 .clear {
