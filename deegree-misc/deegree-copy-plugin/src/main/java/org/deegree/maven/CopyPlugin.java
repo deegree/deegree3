@@ -55,6 +55,14 @@ import org.apache.maven.plugin.logging.Log;
 public class CopyPlugin extends AbstractMojo {
 
     /**
+     * Base directory.
+     * 
+     * @parameter expression="${project.basedir}"
+     * @required
+     */
+    private File basedir;
+
+    /**
      * @parameter
      */
     private Copy[] files;
@@ -69,8 +77,8 @@ public class CopyPlugin extends AbstractMojo {
 
         for ( Copy copy : files ) {
             log.debug( "Renaming " + copy.from + " to " + copy.to );
-            File from = new File( copy.from );
-            File to = new File( copy.to );
+            File from = new File( basedir, copy.from );
+            File to = new File( basedir, copy.to );
             to.getParentFile().mkdirs();
             try {
                 FileUtils.copyFile( from, to );
