@@ -92,6 +92,11 @@ body {
 	font-size: small;
 }
 
+span.navi {
+	font-size: small;
+	color: #DCDAD5;
+}
+
 .navi:hover {
 	color: green;
 }
