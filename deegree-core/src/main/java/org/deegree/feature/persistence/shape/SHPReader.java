@@ -325,12 +325,10 @@ public class SHPReader {
     }
 
     public GeometryType getGeometryType() {
-        System.out.println(type);
         switch ( type ) {
         case POINT:
         case POINTM:
         case POINTZ:
-            System.out.println("one of them is a point");
             return GeometryType.POINT;
         case POLYLINE:
         case POLYLINEM:
