@@ -39,12 +39,13 @@ import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.event.ActionListener;
 
+import javax.swing.AbstractButton;
 import javax.swing.BoxLayout;
-import javax.swing.ButtonGroup;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
-import javax.swing.JTextField;
 
+import org.deegree.commons.utils.Pair;
+import org.deegree.tools.crs.georeferencing.model.buttons.ToggleButtonModel;
 
 /**
  * <Code>ViewPanel</Code>.
@@ -56,91 +57,50 @@ import javax.swing.JTextField;
  */
 public class ViewPanel extends GenericSettingsPanel {
 
-    public static final String TWO = "2pt";
+    private static final String TWO = "2pt";
 
-    public static final String THREE = "3pt";
+    private static final String THREE = "3pt";
 
-    public static final String DEFAULT = "5pt (default)";
+    private static final String DEFAULT = "5pt (default)";
 
-    public static final String SEVEN = "7pt";
+    private static final String SEVEN = "7pt";
 
-    public static final String TEN = "10pt";
-
-    public static final String CUSTOM = "custom";
+    private static final String TEN = "10pt";
 
     public static final String CUSTOM_TEXTFIELD = "customTextField";
 
-    private JRadioButton radio2PT;
+    private final Pair<AbstractButton, Integer>[] radiobuttons = new Pair[] {
+                                                                             new Pair( new JRadioButton( TWO ), 2 ),
+                                                                             new Pair( new JRadioButton( THREE ), 3 ),
+                                                                             new Pair( new JRadioButton( DEFAULT ), 5 ),
+                                                                             new Pair( new JRadioButton( SEVEN ), 7 ),
+                                                                             new Pair( new JRadioButton( TEN ), 10 ) };
 
-    private JRadioButton radio3PT;
+    // private final CustomToggleButton ctb;
 
-    private JRadioButton radioDefault;
-
-    private JRadioButton radio7PT;
-
-    private JRadioButton radio10PT;
-
-    private JRadioButton radioCustom;
-
-    private JTextField textFieldCustom;
-
-    private int pointSize;
+    private final ToggleButtonModel tbm;
 
     /**
      * Creates a new instance of <Code>ViewPanel</Code>.
      */
-    public ViewPanel() {
+    public ViewPanel( ActionListener e ) {
+        // this.ctb = new CustomToggleButton( 10, CUSTOM_TEXTFIELD );
+        this.tbm = new ToggleButtonModel( radiobuttons, e );
 
         JPanel defined = new JPanel();
         defined.setLayout( new BoxLayout( defined, BoxLayout.Y_AXIS ) );
         JPanel custom = new JPanel();
         custom.setLayout( new BoxLayout( custom, BoxLayout.X_AXIS ) );
-
         this.setLayout( new BorderLayout() );
 
-        radio2PT = new JRadioButton( TWO );
-        radio3PT = new JRadioButton( THREE );
-        radioDefault = new JRadioButton( DEFAULT );
-        radio7PT = new JRadioButton( SEVEN );
-        radio10PT = new JRadioButton( TEN );
-        radioCustom = new JRadioButton( CUSTOM );
-        textFieldCustom = new JTextField( 10 );
-        radioDefault.setName( DEFAULT );
-        radio7PT.setName( SEVEN );
-        radio10PT.setName( TEN );
-        textFieldCustom.setName( CUSTOM_TEXTFIELD );
+        for ( AbstractButton b : tbm.getAllButtons() ) {
+            defined.add( b, Component.LEFT_ALIGNMENT );
+        }
+        // custom.add( ctb.getCustom(), Component.LEFT_ALIGNMENT );
+        // custom.add( ctb.getCustomTextField() );
 
-        ButtonGroup group = new ButtonGroup();
-        group.add( radio2PT );
-        group.add( radio3PT );
-        group.add( radioDefault );
-        group.add( radio7PT );
-        group.add( radio10PT );
-        group.add( radioCustom );
-
-        defined.add( radio2PT, Component.LEFT_ALIGNMENT );
-        defined.add( radio3PT, Component.LEFT_ALIGNMENT );
-        defined.add( radioDefault, Component.LEFT_ALIGNMENT );
-        defined.add( radio7PT, Component.LEFT_ALIGNMENT );
-        defined.add( radio10PT, Component.LEFT_ALIGNMENT );
-        custom.add( radioCustom, Component.LEFT_ALIGNMENT );
-        custom.add( textFieldCustom );
         this.add( defined, BorderLayout.PAGE_START );
         this.add( custom, BorderLayout.PAGE_END );
-    }
-
-    /**
-     * Adds the ActionListener to the RadioButtons.
-     * 
-     * @param e
-     */
-    public void addRadioButtonListener( ActionListener e ) {
-        radio2PT.addActionListener( e );
-        radio3PT.addActionListener( e );
-        radioDefault.addActionListener( e );
-        radio7PT.addActionListener( e );
-        radio10PT.addActionListener( e );
-        radioCustom.addActionListener( e );
     }
 
     @Override
@@ -149,54 +109,8 @@ public class ViewPanel extends GenericSettingsPanel {
         return PanelType.ViewPanel;
     }
 
-    /**
-     * 
-     * @return the content of the textfield.
-     */
-    public JTextField getTextFieldCustom() {
-        return textFieldCustom;
-    }
-
-    /**
-     * 
-     * @return the pointSize that is selected.
-     */
-    public int getPointSize() {
-        return pointSize;
-    }
-
-    /**
-     * Sets the pointSize to this view.
-     * 
-     * @param pointSize
-     */
-    public void setPointSize( int pointSize ) {
-        this.pointSize = pointSize;
-        switch ( pointSize ) {
-        case 2:
-            radio2PT.setSelected( true );
-            break;
-        case 3:
-            radio3PT.setSelected( true );
-            break;
-        case 5:
-            radioDefault.setSelected( true );
-            break;
-        case 7:
-            radio7PT.setSelected( true );
-            break;
-        case 10:
-            radio10PT.setSelected( true );
-            break;
-        default:
-            radioCustom.setSelected( true );
-            textFieldCustom.setText( Integer.toString( pointSize ) );
-
-        }
-    }
-
-    public JRadioButton getRadioCustom() {
-        return radioCustom;
+    public ToggleButtonModel getTbm() {
+        return tbm;
     }
 
 }

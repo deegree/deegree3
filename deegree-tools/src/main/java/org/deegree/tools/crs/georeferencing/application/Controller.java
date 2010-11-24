@@ -107,11 +107,11 @@ import org.deegree.tools.crs.georeferencing.communication.dialog.menuitem.OpenWM
 import org.deegree.tools.crs.georeferencing.communication.dialog.menuitem.WMSParameterChooser;
 import org.deegree.tools.crs.georeferencing.communication.dialog.option.GeneralPanel;
 import org.deegree.tools.crs.georeferencing.communication.dialog.option.GenericSettingsPanel;
-import org.deegree.tools.crs.georeferencing.communication.dialog.option.GenericSettingsPanel.PanelType;
 import org.deegree.tools.crs.georeferencing.communication.dialog.option.NavigationPanel;
 import org.deegree.tools.crs.georeferencing.communication.dialog.option.OptionDialog;
 import org.deegree.tools.crs.georeferencing.communication.dialog.option.SettingsPanel;
 import org.deegree.tools.crs.georeferencing.communication.dialog.option.ViewPanel;
+import org.deegree.tools.crs.georeferencing.communication.dialog.option.GenericSettingsPanel.PanelType;
 import org.deegree.tools.crs.georeferencing.communication.panel2D.AbstractPanel2D;
 import org.deegree.tools.crs.georeferencing.communication.panel2D.BuildingFootprintPanel;
 import org.deegree.tools.crs.georeferencing.communication.panel2D.Scene2DPanel;
@@ -128,12 +128,11 @@ import org.deegree.tools.crs.georeferencing.model.exceptions.NumberException;
 import org.deegree.tools.crs.georeferencing.model.mouse.FootprintMouseModel;
 import org.deegree.tools.crs.georeferencing.model.mouse.GeoReferencedMouseModel;
 import org.deegree.tools.crs.georeferencing.model.points.AbstractGRPoint;
-import org.deegree.tools.crs.georeferencing.model.points.AbstractGRPoint.PointType;
 import org.deegree.tools.crs.georeferencing.model.points.FootprintPoint;
 import org.deegree.tools.crs.georeferencing.model.points.GeoReferencedPoint;
 import org.deegree.tools.crs.georeferencing.model.points.Point4Values;
 import org.deegree.tools.crs.georeferencing.model.points.PointResidual;
-import org.deegree.tools.crs.georeferencing.model.textfield.AbstractCoordinateJumperModel;
+import org.deegree.tools.crs.georeferencing.model.points.AbstractGRPoint.PointType;
 import org.deegree.tools.crs.georeferencing.model.textfield.CoordinateJumperModel;
 import org.deegree.tools.rendering.viewer.File3dImporter;
 
@@ -515,7 +514,7 @@ public class Controller {
      * @version $Revision$, $Date$
      */
     class ButtonListener implements ActionListener {
-        private boolean isRunIntoTrouble = false;
+        private boolean exceptionThrown = false;
 
         @Override
         public void actionPerformed( ActionEvent e ) {
@@ -530,35 +529,8 @@ public class Controller {
 
             } else if ( source instanceof JToggleButton ) {
                 if ( source instanceof JRadioButton ) {
-                    if ( ( (JRadioButton) source ).getText().startsWith( ViewPanel.TWO ) ) {
-
-                        conModel.getDialogModel().setSelectionPointSize( 2 );
-                    } else if ( ( (JRadioButton) source ).getText().startsWith( ViewPanel.THREE ) ) {
-
-                        conModel.getDialogModel().setSelectionPointSize( 3 );
-                    } else if ( ( (JRadioButton) source ).getText().startsWith( ViewPanel.DEFAULT ) ) {
-
-                        conModel.getDialogModel().setSelectionPointSize( 5 );
-
-                    } else if ( ( (JRadioButton) source ).getText().startsWith( ViewPanel.SEVEN ) ) {
-
-                        conModel.getDialogModel().setSelectionPointSize( 7 );
-                    } else if ( ( (JRadioButton) source ).getText().startsWith( ViewPanel.TEN ) ) {
-
-                        conModel.getDialogModel().setSelectionPointSize( 10 );
-                    } else if ( ( (JRadioButton) source ).getText().startsWith( ViewPanel.CUSTOM ) ) {
-                        if ( !( (ViewPanel) optionSettingPanel ).getTextFieldCustom().getText().equals( "" ) ) {
-                            conModel.getDialogModel().setTextFieldKeyString( ( (ViewPanel) optionSettingPanel ).getTextFieldCustom().getText() );
-                            int i;
-                            try {
-                                i = Integer.parseInt( conModel.getDialogModel().getTextFieldKeyString().second );
-                                conModel.getDialogModel().setSelectionPointSize( i );
-                            } catch ( NumberFormatException ex ) {
-                                new ErrorDialog( optionDialog, JDialog.ERROR, "This is not a number" );
-                            }
-
-                        }
-                    }
+                    int pointSize = ( (ViewPanel) optionSettingPanel ).getTbm().getButtons().get( source );
+                    conModel.getDialogModel().setSelectionPointSize( pointSize );
 
                 } else if ( source instanceof JCheckBox ) {
                     JCheckBox selectedCheckbox = (JCheckBox) source;
@@ -719,34 +691,41 @@ public class Controller {
 
                         if ( optionSettingPanel != null ) {
 
-                            if ( optionSettingPanel instanceof ViewPanel ) {
-                                // if the custom radiobutton is selected and there is something inside the textField
-                                if ( !( (ViewPanel) optionSettingPanel ).getTextFieldCustom().getText().equals( "" )
-                                     && ( (ViewPanel) optionSettingPanel ).getRadioCustom().getSelectedObjects() != null ) {
-                                    // here you have to check about the input for the custom textfield. Keylistener for
-                                    // the textfield while typing in is problematic because you can workaround with
-                                    // copy&paste...so this should be the way to go.
-
-                                    String textInput = ( (ViewPanel) optionSettingPanel ).getTextFieldCustom().getText();
-                                    if ( AbstractCoordinateJumperModel.validateInt( textInput ) ) {
-                                        conModel.getDialogModel().setTextFieldKeyString( textInput );
-                                        conModel.getDialogModel().setSelectionPointSize( Integer.parseInt( conModel.getDialogModel().getTextFieldKeyString().second ) );
-                                        isRunIntoTrouble = false;
-                                    } else {
-                                        new ErrorDialog( optionDialog, JDialog.ERROR,
-                                                         "Insert numbers only into the textField!" );
-                                        isRunIntoTrouble = true;
-                                    }
-
-                                }
-                            } else if ( optionSettingPanel instanceof GeneralPanel ) {
-                                String p = ( (GeneralPanel) optionSettingPanel ).getTextField( ( (GeneralPanel) optionSettingPanel ).getZoomValue() ).getText();
+                            // if ( optionSettingPanel instanceof ViewPanel ) {
+                            // // if the custom radiobutton is selected and there is something inside the textField
+                            // if ( !( (ViewPanel) optionSettingPanel
+                            // ).getTbm().getCtb().getCustomTextField().getText().equals(
+                            // "" )
+                            // && ( (ViewPanel) optionSettingPanel ).getTbm().getCtb().getCustom().isSelected() == true
+                            // ) {
+                            // // here you have to check about the input for the custom textfield. Keylistener for
+                            // // the textfield while typing in is problematic because you can workaround with
+                            // // copy&paste...so this should be the way to go.
+                            //
+                            // String textInput = ( (ViewPanel) optionSettingPanel
+                            // ).getTbm().getCtb().getCustomTextField().getText();
+                            // if ( TextfieldUtils.validateInt( textInput ) ) {
+                            // conModel.getDialogModel().setTextFieldKeyString( textInput );
+                            // conModel.getDialogModel().setSelectionPointSize(
+                            // Integer.parseInt( conModel.getDialogModel().getTextFieldKeyString().second ) );
+                            // exceptionThrown = false;
+                            // } else {
+                            // new ErrorDialog( optionDialog, JDialog.ERROR,
+                            // "Insert numbers only into the textField!" );
+                            // exceptionThrown = true;
+                            // }
+                            //
+                            // }
+                            // } else
+                            if ( optionSettingPanel instanceof GeneralPanel ) {
+                                String p = ( (GeneralPanel) optionSettingPanel ).getTextField(
+                                                                                               ( (GeneralPanel) optionSettingPanel ).getZoomValue() ).getText();
                                 String p1 = p.replace( ',', '.' );
                                 conModel.getDialogModel().setResizeValue( new Double( p1 ).doubleValue() );
-                                isRunIntoTrouble = false;
+                                exceptionThrown = false;
                             }
                         }
-                        if ( isRunIntoTrouble == false ) {
+                        if ( exceptionThrown == false ) {
                             conModel.getDialogModel().transferNewToOld();
                             AbstractPanel2D.selectedPointSize = conModel.getDialogModel().getSelectionPointSize().first;
                             conModel.getPanel().repaint();
@@ -765,13 +744,13 @@ public class Controller {
                         } catch ( MalformedURLException e1 ) {
                             new ErrorDialog( wmsStartDialog, JDialog.ERROR,
                                              "The requested URL is malformed! There is no response gotten from the server. " );
-                            isRunIntoTrouble = true;
+                            exceptionThrown = true;
                         } catch ( NullPointerException e2 ) {
                             new ErrorDialog( wmsStartDialog, JDialog.ERROR,
                                              "The requested URL is malformed! There is no response gotten from the server. " );
-                            isRunIntoTrouble = true;
+                            exceptionThrown = true;
                         }
-                        if ( isRunIntoTrouble == false ) {
+                        if ( exceptionThrown == false ) {
                             wmsParameter.addListeners( new ButtonListener() );
                             wmsParameter.setVisible( true );
                         }
@@ -860,6 +839,28 @@ public class Controller {
                 }
 
             }
+
+        }
+
+        private void changeRadioButtons( JRadioButton source ) {
+            // if ( source.getName().startsWith( ViewPanel.CUSTOM_TEXTFIELD ) ) {
+            // if ( !( (ViewPanel) optionSettingPanel ).getTbm().getCtb().getCustomTextField().getText().equals( "" ) )
+            // {
+            // conModel.getDialogModel().setTextFieldKeyString(
+            // ( (ViewPanel) optionSettingPanel ).getTbm().getCtb().getCustomTextField().getText() );
+            //
+            // try {
+            // int i = Integer.parseInt( conModel.getDialogModel().getTextFieldKeyString().second );
+            // conModel.getDialogModel().setSelectionPointSize( i );
+            // } catch ( NumberFormatException ex ) {
+            // new ErrorDialog( optionDialog, JDialog.ERROR, "This is not a number" );
+            // }
+            //
+            // }
+            // } else {
+            int pointSize = ( (ViewPanel) optionSettingPanel ).getTbm().getButtons().get( source );
+            conModel.getDialogModel().setSelectionPointSize( pointSize );
+            // }
 
         }
 
@@ -1061,9 +1062,10 @@ public class Controller {
                         ( (GeneralPanel) optionSettingPanel ).setInitialZoomValue( conModel.getDialogModel().getResizeValue().second );
                         break;
                     case ViewPanel:
-                        optionSettingPanel = new ViewPanel();
-                        ( (ViewPanel) optionSettingPanel ).setPointSize( conModel.getDialogModel().getSelectionPointSize().second );
-                        ( (ViewPanel) optionSettingPanel ).addRadioButtonListener( new ButtonListener() );
+                        optionSettingPanel = new ViewPanel( new ButtonListener() );
+                        ( (ViewPanel) optionSettingPanel ).getTbm().setPointSize(
+                                                                                  conModel.getDialogModel().getSelectionPointSize().second );
+                        // ( (ViewPanel) optionSettingPanel ).addRadioButtonListener( new ButtonListener() );
 
                         break;
                     }
@@ -1176,7 +1178,8 @@ public class Controller {
 
                             if ( isZoomInGeoref ) {
                                 if ( minPoint.x == maxPoint.x && minPoint.y == maxPoint.y ) {
-                                    sceneValues.computeZoomedEnvelope( true,
+                                    sceneValues.computeZoomedEnvelope(
+                                                                       true,
                                                                        conModel.getDialogModel().getResizeValue().second,
                                                                        new GeoReferencedPoint( minPoint.x, minPoint.y ) );
                                 } else {
@@ -1195,7 +1198,8 @@ public class Controller {
                                                                    new GeoReferencedPoint( maxPoint.x, maxPoint.y ) );
                             }
 
-                            conModel.getPanel().setImageToDraw( model.generateSubImageFromRaster( sceneValues.getEnvelopeGeoref() ) );
+                            conModel.getPanel().setImageToDraw(
+                                                                model.generateSubImageFromRaster( sceneValues.getEnvelopeGeoref() ) );
                             conModel.getPanel().updatePoints( sceneValues );
                             conModel.getPanel().setZoomRect( null );
                             conModel.getPanel().repaint();
@@ -1236,7 +1240,8 @@ public class Controller {
                                                                                       ( mouseGeoRef.getPointMousePressed().y - m.getY() ) ) );
 
                                 sceneValues.moveEnvelope( mouseGeoRef.getMouseChanging() );
-                                conModel.getPanel().setImageToDraw( model.generateSubImageFromRaster( sceneValues.getEnvelopeGeoref() ) );
+                                conModel.getPanel().setImageToDraw(
+                                                                    model.generateSubImageFromRaster( sceneValues.getEnvelopeGeoref() ) );
                                 conModel.getPanel().updatePoints( sceneValues );
                             }
 
@@ -1471,7 +1476,8 @@ public class Controller {
                         }
                         sceneValues.computeZoomedEnvelope( zoomIn, conModel.getDialogModel().getResizeValue().second,
                                                            mouseOver );
-                        conModel.getPanel().setImageToDraw( model.generateSubImageFromRaster( sceneValues.getEnvelopeGeoref() ) );
+                        conModel.getPanel().setImageToDraw(
+                                                            model.generateSubImageFromRaster( sceneValues.getEnvelopeGeoref() ) );
                         conModel.getPanel().updatePoints( sceneValues );
                         conModel.getPanel().repaint();
                     }

@@ -33,17 +33,17 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.tools.crs.georeferencing.model.textfield;
+package org.deegree.tools.crs.georeferencing.model.utils;
 
 /**
- * Abstract base class for all the textfieldmodels
+ * TODO add class documentation here
  * 
  * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
  */
-public abstract class AbstractCoordinateJumperModel {
+public class TextfieldUtils {
 
     private final static String validateInteger = "[0-9]*";
 

@@ -49,7 +49,7 @@ import org.deegree.tools.crs.georeferencing.model.exceptions.NumberMissmatch;
  * 
  * @version $Revision$, $Date$
  */
-public class CoordinateJumperModel extends AbstractCoordinateJumperModel {
+public class CoordinateJumperModel {
 
     private double xCoordinate;
 
