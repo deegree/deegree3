@@ -76,10 +76,7 @@ public class Util {
 
                 if ( p.getValue() instanceof PrimitiveValue ) {
                     String s = p.getValue().toString();
-                    // skip empty string properties completely
-                    if ( s.isEmpty() ) {
-                        continue;
-                    }
+
                     PropertyType pt = p.getType();
                     // this is some great parsing really, maybe GML 4 does not need multiple properties at all and can
                     // revert to this?
@@ -138,7 +135,7 @@ public class Util {
 
             for ( T o2 : tmp ) {
                 String nm = o2 instanceof Property ? ( (Property) o2 ).getName().getLocalPart()
-                                                     : ( (Feature) o2 ).getName().getLocalPart();
+                                                  : ( (Feature) o2 ).getName().getLocalPart();
                 if ( negate ) {
                     list.add( o2 );
                 }

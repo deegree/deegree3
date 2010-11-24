@@ -695,17 +695,26 @@ public class SHPReader {
                         outer = ring;
                         continue;
                     }
-                    polys.add( fac.createPolygon( null, crs, ring, null ) );
-                    polys.add( fac.createPolygon( null, crs, outer, null ) );
+                    if ( !inners.isEmpty() ) {
+                        polys.add( fac.createPolygon( null, crs, outer, inners ) );
+                        inners = new LinkedList<Ring>();
+                    } else {
+                        polys.add( fac.createPolygon( null, crs, outer, null ) );
+                    }
+                    outer = ring;
                 }
             }
         }
 
-        if ( polys.size() > 0 ) {
+        if ( outer != null ) {
+            polys.add( fac.createPolygon( null, crs, outer, inners ) );
+        }
+
+        if ( polys.size() > 1 ) {
             return fac.createMultiPolygon( null, crs, polys );
         }
 
-        return fac.createPolygon( null, crs, outer, inners );
+        return polys.getFirst();
     }
 
     private MultiPoint readMultipoint( ByteBuffer buffer ) {
