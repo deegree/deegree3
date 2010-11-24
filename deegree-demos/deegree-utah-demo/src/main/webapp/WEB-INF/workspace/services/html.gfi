@@ -47,7 +47,6 @@
         this[document.getElementById('theswitch').value + "_switchfunction"]()
       }
       <?feature *:switchfunction>
-      <?feature SGID93_LOCATION_UDOTMap_CityLocations:citiesswitchfunction>
     </script>
     <p>
       Please select a feature type:
