@@ -12,7 +12,7 @@
       <Keyword lang="en">deegree 3</Keyword>
       <Type codeSpace="whatever">TODO: Do we really need this element? What is it supposed to do?</Type>
     </Keywords>
-    <Fees>None, it's free</Fees>
+    <Fees>None, it is free</Fees>
     <AccessConstraints>None.</AccessConstraints>
     <AccessConstraints>24x7</AccessConstraints>
   </ServiceIdentification>
@@ -20,11 +20,11 @@
     <ProviderName>lat-lon GmbH</ProviderName>
     <ProviderSite>http://www.lat-lon.de</ProviderSite>
     <ServiceContact>
-      <IndividualName>Christian Kiehle</IndividualName>
-      <PositionName>Project Manager</PositionName>
+      <IndividualName>Johannes Wilden</IndividualName>
+      <PositionName>Release Manager</PositionName>
       <Phone>0228/18496-0</Phone>
       <Facsimile>0228/18496-29</Facsimile>
-      <ElectronicMailAddress>kiehle@lat-lon.de</ElectronicMailAddress>
+      <ElectronicMailAddress>wilden@lat-lon.de</ElectronicMailAddress>
       <Address>
         <DeliveryPoint>Aennchenstr. 19</DeliveryPoint>
         <City>Bonn</City>
@@ -34,7 +34,7 @@
       </Address>
       <OnlineResource>http://www.deegree.org</OnlineResource>
       <HoursOfService>24x7</HoursOfService>
-      <ContactInstructions>Don't hesitate to call</ContactInstructions>
+      <ContactInstructions>Do not hesitate to call</ContactInstructions>
       <Role>PointOfContact</Role>
     </ServiceContact>
   </ServiceProvider>
