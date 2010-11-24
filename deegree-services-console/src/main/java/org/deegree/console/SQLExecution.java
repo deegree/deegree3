@@ -55,7 +55,7 @@ public class SQLExecution implements Serializable {
 
     private String[] sqlStatements;
 
-    private String message = "Click Execute button to create tables.";
+    private String message = "Click Execute to create tables.";
 
     public SQLExecution( String connId, String[] sqlStatements ) {
         this.connId = connId;
@@ -96,10 +96,12 @@ public class SQLExecution implements Serializable {
             conn.commit();
             message = "Executed " + sqlStatements.length + " statements successfully.";
         } catch ( SQLException e ) {
-            try {
-                conn.rollback();
-            } catch ( SQLException e1 ) {
-                e1.printStackTrace();
+            if ( conn != null ) {
+                try {
+                    conn.rollback();
+                } catch ( SQLException e1 ) {
+                    e1.printStackTrace();
+                }
             }
             JDBCUtils.close( null, stmt, conn, LOG );
             message = "Error: " + e.getMessage();
