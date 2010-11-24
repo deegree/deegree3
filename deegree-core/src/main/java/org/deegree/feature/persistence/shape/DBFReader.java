@@ -44,7 +44,6 @@ import static org.deegree.commons.tom.primitive.PrimitiveType.INTEGER;
 import static org.deegree.commons.tom.primitive.PrimitiveType.STRING;
 import static org.deegree.commons.utils.EncodingGuesser.guess;
 import static org.deegree.feature.types.property.GeometryPropertyType.CoordinateDimension.DIM_2_OR_3;
-import static org.deegree.feature.types.property.GeometryPropertyType.GeometryType.GEOMETRY;
 import static org.deegree.feature.types.property.ValueRepresentation.BOTH;
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -71,6 +70,7 @@ import org.deegree.feature.types.GenericFeatureType;
 import org.deegree.feature.types.property.GeometryPropertyType;
 import org.deegree.feature.types.property.PropertyType;
 import org.deegree.feature.types.property.SimplePropertyType;
+import org.deegree.feature.types.property.GeometryPropertyType.GeometryType;
 import org.slf4j.Logger;
 
 /**
@@ -110,9 +110,11 @@ public class DBFReader {
      * @param ftName
      *            the name of the feature type, also used for namespace URI and namespace prefix of property
      *            declarations (must not be null)
+     * @param geomType
+     *            the geometry type of the .shp
      * @throws IOException
      */
-    public DBFReader( RandomAccessFile in, Charset encoding, QName ftName ) throws IOException {
+    public DBFReader( RandomAccessFile in, Charset encoding, QName ftName, GeometryType geomType ) throws IOException {
         this.encoding = encoding;
         this.file = in;
         channel = file.getChannel();
@@ -243,7 +245,7 @@ public class DBFReader {
         }
 
         types.add( new GeometryPropertyType( new QName( namespace, "geometry", prefix ), 0, 1, false, false, null,
-                                             GEOMETRY, DIM_2_OR_3, BOTH ) ); // TODO
+                                             geomType, DIM_2_OR_3, BOTH ) ); // TODO
         // properly
         // determine the
         // dimension from SHP type

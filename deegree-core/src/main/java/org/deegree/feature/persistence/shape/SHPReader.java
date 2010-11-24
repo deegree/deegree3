@@ -38,6 +38,9 @@ package org.deegree.feature.persistence.shape;
 
 import static java.nio.ByteOrder.BIG_ENDIAN;
 import static java.nio.ByteOrder.LITTLE_ENDIAN;
+import static org.deegree.feature.types.property.GeometryPropertyType.GeometryType.GEOMETRY;
+import static org.deegree.feature.types.property.GeometryPropertyType.GeometryType.MULTI_LINE_STRING;
+import static org.deegree.feature.types.property.GeometryPropertyType.GeometryType.MULTI_POINT;
 import static org.deegree.geometry.utils.GeometryUtils.createEnvelope;
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -56,6 +59,7 @@ import java.util.List;
 import org.deegree.commons.index.SpatialIndex;
 import org.deegree.commons.utils.Pair;
 import org.deegree.cs.CRS;
+import org.deegree.feature.types.property.GeometryPropertyType.GeometryType;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.GeometryFactory;
@@ -318,6 +322,32 @@ public class SHPReader {
                        + envelope[4] + "," + envelope[5] + " " + envelope[6] + "," + envelope[7] );
         }
 
+    }
+
+    public GeometryType getGeometryType() {
+        System.out.println(type);
+        switch ( type ) {
+        case POINT:
+        case POINTM:
+        case POINTZ:
+            System.out.println("one of them is a point");
+            return GeometryType.POINT;
+        case POLYLINE:
+        case POLYLINEM:
+        case POLYLINEZ:
+            return MULTI_LINE_STRING;
+        case MULTIPOINT:
+        case MULTIPOINTM:
+        case MULTIPOINTZ:
+            return MULTI_POINT;
+        case NULL:
+        case MULTIPATCH:
+            // TODO always use multipolygon here?
+        case POLYGON:
+        case POLYGONM:
+        case POLYGONZ:
+        }
+        return GEOMETRY;
     }
 
     /**

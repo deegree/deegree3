@@ -37,7 +37,6 @@ package org.deegree.feature.persistence.shape;
 
 import static org.deegree.commons.utils.CollectionUtils.unzipPair;
 import static org.deegree.feature.types.property.GeometryPropertyType.CoordinateDimension.DIM_2_OR_3;
-import static org.deegree.feature.types.property.GeometryPropertyType.GeometryType.GEOMETRY;
 import static org.deegree.feature.types.property.ValueRepresentation.BOTH;
 import static org.deegree.geometry.utils.GeometryUtils.createEnvelope;
 import static org.deegree.gml.GMLVersion.GML_31;
@@ -268,7 +267,7 @@ public class ShapeFeatureStore implements FeatureStore {
         String namespace = ftName.getNamespaceURI();
 
         try {
-            dbf = new DBFReader( new RandomAccessFile( dbfFile, "r" ), encoding, ftName );
+            dbf = new DBFReader( new RandomAccessFile( dbfFile, "r" ), encoding, ftName, shp.getGeometryType() );
 
             if ( generateAlphanumericIndexes ) {
                 // set up index
@@ -280,7 +279,8 @@ public class ShapeFeatureStore implements FeatureStore {
             LOG.warn( "A dbf file was not loaded (no attributes will be available): {}.dbf", shpName );
             GeometryPropertyType geomProp = new GeometryPropertyType( new QName( namespace, "geometry",
                                                                                  ftName.getPrefix() ), 0, 1, false,
-                                                                      false, null, GEOMETRY, DIM_2_OR_3, BOTH );
+                                                                      false, null, shp.getGeometryType(), DIM_2_OR_3,
+                                                                      BOTH );
             ft = new GenericFeatureType( ftName, Collections.<PropertyType> singletonList( geomProp ), false );
         }
         schema = new ApplicationSchema( new FeatureType[] { ft }, null, null, null );
@@ -377,7 +377,7 @@ public class ShapeFeatureStore implements FeatureStore {
                 if ( dbf != null && dbfLastModified != dbfFile.lastModified() ) {
                     dbf.close();
                     LOG.debug( "Re-opening the dbf file {}", shpName );
-                    dbf = new DBFReader( new RandomAccessFile( dbfFile, "r" ), encoding, ftName );
+                    dbf = new DBFReader( new RandomAccessFile( dbfFile, "r" ), encoding, ftName, shp.getGeometryType() );
                     if ( generateAlphanumericIndexes ) {
                         // set up index
                         dbfIndex = new DBFIndex( dbf, dbfFile, shp.readEnvelopes() );
