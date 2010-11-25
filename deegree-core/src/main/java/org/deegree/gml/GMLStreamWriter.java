@@ -39,8 +39,10 @@ import static org.deegree.commons.xml.CommonNamespaces.GML3_2_NS;
 import static org.deegree.commons.xml.CommonNamespaces.GMLNS;
 import static org.deegree.commons.xml.CommonNamespaces.OGCNS;
 import static org.deegree.commons.xml.CommonNamespaces.XLNNS;
+import static org.deegree.commons.xml.CommonNamespaces.XSINS;
 import static org.deegree.gml.GMLVersion.GML_32;
 
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 
@@ -107,7 +109,7 @@ public class GMLStreamWriter {
 
     private int traverseXLinkExpiry;
 
-    private Map<String, String> prefixToNs;
+    private Map<String, String> prefixToNs = new HashMap<String, String>();
 
     private AdditionalObjectHandler additionalObjectHandler;
 
@@ -123,9 +125,10 @@ public class GMLStreamWriter {
     GMLStreamWriter( GMLVersion version, XMLStreamWriter xmlStream ) throws XMLStreamException {
         this.version = version;
         this.xmlStream = xmlStream;
-        xmlStream.setPrefix( "ogc", OGCNS );
-        xmlStream.setPrefix( "gml", version != GML_32 ? GMLNS : GML3_2_NS );
-        xmlStream.setPrefix( "xlink", XLNNS );
+        prefixToNs.put( "ogc", OGCNS );
+        prefixToNs.put( "gml", version != GML_32 ? GMLNS : GML3_2_NS );
+        prefixToNs.put( "xlink", XLNNS );
+        prefixToNs.put( "xsi", XSINS );
     }
 
     /**
@@ -178,7 +181,7 @@ public class GMLStreamWriter {
      *            keys: prefix, value: namespace, may be <code>null</code>
      */
     public void setNamespaceBindings( Map<String, String> prefixToNs ) {
-        this.prefixToNs = prefixToNs;
+        this.prefixToNs.putAll( prefixToNs );
     }
 
     /**

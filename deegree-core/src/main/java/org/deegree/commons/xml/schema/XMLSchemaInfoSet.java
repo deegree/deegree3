@@ -97,12 +97,16 @@ public class XMLSchemaInfoSet {
 
     private static final Logger LOG = LoggerFactory.getLogger( XMLSchemaInfoSet.class );
 
-    /** The XML schema infoset. */
-    protected final XSModel xmlSchema;
+    /** The Xerces schema model. */
+    protected final XSModel xsModel;
 
     private Map<String, List<String>> nsToLocations;
 
     private Map<String, String> nsToPrefix;
+
+    private final Map<QName, XSElementDeclaration> nameToElDecl = new HashMap<QName, XSElementDeclaration>();
+
+    private final Map<QName, XSTypeDefinition> nameToTypeDef = new HashMap<QName, XSTypeDefinition>();
 
     /**
      * Creates a new <code>XSModelAnalyzer</code> for the given (Xerces) XML schema infoset.
@@ -111,7 +115,7 @@ public class XMLSchemaInfoSet {
      *            schema infoset, must not be <code>null</code>
      */
     public XMLSchemaInfoSet( XSModel xmlSchema ) {
-        this.xmlSchema = xmlSchema;
+        this.xsModel = xmlSchema;
     }
 
     /**
@@ -126,7 +130,49 @@ public class XMLSchemaInfoSet {
      */
     public XMLSchemaInfoSet( String... schemaUrls ) throws ClassCastException, ClassNotFoundException,
                             InstantiationException, IllegalAccessException {
-        xmlSchema = loadModel( schemaUrls );
+        xsModel = loadModel( schemaUrls );
+
+        // build lookup map to avoid usage of XSModel#getElementDeclaration(...) -- sometimes returns null for element
+        // declarations that definitely exist (observed for XPlanGML 4.0 schemas with ADE)
+        XSNamedMap elDecls = xsModel.getComponents( XSConstants.ELEMENT_DECLARATION );
+        for ( int i = 0; i < elDecls.getLength(); i++ ) {
+            XSElementDeclaration elDecl = (XSElementDeclaration) elDecls.item( i );
+            QName name = new QName( elDecl.getNamespace(), elDecl.getName() );
+            nameToElDecl.put( name, elDecl );
+        }
+        XSNamedMap typeDefs = xsModel.getComponents( XSConstants.TYPE_DEFINITION );
+        for ( int i = 0; i < typeDefs.getLength(); i++ ) {
+            XSTypeDefinition typeDef = (XSTypeDefinition) typeDefs.item( i );
+            QName name = new QName( typeDef.getNamespace(), typeDef.getName() );
+            nameToTypeDef.put( name, typeDef );
+        }
+    }
+
+    /**
+     * Returns the global element declaration with the given name.
+     * <p>
+     * NOTE: Use this method instead of XSModel#getElementDeclaration(...) -- sometimes this convenience method returns
+     * null for element declarations that definitely exist (observed for XPlanGML 4.0 schemas with ADE).
+     * </p>
+     * 
+     * @param name
+     *            qualified name, must not be <code>null</code>
+     * @return the global element declaration or <code>null</code> if it does not exist
+     */
+    public XSElementDeclaration getElementDecl( QName name ) {
+        return nameToElDecl.get( name );
+    }
+
+    public XSElementDeclaration getElementDecl( String localName, String namespace ) {
+        return getElementDecl( new QName( namespace, localName ) );
+    }
+
+    public XSTypeDefinition getTypeDef( QName name ) {
+        return nameToTypeDef.get( name );
+    }
+
+    public XSTypeDefinition getTypeDef( String localName, String namespace ) {
+        return getTypeDef( new QName( namespace, localName ) );
     }
 
     /**
@@ -203,7 +249,7 @@ public class XMLSchemaInfoSet {
     private synchronized Map<String, List<String>> getNSMap() {
         if ( nsToLocations == null ) {
             nsToLocations = new LinkedHashMap<String, List<String>>();
-            XSNamespaceItemList nsItems = xmlSchema.getNamespaceItems();
+            XSNamespaceItemList nsItems = xsModel.getNamespaceItems();
             for ( int i = 0; i < nsItems.getLength(); i++ ) {
                 XSNamespaceItem nsItem = nsItems.item( i );
                 StringList locations = nsItem.getDocumentLocations();
@@ -221,7 +267,7 @@ public class XMLSchemaInfoSet {
      * @return
      */
     public XSNamespaceItemList getNamespaces() {
-        return xmlSchema.getNamespaceItems();
+        return xsModel.getNamespaceItems();
     }
 
     /**
@@ -230,7 +276,7 @@ public class XMLSchemaInfoSet {
      * @return the XML schema infoset
      */
     public XSModel getXSModel() {
-        return xmlSchema;
+        return xsModel;
     }
 
     /**
@@ -253,9 +299,9 @@ public class XMLSchemaInfoSet {
         // that have been loaded from multiple files which have overlapping includes
 
         // first collect all element names, because XSModels seem to contain multiple XSElementDeclaration
-        // elements for the same name (when multiple schema files are involved)
+        // instances for the same name (when multiple schema files are involved)
         Set<QName> elementNames = new HashSet<QName>();
-        XSNamedMap elementDecls = xmlSchema.getComponents( XSConstants.ELEMENT_DECLARATION );
+        XSNamedMap elementDecls = xsModel.getComponents( XSConstants.ELEMENT_DECLARATION );
         for ( int i = 0; i < elementDecls.getLength(); i++ ) {
             XSElementDeclaration candidate = (XSElementDeclaration) elementDecls.item( i );
             if ( namespace == null || namespace.equals( candidate.getNamespace() ) ) {
@@ -286,7 +332,7 @@ public class XMLSchemaInfoSet {
 
         List<XSElementDeclaration> substDecls = new ArrayList<XSElementDeclaration>( elementNames.size() );
         for ( QName name : elementNames ) {
-            substDecls.add( xmlSchema.getElementDeclaration( name.getLocalPart(), name.getNamespaceURI() ) );
+            substDecls.add( nameToElDecl.get( name ) );
         }
         if ( !elementNames.contains( new QName( elementDecl.getNamespace(), elementDecl.getName() ) ) && transitive
              && ( !onlyConcrete || !elementDecl.getAbstract() ) ) {
@@ -312,7 +358,7 @@ public class XMLSchemaInfoSet {
     public List<XSTypeDefinition> getSubtypes( XSTypeDefinition typeDef, String namespace, boolean transitive,
                                                boolean onlyConcrete ) {
         Set<QName> typeNames = new HashSet<QName>();
-        XSNamedMap typeDefs = xmlSchema.getComponents( TYPE_DEFINITION );
+        XSNamedMap typeDefs = xsModel.getComponents( TYPE_DEFINITION );
         for ( int i = 0; i < typeDefs.getLength(); i++ ) {
             XSTypeDefinition candidate = (XSTypeDefinition) typeDefs.item( i );
             if ( namespace == null || namespace.equals( candidate.getNamespace() ) ) {
@@ -340,7 +386,7 @@ public class XMLSchemaInfoSet {
 
         List<XSTypeDefinition> subTypes = new ArrayList<XSTypeDefinition>( typeNames.size() );
         for ( QName name : typeNames ) {
-            subTypes.add( xmlSchema.getTypeDefinition( name.getLocalPart(), name.getNamespaceURI() ) );
+            subTypes.add( xsModel.getTypeDefinition( name.getLocalPart(), name.getNamespaceURI() ) );
         }
         return subTypes;
     }
@@ -360,8 +406,7 @@ public class XMLSchemaInfoSet {
      */
     public List<XSElementDeclaration> getSubstitutions( QName elementName, String namespace, boolean transitive,
                                                         boolean onlyConcrete ) {
-        XSElementDeclaration elementDecl = xmlSchema.getElementDeclaration( elementName.getLocalPart(),
-                                                                            elementName.getNamespaceURI() );
+        XSElementDeclaration elementDecl = nameToElDecl.get( elementName );
         if ( elementDecl == null ) {
             String msg = "The schema does not declare a top-level element with name '" + elementName + "'.";
             throw new IllegalArgumentException( msg );

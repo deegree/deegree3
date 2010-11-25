@@ -492,7 +492,7 @@ public class PostGISFeatureStoreTransaction implements FeatureStoreTransaction {
             codec.encode( feature, fs.getNamespaceContext(), bos, crs );
         } catch ( Exception e ) {
             String msg = "Error encoding feature for BLOB: " + e.getMessage();
-            LOG.error( msg, e.getMessage() );
+            LOG.error( msg, e );
             throw new SQLException( msg, e );
         }
         byte[] bytes = bos.toByteArray();

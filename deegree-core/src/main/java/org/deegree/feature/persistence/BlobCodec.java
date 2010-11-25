@@ -36,7 +36,6 @@
 
 package org.deegree.feature.persistence;
 
-import static java.lang.Boolean.TRUE;
 import static javax.xml.stream.XMLOutputFactory.IS_REPAIRING_NAMESPACES;
 
 import java.io.BufferedInputStream;
@@ -97,7 +96,7 @@ public class BlobCodec {
     private static final XMLInputFactory xmlInputFactory = XMLInputFactory.newInstance();
 
     static {
-        xmlOutputFactory.setProperty( IS_REPAIRING_NAMESPACES, TRUE );
+        xmlOutputFactory.setProperty( IS_REPAIRING_NAMESPACES, Boolean.TRUE );
     }
 
     private final GMLVersion gmlVersion;
@@ -137,15 +136,14 @@ public class BlobCodec {
      * @throws TransformationException
      * @throws IOException
      */
-    public void encode( GMLObject object, Map<String, String> nsContext, OutputStream os, CRS crs )
+    public void encode( GMLObject object, final Map<String, String> nsContext, OutputStream os, CRS crs )
                             throws FeatureStoreException, XMLStreamException, FactoryConfigurationError,
                             UnknownCRSException, TransformationException, IOException {
 
         long begin = System.currentTimeMillis();
         XMLStreamWriter xmlWriter = getXMLWriter( os );
         GMLStreamWriter gmlWriter = GMLOutputFactory.createGMLStreamWriter( gmlVersion, xmlWriter );
-        Map<String,String> bindings = new HashMap<String,String>(nsContext);
-        bindings.put ("gml", gmlVersion.getNamespace());
+        Map<String, String> bindings = new HashMap<String, String>( nsContext );
         gmlWriter.setNamespaceBindings( bindings );
         gmlWriter.setOutputCRS( crs );
         gmlWriter.setLocalXLinkTemplate( "#{}" );

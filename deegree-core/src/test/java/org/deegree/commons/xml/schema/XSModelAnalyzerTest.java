@@ -80,7 +80,7 @@ public class XSModelAnalyzerTest {
                             IllegalAccessException {
 
         XMLSchemaInfoSet analyzer = new XMLSchemaInfoSet(
-                                                        XSModelAnalyzerTest.class.getResource( "Philosopher.xsd" ).toString() );
+                                                          XSModelAnalyzerTest.class.getResource( "Philosopher.xsd" ).toString() );
         QName abstractFeatureElementName = new QName( "http://www.opengis.net/gml", "_Feature" );
         List<XSElementDeclaration> concreteFeatureElements = analyzer.getSubstitutions( abstractFeatureElementName,
                                                                                         null, true, true );
@@ -105,8 +105,8 @@ public class XSModelAnalyzerTest {
 
         XMLSchemaInfoSet analyzer = new XMLSchemaInfoSet( schemaURL, schemaURL2 );
         XSModel model = analyzer.getXSModel();
-        XSElementDeclaration a = model.getElementDeclaration( "Philosopher", "http://www.deegree.org/app" );
-        XSElementDeclaration b = model.getElementDeclaration( "FeatureCollection", "http://www.opengis.net/wfs" );
+        XSElementDeclaration a = analyzer.getElementDecl( "Philosopher", "http://www.deegree.org/app" );
+        XSElementDeclaration b = analyzer.getElementDecl( "FeatureCollection", "http://www.opengis.net/wfs" );
         LOG.debug( "" + a.getSubstitutionGroupAffiliation() );
         LOG.debug( "" + b.getSubstitutionGroupAffiliation().getSubstitutionGroupAffiliation() );
 
@@ -116,7 +116,7 @@ public class XSModelAnalyzerTest {
         // LOG.debug (concreteFeatureElements.size());
     }
 
-    //@Test
+    // @Test
     public void testGML311SF()
                             throws ClassCastException, ClassNotFoundException, InstantiationException,
                             IllegalAccessException {

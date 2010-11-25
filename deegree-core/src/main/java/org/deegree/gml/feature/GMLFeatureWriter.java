@@ -40,7 +40,6 @@ import static javax.xml.XMLConstants.NULL_NS_URI;
 import static org.deegree.commons.xml.CommonNamespaces.XLNNS;
 import static org.deegree.commons.xml.CommonNamespaces.XSINS;
 import static org.deegree.gml.GMLVersion.GML_2;
-import static org.deegree.protocol.wfs.WFSConstants.WFS_NS;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -154,16 +153,8 @@ public class GMLFeatureWriter {
     private AdditionalObjectHandler additionalObjectHandler;
 
     /**
-     * @param writer
-     * @param outputCRS
-     *            crs used for exported geometries, may be <code>null</code> (in that case, the crs of the geometries is
-     *            used)
-     */
-    public GMLFeatureWriter( XMLStreamWriter writer, CRS outputCRS ) {
-        this( GMLVersion.GML_31, writer, outputCRS, null, null, null, 0, -1, null, false, true, null, null );
-    }
-
-    /**
+     * Creates a new {@link GMLFeatureWriter} instance.
+     * 
      * @param version
      *            GML version of the output, must not be <code>null</code>
      * @param writer
@@ -174,16 +165,16 @@ public class GMLFeatureWriter {
      *            formatter to use for exporting coordinates, e.g. to limit the number of decimal places, may be
      *            <code>null</code> (use 5 decimal places)
      * @param referenceTemplate
-     *            URI template used to create references to local objects, e.g.
-     * 
-     *            <code>http://localhost:8080/d3_wfs_lab/services?SERVICE=WFS&REQUEST=GetGmlObject&VERSION=1.1.0&TRAVERSEXLINKDEPTH=1&GMLOBJECTID={}</code>
-     *            , the substring <code>{}</code> is replaced by the object id
+     *            URI template used to create references to local objects, e.g. <code>#{}</code>, the substring
+     *            <code>{}</code> is replaced by the object id
      * @param requestedProps
      *            properties to be exported, may be <code>null</code> (export all properties)
      * @param traverseXlinkDepth
      * @param traverseXlinkExpiry
      * @param xlinkProps
      * @param exportSfGeometries
+     * @param outputGeometries
+     * @param prefixToNs
      * @param additionalObjectHandler
      */
     public GMLFeatureWriter( GMLVersion version, XMLStreamWriter writer, CRS outputCRS, CoordinateFormatter formatter,
@@ -238,128 +229,18 @@ public class GMLFeatureWriter {
         this.additionalObjectHandler = additionalObjectHandler;
     }
 
+    /**
+     * Exports the given {@link Feature} (or {@link FeatureCollection}).
+     * 
+     * @param feature
+     *            feature to be exported, must not be <code>null</code>
+     * @throws XMLStreamException
+     * @throws UnknownCRSException
+     * @throws TransformationException
+     */
     public void export( Feature feature )
                             throws XMLStreamException, UnknownCRSException, TransformationException {
         export( feature, 0, traverseXlinkDepth );
-    }
-
-    /**
-     * TODO merge with other schema location possibilities
-     * 
-     * @param fc
-     * @param noNamespaceSchemaLocation
-     *            may be null
-     * @param bindings
-     *            optional additional schema locations
-     * @throws XMLStreamException
-     * @throws TransformationException
-     * @throws UnknownCRSException
-     */
-    public void export( FeatureCollection fc, String noNamespaceSchemaLocation, Map<String, String> bindings )
-                            throws XMLStreamException, UnknownCRSException, TransformationException {
-
-        LOG.debug( "Exporting generic feature collection." );
-        if ( fc.getId() != null ) {
-            exportedIds.add( fc.getId() );
-        }
-
-        writer.setPrefix( "gml", gmlNs );
-        writer.setPrefix( "wfs", WFS_NS );
-        writeStartElementWithNS( WFS_NS, "FeatureCollection" );
-
-        if ( fc.getId() != null ) {
-            if ( fidAttr.getNamespaceURI() == NULL_NS_URI ) {
-                writer.writeAttribute( fidAttr.getLocalPart(), fc.getId() );
-            } else {
-                writeAttributeWithNS( fidAttr.getNamespaceURI(), fidAttr.getLocalPart(), fc.getId() );
-            }
-        }
-
-        if ( noNamespaceSchemaLocation != null ) {
-            writeAttributeWithNS( XSINS, "noNamespaceSchemaLocation", noNamespaceSchemaLocation );
-        }
-        if ( bindings != null && !bindings.isEmpty() ) {
-            writer.setPrefix( "xsi", XSINS );
-            String locs = null;
-            for ( Entry<String, String> e : bindings.entrySet() ) {
-                if ( locs == null ) {
-                    locs = "";
-                } else {
-                    locs += " ";
-                }
-                locs += e.getKey() + " " + e.getValue();
-            }
-            writeAttributeWithNS( XSINS, "schemaLocation", locs );
-        }
-
-        writeStartElementWithNS( gmlNs, "boundedBy" );
-        Envelope fcEnv = fc.getEnvelope();
-        if ( fcEnv != null ) {
-            geometryWriter.exportEnvelope( fc.getEnvelope() );
-        } else {
-            writeStartElementWithNS( gmlNs, gmlNull );
-            writer.writeCharacters( "missing" );
-            writer.writeEndElement();
-        }
-        writer.writeEndElement();
-        for ( Feature f : fc ) {
-            writeStartElementWithNS( gmlNs, "featureMember" );
-            export( f );
-            writer.writeEndElement();
-        }
-        writer.writeEndElement();
-    }
-
-    /**
-     * @param fc
-     * @param name
-     * @throws XMLStreamException
-     * @throws UnknownCRSException
-     * @throws TransformationException
-     */
-    public void export( FeatureCollection fc, QName name )
-                            throws XMLStreamException, UnknownCRSException, TransformationException {
-
-        LOG.debug( "Exporting feature collection with explicit name." );
-
-        if ( fc.getId() != null ) {
-            exportedIds.add( fc.getId() );
-        }
-
-        writer.setPrefix( "gml", gmlNs );
-        writeStartElementWithNS( name.getNamespaceURI(), name.getLocalPart() );
-
-        if ( fc.getId() != null ) {
-            if ( fidAttr.getNamespaceURI() == NULL_NS_URI ) {
-                writer.writeAttribute( fidAttr.getLocalPart(), fc.getId() );
-            } else {
-                writeAttributeWithNS( fidAttr.getNamespaceURI(), fidAttr.getLocalPart(), fc.getId() );
-            }
-        }
-
-        // gml:boundedBy (mandatory)
-        Envelope fcEnv = fc.getEnvelope();
-        writeStartElementWithNS( gmlNs, "boundedBy" );
-        if ( fcEnv != null ) {
-            geometryWriter.exportEnvelope( fc.getEnvelope() );
-        } else {
-            writeStartElementWithNS( gmlNs, gmlNull );
-            writer.writeCharacters( "missing" );
-            writer.writeEndElement();
-        }
-        writer.writeEndElement();
-
-        for ( Feature member : fc ) {
-            String memberFid = member.getId();
-            writeStartElementWithNS( gmlNs, "featureMember" );
-            if ( memberFid != null && exportedIds.contains( memberFid ) ) {
-                writeAttributeWithNS( XLNNS, "href", "#" + memberFid );
-            } else {
-                export( member, 0, traverseXlinkDepth );
-            }
-            writer.writeEndElement();
-        }
-        writer.writeEndElement();
     }
 
     private void export( Feature feature, int currentLevel, int maxInlineLevels )
@@ -797,8 +678,9 @@ public class GMLFeatureWriter {
         if ( namespaceURI == null || namespaceURI.length() == 0 ) {
             writer.writeAttribute( localname, value );
         } else {
-            if ( writer.getNamespaceContext().getPrefix( namespaceURI ) == null ) {
-                String prefix = nsToPrefix.get( namespaceURI );
+            String prefix = writer.getNamespaceContext().getPrefix( namespaceURI );
+            if ( prefix == null ) {
+                prefix = nsToPrefix.get( namespaceURI );
                 if ( prefix != null ) {
                     writer.setPrefix( prefix, namespaceURI );
                 } else {
@@ -806,7 +688,7 @@ public class GMLFeatureWriter {
                               namespaceURI );
                 }
             }
-            writer.writeAttribute( namespaceURI, localname, value );
+            writer.writeAttribute( prefix, namespaceURI, localname, value );
         }
     }
 

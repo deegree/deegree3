@@ -78,10 +78,10 @@ import org.deegree.feature.types.property.FeaturePropertyType;
 import org.deegree.feature.types.property.GMLObjectPropertyType;
 import org.deegree.feature.types.property.GenericGMLObjectPropertyType;
 import org.deegree.feature.types.property.GeometryPropertyType;
-import org.deegree.feature.types.property.PropertyType;
-import org.deegree.feature.types.property.ValueRepresentation;
 import org.deegree.feature.types.property.GeometryPropertyType.CoordinateDimension;
 import org.deegree.feature.types.property.GeometryPropertyType.GeometryType;
+import org.deegree.feature.types.property.PropertyType;
+import org.deegree.feature.types.property.ValueRepresentation;
 import org.deegree.gml.GMLVersion;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -173,42 +173,42 @@ public class GMLSchemaInfoSet extends XMLSchemaInfoSet {
         this.version = version;
         switch ( version ) {
         case GML_2: {
-            abstractFeatureElementDecl = xmlSchema.getElementDeclaration( "_Feature", GML_PRE_32_NS );
-            abstractGeometryElementDecl = xmlSchema.getElementDeclaration( "_Geometry", GML_PRE_32_NS );
-            abstractFeatureElementTypeDecl = xmlSchema.getTypeDefinition( "AbstractFeatureType", GML_PRE_32_NS );
+            abstractFeatureElementDecl = getElementDecl( "_Feature", GML_PRE_32_NS );
+            abstractGeometryElementDecl = getElementDecl( "_Geometry", GML_PRE_32_NS );
+            abstractFeatureElementTypeDecl = getTypeDef( "AbstractFeatureType", GML_PRE_32_NS );
             break;
         }
         case GML_30:
         case GML_31: {
-            abstractObjectElementDecl = xmlSchema.getElementDeclaration( "_Object", GML_PRE_32_NS );
-            abstractGmlElementDecl = xmlSchema.getElementDeclaration( "_GML", GML_PRE_32_NS );
-            abstractFeatureElementDecl = xmlSchema.getElementDeclaration( "_Feature", GML_PRE_32_NS );
-            abstractGeometryElementDecl = xmlSchema.getElementDeclaration( "_Geometry", GML_PRE_32_NS );
-            abstractValueElementDecl = xmlSchema.getElementDeclaration( "_Value", GML_PRE_32_NS );
-            abstractTopologyElementDecl = xmlSchema.getElementDeclaration( "_Topology", GML_PRE_32_NS );
-            abstractCRSElementDecl = xmlSchema.getElementDeclaration( "_CRS", GML_PRE_32_NS );
-            abstractTimeObjectElementDecl = xmlSchema.getElementDeclaration( "_TimeObject", GML_PRE_32_NS );
-            abstractCoverageElementDecl = xmlSchema.getElementDeclaration( "_Coverage", GML_PRE_32_NS );
-            abstractStyleElementDecl = xmlSchema.getElementDeclaration( "_Style", GML_PRE_32_NS );
-            abstractCurveSegmentElementDecl = xmlSchema.getElementDeclaration( "_CurveSegment", GML_PRE_32_NS );
-            abstractSurfacePatchElementDecl = xmlSchema.getElementDeclaration( "_SurfacePatch", GML_PRE_32_NS );
-            abstractFeatureElementTypeDecl = xmlSchema.getTypeDefinition( "AbstractFeatureType", GML_PRE_32_NS );
+            abstractObjectElementDecl = getElementDecl( "_Object", GML_PRE_32_NS );
+            abstractGmlElementDecl = getElementDecl( "_GML", GML_PRE_32_NS );
+            abstractFeatureElementDecl = getElementDecl( "_Feature", GML_PRE_32_NS );
+            abstractGeometryElementDecl = getElementDecl( "_Geometry", GML_PRE_32_NS );
+            abstractValueElementDecl = getElementDecl( "_Value", GML_PRE_32_NS );
+            abstractTopologyElementDecl = getElementDecl( "_Topology", GML_PRE_32_NS );
+            abstractCRSElementDecl = getElementDecl( "_CRS", GML_PRE_32_NS );
+            abstractTimeObjectElementDecl = getElementDecl( "_TimeObject", GML_PRE_32_NS );
+            abstractCoverageElementDecl = getElementDecl( "_Coverage", GML_PRE_32_NS );
+            abstractStyleElementDecl = getElementDecl( "_Style", GML_PRE_32_NS );
+            abstractCurveSegmentElementDecl = getElementDecl( "_CurveSegment", GML_PRE_32_NS );
+            abstractSurfacePatchElementDecl = getElementDecl( "_SurfacePatch", GML_PRE_32_NS );
+            abstractFeatureElementTypeDecl = getTypeDef( "AbstractFeatureType", GML_PRE_32_NS );
             break;
         }
         case GML_32: {
-            abstractObjectElementDecl = xmlSchema.getElementDeclaration( "AbstractObject", GML_32_NS );
-            abstractGmlElementDecl = xmlSchema.getElementDeclaration( "AbstractGML", GML_32_NS );
-            abstractFeatureElementDecl = xmlSchema.getElementDeclaration( "AbstractFeature", GML_32_NS );
-            abstractGeometryElementDecl = xmlSchema.getElementDeclaration( "AbstractGeometry", GML_32_NS );
-            abstractValueElementDecl = xmlSchema.getElementDeclaration( "AbstractValue", GML_32_NS );
-            abstractTopologyElementDecl = xmlSchema.getElementDeclaration( "AbstractTopology", GML_32_NS );
-            abstractCRSElementDecl = xmlSchema.getElementDeclaration( "AbstractCRS", GML_32_NS );
-            abstractTimeObjectElementDecl = xmlSchema.getElementDeclaration( "AbstractTimeObject", GML_32_NS );
-            abstractCoverageElementDecl = xmlSchema.getElementDeclaration( "AbstractCoverage", GML_32_NS );
-            abstractStyleElementDecl = xmlSchema.getElementDeclaration( "AbstractStyle", GML_32_NS );
-            abstractCurveSegmentElementDecl = xmlSchema.getElementDeclaration( "AbstractCurveSegment", GML_32_NS );
-            abstractSurfacePatchElementDecl = xmlSchema.getElementDeclaration( "AbstractSurfacePatch", GML_32_NS );
-            abstractFeatureElementTypeDecl = xmlSchema.getTypeDefinition( "AbstractFeatureType", GML_32_NS );
+            abstractObjectElementDecl = getElementDecl( "AbstractObject", GML_32_NS );
+            abstractGmlElementDecl = getElementDecl( "AbstractGML", GML_32_NS );
+            abstractFeatureElementDecl = getElementDecl( "AbstractFeature", GML_32_NS );
+            abstractGeometryElementDecl = getElementDecl( "AbstractGeometry", GML_32_NS );
+            abstractValueElementDecl = getElementDecl( "AbstractValue", GML_32_NS );
+            abstractTopologyElementDecl = getElementDecl( "AbstractTopology", GML_32_NS );
+            abstractCRSElementDecl = getElementDecl( "AbstractCRS", GML_32_NS );
+            abstractTimeObjectElementDecl = getElementDecl( "AbstractTimeObject", GML_32_NS );
+            abstractCoverageElementDecl = getElementDecl( "AbstractCoverage", GML_32_NS );
+            abstractStyleElementDecl = getElementDecl( "AbstractStyle", GML_32_NS );
+            abstractCurveSegmentElementDecl = getElementDecl( "AbstractCurveSegment", GML_32_NS );
+            abstractSurfacePatchElementDecl = getElementDecl( "AbstractSurfacePatch", GML_32_NS );
+            abstractFeatureElementTypeDecl = getTypeDef( "AbstractFeatureType", GML_32_NS );
             break;
         }
         }
@@ -221,15 +221,13 @@ public class GMLSchemaInfoSet extends XMLSchemaInfoSet {
         case GML_31: {
             // TODO do this the right way
             fcDecls = new ArrayList<XSElementDeclaration>();
-            if ( xmlSchema.getElementDeclaration( "_FeatureCollection", GML_PRE_32_NS ) != null ) {
-                fcDecls.addAll( getSubstitutions(
-                                                  xmlSchema.getElementDeclaration( "_FeatureCollection", GML_PRE_32_NS ),
-                                                  null, true, false ) );
+            if ( getElementDecl( "_FeatureCollection", GML_PRE_32_NS ) != null ) {
+                fcDecls.addAll( getSubstitutions( getElementDecl( "_FeatureCollection", GML_PRE_32_NS ), null, true,
+                                                  false ) );
             }
-            if ( xmlSchema.getElementDeclaration( "FeatureCollection", GML_PRE_32_NS ) != null ) {
-                fcDecls.addAll( getSubstitutions(
-                                                  xmlSchema.getElementDeclaration( "FeatureCollection", GML_PRE_32_NS ),
-                                                  null, true, false ) );
+            if ( getElementDecl( "FeatureCollection", GML_PRE_32_NS ) != null ) {
+                fcDecls.addAll( getSubstitutions( getElementDecl( "FeatureCollection", GML_PRE_32_NS ), null, true,
+                                                  false ) );
             }
 
             break;
@@ -707,8 +705,7 @@ public class GMLSchemaInfoSet extends XMLSchemaInfoSet {
         // inside the annotation element (e.g. CITE examples for WFS 1.1.0)
         NamespaceContext nsContext = new NamespaceContext();
         nsContext.addNamespace( "xs", CommonNamespaces.XSNS );
-        QName refElement = annotationXML.getNodeAsQName(
-                                                         annotationXML.getRootElement(),
+        QName refElement = annotationXML.getNodeAsQName( annotationXML.getRootElement(),
                                                          new XPath(
                                                                     "xs:appinfo[@source='urn:x-gml:targetElement']/text()",
                                                                     nsContext ), null );
