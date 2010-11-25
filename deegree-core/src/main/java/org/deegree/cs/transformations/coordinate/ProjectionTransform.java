@@ -91,7 +91,6 @@ public class ProjectionTransform extends Transformation {
 
     /**
      * @param axis
-     * @return
      */
     private boolean checkAxisOrientation( Axis[] axis ) {
         boolean result = false;
@@ -141,24 +140,19 @@ public class ProjectionTransform extends Transformation {
             sb.append( projection.getImplementationName() );
             LOG.debug( sb.toString() );
         }
-        TransformationException trans = new TransformationException( srcPts.size() );
         if ( isInverseTransform() ) {
-            doInverseTransform( srcPts, trans );
+            doInverseTransform( srcPts );
         } else {
-            doForwardTransform( srcPts, trans );
+            doForwardTransform( srcPts );
         }
-        if ( !trans.getTransformErrors().isEmpty() ) {
-            trans.setTransformedPoints( srcPts );
-            throw trans;
-        }
+
         return srcPts;
     }
 
     /**
      * @param srcPts
-     * @param trans
      */
-    private void doForwardTransform( List<Point3d> srcPts, TransformationException trans ) {
+    private void doForwardTransform( List<Point3d> srcPts ) {
         int i = 0;
         if ( swapAxisSource ) {
             for ( Point3d p : srcPts ) {
@@ -172,7 +166,8 @@ public class ProjectionTransform extends Transformation {
                         p.y = tmp.y;
                     }
                 } catch ( ProjectionException e ) {
-                    trans.setTransformError( i, e.getMessage() );
+                    LOG.trace( "Stack trace:", e );
+                    LOG.warn( "Transformation error: {}", e.getLocalizedMessage() );
                 }
                 ++i;
             }
@@ -188,7 +183,8 @@ public class ProjectionTransform extends Transformation {
                         p.y = tmp.y;
                     }
                 } catch ( ProjectionException e ) {
-                    trans.setTransformError( i, e.getMessage() );
+                    LOG.trace( "Stack trace:", e );
+                    LOG.warn( "Transformation error: {}", e.getLocalizedMessage() );
                 }
                 ++i;
             }
@@ -199,7 +195,7 @@ public class ProjectionTransform extends Transformation {
     /**
      * @param srcPts
      */
-    private void doInverseTransform( List<Point3d> srcPts, TransformationException trans ) {
+    private void doInverseTransform( List<Point3d> srcPts ) {
         int i = 0;
         if ( swapAxisTarget ) {
             for ( Point3d p : srcPts ) {
@@ -213,7 +209,8 @@ public class ProjectionTransform extends Transformation {
                         p.y = tmp.y;
                     }
                 } catch ( ProjectionException e ) {
-                    trans.setTransformError( i, e.getMessage() );
+                    LOG.trace( "Stack trace:", e );
+                    LOG.warn( "Transformation error: {}", e.getLocalizedMessage() );
                 }
                 ++i;
             }
@@ -229,7 +226,8 @@ public class ProjectionTransform extends Transformation {
                         p.y = tmp.y;
                     }
                 } catch ( ProjectionException e ) {
-                    trans.setTransformError( i, e.getMessage() );
+                    LOG.trace( "Stack trace:", e );
+                    LOG.warn( "Transformation error: {}", e.getLocalizedMessage() );
                 }
                 ++i;
             }
