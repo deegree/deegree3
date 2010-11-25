@@ -92,23 +92,29 @@ public class PostGISDDLCreator {
         List<String> ddl = new ArrayList<String>();
 
         // create feature_type table
-        ddl.add( "CREATE TABLE feature_types (id smallint PRIMARY KEY, qname text NOT NULL)" );
-        ddl.add( "COMMENT ON TABLE feature_types IS 'Ids and bboxes of concrete feature types'" );
-        ddl.add( "SELECT ADDGEOMETRYCOLUMN('public', 'feature_types','bbox','-1','GEOMETRY',2);" );
+        QTableName ftTable = schema.getBBoxMapping().getTable();
+        String ftTableSchema = ftTable.getSchema() == null ? "public" : ftTable.getSchema();
+        ddl.add( "CREATE TABLE " + ftTable + " (id smallint PRIMARY KEY, qname text NOT NULL)" );
+        ddl.add( "COMMENT ON TABLE " + ftTable + " IS 'Ids and bboxes of concrete feature types'" );
+        ddl.add( "SELECT ADDGEOMETRYCOLUMN('" + ftTableSchema + "', '" + ftTable.getTable()
+                 + "','bbox','-1','GEOMETRY',2);" );
 
         // populate feature_type table
         for ( short ftId = 0; ftId < schema.getFts(); ftId++ ) {
             QName ftName = schema.getFtName( ftId );
-            ddl.add( "INSERT INTO feature_types (id,qname) VALUES (" + ftId + ",'" + ftName + "')" );
+            ddl.add( "INSERT INTO " + ftTable + "  (id,qname) VALUES (" + ftId + ",'" + ftName + "')" );
         }
 
         // create gml_objects table
-        ddl.add( "CREATE TABLE gml_objects (id serial PRIMARY KEY, "
-                 + "gml_id text UNIQUE NOT NULL, ft_type smallint REFERENCES feature_types, binary_object bytea)" );
-        ddl.add( "COMMENT ON TABLE gml_objects IS 'All objects (features and geometries)'" );
-        ddl.add( "SELECT ADDGEOMETRYCOLUMN('public', 'gml_objects','gml_bounded_by','-1','GEOMETRY',2)" );
-        ddl.add( "ALTER TABLE gml_objects ADD CONSTRAINT gml_objects_geochk CHECK (isvalid(gml_bounded_by))" );
-        ddl.add( "CREATE INDEX gml_objects_sidx ON gml_objects USING GIST (gml_bounded_by GIST_GEOMETRY_OPS)" );
+        QTableName blobTable = schema.getBlobMapping().getTable();
+        String blobTableSchema = blobTable.getSchema() == null ? "public" : blobTable.getSchema();
+        ddl.add( "CREATE TABLE " + blobTable + " (id serial PRIMARY KEY, "
+                 + "gml_id text UNIQUE NOT NULL, ft_type smallint REFERENCES " + ftTable + " , binary_object bytea)" );
+        ddl.add( "COMMENT ON TABLE " + blobTable + " IS 'All objects (features and geometries)'" );
+        ddl.add( "SELECT ADDGEOMETRYCOLUMN('" + blobTableSchema + "', '" + blobTable.getTable()
+                 + "','gml_bounded_by','-1','GEOMETRY',2)" );
+        ddl.add( "ALTER TABLE " + blobTable + " ADD CONSTRAINT gml_objects_geochk CHECK (isvalid(gml_bounded_by))" );
+        ddl.add( "CREATE INDEX gml_objects_sidx ON " + blobTable + "  USING GIST (gml_bounded_by GIST_GEOMETRY_OPS)" );
         // ddl.add( "CREATE TABLE gml_names (gml_object_id integer REFERENCES gml_objects,"
         // + "name text NOT NULL,codespace text,prop_idx smallint NOT NULL)" );
         return ddl;

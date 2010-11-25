@@ -3,6 +3,7 @@
  */
 package org.deegree.feature.persistence.mapping;
 
+import org.deegree.commons.jdbc.QTableName;
 import org.deegree.cs.CRS;
 
 /**
@@ -11,14 +12,17 @@ import org.deegree.cs.CRS;
  */
 public class BBoxTableMapping {
 
-    private CRS crs;
+    private final QTableName ftTable;
 
-    public BBoxTableMapping( CRS crs ) {
+    private final CRS crs;
+
+    public BBoxTableMapping( String ftTable, CRS crs ) {
+        this.ftTable = new QTableName( ftTable );
         this.crs = crs;
     }
 
-    public String getTable() {
-        return "feature_types";
+    public QTableName getTable() {
+        return ftTable;
     }
 
     public CRS getCRS() {

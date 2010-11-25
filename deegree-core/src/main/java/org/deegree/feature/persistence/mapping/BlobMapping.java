@@ -35,6 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.feature.persistence.mapping;
 
+import org.deegree.commons.jdbc.QTableName;
 import org.deegree.cs.CRS;
 import org.deegree.feature.persistence.BlobCodec;
 
@@ -51,7 +52,7 @@ import org.deegree.feature.persistence.BlobCodec;
  */
 public class BlobMapping {
 
-    private final String table;
+    private final QTableName table;
 
     private final CRS storageCRS;
 
@@ -68,17 +69,17 @@ public class BlobMapping {
      *            the decoder / encoder used for the BLOBs, must not be <code>null</code>
      */
     public BlobMapping( String table, CRS storageCRS, BlobCodec codec ) {
-        this.table = table;
+        this.table = new QTableName( table );
         this.storageCRS = storageCRS;
         this.codec = codec;
     }
 
     /**
-     * Returns the name of the table that stores the BLOBs.
+     * Returns the table that stores the BLOBs.
      * 
-     * @return the name of the table that stores the BLOBs, never <code>null</code>
+     * @return the table that stores the BLOBs, never <code>null</code>
      */
-    public String getTable() {
+    public QTableName getTable() {
         return table;
     }
 

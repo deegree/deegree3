@@ -191,8 +191,11 @@ class SchemaBuilderBLOB {
 
         CRS storageCRS = new CRS( blobMappingConf.getStorageCRS(), true );
         ApplicationSchema appSchema = decoder.extractFeatureTypeSchema();
-        BBoxTableMapping bboxMapping = new BBoxTableMapping( storageCRS );
-        BlobMapping blobMapping = new BlobMapping( "GML_OBJECTS", storageCRS, new BlobCodec( GML_32, NONE ) );
+        String ftTable = blobMappingConf.getFeatureTypeTable() == null ? "feature_types"
+                                                                      : blobMappingConf.getFeatureTypeTable();
+        BBoxTableMapping bboxMapping = new BBoxTableMapping( ftTable, storageCRS );
+        String blobTable = blobMappingConf.getBlobTable() == null ? "gml_objects" : blobMappingConf.getBlobTable();
+        BlobMapping blobMapping = new BlobMapping( blobTable, storageCRS, new BlobCodec( GML_32, NONE ) );
 
         FeatureTypeMapping[] ftMappings = ftNameToMapping.values().toArray( new FeatureTypeMapping[ftNameToMapping.size()] );
 

@@ -24,6 +24,8 @@
           <element name="BLOBMapping">
             <complexType>
               <sequence>
+                <element name="BlobTable" type="string" minOccurs="0" default="gml_objects" />
+                <element name="FeatureTypeTable" type="string" minOccurs="0" default="feature_types" />
                 <element name="StorageCRS" type="string" />
                 <element name="GMLSchema" minOccurs="1" maxOccurs="unbounded">
                   <complexType>
@@ -46,7 +48,14 @@
           </element>
         </choice>
       </sequence>
-      <attribute name="configVersion" use="required" fixed="3.0.0" />
+      <attribute name="configVersion" use="required">
+        <simpleType>
+          <restriction base="string">
+            <enumeration value="3.0.0" />
+            <enumeration value="3.0.1" />
+          </restriction>
+        </simpleType>
+      </attribute>
     </complexType>
   </element>
   <simpleType name="GMLVersionType">
