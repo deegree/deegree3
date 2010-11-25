@@ -41,10 +41,8 @@ import java.util.List;
 import javax.xml.stream.FactoryConfigurationError;
 import javax.xml.stream.XMLStreamException;
 
-import org.deegree.metadata.MetadataRecord;
 import org.deegree.metadata.persistence.MetadataInspectorException;
 import org.deegree.metadata.persistence.MetadataQuery;
-import org.deegree.metadata.persistence.MetadataResultSet;
 import org.deegree.metadata.persistence.MetadataStoreException;
 import org.deegree.metadata.persistence.MetadataStoreTransaction;
 import org.deegree.metadata.persistence.iso.ISOMetadataStore;
@@ -86,11 +84,11 @@ public class TstAnyTextElement extends AbstractISOTest {
         List<String> ids = TstUtils.insertMetadata( store, ta, TstConstants.tst_10 );
         if ( ids != null ) {
             // test query
-            MetadataQuery query = new MetadataQuery( null, null, ResultType.results, 10, 1 );
-            MetadataResultSet resultSet = store.getRecords( query );
+            MetadataQuery query = new MetadataQuery( null, null, ResultType.results, 1 );
+            resultSet = store.getRecords( query );
             String anyText = null;
-            for ( MetadataRecord m : resultSet.getMembers() ) {
-                anyText = m.getAnyText();
+            while ( resultSet.next() ) {
+                anyText = resultSet.getRecord().getAnyText();
             }
 
             String compare = "d0e5c36eec7f473b91b8b249da87d522 eng UTF 8 dataset European Commission, Joint Research Centre cid-contact@jrc.ec.europa.eu pointOfContact 2007-01-23 ISO 19115:2003/19139 1.0 2 6000 6000 true false 10.2295939511158 52.6984540463519 10.4685111911662 53.2174450795883 9.34255616300099 52.8445914851784 9.57111840348035 53.3646726482873 center 4326 EPSG SPOT 5 RAW 2007-01-23T10:25:14 2007-01-23T10:25:14 d0e5c36eec7f473b91b8b249da87d522 Raw (source) image from CwRS campaigns. European Commission, Joint Research Centre, IPSC, MARS Unit cid-contact@jrc.ec.europa.eu pointOfContact SPOT 5 PATH 50 ROW 242 Orthoimagery GEMET - INSPIRE themes, version 1.0 2008-06-01 publication http://cidportal.jrc.ec.europa.eu/home/idp/info/license/ec-jrc-fc251603/ otherRestrictions (e) intellectual property rights; license unclassified 10.0 eng imageryBaseMapsEarthCover 9.342556163 10.4685111912 52.6984540464 53.3646726483 9.57111840348035 53.3646726482873 9.34255616300099 52.8445914851784 10.2295939511158 52.6984540463519 10.4685111911662 53.2174450795883 9.57111840348035 53.3646726482873 2007-01-23T10:25:14 2007-01-23T10:25:14 Detailed image characteristics XS1 8 XS2 8 XS3 8 SWIR 8 16.129405 163.631838 0.0 RAW RAW N/A ECW N/A http://cidportal.jrc.ec.europa.eu/imagearchive/ Raw (Source) image as delivered by image provider. ";
@@ -119,11 +117,11 @@ public class TstAnyTextElement extends AbstractISOTest {
         List<String> ids = TstUtils.insertMetadata( store, ta, TstConstants.tst_10 );
         if ( ids != null ) {
             // test query
-            MetadataQuery query = new MetadataQuery( null, null, ResultType.results, 10, 1 );
-            MetadataResultSet resultSet = store.getRecords( query );
+            MetadataQuery query = new MetadataQuery( null, null, ResultType.results, 1 );
+            resultSet = store.getRecords( query );
             String anyText = null;
-            for ( MetadataRecord m : resultSet.getMembers() ) {
-                anyText = m.getAnyText();
+            while ( resultSet.next() ) {
+                anyText = resultSet.getRecord().getAnyText();
             }
 
             String compare = "Raw (source) image from CwRS campaigns. RAW ECW d0e5c36eec7f473b91b8b249da87d522 eng Tue Jan 23 00:00:00 CET 2007 SPOT 5 RAW 2007-01-23T10:25:14 dataset SPOT 5 PATH 50 ROW 242 Orthoimagery imageryBaseMapsEarthCover true otherRestrictions license Raw (Source) image as delivered by image provider. ";
@@ -152,11 +150,11 @@ public class TstAnyTextElement extends AbstractISOTest {
         List<String> ids = TstUtils.insertMetadata( store, ta, TstConstants.tst_10 );
         if ( ids != null ) {
             // test query
-            MetadataQuery query = new MetadataQuery( null, null, ResultType.results, 10, 1 );
-            MetadataResultSet resultSet = store.getRecords( query );
+            MetadataQuery query = new MetadataQuery( null, null, ResultType.results, 1 );
+            resultSet = store.getRecords( query );
             String anyText = null;
-            for ( MetadataRecord m : resultSet.getMembers() ) {
-                anyText = m.getAnyText();
+            while ( resultSet.next() ) {
+                anyText = resultSet.getRecord().getAnyText();
             }
 
             String compare = "d0e5c36eec7f473b91b8b249da87d522 SPOT 5 PATH 50 ROW 242 Orthoimagery ";

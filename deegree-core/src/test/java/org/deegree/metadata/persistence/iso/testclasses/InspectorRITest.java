@@ -38,7 +38,6 @@ package org.deegree.metadata.persistence.iso.testclasses;
 import java.util.List;
 
 import org.deegree.metadata.persistence.MetadataInspectorException;
-import org.deegree.metadata.persistence.MetadataResultSet;
 import org.deegree.metadata.persistence.MetadataStoreException;
 import org.deegree.metadata.persistence.MetadataStoreTransaction;
 import org.deegree.metadata.persistence.iso.ISOMetadataStore;
@@ -87,9 +86,12 @@ public class InspectorRITest extends AbstractISOTest {
         }
         MetadataStoreTransaction ta = store.acquireTransaction();
         List<String> ids = TstUtils.insertMetadata( store, ta, TstConstants.tst_6 );
-        MetadataResultSet resultSet = store.getRecordsById( ids );
-
-        Assert.assertEquals( 1, resultSet.getMembers().size() );
+        resultSet = store.getRecordById( ids );
+        int size = 0;
+        while ( resultSet.next() ) {
+            size++;
+        }
+        Assert.assertEquals( 1, size );
 
     }
 
@@ -123,9 +125,12 @@ public class InspectorRITest extends AbstractISOTest {
                                                     TstConstants.tst_5, TstConstants.tst_6, TstConstants.tst_7,
                                                     TstConstants.tst_8 );
 
-        MetadataResultSet resultSet = store.getRecordsById( ids );
-
-        Assert.assertEquals( 6, resultSet.getMembers().size() );
+        resultSet = store.getRecordById( ids );
+        int size = 0;
+        while ( resultSet.next() ) {
+            size++;
+        }
+        Assert.assertEquals( 6, size );
 
     }
 
@@ -153,8 +158,12 @@ public class InspectorRITest extends AbstractISOTest {
         MetadataStoreTransaction ta = store.acquireTransaction();
         List<String> ids = TstUtils.insertMetadata( store, ta, TstConstants.tst_2 );
 
-        MetadataResultSet resultSet = store.getRecordsById( ids );
-        Assert.assertEquals( 1, resultSet.getMembers().size() );
+        resultSet = store.getRecordById( ids );
+        int size = 0;
+        while ( resultSet.next() ) {
+            size++;
+        }
+        Assert.assertEquals( 1, size );
 
     }
 

@@ -52,7 +52,6 @@ import org.deegree.geometry.Envelope;
 import org.deegree.metadata.MetadataRecord;
 import org.deegree.metadata.persistence.MetadataInspectorException;
 import org.deegree.metadata.persistence.MetadataQuery;
-import org.deegree.metadata.persistence.MetadataResultSet;
 import org.deegree.metadata.persistence.MetadataStoreException;
 import org.deegree.metadata.persistence.MetadataStoreTransaction;
 import org.deegree.metadata.persistence.iso.ISOMetadataStore;
@@ -117,6 +116,15 @@ public class CommonISOTest extends AbstractISOTest {
         MetadataStoreTransaction ta = store.acquireTransaction();
         List<String> ids = TstUtils.insertMetadata( store, ta, urlArray );
 
+        MetadataQuery query = new MetadataQuery( null, null, ResultType.results, 1 );
+        resultSet = store.getRecords( query );
+        int size = 0;
+        while ( resultSet.next() ) {
+            size++;
+        }
+
+        Assert.assertEquals( 2, size );
+
         // TODO test various queries
 
     }
@@ -135,9 +143,13 @@ public class CommonISOTest extends AbstractISOTest {
             return;
         }
         store.setupMetametadata();
-        MetadataQuery query = new MetadataQuery( null, null, ResultType.results, 10, 1 );
-        MetadataResultSet resultSet = store.getRecords( query );
-        Assert.assertEquals( 1, resultSet.getMembers().size() );
+        MetadataQuery query = new MetadataQuery( null, null, ResultType.results, 1 );
+        resultSet = store.getRecords( query );
+        int size = 0;
+        while ( resultSet.next() ) {
+            size++;
+        }
+        Assert.assertEquals( 1, size );
 
     }
 
@@ -157,7 +169,7 @@ public class CommonISOTest extends AbstractISOTest {
 
         MetadataStoreTransaction ta = store.acquireTransaction();
         List<String> ids = TstUtils.insertMetadata( store, ta, TstConstants.tst_12 );
-        MetadataResultSet resultSet = store.getRecordsById( ids );
+        resultSet = store.getRecordById( ids );
 
         // create the is output
         // String file = "/home/thomas/Desktop/zTestBrief.xml";
@@ -222,13 +234,20 @@ public class CommonISOTest extends AbstractISOTest {
         XMLStreamReader xmlStreamFilter = TstUtils.readXMLStream( fileString );
         Filter constraintDelete = Filter110XMLDecoder.parse( xmlStreamFilter );
         xmlStreamFilter.close();
+
+        MetadataStoreTransaction taDel = store.acquireTransaction();
         DeleteTransaction delete = new DeleteTransaction( "delete", null, constraintDelete );
-        ta.performDelete( delete );
-        ta.commit();
+        taDel.performDelete( delete );
+        taDel.commit();
         // test query
-        MetadataQuery query = new MetadataQuery( null, null, ResultType.results, 10, 1 );
-        MetadataResultSet resultSet = store.getRecords( query );
-        Assert.assertEquals( 1, resultSet.getMembers().size() );
+        MetadataQuery query = new MetadataQuery( null, null, ResultType.results, 1 );
+        resultSet = store.getRecords( query );
+        int size = 0;
+        while ( resultSet.next() ) {
+            size++;
+        }
+
+        Assert.assertEquals( 1, size );
 
     }
 
@@ -258,7 +277,7 @@ public class CommonISOTest extends AbstractISOTest {
         }
         MetadataStoreTransaction ta = store.acquireTransaction();
         List<String> ids = TstUtils.insertMetadata( store, ta, TstConstants.fullRecord );
-        MetadataResultSet resultSet = store.getRecordsById( ids );
+        resultSet = store.getRecordById( ids );
 
         XMLStreamReader xmlStreamActual = XMLInputFactory.newInstance().createXMLStreamReader(
                                                                                                TstConstants.briefRecord.openStream() );
@@ -307,7 +326,7 @@ public class CommonISOTest extends AbstractISOTest {
         }
         MetadataStoreTransaction ta = store.acquireTransaction();
         List<String> ids = TstUtils.insertMetadata( store, ta, TstConstants.fullRecord );
-        MetadataResultSet resultSet = store.getRecordsById( ids );
+        resultSet = store.getRecordById( ids );
 
         XMLStreamReader xmlStreamActual = XMLInputFactory.newInstance().createXMLStreamReader(
                                                                                                TstConstants.summaryRecord.openStream() );
@@ -346,8 +365,8 @@ public class CommonISOTest extends AbstractISOTest {
         List<String> ids = TstUtils.insertMetadata( store, ta, TstConstants.tst_10 );
         if ( ids != null ) {
             // test query
-            MetadataQuery query = new MetadataQuery( null, null, ResultType.results, 10, 1 );
-            MetadataResultSet resultSet = store.getRecords( query );
+            MetadataQuery query = new MetadataQuery( null, null, ResultType.results, 1 );
+            resultSet = store.getRecords( query );
             // identifier
             String[] identifier = null;
             String[] title = null;
@@ -358,7 +377,8 @@ public class CommonISOTest extends AbstractISOTest {
             String[] rights = null;
             String source = null;
             Envelope[] bbox = null;
-            for ( MetadataRecord m : resultSet.getMembers() ) {
+            while ( resultSet.next() ) {
+                MetadataRecord m = resultSet.getRecord();
                 identifier = m.getIdentifier();
                 title = m.getTitle();
                 type = m.getType();

@@ -47,9 +47,11 @@ import java.util.Set;
 import org.deegree.CoreTstProperties;
 import org.deegree.commons.jdbc.ConnectionManager;
 import org.deegree.commons.utils.JDBCUtils;
+import org.deegree.metadata.persistence.MetadataResultSet;
 import org.deegree.metadata.persistence.MetadataStoreException;
 import org.deegree.metadata.persistence.iso.ISOMetadataStore;
 import org.deegree.metadata.persistence.iso.ISOMetadataStoreProvider;
+import org.junit.After;
 import org.junit.Before;
 import org.slf4j.Logger;
 
@@ -73,6 +75,10 @@ public abstract class AbstractISOTest {
 
     protected String jdbcPass;
 
+    protected MetadataResultSet resultSet;
+
+    protected Connection conn;
+
     /**
      * @throws java.lang.Exception
      */
@@ -88,26 +94,26 @@ public abstract class AbstractISOTest {
             LOG.info( "publish the connectionIDs: " + connIds + " " );
             if ( connIds.contains( "iso_pg_set_up_tables" ) ) {
                 // skip new creation of the connection
-                Connection connDeleteTables = null;
+                // Connection connDeleteTables = null;
                 try {
-                    connDeleteTables = ConnectionManager.getConnection( "iso_pg_set_up_tables" );
+                    conn = ConnectionManager.getConnection( "iso_pg_set_up_tables" );
 
-                    deleteFromTables( connDeleteTables );
+                    deleteFromTables( conn );
                 } finally {
-                    connDeleteTables.close();
+                    JDBCUtils.close( conn );
                 }
 
             } else {
                 ConnectionManager.addConnection( "iso_pg_set_up_tables", jdbcURL, jdbcUser, jdbcPass, 5, 20 );
-                Connection connSetUpTables = null;
+                // Connection connSetUpTables = null;
 
                 try {
-                    connSetUpTables = ConnectionManager.getConnection( "iso_pg_set_up_tables" );
+                    conn = ConnectionManager.getConnection( "iso_pg_set_up_tables" );
 
-                    setUpTables( connSetUpTables );
+                    setUpTables( conn );
 
                 } finally {
-                    JDBCUtils.close( connSetUpTables );
+                    JDBCUtils.close( conn );
 
                 }
 
@@ -139,18 +145,25 @@ public abstract class AbstractISOTest {
         }
     }
 
-    // @After
-    // public void tearDown()
-    // throws SQLException, UnsupportedEncodingException, IOException {
-    // Connection connDeleteTables = null;
-    // try {
-    // connDeleteTables = ConnectionManager.getConnection( "iso_pg_set_up_tables" );
-    //
-    // deleteFromTables( connDeleteTables );
-    // } finally {
-    // JDBCUtils.close( connDeleteTables );
-    // }
-    // }
+    @After
+    public void tearDown()
+                            throws SQLException, UnsupportedEncodingException, IOException, MetadataStoreException {
+        if ( resultSet != null ) {
+            LOG.info( "------------------" );
+            LOG.info( "Tear down the test" );
+            LOG.info( "------------------" );
+            resultSet.close();
+        } else {
+            if ( conn != null && conn.isClosed() ) {
+                LOG.info( "------------------" );
+                LOG.info( "no closing of resultSet possible..." );
+                LOG.info( "so close the jdbcConnection at least!" );
+                LOG.info( "------------------" );
+                JDBCUtils.close( conn );
+            }
+
+        }
+    }
 
     private void deleteFromTables( Connection conn )
                             throws SQLException, UnsupportedEncodingException, IOException {

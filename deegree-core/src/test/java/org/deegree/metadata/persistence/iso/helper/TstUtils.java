@@ -58,7 +58,6 @@ import javax.xml.stream.XMLStreamWriter;
 import org.apache.axiom.om.OMElement;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.stax.StAXParsingHelper;
-import org.deegree.metadata.MetadataRecord;
 import org.deegree.metadata.persistence.MetadataInspectorException;
 import org.deegree.metadata.persistence.MetadataResultSet;
 import org.deegree.metadata.persistence.MetadataStoreException;
@@ -99,14 +98,19 @@ public class TstUtils {
         int countInsert = 0;
         countInsert = URLInput.length;
         try {
-            InsertTransaction insert = new InsertTransaction( records, records.get( 0 ).getQName(), "insert" );
-            ids = ta.performInsert( insert );
+            if ( countInsert > 0 ) {
+                InsertTransaction insert = new InsertTransaction( records, records.get( 0 ).getQName(), "insert" );
+                ids = ta.performInsert( insert );
 
-            ta.commit();
+                ta.commit();
+            }
         } catch ( MetadataStoreException e ) {
             String msg = "Error while commit the statement!";
-            LOG.info( msg );
-            throw new MetadataStoreException( msg );
+            if ( ta != null ) {
+                ta.rollback();
+                LOG.info( msg );
+                throw new MetadataInspectorException();
+            }
         } catch ( MetadataInspectorException e ) {
             String msg = "Error while insert/inspect metadataRecord!";
             if ( ta != null ) {
@@ -137,7 +141,7 @@ public class TstUtils {
     public static StringBuilder stringBuilderFromResultSet( MetadataResultSet resultSet,
                                                             ReturnableElement returnableElement, String file,
                                                             int searchEvent )
-                            throws XMLStreamException, FileNotFoundException {
+                            throws XMLStreamException, FileNotFoundException, MetadataStoreException {
         OutputStream fout = null;
         if ( file == null ) {
             fout = new ByteArrayOutputStream();
@@ -147,8 +151,8 @@ public class TstUtils {
 
         XMLStreamWriter writer = XMLOutputFactory.newInstance().createXMLStreamWriter( fout );
 
-        for ( MetadataRecord m : resultSet.getMembers() ) {
-            m.serialize( writer, returnableElement );
+        while ( resultSet.next() ) {
+            resultSet.getRecord().serialize( writer, returnableElement );
         }
         writer.flush();
 

@@ -39,7 +39,6 @@ import java.sql.SQLException;
 import java.util.List;
 
 import org.deegree.metadata.persistence.MetadataInspectorException;
-import org.deegree.metadata.persistence.MetadataResultSet;
 import org.deegree.metadata.persistence.MetadataStoreException;
 import org.deegree.metadata.persistence.MetadataStoreTransaction;
 import org.deegree.metadata.persistence.iso.ISOMetadataStore;
@@ -122,9 +121,13 @@ public class InspectorIdentifierTest extends AbstractISOTest {
         MetadataStoreTransaction ta = store.acquireTransaction();
         List<String> ids = TstUtils.insertMetadata( store, ta, TstConstants.tst_1, TstConstants.tst_2 );
 
-        MetadataResultSet resultSet = store.getRecordsById( ids );
+        resultSet = store.getRecordById( ids );
+        int size = 0;
+        while ( resultSet.next() ) {
+            size++;
+        }
 
-        Assert.assertEquals( 2, resultSet.getMembers().size() );
+        Assert.assertEquals( 2, size );
 
     }
 
@@ -153,9 +156,13 @@ public class InspectorIdentifierTest extends AbstractISOTest {
         MetadataStoreTransaction ta = store.acquireTransaction();
         List<String> ids = TstUtils.insertMetadata( store, ta, TstConstants.tst_1, TstConstants.tst_2 );
 
-        MetadataResultSet resultSet = store.getRecordsById( ids );
+        resultSet = store.getRecordById( ids );
+        int size = 0;
+        while ( resultSet.next() ) {
+            size++;
+        }
 
-        Assert.assertEquals( 2, resultSet.getMembers().size() );
+        Assert.assertEquals( 2, size );
 
     }
 

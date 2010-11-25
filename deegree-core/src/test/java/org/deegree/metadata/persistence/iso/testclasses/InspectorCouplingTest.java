@@ -38,7 +38,6 @@ package org.deegree.metadata.persistence.iso.testclasses;
 import java.util.List;
 
 import org.deegree.metadata.persistence.MetadataInspectorException;
-import org.deegree.metadata.persistence.MetadataResultSet;
 import org.deegree.metadata.persistence.MetadataStoreException;
 import org.deegree.metadata.persistence.MetadataStoreTransaction;
 import org.deegree.metadata.persistence.iso.ISOMetadataStore;
@@ -78,9 +77,13 @@ public class InspectorCouplingTest extends AbstractISOTest {
         List<String> ids = TstUtils.insertMetadata( store, ta, TstConstants.tst_12, TstConstants.tst_12_2,
                                                     TstConstants.tst_13 );
 
-        MetadataResultSet resultSet = store.getRecordsById( ids );
+        resultSet = store.getRecordById( ids );
+        int size = 0;
+        while ( resultSet.next() ) {
+            size++;
+        }
 
-        Assert.assertEquals( 3, resultSet.getMembers().size() );
+        Assert.assertEquals( 3, size );
 
     }
 
@@ -98,9 +101,13 @@ public class InspectorCouplingTest extends AbstractISOTest {
         MetadataStoreTransaction ta = store.acquireTransaction();
         List<String> ids = TstUtils.insertMetadata( store, ta, TstConstants.tst_11, TstConstants.tst_13 );
 
-        MetadataResultSet resultSet = store.getRecordsById( ids );
+        resultSet = store.getRecordById( ids );
+        int size = 0;
+        while ( resultSet.next() ) {
+            size++;
+        }
 
-        Assert.assertEquals( 2, resultSet.getMembers().size() );
+        Assert.assertEquals( 2, size );
 
     }
 
@@ -119,9 +126,13 @@ public class InspectorCouplingTest extends AbstractISOTest {
         List<String> ids = TstUtils.insertMetadata( store, ta, TstConstants.tst_12, TstConstants.tst_12_2,
                                                     TstConstants.tst_13 );
 
-        MetadataResultSet resultSet = store.getRecordsById( ids );
+        resultSet = store.getRecordById( ids );
+        int size = 0;
+        while ( resultSet.next() ) {
+            size++;
+        }
 
-        Assert.assertEquals( 3, resultSet.getMembers().size() );
+        Assert.assertEquals( 3, size );
 
     }
 
