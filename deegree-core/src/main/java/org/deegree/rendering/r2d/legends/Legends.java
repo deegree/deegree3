@@ -48,6 +48,7 @@ import java.awt.font.FontRenderContext;
 import java.awt.font.TextLayout;
 import java.awt.geom.AffineTransform;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -160,7 +161,9 @@ public class Legends {
         int ypos = 6;
         int xpos = 6;
 
-        Iterator<Class<?>> types = style.getRuleTypes().iterator();
+        LinkedList<Class<?>> ruleTypes = style.getRuleTypes();
+        Collections.reverse( ruleTypes );
+        Iterator<Class<?>> types = ruleTypes.iterator();
         TextStyling textStyling = new TextStyling();
         textStyling.font = new org.deegree.rendering.r2d.styling.components.Font();
         textStyling.font.fontFamily.add( 0, "Arial" );
@@ -172,8 +175,12 @@ public class Legends {
         Mapper<Boolean, Styling> pointStylingMapper = CollectionUtils.<Styling> getInstanceofMapper( PointStyling.class );
         Mapper<Boolean, Styling> lineStylingMapper = CollectionUtils.<Styling> getInstanceofMapper( LineStyling.class );
 
-        Iterator<String> titles = style.getRuleTitles().iterator();
-        for ( LinkedList<Styling> styles : style.getBases() ) {
+        LinkedList<String> ruleTitles = style.getRuleTitles();
+        Collections.reverse( ruleTitles );
+        Iterator<String> titles = ruleTitles.iterator();
+        ArrayList<LinkedList<Styling>> bases = style.getBases();
+        Collections.reverse( bases );
+        for ( LinkedList<Styling> styles : bases ) {
             String title = titles.next();
             Class<?> c = types.next();
             boolean isPoint = c.equals( Point.class ) || reduce( true, map( styles, pointStylingMapper ), AND );

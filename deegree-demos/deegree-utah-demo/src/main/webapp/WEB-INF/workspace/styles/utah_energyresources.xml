@@ -4,7 +4,9 @@
     xsi:schemaLocation="http://www.opengis.net/se http://schemas.opengis.net/se/1.1.0/FeatureStyle.xsd http://www.deegree.org/se http://schemas.deegree.org/se/1.1.0/Symbolizer-deegree.xsd">
   <Name>EnergyResources</Name>
   <Rule>
-    <Name>Coal</Name>
+    <Description>
+      <Title>Coal</Title>
+    </Description>
     <ogc:Filter>
       <ogc:PropertyIsLike singleChar="?" escapeChar="\" wildCard="*">
         <ogc:PropertyName>app:CODE</ogc:PropertyName>
@@ -24,7 +26,9 @@
       </PolygonSymbolizer>
   </Rule>
   <Rule>
-    <Name>GF</Name>
+    <Description>
+      <Title>GF</Title>
+    </Description>
     <ogc:Filter>
       <ogc:PropertyIsLike singleChar="?" escapeChar="\" wildCard="*">
         <ogc:PropertyName>app:CODE</ogc:PropertyName>
@@ -44,7 +48,9 @@
       </PolygonSymbolizer>
   </Rule>
   <Rule>
-    <Name>OF</Name>
+    <Description>
+      <Title>OF</Title>
+    </Description>
     <ogc:Filter>
       <ogc:PropertyIsLike singleChar="?" escapeChar="\" wildCard="*">
         <ogc:PropertyName>app:CODE</ogc:PropertyName>
@@ -64,7 +70,9 @@
       </PolygonSymbolizer>
   </Rule>
   <Rule>
-    <Name>OI</Name>
+    <Description>
+      <Title>OI</Title>
+    </Description>
     <ogc:Filter>
       <ogc:PropertyIsLike singleChar="?" escapeChar="\" wildCard="*">
         <ogc:PropertyName>app:CODE</ogc:PropertyName>
@@ -84,7 +92,9 @@
       </PolygonSymbolizer>
   </Rule>
   <Rule>
-    <Name>PC</Name>
+    <Description>
+      <Title>PC</Title>
+    </Description>
     <ogc:Filter>
       <ogc:PropertyIsLike singleChar="?" escapeChar="\" wildCard="*">
         <ogc:PropertyName>app:CODE</ogc:PropertyName>
@@ -104,7 +114,9 @@
       </PolygonSymbolizer>
   </Rule>
   <Rule>
-    <Name>PC</Name>
+    <Description>
+      <Title>GEOMR/GEOME</Title>
+    </Description>
     <ogc:Filter>
       <ogc:Or>
         <ogc:PropertyIsEqualTo>
@@ -130,7 +142,9 @@
       </PolygonSymbolizer>
   </Rule>
   <Rule>
-    <Name>Unknown</Name>
+    <Description>
+      <Title>Unknown</Title>
+    </Description>
     <ogc:Filter>
       <ogc:Or>
         <ogc:PropertyIsEqualTo>
