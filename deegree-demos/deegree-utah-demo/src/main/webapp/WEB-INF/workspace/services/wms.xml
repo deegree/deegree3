@@ -9,7 +9,7 @@
     </DefaultLayerOptions>
 
     <UnrequestableLayer>
-      <Title>deegree 3 WMS demo</Title>
+      <Title>deegree 3 utahDemo</Title>
       <CRS>EPSG:4326 CRS:84 EPSG:26912</CRS>
 
 
