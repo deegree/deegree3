@@ -57,7 +57,7 @@ import org.slf4j.LoggerFactory;
  * @see WPSClient
  * @see ProcessExecution
  * 
- * @author <a href="mailto:kiehle@lat-lon.de">Christian Kiehle</a>
+ * @author <a href="mailto:wilden@lat-lon.de">Johannes Wilden</a>
  * @author <a href="mailto:walenciak@uni-heidelberg.de">Georg Walenciak</a>
  * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>

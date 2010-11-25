@@ -128,8 +128,8 @@ public class WPSClientTest {
         Assert.assertEquals( serviceProvider.getProviderSite().toExternalForm(), "http://www.lat-lon.de" );
 
         ServiceContact serviceContact = serviceProvider.getServiceContact();
-        Assert.assertEquals( serviceContact.getIndividualName(), "Christian Kiehle" );
-        Assert.assertEquals( serviceContact.getPositionName(), "Project Manager" );
+        Assert.assertEquals( serviceContact.getIndividualName(), "Johannes Wilden" );
+        Assert.assertEquals( serviceContact.getPositionName(), "Release Manager" );
 
         ContactInfo contactInfo = serviceContact.getContactInfo();
         Assert.assertEquals( contactInfo.getPhone().getVoice().get( 0 ), "0228/18496-0" );
@@ -139,10 +139,10 @@ public class WPSClientTest {
         Assert.assertEquals( contactInfo.getAddress().getAdministrativeArea(), "NRW" );
         Assert.assertEquals( contactInfo.getAddress().getPostalCode(), "53177" );
         Assert.assertEquals( contactInfo.getAddress().getCountry(), "Bonn" );
-        Assert.assertEquals( contactInfo.getAddress().getElectronicMailAddress().get( 0 ).trim(), "kiehle@lat-lon.de" );
+        Assert.assertEquals( contactInfo.getAddress().getElectronicMailAddress().get( 0 ).trim(), "wilden@lat-lon.de" );
         Assert.assertEquals( contactInfo.getOnlineResource().toExternalForm(), "http://www.deegree.org" );
         Assert.assertEquals( contactInfo.getHoursOfService(), "24x7" );
-        Assert.assertEquals( contactInfo.getContactInstruction(), "Don't hesitate to call" );
+        Assert.assertEquals( contactInfo.getContactInstruction(), "Do not hesitate to call" );
 
         Assert.assertEquals( serviceContact.getRole().getCode(), "PointOfContact" );
 
