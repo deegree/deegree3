@@ -42,8 +42,11 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.ListIterator;
 
 import org.apache.xerces.dom.DOMInputImpl;
 import org.apache.xerces.impl.xs.XMLSchemaLoader;
@@ -313,13 +316,16 @@ public class SchemaValidator {
 
 /**
  * Simple <code>LSInputList</code> implementation.
+ * <p>
+ * Implements List to be already prepared for switch to Xerces 2.10 series.
+ * </p>
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author: schneider $
  * 
  * @version $Revision: $, $Date: $
  */
-class LSInputListImpl implements LSInputList {
+class LSInputListImpl implements LSInputList, List {
 
     private List<LSInput> inputs = new ArrayList<LSInput>();
 
@@ -344,5 +350,138 @@ class LSInputListImpl implements LSInputList {
     @Override
     public LSInput item( int i ) {
         return inputs.get( i );
+    }
+
+    @Override
+    public int size() {
+        return inputs.size();
+    }
+
+    @Override
+    public boolean isEmpty() {
+        return inputs.isEmpty();
+    }
+
+    @Override
+    public boolean contains( Object o ) {
+        return inputs.contains( o );
+    }
+
+    @Override
+    public Iterator<LSInput> iterator() {
+        return inputs.iterator();
+    }
+
+    @Override
+    public Object[] toArray() {
+        return inputs.toArray();
+    }
+
+    @Override
+    public Object[] toArray( Object[] a ) {
+        return inputs.toArray( a );
+    }
+
+    @Override
+    public boolean remove( Object o ) {
+        return inputs.remove( o );
+    }
+
+    @Override
+    public boolean containsAll( Collection c ) {
+        return inputs.containsAll( c );
+    }
+
+    @Override
+    public boolean addAll( Collection c ) {
+        return inputs.addAll( c );
+    }
+
+    @Override
+    public boolean addAll( int index, Collection c ) {
+        return inputs.addAll( index, c );
+    }
+
+    @Override
+    public boolean removeAll( Collection c ) {
+        return inputs.removeAll( c );
+    }
+
+    @Override
+    public boolean retainAll( Collection c ) {
+        return inputs.retainAll( c );
+    }
+
+    @Override
+    public void clear() {
+        inputs.clear();
+    }
+
+    @Override
+    public boolean equals( Object o ) {
+        return inputs.equals( o );
+    }
+
+    @Override
+    public int hashCode() {
+        return inputs.hashCode();
+    }
+
+    @Override
+    public LSInput get( int index ) {
+        return inputs.get( index );
+    }
+
+    public LSInput set( int index, LSInput element ) {
+        return inputs.set( index, element );
+    }
+
+    public void add( int index, LSInput element ) {
+        inputs.add( index, element );
+    }
+
+    @Override
+    public LSInput remove( int index ) {
+        return inputs.remove( index );
+    }
+
+    @Override
+    public int indexOf( Object o ) {
+        return inputs.indexOf( o );
+    }
+
+    @Override
+    public int lastIndexOf( Object o ) {
+        return inputs.lastIndexOf( o );
+    }
+
+    @Override
+    public ListIterator<LSInput> listIterator() {
+        return inputs.listIterator();
+    }
+
+    @Override
+    public ListIterator<LSInput> listIterator( int index ) {
+        return inputs.listIterator( index );
+    }
+
+    @Override
+    public List<LSInput> subList( int fromIndex, int toIndex ) {
+        return inputs.subList( fromIndex, toIndex );
+    }
+
+    @Override
+    public boolean add( Object e ) {
+        return inputs.add( (LSInput) e );
+    }
+
+    @Override
+    public Object set( int index, Object element ) {
+        return inputs.set( index, (LSInput) element );
+    }
+
+    @Override
+    public void add( int index, Object element ) {
+        inputs.add( index, (LSInput) element );
     }
 }
