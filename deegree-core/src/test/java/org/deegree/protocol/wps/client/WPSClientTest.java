@@ -124,7 +124,7 @@ public class WPSClientTest {
         Assert.assertEquals( serviceId.getServiceTypeVersion().get( 0 ).toString(), "1.0.0" );
 
         ServiceProvider serviceProvider = client.getMetadata().getServiceProvider();
-        Assert.assertEquals( serviceProvider.getProviderName(), "lat-lon GmbH" );
+        Assert.assertEquals( serviceProvider.getProviderName(), "lat/lon GmbH" );
         Assert.assertEquals( serviceProvider.getProviderSite().toExternalForm(), "http://www.lat-lon.de" );
 
         ServiceContact serviceContact = serviceProvider.getServiceContact();

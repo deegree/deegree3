@@ -17,7 +17,7 @@
     <AccessConstraints>24x7</AccessConstraints>
   </ServiceIdentification>
   <ServiceProvider>
-    <ProviderName>lat-lon GmbH</ProviderName>
+    <ProviderName>lat/lon GmbH</ProviderName>
     <ProviderSite>http://www.lat-lon.de</ProviderSite>
     <ServiceContact>
       <IndividualName>Johannes Wilden</IndividualName>
