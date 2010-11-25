@@ -42,10 +42,10 @@ import static java.lang.Integer.parseInt;
 import static java.util.Arrays.asList;
 import static javax.xml.stream.XMLOutputFactory.IS_REPAIRING_NAMESPACES;
 import static org.deegree.commons.utils.math.MathUtils.round;
+import static org.deegree.rendering.r2d.utils.ImageUtils.prepareImage;
 import static org.deegree.services.controller.ows.OWSException.CURRENT_UPDATE_SEQUENCE;
 import static org.deegree.services.controller.ows.OWSException.INVALID_UPDATE_SEQUENCE;
 import static org.deegree.services.i18n.Messages.get;
-import static org.deegree.services.wms.MapService.prepareImage;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
@@ -101,6 +101,8 @@ public abstract class WMSControllerBase implements Controller {
         case GetLegendGraphic:
             exceptions = exceptions == null ? EXCEPTION_DEFAULT : exceptions;
             break;
+        case DTD:
+            break;
         }
 
         try {
@@ -122,7 +124,7 @@ public abstract class WMSControllerBase implements Controller {
         if ( type.equalsIgnoreCase( EXCEPTION_DEFAULT ) ) {
             AbstractOGCServiceController.sendException( EXCEPTION_MIME, "UTF-8", null, 200, EXCEPTIONS, ex, response );
         } else if ( type.equalsIgnoreCase( EXCEPTION_INIMAGE ) ) {
-            BufferedImage img = prepareImage( width, height, color, transparent, format );
+            BufferedImage img = prepareImage( format, width, height, transparent, color );
             Graphics2D g = img.createGraphics();
             g.setColor( black );
             LinkedList<String> words = new LinkedList<String>( asList( ex.getMessage().split( "\\s" ) ) );
@@ -151,7 +153,7 @@ public abstract class WMSControllerBase implements Controller {
                                                             response );
             }
         } else if ( type.equalsIgnoreCase( EXCEPTION_BLANK ) ) {
-            BufferedImage img = prepareImage( width, height, color, transparent, format );
+            BufferedImage img = prepareImage( format, width, height, transparent, color );
             try {
                 controller.sendImage( img, response, format );
             } catch ( OWSException e ) {

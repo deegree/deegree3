@@ -36,7 +36,6 @@
 
 package org.deegree.services.wms;
 
-import static java.awt.Font.PLAIN;
 import static java.awt.RenderingHints.KEY_ANTIALIASING;
 import static java.awt.RenderingHints.KEY_INTERPOLATION;
 import static java.awt.RenderingHints.KEY_RENDERING;
@@ -51,22 +50,15 @@ import static java.awt.RenderingHints.VALUE_RENDER_QUALITY;
 import static java.awt.RenderingHints.VALUE_RENDER_SPEED;
 import static java.awt.RenderingHints.VALUE_TEXT_ANTIALIAS_OFF;
 import static java.awt.RenderingHints.VALUE_TEXT_ANTIALIAS_ON;
-import static java.awt.image.BufferedImage.TYPE_BYTE_INDEXED;
-import static java.awt.image.BufferedImage.TYPE_INT_ARGB;
-import static java.awt.image.BufferedImage.TYPE_INT_RGB;
-import static java.awt.image.DataBuffer.TYPE_BYTE;
-import static java.awt.image.Raster.createBandedRaster;
 import static java.lang.Double.NEGATIVE_INFINITY;
 import static java.lang.Double.POSITIVE_INFINITY;
-import static java.lang.Math.max;
-import static javax.media.jai.operator.ColorQuantizerDescriptor.MEDIANCUT;
 import static org.deegree.commons.utils.CollectionUtils.AND;
 import static org.deegree.commons.utils.CollectionUtils.addAllUncontained;
 import static org.deegree.commons.utils.CollectionUtils.map;
 import static org.deegree.commons.utils.CollectionUtils.reduce;
 import static org.deegree.commons.utils.CollectionUtils.removeDuplicates;
 import static org.deegree.gml.GMLVersion.GML_31;
-import static org.deegree.rendering.r2d.styling.components.UOM.Metre;
+import static org.deegree.rendering.r2d.utils.ImageUtils.postprocessPng8bit;
 import static org.deegree.services.wms.controller.ops.GetMap.Antialias.BOTH;
 import static org.deegree.services.wms.controller.ops.GetMap.Interpolation.NEARESTNEIGHBOR;
 import static org.deegree.services.wms.controller.ops.GetMap.Quality.NORMAL;
@@ -74,15 +66,8 @@ import static org.deegree.services.wms.model.layers.Layer.render;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.awt.Color;
-import java.awt.Font;
 import java.awt.Graphics2D;
-import java.awt.font.FontRenderContext;
-import java.awt.font.TextLayout;
-import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
-import java.awt.image.ColorModel;
-import java.awt.image.IndexColorModel;
-import java.awt.image.WritableRaster;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -97,10 +82,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Timer;
 
-import javax.media.jai.PlanarImage;
-import javax.media.jai.RenderedOp;
-import javax.media.jai.operator.BandSelectDescriptor;
-import javax.media.jai.operator.ColorQuantizerDescriptor;
 import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
 
@@ -122,19 +103,11 @@ import org.deegree.feature.persistence.query.ThreadedResultSet;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.feature.xpath.FeatureXPathEvaluator;
 import org.deegree.filter.FilterEvaluationException;
-import org.deegree.geometry.Geometry;
-import org.deegree.geometry.GeometryFactory;
-import org.deegree.geometry.primitive.LineString;
-import org.deegree.geometry.primitive.Point;
-import org.deegree.geometry.primitive.Polygon;
-import org.deegree.geometry.standard.DefaultEnvelope;
 import org.deegree.rendering.r2d.Java2DRenderer;
 import org.deegree.rendering.r2d.Java2DTextRenderer;
+import org.deegree.rendering.r2d.legends.Legends;
 import org.deegree.rendering.r2d.se.unevaluated.Style;
-import org.deegree.rendering.r2d.styling.LineStyling;
-import org.deegree.rendering.r2d.styling.PointStyling;
-import org.deegree.rendering.r2d.styling.Styling;
-import org.deegree.rendering.r2d.styling.TextStyling;
+import org.deegree.rendering.r2d.utils.ImageUtils;
 import org.deegree.services.jaxb.wms.AbstractLayerType;
 import org.deegree.services.jaxb.wms.BaseAbstractLayerType;
 import org.deegree.services.jaxb.wms.DynamicLayer;
@@ -171,8 +144,6 @@ import org.slf4j.Logger;
 public class MapService {
 
     private static final Logger LOG = getLogger( MapService.class );
-
-    private static final GeometryFactory geofac = new GeometryFactory();
 
     /**
      * 
@@ -501,14 +472,6 @@ public class MapService {
         return warnings;
     }
 
-    private static int getType( boolean transparent, String format ) {
-        int type = transparent ? TYPE_INT_ARGB : TYPE_INT_RGB;
-        if ( format.equals( "image/x-ms-bmp" ) ) {
-            type = TYPE_INT_RGB;
-        }
-        return type;
-    }
-
     /**
      * @param req
      *            should be a GetMap or GetLegendGraphic
@@ -535,32 +498,7 @@ public class MapService {
         } else {
             return null;
         }
-        if ( format.equals( "image/png; mode=8bit" ) || format.equals( "image/png; subtype=8bit" )
-             || format.equals( "image/gif" ) ) {
-            ColorModel cm = PlanarImage.getDefaultColorModel( TYPE_BYTE, 4 );
-            return new BufferedImage( cm, createBandedRaster( TYPE_BYTE, width, height, 4, null ), false, null );
-        }
-        return prepareImage( width, height, bgcolor,
-                             transparent && ( format.indexOf( "png" ) != -1 || format.indexOf( "gif" ) != -1 ), format );
-    }
-
-    /**
-     * @param width
-     * @param height
-     * @param color
-     * @param transparent
-     * @param format
-     * @return an empty image conforming to the parameters
-     */
-    public static BufferedImage prepareImage( int width, int height, Color color, boolean transparent, String format ) {
-        BufferedImage img = new BufferedImage( width, height, getType( transparent, format ) );
-        if ( !transparent ) {
-            Graphics2D g = img.createGraphics();
-            g.setBackground( color );
-            g.clearRect( 0, 0, width, height );
-            g.dispose();
-        }
-        return img;
+        return ImageUtils.prepareImage( format, width, height, transparent, bgcolor );
     }
 
     protected static void applyHints( final Layer l, final Map<Layer, Quality> qualities,
@@ -607,50 +545,6 @@ public class MapService {
             g.setRenderingHint( KEY_TEXT_ANTIALIASING, VALUE_TEXT_ANTIALIAS_OFF );
             break;
         }
-    }
-
-    /**
-     * @param img
-     * @return a new 8bit image, quantized
-     */
-    public static final BufferedImage postprocessPng8bit( final BufferedImage img ) {
-        RenderedOp torgb = BandSelectDescriptor.create( img, new int[] { 0, 1, 2 }, null );
-
-        torgb = ColorQuantizerDescriptor.create( torgb, MEDIANCUT, 254, null, null, null, null, null );
-
-        WritableRaster data = torgb.getAsBufferedImage().getRaster();
-
-        IndexColorModel model = (IndexColorModel) torgb.getColorModel();
-        byte[] reds = new byte[256];
-        byte[] greens = new byte[256];
-        byte[] blues = new byte[256];
-        byte[] alphas = new byte[256];
-        model.getReds( reds );
-        model.getGreens( greens );
-        model.getBlues( blues );
-        // note that this COULD BE OPTIMIZED to SUPPORT EG HALF TRANSPARENT PIXELS for PNG-8!
-        // It's not true that PNG-8 does not support this! Try setting the value to eg. 128 here and see what
-        // you'll get...
-        for ( int i = 0; i < 254; ++i ) {
-            alphas[i] = -1;
-        }
-        alphas[255] = 0;
-        IndexColorModel newModel = new IndexColorModel( 8, 256, reds, greens, blues, alphas );
-
-        // yeah, double memory, but it was the only way I could find (I could be blind...)
-        BufferedImage res = new BufferedImage( torgb.getWidth(), torgb.getHeight(), TYPE_BYTE_INDEXED, newModel );
-        res.setData( data );
-
-        // do it the hard way as the OR operation would destroy the channels
-        for ( int y = 0; y < img.getHeight(); ++y ) {
-            for ( int x = 0; x < img.getWidth(); ++x ) {
-                if ( img.getRGB( x, y ) == 0 ) {
-                    res.setRGB( x, y, 0 );
-                }
-            }
-        }
-
-        return res;
     }
 
     private static Mapper<Boolean, Layer> getFeatureLayerCollector( final LinkedList<FeatureLayer> list ) {
@@ -932,52 +826,22 @@ public class MapService {
     }
 
     /**
-     * @param xpos
-     * @param ypos
-     * @param xsize
-     * @param ysize
-     * @return a made up rectangle to be used in a legend
+     * @param style
+     * @return the optimal legend size
      */
-    public static Polygon getLegendRect( int xpos, int ypos, int xsize, int ysize ) {
-        Point p1 = geofac.createPoint( null, xpos, ypos, null );
-        Point p2 = geofac.createPoint( null, xpos + xsize, ypos, null );
-        Point p3 = geofac.createPoint( null, xpos + xsize, ypos + ysize, null );
-        Point p4 = geofac.createPoint( null, xpos, ypos + ysize, null );
-        List<Point> ps = new ArrayList<Point>( 5 );
-        ps.add( p1 );
-        ps.add( p2 );
-        ps.add( p3 );
-        ps.add( p4 );
-        ps.add( p1 );
+    public Pair<Integer, Integer> getLegendSize( Style style ) {
+        Pair<Integer, Integer> res = legendSizes.get( style );
+        if ( res != null ) {
+            return res;
+        }
 
-        return geofac.createPolygon( null, null, geofac.createLinearRing( null, null, geofac.createPoints( ps ) ), null );
+        legendSizes.put( style, res = new Legends().getLegendSize( style ) );
+        return res;
     }
 
-    /**
-     * @param xpos
-     * @param ypos
-     * @param xsz
-     * @param ysz
-     * @return a made up line string to be used in a legend
-     */
-    public static LineString getLegendLine( int xpos, int ypos, int xsz, int ysz ) {
-        Point p1 = geofac.createPoint( null, xpos, ypos, null );
-        Point p2 = geofac.createPoint( null, xpos + xsz / 3, ypos + ysz / 3 * 2, null );
-        Point p3 = geofac.createPoint( null, xpos + xsz / 3 * 2, ypos + ysz / 3, null );
-        Point p4 = geofac.createPoint( null, xpos + xsz, ypos + ysz, null );
-        List<Point> ps = new ArrayList<Point>( 4 );
-        ps.add( p1 );
-        ps.add( p2 );
-        ps.add( p3 );
-        ps.add( p4 );
-        return geofac.createLineString( null, null, geofac.createPoints( ps ) );
-    }
-
-    /**
-     * @param req
-     * @return the legend
-     */
     public BufferedImage getLegend( GetLegendGraphic req ) {
+        Legends renderer = new Legends();
+
         Style style = req.getStyle();
         Pair<Integer, Integer> size = getLegendSize( style );
 
@@ -997,73 +861,8 @@ public class MapService {
         g.setRenderingHint( KEY_ANTIALIASING, VALUE_ANTIALIAS_ON );
         g.setRenderingHint( KEY_TEXT_ANTIALIASING, VALUE_TEXT_ANTIALIAS_ON );
 
-        Java2DRenderer renderer = new Java2DRenderer( g, req.getWidth(), req.getHeight(),
-                                                      new DefaultEnvelope( geofac.createPoint( null, 0, 0, null ),
-                                                                           geofac.createPoint( null, size.first,
-                                                                                               size.second, null ) ) );
-        Java2DTextRenderer textRenderer = new Java2DTextRenderer( renderer );
+        renderer.paintLegend( style, req.getWidth(), req.getHeight(), g );
 
-        int ypos = 6;
-        int xpos = 6;
-
-        Iterator<Class<?>> types = style.getRuleTypes().iterator();
-        TextStyling textStyling = new TextStyling();
-        textStyling.font = new org.deegree.rendering.r2d.styling.components.Font();
-        textStyling.font.fontFamily.add( 0, "Arial" );
-        textStyling.font.fontSize = 14;
-        textStyling.anchorPointX = 0;
-        textStyling.anchorPointY = 0.5;
-        textStyling.uom = Metre;
-
-        Mapper<Boolean, Styling> pointStylingMapper = CollectionUtils.<Styling> getInstanceofMapper( PointStyling.class );
-        Mapper<Boolean, Styling> lineStylingMapper = CollectionUtils.<Styling> getInstanceofMapper( LineStyling.class );
-        // Mapper<Boolean, Styling> polygonStylingMapper = CollectionUtils.<Styling> getInstanceofMapper(
-        // PolygonStyling.class );
-        Iterator<String> titles = style.getRuleTitles().iterator();
-        for ( LinkedList<Styling> styles : style.getBases() ) {
-            String title = titles.next();
-            Class<?> c = types.next();
-            boolean isPoint = c.equals( Point.class ) || reduce( true, map( styles, pointStylingMapper ), AND );
-            boolean isLine = c.equals( LineString.class ) || reduce( true, map( styles, lineStylingMapper ), AND );
-            // boolean isPolygon = c.equals( Polygon.class ) || reduce( true, map( styles, polygonStylingMapper ), AND
-            // );
-
-            Geometry geom;
-            if ( isPoint ) {
-                geom = geofac.createPoint( null, xpos + 10, ypos + 10, null );
-            } else if ( isLine ) {
-                geom = getLegendLine( xpos, ypos, 20, 20 );
-                // } else if ( isPolygon ) {
-                // geom = getLegendRect( xpos, ypos, 20, 20 );
-            } else {
-                // something better?
-                geom = getLegendRect( xpos, ypos, 20, 20 );
-            }
-            if ( title != null && title.length() > 0 ) {
-                textRenderer.render( textStyling, title, geofac.createPoint( null, 35, ypos + 10, null ) );
-            }
-            ypos += 32;
-
-            double maxSize = 0;
-            if ( isPoint ) {
-                for ( Styling s : styles ) {
-                    if ( s instanceof PointStyling ) {
-                        maxSize = max( ( (PointStyling) s ).graphic.size, maxSize );
-                    }
-                }
-            }
-
-            for ( Styling styling : styles ) {
-                // normalize point symbols to 20 pixels
-                if ( styling instanceof PointStyling && isPoint ) {
-                    PointStyling s = ( (PointStyling) styling ).copy();
-                    s.uom = Metre;
-                    s.graphic.size = s.graphic.size / maxSize * 20;
-                    styling = s;
-                }
-                renderer.render( styling, geom );
-            }
-        }
         g.dispose();
 
         if ( req.getFormat().equals( "image/png; mode=8bit" ) || req.getFormat().equals( "image/png; subtype=8bit" )
@@ -1076,37 +875,6 @@ public class MapService {
         }
 
         return img;
-    }
-
-    /**
-     * @param style
-     * @return the legend width/height given a base size of 32x32
-     */
-    public Pair<Integer, Integer> getLegendSize( Style style ) {
-        Pair<Integer, Integer> res = legendSizes.get( style );
-        if ( res != null ) {
-            return res;
-        }
-
-        res = new Pair<Integer, Integer>( 0, 0 );
-
-        res.second = 32 * style.getBases().size();
-        res.first = 32;
-
-        Font font = new Font( "Arial", PLAIN, 14 );
-
-        for ( String s : style.getRuleTitles() ) {
-            if ( s != null && s.length() > 0 ) {
-                TextLayout layout = new TextLayout( s, font, new FontRenderContext( new AffineTransform(), true, false ) );
-                res.first = (int) max( layout.getBounds().getWidth() + 40, res.first );
-            }
-        }
-
-        LOG.trace( "Calculated a legend size of '{}'.", res );
-
-        legendSizes.put( style, res );
-
-        return res;
     }
 
     /**
