@@ -111,7 +111,7 @@ public class ISOMetadataStoreTransaction implements MetadataStoreTransaction {
                     } else {
                         String msg = Messages.getMessage( "ERROR_DUPLICATE_INSERT", id );
                         LOG.info( msg );
-                        // throw new MetadataStoreException( msg );
+                        throw new MetadataStoreException( msg );
                     }
                 }
 
