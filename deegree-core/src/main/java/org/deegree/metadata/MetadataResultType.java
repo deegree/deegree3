@@ -54,21 +54,6 @@ public interface MetadataResultType {
     int getNumberOfRecordsMatched();
 
     /**
-     * How many records should be performed in the response, whereas getNumberOfRecordsMatched is the number that could
-     * be requested.
-     * 
-     * @return the number of records that should be returned.
-     */
-    int getNumberOfRecordsReturned();
-
-    /**
-     * Indicates the next record that could be queried after the last performed record.
-     * 
-     * @return the next record if there are more, otherwise 0.
-     */
-    int getNextRecord();
-
-    /**
      * TODO
      * 
      * @return

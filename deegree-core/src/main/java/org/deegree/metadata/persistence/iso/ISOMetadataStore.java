@@ -38,11 +38,8 @@ package org.deegree.metadata.persistence.iso;
 import static org.deegree.commons.utils.JDBCUtils.close;
 import static org.slf4j.LoggerFactory.getLogger;
 
-import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.nio.charset.Charset;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -67,14 +64,12 @@ import org.deegree.filter.sql.postgis.PostGISWhereBuilder;
 import org.deegree.metadata.ISORecord;
 import org.deegree.metadata.MetadataResultType;
 import org.deegree.metadata.i18n.Messages;
-import org.deegree.metadata.persistence.MetadataCollection;
 import org.deegree.metadata.persistence.MetadataInspectorException;
 import org.deegree.metadata.persistence.MetadataQuery;
 import org.deegree.metadata.persistence.MetadataResultSet;
 import org.deegree.metadata.persistence.MetadataStore;
 import org.deegree.metadata.persistence.MetadataStoreException;
 import org.deegree.metadata.persistence.MetadataStoreTransaction;
-import org.deegree.metadata.persistence.iso.parsing.IdUtils;
 import org.deegree.metadata.persistence.iso.parsing.inspectation.CoupledDataInspector;
 import org.deegree.metadata.persistence.iso.parsing.inspectation.FIInspector;
 import org.deegree.metadata.persistence.iso.parsing.inspectation.InspireComplianceInspector;
@@ -107,11 +102,6 @@ public class ISOMetadataStore implements MetadataStore {
 
     // if true, use old-style for spatial predicates (intersects instead of ST_Intersecs)
     private boolean useLegacyPredicates;
-
-    /**
-     * shows the encoding of the database that is used
-     */
-    private String encoding;
 
     private ISOMetadataStoreConfig config;
 
@@ -206,8 +196,6 @@ public class ISOMetadataStore implements MetadataStore {
             Class.forName( "org.postgresql.Driver" );
             conn = ConnectionManager.getConnection( connectionId );
 
-            encoding = determinePostGRESEncoding( conn );
-
             String version = determinePostGISVersion( conn );
             if ( version.startsWith( "0." ) || version.startsWith( "1.0" ) || version.startsWith( "1.1" )
                  || version.startsWith( "1.2" ) ) {
@@ -227,33 +215,6 @@ public class ISOMetadataStore implements MetadataStore {
             close( conn );
         }
 
-    }
-
-    /**
-     * @param conn
-     * @return the encoding of the PostGRES database.
-     */
-    private String determinePostGRESEncoding( Connection conn ) {
-        String encodingPostGRES = "UTF-8";
-        Statement stmt = null;
-        ResultSet rs = null;
-        try {
-            stmt = conn.createStatement();
-            rs = stmt.executeQuery( "SHOW server_encoding" );
-            rs.next();
-            encodingPostGRES = rs.getString( 1 );
-            LOG.debug( Messages.getMessage( "DET_POSTGRES_ENCODING", encodingPostGRES ) );
-            stmt.close();
-            rs.close();
-        } catch ( Exception e ) {
-            String msg = Messages.getMessage( "WARN_DET_POSTGRES_ENCODING", e.getMessage() );
-            LOG.warn( msg );
-        } finally {
-            close( rs );
-            close( stmt );
-        }
-
-        return encodingPostGRES;
     }
 
     private String determinePostGISVersion( Connection conn ) {
@@ -293,10 +254,8 @@ public class ISOMetadataStore implements MetadataStore {
         PostGISMappingsISODC mapping = new PostGISMappingsISODC();
         PostGISWhereBuilder builder = null;
         Connection conn = null;
-
         MetadataResultSet result = null;
         MetadataResultType resultType = null;
-        MetadataCollection col = new ISOCollection();
 
         try {
             conn = ConnectionManager.getConnection( connectionId );
@@ -309,7 +268,7 @@ public class ISOMetadataStore implements MetadataStore {
                 break;
             case hits:
                 resultType = doHitsOnGetRecord( query, ResultType.hits, builder, conn, new ExecuteStatements() );
-                result = new ISOMetadataResultSet( col, resultType );
+                result = new ISOMetadataResultSet( null, conn, resultType, config.getAnyText() );
                 break;
             case validate:
                 // is handled by the protocol layer
@@ -322,8 +281,6 @@ public class ISOMetadataStore implements MetadataStore {
             String msg = Messages.getMessage( "ERROR_OPERATION", operationName, e.getMessage() );
             LOG.debug( msg );
             throw new MetadataStoreException( msg );
-        } finally {
-            close( conn );
         }
 
         return result;
@@ -356,37 +313,27 @@ public class ISOMetadataStore implements MetadataStore {
         try {
 
             int countRows = 0;
-            int nextRecord = 0;
-            int returnedRecords = 0;
 
             ps = exe.executeGetRecords( recOpt, true, builder, conn );
 
             rs = ps.executeQuery();
             rs.next();
             countRows = rs.getInt( 1 );
-            LOG.debug( "rs for rowCount: " + rs.getInt( 1 ) );
-
-            if ( countRows > recOpt.getMaxRecords() ) {
-                nextRecord = recOpt.getMaxRecords() + 1;
-                returnedRecords = recOpt.getMaxRecords();
-            } else {
-                nextRecord = 0;
-                returnedRecords = countRows - recOpt.getStartPosition() + 1;
-            }
+            LOG.info( "rs for rowCount: " + rs.getInt( 1 ) );
 
             if ( resultType.equals( ResultType.results ) ) {
-                result = new Hits( countRows, returnedRecords, nextRecord, DateUtils.formatISO8601Date( new Date() ) );
+                result = new Hits( countRows, DateUtils.formatISO8601Date( new Date() ) );
             } else {
-                result = new Hits( countRows, 0, 1, DateUtils.formatISO8601Date( new Date() ) );
+                result = new Hits( countRows, DateUtils.formatISO8601Date( new Date() ) );
             }
 
-        } catch ( Exception e ) {
-            String msg = Messages.getMessage( "ERROR_REQUEST_TYPE", resultTypeName, e.getMessage() );
+        } catch ( Throwable t ) {
+            JDBCUtils.close( rs, ps, conn, LOG );
+            String msg = Messages.getMessage( "ERROR_REQUEST_TYPE", ResultType.results.name(), t.getMessage() );
             LOG.debug( msg );
             throw new MetadataStoreException( msg );
         } finally {
-            close( rs );
-            close( ps );
+            JDBCUtils.close( rs );
         }
 
         return result;
@@ -415,54 +362,27 @@ public class ISOMetadataStore implements MetadataStore {
                             throws MetadataStoreException {
         LOG.info( Messages.getMessage( "INFO_EXEC", "do results on getRecords" ) );
         MetadataResultType type = null;
-        MetadataCollection col = new ISOCollection();
         ResultSet rs = null;
-        ResultSet rsOut = null;
         PreparedStatement preparedStatement = null;
-        PreparedStatement stmtOut = null;
         ExecuteStatements exe = new ExecuteStatements();
         try {
             preparedStatement = exe.executeGetRecords( recordStoreOptions, false, builder, conn );
             type = doHitsOnGetRecord( recordStoreOptions, ResultType.results, builder, conn, exe );
             rs = preparedStatement.executeQuery();
-
-            if ( rs != null && recordStoreOptions.getMaxRecords() != 0 ) {
-                // generate the output based on the outputSchema
-                while ( rs.next() ) {
-                    int returnedID = rs.getInt( 1 );
-
-                    StringBuilder outS = new StringBuilder();
-                    outS.append( "SELECT " ).append( datasets ).append( '.' ).append( recordfull );
-                    outS.append( " FROM " ).append( datasets );
-                    outS.append( " WHERE " ).append( id );
-                    outS.append( " = " ).append( returnedID );
-                    stmtOut = conn.prepareStatement( outS.toString() );
-                    LOG.debug( "" + stmtOut );
-                    rsOut = stmtOut.executeQuery();
-                    col.add( new ISORecord( writeXMLStreamReader( rsOut, 1 ), config.getAnyText() ) );
-                    stmtOut.close();
-                    rsOut.close();
-                }
-
-                rs.close();
-            }
-        } catch ( SQLException e ) {
-            String msg = Messages.getMessage( "ERROR_REQUEST_TYPE", ResultType.results.name(), e.getMessage() );
+            // close( preparedStatement );
+        } catch ( Throwable t ) {
+            JDBCUtils.close( rs, preparedStatement, conn, LOG );
+            String msg = Messages.getMessage( "ERROR_REQUEST_TYPE", ResultType.results.name(), t.getMessage() );
             LOG.debug( msg );
             throw new MetadataStoreException( msg );
-        } finally {
-            close( rs );
-            close( rsOut );
-            close( preparedStatement );
-            close( stmtOut );
         }
 
-        return new ISOMetadataResultSet( col, type );
+        return new ISOMetadataResultSet( rs, conn, type, config.getAnyText() );
 
     }
 
     @Override
-    public MetadataResultSet getRecordsById( List<String> idList )
+    public MetadataResultSet getRecordById( List<String> idList )
                             throws MetadataStoreException {
 
         String operationName = "getRecordsById";
@@ -472,76 +392,53 @@ public class ISOMetadataStore implements MetadataStore {
         ResultSet rs = null;
         Connection conn = null;
         PreparedStatement stmt = null;
-
-        MetadataCollection col = new ISOCollection();
         try {
-
+            int size = idList.size();
             conn = ConnectionManager.getConnection( connectionId );
 
-            for ( String identifier : idList ) {
-                String provedID = IdUtils.newInstance( conn ).proveIdExistence( identifier );
-                if ( provedID == null ) {
-                    String msg = Messages.getMessage( "NO_IDENTIFIER_FOUND", identifier );
-                    LOG.info( msg );
-                    throw new MetadataStoreException( msg );
+            StringBuilder select = new StringBuilder();
+            select.append( "SELECT " ).append( "d." ).append( recordfull );
+            select.append( " FROM " ).append( datasets ).append( " AS d" ).append( ',' );
+            select.append( qp_identifier );
+            select.append( " AS i" );
+            select.append( " WHERE d." ).append( id );
+            select.append( " = " ).append( "i.fk_datasets" ).append( " AND (" );
+            for ( int iter = 0; iter < size; iter++ ) {
+                select.append( "i." );
+                select.append( backendIdentifier ).append( " = ? " );
+                if ( iter < size - 1 ) {
+                    select.append( " OR " );
                 }
 
-                StringBuilder select = new StringBuilder();
-                select.append( "SELECT " ).append( "d." ).append( recordfull );
-                select.append( " FROM " ).append( datasets ).append( " AS d" ).append( ',' );
-                select.append( qp_identifier );
-                select.append( " AS i" );
-                select.append( " WHERE d." ).append( id );
-                select.append( " = " ).append( "i.fk_datasets" ).append( " AND i." );
-                select.append( backendIdentifier ).append( " = ? " );
+            }
+            select.append( ')' );
 
-                stmt = conn.prepareStatement( select.toString() );
-                LOG.debug( "select RecordById statement: " + stmt );
+            stmt = conn.prepareStatement( select.toString() );
+            LOG.debug( "select RecordById statement: " + stmt );
 
-                if ( stmt != null ) {
-
-                    stmt.setObject( 1, identifier );
+            if ( stmt != null ) {
+                int i = 1;
+                for ( String identifier : idList ) {
+                    stmt.setString( i, identifier );
                     LOG.debug( "identifier: " + identifier );
                     LOG.debug( "" + stmt );
-                    rs = stmt.executeQuery();
-
-                    col.add( new ISORecord( writeXMLStreamReader( rs, 1 ), config.getAnyText() ) );
-
+                    i++;
                 }
-                stmt.close();
+                rs = stmt.executeQuery();
+
+            } else {
+                String msg = Messages.getMessage( "NO_IDENTIFIER_FOUND", idList );
+                LOG.info( msg );
+                throw new MetadataStoreException( msg );
             }
 
-        } catch ( SQLException e ) {
-            String msg = Messages.getMessage( "ERROR_OPERATION", operationName, e.getMessage() );
+        } catch ( Throwable t ) {
+            JDBCUtils.close( rs, stmt, conn, LOG );
+            String msg = Messages.getMessage( "ERROR_REQUEST_TYPE", ResultType.results.name(), t.getMessage() );
             LOG.debug( msg );
             throw new MetadataStoreException( msg );
-        } finally {
-            JDBCUtils.close( rs, stmt, conn, LOG );
-
         }
-        return new ISOMetadataResultSet( col, null );
-    }
-
-    private XMLStreamReader writeXMLStreamReader( ResultSet rs, int col )
-                            throws SQLException, MetadataStoreException {
-        InputStreamReader isr = null;
-        Charset charset = encoding == null ? Charset.defaultCharset() : Charset.forName( encoding );
-        XMLStreamReader xmlReader = null;
-        while ( rs.next() ) {
-            BufferedInputStream bais = new BufferedInputStream( rs.getBinaryStream( col ) );
-
-            try {
-                isr = new InputStreamReader( bais, charset );
-                xmlReader = XMLInputFactory.newInstance().createXMLStreamReader( isr );
-            } catch ( Exception e ) {
-                String msg = Messages.getMessage( "ERROR_WRITING_RESULT", e.getMessage() );
-                LOG.debug( msg );
-                throw new MetadataStoreException( msg );
-            } catch ( FactoryConfigurationError e ) {
-                throw new MetadataStoreException( e.getMessage() );
-            }
-        }
-        return xmlReader;
+        return new ISOMetadataResultSet( rs, conn, null, config.getAnyText() );
     }
 
     @Override

@@ -95,7 +95,7 @@ public interface MetadataStore {
      *            list of the requested identifiers
      * @throws MetadataStoreException
      */
-    public MetadataResultSet getRecordsById( List<String> idList )
+    public MetadataResultSet getRecordById( List<String> idList )
                             throws MetadataStoreException;
 
     /**

@@ -50,13 +50,11 @@ import org.deegree.filter.sql.postgis.PostGISWhereBuilder;
  */
 public interface GenericDatabaseExecution {
 
-    String getEncoding();
-
-    int executeDeleteStatement( Connection connection, PostGISWhereBuilder builder )
+    public int executeDeleteStatement( Connection connection, PostGISWhereBuilder builder )
                             throws MetadataStoreException;
 
-    PreparedStatement executeGetRecords( MetadataQuery recordStoreOptions, boolean setCount,
-                                         PostGISWhereBuilder builder, Connection conn )
+    public PreparedStatement executeGetRecords( MetadataQuery recordStoreOptions, boolean setCount,
+                                                PostGISWhereBuilder builder, Connection conn )
                             throws MetadataStoreException;
 
 }

@@ -55,9 +55,6 @@ public class MetadataQuery {
     // ?
     private final ResultType resultType;
 
-    // ?
-    private final int maxRecords;
-
     private final int startPosition;
 
     private final Filter filter;
@@ -71,18 +68,14 @@ public class MetadataQuery {
      *            the parsed filter expression
      * @param resultType
      *            {@link ResultType}
-     * @param maxRecords
-     *            the maximum number of records that shall be presented in the response
      * @param startPosition
      *            at which record position should start the response}
      */
-    public MetadataQuery( Filter filter, SortProperty[] sorting, ResultType resultType, int maxRecords,
-                          int startPosition ) {
+    public MetadataQuery( Filter filter, SortProperty[] sorting, ResultType resultType, int startPosition ) {
 
         this.filter = filter;
         this.sorting = sorting;
         this.resultType = resultType;
-        this.maxRecords = maxRecords;
         this.startPosition = startPosition;
 
     }
@@ -99,13 +92,6 @@ public class MetadataQuery {
      */
     public ResultType getResultType() {
         return resultType;
-    }
-
-    /**
-     * @return the maxRecords
-     */
-    public int getMaxRecords() {
-        return maxRecords;
     }
 
     /**

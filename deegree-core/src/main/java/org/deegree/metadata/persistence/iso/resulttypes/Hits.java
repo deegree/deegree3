@@ -50,10 +50,6 @@ public class Hits implements MetadataResultType {
 
     private final int numberOfRecordsMatched;
 
-    private final int numberOfRecordsReturned;
-
-    private final int nextRecord;
-
     private final String expires;
 
     /**
@@ -65,11 +61,9 @@ public class Hits implements MetadataResultType {
      * @param nextRecord
      * @param expires
      */
-    public Hits( int numberOfRecordsMatched, int numberOfRecordsReturned, int nextRecord, String expires ) {
+    public Hits( int numberOfRecordsMatched, String expires ) {
 
         this.numberOfRecordsMatched = numberOfRecordsMatched;
-        this.numberOfRecordsReturned = numberOfRecordsReturned;
-        this.nextRecord = nextRecord;
         this.expires = expires;
     }
 
@@ -80,20 +74,9 @@ public class Hits implements MetadataResultType {
     }
 
     @Override
-    public int getNextRecord() {
-
-        return this.nextRecord;
-    }
-
-    @Override
     public int getNumberOfRecordsMatched() {
 
         return this.numberOfRecordsMatched;
-    }
-
-    @Override
-    public int getNumberOfRecordsReturned() {
-        return this.numberOfRecordsReturned;
     }
 
 }

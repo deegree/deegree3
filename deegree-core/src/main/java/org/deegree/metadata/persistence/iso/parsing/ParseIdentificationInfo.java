@@ -124,7 +124,6 @@ public class ParseIdentificationInfo extends XMLAdapter {
              * Citation
              * 
              *---------------------------------------------------------------*/
-            LOG.debug( "Citation element..." );
             OMElement citation = getElement( sv_service_OR_md_dataIdentification, new XPath( "./gmd:citation",
                                                                                              nsContextParseII ) );
 
@@ -184,7 +183,6 @@ public class ParseIdentificationInfo extends XMLAdapter {
              * RS_/MD_Identifier check
              * 
              *---------------------------------------------------------------*/
-            LOG.debug( "Checking resourceIdentifier..." );
             List<String> resourceIdentifierList = new ArrayList<String>();
             for ( OMElement resourceElement : identifier ) {
                 // maybe additional this?? : | ./gmd:RS_Identifier/gmd:code/gco:CharacterString
@@ -193,7 +191,6 @@ public class ParseIdentificationInfo extends XMLAdapter {
                                                              new XPath(
                                                                         "./gmd:MD_Identifier/gmd:code/gco:CharacterString | ./gmd:RS_Identifier/gmd:code/gco:CharacterString",
                                                                         nsContextParseII ), null );
-                LOG.debug( "resourceIdentifier: '" + resourceIdentifier + "' " );
 
                 resourceIdentifierList.add( resourceIdentifier );
 
@@ -219,7 +216,6 @@ public class ParseIdentificationInfo extends XMLAdapter {
              * Purpose
              * 
              *---------------------------------------------------------------*/
-            LOG.debug( "Purpose element..." );
             OMElement purpose = getElement( sv_service_OR_md_dataIdentification, new XPath( "./gmd:purpose",
                                                                                             nsContextParseII ) );
 
@@ -228,7 +224,6 @@ public class ParseIdentificationInfo extends XMLAdapter {
              * Credit
              * 
              *---------------------------------------------------------------*/
-            LOG.debug( "Credit element..." );
             List<OMElement> credit = getElements( sv_service_OR_md_dataIdentification, new XPath( "./gmd:credit",
                                                                                                   nsContextParseII ) );
 
@@ -236,8 +231,7 @@ public class ParseIdentificationInfo extends XMLAdapter {
              * 
              * Status
              * 
-             *---------------------------------------------------------------*/
-            LOG.debug( "Status element..." );
+             *---------------------------------------------------------------*/;
             List<OMElement> status = getElements( sv_service_OR_md_dataIdentification, new XPath( "./gmd:status",
                                                                                                   nsContextParseII ) );
 
@@ -246,7 +240,6 @@ public class ParseIdentificationInfo extends XMLAdapter {
              * PointOfContact
              * 
              *---------------------------------------------------------------*/
-            LOG.debug( "PointOfContact element..." );
             List<OMElement> pointOfContact = getElements( sv_service_OR_md_dataIdentification,
                                                           new XPath( "./gmd:pointOfContact", nsContextParseII ) );
 
@@ -255,7 +248,6 @@ public class ParseIdentificationInfo extends XMLAdapter {
              * ResourceMaintenance
              * 
              *---------------------------------------------------------------*/
-            LOG.debug( "ResourceMaintenance element..." );
             List<OMElement> resourceMaintenance = getElements(
                                                                sv_service_OR_md_dataIdentification,
                                                                new XPath( "./gmd:resourceMaintenance", nsContextParseII ) );
@@ -267,7 +259,6 @@ public class ParseIdentificationInfo extends XMLAdapter {
              * ResourceFormat
              * 
              *---------------------------------------------------------------*/
-            LOG.debug( "ResourceFormat element..." );
             List<OMElement> resourceFormat = getElements( sv_service_OR_md_dataIdentification,
                                                           new XPath( "./gmd:resourceFormat", nsContextParseII ) );
 
@@ -276,7 +267,6 @@ public class ParseIdentificationInfo extends XMLAdapter {
              * DescriptiveKeywords
              * 
              *---------------------------------------------------------------*/
-            LOG.debug( "DescripticeKeywords element..." );
             List<OMElement> descriptiveKeywords = getElements(
                                                                sv_service_OR_md_dataIdentification,
                                                                new XPath( "./gmd:descriptiveKeywords", nsContextParseII ) );
@@ -286,7 +276,6 @@ public class ParseIdentificationInfo extends XMLAdapter {
              * ResourceSpecificUsage
              * 
              *---------------------------------------------------------------*/
-            LOG.debug( "ResourceSpecificUsage element..." );
             List<OMElement> resourceSpecificUsage = getElements( sv_service_OR_md_dataIdentification,
                                                                  new XPath( "./gmd:resourceSpecificUsage",
                                                                             nsContextParseII ) );
@@ -296,8 +285,7 @@ public class ParseIdentificationInfo extends XMLAdapter {
              * 
              * AggregationInfo
              * 
-             *---------------------------------------------------------------*/
-            LOG.debug( "AggregationInfo element..." );
+             *---------------------------------------------------------------*/;
             List<OMElement> aggregationInfo = getElements( sv_service_OR_md_dataIdentification,
                                                            new XPath( "./gmd:aggregationInfo", nsContextParseII ) );
 
@@ -317,7 +305,6 @@ public class ParseIdentificationInfo extends XMLAdapter {
                  * SpatialRepresentationType
                  * 
                  *---------------------------------------------------------------*/
-                LOG.debug( "MD_DataIdentification/SpatialRepresentation element..." );
                 spatialRepresentationType = getElements(
                                                          md_dataIdentification,
                                                          new XPath( "./gmd:spatialRepresentationType", nsContextParseII ) );
@@ -326,7 +313,6 @@ public class ParseIdentificationInfo extends XMLAdapter {
                  * SpatialResolution
                  * 
                  *---------------------------------------------------------------*/
-                LOG.debug( "MD_DataIdentification/SpatialResolution element..." );
 
                 spatialResolution = getElements( md_dataIdentification, new XPath( "./gmd:spatialResolution",
                                                                                    nsContextParseII ) );
@@ -336,7 +322,6 @@ public class ParseIdentificationInfo extends XMLAdapter {
                  * Language
                  * 
                  *---------------------------------------------------------------*/
-                LOG.debug( "MD_DataIdentification/Language element..." );
 
                 language_md_dataIdent = getElements( md_dataIdentification, new XPath( "./gmd:language",
                                                                                        nsContextParseII ) );
@@ -346,7 +331,6 @@ public class ParseIdentificationInfo extends XMLAdapter {
                  * CharacterSet
                  * 
                  *---------------------------------------------------------------*/
-                LOG.debug( "MD_DataIdentification/CharacterSet element..." );
 
                 characterSet_md_dataIdent = getElements( md_dataIdentification, new XPath( "./gmd:characterSet",
                                                                                            nsContextParseII ) );
@@ -356,7 +340,6 @@ public class ParseIdentificationInfo extends XMLAdapter {
                  * TopicCategory
                  * 
                  *---------------------------------------------------------------*/
-                LOG.debug( "MD_DataIdentification/TopicCategory element..." );
 
                 // topicCategory = getElements( md_dataIdentification, new XPath( "./gmd:topicCategory",
                 // nsContextParseII ) );
@@ -374,8 +357,7 @@ public class ParseIdentificationInfo extends XMLAdapter {
                  * MD_DataIdentification
                  * EnvironmentDescription
                  * 
-                 *---------------------------------------------------------------*/
-                LOG.debug( "MD_DataIdentification/EnvironmentDescription element..." );
+                 *---------------------------------------------------------------*/;
 
                 environmentDescription = getElement( md_dataIdentification, new XPath( "./gmd:environmentDescription",
                                                                                        nsContextParseII ) );
@@ -385,7 +367,6 @@ public class ParseIdentificationInfo extends XMLAdapter {
                  * Extent
                  * 
                  *---------------------------------------------------------------*/
-                LOG.debug( "MD_DataIdentification/Extent element..." );
 
                 extent_md_dataIdent = getElements( md_dataIdentification, new XPath( "./gmd:extent", nsContextParseII ) );
 
@@ -394,7 +375,6 @@ public class ParseIdentificationInfo extends XMLAdapter {
                  * SupplementalInformation
                  * 
                  *---------------------------------------------------------------*/
-                LOG.debug( "MD_DataIdentification/SupplementalInformation element..." );
 
                 supplementalInformation = getElement( md_dataIdentification,
                                                       new XPath( "./gmd:supplementalInformation", nsContextParseII ) );
@@ -499,7 +479,6 @@ public class ParseIdentificationInfo extends XMLAdapter {
                  * ServiceType
                  * 
                  *---------------------------------------------------------------*/
-                LOG.debug( "SV_ServiceIdentification/ServiceType element..." );
 
                 String serviceType = getNodeAsString( sv_serviceIdentification,
                                                       new XPath( "./srv:serviceType/gco:LocalName", nsContextParseII ),
@@ -514,7 +493,6 @@ public class ParseIdentificationInfo extends XMLAdapter {
                  * ServiceTypeVersion
                  * 
                  *---------------------------------------------------------------*/
-                LOG.debug( "SV_ServiceIdentification/ServiceTypeVersion element..." );
                 String[] serviceTypeVersion = getNodesAsStrings(
                                                                  sv_serviceIdentification,
                                                                  new XPath(
@@ -530,7 +508,6 @@ public class ParseIdentificationInfo extends XMLAdapter {
                  * AccessProperties
                  * 
                  *---------------------------------------------------------------*/
-                LOG.debug( "SV_ServiceIdentification/AccessProperties element..." );
                 accessProperties = getElement( sv_serviceIdentification, new XPath( "./srv:accessProperties",
                                                                                     nsContextParseII ) );
 
@@ -539,7 +516,6 @@ public class ParseIdentificationInfo extends XMLAdapter {
                  * Restrictions
                  * 
                  *---------------------------------------------------------------*/
-                LOG.debug( "SV_ServiceIdentification/Restrictions element..." );
                 restrictions = getElement( sv_serviceIdentification, new XPath( "./srv:restrictions", nsContextParseII ) );
 
                 /*---------------------------------------------------------------
@@ -547,7 +523,6 @@ public class ParseIdentificationInfo extends XMLAdapter {
                  * Keywords
                  * 
                  *---------------------------------------------------------------*/
-                LOG.debug( "SV_ServiceIdentification/Keywords element..." );
                 keywords_service = getElements( sv_serviceIdentification,
                                                 new XPath( "./srv:keywords", nsContextParseII ) );
 
@@ -556,7 +531,6 @@ public class ParseIdentificationInfo extends XMLAdapter {
                  * Extent
                  * 
                  *---------------------------------------------------------------*/
-                LOG.debug( "SV_ServiceIdentification/Extent element..." );
                 extent_service = getElements( sv_serviceIdentification, new XPath( "./srv:extent", nsContextParseII ) );
 
                 /*---------------------------------------------------------------
@@ -564,7 +538,6 @@ public class ParseIdentificationInfo extends XMLAdapter {
                  * CoupledResource
                  * 
                  *---------------------------------------------------------------*/
-                LOG.debug( "SV_ServiceIdentification/CoupledResource element..." );
                 coupledResource = getElements( sv_serviceIdentification, new XPath( "./srv:coupledResource",
                                                                                     nsContextParseII ) );
 
@@ -573,7 +546,6 @@ public class ParseIdentificationInfo extends XMLAdapter {
                  * CouplingType
                  * 
                  *---------------------------------------------------------------*/
-                LOG.debug( "SV_ServiceIdentification/CouplingType element..." );
                 couplingType = getElement( sv_serviceIdentification, new XPath( "./srv:couplingType", nsContextParseII ) );
 
                 /*---------------------------------------------------------------
@@ -581,7 +553,6 @@ public class ParseIdentificationInfo extends XMLAdapter {
                  * ContainsOperations
                  * 
                  *---------------------------------------------------------------*/
-                LOG.debug( "SV_ServiceIdentification/ContainsOperations element..." );
                 containsOperations = getElements( sv_serviceIdentification, new XPath( "./srv:containsOperations",
                                                                                        nsContextParseII ) );
                 String[] operation = getNodesAsStrings(
@@ -611,7 +582,6 @@ public class ParseIdentificationInfo extends XMLAdapter {
                  * OperatesOn
                  * 
                  *---------------------------------------------------------------*/
-                LOG.debug( "SV_ServiceIdentification/OperatesOn element..." );
                 operatesOn = getElements( sv_serviceIdentification, new XPath( "./srv:operatesOn", nsContextParseII ) );
             }
             /*---------------------------------------------------------------
@@ -619,7 +589,6 @@ public class ParseIdentificationInfo extends XMLAdapter {
              * Setting the EXTENT for one of the metadatatypes (service or data)
              * 
              *---------------------------------------------------------------*/
-            LOG.debug( "setting element Extent either from MD_DataIdentification or SV_ServiceIdentification..." );
             List<OMElement> extent = (List<OMElement>) ( extent_md_dataIdent.size() != 0 ? extent_md_dataIdent
                                                                                         : extent_service );
 
@@ -745,8 +714,6 @@ public class ParseIdentificationInfo extends XMLAdapter {
              * Setting all the KEYWORDS found in the metadata 
              * 
              *---------------------------------------------------------------*/
-            LOG.debug( "keywords..." );
-
             List<OMElement> commonKeywords = new ArrayList<OMElement>();
 
             commonKeywords.addAll( descriptiveKeywords );
@@ -795,8 +762,6 @@ public class ParseIdentificationInfo extends XMLAdapter {
              * Setting the COUPLINGTYPE
              * 
              *---------------------------------------------------------------*/
-            LOG.debug( "CouplingType..." );
-
             List<String> operatesOnList = new ArrayList<String>();
             List<OperatesOnData> operatesOnDataList = new ArrayList<OperatesOnData>();
             for ( OMElement operatesOnElem : operatesOn ) {
@@ -939,8 +904,6 @@ public class ParseIdentificationInfo extends XMLAdapter {
      * @param rp
      */
     private void parseResourceConstraints( QueryableProperties qp, ReturnableProperties rp, OMElement parent ) {
-
-        LOG.debug( "ResourceConstraints element..." );
         List<OMElement> resourceConstraints = getElements( parent, new XPath( "./gmd:resourceConstraints",
                                                                               nsContextParseII ) );
 
@@ -980,7 +943,6 @@ public class ParseIdentificationInfo extends XMLAdapter {
                                                                            "./gmd:resourceConstraints/gmd:MD_SecurityConstraints/gmd:classification/gmd:MD_ClassificationCode/@codeListValue",
                                                                            nsContextParseII ) ) ) );
 
-        LOG.debug( "hasSecurityConstraints..." );
         OMElement hasSecurityConstraintsElement = null;
         List<String> rightsElements = new ArrayList<String>();
         for ( OMElement resourceConstraintsElem : resourceConstraints ) {
@@ -997,7 +959,6 @@ public class ParseIdentificationInfo extends XMLAdapter {
 
         }
         if ( rightsElements != null ) {
-            LOG.debug( "hasRights..." );
             rp.setRights( rightsElements );
         }
 
@@ -1015,7 +976,6 @@ public class ParseIdentificationInfo extends XMLAdapter {
      */
     private void parseGraphicOverview( ReturnableProperties rp, OMElement parent ) {
 
-        LOG.debug( "GraphicOverview element..." );
         List<OMElement> graphicOverview = getElements( parent, new XPath( "./gmd:graphicOverview", nsContextParseII ) );
 
         String graphicOverviewString = getNodeAsString(
@@ -1033,7 +993,6 @@ public class ParseIdentificationInfo extends XMLAdapter {
          * Abstract
          * 
          *---------------------------------------------------------------*/
-        LOG.debug( "Abstract element..." );
         OMElement _abstract = getElement( parent, new XPath( "./gmd:abstract", nsContextParseII ) );
 
         String[] _abstractOtherLang = getNodesAsStrings(

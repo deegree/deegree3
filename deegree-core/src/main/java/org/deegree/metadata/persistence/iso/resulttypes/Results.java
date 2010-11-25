@@ -65,9 +65,8 @@ public class Results extends Hits {
      * @param nextRecord
      * @param expires
      */
-    public Results( int numberOfRecordsMatched, int numberOfRecordsReturned, int nextRecord, String expires,
-                    XMLStreamReader stream ) {
-        super( numberOfRecordsMatched, numberOfRecordsReturned, nextRecord, expires );
+    public Results( int numberOfRecordsMatched, String expires, XMLStreamReader stream ) {
+        super( numberOfRecordsMatched, expires );
         this.stream = stream;
     }
 

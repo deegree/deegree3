@@ -53,26 +53,31 @@ public interface MetadataResultSet {
     /**
      * Must be invoked after using to close underlying resources, e.g. SQL {@link ResultSet}s.
      */
-    void close();
+    public void close()
+                            throws MetadataStoreException;
 
     /**
+     * Moves the cursor down one row from its current position. A ResultSet cursor is initially positioned before the
+     * first row; the first call to the method next makes the first row the current row; the second call makes the
+     * second row the current row, and so on.
      * 
-     * @return the encoding of the metadata.
+     * @return
      */
-    String encoding();
+    public boolean next()
+                            throws MetadataStoreException;
 
     /**
-     * A collection of {@link MetadataRecord}s.
+     * Returns the {@link MetadataRecord} at the current cursor position.
      * 
-     * @return a {@link MetadataCollection}
+     * @return
      */
-    MetadataCollection getMembers();
+    public MetadataRecord getRecord()
+                            throws MetadataStoreException;
 
     /**
      * A {@link MetadataResultType}.
      * 
      * @return a {@link MetadataResultType}.
      */
-    MetadataResultType getResultType();
-
+    public MetadataResultType getResultType();
 }

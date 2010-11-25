@@ -63,6 +63,7 @@ public class ISOMetadataStoreTransaction implements MetadataStoreTransaction {
         LOG.debug( Messages.getMessage( "INFO_TA_COMMIT" ) );
         try {
             conn.commit();
+            conn.close();
         } catch ( SQLException e ) {
             String msg = Messages.getMessage( "ERROR_TA_COMMIT", e.getMessage() );
             LOG.debug( msg );
@@ -110,7 +111,7 @@ public class ISOMetadataStoreTransaction implements MetadataStoreTransaction {
                     } else {
                         String msg = Messages.getMessage( "ERROR_DUPLICATE_INSERT", id );
                         LOG.info( msg );
-                        throw new MetadataStoreException( msg );
+                        // throw new MetadataStoreException( msg );
                     }
                 }
 

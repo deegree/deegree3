@@ -35,9 +35,23 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.metadata.persistence.iso;
 
+import java.io.BufferedInputStream;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
+import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.XMLStreamReader;
+
+import org.deegree.commons.utils.JDBCUtils;
+import org.deegree.metadata.ISORecord;
+import org.deegree.metadata.MetadataRecord;
 import org.deegree.metadata.MetadataResultType;
-import org.deegree.metadata.persistence.MetadataCollection;
 import org.deegree.metadata.persistence.MetadataResultSet;
+import org.deegree.metadata.persistence.MetadataStoreException;
+import org.deegree.metadata.persistence.iso19115.jaxb.ISOMetadataStoreConfig.AnyText;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Implementation of {@link MetadataResultSet} for the ISO Application Profile.
@@ -49,39 +63,57 @@ import org.deegree.metadata.persistence.MetadataResultSet;
  */
 public class ISOMetadataResultSet implements MetadataResultSet {
 
-    private MetadataResultSet rs;
+    private static Logger LOG = LoggerFactory.getLogger( ISOMetadataResultSet.class );
 
-    private MetadataCollection collection;
+    private final ResultSet rs;
 
-    private MetadataResultType type;
+    private final MetadataResultType type;
 
-    public ISOMetadataResultSet( MetadataCollection collection, MetadataResultType type ) {
-        this.collection = collection;
+    private final AnyText anyText;
+
+    private final Connection conn;
+
+    public ISOMetadataResultSet( ResultSet rs, Connection conn, MetadataResultType type, AnyText anyText ) {
+        this.rs = rs;
+        this.conn = conn;
         this.type = type;
+        this.anyText = anyText;
     }
 
     @Override
-    public void close() {
-        rs.close();
-
-    }
-
-    @Override
-    public String encoding() {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    public MetadataCollection getMembers() {
-
-        return this.collection;
+    public void close()
+                            throws MetadataStoreException {
+        JDBCUtils.close( rs, null, conn, LOG );
     }
 
     @Override
     public MetadataResultType getResultType() {
-
         return this.type;
+    }
+
+    @Override
+    public MetadataRecord getRecord()
+                            throws MetadataStoreException {
+
+        MetadataRecord record = null;
+        try {
+            BufferedInputStream bais = new BufferedInputStream( rs.getBinaryStream( 1 ) );
+            XMLStreamReader xmlReader = XMLInputFactory.newInstance().createXMLStreamReader( bais );
+            record = new ISORecord( xmlReader, anyText );
+        } catch ( Exception e ) {
+            throw new MetadataStoreException( "Error re-creating MetadataRecord from result set: " + e.getMessage() );
+        }
+        return record;
+    }
+
+    @Override
+    public boolean next()
+                            throws MetadataStoreException {
+        try {
+            return rs.next();
+        } catch ( SQLException e ) {
+            throw new MetadataStoreException( e.getMessage(), e );
+        }
     }
 
 }
