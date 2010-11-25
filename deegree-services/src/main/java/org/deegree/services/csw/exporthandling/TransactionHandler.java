@@ -50,7 +50,6 @@ import javax.xml.stream.XMLStreamWriter;
 import org.deegree.commons.tom.ows.Version;
 import org.deegree.commons.xml.stax.SchemaLocationXMLStreamWriter;
 import org.deegree.metadata.DCRecord;
-import org.deegree.metadata.MetadataRecord;
 import org.deegree.metadata.persistence.MetadataInspectorException;
 import org.deegree.metadata.persistence.MetadataResultSet;
 import org.deegree.metadata.persistence.MetadataStore;
@@ -247,10 +246,16 @@ public class TransactionHandler {
                 if ( handle != null ) {
                     writer.writeAttribute( "handleRef", handle );
                 }
-                MetadataResultSet rs = service.getStore().getRecordsById( ids );
-                for ( MetadataRecord m : rs.getMembers() ) {
-                    DCRecord dc = m.toDublinCore();
-                    dc.serialize( writer, ReturnableElement.brief );
+                MetadataResultSet rs = service.getStore().getRecordById( ids );
+                try {
+                    while ( rs.next() ) {
+                        DCRecord dc = rs.getRecord().toDublinCore();
+                        dc.serialize( writer, ReturnableElement.brief );
+                    }
+                } finally {
+                    if ( rs != null ) {
+                        rs.close();
+                    }
                 }
                 writer.writeEndElement();// InsertResult
             }

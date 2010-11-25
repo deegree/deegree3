@@ -67,7 +67,6 @@ import org.deegree.commons.xml.stax.TrimmingXMLStreamWriter;
 import org.deegree.metadata.DCRecord;
 import org.deegree.metadata.MetadataRecord;
 import org.deegree.metadata.MetadataResultType;
-import org.deegree.metadata.persistence.MetadataCollection;
 import org.deegree.metadata.persistence.MetadataQuery;
 import org.deegree.metadata.persistence.MetadataResultSet;
 import org.deegree.metadata.persistence.MetadataStore;
@@ -260,59 +259,81 @@ public class GetRecordsHandler {
         String elementSetValue = getRec.getElementSetName() != null ? getRec.getElementSetName().name() : "custom";
 
         MetadataResultType type = null;
+        int returnedRecords = 0;
+        int counter = 0;
 
         MetadataResultSet storeSet = null;
-        MetadataCollection col = null;
 
-        if ( VERSION_202.equals( version ) ) {
+        try {
+            if ( VERSION_202.equals( version ) ) {
 
-            writer.writeStartElement( CSW_202_NS, "SearchResults" );
+                writer.writeStartElement( CSW_202_NS, "SearchResults" );
 
-            MetadataStore rec = service.getStore();
-            MetadataQuery query = new MetadataQuery( getRec.getConstraint(), getRec.getSortBy(),
-                                                     getRec.getResultType(), getRec.getMaxRecords(),
-                                                     getRec.getStartPosition() );
+                int countRows = 0;
+                int nextRecord = 0;
 
-            try {
-                storeSet = rec.getRecords( query );
-            } catch ( MetadataStoreException e ) {
-                throw new OWSException( e.getMessage(), OWSException.INVALID_PARAMETER_VALUE );
+                MetadataStore rec = service.getStore();
+                MetadataQuery query = new MetadataQuery( getRec.getConstraint(), getRec.getSortBy(),
+                                                         getRec.getResultType(), getRec.getStartPosition() );
+
+                try {
+                    storeSet = rec.getRecords( query );
+                } catch ( MetadataStoreException e ) {
+                    throw new OWSException( e.getMessage(), OWSException.INVALID_PARAMETER_VALUE );
+                }
+
+                type = storeSet.getResultType();
+                countRows = type.getNumberOfRecordsMatched();
+                if ( countRows > getRec.getMaxRecords() ) {
+                    nextRecord = getRec.getMaxRecords() + 1;
+                    returnedRecords = getRec.getMaxRecords();
+                } else {
+                    nextRecord = 0;
+                    returnedRecords = countRows - getRec.getStartPosition() + 1;
+                }
+
+                writer.writeAttribute( "elementSet", elementSetValue );
+
+                writer.writeAttribute( "recordSchema", getRec.getOutputSchema().toString() );
+
+                writer.writeAttribute( "numberOfRecordsMatched", Integer.toString( type.getNumberOfRecordsMatched() ) );
+
+                writer.writeAttribute( "numberOfRecordsReturned", Integer.toString( returnedRecords ) );
+
+                writer.writeAttribute( "nextRecord", Integer.toString( nextRecord ) );
+
+                writer.writeAttribute( "expires", DateUtils.formatISO8601Date( new Date() ) );
+
+            } else {
+                throw new IllegalArgumentException( "Version '" + version + "' is not supported." );
             }
 
-            type = storeSet.getResultType();
-            col = storeSet.getMembers();
-
-            writer.writeAttribute( "elementSet", elementSetValue );
-
-            writer.writeAttribute( "recordSchema", getRec.getOutputSchema().toString() );
-
-            writer.writeAttribute( "numberOfRecordsMatched", Integer.toString( type.getNumberOfRecordsMatched() ) );
-
-            writer.writeAttribute( "numberOfRecordsReturned", Integer.toString( type.getNumberOfRecordsReturned() ) );
-
-            writer.writeAttribute( "nextRecord", Integer.toString( type.getNextRecord() ) );
-
-            writer.writeAttribute( "expires", DateUtils.formatISO8601Date( new Date() ) );
-
-        } else {
-            throw new IllegalArgumentException( "Version '" + version + "' is not supported." );
-        }
-
-        for ( MetadataRecord m : col ) {
-            if ( isElementName == false ) {
-                if ( getRec.getOutputSchema().equals( OutputSchema.determineOutputSchema( OutputSchema.ISO_19115 ) ) ) {
-                    m.serialize( writer, getRec.getElementSetName() );
-                } else {
-                    DCRecord dc = m.toDublinCore();
-                    dc.serialize( writer, getRec.getElementSetName() );
+            while ( storeSet.next() ) {
+                if ( counter < returnedRecords ) {
+                    MetadataRecord m = storeSet.getRecord();
+                    if ( isElementName == false ) {
+                        if ( getRec.getOutputSchema().equals(
+                                                              OutputSchema.determineOutputSchema( OutputSchema.ISO_19115 ) ) ) {
+                            m.serialize( writer, getRec.getElementSetName() );
+                        } else {
+                            DCRecord dc = m.toDublinCore();
+                            dc.serialize( writer, getRec.getElementSetName() );
+                        }
+                    } else {
+                        if ( getRec.getOutputSchema().equals(
+                                                              OutputSchema.determineOutputSchema( OutputSchema.ISO_19115 ) ) ) {
+                            m.serialize( writer, getRec.getElementName() );
+                        } else {
+                            DCRecord dc = m.toDublinCore();
+                            dc.serialize( writer, getRec.getElementName() );
+                        }
+                    }
                 }
-            } else {
-                if ( getRec.getOutputSchema().equals( OutputSchema.determineOutputSchema( OutputSchema.ISO_19115 ) ) ) {
-                    m.serialize( writer, getRec.getElementName() );
-                } else {
-                    DCRecord dc = m.toDublinCore();
-                    dc.serialize( writer, getRec.getElementName() );
-                }
+                counter++;
+            }
+        } finally {
+            if ( storeSet != null ) {
+                storeSet.close();
             }
         }
 

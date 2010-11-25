@@ -51,7 +51,6 @@ import org.deegree.commons.utils.kvp.InvalidParameterValueException;
 import org.deegree.commons.xml.stax.SchemaLocationXMLStreamWriter;
 import org.deegree.commons.xml.stax.TrimmingXMLStreamWriter;
 import org.deegree.metadata.DCRecord;
-import org.deegree.metadata.MetadataRecord;
 import org.deegree.metadata.persistence.MetadataResultSet;
 import org.deegree.metadata.persistence.MetadataStore;
 import org.deegree.metadata.persistence.MetadataStoreException;
@@ -170,26 +169,30 @@ public class GetRecordByIdHandler {
         writer.writeStartElement( CSW_202_NS, "GetRecordByIdResponse" );
 
         MetadataResultSet resultSet = null;
-
-        if ( service.getMetadataStore() != null ) {
-            try {
-                for ( MetadataStore rec : service.getMetadataStore() ) {
-                    resultSet = rec.getRecordsById( getRecBI.getRequestedIds() );
+        try {
+            if ( service.getMetadataStore() != null ) {
+                try {
+                    for ( MetadataStore rec : service.getMetadataStore() ) {
+                        resultSet = rec.getRecordById( getRecBI.getRequestedIds() );
+                    }
+                } catch ( MetadataStoreException e ) {
+                    throw new OWSException( e.getMessage(), OWSException.INVALID_PARAMETER_VALUE, "outputFormat" );
                 }
-            } catch ( MetadataStoreException e ) {
-                throw new OWSException( e.getMessage(), OWSException.INVALID_PARAMETER_VALUE, "outputFormat" );
+            }
+
+            while ( resultSet.next() ) {
+                if ( getRecBI.getOutputSchema().equals( OutputSchema.determineOutputSchema( OutputSchema.ISO_19115 ) ) ) {
+                    resultSet.getRecord().serialize( writer, getRecBI.getElementSetName() );
+                } else {
+                    DCRecord dc = resultSet.getRecord().toDublinCore();
+                    dc.serialize( writer, getRecBI.getElementSetName() );
+                }
+            }
+        } finally {
+            if ( resultSet != null ) {
+                resultSet.close();
             }
         }
-
-        for ( MetadataRecord m : resultSet.getMembers() ) {
-            if ( getRecBI.getOutputSchema().equals( OutputSchema.determineOutputSchema( OutputSchema.ISO_19115 ) ) ) {
-                m.serialize( writer, getRecBI.getElementSetName() );
-            } else {
-                DCRecord dc = m.toDublinCore();
-                dc.serialize( writer, getRecBI.getElementSetName() );
-            }
-        }
-
         writer.writeEndDocument();
 
     }
