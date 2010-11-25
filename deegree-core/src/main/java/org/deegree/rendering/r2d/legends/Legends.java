@@ -96,9 +96,22 @@ public class Legends {
      * @param textSize
      */
     public Legends( int baseSizeX, int baseSizeY, int textSize ) {
-        this.baseSizeX = baseSizeX;
-        this.baseSizeY = baseSizeY;
-        this.textSize = textSize;
+        if ( baseSizeX > 0 ) {
+            this.baseSizeX = baseSizeX;
+        }
+        if ( baseSizeY > 0 ) {
+            this.baseSizeY = baseSizeY;
+        }
+        if ( textSize > 0 ) {
+            this.textSize = textSize;
+        }
+    }
+
+    /**
+     * @return true, if base/text sizes are default
+     */
+    public boolean isDefault() {
+        return baseSizeX == 20 && baseSizeY == 15 && textSize == 12;
     }
 
     /**
