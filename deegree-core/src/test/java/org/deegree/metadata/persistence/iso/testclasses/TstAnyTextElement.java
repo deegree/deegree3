@@ -44,7 +44,6 @@ import javax.xml.stream.XMLStreamException;
 import org.deegree.metadata.persistence.MetadataInspectorException;
 import org.deegree.metadata.persistence.MetadataQuery;
 import org.deegree.metadata.persistence.MetadataStoreException;
-import org.deegree.metadata.persistence.MetadataStoreTransaction;
 import org.deegree.metadata.persistence.iso.ISOMetadataStore;
 import org.deegree.metadata.persistence.iso.ISOMetadataStoreProvider;
 import org.deegree.metadata.persistence.iso.helper.AbstractISOTest;
@@ -80,8 +79,7 @@ public class TstAnyTextElement extends AbstractISOTest {
             LOG.warn( "Skipping test (needs configuration)." );
             return;
         }
-        MetadataStoreTransaction ta = store.acquireTransaction();
-        List<String> ids = TstUtils.insertMetadata( store, ta, TstConstants.tst_10 );
+        List<String> ids = TstUtils.insertMetadata( store, TstConstants.tst_10 );
         if ( ids != null ) {
             // test query
             MetadataQuery query = new MetadataQuery( null, null, ResultType.results, 1 );
@@ -113,8 +111,7 @@ public class TstAnyTextElement extends AbstractISOTest {
             LOG.warn( "Skipping test (needs configuration)." );
             return;
         }
-        MetadataStoreTransaction ta = store.acquireTransaction();
-        List<String> ids = TstUtils.insertMetadata( store, ta, TstConstants.tst_10 );
+        List<String> ids = TstUtils.insertMetadata( store, TstConstants.tst_10 );
         if ( ids != null ) {
             // test query
             MetadataQuery query = new MetadataQuery( null, null, ResultType.results, 1 );
@@ -146,8 +143,7 @@ public class TstAnyTextElement extends AbstractISOTest {
             LOG.warn( "Skipping test (needs configuration)." );
             return;
         }
-        MetadataStoreTransaction ta = store.acquireTransaction();
-        List<String> ids = TstUtils.insertMetadata( store, ta, TstConstants.tst_10 );
+        List<String> ids = TstUtils.insertMetadata( store, TstConstants.tst_10 );
         if ( ids != null ) {
             // test query
             MetadataQuery query = new MetadataQuery( null, null, ResultType.results, 1 );

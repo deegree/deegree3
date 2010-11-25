@@ -80,44 +80,46 @@ public class TstUtils {
 
     private static Logger LOG = LoggerFactory.getLogger( TstUtils.class );
 
-    public static List<String> insertMetadata( ISOMetadataStore store, MetadataStoreTransaction ta, URL... URLInput )
+    public static List<String> insertMetadata( ISOMetadataStore store, URL... URLInput )
                             throws MetadataStoreException, MetadataInspectorException {
 
-        List<OMElement> records = new ArrayList<OMElement>();
+        List<OMElement> records = null;
+        InsertTransaction insert = null;
+        MetadataStoreTransaction ta = null;
 
         List<String> ids = new ArrayList<String>();
-        for ( URL file : URLInput ) {
-
-            OMElement record = new XMLAdapter( file ).getRootElement();
-            LOG.info( "inserting filename: " + file.getFile() );
-            records.add( record );
-
-        }
-
         int countInserted = 0;
         int countInsert = 0;
         countInsert = URLInput.length;
-        try {
-            if ( countInsert > 0 ) {
-                InsertTransaction insert = new InsertTransaction( records, records.get( 0 ).getQName(), "insert" );
-                ids = ta.performInsert( insert );
 
-                ta.commit();
+        for ( URL file : URLInput ) {
+            records = new ArrayList<OMElement>();
+            ta = store.acquireTransaction();
+            OMElement record = new XMLAdapter( file ).getRootElement();
+            LOG.info( "inserting filename: " + file.getFile() );
+            records.add( record );
+            try {
+                if ( countInsert > 0 ) {
+                    insert = new InsertTransaction( records, records.get( 0 ).getQName(), "insert" );
+                    ids.addAll( ta.performInsert( insert ) );
+                    ta.commit();
+                }
+            } catch ( MetadataStoreException e ) {
+                String msg = "Error while commit the statement!";
+                if ( ta != null ) {
+                    ta.rollback();
+                    LOG.info( msg );
+                    // throw new MetadataInspectorException();
+                }
+            } catch ( MetadataInspectorException e ) {
+                String msg = "Error while insert/inspect metadataRecord!";
+                if ( ta != null ) {
+                    ta.rollback();
+                    LOG.info( msg );
+                    throw new MetadataInspectorException();
+                }
             }
-        } catch ( MetadataStoreException e ) {
-            String msg = "Error while commit the statement!";
-            if ( ta != null ) {
-                ta.rollback();
-                LOG.info( msg );
-                throw new MetadataInspectorException();
-            }
-        } catch ( MetadataInspectorException e ) {
-            String msg = "Error while insert/inspect metadataRecord!";
-            if ( ta != null ) {
-                ta.rollback();
-                LOG.info( msg );
-                throw new MetadataInspectorException();
-            }
+
         }
 
         if ( !ids.isEmpty() ) {

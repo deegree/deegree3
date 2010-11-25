@@ -113,8 +113,8 @@ public class CommonISOTest extends AbstractISOTest {
             }
 
         }
-        MetadataStoreTransaction ta = store.acquireTransaction();
-        List<String> ids = TstUtils.insertMetadata( store, ta, urlArray );
+
+        TstUtils.insertMetadata( store, urlArray );
 
         MetadataQuery query = new MetadataQuery( null, null, ResultType.results, 1 );
         resultSet = store.getRecords( query );
@@ -167,8 +167,7 @@ public class CommonISOTest extends AbstractISOTest {
             return;
         }
 
-        MetadataStoreTransaction ta = store.acquireTransaction();
-        List<String> ids = TstUtils.insertMetadata( store, ta, TstConstants.tst_12 );
+        List<String> ids = TstUtils.insertMetadata( store, TstConstants.tst_12 );
         resultSet = store.getRecordById( ids );
 
         // create the is output
@@ -219,9 +218,7 @@ public class CommonISOTest extends AbstractISOTest {
             return;
         }
 
-        MetadataStoreTransaction ta = store.acquireTransaction();
-        List<String> ids = TstUtils.insertMetadata( store, ta, TstConstants.tst_9, TstConstants.tst_10,
-                                                    TstConstants.tst_1 );
+        List<String> ids = TstUtils.insertMetadata( store, TstConstants.tst_9, TstConstants.tst_10, TstConstants.tst_1 );
 
         LOG.info( "Inserted records with ids: " + ids + ". Now: delete them..." );
         String fileString = TstConstants.propEqualToID.getFile();
@@ -275,8 +272,7 @@ public class CommonISOTest extends AbstractISOTest {
             LOG.warn( "Skipping test (needs configuration)." );
             return;
         }
-        MetadataStoreTransaction ta = store.acquireTransaction();
-        List<String> ids = TstUtils.insertMetadata( store, ta, TstConstants.fullRecord );
+        List<String> ids = TstUtils.insertMetadata( store, TstConstants.fullRecord );
         resultSet = store.getRecordById( ids );
 
         XMLStreamReader xmlStreamActual = XMLInputFactory.newInstance().createXMLStreamReader(
@@ -324,8 +320,7 @@ public class CommonISOTest extends AbstractISOTest {
             LOG.warn( "Skipping test (needs configuration)." );
             return;
         }
-        MetadataStoreTransaction ta = store.acquireTransaction();
-        List<String> ids = TstUtils.insertMetadata( store, ta, TstConstants.fullRecord );
+        List<String> ids = TstUtils.insertMetadata( store, TstConstants.fullRecord );
         resultSet = store.getRecordById( ids );
 
         XMLStreamReader xmlStreamActual = XMLInputFactory.newInstance().createXMLStreamReader(
@@ -361,8 +356,7 @@ public class CommonISOTest extends AbstractISOTest {
             LOG.warn( "Skipping test (needs configuration)." );
             return;
         }
-        MetadataStoreTransaction ta = store.acquireTransaction();
-        List<String> ids = TstUtils.insertMetadata( store, ta, TstConstants.tst_10 );
+        List<String> ids = TstUtils.insertMetadata( store, TstConstants.tst_10 );
         if ( ids != null ) {
             // test query
             MetadataQuery query = new MetadataQuery( null, null, ResultType.results, 1 );

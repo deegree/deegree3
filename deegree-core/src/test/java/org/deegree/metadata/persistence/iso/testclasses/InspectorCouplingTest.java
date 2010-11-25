@@ -73,8 +73,7 @@ public class InspectorCouplingTest extends AbstractISOTest {
             LOG.warn( "Skipping test (needs configuration)." );
             return;
         }
-        MetadataStoreTransaction ta = store.acquireTransaction();
-        List<String> ids = TstUtils.insertMetadata( store, ta, TstConstants.tst_12, TstConstants.tst_12_2,
+        List<String> ids = TstUtils.insertMetadata( store, TstConstants.tst_12, TstConstants.tst_12_2,
                                                     TstConstants.tst_13 );
 
         resultSet = store.getRecordById( ids );
@@ -98,8 +97,7 @@ public class InspectorCouplingTest extends AbstractISOTest {
             LOG.warn( "Skipping test (needs configuration)." );
             return;
         }
-        MetadataStoreTransaction ta = store.acquireTransaction();
-        List<String> ids = TstUtils.insertMetadata( store, ta, TstConstants.tst_11, TstConstants.tst_13 );
+        List<String> ids = TstUtils.insertMetadata( store, TstConstants.tst_11, TstConstants.tst_13 );
 
         resultSet = store.getRecordById( ids );
         int size = 0;
@@ -122,8 +120,7 @@ public class InspectorCouplingTest extends AbstractISOTest {
             LOG.warn( "Skipping test (needs configuration)." );
             return;
         }
-        MetadataStoreTransaction ta = store.acquireTransaction();
-        List<String> ids = TstUtils.insertMetadata( store, ta, TstConstants.tst_12, TstConstants.tst_12_2,
+        List<String> ids = TstUtils.insertMetadata( store, TstConstants.tst_12, TstConstants.tst_12_2,
                                                     TstConstants.tst_13 );
 
         resultSet = store.getRecordById( ids );
@@ -148,8 +145,7 @@ public class InspectorCouplingTest extends AbstractISOTest {
             LOG.warn( "Skipping test (needs configuration)." );
             throw new MetadataInspectorException( "skipping test (needs configuration)" );
         }
-        ta = store.acquireTransaction();
-        TstUtils.insertMetadata( store, ta, TstConstants.tst_11, TstConstants.tst_13 );
+        TstUtils.insertMetadata( store, TstConstants.tst_11, TstConstants.tst_13 );
 
     }
 

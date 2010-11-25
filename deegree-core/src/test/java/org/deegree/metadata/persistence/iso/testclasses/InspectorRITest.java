@@ -84,8 +84,7 @@ public class InspectorRITest extends AbstractISOTest {
             LOG.warn( "Skipping test (needs configuration)." );
             return;
         }
-        MetadataStoreTransaction ta = store.acquireTransaction();
-        List<String> ids = TstUtils.insertMetadata( store, ta, TstConstants.tst_6 );
+        List<String> ids = TstUtils.insertMetadata( store, TstConstants.tst_6 );
         resultSet = store.getRecordById( ids );
         int size = 0;
         while ( resultSet.next() ) {
@@ -120,10 +119,8 @@ public class InspectorRITest extends AbstractISOTest {
             LOG.warn( "Skipping test (needs configuration)." );
             return;
         }
-        MetadataStoreTransaction ta = store.acquireTransaction();
-        List<String> ids = TstUtils.insertMetadata( store, ta, TstConstants.tst_3, TstConstants.tst_4,
-                                                    TstConstants.tst_5, TstConstants.tst_6, TstConstants.tst_7,
-                                                    TstConstants.tst_8 );
+        List<String> ids = TstUtils.insertMetadata( store, TstConstants.tst_3, TstConstants.tst_4, TstConstants.tst_5,
+                                                    TstConstants.tst_6, TstConstants.tst_7, TstConstants.tst_8 );
 
         resultSet = store.getRecordById( ids );
         int size = 0;
@@ -155,8 +152,7 @@ public class InspectorRITest extends AbstractISOTest {
             LOG.warn( "Skipping test (needs configuration)." );
             return;
         }
-        MetadataStoreTransaction ta = store.acquireTransaction();
-        List<String> ids = TstUtils.insertMetadata( store, ta, TstConstants.tst_2 );
+        List<String> ids = TstUtils.insertMetadata( store, TstConstants.tst_2 );
 
         resultSet = store.getRecordById( ids );
         int size = 0;
@@ -188,8 +184,7 @@ public class InspectorRITest extends AbstractISOTest {
             LOG.warn( "Skipping test (needs configuration)." );
             throw new MetadataInspectorException( "skipping test (needs configuration)" );
         }
-        ta = store.acquireTransaction();
-        TstUtils.insertMetadata( store, ta, TstConstants.tst_4 );
+        TstUtils.insertMetadata( store, TstConstants.tst_4 );
 
     }
 
@@ -214,8 +209,7 @@ public class InspectorRITest extends AbstractISOTest {
             LOG.warn( "Skipping test (needs configuration)." );
             throw new MetadataInspectorException( "skipping test (needs configuration)" );
         }
-        ta = store.acquireTransaction();
-        TstUtils.insertMetadata( store, ta, TstConstants.tst_5 );
+        TstUtils.insertMetadata( store, TstConstants.tst_5 );
 
     }
 
@@ -239,8 +233,7 @@ public class InspectorRITest extends AbstractISOTest {
             LOG.warn( "Skipping test (needs configuration)." );
             throw new MetadataInspectorException( "skipping test (needs configuration)" );
         }
-        ta = store.acquireTransaction();
-        TstUtils.insertMetadata( store, ta, TstConstants.tst_8 );
+        TstUtils.insertMetadata( store, TstConstants.tst_8 );
 
     }
 
@@ -265,8 +258,7 @@ public class InspectorRITest extends AbstractISOTest {
             LOG.warn( "Skipping test (needs configuration)." );
             throw new MetadataInspectorException( "skipping test (needs configuration)" );
         }
-        ta = store.acquireTransaction();
-        TstUtils.insertMetadata( store, ta, TstConstants.tst_7 );
+        TstUtils.insertMetadata( store, TstConstants.tst_7 );
 
     }
 
