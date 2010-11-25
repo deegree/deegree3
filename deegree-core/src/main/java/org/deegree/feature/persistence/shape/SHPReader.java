@@ -41,6 +41,7 @@ import static java.nio.ByteOrder.LITTLE_ENDIAN;
 import static org.deegree.feature.types.property.GeometryPropertyType.GeometryType.GEOMETRY;
 import static org.deegree.feature.types.property.GeometryPropertyType.GeometryType.MULTI_LINE_STRING;
 import static org.deegree.feature.types.property.GeometryPropertyType.GeometryType.MULTI_POINT;
+import static org.deegree.feature.types.property.GeometryPropertyType.GeometryType.MULTI_POLYGON;
 import static org.deegree.geometry.utils.GeometryUtils.createEnvelope;
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -338,12 +339,12 @@ public class SHPReader {
         case MULTIPOINTM:
         case MULTIPOINTZ:
             return MULTI_POINT;
-        case NULL:
-        case MULTIPATCH:
-            // TODO always use multipolygon here?
         case POLYGON:
         case POLYGONM:
         case POLYGONZ:
+            return MULTI_POLYGON;
+        case NULL:
+        case MULTIPATCH:
         }
         return GEOMETRY;
     }
@@ -738,11 +739,7 @@ public class SHPReader {
             polys.add( fac.createPolygon( null, crs, outer, inners ) );
         }
 
-        if ( polys.size() > 1 ) {
-            return fac.createMultiPolygon( null, crs, polys );
-        }
-
-        return polys.getFirst();
+        return fac.createMultiPolygon( null, crs, polys );
     }
 
     private MultiPoint readMultipoint( ByteBuffer buffer ) {
