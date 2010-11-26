@@ -100,6 +100,7 @@ import org.deegree.rendering.r2d.Java2DRenderer;
 import org.deegree.rendering.r2d.Java2DTextRenderer;
 import org.deegree.rendering.r2d.se.unevaluated.Style;
 import org.deegree.services.jaxb.wms.AbstractLayerType;
+import org.deegree.services.wms.MapService;
 import org.deegree.services.wms.WMSException.InvalidDimensionValue;
 import org.deegree.services.wms.WMSException.MissingDimensionValue;
 import org.deegree.services.wms.controller.ops.GetFeatureInfo;
@@ -130,9 +131,9 @@ public class FeatureLayer extends Layer {
      * @throws MalformedURLException
      * @throws FileNotFoundException
      */
-    public FeatureLayer( AbstractLayerType layer, Layer parent, XMLAdapter adapter ) throws FileNotFoundException,
-                            MalformedURLException, IOException {
-        super( layer, parent );
+    public FeatureLayer( MapService service, AbstractLayerType layer, Layer parent, XMLAdapter adapter )
+                            throws FileNotFoundException, MalformedURLException, IOException {
+        super( service, layer, parent );
         datastore = FeatureStoreManager.get( layer.getFeatureStoreId() );
     }
 
@@ -143,8 +144,8 @@ public class FeatureLayer extends Layer {
      * @param title
      * @param parent
      */
-    public FeatureLayer( String name, String title, Layer parent ) {
-        super( name, title, parent );
+    public FeatureLayer( MapService service, String name, String title, Layer parent ) {
+        super( service, name, title, parent );
     }
 
     /**
@@ -155,9 +156,9 @@ public class FeatureLayer extends Layer {
      * @throws IOException
      * @throws FileNotFoundException
      */
-    public FeatureLayer( String name, String title, Layer parent, String file ) throws FileNotFoundException,
-                            IOException {
-        super( name, title, parent );
+    public FeatureLayer( MapService service, String name, String title, Layer parent, String file )
+                            throws FileNotFoundException, IOException {
+        super( service, name, title, parent );
         // TODO what about the charset here?
         datastore = new ShapeFeatureStore( file, null, null, null, null, null, true, null );
         try {
@@ -193,10 +194,23 @@ public class FeatureLayer extends Layer {
         Envelope bbox = null;
         ApplicationSchema schema = datastore.getSchema();
 
-        for ( FeatureType t : schema.getFeatureTypes( null, false, false ) ) {
+        List<Style> styles = service.registry.getAll( getName() );
+        List<QName> ftNames = new LinkedList<QName>();
+        for ( Style s : styles ) {
+            if ( s.getFeatureType() != null ) {
+                ftNames.add( s.getFeatureType() );
+            }
+        }
+        if ( ftNames.isEmpty() ) {
+            for ( FeatureType t : schema.getFeatureTypes( null, false, false ) ) {
+                ftNames.add( t.getName() );
+            }
+        }
+
+        for ( QName t : ftNames ) {
             Envelope thisBox = null;
             try {
-                thisBox = datastore.getEnvelope( t.getName() );
+                thisBox = datastore.getEnvelope( t );
             } catch ( FeatureStoreException e ) {
                 LOG.error( "Error retrieving envelope from FeatureStore: " + e.getMessage(), e );
             }

@@ -94,7 +94,7 @@ public class ShapeUpdater extends LayerUpdater {
                 if ( f.isDirectory() ) {
                     Layer newParent = parent.getChild( nm );
                     if ( newParent == null && f.listFiles().length > 0 ) {
-                        newParent = new EmptyLayer( nm, nm, parent );
+                        newParent = new EmptyLayer( service, nm, nm, parent );
                         if ( service.layers.containsKey( nm ) ) {
                             LOG.warn( "The layer with name '{}' is defined more than once."
                                       + " This may lead to problems.", nm );
@@ -112,7 +112,7 @@ public class ShapeUpdater extends LayerUpdater {
                         String fstr = f.toString();
                         if ( nm.toLowerCase().endsWith( ".shp" ) && parent.getChild( layName ) == null ) {
                             try {
-                                FeatureLayer lay = new FeatureLayer( layName, layName, parent, fstr );
+                                FeatureLayer lay = new FeatureLayer( service, layName, layName, parent, fstr );
                                 changed = true;
                                 if ( service.layers.containsKey( layName ) ) {
                                     LOG.warn( "The layer with name '{}' is defined more than once."

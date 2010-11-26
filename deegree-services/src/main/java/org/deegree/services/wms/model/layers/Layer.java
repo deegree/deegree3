@@ -81,6 +81,7 @@ import org.deegree.services.jaxb.wms.AbstractLayerType;
 import org.deegree.services.jaxb.wms.BoundingBoxType;
 import org.deegree.services.jaxb.wms.DimensionType;
 import org.deegree.services.jaxb.wms.LanguageStringType;
+import org.deegree.services.wms.MapService;
 import org.deegree.services.wms.WMSException.InvalidDimensionValue;
 import org.deegree.services.wms.WMSException.MissingDimensionValue;
 import org.deegree.services.wms.controller.ops.GetFeatureInfo;
@@ -127,7 +128,10 @@ public abstract class Layer {
 
     private boolean queryable = true;
 
-    protected Layer( String name, String title, Layer parent ) {
+    protected MapService service;
+
+    protected Layer( MapService service, String name, String title, Layer parent ) {
+        this.service = service;
         this.name = name;
         this.title = title;
         this.parent = parent;
@@ -136,7 +140,8 @@ public abstract class Layer {
         children = new LinkedList<Layer>();
     }
 
-    protected Layer( AbstractLayerType layer, Layer parent ) {
+    protected Layer( MapService service, AbstractLayerType layer, Layer parent ) {
+        this.service = service;
         name = layer.getName();
         title = layer.getTitle();
         abstract_ = layer.getAbstract();
@@ -280,7 +285,7 @@ public abstract class Layer {
 
     /**
      * @param f
-     * @param evaluator 
+     * @param evaluator
      * @param style
      * @param renderer
      * @param textRenderer

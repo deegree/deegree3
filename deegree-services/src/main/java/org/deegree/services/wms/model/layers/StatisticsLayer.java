@@ -85,6 +85,7 @@ import org.deegree.rendering.r2d.styling.PolygonStyling;
 import org.deegree.rendering.r2d.styling.components.Fill;
 import org.deegree.rendering.r2d.styling.components.Stroke;
 import org.deegree.services.controller.FrontControllerStats;
+import org.deegree.services.wms.MapService;
 import org.deegree.services.wms.WMSException.InvalidDimensionValue;
 import org.deegree.services.wms.WMSException.MissingDimensionValue;
 import org.deegree.services.wms.controller.ops.GetFeatureInfo;
@@ -130,8 +131,8 @@ public class StatisticsLayer extends FeatureLayer {
     /**
      * @param parent
      */
-    public StatisticsLayer( Layer parent ) {
-        super( "statistics", "WMS Request Statistics", parent );
+    public StatisticsLayer( MapService service, Layer parent ) {
+        super( service, "statistics", "WMS Request Statistics", parent );
         Date date = new Date( FrontControllerStats.getStartingTime() );
         List<Object> extent = new ArrayList<Object>();
         extent.add( new DimensionInterval<Date, String, Integer>( date, "current", 0 ) );

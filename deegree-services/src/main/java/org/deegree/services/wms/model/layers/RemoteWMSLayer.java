@@ -73,6 +73,7 @@ import org.deegree.protocol.wms.raster.WMSRaster;
 import org.deegree.protocol.wms.raster.WMSReader;
 import org.deegree.rendering.r2d.se.unevaluated.Style;
 import org.deegree.services.jaxb.wms.AbstractLayerType;
+import org.deegree.services.wms.MapService;
 import org.deegree.services.wms.controller.ops.GetFeatureInfo;
 import org.deegree.services.wms.controller.ops.GetMap;
 import org.slf4j.Logger;
@@ -104,8 +105,9 @@ public class RemoteWMSLayer extends Layer {
      * @param raster
      * @throws MalformedURLException
      */
-    public RemoteWMSLayer( AbstractLayerType layer, Layer parent, WMSRaster raster ) throws MalformedURLException {
-        super( layer, parent );
+    public RemoteWMSLayer( MapService service, AbstractLayerType layer, Layer parent, WMSRaster raster )
+                            throws MalformedURLException {
+        super( service, layer, parent );
         // hack to extract configuration from the raster for now
         WMSReader reader = (WMSReader) ( (ByteBufferRasterData) raster.getRasterData() ).getReader();
         client = reader.getClient();

@@ -44,6 +44,7 @@ import org.deegree.feature.FeatureCollection;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.rendering.r2d.se.unevaluated.Style;
 import org.deegree.services.jaxb.wms.AbstractLayerType;
+import org.deegree.services.wms.MapService;
 import org.deegree.services.wms.controller.ops.GetFeatureInfo;
 import org.deegree.services.wms.controller.ops.GetMap;
 
@@ -62,16 +63,16 @@ public class EmptyLayer extends Layer {
      * @param title
      * @param parent
      */
-    public EmptyLayer( String name, String title, Layer parent ) {
-        super( name, title, parent );
+    public EmptyLayer( MapService service, String name, String title, Layer parent ) {
+        super( service, name, title, parent );
     }
 
     /**
      * @param layer
      * @param parent
      */
-    public EmptyLayer( AbstractLayerType layer, Layer parent ) {
-        super( layer, parent );
+    public EmptyLayer( MapService service, AbstractLayerType layer, Layer parent ) {
+        super( service, layer, parent );
     }
 
     @Override

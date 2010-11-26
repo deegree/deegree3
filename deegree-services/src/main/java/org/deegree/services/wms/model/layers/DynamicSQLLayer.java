@@ -68,6 +68,7 @@ import org.deegree.rendering.r2d.Java2DRenderer;
 import org.deegree.rendering.r2d.Java2DTextRenderer;
 import org.deegree.rendering.r2d.se.parser.PostgreSQLReader;
 import org.deegree.rendering.r2d.se.unevaluated.Style;
+import org.deegree.services.wms.MapService;
 import org.deegree.services.wms.WMSException.InvalidDimensionValue;
 import org.deegree.services.wms.WMSException.MissingDimensionValue;
 import org.deegree.services.wms.controller.ops.GetFeatureInfo;
@@ -104,9 +105,10 @@ public class DynamicSQLLayer extends Layer {
      * @param symbolCodes
      * @param symbolField
      */
-    public DynamicSQLLayer( String name, String title, Layer parent, SimpleSQLFeatureStore datastore,
-                            PostgreSQLReader styles, Collection<Integer> symbolCodes, String symbolField ) {
-        super( name, title, parent );
+    public DynamicSQLLayer( MapService service, String name, String title, Layer parent,
+                            SimpleSQLFeatureStore datastore, PostgreSQLReader styles, Collection<Integer> symbolCodes,
+                            String symbolField ) {
+        super( service, name, title, parent );
         this.datastore = datastore;
         this.styles = styles;
         this.symbolCodes = symbolCodes;

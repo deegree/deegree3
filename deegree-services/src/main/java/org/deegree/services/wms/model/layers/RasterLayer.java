@@ -97,6 +97,7 @@ import org.deegree.services.jaxb.wms.AbstractLayerType;
 import org.deegree.services.wcs.WCServiceException;
 import org.deegree.services.wcs.coverages.CoverageTransform;
 import org.deegree.services.wcs.model.Grid;
+import org.deegree.services.wms.MapService;
 import org.deegree.services.wms.WMSException.InvalidDimensionValue;
 import org.deegree.services.wms.WMSException.MissingDimensionValue;
 import org.deegree.services.wms.controller.ops.GetFeatureInfo;
@@ -132,8 +133,8 @@ public class RasterLayer extends Layer {
      * @param lay
      * @param parent
      */
-    public RasterLayer( AbstractLayerType lay, Layer parent ) {
-        super( lay, parent );
+    public RasterLayer( MapService service, AbstractLayerType lay, Layer parent ) {
+        super( service, lay, parent );
         AbstractCoverage cov = getServiceWorkspace().getCoverageBuilderManager().get( lay.getCoverageStoreId() );
         this.raster = (AbstractRaster) ( cov instanceof AbstractRaster ? cov : null );
         this.multiraster = (MultiResolutionRaster) ( cov instanceof MultiResolutionRaster ? cov : null );
@@ -165,13 +166,13 @@ public class RasterLayer extends Layer {
      * @return a RasterLayer or WMSLayer, depending on what's configured
      * @throws MalformedURLException
      */
-    public static Layer createRasterLayer( AbstractLayerType lay, Layer parent )
+    public static Layer createRasterLayer( MapService service, AbstractLayerType lay, Layer parent )
                             throws MalformedURLException {
         AbstractCoverage cov = getServiceWorkspace().getCoverageBuilderManager().get( lay.getCoverageStoreId() );
         if ( cov instanceof WMSRaster ) {
-            return new RemoteWMSLayer( lay, parent, (WMSRaster) cov );
+            return new RemoteWMSLayer( service, lay, parent, (WMSRaster) cov );
         }
-        return new RasterLayer( lay, parent );
+        return new RasterLayer( service, lay, parent );
     }
 
     @Override

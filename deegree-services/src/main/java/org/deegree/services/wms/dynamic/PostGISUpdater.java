@@ -245,7 +245,7 @@ public class PostGISUpdater extends LayerUpdater {
                 DynamicSQLLayer layer = layers.get( new StringPair( name, title ) );
                 if ( layer == null ) {
                     changed = true;
-                    layer = new DynamicSQLLayer( name, title, parent, ds, styles, codes, symbolfield );
+                    layer = new DynamicSQLLayer( service, name, title, parent, ds, styles, codes, symbolfield );
                 }
                 if ( name != null ) {
                     service.layers.put( name, layer );

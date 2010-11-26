@@ -347,7 +347,7 @@ public class MapService {
 
             if ( aLayer.getFeatureStoreId() != null ) {
                 try {
-                    res = new FeatureLayer( aLayer, parent, adapter );
+                    res = new FeatureLayer( this, aLayer, parent, adapter );
                 } catch ( FileNotFoundException e ) {
                     LOG.warn( "Layer '{}' could not be loaded: '{}'", aLayer.getName() == null ? aLayer.getTitle()
                                                                                               : aLayer.getName(),
@@ -362,11 +362,11 @@ public class MapService {
                     return null;
                 }
             } else if ( aLayer.getCoverageStoreId() != null ) {
-                res = RasterLayer.createRasterLayer( aLayer, parent );
+                res = RasterLayer.createRasterLayer( this, aLayer, parent );
                 // res = new RasterLayer( aLayer, parent );
                 // }else if(aLayer.getWMSStoreId() != null){
             } else {
-                res = new EmptyLayer( aLayer, parent );
+                res = new EmptyLayer( this, aLayer, parent );
             }
 
             if ( res.getName() != null ) {
@@ -415,7 +415,7 @@ public class MapService {
 
             addChildren( res, aLayer.getAbstractLayer(), adapter, alias, interpol, quality );
         } else if ( layer instanceof StatisticsLayer ) {
-            res = new org.deegree.services.wms.model.layers.StatisticsLayer( parent );
+            res = new org.deegree.services.wms.model.layers.StatisticsLayer( this, parent );
             synchronized ( layers ) {
                 layers.put( res.getName(), res );
             }
