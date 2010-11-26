@@ -82,6 +82,8 @@ public class StyleRegistry extends TimerTask {
 
     private HashMap<String, HashMap<String, Style>> registry = new HashMap<String, HashMap<String, Style>>();
 
+    private HashMap<String, HashMap<String, Style>> legendRegistry = new HashMap<String, HashMap<String, Style>>();
+
     private HashMap<File, Pair<Long, String>> monitoredFiles = new HashMap<File, Pair<Long, String>>();
 
     private HashSet<String> soleStyleFiles = new HashSet<String>();
@@ -97,6 +99,29 @@ public class StyleRegistry extends TimerTask {
         if ( styles == null ) {
             styles = new HashMap<String, Style>();
             registry.put( layerName, styles );
+            styles.put( "default", style );
+        } else if ( clear ) {
+            styles.clear();
+            styles.put( "default", style );
+        }
+        if ( style.getName() == null ) {
+            LOG.debug( "Overriding default style since new style does not have name." );
+            styles.put( "default", style );
+        } else {
+            styles.put( style.getName(), style );
+        }
+    }
+
+    /**
+     * @param layerName
+     * @param style
+     * @param clear
+     */
+    public void putLegend( String layerName, Style style, boolean clear ) {
+        HashMap<String, Style> styles = legendRegistry.get( layerName );
+        if ( styles == null ) {
+            styles = new HashMap<String, Style>();
+            legendRegistry.put( layerName, styles );
             styles.put( "default", style );
         } else if ( clear ) {
             styles.clear();
@@ -134,6 +159,22 @@ public class StyleRegistry extends TimerTask {
             return null;
         }
         return styles.get( "default" );
+    }
+
+    /**
+     * @param layerName
+     * @param styleName
+     *            may be null, in which case the default style will be searched for
+     * @return null, if not available
+     */
+    public Style getLegendStyle( String layerName, String styleName ) {
+        if ( styleName == null ) {
+            styleName = "default";
+        }
+        if ( legendRegistry.get( layerName ) != null && legendRegistry.get( layerName ).containsKey( styleName ) ) {
+            return legendRegistry.get( layerName ).get( styleName );
+        }
+        return get( layerName, styleName );
     }
 
     /**
@@ -229,6 +270,26 @@ public class StyleRegistry extends TimerTask {
                         soleStyleFiles.add( file.getName() );
                     }
                     put( layerName, style, false );
+                }
+            } catch ( MalformedURLException e ) {
+                LOG.trace( "Stack trace", e );
+                LOG.info( "Style file '{}' for layer '{}' could not be resolved.", sty.getFile(), layerName );
+            } catch ( URISyntaxException e ) {
+                LOG.trace( "Stack trace", e );
+                LOG.info( "Style file '{}' for layer '{}' could not be resolved.", sty.getFile(), layerName );
+            }
+            try {
+                if ( sty.getLegendConfigurationFile() != null ) {
+                    LOG.debug( "Reading {} as legend configuration file.", sty.getLegendConfigurationFile() );
+                    File file = new File( adapter.resolve( sty.getLegendConfigurationFile() ).toURI() );
+                    String name = sty.getName();
+                    Style style = loadNoImport( layerName, file );
+                    if ( style != null ) {
+                        if ( name != null ) {
+                            style.setName( name );
+                        }
+                        putLegend( layerName, style, false );
+                    }
                 }
             } catch ( MalformedURLException e ) {
                 LOG.trace( "Stack trace", e );

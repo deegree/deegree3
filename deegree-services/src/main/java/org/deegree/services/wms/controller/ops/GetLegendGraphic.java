@@ -80,10 +80,7 @@ public class GetLegendGraphic {
             throw new OWSException( get( "WMS.LAYER_NOT_KNOWN", layer ), LAYER_NOT_DEFINED );
         }
         String s = map.get( "STYLE" );
-        if ( s == null ) {
-            s = "default";
-        }
-        style = service.getStyles().get( layer, s );
+        style = service.getStyles().getLegendStyle( layer, s );
         if ( style == null ) {
             throw new OWSException( get( "WMS.UNDEFINED_STYLE", s, layer ), STYLE_NOT_DEFINED );
         }
