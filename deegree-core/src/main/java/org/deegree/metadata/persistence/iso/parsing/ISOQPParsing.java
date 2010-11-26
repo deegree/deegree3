@@ -167,6 +167,7 @@ public final class ISOQPParsing extends XMLAdapter {
          * Type
          * HierarchieLevel
          * 
+         * is handled by an inspector
          *---------------------------------------------------------------*/
         /**
          * if provided data is a dataset: type = dataset (default)
@@ -178,7 +179,7 @@ public final class ISOQPParsing extends XMLAdapter {
          * if provided data is a service: type = service
          */
         String type = getNodeAsString( rootElement, new XPath( "./gmd:hierarchyLevel/gmd:MD_ScopeCode/@codeListValue",
-                                                               nsContextISOParsing ), "dataset" );
+                                                               nsContext ), "dataset" );
         qp.setType( type );
 
         /*---------------------------------------------------------------
@@ -207,9 +208,9 @@ public final class ISOQPParsing extends XMLAdapter {
         String[] dateString = getNodesAsStrings( rootElement,
                                                  new XPath( "./gmd:dateStamp/gco:Date | ./gmd:dateStamp/gco:DateTime",
                                                             nsContextISOParsing ) );
-//        OMElement es = getElement( rootElement, new XPath( "./gmd:fileIdentifier", nsContextISOParsing ) );
-//
-//        LOG.debug( "elem: " + es );
+        // OMElement es = getElement( rootElement, new XPath( "./gmd:fileIdentifier", nsContextISOParsing ) );
+        //
+        // LOG.debug( "elem: " + es );
         Date[] date = new Date[dateString.length];
         try {
             int counter = 0;

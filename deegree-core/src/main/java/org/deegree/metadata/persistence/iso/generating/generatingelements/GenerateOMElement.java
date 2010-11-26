@@ -84,6 +84,25 @@ public class GenerateOMElement {
     }
 
     /**
+     * Creates the hierarchieLevel element for application profile ISO. This new created element has the codeListValue
+     * of "dataset".
+     * 
+     * @return the generated element of the hierarchieLevel.
+     */
+    public OMElement createHierarchieLevelElement() {
+        OMElement omHierarchieLevel = factory.createOMElement( "hierarchieLevel", namespaceGMD );
+        OMElement omScopeCode = factory.createOMElement( "MD_ScopeCode", namespaceGMD );
+        omHierarchieLevel.addChild( omScopeCode );
+        omScopeCode.addAttribute(
+                                  "codeList",
+                                  "http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/Codelist/gmxCodelists.xml#MX_ScopeCode",
+                                  null );
+        omScopeCode.addAttribute( "codeListValue", "dataset", null );
+
+        return omHierarchieLevel;
+    }
+
+    /**
      * Creates the MD_Identifier element for the application profile ISO.
      * 
      * @param id

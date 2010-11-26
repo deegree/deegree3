@@ -63,12 +63,26 @@ public class ISOMetadataStoreTransaction implements MetadataStoreTransaction {
         LOG.debug( Messages.getMessage( "INFO_TA_COMMIT" ) );
         try {
             conn.commit();
+
+        } catch ( SQLException e ) {
+            String msg = Messages.getMessage( "ERROR_TA_COMMIT", e.getMessage() );
+            LOG.debug( msg );
+            throw new MetadataStoreException( msg );
+        } finally {
+            tearDown();
+        }
+    }
+
+    private void tearDown()
+                            throws MetadataStoreException {
+        try {
             conn.close();
         } catch ( SQLException e ) {
             String msg = Messages.getMessage( "ERROR_TA_COMMIT", e.getMessage() );
             LOG.debug( msg );
             throw new MetadataStoreException( msg );
         }
+
     }
 
     @Override
@@ -184,11 +198,13 @@ public class ISOMetadataStoreTransaction implements MetadataStoreTransaction {
         LOG.debug( Messages.getMessage( "INFO_TA_ROLLBACK" ) );
         try {
             conn.rollback();
-            conn.close();
+
         } catch ( SQLException e ) {
             String msg = Messages.getMessage( "ERROR_TA_ROLLBACK", e.getMessage() );
             LOG.debug( msg );
             throw new MetadataStoreException( msg );
+        } finally {
+            tearDown();
         }
     }
 }

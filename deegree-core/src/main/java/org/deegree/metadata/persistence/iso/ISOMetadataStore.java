@@ -72,6 +72,7 @@ import org.deegree.metadata.persistence.MetadataStoreException;
 import org.deegree.metadata.persistence.MetadataStoreTransaction;
 import org.deegree.metadata.persistence.iso.parsing.inspectation.CoupledDataInspector;
 import org.deegree.metadata.persistence.iso.parsing.inspectation.FIInspector;
+import org.deegree.metadata.persistence.iso.parsing.inspectation.HierarchieLevelInspector;
 import org.deegree.metadata.persistence.iso.parsing.inspectation.InspireComplianceInspector;
 import org.deegree.metadata.persistence.iso.parsing.inspectation.MetadataSchemaValidationInspector;
 import org.deegree.metadata.persistence.iso.parsing.inspectation.RecordInspector;
@@ -470,6 +471,8 @@ public class ISOMetadataStore implements MetadataStore {
                 }
 
             }
+            // hard coded because there is no configuration planned
+            ri.add( new HierarchieLevelInspector() );
             ta = new ISOMetadataStoreTransaction( conn, ri, config.getAnyText(), useLegacyPredicates );
         } catch ( SQLException e ) {
             throw new MetadataStoreException( e.getMessage() );
