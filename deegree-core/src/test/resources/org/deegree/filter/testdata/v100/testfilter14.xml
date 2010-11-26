@@ -1,0 +1,19 @@
+<Filter xmlns="http://www.opengis.net/ogc" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.opengis.net/ogc http://schemas.opengis.net/filter/1.0.0/filter.xsd">
+	<And>
+		<Or>
+			<PropertyIsEqualTo>
+				<PropertyName>FIELD1</PropertyName>
+				<Literal>10</Literal>
+			</PropertyIsEqualTo>
+			<PropertyIsEqualTo>
+				<PropertyName>FIELD1</PropertyName>
+				<Literal>20</Literal>
+			</PropertyIsEqualTo>
+		</Or>
+		<PropertyIsEqualTo>
+			<PropertyName>STATUS</PropertyName>
+			<Literal>VALID</Literal>
+		</PropertyIsEqualTo>
+	</And>
+</Filter>
