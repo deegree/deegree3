@@ -315,10 +315,19 @@ public class StyleRegistry extends TimerTask {
                 Map<String, String> map = new HashMap<String, String>();
                 String name = null;
                 for ( JAXBElement<String> elem : sty.getNameAndUserStyleAndLegendConfigurationFile() ) {
-                    // TODO sth w/ the legend file
                     if ( elem.getName().getLocalPart().equals( "Name" ) ) {
                         name = elem.getValue();
-                    } else {
+                    } else if ( elem.getName().getLocalPart().equals( "LegendConfigurationFile" ) ) {
+                        LOG.debug( "Reading {} as legend configuration file.", elem.getValue() );
+                        File legendFile = new File( adapter.resolve( elem.getValue() ).toURI() );
+                        Style style = loadNoImport( layerName, legendFile );
+                        if ( style != null ) {
+                            if ( name != null ) {
+                                style.setName( name );
+                            }
+                            putLegend( layerName, style, false );
+                        }
+                    } else if ( elem.getName().getLocalPart().equals( "UserStyle" ) ) {
                         if ( name == null ) {
                             name = elem.getValue();
                         }
