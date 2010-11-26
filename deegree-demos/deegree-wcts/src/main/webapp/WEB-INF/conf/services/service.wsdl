@@ -1,0 +1,508 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<wsdl:definitions name="deegreeWPS"
+	targetNamespace="http://www.deegree.org/services/wps" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/"
+	xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:wps="http://www.deegree.org/services/wps"
+	xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+	xmlns:http="http://schemas.xmlsoap.org/wsdl/http/">
+	<wsdl:types>
+		<xsd:schema targetNamespace="http://www.deegree.org/services/wps">
+			<xsd:element name="GetCapabilities">
+				<xsd:complexType>
+					<xsd:sequence>
+						<xsd:element maxOccurs="1" minOccurs="0" name="updateSequence"
+							type="xsd:string" />
+						<xsd:element maxOccurs="1" minOccurs="0" name="acceptFormats"
+							type="xsd:string" />
+						<xsd:element maxOccurs="1" minOccurs="0" name="acceptVersions"
+							type="xsd:string" />
+					</xsd:sequence>
+				</xsd:complexType>
+			</xsd:element>
+			<xsd:element name="GetCapabilitiesResponse">
+				<xsd:complexType>
+					<xsd:sequence>
+						<xsd:element maxOccurs="1" minOccurs="0"
+							name="GetCapabilitiesResult" />
+					</xsd:sequence>
+				</xsd:complexType>
+			</xsd:element>
+			<xsd:element name="DescribeProcess_ALL">
+				<xsd:complexType>
+					<xsd:sequence>
+						<xsd:element name="in" type="xsd:string"></xsd:element>
+					</xsd:sequence>
+				</xsd:complexType>
+			</xsd:element>
+			<xsd:element name="DescribeProcess_ALLResponse">
+				<xsd:complexType>
+					<xsd:sequence>
+						<xsd:element maxOccurs="1" minOccurs="0"
+							name="DescribeProcess_AllResult" />
+					</xsd:sequence>
+				</xsd:complexType>
+			</xsd:element>
+			<xsd:element name="DescribeProcess_ParameterDemoProcess">
+				<xsd:complexType>
+					<xsd:sequence>
+						<xsd:element maxOccurs="1" minOccurs="0" name="updateSequence"
+							type="xsd:string" />
+					</xsd:sequence>
+				</xsd:complexType>
+			</xsd:element>
+			<xsd:element name="DescribeProcess_ParameterDemoProcessResponse">
+				<xsd:complexType>
+					<xsd:sequence>
+						<xsd:element maxOccurs="1" minOccurs="0"
+							name="DescribeProcess_ParameterDemoProcessResult" />
+					</xsd:sequence>
+				</xsd:complexType>
+			</xsd:element>
+			<xsd:element name="Execute_ParameterDemoProcess">
+				<xsd:complexType>
+					<xsd:sequence>
+						<xsd:element maxOccurs="1" minOccurs="0" name="GmlUrlResource"
+							type="xsd:string" />
+					</xsd:sequence>
+				</xsd:complexType>
+			</xsd:element>
+			<xsd:element name="Execute_ParameterDemoProcessResponse">
+				<xsd:complexType>
+					<xsd:sequence>
+						<xsd:element maxOccurs="1" minOccurs="0"
+							name="ExecuteProcess_ParameterDemoProcessResult" />
+					</xsd:sequence>
+				</xsd:complexType>
+			</xsd:element>
+			<xsd:element name="DescribeProcess_BufferProcess">
+				<xsd:complexType>
+					<xsd:sequence>
+						<xsd:element maxOccurs="1" minOccurs="0" name="updateSequence"
+							type="xsd:string" />
+					</xsd:sequence>
+				</xsd:complexType>
+			</xsd:element>
+			<xsd:element name="DescribeProcess_BufferProcessResponse">
+				<xsd:complexType>
+					<xsd:sequence>
+						<xsd:element maxOccurs="1" minOccurs="0"
+							name="DescribeProcess_BufferProcessResult" />
+					</xsd:sequence>
+				</xsd:complexType>
+			</xsd:element>
+			<xsd:element name="Execute_BufferProcess">
+				<xsd:complexType>
+					<xsd:sequence>
+						<xsd:element maxOccurs="1" minOccurs="0" name="GmlUrlResource"
+							type="xsd:string" />
+					</xsd:sequence>
+				</xsd:complexType>
+			</xsd:element>
+			<xsd:element name="Execute_BufferProcessResponse">
+				<xsd:complexType>
+					<xsd:sequence>
+						<xsd:element maxOccurs="1" minOccurs="0"
+							name="ExecuteProcess_BufferProcessResult" />
+					</xsd:sequence>
+				</xsd:complexType>
+			</xsd:element>
+		</xsd:schema>
+	</wsdl:types>
+	<wsdl:message name="GetCapabilitiesRequest">
+		<wsdl:part name="parameters" element="wps:GetCapabilities"></wsdl:part>
+	</wsdl:message>
+	<wsdl:message name="GetCapabilitiesResponse">
+		<wsdl:part element="wps:GetCapabilitiesResponse" name="parameters" />
+	</wsdl:message>
+	<wsdl:message name="GetCapabilitiesRequest">
+		<wsdl:part name="parameters" element="wps:GetCapabilities"></wsdl:part>
+	</wsdl:message>
+	<wsdl:message name="GetCapabilitiesResponse">
+		<wsdl:part name="parameters" element="wps:GetCapabilitiesResponse"></wsdl:part>
+	</wsdl:message>
+	<wsdl:message name="GetCapabilitiesResponse1">
+		<wsdl:part name="parameters" element="wps:GetCapabilitiesResponse"></wsdl:part>
+	</wsdl:message>
+	<wsdl:message name="DescribeProcess_ALLRequest">
+		<wsdl:part name="parameters" element="wps:DescribeProcess_ALL"></wsdl:part>
+	</wsdl:message>
+	<wsdl:message name="DescribeProcess_ALLResponse">
+		<wsdl:part name="parameters" element="wps:DescribeProcess_ALLResponse"></wsdl:part>
+	</wsdl:message>
+	<wsdl:message name="DescribeProcess_ParameterDemoProcessRequest">
+		<wsdl:part name="parameters" element="wps:DescribeProcess_ParameterDemoProcess"></wsdl:part>
+	</wsdl:message>
+	<wsdl:message name="DescribeProcess_ParameterDemoProcessResponse">
+		<wsdl:part name="parameters"
+			element="wps:DescribeProcess_ParameterDemoProcessResponse"></wsdl:part>
+	</wsdl:message>
+	<wsdl:message name="Execute_ParameterDemoProcessRequest">
+		<wsdl:part name="parameters" element="wps:Execute_ParameterDemoProcess"></wsdl:part>
+	</wsdl:message>
+	<wsdl:message name="Execute_ParameterDemoProcessResponse">
+		<wsdl:part name="parameters" element="wps:Execute_ParameterDemoProcessResponse"></wsdl:part>
+	</wsdl:message>
+	<wsdl:message name="DescribeProcess_BufferProcessRequest">
+		<wsdl:part name="parameters" element="wps:DescribeProcess_BufferProcess"></wsdl:part>
+	</wsdl:message>
+	<wsdl:message name="DescribeProcess_BufferProcessResponse">
+		<wsdl:part name="parameters" element="wps:DescribeProcess_BufferProcessResponse"></wsdl:part>
+	</wsdl:message>
+	<wsdl:message name="Execute_BufferProcessRequest">
+		<wsdl:part name="parameters" element="wps:Execute_BufferProcess"></wsdl:part>
+	</wsdl:message>
+	<wsdl:message name="Execute_BufferProcessResponse">
+		<wsdl:part name="parameters" element="wps:Execute_BufferProcessResponse"></wsdl:part>
+	</wsdl:message>
+	<wsdl:message name="DescribeProcess_ALLRequest">
+		<wsdl:part name="parameters" element="wps:DescribeProcess_ALL"></wsdl:part>
+	</wsdl:message>
+	<wsdl:message name="DescribeProcess_ALLResponse">
+		<wsdl:part name="parameters" element="wps:DescribeProcess_ALLResponse"></wsdl:part>
+	</wsdl:message>
+	<wsdl:message name="DescribeProcess_ParameterDemoProcessRequest">
+		<wsdl:part name="parameters" element="wps:DescribeProcess_ParameterDemoProcess"></wsdl:part>
+	</wsdl:message>
+	<wsdl:message name="DescribeProcess_ParameterDemoProcessResponse">
+		<wsdl:part name="parameters"
+			element="wps:DescribeProcess_ParameterDemoProcessResponse"></wsdl:part>
+	</wsdl:message>
+	<wsdl:message name="Execute_ParameterDemoProcessRequest">
+		<wsdl:part name="parameters" element="wps:Execute_ParameterDemoProcess"></wsdl:part>
+	</wsdl:message>
+	<wsdl:message name="Execute_ParameterDemoProcessResponse">
+		<wsdl:part name="parameters" element="wps:Execute_ParameterDemoProcessResponse"></wsdl:part>
+	</wsdl:message>
+	<wsdl:message name="DescribeProcess_BufferProcessRequest">
+		<wsdl:part name="parameters" element="wps:DescribeProcess_BufferProcess"></wsdl:part>
+	</wsdl:message>
+	<wsdl:message name="DescribeProcess_BufferProcessResponse">
+		<wsdl:part name="parameters" element="wps:DescribeProcess_BufferProcessResponse"></wsdl:part>
+	</wsdl:message>
+	<wsdl:message name="Execute_BufferProcessRequest">
+		<wsdl:part name="parameters" element="wps:Execute_BufferProcess"></wsdl:part>
+	</wsdl:message>
+	<wsdl:message name="Execute_BufferProcessResponse">
+		<wsdl:part name="parameters" element="wps:Execute_BufferProcessResponse"></wsdl:part>
+	</wsdl:message>
+	<wsdl:message name="DescribeProcess_ALLRequest">
+		<wsdl:part name="parameters" element="wps:DescribeProcess_ALL"></wsdl:part>
+	</wsdl:message>
+	<wsdl:message name="DescribeProcess_ALLResponse">
+		<wsdl:part name="parameters" element="wps:DescribeProcess_ALLResponse"></wsdl:part>
+	</wsdl:message>
+	<wsdl:message name="DescribeProcess_ParameterDemoProcessRequest">
+		<wsdl:part name="parameters" element="wps:DescribeProcess_ParameterDemoProcess"></wsdl:part>
+	</wsdl:message>
+	<wsdl:message name="DescribeProcess_ParameterDemoProcessResponse">
+		<wsdl:part name="parameters"
+			element="wps:DescribeProcess_ParameterDemoProcessResponse"></wsdl:part>
+	</wsdl:message>
+	<wsdl:message name="Execute_ParameterDemoProcessRequest">
+		<wsdl:part name="parameters" element="wps:Execute_ParameterDemoProcess"></wsdl:part>
+	</wsdl:message>
+	<wsdl:message name="Execute_ParameterDemoProcessResponse">
+		<wsdl:part name="parameters" element="wps:Execute_ParameterDemoProcessResponse"></wsdl:part>
+	</wsdl:message>
+	<wsdl:message name="DescribeProcess_BufferProcessRequest">
+		<wsdl:part name="parameters" element="wps:DescribeProcess_BufferProcess"></wsdl:part>
+	</wsdl:message>
+	<wsdl:message name="DescribeProcess_BufferProcessResponse">
+		<wsdl:part name="parameters" element="wps:DescribeProcess_BufferProcessResponse"></wsdl:part>
+	</wsdl:message>
+	<wsdl:message name="Execute_BufferProcessRequest">
+		<wsdl:part name="parameters" element="wps:Execute_BufferProcess"></wsdl:part>
+	</wsdl:message>
+	<wsdl:message name="Execute_BufferProcessResponse">
+		<wsdl:part name="parameters" element="wps:Execute_BufferProcessResponse"></wsdl:part>
+	</wsdl:message>
+	<wsdl:portType name="deegree3WPSSOAP">
+		<wsdl:operation name="GetCapabilities">
+			<wsdl:documentation></wsdl:documentation>
+			<wsdl:input message="wps:GetCapabilitiesRequest" />
+			<wsdl:output message="wps:GetCapabilitiesResponse" />
+		</wsdl:operation>
+		<wsdl:operation name="DescribeProcess_ALL">
+			<wsdl:documentation></wsdl:documentation>
+			<wsdl:input message="wps:DescribeProcess_ALLRequest"></wsdl:input>
+			<wsdl:output message="wps:DescribeProcess_ALLResponse"></wsdl:output>
+		</wsdl:operation>
+		<wsdl:operation name="DescribeProcess_ParameterDemoProcess">
+			<wsdl:documentation></wsdl:documentation>
+			<wsdl:input message="wps:DescribeProcess_ParameterDemoProcessRequest"></wsdl:input>
+			<wsdl:output message="wps:DescribeProcess_ParameterDemoProcessResponse"></wsdl:output>
+		</wsdl:operation>
+		<wsdl:operation name="Execute_ParameterDemoProcess">
+			<wsdl:documentation></wsdl:documentation>
+			<wsdl:input message="wps:Execute_ParameterDemoProcessRequest"></wsdl:input>
+			<wsdl:output message="wps:Execute_ParameterDemoProcessResponse"></wsdl:output>
+		</wsdl:operation>
+		<wsdl:operation name="DescribeProcess_BufferProcess">
+			<wsdl:documentation></wsdl:documentation>
+			<wsdl:input message="wps:DescribeProcess_BufferProcessRequest"></wsdl:input>
+			<wsdl:output message="wps:DescribeProcess_BufferProcessResponse"></wsdl:output>
+		</wsdl:operation>
+		<wsdl:operation name="Execute_BufferProcess">
+			<wsdl:documentation></wsdl:documentation>
+			<wsdl:input message="wps:Execute_BufferProcessRequest"></wsdl:input>
+			<wsdl:output message="wps:Execute_BufferProcessResponse"></wsdl:output>
+		</wsdl:operation>
+	</wsdl:portType>
+	<wsdl:portType name="deegree3WPSHttpGet">
+		<wsdl:operation name="GetCapabilities">
+			<wsdl:documentation></wsdl:documentation>
+			<wsdl:input message="wps:GetCapabilitiesRequest"></wsdl:input>
+			<wsdl:output message="wps:GetCapabilitiesResponse"></wsdl:output>
+		</wsdl:operation>
+		<wsdl:operation name="DescribeProcess_ALL">
+			<wsdl:documentation></wsdl:documentation>
+			<wsdl:input message="wps:DescribeProcess_ALLRequest"></wsdl:input>
+			<wsdl:output message="wps:DescribeProcess_ALLResponse"></wsdl:output>
+		</wsdl:operation>
+		<wsdl:operation name="DescribeProcess_ParameterDemoProcess">
+			<wsdl:documentation></wsdl:documentation>
+			<wsdl:input message="wps:DescribeProcess_ParameterDemoProcessRequest"></wsdl:input>
+			<wsdl:output message="wps:DescribeProcess_ParameterDemoProcessResponse"></wsdl:output>
+		</wsdl:operation>
+		<wsdl:operation name="Execute_ParameterDemoProcess">
+			<wsdl:documentation></wsdl:documentation>
+			<wsdl:input message="wps:Execute_ParameterDemoProcessRequest"></wsdl:input>
+			<wsdl:output message="wps:Execute_ParameterDemoProcessResponse"></wsdl:output>
+		</wsdl:operation>
+		<wsdl:operation name="DescribeProcess_BufferProcess">
+			<wsdl:documentation></wsdl:documentation>
+			<wsdl:input message="wps:DescribeProcess_BufferProcessRequest"></wsdl:input>
+			<wsdl:output message="wps:DescribeProcess_BufferProcessResponse"></wsdl:output>
+		</wsdl:operation>
+		<wsdl:operation name="Execute_BufferProcess">
+			<wsdl:documentation></wsdl:documentation>
+			<wsdl:input message="wps:Execute_BufferProcessRequest"></wsdl:input>
+			<wsdl:output message="wps:Execute_BufferProcessResponse"></wsdl:output>
+		</wsdl:operation>
+	</wsdl:portType>
+	<wsdl:portType name="deegree3WPSHttpPost">
+		<wsdl:operation name="GetCapabilities">
+			<wsdl:documentation></wsdl:documentation>
+			<wsdl:input message="wps:GetCapabilitiesRequest"></wsdl:input>
+			<wsdl:output message="wps:GetCapabilitiesResponse1"></wsdl:output>
+		</wsdl:operation>
+		<wsdl:operation name="DescribeProcess_ALL">
+			<wsdl:documentation></wsdl:documentation>
+			<wsdl:input message="wps:DescribeProcess_ALLRequest"></wsdl:input>
+			<wsdl:output message="wps:DescribeProcess_ALLResponse"></wsdl:output>
+		</wsdl:operation>
+		<wsdl:operation name="DescribeProcess_ParameterDemoProcess">
+			<wsdl:documentation></wsdl:documentation>
+			<wsdl:input message="wps:DescribeProcess_ParameterDemoProcessRequest"></wsdl:input>
+			<wsdl:output message="wps:DescribeProcess_ParameterDemoProcessResponse"></wsdl:output>
+		</wsdl:operation>
+		<wsdl:operation name="Execute_ParameterDemoProcess">
+			<wsdl:documentation></wsdl:documentation>
+			<wsdl:input message="wps:Execute_ParameterDemoProcessRequest"></wsdl:input>
+			<wsdl:output message="wps:Execute_ParameterDemoProcessResponse"></wsdl:output>
+		</wsdl:operation>
+		<wsdl:operation name="DescribeProcess_BufferProcess">
+			<wsdl:documentation></wsdl:documentation>
+			<wsdl:input message="wps:DescribeProcess_BufferProcessRequest"></wsdl:input>
+			<wsdl:output message="wps:DescribeProcess_BufferProcessResponse"></wsdl:output>
+		</wsdl:operation>
+		<wsdl:operation name="Execute_BufferProcess">
+			<wsdl:documentation></wsdl:documentation>
+			<wsdl:input message="wps:Execute_BufferProcessRequest"></wsdl:input>
+			<wsdl:output message="wps:Execute_BufferProcessResponse"></wsdl:output>
+		</wsdl:operation>
+	</wsdl:portType>
+	<wsdl:binding name="deegree3WPSSOAP" type="wps:deegree3WPSSOAP">
+		<soap:binding style="document"
+			transport="http://schemas.xmlsoap.org/soap/http" />
+		<wsdl:operation name="GetCapabilities">
+			<soap:operation soapAction="http://www.deegree.org/services/wps/GetCapabilities" style="document" />
+			<wsdl:input name="GetCapabilitiesRequest">
+				<soap:body use="literal" />
+			</wsdl:input>
+			<wsdl:output name="GetCapabilitiesResponse">
+				<soap:body use="literal" />
+			</wsdl:output>
+		</wsdl:operation>
+		<wsdl:operation name="DescribeProcess_All">
+			<soap:operation
+				soapAction="http://www.deegree.org/services/wps/DescribeProcess_All"
+				style="document" />
+			<wsdl:input name="DescribeProcess_AllRequest">
+				<soap:body use="literal" />
+			</wsdl:input>
+			<wsdl:output name="DescribeProcess_AllResponse">
+				<soap:body use="literal" />
+			</wsdl:output>
+		</wsdl:operation>
+		<wsdl:operation name="DescribeProcess_ParameterDemoProcess">
+			<soap:operation
+				soapAction="http://www.deegree.org/services/wps/DescribeProcess_ParameterDemoProcess"
+				style="document" />
+			<wsdl:input name="DescribeProcess_ParameterDemoProcessRequest">
+				<soap:body use="literal" />
+			</wsdl:input>
+			<wsdl:output name="DescribeProcess_ParameterDemoProcessResponse">
+				<soap:body use="literal" />
+			</wsdl:output>
+		</wsdl:operation>
+				<wsdl:operation name="ExecuteProcess_ParameterDemoProcess">
+			<soap:operation
+				soapAction="http://www.deegree.org/services/wps/ExecuteProcess_ParameterDemoProcess"
+				style="document" />
+			<wsdl:input name="ExecuteProcess_ParameterDemoProcessRequest">
+				<soap:body use="literal" />
+			</wsdl:input>
+			<wsdl:output name="ExecuteProcess_ParameterDemoProcessResponse">
+				<soap:body use="literal" />
+			</wsdl:output>
+		</wsdl:operation>
+				<wsdl:operation name="DescribeProcess_BufferProcess">
+			<soap:operation
+				soapAction="http://www.deegree.org/services/wps/DescribeProcess_BufferProcess"
+				style="document" />
+			<wsdl:input name="DescribeProcess_BufferProcessRequest">
+				<soap:body use="literal" />
+			</wsdl:input>
+			<wsdl:output name="DescribeProcess_BufferProcessResponse">
+				<soap:body use="literal" />
+			</wsdl:output>
+		</wsdl:operation>
+		<wsdl:operation name="ExecuteProcess_BufferProcess">
+			<soap:operation
+				soapAction="http://www.deegree.org/services/wps/ExecuteProcess_BufferProcess"
+				style="document" />
+			<wsdl:input name="ExecuteProcess_BufferProcessRequest">
+				<soap:body use="literal" />
+			</wsdl:input>
+			<wsdl:output name="ExecuteProcess_BufferProcessResponse">
+				<soap:body use="literal" />
+			</wsdl:output>
+		</wsdl:operation>
+	</wsdl:binding>
+	<wsdl:binding name="deegree3WPSHttpGet" type="wps:deegree3WPSHttpGet">
+		<http:binding verb="GET" />
+		<wsdl:operation name="GetCapabilities">
+			<http:operation location="/GetCapabilities" />
+			<wsdl:input name="GetCapabilitiesRequest">
+				<http:urlEncoded />
+			</wsdl:input>
+			<wsdl:output name="GetCapabilitiesResponse">
+				<mime:mimeXml part="Body" />
+			</wsdl:output>
+		</wsdl:operation>
+		<wsdl:operation name="DescribeProcess_All">
+			<http:operation location="/DescribeProcess_All" />
+			<wsdl:input name="DescribeProcess_AllRequest">
+				<http:urlEncoded />
+			</wsdl:input>
+			<wsdl:output name="DescribeProcess_AllResponse">
+				<mime:mimeXml part="Body" />
+			</wsdl:output>
+		</wsdl:operation>
+		<wsdl:operation name="DescribeProcess_ParameterDemoProcess">
+			<http:operation location="/DescribeProcess_ParameterDemoProcess" />
+			<wsdl:input name="DescribeProcess_ParameterDemoProcessRequest">
+				<http:urlEncoded />
+			</wsdl:input>
+			<wsdl:output name="DescribeProcess_ParameterDemoProcessResponse">
+				<mime:mimeXml part="Body" />
+			</wsdl:output>
+		</wsdl:operation>
+		<wsdl:operation name="ExecuteProcess_ParameterDemoProcess">
+			<http:operation location="/ExecuteProcess_ParameterDemoProcess" />
+			<wsdl:input name="ExecuteProcess_ParameterDemoProcessRequest">
+				<http:urlEncoded />
+			</wsdl:input>
+			<wsdl:output name="ExecuteProcess_ParameterDemoProcessResponse">
+				<mime:mimeXml part="Body" />
+			</wsdl:output>
+		</wsdl:operation>
+		<wsdl:operation name="DescribeProcess_BufferProcess">
+			<http:operation location="/DescribeProcess_BufferProcess" />
+			<wsdl:input name="DescribeProcess_BufferProcessRequest">
+				<http:urlEncoded />
+			</wsdl:input>
+			<wsdl:output name="DescribeProcess_BufferProcessResponse">
+				<mime:mimeXml part="Body" />
+			</wsdl:output>
+		</wsdl:operation>
+		<wsdl:operation name="ExecuteProcess_BufferProcess">
+			<http:operation location="/ExecuteProcess_BufferProcess" />
+			<wsdl:input name="ExecuteProcess_BufferProcessRequest">
+				<http:urlEncoded />
+			</wsdl:input>
+			<wsdl:output name="ExecuteProcess_BufferProcessResponse">
+				<mime:mimeXml part="Body" />
+			</wsdl:output>
+		</wsdl:operation>
+	</wsdl:binding>
+	<wsdl:binding name="deegree3WPSHttpPost" type="wps:deegree3WPSHttpPost">
+		<http:binding verb="POST" />
+				<wsdl:operation name="GetCapabilities">
+			<http:operation location="/GetCapabilities" />
+			<wsdl:input name="GetCapabilitiesRequest">
+				<mime:content part="Body" type="application/x-www-form-urlencoded" />
+			</wsdl:input>
+			<wsdl:output name="GetCapabilitiesResponse">
+				<mime:mimeXml part="Body" />
+			</wsdl:output>
+		</wsdl:operation>
+		<wsdl:operation name="DescribeProcess_All">
+			<http:operation location="/DescribeProcess_All" />
+			<wsdl:input name="DescribeProcess_AllRequest">
+				<mime:content part="Body" type="application/x-www-form-urlencoded" />
+			</wsdl:input>
+			<wsdl:output name="DescribeProcess_AllResponse">
+				<mime:mimeXml part="Body" />
+			</wsdl:output>
+		</wsdl:operation>
+				<wsdl:operation name="DescribeProcess_ParameterDemoProcess">
+			<http:operation location="/DescribeProcess_ParameterDemoProcess" />
+			<wsdl:input name="DescribeProcess_ParameterDemoProcessRequest">
+				<mime:content part="Body" type="application/x-www-form-urlencoded" />
+			</wsdl:input>
+			<wsdl:output name="DescribeProcess_ParameterDemoProcessResponse">
+				<mime:mimeXml part="Body" />
+			</wsdl:output>
+		</wsdl:operation>
+		<wsdl:operation name="ExecuteProcess_ParameterDemoProcess">
+			<http:operation location="/ExecuteProcess_ParameterDemoProcess" />
+			<wsdl:input name="ExecuteProcess_ParameterDemoProcessRequest">
+				<mime:content part="Body" type="application/x-www-form-urlencoded" />
+			</wsdl:input>
+			<wsdl:output name="ExecuteProcess_ParameterDemoProcessResponse">
+				<mime:mimeXml part="Body" />
+			</wsdl:output>
+		</wsdl:operation>
+		<wsdl:operation name="DescribeProcess_BufferProcess">
+			<http:operation location="/DescribeProcess_BufferProcess" />
+			<wsdl:input name="DescribeProcess_BufferProcessRequest">
+				<mime:content part="Body" type="application/x-www-form-urlencoded" />
+			</wsdl:input>
+			<wsdl:output name="DescribeProcess_BufferProcessResponse">
+				<mime:mimeXml part="Body" />
+			</wsdl:output>
+		</wsdl:operation>
+		<wsdl:operation name="ExecuteProcess_BufferProcess">
+			<http:operation location="/ExecuteProcess_BufferProcess" />
+			<wsdl:input name="ExecuteProcess_BufferProcessRequest">
+				<mime:content part="Body" type="application/x-www-form-urlencoded" />
+			</wsdl:input>
+			<wsdl:output name="ExecuteProcess_BufferProcessResponse">
+				<mime:mimeXml part="Body" />
+			</wsdl:output>
+		</wsdl:operation>
+	</wsdl:binding>
+	<wsdl:service name="deegree3WPS">
+		<wsdl:documentation></wsdl:documentation>
+		<wsdl:port binding="wps:deegree3WPSSOAP" name="deegree3WPSSOAP">
+			<soap:address location="http://www.example.org/" />
+		</wsdl:port>
+		<wsdl:port name="deegree3WPSHttpGet" binding="wps:deegree3WPSHttpGet">
+			<http:address location="http://www.example.org/" />
+		</wsdl:port>
+		<wsdl:port name="deegree3WPSHttpPost" binding="wps:deegree3WPSHttpPost">
+			<http:address location="http://www.example.org/" />
+		</wsdl:port>
+	</wsdl:service>
+</wsdl:definitions>
