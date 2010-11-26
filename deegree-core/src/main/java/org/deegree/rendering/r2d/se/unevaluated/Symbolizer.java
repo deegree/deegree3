@@ -212,7 +212,9 @@ public class Symbolizer<T extends Copyable<T>> {
                     }
                 }
             } catch ( FilterEvaluationException e ) {
-                LOG.warn( "Could not evaluate a geometry expression." );
+                LOG.warn( "Could not evaluate a geometry expression in file '{}', line {}, column {}: {}.",
+                          new Object[] { file, line, col, e.getLocalizedMessage() } );
+                LOG.trace( "Stack trace:", e );
             }
         } else {
             Property[] gs = f.getGeometryProperties();

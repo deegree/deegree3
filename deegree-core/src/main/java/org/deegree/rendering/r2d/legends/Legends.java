@@ -56,6 +56,7 @@ import java.util.List;
 import org.deegree.commons.utils.CollectionUtils;
 import org.deegree.commons.utils.Pair;
 import org.deegree.commons.utils.CollectionUtils.Mapper;
+import org.deegree.cs.CRS;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.GeometryFactory;
 import org.deegree.geometry.primitive.LineString;
@@ -82,6 +83,8 @@ public class Legends {
     private int baseSizeX = 20, baseSizeY = 15, textSize = 12;
 
     private GeometryFactory geofac = new GeometryFactory();
+
+    private static final CRS mapcs = new CRS( "CRS:1" );
 
     /**
      * New legend renderer with base size of 20x15, text size of 12
@@ -122,10 +125,10 @@ public class Legends {
      * @return a made up rectangle to be used in a legend
      */
     public Polygon getLegendRect( int xpos, int ypos, int xsize, int ysize ) {
-        Point p1 = geofac.createPoint( null, xpos, ypos, null );
-        Point p2 = geofac.createPoint( null, xpos + xsize, ypos, null );
-        Point p3 = geofac.createPoint( null, xpos + xsize, ypos + ysize, null );
-        Point p4 = geofac.createPoint( null, xpos, ypos + ysize, null );
+        Point p1 = geofac.createPoint( null, xpos, ypos, mapcs );
+        Point p2 = geofac.createPoint( null, xpos + xsize, ypos, mapcs );
+        Point p3 = geofac.createPoint( null, xpos + xsize, ypos + ysize, mapcs );
+        Point p4 = geofac.createPoint( null, xpos, ypos + ysize, mapcs );
         List<Point> ps = new ArrayList<Point>( 5 );
         ps.add( p1 );
         ps.add( p2 );
@@ -133,7 +136,8 @@ public class Legends {
         ps.add( p4 );
         ps.add( p1 );
 
-        return geofac.createPolygon( null, null, geofac.createLinearRing( null, null, geofac.createPoints( ps ) ), null );
+        return geofac.createPolygon( null, mapcs, geofac.createLinearRing( null, null, geofac.createPoints( ps ) ),
+                                     null );
     }
 
     /**
@@ -144,16 +148,16 @@ public class Legends {
      * @return a made up line string to be used in a legend
      */
     public LineString getLegendLine( int xpos, int ypos, int xsz, int ysz ) {
-        Point p1 = geofac.createPoint( null, xpos, ypos, null );
-        Point p2 = geofac.createPoint( null, xpos + xsz / 3, ypos + ysz / 3 * 2, null );
-        Point p3 = geofac.createPoint( null, xpos + xsz / 3 * 2, ypos + ysz / 3, null );
-        Point p4 = geofac.createPoint( null, xpos + xsz, ypos + ysz, null );
+        Point p1 = geofac.createPoint( null, xpos, ypos, mapcs );
+        Point p2 = geofac.createPoint( null, xpos + xsz / 3, ypos + ysz / 3 * 2, mapcs );
+        Point p3 = geofac.createPoint( null, xpos + xsz / 3 * 2, ypos + ysz / 3, mapcs );
+        Point p4 = geofac.createPoint( null, xpos + xsz, ypos + ysz, mapcs );
         List<Point> ps = new ArrayList<Point>( 4 );
         ps.add( p1 );
         ps.add( p2 );
         ps.add( p3 );
         ps.add( p4 );
-        return geofac.createLineString( null, null, geofac.createPoints( ps ) );
+        return geofac.createLineString( null, mapcs, geofac.createPoints( ps ) );
     }
 
     /**
@@ -166,9 +170,9 @@ public class Legends {
         Pair<Integer, Integer> size = getLegendSize( style );
 
         Java2DRenderer renderer = new Java2DRenderer( g, width, height,
-                                                      new DefaultEnvelope( geofac.createPoint( null, 0, 0, null ),
+                                                      new DefaultEnvelope( geofac.createPoint( null, 0, 0, mapcs ),
                                                                            geofac.createPoint( null, size.first,
-                                                                                               size.second, null ) ) );
+                                                                                               size.second, mapcs ) ) );
         Java2DTextRenderer textRenderer = new Java2DTextRenderer( renderer );
 
         int ypos = 6;
@@ -210,7 +214,7 @@ public class Legends {
             }
             if ( title != null && title.length() > 0 ) {
                 textRenderer.render( textStyling, title, geofac.createPoint( null, 15 + baseSizeX,
-                                                                             ypos + baseSizeY / 2, null ) );
+                                                                             ypos + baseSizeY / 2, mapcs ) );
             }
             ypos += 12 + baseSizeY;
 
