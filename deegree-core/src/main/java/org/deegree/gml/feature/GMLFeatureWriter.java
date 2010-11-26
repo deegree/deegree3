@@ -40,6 +40,7 @@ import static javax.xml.XMLConstants.NULL_NS_URI;
 import static org.deegree.commons.xml.CommonNamespaces.XLNNS;
 import static org.deegree.commons.xml.CommonNamespaces.XSINS;
 import static org.deegree.gml.GMLVersion.GML_2;
+import static org.deegree.protocol.wfs.WFSConstants.WFS_NS;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -243,6 +244,73 @@ public class GMLFeatureWriter {
         export( feature, 0, traverseXlinkDepth );
     }
 
+    /**
+     * TODO merge with other schema location possibilities
+     * 
+     * @param fc
+     * @param noNamespaceSchemaLocation
+     *            may be null
+     * @param bindings
+     *            optional additional schema locations
+     * @throws XMLStreamException
+     * @throws TransformationException
+     * @throws UnknownCRSException
+     */
+    public void export( FeatureCollection fc, String noNamespaceSchemaLocation, Map<String, String> bindings )
+                            throws XMLStreamException, UnknownCRSException, TransformationException {
+
+        LOG.debug( "Exporting generic feature collection." );
+        if ( fc.getId() != null ) {
+            exportedIds.add( fc.getId() );
+        }
+
+        writer.setPrefix( "gml", gmlNs );
+        writer.setPrefix( "wfs", WFS_NS );
+        writeStartElementWithNS( WFS_NS, "FeatureCollection" );
+
+        if ( fc.getId() != null ) {
+            if ( fidAttr.getNamespaceURI() == NULL_NS_URI ) {
+                writer.writeAttribute( fidAttr.getLocalPart(), fc.getId() );
+            } else {
+                writeAttributeWithNS( fidAttr.getNamespaceURI(), fidAttr.getLocalPart(), fc.getId() );
+            }
+        }
+
+        if ( noNamespaceSchemaLocation != null ) {
+            writeAttributeWithNS( XSINS, "noNamespaceSchemaLocation", noNamespaceSchemaLocation );
+        }
+        if ( bindings != null && !bindings.isEmpty() ) {
+            writer.setPrefix( "xsi", XSINS );
+            String locs = null;
+            for ( Entry<String, String> e : bindings.entrySet() ) {
+                if ( locs == null ) {
+                    locs = "";
+                } else {
+                    locs += " ";
+                }
+                locs += e.getKey() + " " + e.getValue();
+            }
+            writeAttributeWithNS( XSINS, "schemaLocation", locs );
+        }
+
+        writeStartElementWithNS( gmlNs, "boundedBy" );
+        Envelope fcEnv = fc.getEnvelope();
+        if ( fcEnv != null ) {
+            geometryWriter.exportEnvelope( fc.getEnvelope() );
+        } else {
+            writeStartElementWithNS( gmlNs, gmlNull );
+            writer.writeCharacters( "missing" );
+            writer.writeEndElement();
+        }
+        writer.writeEndElement();
+        for ( Feature f : fc ) {
+            writeStartElementWithNS( gmlNs, "featureMember" );
+            export( f );
+            writer.writeEndElement();
+        }
+        writer.writeEndElement();
+    }
+    
     private void export( Feature feature, int currentLevel, int maxInlineLevels )
                             throws XMLStreamException, UnknownCRSException, TransformationException {
 
