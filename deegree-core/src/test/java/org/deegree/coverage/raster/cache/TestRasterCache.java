@@ -44,6 +44,7 @@ import java.net.URL;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 import junit.framework.Assert;
 
@@ -115,7 +116,7 @@ public class TestRasterCache {
 
     private static final File CACHE_DIR;
     static {
-        CACHE_DIR = new File( RasterCache.DEFAULT_CACHE_DIR + "/test" );
+        CACHE_DIR = new File( RasterCache.DEFAULT_CACHE_DIR + "/test-" + UUID.randomUUID() );
         if ( CACHE_DIR.exists() && CACHE_DIR.isDirectory() ) {
             File[] files = CACHE_DIR.listFiles();
             for ( File fi : files ) {
