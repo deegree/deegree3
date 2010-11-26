@@ -47,6 +47,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -154,6 +155,8 @@ public class PostGISFeatureStore implements SQLFeatureStore {
 
     private Map<String, String> nsContext;
 
+    final Map<FeatureType, Envelope> ftToBBox = Collections.synchronizedMap( new HashMap<FeatureType, Envelope>() );
+
     /**
      * Creates a new {@link PostGISFeatureStore} for the given {@link ApplicationSchema}.
      * 
@@ -203,13 +206,16 @@ public class PostGISFeatureStore implements SQLFeatureStore {
         Envelope env = null;
         FeatureType ft = schema.getFeatureType( ftName );
         if ( ft != null ) {
-            // TODO bbox caching
-            // BBoxTableMapping bboxMapping = schema.getBBoxMapping();
-            BlobMapping blobMapping = schema.getBlobMapping();
-            if ( blobMapping != null ) {
-                env = getEnvelope( ft.getName(), blobMapping );
+            if ( !ftToBBox.containsKey( ft ) ) {
+                BlobMapping blobMapping = schema.getBlobMapping();
+                if ( blobMapping != null ) {
+                    env = getEnvelope( ft.getName(), blobMapping );
+                } else {
+                    env = getEnvelope( schema.getMapping( ft.getName() ) );
+                }
+                ftToBBox.put( ft, env );
             } else {
-                env = getEnvelope( schema.getMapping( ft.getName() ) );
+                env = ftToBBox.get( ft );
             }
         }
         return env;
@@ -1263,10 +1269,10 @@ public class PostGISFeatureStore implements SQLFeatureStore {
 
     Map<String, String> getNamespaceContext() {
         if ( nsContext == null ) {
-            nsContext = new HashMap<String, String>(schema.getNamespaceBindings());
-            nsContext.put ("xlink", XLNNS);
-            nsContext.put ("xsi", XSINS);
-            nsContext.put ("ogc", OGCNS);
+            nsContext = new HashMap<String, String>( schema.getNamespaceBindings() );
+            nsContext.put( "xlink", XLNNS );
+            nsContext.put( "xsi", XSINS );
+            nsContext.put( "ogc", OGCNS );
         }
         return nsContext;
     }

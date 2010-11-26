@@ -151,6 +151,7 @@ public class PostGISFeatureStoreTransaction implements FeatureStoreTransaction {
         LOG.debug( "Committing transaction." );
         try {
             conn.commit();
+            fs.ftToBBox.clear();
         } catch ( SQLException e ) {
             LOG.debug( e.getMessage(), e );
             LOG.debug( e.getMessage(), e.getNextException() );
