@@ -84,7 +84,7 @@ public class GMLSchema implements OutputFormat {
                                                                           GMLVersion.GML_31, GMLType.GEOMETRY );
 
     public static final GMLSchema GML_32_GEOMETRY_SCHEMA = new GMLSchema(
-                                                                          "http://schemas.opengis.net/gml/3.2.1/gml.xsd",
+                                                                          "http://schemas.opengis.net/gml/3.2.1/geometryComplexes.xsd",
                                                                           GMLVersion.GML_32, GMLType.GEOMETRY );
 
     public static final GMLSchema GML_2_FEATURE_COLLECTION_SCHEMA = new GMLSchema(
