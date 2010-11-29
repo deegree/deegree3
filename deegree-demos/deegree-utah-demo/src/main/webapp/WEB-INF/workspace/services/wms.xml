@@ -215,6 +215,7 @@
         <FeatureStoreId>utah_energyresources</FeatureStoreId>
         <DirectStyle>
           <File>../styles/utah_energyresources.xml</File>
+          <LegendConfigurationFile>../styles/utah_energyresources_legend.xml</LegendConfigurationFile>
         </DirectStyle>
         <LayerOptions>
           <AntiAliasing>NONE</AntiAliasing>
