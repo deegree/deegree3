@@ -58,8 +58,8 @@ import org.deegree.services.csw.CSWController;
 import org.deegree.services.jaxb.controller.AllowedServices;
 import org.deegree.services.jaxb.controller.ConfiguredServicesType;
 import org.deegree.services.jaxb.controller.DeegreeServiceControllerType;
-import org.deegree.services.jaxb.controller.ServiceType;
 import org.deegree.services.jaxb.controller.DeegreeServiceControllerType.RequestLogging;
+import org.deegree.services.jaxb.controller.ServiceType;
 import org.deegree.services.jaxb.metadata.DeegreeServicesMetadataType;
 import org.deegree.services.sos.SOSController;
 import org.deegree.services.wcs.WCSController;
@@ -133,7 +133,7 @@ public class WebServicesConfiguration {
             LOG.error( msg );
             throw new ServletException( msg );
         }
-        if ( !metadata.exists() ) {
+        if ( !main.exists() ) {
             LOG.debug( "No 'services/main.xml' file, assuming defaults." );
         }
 
