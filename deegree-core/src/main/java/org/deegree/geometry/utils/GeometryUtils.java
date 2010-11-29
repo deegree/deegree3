@@ -120,7 +120,7 @@ public class GeometryUtils {
             }
             return fac.createLineString( geom.getId(), c.getCoordinateSystem(), new PointsList( ps ) );
         }
-        if ( geom instanceof Surface ) {
+        if ( geom instanceof Polygon ) {
             Surface s = (Surface) geom;
             LinkedList<SurfacePatch> movedPatches = new LinkedList<SurfacePatch>();
             for ( SurfacePatch patch : s.getPatches() ) {
@@ -279,7 +279,7 @@ public class GeometryUtils {
         if ( sourceEnvelope != null && sourceEnvelope.getCoordinateSystem() != null
              && !sourceEnvelope.getCoordinateSystem().equals( targetCRS ) ) {
             try {
-                result = (Envelope) new GeometryTransformer( targetCRS.getWrappedCRS() ).transform( sourceEnvelope );
+                result = new GeometryTransformer( targetCRS.getWrappedCRS() ).transform( sourceEnvelope );
             } catch ( IllegalArgumentException e ) {
                 throw new TransformationException( "Could not transform to given envelope because: "
                                                    + e.getLocalizedMessage(), e );

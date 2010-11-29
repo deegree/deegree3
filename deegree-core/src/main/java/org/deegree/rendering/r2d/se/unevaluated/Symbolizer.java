@@ -175,10 +175,6 @@ public class Symbolizer<T extends Copyable<T>> {
      * @return the styling with the geometries, p.second may be null if no geoms were found
      */
     public Pair<T, LinkedList<Geometry>> evaluate( Feature f, XPathEvaluator<Feature> evaluator ) {
-        if ( f == null ) {
-            return new Pair<T, LinkedList<Geometry>>( evaluated == null ? base.copy() : evaluated.copy(), null );
-        }
-
         LinkedList<Geometry> geoms = new LinkedList<Geometry>();
         if ( geometry != null ) {
             try {
@@ -216,7 +212,7 @@ public class Symbolizer<T extends Copyable<T>> {
                           new Object[] { file, line, col, e.getLocalizedMessage() } );
                 LOG.trace( "Stack trace:", e );
             }
-        } else {
+        } else if ( f != null ) {
             Property[] gs = f.getGeometryProperties();
             if ( gs.length > 0 ) {
                 for ( Property p : gs ) {
@@ -227,6 +223,10 @@ public class Symbolizer<T extends Copyable<T>> {
             } else {
                 LOG.warn( "Style was applied to a feature without a geometry." );
             }
+        }
+
+        if ( f == null ) {
+            return new Pair<T, LinkedList<Geometry>>( evaluated == null ? base.copy() : evaluated.copy(), geoms );
         }
 
         String id = f.getId();

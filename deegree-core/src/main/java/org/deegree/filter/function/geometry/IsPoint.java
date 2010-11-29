@@ -5,12 +5,12 @@ import java.util.List;
 
 import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
-import org.deegree.feature.property.Property;
 import org.deegree.filter.Expression;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.XPathEvaluator;
 import org.deegree.filter.expression.Function;
 import org.deegree.filter.function.FunctionProvider;
+import org.deegree.filter.utils.FilterUtils;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.multi.MultiPoint;
 import org.deegree.geometry.primitive.Point;
@@ -32,7 +32,7 @@ public class IsPoint implements FunctionProvider {
     public String getName() {
         return NAME;
     }
-    
+
     @Override
     public int getArgCount() {
         return 1;
@@ -49,12 +49,16 @@ public class IsPoint implements FunctionProvider {
                                     throws FilterEvaluationException {
                 TypedObjectNode[] vals = getParams()[0].evaluate( obj, xpathEvaluator );
 
-                if ( vals.length != 1 || !( vals[0] instanceof Geometry ) && !( vals[0] instanceof Property )
-                     && !( ( (Property) vals[0] ).getValue() instanceof Geometry ) ) {
-                    return new TypedObjectNode[0];
+                if ( vals.length != 1 ) {
+                    throw new FilterEvaluationException( "The " + NAME + " function's first argument must evaluate"
+                                                         + " to exactly one value." );
                 }
-                Geometry geom = vals[0] instanceof Geometry ? (Geometry) vals[0]
-                                                           : (Geometry) ( (Property) vals[0] ).getValue();
+                Geometry geom = FilterUtils.getGeometryValue( vals[0] );
+
+                if ( geom == null ) {
+                    throw new FilterEvaluationException( "The " + NAME + " function's first argument did"
+                                                         + " not evaluate to a geometry." );
+                }
 
                 // TODO is handling of multi geometries like this ok?
                 boolean isPoint = geom instanceof Point || geom instanceof MultiPoint;

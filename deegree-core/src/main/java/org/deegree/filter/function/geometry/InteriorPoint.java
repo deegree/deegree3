@@ -35,11 +35,12 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.filter.function.geometry;
 
+import static org.deegree.filter.utils.FilterUtils.getGeometryValue;
+
 import java.util.ArrayList;
 import java.util.List;
 
 import org.deegree.commons.tom.TypedObjectNode;
-import org.deegree.feature.property.Property;
 import org.deegree.filter.Expression;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.XPathEvaluator;
@@ -72,23 +73,13 @@ public class InteriorPoint implements FunctionProvider {
     @Override
     public Function create( List<Expression> params ) {
         return new Function( NAME, params ) {
-            private Geometry getGeomValue( TypedObjectNode node ) {
-                Geometry geom = null;
-                if ( node instanceof Geometry ) {
-                    geom = (Geometry) node;
-                } else if ( node instanceof Property && ( (Property) node ).getValue() instanceof Geometry ) {
-                    geom = (Geometry) ( (Property) node ).getValue();
-                }
-                return geom;
-            }
-
             @Override
             public <T> TypedObjectNode[] evaluate( T obj, XPathEvaluator<T> xpathEvaluator )
                                     throws FilterEvaluationException {
                 TypedObjectNode[] inputs = getParams()[0].evaluate( obj, xpathEvaluator );
                 List<TypedObjectNode> points = new ArrayList<TypedObjectNode>( inputs.length );
                 for ( TypedObjectNode val : inputs ) {
-                    Geometry geom = getGeomValue( val );
+                    Geometry geom = getGeometryValue( val );
                     if ( geom != null && geom instanceof DefaultSurface ) {
                         points.add( ( (DefaultSurface) geom ).getInteriorPoint() );
                     }

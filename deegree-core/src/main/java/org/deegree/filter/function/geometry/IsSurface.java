@@ -5,12 +5,12 @@ import java.util.List;
 
 import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
-import org.deegree.feature.property.Property;
 import org.deegree.filter.Expression;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.XPathEvaluator;
 import org.deegree.filter.expression.Function;
 import org.deegree.filter.function.FunctionProvider;
+import org.deegree.filter.utils.FilterUtils;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.multi.MultiPolygon;
 import org.deegree.geometry.multi.MultiSurface;
@@ -48,14 +48,18 @@ public class IsSurface implements FunctionProvider {
             @Override
             public <T> TypedObjectNode[] evaluate( T obj, XPathEvaluator<T> xpathEvaluator )
                                     throws FilterEvaluationException {
-                Object[] vals = getParams()[0].evaluate( obj, xpathEvaluator );
+                TypedObjectNode[] vals = getParams()[0].evaluate( obj, xpathEvaluator );
 
-                if ( vals.length != 1 || !( vals[0] instanceof Geometry ) && !( vals[0] instanceof Property )
-                     && !( ( (Property) vals[0] ).getValue() instanceof Geometry ) ) {
-                    return new TypedObjectNode[0];
+                if ( vals.length != 1 ) {
+                    throw new FilterEvaluationException( "The " + NAME + " function's first argument must evaluate"
+                                                         + " to exactly one value." );
                 }
-                Geometry geom = vals[0] instanceof Geometry ? (Geometry) vals[0]
-                                                           : (Geometry) ( (Property) vals[0] ).getValue();
+                Geometry geom = FilterUtils.getGeometryValue( vals[0] );
+
+                if ( geom == null ) {
+                    throw new FilterEvaluationException( "The " + NAME + " function's first argument did"
+                                                         + " not evaluate to a geometry." );
+                }
 
                 // TODO is handling of multi geometries like this ok?
                 boolean isSurface = geom instanceof Surface || geom instanceof MultiPolygon

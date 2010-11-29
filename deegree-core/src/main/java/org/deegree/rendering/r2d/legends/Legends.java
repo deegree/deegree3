@@ -54,6 +54,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.deegree.commons.utils.CollectionUtils;
+import org.deegree.commons.utils.DoublePair;
 import org.deegree.commons.utils.Pair;
 import org.deegree.commons.utils.CollectionUtils.Mapper;
 import org.deegree.cs.CRS;
@@ -65,7 +66,9 @@ import org.deegree.geometry.primitive.Polygon;
 import org.deegree.geometry.standard.DefaultEnvelope;
 import org.deegree.rendering.r2d.Java2DRenderer;
 import org.deegree.rendering.r2d.Java2DTextRenderer;
+import org.deegree.rendering.r2d.se.unevaluated.Continuation;
 import org.deegree.rendering.r2d.se.unevaluated.Style;
+import org.deegree.rendering.r2d.se.unevaluated.Symbolizer;
 import org.deegree.rendering.r2d.styling.LineStyling;
 import org.deegree.rendering.r2d.styling.PointStyling;
 import org.deegree.rendering.r2d.styling.Styling;
@@ -195,9 +198,15 @@ public class Legends {
         LinkedList<String> ruleTitles = style.getRuleTitles();
         Collections.reverse( ruleTitles );
         Iterator<String> titles = ruleTitles.iterator();
+        LinkedList<Pair<Continuation<LinkedList<Symbolizer<?>>>, DoublePair>> rules;
+        rules = new LinkedList<Pair<Continuation<LinkedList<Symbolizer<?>>>, DoublePair>>( style.getRules() );
+        Collections.reverse( rules );
+        Iterator<Pair<Continuation<LinkedList<Symbolizer<?>>>, DoublePair>> ruleIterator = rules.iterator();
         ArrayList<LinkedList<Styling>> bases = style.getBases();
         Collections.reverse( bases );
         for ( LinkedList<Styling> styles : bases ) {
+            Continuation<LinkedList<Symbolizer<?>>> rule = ruleIterator.next().first;
+
             String title = titles.next();
             Class<?> c = types.next();
             boolean isPoint = c.equals( Point.class ) || reduce( true, map( styles, pointStylingMapper ), AND );
@@ -227,15 +236,26 @@ public class Legends {
                 }
             }
 
-            for ( Styling styling : styles ) {
-                // normalize point symbols to 20 pixels
-                if ( styling instanceof PointStyling && isPoint ) {
-                    PointStyling s = ( (PointStyling) styling ).copy();
-                    s.uom = Metre;
-                    s.graphic.size = s.graphic.size / maxSize * Math.max( baseSizeX, baseSizeY );
-                    styling = s;
+            LinkedList<Symbolizer<?>> syms = new LinkedList<Symbolizer<?>>();
+            rule.evaluate( syms, null, null );
+            if ( !syms.isEmpty() ) {
+                for ( Symbolizer<?> s : syms ) {
+                    Pair<?, LinkedList<Geometry>> evald = s.evaluate( null, null );
+                    for ( Geometry gm : evald.second ) {
+                        renderer.render( (Styling) evald.first, gm );
+                    }
                 }
-                renderer.render( styling, geom );
+            } else {
+                for ( Styling styling : styles ) {
+                    // normalize point symbols to 20 pixels
+                    if ( styling instanceof PointStyling && isPoint ) {
+                        PointStyling s = ( (PointStyling) styling ).copy();
+                        s.uom = Metre;
+                        s.graphic.size = s.graphic.size / maxSize * Math.max( baseSizeX, baseSizeY );
+                        styling = s;
+                    }
+                    renderer.render( styling, geom );
+                }
             }
         }
         g.dispose();

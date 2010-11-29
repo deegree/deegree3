@@ -6,6 +6,7 @@ org.deegree.filter.function.geometry.IsCurve
 org.deegree.filter.function.geometry.IsPoint
 org.deegree.filter.function.geometry.IsSurface
 org.deegree.filter.function.geometry.GeometryFromWKT
+org.deegree.filter.function.geometry.MoveGeometry
 org.deegree.filter.function.other.IDiv
 org.deegree.filter.function.other.IMod
 org.deegree.filter.function.other.FtName

@@ -1,7 +1,7 @@
 //$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
- Copyright (C) 2001-2009 by:
+ Copyright (C) 2001-2010 by:
  - Department of Geography, University of Bonn -
  and
  - lat/lon GmbH -
@@ -36,8 +36,9 @@
 package org.deegree.filter.function.geometry;
 
 import static org.deegree.filter.utils.FilterUtils.getGeometryValue;
+import static org.deegree.geometry.utils.GeometryUtils.move;
+import static org.slf4j.LoggerFactory.getLogger;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.deegree.commons.tom.TypedObjectNode;
@@ -47,18 +48,20 @@ import org.deegree.filter.XPathEvaluator;
 import org.deegree.filter.expression.Function;
 import org.deegree.filter.function.FunctionProvider;
 import org.deegree.geometry.Geometry;
+import org.slf4j.Logger;
 
 /**
- * Returns a list of centroids for each geometry. Other values are ignored.
  * 
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
  */
-public class Centroid implements FunctionProvider {
+public class MoveGeometry implements FunctionProvider {
 
-    private static final String NAME = "Centroid";
+    static final Logger LOG = getLogger( MoveGeometry.class );
+
+    private static final String NAME = "MoveGeometry";
 
     @Override
     public String getName() {
@@ -67,25 +70,42 @@ public class Centroid implements FunctionProvider {
 
     @Override
     public int getArgCount() {
-        return 1;
+        return 3;
     }
 
     @Override
     public Function create( List<Expression> params ) {
         return new Function( NAME, params ) {
+
             @Override
             public <T> TypedObjectNode[] evaluate( T obj, XPathEvaluator<T> xpathEvaluator )
                                     throws FilterEvaluationException {
-                TypedObjectNode[] inputs = getParams()[0].evaluate( obj, xpathEvaluator );
-                List<TypedObjectNode> centroids = new ArrayList<TypedObjectNode>( inputs.length );
-                for ( TypedObjectNode val : inputs ) {
-                    Geometry geom = getGeometryValue( val );
-                    if ( geom != null ) {
-                        centroids.add( geom.getCentroid() );
-                    }
+                TypedObjectNode[] geometry = getParams()[0].evaluate( obj, xpathEvaluator );
+                TypedObjectNode[] offx = getParams()[1].evaluate( obj, xpathEvaluator );
+                TypedObjectNode[] offy = getParams()[2].evaluate( obj, xpathEvaluator );
+                if ( geometry.length != 1 ) {
+                    throw new FilterEvaluationException( "The MoveGeometry function's first argument must "
+                                                         + "evaluate to exactly one value." );
                 }
-                return centroids.toArray( new TypedObjectNode[centroids.size()] );
+                if ( offx.length != 1 ) {
+                    throw new FilterEvaluationException( "The MoveGeometry function's second argument must "
+                                                         + "evaluate to exactly one value." );
+                }
+                if ( offy.length != 1 ) {
+                    throw new FilterEvaluationException( "The MoveGeometry function's third argument must "
+                                                         + "evaluate to exactly one value." );
+                }
+                try {
+                    double movex = Double.parseDouble( offx[0].toString() );
+                    double movey = Double.parseDouble( offy[0].toString() );
+                    Geometry geom = getGeometryValue( geometry[0] );
+                    return new TypedObjectNode[] { move( geom, movex, movey ) };
+                } catch ( NumberFormatException e ) {
+                    throw new FilterEvaluationException( "The MoveGeometry function's second and third argument must "
+                                                         + "evaluate to numeric values." );
+                }
             }
         };
     }
+
 }
