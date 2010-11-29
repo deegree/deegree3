@@ -9,7 +9,7 @@
             String urlStr = request.getParameter( "url" );
             URL url = new URL(urlStr);
             
-            long maxFileSize = 1024 * 1024;
+            long maxFileSize = 1024 * 1024 * 2;
 
              String contentType ="text/xml;charset=UTF-8"; //text/xml; subtype=gml/2.1.2;charset=UTF-8
              response.setContentType( contentType );        
