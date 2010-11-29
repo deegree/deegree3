@@ -231,12 +231,11 @@ function addGMLLayer(gmlName, gmlURL, attr) {
 	request.send();
 	var xmlDoc = request.responseXML;
 	var msg = xmlDoc.documentElement.localName;
+	//alert(msg);
+	var errorMsg = "Parse error / File size of input data is to large? (max. 2 MB)";
 	if(msg == "parsererror"){
-		var errorMsg = "Parse error / File size of input data is to large?"
-		if(gmlURL.search("wps") != -1 || gmlURL.search("WPS") != -1 )
-			resultDisplayWPS.data = errorMsg;
-		else
-			resultDisplayWFS.data = errorMsg;
+		resultDisplayWPS.data = errorMsg;
+	 	resultDisplayWFS.data = errorMsg;
 		return null;
 	}
 	
@@ -247,7 +246,6 @@ function addGMLLayer(gmlName, gmlURL, attr) {
 	// create a GML layer
 	var layer = new OpenLayers.Layer.GML(gmlNameArray[1], gmlURL, { styleMap: getStyleMap() });
 
-	
 //	 var layerProtocol = new OpenLayers.Protocol.HTTP( {
 //		 url : gmlURL,
 //	 	format : new OpenLayers.Format.GML()
@@ -1596,6 +1594,10 @@ var WPSSwitcher =
 	        this.div.style.width = "";
 	        this.div.style.height = "";
 
+	        resultDisplayWPS.data = "";
+	        resultDisplayWFS.data = "";
+	        
+	        
 	        this.showControls(false);
 
 	        if (e != null) {
@@ -1614,6 +1616,10 @@ var WPSSwitcher =
 	        // and height to 0px, we cannot just set "display"
 	        // to "none" because it would hide the maximize
 	        // div
+	    	
+	        resultDisplayWPS.data = "";
+	        resultDisplayWFS.data = "";
+	    	
 	        this.div.style.width = "0px";
 	        this.div.style.height = "0px";
 
@@ -2158,6 +2164,9 @@ var WFSSwitcher =
 	        this.div.style.width = "";
 	        this.div.style.height = "";
 
+	        resultDisplayWPS.data = "";
+	        resultDisplayWFS.data = "";
+	        
 	        this.showControls(false);
 
 	        if (e != null) {
@@ -2179,6 +2188,9 @@ var WFSSwitcher =
 	        this.div.style.width = "0px";
 	        this.div.style.height = "0px";
 
+	        resultDisplayWPS.data = "";
+	        resultDisplayWFS.data = "";
+	        
 	        this.showControls(true);
 
 	        if (e != null) {
