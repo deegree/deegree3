@@ -195,7 +195,7 @@ public class MapController {
     private GetMap getCurrentQuery() {
         List<Style> styles = new ArrayList<Style>( layers.size() );
         for ( Layer l : layers ) {
-            styles.add( service.getStyles().getDefault( l.getName() ) );
+            styles.add( service.getStyles().get( l.getName(), null ) );
         }
         return new GetMap( service, layers, styles, width, height, envelope );
     }
@@ -284,7 +284,7 @@ public class MapController {
             return new GenericFeatureCollection();
         }
         GetFeatureInfo gfi = new GetFeatureInfo( singleton( queryLayer ),
-                                                 singleton( service.getStyles().getDefault( queryLayer.getName() ) ),
+                                                 singleton( service.getStyles().get( queryLayer.getName(), null ) ),
                                                  radius, envelope, x, y, width, height, 6 );
         try {
             return service.getFeatures( gfi ).first;

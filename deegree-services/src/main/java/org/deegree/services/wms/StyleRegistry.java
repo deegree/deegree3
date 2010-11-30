@@ -86,7 +86,11 @@ public class StyleRegistry extends TimerTask {
 
     private HashMap<File, Pair<Long, String>> monitoredFiles = new HashMap<File, Pair<Long, String>>();
 
+    private HashMap<File, Pair<Long, String>> monitoredLegendFiles = new HashMap<File, Pair<Long, String>>();
+
     private HashSet<String> soleStyleFiles = new HashSet<String>();
+
+    private HashSet<String> soleLegendFiles = new HashSet<String>();
 
     /**
      * @param layerName
@@ -151,18 +155,6 @@ public class StyleRegistry extends TimerTask {
 
     /**
      * @param layerName
-     * @return null, if not available
-     */
-    public Style getDefault( String layerName ) {
-        HashMap<String, Style> styles = registry.get( layerName );
-        if ( styles == null ) {
-            return null;
-        }
-        return styles.get( "default" );
-    }
-
-    /**
-     * @param layerName
      * @param styleName
      *            may be null, in which case the default style will be searched for
      * @return null, if not available
@@ -190,12 +182,16 @@ public class StyleRegistry extends TimerTask {
     /**
      * @param layerName
      * @param styleName
+     *            may be null, in which case the default style will be searched for
      * @return null, if not available
      */
     public Style get( String layerName, String styleName ) {
         HashMap<String, Style> styles = registry.get( layerName );
         if ( styles == null ) {
             return null;
+        }
+        if ( styleName == null ) {
+            styleName = "default";
         }
         return styles.get( styleName );
     }
@@ -214,14 +210,19 @@ public class StyleRegistry extends TimerTask {
         return styles;
     }
 
-    private Style loadNoImport( String layerName, File file ) {
+    private Style loadNoImport( String layerName, File file, boolean legend ) {
         XMLInputFactory fac = XMLInputFactory.newInstance();
         try {
-            LOG.debug( "Trying to load style from '{}'", file );
+
+            LOG.debug( "Trying to load{} style from '{}'", legend ? "" : " legend", file );
             FileInputStream in = new FileInputStream( file );
             Style sty = SymbologyParser.INSTANCE.parse( fac.createXMLStreamReader( file.toString(), in ) );
             in.close();
-            monitoredFiles.put( file, new Pair<Long, String>( file.lastModified(), layerName ) );
+            if ( legend ) {
+                monitoredLegendFiles.put( file, new Pair<Long, String>( file.lastModified(), layerName ) );
+            } else {
+                monitoredFiles.put( file, new Pair<Long, String>( file.lastModified(), layerName ) );
+            }
             return sty;
         } catch ( FileNotFoundException e ) {
             LOG.info( "Style file '{}' for layer '{}' could not be found: '{}'",
@@ -243,9 +244,23 @@ public class StyleRegistry extends TimerTask {
      * @return true, if actually loaded
      */
     public boolean load( String layerName, File file ) {
-        Style sty = loadNoImport( layerName, file );
+        Style sty = loadNoImport( layerName, file, false );
         if ( sty != null ) {
             put( layerName, sty, soleStyleFiles.contains( file.getName() ) );
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * @param layerName
+     * @param file
+     * @return true, if actually loaded
+     */
+    public boolean loadLegend( String layerName, File file ) {
+        Style sty = loadNoImport( layerName, file, true );
+        if ( sty != null ) {
+            putLegend( layerName, sty, soleLegendFiles.contains( file.getName() ) );
             return true;
         }
         return false;
@@ -261,7 +276,7 @@ public class StyleRegistry extends TimerTask {
             try {
                 File file = new File( adapter.resolve( sty.getFile() ).toURI() );
                 String name = sty.getName();
-                Style style = loadNoImport( layerName, file );
+                Style style = loadNoImport( layerName, file, false );
                 if ( style != null ) {
                     if ( name != null ) {
                         style.setName( name );
@@ -280,13 +295,15 @@ public class StyleRegistry extends TimerTask {
             }
             try {
                 if ( sty.getLegendConfigurationFile() != null ) {
-                    LOG.debug( "Reading {} as legend configuration file.", sty.getLegendConfigurationFile() );
                     File file = new File( adapter.resolve( sty.getLegendConfigurationFile() ).toURI() );
                     String name = sty.getName();
-                    Style style = loadNoImport( layerName, file );
+                    Style style = loadNoImport( layerName, file, true );
                     if ( style != null ) {
                         if ( name != null ) {
                             style.setName( name );
+                        }
+                        if ( styles.size() == 1 ) {
+                            soleLegendFiles.add( file.getName() );
                         }
                         putLegend( layerName, style, false );
                     }
@@ -318,9 +335,8 @@ public class StyleRegistry extends TimerTask {
                     if ( elem.getName().getLocalPart().equals( "Name" ) ) {
                         name = elem.getValue();
                     } else if ( elem.getName().getLocalPart().equals( "LegendConfigurationFile" ) ) {
-                        LOG.debug( "Reading {} as legend configuration file.", elem.getValue() );
                         File legendFile = new File( adapter.resolve( elem.getValue() ).toURI() );
-                        Style style = loadNoImport( layerName, legendFile );
+                        Style style = loadNoImport( layerName, legendFile, true );
                         if ( style != null ) {
                             if ( name != null ) {
                                 style.setName( name );
@@ -390,6 +406,13 @@ public class StyleRegistry extends TimerTask {
             Pair<Long, String> pair = monitoredFiles.get( f );
             if ( f.lastModified() != pair.first ) {
                 LOG.debug( "Reloading style file '{}'", f );
+                load( pair.second, f );
+            }
+        }
+        for ( File f : monitoredLegendFiles.keySet() ) {
+            Pair<Long, String> pair = monitoredLegendFiles.get( f );
+            if ( f.lastModified() != pair.first ) {
+                LOG.debug( "Reloading legend style file '{}'", f );
                 load( pair.second, f );
             }
         }

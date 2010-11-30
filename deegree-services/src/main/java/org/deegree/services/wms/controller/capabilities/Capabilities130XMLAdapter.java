@@ -326,7 +326,7 @@ public class Capabilities130XMLAdapter extends XMLAdapter {
             writer.writeEndElement();
         }
 
-        Style def = service.getStyles().getDefault( layer.getName() );
+        Style def = service.getStyles().get( layer.getName(), null );
         if ( def != null ) {
             if ( def.getName() != null && !def.getName().isEmpty() ) {
                 writeStyle( writer, "default", def.getName(), service.getLegendSize( def ), layer.getName(),

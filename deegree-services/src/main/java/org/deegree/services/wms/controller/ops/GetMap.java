@@ -270,7 +270,7 @@ public class GetMap {
         StyleRegistry registry = service.getStyles();
         if ( ss.trim().isEmpty() ) {
             for ( Layer layer : layers ) {
-                styles.add( registry.getDefault( layer.getName() ) );
+                styles.add( registry.get( layer.getName(), null ) );
             }
         } else {
             // to work around #split limitations
@@ -289,7 +289,7 @@ public class GetMap {
             int i = -1;
             for ( Layer l : layers ) {
                 if ( styls[++i].isEmpty() || styls[i].equals( "default" ) ) {
-                    styles.add( registry.getDefault( l.getName() ) );
+                    styles.add( registry.get( l.getName(), null ) );
                 } else {
                     if ( !registry.hasStyle( l.getName(), styls[i] ) ) {
                         throw new OWSException( get( "WMS.UNDEFINED_STYLE", styls[i], l.getName() ), STYLE_NOT_DEFINED );

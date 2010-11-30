@@ -467,7 +467,7 @@ public class MapService {
         warnings.addAll( l.paintMap( g, gm, s ) );
 
         for ( Layer child : l.getChildren() ) {
-            warnings.addAll( paintLayer( child, registry.getDefault( child.getInternalName() ), g, gm ) );
+            warnings.addAll( paintLayer( child, registry.get( child.getInternalName(), null ), g, gm ) );
         }
         return warnings;
     }
@@ -596,7 +596,7 @@ public class MapService {
 
         for ( Layer child : l.getChildren() ) {
             LinkedList<String> otherWarns = collectFeatureQueries( queries, (FeatureLayer) child,
-                                                                   registry.getDefault( child.getInternalName() ), gm,
+                                                                   registry.get( child.getInternalName(), null ), gm,
                                                                    ftToLayer, ftToStyle );
             if ( otherWarns == null ) {
                 return null;
@@ -752,7 +752,7 @@ public class MapService {
         }
         for ( Layer c : l.getChildren() ) {
             if ( c.getName() != null ) {
-                s = registry.getDefault( c.getName() );
+                s = registry.get( c.getName(), null );
             }
             warnings.addAll( getFeatures( feats, c, fi, s ) );
         }
