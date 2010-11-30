@@ -216,7 +216,7 @@ public class CSWController extends AbstractOGCServiceController {
             String rootElement = KVPUtils.getRequired( normalizedKVPParams, "REQUEST" );
             CSWRequestType requestType = getRequestType( rootElement );
 
-            Version requestVersion = getVersion( normalizedKVPParams.get( "VERSION" ) );
+            Version requestVersion = getVersion( normalizedKVPParams.get( "ACCEPTVERSIONS" ) );
 
             String serviceAttr = KVPUtils.getRequired( normalizedKVPParams, "SERVICE" );
             if ( !"CSW".equals( serviceAttr ) ) {
@@ -231,13 +231,11 @@ public class CSWController extends AbstractOGCServiceController {
 
             case GetCapabilities:
 
-                GetCapabilities getCapabilities = securityManager == null ? GetCapabilities202KVPAdapter.parse(
-                                                                                                                requestVersion,
-                                                                                                                normalizedKVPParams )
+                GetCapabilities getCapabilities = securityManager == null ? GetCapabilities202KVPAdapter.parse( normalizedKVPParams )
                                                                          : securityManager.preprocess(
                                                                                                        GetCapabilities202KVPAdapter.parse(
-                                                                                                                                           requestVersion,
-                                                                                                                                           normalizedKVPParams ),
+
+                                                                                                       normalizedKVPParams ),
                                                                                                        OGCFrontController.getContext().getCredentials(),
                                                                                                        false );
                 doGetCapabilities( getCapabilities, request, response, false );
@@ -310,8 +308,9 @@ public class CSWController extends AbstractOGCServiceController {
 
         try {
             XMLAdapter requestDoc = new XMLAdapter( xmlStream );
-            String rootElement = requestDoc.getRootElement().getLocalName();
-            CSWRequestType requestType = getRequestType( rootElement );
+            OMElement rootElement = requestDoc.getRootElement();
+            String rootElementString = rootElement.getLocalName();
+            CSWRequestType requestType = getRequestType( rootElementString );
 
             // check if requested version is supported and offered (except for GetCapabilities)
             Version requestVersion = getVersion( requestDoc.getRootElement().getAttributeValue( new QName( "version" ) ) );
@@ -323,13 +322,13 @@ public class CSWController extends AbstractOGCServiceController {
 
             case GetCapabilities:
                 GetCapabilitiesVersionXMLAdapter getCapabilitiesAdapter = new GetCapabilitiesVersionXMLAdapter();
-                getCapabilitiesAdapter.setRootElement( requestDoc.getRootElement() );
+                getCapabilitiesAdapter.setRootElement( rootElement );
                 // if the securityManager is null don't care about anything. Even if here is the authorization in the
                 // header.
                 GetCapabilities cswRequest = securityManager == null
-                                             && ( request.getHeader( "authorization" ) != null || request.getHeader( "authorization" ) == null ) ? getCapabilitiesAdapter.parse( requestVersion )
+                                             && ( request.getHeader( "authorization" ) != null || request.getHeader( "authorization" ) == null ) ? getCapabilitiesAdapter.parse()
                                                                                                                                                 : securityManager.preprocess(
-                                                                                                                                                                              getCapabilitiesAdapter.parse( requestVersion ),
+                                                                                                                                                                              getCapabilitiesAdapter.parse(),
                                                                                                                                                                               OGCFrontController.getContext().getCredentials(),
                                                                                                                                                                               false );
 
@@ -374,7 +373,7 @@ public class CSWController extends AbstractOGCServiceController {
                 getRecordByIdHandler.doGetRecordById( cswGRBIRequest, response, false );
                 break;
             case Transaction:
-                checkTransactionsEnabled( rootElement );
+                checkTransactionsEnabled( rootElementString );
                 TransactionXMLAdapter transAdapter = new TransactionXMLAdapter();
                 transAdapter.setRootElement( requestDoc.getRootElement() );
 
@@ -432,9 +431,9 @@ public class CSWController extends AbstractOGCServiceController {
                 getCapabilitiesAdapter.setRootElement( requestElement );
 
                 GetCapabilities cswRequest = securityManager == null
-                                             && ( request.getHeader( "authorization" ) != null || request.getHeader( "authorization" ) == null ) ? getCapabilitiesAdapter.parse( requestVersion )
+                                             && ( request.getHeader( "authorization" ) != null || request.getHeader( "authorization" ) == null ) ? getCapabilitiesAdapter.parse()
                                                                                                                                                 : securityManager.preprocess(
-                                                                                                                                                                              getCapabilitiesAdapter.parse( requestVersion ),
+                                                                                                                                                                              getCapabilitiesAdapter.parse(),
                                                                                                                                                                               OGCFrontController.getContext().getCredentials(),
                                                                                                                                                                               true );
                 doGetCapabilities( cswRequest, request, response, true );
@@ -570,16 +569,16 @@ public class CSWController extends AbstractOGCServiceController {
 
         checkOrCreateDCPGetURL( requestWrapper );
         checkOrCreateDCPPostURL( requestWrapper );
+        String acceptFormat = getAcceptsFormats( getCapabilitiesRequest );
         Set<Sections> sections = getSections( getCapabilitiesRequest );
-        // Version negotiatedVersion = negotiateVersion( getCapabilitiesRequest );
         Version negotiatedVersion = null;
-        if ( getCapabilitiesRequest.getVersion() == null ) {
+        if ( getCapabilitiesRequest.getAcceptVersions() == null ) {
             negotiatedVersion = new Version( 2, 0, 2 );
         } else {
-            negotiatedVersion = getCapabilitiesRequest.getVersionAsVersion();
+            negotiatedVersion = negotiateVersion( getCapabilitiesRequest );
         }
 
-        response.setContentType( "text/xml; charset=UTF-8" );
+        response.setContentType( acceptFormat );
 
         XMLStreamWriter xmlWriter = getXMLResponseWriter( response, null );
 
@@ -643,6 +642,26 @@ public class CSWController extends AbstractOGCServiceController {
             }
         }
         return result;
+    }
+
+    private String getAcceptsFormats( GetCapabilities getCapabilitiesRequest )
+                            throws OWSException {
+        String acceptFormat;
+        Set<String> af = getCapabilitiesRequest.getAcceptFormats();
+        String application = "application/xml";
+        String text = "text/xml";
+        if ( af.isEmpty() ) {
+            acceptFormat = text;
+        } else if ( af.contains( application ) ) {
+            acceptFormat = application;
+        } else if ( af.contains( text ) ) {
+            acceptFormat = text;
+        } else {
+            throw new OWSException( "Format determination failed. Requested format is not supported by this CSW.",
+                                    OWSException.INVALID_FORMAT );
+        }
+
+        return acceptFormat;
     }
 
     /**

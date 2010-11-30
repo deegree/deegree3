@@ -176,6 +176,7 @@ public class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
         supportedOperations.add( CSWRequestType.DescribeRecord.name() );
         supportedOperations.add( CSWRequestType.GetRecords.name() );
         supportedOperations.add( CSWRequestType.GetRecordById.name() );
+        // supportedOperations.add( CSWRequestType.Transaction.name() );
 
     }
 
@@ -643,17 +644,17 @@ public class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
         writer.writeStartElement( owsNS, "Parameter" );
         writer.writeAttribute( "name", "outputFormat" );
 
+        // writer.writeStartElement( owsNS, "Value" );
+        // writer.writeCharacters( acceptFormat );
+        // writer.writeEndElement();// Value
+
+        writer.writeStartElement( owsNS, "Value" );
+        writer.writeCharacters( "text/xml" );
+        writer.writeEndElement();// Value
+
         writer.writeStartElement( owsNS, "Value" );
         writer.writeCharacters( "application/xml" );
         writer.writeEndElement();// Value
-
-        // writer.writeStartElement( owsNS, "Value" );
-        // writer.writeCharacters( "text/plain" );
-        // writer.writeEndElement();// Value
-        //
-        // writer.writeStartElement( owsNS, "Value" );
-        // writer.writeCharacters( "text/html" );
-        // writer.writeEndElement();// Value
 
         writer.writeEndElement();// Parameter
 

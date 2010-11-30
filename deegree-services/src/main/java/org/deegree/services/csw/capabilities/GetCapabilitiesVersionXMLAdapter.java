@@ -35,7 +35,6 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.services.csw.capabilities;
 
-import org.deegree.commons.tom.ows.Version;
 import org.deegree.protocol.ows.capabilities.GetCapabilities;
 import org.deegree.protocol.ows.capabilities.GetCapabilitiesXMLParser;
 
@@ -58,16 +57,16 @@ public class GetCapabilitiesVersionXMLAdapter extends GetCapabilitiesXMLParser {
      *            that is parsed from the request in the GetCapabilities
      * @return {@link GetCapabilities} request
      */
-    public GetCapabilities parse( Version version ) {
+    public GetCapabilities parse() {
         GetCapabilities request = null;
-        if ( version != null ) {
-            // @version present -> treat as CSW [version] request
-
-            request = new GetCapabilities( version );
-        } else {
-            // else treat as OWS 1.0.0
-            request = parse100();
-        }
+        // if ( version != null ) {
+        // // @version present -> treat as CSW [version] request
+        //
+        // request = new GetCapabilities( version );
+        // } else {
+        // else treat as OWS 1.0.0
+        request = parse100();
+        // }
         return request;
     }
 
