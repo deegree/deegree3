@@ -38,7 +38,6 @@ package org.deegree.metadata.persistence;
 import java.sql.ResultSet;
 
 import org.deegree.metadata.MetadataRecord;
-import org.deegree.metadata.MetadataResultType;
 
 /**
  * Has a {@link MetadataCollection} and the corresponding {@link MetadataResultType} as content.
@@ -74,10 +73,4 @@ public interface MetadataResultSet {
     public MetadataRecord getRecord()
                             throws MetadataStoreException;
 
-    /**
-     * A {@link MetadataResultType}.
-     * 
-     * @return a {@link MetadataResultType}.
-     */
-    public MetadataResultType getResultType();
 }

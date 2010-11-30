@@ -49,7 +49,6 @@ import org.deegree.metadata.persistence.iso.ISOMetadataStoreProvider;
 import org.deegree.metadata.persistence.iso.helper.AbstractISOTest;
 import org.deegree.metadata.persistence.iso.helper.TstConstants;
 import org.deegree.metadata.persistence.iso.helper.TstUtils;
-import org.deegree.protocol.csw.CSWConstants.ResultType;
 import org.junit.Assert;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -82,7 +81,7 @@ public class TstAnyTextElement extends AbstractISOTest {
         List<String> ids = TstUtils.insertMetadata( store, TstConstants.tst_10 );
         if ( ids != null ) {
             // test query
-            MetadataQuery query = new MetadataQuery( null, null, ResultType.results, 1 );
+            MetadataQuery query = new MetadataQuery( null, null, 1 );
             resultSet = store.getRecords( query );
             String anyText = null;
             while ( resultSet.next() ) {
@@ -114,7 +113,7 @@ public class TstAnyTextElement extends AbstractISOTest {
         List<String> ids = TstUtils.insertMetadata( store, TstConstants.tst_10 );
         if ( ids != null ) {
             // test query
-            MetadataQuery query = new MetadataQuery( null, null, ResultType.results, 1 );
+            MetadataQuery query = new MetadataQuery( null, null, 1 );
             resultSet = store.getRecords( query );
             String anyText = null;
             while ( resultSet.next() ) {
@@ -146,7 +145,7 @@ public class TstAnyTextElement extends AbstractISOTest {
         List<String> ids = TstUtils.insertMetadata( store, TstConstants.tst_10 );
         if ( ids != null ) {
             // test query
-            MetadataQuery query = new MetadataQuery( null, null, ResultType.results, 1 );
+            MetadataQuery query = new MetadataQuery( null, null, 1 );
             resultSet = store.getRecords( query );
             String anyText = null;
             while ( resultSet.next() ) {

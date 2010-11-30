@@ -46,7 +46,6 @@ import javax.xml.stream.XMLStreamReader;
 import org.deegree.commons.utils.JDBCUtils;
 import org.deegree.metadata.ISORecord;
 import org.deegree.metadata.MetadataRecord;
-import org.deegree.metadata.MetadataResultType;
 import org.deegree.metadata.persistence.MetadataResultSet;
 import org.deegree.metadata.persistence.MetadataStoreException;
 import org.deegree.metadata.persistence.iso19115.jaxb.ISOMetadataStoreConfig.AnyText;
@@ -67,16 +66,13 @@ public class ISOMetadataResultSet implements MetadataResultSet {
 
     private final ResultSet rs;
 
-    private final MetadataResultType type;
-
     private final AnyText anyText;
 
     private final Connection conn;
 
-    public ISOMetadataResultSet( ResultSet rs, Connection conn, MetadataResultType type, AnyText anyText ) {
+    public ISOMetadataResultSet( ResultSet rs, Connection conn, AnyText anyText ) {
         this.rs = rs;
         this.conn = conn;
-        this.type = type;
         this.anyText = anyText;
     }
 
@@ -84,11 +80,6 @@ public class ISOMetadataResultSet implements MetadataResultSet {
     public void close()
                             throws MetadataStoreException {
         JDBCUtils.close( rs, null, conn, LOG );
-    }
-
-    @Override
-    public MetadataResultType getResultType() {
-        return this.type;
     }
 
     @Override

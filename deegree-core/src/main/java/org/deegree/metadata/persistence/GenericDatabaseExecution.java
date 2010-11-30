@@ -53,8 +53,8 @@ public interface GenericDatabaseExecution {
     public int executeDeleteStatement( Connection connection, PostGISWhereBuilder builder )
                             throws MetadataStoreException;
 
-    public PreparedStatement executeGetRecords( MetadataQuery recordStoreOptions, boolean setCount,
-                                                PostGISWhereBuilder builder, Connection conn )
+    public PreparedStatement executeGetRecords( MetadataQuery recordStoreOptions, PostGISWhereBuilder builder,
+                                                Connection conn )
                             throws MetadataStoreException;
 
 }

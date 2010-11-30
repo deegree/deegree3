@@ -110,4 +110,7 @@ public interface MetadataStore {
     public MetadataStoreTransaction acquireTransaction()
                             throws MetadataStoreException;
 
+    public int countMetadata( MetadataQuery query )
+                            throws MetadataStoreException;
+
 }

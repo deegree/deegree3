@@ -51,10 +51,6 @@ import org.deegree.protocol.csw.CSWConstants.ResultType;
  * @version $Revision$, $Date$
  */
 public class MetadataQuery {
-
-    // ?
-    private final ResultType resultType;
-
     private final int startPosition;
 
     private final Filter filter;
@@ -71,11 +67,10 @@ public class MetadataQuery {
      * @param startPosition
      *            at which record position should start the response}
      */
-    public MetadataQuery( Filter filter, SortProperty[] sorting, ResultType resultType, int startPosition ) {
+    public MetadataQuery( Filter filter, SortProperty[] sorting, int startPosition ) {
 
         this.filter = filter;
         this.sorting = sorting;
-        this.resultType = resultType;
         this.startPosition = startPosition;
 
     }
@@ -85,13 +80,6 @@ public class MetadataQuery {
      */
     public Filter getFilter() {
         return filter;
-    }
-
-    /**
-     * @return the resultType
-     */
-    public ResultType getResultType() {
-        return resultType;
     }
 
     /**

@@ -46,7 +46,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import javax.xml.stream.FactoryConfigurationError;
@@ -57,12 +56,10 @@ import javax.xml.stream.XMLStreamReader;
 import org.apache.axiom.om.OMElement;
 import org.deegree.commons.jdbc.ConnectionManager;
 import org.deegree.commons.utils.JDBCUtils;
-import org.deegree.commons.utils.time.DateUtils;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.OperatorFilter;
 import org.deegree.filter.sql.postgis.PostGISWhereBuilder;
 import org.deegree.metadata.ISORecord;
-import org.deegree.metadata.MetadataResultType;
 import org.deegree.metadata.i18n.Messages;
 import org.deegree.metadata.persistence.MetadataInspectorException;
 import org.deegree.metadata.persistence.MetadataQuery;
@@ -76,7 +73,6 @@ import org.deegree.metadata.persistence.iso.parsing.inspectation.HierarchieLevel
 import org.deegree.metadata.persistence.iso.parsing.inspectation.InspireComplianceInspector;
 import org.deegree.metadata.persistence.iso.parsing.inspectation.MetadataSchemaValidationInspector;
 import org.deegree.metadata.persistence.iso.parsing.inspectation.RecordInspector;
-import org.deegree.metadata.persistence.iso.resulttypes.Hits;
 import org.deegree.metadata.persistence.iso19115.jaxb.CoupledResourceInspector;
 import org.deegree.metadata.persistence.iso19115.jaxb.FileIdentifierInspector;
 import org.deegree.metadata.persistence.iso19115.jaxb.ISOMetadataStoreConfig;
@@ -256,24 +252,18 @@ public class ISOMetadataStore implements MetadataStore {
         PostGISWhereBuilder builder = null;
         Connection conn = null;
         MetadataResultSet result = null;
-        MetadataResultType resultType = null;
 
         try {
             conn = ConnectionManager.getConnection( connectionId );
             builder = new PostGISWhereBuilder( mapping, (OperatorFilter) query.getFilter(), query.getSorting(),
                                                useLegacyPredicates );
 
-            switch ( query.getResultType() ) {
-            case results:
-                result = doResultsOnGetRecord( query, builder, conn );
-                break;
-            case hits:
-                resultType = doHitsOnGetRecord( query, ResultType.hits, builder, conn, new ExecuteStatements() );
-                result = new ISOMetadataResultSet( null, conn, resultType, config.getAnyText() );
-                break;
-            case validate:
-                // is handled by the protocol layer
-            }
+            result = doResultsOnGetRecord( query, builder, conn );
+            // break;
+            // case hits:
+            // resultType = doHitsOnGetRecord( query, ResultType.hits, builder, conn, new ExecuteStatements() );
+            // result = new ISOMetadataResultSet( null, conn, resultType, config.getAnyText() );
+
         } catch ( FilterEvaluationException e ) {
             String msg = Messages.getMessage( "ERROR_OPERATION", operationName, e.getLocalizedMessage() );
             LOG.debug( msg );
@@ -302,31 +292,23 @@ public class ISOMetadataStore implements MetadataStore {
      *            - the JDBCConnection
      * @throws MetadataStoreException
      */
-    private MetadataResultType doHitsOnGetRecord( MetadataQuery recOpt, ResultType resultType,
-                                                  PostGISWhereBuilder builder, Connection conn, ExecuteStatements exe )
+    public int countMetadata( MetadataQuery recOpt )
                             throws MetadataStoreException {
         String resultTypeName = "hits";
         LOG.info( Messages.getMessage( "INFO_EXEC", "do " + resultTypeName + " on getRecords" ) );
         ResultSet rs = null;
         PreparedStatement ps = null;
-        MetadataResultType result = null;
+        int countRows = 0;
+        Connection conn = null;
 
         try {
 
-            int countRows = 0;
-
-            ps = exe.executeGetRecords( recOpt, true, builder, conn );
-
+            conn = ConnectionManager.getConnection( connectionId );
+            ps = conn.prepareStatement( new ExecuteStatements().executeCounting().toString() );
             rs = ps.executeQuery();
             rs.next();
             countRows = rs.getInt( 1 );
             LOG.info( "rs for rowCount: " + rs.getInt( 1 ) );
-
-            if ( resultType.equals( ResultType.results ) ) {
-                result = new Hits( countRows, DateUtils.formatISO8601Date( new Date() ) );
-            } else {
-                result = new Hits( countRows, DateUtils.formatISO8601Date( new Date() ) );
-            }
 
         } catch ( Throwable t ) {
             JDBCUtils.close( rs, ps, conn, LOG );
@@ -337,7 +319,7 @@ public class ISOMetadataStore implements MetadataStore {
             JDBCUtils.close( rs );
         }
 
-        return result;
+        return countRows;
 
     }
 
@@ -362,13 +344,11 @@ public class ISOMetadataStore implements MetadataStore {
                                                     Connection conn )
                             throws MetadataStoreException {
         LOG.info( Messages.getMessage( "INFO_EXEC", "do results on getRecords" ) );
-        MetadataResultType type = null;
         ResultSet rs = null;
         PreparedStatement preparedStatement = null;
         ExecuteStatements exe = new ExecuteStatements();
         try {
-            preparedStatement = exe.executeGetRecords( recordStoreOptions, false, builder, conn );
-            type = doHitsOnGetRecord( recordStoreOptions, ResultType.results, builder, conn, exe );
+            preparedStatement = exe.executeGetRecords( recordStoreOptions, builder, conn );
             rs = preparedStatement.executeQuery();
             // close( preparedStatement );
         } catch ( Throwable t ) {
@@ -378,7 +358,7 @@ public class ISOMetadataStore implements MetadataStore {
             throw new MetadataStoreException( msg );
         }
 
-        return new ISOMetadataResultSet( rs, conn, type, config.getAnyText() );
+        return new ISOMetadataResultSet( rs, conn, config.getAnyText() );
 
     }
 
@@ -439,7 +419,7 @@ public class ISOMetadataStore implements MetadataStore {
             LOG.debug( msg );
             throw new MetadataStoreException( msg );
         }
-        return new ISOMetadataResultSet( rs, conn, null, config.getAnyText() );
+        return new ISOMetadataResultSet( rs, conn, config.getAnyText() );
     }
 
     @Override

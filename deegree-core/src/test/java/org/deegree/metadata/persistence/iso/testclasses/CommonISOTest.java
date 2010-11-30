@@ -60,7 +60,6 @@ import org.deegree.metadata.persistence.iso.helper.AbstractISOTest;
 import org.deegree.metadata.persistence.iso.helper.TstConstants;
 import org.deegree.metadata.persistence.iso.helper.TstUtils;
 import org.deegree.metadata.publication.DeleteTransaction;
-import org.deegree.protocol.csw.CSWConstants.ResultType;
 import org.deegree.protocol.csw.CSWConstants.ReturnableElement;
 import org.junit.Assert;
 import org.junit.Test;
@@ -116,14 +115,14 @@ public class CommonISOTest extends AbstractISOTest {
 
         TstUtils.insertMetadata( store, urlArray );
 
-        MetadataQuery query = new MetadataQuery( null, null, ResultType.results, 1 );
+        MetadataQuery query = new MetadataQuery( null, null, 1 );
         resultSet = store.getRecords( query );
         int size = 0;
         while ( resultSet.next() ) {
             size++;
         }
 
-        Assert.assertEquals( 2, size );
+        Assert.assertEquals( 3, size );
 
         // TODO test various queries
 
@@ -143,7 +142,7 @@ public class CommonISOTest extends AbstractISOTest {
             return;
         }
         store.setupMetametadata();
-        MetadataQuery query = new MetadataQuery( null, null, ResultType.results, 1 );
+        MetadataQuery query = new MetadataQuery( null, null, 1 );
         resultSet = store.getRecords( query );
         int size = 0;
         while ( resultSet.next() ) {
@@ -237,7 +236,7 @@ public class CommonISOTest extends AbstractISOTest {
         taDel.performDelete( delete );
         taDel.commit();
         // test query
-        MetadataQuery query = new MetadataQuery( null, null, ResultType.results, 1 );
+        MetadataQuery query = new MetadataQuery( null, null, 1 );
         resultSet = store.getRecords( query );
         int size = 0;
         while ( resultSet.next() ) {
@@ -359,7 +358,7 @@ public class CommonISOTest extends AbstractISOTest {
         List<String> ids = TstUtils.insertMetadata( store, TstConstants.tst_10 );
         if ( ids != null ) {
             // test query
-            MetadataQuery query = new MetadataQuery( null, null, ResultType.results, 1 );
+            MetadataQuery query = new MetadataQuery( null, null, 1 );
             resultSet = store.getRecords( query );
             // identifier
             String[] identifier = null;

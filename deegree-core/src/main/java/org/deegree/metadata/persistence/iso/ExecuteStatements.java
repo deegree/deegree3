@@ -90,8 +90,8 @@ public class ExecuteStatements implements GenericDatabaseExecution {
         List<Integer> deletableDatasets;
         try {
 
-            StringBuilder header = getPreparedStatementDatasetIDs( null, false, true, builder );
-            preparedStatement = getPSBody( null, false, connection, builder, header );
+            StringBuilder header = getPreparedStatementDatasetIDs( null, true, builder );
+            preparedStatement = getPSBody( null, connection, builder, header );
 
             int i = 1;
             if ( builder.getWhere() != null ) {
@@ -147,7 +147,7 @@ public class ExecuteStatements implements GenericDatabaseExecution {
 
     }
 
-    private StringBuilder getPreparedStatementDatasetIDs( MetadataQuery query, boolean setCount, boolean setDelete,
+    private StringBuilder getPreparedStatementDatasetIDs( MetadataQuery query, boolean setDelete,
                                                           PostGISWhereBuilder builder )
                             throws MetadataStoreException {
 
@@ -159,31 +159,24 @@ public class ExecuteStatements implements GenericDatabaseExecution {
         }
         String rootTableAlias = builder.getAliasManager().getRootTableAlias();
         getDatasetIDs.append( "SELECT " );
-        if ( setCount ) {
-            getDatasetIDs.append( "COUNT( DISTINCT " );
+
+        if ( setDelete ) {
+            getDatasetIDs.append( " DISTINCT " );
+            getDatasetIDs.append( rootTableAlias );
+            getDatasetIDs.append( '.' );
+            getDatasetIDs.append( id );
+            if ( orderByclause != null ) {
+                getDatasetIDs.append( ',' );
+                getDatasetIDs.append( orderByclause );
+            }
+        } else {
+            getDatasetIDs.append( " DISTINCT " );
             getDatasetIDs.append( rootTableAlias );
             getDatasetIDs.append( '.' );
             getDatasetIDs.append( rf );
-            getDatasetIDs.append( ')' );
-        } else {
-            if ( setDelete ) {
-                getDatasetIDs.append( " DISTINCT " );
-                getDatasetIDs.append( rootTableAlias );
-                getDatasetIDs.append( '.' );
-                getDatasetIDs.append( id );
-                if ( orderByclause != null ) {
-                    getDatasetIDs.append( ',' );
-                    getDatasetIDs.append( orderByclause );
-                }
-            } else {
-                getDatasetIDs.append( " DISTINCT " );
-                getDatasetIDs.append( rootTableAlias );
-                getDatasetIDs.append( '.' );
-                getDatasetIDs.append( rf );
-                if ( orderByclause != null ) {
-                    getDatasetIDs.append( ',' );
-                    getDatasetIDs.append( orderByclause );
-                }
+            if ( orderByclause != null ) {
+                getDatasetIDs.append( ',' );
+                getDatasetIDs.append( orderByclause );
             }
         }
 
@@ -191,8 +184,8 @@ public class ExecuteStatements implements GenericDatabaseExecution {
 
     }
 
-    private PreparedStatement getPSBody( MetadataQuery query, boolean setCount, Connection connection,
-                                         PostGISWhereBuilder builder, StringBuilder getDatasetIDs )
+    private PreparedStatement getPSBody( MetadataQuery query, Connection connection, PostGISWhereBuilder builder,
+                                         StringBuilder getDatasetIDs )
                             throws MetadataStoreException {
 
         String rootTableAlias = builder.getAliasManager().getRootTableAlias();
@@ -227,12 +220,12 @@ public class ExecuteStatements implements GenericDatabaseExecution {
             getDatasetIDs.append( builder.getWhere().getSQL() );
         }
 
-        if ( builder.getOrderBy() != null && !setCount ) {
+        if ( builder.getOrderBy() != null ) {
             getDatasetIDs.append( " ORDER BY " );
             getDatasetIDs.append( builder.getOrderBy().getSQL() );
         }
 
-        if ( !setCount && query != null ) {
+        if ( query != null ) {
             getDatasetIDs.append( " OFFSET " ).append( Integer.toString( query.getStartPosition() - 1 ) );
         }
 
@@ -385,8 +378,7 @@ public class ExecuteStatements implements GenericDatabaseExecution {
     }
 
     @Override
-    public PreparedStatement executeGetRecords( MetadataQuery query, boolean setCount, PostGISWhereBuilder builder,
-                                                Connection conn )
+    public PreparedStatement executeGetRecords( MetadataQuery query, PostGISWhereBuilder builder, Connection conn )
                             throws MetadataStoreException {
         PreparedStatement preparedStatement = null;
         java.util.Date date = null;
@@ -394,8 +386,8 @@ public class ExecuteStatements implements GenericDatabaseExecution {
 
             LOG.debug( Messages.getMessage( "INFO_EXEC", "getRecords-statement" ) );
 
-            StringBuilder header = getPreparedStatementDatasetIDs( query, setCount, false, builder );
-            preparedStatement = getPSBody( query, setCount, conn, builder, header );
+            StringBuilder header = getPreparedStatementDatasetIDs( query, false, builder );
+            preparedStatement = getPSBody( query, conn, builder, header );
 
             int i = 1;
             if ( builder.getWhere() != null ) {
@@ -434,6 +426,19 @@ public class ExecuteStatements implements GenericDatabaseExecution {
         }
         return preparedStatement;
 
+    }
+
+    public StringBuilder executeCounting() {
+        LOG.info( "new Counting" );
+        StringBuilder getDatasetIDs = new StringBuilder();
+        getDatasetIDs.append( "SELECT " );
+        getDatasetIDs.append( "COUNT( " );
+        getDatasetIDs.append( rf );
+        getDatasetIDs.append( ')' );
+        getDatasetIDs.append( " FROM " );
+        getDatasetIDs.append( databaseTable );
+
+        return getDatasetIDs;
     }
 
 }
