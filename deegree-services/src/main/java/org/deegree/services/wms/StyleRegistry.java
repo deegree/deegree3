@@ -413,7 +413,7 @@ public class StyleRegistry extends TimerTask {
             Pair<Long, String> pair = monitoredLegendFiles.get( f );
             if ( f.lastModified() != pair.first ) {
                 LOG.debug( "Reloading legend style file '{}'", f );
-                load( pair.second, f );
+                loadLegend( pair.second, f );
             }
         }
     }
