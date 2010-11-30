@@ -9,6 +9,7 @@
     </Description>
     <PolygonSymbolizer>
       <Geometry>
+      <ogc:Function name="MoveGeometry">
         <ogc:Function name="GeometryFromWKT">
           <ogc:Literal>CRS:1</ogc:Literal>
           <ogc:Literal>POLYGON ((
@@ -22,6 +23,9 @@
         9.293103448275865 21.49137931034483, 
         16.500000000000004 21.163793103448274
     ))</ogc:Literal>
+        </ogc:Function>
+        <ogc:Literal>0</ogc:Literal>
+        <ogc:Literal>162</ogc:Literal>
         </ogc:Function>
       </Geometry>
         <Fill>
@@ -57,7 +61,7 @@
     ))</ogc:Literal>
         </ogc:Function>
         <ogc:Literal>0</ogc:Literal>
-        <ogc:Literal>27</ogc:Literal>
+        <ogc:Literal>135</ogc:Literal>
         </ogc:Function>
       </Geometry>
         <Fill>
@@ -93,7 +97,7 @@
     ))</ogc:Literal>
         </ogc:Function>
         <ogc:Literal>0</ogc:Literal>
-        <ogc:Literal>54</ogc:Literal>
+        <ogc:Literal>108</ogc:Literal>
         </ogc:Function>
       </Geometry>
         <Fill>
@@ -170,7 +174,7 @@
     ))</ogc:Literal>
         </ogc:Function>
         <ogc:Literal>0</ogc:Literal>
-        <ogc:Literal>108</ogc:Literal>
+        <ogc:Literal>54</ogc:Literal>
         </ogc:Function>
         </ogc:Function>
       </Geometry>
@@ -207,7 +211,7 @@
     ))</ogc:Literal>
         </ogc:Function>
         <ogc:Literal>0</ogc:Literal>
-        <ogc:Literal>135</ogc:Literal>
+        <ogc:Literal>27</ogc:Literal>
         </ogc:Function>
       </Geometry>
         <Fill>
@@ -227,7 +231,6 @@
     </Description>
     <PolygonSymbolizer>
       <Geometry>
-      <ogc:Function name="MoveGeometry">
         <ogc:Function name="GeometryFromWKT">
           <ogc:Literal>CRS:1</ogc:Literal>
           <ogc:Literal>POLYGON ((
@@ -241,9 +244,6 @@
         9.293103448275865 21.49137931034483, 
         16.500000000000004 21.163793103448274
     ))</ogc:Literal>
-        </ogc:Function>
-        <ogc:Literal>0</ogc:Literal>
-        <ogc:Literal>162</ogc:Literal>
         </ogc:Function>
       </Geometry>
         <Fill>
