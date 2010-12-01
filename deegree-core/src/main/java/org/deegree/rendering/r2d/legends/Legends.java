@@ -36,6 +36,7 @@
 package org.deegree.rendering.r2d.legends;
 
 import static java.lang.Math.max;
+import static org.deegree.rendering.r2d.styling.components.UOM.Metre;
 
 import java.awt.Graphics2D;
 import java.util.ArrayList;
@@ -45,15 +46,18 @@ import java.util.List;
 
 import org.deegree.commons.utils.DoublePair;
 import org.deegree.commons.utils.Pair;
+import org.deegree.cs.CRS;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryFactory;
 import org.deegree.rendering.r2d.Java2DRenderer;
 import org.deegree.rendering.r2d.Java2DTextRenderer;
+import org.deegree.rendering.r2d.TextRenderer;
 import org.deegree.rendering.r2d.se.unevaluated.Continuation;
 import org.deegree.rendering.r2d.se.unevaluated.Style;
 import org.deegree.rendering.r2d.se.unevaluated.Symbolizer;
 import org.deegree.rendering.r2d.styling.RasterStyling;
 import org.deegree.rendering.r2d.styling.Styling;
+import org.deegree.rendering.r2d.styling.TextStyling;
 
 /**
  * 
@@ -86,6 +90,22 @@ public class Legends {
         return opts;
     }
 
+    public static void paintLegendText( int origin, LegendOptions opts, String text, TextRenderer textRenderer ) {
+        TextStyling textStyling = new TextStyling();
+        textStyling.font = new org.deegree.rendering.r2d.styling.components.Font();
+        textStyling.font.fontFamily.add( 0, "Arial" );
+        textStyling.font.fontSize = opts.textSize;
+        textStyling.anchorPointX = 0;
+        textStyling.anchorPointY = 0.5;
+        textStyling.uom = Metre;
+
+        if ( text != null && text.length() > 0 ) {
+            textRenderer.render( textStyling, text, geofac.createPoint( null, opts.baseWidth + opts.spacing * 2,
+                                                                        origin - opts.baseHeight / 2 - opts.spacing,
+                                                                        new CRS( "CRS:1" ) ) );
+        }
+    }
+
     private List<LegendItem> prepareLegend( Style style, Graphics2D g, Java2DRenderer renderer,
                                             Java2DTextRenderer textRenderer ) {
         List<LegendItem> items = new LinkedList<LegendItem>();
@@ -102,7 +122,7 @@ public class Legends {
             boolean raster = false;
             for ( Styling s : styles ) {
                 if ( s instanceof RasterStyling ) {
-                    items.add( new RasterLegendItem( (RasterStyling) s, g ) );
+                    items.add( new RasterLegendItem( (RasterStyling) s, g, textRenderer ) );
                     raster = true;
                 }
             }

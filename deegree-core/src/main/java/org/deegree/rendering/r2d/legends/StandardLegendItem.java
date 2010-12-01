@@ -41,6 +41,7 @@ import static java.lang.Math.min;
 import static org.deegree.commons.utils.CollectionUtils.AND;
 import static org.deegree.commons.utils.CollectionUtils.map;
 import static org.deegree.commons.utils.CollectionUtils.reduce;
+import static org.deegree.rendering.r2d.legends.Legends.paintLegendText;
 import static org.deegree.rendering.r2d.styling.components.UOM.Metre;
 
 import java.awt.Font;
@@ -68,7 +69,6 @@ import org.deegree.rendering.r2d.se.unevaluated.Symbolizer;
 import org.deegree.rendering.r2d.styling.LineStyling;
 import org.deegree.rendering.r2d.styling.PointStyling;
 import org.deegree.rendering.r2d.styling.Styling;
-import org.deegree.rendering.r2d.styling.TextStyling;
 
 /**
  * 
@@ -110,14 +110,6 @@ public class StandardLegendItem implements LegendItem {
     }
 
     public void paint( int origin, LegendOptions opts ) {
-        TextStyling textStyling = new TextStyling();
-        textStyling.font = new org.deegree.rendering.r2d.styling.components.Font();
-        textStyling.font.fontFamily.add( 0, "Arial" );
-        textStyling.font.fontSize = opts.textSize;
-        textStyling.anchorPointX = 0;
-        textStyling.anchorPointY = 0.5;
-        textStyling.uom = Metre;
-
         Mapper<Boolean, Styling> pointStylingMapper = CollectionUtils.<Styling> getInstanceofMapper( PointStyling.class );
         Mapper<Boolean, Styling> lineStylingMapper = CollectionUtils.<Styling> getInstanceofMapper( LineStyling.class );
 
@@ -134,11 +126,8 @@ public class StandardLegendItem implements LegendItem {
             // something better?
             geom = getLegendRect( opts.spacing, origin - opts.spacing, opts.baseWidth, opts.baseHeight );
         }
-        if ( text != null && text.length() > 0 ) {
-            textRenderer.render( textStyling, text, geofac.createPoint( null, opts.baseWidth + opts.spacing * 2,
-                                                                        origin - opts.baseHeight / 2 - opts.spacing,
-                                                                        mapcs ) );
-        }
+
+        paintLegendText( origin, opts, text, textRenderer );
 
         // normalize symbol sizes
         double maxSize = 0;
