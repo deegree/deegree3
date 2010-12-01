@@ -853,7 +853,7 @@ public class RasterFactory {
      * @param rasterGeoReference
      *            the raster geo reference defining the resolution of the raster.
      * @param reader
-     *            to lazely instantiate the data from, may be <code>null</code>, if the raster should not be backed by
+     *            to lazily instantiate the data from, may be <code>null</code>, if the raster should not be backed by
      *            any data.
      * @param addToCache
      *            true if the raster data of the given raster should be added to the cache.
@@ -870,7 +870,7 @@ public class RasterFactory {
             if ( reader == null ) {
                 rasterRect = rasterGeoReference.convertEnvelopeToRasterCRS( worldEnvelope );
             } else {
-                rasterRect = new RasterRect( 0, 0, reader.getWidth(), reader.getHeight() ); //
+                rasterRect = new RasterRect( 0, 0, reader.getWidth(), reader.getHeight() );
             }
             ByteBufferRasterData data = RasterDataFactory.createRasterData( rasterRect, rdi, reader, addToCache,
                                                                             options );
