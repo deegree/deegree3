@@ -110,8 +110,6 @@ public class Interpolate extends AbstractCustomExpression {
 
     private boolean color;
 
-    private boolean linear, cosine, cubic;
-
     private Mode mode;
 
     private Color fallbackColor;
@@ -123,8 +121,8 @@ public class Interpolate extends AbstractCustomExpression {
 
     private Interpolate( StringBuffer value, Continuation<StringBuffer> contn, LinkedList<Double> datas,
                          Double[] dataArray, LinkedList<StringBuffer> values, Double[] valuesArray, Color[] colorArray,
-                         LinkedList<Continuation<StringBuffer>> valueContns, boolean color, boolean linear,
-                         boolean cosine, boolean cubic, Mode mode, Color fallbackColor ) {
+                         LinkedList<Continuation<StringBuffer>> valueContns, boolean color, Mode mode,
+                         Color fallbackColor ) {
         this.value = value;
         this.contn = contn;
         this.datas = datas;
@@ -134,9 +132,6 @@ public class Interpolate extends AbstractCustomExpression {
         this.colorArray = colorArray;
         this.valueContns = valueContns;
         this.color = color;
-        this.linear = linear;
-        this.cosine = cosine;
-        this.cubic = cubic;
         this.mode = mode;
         this.fallbackColor = fallbackColor;
     }
@@ -302,10 +297,7 @@ public class Interpolate extends AbstractCustomExpression {
         }
     }
 
-    /**
-     * @param in
-     * @throws XMLStreamException
-     */
+    @Override
     public Interpolate parse( XMLStreamReader in )
                             throws XMLStreamException {
 
@@ -315,9 +307,6 @@ public class Interpolate extends AbstractCustomExpression {
         LinkedList<StringBuffer> values = new LinkedList<StringBuffer>();
         LinkedList<Continuation<StringBuffer>> valueContns = new LinkedList<Continuation<StringBuffer>>();
         boolean color = false;
-        boolean linear = true;
-        boolean cosine = false;
-        boolean cubic = false;
         Mode mode = Mode.Linear;
         Color fallbackColor = null;
 
@@ -328,9 +317,9 @@ public class Interpolate extends AbstractCustomExpression {
         LOG.trace( "Parsing SE XML document for Interpolate... " );
         String sMode = in.getAttributeValue( null, "mode" );
         if ( sMode != null ) {
-            linear = sMode.equalsIgnoreCase( "linear" );
-            cosine = sMode.equalsIgnoreCase( "cosine" );
-            cubic = sMode.equalsIgnoreCase( "cubic" );
+            boolean linear = sMode.equalsIgnoreCase( "linear" );
+            boolean cosine = sMode.equalsIgnoreCase( "cosine" );
+            boolean cubic = sMode.equalsIgnoreCase( "cubic" );
             if ( linear )
                 mode = Mode.Linear;
             if ( cosine )
@@ -376,14 +365,13 @@ public class Interpolate extends AbstractCustomExpression {
         in.require( END_ELEMENT, null, "Interpolate" );
 
         Interpolate inp = new Interpolate( value, contn, datas, dataArray, values, valuesArray, colorArray,
-                                           valueContns, color, linear, cosine, cubic, mode, fallbackColor );
+                                           valueContns, color, mode, fallbackColor );
         inp.buildLookupArrays();
         return inp;
     }
 
     /**
      * @param in
-     * @return
      * @throws XMLStreamException
      */
     public static Interpolate parseSLD100( XMLStreamReader in )
@@ -395,9 +383,6 @@ public class Interpolate extends AbstractCustomExpression {
         LinkedList<StringBuffer> values = new LinkedList<StringBuffer>();
         LinkedList<Continuation<StringBuffer>> valueContns = new LinkedList<Continuation<StringBuffer>>();
         boolean color = true;
-        boolean linear = true;
-        boolean cosine = false;
-        boolean cubic = false;
         Mode mode = Mode.Linear;
         Color fallbackColor = null;
 
@@ -423,7 +408,7 @@ public class Interpolate extends AbstractCustomExpression {
         Double[] valuesArray = null;
         Double[] dataArray = null;
         Interpolate inp = new Interpolate( value, contn, datas, dataArray, values, valuesArray, colorArray,
-                                           valueContns, color, linear, cosine, cubic, mode, fallbackColor );
+                                           valueContns, color, mode, fallbackColor );
         inp.buildLookupArrays();
         return inp;
     }
@@ -534,6 +519,13 @@ public class Interpolate extends AbstractCustomExpression {
                 img.setRGB( col, row, rgb );
             }
         return img;
+    }
+
+    /**
+     * @return the array with the data boundaries
+     */
+    public Double[] getDatas() {
+        return dataArray;
     }
 
     /**

@@ -205,7 +205,7 @@ public class Categorize extends AbstractCustomExpression {
                 pos++;
             }
         } else {
-            pos = pos * ( -1 ) - 1;
+            pos = -pos - 1;
         }
 
         return valuesArray[pos];

@@ -44,6 +44,7 @@ import static org.deegree.services.i18n.Messages.get;
 
 import java.util.Map;
 
+import org.deegree.rendering.r2d.legends.LegendOptions;
 import org.deegree.rendering.r2d.se.unevaluated.Style;
 import org.deegree.services.controller.ows.OWSException;
 import org.deegree.services.wms.MapService;
@@ -63,7 +64,9 @@ public class GetLegendGraphic {
 
     private String format;
 
-    private int width = -1, height = -1, baseWidth = -1, baseHeight = -1, textSize = -1;
+    private LegendOptions opts = new LegendOptions();
+
+    private int width = -1, height = -1;
 
     /**
      * @param map
@@ -108,7 +111,7 @@ public class GetLegendGraphic {
         w = map.get( "BASEWIDTH" );
         if ( w != null ) {
             try {
-                baseWidth = parseInt( w );
+                opts.baseWidth = parseInt( w );
             } catch ( NumberFormatException e ) {
                 throw new OWSException( get( "WMS.NOT_A_NUMBER", "BASEWIDTH", w ), INVALID_PARAMETER_VALUE );
             }
@@ -116,7 +119,7 @@ public class GetLegendGraphic {
         h = map.get( "BASEHEIGHT" );
         if ( h != null ) {
             try {
-                baseHeight = parseInt( h );
+                opts.baseHeight = parseInt( h );
             } catch ( NumberFormatException e ) {
                 throw new OWSException( get( "WMS.NOT_A_NUMBER", "BASEHEIGHT", h ), INVALID_PARAMETER_VALUE );
             }
@@ -124,9 +127,17 @@ public class GetLegendGraphic {
         h = map.get( "TEXTSIZE" );
         if ( h != null ) {
             try {
-                textSize = parseInt( h );
+                opts.textSize = parseInt( h );
             } catch ( NumberFormatException e ) {
                 throw new OWSException( get( "WMS.NOT_A_NUMBER", "TEXTSIZE", h ), INVALID_PARAMETER_VALUE );
+            }
+        }
+        h = map.get( "SPACING" );
+        if ( h != null ) {
+            try {
+                opts.spacing = parseInt( h );
+            } catch ( NumberFormatException e ) {
+                throw new OWSException( get( "WMS.NOT_A_NUMBER", "SPACING", h ), INVALID_PARAMETER_VALUE );
             }
         }
     }
@@ -160,27 +171,6 @@ public class GetLegendGraphic {
     }
 
     /**
-     * @return -1, if not set
-     */
-    public int getBaseWidth() {
-        return baseWidth;
-    }
-
-    /**
-     * @return -1, if not set
-     */
-    public int getBaseHeight() {
-        return baseHeight;
-    }
-
-    /**
-     * @return -1, if not set
-     */
-    public int getTextSize() {
-        return textSize;
-    }
-
-    /**
      * @param w
      */
     public void setWidth( int w ) {
@@ -192,6 +182,13 @@ public class GetLegendGraphic {
      */
     public void setHeight( int h ) {
         height = h;
+    }
+
+    /**
+     * @return the legend options
+     */
+    public LegendOptions getLegendOptions() {
+        return opts;
     }
 
 }

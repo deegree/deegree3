@@ -840,12 +840,12 @@ public class MapService {
     }
 
     public BufferedImage getLegend( GetLegendGraphic req ) {
-        Legends renderer = new Legends( req.getBaseWidth(), req.getBaseHeight(), req.getTextSize() );
+        Legends renderer = new Legends( req.getLegendOptions() );
 
         Style style = req.getStyle();
 
         Pair<Integer, Integer> size;
-        if ( renderer.isDefault() ) {
+        if ( renderer.getLegendOptions().isDefault() ) {
             size = getLegendSize( style );
         } else {
             size = renderer.getLegendSize( style );
@@ -858,7 +858,7 @@ public class MapService {
             req.setHeight( size.second );
         }
 
-        boolean originalSize = req.getWidth() == size.first && req.getHeight() == size.second && renderer.isDefault();
+        boolean originalSize = req.getWidth() == size.first && req.getHeight() == size.second && renderer.getLegendOptions().isDefault();
 
         HashMap<String, BufferedImage> legendMap = legends.get( style );
         if ( originalSize && legendMap != null && legendMap.get( req.getFormat() ) != null ) {
