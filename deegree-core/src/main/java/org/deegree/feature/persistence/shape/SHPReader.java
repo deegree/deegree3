@@ -629,7 +629,7 @@ public class SHPReader {
         }
         case POLYLINEZ: {
             skipBytes( buffer, 32 );
-            g = readPolyline( buffer, true, false, length );
+            g = readPolyline( buffer, true, true, length );
             break;
         }
         case POLYGONZ: {
