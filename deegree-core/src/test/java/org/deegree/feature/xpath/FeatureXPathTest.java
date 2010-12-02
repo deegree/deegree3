@@ -319,4 +319,14 @@ public class FeatureXPathTest {
             assertTrue( value.getValue().toString().startsWith( "PHILOSOPHER_" ) );
         }
     }
+
+    @Test
+    public void testXPath19()
+                            throws FilterEvaluationException {
+        String xpath = "local-name(gml:featureMember/*)";
+        TypedObjectNode[] result = new FeatureXPathEvaluator( GML_31 ).eval( fc, new PropertyName( xpath, nsContext ) );
+        assertNotNull( result );
+        assertEquals( 1, result.length );
+        assertEquals( "Philosopher", ( (PrimitiveValue) result[0] ).getAsText() );
+    }
 }
