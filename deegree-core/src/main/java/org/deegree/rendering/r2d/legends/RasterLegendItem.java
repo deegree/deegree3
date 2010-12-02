@@ -45,11 +45,9 @@ import static org.deegree.coverage.raster.utils.RasterFactory.createEmptyRaster;
 import static org.deegree.rendering.r2d.legends.Legends.paintLegendText;
 
 import java.awt.Font;
-import java.awt.Graphics2D;
 import java.awt.font.FontRenderContext;
 import java.awt.font.TextLayout;
 import java.awt.geom.AffineTransform;
-import java.awt.image.BufferedImage;
 import java.util.LinkedList;
 
 import org.deegree.coverage.raster.SimpleRaster;
@@ -60,6 +58,7 @@ import org.deegree.coverage.raster.geom.RasterGeoReference;
 import org.deegree.cs.CRS;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryFactory;
+import org.deegree.rendering.r2d.RasterRenderer;
 import org.deegree.rendering.r2d.TextRenderer;
 import org.deegree.rendering.r2d.styling.RasterStyling;
 
@@ -74,17 +73,19 @@ public class RasterLegendItem implements LegendItem {
 
     private static final GeometryFactory geofac = new GeometryFactory();
 
-    private RasterStyling styling;
+    private static final CRS mapcs = new CRS( "CRS:1" );
 
-    private Graphics2D graphics;
+    private RasterStyling styling;
 
     private LinkedList<String> texts = new LinkedList<String>();
 
     private final TextRenderer textRenderer;
 
-    public RasterLegendItem( RasterStyling styling, Graphics2D g, TextRenderer textRenderer ) {
+    private RasterRenderer rasterRenderer;
+
+    public RasterLegendItem( RasterStyling styling, RasterRenderer rasterRenderer, TextRenderer textRenderer ) {
         this.styling = styling;
-        this.graphics = g;
+        this.rasterRenderer = rasterRenderer;
         this.textRenderer = textRenderer;
         if ( styling.interpolate != null ) {
             for ( Double d : styling.interpolate.getDatas() ) {
@@ -120,10 +121,14 @@ public class RasterLegendItem implements LegendItem {
             Double[] datas = styling.interpolate.getDatas();
             int rasterHeight = ( datas.length - 1 ) * ( opts.baseHeight + 2 * opts.spacing );
             RasterDataInfo info = new RasterDataInfo( new BandType[] { BAND_0 }, FLOAT, PIXEL );
-            Envelope bbox = geofac.createEnvelope( 0, 0, opts.baseWidth, rasterHeight, new CRS( "CRS:1" ) );
-            RasterGeoReference rref = new RasterGeoReference( OUTER, 1, 1, 0, 0 );
+            int miny = origin - rasterHeight - opts.baseHeight / 2 - opts.spacing;
+            int maxy = origin - opts.baseHeight / 2 - opts.spacing;
+            Envelope bbox = geofac.createEnvelope( opts.spacing, miny, opts.baseWidth + opts.spacing, maxy, mapcs );
+            RasterGeoReference rref = new RasterGeoReference( OUTER, 1, 1, opts.spacing, miny, mapcs );
             SimpleRaster raster = createEmptyRaster( info, bbox, rref );
+
             RasterData rasterData = raster.getRasterData();
+
             int row = 0;
             for ( int i = 0; i < datas.length - 1; ++i ) {
                 double a = datas[i], b = datas[i + 1];
@@ -135,8 +140,7 @@ public class RasterLegendItem implements LegendItem {
                     ++row;
                 }
             }
-            BufferedImage img = styling.interpolate.evaluateRaster( raster, styling );
-            graphics.drawImage( img, opts.spacing, opts.spacing + opts.baseWidth / 2, null );
+            rasterRenderer.render( styling, raster );
 
             for ( String text : texts ) {
                 paintLegendText( origin, opts, text, textRenderer );

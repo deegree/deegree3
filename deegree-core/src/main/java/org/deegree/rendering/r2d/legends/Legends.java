@@ -49,6 +49,7 @@ import org.deegree.commons.utils.Pair;
 import org.deegree.cs.CRS;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryFactory;
+import org.deegree.rendering.r2d.Java2DRasterRenderer;
 import org.deegree.rendering.r2d.Java2DRenderer;
 import org.deegree.rendering.r2d.Java2DTextRenderer;
 import org.deegree.rendering.r2d.TextRenderer;
@@ -106,8 +107,8 @@ public class Legends {
         }
     }
 
-    private List<LegendItem> prepareLegend( Style style, Graphics2D g, Java2DRenderer renderer,
-                                            Java2DTextRenderer textRenderer ) {
+    private List<LegendItem> prepareLegend( Style style, Java2DRenderer renderer, Java2DTextRenderer textRenderer,
+                                            Java2DRasterRenderer rasterRenderer ) {
         List<LegendItem> items = new LinkedList<LegendItem>();
         LinkedList<Class<?>> ruleTypes = style.getRuleTypes();
         Iterator<Class<?>> types = ruleTypes.iterator();
@@ -122,7 +123,7 @@ public class Legends {
             boolean raster = false;
             for ( Styling s : styles ) {
                 if ( s instanceof RasterStyling ) {
-                    items.add( new RasterLegendItem( (RasterStyling) s, g, textRenderer ) );
+                    items.add( new RasterLegendItem( (RasterStyling) s, rasterRenderer, textRenderer ) );
                     raster = true;
                 }
             }
@@ -141,7 +142,8 @@ public class Legends {
         Envelope box = geofac.createEnvelope( 0, 0, p.first, p.second, null );
         Java2DRenderer renderer = new Java2DRenderer( g, width, height, box );
         Java2DTextRenderer textRenderer = new Java2DTextRenderer( renderer );
-        return prepareLegend( style, g, renderer, textRenderer );
+        Java2DRasterRenderer rasterRenderer = new Java2DRasterRenderer( g, width, height, box );
+        return prepareLegend( style, renderer, textRenderer, rasterRenderer );
     }
 
     /**

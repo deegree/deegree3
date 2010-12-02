@@ -35,6 +35,7 @@
 
 package org.deegree.rendering.r2d;
 
+import static org.deegree.commons.utils.math.MathUtils.round;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.awt.AlphaComposite;
@@ -159,7 +160,7 @@ public class Java2DRasterRenderer implements RasterRenderer {
 
         LOG.trace( "Rendering raster..." );
         if ( img != null ) {
-            render( img );
+            render( img, raster.getEnvelope() );
         } else {
             render( raster );
         }
@@ -364,10 +365,15 @@ public class Java2DRasterRenderer implements RasterRenderer {
     }
 
     private void render( final AbstractRaster raster ) {
-        render( RasterFactory.imageFromRaster( raster ) );
+        render( RasterFactory.imageFromRaster( raster ), raster.getEnvelope() );
     }
 
-    private void render( final BufferedImage img ) {
-        graphics.drawImage( img, worldToScreen, null );
+    private void render( final BufferedImage img, final Envelope box ) {
+        double[] min = new double[2];
+        double[] max = new double[2];
+        worldToScreen.transform( box.getMin().getAsArray(), 0, min, 0, 1 );
+        worldToScreen.transform( box.getMax().getAsArray(), 0, max, 0, 1 );
+        graphics.drawImage( img, round( min[0] ), round( max[1] ), round( max[0] - min[0] ), round( min[1] - max[1] ),
+                            null );
     }
 }
