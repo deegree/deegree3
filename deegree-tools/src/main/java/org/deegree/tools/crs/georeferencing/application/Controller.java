@@ -691,32 +691,6 @@ public class Controller {
 
                         if ( optionSettingPanel != null ) {
 
-                            // if ( optionSettingPanel instanceof ViewPanel ) {
-                            // // if the custom radiobutton is selected and there is something inside the textField
-                            // if ( !( (ViewPanel) optionSettingPanel
-                            // ).getTbm().getCtb().getCustomTextField().getText().equals(
-                            // "" )
-                            // && ( (ViewPanel) optionSettingPanel ).getTbm().getCtb().getCustom().isSelected() == true
-                            // ) {
-                            // // here you have to check about the input for the custom textfield. Keylistener for
-                            // // the textfield while typing in is problematic because you can workaround with
-                            // // copy&paste...so this should be the way to go.
-                            //
-                            // String textInput = ( (ViewPanel) optionSettingPanel
-                            // ).getTbm().getCtb().getCustomTextField().getText();
-                            // if ( TextfieldUtils.validateInt( textInput ) ) {
-                            // conModel.getDialogModel().setTextFieldKeyString( textInput );
-                            // conModel.getDialogModel().setSelectionPointSize(
-                            // Integer.parseInt( conModel.getDialogModel().getTextFieldKeyString().second ) );
-                            // exceptionThrown = false;
-                            // } else {
-                            // new ErrorDialog( optionDialog, JDialog.ERROR,
-                            // "Insert numbers only into the textField!" );
-                            // exceptionThrown = true;
-                            // }
-                            //
-                            // }
-                            // } else
                             if ( optionSettingPanel instanceof GeneralPanel ) {
                                 String p = ( (GeneralPanel) optionSettingPanel ).getTextField(
                                                                                                ( (GeneralPanel) optionSettingPanel ).getZoomValue() ).getText();
@@ -839,28 +813,6 @@ public class Controller {
                 }
 
             }
-
-        }
-
-        private void changeRadioButtons( JRadioButton source ) {
-            // if ( source.getName().startsWith( ViewPanel.CUSTOM_TEXTFIELD ) ) {
-            // if ( !( (ViewPanel) optionSettingPanel ).getTbm().getCtb().getCustomTextField().getText().equals( "" ) )
-            // {
-            // conModel.getDialogModel().setTextFieldKeyString(
-            // ( (ViewPanel) optionSettingPanel ).getTbm().getCtb().getCustomTextField().getText() );
-            //
-            // try {
-            // int i = Integer.parseInt( conModel.getDialogModel().getTextFieldKeyString().second );
-            // conModel.getDialogModel().setSelectionPointSize( i );
-            // } catch ( NumberFormatException ex ) {
-            // new ErrorDialog( optionDialog, JDialog.ERROR, "This is not a number" );
-            // }
-            //
-            // }
-            // } else {
-            int pointSize = ( (ViewPanel) optionSettingPanel ).getTbm().getButtons().get( source );
-            conModel.getDialogModel().setSelectionPointSize( pointSize );
-            // }
 
         }
 

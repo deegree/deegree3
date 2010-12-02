@@ -43,7 +43,7 @@ import org.deegree.tools.crs.georeferencing.communication.panel2D.Scene2DPanel;
 import org.deegree.tools.crs.georeferencing.model.dialog.OptionDialogModel;
 
 /**
- * TODO add class documentation here
+ * Model for the <Code>Controller</Code>.
  * 
  * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
  * @author last edited by: $Author$

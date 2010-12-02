@@ -60,8 +60,6 @@ public class ToggleButtonModel {
 
     private final Pair<AbstractButton, Integer>[] abstractButtons;
 
-    // private final CustomToggleButton ctb;
-
     private int pointSize;
 
     /**
@@ -74,7 +72,6 @@ public class ToggleButtonModel {
      */
     public ToggleButtonModel( Pair<AbstractButton, Integer>[] abstractButtons, ActionListener e ) {
         this.abstractButtons = abstractButtons;
-        // this.ctb = customTB;
 
         buttonsInverse = new HashMap<Integer, AbstractButton>();
         for ( Pair<AbstractButton, Integer> b : abstractButtons ) {
@@ -82,40 +79,28 @@ public class ToggleButtonModel {
             buttonsInverse.put( b.second, b.first );
 
         }
-        // buttonsInverse.put( 0, ctb.getCustom() );
         buttons = new HashMap<AbstractButton, Integer>();
         for ( Pair<AbstractButton, Integer> b : abstractButtons ) {
 
             buttons.put( b.first, b.second );
         }
-        // buttons.put( ctb.getCustom(), 0 );
         ButtonGroup group = new ButtonGroup();
         for ( Pair<AbstractButton, Integer> b : abstractButtons ) {
             group.add( b.first );
             b.first.addActionListener( e );
         }
-        // group.add( customTB.getCustom() );
-        // customTB.getCustom().addActionListener( e );
     }
 
     public AbstractButton[] getAllButtons() {
         int size = abstractButtons.length;
-        // if ( ctb != null ) {
-        // size += 1;
-        // }
 
         AbstractButton[] a = new AbstractButton[size];
         int i = 0;
         for ( Pair<AbstractButton, Integer> b : abstractButtons ) {
             a[i++] = b.first;
         }
-        // a[i] = ctb.getCustom();
         return a;
     }
-
-    // public CustomToggleButton getCtb() {
-    // return ctb;
-    // }
 
     /**
      * 
@@ -132,17 +117,11 @@ public class ToggleButtonModel {
      */
     public void setPointSize( int pointSize ) {
         this.pointSize = pointSize;
-        // boolean isNotCustom = false;
 
         if ( buttons.containsValue( pointSize ) ) {
             buttonsInverse.get( pointSize ).setSelected( true );
-            // isNotCustom = true;
         }
 
-        // if ( !isNotCustom ) {
-        // ctb.getCustom().setSelected( true );
-        // ctb.getCustomTextField().setText( Integer.toString( pointSize ) );
-        // }
     }
 
     public Map<AbstractButton, Integer> getButtons() {

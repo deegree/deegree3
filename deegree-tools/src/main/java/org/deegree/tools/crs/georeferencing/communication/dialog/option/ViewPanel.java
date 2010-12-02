@@ -67,8 +67,6 @@ public class ViewPanel extends GenericSettingsPanel {
 
     private static final String TEN = "10pt";
 
-    public static final String CUSTOM_TEXTFIELD = "customTextField";
-
     private final Pair<AbstractButton, Integer>[] radiobuttons = new Pair[] {
                                                                              new Pair( new JRadioButton( TWO ), 2 ),
                                                                              new Pair( new JRadioButton( THREE ), 3 ),
@@ -76,15 +74,12 @@ public class ViewPanel extends GenericSettingsPanel {
                                                                              new Pair( new JRadioButton( SEVEN ), 7 ),
                                                                              new Pair( new JRadioButton( TEN ), 10 ) };
 
-    // private final CustomToggleButton ctb;
-
     private final ToggleButtonModel tbm;
 
     /**
      * Creates a new instance of <Code>ViewPanel</Code>.
      */
     public ViewPanel( ActionListener e ) {
-        // this.ctb = new CustomToggleButton( 10, CUSTOM_TEXTFIELD );
         this.tbm = new ToggleButtonModel( radiobuttons, e );
 
         JPanel defined = new JPanel();
@@ -96,8 +91,6 @@ public class ViewPanel extends GenericSettingsPanel {
         for ( AbstractButton b : tbm.getAllButtons() ) {
             defined.add( b, Component.LEFT_ALIGNMENT );
         }
-        // custom.add( ctb.getCustom(), Component.LEFT_ALIGNMENT );
-        // custom.add( ctb.getCustomTextField() );
 
         this.add( defined, BorderLayout.PAGE_START );
         this.add( custom, BorderLayout.PAGE_END );
