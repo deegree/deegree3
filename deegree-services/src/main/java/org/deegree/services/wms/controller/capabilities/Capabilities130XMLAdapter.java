@@ -371,17 +371,19 @@ public class Capabilities130XMLAdapter extends XMLAdapter {
         writer.writeStartElement( WMSNS, "Style" );
         writeElement( writer, WMSNS, "Name", name );
         writeElement( writer, WMSNS, "Title", title );
-        writer.writeStartElement( WMSNS, "LegendURL" );
-        writer.writeAttribute( "width", "" + legendSize.first );
-        writer.writeAttribute( "height", "" + legendSize.second );
-        writeElement( writer, WMSNS, "Format", "image/png" );
-        writer.writeStartElement( WMSNS, "OnlineResource" );
-        writer.writeAttribute( XLNNS, "type", "simple" );
-        String style = styleName == null ? "" : ( "&style=" + styleName );
-        writer.writeAttribute( XLNNS, "href", getUrl + "?request=GetLegendGraphic&version=1.3.0&service=WMS&layer="
-                                              + layerName + style + "&format=image/png" );
-        writer.writeEndElement();
-        writer.writeEndElement();
+        if ( legendSize.first > 0 && legendSize.second > 0 ) {
+            writer.writeStartElement( WMSNS, "LegendURL" );
+            writer.writeAttribute( "width", "" + legendSize.first );
+            writer.writeAttribute( "height", "" + legendSize.second );
+            writeElement( writer, WMSNS, "Format", "image/png" );
+            writer.writeStartElement( WMSNS, "OnlineResource" );
+            writer.writeAttribute( XLNNS, "type", "simple" );
+            String style = styleName == null ? "" : ( "&style=" + styleName );
+            writer.writeAttribute( XLNNS, "href", getUrl + "?request=GetLegendGraphic&version=1.3.0&service=WMS&layer="
+                                                  + layerName + style + "&format=image/png" );
+            writer.writeEndElement();
+            writer.writeEndElement();
+        }
         writer.writeEndElement();
     }
 
