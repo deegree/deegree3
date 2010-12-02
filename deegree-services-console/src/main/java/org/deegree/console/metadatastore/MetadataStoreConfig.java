@@ -42,6 +42,7 @@ import javax.faces.context.FacesContext;
 
 import org.deegree.console.ManagedXMLConfig;
 import org.deegree.console.SQLExecution;
+import org.deegree.metadata.persistence.MetadataStore;
 import org.deegree.metadata.persistence.MetadataStoreException;
 import org.deegree.metadata.persistence.MetadataStoreManager;
 import org.deegree.metadata.persistence.MetadataStoreProvider;
@@ -82,6 +83,18 @@ public class MetadataStoreConfig extends ManagedXMLConfig {
         return "/console/metadata/index";
     }
 
+    public String openImporter()
+                            throws Exception {
+        MetadataStore ms = MetadataStoreManager.get( getId() );
+        if ( ms == null ) {
+            throw new Exception( "No metadata store with id '" + getId() + "' known / active." );
+        }
+        MetadataImporter msImporter = new MetadataImporter( ms );
+        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put( "msConfig", this );
+        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put( "msImporter", msImporter );
+        return "/console/metadata/importer";
+    }
+
     public String createTables()
                             throws MetadataStoreException {
         if ( !isActive() ) {
@@ -104,6 +117,10 @@ public class MetadataStoreConfig extends ManagedXMLConfig {
 
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put( "execution", execution );
         return "/console/generic/sql.jsf?faces-redirect=true";
+    }
+
+    public MetadataStoreProvider getProvider() {
+        return provider;
     }
 
     @Override
