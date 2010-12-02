@@ -140,7 +140,7 @@ public class PropertyName implements Expression {
         } else {
             this.text = name.getLocalPart();
         }
-        init( bindings );
+        init( nsContext );
     }
 
     // TODO check if this should stay here
