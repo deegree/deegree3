@@ -35,6 +35,7 @@
 
 package org.deegree.rendering.r2d;
 
+import static java.lang.Math.abs;
 import static org.deegree.commons.utils.math.MathUtils.round;
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -82,6 +83,14 @@ public class Java2DRasterRenderer implements RasterRenderer {
 
     private AffineTransform worldToScreen = new AffineTransform();
 
+    private int width;
+
+    private int height;
+
+    private Envelope envelope;
+
+    private double resx, resy;
+
     /**
      * @param graphics
      * @param width
@@ -90,10 +99,15 @@ public class Java2DRasterRenderer implements RasterRenderer {
      */
     public Java2DRasterRenderer( Graphics2D graphics, int width, int height, Envelope bbox ) {
         this.graphics = graphics;
+        this.width = width;
+        this.height = height;
+        this.envelope = bbox;
 
         if ( bbox != null ) {
             double scalex = width / bbox.getSpan0();
             double scaley = height / bbox.getSpan1();
+            resx = abs( 1 / scalex );
+            resy = abs( 1 / scaley );
 
             // we have to flip horizontally, so invert y scale and add the screen height
             worldToScreen.translate( -bbox.getMin().get0() * scalex, bbox.getMin().get1() * scaley + height );
@@ -369,11 +383,15 @@ public class Java2DRasterRenderer implements RasterRenderer {
     }
 
     private void render( final BufferedImage img, final Envelope box ) {
-        double[] min = new double[2];
-        double[] max = new double[2];
-        worldToScreen.transform( box.getMin().getAsArray(), 0, min, 0, 1 );
-        worldToScreen.transform( box.getMax().getAsArray(), 0, max, 0, 1 );
-        graphics.drawImage( img, round( min[0] ), round( max[1] ), round( max[0] - min[0] ), round( min[1] - max[1] ),
-                            null );
+        if ( envelope != null && box != null ) {
+            int minx = 0, miny = 0, maxx = width, maxy = height;
+            minx = round( ( box.getMin().get0() - envelope.getMin().get0() ) / resx );
+            miny = round( ( box.getMin().get1() - envelope.getMin().get1() ) / resy );
+            maxx = width - round( ( envelope.getMax().get0() - box.getMax().get0() ) / resx );
+            maxy = height - round( ( envelope.getMax().get1() - box.getMax().get1() ) / resy );
+            graphics.drawImage( img, minx, miny, maxx - minx, maxy - miny, null );
+        } else {
+            graphics.drawImage( img, worldToScreen, null );
+        }
     }
 }
