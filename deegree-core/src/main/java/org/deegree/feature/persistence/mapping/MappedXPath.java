@@ -103,7 +103,7 @@ public class MappedXPath {
                 throw new UnmappableException( msg );
             }
             steps.add( pt.getName() );
-        } else if ( propName.isSimple() ) {
+        } else if ( propName.getAsQName() != null ) {
             LOG.debug( "Simple property name (=QName)." );
             steps.add( propName.getAsQName() );
         } else {
@@ -271,7 +271,7 @@ public class MappedXPath {
             QTableName table = getCurrentTable();
             DBField from = new DBField( table.toString(),
                                         chain.getFields().get( chain.getFields().size() - 1 ).getColumn() );
-            // TODO            
+            // TODO
             DBField to = new DBField( target.getFtTable().toString(), target.getFidMapping().getColumn() );
             joins.add( new Join( from, to, null, -1 ) );
         } else {

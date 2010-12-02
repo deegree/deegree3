@@ -54,7 +54,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * {@link Expression} that contain an XPath 1.0 expression (but usually is a simple property name).
+ * {@link Expression} that contains an XPath 1.0 expression, a simple property name or an arbitrary identifier.
+ * <p>
+ * Depending on the content, the targeted property can be accessed as follows:
+ * <ul>
+ * <li>Arbitrary identifier: Use {@link #getAsText()}. This method always return not <code>null<code>.</li>
+ * <li>An XPath (1.0) expression: {@link #getAsXPath()} returns not <code>null<code>.</li>
+ * <li>A (qualified) name: {@link #getAsQName()} returns not <code>null<code>.</li>
+ * </ul>
+ * </p>
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
@@ -65,9 +73,9 @@ public class PropertyName implements Expression {
 
     private static Logger LOG = LoggerFactory.getLogger( PropertyName.class );
 
-    private String text;
-
     private NamespaceBindings bindings = new NamespaceBindings();
+
+    private String text;
 
     private Expr xpath;
 
@@ -80,13 +88,11 @@ public class PropertyName implements Expression {
      *            must be a valid XPath 1.0-expression, must not be <code>null</code>
      * @param nsContext
      *            binding of the namespaces used in the XPath expression, may be <code>null</code>
-     * @throws IllegalArgumentException
-     *             if text is not a valid XPath 1.0-expression (or a used namespace is not bound)
      */
     public PropertyName( String text, NamespaceContext nsContext ) throws IllegalArgumentException {
         this.text = text;
         init( nsContext );
-    }    
+    }
 
     private void init( NamespaceContext nsContext ) {
 
@@ -94,8 +100,8 @@ public class PropertyName implements Expression {
             xpath = new BaseXPath( text, null ).getRootExpr();
             LOG.debug( "XPath: " + xpath );
         } catch ( JaxenException e ) {
-            String msg = "'" + text + "' does not denote a valid XPath 1.0 expression: " + e.getMessage();
-            throw new IllegalArgumentException( msg );
+            LOG.debug( "'" + text + "' does not denote a valid XPath 1.0 expression." );
+            return;
         }
 
         for ( String prefix : XPathUtils.extractPrefixes( xpath ) ) {
@@ -104,6 +110,7 @@ public class PropertyName implements Expression {
             bindings.addNamespace( prefix, ns );
         }
 
+        // check if it is a QName
         if ( xpath instanceof LocationPath ) {
             LocationPath lpath = (LocationPath) xpath;
             if ( lpath.getSteps().size() == 1 ) {
@@ -153,7 +160,7 @@ public class PropertyName implements Expression {
      * Returns the <a href="http://jaxen.codehaus.org/">Jaxen</a> representation of the XPath expression, which provides
      * access to the syntax tree.
      * 
-     * @return the compiled expression, never <code>null</code>
+     * @return the compiled expression, or <code>null</code> if the property name is not an XPath expression
      */
     public Expr getAsXPath()
                             throws FilterEvaluationException {
@@ -186,15 +193,6 @@ public class PropertyName implements Expression {
      */
     public NamespaceContext getNsContext() {
         return bindings;
-    }
-
-    /**
-     * Returns whether the property name is simple, i.e. if it only contains of a single element step.
-     * 
-     * @return <code>true</code>, if the property is simple, <code>false</code> otherwise
-     */
-    public boolean isSimple() {
-        return qName != null;
     }
 
     @Override

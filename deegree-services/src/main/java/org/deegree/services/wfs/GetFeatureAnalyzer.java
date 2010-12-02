@@ -415,7 +415,7 @@ public class GetFeatureAnalyzer {
 
         // no check possible if feature type is unknown
         if ( typeNames.length > 0 ) {
-            if ( propName.isSimple() ) {
+            if ( propName.getAsQName() != null ) {
                 if ( !isPrefixedAndBound( propName ) ) {
                     repairSimpleUnqualified( propName, typeNames[0] );
                 }

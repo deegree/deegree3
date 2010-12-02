@@ -372,8 +372,8 @@ public class Filter110XMLEncoder {
         case PROPERTY_NAME:
             // TODO what about other bindings in non-simple xpaths?
             PropertyName pn = (PropertyName) expression;
-            if ( pn.isSimple() ) {
-                QName qn = pn.getAsQName();
+            QName qn = pn.getAsQName();
+            if ( qn != null ) {
                 writer.writeNamespace( qn.getPrefix(), qn.getNamespaceURI() );
             }
             writer.writeCharacters( ( (PropertyName) expression ).getAsText() );
