@@ -504,7 +504,7 @@ public class PostGISMappingsISODC implements PostGISMapping {
             Expr xpath = propName.getAsXPath();
 
             if ( !( xpath instanceof LocationPath ) ) {
-                LOG.debug( "Unable to map PropertyName '" + propName.getPropertyName()
+                LOG.debug( "Unable to map PropertyName '" + propName.getAsText()
                            + "': the root expression is not a LocationPath." );
                 return null;
             }
@@ -512,13 +512,13 @@ public class PostGISMappingsISODC implements PostGISMapping {
 
             for ( Object step : ( (LocationPath) xpath ).getSteps() ) {
                 if ( !( step instanceof NameStep ) ) {
-                    LOG.debug( "Unable to map PropertyName '" + propName.getPropertyName()
+                    LOG.debug( "Unable to map PropertyName '" + propName.getAsText()
                                + "': contains an expression that is not a NameStep." );
                     return null;
                 }
                 NameStep namestep = (NameStep) step;
                 if ( namestep.getPredicates() != null && !namestep.getPredicates().isEmpty() ) {
-                    LOG.debug( "Unable to map PropertyName '" + propName.getPropertyName()
+                    LOG.debug( "Unable to map PropertyName '" + propName.getAsText()
                                + "': contains a NameStep with a predicate (needs implementation)." );
                     return null;
                 }
@@ -528,7 +528,7 @@ public class PostGISMappingsISODC implements PostGISMapping {
                 steps.add( new QName( namespace, localPart, prefix ) );
             }
             if ( steps.size() < 1 || steps.size() > 2 ) {
-                LOG.debug( "Unable to map PropertyName '" + propName.getPropertyName()
+                LOG.debug( "Unable to map PropertyName '" + propName.getAsText()
                            + "': must contain one or two NameSteps (needs implementation)." );
                 return null;
             }
@@ -597,7 +597,7 @@ public class PostGISMappingsISODC implements PostGISMapping {
         Expr xpath = propName.getAsXPath();
 
         if ( !( xpath instanceof LocationPath ) ) {
-            LOG.debug( "Unable to map PropertyName '" + propName.getPropertyName()
+            LOG.debug( "Unable to map PropertyName '" + propName.getAsText()
                        + "': the root expression is not a LocationPath." );
             return null;
         }
@@ -605,13 +605,13 @@ public class PostGISMappingsISODC implements PostGISMapping {
 
         for ( Object step : ( (LocationPath) xpath ).getSteps() ) {
             if ( !( step instanceof NameStep ) ) {
-                LOG.debug( "Unable to map PropertyName '" + propName.getPropertyName()
+                LOG.debug( "Unable to map PropertyName '" + propName.getAsText()
                            + "': contains an expression that is not a NameStep." );
                 return null;
             }
             NameStep namestep = (NameStep) step;
             if ( namestep.getPredicates() != null && !namestep.getPredicates().isEmpty() ) {
-                LOG.debug( "Unable to map PropertyName '" + propName.getPropertyName()
+                LOG.debug( "Unable to map PropertyName '" + propName.getAsText()
                            + "': contains a NameStep with a predicate (needs implementation)." );
                 return null;
             }
@@ -621,7 +621,7 @@ public class PostGISMappingsISODC implements PostGISMapping {
             steps.add( new QName( namespace, localPart, prefix ) );
         }
         if ( steps.size() < 1 || steps.size() > 2 ) {
-            LOG.debug( "Unable to map PropertyName '" + propName.getPropertyName()
+            LOG.debug( "Unable to map PropertyName '" + propName.getAsText()
                        + "': must contain one or two NameSteps (needs implementation)." );
             return null;
         }

@@ -39,7 +39,6 @@ import static org.deegree.commons.utils.CollectionUtils.unzipPair;
 import static org.deegree.feature.types.property.GeometryPropertyType.CoordinateDimension.DIM_2_OR_3;
 import static org.deegree.feature.types.property.ValueRepresentation.BOTH;
 import static org.deegree.geometry.utils.GeometryUtils.createEnvelope;
-import static org.deegree.gml.GMLVersion.GML_31;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.BufferedReader;
@@ -529,7 +528,7 @@ public class ShapeFeatureStore implements FeatureStore {
             // add geometry property
             Geometry g = shp.readGeometry( recNumAndPos.second );
             props.add( new GenericProperty( ft.getDefaultGeometryPropertyDeclaration(), g ) );
-            feature = ft.newFeature( fid, props, GML_31 );
+            feature = ft.newFeature( fid, props, null, null );
 
             cache.add( feature );
         } else {

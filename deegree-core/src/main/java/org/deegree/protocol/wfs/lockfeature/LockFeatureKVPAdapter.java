@@ -49,7 +49,7 @@ import javax.xml.stream.XMLStreamException;
 import org.deegree.commons.tom.ows.Version;
 import org.deegree.commons.utils.kvp.InvalidParameterValueException;
 import org.deegree.commons.utils.kvp.KVPUtils;
-import org.deegree.commons.xml.NamespaceContext;
+import org.deegree.commons.xml.NamespaceBindings;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;
@@ -113,7 +113,7 @@ public class LockFeatureKVPAdapter extends AbstractWFSRequestKVPAdapter {
         // optional: 'NAMESPACE'
         Map<String, String> nsBindings = extractNamespaceBindings( kvpParams );
 
-        NamespaceContext nsContext = new NamespaceContext();
+        NamespaceBindings nsContext = new NamespaceBindings();
         if ( nsBindings != null ) {
             for ( String key : nsBindings.keySet() ) {
                 nsContext.addNamespace( key, nsBindings.get( key ) );

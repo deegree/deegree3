@@ -41,7 +41,7 @@ import static org.deegree.protocol.wcs.WCSConstants.WCS_100_NS;
 
 import org.apache.axiom.om.OMElement;
 import org.deegree.commons.tom.ows.Version;
-import org.deegree.commons.xml.NamespaceContext;
+import org.deegree.commons.xml.NamespaceBindings;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.XPath;
 import org.deegree.protocol.wcs.WCSConstants;
@@ -65,10 +65,10 @@ public class WCSRequest100XMLAdapter extends XMLAdapter {
     /**
      * namespace context with wcs ns
      */
-    protected final static NamespaceContext wcsNSContext;
+    protected final static NamespaceBindings wcsNSContext;
 
     static {
-        wcsNSContext = new NamespaceContext( XMLAdapter.nsContext );
+        wcsNSContext = new NamespaceBindings( XMLAdapter.nsContext );
         wcsNSContext.addNamespace( WCS_PREFIX, WCS_100_NS );
         wcsNSContext.addNamespace( GML_PREFIX, GMLNS );
     }

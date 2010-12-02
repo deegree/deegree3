@@ -44,8 +44,10 @@ import static org.apache.xerces.xs.XSComplexTypeDefinition.CONTENTTYPE_EMPTY;
 import static org.apache.xerces.xs.XSComplexTypeDefinition.CONTENTTYPE_MIXED;
 import static org.apache.xerces.xs.XSComplexTypeDefinition.CONTENTTYPE_SIMPLE;
 import static org.apache.xerces.xs.XSTypeDefinition.SIMPLE_TYPE;
+import static org.deegree.commons.tom.primitive.PrimitiveType.STRING;
 import static org.deegree.commons.xml.CommonNamespaces.XLNNS;
 import static org.deegree.commons.xml.CommonNamespaces.XSINS;
+import static org.deegree.feature.property.ExtraProps.EXTRA_PROP_NS;
 import static org.deegree.gml.feature.StandardGMLFeatureProps.PT_BOUNDED_BY_GML31;
 import static org.deegree.gml.feature.StandardGMLFeatureProps.PT_BOUNDED_BY_GML32;
 import static org.deegree.gml.feature.schema.DefaultGMLTypes.GML311_FEATURECOLLECTION;
@@ -92,6 +94,7 @@ import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.feature.Feature;
 import org.deegree.feature.StreamFeatureCollection;
 import org.deegree.feature.i18n.Messages;
+import org.deegree.feature.property.ExtraProps;
 import org.deegree.feature.property.GenericProperty;
 import org.deegree.feature.property.Property;
 import org.deegree.feature.property.SimpleProperty;
@@ -106,11 +109,11 @@ import org.deegree.feature.types.property.FeaturePropertyType;
 import org.deegree.feature.types.property.GMLObjectPropertyType;
 import org.deegree.feature.types.property.GenericGMLObjectPropertyType;
 import org.deegree.feature.types.property.GeometryPropertyType;
+import org.deegree.feature.types.property.GeometryPropertyType.GeometryType;
 import org.deegree.feature.types.property.MeasurePropertyType;
 import org.deegree.feature.types.property.PropertyType;
 import org.deegree.feature.types.property.SimplePropertyType;
 import org.deegree.feature.types.property.StringOrRefPropertyType;
-import org.deegree.feature.types.property.GeometryPropertyType.GeometryType;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.GeometryFactory;
@@ -287,6 +290,7 @@ public class GMLFeatureReader extends XMLAdapter {
 
         CRS activeCRS = crs;
         List<Property> propertyList = new ArrayList<Property>();
+        List<Property> extraPropertyList = null;
 
         xmlStream.nextTag();
 
@@ -295,6 +299,18 @@ public class GMLFeatureReader extends XMLAdapter {
             QName propName = xmlStream.getName();
             if ( LOG.isDebugEnabled() ) {
                 LOG.debug( "- property '" + propName + "'" );
+            }
+
+            if ( EXTRA_PROP_NS.equals( propName.getNamespaceURI() ) ) {
+                if ( extraPropertyList == null ) {
+                    extraPropertyList = new ArrayList<Property>();
+                }
+                LOG.debug( "Parsing extra property: " + propName );
+                SimplePropertyType pt = new SimplePropertyType( propName, 1, 1, STRING, false, false, null );
+                Property prop = parseProperty( xmlStream, pt, activeCRS, 0 );
+                extraPropertyList.add( prop );
+                xmlStream.nextTag();
+                continue;
             }
 
             if ( findConcretePropertyType( propName, activeDecl ) != null ) {
@@ -350,7 +366,11 @@ public class GMLFeatureReader extends XMLAdapter {
             LOG.debug( " - parsing feature (end): " + xmlStream.getCurrentEventInfo() );
         }
 
-        feature = ft.newFeature( fid, propertyList, version );
+        ExtraProps extraProps = null;
+        if ( extraPropertyList != null ) {
+            extraProps = new ExtraProps( extraPropertyList.toArray( new Property[extraPropertyList.size()] ) );
+        }
+        feature = ft.newFeature( fid, propertyList, extraProps, version );
 
         if ( fid != null && !"".equals( fid ) ) {
             if ( idContext.getObject( fid ) != null ) {

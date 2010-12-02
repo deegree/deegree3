@@ -79,7 +79,7 @@ import org.deegree.commons.utils.Pair;
 import org.deegree.commons.utils.kvp.InvalidParameterValueException;
 import org.deegree.commons.utils.kvp.KVPUtils;
 import org.deegree.commons.utils.kvp.MissingParameterException;
-import org.deegree.commons.xml.NamespaceContext;
+import org.deegree.commons.xml.NamespaceBindings;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.commons.xml.XMLProcessingException;
@@ -105,10 +105,10 @@ import org.deegree.protocol.sos.filter.ProcedureFilter;
 import org.deegree.protocol.sos.filter.SpatialFilter;
 import org.deegree.protocol.sos.getfeatureofinterest.GetFeatureOfInterest;
 import org.deegree.protocol.sos.getfeatureofinterest.GetFeatureOfInterest100XMLAdapter;
+import org.deegree.protocol.sos.getobservation.EventTime100XMLAdapter.EventTimeXMLParsingException;
 import org.deegree.protocol.sos.getobservation.GetObservation;
 import org.deegree.protocol.sos.getobservation.GetObservation100KVPAdapter;
 import org.deegree.protocol.sos.getobservation.GetObservation100XMLAdapter;
-import org.deegree.protocol.sos.getobservation.EventTime100XMLAdapter.EventTimeXMLParsingException;
 import org.deegree.protocol.sos.getobservation.GetObservation100XMLAdapter.ResultFilterException;
 import org.deegree.services.controller.AbstractOGCServiceController;
 import org.deegree.services.controller.ImplementationMetadata;
@@ -177,7 +177,7 @@ public class SOSController extends AbstractOGCServiceController {
 
         init( serviceMetadata, mainConf, IMPLEMENTATION_METADATA, controllerConf );
 
-        NamespaceContext nsContext = new NamespaceContext();
+        NamespaceBindings nsContext = new NamespaceBindings();
         nsContext.addNamespace( "sos", "http://www.deegree.org/services/sos" );
 
         OMElement confElem = controllerConf.getRequiredElement( controllerConf.getRootElement(),
@@ -222,15 +222,14 @@ public class SOSController extends AbstractOGCServiceController {
     }
 
     private boolean checkProcURNinFile( String procURN, URL sensorFile ) {
-        NamespaceContext nsContext = new NamespaceContext();
+        NamespaceBindings nsContext = new NamespaceBindings();
         nsContext.addNamespace( "sml", "http://www.opengis.net/sensorML/1.0.1" );
         nsContext.addNamespace( "gml", "http://www.opengis.net/gml" );
         nsContext.addNamespace( "swe", "http://www.opengis.net/swe/1.0.1" );
         nsContext.addNamespace( "xlink", "http://www.w3.org/1999/xlink" );
 
         XMLAdapter sensorXML = new XMLAdapter( sensorFile );
-        OMElement element = sensorXML.getElement(
-                                                  sensorXML.getRootElement(),
+        OMElement element = sensorXML.getElement( sensorXML.getRootElement(),
                                                   new XPath(
                                                              "/sml:SensorML/sml:identification/sml:IdentifierList/sml:identifier[@name=\"URN\"]/sml:Term/sml:value",
                                                              nsContext ) );
@@ -344,8 +343,7 @@ public class SOSController extends AbstractOGCServiceController {
                                   response );
         } catch ( XMLStreamException e ) {
             LOG.error( "an error occured while processing the request", e );
-            sendServiceException(
-                                  new OWSException( "an error occured while processing the request", NO_APPLICABLE_CODE ),
+            sendServiceException( new OWSException( "an error occured while processing the request", NO_APPLICABLE_CODE ),
                                   response );
         } catch ( XMLProcessingException e ) {
             LOG.error( "an error occured while processing the request", e );

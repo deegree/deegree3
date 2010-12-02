@@ -226,7 +226,7 @@ public class RasterLayer extends Layer {
                 break;
             }
 
-            Feature f = new GenericFeature( featureType, null, props, null );
+            Feature f = new GenericFeature( featureType, null, props, null, null );
             col.add( f );
             return new Pair<FeatureCollection, LinkedList<String>>( col, new LinkedList<String>() );
         } catch ( IllegalArgumentException e ) {

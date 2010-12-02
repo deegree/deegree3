@@ -112,8 +112,8 @@ public class WPSImporter extends AbstractDCImporter {
     private String rights;
 
     static {
-        mapping.put( new QName( nsContext.getURI( OWSCapabilitiesXMLAdapter.OWS_PREFIX ), "ServiceType",
-                                OWSCapabilitiesXMLAdapter.OWS_PREFIX ), "subject" );
+        mapping.put( new QName( nsContext.translateNamespacePrefixToUri( OWSCapabilitiesXMLAdapter.OWS_PREFIX ),
+                                "ServiceType", OWSCapabilitiesXMLAdapter.OWS_PREFIX ), "subject" );
 
     }
 
@@ -210,7 +210,7 @@ public class WPSImporter extends AbstractDCImporter {
 
     // @Override
     // public void elementMapping() {
-    //        
+    //
     // }
 
     /**
@@ -226,9 +226,8 @@ public class WPSImporter extends AbstractDCImporter {
         try {
             fout = new FileOutputStream( tmpFile.getName() + File.separator + "output.xml" );
             XMLStreamWriter writer = new SchemaLocationXMLStreamWriter(
-                                                                 XMLOutputFactory.newInstance().createXMLStreamWriter(
-                                                                                                                       fout ),
-                                                                 schemaLocation );
+                                                                        XMLOutputFactory.newInstance().createXMLStreamWriter( fout ),
+                                                                        schemaLocation );
             writer.setDefaultNamespace( CSW_202_NS );
             writer.setPrefix( CSW_PREFIX, CSW_202_NS );
             writer.writeStartDocument();

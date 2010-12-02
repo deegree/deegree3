@@ -40,6 +40,7 @@ import java.util.List;
 import javax.xml.namespace.QName;
 
 import org.deegree.commons.tom.TypedObjectNode;
+import org.deegree.feature.property.ExtraProps;
 import org.deegree.feature.property.Property;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.geometry.Envelope;
@@ -245,4 +246,17 @@ public interface Feature extends GMLObject {
 
     @Override
     public StandardGMLFeatureProps getGMLProperties();
+
+    /**
+     * Returns the extra properties associated with the feature.
+     * <p>
+     * These properties are not defined by the {@link FeatureType}, but provide a generic way to attach information to
+     * the {@link Feature} (e.g. rendering hints).
+     * </p>
+     * 
+     * @return extra properties, may be <code>null</code>
+     */
+    public ExtraProps getExtraProperties();
+
+    public void setExtraProperties( ExtraProps extraProps );
 }

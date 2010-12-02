@@ -35,12 +35,11 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.filter.expression;
 
-import static javax.xml.XMLConstants.DEFAULT_NS_PREFIX;
-import static javax.xml.XMLConstants.NULL_NS_URI;
-
 import javax.xml.namespace.QName;
 
 import org.deegree.commons.tom.TypedObjectNode;
+import org.deegree.commons.xml.NamespaceBindings;
+import org.deegree.commons.xml.XPathUtils;
 import org.deegree.filter.Expression;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.XPathEvaluator;
@@ -48,10 +47,14 @@ import org.jaxen.BaseXPath;
 import org.jaxen.JaxenException;
 import org.jaxen.NamespaceContext;
 import org.jaxen.expr.Expr;
+import org.jaxen.expr.LocationPath;
+import org.jaxen.expr.NameStep;
+import org.jaxen.saxpath.Axis;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
- * {@link Expression} that usually just encodes the name of a property of an object, but may also contains an XPath 1.0
- * expression.
+ * {@link Expression} that contain an XPath 1.0 expression (but usually is a simple property name).
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
@@ -60,36 +63,66 @@ import org.jaxen.expr.Expr;
  */
 public class PropertyName implements Expression {
 
+    private static Logger LOG = LoggerFactory.getLogger( PropertyName.class );
+
     private String text;
 
-    private NamespaceContext nsContext;
+    private NamespaceBindings bindings = new NamespaceBindings();
 
     private Expr xpath;
 
-    private QName simpleProp;
-
-    private Boolean isSimple;
+    private QName qName;
 
     /**
      * Creates a new {@link PropertyName} instance from an encoded XPath-expression and the namespace bindings.
      * 
      * @param text
-     *            must be a valid XPath 1.0-expression, never <code>null</code>
+     *            must be a valid XPath 1.0-expression, must not be <code>null</code>
      * @param nsContext
-     *            binding of the namespaces used in the XPath expression
+     *            binding of the namespaces used in the XPath expression, may be <code>null</code>
+     * @throws IllegalArgumentException
+     *             if text is not a valid XPath 1.0-expression (or a used namespace is not bound)
      */
-    public PropertyName( String text, NamespaceContext nsContext ) {
+    public PropertyName( String text, NamespaceContext nsContext ) throws IllegalArgumentException {
         this.text = text;
-        this.nsContext = nsContext;
-    }
+        init( nsContext );
+    }    
 
-    // TODO check if this should stay here
-    public void set( String text, NamespaceContext nsContext ) {
-        this.text = text;
-        this.nsContext = nsContext;
-        this.xpath = null;
-        this.simpleProp = null;
-        this.isSimple = null;
+    private void init( NamespaceContext nsContext ) {
+
+        try {
+            xpath = new BaseXPath( text, null ).getRootExpr();
+            LOG.debug( "XPath: " + xpath );
+        } catch ( JaxenException e ) {
+            String msg = "'" + text + "' does not denote a valid XPath 1.0 expression: " + e.getMessage();
+            throw new IllegalArgumentException( msg );
+        }
+
+        for ( String prefix : XPathUtils.extractPrefixes( xpath ) ) {
+            String ns = nsContext == null ? null : nsContext.translateNamespacePrefixToUri( prefix );
+            LOG.info( prefix + " -> " + ns );
+            bindings.addNamespace( prefix, ns );
+        }
+
+        if ( xpath instanceof LocationPath ) {
+            LocationPath lpath = (LocationPath) xpath;
+            if ( lpath.getSteps().size() == 1 ) {
+                if ( lpath.getSteps().get( 0 ) instanceof NameStep ) {
+                    NameStep step = (NameStep) lpath.getSteps().get( 0 );
+                    if ( step.getAxis() == Axis.CHILD && step.getPredicates().isEmpty()
+                         && !step.getLocalName().equals( "*" ) ) {
+                        String prefix = step.getPrefix();
+                        if ( prefix.isEmpty() ) {
+                            qName = new QName( step.getLocalName() );
+                        } else {
+                            String ns = this.bindings.translateNamespacePrefixToUri( prefix );
+                            qName = new QName( ns, step.getLocalName(), prefix );
+                        }
+                        LOG.debug( "QName: " + qName );
+                    }
+                }
+            }
+        }
     }
 
     /**
@@ -99,34 +132,31 @@ public class PropertyName implements Expression {
      *            qualified name of the property, never <code>null</code>
      */
     public PropertyName( QName name ) {
-        this.nsContext = new org.deegree.commons.xml.NamespaceContext();
+        NamespaceBindings nsContext = new NamespaceBindings();
         if ( name.getNamespaceURI() != null ) {
             String prefix = ( name.getPrefix() != null && !"".equals( name.getPrefix() ) ) ? name.getPrefix() : "app";
-            ( (org.deegree.commons.xml.NamespaceContext) nsContext ).addNamespace( prefix, name.getNamespaceURI() );
+            nsContext.addNamespace( prefix, name.getNamespaceURI() );
             this.text = prefix + ":" + name.getLocalPart();
         } else {
             this.text = name.getLocalPart();
         }
+        init( bindings );
+    }
+
+    // TODO check if this should stay here
+    public void set( String text, NamespaceContext nsContext ) {
+        this.text = text;
+        init( nsContext );
     }
 
     /**
      * Returns the <a href="http://jaxen.codehaus.org/">Jaxen</a> representation of the XPath expression, which provides
      * access to the syntax tree.
      * 
-     * @return the compiled expression, or <code>null</code> if this {@link PropertyName} represents the empty string
-     * @throws FilterEvaluationException
-     *             if this {@link PropertyName} does not denote a valid XPath 1.0 expression
+     * @return the compiled expression, never <code>null</code>
      */
     public Expr getAsXPath()
                             throws FilterEvaluationException {
-        if ( xpath == null ) {
-            try {
-                xpath = new BaseXPath( text, null ).getRootExpr();
-            } catch ( JaxenException e ) {
-                String msg = "'" + text + "' does not denote a valid XPath 1.0 expression: " + e.getMessage();
-                throw new FilterEvaluationException( msg );
-            }
-        }
         return xpath;
     }
 
@@ -135,7 +165,7 @@ public class PropertyName implements Expression {
      * 
      * @return the XPath property name, this may be an empty string, but never <code>null</code>
      */
-    public String getPropertyName() {
+    public String getAsText() {
         return text;
     }
 
@@ -146,20 +176,7 @@ public class PropertyName implements Expression {
      * @return the qualified name value, or <code>null</code> if the property name is not simple
      */
     public QName getAsQName() {
-        if ( simpleProp == null && isSimple() ) {
-            int colonIdx = text.indexOf( ":" );
-            String localPart = null;
-            String prefix = DEFAULT_NS_PREFIX;
-            if ( colonIdx == -1 ) {
-                localPart = text;
-            } else {
-                localPart = text.substring( colonIdx + 1 );
-                prefix = text.substring( 0, colonIdx );
-            }
-            String namespace = nsContext == null ? NULL_NS_URI : nsContext.translateNamespacePrefixToUri( prefix );
-            simpleProp = new QName( namespace, localPart, prefix );
-        }
-        return simpleProp;
+        return qName;
     }
 
     /**
@@ -168,7 +185,7 @@ public class PropertyName implements Expression {
      * @return the namespace bindings, never <code>null</code>
      */
     public NamespaceContext getNsContext() {
-        return nsContext;
+        return bindings;
     }
 
     /**
@@ -177,12 +194,7 @@ public class PropertyName implements Expression {
      * @return <code>true</code>, if the property is simple, <code>false</code> otherwise
      */
     public boolean isSimple() {
-        if ( isSimple == null ) {
-            // TODO check against XPath spec.
-            isSimple = !text.contains( "@" ) && !text.contains( "/" ) && !text.contains( "[" ) && !text.contains( "*" )
-                       && !text.contains( "::" ) && !text.contains( "(" ) && !text.contains( "=" );
-        }
-        return isSimple;
+        return qName != null;
     }
 
     @Override

@@ -54,7 +54,7 @@ import javax.xml.stream.XMLStreamException;
 import org.deegree.commons.tom.ows.Version;
 import org.deegree.commons.utils.kvp.InvalidParameterValueException;
 import org.deegree.commons.utils.kvp.KVPUtils;
-import org.deegree.commons.xml.NamespaceContext;
+import org.deegree.commons.xml.NamespaceBindings;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;
@@ -157,7 +157,7 @@ public class GetFeatureKVPAdapter extends AbstractWFSRequestKVPAdapter {
     private static GetFeature parse100( Map<String, String> kvpParams, Map<String, String> nsMap )
                             throws Exception {
 
-        NamespaceContext nsContext = new NamespaceContext();
+        NamespaceBindings nsContext = new NamespaceBindings();
         if ( nsMap != null ) {
             for ( String key : nsMap.keySet() ) {
                 nsContext.addNamespace( key, nsMap.get( key ) );
@@ -287,7 +287,7 @@ public class GetFeatureKVPAdapter extends AbstractWFSRequestKVPAdapter {
             nsBindings = Collections.emptyMap();
         }
 
-        NamespaceContext nsContext = new NamespaceContext();
+        NamespaceBindings nsContext = new NamespaceBindings();
         if ( nsBindings != null ) {
             for ( String key : nsBindings.keySet() ) {
                 nsContext.addNamespace( key, nsBindings.get( key ) );
@@ -597,7 +597,7 @@ public class GetFeatureKVPAdapter extends AbstractWFSRequestKVPAdapter {
         return result;
     }
 
-    private static SortProperty[] getSortBy( String sortbyStr, NamespaceContext nsContext ) {
+    private static SortProperty[] getSortBy( String sortbyStr, NamespaceBindings nsContext ) {
         SortProperty[] result = null;
         if ( sortbyStr != null ) {
             String[] sortbyComm = sortbyStr.split( "," );
@@ -623,7 +623,7 @@ public class GetFeatureKVPAdapter extends AbstractWFSRequestKVPAdapter {
         return result;
     }
 
-    private static PropertyName[][] getPropertyNames( String propertyStr, NamespaceContext nsContext ) {
+    private static PropertyName[][] getPropertyNames( String propertyStr, NamespaceBindings nsContext ) {
         PropertyName[][] result = null;
         if ( propertyStr != null ) {
             String[][] propComm = parseParamList( propertyStr );

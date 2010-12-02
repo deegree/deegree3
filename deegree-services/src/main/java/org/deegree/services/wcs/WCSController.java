@@ -63,7 +63,7 @@ import org.deegree.commons.tom.ows.Version;
 import org.deegree.commons.utils.Pair;
 import org.deegree.commons.utils.kvp.KVPUtils;
 import org.deegree.commons.utils.kvp.MissingParameterException;
-import org.deegree.commons.xml.NamespaceContext;
+import org.deegree.commons.xml.NamespaceBindings;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.XPath;
 import org.deegree.commons.xml.stax.IndentingXMLStreamWriter;
@@ -90,8 +90,8 @@ import org.deegree.services.jaxb.metadata.ServiceProviderType;
 import org.deegree.services.jaxb.wcs.PublishedInformation;
 import org.deegree.services.jaxb.wcs.PublishedInformation.AllowedOperations;
 import org.deegree.services.wcs.capabilities.Capabilities100XMLAdapter;
-import org.deegree.services.wcs.capabilities.GetCapabilities100XMLAdapter;
 import org.deegree.services.wcs.capabilities.Capabilities100XMLAdapter.Sections;
+import org.deegree.services.wcs.capabilities.GetCapabilities100XMLAdapter;
 import org.deegree.services.wcs.coverages.WCSCoverage;
 import org.deegree.services.wcs.describecoverage.CoverageDescription100XMLAdapter;
 import org.deegree.services.wcs.describecoverage.DescribeCoverage;
@@ -154,7 +154,7 @@ public class WCSController extends AbstractOGCServiceController {
         init( serviceMetadata, mainConf, IMPLEMENTATION_METADATA, controllerConf );
         UPDATE_SEQUENCE++;
 
-        NamespaceContext nsContext = new NamespaceContext();
+        NamespaceBindings nsContext = new NamespaceBindings();
         nsContext.addNamespace( WCSConstants.WCS_100_PRE, WCS_100_NS );
         nsContext.addNamespace( WCSConstants.WCS_110_PRE, WCSConstants.WCS_110_NS );
         nsContext.addNamespace( CONFIG_PRE, CONFIG_NS );
@@ -186,7 +186,7 @@ public class WCSController extends AbstractOGCServiceController {
     }
 
     private ServiceConfigurationXMLAdapter parseServiceConfiguration( XMLAdapter controllerConf,
-                                                                      NamespaceContext nsContext ) {
+                                                                      NamespaceBindings nsContext ) {
         OMElement confElem = controllerConf.getRequiredElement( controllerConf.getRootElement(),
                                                                 new XPath( CONFIG_PRE + ":ServiceConfiguration",
                                                                            nsContext ) );
@@ -196,7 +196,7 @@ public class WCSController extends AbstractOGCServiceController {
         return serviceConfigAdapter;
     }
 
-    private PublishedInformation parsePublishedInformation( XMLAdapter controllerConf, NamespaceContext nsContext )
+    private PublishedInformation parsePublishedInformation( XMLAdapter controllerConf, NamespaceBindings nsContext )
                             throws ControllerInitException {
 
         PublishedInformation pubInf = null;

@@ -47,7 +47,7 @@ import org.apache.axiom.om.OMAbstractFactory;
 import org.apache.axiom.om.OMAttribute;
 import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.impl.llom.OMAttributeImpl;
-import org.deegree.commons.xml.NamespaceContext;
+import org.deegree.commons.xml.NamespaceBindings;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.XPath;
 import org.deegree.metadata.i18n.Messages;
@@ -171,13 +171,12 @@ public class ResourceIdentifier implements InspireCompliance {
         a.setRootElement( record );
         this.util = IdUtils.newInstance( conn );
 
-        NamespaceContext nsContext = a.getNamespaceContext( record );
+        NamespaceBindings nsContext = a.getNamespaceContext( record );
         nsContext.addNamespace( "srv", "http://www.isotc211.org/2005/srv" );
         nsContext.addNamespace( "gmd", "http://www.isotc211.org/2005/gmd" );
         nsContext.addNamespace( "gco", "http://www.isotc211.org/2005/gco" );
 
-        OMElement sv_service_OR_md_dataIdentification = a.getElement(
-                                                                      record,
+        OMElement sv_service_OR_md_dataIdentification = a.getElement( record,
                                                                       new XPath(
                                                                                  "./gmd:identificationInfo/srv:SV_ServiceIdentification | ./gmd:identificationInfo/gmd:MD_DataIdentification",
                                                                                  nsContext ) );
@@ -197,8 +196,7 @@ public class ResourceIdentifier implements InspireCompliance {
 
         List<String> resourceIdentifierList = new ArrayList<String>();
         for ( OMElement resourceElement : identifier ) {
-            String resourceIdentifier = a.getNodeAsString(
-                                                           resourceElement,
+            String resourceIdentifier = a.getNodeAsString( resourceElement,
                                                            new XPath(
                                                                       "./gmd:MD_Identifier/gmd:code/gco:CharacterString | ./gmd:RS_Identifier/gmd:code/gco:CharacterString",
                                                                       nsContext ), null );

@@ -40,6 +40,7 @@ import java.util.List;
 import javax.xml.namespace.QName;
 
 import org.deegree.feature.Feature;
+import org.deegree.feature.property.ExtraProps;
 import org.deegree.feature.property.Property;
 import org.deegree.feature.types.property.GeometryPropertyType;
 import org.deegree.feature.types.property.PropertyType;
@@ -122,12 +123,14 @@ public interface FeatureType {
      *            feature id, or null if the feature doesn't have an id
      * @param props
      *            properties
+     * @param extraProps
+     *            properties that are not defined by the {@link FeatureType} (e.g. rendering hints)
      * @param version
      *            determines the names and types of the standard GML properties, can be <code>null</code> (no GML
      *            properties)
      * @return a new <code>Feature</code> instance
      */
-    public Feature newFeature( String fid, List<Property> props, GMLVersion version );
+    public Feature newFeature( String fid, List<Property> props, ExtraProps extraProps, GMLVersion version );
 
     /**
      * Returns the {@link ApplicationSchema} that this feature type belongs to.

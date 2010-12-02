@@ -42,6 +42,7 @@ import javax.xml.namespace.QName;
 
 import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.feature.Feature;
+import org.deegree.feature.property.ExtraProps;
 import org.deegree.feature.property.Property;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.geometry.Envelope;
@@ -154,5 +155,15 @@ public class FeatureReference extends GMLReference<Feature> implements Feature {
     @Override
     public StandardGMLFeatureProps getGMLProperties() {
         return getReferencedObject().getGMLProperties();
+    }
+
+    @Override
+    public ExtraProps getExtraProperties() {
+        return getReferencedObject().getExtraProperties();
+    }
+
+    @Override
+    public void setExtraProperties( ExtraProps extraProps ) {
+        getReferencedObject().setExtraProperties( extraProps );
     }
 }

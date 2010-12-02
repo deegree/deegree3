@@ -370,7 +370,7 @@ public class SimpleSQLFeatureStore implements FeatureStore {
                                 }
                             }
                         }
-                        return new GenericFeature( featureType, null, props, null );
+                        return new GenericFeature( featureType, null, props, null, null );
                     }
                 } );
 

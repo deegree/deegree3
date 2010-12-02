@@ -47,8 +47,8 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import javax.xml.namespace.QName;
 
@@ -66,7 +66,7 @@ import org.apache.xerces.xs.XSTypeDefinition;
 import org.deegree.commons.tom.primitive.PrimitiveType;
 import org.deegree.commons.tom.primitive.XMLValueMangler;
 import org.deegree.commons.xml.CommonNamespaces;
-import org.deegree.commons.xml.NamespaceContext;
+import org.deegree.commons.xml.NamespaceBindings;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.XPath;
 import org.deegree.feature.types.ApplicationSchema;
@@ -538,11 +538,10 @@ public class ApplicationSchemaXSDDecoder {
             XSAnnotation annotation = (XSAnnotation) annotations.item( 0 );
             String s = annotation.getAnnotationString();
             XMLAdapter adapter = new XMLAdapter( new StringReader( s ) );
-            NamespaceContext nsContext = new NamespaceContext();
+            NamespaceBindings nsContext = new NamespaceBindings();
             nsContext.addNamespace( "xs", CommonNamespaces.XSNS );
             nsContext.addNamespace( "adv", "http://www.adv-online.de/nas" );
-            codeListId = adapter.getNodeAsString(
-                                                  adapter.getRootElement(),
+            codeListId = adapter.getNodeAsString( adapter.getRootElement(),
                                                   new XPath( "xs:appinfo/adv:referenzierteCodeList/text()", nsContext ),
                                                   null );
             if ( codeListId != null ) {

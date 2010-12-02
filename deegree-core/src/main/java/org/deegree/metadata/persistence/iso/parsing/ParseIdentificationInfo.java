@@ -49,7 +49,7 @@ import javax.xml.namespace.QName;
 import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.OMFactory;
 import org.deegree.commons.tom.datetime.Date;
-import org.deegree.commons.xml.NamespaceContext;
+import org.deegree.commons.xml.NamespaceBindings;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.XPath;
 import org.deegree.metadata.i18n.Messages;
@@ -72,7 +72,7 @@ public class ParseIdentificationInfo extends XMLAdapter {
 
     private static final Logger LOG = getLogger( ParseIdentificationInfo.class );
 
-    private NamespaceContext nsContextParseII;
+    private NamespaceBindings nsContextParseII;
 
     /**
      * 
@@ -80,7 +80,7 @@ public class ParseIdentificationInfo extends XMLAdapter {
      * @param connection
      * @param nsContext
      */
-    protected ParseIdentificationInfo( OMFactory factory, NamespaceContext nsContext ) {
+    protected ParseIdentificationInfo( OMFactory factory, NamespaceBindings nsContext ) {
         this.nsContextParseII = nsContext;
 
     }
@@ -113,8 +113,7 @@ public class ParseIdentificationInfo extends XMLAdapter {
                                                              new XPath( "./srv:SV_ServiceIdentification",
                                                                         nsContextParseII ) );
 
-            OMElement sv_service_OR_md_dataIdentification = getElement(
-                                                                        root_identInfo,
+            OMElement sv_service_OR_md_dataIdentification = getElement( root_identInfo,
                                                                         new XPath(
                                                                                    "./srv:SV_ServiceIdentification | ./gmd:MD_DataIdentification",
                                                                                    nsContextParseII ) );
@@ -131,8 +130,7 @@ public class ParseIdentificationInfo extends XMLAdapter {
 
             OMElement title = getElement( ci_citation, new XPath( "./gmd:title", nsContextParseII ) );
 
-            String[] titleList = getNodesAsStrings(
-                                                    title,
+            String[] titleList = getNodesAsStrings( title,
                                                     new XPath(
                                                                "./gmd:PT_FreeText/gmd:textGroup/gmd:LocalisedCharacterString",
                                                                nsContextParseII ) );
@@ -142,8 +140,7 @@ public class ParseIdentificationInfo extends XMLAdapter {
 
             String[] alternateTitleOtherLang = null;
             for ( OMElement alternateTitleElement : alternateTitle ) {
-                alternateTitleOtherLang = getNodesAsStrings(
-                                                             alternateTitleElement,
+                alternateTitleOtherLang = getNodesAsStrings( alternateTitleElement,
                                                              new XPath(
                                                                         "./gmd:PT_FreeText/gmd:textGroup/gmd:LocalisedCharacterString",
                                                                         nsContextParseII ) );
@@ -157,8 +154,7 @@ public class ParseIdentificationInfo extends XMLAdapter {
 
             String[] titleElements = getNodesAsStrings( title, new XPath( "./gco:CharacterString", nsContextParseII ) );
 
-            String[] alternateTitleElements = getNodesAsStrings(
-                                                                 sv_service_OR_md_dataIdentification,
+            String[] alternateTitleElements = getNodesAsStrings( sv_service_OR_md_dataIdentification,
                                                                  new XPath(
                                                                             "./gmd:citation/gmd:CI_Citation/gmd:alternateTitle/gco:CharacterString",
                                                                             nsContextParseII ) );
@@ -186,8 +182,7 @@ public class ParseIdentificationInfo extends XMLAdapter {
             List<String> resourceIdentifierList = new ArrayList<String>();
             for ( OMElement resourceElement : identifier ) {
                 // maybe additional this?? : | ./gmd:RS_Identifier/gmd:code/gco:CharacterString
-                String resourceIdentifier = getNodeAsString(
-                                                             resourceElement,
+                String resourceIdentifier = getNodeAsString( resourceElement,
                                                              new XPath(
                                                                         "./gmd:MD_Identifier/gmd:code/gco:CharacterString | ./gmd:RS_Identifier/gmd:code/gco:CharacterString",
                                                                         nsContextParseII ), null );
@@ -250,8 +245,7 @@ public class ParseIdentificationInfo extends XMLAdapter {
              * ResourceMaintenance
              * 
              *---------------------------------------------------------------*/
-            List<OMElement> resourceMaintenance = getElements(
-                                                               sv_service_OR_md_dataIdentification,
+            List<OMElement> resourceMaintenance = getElements( sv_service_OR_md_dataIdentification,
                                                                new XPath( "./gmd:resourceMaintenance", nsContextParseII ) );
 
             parseGraphicOverview( rp, sv_service_OR_md_dataIdentification );
@@ -269,8 +263,7 @@ public class ParseIdentificationInfo extends XMLAdapter {
              * DescriptiveKeywords
              * 
              *---------------------------------------------------------------*/
-            List<OMElement> descriptiveKeywords = getElements(
-                                                               sv_service_OR_md_dataIdentification,
+            List<OMElement> descriptiveKeywords = getElements( sv_service_OR_md_dataIdentification,
                                                                new XPath( "./gmd:descriptiveKeywords", nsContextParseII ) );
 
             /*---------------------------------------------------------------
@@ -307,8 +300,7 @@ public class ParseIdentificationInfo extends XMLAdapter {
                  * SpatialRepresentationType
                  * 
                  *---------------------------------------------------------------*/
-                spatialRepresentationType = getElements(
-                                                         md_dataIdentification,
+                spatialRepresentationType = getElements( md_dataIdentification,
                                                          new XPath( "./gmd:spatialRepresentationType", nsContextParseII ) );
                 /*---------------------------------------------------------------
                  * MD_DataIdentification
@@ -389,8 +381,7 @@ public class ParseIdentificationInfo extends XMLAdapter {
                 }
 
                 for ( OMElement spatialResolutionElem : spatialResolution ) {
-                    int denominator = getNodeAsInt(
-                                                    spatialResolutionElem,
+                    int denominator = getNodeAsInt( spatialResolutionElem,
                                                     new XPath(
                                                                "./gmd:equivalentScale/gmd:MD_RepresentativeFraction/gmd:denominator/gco:Integer",
                                                                nsContextParseII ), -1 );
@@ -435,24 +426,21 @@ public class ParseIdentificationInfo extends XMLAdapter {
                 OMElement ci_responsibleParty = getElement( pointOfContactElem, new XPath( "./gmd:CI_ResponsibleParty",
                                                                                            nsContextParseII ) );
 
-                String creator = getNodeAsString(
-                                                  ci_responsibleParty,
+                String creator = getNodeAsString( ci_responsibleParty,
                                                   new XPath(
                                                              "./gmd:organisationName[../gmd:role/gmd:CI_RoleCode/@codeListValue='originator']/gco:CharacterString",
                                                              nsContextParseII ), null );
 
                 rp.setCreator( creator );
 
-                String publisher = getNodeAsString(
-                                                    ci_responsibleParty,
+                String publisher = getNodeAsString( ci_responsibleParty,
                                                     new XPath(
                                                                "./gmd:organisationName[../gmd:role/gmd:CI_RoleCode/@codeListValue='publisher']/gco:CharacterString",
                                                                nsContextParseII ), null );
 
                 rp.setPublisher( publisher );
 
-                String contributor = getNodeAsString(
-                                                      ci_responsibleParty,
+                String contributor = getNodeAsString( ci_responsibleParty,
                                                       new XPath(
                                                                  "./gmd:organisationName[../gmd:role/gmd:CI_RoleCode/@codeListValue='author']/gco:CharacterString",
                                                                  nsContextParseII ), null );
@@ -495,8 +483,7 @@ public class ParseIdentificationInfo extends XMLAdapter {
                  * ServiceTypeVersion
                  * 
                  *---------------------------------------------------------------*/
-                String[] serviceTypeVersion = getNodesAsStrings(
-                                                                 sv_serviceIdentification,
+                String[] serviceTypeVersion = getNodesAsStrings( sv_serviceIdentification,
                                                                  new XPath(
                                                                             "./srv:serviceTypeVersion/gco:CharacterString",
                                                                             nsContextParseII ) );
@@ -557,21 +544,18 @@ public class ParseIdentificationInfo extends XMLAdapter {
                  *---------------------------------------------------------------*/
                 containsOperations = getElements( sv_serviceIdentification, new XPath( "./srv:containsOperations",
                                                                                        nsContextParseII ) );
-                String[] operation = getNodesAsStrings(
-                                                        sv_serviceIdentification,
+                String[] operation = getNodesAsStrings( sv_serviceIdentification,
                                                         new XPath(
                                                                    "./srv:containsOperations/srv:SV_OperationMetadata/srv:operationName/gco:CharacterString",
                                                                    nsContextParseII ) );
                 for ( OMElement containsOpElem : containsOperations ) {
 
-                    String operation_dcp = getNodeAsString(
-                                                            containsOpElem,
+                    String operation_dcp = getNodeAsString( containsOpElem,
                                                             new XPath(
                                                                        "./srv:SV_OperationMetadata/srv:DCP/srv:DCPList",
                                                                        nsContextParseII ), null );
 
-                    String operation_linkage = getNodeAsString(
-                                                                containsOpElem,
+                    String operation_linkage = getNodeAsString( containsOpElem,
                                                                 new XPath(
                                                                            "./srv:SV_OperationMetadata/srv:connectPoint/srv:CI_OnlineResource/srv:linkage/srv:URL",
                                                                            nsContextParseII ), null );
@@ -604,14 +588,12 @@ public class ParseIdentificationInfo extends XMLAdapter {
             if ( extent != null ) {
                 for ( OMElement extentElem : extent ) {
 
-                    String temporalExtentBegin = getNodeAsString(
-                                                                  extentElem,
+                    String temporalExtentBegin = getNodeAsString( extentElem,
                                                                   new XPath(
                                                                              "./gmd:EX_Extent/gmd:temporalElement/gmd:EX_TemporalExtent/gmd:extent/gmd:TimePeriod/gmd:beginPosition",
                                                                              nsContextParseII ), null );
 
-                    String temporalExtentEnd = getNodeAsString(
-                                                                extentElem,
+                    String temporalExtentEnd = getNodeAsString( extentElem,
                                                                 new XPath(
                                                                            "./gmd:EX_Extent/gmd:temporalElement/gmd:EX_TemporalExtent/gmd:extent/gmd:TimePeriod/gmd:endPosition",
                                                                            nsContextParseII ), null );
@@ -628,8 +610,7 @@ public class ParseIdentificationInfo extends XMLAdapter {
                         throw new MetadataStoreException( msg );
                     }
 
-                    List<OMElement> geographicElement = getElements(
-                                                                     extentElem,
+                    List<OMElement> geographicElement = getElements( extentElem,
                                                                      new XPath(
                                                                                 "./gmd:EX_Extent/gmd:geographicElement",
                                                                                 nsContextParseII ) );
@@ -644,32 +625,28 @@ public class ParseIdentificationInfo extends XMLAdapter {
                         OMElement bbox = getElement( geographicElem, new XPath( "./gmd:EX_GeographicBoundingBox",
                                                                                 nsContextParseII ) );
                         if ( boundingBoxWestLongitude == 0.0 ) {
-                            boundingBoxWestLongitude = getNodeAsDouble(
-                                                                        bbox,
+                            boundingBoxWestLongitude = getNodeAsDouble( bbox,
                                                                         new XPath(
                                                                                    "./gmd:westBoundLongitude/gco:Decimal",
                                                                                    nsContextParseII ), 0.0 );
 
                         }
                         if ( boundingBoxEastLongitude == 0.0 ) {
-                            boundingBoxEastLongitude = getNodeAsDouble(
-                                                                        bbox,
+                            boundingBoxEastLongitude = getNodeAsDouble( bbox,
                                                                         new XPath(
                                                                                    "./gmd:eastBoundLongitude/gco:Decimal",
                                                                                    nsContextParseII ), 0.0 );
 
                         }
                         if ( boundingBoxSouthLatitude == 0.0 ) {
-                            boundingBoxSouthLatitude = getNodeAsDouble(
-                                                                        bbox,
+                            boundingBoxSouthLatitude = getNodeAsDouble( bbox,
                                                                         new XPath(
                                                                                    "./gmd:southBoundLatitude/gco:Decimal",
                                                                                    nsContextParseII ), 0.0 );
 
                         }
                         if ( boundingBoxNorthLatitude == 0.0 ) {
-                            boundingBoxNorthLatitude = getNodeAsDouble(
-                                                                        bbox,
+                            boundingBoxNorthLatitude = getNodeAsDouble( bbox,
                                                                         new XPath(
                                                                                    "./gmd:northBoundLatitude/gco:Decimal",
                                                                                    nsContextParseII ), 0.0 );
@@ -677,16 +654,14 @@ public class ParseIdentificationInfo extends XMLAdapter {
                         }
 
                         if ( geographicDescriptionCode_service == null ) {
-                            OMElement geographicDescriptionCode_serviceElem = getElement(
-                                                                                          geographicElem,
+                            OMElement geographicDescriptionCode_serviceElem = getElement( geographicElem,
                                                                                           new XPath(
                                                                                                      "./gmd:EX_GeopraphicDescription/gmd:geographicIdentifier/gmd:MD_Identifier/gmd:code",
                                                                                                      nsContextParseII ) );
                             geographicDescriptionCode_service = getNodeAsString( geographicDescriptionCode_serviceElem,
                                                                                  new XPath( "./gco:CharacterString",
                                                                                             nsContextParseII ), null );
-                            geographicDescriptionCode_serviceOtherLang = getNodesAsStrings(
-                                                                                            geographicDescriptionCode_serviceElem,
+                            geographicDescriptionCode_serviceOtherLang = getNodesAsStrings( geographicDescriptionCode_serviceElem,
                                                                                             new XPath(
                                                                                                        "./gmd:PT_FreeText/gmd:textGroup/gmd:LocalisedCharacterString",
                                                                                                        nsContextParseII ) );
@@ -726,8 +701,7 @@ public class ParseIdentificationInfo extends XMLAdapter {
             List<Keyword> listOfKeywords = new ArrayList<Keyword>();
             for ( OMElement md_keywords : commonKeywords ) {
 
-                String keywordType = getNodeAsString(
-                                                      md_keywords,
+                String keywordType = getNodeAsString( md_keywords,
                                                       new XPath(
                                                                  "./gmd:MD_Keywords/gmd:type/gmd:MD_KeywordTypeCode/@codeListValue",
                                                                  nsContextParseII ), null );
@@ -736,14 +710,12 @@ public class ParseIdentificationInfo extends XMLAdapter {
                                                        new XPath( "./gmd:MD_Keywords/gmd:keyword/gco:CharacterString",
                                                                   nsContextParseII ) );
 
-                String[] keywordsOtherLang = getNodesAsStrings(
-                                                                md_keywords,
+                String[] keywordsOtherLang = getNodesAsStrings( md_keywords,
                                                                 new XPath(
                                                                            "./gmd:MD_Keywords/gmd:keyword/gmd:PT_FreeText/gmd:textGroup/gmd:LocalisedCharacterString",
                                                                            nsContextParseII ) );
 
-                String thesaurus = getNodeAsString(
-                                                    md_keywords,
+                String thesaurus = getNodeAsString( md_keywords,
                                                     new XPath(
                                                                "./gmd:MD_Keywords/gmd:thesaurusName/gmd:CI_Citation/gmd:title/gco:CharacterString",
                                                                nsContextParseII ), null );
@@ -772,8 +744,7 @@ public class ParseIdentificationInfo extends XMLAdapter {
                 if ( operatesOnStringUuIdAttribute != null && !operatesOnStringUuIdAttribute.equals( "" ) ) {
                     operatesOnList.add( operatesOnStringUuIdAttribute );
                 } else {
-                    operatesOnString = getNodeAsString(
-                                                        operatesOnElem,
+                    operatesOnString = getNodeAsString( operatesOnElem,
                                                         new XPath(
                                                                    "./gmd:MD_DataIdentification/gmd:citation/gmd:CI_Citation/gmd:identifier/gmd:MD_Identifier/gmd:code/gco:CharacterString",
                                                                    nsContextParseII ), null );
@@ -782,13 +753,11 @@ public class ParseIdentificationInfo extends XMLAdapter {
 
             }
 
-            List<OMElement> operatesOnCoupledResources = getElements(
-                                                                      sv_serviceIdentification,
+            List<OMElement> operatesOnCoupledResources = getElements( sv_serviceIdentification,
                                                                       new XPath(
                                                                                  "./srv:coupledResource/srv:SV_CoupledResource",
                                                                                  nsContextParseII ) );
-            String[] operatesOnIdentifierList = getNodesAsStrings(
-                                                                   sv_serviceIdentification,
+            String[] operatesOnIdentifierList = getNodesAsStrings( sv_serviceIdentification,
                                                                    new XPath(
                                                                               "./srv:coupledResource/srv:SV_CoupledResource/srv:identifier/gco:CharacterString",
                                                                               nsContextParseII ) );
@@ -820,8 +789,7 @@ public class ParseIdentificationInfo extends XMLAdapter {
             }
             qp.setOperatesOnData( operatesOnDataList );
 
-            String couplingTypeString = getNodeAsString(
-                                                         sv_serviceIdentification,
+            String couplingTypeString = getNodeAsString( sv_serviceIdentification,
                                                          new XPath(
                                                                     "./srv:couplingType/srv:SV_CouplingType/@codeListValue",
                                                                     nsContextParseII ), null );
@@ -840,8 +808,7 @@ public class ParseIdentificationInfo extends XMLAdapter {
      * @param ci_citation
      */
     private void parseDateComponents( QueryableProperties qp, OMElement ci_citation ) {
-        String revisionDateString = getNodeAsString(
-                                                     ci_citation,
+        String revisionDateString = getNodeAsString( ci_citation,
                                                      new XPath(
                                                                 "./gmd:date/gmd:CI_Date[./gmd:dateType/gmd:CI_DateTypeCode/@codeListValue='revision']/gmd:date/gco:Date | ./gmd:date/gmd:CI_Date[./gmd:dateType/gmd:CI_DateTypeCode/@codeListValue='revision']/gmd:date/gco:DateTime",
                                                                 nsContextParseII ), null );
@@ -859,8 +826,7 @@ public class ParseIdentificationInfo extends XMLAdapter {
 
         qp.setRevisionDate( date );
 
-        String creationDateString = getNodeAsString(
-                                                     ci_citation,
+        String creationDateString = getNodeAsString( ci_citation,
                                                      new XPath(
                                                                 "./gmd:date/gmd:CI_Date[./gmd:dateType/gmd:CI_DateTypeCode/@codeListValue='creation']/gmd:date/gco:DateTime | ./gmd:date/gmd:CI_Date[./gmd:dateType/gmd:CI_DateTypeCode/@codeListValue='creation']/gmd:date/gco:Date",
                                                                 nsContextParseII ), null );
@@ -878,8 +844,7 @@ public class ParseIdentificationInfo extends XMLAdapter {
 
         qp.setCreationDate( date );
 
-        String publicationDateString = getNodeAsString(
-                                                        ci_citation,
+        String publicationDateString = getNodeAsString( ci_citation,
                                                         new XPath(
                                                                    "./gmd:date/gmd:CI_Date[./gmd:dateType/gmd:CI_DateTypeCode/@codeListValue='publication']/gmd:date/gco:Date | ./gmd:date/gmd:CI_Date[./gmd:dateType/gmd:CI_DateTypeCode/@codeListValue='publication']/gmd:date/gco:DateTime",
                                                                    nsContextParseII ), null );
@@ -910,38 +875,33 @@ public class ParseIdentificationInfo extends XMLAdapter {
         List<OMElement> resourceConstraints = getElements( parent, new XPath( "./gmd:resourceConstraints",
                                                                               nsContextParseII ) );
 
-        String[] useLim = getNodesAsStrings(
-                                             parent,
+        String[] useLim = getNodesAsStrings( parent,
                                              new XPath(
                                                         "./gmd:resourceConstraints/gmd:MD_Constraints/gmd:useLimitation/gco:CharacterString",
                                                         nsContextParseII ) );
 
         qp.setLimitation( Arrays.asList( useLim ) );
 
-        String[] accessConst = getNodesAsStrings(
-                                                  parent,
+        String[] accessConst = getNodesAsStrings( parent,
                                                   new XPath(
                                                              "./gmd:resourceConstraints/gmd:MD_LegalConstraints/gmd:accessConstraints/gmd:MD_RestrictionCode/@codeListValue",
                                                              nsContextParseII ) );
 
         qp.setAccessConstraints( Arrays.asList( accessConst ) );
 
-        String[] useConst = getNodesAsStrings(
-                                               parent,
+        String[] useConst = getNodesAsStrings( parent,
                                                new XPath(
                                                           "./gmd:resourceConstraints/gmd:MD_LegalConstraints/gmd:useConstraints/gco:CharacterString",
                                                           nsContextParseII ) );
 
-        String[] otherConst = getNodesAsStrings(
-                                                 parent,
+        String[] otherConst = getNodesAsStrings( parent,
                                                  new XPath(
                                                             "./gmd:resourceConstraints/gmd:MD_LegalConstraints/gmd:otherConstraints/gco:CharacterString",
                                                             nsContextParseII ) );
 
         qp.setOtherConstraints( Arrays.asList( otherConst ) );
 
-        qp.setClassification( Arrays.asList( getNodesAsStrings(
-                                                                parent,
+        qp.setClassification( Arrays.asList( getNodesAsStrings( parent,
                                                                 new XPath(
                                                                            "./gmd:resourceConstraints/gmd:MD_SecurityConstraints/gmd:classification/gmd:MD_ClassificationCode/@codeListValue",
                                                                            nsContextParseII ) ) ) );
@@ -949,8 +909,7 @@ public class ParseIdentificationInfo extends XMLAdapter {
         OMElement hasSecurityConstraintsElement = null;
         List<String> rightsElements = new ArrayList<String>();
         for ( OMElement resourceConstraintsElem : resourceConstraints ) {
-            String rights = getNodeAsString(
-                                             resourceConstraintsElem,
+            String rights = getNodeAsString( resourceConstraintsElem,
                                              new XPath(
                                                         "./gmd:MD_LegalConstraints/gmd:accessConstraints/gmd:MD_RestrictionCode/@codeListValue",
                                                         nsContextParseII ), null );
@@ -981,8 +940,7 @@ public class ParseIdentificationInfo extends XMLAdapter {
 
         List<OMElement> graphicOverview = getElements( parent, new XPath( "./gmd:graphicOverview", nsContextParseII ) );
 
-        String graphicOverviewString = getNodeAsString(
-                                                        parent,
+        String graphicOverviewString = getNodeAsString( parent,
                                                         new XPath(
                                                                    "./gmd:graphicOverview/gmd:MD_BrowseGraphic/gmd:fileName/gco:CharacterString",
                                                                    nsContextParseII ), null );
@@ -998,8 +956,7 @@ public class ParseIdentificationInfo extends XMLAdapter {
          *---------------------------------------------------------------*/
         OMElement _abstract = getElement( parent, new XPath( "./gmd:abstract", nsContextParseII ) );
 
-        String[] _abstractOtherLang = getNodesAsStrings(
-                                                         _abstract,
+        String[] _abstractOtherLang = getNodesAsStrings( _abstract,
                                                          new XPath(
                                                                     "./gmd:PT_FreeText/gmd:textGroup/gmd:LocalisedCharacterString",
                                                                     nsContextParseII ) );

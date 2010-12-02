@@ -38,7 +38,7 @@ package org.deegree.services.csw.describerecord;
 import javax.xml.namespace.QName;
 
 import org.deegree.commons.tom.ows.Version;
-import org.deegree.commons.xml.NamespaceContext;
+import org.deegree.commons.xml.NamespaceBindings;
 import org.deegree.services.csw.AbstractCSWRequest;
 
 /**
@@ -66,7 +66,7 @@ public class DescribeRecord extends AbstractCSWRequest {
      * @param schemaLanguage
      *            requested schema language format
      */
-    protected DescribeRecord( Version version, NamespaceContext namespaces, QName[] typeNames, String outputFormat,
+    protected DescribeRecord( Version version, NamespaceBindings namespaces, QName[] typeNames, String outputFormat,
                               String schemaLanguage ) {
         super( version, namespaces, typeNames, outputFormat );
         this.schemaLanguage = schemaLanguage;

@@ -45,7 +45,7 @@ import javax.xml.namespace.QName;
 import org.deegree.commons.tom.ows.Version;
 import org.deegree.commons.utils.kvp.InvalidParameterValueException;
 import org.deegree.commons.utils.kvp.KVPUtils;
-import org.deegree.commons.xml.NamespaceContext;
+import org.deegree.commons.xml.NamespaceBindings;
 import org.deegree.protocol.i18n.Messages;
 import org.deegree.services.csw.AbstractCSWKVPAdapter;
 
@@ -100,7 +100,7 @@ public class DescribeRecordKVPAdapter extends AbstractCSWKVPAdapter {
             nsBindings = Collections.emptyMap();
         }
 
-        NamespaceContext nsContext = new NamespaceContext();
+        NamespaceBindings nsContext = new NamespaceBindings();
         if ( nsBindings != null ) {
             for ( String key : nsBindings.keySet() ) {
                 nsContext.addNamespace( key, nsBindings.get( key ) );

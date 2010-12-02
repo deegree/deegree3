@@ -57,7 +57,7 @@ import org.apache.axiom.om.OMElement;
 import org.deegree.commons.tom.ows.CodeType;
 import org.deegree.commons.tom.ows.LanguageString;
 import org.deegree.commons.utils.Pair;
-import org.deegree.commons.xml.NamespaceContext;
+import org.deegree.commons.xml.NamespaceBindings;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.commons.xml.XPath;
@@ -69,12 +69,12 @@ import org.deegree.process.jaxb.java.ComplexFormatType;
 import org.deegree.process.jaxb.java.ComplexInputDefinition;
 import org.deegree.process.jaxb.java.ComplexOutputDefinition;
 import org.deegree.process.jaxb.java.LiteralInputDefinition;
-import org.deegree.process.jaxb.java.ProcessDefinition;
-import org.deegree.process.jaxb.java.ProcessletInputDefinition;
-import org.deegree.process.jaxb.java.ProcessletOutputDefinition;
 import org.deegree.process.jaxb.java.LiteralInputDefinition.OtherUOM;
+import org.deegree.process.jaxb.java.ProcessDefinition;
 import org.deegree.process.jaxb.java.ProcessDefinition.InputParameters;
 import org.deegree.process.jaxb.java.ProcessDefinition.OutputParameters;
+import org.deegree.process.jaxb.java.ProcessletInputDefinition;
+import org.deegree.process.jaxb.java.ProcessletOutputDefinition;
 import org.deegree.protocol.ows.OWSCommonXMLAdapter;
 import org.deegree.protocol.wps.WPSConstants;
 import org.deegree.services.controller.ows.OWSException;
@@ -115,10 +115,10 @@ public class ExecuteRequestXMLAdapter extends OWSCommonXMLAdapter {
 
     private static final Logger LOG = LoggerFactory.getLogger( ExecuteRequestXMLAdapter.class );
 
-    private static NamespaceContext nsContext;
+    private static NamespaceBindings nsContext;
 
     static {
-        nsContext = new NamespaceContext( XMLAdapter.nsContext );
+        nsContext = new NamespaceBindings( XMLAdapter.nsContext );
         nsContext.addNamespace( OWS_PREFIX, OWS110_NS );
         nsContext.addNamespace( WPS_PREFIX, WPS_100_NS );
     }

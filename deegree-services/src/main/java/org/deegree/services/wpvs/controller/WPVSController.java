@@ -64,7 +64,7 @@ import org.deegree.commons.tom.ows.Version;
 import org.deegree.commons.utils.Pair;
 import org.deegree.commons.utils.kvp.KVPUtils;
 import org.deegree.commons.utils.kvp.MissingParameterException;
-import org.deegree.commons.xml.NamespaceContext;
+import org.deegree.commons.xml.NamespaceBindings;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.XPath;
 import org.deegree.commons.xml.stax.IndentingXMLStreamWriter;
@@ -88,8 +88,8 @@ import org.deegree.services.jaxb.metadata.DeegreeServicesMetadataType;
 import org.deegree.services.jaxb.metadata.ServiceIdentificationType;
 import org.deegree.services.jaxb.metadata.ServiceProviderType;
 import org.deegree.services.jaxb.wpvs.PublishedInformation;
-import org.deegree.services.jaxb.wpvs.ServiceConfiguration;
 import org.deegree.services.jaxb.wpvs.PublishedInformation.AllowedOperations;
+import org.deegree.services.jaxb.wpvs.ServiceConfiguration;
 import org.deegree.services.wpvs.PerspectiveViewService;
 import org.deegree.services.wpvs.controller.capabilities.CapabilitiesXMLAdapter;
 import org.deegree.services.wpvs.controller.getview.GetView;
@@ -155,7 +155,7 @@ public class WPVSController extends AbstractOGCServiceController {
         identification = serviceMetadata.getServiceIdentification();
         provider = serviceMetadata.getServiceProvider();
 
-        NamespaceContext nsContext = new NamespaceContext();
+        NamespaceBindings nsContext = new NamespaceBindings();
         nsContext.addNamespace( "wpvs", "http://www.deegree.org/services/wpvs" );
         try {
             publishedInformation = parsePublishedInformation( nsContext, controllerConf );
@@ -166,7 +166,7 @@ public class WPVSController extends AbstractOGCServiceController {
         }
     }
 
-    private PublishedInformation parsePublishedInformation( NamespaceContext nsContext, XMLAdapter controllerConf )
+    private PublishedInformation parsePublishedInformation( NamespaceBindings nsContext, XMLAdapter controllerConf )
                             throws ControllerInitException {
 
         XPath xp = new XPath( "wpvs:PublishedInformation", nsContext );
@@ -194,7 +194,7 @@ public class WPVSController extends AbstractOGCServiceController {
         return result;
     }
 
-    private ServiceConfiguration parseServerConfiguration( NamespaceContext nsContext, XMLAdapter controllerConf )
+    private ServiceConfiguration parseServerConfiguration( NamespaceBindings nsContext, XMLAdapter controllerConf )
                             throws ControllerInitException {
         XPath xp = new XPath( "wpvs:ServiceConfiguration", nsContext );
         OMElement elem = controllerConf.getRequiredElement( controllerConf.getRootElement(), xp );

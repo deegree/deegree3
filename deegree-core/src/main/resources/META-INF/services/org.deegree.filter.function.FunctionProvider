@@ -10,3 +10,4 @@ org.deegree.filter.function.geometry.MoveGeometry
 org.deegree.filter.function.other.IDiv
 org.deegree.filter.function.other.IMod
 org.deegree.filter.function.other.FtName
+org.deegree.filter.function.other.ExtraProp

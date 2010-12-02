@@ -202,21 +202,21 @@ public class FilterEvaluationTest {
         Filter filter = parseFilter( "testfilter14.xml" );
         assertResultSet( fc.getMembers( filter, new FeatureXPathEvaluator( GML_31 ) ), "PHILOSOPHER_1" );
     }
-    
+
     @Test
     public void filterCollection25()
                             throws FilterEvaluationException, XMLStreamException, FactoryConfigurationError {
         Filter filter = parseFilter( "testfilter25.xml" );
         assertResultSet( fc.getMembers( filter, new FeatureXPathEvaluator( GML_31 ) ), "PHILOSOPHER_1" );
     }
-    
+
     @Test
     public void filterCollection26()
                             throws FilterEvaluationException, XMLStreamException, FactoryConfigurationError {
         Filter filter = parseFilter( "testfilter26.xml" );
         assertResultSet( fc.getMembers( filter, new FeatureXPathEvaluator( GML_31 ) ), "PHILOSOPHER_1" );
     }
-    
+
     @Test
     public void filterCollection27()
                             throws FilterEvaluationException, XMLStreamException, FactoryConfigurationError {

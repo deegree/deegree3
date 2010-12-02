@@ -48,7 +48,7 @@ import org.apache.axiom.om.OMAbstractFactory;
 import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.OMFactory;
 import org.deegree.commons.tom.datetime.Date;
-import org.deegree.commons.xml.NamespaceContext;
+import org.deegree.commons.xml.NamespaceBindings;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.XPath;
 import org.deegree.cs.CRSCodeType;
@@ -74,7 +74,8 @@ public final class ISOQPParsing extends XMLAdapter {
 
     private static final Logger LOG = getLogger( ISOQPParsing.class );
 
-    private static NamespaceContext nsContextISOParsing = new NamespaceContext( XMLAdapter.nsContext );
+    private static NamespaceBindings nsContextISOParsing = new NamespaceBindings(
+                                                                                                    (NamespaceBindings) XMLAdapter.nsContext );
 
     private QueryableProperties qp;
 
@@ -126,8 +127,7 @@ public final class ISOQPParsing extends XMLAdapter {
          * 
          * 
          *---------------------------------------------------------------*/
-        String language = getNodeAsString(
-                                           rootElement,
+        String language = getNodeAsString( rootElement,
                                            new XPath(
                                                       "./gmd:language/gco:CharacterString | ./gmd:language/gmd:LanguageCode/@codeListValue",
                                                       nsContextISOParsing ), null );
@@ -276,8 +276,7 @@ public final class ISOQPParsing extends XMLAdapter {
          * 
          * 
          *---------------------------------------------------------------*/
-        List<OMElement> crsElements = getElements(
-                                                   rootElement,
+        List<OMElement> crsElements = getElements( rootElement,
                                                    new XPath(
                                                               "./gmd:referenceSystemInfo/gmd:MD_ReferenceSystem/gmd:referenceSystemIdentifier/gmd:RS_Identifier",
                                                               nsContextISOParsing ) );
@@ -449,14 +448,12 @@ public final class ISOQPParsing extends XMLAdapter {
 
         List<OMElement> formats = new ArrayList<OMElement>();
 
-        formats.addAll( getElements(
-                                     rootElement,
+        formats.addAll( getElements( rootElement,
                                      new XPath(
                                                 "./gmd:distributionInfo/gmd:MD_Distribution/gmd:distributor/gmd:MD_Distributor/gmd:distributorFormat/gmd:MD_Format",
                                                 nsContextISOParsing ) ) );
 
-        formats.addAll( getElements(
-                                     rootElement,
+        formats.addAll( getElements( rootElement,
                                      new XPath(
                                                 "./gmd:distributionInfo/gmd:MD_Distribution/gmd:distributionFormat/gmd:MD_Format",
                                                 nsContextISOParsing ) ) );
@@ -492,8 +489,7 @@ public final class ISOQPParsing extends XMLAdapter {
      */
     private void parseDataQualityInfo()
                             throws MetadataStoreException {
-        String source = getNodeAsString(
-                                         rootElement,
+        String source = getNodeAsString( rootElement,
                                          new XPath(
                                                     "./gmd:dataQualityInfo/gmd:DQ_DataQuality/gmd:lineage/gmd:LI_Lineage/gmd:statement/gco:CharacterString",
                                                     nsContextISOParsing ), null );
@@ -501,14 +497,12 @@ public final class ISOQPParsing extends XMLAdapter {
             qp.setLineage( source );
             rp.setSource( source );
         }
-        qp.setDegree( getNodeAsBoolean(
-                                        rootElement,
+        qp.setDegree( getNodeAsBoolean( rootElement,
                                         new XPath(
                                                    "./gmd:dataQualityInfo/gmd:DQ_DataQuality/gmd:report/gmd:DQ_DomainConsistency/gmd:result/gmd:DQ_ConformanceResult/gmd:pass/gco:Boolean",
                                                    nsContextISOParsing ), false ) );
 
-        List<OMElement> titleElems = getElements(
-                                                  rootElement,
+        List<OMElement> titleElems = getElements( rootElement,
                                                   new XPath(
                                                              "./gmd:dataQualityInfo/gmd:DQ_DataQuality/gmd:report/gmd:DQ_DomainConsistency/gmd:result/gmd:DQ_ConformanceResult/gmd:specification/gmd:CI_Citation/gmd:title",
                                                              nsContextISOParsing ) );
@@ -516,8 +510,7 @@ public final class ISOQPParsing extends XMLAdapter {
         List<String> titleStringList = new ArrayList<String>();
         for ( OMElement titleElem : titleElems ) {
             String title = getNodeAsString( titleElem, new XPath( "./gco:CharacterString", nsContextISOParsing ), null );
-            String[] titleList = getNodesAsStrings(
-                                                    titleElem,
+            String[] titleList = getNodesAsStrings( titleElem,
                                                     new XPath(
                                                                "./gmd:PT_FreeText/gmd:textGroup/gmd:LocalisedCharacterString",
                                                                nsContextISOParsing ) );
@@ -533,16 +526,14 @@ public final class ISOQPParsing extends XMLAdapter {
         if ( !titleStringList.isEmpty() ) {
             qp.setSpecificationTitle( titleStringList );
         }
-        String specDateType = getNodeAsString(
-                                               rootElement,
+        String specDateType = getNodeAsString( rootElement,
                                                new XPath(
                                                           "./gmd:dataQualityInfo/gmd:DQ_DataQuality/gmd:report/gmd:DQ_DomainConsistency/gmd:result/gmd:DQ_ConformanceResult/gmd:specification/gmd:CI_Citation/gmd:date/gmd:CI_Date/gmd:dateType/gmd:CI_DateTypeCode/@codeListValue",
                                                           nsContextISOParsing ), null );
         if ( specDateType != null ) {
             qp.setSpecificationDateType( specDateType );
         }
-        String specificationDateString = getNodeAsString(
-                                                          rootElement,
+        String specificationDateString = getNodeAsString( rootElement,
                                                           new XPath(
                                                                      "./gmd:dataQualityInfo/gmd:DQ_DataQuality/gmd:report/gmd:DQ_DomainConsistency/gmd:result/gmd:DQ_ConformanceResult/gmd:specification/gmd:CI_Citation/gmd:date/gmd:CI_Date/gmd:date/gco:Date",
                                                                      nsContextISOParsing ), null );

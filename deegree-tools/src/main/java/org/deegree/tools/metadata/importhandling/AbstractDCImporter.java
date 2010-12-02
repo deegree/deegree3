@@ -61,7 +61,7 @@ import org.apache.axiom.om.OMAbstractFactory;
 import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.OMFactory;
 import org.apache.axiom.om.OMNamespace;
-import org.deegree.commons.xml.NamespaceContext;
+import org.deegree.commons.xml.NamespaceBindings;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.XPath;
 import org.deegree.metadata.persistence.iso.ISOMetadataStore;
@@ -77,6 +77,7 @@ import org.slf4j.Logger;
  * @version $Revision$, $Date$
  */
 public abstract class AbstractDCImporter extends XMLAdapter {
+
     private static final Logger LOG = getLogger( ISOMetadataStore.class );
 
     protected OMFactory factory;
@@ -118,7 +119,7 @@ public abstract class AbstractDCImporter extends XMLAdapter {
     protected static String schemaLocation = CSW_202_NS + " " + CSW_202_PUBLICATION_SCHEMA;
 
     static {
-        nsContext = new NamespaceContext( XMLAdapter.nsContext );
+        nsContext = new NamespaceBindings( XMLAdapter.nsContext );
         nsContext.addNamespace( WPS_PREFIX, WPS_100_NS );
         nsContext.addNamespace( OWSCapabilitiesXMLAdapter.OWS_PREFIX, OWSCapabilitiesXMLAdapter.OWS110_NS );
         subjectElem = new QName( DC_NS, "subject", DC_PREFIX );

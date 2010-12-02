@@ -193,7 +193,7 @@ public class GenericFilterConverter implements SQLFilterConverter {
         PropertyIsBetween p = (PropertyIsBetween) op;
         String propName, lower, upper;
         try {
-            propName = ( (PropertyName) p.getExpression() ).getPropertyName();
+            propName = ( (PropertyName) p.getExpression() ).getAsText();
             lower = ( (Literal<?>) p.getLowerBoundary() ).getValue().toString();
             upper = ( (Literal<?>) p.getUpperBoundary() ).getValue().toString();
         } catch ( ClassCastException ex ) {
@@ -207,7 +207,7 @@ public class GenericFilterConverter implements SQLFilterConverter {
 
     private void buildPropertyIsNullClause( QueryBuilder q, ComparisonOperator op ) {
         PropertyIsNull p = (PropertyIsNull) op;
-        String propName = p.getPropertyName().getPropertyName();
+        String propName = p.getPropertyName().getAsText();
         String colName = columnMap.get( propName );
         q.add( colName + " IS NOT NULL" );
     }
@@ -256,7 +256,7 @@ public class GenericFilterConverter implements SQLFilterConverter {
                 PropertyName pname = (PropertyName) bop.getParameter1();
                 if ( bop.getParameter2().getType() == Expression.Type.LITERAL ) {
                     Literal<?> value = (Literal<?>) bop.getParameter2();
-                    return new StringPair( pname.getPropertyName(), value.getValue().toString() );
+                    return new StringPair( pname.getAsText(), value.getValue().toString() );
                 }
             }
         }

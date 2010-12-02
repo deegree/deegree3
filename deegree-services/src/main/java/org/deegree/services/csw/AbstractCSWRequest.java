@@ -38,7 +38,7 @@ package org.deegree.services.csw;
 import javax.xml.namespace.QName;
 
 import org.deegree.commons.tom.ows.Version;
-import org.deegree.commons.xml.NamespaceContext;
+import org.deegree.commons.xml.NamespaceBindings;
 
 /**
  * Abstract base class for the requests of all operations.
@@ -52,7 +52,7 @@ public abstract class AbstractCSWRequest {
 
     private Version version;
 
-    private NamespaceContext namespaces;
+    private NamespaceBindings namespaces;
 
     private QName[] typeNames;
 
@@ -66,7 +66,7 @@ public abstract class AbstractCSWRequest {
      * @param typeNames
      * @param outputFormat
      */
-    public AbstractCSWRequest( Version version, NamespaceContext namespaces, QName[] typeNames, String outputFormat ) {
+    public AbstractCSWRequest( Version version, NamespaceBindings namespaces, QName[] typeNames, String outputFormat ) {
         this.version = version;
         this.namespaces = namespaces;
         this.typeNames = typeNames;
@@ -83,7 +83,7 @@ public abstract class AbstractCSWRequest {
     /**
      * @return the namespaces
      */
-    public NamespaceContext getNamespaces() {
+    public NamespaceBindings getNamespaces() {
         return namespaces;
     }
 

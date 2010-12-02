@@ -47,7 +47,7 @@ import javax.xml.namespace.QName;
 import org.apache.axiom.om.OMElement;
 import org.deegree.commons.tom.ows.CodeType;
 import org.deegree.commons.tom.ows.LanguageString;
-import org.deegree.commons.xml.NamespaceContext;
+import org.deegree.commons.xml.NamespaceBindings;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.XPath;
 import org.deegree.protocol.ows.metadata.Range;
@@ -79,7 +79,7 @@ public class ProcessDetails {
 
     private static final String xmlNS = "http://www.w3.org/XML/1998/namespace";
 
-    private static NamespaceContext nsContext;
+    private static NamespaceBindings nsContext;
 
     private final XMLAdapter omResponse;
 
@@ -92,7 +92,7 @@ public class ProcessDetails {
     private final boolean statusSupported;
 
     static {
-        nsContext = new NamespaceContext();
+        nsContext = new NamespaceBindings();
         nsContext.addNamespace( WPS_PREFIX, WPS_100_NS );
         nsContext.addNamespace( owsPrefix, owsNS );
     }
@@ -344,7 +344,7 @@ public class ProcessDetails {
         if ( omAllowedValues != null ) {
             QName valueQName = new QName( owsNS, "Value" );
             // safe cast
-            @SuppressWarnings( { "cast", "unchecked" })
+            @SuppressWarnings({ "cast", "unchecked" })
             Iterator<OMElement> iterator = (Iterator<OMElement>) omAllowedValues.getChildrenWithName( valueQName );
             values = new ArrayList<String>();
             for ( ; iterator.hasNext(); ) {
@@ -353,7 +353,7 @@ public class ProcessDetails {
 
             QName rangeQName = new QName( owsNS, "Range" );
             // safe cast
-            @SuppressWarnings( { "cast", "unchecked" })
+            @SuppressWarnings({ "cast", "unchecked" })
             Iterator<OMElement> iterator2 = (Iterator<OMElement>) omAllowedValues.getChildrenWithName( rangeQName );
             rangeList = new ArrayList<Range>();
             for ( ; iterator2.hasNext(); ) {

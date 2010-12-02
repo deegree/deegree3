@@ -93,7 +93,7 @@ public class MappedXPath {
 
         List<QName> steps = new ArrayList<QName>();
 
-        if ( propName == null || propName.getPropertyName().isEmpty() ) {
+        if ( propName == null || propName.getAsText().isEmpty() ) {
             LOG.debug( "Null / empty property name (=targets default geometry property)." );
             FeatureType ft = schema.getFeatureType( ftMapping.getFeatureType() );
             GeometryPropertyType pt = ft.getDefaultGeometryPropertyDeclaration();
@@ -111,21 +111,21 @@ public class MappedXPath {
             try {
                 Expr xpath = propName.getAsXPath();
                 if ( !( xpath instanceof LocationPath ) ) {
-                    String msg = "Unable to map PropertyName '" + propName.getPropertyName()
+                    String msg = "Unable to map PropertyName '" + propName.getAsText()
                                  + "': the root expression is not a LocationPath.";
                     LOG.debug( msg );
                     throw new UnmappableException( msg );
                 }
                 for ( Object step : ( (LocationPath) xpath ).getSteps() ) {
                     if ( !( step instanceof NameStep ) ) {
-                        String msg = "Unable to map PropertyName '" + propName.getPropertyName()
+                        String msg = "Unable to map PropertyName '" + propName.getAsText()
                                      + "': contains an expression that is not a NameStep.";
                         LOG.debug( msg );
                         throw new UnmappableException( msg );
                     }
                     NameStep namestep = (NameStep) step;
                     if ( namestep.getPredicates() != null && !namestep.getPredicates().isEmpty() ) {
-                        String msg = "Unable to map PropertyName '" + propName.getPropertyName()
+                        String msg = "Unable to map PropertyName '" + propName.getAsText()
                                      + "': contains a NameStep with a predicate (needs implementation).";
                         LOG.debug( msg );
                         throw new UnmappableException( msg );

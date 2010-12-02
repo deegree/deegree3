@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,33 +32,33 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 package org.deegree.commons.xml;
 
 /**
  * TODO add documentation here
- *
+ * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
- *
+ * 
  * @version $Revision:$, $Date:$
  */
 public class XPath {
 
     private String xpath;
 
-    private NamespaceContext nsContext;
+    private NamespaceBindings nsContext;
 
-    public XPath( String xpath, NamespaceContext nsContext ) {
+    public XPath( String xpath, NamespaceBindings nsContext ) {
         this.xpath = xpath;
-        this.nsContext = nsContext == null ? new NamespaceContext() : nsContext;
+        this.nsContext = nsContext == null ? new NamespaceBindings() : nsContext;
     }
 
     public String getXPath() {
         return xpath;
     }
 
-    public NamespaceContext getNamespaceContext() {
+    public NamespaceBindings getNamespaceContext() {
         return nsContext;
     }
 

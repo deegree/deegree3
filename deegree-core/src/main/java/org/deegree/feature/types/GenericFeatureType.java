@@ -45,6 +45,7 @@ import javax.xml.namespace.QName;
 
 import org.deegree.feature.Feature;
 import org.deegree.feature.GenericFeature;
+import org.deegree.feature.property.ExtraProps;
 import org.deegree.feature.property.Property;
 import org.deegree.feature.types.property.GeometryPropertyType;
 import org.deegree.feature.types.property.PropertyType;
@@ -131,8 +132,8 @@ public class GenericFeatureType implements FeatureType {
     }
 
     @Override
-    public Feature newFeature( String fid, List<Property> props, GMLVersion version ) {
-        return new GenericFeature( this, fid, props, version );
+    public Feature newFeature( String fid, List<Property> props, ExtraProps extraProps, GMLVersion version ) {
+        return new GenericFeature( this, fid, props, version, extraProps );
     }
 
     @Override

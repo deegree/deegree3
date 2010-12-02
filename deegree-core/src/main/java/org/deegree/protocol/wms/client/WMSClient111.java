@@ -66,7 +66,7 @@ import org.apache.axiom.om.OMElement;
 import org.deegree.commons.concurrent.Executor;
 import org.deegree.commons.utils.Pair;
 import org.deegree.commons.utils.ProxyUtils;
-import org.deegree.commons.xml.NamespaceContext;
+import org.deegree.commons.xml.NamespaceBindings;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.XPath;
 import org.deegree.coverage.raster.SimpleRaster;
@@ -93,7 +93,7 @@ import org.slf4j.Logger;
  */
 public class WMSClient111 {
 
-    private static final NamespaceContext nsContext = getNamespaceContext();
+    private static final NamespaceBindings nsContext = getNamespaceContext();
 
     // needed in the worker
     static final Logger LOG = getLogger( WMSClient111.class );

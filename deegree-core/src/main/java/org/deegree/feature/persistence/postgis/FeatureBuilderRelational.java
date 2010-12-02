@@ -133,7 +133,7 @@ class FeatureBuilderRelational implements FeatureBuilder {
                     i++;
                 }
             }
-            feature = ft.newFeature( gmlId, props, null );
+            feature = ft.newFeature( gmlId, props, null, null );
             fs.getCache().add( feature );
         } else {
             LOG.debug( "Cache hit." );

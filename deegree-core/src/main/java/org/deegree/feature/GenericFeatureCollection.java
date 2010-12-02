@@ -48,6 +48,7 @@ import javax.xml.namespace.QName;
 import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.commons.tom.array.TypedObjectNodeArray;
 import org.deegree.commons.utils.Pair;
+import org.deegree.feature.property.ExtraProps;
 import org.deegree.feature.property.GenericProperty;
 import org.deegree.feature.property.Property;
 import org.deegree.feature.types.FeatureCollectionType;
@@ -88,9 +89,10 @@ public class GenericFeatureCollection extends AbstractFeatureCollection {
      *            GML version (determines the names/types of the standard properties), or <code>null</code> (then no
      *            standard GML properties are allowed)
      */
-    public GenericFeatureCollection( FeatureCollectionType ft, String fid, List<Property> props, GMLVersion version ) {
+    public GenericFeatureCollection( FeatureCollectionType ft, String fid, List<Property> props, ExtraProps extraProps,
+                                     GMLVersion version ) {
 
-        super( fid, ft );
+        super( fid, ft, extraProps );
         if ( version != null ) {
             Pair<StandardGMLFeatureProps, List<Property>> pair = StandardGMLFeatureProps.create( props, version );
             standardProps = pair.first;
@@ -122,7 +124,7 @@ public class GenericFeatureCollection extends AbstractFeatureCollection {
      * @param memberFeatures
      */
     public GenericFeatureCollection( String fid, Collection<Feature> memberFeatures ) {
-        super( fid, GML311_FEATURECOLLECTION );
+        super( fid, GML311_FEATURECOLLECTION, null );
         this.memberFeatures.addAll( memberFeatures );
         this.props = null;
     }
@@ -131,7 +133,7 @@ public class GenericFeatureCollection extends AbstractFeatureCollection {
      * Creates a new empty {@link GenericFeatureCollection} instance without type information.
      */
     public GenericFeatureCollection() {
-        super( null, GML311_FEATURECOLLECTION );
+        super( null, GML311_FEATURECOLLECTION, null );
         this.props = null;
     }
 
@@ -280,21 +282,21 @@ public class GenericFeatureCollection extends AbstractFeatureCollection {
         }
         return geoProps.toArray( new Property[geoProps.size()] );
     }
-    
+
     public FeatureInputStream getFeatureStream() {
         final Iterator<Feature> iter = iterator();
         return new FeatureInputStream() {
-            
+
             @Override
             public void close()
                                     throws IOException {
                 // nothing to do
             }
-            
+
             @Override
             public Feature read()
                                     throws IOException {
-                if (iter.hasNext()) {
+                if ( iter.hasNext() ) {
                     return iter.next();
                 }
                 return null;

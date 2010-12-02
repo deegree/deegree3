@@ -56,7 +56,7 @@ import javax.xml.stream.XMLStreamException;
 
 import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
-import org.deegree.commons.xml.NamespaceContext;
+import org.deegree.commons.xml.NamespaceBindings;
 import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.feature.Feature;
@@ -549,7 +549,7 @@ public class CityGMLImporter implements ModelImporter {
 
         String result = null;
 
-        NamespaceContext nsContext = new NamespaceContext();
+        NamespaceBindings nsContext = new NamespaceBindings();
         nsContext.addNamespace( "cgml", NS );
         PropertyName propName = new PropertyName( "cgml:externalReference/cgml:informationSystem/text()", nsContext );
 

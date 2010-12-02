@@ -77,7 +77,7 @@ import org.deegree.commons.jdbc.ConnectionManager;
 import org.deegree.commons.utils.Pair;
 import org.deegree.commons.utils.SunInfo;
 import org.deegree.commons.utils.math.Vectors3f;
-import org.deegree.commons.xml.NamespaceContext;
+import org.deegree.commons.xml.NamespaceBindings;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.XPath;
 import org.deegree.rendering.r3d.ViewParams;
@@ -937,8 +937,8 @@ public class InteractiveWPVS extends GLCanvas implements GLEventListener, KeyLis
 
         }
 
-        // TODO adapt to workspace concept 
-        workspace = DeegreeWorkspace.getInstance(null, baseDir);
+        // TODO adapt to workspace concept
+        workspace = DeegreeWorkspace.getInstance( null, baseDir );
 
         File dsDir = new File( baseDir, "/datasources/" );
         if ( !dsDir.exists() ) {
@@ -956,7 +956,7 @@ public class InteractiveWPVS extends GLCanvas implements GLEventListener, KeyLis
                                              + " don't know where the wpvs configuration file is located." );
         }
         XMLAdapter controllerConf = new XMLAdapter( wpvsConfig );
-        NamespaceContext nsContext = new NamespaceContext();
+        NamespaceBindings nsContext = new NamespaceBindings();
         nsContext.addNamespace( "wpvs", "http://www.deegree.org/services/wpvs" );
         XPath xp = new XPath( "wpvs:ServiceConfiguration", nsContext );
 

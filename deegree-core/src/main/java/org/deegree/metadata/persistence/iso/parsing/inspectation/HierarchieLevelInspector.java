@@ -40,7 +40,7 @@ import java.sql.Connection;
 import javax.xml.namespace.QName;
 
 import org.apache.axiom.om.OMElement;
-import org.deegree.commons.xml.NamespaceContext;
+import org.deegree.commons.xml.NamespaceBindings;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.XPath;
 import org.deegree.metadata.i18n.Messages;
@@ -73,7 +73,7 @@ public class HierarchieLevelInspector implements RecordInspector {
 
         a.setRootElement( record );
 
-        NamespaceContext nsContext = a.getNamespaceContext( record );
+        NamespaceBindings nsContext = a.getNamespaceContext( record );
         // NamespaceContext newNSC = generateNSC(nsContext);
         nsContext.addNamespace( "srv", "http://www.isotc211.org/2005/srv" );
         nsContext.addNamespace( "gmd", "http://www.isotc211.org/2005/gmd" );

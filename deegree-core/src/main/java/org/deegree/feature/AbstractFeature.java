@@ -44,6 +44,7 @@ import javax.xml.namespace.QName;
 import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.commons.tom.genericxml.GenericXMLElementContent;
 import org.deegree.commons.utils.Pair;
+import org.deegree.feature.property.ExtraProps;
 import org.deegree.feature.property.Property;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.geometry.Envelope;
@@ -74,6 +75,8 @@ public abstract class AbstractFeature implements Feature {
     /** Default GML properties that every GML feature allows for (gml:name, gml:description, ...). */
     protected StandardGMLFeatureProps standardProps;
 
+    private ExtraProps extraProps;
+
     /**
      * Creates a new {@link AbstractFeature} instance.
      * 
@@ -81,10 +84,13 @@ public abstract class AbstractFeature implements Feature {
      *            feature id or <code>null</code> if the feature is anonymous (discouraged for most use cases)
      * @param ft
      *            feature type, must not be <code>null</code>
+     * @param extraProps
+     *            extra properties, may be <code>null</code>
      */
-    protected AbstractFeature( String fid, FeatureType ft ) {
+    protected AbstractFeature( String fid, FeatureType ft, ExtraProps extraProps ) {
         this.fid = fid;
         this.ft = ft;
+        this.extraProps = extraProps;
     }
 
     @Override
@@ -210,5 +216,15 @@ public abstract class AbstractFeature implements Feature {
         if ( standardProps == null || !standardProps.setPropertyValue( propName, occurence, value, version ) ) {
             setPropertyValue( propName, occurence, value );
         }
+    }
+
+    @Override
+    public ExtraProps getExtraProperties() {
+        return extraProps;
+    }
+
+    @Override
+    public void setExtraProperties( ExtraProps extraProps ) {
+        this.extraProps = extraProps;
     }
 }

@@ -50,7 +50,7 @@ import java.util.List;
 import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.OMNamespace;
 import org.deegree.commons.utils.Pair;
-import org.deegree.commons.xml.NamespaceContext;
+import org.deegree.commons.xml.NamespaceBindings;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.XPath;
 import org.deegree.protocol.wpvs.WPVSConstants.WPVSRequestType;
@@ -70,7 +70,7 @@ public class WPVSClient {
 
     private final static Logger LOG = LoggerFactory.getLogger( WPVSClient.class );
 
-    private final NamespaceContext nsContext;
+    private final NamespaceBindings nsContext;
 
     private XMLAdapter capabilities;
 
@@ -92,7 +92,7 @@ public class WPVSClient {
     public WPVSClient( XMLAdapter capabilities ) {
         this.capabilities = capabilities;
         // add namespaces to namespace context, to be used later with xpath
-        nsContext = new NamespaceContext();
+        nsContext = new NamespaceBindings();
         // get all defined namespaces from getCapabilities in order to define the namespace context
         Iterator<OMNamespace> nss = this.capabilities.getRootElement().getAllDeclaredNamespaces();
         while ( nss.hasNext() ) {

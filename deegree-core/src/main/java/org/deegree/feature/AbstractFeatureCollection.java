@@ -38,6 +38,7 @@ package org.deegree.feature;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.deegree.feature.property.ExtraProps;
 import org.deegree.feature.types.FeatureCollectionType;
 import org.deegree.filter.Filter;
 import org.deegree.filter.FilterEvaluationException;
@@ -63,9 +64,11 @@ public abstract class AbstractFeatureCollection extends AbstractFeature implemen
      *            feature id or <code>null</code> if the feature is anonymous (discouraged for most use cases)
      * @param ft
      *            feature type, must not be <code>null</code>
+     * @param extraProps
+     *            extra properties, may be <code>null</code>
      */
-    protected AbstractFeatureCollection( String fid, FeatureCollectionType ft ) {
-        super( fid, ft );
+    protected AbstractFeatureCollection( String fid, FeatureCollectionType ft, ExtraProps extraProps ) {
+        super( fid, ft, extraProps );
     }
 
     @Override

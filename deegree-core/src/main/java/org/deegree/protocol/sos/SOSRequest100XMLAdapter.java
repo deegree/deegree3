@@ -36,11 +36,12 @@
 package org.deegree.protocol.sos;
 
 import org.apache.axiom.om.OMElement;
-import org.deegree.commons.xml.NamespaceContext;
+import org.deegree.commons.xml.NamespaceBindings;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.commons.xml.XPath;
 import org.deegree.protocol.ows.OWSCommonXMLAdapter;
+import org.deegree.protocol.ows.exception.OWSException;
 
 /**
  * Base class for all SOS 1.0.0 XMLAdapter. Defines the SOS XML namespace.
@@ -68,10 +69,10 @@ public class SOSRequest100XMLAdapter extends OWSCommonXMLAdapter {
     /**
      * namespace context with sos ns
      */
-    protected final static NamespaceContext nsContext;
+    protected final static NamespaceBindings nsContext;
 
     static {
-        nsContext = new NamespaceContext( XMLAdapter.nsContext );
+        nsContext = new NamespaceBindings( XMLAdapter.nsContext );
         nsContext.addNamespace( SOS_PREFIX, SOS_NS );
         nsContext.addNamespace( GML_PREFIX, GML_NS );
         nsContext.addNamespace( OGC_PREFIX, OGC_NS );

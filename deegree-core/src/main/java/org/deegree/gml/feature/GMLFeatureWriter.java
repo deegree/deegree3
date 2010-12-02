@@ -71,6 +71,7 @@ import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.feature.Feature;
 import org.deegree.feature.FeatureCollection;
 import org.deegree.feature.GenericFeatureCollection;
+import org.deegree.feature.property.ExtraProps;
 import org.deegree.feature.property.Property;
 import org.deegree.feature.types.property.ArrayPropertyType;
 import org.deegree.feature.types.property.CodePropertyType;
@@ -310,7 +311,7 @@ public class GMLFeatureWriter {
         }
         writer.writeEndElement();
     }
-    
+
     private void export( Feature feature, int currentLevel, int maxInlineLevels )
                             throws XMLStreamException, UnknownCRSException, TransformationException {
 
@@ -356,6 +357,12 @@ public class GMLFeatureWriter {
                     maxInlineLevels = getInlineLevels( prop );
                 }
                 export( prop, currentLevel, maxInlineLevels );
+            }
+            ExtraProps extraProps = feature.getExtraProperties();
+            if ( extraProps != null ) {
+                for ( Property prop : extraProps.getProperties() ) {
+                    export( prop, currentLevel, maxInlineLevels );
+                }
             }
             writer.writeEndElement();
         }

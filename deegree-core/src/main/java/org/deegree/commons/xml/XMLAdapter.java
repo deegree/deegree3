@@ -121,7 +121,7 @@ public class XMLAdapter {
     /**
      * The context
      */
-    protected static NamespaceContext nsContext = CommonNamespaces.getNamespaceContext();
+    protected static NamespaceBindings nsContext = CommonNamespaces.getNamespaceContext();
 
     /**
      * the xlink namespace
@@ -1098,20 +1098,19 @@ public class XMLAdapter {
      *            the given element
      * @return the constructed namespace context
      */
-    public NamespaceContext getNamespaceContext( OMElement element ) {
+    public NamespaceBindings getNamespaceContext( OMElement element ) {
 
-        NamespaceContext nsContext = new NamespaceContext();
+        NamespaceBindings nsContext = new NamespaceBindings();
         augmentNamespaceContext( element, nsContext );
-        // System.out.println( nsContext );
         return nsContext;
     }
 
     @SuppressWarnings("unchecked")
-    private void augmentNamespaceContext( OMElement element, NamespaceContext nsContext ) {
+    private void augmentNamespaceContext( OMElement element, NamespaceBindings nsContext ) {
         Iterator<OMNamespace> iterator = element.getAllDeclaredNamespaces();
         while ( iterator.hasNext() ) {
             OMNamespace namespace = iterator.next();
-            if ( nsContext.getURI( namespace.getPrefix() ) == null ) {
+            if ( nsContext.translateNamespacePrefixToUri( namespace.getPrefix() ) == null ) {
                 nsContext.addNamespace( namespace.getPrefix(), namespace.getNamespaceURI() );
             }
         }

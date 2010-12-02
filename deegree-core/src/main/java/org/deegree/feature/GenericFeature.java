@@ -42,6 +42,7 @@ import javax.xml.namespace.QName;
 
 import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.commons.utils.Pair;
+import org.deegree.feature.property.ExtraProps;
 import org.deegree.feature.property.GenericProperty;
 import org.deegree.feature.property.Property;
 import org.deegree.feature.types.GenericFeatureType;
@@ -78,9 +79,12 @@ public class GenericFeature extends AbstractFeature {
      * @param version
      *            GML version (determines the names/types of the standard properties), or <code>null</code> (then no
      *            standard GML properties are allowed)
+     * @param extraProps
+     *            extra properties, may be <code>null</code>
      */
-    public GenericFeature( GenericFeatureType ft, String fid, List<Property> props, GMLVersion version ) {
-        super( fid, ft );
+    public GenericFeature( GenericFeatureType ft, String fid, List<Property> props, GMLVersion version,
+                           ExtraProps extraProps ) {
+        super( fid, ft, extraProps );
         if ( version == null ) {
             this.props = new ArrayList<Property>( props );
         } else {

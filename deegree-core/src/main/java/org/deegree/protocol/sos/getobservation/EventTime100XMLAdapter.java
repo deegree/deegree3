@@ -44,7 +44,7 @@ import javax.xml.namespace.QName;
 
 import org.apache.axiom.om.OMElement;
 import org.deegree.commons.utils.time.DateUtils;
-import org.deegree.commons.xml.NamespaceContext;
+import org.deegree.commons.xml.NamespaceBindings;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.commons.xml.XPath;
@@ -66,7 +66,7 @@ import org.deegree.protocol.sos.time.TimePeriod;
  */
 public class EventTime100XMLAdapter extends XMLAdapter {
 
-    private static final NamespaceContext nsContext;
+    private static final NamespaceBindings nsContext;
 
     private static final String GML_PREFIX = "gml";
 
@@ -79,7 +79,7 @@ public class EventTime100XMLAdapter extends XMLAdapter {
     private static final String SOS_NS = "http://www.opengis.net/sos/1.0";
 
     static {
-        nsContext = new NamespaceContext( XMLAdapter.nsContext );
+        nsContext = new NamespaceBindings( XMLAdapter.nsContext );
         nsContext.addNamespace( GML_PREFIX, GML_NS );
         nsContext.addNamespace( SOS_PREFIX, SOS_NS );
     }

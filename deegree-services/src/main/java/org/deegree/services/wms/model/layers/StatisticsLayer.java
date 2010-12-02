@@ -139,8 +139,9 @@ public class StatisticsLayer extends FeatureLayer {
         List<Object> defaultVals = new ArrayList<Object>();
         date = new Date( System.currentTimeMillis() );
         defaultVals.add( new DimensionInterval<Date, String, Integer>( date, "current", 0 ) );
-        dimensions.put( "time", new Dimension<Object>( "time", defaultVals, true, true, true, "ISO8601", null,
-                                                       timeProp.getName(), extent ) );
+        dimensions.put( "time",
+                        new Dimension<Object>( "time", defaultVals, true, true, true, "ISO8601", null,
+                                               timeProp.getName(), extent ) );
     }
 
     @Override
@@ -174,7 +175,7 @@ public class StatisticsLayer extends FeatureLayer {
                     props.add( new SimpleProperty( timeProp, formatISO8601Date( new Date( req.first ) ), DATE ) );
                     props.add( new GenericProperty( boxProp, box ) );
 
-                    GenericFeature f = new GenericFeature( featureType, null, props, null );
+                    GenericFeature f = new GenericFeature( featureType, null, props, null, null );
                     try {
                         if ( filter.first != null && !filter.first.evaluate( f, evaluator ) ) {
                             continue;
@@ -230,7 +231,7 @@ public class StatisticsLayer extends FeatureLayer {
                     props.add( new SimpleProperty( timeProp, formatISO8601Date( new Date( req.first ) ), DATE ) );
                     props.add( new GenericProperty( boxProp, box ) );
 
-                    GenericFeature f = new GenericFeature( featureType, null, props, null );
+                    GenericFeature f = new GenericFeature( featureType, null, props, null, null );
                     try {
                         if ( filter.first != null && !filter.first.evaluate( f, evaluator ) ) {
                             continue;

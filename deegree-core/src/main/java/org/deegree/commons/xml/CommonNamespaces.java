@@ -120,11 +120,11 @@ public class CommonNamespaces {
     public static final String ISOAP10GCONS = "http://www.isotc211.org/2005/gco";
 
     public static final String ISO_2005_GCO_NS = "http://www.isotc211.org/2005/gco";
-    
+
     public static final String ISO_2005_GSR_NS = "http://www.isotc211.org/2005/gsr";
 
     public static final String ISO_2005_GSS_NS = "http://www.isotc211.org/2005/gss";
-    
+
     public static final String ISO_2005_GTS_NS = "http://www.isotc211.org/2005/gts";
 
     /**
@@ -253,16 +253,16 @@ public class CommonNamespaces {
      */
     public static final String WMS_PREFIX = "wms";
 
-    private static NamespaceContext nsContext = null;
+    private static NamespaceBindings nsContext = null;
 
     /**
      * Returns the <code>NamespaceContext</code> for common namespaces known be deegree.
      * 
      * @return the NamespaceContext for all common namespaces
      */
-    public static synchronized NamespaceContext getNamespaceContext() {
+    public static synchronized NamespaceBindings getNamespaceContext() {
         if ( nsContext == null ) {
-            nsContext = new NamespaceContext();
+            nsContext = new NamespaceBindings();
             nsContext.addNamespace( GML_PREFIX, GMLNS );
             nsContext.addNamespace( GML3_2_PREFIX, GML3_2_NS );
             nsContext.addNamespace( OGC_PREFIX, OGCNS );

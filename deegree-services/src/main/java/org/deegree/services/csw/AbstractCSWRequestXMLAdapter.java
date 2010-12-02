@@ -37,7 +37,7 @@ package org.deegree.services.csw;
 import static org.deegree.protocol.csw.CSWConstants.CSW_202_NS;
 import static org.deegree.protocol.csw.CSWConstants.CSW_PREFIX;
 
-import org.deegree.commons.xml.NamespaceContext;
+import org.deegree.commons.xml.NamespaceBindings;
 import org.deegree.commons.xml.XMLAdapter;
 
 /**
@@ -58,7 +58,7 @@ public abstract class AbstractCSWRequestXMLAdapter extends XMLAdapter {
     protected final static String SOAP_10_PREFIX = "wsse";
 
     static {
-        nsContext = new NamespaceContext( XMLAdapter.nsContext );
+        nsContext = new NamespaceBindings( XMLAdapter.nsContext );
         nsContext.addNamespace( CSW_PREFIX, CSW_202_NS );
         nsContext.addNamespace( SOAP_10_PREFIX, SOAP_10 );
 

@@ -65,8 +65,9 @@ import org.deegree.commons.tom.genericxml.GenericXMLElementContent;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.commons.uom.Measure;
 import org.deegree.commons.utils.ArrayUtils;
-import org.deegree.commons.xml.NamespaceContext;
+import org.deegree.commons.xml.NamespaceBindings;
 import org.deegree.commons.xml.XMLParsingException;
+import org.deegree.commons.xml.XPathUtils;
 import org.deegree.commons.xml.stax.StAXParsingHelper;
 import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;
 import org.deegree.cs.exceptions.UnknownCRSException;
@@ -77,6 +78,7 @@ import org.deegree.filter.Operator;
 import org.deegree.filter.OperatorFilter;
 import org.deegree.filter.comparison.BinaryComparisonOperator;
 import org.deegree.filter.comparison.ComparisonOperator;
+import org.deegree.filter.comparison.ComparisonOperator.SubType;
 import org.deegree.filter.comparison.PropertyIsBetween;
 import org.deegree.filter.comparison.PropertyIsEqualTo;
 import org.deegree.filter.comparison.PropertyIsGreaterThan;
@@ -86,7 +88,6 @@ import org.deegree.filter.comparison.PropertyIsLessThanOrEqualTo;
 import org.deegree.filter.comparison.PropertyIsLike;
 import org.deegree.filter.comparison.PropertyIsNotEqualTo;
 import org.deegree.filter.comparison.PropertyIsNull;
-import org.deegree.filter.comparison.ComparisonOperator.SubType;
 import org.deegree.filter.expression.Add;
 import org.deegree.filter.expression.Div;
 import org.deegree.filter.expression.Function;
@@ -495,7 +496,8 @@ public class Filter110XMLDecoder {
         // check if element name is a valid comparison operator element
         ComparisonOperator.SubType type = elementNameToComparisonOperatorType.get( xmlStream.getName() );
         if ( type == null ) {
-            String msg = Messages.getMessage( "FILTER_PARSER_UNEXPECTED_ELEMENT", xmlStream.getName(),
+            String msg = Messages.getMessage( "FILTER_PARSER_UNEXPECTED_ELEMENT",
+                                              xmlStream.getName(),
                                               elemNames( ComparisonOperator.SubType.class,
                                                          comparisonOperatorTypeToElementName ) );
             throw new XMLParsingException( xmlStream, msg );
@@ -694,7 +696,6 @@ public class Filter110XMLDecoder {
     private static PropertyName parsePropertyName( XMLStreamReader xmlStream, boolean permitEmpty )
                             throws XMLStreamException {
         requireStartElement( xmlStream, Collections.singleton( new QName( OGC_NS, "PropertyName" ) ) );
-        NamespaceContext nsc = StAXParsingHelper.getDeegreeNamespaceContext( xmlStream );
         String xpath = xmlStream.getElementText().trim();
         if ( !permitEmpty && xpath.isEmpty() ) {
             // TODO filter encoding guy: use whatever exception shall be used here. But make sure that the
@@ -705,7 +706,8 @@ public class Filter110XMLDecoder {
         if ( xpath.isEmpty() ) {
             return null;
         }
-        return new PropertyName( xpath, nsc );
+        Set<String> prefixes = XPathUtils.extractPrefixes( xpath );
+        return new PropertyName( xpath, new NamespaceBindings( xmlStream.getNamespaceContext(), prefixes ) );
     }
 
     private static PropertyIsBetween parsePropertyIsBetweenOperator( XMLStreamReader xmlStream )
@@ -768,7 +770,8 @@ public class Filter110XMLDecoder {
         // check if element name is a valid logical operator element
         LogicalOperator.SubType type = elementNameToLogicalOperatorType.get( xmlStream.getName() );
         if ( type == null ) {
-            String msg = Messages.getMessage( "FILTER_PARSER_UNEXPECTED_ELEMENT", xmlStream.getName(),
+            String msg = Messages.getMessage( "FILTER_PARSER_UNEXPECTED_ELEMENT",
+                                              xmlStream.getName(),
                                               elemNames( LogicalOperator.SubType.class,
                                                          logicalOperatorTypeToElementName ) );
             throw new XMLParsingException( xmlStream, msg );
@@ -818,7 +821,8 @@ public class Filter110XMLDecoder {
         // check if element name is a valid spatial operator element name
         SpatialOperator.SubType type = elementNameToSpatialOperatorType.get( xmlStream.getName() );
         if ( type == null ) {
-            String msg = Messages.getMessage( "FILTER_PARSER_UNEXPECTED_ELEMENT", xmlStream.getName(),
+            String msg = Messages.getMessage( "FILTER_PARSER_UNEXPECTED_ELEMENT",
+                                              xmlStream.getName(),
                                               elemNames( SpatialOperator.SubType.class,
                                                          spatialOperatorTypeToElementName ) );
             throw new XMLParsingException( xmlStream, msg );

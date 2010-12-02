@@ -34,7 +34,7 @@
 ----------------------------------------------------------------------------*/
 package org.deegree.protocol.wfs;
 
-import org.deegree.commons.xml.NamespaceContext;
+import org.deegree.commons.xml.NamespaceBindings;
 import org.deegree.commons.xml.XMLAdapter;
 
 /**
@@ -48,7 +48,7 @@ import org.deegree.commons.xml.XMLAdapter;
 public abstract class AbstractWFSRequestXMLAdapter extends XMLAdapter {
 
     /** Namespace context with predefined bindings "wfs" and "wfs200" */
-    protected static final NamespaceContext nsContext;
+    protected static final NamespaceBindings nsContext;
 
     /** Namespace binding for WFS 1.0.0 and WFS 1.1.0 constructs */
     protected final static String WFS_PREFIX = "wfs";
@@ -57,7 +57,7 @@ public abstract class AbstractWFSRequestXMLAdapter extends XMLAdapter {
     protected final static String WFS_200_PREFIX = "wfs200";
 
     static {
-        nsContext = new NamespaceContext( XMLAdapter.nsContext );
+        nsContext = new NamespaceBindings( XMLAdapter.nsContext );
         nsContext.addNamespace( WFS_PREFIX, WFSConstants.WFS_NS );
         nsContext.addNamespace( WFS_200_PREFIX, WFSConstants.WFS_200_NS );
     }

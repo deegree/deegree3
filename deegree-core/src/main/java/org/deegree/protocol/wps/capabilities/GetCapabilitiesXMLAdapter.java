@@ -43,7 +43,7 @@ import java.util.List;
 import javax.xml.namespace.QName;
 
 import org.deegree.commons.utils.kvp.InvalidParameterValueException;
-import org.deegree.commons.xml.NamespaceContext;
+import org.deegree.commons.xml.NamespaceBindings;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.XPath;
 import org.deegree.protocol.ows.capabilities.GetCapabilities;
@@ -66,10 +66,10 @@ public class GetCapabilitiesXMLAdapter extends XMLAdapter {
 
     private static final String WPS_NS = "http://www.opengis.net/wps/1.0.0";
 
-    private static NamespaceContext nsContext;
+    private static NamespaceBindings nsContext;
 
     static {
-        nsContext = new NamespaceContext( XMLAdapter.nsContext );
+        nsContext = new NamespaceBindings( XMLAdapter.nsContext );
         nsContext.addNamespace( OWS_PREFIX, OWS_NS );
         nsContext.addNamespace( WPS_PREFIX, WPS_NS );
     }

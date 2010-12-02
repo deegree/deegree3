@@ -51,6 +51,7 @@ import javax.xml.XMLConstants;
 import javax.xml.namespace.QName;
 
 import org.deegree.commons.utils.QNameUtils;
+import org.deegree.commons.xml.NamespaceBindings;
 import org.deegree.cs.CRS;
 import org.deegree.cs.exceptions.TransformationException;
 import org.deegree.cs.exceptions.UnknownCRSException;
@@ -425,7 +426,7 @@ public class GetFeatureAnalyzer {
                     if ( typeNames.length == 1 ) {
                         FeatureType ft = service.lookupFeatureType( typeNames[0].getFeatureTypeName() );
                         if ( ft.getPropertyDeclaration( name, outputFormat ) == null ) {
-                            String msg = "Specified PropertyName '" + propName.getPropertyName() + "' (='" + name
+                            String msg = "Specified PropertyName '" + propName.getAsText() + "' (='" + name
                                          + "') does not exist for feature type '" + ft.getName() + "'.";
                             throw new OWSException( msg, OWSException.INVALID_PARAMETER_VALUE, "PropertyName" );
                         }
@@ -477,8 +478,8 @@ public class GetFeatureAnalyzer {
 
         QName match = QNameUtils.findBestMatch( propName.getAsQName(), propNames );
         if ( match == null ) {
-            String msg = "Specified PropertyName '" + propName.getPropertyName()
-                         + "' does not exist for feature type '" + ft.getName() + "'.";
+            String msg = "Specified PropertyName '" + propName.getAsText() + "' does not exist for feature type '"
+                         + ft.getName() + "'.";
             throw new OWSException( msg, OWSException.INVALID_PARAMETER_VALUE, "PropertyName" );
         }
         if ( !match.equals( propName.getAsQName() ) ) {
@@ -489,7 +490,7 @@ public class GetFeatureAnalyzer {
             if ( !match.getPrefix().equals( DEFAULT_NS_PREFIX ) ) {
                 text = match.getPrefix() + ":" + match.getLocalPart();
             }
-            org.deegree.commons.xml.NamespaceContext nsContext = new org.deegree.commons.xml.NamespaceContext();
+            NamespaceBindings nsContext = new NamespaceBindings();
             nsContext.addNamespace( match.getPrefix(), match.getNamespaceURI() );
             propName.set( text, nsContext );
         }
@@ -499,7 +500,7 @@ public class GetFeatureAnalyzer {
     private QName getPropertyNameAsQName( PropertyName propName ) {
         QName name = null;
         NamespaceContext nsContext = propName.getNsContext();
-        String s = propName.getPropertyName();
+        String s = propName.getAsText();
         int colonIdx = s.indexOf( ':' );
         if ( !s.contains( "/" ) && colonIdx != -1 ) {
             if ( Character.isLetterOrDigit( s.charAt( 0 ) ) && Character.isLetterOrDigit( s.charAt( s.length() - 1 ) ) ) {

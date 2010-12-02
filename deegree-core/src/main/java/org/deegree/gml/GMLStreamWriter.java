@@ -40,6 +40,7 @@ import static org.deegree.commons.xml.CommonNamespaces.GMLNS;
 import static org.deegree.commons.xml.CommonNamespaces.OGCNS;
 import static org.deegree.commons.xml.CommonNamespaces.XLNNS;
 import static org.deegree.commons.xml.CommonNamespaces.XSINS;
+import static org.deegree.feature.property.ExtraProps.EXTRA_PROP_NS;
 import static org.deegree.gml.GMLVersion.GML_32;
 
 import java.util.HashMap;
@@ -129,6 +130,7 @@ public class GMLStreamWriter {
         prefixToNs.put( "gml", version != GML_32 ? GMLNS : GML3_2_NS );
         prefixToNs.put( "xlink", XLNNS );
         prefixToNs.put( "xsi", XSINS );
+        prefixToNs.put( "dxtra", EXTRA_PROP_NS );
     }
 
     /**

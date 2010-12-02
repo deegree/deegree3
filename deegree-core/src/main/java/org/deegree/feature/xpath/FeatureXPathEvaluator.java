@@ -108,7 +108,7 @@ public class FeatureXPathEvaluator implements XPathEvaluator<Feature> {
                         }
                     }
                 }
-                XPath xpath = new FeatureXPath( propName.getPropertyName(), context, version );
+                XPath xpath = new FeatureXPath( propName.getAsText(), context, version );
                 xpath.setNamespaceContext( propName.getNsContext() );
                 List<?> selectedNodes;
                 selectedNodes = xpath.selectNodes( new GMLObjectNode<Feature>( null, context, version ) );
@@ -145,7 +145,7 @@ public class FeatureXPathEvaluator implements XPathEvaluator<Feature> {
 
         TypedObjectNode[] resultValues = null;
         try {
-            XPath xpath = new FeatureXPath( propName.getPropertyName(), null, version );
+            XPath xpath = new FeatureXPath( propName.getAsText(), null, version );
             xpath.setNamespaceContext( propName.getNsContext() );
             List<?> selectedNodes;
             selectedNodes = xpath.selectNodes( new PropertyNode( null, prop ) );
@@ -173,7 +173,7 @@ public class FeatureXPathEvaluator implements XPathEvaluator<Feature> {
 
         TypedObjectNode[] resultValues = null;
         try {
-            XPath xpath = new FeatureXPath( propName.getPropertyName(), null, version );
+            XPath xpath = new FeatureXPath( propName.getAsText(), null, version );
             xpath.setNamespaceContext( propName.getNsContext() );
             List<?> selectedNodes;
             selectedNodes = xpath.selectNodes( new XMLElementNode( null, element ) );

@@ -376,7 +376,7 @@ public class Filter110XMLEncoder {
                 QName qn = pn.getAsQName();
                 writer.writeNamespace( qn.getPrefix(), qn.getNamespaceURI() );
             }
-            writer.writeCharacters( ( (PropertyName) expression ).getPropertyName() );
+            writer.writeCharacters( ( (PropertyName) expression ).getAsText() );
             break;
         case LITERAL:
             // TODO handle complex literals

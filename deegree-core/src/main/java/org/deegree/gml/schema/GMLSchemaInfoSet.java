@@ -70,7 +70,7 @@ import org.apache.xerces.xs.XSParticle;
 import org.apache.xerces.xs.XSTerm;
 import org.apache.xerces.xs.XSTypeDefinition;
 import org.deegree.commons.xml.CommonNamespaces;
-import org.deegree.commons.xml.NamespaceContext;
+import org.deegree.commons.xml.NamespaceBindings;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.XPath;
 import org.deegree.commons.xml.schema.XMLSchemaInfoSet;
@@ -703,7 +703,7 @@ public class GMLSchemaInfoSet extends XMLSchemaInfoSet {
         // handle schemas that use a source="urn:x-gml:targetElement" attribute
         // for defining the referenced feature type
         // inside the annotation element (e.g. CITE examples for WFS 1.1.0)
-        NamespaceContext nsContext = new NamespaceContext();
+        NamespaceBindings nsContext = new NamespaceBindings();
         nsContext.addNamespace( "xs", CommonNamespaces.XSNS );
         QName refElement = annotationXML.getNodeAsQName( annotationXML.getRootElement(),
                                                          new XPath(
@@ -726,7 +726,7 @@ public class GMLSchemaInfoSet extends XMLSchemaInfoSet {
 
         // handle adv schemas (referenced feature type inside annotation
         // element)
-        NamespaceContext nsContext = new NamespaceContext();
+        NamespaceBindings nsContext = new NamespaceBindings();
         nsContext.addNamespace( "xs", CommonNamespaces.XSNS );
         nsContext.addNamespace( "adv", "http://www.adv-online.de/nas" );
         QName refElement = annotationXML.getNodeAsQName( annotationXML.getRootElement(),
@@ -746,9 +746,8 @@ public class GMLSchemaInfoSet extends XMLSchemaInfoSet {
                                                                XSComplexTypeDefinition typeDef, int minOccurs,
                                                                int maxOccurs, List<PropertyType> ptSubstitutions,
                                                                XMLAdapter annotationXML ) {
-        // handle GML 3.2 schemas (referenced feature type inside annotation
-        // element)
-        NamespaceContext nsContext = new NamespaceContext();
+        // handle GML 3.2 schemas (referenced feature type inside annotation element)
+        NamespaceBindings nsContext = new NamespaceBindings();
         nsContext.addNamespace( "xs", CommonNamespaces.XSNS );
         nsContext.addNamespace( "gml", GML3_2_NS );
         QName refElement = annotationXML.getNodeAsQName( annotationXML.getRootElement(),

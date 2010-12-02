@@ -51,7 +51,7 @@ import javax.xml.stream.XMLStreamWriter;
 import org.apache.axiom.om.OMElement;
 import org.deegree.commons.tom.datetime.Date;
 import org.deegree.commons.xml.CommonNamespaces;
-import org.deegree.commons.xml.NamespaceContext;
+import org.deegree.commons.xml.NamespaceBindings;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.XPath;
 import org.deegree.commons.xml.stax.StAXParsingHelper;
@@ -97,7 +97,7 @@ public class ISORecord implements MetadataRecord {
 
     private static String[] briefSummaryLocalParts = new String[23];
 
-    private static final NamespaceContext ns = CommonNamespaces.getNamespaceContext();
+    private static final NamespaceBindings ns = CommonNamespaces.getNamespaceContext();
 
     private static XPath[] xpathAll = new XPath[1];
 

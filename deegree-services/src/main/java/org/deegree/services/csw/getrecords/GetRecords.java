@@ -41,7 +41,7 @@ import javax.xml.namespace.QName;
 
 import org.apache.axiom.om.OMElement;
 import org.deegree.commons.tom.ows.Version;
-import org.deegree.commons.xml.NamespaceContext;
+import org.deegree.commons.xml.NamespaceBindings;
 import org.deegree.filter.Filter;
 import org.deegree.filter.sort.SortProperty;
 import org.deegree.protocol.csw.CSWConstants.ConstraintLanguage;
@@ -116,7 +116,7 @@ public class GetRecords extends AbstractCSWRequest {
      * @param hopCount
      * @param responseHandler
      */
-    public GetRecords( Version version, NamespaceContext namespaces, QName[] typeNames, String outputFormat,
+    public GetRecords( Version version, NamespaceBindings namespaces, QName[] typeNames, String outputFormat,
                        ResultType resultType, String requestId, URI outputSchema, int startPosition, int maxRecords,
                        String[] elementName, ReturnableElement elementSetName, ConstraintLanguage constraintLanguage,
                        Filter constraint, SortProperty[] sortBy, boolean distributedSearch, int hopCount,

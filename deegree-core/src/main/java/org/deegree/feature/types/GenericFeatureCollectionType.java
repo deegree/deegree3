@@ -45,6 +45,7 @@ import javax.xml.namespace.QName;
 
 import org.deegree.feature.Feature;
 import org.deegree.feature.GenericFeatureCollection;
+import org.deegree.feature.property.ExtraProps;
 import org.deegree.feature.property.Property;
 import org.deegree.feature.types.property.ArrayPropertyType;
 import org.deegree.feature.types.property.FeaturePropertyType;
@@ -136,8 +137,8 @@ public class GenericFeatureCollectionType implements FeatureCollectionType {
     }
 
     @Override
-    public Feature newFeature( String fid, List<Property> props, GMLVersion version ) {
-        return new GenericFeatureCollection( this, fid, props, version );
+    public Feature newFeature( String fid, List<Property> props, ExtraProps extraProps, GMLVersion version ) {
+        return new GenericFeatureCollection( this, fid, props, extraProps, version );
     }
 
     @Override

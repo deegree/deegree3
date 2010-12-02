@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,7 +32,7 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 package org.deegree.commons.xml;
 
 import static junit.framework.Assert.assertEquals;
@@ -56,10 +56,10 @@ import org.junit.Test;
 
 /**
  * Basic tests for the {@link XMLAdapter} class.
- *
+ * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
- *
+ * 
  * @version $Revision:$, $Date:$
  */
 public class XMLAdapterTest extends XMLAdapter {
@@ -68,7 +68,7 @@ public class XMLAdapterTest extends XMLAdapter {
 
     private static String APP_NS = "http://www.deegree.org/app";
 
-    private NamespaceContext nsContext;
+    private NamespaceBindings nsContext;
 
     /**
      * @throws java.lang.Exception
@@ -77,7 +77,7 @@ public class XMLAdapterTest extends XMLAdapter {
     public void setUp()
                             throws Exception {
         load( XMLAdapterTest.class.getResourceAsStream( "testdocument.xml" ) );
-        nsContext = new NamespaceContext();
+        nsContext = new NamespaceBindings();
         nsContext.addNamespace( "ogc", "http://www.opengis.net/ogc" );
         nsContext.addNamespace( "gml", "http://www.opengis.net/gml" );
         nsContext.addNamespace( "wfs", "http://www.opengis.net/wfs" );
@@ -110,11 +110,11 @@ public class XMLAdapterTest extends XMLAdapter {
 
         // select text node
         Object textNode = getNode( root, new XPath( "wfs:Query/ogc:Filter/ogc:BBOX/ogc:PropertyName/text()", nsContext ) );
-        assertEquals ("app:placeOfBirth/app:Place/app:country/app:Country/app:geom", ((OMText) textNode).getText());
+        assertEquals( "app:placeOfBirth/app:Place/app:country/app:Country/app:geom", ( (OMText) textNode ).getText() );
 
         // select attribute node
         Object attributeNode = getNode( root, new XPath( "wfs:Query/@typeName", nsContext ) );
-        assertEquals ("app:Philosopher", ((OMAttribute) attributeNode).getAttributeValue());
+        assertEquals( "app:Philosopher", ( (OMAttribute) attributeNode ).getAttributeValue() );
     }
 
     @Test
@@ -129,16 +129,16 @@ public class XMLAdapterTest extends XMLAdapter {
 
         // select attribute node
         QName attributeNode = getNodeAsQName( root, new XPath( "wfs:Query/@typeName", nsContext ), null );
-        assertEquals( QName.valueOf( "{http://www.deegree.org/app}Philosopher"), attributeNode );
+        assertEquals( QName.valueOf( "{http://www.deegree.org/app}Philosopher" ), attributeNode );
 
         // select element node
         String elementNode = getNodeAsString( root,
                                               new XPath( "wfs:Query/ogc:Filter/ogc:BBOX/gml:Envelope/gml:coord/gml:X",
                                                          nsContext ), null );
-        assertEquals ("-1", elementNode);
+        assertEquals( "-1", elementNode );
     }
 
-    @Test(expected=XMLProcessingException.class)
+    @Test(expected = XMLProcessingException.class)
     public void testGetRequiredNodeAsString() {
 
         OMElement root = getRootElement();
@@ -150,7 +150,7 @@ public class XMLAdapterTest extends XMLAdapter {
         getRequiredNodeAsString( root, new XPath( "wfs:Query/@doesNotExist", nsContext ) );
     }
 
-    @Test(expected=XMLProcessingException.class)
+    @Test(expected = XMLProcessingException.class)
     public void testGetRequiredNodeAsQName() {
 
         OMElement root = getRootElement();

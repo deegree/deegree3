@@ -79,7 +79,7 @@ import org.deegree.commons.jdbc.QTableName;
 import org.deegree.commons.tom.primitive.PrimitiveType;
 import org.deegree.commons.utils.JDBCUtils;
 import org.deegree.commons.utils.Pair;
-import org.deegree.commons.xml.NamespaceContext;
+import org.deegree.commons.xml.NamespaceBindings;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.cs.CRS;
 import org.deegree.feature.persistence.BlobCodec;
@@ -148,7 +148,7 @@ class SchemaBuilderBLOB {
 
     private Map<QName, FeatureTypeMapping> ftNameToMapping = new HashMap<QName, FeatureTypeMapping>();
 
-    private NamespaceContext nsContext = null;
+    private NamespaceBindings nsContext = null;
 
     private Connection conn;
 

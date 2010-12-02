@@ -48,7 +48,7 @@ import javax.xml.namespace.QName;
 import org.apache.axiom.om.OMElement;
 import org.deegree.commons.tom.ows.CodeType;
 import org.deegree.commons.tom.ows.LanguageString;
-import org.deegree.commons.xml.NamespaceContext;
+import org.deegree.commons.xml.NamespaceBindings;
 import org.deegree.commons.xml.XPath;
 import org.deegree.protocol.ows.OWS110CapabilitiesAdapter;
 import org.deegree.protocol.wps.client.WPSClient;
@@ -67,7 +67,7 @@ import org.deegree.protocol.wps.client.process.ProcessInfo;
  */
 public class WPS100CapabilitiesAdapter extends OWS110CapabilitiesAdapter {
 
-    private final NamespaceContext nsContext = new NamespaceContext();
+    private final NamespaceBindings nsContext = new NamespaceBindings();
 
     /**
      * Creates a new {@link WPS100CapabilitiesAdapter} instance.

@@ -51,7 +51,7 @@ import org.deegree.commons.tom.ows.CodeType;
 import org.deegree.commons.tom.ows.LanguageString;
 import org.deegree.commons.tom.ows.Version;
 import org.deegree.commons.utils.Pair;
-import org.deegree.commons.xml.NamespaceContext;
+import org.deegree.commons.xml.NamespaceBindings;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.XPath;
 import org.deegree.protocol.ows.metadata.Address;
@@ -83,7 +83,7 @@ public class OWS110CapabilitiesAdapter extends XMLAdapter {
 
     private static final String XML1998NS = "http://www.w3.org/XML/1998/namespace";
 
-    private final NamespaceContext nsContext = new NamespaceContext();
+    private final NamespaceBindings nsContext = new NamespaceBindings();
 
     /**
      * Creates a new {@link OWS110CapabilitiesAdapter} instance.

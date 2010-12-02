@@ -68,7 +68,6 @@ import javax.xml.stream.XMLStreamReader;
 
 import org.deegree.commons.i18n.Messages;
 import org.deegree.commons.utils.ArrayUtils;
-import org.deegree.commons.xml.NamespaceContext;
 import org.deegree.commons.xml.XMLParsingException;
 import org.slf4j.Logger;
 
@@ -348,10 +347,6 @@ public class StAXParsingHelper {
             return "SPACE";
         }
         return "UNKNOWN_EVENT_TYPE , " + eventType;
-    }
-
-    public static NamespaceContext getDeegreeNamespaceContext( XMLStreamReader xmlStream ) {
-        return new NamespaceContext( xmlStream.getNamespaceContext() );
     }
 
     public static boolean getRequiredAttributeValueAsBoolean( XMLStreamReader xmlStream, String namespaceURI,

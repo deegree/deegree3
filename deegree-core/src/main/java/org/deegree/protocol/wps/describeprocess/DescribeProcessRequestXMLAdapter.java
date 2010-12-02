@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,7 +32,7 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 
 package org.deegree.protocol.wps.describeprocess;
 
@@ -43,7 +43,7 @@ import javax.xml.namespace.QName;
 
 import org.apache.axiom.om.OMElement;
 import org.deegree.commons.tom.ows.CodeType;
-import org.deegree.commons.xml.NamespaceContext;
+import org.deegree.commons.xml.NamespaceBindings;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.commons.xml.XPath;
@@ -51,11 +51,11 @@ import org.deegree.protocol.wps.WPSConstants;
 
 /**
  * Parser for WPS <code>DescribeProcess</code> XML requests.
- *
+ * 
  * @author <a href="mailto:apadberg@uni-bonn.de">Alexander Padberg</a>
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author: padberg$
- *
+ * 
  * @version $Revision$, $Date: 09.05.2008 11:44:19$
  */
 public class DescribeProcessRequestXMLAdapter extends XMLAdapter {
@@ -64,10 +64,10 @@ public class DescribeProcessRequestXMLAdapter extends XMLAdapter {
 
     private static final String OWS_NS = "http://www.opengis.net/ows/1.1";
 
-    private static NamespaceContext nsContext;
+    private static NamespaceBindings nsContext;
 
     static {
-        nsContext = new NamespaceContext( XMLAdapter.nsContext );
+        nsContext = new NamespaceBindings( XMLAdapter.nsContext );
         nsContext.addNamespace( OWS_PREFIX, OWS_NS );
         nsContext.addNamespace( WPSConstants.WPS_PREFIX, WPSConstants.WPS_100_NS );
     }
@@ -81,7 +81,7 @@ public class DescribeProcessRequestXMLAdapter extends XMLAdapter {
      * (wps="http://www.opengis.net/wps/1.0.0").</li>
      * <li>The <code>version</code> attribute of the element must have the value <code>1.0.0</code>.</li>
      * </p>
-     *
+     * 
      * @return corresponding <code>DescribeProcessRequest</code> object
      * @throws XMLParsingException
      *             if a syntactical or semantical error has been encountered in the request document

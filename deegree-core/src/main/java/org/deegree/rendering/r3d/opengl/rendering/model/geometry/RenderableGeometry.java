@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,7 +32,7 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 
 package org.deegree.rendering.r3d.opengl.rendering.model.geometry;
 
@@ -61,13 +61,13 @@ import com.sun.opengl.util.BufferUtil;
  * the usage of the {@link Tesselator}. The {@link Tesselator} class can be used to create a sole
  * {@link RenderableGeometry} as well.
  * </p>
- *
+ * 
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- *
+ * 
  * @author last edited by: $Author$
- *
+ * 
  * @version $Revision$, $Date$
- *
+ * 
  */
 public class RenderableGeometry implements RenderableQualityModelPart {
 
@@ -110,7 +110,7 @@ public class RenderableGeometry implements RenderableQualityModelPart {
 
     /**
      * Set and check the given parameters.
-     *
+     * 
      * @param openGLType
      * @param style
      * @param useDirectBuffers
@@ -239,7 +239,7 @@ public class RenderableGeometry implements RenderableQualityModelPart {
             normal[2] = normalBuffer.get();
             float length = Vectors3f.length( normal );
             if ( length > 1 ) {
-                System.out.println( "Normal is larger 1: " + length + ", this may not be. " );
+                LOG.warn( "Normal is larger 1: " + length + ", this may not be. " );
             }
         }
         normalBuffer.rewind();
@@ -247,7 +247,7 @@ public class RenderableGeometry implements RenderableQualityModelPart {
 
     /**
      * Load the float buffers and enable the client state.
-     *
+     * 
      * @param glRenderContext
      * @param geomBuffer
      *            for which the coord/normal Positions are valid for.
@@ -319,7 +319,7 @@ public class RenderableGeometry implements RenderableQualityModelPart {
         this.hasNormals = ( vertexNormals != null && vertexNormals.length > 0 );
         if ( hasNormals ) {
             if ( vertexNormals.length % 3 != 0 ) {
-                throw new IllegalArgumentException( "The number of vertex normals(" + ( vertexNormals.length                                                                                                                                                                                                                                                                                                                                                                                                                                                     )
+                throw new IllegalArgumentException( "The number of vertex normals(" + ( vertexNormals.length )
                                                     + ") must be kongruent to 3." );
             } else if ( ( vertexNormals.length / 3 ) != vertexCount ) {
                 throw new IllegalArgumentException( "The number of normals (" + ( vertexNormals.length / 3 )

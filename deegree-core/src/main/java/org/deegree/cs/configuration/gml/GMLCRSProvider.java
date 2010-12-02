@@ -61,7 +61,7 @@ import org.apache.axiom.om.OMElement;
 import org.deegree.commons.utils.Pair;
 import org.deegree.commons.utils.log.LoggingNotes;
 import org.deegree.commons.xml.CommonNamespaces;
-import org.deegree.commons.xml.NamespaceContext;
+import org.deegree.commons.xml.NamespaceBindings;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.commons.xml.XPath;
@@ -131,7 +131,7 @@ public class GMLCRSProvider extends AbstractCRSProvider<OMElement> {
 
     private static String GCO_NS = "http://www.isotc211.org/2005/gco";
 
-    private static NamespaceContext nsContext = CommonNamespaces.getNamespaceContext();
+    private static NamespaceBindings nsContext = CommonNamespaces.getNamespaceContext();
     static {
         nsContext.addNamespace( GMD_PRE, GMD_NS );
         nsContext.addNamespace( GCO_PRE, GCO_NS );
@@ -701,8 +701,7 @@ public class GMLCRSProvider extends AbstractCRSProvider<OMElement> {
 
         OMElement conversionElementProperty = adapter.getRequiredElement( rootElement, new XPath( PRE + "conversion",
                                                                                                   nsContext ) );
-        Projection projection = parseProjection(
-                                                 getRequiredXlinkedElement( conversionElementProperty, PRE
+        Projection projection = parseProjection( getRequiredXlinkedElement( conversionElementProperty, PRE
                                                                                                        + "Conversion" ),
                                                  underlyingCRS );
         CoordinateSystem result = new ProjectedCRS( projection, axis, id );
@@ -1502,10 +1501,10 @@ public class GMLCRSProvider extends AbstractCRSProvider<OMElement> {
                         }
                     } catch ( XMLParsingException e ) {
                         LOG.debug( "Could not get an identifiable for id: " + id.getOriginal() + " because: "
-                                   + e.getLocalizedMessage(), e );
+                                                           + e.getLocalizedMessage(), e );
                     } catch ( IOException e ) {
                         LOG.debug( "Could not get an identifiable for id: " + id.getOriginal() + " because: "
-                                   + e.getLocalizedMessage(), e );
+                                                           + e.getLocalizedMessage(), e );
                     }
 
                 }

@@ -41,7 +41,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.axiom.om.OMElement;
-import org.deegree.commons.xml.NamespaceContext;
+import org.deegree.commons.xml.NamespaceBindings;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.XMLProcessingException;
 import org.deegree.commons.xml.XPath;
@@ -89,7 +89,7 @@ public class SOSBuilder {
         SOService result = null;
         try {
             XMLAdapter adapter = new XMLAdapter( config );
-            NamespaceContext ctxt = new NamespaceContext();
+            NamespaceBindings ctxt = new NamespaceBindings();
             ctxt.addNamespace( "sos", "http://www.deegree.org/services/sos" );
 
             OMElement serviceConf = adapter.getElement( adapter.getRootElement(),
@@ -167,10 +167,10 @@ public class SOSBuilder {
         }
 
         org.deegree.observation.model.Offering offering = new org.deegree.observation.model.Offering(
-                                                                                                        offeringName,
-                                                                                                        observationStoreId,
-                                                                                                        srsName,
-                                                                                                        procedures );
+                                                                                                      offeringName,
+                                                                                                      observationStoreId,
+                                                                                                      srsName,
+                                                                                                      procedures );
         return offering;
     }
 }

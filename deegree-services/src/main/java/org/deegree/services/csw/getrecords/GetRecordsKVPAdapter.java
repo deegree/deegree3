@@ -54,7 +54,7 @@ import org.deegree.commons.tom.ows.Version;
 import org.deegree.commons.utils.kvp.InvalidParameterValueException;
 import org.deegree.commons.utils.kvp.KVPUtils;
 import org.deegree.commons.utils.kvp.MissingParameterException;
-import org.deegree.commons.xml.NamespaceContext;
+import org.deegree.commons.xml.NamespaceBindings;
 import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.filter.Filter;
 import org.deegree.filter.expression.PropertyName;
@@ -120,7 +120,7 @@ public class GetRecordsKVPAdapter extends AbstractCSWKVPAdapter {
             nsBindings = Collections.emptyMap();
         }
 
-        NamespaceContext nsContext = new NamespaceContext();
+        NamespaceBindings nsContext = new NamespaceBindings();
         if ( nsBindings != null ) {
             for ( String key : nsBindings.keySet() ) {
                 nsContext.addNamespace( key, nsBindings.get( key ) );
@@ -264,7 +264,7 @@ public class GetRecordsKVPAdapter extends AbstractCSWKVPAdapter {
      * @param nsContext
      * @return
      */
-    private static SortProperty[] getSortBy( List<String> sortByStrList, NamespaceContext nsContext ) {
+    private static SortProperty[] getSortBy( List<String> sortByStrList, NamespaceBindings nsContext ) {
         SortProperty[] result = null;
         if ( sortByStrList != null ) {
 
