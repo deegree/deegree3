@@ -349,7 +349,7 @@ public class OracleFeatureStore implements FeatureStore {
                 @Override
                 public PropertyNameMapping getMapping( PropertyName propName, TableAliasManager aliasManager )
                                         throws FilterEvaluationException, UnmappableException {
-                    LOG.debug( "Mapping " + propName.getPropertyName() + " to DB." );
+                    LOG.debug( "Mapping " + propName.getAsText() + " to DB." );
                     return new PropertyNameMapping( "X1", propName.getAsQName().getLocalPart(), null, null );
                 }
             };
@@ -488,7 +488,7 @@ public class OracleFeatureStore implements FeatureStore {
             }
             i++;
         }
-        return ft.newFeature( fid, props, null );
+        return ft.newFeature( fid, props, null, null );
     }
 
     FeatureType getFeatureType( QName ftName ) {
