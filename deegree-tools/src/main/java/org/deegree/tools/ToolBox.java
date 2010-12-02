@@ -68,7 +68,6 @@ import org.deegree.tools.feature.gml.GMLSchemaComparator;
 import org.deegree.tools.feature.gml.MappingShortener;
 import org.deegree.tools.feature.gml.SchemaAnalyzer;
 import org.deegree.tools.feature.persistence.FeatureStoreLoader;
-import org.deegree.tools.metadata.importhandling.WPSImporter;
 import org.deegree.tools.rendering.InteractiveWPVS;
 import org.deegree.tools.rendering.dem.builder.DEMDatasetGenerator;
 import org.deegree.tools.rendering.dem.filtering.DEMRasterFilterer;
@@ -109,11 +108,9 @@ public class ToolBox {
                                       new ToolInfo( EPSGDBSynchronizer.class ),
                                       new ToolInfo( FeatureStoreLoader.class ),
                                       new ToolInfo( GMLSchemaAnalyzer.class ), new ToolInfo( InteractiveWPVS.class ),
-                                      new ToolInfo( MappingShortener.class ),
-                                      new ToolInfo( ModelGeneralizor.class ),
+                                      new ToolInfo( MappingShortener.class ), new ToolInfo( ModelGeneralizor.class ),
                                       new ToolInfo( PostgreSQLImporter.class ),
-                                      new ToolInfo( PrototypeAssigner.class ),
-                                      new ToolInfo( RTBClient.class ),
+                                      new ToolInfo( PrototypeAssigner.class ), new ToolInfo( RTBClient.class ),
                                       new ToolInfo( RasterConverter.class ),
                                       new ToolInfo( RasterTreeGridifier.class ),
                                       new ToolInfo( SchemaAnalyzer.class ),
@@ -126,8 +123,7 @@ public class ToolBox {
                                       // the tools annotation (maybe fix them?)
                                       new ToolInfo( ScanEncoding.class ),
                                       new ToolInfo( PolynomialParameterCreator.class ),
-                                      new ToolInfo( GMLSchemaComparator.class ), new ToolInfo( GLViewer.class ),
-                                      new ToolInfo( WPSImporter.class ) };
+                                      new ToolInfo( GMLSchemaComparator.class ), new ToolInfo( GLViewer.class ) };
 
     private synchronized static ToolBox getInstance() {
         if ( instance == null ) {
