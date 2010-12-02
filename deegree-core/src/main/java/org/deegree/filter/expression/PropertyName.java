@@ -100,7 +100,7 @@ public class PropertyName implements Expression {
 
         for ( String prefix : XPathUtils.extractPrefixes( xpath ) ) {
             String ns = nsContext == null ? null : nsContext.translateNamespacePrefixToUri( prefix );
-            LOG.info( prefix + " -> " + ns );
+            LOG.debug( prefix + " -> " + ns );
             bindings.addNamespace( prefix, ns );
         }
 

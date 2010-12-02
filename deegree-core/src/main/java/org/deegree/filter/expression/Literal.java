@@ -54,6 +54,7 @@ public class Literal<V extends TypedObjectNode> implements Expression {
 
     private V value;
 
+    @SuppressWarnings("unchecked")
     public Literal( String value ) {
         this.value = (V) new PrimitiveValue( value );
     }
