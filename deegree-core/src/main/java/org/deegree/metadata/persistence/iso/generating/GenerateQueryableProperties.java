@@ -723,13 +723,14 @@ public class GenerateQueryableProperties {
 
         StringWriter s_PRE = new StringWriter( 200 );
         StringWriter s_POST = new StringWriter( 50 );
+        if ( !qp.getResourceLanguage().isEmpty() ) {
 
-        s_PRE.append( "INSERT INTO " + databaseTable + " (" + id + ", " + fk_datasets + ", resourcelanguage)" );
+            s_PRE.append( "INSERT INTO " + databaseTable + " (" + id + ", " + fk_datasets + ", resourcelanguage)" );
 
-        s_POST.append( "'" + stringInspectation( qp.getResourceLanguage() ) + "');" );
+            s_POST.append( "'" + stringInspectation( qp.getResourceLanguage() ) + "');" );
 
-        executeQueryablePropertiesDatabasetables( isUpdate, connection, operatesOnId, databaseTable, s_PRE, s_POST );
-
+            executeQueryablePropertiesDatabasetables( isUpdate, connection, operatesOnId, databaseTable, s_PRE, s_POST );
+        }
     }
 
     /**
@@ -1206,14 +1207,24 @@ public class GenerateQueryableProperties {
 
             qp.setCrs( newCRSList );
         }
-
+        int crsSize = qp.getCrs().size();
+        int bbSize = qp.getBoundingBox().size();
+        if ( crsSize != 1 && crsSize != bbSize ) {
+            String msg = Messages.getMessage( "ERROR_SIZE_CRS_BBX" );
+            LOG.debug( msg );
+            CRSCodeType c = qp.getCrs().get( 0 );
+            List<CRSCodeType> tempCRSList = new ArrayList<CRSCodeType>();
+            tempCRSList.add( c );
+            qp.setCrs( tempCRSList );
+        }
         int counter = 0;
+
         for ( BoundingBox bbox : qp.getBoundingBox() ) {
             double east = bbox.getEastBoundLongitude();
             double north = bbox.getNorthBoundLatitude();
             double west = bbox.getWestBoundLongitude();
             double south = bbox.getSouthBoundLatitude();
-
+            CRSCodeType c = qp.getCrs().get( counter );
             int localId = 0;
             try {
 
@@ -1227,9 +1238,9 @@ public class GenerateQueryableProperties {
                     sqlStatement.append( "id_crs" ).append( ',' );
                     sqlStatement.append( "version" );
                     sqlStatement.append( ", bbox) VALUES (" + localId ).append( "," + operatesOnId );
-                    sqlStatement.append( ",'" + qp.getCrs().get( counter ).getCodeSpace() ).append( '\'' );
-                    sqlStatement.append( ",'" + qp.getCrs().get( counter ).getCode() ).append( '\'' );
-                    sqlStatement.append( ",'" + qp.getCrs().get( counter ).getCodeVersion() ).append( '\'' );
+                    sqlStatement.append( ",'" + c.getCodeSpace() ).append( '\'' );
+                    sqlStatement.append( ",'" + c.getCode() ).append( '\'' );
+                    sqlStatement.append( ",'" + c.getCodeVersion() ).append( '\'' );
                     sqlStatement.append( ",SetSRID('BOX3D(" + west ).append( " " + south ).append( "," + east );
                     sqlStatement.append( " " + north ).append( ")'::box3d,-1));" );
                 } else {
@@ -1245,7 +1256,9 @@ public class GenerateQueryableProperties {
                 LOG.debug( "boundinbox: " + stm );
                 stm.executeUpdate();
                 stm.close();
-                counter++;
+                if ( crsSize != 1 ) {
+                    counter++;
+                }
 
             } catch ( SQLException e ) {
                 String msg = Messages.getMessage( "ERROR_SQL", sqlStatement.toString(), e.getMessage() );
@@ -1318,7 +1331,7 @@ public class GenerateQueryableProperties {
 
     private List<String> stringInspectation( List<String> input ) {
         List<String> output = new ArrayList<String>();
-        if ( input != null ) {
+        if ( input != null && !input.isEmpty() ) {
 
             for ( String s : input ) {
                 if ( s != null ) {
@@ -1328,6 +1341,9 @@ public class GenerateQueryableProperties {
             }
         } else {
 
+        }
+        if ( output.isEmpty() ) {
+            return null;
         }
 
         return output;

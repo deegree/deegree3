@@ -192,7 +192,9 @@ public class ParseIdentificationInfo extends XMLAdapter {
                                                                         "./gmd:MD_Identifier/gmd:code/gco:CharacterString | ./gmd:RS_Identifier/gmd:code/gco:CharacterString",
                                                                         nsContextParseII ), null );
 
-                resourceIdentifierList.add( resourceIdentifier );
+                if ( resourceIdentifier != null ) {
+                    resourceIdentifierList.add( resourceIdentifier );
+                }
 
             }
 
@@ -811,9 +813,10 @@ public class ParseIdentificationInfo extends XMLAdapter {
                     }
 
                 }
+                if ( ood != null ) {
 
-                operatesOnDataList.add( ood );
-
+                    operatesOnDataList.add( ood );
+                }
             }
             qp.setOperatesOnData( operatesOnDataList );
 

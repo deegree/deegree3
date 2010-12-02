@@ -43,8 +43,11 @@ import org.apache.axiom.om.OMElement;
 import org.deegree.commons.xml.NamespaceContext;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.XPath;
+import org.deegree.metadata.i18n.Messages;
 import org.deegree.metadata.persistence.MetadataInspectorException;
 import org.deegree.metadata.persistence.iso.generating.generatingelements.GenerateOMElement;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * TODO add class documentation here
@@ -55,6 +58,8 @@ import org.deegree.metadata.persistence.iso.generating.generatingelements.Genera
  * @version $Revision$, $Date$
  */
 public class HierarchieLevelInspector implements RecordInspector {
+
+    private static Logger LOG = LoggerFactory.getLogger( HierarchieLevelInspector.class );
 
     private final XMLAdapter a;
 
@@ -93,7 +98,13 @@ public class HierarchieLevelInspector implements RecordInspector {
             if ( hln != null ) {
                 hln.insertSiblingBefore( GenerateOMElement.newInstance().createHierarchieLevelElement() );
             } else {
-                contact.insertSiblingBefore( GenerateOMElement.newInstance().createHierarchieLevelElement() );
+                if ( contact != null ) {
+                    contact.insertSiblingBefore( GenerateOMElement.newInstance().createHierarchieLevelElement() );
+                } else {
+                    String msg = Messages.getMessage( "ERROR_MANDATORY_ELEMENT_MISSING", "contact" );
+                    LOG.debug( msg );
+                    throw new MetadataInspectorException( msg );
+                }
             }
 
         }
