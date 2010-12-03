@@ -44,10 +44,12 @@ import static org.deegree.coverage.raster.geom.RasterGeoReference.OriginLocation
 import static org.deegree.coverage.raster.utils.RasterFactory.createEmptyRaster;
 import static org.deegree.rendering.r2d.legends.Legends.paintLegendText;
 
+import java.awt.Color;
 import java.awt.Font;
 import java.awt.font.FontRenderContext;
 import java.awt.font.TextLayout;
 import java.awt.geom.AffineTransform;
+import java.util.Iterator;
 import java.util.LinkedList;
 
 import org.deegree.coverage.raster.SimpleRaster;
@@ -58,9 +60,14 @@ import org.deegree.coverage.raster.geom.RasterGeoReference;
 import org.deegree.cs.CRS;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryFactory;
+import org.deegree.geometry.primitive.Polygon;
 import org.deegree.rendering.r2d.RasterRenderer;
+import org.deegree.rendering.r2d.Renderer;
 import org.deegree.rendering.r2d.TextRenderer;
+import org.deegree.rendering.r2d.styling.PolygonStyling;
 import org.deegree.rendering.r2d.styling.RasterStyling;
+import org.deegree.rendering.r2d.styling.Styling;
+import org.deegree.rendering.r2d.styling.components.Fill;
 
 /**
  * 
@@ -83,8 +90,12 @@ public class RasterLegendItem implements LegendItem {
 
     private RasterRenderer rasterRenderer;
 
-    public RasterLegendItem( RasterStyling styling, RasterRenderer rasterRenderer, TextRenderer textRenderer ) {
+    private Renderer renderer;
+
+    public RasterLegendItem( RasterStyling styling, Renderer renderer, RasterRenderer rasterRenderer,
+                             TextRenderer textRenderer ) {
         this.styling = styling;
+        this.renderer = renderer;
         this.rasterRenderer = rasterRenderer;
         this.textRenderer = textRenderer;
         if ( styling.interpolate != null ) {
@@ -92,11 +103,23 @@ public class RasterLegendItem implements LegendItem {
                 texts.add( d.toString() );
             }
         }
+        if ( styling.categorize != null ) {
+            Float[] values = styling.categorize.getThreshholds();
+            boolean prec = styling.categorize.getPrecedingBelongs();
+            texts.add( ( prec ? "< " : "<= " ) + values[0] );
+            for ( int i = 0; i < values.length - 1; ++i ) {
+                texts.add( values[i] + ( prec ? " < " : " <= " ) + values[i + 1] );
+            }
+            texts.add( ( prec ? ">= " : "> " ) + values[values.length - 1] );
+        }
     }
 
     public int getHeight() {
         if ( styling.interpolate != null ) {
             return styling.interpolate.getDatas().length;
+        }
+        if ( styling.categorize != null ) {
+            return styling.categorize.getThreshholds().length + 1;
         }
         return 0;
     }
@@ -140,10 +163,25 @@ public class RasterLegendItem implements LegendItem {
                     ++row;
                 }
             }
+
             rasterRenderer.render( styling, raster );
 
             for ( String text : texts ) {
                 paintLegendText( origin, opts, text, textRenderer );
+                origin -= opts.baseHeight + 2 * opts.spacing;
+            }
+        }
+        if ( styling.categorize != null ) {
+            Iterator<String> texts = this.texts.iterator();
+            for ( Color c : styling.categorize.getColors() ) {
+                PolygonStyling s = new PolygonStyling();
+                s.fill = new Fill();
+                s.fill.color = c;
+                LinkedList<Styling> list = new LinkedList<Styling>();
+                list.add( s );
+                StandardLegendItem item = new StandardLegendItem( list, null, Polygon.class, texts.next(), renderer,
+                                                                  textRenderer );
+                item.paint( origin, opts );
                 origin -= opts.baseHeight + 2 * opts.spacing;
             }
         }

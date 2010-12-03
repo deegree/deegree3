@@ -163,6 +163,27 @@ public class Categorize extends AbstractCustomExpression {
     }
 
     /**
+     * @return the array of threshholds
+     */
+    public Float[] getThreshholds() {
+        return thresholdsArray;
+    }
+
+    /**
+     * @return true, if preceding value belongs to current category
+     */
+    public boolean getPrecedingBelongs() {
+        return precedingBelongs;
+    }
+
+    /**
+     * @return the categories' colors
+     */
+    public Color[] getColors() {
+        return valuesArray;
+    }
+
+    /**
      * Construct an image map, as the result of the Categorize operation
      * 
      * @param raster

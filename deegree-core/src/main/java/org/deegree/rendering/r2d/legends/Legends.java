@@ -123,7 +123,7 @@ public class Legends {
             boolean raster = false;
             for ( Styling s : styles ) {
                 if ( s instanceof RasterStyling ) {
-                    items.add( new RasterLegendItem( (RasterStyling) s, rasterRenderer, textRenderer ) );
+                    items.add( new RasterLegendItem( (RasterStyling) s, renderer, rasterRenderer, textRenderer ) );
                     raster = true;
                 }
             }

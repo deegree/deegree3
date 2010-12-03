@@ -139,6 +139,13 @@ public class StandardLegendItem implements LegendItem {
             }
         }
 
+        if ( rule == null ) {
+            for ( Styling s : stylings ) {
+                renderer.render( s, geom );
+            }
+            return;
+        }
+
         LinkedList<Symbolizer<?>> syms = new LinkedList<Symbolizer<?>>();
         rule.evaluate( syms, null, null );
 
