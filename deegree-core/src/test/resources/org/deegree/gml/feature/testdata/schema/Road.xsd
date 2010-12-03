@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema xmlns="http://www.w3.org/2001/XMLSchema" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:gml="http://www.opengis.net/gml" xmlns:app="http://www.deegree.org/app" targetNamespace="http://www.deegree.org/app" elementFormDefault="qualified" attributeFormDefault="unqualified">
+  <import namespace="http://www.opengis.net/gml" schemaLocation="http://schemas.opengis.net/gml/3.1.1/base/feature.xsd"/>
+  <element name="Road" substitutionGroup="gml:_Feature">
+    <complexType>
+      <complexContent>
+        <extension base="gml:AbstractFeatureType">
+          <sequence>
+            <element name="material" type="string" minOccurs="0"/>
+            <element name="age" type="gml:MeasureType" minOccurs="0"/>
+            <element name="divided" type="boolean" default="false" minOccurs="0"/>
+            <element name="travelDirection" type="app:TravelDirectionClassification" minOccurs="0"/>
+            <element name="underConstruction" type="boolean" default="false" minOccurs="0"/>
+            <element name="centerLineOf" type="gml:CurvePropertyType"/>
+            <element name="surfaceExtent" type="gml:SurfacePropertyType" minOccurs="0"/>
+          </sequence>
+        </extension>
+      </complexContent>
+    </complexType>
+  </element>
+  <simpleType name="TravelDirectionClassification">
+    <restriction base="string">
+      <enumeration value="oneWay"/>
+      <enumeration value="twoWay"/>
+    </restriction>
+  </simpleType>
+</schema>

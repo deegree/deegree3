@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<crs:CRSConfiguration configVersion="3.0.0" xmlns:crs="http://www.deegree.org/crs" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.deegree.org/crs http://schemas.deegree.org/crs/3.0.0/crsdefinition.xsd">
+  <crs:ProjectionsFile>config/projection-definitions.xml</crs:ProjectionsFile>
+  <crs:TransformationsFile>config/transformation-definitions.xml</crs:TransformationsFile>
+  <crs:PrimeMeridiansFile>config/pm-definitions.xml</crs:PrimeMeridiansFile>
+  <crs:EllispoidsFile>config/ellipsoid-definitions.xml</crs:EllispoidsFile>
+  <crs:DatumsFile>config/datum-definitions.xml</crs:DatumsFile>
+  <crs:CRSsFile>config/crs-definitions.xml</crs:CRSsFile>
+</crs:CRSConfiguration>

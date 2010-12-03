@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sos:GetCapabilities xmlns:sos="http://www.opengis.net/sos/1.0" xmlns:ows="http://www.opengis.net/ows/1.1"
+    service="SOS">
+    <ows:AcceptVersions>
+        <ows:Version>1.0.0</ows:Version>
+    </ows:AcceptVersions>
+</sos:GetCapabilities>
