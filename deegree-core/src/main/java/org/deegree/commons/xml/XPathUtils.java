@@ -35,6 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.commons.xml;
 
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -61,22 +62,23 @@ import org.jaxen.expr.VariableReferenceExpr;
  * @version $Revision: $, $Date: $
  */
 public class XPathUtils {
-    
+
     /**
      * Returns the namespace prefixes that are used in the given XPath 1.0 expression.
+     * <p>
+     * If the expression is not a valid XPath expression, the empty set is returned.
+     * </p>
      * 
      * @param text
      *            xpath expression, must not be <code>null</code>
-     * @return namespace prefixes used in the expresssion, never <code>null</code>
-     * @throws IllegalArgumentException
-     *             if the given expression does not denote a valid XPath 1.0 expression
+     * @return namespace prefixes used in the expression, never <code>null</code>, but can be empty
      */
     public static Set<String> extractPrefixes( String text ) {
         try {
             return extractPrefixes( new BaseXPath( text, null ).getRootExpr() );
         } catch ( JaxenException e ) {
-            String msg = "'" + text + "' does not denote a valid XPath 1.0 expression: " + e.getMessage();
-            throw new IllegalArgumentException( msg );
+            // not an XPath expression
+            return Collections.emptySet();
         }
     }
 
