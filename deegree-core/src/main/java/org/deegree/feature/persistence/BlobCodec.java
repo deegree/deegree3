@@ -148,6 +148,7 @@ public class BlobCodec {
         gmlWriter.setOutputCRS( crs );
         gmlWriter.setLocalXLinkTemplate( "#{}" );
         gmlWriter.setXLinkDepth( 0 );
+        gmlWriter.setExportExtraProps( true );
         gmlWriter.write( object );
         gmlWriter.close();
         if ( LOG.isDebugEnabled() ) {

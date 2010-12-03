@@ -38,8 +38,6 @@ package org.deegree.feature.property;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.xml.namespace.QName;
-
 import org.deegree.feature.Feature;
 import org.deegree.feature.types.FeatureType;
 
@@ -79,10 +77,10 @@ public class ExtraProps {
      *            name of the requested properties
      * @return the properties with the given name, in order, may be empty, but never <code>null</code>
      */
-    public Property[] getProperties( QName propName ) {
+    public Property[] getProperties( String propName ) {
         List<Property> namedProps = new ArrayList<Property>( props.length );
         for ( Property property : props ) {
-            if ( propName.equals( property.getName() ) ) {
+            if ( propName.equals( property.getName().getLocalPart() ) ) {
                 namedProps.add( property );
             }
         }
@@ -98,10 +96,10 @@ public class ExtraProps {
      * @throws IllegalArgumentException
      *             if the feature has more than one property with the given name
      */
-    public Property getProperty( QName propName ) {
+    public Property getProperty( String propName ) {
         Property prop = null;
         for ( Property property : props ) {
-            if ( propName.equals( property.getName() ) ) {
+            if ( propName.equals( property.getName().getLocalPart() ) ) {
                 if ( prop != null ) {
                     String msg = "Feature has more than one property with name '" + propName + "'.";
                     throw new IllegalArgumentException( msg );

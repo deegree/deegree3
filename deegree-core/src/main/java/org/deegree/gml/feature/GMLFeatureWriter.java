@@ -154,6 +154,8 @@ public class GMLFeatureWriter {
 
     private AdditionalObjectHandler additionalObjectHandler;
 
+    private boolean exportExtraProps;
+
     /**
      * Creates a new {@link GMLFeatureWriter} instance.
      * 
@@ -178,12 +180,13 @@ public class GMLFeatureWriter {
      * @param outputGeometries
      * @param prefixToNs
      * @param additionalObjectHandler
+     * @param exportExtraProps
      */
     public GMLFeatureWriter( GMLVersion version, XMLStreamWriter writer, CRS outputCRS, CoordinateFormatter formatter,
                              String referenceTemplate, PropertyName[] requestedProps, int traverseXlinkDepth,
                              int traverseXlinkExpiry, XLinkPropertyName[] xlinkProps, boolean exportSfGeometries,
                              boolean outputGeometries, Map<String, String> prefixToNs,
-                             AdditionalObjectHandler additionalObjectHandler ) {
+                             AdditionalObjectHandler additionalObjectHandler, boolean exportExtraProps ) {
         this.version = version;
         this.writer = writer;
         this.referenceTemplate = referenceTemplate;
@@ -229,6 +232,7 @@ public class GMLFeatureWriter {
             }
         }
         this.additionalObjectHandler = additionalObjectHandler;
+        this.exportExtraProps = exportExtraProps;
     }
 
     /**
@@ -358,10 +362,12 @@ public class GMLFeatureWriter {
                 }
                 export( prop, currentLevel, maxInlineLevels );
             }
-            ExtraProps extraProps = feature.getExtraProperties();
-            if ( extraProps != null ) {
-                for ( Property prop : extraProps.getProperties() ) {
-                    export( prop, currentLevel, maxInlineLevels );
+            if ( exportExtraProps ) {
+                ExtraProps extraProps = feature.getExtraProperties();
+                if ( extraProps != null ) {
+                    for ( Property prop : extraProps.getProperties() ) {
+                        export( prop, currentLevel, maxInlineLevels );
+                    }
                 }
             }
             writer.writeEndElement();
@@ -437,11 +443,11 @@ public class GMLFeatureWriter {
                     writeAttributeWithNS( XLNNS, "href", "#" + gValue.getId() );
                 } else {
                     writeStartElementWithNS( propName.getNamespaceURI(), propName.getLocalPart() );
-                    if ( gValue.getId() != null ) {
-                        // WFS CITE 1.1.0 test requirement
-                        // (wfs:GetFeature.XLink-POST-XML-10)
-                        writer.writeComment( "Inlined geometry '" + gValue.getId() + "'" );
-                    }
+                    // if ( gValue.getId() != null ) {
+                    // // WFS CITE 1.1.0 test requirement
+                    // // (wfs:GetFeature.XLink-POST-XML-10)
+                    // writer.writeComment( "Inlined geometry '" + gValue.getId() + "'" );
+                    // }
                     geometryWriter.export( (Geometry) value );
                     writer.writeEndElement();
                 }

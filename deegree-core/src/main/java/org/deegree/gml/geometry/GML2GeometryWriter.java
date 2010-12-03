@@ -46,6 +46,7 @@ import javax.xml.stream.XMLStreamWriter;
 
 import org.deegree.cs.CRS;
 import org.deegree.cs.CoordinateTransformer;
+import org.deegree.cs.components.Unit;
 import org.deegree.cs.coordinatesystems.CoordinateSystem;
 import org.deegree.cs.exceptions.TransformationException;
 import org.deegree.cs.exceptions.UnknownCRSException;
@@ -141,9 +142,11 @@ public class GML2GeometryWriter implements GMLGeometryWriter {
         } else {
             this.exportedIds = exportedIds;
         }
+        Unit crsUnits = null;
         if ( outputCrs != null ) {
             try {
                 CoordinateSystem crs = outputCrs.getWrappedCRS();
+                crsUnits = crs.getAxis()[0].getUnits();
                 transformer = new CoordinateTransformer( crs );
                 transformedOrdinates = new double[crs.getDimension()];
                 geoTransformer = new GeometryTransformer( crs );
@@ -153,7 +156,7 @@ public class GML2GeometryWriter implements GMLGeometryWriter {
             }
         }
         if ( formatter == null ) {
-            this.formatter = new DecimalCoordinateFormatter();
+            this.formatter = new DecimalCoordinateFormatter( crsUnits );
         } else {
             this.formatter = formatter;
         }

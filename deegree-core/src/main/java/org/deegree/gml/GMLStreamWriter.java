@@ -54,6 +54,7 @@ import org.deegree.cs.CRS;
 import org.deegree.cs.exceptions.TransformationException;
 import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.feature.Feature;
+import org.deegree.feature.property.ExtraProps;
 import org.deegree.filter.expression.PropertyName;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.io.CoordinateFormatter;
@@ -86,8 +87,6 @@ public class GMLStreamWriter {
 
     private XMLStreamWriter xmlStream;
 
-    private String indentString;
-
     private int inlineXLinklevels;
 
     private String localXLinkTemplate;
@@ -95,8 +94,6 @@ public class GMLStreamWriter {
     private CRS crs;
 
     private CoordinateFormatter formatter;
-
-    private String schemaLocation;
 
     private GMLGeometryWriter geometryWriter;
 
@@ -110,9 +107,11 @@ public class GMLStreamWriter {
 
     private int traverseXLinkExpiry;
 
-    private Map<String, String> prefixToNs = new HashMap<String, String>();
+    private final Map<String, String> prefixToNs = new HashMap<String, String>();
 
     private AdditionalObjectHandler additionalObjectHandler;
+
+    private boolean exportExtraProps;
 
     /**
      * Creates a new {@link GMLStreamWriter} instance.
@@ -131,28 +130,6 @@ public class GMLStreamWriter {
         prefixToNs.put( "xlink", XLNNS );
         prefixToNs.put( "xsi", XSINS );
         prefixToNs.put( "dxtra", EXTRA_PROP_NS );
-    }
-
-    /**
-     * Controls the value of the <code>xsi:schemaLocation</code> attribute in the root element.
-     * 
-     * @param schemaLocation
-     *            value to be exported in the <code>xsi:schemaLocation</code> attribute in the root element, or
-     *            <code>null</code> (no <code>xsi:schemaLocation</code> attribute will be exported)
-     */
-    public void setSchemaLocation( String schemaLocation ) {
-        this.schemaLocation = schemaLocation;
-    }
-
-    /**
-     * Controls the indentation of the generated XML.
-     * 
-     * @param indentString
-     *            string to be used for one level of indentation (must be some combination of whitespaces), can be
-     *            <code>null</code> (turns off indentation)
-     */
-    public void setIndentation( String indentString ) {
-        this.indentString = indentString;
     }
 
     /**
@@ -239,8 +216,24 @@ public class GMLStreamWriter {
         this.xlinkProps = xlinkProps;
     }
 
+    /**
+     * Sets an {@link AdditionalObjectHandler} that copes with {@link GMLReference}s that are processed during export.
+     * 
+     * @param handler
+     *            handler, may be <code>null</code>
+     */
     public void setAdditionalObjectHandler( AdditionalObjectHandler handler ) {
         this.additionalObjectHandler = handler;
+    }
+
+    /**
+     * Controls whether {@link ExtraProps} associated with feature objects should be exported as property elements.
+     * 
+     * @param exportExtraProps
+     *            true, if extra props should be exported, false otherwise
+     */
+    public void setExportExtraProps( boolean exportExtraProps ) {
+        this.exportExtraProps = exportExtraProps;
     }
 
     /**
@@ -343,7 +336,7 @@ public class GMLStreamWriter {
         if ( featureWriter == null ) {
             featureWriter = new GMLFeatureWriter( version, xmlStream, crs, formatter, localXLinkTemplate, featureProps,
                                                   inlineXLinklevels, traverseXLinkExpiry, xlinkProps, false, true,
-                                                  prefixToNs, additionalObjectHandler );
+                                                  prefixToNs, additionalObjectHandler, exportExtraProps );
         }
         return featureWriter;
     }

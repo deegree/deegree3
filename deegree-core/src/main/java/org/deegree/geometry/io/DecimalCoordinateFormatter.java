@@ -38,6 +38,8 @@ package org.deegree.geometry.io;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 
+import org.deegree.cs.components.Unit;
+
 /**
  * {@link CoordinateFormatter} based on {@link DecimalFormat}.
  * 
@@ -48,8 +50,11 @@ import java.text.DecimalFormatSymbols;
  */
 public class DecimalCoordinateFormatter implements CoordinateFormatter {
 
-    /** Number of decimal places used by default (5). **/
-    public static final int DEFAULT_PLACES = 5;
+    /** Number of decimal places used by default (6). **/
+    public static final int DEFAULT_PLACES = 6;
+
+    /** Number of decimal places used for metric coordinates (3). **/
+    private static final int DEFAULT_PLACES_METRE = 3;
 
     private final DecimalFormat decimalFormat;
 
@@ -58,6 +63,29 @@ public class DecimalCoordinateFormatter implements CoordinateFormatter {
      */
     public DecimalCoordinateFormatter() {
         this( DEFAULT_PLACES );
+    }
+
+    /**
+     * Creates a new {@link DecimalCoordinateFormatter} instance suitable for the specified {@link Unit}.
+     * 
+     * @param uom
+     *            unit-of-measure, may be <code>null</code>
+     */
+    public DecimalCoordinateFormatter( Unit uom ) {
+        int decimalPlaces = DEFAULT_PLACES;
+        if ( uom == Unit.METRE ) {
+            decimalPlaces = DEFAULT_PLACES_METRE;
+        }
+        StringBuffer pattern = new StringBuffer( "0" );
+        if ( decimalPlaces > 0 ) {
+            pattern.append( "." );
+            for ( int i = 0; i < decimalPlaces; i++ ) {
+                pattern.append( "0" );
+            }
+        }
+        DecimalFormatSymbols symbols = new DecimalFormatSymbols();
+        symbols.setDecimalSeparator( '.' );
+        decimalFormat = new DecimalFormat( pattern.toString(), symbols );
     }
 
     /**

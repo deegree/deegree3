@@ -37,16 +37,15 @@ package org.deegree.filter.function.other;
 
 import java.util.List;
 
-import javax.xml.namespace.QName;
-
 import org.deegree.commons.tom.TypedObjectNode;
+import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.feature.Feature;
 import org.deegree.feature.property.ExtraProps;
 import org.deegree.filter.Expression;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.XPathEvaluator;
 import org.deegree.filter.expression.Function;
-import org.deegree.filter.expression.PropertyName;
+import org.deegree.filter.expression.Literal;
 import org.deegree.filter.function.FunctionProvider;
 
 /**
@@ -77,17 +76,12 @@ public class ExtraProp implements FunctionProvider {
             @Override
             public <T> TypedObjectNode[] evaluate( T obj, XPathEvaluator<T> xpathEvaluator )
                                     throws FilterEvaluationException {
-                if ( obj instanceof Feature && getParams()[0] instanceof PropertyName ) {
+                if ( obj instanceof Feature && getParams()[0] instanceof Literal ) {
                     Feature f = (Feature) obj;
-                    PropertyName propName = (PropertyName) getParams()[0];
-                    QName qName = propName.getAsQName();
-                    if ( qName == null ) {
-                        String msg = "Only plain qualified names are currently supported as " + NAME + " arguments.";
-                        throw new FilterEvaluationException( msg );
-                    }
+                    String propName = ( (PrimitiveValue) ( (Literal) getParams()[0] ).getValue() ).getAsText();
                     ExtraProps extraProps = f.getExtraProperties();
                     if ( extraProps != null ) {
-                        TypedObjectNode ton = extraProps.getProperty( qName );
+                        TypedObjectNode ton = extraProps.getProperty( propName );
                         if ( ton != null ) {
                             return new TypedObjectNode[] { ton };
                         }
