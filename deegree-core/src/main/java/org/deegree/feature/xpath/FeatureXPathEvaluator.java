@@ -140,7 +140,7 @@ public class FeatureXPathEvaluator implements XPathEvaluator<Feature> {
         return resultValues;
     }
 
-    public TypedObjectNode[] eval( Property prop, PropertyName propName )
+    private TypedObjectNode[] eval( Property prop, PropertyName propName )
                             throws FilterEvaluationException {
 
         TypedObjectNode[] resultValues = null;

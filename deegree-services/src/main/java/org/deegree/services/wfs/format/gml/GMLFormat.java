@@ -147,7 +147,7 @@ public class GMLFormat implements Format {
     private CoordinateFormatter formatter;
 
     private DescribeFeatureTypeHandler dftHandler;
-    
+
     private boolean exportOriginalSchema;
 
     public GMLFormat( WFSController master, GMLVersion gmlVersion ) {
@@ -158,7 +158,7 @@ public class GMLFormat implements Format {
 
         this.featureLimit = master.getMaxFeatures();
         this.checkAreaOfUse = master.getCheckAreaOfUse();
-        this.formatter = new DecimalCoordinateFormatter( 8 );
+        this.formatter = new DecimalCoordinateFormatter();
         this.gmlVersion = gmlVersion;
     }
 
@@ -182,7 +182,7 @@ public class GMLFormat implements Format {
             if ( responseConfig.getAdditionalSchemaLocation() != null ) {
                 schemaLocation = responseConfig.getAdditionalSchemaLocation();
             }
-            if (responseConfig.isDisableDynamicSchema() != null) {
+            if ( responseConfig.isDisableDynamicSchema() != null ) {
                 exportOriginalSchema = responseConfig.isDisableDynamicSchema();
             }
         }
@@ -191,7 +191,7 @@ public class GMLFormat implements Format {
         this.featureLimit = master.getMaxFeatures();
         this.checkAreaOfUse = master.getCheckAreaOfUse();
 
-        this.formatter = new DecimalCoordinateFormatter( 8 );
+        this.formatter = new DecimalCoordinateFormatter();
         try {
             JAXBElement<?> formatterEl = formatDef.getAbstractCoordinateFormatter();
             if ( formatterEl != null ) {

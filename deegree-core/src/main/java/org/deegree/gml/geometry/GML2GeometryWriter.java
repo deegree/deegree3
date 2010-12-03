@@ -128,7 +128,7 @@ public class GML2GeometryWriter implements GMLGeometryWriter {
      *            used)
      * @param formatter
      *            formatter to use for exporting coordinates, e.g. to limit the number of decimal places, may be
-     *            <code>null</code> (use 5 decimal places)
+     *            <code>null</code> (use default {@link DecimalCoordinateFormatter})
      * @param exportedIds
      *            may be <code>null</code>
      */
@@ -153,7 +153,7 @@ public class GML2GeometryWriter implements GMLGeometryWriter {
             }
         }
         if ( formatter == null ) {
-            this.formatter = new DecimalCoordinateFormatter( 5 );
+            this.formatter = new DecimalCoordinateFormatter();
         } else {
             this.formatter = formatter;
         }

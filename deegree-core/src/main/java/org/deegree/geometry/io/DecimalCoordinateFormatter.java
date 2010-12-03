@@ -48,7 +48,17 @@ import java.text.DecimalFormatSymbols;
  */
 public class DecimalCoordinateFormatter implements CoordinateFormatter {
 
+    /** Number of decimal places used by default (5). **/
+    public static final int DEFAULT_PLACES = 5;
+
     private final DecimalFormat decimalFormat;
+
+    /**
+     * Creates a new {@link DecimalCoordinateFormatter} instance that uses {@link #DEFAULT_PLACES}.
+     */
+    public DecimalCoordinateFormatter() {
+        this( DEFAULT_PLACES );
+    }
 
     /**
      * Creates a new {@link DecimalCoordinateFormatter} instance that uses the specified number of decimal places.

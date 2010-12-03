@@ -76,8 +76,8 @@ import org.deegree.geometry.primitive.Surface;
 import org.deegree.geometry.primitive.Tin;
 import org.deegree.geometry.primitive.patches.GriddedSurfacePatch;
 import org.deegree.geometry.primitive.patches.PolygonPatch;
-import org.deegree.geometry.primitive.patches.SurfacePatch;
 import org.deegree.geometry.primitive.patches.PolygonPatch.PolygonPatchType;
+import org.deegree.geometry.primitive.patches.SurfacePatch;
 import org.deegree.geometry.primitive.segments.Arc;
 import org.deegree.geometry.primitive.segments.ArcByBulge;
 import org.deegree.geometry.primitive.segments.ArcByCenterPoint;
@@ -160,7 +160,7 @@ public class WKTWriter {
             this.flags = new HashSet<WKTFlag>();
         }
         if ( formatter == null ) {
-            this.formatter = new DecimalCoordinateFormatter( 5 );
+            this.formatter = new DecimalCoordinateFormatter();
         } else {
             this.formatter = formatter;
         }
@@ -516,7 +516,7 @@ public class WKTWriter {
                 writer.append( ')' );
             }
         }
-        writer.append( ')' );        
+        writer.append( ')' );
     }
 
     /**
@@ -1103,11 +1103,11 @@ public class WKTWriter {
         }
         writer.append( '(' );
 
-        for ( int i = 0; i < geometry.size(); i++ ) {       
+        for ( int i = 0; i < geometry.size(); i++ ) {
             writePolygonWithoutPrefix( geometry.get( i ), writer );
             if ( i < geometry.size() - 1 ) {
                 writer.append( ',' );
-            }           
+            }
         }
         writer.append( ')' );
     }

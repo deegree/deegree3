@@ -181,7 +181,7 @@ public class GML3GeometryWriter implements GMLGeometryWriter {
      *            used)
      * @param formatter
      *            formatter to use for exporting coordinates, e.g. to limit the number of decimal places, may be
-     *            <code>null</code> (use 5 decimal places)
+     *            <code>null</code> (use default {@link DecimalCoordinateFormatter})
      * @param exportSf
      *            if true, the generated GML must conform to the GML-SF profile (only simple geometries are used and
      *            they are exported without id attributes)
@@ -208,7 +208,7 @@ public class GML3GeometryWriter implements GMLGeometryWriter {
             }
         }
         if ( formatter == null ) {
-            this.formatter = new DecimalCoordinateFormatter( 8 );
+            this.formatter = new DecimalCoordinateFormatter();
         } else {
             this.formatter = formatter;
         }

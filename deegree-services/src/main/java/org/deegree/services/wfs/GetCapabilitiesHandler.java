@@ -115,8 +115,8 @@ class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
 
     private static GeometryTransformer transformer;
 
-    // used for formatting WGS84 bounding box coordinates (6 decimal places appears to be reasonable for most use-cases)
-    private static CoordinateFormatter formatter = new DecimalCoordinateFormatter( 6 );
+    // used for formatting WGS84 bounding box coordinates
+    private static CoordinateFormatter formatter = new DecimalCoordinateFormatter();
 
     static {
         try {
