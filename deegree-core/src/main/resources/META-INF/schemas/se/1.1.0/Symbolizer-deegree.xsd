@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.deegree.org/se" xmlns="http://www.deegree.org/se"
+  xmlns:se="http://www.opengis.net/se" elementFormDefault="qualified">
+
+  <xsd:import namespace="http://www.opengis.net/se" schemaLocation="http://schemas.opengis.net/se/1.1.0/Symbolizer.xsd" />
+
+  <xsd:element name="ShadedRelief" type="ShadedReliefType" substitutionGroup="se:ShadedRelief">
+    <xsd:annotation>
+      <xsd:documentation>
+        "ShadedRelief" specifies the application of relief
+        shading (or "hill shading") to a DEM raster
+        to give it somewhat of a
+        three-dimensional effect and to make elevation changes more visible.
+        This element adds
+        deegree3-specific options, so that the output can
+        controlled more precisely.
+			</xsd:documentation>
+    </xsd:annotation>
+  </xsd:element>
+
+  <xsd:complexType name="ShadedReliefType">
+    <xsd:complexContent>
+      <xsd:extension base="se:ShadedReliefType">
+        <xsd:sequence>
+
+          <xsd:element name="AzimuthAngle" type="xsd:double" default="315.0" minOccurs="0">
+            <xsd:annotation>
+              <xsd:documentation>
+                Specifies the Azimuth in degrees (0 to 360).
+                This is the position of the light source. 0
+                degrees means North,
+                and counting is done clock-wise. The default value is 315
+                (North-West).
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:element>
+
+          <xsd:element name="IlluminationAngle" type="xsd:double" minOccurs="0">
+            <xsd:annotation>
+              <xsd:documentation>
+                Specifies the vertical angle of the light
+                source (0 to 90). Default is 45 degrees.
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:element>
+
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+
+  <xsd:element name="PerpendicularOffset" type="PerpendicularOffsetType" substitutionGroup="se:PerpendicularOffset">
+    <xsd:annotation>
+      <xsd:documentation>
+        This element lets the user define the type of perpendicular offset in more detail, to more
+        clearly define the desired level of quality vs. speed.
+    </xsd:documentation>
+    </xsd:annotation>
+  </xsd:element>
+
+  <xsd:complexType name="PerpendicularOffsetType" mixed="true">
+    <xsd:complexContent>
+      <xsd:extension base="se:ParameterValueType">
+        <xsd:attribute name="type">
+          <xsd:simpleType>
+            <xsd:restriction base="xsd:string">
+              <xsd:enumeration value="Standard" />
+              <xsd:enumeration value="Round" />
+              <xsd:enumeration value="Edged" />
+            </xsd:restriction>
+          </xsd:simpleType>
+        </xsd:attribute>
+        <xsd:attribute name="substraction">
+          <xsd:simpleType>
+            <xsd:restriction base="xsd:string">
+              <xsd:enumeration value="None" />
+              <xsd:enumeration value="NegativeOffset" />
+            </xsd:restriction>
+          </xsd:simpleType>
+        </xsd:attribute>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+
+  <xsd:element name="GraphicStroke" type="GraphicStrokeType" substitutionGroup="se:GraphicStroke">
+    <xsd:annotation>
+      <xsd:documentation>
+        Added is the possibility to specify start/end/percentage signatures to lines.
+      </xsd:documentation>
+    </xsd:annotation>
+  </xsd:element>
+
+  <xsd:complexType name="GraphicStrokeType">
+    <xsd:complexContent>
+      <xsd:extension base="se:GraphicStrokeType">
+        <xsd:sequence>
+          <xsd:element name="PositionPercentage" type="xsd:string" />
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+
+</xsd:schema>

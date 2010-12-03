@@ -1,0 +1,4 @@
+in memory each tile
+750000 bytes
+4*tiles = 3000000 bytes = 3MB
+
