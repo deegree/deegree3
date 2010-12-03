@@ -1,0 +1,57 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+<html>
+<head>
+<!--
+   $HeadURL$
+-->
+</head>
+<body bgcolor="white">
+A Transformation can be defined as an mathematical operation which transforms some values into other values using a
+specified function. In geographic terms this means, that some incoming coordinate in a specified crs, must be
+transformed into a coordinate valid for some other crs. In general two different transformations can be distinguished:
+<ol>
+  <li>The helmert transformation allows coordinate transformation with a datum shift by going to euclidean
+  space and normalizing to WGS84</li>
+  <li>Polynomial transformations use a polynomial to approximate a function which directly transforms coordinates
+  from one crs into another.</li>
+</ol>
+To accommodate these transformation the deegree crs package defines different transformation packages:
+<ul>
+  <li>{@link org.deegree.cs.transformations.coordinate coordinate}, which defines classes for chaining transformations (e.g. transformation steps). The resulting
+  concatenated transformation will define a function which transforms coordinates between two different coordinate
+  systems</li>
+  <li>{@link org.deegree.cs.transformations.helmert helmert}, which transforms coordinates from one euclidean R^3 space into another</li>
+  <li>{@link org.deegree.cs.transformations.polynomial polynomial}, which transforms coordinates direct between two different coordinate system using a polynomial
+  function</li>
+</ul>
+<p>The TransformFactory tries to create the appropriate transformation(s) to maps coordinates from one coordinate
+systems into another.</p>
+
+<h3>Automatic loading of transformation classes</h3>
+It is possible to create your own transformation classes, which the default provider {@link org.deegree.cs.configuration.deegree.xml.DeegreeCRSProvider} will load automatically.
+<p>You can achieve this loading by supplying the <b><code>class</code></b> attribute to a <code>crs:TransformationDefinitions/crs:UserDefined</code>
+element in the 'transformation-definitions.xml'. This attribute must contain the full class name (with package), e.g. <code>&lt;crs:UserDefined
+class='my.package.and.transformation.Implementation'&gt;</code></p>
+Because the loading is done with reflections your classes must sustain following criteria:
+<ol>
+  <li>It must be a sub class of {@link org.deegree.cs.transformations}</li>
+  <li>A constructor with following signature must be supplied: <br />
+  <code> public MyTransformation( <br />
+  &emsp;&emsp;&emsp;&emsp;{@link org.deegree.cs.CRSIdentifiable},<br />
+  &emsp;&emsp;&emsp;&emsp;{@link org.deegree.cs.coordinatesystems.CoordinateSystem} sourceCRS,<br />
+  &emsp;&emsp;&emsp;&emsp;{@link org.deegree.cs.coordinatesystems.CoordinateSystem} targetCRS,<br />  
+  &emsp;&emsp;&emsp;&emsp;{@link javax.xml.stream.XMLStreamReader} reader<br />
+  );<br />
+  </code>
+  <p>The first three parameters are common to all transformations (for an explanation of their meaning take a look
+  at {@link org.deegree.cs.transformations.Transformation}). The reader, will point to the next element you supplied in the deegree configuration (child
+  elements of the crs:TransformationDefinitions/crs:UserDefined/), thus relieving you of the parsing of the
+  transformation-definitions.xml document.</p>
+  </li>
+</ol>
+@author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
+@author last edited by: $Author$ 
+@version $Revision$, $Date: 2007-03-20 10:15:15 +0100 (Di, 20 Mrz
+2007)$
+</body>
+</html>
