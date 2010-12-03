@@ -88,6 +88,8 @@ public class PortnumberPlugin extends AbstractMojo {
                 port = 1025;
             }
 
+            getLog().info( "Using portnumber " + port + " for this run." );
+
             project.getProperties().put( "portnumber", "" + port );
 
             FileOutputStream fos = new FileOutputStream( portfile );
