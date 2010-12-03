@@ -29,7 +29,6 @@
     </snapshotRepository>
   </distributionManagement>
 
-
   <pluginRepositories>
     <pluginRepository>
       <id>deegree-plugin-repo</id>
@@ -44,7 +43,6 @@
   </pluginRepositories>
 
   <build>
-
     <testResources>
       <testResource>
         <directory>src/test/resources</directory>
@@ -53,11 +51,6 @@
     </testResources>
 
     <plugins>
-      <plugin>
-        <groupId>org.twdata.maven</groupId>
-        <artifactId>maven-cli-plugin</artifactId>
-      </plugin>
-
       <plugin>
         <groupId>org.deegree</groupId>
         <artifactId>deegree-portnumber-plugin</artifactId>

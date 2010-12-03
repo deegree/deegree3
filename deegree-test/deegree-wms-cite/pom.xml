@@ -11,8 +11,42 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <buildTimestamp>${maven.build.timestamp}</buildTimestamp>
   </properties>
+
+  <pluginRepositories>
+    <pluginRepository>
+      <id>deegree-plugin-repo</id>
+      <url>http://artefacts.deegree.org/repo</url>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+    </pluginRepository>
+  </pluginRepositories>
+
   <build>
+    <testResources>
+      <testResource>
+        <directory>src/test/resources</directory>
+        <filtering>true</filtering>
+      </testResource>
+    </testResources>
+
     <plugins>
+      <plugin>
+        <groupId>org.deegree</groupId>
+        <artifactId>deegree-portnumber-plugin</artifactId>
+        <version>1.0-SNAPSHOT</version>
+        <executions>
+          <execution>
+            <phase>generate-sources</phase>
+            <goals>
+              <goal>generate</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
 
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -25,40 +59,26 @@
       </plugin>
 
       <plugin>
-        <groupId>org.mortbay.jetty</groupId>
-        <artifactId>jetty-maven-plugin</artifactId>
-        <version>8.0.0.M0</version>
-        <configuration>
-          <connectors>
-            <connector implementation="org.eclipse.jetty.server.nio.SelectChannelConnector">
-              <port>18082</port>
-              <maxIdleTime>60000</maxIdleTime>
-            </connector>
-          </connectors>
-          <webAppConfig>
-            <contextPath>/deegree-wms-cite</contextPath>
-          </webAppConfig>
-          <scanIntervalSeconds>10</scanIntervalSeconds>
-          <stopKey>foo</stopKey>
-          <stopPort>9994</stopPort>
-        </configuration>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>tomcat-maven-plugin</artifactId>
+        <version>1.1</version>
         <executions>
           <execution>
-            <id>start-jetty</id>
+            <id>start-tomcat</id>
             <phase>pre-integration-test</phase>
             <goals>
-              <goal>run-war</goal>
+              <goal>run</goal>
             </goals>
             <configuration>
-              <scanIntervalSeconds>0</scanIntervalSeconds>
-              <daemon>true</daemon>
+              <port>${portnumber}</port>
+              <fork>true</fork>
             </configuration>
           </execution>
           <execution>
-            <id>stop-jetty</id>
+            <id>stop-tomcat</id>
             <phase>post-integration-test</phase>
             <goals>
-              <goal>stop</goal>
+              <goal>shutdown</goal>
             </goals>
           </execution>
         </executions>
@@ -109,15 +129,6 @@
             </configuration>
           </execution>
         </executions>
-      </plugin>
-
-      <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>tomcat-maven-plugin</artifactId>
-        <version>1.0</version>
-        <configuration>
-          <path>/</path>
-        </configuration>
       </plugin>
 
     </plugins>

@@ -79,7 +79,7 @@
         <!-- ***** Hard-wired the URL and test options (everything) ***** -->
          <xsl:variable name="VAR_WFS_CAPABILITIES_URL">
             <request>
-               <url>http://localhost:18084/deegree-wfs-cite100/services?request=GetCapabilities&amp;service=WFS</url>
+               <url>http://localhost:${portnumber}/deegree-wfs-cite100/services?request=GetCapabilities&amp;service=WFS</url>
                <method>get</method>
             </request>
          </xsl:variable>
