@@ -1,0 +1,114 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:dg="http://deegree.org/jsf"
+  xmlns:dgc="http://java.sun.com/jsf/composite/deegree">
+<h:head>
+  <title>deegree 3 services</title>
+  <h:outputStylesheet name="styles.css" />
+  <h:outputScript name="console.js" />
+</h:head>
+<h:body>
+
+  <div id="PLEASEWAIT">
+  <div class="curved"><b class="b1"></b><b class="b2"></b><b class="b3"></b><b class="b4"></b>
+  <div class="boxcontent">
+  <p>Applying changes.<br />
+  Please wait.</p>
+  </div>
+  <b class="b4"></b><b class="b3"></b><b class="b2"></b><b class="b1"></b></div>
+  </div>
+  <div id="PLEASEWAIT_BG"></div>
+
+  <div id="container">
+
+  <div id="header">
+  <div id="logo">
+  <!-- 
+  <pre><h:outputText value="#{applicationBean.logo}" /></pre> 
+  -->
+  <h:panelGroup
+    rendered="#{logBean.loggedIn}">
+    <h:form>
+      <h:commandButton value="#{labels.apply_changes}" styleClass="button" action="#{configManager.applyChanges}"
+        onclick="show();" rendered="#{configManager.pendingChanges}" />
+      <h:commandButton value="#{labels.apply_changes}" styleClass="buttongray" action="#{configManager.applyChanges}"
+        onclick="show();" rendered="#{!configManager.pendingChanges}" />
+      <h:outputText value="#{configManager.lastMessage}" styleClass="attention"
+        rendered="#{configManager.pendingChanges}" />
+      <h:outputText value="#{configManager.lastMessage}" styleClass="noattention"
+        rendered="#{!configManager.pendingChanges}" />
+    </h:form>
+  </h:panelGroup></div>
+  <div id="login"><h:panelGroup rendered="#{!logBean.loggedIn}">
+    <ui:include src="/console/jsf/login.xhtml" />
+  </h:panelGroup> <h:panelGroup rendered="#{logBean.loggedIn}">
+    <ui:include src="/console/jsf/logout.xhtml" />
+  </h:panelGroup></div>
+  <div class="clear" />
+  </div>
+
+  <div id="main">
+  <div id="left"><h:panelGrid id="menuPG" columns="1">
+    <br />
+    <h:link styleClass="naviactive" value="version" outcome="/console/jsf/version.xhtml"
+      rendered="#{facesContext.viewRoot.viewId == '/console/jsf/version.xhtml'}" />
+    <h:link styleClass="navi" value="version" outcome="/console/jsf/version.xhtml"
+      rendered="#{facesContext.viewRoot.viewId != '/console/jsf/version.xhtml'}" />
+    <h:link styleClass="naviactive" value="workspace" outcome="/console/jsf/workspace.xhtml" disabled="#{!logBean.loggedIn}"
+      rendered="#{facesContext.viewRoot.viewId == '/console/jsf/workspace.xhtml'}" />
+    <h:link styleClass="navi" value="workspace" outcome="/console/jsf/workspace.xhtml" disabled="#{!logBean.loggedIn}"
+      rendered="#{facesContext.viewRoot.viewId != '/console/jsf/workspace.xhtml'}" />
+       <h:link styleClass="naviactive" value="jdbc" outcome="/console/jsf/jdbc.xhtml" disabled="#{!logBean.loggedIn}"
+      rendered="#{facesContext.viewRoot.viewId == '/console/jsf/jdbc.xhtml'}" />
+    <h:link styleClass="navi" value="jdbc" outcome="/console/jsf/jdbc.xhtml" disabled="#{!logBean.loggedIn}"
+      rendered="#{facesContext.viewRoot.viewId != '/console/jsf/jdbc.xhtml'}" />
+    <h:link styleClass="naviactive" value="proxy" outcome="/console/jsf/proxy.xhtml" disabled="#{!logBean.loggedIn}"
+      rendered="#{facesContext.viewRoot.viewId == '/console/jsf/proxy.xhtml'}" />
+    <h:link styleClass="navi" value="proxy" outcome="/console/jsf/proxy.xhtml" disabled="#{!logBean.loggedIn}"
+      rendered="#{facesContext.viewRoot.viewId != '/console/jsf/proxy.xhtml'}" />
+    <br />
+    <h:link styleClass="naviactive" value="web services" outcome="/console/jsf/webservices.xhtml"
+      disabled="#{!logBean.loggedIn}" rendered="#{facesContext.viewRoot.viewId == '/console/jsf/webservices.xhtml'}" />
+    <h:link styleClass="navi" value="web services" outcome="/console/jsf/webservices.xhtml"
+      disabled="#{!logBean.loggedIn}" rendered="#{facesContext.viewRoot.viewId != '/console/jsf/webservices.xhtml'}" />
+    <h:link styleClass="naviactive" value="render styles" outcome="/console/jsf/render.xhtml" disabled="#{!logBean.loggedIn}"
+      rendered="#{facesContext.viewRoot.viewId == '/console/jsf/render.xhtml'}" />
+    <h:link styleClass="navi" value="render styles" outcome="/console/jsf/render.xhtml" disabled="#{!logBean.loggedIn}"
+      rendered="#{facesContext.viewRoot.viewId != '/console/jsf/render.xhtml'}" />
+    <h:link styleClass="naviactive" value="feature stores" outcome="/console/jsf/featureStore.xhtml"
+      disabled="#{!logBean.loggedIn}" rendered="#{facesContext.viewRoot.viewId == '/console/jsf/featureStore.xhtml'}" />
+    <h:link styleClass="navi" value="feature stores" outcome="/console/jsf/featureStore.xhtml"
+      disabled="#{!logBean.loggedIn}" rendered="#{facesContext.viewRoot.viewId != '/console/jsf/featureStore.xhtml'}" />
+    <h:link styleClass="naviactive" value="metadata stores" outcome="/console/jsf/metadataStore.xhtml"
+      disabled="#{!logBean.loggedIn}" rendered="#{facesContext.viewRoot.viewId == '/console/jsf/metadataStore.xhtml'}" />
+    <h:link styleClass="navi" value="metadata stores" outcome="/console/jsf/metadataStore.xhtml"
+      disabled="#{!logBean.loggedIn}" rendered="#{facesContext.viewRoot.viewId != '/console/jsf/metadataStore.xhtml'}" />
+    <h:link styleClass="naviactive" value="observation stores" outcome="/console/jsf/observationStores.xhtml"
+      disabled="#{!logBean.loggedIn}"
+      rendered="#{facesContext.viewRoot.viewId == '/console/jsf/observationStores.xhtml'}" />
+    <h:link styleClass="navi" value="observation stores" outcome="/console/jsf/observationStores.xhtml"
+      disabled="#{!logBean.loggedIn}"
+      rendered="#{facesContext.viewRoot.viewId != '/console/jsf/observationStores.xhtml'}" />
+    <br />
+    <h:link styleClass="naviExtern" outcome="/console/client/client.xhtml" value="#{labels.link_genericClient}" />
+    <h:outputLink styleClass="naviExtern"
+      value="#{facesContext.externalContext.requestContextPath}/console/wms/wms.html">
+      <h:outputText value="#{labels.link_wmsClient}" />
+    </h:outputLink>
+    <br />
+    <br />
+    <dg:externalLink styleClass="linkWiki" href="http://wiki.deegree.org" title="#{labels.link_wiki}" />
+  </h:panelGrid></div>
+
+  <div id="center"><ui:insert name="center" /> <h:panelGroup>
+    <h:messages errorClass="consoleError" />
+  </h:panelGroup></div>
+
+  <div id="right"><h:panelGrid columns="1">
+  </h:panelGrid></div>
+
+  <div class="clear" />
+  </div>
+
+  </div>
+</h:body>
+</html>
