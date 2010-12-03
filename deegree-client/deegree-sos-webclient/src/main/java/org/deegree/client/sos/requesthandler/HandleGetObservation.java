@@ -28,7 +28,7 @@ import org.deegree.client.sos.storage.components.OWSException;
 import org.deegree.client.sos.storage.components.Observation;
 import org.deegree.commons.utils.Pair;
 import org.deegree.commons.xml.CommonNamespaces;
-import org.deegree.commons.xml.NamespaceContext;
+import org.deegree.commons.xml.NamespaceBindings;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.XPath;
 import org.slf4j.Logger;
@@ -54,7 +54,7 @@ public class HandleGetObservation {
 
     private static final Logger LOG = LoggerFactory.getLogger( HandleGetObservation.class );
 
-    private static NamespaceContext nsContext;
+    private static NamespaceBindings nsContext;
 
     static {
         nsContext = CommonNamespaces.getNamespaceContext();

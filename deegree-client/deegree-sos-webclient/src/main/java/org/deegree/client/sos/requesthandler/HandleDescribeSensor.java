@@ -21,7 +21,7 @@ import org.apache.commons.httpclient.methods.StringRequestEntity;
 import org.deegree.client.sos.storage.StorageDescribeSensor;
 import org.deegree.client.sos.storage.components.OWSException;
 import org.deegree.commons.xml.CommonNamespaces;
-import org.deegree.commons.xml.NamespaceContext;
+import org.deegree.commons.xml.NamespaceBindings;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.XPath;
 import org.slf4j.Logger;
@@ -45,7 +45,7 @@ public class HandleDescribeSensor {
 
     private XMLAdapter xml;
 
-    private static NamespaceContext nsContext;
+    private static NamespaceBindings nsContext;
 
     private XPath xpath;
 

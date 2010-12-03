@@ -20,7 +20,7 @@ import org.deegree.client.sos.storage.components.Parameter;
 import org.deegree.client.sos.storage.components.Time;
 import org.deegree.commons.utils.Pair;
 import org.deegree.commons.xml.CommonNamespaces;
-import org.deegree.commons.xml.NamespaceContext;
+import org.deegree.commons.xml.NamespaceBindings;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.XPath;
 import org.slf4j.Logger;
@@ -43,12 +43,12 @@ public class HandleGetCapabilities {
 
     private StorageGetCapabilities storage = new StorageGetCapabilities();
 
-    private static NamespaceContext nsContext;
+    private static NamespaceBindings nsContext;
 
     private XPath xpath;
 
     static {
-        nsContext = new NamespaceContext();
+        nsContext = new NamespaceBindings();
         nsContext.addNamespace( "sos", "http://www.opengis.net/sos/1.0" );
         nsContext.addNamespace( "ows", "http://www.opengis.net/ows/1.1" );
         nsContext.addNamespace( "om", "http://www.opengis.net/om/1.0" );
