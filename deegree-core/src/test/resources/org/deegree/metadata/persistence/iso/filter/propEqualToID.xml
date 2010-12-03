@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ogc:Filter xmlns:ogc="http://www.opengis.net/ogc" xmlns:apiso="http://www.opengis.net/cat/csw/apiso/1.0">
+  <ogc:Or>
+    <ogc:PropertyIsEqualTo>
+      <ogc:PropertyName>apiso:identifier</ogc:PropertyName>
+      <ogc:Literal>4c0f6fc97a55a47c870162bb9c4f926d</ogc:Literal>
+    </ogc:PropertyIsEqualTo>
+    <ogc:PropertyIsEqualTo>
+      <ogc:PropertyName>apiso:identifier</ogc:PropertyName>
+      <ogc:Literal>d0e5c36eec7f473b91b8b249da87d522</ogc:Literal>
+    </ogc:PropertyIsEqualTo>
+  </ogc:Or>
+</ogc:Filter>
+
+

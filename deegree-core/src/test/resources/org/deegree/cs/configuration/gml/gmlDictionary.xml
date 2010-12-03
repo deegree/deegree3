@@ -1,0 +1,486 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Dictionary xmlns:gmd="http://www.isotc211.org/2005/gmd" xmlns:gco="http://www.isotc211.org/2005/gco" xmlns:epsg="urn:x-ogp:spec:schema-xsd:EPSG:0.1:dataset" xmlns:gml="http://www.opengis.net/gml/3.2" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:rim="urn:oasis:names:tc:ebxml-regrep:xsd:rim:3.0" xmlns="http://www.opengis.net/gml/3.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" gml:id="_1" xsi:schemaLocation="http://www.opengis.net/gml/3.2 http://schemas.opengis.net/gml/3.2.1/gml.xsd">
+ <description>urn:ogc:ClassificationScheme:Register:crs</description>
+ <identifier codeSpace="urn:ogc">urn:ogc:request:crs:1</identifier>
+ <dictionaryEntry>
+  <Transformation gml:id="epsg-op-1777">
+   <identifier codeSpace="OGP">urn:ogc:def:coordinateOperation:EPSG::1777</identifier>
+   <name>DHDN to WGS 84 (2)</name>
+   <remarks>
+        Parameter values from DHDN to ETRS89 (2) (code 1776) assuming that ETRS89 is equivalent to WGS 84 within the accuracy of the transformation.
+        Replaces DHDN to WGS 84 (1) (tfm code 1673).
+      </remarks>
+   <scope>For applications with an accuracy at 3 m level</scope>
+   <operationVersion>EPSG-Deu W 3m</operationVersion>
+   <coordinateOperationAccuracy>
+    <gmd:DQ_RelativeInternalPositionalAccuracy>
+     <gmd:result>
+      <gmd:DQ_QuantitativeResult>
+       <gmd:valueUnit xlink:href="urn:ogc:def:uom:EPSG::9001"/>
+       <gmd:value>
+        <gco:Record>
+         <gco:Decimal>3</gco:Decimal>
+        </gco:Record>
+       </gmd:value>
+      </gmd:DQ_QuantitativeResult>
+     </gmd:result>
+    </gmd:DQ_RelativeInternalPositionalAccuracy>
+   </coordinateOperationAccuracy>
+   <sourceCRS xlink:href="urn:ogc:def:crs:EPSG::4314"/>
+   <targetCRS xlink:href="urn:ogc:def:crs:EPSG::4326"/>
+   <method xlink:href="urn:ogc:def:method:EPSG::9606"/>
+   <parameterValue>
+    <ParameterValue>
+     <value uom="urn:ogc:def:uom:EPSG::9001">598.1</value>
+     <operationParameter xlink:href="urn:ogc:def:parameter:EPSG::8605"/>
+    </ParameterValue>
+   </parameterValue>
+   <parameterValue>
+    <ParameterValue>
+     <value uom="urn:ogc:def:uom:EPSG::9001">73.7</value>
+     <operationParameter xlink:href="urn:ogc:def:parameter:EPSG::8606"/>
+    </ParameterValue>
+   </parameterValue>
+   <parameterValue>
+    <ParameterValue>
+     <value uom="urn:ogc:def:uom:EPSG::9001">418.2</value>
+     <operationParameter xlink:href="urn:ogc:def:parameter:EPSG::8607"/>
+    </ParameterValue>
+   </parameterValue>
+   <parameterValue>
+    <ParameterValue>
+     <value uom="urn:ogc:def:uom:EPSG::9104">0.202</value>
+     <operationParameter xlink:href="urn:ogc:def:parameter:EPSG::8608"/>
+    </ParameterValue>
+   </parameterValue>
+   <parameterValue>
+    <ParameterValue>
+     <value uom="urn:ogc:def:uom:EPSG::9104">0.045</value>
+     <operationParameter xlink:href="urn:ogc:def:parameter:EPSG::8609"/>
+    </ParameterValue>
+   </parameterValue>
+   <parameterValue>
+    <ParameterValue>
+     <value uom="urn:ogc:def:uom:EPSG::9104">-2.455</value>
+     <operationParameter xlink:href="urn:ogc:def:parameter:EPSG::8610"/>
+    </ParameterValue>
+   </parameterValue>
+   <parameterValue>
+    <ParameterValue>
+     <value uom="urn:ogc:def:uom:EPSG::9202">6.7</value>
+     <operationParameter xlink:href="urn:ogc:def:parameter:EPSG::8611"/>
+    </ParameterValue>
+   </parameterValue>
+  </Transformation>
+ </dictionaryEntry>
+ <dictionaryEntry>
+  <OperationMethod gml:id="epsg-method-9606">
+   <identifier codeSpace="OGP">urn:ogc:def:method:EPSG::9606</identifier>
+   <name>Position Vector 7-param. transformation</name>
+   <remarks>
+        Note the analogy with the Coordinate Frame Rotation (code 9607) but beware of the differences! The Position Vector convention is used by IAG
+        and recommended by ISO 19111.
+      </remarks>
+   <formula>
+        Note: These formulas have been transcribed from EPSG Guidance Note #7-2. Users are encouraged to use that document rather than the text which
+        follows as reference because limitations in the transcription will be avoided.
+
+        Transformation of coordinates from one geographic coordinate reference system into another (also known as a "datum transformation") is usually
+        carried out as an implicit concatenation of three transformations: [geographical to geocentric &gt;&gt; geocentric to geocentric &gt;&gt;
+        geocentric to geographic]
+
+        The middle part of the concatenated transformation, from geocentric to geocentric, is usually described as a simplified 7-parameter Helmert
+        transformation, expressed in matrix form with 7 parameters, in what is known as the "Bursa-Wolf" formula:
+
+        (Xt) ( 1 -Rz +Ry) (Xs) (dX) (Yt) = M * ( +Rz 1 -Rx) * (Ys) + (dY) (Zt) ( -Ry +Rx 1 ) (Zs) (dZ)
+
+        The parameters are commonly referred to defining the transformation "from source coordinate reference system to target coordinate reference
+        system", whereby (Xs, Ys, Zs) are the coordinates of the point in the source geocentric coordinate reference system and (Xt, Yt, Zt) are the
+        coordinates of the point in the target geocentric coordinate reference system. But that does not define the parameters uniquely; neither is
+        the definition of the parameters implied in the formula, as is often believed. However, the following definition, which is consistent with the
+        “Position Vector Transformation” convention is common E&amp;P survey practice,
+
+        (dX, dY, dZ) :Translation vector, to be added to the point's position vector in the source coordinate reference system in order to transform
+        from source system to target system; also: the coordinates of the origin of the source coordinate reference system in the target coordinate
+        reference system.
+
+        (Rx, Ry, Rz) :Rotations to be applied to the point's vector. The sign convention is such that a positive rotation about an axis is defined as
+        a clockwise rotation of the position vector when viewed from the origin of the Cartesian coordinate reference system in the positive direction
+        of that axis; e.g. a positive rotation about the Z-axis only from source system to target system will result in a larger longitude value for
+        the point in the target system. Although rotation angles may be quoted in any angular unit of measure, the formula as given here requires the
+        angles to be provided in radians.
+
+        M :The scale correction to be made to the position vector in the source coordinate reference system in order to obtain the correct scale in
+        the target coordinate reference system. M = (1 + dS*10^-6), where dS is the scale correction expressed in parts per million.
+
+        &lt;&lt;&lt;&lt;&lt;This text continues in the description of the Coordinate Frame Rotation formula&gt;&gt;&gt;&gt;&gt;
+      </formula>
+   <sourceDimensions>2</sourceDimensions>
+   <targetDimensions>2</targetDimensions>
+   <generalOperationParameter xlink:href="urn:ogc:def:parameter:EPSG::8605"/>
+   <generalOperationParameter xlink:href="urn:ogc:def:parameter:EPSG::8606"/>
+   <generalOperationParameter xlink:href="urn:ogc:def:parameter:EPSG::8607"/>
+   <generalOperationParameter xlink:href="urn:ogc:def:parameter:EPSG::8608"/>
+   <generalOperationParameter xlink:href="urn:ogc:def:parameter:EPSG::8609"/>
+   <generalOperationParameter xlink:href="urn:ogc:def:parameter:EPSG::8610"/>
+   <generalOperationParameter xlink:href="urn:ogc:def:parameter:EPSG::8611"/>
+  </OperationMethod>
+ </dictionaryEntry>
+ <dictionaryEntry>
+  <Ellipsoid gml:id="epsg-ellipsoid-7004">
+   <identifier codeSpace="OGP">urn:ogc:def:ellipsoid:EPSG::7004</identifier>
+   <name>Bessel 1841</name>
+   <remarks>
+        Original Bessel definition is a=3272077.14 and b=3261139.33 toise. This used a weighted mean of values from several authors but did not
+        account for differences in the length of the various toise: the "Bessel toise" is therefore of uncertain length.
+      </remarks>
+   <semiMajorAxis uom="urn:ogc:def:uom:EPSG::9001">6377397.155</semiMajorAxis>
+   <secondDefiningParameter>
+    <SecondDefiningParameter>
+     <inverseFlattening uom="urn:ogc:def:uom:EPSG::9201">299.1528128</inverseFlattening>
+    </SecondDefiningParameter>
+   </secondDefiningParameter>
+  </Ellipsoid>
+ </dictionaryEntry>
+ <dictionaryEntry>
+  <ProjectedCRS gml:id="epsg-crs-31467">
+   <identifier codeSpace="OGP">urn:ogc:def:crs:EPSG::31467</identifier>
+   <name>DHDN / 3-degree Gauss-Kruger zone 3</name>
+   <remarks>Zone width 3 degrees.</remarks>
+   <scope>Large and medium scale topographic mapping and engineering survey, cadastral survey.</scope>
+   <conversion xlink:href="urn:ogc:def:coordinateOperation:EPSG::16263"/>
+   <baseGeodeticCRS xlink:href="urn:ogc:def:crs:EPSG::4314"/>
+   <cartesianCS xlink:href="urn:ogc:def:cs:EPSG::4530"/>
+  </ProjectedCRS>
+ </dictionaryEntry>
+ <dictionaryEntry>
+  <Conversion gml:id="epsg-op-16263">
+   <identifier codeSpace="OGP">urn:ogc:def:coordinateOperation:EPSG::16263</identifier>
+   <name>3-degree Gauss-Kruger zone 3</name>
+   <remarks>
+        Also found with zone truncated from false easting: see Gauss-Kruger cm 9E (code 16302). Original transformation by Gauss-Kruger formula.
+      </remarks>
+   <scope>Large scale topographic mapping, cadastral and engineering survey.</scope>
+   <coordinateOperationAccuracy>
+    <gmd:DQ_RelativeInternalPositionalAccuracy>
+     <gmd:result>
+      <gmd:DQ_QuantitativeResult>
+       <gmd:valueUnit xlink:href="urn:ogc:def:uom:EPSG::9001"/>
+       <gmd:value>
+        <gco:Record>
+         <gco:Decimal>0</gco:Decimal>
+        </gco:Record>
+       </gmd:value>
+      </gmd:DQ_QuantitativeResult>
+     </gmd:result>
+    </gmd:DQ_RelativeInternalPositionalAccuracy>
+   </coordinateOperationAccuracy>
+   <method xlink:href="urn:ogc:def:method:EPSG::9807"/>
+   <parameterValue>
+    <ParameterValue>
+     <value uom="urn:ogc:def:uom:EPSG::9102">0</value>
+     <operationParameter xlink:href="urn:ogc:def:parameter:EPSG::8801"/>
+    </ParameterValue>
+   </parameterValue>
+   <parameterValue>
+    <ParameterValue>
+     <value uom="urn:ogc:def:uom:EPSG::9102">9</value>
+     <operationParameter xlink:href="urn:ogc:def:parameter:EPSG::8802"/>
+    </ParameterValue>
+   </parameterValue>
+   <parameterValue>
+    <ParameterValue>
+     <value uom="urn:ogc:def:uom:EPSG::9201">1</value>
+     <operationParameter xlink:href="urn:ogc:def:parameter:EPSG::8805"/>
+    </ParameterValue>
+   </parameterValue>
+   <parameterValue>
+    <ParameterValue>
+     <value uom="urn:ogc:def:uom:EPSG::9001">3500000</value>
+     <operationParameter xlink:href="urn:ogc:def:parameter:EPSG::8806"/>
+    </ParameterValue>
+   </parameterValue>
+   <parameterValue>
+    <ParameterValue>
+     <value uom="urn:ogc:def:uom:EPSG::9001">0</value>
+     <operationParameter xlink:href="urn:ogc:def:parameter:EPSG::8807"/>
+    </ParameterValue>
+   </parameterValue>
+  </Conversion>
+ </dictionaryEntry>
+ <dictionaryEntry>
+  <GeodeticCRS gml:id="epsg-crs-4314">
+   <identifier codeSpace="OGP">urn:ogc:def:crs:EPSG::4314</identifier>
+   <name>DHDN</name>
+   <remarks>See also RD/83 for Saxony and PD/83 for Thuringen. For national digital cartographic purposes used across all German states.</remarks>
+   <scope>Geodetic survey.</scope>
+   <ellipsoidalCS xlink:href="urn:ogc:def:cs:EPSG::6422"/>
+   <geodeticDatum xlink:href="urn:ogc:def:datum:EPSG::6314"/>
+  </GeodeticCRS>
+ </dictionaryEntry>
+ <dictionaryEntry>
+  <CartesianCS gml:id="epsg-cs-4530">
+   <identifier codeSpace="OGP">urn:ogc:def:cs:EPSG::4530</identifier>
+   <name>Cartesian 2D CS. Axes: northing, easting (X,Y). Orientations: north, east. UoM: m.</name>
+   <remarks>Used in projected and engineering coordinate reference systems.</remarks>
+   <axis>
+    <CoordinateSystemAxis gml:id="epsg-axis-48" uom="urn:ogc:def:uom:EPSG::9001">
+     <descriptionReference xlink:href="urn:ogc:def:axis-name:EPSG::9907"/>
+     <identifier codeSpace="OGP">urn:ogc:def:axis:EPSG::48</identifier>
+     <axisAbbrev>X</axisAbbrev>
+     <axisDirection codeSpace="EPSG">north</axisDirection>
+    </CoordinateSystemAxis>
+   </axis>
+   <axis>
+    <CoordinateSystemAxis gml:id="epsg-axis-47" uom="urn:ogc:def:uom:EPSG::9001">
+     <descriptionReference xlink:href="urn:ogc:def:axis-name:EPSG::9906"/>
+     <identifier codeSpace="OGP">urn:ogc:def:axis:EPSG::47</identifier>
+     <axisAbbrev>Y</axisAbbrev>
+     <axisDirection codeSpace="EPSG">east</axisDirection>
+    </CoordinateSystemAxis>
+   </axis>
+  </CartesianCS>
+ </dictionaryEntry>
+ <dictionaryEntry>
+  <OperationMethod gml:id="epsg-method-9807">
+   <identifier codeSpace="OGP">urn:ogc:def:method:EPSG::9807</identifier>
+   <name>Transverse Mercator</name>
+   <formula/>
+   <sourceDimensions>2</sourceDimensions>
+   <targetDimensions>2</targetDimensions>
+   <generalOperationParameter xlink:href="urn:ogc:def:parameter:EPSG::8801"/>
+   <generalOperationParameter xlink:href="urn:ogc:def:parameter:EPSG::8802"/>
+   <generalOperationParameter xlink:href="urn:ogc:def:parameter:EPSG::8805"/>
+   <generalOperationParameter xlink:href="urn:ogc:def:parameter:EPSG::8806"/>
+   <generalOperationParameter xlink:href="urn:ogc:def:parameter:EPSG::8807"/>
+  </OperationMethod>
+ </dictionaryEntry>
+ <dictionaryEntry>
+  <ConventionalUnit gml:id="epsg-uom-9102">
+   <identifier codeSpace="OGP">urn:ogc:def:uom:EPSG::9102</identifier>
+   <name>degree</name>
+   <remarks>= pi/180 radians</remarks>
+   <quantityType>angle</quantityType>
+   <conversionToPreferredUnit uom="urn:ogc:def:uom:EPSG::9101">
+    <formula>
+     <b>3.14159265358979</b>
+     <c>180</c>
+    </formula>
+   </conversionToPreferredUnit>
+  </ConventionalUnit>
+ </dictionaryEntry>
+ <dictionaryEntry>
+  <BaseUnit gml:id="epsg-uom-9201">
+   <identifier codeSpace="OGP">urn:ogc:def:uom:EPSG::9201</identifier>
+   <name>unity</name>
+   <quantityType>scale</quantityType>
+   <unitsSystem xlink:href="http://www.epsg.org/Geodetic.html"/>
+  </BaseUnit>
+ </dictionaryEntry>
+ <dictionaryEntry>
+  <BaseUnit gml:id="epsg-uom-9001">
+   <identifier codeSpace="OGP">urn:ogc:def:uom:EPSG::9001</identifier>
+   <name>metre</name>
+   <remarks>Also known as International metre. SI standard unit.</remarks>
+   <quantityType>length</quantityType>
+   <unitsSystem xlink:href="http://www.bipm.fr/en/si"/>
+  </BaseUnit>
+ </dictionaryEntry>
+ <dictionaryEntry>
+  <ConventionalUnit gml:id="epsg-uom-9122">
+   <identifier codeSpace="OGP">urn:ogc:def:uom:EPSG::9122</identifier>
+   <name>degree (supplier to define representation)</name>
+   <remarks>
+        = pi/180 radians. The degree representation (e.g. decimal, DMSH, etc.) must be clarified by suppliers of data associated with this code.
+      </remarks>
+   <quantityType>angle</quantityType>
+   <conversionToPreferredUnit uom="urn:ogc:def:uom:EPSG::9101">
+    <formula>
+     <b>3.14159265358979</b>
+     <c>180</c>
+    </formula>
+   </conversionToPreferredUnit>
+  </ConventionalUnit>
+ </dictionaryEntry>
+ <dictionaryEntry>
+  <OperationParameter gml:id="epsg-param-8801">
+   <description>
+        The latitude of the point from which the values of both the geographical coordinates on the ellipsoid and the grid coordinates on the
+        projection are deemed to increment or decrement for computational purposes. Alternatively it may be considered as the latitude of the point
+        which in the absence of application of false coordinates has grid coordinates of (0,0).
+      </description>
+   <identifier codeSpace="OGP">urn:ogc:def:parameter:EPSG::8801</identifier>
+   <name>Latitude of natural origin</name>
+  </OperationParameter>
+ </dictionaryEntry>
+ <dictionaryEntry>
+  <OperationParameter gml:id="epsg-param-8802">
+   <description>
+        The longitude of the point from which the values of both the geographical coordinates on the ellipsoid and the grid coordinates on the
+        projection are deemed to increment or decrement for computational purposes. Alternatively it may be considered as the longitude of the point
+        which in the absence of application of false coordinates has grid coordinates of (0,0). Sometimes known as "central meridian (CM)".
+      </description>
+   <identifier codeSpace="OGP">urn:ogc:def:parameter:EPSG::8802</identifier>
+   <name>Longitude of natural origin</name>
+  </OperationParameter>
+ </dictionaryEntry>
+ <dictionaryEntry>
+  <OperationParameter gml:id="epsg-param-8805">
+   <description>
+        The factor by which the map grid is reduced or enlarged during the projection process, defined by its value at the natural origin.
+      </description>
+   <identifier codeSpace="OGP">urn:ogc:def:parameter:EPSG::8805</identifier>
+   <name>Scale factor at natural origin</name>
+  </OperationParameter>
+ </dictionaryEntry>
+ <dictionaryEntry>
+  <OperationParameter gml:id="epsg-param-8806">
+   <description>
+        Since the natural origin may be at or near the centre of the projection and under normal coordinate circumstances would thus give rise to
+        negative coordinates over parts of the mapped area, this origin is usually given false coordinates which are large enough to avoid this
+        inconvenience. The False Easting, FE, is the value assigned to the abscissa (east or west) axis of the projection grid at the natural origin.
+      </description>
+   <identifier codeSpace="OGP">urn:ogc:def:parameter:EPSG::8806</identifier>
+   <name>False easting</name>
+  </OperationParameter>
+ </dictionaryEntry>
+ <dictionaryEntry>
+  <OperationParameter gml:id="epsg-param-8807">
+   <description>
+        Since the natural origin may be at or near the centre of the projection and under normal coordinate circumstances would thus give rise to
+        negative coordinates over parts of the mapped area, this origin is usually given false coordinates which are large enough to avoid this
+        inconvenience. The False Northing, FN, is the value assigned to the ordinate (north or south) axis of the projection grid at the natural
+        origin.
+      </description>
+   <identifier codeSpace="OGP">urn:ogc:def:parameter:EPSG::8807</identifier>
+   <name>False northing</name>
+  </OperationParameter>
+ </dictionaryEntry>
+ <dictionaryEntry>
+  <EllipsoidalCS gml:id="epsg-cs-6422">
+   <identifier codeSpace="OGP">urn:ogc:def:cs:EPSG::6422</identifier>
+   <name>Ellipsoidal 2D CS. Axes: latitude, longitude. Orientations: north, east. UoM: degree</name>
+   <remarks>
+        Coordinates referenced to this CS are in degrees. Any degree representation (e.g. DMSH, decimal, etc.) may be used but that used must be
+        declared for the user by the supplier of data. Used in geographic 2D coordinate reference systems.
+      </remarks>
+   <axis>
+    <CoordinateSystemAxis gml:id="epsg-axis-106" uom="urn:ogc:def:uom:EPSG::9122">
+     <descriptionReference xlink:href="urn:ogc:def:axis-name:EPSG::9901"/>
+     <identifier codeSpace="OGP">urn:ogc:def:axis:EPSG::106</identifier>
+     <axisAbbrev>Lat</axisAbbrev>
+     <axisDirection codeSpace="EPSG">north</axisDirection>
+    </CoordinateSystemAxis>
+   </axis>
+   <axis>
+    <CoordinateSystemAxis gml:id="epsg-axis-107" uom="urn:ogc:def:uom:EPSG::9122">
+     <descriptionReference xlink:href="urn:ogc:def:axis-name:EPSG::9902"/>
+     <identifier codeSpace="OGP">urn:ogc:def:axis:EPSG::107</identifier>
+     <axisAbbrev>Long</axisAbbrev>
+     <axisDirection codeSpace="EPSG">east</axisDirection>
+    </CoordinateSystemAxis>
+   </axis>
+  </EllipsoidalCS>
+ </dictionaryEntry>
+ <dictionaryEntry>
+  <GeodeticDatum gml:id="epsg-datum-6314">
+   <identifier codeSpace="OGP">urn:ogc:def:datum:EPSG::6314</identifier>
+   <name>Deutsches Hauptdreiecksnetz</name>
+   <remarks/>
+   <scope>Geodetic survey, cadastre, topographic mapping, engineering survey.</scope>
+   <anchorDefinition>
+        Fundamental point: Rauenberg. Latitude: 52°27'12.021"N, longitude: 13°22'04.928"E (of Greenwich). This station was destroyed in 1910 and the
+        station at Potsdam substituted as the fundamental point.
+      </anchorDefinition>
+   <primeMeridian xlink:href="urn:ogc:def:meridian:EPSG::8901"/>
+   <ellipsoid xlink:href="urn:ogc:def:ellipsoid:EPSG::7004"/>
+  </GeodeticDatum>
+ </dictionaryEntry>
+ <dictionaryEntry>
+  <PrimeMeridian gml:id="epsg-meridian-8901">
+   <identifier codeSpace="OGP">urn:ogc:def:meridian:EPSG::8901</identifier>
+   <name>Greenwich</name>
+   <greenwichLongitude uom="urn:ogc:def:uom:EPSG::9102">0</greenwichLongitude>
+  </PrimeMeridian>
+ </dictionaryEntry>
+ <dictionaryEntry>
+  <OperationParameter gml:id="epsg-param-8605">
+   <description>The difference between the X values of a point in the target and source coordinate reference systems.</description>
+   <identifier codeSpace="OGP">urn:ogc:def:parameter:EPSG::8605</identifier>
+   <name>X-axis translation</name>
+  </OperationParameter>
+ </dictionaryEntry>
+ <dictionaryEntry>
+  <OperationParameter gml:id="epsg-param-8606">
+   <description>The difference between the Y values of a point in the target and source coordinate reference systems.</description>
+   <identifier codeSpace="OGP">urn:ogc:def:parameter:EPSG::8606</identifier>
+   <name>Y-axis translation</name>
+  </OperationParameter>
+ </dictionaryEntry>
+ <dictionaryEntry>
+  <OperationParameter gml:id="epsg-param-8607">
+   <description>The difference between the Z values of a point in the target and source coordinate reference systems.</description>
+   <identifier codeSpace="OGP">urn:ogc:def:parameter:EPSG::8607</identifier>
+   <name>Z-axis translation</name>
+  </OperationParameter>
+ </dictionaryEntry>
+ <dictionaryEntry>
+  <OperationParameter gml:id="epsg-param-8608">
+   <description>
+        The angular difference between the Y and Z axes directions of target and source coordinate reference systems. This is a rotation about the X
+        axis as viewed from the origin looking along that axis. The particular method defines which direction is positive, and what is being rotated
+        (point or axis).
+      </description>
+   <identifier codeSpace="OGP">urn:ogc:def:parameter:EPSG::8608</identifier>
+   <name>X-axis rotation</name>
+  </OperationParameter>
+ </dictionaryEntry>
+ <dictionaryEntry>
+  <OperationParameter gml:id="epsg-param-8609">
+   <description>
+        The angular difference between the X and Z axes directions of target and source coordinate reference systems. This is a rotation about theY
+        axis as viewed from the origin looking along that axis. The particular method defines which direction is positive, and what is being rotated
+        (point or axis).
+      </description>
+   <identifier codeSpace="OGP">urn:ogc:def:parameter:EPSG::8609</identifier>
+   <name>Y-axis rotation</name>
+  </OperationParameter>
+ </dictionaryEntry>
+ <dictionaryEntry>
+  <OperationParameter gml:id="epsg-param-8610">
+   <description>
+        The angular difference between the X and Y axes directions of target and source coordinate reference systems. This is a rotation about the Z
+        axis as viewed from the origin looking along that axis. The particular method defines which direction is positive, and what is being rotated
+        (point or axis).
+      </description>
+   <identifier codeSpace="OGP">urn:ogc:def:parameter:EPSG::8610</identifier>
+   <name>Z-axis rotation</name>
+  </OperationParameter>
+ </dictionaryEntry>
+ <dictionaryEntry>
+  <OperationParameter gml:id="epsg-param-8611">
+   <description>
+        The scale difference increased by unity equals the ratio of an the length of an arbitrary distance between two points in target and source
+        coordinate reference systems. This is usually averaged for the intersection area of the two coordinate reference systems.
+
+        If a distance of 100 km in the source coordinate reference system translates into a distance of 100.001 km in the target coordinate reference
+        system, the scale difference is 1 ppm (the ratio being 1.000001).
+      </description>
+   <identifier codeSpace="OGP">urn:ogc:def:parameter:EPSG::8611</identifier>
+   <name>Scale difference</name>
+  </OperationParameter>
+ </dictionaryEntry>
+ <dictionaryEntry>
+  <ConventionalUnit gml:id="epsg-uom-9202">
+   <identifier codeSpace="OGP">urn:ogc:def:uom:EPSG::9202</identifier>
+   <name>parts per million</name>
+   <quantityType>scale</quantityType>
+   <conversionToPreferredUnit uom="urn:ogc:def:uom:EPSG::9201">
+    <formula>
+     <b>1</b>
+     <c>1000000</c>
+    </formula>
+   </conversionToPreferredUnit>
+  </ConventionalUnit>
+ </dictionaryEntry>
+</Dictionary>
