@@ -59,11 +59,11 @@ import org.deegree.feature.property.SimpleProperty;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.feature.types.GenericFeatureType;
 import org.deegree.feature.types.property.GeometryPropertyType;
+import org.deegree.feature.types.property.GeometryPropertyType.CoordinateDimension;
+import org.deegree.feature.types.property.GeometryPropertyType.GeometryType;
 import org.deegree.feature.types.property.PropertyType;
 import org.deegree.feature.types.property.SimplePropertyType;
 import org.deegree.feature.types.property.ValueRepresentation;
-import org.deegree.feature.types.property.GeometryPropertyType.CoordinateDimension;
-import org.deegree.feature.types.property.GeometryPropertyType.GeometryType;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.GeometryFactory;
 import org.deegree.geometry.standard.AbstractDefaultGeometry;
@@ -530,7 +530,7 @@ public class VectorLayerAdapter {
         }
 
         // create feature
-        feature = new GenericFeature( fty, id, props, GMLVersion.GML_31 );
+        feature = new GenericFeature( fty, id, props, GMLVersion.GML_31, null );
 
         return feature;
     }
