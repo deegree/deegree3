@@ -84,7 +84,7 @@ public class PortnumberPlugin extends AbstractMojo {
                 port = Integer.parseInt( reader.readLine() ) + 1;
                 reader.close();
             }
-            if ( port > 65534 ) {
+            if ( port > 18000 ) {
                 port = 1025;
             }
 
