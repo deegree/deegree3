@@ -158,7 +158,6 @@ public class GMLFormat implements Format {
 
         this.featureLimit = master.getMaxFeatures();
         this.checkAreaOfUse = master.getCheckAreaOfUse();
-        this.formatter = new DecimalCoordinateFormatter();
         this.gmlVersion = gmlVersion;
     }
 
@@ -191,7 +190,7 @@ public class GMLFormat implements Format {
         this.featureLimit = master.getMaxFeatures();
         this.checkAreaOfUse = master.getCheckAreaOfUse();
 
-        this.formatter = new DecimalCoordinateFormatter();
+        this.formatter = null;
         try {
             JAXBElement<?> formatterEl = formatDef.getAbstractCoordinateFormatter();
             if ( formatterEl != null ) {

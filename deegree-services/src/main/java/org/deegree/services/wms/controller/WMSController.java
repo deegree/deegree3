@@ -525,9 +525,10 @@ public class WMSController extends AbstractOGCServiceController {
                 // gmlWriter.setOutputCRS(fi.getCoordinateSystem() );
                 // gmlWriter.set
                 new GMLFeatureWriter( GMLVersion.GML_2, xmlWriter, fi.getCoordinateSystem(), null, "#{}", null, 0, -1,
-                                      null, false, fi.returnGeometries(), null, null ).export( col, ns == null ? loc
-                                                                                                              : null,
-                                                                                               bindings );
+                                      null, false, fi.returnGeometries(), null, null, false ).export( col,
+                                                                                                      ns == null ? loc
+                                                                                                                : null,
+                                                                                                      bindings );
             } catch ( XMLStreamException e ) {
                 LOG.warn( "Error when writing GetFeatureInfo GML response '{}'.", e.getLocalizedMessage() );
                 LOG.trace( "Stack trace:", e );
