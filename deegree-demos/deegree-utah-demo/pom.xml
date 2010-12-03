@@ -4,7 +4,7 @@
   <groupId>org.deegree</groupId>
   <artifactId>deegree-utah-demo</artifactId>
   <packaging>war</packaging>
-  <version>3.1-SNAPSHOT</version>
+  <version>3.1-pre1</version>
   <name>deegree 3 Utah Demo</name>
   <url>http://maven.apache.org</url>
   <repositories>
@@ -30,12 +30,12 @@
     <dependency>
       <groupId>org.deegree</groupId>
       <artifactId>deegree-services-console</artifactId>
-      <version>3.1-SNAPSHOT</version>
+      <version>3.1-pre1</version>
     </dependency>
     <dependency>
       <groupId>org.deegree</groupId>
       <artifactId>deegree-services-console</artifactId>
-      <version>3.1-SNAPSHOT</version>
+      <version>3.1-pre1</version>
       <type>zip</type>
       <classifier>webapp-template</classifier>
       <scope>compile</scope>
@@ -43,7 +43,7 @@
     <dependency>
       <groupId>org.deegree</groupId>
       <artifactId>deegree-tomcat</artifactId>
-      <version>3.1-SNAPSHOT</version>
+      <version>3.1-pre1</version>
       <type>zip</type>
       <scope>compile</scope>
     </dependency>
