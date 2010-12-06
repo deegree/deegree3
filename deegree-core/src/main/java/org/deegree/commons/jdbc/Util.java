@@ -42,6 +42,7 @@ import static java.sql.Types.BLOB;
 import static java.sql.Types.CHAR;
 import static java.sql.Types.DOUBLE;
 import static java.sql.Types.INTEGER;
+import static java.sql.Types.LONGVARBINARY;
 import static java.sql.Types.NUMERIC;
 import static java.sql.Types.OTHER;
 import static java.sql.Types.SMALLINT;
@@ -59,6 +60,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.sql.Types;
 import java.util.LinkedList;
 
 import javax.xml.namespace.QName;
@@ -130,11 +132,13 @@ public class Util {
                 case NUMERIC:
                 case DOUBLE:
                 case BIGINT:
+                case Types.DECIMAL:
                     pt = new SimplePropertyType( ptName, 0, 1, DECIMAL, false, false, null );
                     break;
                 case OTHER:
                 case BINARY:
                 case BLOB:
+                case LONGVARBINARY:
                     pt = new GeometryPropertyType( ptName, 0, 1, false, false, null, GEOMETRY, DIM_2_OR_3, null );
                     break;
                 default:
