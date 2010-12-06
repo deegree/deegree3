@@ -12,3 +12,7 @@ function blockInput(event) {
 		document.getElementById("PLEASEWAIT_BG").style.display = 'none';
 	}
 }
+
+function confirmDelete() {
+	return confirm("Do you really want do delete?");
+}
