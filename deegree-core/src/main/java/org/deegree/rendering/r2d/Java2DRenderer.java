@@ -156,7 +156,7 @@ public class Java2DRenderer implements Renderer {
             double scalex = width / bbox.getSpan0();
             double scaley = height / bbox.getSpan1();
             try {
-                if ( bbox.getCoordinateSystem() == null
+                if ( bbox.getCoordinateSystem() == null || bbox.getCoordinateSystem().getName().equals( "CRS:1" )
                      || bbox.getCoordinateSystem().getWrappedCRS().getUnits()[0].equals( METRE ) ) {
                     res = bbox.getSpan0() / width; // use x for resolution
                 } else {
@@ -189,7 +189,7 @@ public class Java2DRenderer implements Renderer {
             worldToScreen.scale( scalex, -scaley );
 
             try {
-                if ( bbox.getCoordinateSystem() != null ) {
+                if ( bbox.getCoordinateSystem() != null && ( !bbox.getCoordinateSystem().getName().equals( "CRS:1" ) ) ) {
                     transformer = new GeometryTransformer( bbox.getCoordinateSystem().getWrappedCRS() );
                 }
             } catch ( IllegalArgumentException e ) {

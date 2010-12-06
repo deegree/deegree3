@@ -40,6 +40,7 @@ import static java.util.Arrays.asList;
 
 import java.util.Random;
 
+import org.deegree.cs.CRS;
 import org.deegree.geometry.GeometryFactory;
 import org.deegree.geometry.primitive.Curve;
 import org.deegree.geometry.primitive.Point;
@@ -60,6 +61,8 @@ public class GeometryGenerator {
 
     private static final GeometryFactory fac = new GeometryFactory();
 
+    private static final CRS mapcs = new CRS( "CRS:1" );
+
     /**
      * @param max
      *            generate points between offx/offy and max + offx/offy
@@ -71,13 +74,14 @@ public class GeometryGenerator {
         double x = rnd.nextDouble() * max + offx;
         double y = rnd.nextDouble() * max + offy;
         Point[] ps = {
-                      fac.createPoint( null, new double[] { x, y }, null ),
+                      fac.createPoint( null, new double[] { x, y }, mapcs ),
                       fac.createPoint( null, new double[] { rnd.nextDouble() * max + offx,
-                                                           rnd.nextDouble() * max + offy }, null ),
+                                                           rnd.nextDouble() * max + offy }, mapcs ),
                       fac.createPoint( null, new double[] { rnd.nextDouble() * max + offx,
-                                                           rnd.nextDouble() * max + offy }, null ),
-                      fac.createPoint( null, new double[] { x, y }, null ) };
-        return fac.createPolygon( null, null, fac.createLinearRing( null, null, new PointsList( asList( ps ) ) ), null );
+                                                           rnd.nextDouble() * max + offy }, mapcs ),
+                      fac.createPoint( null, new double[] { x, y }, mapcs ) };
+        return fac.createPolygon( null, mapcs, fac.createLinearRing( null, mapcs, new PointsList( asList( ps ) ) ),
+                                  null );
     }
 
     /**
@@ -89,7 +93,7 @@ public class GeometryGenerator {
     public static Point randomPoint( int max, double offx, double offy ) {
         double x = rnd.nextDouble() * max + offx;
         double y = rnd.nextDouble() * max + offy;
-        return fac.createPoint( null, new double[] { x, y }, null );
+        return fac.createPoint( null, new double[] { x, y }, mapcs );
     }
 
     /**
@@ -103,15 +107,16 @@ public class GeometryGenerator {
         double x = rnd.nextDouble() * half + offx;
         double y = rnd.nextDouble() * half + offy;
         Point[] ps = {
-                      fac.createPoint( null, new double[] { x, y }, null ),
+                      fac.createPoint( null, new double[] { x, y }, mapcs ),
                       fac.createPoint( null, new double[] { rnd.nextDouble() * half + half + offx,
-                                                           rnd.nextDouble() * half + offy }, null ),
+                                                           rnd.nextDouble() * half + offy }, mapcs ),
                       fac.createPoint( null, new double[] { rnd.nextDouble() * half + half + offx,
-                                                           rnd.nextDouble() * half + half + offy }, null ),
+                                                           rnd.nextDouble() * half + half + offy }, mapcs ),
                       fac.createPoint( null, new double[] { rnd.nextDouble() * half + offx,
-                                                           rnd.nextDouble() * half + half + offy }, null ),
-                      fac.createPoint( null, new double[] { x, y }, null ) };
-        return fac.createPolygon( null, null, fac.createLinearRing( null, null, new PointsList( asList( ps ) ) ), null );
+                                                           rnd.nextDouble() * half + half + offy }, mapcs ),
+                      fac.createPoint( null, new double[] { x, y }, mapcs ) };
+        return fac.createPolygon( null, mapcs, fac.createLinearRing( null, mapcs, new PointsList( asList( ps ) ) ),
+                                  null );
     }
 
     /**
@@ -125,14 +130,14 @@ public class GeometryGenerator {
         double x = rnd.nextDouble() * half + offx;
         double y = rnd.nextDouble() * half + offy;
         Point[] ps = {
-                      fac.createPoint( null, new double[] { x, y }, null ),
+                      fac.createPoint( null, new double[] { x, y }, mapcs ),
                       fac.createPoint( null, new double[] { rnd.nextDouble() * half + half + offx,
-                                                           rnd.nextDouble() * half + offy }, null ),
+                                                           rnd.nextDouble() * half + offy }, mapcs ),
                       fac.createPoint( null, new double[] { rnd.nextDouble() * half + half + offx,
-                                                           rnd.nextDouble() * half + half + offy }, null ),
+                                                           rnd.nextDouble() * half + half + offy }, mapcs ),
                       fac.createPoint( null, new double[] { rnd.nextDouble() * half + offx,
-                                                           rnd.nextDouble() * half + half + offy }, null ) };
-        return fac.createLineString( null, null, new PointsList( asList( ps ) ) );
+                                                           rnd.nextDouble() * half + half + offy }, mapcs ) };
+        return fac.createLineString( null, mapcs, new PointsList( asList( ps ) ) );
     }
 
 }
