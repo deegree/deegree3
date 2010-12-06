@@ -1143,22 +1143,55 @@ public class SHPReader {
             }
         }
 
+        // untested...
+        if ( m && mlen == length ) {
+            for ( int i = 0; i < numParts; ++i ) {
+                double[] coords = res[i].getAsArray();
+                int num = coords.length / coordDim;
+                int newDim = coordDim - 1;
+                double[] newCoords = new double[num * newDim];
+                for ( int j = 0; j < num; ++j ) {
+                    int baseidx = j * newDim;
+                    int basesrcidx = j * coordDim;
+                    for ( int k = 0; k < newDim; ++k ) {
+                        newCoords[k + baseidx] = coords[k + basesrcidx];
+                    }
+                }
+                res[i] = new PackedPoints( crs, newCoords, newDim );
+            }
+            return res;
+        }
+
         if ( ( m && mlen != length ) || ( z && zlen != length ) ) {
             skipBytes( buffer, 16 );
             for ( int i = 0; i < numParts; ++i ) {
+                boolean allNodata = true;
                 double[] coords = res[i].getAsArray();
+                double val;
                 for ( int j = 0; j < res[i].size(); ++j ) {
-                    coords[3 + j * coordDim] = buffer.getDouble();
+                    val = buffer.getDouble();
+                    if ( val > -10E38 ) {
+                        allNodata = false;
+                    }
+                    coords[3 + j * coordDim] = val;
+                }
+                if ( allNodata ) {
+                    int newDim = coordDim - 1;
+                    double[] newCoords = new double[newDim * res[i].size()];
+                    for ( int j = 0; j < res[i].size(); ++j ) {
+                        int baseidx = j * newDim;
+                        int basesrcidx = j * coordDim;
+                        for ( int k = 0; k < newDim; ++k ) {
+                            newCoords[k + baseidx] = coords[k + basesrcidx];
+                        }
+                    }
+                    res[i] = new PackedPoints( crs, newCoords, newDim );
                 }
             }
         }
 
         return res;
     }
-
-    // private int getUnsigned( ByteBuffer buffer ) {
-    // return buffer.get() & 0xff;
-    // }
 
     /**
      * Closes the underlying file channel and random access file.
