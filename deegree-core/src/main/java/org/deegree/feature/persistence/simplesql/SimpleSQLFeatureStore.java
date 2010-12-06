@@ -38,7 +38,6 @@ package org.deegree.feature.persistence.simplesql;
 import static java.lang.System.currentTimeMillis;
 import static org.deegree.commons.jdbc.ConnectionManager.getConnection;
 import static org.deegree.cs.CRS.EPSG_4326;
-import static org.deegree.feature.persistence.query.Query.QueryHint.HINT_LOOSE_BBOX;
 import static org.deegree.feature.persistence.query.Query.QueryHint.HINT_SCALE;
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -301,7 +300,11 @@ public class SimpleSQLFeatureStore implements FeatureStore {
 
             for ( final Query q : queries ) {
 
-                Envelope bbox = (Envelope) q.getHint( HINT_LOOSE_BBOX );
+                Envelope bbox = q.getPrefilterBBox();
+                if ( bbox == null ) {
+                    bbox = getEnvelope( ftName );
+                }
+
                 Object scaleHint = q.getHint( HINT_SCALE );
                 int scale = -1;
                 if ( scaleHint != null ) {
