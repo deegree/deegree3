@@ -120,17 +120,26 @@ public class SextanteProcesslet implements Processlet {
             SextanteWPSProcess.logAlgorithm( alg );
             // LOG.info( "SET INPUT PARAMETERS" );
 
-            // sets all input values
-            setInputValues( alg, in );
+            SextanteFeatureCollectionStreamer sfcs = new SextanteFeatureCollectionStreamer( alg, in, out );
 
-            // LOG.info( "GET OUTPUT PARAMETERS" );
+            if ( sfcs.containFeatureCollectionInput() && false) { // feature collection = streaming
+                LOG.info( "STREAMING" );
+                sfcs.execute();
+            } else { // no feature collection = no streaming
+                
+                LOG.info( "NO STREAMING" );
+                
+                // sets all input values
+                setInputValues( alg, in );
 
-            // execute the algorithm
-            alg.execute( null, new OutputFactoryExt() );
+                // LOG.info( "GET OUTPUT PARAMETERS" );
 
-            // write all output values
-            writeResult( alg, out );
+                // execute the algorithm
+                alg.execute( null, new OutputFactoryExt() );
 
+                // write all output values
+                writeResult( alg, out );
+            }
         } catch ( NullParameterValueException e ) { // false input data
             e.printStackTrace();
             String message = "'" + SextanteWPSProcess.createIdentifier( alg ) + "' algorithm found false input data. ("
@@ -778,9 +787,8 @@ public class SextanteProcesslet implements Processlet {
             else
                 schemaPrefix = "http://www.opengis.net/gml ";
 
-
-            SchemaLocationXMLStreamWriter sw = new SchemaLocationXMLStreamWriter( gmlOutput.getXMLStreamWriter(), schemaPrefix
-                                                                                                    + gmlSchema );
+            SchemaLocationXMLStreamWriter sw = new SchemaLocationXMLStreamWriter( gmlOutput.getXMLStreamWriter(),
+                                                                                  schemaPrefix + gmlSchema );
             sw.setPrefix( "gml", GMLNS );
             GMLStreamWriter gmlWriter = GMLOutputFactory.createGMLStreamWriter( gmlVersion, sw );
 

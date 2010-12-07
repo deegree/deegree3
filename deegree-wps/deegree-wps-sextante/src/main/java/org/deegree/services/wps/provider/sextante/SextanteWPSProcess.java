@@ -150,7 +150,7 @@ public class SextanteWPSProcess implements WPSProcess {
     }
 
     // processlet
-    private final SextanteProcesslet processlet;
+    private final Processlet processlet;
 
     // process description
     private final ProcessDefinition description;
