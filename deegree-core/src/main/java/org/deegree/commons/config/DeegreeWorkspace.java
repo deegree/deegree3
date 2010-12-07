@@ -49,6 +49,7 @@ import org.deegree.coverage.persistence.CoverageBuilderManager;
 import org.deegree.feature.persistence.FeatureStoreManager;
 import org.deegree.metadata.persistence.MetadataStoreManager;
 import org.deegree.observation.persistence.ObservationStoreManager;
+import org.deegree.remoteows.RemoteOWSManager;
 import org.deegree.rendering.r3d.multiresolution.persistence.BatchedMTStoreManager;
 import org.deegree.rendering.r3d.persistence.RenderableStoreManager;
 import org.slf4j.Logger;
@@ -93,6 +94,8 @@ public class DeegreeWorkspace {
     private CoverageBuilderManager coverageBuilderManager;
 
     private Actions currentAction = Actions.NotInited;
+
+    private RemoteOWSManager remoteOWSManager;
 
     private DeegreeWorkspace( String workspaceName, File dir ) throws IOException {
         this.dir = new File( dir.getCanonicalPath() );
@@ -203,6 +206,16 @@ public class DeegreeWorkspace {
     }
 
     /**
+     * @return the remote ows manager
+     */
+    public synchronized RemoteOWSManager getRemoteOWSManager() {
+        if ( remoteOWSManager == null ) {
+            remoteOWSManager = new RemoteOWSManager();
+        }
+        return remoteOWSManager;
+    }
+
+    /**
      * Initializes all managed configurations.
      */
     public synchronized void initAll() {
@@ -210,6 +223,7 @@ public class DeegreeWorkspace {
         ProxyUtils.setupProxyParameters( new File( dir, "proxy.xml" ) );
         currentAction = Actions.ConnectionManager;
         ConnectionManager.init( new File( dir, "jdbc" ) );
+        getRemoteOWSManager().init( new File( dir, "datasources" + separator + "remoteows" ) );
         currentAction = Actions.ObservationManager;
         ObservationStoreManager.init( new File( dir, "datasources" + separator + "observation" ) );
         currentAction = Actions.FeatureManager;

@@ -1,0 +1,50 @@
+<?xml version="1.0"?>
+<schema xmlns="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.deegree.org/datasource/remoteows/wms"
+  xmlns:wms="http://www.deegree.org/datasource/remoteows/wms" elementFormDefault="qualified" xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
+  jaxb:version="2.1">
+
+  <annotation>
+    <appinfo>
+      <jaxb:schemaBindings>
+        <jaxb:package name="org.deegree.remoteows.wms.jaxb" />
+      </jaxb:schemaBindings>
+    </appinfo>
+  </annotation>
+
+  <element name="RemoteWMSStore">
+    <complexType>
+      <sequence>
+        <element name="CapabilitiesDocumentLocation">
+          <complexType>
+            <attribute name="location" type="string" use="required" />
+          </complexType>
+        </element>
+        <element name="DefaultRequestOptions" type="wms:RequestOptionsType" minOccurs="0" />
+        <element name="RequestedLayer" type="wms:RequestedLayerType" minOccurs="0" maxOccurs="unbounded" />
+      </sequence>
+      <attribute name="configVersion" use="required" fixed="3.1.0" />
+    </complexType>
+  </element>
+
+  <complexType name="RequestedLayerType">
+    <sequence>
+      <element name="Name" type="string" />
+      <element name="RequestOptions" type="wms:RequestOptionsType" minOccurs="0" />
+    </sequence>
+  </complexType>
+
+  <complexType name="RequestOptionsType">
+    <sequence>
+      <element name="ImageFormat">
+        <complexType>
+          <simpleContent>
+            <extension base="string">
+              <attribute name="transparent" type="boolean" default="true" />
+            </extension>
+          </simpleContent>
+        </complexType>
+      </element>
+    </sequence>
+  </complexType>
+
+</schema>
