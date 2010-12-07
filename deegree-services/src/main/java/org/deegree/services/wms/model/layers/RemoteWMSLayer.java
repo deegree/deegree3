@@ -36,41 +36,16 @@
 
 package org.deegree.services.wms.model.layers;
 
-import static org.deegree.commons.utils.math.MathUtils.round;
-import static org.deegree.coverage.raster.geom.RasterGeoReference.OriginLocation.OUTER;
-import static org.deegree.coverage.raster.interpolation.InterpolationType.BILINEAR;
-import static org.deegree.coverage.raster.utils.RasterFactory.rasterDataFromImage;
-import static org.deegree.coverage.raster.utils.RasterFactory.rasterDataToImage;
-import static org.deegree.cs.coordinatesystems.GeographicCRS.WGS84;
-import static org.deegree.services.i18n.Messages.get;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
-import java.io.IOException;
-import java.net.MalformedURLException;
 import java.util.LinkedList;
-import java.util.List;
-import java.util.TreeSet;
 
 import org.deegree.commons.utils.Pair;
 import org.deegree.commons.utils.log.LoggingNotes;
-import org.deegree.coverage.raster.RasterTransformer;
-import org.deegree.coverage.raster.SimpleRaster;
-import org.deegree.coverage.raster.data.RasterData;
-import org.deegree.coverage.raster.data.nio.ByteBufferRasterData;
-import org.deegree.coverage.raster.geom.RasterGeoReference;
-import org.deegree.cs.CRS;
-import org.deegree.cs.exceptions.TransformationException;
-import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.feature.FeatureCollection;
 import org.deegree.feature.types.FeatureType;
-import org.deegree.geometry.Envelope;
-import org.deegree.geometry.GeometryTransformer;
-import org.deegree.protocol.wms.Utils;
-import org.deegree.protocol.wms.client.WMSClient111;
-import org.deegree.protocol.wms.raster.WMSRaster;
-import org.deegree.protocol.wms.raster.WMSReader;
 import org.deegree.remoteows.RemoteOWSManager;
 import org.deegree.remoteows.RemoteOWSStore;
 import org.deegree.remoteows.wms.RemoteWMSStore;
@@ -95,13 +70,9 @@ public class RemoteWMSLayer extends Layer {
 
     private static final Logger LOG = getLogger( RemoteWMSLayer.class );
 
-    private WMSClient111 client;
+    private boolean available = true;
 
-    private List<String> layers;
-
-    private TreeSet<String> commonSRS;
-
-    private String defaultSRS;
+    private RemoteWMSStore wmsStore;
 
     /**
      * Construct one with RemoteWMSStoreId in jaxb bean.
@@ -116,86 +87,21 @@ public class RemoteWMSLayer extends Layer {
 
         RemoteOWSManager manager = OGCFrontController.getServiceWorkspace().getRemoteOWSManager();
         RemoteOWSStore store = manager.get( layer.getRemoteWMSStoreId() );
-        System.out.println(store);
-        System.out.println(layer.getRemoteWMSStoreId());
+
         if ( !( store instanceof RemoteWMSStore ) ) {
-            throw new IllegalArgumentException( "Layer configuration did not resolve to a remote WMS store." );
+            available = false;
+            LOG.warn( "Layer configuration for {} did not resolve to a remote WMS store.",
+                      layer.getName() == null ? layer.getTitle() : layer.getName() );
+            return;
         }
 
-        RemoteWMSStore wmsStore = (RemoteWMSStore) store;
+        wmsStore = (RemoteWMSStore) store;
 
-        client = wmsStore.getClient();
-        layers = wmsStore.getLayers();
-
-        setBbox( client.getLatLonBoundingBox( layers ) );
-
-        commonSRS = null;
-        for ( String l : layers ) {
-            if ( commonSRS == null ) {
-                commonSRS = new TreeSet<String>( client.getCoordinateSystems( l ) );
-            } else {
-                commonSRS.retainAll( client.getCoordinateSystems( l ) );
-            }
-        }
-        LOG.debug( "Requestable srs common to all cascaded layers: " + commonSRS );
-
-        defaultSRS = defaultSRS == null ? "EPSG:4326" : defaultSRS;
-        if ( !commonSRS.contains( defaultSRS ) ) {
-            defaultSRS = commonSRS.first();
-            // try to set the srs to the first advertised srs, as WGS84 is unlikely to be correct
-            try {
-                Envelope bbox = client.getBoundingBox( defaultSRS, layers );
-                GeometryTransformer trans = new GeometryTransformer( WGS84 );
-                setBbox( trans.transform( bbox ) );
-            } catch ( UnknownCRSException e ) {
-                LOG.warn( "The coordinate system " + defaultSRS + " could not be found." );
-            } catch ( TransformationException e ) {
-                LOG.debug( get( "WMS.CANNOT_TRANSFORM_BBOX_FROM", defaultSRS ) );
-            }
-        }
     }
 
-    /**
-     * @param layer
-     * @param parent
-     * @param raster
-     * @throws MalformedURLException
-     */
-    public RemoteWMSLayer( MapService service, AbstractLayerType layer, Layer parent, WMSRaster raster )
-                            throws MalformedURLException {
-        super( service, layer, parent );
-        // hack to extract configuration from the raster for now
-        WMSReader reader = (WMSReader) ( (ByteBufferRasterData) raster.getRasterData() ).getReader();
-        client = reader.getClient();
-        layers = reader.getLayers();
-
-        setBbox( client.getLatLonBoundingBox( layers ) );
-
-        commonSRS = null;
-        for ( String l : layers ) {
-            if ( commonSRS == null ) {
-                commonSRS = new TreeSet<String>( client.getCoordinateSystems( l ) );
-            } else {
-                commonSRS.retainAll( client.getCoordinateSystems( l ) );
-            }
-        }
-        LOG.debug( "Requestable srs common to all cascaded layers: " + commonSRS );
-
-        defaultSRS = reader.getCRS().getName();
-        defaultSRS = defaultSRS == null ? "EPSG:4326" : defaultSRS;
-        if ( !commonSRS.contains( defaultSRS ) ) {
-            defaultSRS = commonSRS.first();
-            // try to set the srs to the first advertised srs, as WGS84 is unlikely to be correct
-            try {
-                Envelope bbox = client.getBoundingBox( defaultSRS, layers );
-                GeometryTransformer trans = new GeometryTransformer( WGS84 );
-                setBbox( trans.transform( bbox ) );
-            } catch ( UnknownCRSException e ) {
-                LOG.warn( "The coordinate system " + defaultSRS + " could not be found." );
-            } catch ( TransformationException e ) {
-                LOG.debug( get( "WMS.CANNOT_TRANSFORM_BBOX_FROM", defaultSRS ) );
-            }
-        }
+    @Override
+    public boolean isAvailable() {
+        return available;
     }
 
     @Override
@@ -209,72 +115,10 @@ public class RemoteWMSLayer extends Layer {
 
     @Override
     public Pair<BufferedImage, LinkedList<String>> paintMap( GetMap gm, Style style ) {
-        CRS origCrs = gm.getCoordinateSystem();
-        String origCrsName = origCrs.getName();
-        try {
-
-            if ( commonSRS.contains( origCrsName ) ) {
-                LOG.trace( "Will request remote layer(s) in " + origCrsName );
-                LinkedList<String> errors = new LinkedList<String>();
-                Pair<BufferedImage, String> pair = client.getMap( layers, gm.getWidth(), gm.getHeight(),
-                                                                  gm.getBoundingBox(), origCrs, gm.getFormat(),
-                                                                  gm.getTransparent(), false, 100, true, errors );
-                LOG.debug( "Parameters that have been replaced for this request: " + errors );
-                if ( pair.first == null ) {
-                    LOG.debug( "Error from remote WMS: " + pair.second );
-                }
-                return new Pair<BufferedImage, LinkedList<String>>( pair.first, new LinkedList<String>() );
-            }
-
-            // case: transform the bbox and image
-            LOG.trace( "Will request remote layer(s) in " + defaultSRS + " and transform to " + origCrsName );
-
-            GeometryTransformer trans = new GeometryTransformer( defaultSRS );
-            Envelope bbox = (Envelope) trans.transform( gm.getBoundingBox(), origCrs.getWrappedCRS() );
-
-            RasterTransformer rtrans = new RasterTransformer( origCrs.getWrappedCRS() );
-
-            int width = gm.getWidth();
-            int height = gm.getHeight();
-            double scale = Utils.calcScaleWMS111( width, height, gm.getBoundingBox(),
-                                                  gm.getCoordinateSystem().getWrappedCRS() );
-            double newScale = Utils.calcScaleWMS111( width, height, bbox, new CRS( defaultSRS ).getWrappedCRS() );
-            double ratio = scale / newScale;
-
-            width = round( ratio * width );
-            height = round( ratio * height );
-
-            LinkedList<String> errors = new LinkedList<String>();
-            Pair<BufferedImage, String> pair = client.getMap( layers, width, height, bbox, new CRS( defaultSRS ),
-                                                              gm.getFormat(), gm.getTransparent(), false, -1, true,
-                                                              errors );
-
-            LOG.debug( "Parameters that have been replaced for this request: " + errors );
-            if ( pair.first == null ) {
-                LOG.debug( "Error from remote WMS: " + pair.second );
-                return null;
-            }
-
-            RasterGeoReference env = RasterGeoReference.create( OUTER, bbox, width, height );
-            RasterData data = rasterDataFromImage( pair.first );
-            SimpleRaster raster = new SimpleRaster( data, bbox, env );
-
-            SimpleRaster transformed = rtrans.transform( raster, gm.getBoundingBox(), gm.getWidth(), gm.getHeight(),
-                                                         BILINEAR ).getAsSimpleRaster();
-
-            return new Pair<BufferedImage, LinkedList<String>>( rasterDataToImage( transformed.getRasterData() ),
-                                                                new LinkedList<String>() );
-
-        } catch ( IOException e ) {
-            LOG.info( get( "WMS.IO_ERROR_REMOTE_WMS", e.getLocalizedMessage() ) );
-            LOG.trace( "Stack trace", e );
-        } catch ( UnknownCRSException e ) {
-            LOG.warn( "Unable to find crs, this is not supposed to happen. Trace: " + e );
-        } catch ( TransformationException e ) {
-            LOG.warn( "Unable to transform bbox from " + origCrsName + " to " + defaultSRS );
-        }
-
-        return null;
+        // TODO handle multiple resulting images
+        return new Pair<BufferedImage, LinkedList<String>>( wmsStore.getMap( gm.getBoundingBox(), gm.getWidth(),
+                                                                             gm.getHeight() ).get( 0 ),
+                                                            new LinkedList<String>() );
     }
 
     @Override

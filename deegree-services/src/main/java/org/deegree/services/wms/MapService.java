@@ -363,9 +363,7 @@ public class MapService {
                     return null;
                 }
             } else if ( aLayer.getCoverageStoreId() != null ) {
-                res = RasterLayer.createRasterLayer( this, aLayer, parent );
-                // res = new RasterLayer( aLayer, parent );
-                // }else if(aLayer.getWMSStoreId() != null){
+                res = new RasterLayer( this, aLayer, parent );
             } else if ( aLayer.getRemoteWMSStoreId() != null ) {
                 res = new RemoteWMSLayer( this, aLayer, parent );
             } else {

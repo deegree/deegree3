@@ -47,7 +47,6 @@ import static org.slf4j.LoggerFactory.getLogger;
 
 import java.awt.Graphics2D;
 import java.math.BigDecimal;
-import java.net.MalformedURLException;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -88,7 +87,6 @@ import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.GeometryTransformer;
 import org.deegree.protocol.wms.dims.DimensionInterval;
-import org.deegree.protocol.wms.raster.WMSRaster;
 import org.deegree.rendering.r2d.Java2DRasterRenderer;
 import org.deegree.rendering.r2d.se.unevaluated.Style;
 import org.deegree.rendering.r2d.styling.RasterStyling;
@@ -158,21 +156,6 @@ public class RasterLayer extends Layer {
         List<PropertyType> pts = new LinkedList<PropertyType>();
         pts.add( new SimplePropertyType( new QName( "value" ), 0, -1, DECIMAL, false, false, null ) );
         featureType = new GenericFeatureType( new QName( "data" ), pts, false );
-    }
-
-    /**
-     * @param lay
-     * @param parent
-     * @return a RasterLayer or WMSLayer, depending on what's configured
-     * @throws MalformedURLException
-     */
-    public static Layer createRasterLayer( MapService service, AbstractLayerType lay, Layer parent )
-                            throws MalformedURLException {
-        AbstractCoverage cov = getServiceWorkspace().getCoverageBuilderManager().get( lay.getCoverageStoreId() );
-        if ( cov instanceof WMSRaster ) {
-            return new RemoteWMSLayer( service, lay, parent, (WMSRaster) cov );
-        }
-        return new RasterLayer( service, lay, parent );
     }
 
     @Override
