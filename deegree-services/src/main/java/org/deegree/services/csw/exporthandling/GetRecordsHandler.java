@@ -70,6 +70,7 @@ import org.deegree.metadata.persistence.MetadataQuery;
 import org.deegree.metadata.persistence.MetadataResultSet;
 import org.deegree.metadata.persistence.MetadataStore;
 import org.deegree.metadata.persistence.MetadataStoreException;
+import org.deegree.protocol.csw.CSWConstants;
 import org.deegree.protocol.csw.CSWConstants.OutputSchema;
 import org.deegree.protocol.csw.CSWConstants.ResultType;
 import org.deegree.services.controller.exception.ControllerException;
@@ -260,6 +261,9 @@ public class GetRecordsHandler {
         int returnedRecords = 0;
         int counter = 0;
 
+        boolean isResultTypeHits = getRec.getResultType().name().equals( CSWConstants.ResultType.hits.name() ) ? true
+                                                                                                              : false;
+
         MetadataResultSet storeSet = null;
 
         try {
@@ -276,19 +280,15 @@ public class GetRecordsHandler {
 
                 try {
                     countRows = rec.countMetadata( query );
-                    if ( getRec.getResultType().name().equals( ResultType.results.name() ) ) {
+                    returnedRecords = 0;
+                    nextRecord = 1;
+                    if ( !isResultTypeHits ) {
                         storeSet = rec.getRecords( query );
+                        returnedRecords = computeReturned( countRows, getRec.getMaxRecords(), getRec.getStartPosition() );
+                        nextRecord = computeNext( countRows, getRec.getMaxRecords(), getRec.getStartPosition() );
                     }
                 } catch ( MetadataStoreException e ) {
                     throw new OWSException( e.getMessage(), OWSException.INVALID_PARAMETER_VALUE );
-                }
-
-                if ( countRows > getRec.getMaxRecords() ) {
-                    nextRecord = getRec.getMaxRecords() + 1;
-                    returnedRecords = getRec.getMaxRecords();
-                } else {
-                    nextRecord = 0;
-                    returnedRecords = countRows - getRec.getStartPosition() + 1;
                 }
 
                 writer.writeAttribute( "elementSet", elementSetValue );
@@ -338,6 +338,46 @@ public class GetRecordsHandler {
         }
 
         writer.writeEndElement();// SearchResult
+
+    }
+
+    /**
+     * Computes the header-attribute <i>nextRecord</i>
+     * 
+     * @param countRows
+     * @param max
+     * @param start
+     * @return a number for <i>nextRecord</i>
+     */
+    private int computeNext( int countRows, int max, int start ) {
+        int comPre = countRows - ( start + max );
+        if ( comPre < 0 ) {
+            return 0;
+        } else {
+            return start + max;
+        }
+
+    }
+
+    /**
+     * Computes the header-attribute <i>numberOfRecordsReturned</i>
+     * 
+     * @param countRows
+     * @param max
+     * @param start
+     * @return a number for <i>numberOfRecordsReturned</i>
+     */
+    private int computeReturned( int countRows, int max, int start ) {
+        int comPre = countRows - ( start + max );
+        if ( comPre >= 0 ) {
+            return max;
+        } else {
+            int comp = countRows - ( start - 1 );
+            if ( comp < 0 ) {
+                comp = 0;
+            }
+            return comp;
+        }
 
     }
 
