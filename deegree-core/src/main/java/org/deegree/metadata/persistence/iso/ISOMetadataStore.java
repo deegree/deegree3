@@ -397,21 +397,14 @@ public class ISOMetadataStore implements MetadataStore {
             stmt = conn.prepareStatement( select.toString() );
             LOG.debug( "select RecordById statement: " + stmt );
 
-            if ( stmt != null ) {
-                int i = 1;
-                for ( String identifier : idList ) {
-                    stmt.setString( i, identifier );
-                    LOG.debug( "identifier: " + identifier );
-                    LOG.debug( "" + stmt );
-                    i++;
-                }
-                rs = stmt.executeQuery();
-
-            } else {
-                String msg = Messages.getMessage( "NO_IDENTIFIER_FOUND", idList );
-                LOG.info( msg );
-                throw new MetadataStoreException( msg );
+            int i = 1;
+            for ( String identifier : idList ) {
+                stmt.setString( i, identifier );
+                LOG.debug( "identifier: " + identifier );
+                LOG.debug( "" + stmt );
+                i++;
             }
+            rs = stmt.executeQuery();
 
         } catch ( Throwable t ) {
             JDBCUtils.close( rs, stmt, conn, LOG );

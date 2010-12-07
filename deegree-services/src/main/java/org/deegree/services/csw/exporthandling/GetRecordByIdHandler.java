@@ -42,6 +42,7 @@ import static org.deegree.protocol.csw.CSWConstants.VERSION_202;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.List;
 
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
@@ -50,7 +51,7 @@ import org.deegree.commons.tom.ows.Version;
 import org.deegree.commons.utils.kvp.InvalidParameterValueException;
 import org.deegree.commons.xml.stax.SchemaLocationXMLStreamWriter;
 import org.deegree.commons.xml.stax.TrimmingXMLStreamWriter;
-import org.deegree.metadata.DCRecord;
+import org.deegree.metadata.MetadataRecord;
 import org.deegree.metadata.persistence.MetadataResultSet;
 import org.deegree.metadata.persistence.MetadataStore;
 import org.deegree.metadata.persistence.MetadataStoreException;
@@ -60,6 +61,7 @@ import org.deegree.services.controller.ows.OWSException;
 import org.deegree.services.controller.utils.HttpResponseBuffer;
 import org.deegree.services.csw.CSWService;
 import org.deegree.services.csw.getrecordbyid.GetRecordById;
+import org.deegree.services.i18n.Messages;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -123,7 +125,6 @@ public class GetRecordByIdHandler {
             LOG.debug( e.getMessage() );
             throw new InvalidParameterValueException( e.getMessage() );
         } catch ( MetadataStoreException e ) {
-            LOG.debug( e.getMessage() );
             throw new OWSException( e.getMessage(), ControllerException.NO_APPLICABLE_CODE );
         }
         xmlWriter.flush();
@@ -169,11 +170,15 @@ public class GetRecordByIdHandler {
         writer.writeStartElement( CSW_202_NS, "GetRecordByIdResponse" );
 
         MetadataResultSet resultSet = null;
+        int countIdList = 0;
+        List<String> requestedIdList = getRecBI.getRequestedIds();
+        int requestedIds = requestedIdList.size();
+        MetadataRecord recordResponse = null;
         try {
             if ( service.getMetadataStore() != null ) {
                 try {
                     for ( MetadataStore rec : service.getMetadataStore() ) {
-                        resultSet = rec.getRecordById( getRecBI.getRequestedIds() );
+                        resultSet = rec.getRecordById( requestedIdList );
                     }
                 } catch ( MetadataStoreException e ) {
                     throw new OWSException( e.getMessage(), OWSException.INVALID_PARAMETER_VALUE, "outputFormat" );
@@ -181,12 +186,21 @@ public class GetRecordByIdHandler {
             }
 
             while ( resultSet.next() ) {
+                countIdList++;
                 if ( getRecBI.getOutputSchema().equals( OutputSchema.determineOutputSchema( OutputSchema.ISO_19115 ) ) ) {
-                    resultSet.getRecord().serialize( writer, getRecBI.getElementSetName() );
+                    recordResponse = resultSet.getRecord();
+                    recordResponse.serialize( writer, getRecBI.getElementSetName() );
+                    removeId( recordResponse, requestedIdList );
                 } else {
-                    DCRecord dc = resultSet.getRecord().toDublinCore();
-                    dc.serialize( writer, getRecBI.getElementSetName() );
+                    recordResponse = resultSet.getRecord();
+                    recordResponse.toDublinCore().serialize( writer, getRecBI.getElementSetName() );
+                    removeId( recordResponse, requestedIdList );
                 }
+            }
+            if ( countIdList != requestedIds ) {
+                String msg = Messages.getMessage( "CSW_NO_IDENTIFIER_FOUND", requestedIdList );
+                LOG.debug( msg );
+                throw new MetadataStoreException( msg );
             }
         } finally {
             if ( resultSet != null ) {
@@ -217,6 +231,29 @@ public class GetRecordByIdHandler {
         XMLStreamWriter fWriter = new TrimmingXMLStreamWriter( writer.getXMLWriter() );
         return new SchemaLocationXMLStreamWriter( fWriter, schemaLocation );
         // return new TrimmingXMLStreamWriter( writer.getXMLWriter() );
+    }
+
+    /**
+     * Removes the identifier of the requested ID list to have a proper subset of the {@link MetadataRecord}s that are
+     * not found in backend.
+     * 
+     * @param recordResponse
+     *            the {@link MetadataRecord} that is found in backend, not <Code>null</Code>.
+     * @param requestedIdList
+     *            the list of requested identifier, not <Code>null</Code>.
+     * @throws MetadataStoreException
+     */
+    private void removeId( MetadataRecord recordResponse, List<String> requestedIdList )
+                            throws MetadataStoreException {
+        try {
+            String identifier = recordResponse.getIdentifier()[0];
+            requestedIdList.remove( identifier );
+        } catch ( NullPointerException e ) {
+            // should not occur!
+            String msg = "There is no Identifier available...whyever!";
+            LOG.error( msg );
+            throw new MetadataStoreException( msg );
+        }
     }
 
 }
