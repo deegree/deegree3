@@ -130,6 +130,7 @@ import org.deegree.services.wms.model.layers.EmptyLayer;
 import org.deegree.services.wms.model.layers.FeatureLayer;
 import org.deegree.services.wms.model.layers.Layer;
 import org.deegree.services.wms.model.layers.RasterLayer;
+import org.deegree.services.wms.model.layers.RemoteWMSLayer;
 import org.slf4j.Logger;
 
 /**
@@ -365,6 +366,8 @@ public class MapService {
                 res = RasterLayer.createRasterLayer( this, aLayer, parent );
                 // res = new RasterLayer( aLayer, parent );
                 // }else if(aLayer.getWMSStoreId() != null){
+            } else if ( aLayer.getRemoteWMSStoreId() != null ) {
+                res = new RemoteWMSLayer( this, aLayer, parent );
             } else {
                 res = new EmptyLayer( this, aLayer, parent );
             }
@@ -858,7 +861,8 @@ public class MapService {
             req.setHeight( size.second );
         }
 
-        boolean originalSize = req.getWidth() == size.first && req.getHeight() == size.second && renderer.getLegendOptions().isDefault();
+        boolean originalSize = req.getWidth() == size.first && req.getHeight() == size.second
+                               && renderer.getLegendOptions().isDefault();
 
         HashMap<String, BufferedImage> legendMap = legends.get( style );
         if ( originalSize && legendMap != null && legendMap.get( req.getFormat() ) != null ) {

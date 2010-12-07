@@ -71,7 +71,11 @@ import org.deegree.protocol.wms.Utils;
 import org.deegree.protocol.wms.client.WMSClient111;
 import org.deegree.protocol.wms.raster.WMSRaster;
 import org.deegree.protocol.wms.raster.WMSReader;
+import org.deegree.remoteows.RemoteOWSManager;
+import org.deegree.remoteows.RemoteOWSStore;
+import org.deegree.remoteows.wms.RemoteWMSStore;
 import org.deegree.rendering.r2d.se.unevaluated.Style;
+import org.deegree.services.controller.OGCFrontController;
 import org.deegree.services.jaxb.wms.AbstractLayerType;
 import org.deegree.services.wms.MapService;
 import org.deegree.services.wms.controller.ops.GetFeatureInfo;
@@ -98,6 +102,58 @@ public class RemoteWMSLayer extends Layer {
     private TreeSet<String> commonSRS;
 
     private String defaultSRS;
+
+    /**
+     * Construct one with RemoteWMSStoreId in jaxb bean.
+     * 
+     * @param service
+     * @param layer
+     *            must have a remotewmsstoreid set and resolving to a remote wms store.
+     * @param parent
+     */
+    public RemoteWMSLayer( MapService service, AbstractLayerType layer, Layer parent ) {
+        super( service, layer, parent );
+
+        RemoteOWSManager manager = OGCFrontController.getServiceWorkspace().getRemoteOWSManager();
+        RemoteOWSStore store = manager.get( layer.getRemoteWMSStoreId() );
+        System.out.println(store);
+        System.out.println(layer.getRemoteWMSStoreId());
+        if ( !( store instanceof RemoteWMSStore ) ) {
+            throw new IllegalArgumentException( "Layer configuration did not resolve to a remote WMS store." );
+        }
+
+        RemoteWMSStore wmsStore = (RemoteWMSStore) store;
+
+        client = wmsStore.getClient();
+        layers = wmsStore.getLayers();
+
+        setBbox( client.getLatLonBoundingBox( layers ) );
+
+        commonSRS = null;
+        for ( String l : layers ) {
+            if ( commonSRS == null ) {
+                commonSRS = new TreeSet<String>( client.getCoordinateSystems( l ) );
+            } else {
+                commonSRS.retainAll( client.getCoordinateSystems( l ) );
+            }
+        }
+        LOG.debug( "Requestable srs common to all cascaded layers: " + commonSRS );
+
+        defaultSRS = defaultSRS == null ? "EPSG:4326" : defaultSRS;
+        if ( !commonSRS.contains( defaultSRS ) ) {
+            defaultSRS = commonSRS.first();
+            // try to set the srs to the first advertised srs, as WGS84 is unlikely to be correct
+            try {
+                Envelope bbox = client.getBoundingBox( defaultSRS, layers );
+                GeometryTransformer trans = new GeometryTransformer( WGS84 );
+                setBbox( trans.transform( bbox ) );
+            } catch ( UnknownCRSException e ) {
+                LOG.warn( "The coordinate system " + defaultSRS + " could not be found." );
+            } catch ( TransformationException e ) {
+                LOG.debug( get( "WMS.CANNOT_TRANSFORM_BBOX_FROM", defaultSRS ) );
+            }
+        }
+    }
 
     /**
      * @param layer

@@ -159,7 +159,7 @@
         <element name="ServiceConfiguration" type="wms:ServiceConfigurationType" />
         <element name="FeatureInfoFormats" minOccurs="0" type="wms:FeatureInfoFormatsType" />
       </sequence>
-      <attribute name="configVersion" use="required" fixed="3.0.0" />
+      <attribute name="configVersion" use="required" type="wms:ConfigVersionType" />
     </complexType>
   </element>
 
@@ -253,6 +253,7 @@
           <choice minOccurs="0">
             <element name="FeatureStoreId" type="string" />
             <element name="CoverageStoreId" type="string" />
+            <element name="RemoteWMSStoreId" type="string" />
           </choice>
           <element name="DirectStyle" type="wms:DirectStyleType" minOccurs="0" maxOccurs="unbounded" />
           <element name="SLDStyle" type="wms:SLDStyleType" minOccurs="0" maxOccurs="unbounded" />
@@ -284,6 +285,7 @@
             <choice minOccurs="0">
               <element name="FeatureStoreId" type="string" />
               <element name="CoverageStoreId" type="string" />
+              <element name="RemoteWMSStoreId" type="string" />
             </choice>
             <element name="DirectStyle" type="wms:DirectStyleType" minOccurs="0" maxOccurs="unbounded" />
             <element name="SLDStyle" type="wms:SLDStyleType" minOccurs="0" maxOccurs="unbounded" />
@@ -314,6 +316,7 @@
             <choice minOccurs="0">
               <element name="FeatureStoreId" type="string" />
               <element name="CoverageStoreId" type="string" />
+              <element name="RemoteWMSStoreId" type="string" />
             </choice>
             <element name="DirectStyle" type="wms:DirectStyleType" minOccurs="0" maxOccurs="unbounded" />
             <element name="SLDStyle" type="wms:SLDStyleType" minOccurs="0" maxOccurs="unbounded" />
@@ -340,6 +343,7 @@
             <choice minOccurs="0">
               <element name="FeatureStoreId" type="string" />
               <element name="CoverageStoreId" type="string" />
+              <element name="RemoteWMSStoreId" type="string" />
             </choice>
             <element name="DirectStyle" type="wms:DirectStyleType" minOccurs="0" maxOccurs="unbounded" />
             <element name="SLDStyle" type="wms:SLDStyleType" minOccurs="0" maxOccurs="unbounded" />
@@ -437,5 +441,12 @@
       </extension>
     </simpleContent>
   </complexType>
+
+  <simpleType name="ConfigVersionType">
+    <restriction base="string">
+      <enumeration value="3.0.0" />
+      <enumeration value="3.1.0" />
+    </restriction>
+  </simpleType>
 
 </schema>
