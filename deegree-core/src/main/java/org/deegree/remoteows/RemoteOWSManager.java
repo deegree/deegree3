@@ -107,7 +107,6 @@ public class RemoteOWSManager {
             }
             try {
                 RemoteOWSStore store = create( conf.toURI().toURL() );
-                System.out.println("[ut" + storeId);
                 stores.put( storeId, store );
             } catch ( Exception e ) {
                 LOG.warn( "Error creating remote OWS store: {}", e.getMessage() );
@@ -122,7 +121,6 @@ public class RemoteOWSManager {
      * @return null, if namespace could not be determined, or no fitting provider was found
      */
     public RemoteOWSStore create( URL configURL ) {
-
         String namespace = null;
         try {
             XMLStreamReader xmlReader = XMLInputFactory.newInstance().createXMLStreamReader( configURL.openStream() );

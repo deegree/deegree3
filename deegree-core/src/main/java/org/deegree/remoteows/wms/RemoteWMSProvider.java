@@ -40,8 +40,10 @@ import static org.slf4j.LoggerFactory.getLogger;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import javax.xml.bind.JAXBException;
 
@@ -49,7 +51,9 @@ import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.protocol.wms.client.WMSClient111;
 import org.deegree.remoteows.RemoteOWSProvider;
 import org.deegree.remoteows.RemoteOWSStore;
+import org.deegree.remoteows.wms.RemoteWMSStore.LayerOptions;
 import org.deegree.remoteows.wms.jaxb.RemoteWMSStore;
+import org.deegree.remoteows.wms.jaxb.RequestOptionsType;
 import org.deegree.remoteows.wms.jaxb.RequestedLayerType;
 import org.slf4j.Logger;
 
@@ -87,6 +91,19 @@ public class RemoteWMSProvider implements RemoteOWSProvider {
         return "WMS";
     }
 
+    private static void fillLayerOptions( LayerOptions opts, RequestOptionsType ropts ) {
+        if ( ropts != null ) {
+            if ( ropts.getImageFormat() != null ) {
+                opts.imageFormat = ropts.getImageFormat().getValue();
+                opts.transparent = ropts.getImageFormat().isTransparent();
+            }
+            if ( ropts.getDefaultCRS() != null ) {
+                opts.defaultCRS = ropts.getDefaultCRS().getValue();
+                opts.alwaysUseDefaultCRS = ropts.getDefaultCRS().isUseAlways();
+            }
+        }
+    }
+
     public RemoteOWSStore create( URL config ) {
         try {
             RemoteWMSStore cfg = (RemoteWMSStore) unmarshall( CONFIG_JAXB_PACKAGE, CONFIG_SCHEMA, config );
@@ -94,19 +111,28 @@ public class RemoteWMSProvider implements RemoteOWSProvider {
             resolver.setSystemId( config.toString() );
             URL capas = resolver.resolve( cfg.getCapabilitiesDocumentLocation().getLocation() );
             WMSClient111 client = new WMSClient111( capas );
-            List<String> layers = new LinkedList<String>();
+            Map<String, LayerOptions> layers = new HashMap<String, LayerOptions>();
+            List<String> layerOrder = new LinkedList<String>();
+            RequestOptionsType def = cfg.getDefaultRequestOptions();
             for ( RequestedLayerType rlt : cfg.getRequestedLayer() ) {
-                layers.add( rlt.getName() );
+                layerOrder.add( rlt.getName() );
+                LayerOptions opts = new LayerOptions();
+                fillLayerOptions( opts, def );
+                fillLayerOptions( opts, rlt.getRequestOptions() );
+                layers.put( rlt.getName(), opts );
             }
-            return new org.deegree.remoteows.wms.RemoteWMSStore( client, layers );
+            return new org.deegree.remoteows.wms.RemoteWMSStore( client, layers, layerOrder );
         } catch ( JAXBException e ) {
-            LOG.warn( "Remote OWS store config at '{}' could not be parsed: {}", config, e.getLocalizedMessage() );
+            e.printStackTrace();
+            LOG.warn( "Remote WMS store config at '{}' could not be parsed: {}", config, e.getLocalizedMessage() );
             LOG.trace( "Stack trace:", e );
         } catch ( ClassCastException e ) {
-            LOG.warn( "Remote OWS store config at '{}' could not be parsed: {}", config, e.getLocalizedMessage() );
+            e.printStackTrace();
+            LOG.warn( "Remote WMS store config at '{}' could not be parsed: {}", config, e.getLocalizedMessage() );
             LOG.trace( "Stack trace:", e );
         } catch ( MalformedURLException e ) {
-            LOG.warn( "Remote OWS store config at '{}' could not be parsed: {}", config, e.getLocalizedMessage() );
+            e.printStackTrace();
+            LOG.warn( "Remote WMS store config at '{}' could not be parsed: {}", config, e.getLocalizedMessage() );
             LOG.trace( "Stack trace:", e );
         }
         return null;

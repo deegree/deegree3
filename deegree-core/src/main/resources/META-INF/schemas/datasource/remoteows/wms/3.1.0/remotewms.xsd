@@ -35,11 +35,20 @@
 
   <complexType name="RequestOptionsType">
     <sequence>
-      <element name="ImageFormat">
+      <element name="ImageFormat" minOccurs="0">
         <complexType>
           <simpleContent>
             <extension base="string">
-              <attribute name="transparent" type="boolean" default="true" />
+              <attribute name="transparent" type="boolean" default="true" use="optional" />
+            </extension>
+          </simpleContent>
+        </complexType>
+      </element>
+      <element name="DefaultCRS" minOccurs="0">
+        <complexType>
+          <simpleContent>
+            <extension base="string">
+              <attribute name="useAlways" type="boolean" default="false" use="optional" />
             </extension>
           </simpleContent>
         </complexType>
