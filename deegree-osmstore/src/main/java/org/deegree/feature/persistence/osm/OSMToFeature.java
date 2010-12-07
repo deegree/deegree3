@@ -1,6 +1,9 @@
 package org.deegree.feature.persistence.osm;
 
 import static org.deegree.cs.CRS.EPSG_4326;
+import static org.deegree.feature.types.property.GeometryPropertyType.CoordinateDimension.DIM_2;
+import static org.deegree.feature.types.property.GeometryPropertyType.GeometryType.POINT;
+import static org.deegree.feature.types.property.ValueRepresentation.BOTH;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -15,12 +18,19 @@ import javax.xml.stream.XMLStreamReader;
 
 import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.feature.Feature;
+import org.deegree.feature.FeatureCollection;
+import org.deegree.feature.GenericFeatureCollection;
 import org.deegree.feature.property.GenericProperty;
 import org.deegree.feature.property.Property;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.feature.types.property.GeometryPropertyType;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.GeometryFactory;
+import org.deegree.geometry.points.Points;
+import org.deegree.geometry.primitive.Point;
+import org.deegree.geometry.standard.points.PointsList;
+
+
 
 public class OSMToFeature {
 
@@ -34,23 +44,37 @@ public class OSMToFeature {
 
     String firstndref = "";
 
+    private ArrayList<Point> nds = new ArrayList<Point>();
+
     private static FeatureType nodeFt;
 
     private static FeatureType wayFt;
 
     private static FeatureType relationFt;
 
-    private static GeometryPropertyType nodeGeomPt;
+    private static final String OSM_NS = "http://www.deegree.org/osm";
+    
+    private static GeometryPropertyType nodeGeomPt , wayGeomPt;
+    
+    List<Property> pointProps = new ArrayList<Property>();
 
     GeometryFactory geomFac = new GeometryFactory();
-
-    public Feature getNodes()
-                            throws XMLStreamException, FileNotFoundException {
+    
+    OSMToFeature() {
+        
+        nodeGeomPt = new GeometryPropertyType( new QName( OSM_NS, "geometry", "osm" ), 1, 1, false, false, null, POINT,
+                                               DIM_2, BOTH );
+        
+    }
+    
+    public FeatureCollection  getNodes()
+                            throws XMLStreamException, FileNotFoundException  {
 
         InputStream in = new FileInputStream( "/home/goerke/Desktop/map.osm" );
         XMLInputFactory inputFactory = XMLInputFactory.newInstance();
         XMLStreamReader parser = inputFactory.createXMLStreamReader( in );
-
+        
+        List<Feature> nodes = new ArrayList<Feature>();
         while ( parser.hasNext() ) {
             int event = parser.next();
 
@@ -64,138 +88,137 @@ public class OSMToFeature {
                 latstr = parser.getAttributeValue( 1 ).toString();
                 lonstr = parser.getAttributeValue( 2 ).toString();
                 lat = Double.parseDouble( latstr );
-                lon = Double.parseDouble( latstr );
+                lon = Double.parseDouble( lonstr );
 
-                List<Property> props = new ArrayList<Property>();
+                List<Property> pointProps = new ArrayList<Property>();
                 Geometry geom = geomFac.createPoint( null, lon, lat, EPSG_4326 );
-                props.add( new GenericProperty( nodeGeomPt, nodeGeomPt.getName(), geom ) );
+                geom.toString();
+                System.out.println("Geometry: "+ geom);
+                pointProps.add( new GenericProperty( nodeGeomPt, nodeGeomPt.getName(), geom ) );
                 parser.next();
                 parser.next();
                 parser.next();
-                this.getTags();
-
-                Feature node = nodeFt.newFeature( fid, props, null );
-                return node;
+               // this.getTags();
+                System.out.println(pointProps.toString());
+                Feature node = nodeFt.newFeature( fid, pointProps, null );
+                nodes.add( node );
+                pointProps.clear();
+                
             }
         }
-        return null;
+       return new GenericFeatureCollection( null, nodes );
     }
-    
-    public void getWays() throws XMLStreamException, FileNotFoundException
-    {
-        
+
+    public void getWays()
+                            throws XMLStreamException, FileNotFoundException {
+
         InputStream in = new FileInputStream( "/home/goerke/Desktop/map.osm" );
         XMLInputFactory inputFactory = XMLInputFactory.newInstance();
         XMLStreamReader parser = inputFactory.createXMLStreamReader( in );
-        
         while ( parser.hasNext() ) {
-             int event = parser.next();
-             
-             if ( event == XMLStreamReader.START_ELEMENT && "way".equals( parser.getLocalName())) {
-                 wayref = parser.getAttributeValue( 0 ).toString();
-                 String wayid;
-                 wayid = "way" + parser.getAttributeValue( 0 ).toString();
+            int event = parser.next();
 
-                 
-                 parser.nextTag();
-                 //this.askLineOrPolygon();
-                 while ( event == XMLStreamReader.START_ELEMENT && "nd".equals(parser.getLocalName()) )
-                 {
-                     ndref = parser.getAttributeValue( 0 );
-                     this.getWayNodes();
-                     parser.nextTag();
-                     parser.nextTag();
-                     
-                 }
-                 List<Property> props = new ArrayList<Property>();
-                 Geometry geom = geomFac.createLineString( null, crs, points )
-                 props.add( new GenericProperty( wayGeomPt, wayGeomPt.getName(), geom ) );
-                 this.getTags();
-                 
-                 }
-                 
-            
-             }
-            
-        
+            if ( event == XMLStreamReader.START_ELEMENT && "way".equals( parser.getLocalName() ) ) {
+                wayref = parser.getAttributeValue( 0 ).toString();
+                String wayid;
+                wayid = "way" + parser.getAttributeValue( 0 ).toString();
+                String fid = wayid;
+                
+                parser.nextTag();
+                while ( event == XMLStreamReader.START_ELEMENT && "nd".equals( parser.getLocalName() ) ) {
+                    ndref = parser.getAttributeValue( 0 );
+                    
+                    this.getWayNodes();
+                    parser.nextTag();
+                    parser.nextTag();
+
+                }
+                List<Property> props = new ArrayList<Property>();
+                Points points = new PointsList( nds );
+                Geometry geom = geomFac.createLineString( null, org.deegree.cs.CRS.EPSG_4326, points );
+                props.add( new GenericProperty( wayGeomPt, wayGeomPt.getName(), geom ) );
+                nds.clear();
+                this.getTags();
+                
+                Feature way = wayFt.newFeature( fid, props, null );
+                
+            }
+
+        }
+
     }
-    
-    public void getWayNodes() throws XMLStreamException, FileNotFoundException{
-        
-        
+
+    public void getWayNodes()
+                            throws XMLStreamException, FileNotFoundException {
+
         InputStream in = new FileInputStream( "/home/goerke/Desktop/map.osm" );
         XMLInputFactory inputFactory = XMLInputFactory.newInstance();
         XMLStreamReader parser = inputFactory.createXMLStreamReader( in );
-        
-        while ( parser.hasNext() ) {
-             int event = parser.next();
-             while ( event == XMLStreamReader.START_ELEMENT && "node".equals( parser.getLocalName()) && ndref.equals(parser.getAttributeValue(0)) ) {
-                    String lat, lon;
-                    int countnd = 0;
-                    if ( event == XMLStreamReader.START_ELEMENT && "node".equals( parser.getLocalName()) && ndref.equals(parser.getAttributeValue(0)) ) {
-                        countnd++;
-                       System.out.println("BEGINLOCATION: "+ parser.getLocation());
-                      
-                    for (int i =0; i <= countnd; i++ ){
 
-                       
-                       lat = parser.getAttributeValue( 1 ).toString();
-                       lon = parser.getAttributeValue( 2 ).toString();
-                       writer.writeStartElement( "gml", "pos", "http://www.opengis.net/gml" );
-                       writer.writeCharacters( lon + " " + lat );
-                       writer.writeEndElement();
-                       System.out.println("");
-                       System.out.println("LOCATIONEND: "+ parser.getLocation());
-                       parser.nextTag();
-                       parser.nextTag();
-                    }
-                    
-                    }
-                    
-                    
-                    
-                    
-                    
+        while ( parser.hasNext() ) {
+            int event = parser.next();
+            while ( event == XMLStreamReader.START_ELEMENT && "node".equals( parser.getLocalName() )
+                    && ndref.equals( parser.getAttributeValue( 0 ) ) ) {
+                String latstr, lonstr;
+                double lat = 0, lon = 0;
                 
-                
-             }
+                int countnd = 0;
+                if ( event == XMLStreamReader.START_ELEMENT && "node".equals( parser.getLocalName() )
+                     && ndref.equals( parser.getAttributeValue( 0 ) ) ) {
+                    countnd++;
+                    System.out.println( "BEGINLOCATION: " + parser.getLocation() );
+
+                    for ( int i = 0; i < countnd; i++ ) {
+
+                        latstr = parser.getAttributeValue( 1 ).toString();
+                        lonstr = parser.getAttributeValue( 2 ).toString();
+                        lat = Double.parseDouble( latstr );
+                        lon = Double.parseDouble( lonstr );
+                        Point point;
+                        point = geomFac.createPoint( null, lon, lat, org.deegree.cs.CRS.EPSG_4326 );
+                        nds.add( point );
+                        System.out.println( "" );
+                        System.out.println( "LOCATIONEND: " + parser.getLocation() );
+                        parser.nextTag();
+                        parser.nextTag();
+                    }
+
+                }
+
+            }
         }
     }
-    
-    public Feature getRelations()
-                    throws XMLStreamException, FileNotFoundException {
-        
+
+    public void getRelations()
+                            throws XMLStreamException, FileNotFoundException {
+
         InputStream in = new FileInputStream( "/home/goerke/Desktop/map.osm" );
         XMLInputFactory inputFactory = XMLInputFactory.newInstance();
         XMLStreamReader parser = inputFactory.createXMLStreamReader( in );
-        
         while ( parser.hasNext() ) {
-             int event = parser.next();
-             List<Property> props = new ArrayList<Property>();
-             if ( event == XMLStreamReader.START_ELEMENT && "relation".equals(parser.getLocalName())) {
-                 String relationid;
-                 relationref = parser.getAttributeValue( 0 ).toString();
-                 relationid = "relation" + parser.getAttributeValue( 0 ).toString();
-                 String fid = relationid;
-                 parser.nextTag();
-                 while ( event == XMLStreamReader.START_ELEMENT && "member".equals(parser.getLocalName()) )
-                 { 
-                   String ref = parser.getAttributeValue(1).toString();
-                   String type = parser.getAttributeValue(0).toString();
-                   QName member = new QName("osm", "member", "http://www.deegree.org/osm");
-                   
-                   props.add( new GenericProperty( relationFt.getPropertyDeclaration(member), member, null ) );
-                   parser.nextTag(); 
-                   parser.nextTag();
-                  
-                   
-                 }
-                 this.getTags();
-                 Feature Relation = relationFt.newFeature( fid, props, null );
-                 return Relation;
-             }
-         }    
-        return null;
+            int event = parser.next();
+            List<Property> props = new ArrayList<Property>();
+            if ( event == XMLStreamReader.START_ELEMENT && "relation".equals( parser.getLocalName() ) ) {
+                String relationid;
+                relationref = parser.getAttributeValue( 0 ).toString();
+                relationid = "relation" + parser.getAttributeValue( 0 ).toString();
+                String fid = relationid;
+                parser.nextTag();
+                while ( event == XMLStreamReader.START_ELEMENT && "member".equals( parser.getLocalName() ) ) {
+                    String ref = parser.getAttributeValue( 1 ).toString();
+                    String type = parser.getAttributeValue( 0 ).toString();
+                    QName member = new QName( "osm", "member", "http://www.deegree.org/osm" );
+
+                    props.add( new GenericProperty( relationFt.getPropertyDeclaration( member ), member, new PrimitiveValue(type+ref )) );
+                    parser.nextTag();
+                    parser.nextTag();
+
+                }
+                this.getTags();
+                Feature relation = relationFt.newFeature( fid, props, null );
+                
+            }
+        }
     }
 
     public void getTags()
@@ -226,7 +249,7 @@ public class OSMToFeature {
          */
 
         };
-        InputStream in = new FileInputStream( "C:/Dokumente und Einstellungen/Besitzer/Desktop/map.osm" );
+        InputStream in = new FileInputStream( "/home/goerke/Desktop/map.osm" );
         XMLInputFactory inputFactory = XMLInputFactory.newInstance();
         XMLStreamReader parser = inputFactory.createXMLStreamReader( in );
         while ( parser.hasNext() ) {
@@ -236,6 +259,38 @@ public class OSMToFeature {
                  && noderef.equals( parser.getAttributeValue( 0 ) ) ) {
                 parser.nextTag();
                 parser.nextTag();
+                while ( event == XMLStreamReader.START_ELEMENT && "tag".equals( parser.getLocalName() ) ) {
+                    String keystr, value;
+                    keystr = parser.getAttributeValue( 0 ).toString();
+                    for ( int index = 0; index < tagNames.length; index++ ) {
+                        if ( keystr == tagNames[index] ) {
+                            QName key = new QName( "osm", keystr, "http://www.deegree.org/osm" );
+                            value = parser.getAttributeValue( 1 ).toString();
+                            pointProps.add( new GenericProperty( nodeFt.getPropertyDeclaration( key ), key,
+                                                            new PrimitiveValue( value ) ) );
+
+                        }
+                    }
+
+                    parser.nextTag();
+                    parser.nextTag();
+
+                }
+            }
+            while ( event == XMLStreamReader.START_ELEMENT && "relation".equals( parser.getLocalName() )
+                    && relationref.equals( parser.getAttributeValue( 0 ) ) ) {
+                parser.nextTag();
+                int countref = 0;
+                for ( int i = 0; i <= countref; i++ ) {
+                    if ( event == XMLStreamReader.START_ELEMENT && "member".equals( parser.getLocalName() ) ) {
+                        countref++;
+                    } else {
+                        break;
+                    }
+                    parser.nextTag();
+
+                }
+
                 while ( event == XMLStreamReader.START_ELEMENT && "tag".equals( parser.getLocalName() ) ) {
                     String keystr, value;
                     keystr = parser.getAttributeValue( 0 ).toString();
@@ -255,40 +310,6 @@ public class OSMToFeature {
 
                 }
             }
-            while ( event == XMLStreamReader.START_ELEMENT && "relation".equals( parser.getLocalName()) && relationref.equals(parser.getAttributeValue(0))) {
-                parser.nextTag();
-                int countref =0;
-                for(int i = 0; i <= countref; i++){
-                  if ( event == XMLStreamReader.START_ELEMENT && "member".equals( parser.getLocalName() ) ) {
-                  countref++;
-                  }
-                  else {
-                      break;
-                  }
-                  parser.nextTag();
-                  
-                }
-               
-           
-                while ( event == XMLStreamReader.START_ELEMENT && "tag".equals( parser.getLocalName() ) ) {
-                    String keystr, value;
-                    keystr = parser.getAttributeValue( 0 ).toString();
-                    for ( int index = 0; index < tagNames.length; index++ ) {
-                        if ( keystr == tagNames[index] ) {
-                            QName key = new QName( "osm", keystr, "http://www.deegree.org/osm" );
-                            value = parser.getAttributeValue( 1 ).toString();
-                            List<Property> props = new ArrayList<Property>();
-                            props.add( new GenericProperty( nodeFt.getPropertyDeclaration( key ), key,
-                                                            new PrimitiveValue( value ) ) );
-
-                        }
-                    }
-
-                    parser.nextTag();
-                    parser.nextTag();
-
-                }
-             }
         }
     }
 }
