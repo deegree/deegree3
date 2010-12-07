@@ -292,7 +292,7 @@ public class ISOMetadataStore implements MetadataStore {
      *            - the JDBCConnection
      * @throws MetadataStoreException
      */
-    public int countMetadata( MetadataQuery recOpt )
+    public int countMetadata( MetadataQuery query )
                             throws MetadataStoreException {
         String resultTypeName = "hits";
         LOG.info( Messages.getMessage( "INFO_EXEC", "do " + resultTypeName + " on getRecords" ) );
@@ -300,11 +300,16 @@ public class ISOMetadataStore implements MetadataStore {
         PreparedStatement ps = null;
         int countRows = 0;
         Connection conn = null;
-
+        PostGISWhereBuilder builder = null;
+        PostGISMappingsISODC mapping = new PostGISMappingsISODC();
         try {
 
             conn = ConnectionManager.getConnection( connectionId );
-            ps = conn.prepareStatement( new ExecuteStatements().executeCounting().toString() );
+            builder = new PostGISWhereBuilder( mapping, (OperatorFilter) query.getFilter(), query.getSorting(),
+                                               useLegacyPredicates );
+
+            ps = new ExecuteStatements().executeCounting( query, builder, conn );
+            LOG.info( ps.toString() );
             rs = ps.executeQuery();
             rs.next();
             countRows = rs.getInt( 1 );

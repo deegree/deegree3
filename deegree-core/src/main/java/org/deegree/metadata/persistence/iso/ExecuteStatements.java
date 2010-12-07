@@ -45,10 +45,8 @@ import java.sql.Timestamp;
 import java.sql.Types;
 import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
-import org.apache.axiom.om.OMElement;
 import org.deegree.commons.utils.JDBCUtils;
 import org.deegree.commons.utils.time.DateUtils;
 import org.deegree.feature.persistence.mapping.DBField;
@@ -91,8 +89,8 @@ public class ExecuteStatements implements GenericDatabaseExecution {
         try {
 
             StringBuilder header = getPreparedStatementDatasetIDs( null, true, builder );
-            preparedStatement = getPSBody( null, connection, builder, header );
-
+            getPSBody( null, connection, builder, header );
+            preparedStatement = connection.prepareStatement( header.toString() );
             int i = 1;
             if ( builder.getWhere() != null ) {
                 for ( SQLLiteral o : builder.getWhere().getLiterals() ) {
@@ -184,8 +182,8 @@ public class ExecuteStatements implements GenericDatabaseExecution {
 
     }
 
-    private PreparedStatement getPSBody( MetadataQuery query, Connection connection, PostGISWhereBuilder builder,
-                                         StringBuilder getDatasetIDs )
+    private void getPSBody( MetadataQuery query, Connection connection, PostGISWhereBuilder builder,
+                            StringBuilder getDatasetIDs )
                             throws MetadataStoreException {
 
         String rootTableAlias = builder.getAliasManager().getRootTableAlias();
@@ -225,156 +223,6 @@ public class ExecuteStatements implements GenericDatabaseExecution {
             getDatasetIDs.append( builder.getOrderBy().getSQL() );
         }
 
-        if ( query != null ) {
-            getDatasetIDs.append( " OFFSET " ).append( Integer.toString( query.getStartPosition() - 1 ) );
-        }
-
-        try {
-            return connection.prepareStatement( getDatasetIDs.toString() );
-        } catch ( SQLException e ) {
-            String msg = Messages.getMessage( "ERROR_SQL", getDatasetIDs.toString(), e.getMessage() );
-            LOG.debug( msg );
-            throw new MetadataStoreException( msg );
-        }
-    }
-
-    private void updatePrecondition( PostGISMappingsISODC mapping, PostGISWhereBuilder builder ) {
-
-        // for ( QName propName : mapping.getPropToTableAndCol().keySet() ) {
-        // String nsURI = propName.getNamespaceURI();
-        // String prefix = propName.getPrefix();
-        // QName analysedQName = new QName( nsURI, "", prefix );
-        // qNameSet.add( analysedQName );
-        // }
-        //
-        // for ( QName qName : typeNames.keySet() ) {
-        // if ( qName.equals( qNameSet.iterator().next() ) ) {
-        // formatNumber = typeNames.get( qName );
-        // }
-        // }
-        //
-        // PreparedStatement str = getRequestedIDStatement( formatTypeInISORecordStore.get( ReturnableElement.full ),
-        // gdds, formatNumber, builder );
-        //
-        // ResultSet rsUpdatableDatasets = str.executeQuery();
-        // List<Integer> updatableDatasets = new ArrayList<Integer>();
-        // while ( rsUpdatableDatasets.next() ) {
-        // updatableDatasets.add( rsUpdatableDatasets.getInt( 1 ) );
-        //
-        // }
-        // str.close();
-        // rsUpdatableDatasets.close();
-        //
-        // if ( updatableDatasets.size() != 0 ) {
-        // PreparedStatement stmt = null;
-        // StringBuilder stringBuilder = new StringBuilder();
-        // stringBuilder.append( "SELECT " ).append( formatTypeInISORecordStore.get( ReturnableElement.full ) );
-        // stringBuilder.append( '.' ).append( data );
-        // stringBuilder.append( " FROM " ).append( formatTypeInISORecordStore.get( ReturnableElement.full ) );
-        // stringBuilder.append( " WHERE " ).append( formatTypeInISORecordStore.get( ReturnableElement.full ) );
-        // stringBuilder.append( '.' ).append( format );
-        // stringBuilder.append( " = 2 AND " ).append( formatTypeInISORecordStore.get( ReturnableElement.full ) );
-        // stringBuilder.append( '.' ).append( fk_datasets ).append( " = ?;" );
-        // for ( int i : updatableDatasets ) {
-        //
-        // stmt = conn.prepareStatement( stringBuilder.toString() );
-        // stmt.setObject( 1, i );
-        // ResultSet rsGetStoredFullRecordXML = stmt.executeQuery();
-        //
-        // while ( rsGetStoredFullRecordXML.next() ) {
-        // for ( MetadataProperty recProp : upd.getRecordProperty() ) {
-        //
-        // PropertyNameMapping propMapping = mapping.getMapping( recProp.getPropertyName(), null );
-        //
-        // Object obje = mapping.getPostGISValue( (Literal<?>) recProp.getReplacementValue(),
-        // recProp.getPropertyName() );
-        //
-        // // creating an OMElement read from backend byteData
-        // InputStream in = rsGetStoredFullRecordXML.getBinaryStream( 1 );
-        // XMLStreamReader reader = XMLInputFactory.newInstance().createXMLStreamReader( in );
-        //
-        // OMElement elementBuiltFromDB = new StAXOMBuilder( reader ).getDocument().getOMDocumentElement();
-        //
-        // OMElement omElement = recursiveElementKnotUpdate( elementBuiltFromDB,
-        // elementBuiltFromDB.getChildElements(),
-        // propMapping.getTargetField().getColumn(),
-        // obje.toString() );
-        //
-        // QName localName = omElement.getQName();
-        //
-        // ExecuteStatements executeStatements = new ExecuteStatements();
-        //
-        // if ( localName.equals( new QName( CSW_202_NS, "Record", CSW_PREFIX ) )
-        // || localName.equals( new QName( CSW_202_NS, "Record", "" ) ) ) {
-        //
-        // executeStatements.executeUpdateStatement( conn, affectedIds,
-        // new ISOQPParsing().parseAPDC( omElement ) );
-        //
-        // } else {
-        //
-        // // executeStatements.executeUpdateStatement(
-        // // conn,
-        // // affectedIds,
-        // // new ISOQPParsing().parseAPISO(
-        // // fi,
-        // // ic,
-        // // ci,
-        // // omElement,
-        // // true ) );
-        //
-        // }
-        //
-        // }
-        // }
-        // stmt.close();
-        // rsGetStoredFullRecordXML.close();
-        //
-        // }
-        // }
-
-    }
-
-    /**
-     * This method replaces the text content of an elementknot.
-     * <p>
-     * TODO this is suitable for updates which affect an elementknot that has just one child. <br>
-     * BUG - if there a more childs like in the "keyword"-elementknot.
-     * 
-     * @param element
-     *            where to start in the OMTree
-     * @param childElements
-     *            as an Iterator above all the childElements of the element
-     * @param searchForLocalName
-     *            is the name that is searched for. This is the elementknot thats content should be updated.
-     * @param newContent
-     *            is the new content that should be updated
-     * @return OMElement
-     */
-    private OMElement recursiveElementKnotUpdate( OMElement element, Iterator childElements, String searchForLocalName,
-                                                  String newContent ) {
-
-        Iterator it = element.getChildrenWithLocalName( searchForLocalName );
-
-        if ( it.hasNext() ) {
-            OMElement u = null;
-            while ( it.hasNext() ) {
-                u = (OMElement) it.next();
-                LOG.debug( "rec: " + u.toString() );
-                u.getFirstElement().setText( newContent );
-                LOG.debug( "rec2: " + u.toString() );
-            }
-            return element;
-
-        }
-        while ( childElements.hasNext() ) {
-            OMElement elem = (OMElement) childElements.next();
-
-            recursiveElementKnotUpdate( elem, elem.getChildElements(), searchForLocalName, newContent );
-
-        }
-
-        return element;
-
     }
 
     @Override
@@ -387,7 +235,12 @@ public class ExecuteStatements implements GenericDatabaseExecution {
             LOG.debug( Messages.getMessage( "INFO_EXEC", "getRecords-statement" ) );
 
             StringBuilder header = getPreparedStatementDatasetIDs( query, false, builder );
-            preparedStatement = getPSBody( query, conn, builder, header );
+            getPSBody( query, conn, builder, header );
+
+            if ( query != null ) {
+                header.append( " OFFSET " ).append( Integer.toString( query.getStartPosition() - 1 ) );
+            }
+            preparedStatement = conn.prepareStatement( header.toString() );
 
             int i = 1;
             if ( builder.getWhere() != null ) {
@@ -428,17 +281,56 @@ public class ExecuteStatements implements GenericDatabaseExecution {
 
     }
 
-    public StringBuilder executeCounting() {
-        LOG.info( "new Counting" );
-        StringBuilder getDatasetIDs = new StringBuilder();
-        getDatasetIDs.append( "SELECT " );
-        getDatasetIDs.append( "COUNT( " );
-        getDatasetIDs.append( rf );
-        getDatasetIDs.append( ')' );
-        getDatasetIDs.append( " FROM " );
-        getDatasetIDs.append( databaseTable );
+    public PreparedStatement executeCounting( MetadataQuery query, PostGISWhereBuilder builder, Connection conn )
+                            throws MetadataStoreException {
+        PreparedStatement preparedStatement = null;
+        java.util.Date date = null;
+        try {
 
-        return getDatasetIDs;
+            LOG.info( "new Counting" );
+            StringBuilder getDatasetIDs = new StringBuilder();
+            getDatasetIDs.append( "SELECT " );
+            getDatasetIDs.append( "COUNT( " );
+            getDatasetIDs.append( rf );
+            getDatasetIDs.append( ')' );
+            getPSBody( query, conn, builder, getDatasetIDs );
+            preparedStatement = conn.prepareStatement( getDatasetIDs.toString() );
+            int i = 1;
+            if ( builder.getWhere() != null ) {
+                for ( SQLLiteral o : builder.getWhere().getLiterals() ) {
+                    if ( o.getSQLType() == Types.TIMESTAMP ) {
+                        date = DateUtils.parseISO8601Date( o.getValue().toString() );
+                        Timestamp d = new Timestamp( date.getTime() );
+                        preparedStatement.setTimestamp( i++, d );
+                    } else if ( o.getSQLType() == Types.BOOLEAN ) {
+                        String bool = o.getValue().toString();
+                        boolean b = false;
+                        if ( bool.equals( "true" ) ) {
+                            b = true;
+                        }
+                        preparedStatement.setBoolean( i++, b );
+                    } else {
+                        preparedStatement.setObject( i++, o.getValue() );
+                    }
+                }
+            }
+            if ( builder.getOrderBy() != null ) {
+                for ( SQLLiteral o : builder.getOrderBy().getLiterals() ) {
+                    preparedStatement.setObject( i++, o.getValue() );
+                }
+            }
+
+            LOG.debug( preparedStatement.toString() );
+        } catch ( SQLException e ) {
+            String msg = Messages.getMessage( "ERROR_SQL", preparedStatement.toString(), e.getMessage() );
+            LOG.debug( msg );
+            throw new MetadataStoreException( msg );
+        } catch ( ParseException e ) {
+            String msg = Messages.getMessage( "ERROR_PARSING", date, e.getMessage() );
+            LOG.debug( msg );
+            throw new MetadataStoreException( msg );
+        }
+        return preparedStatement;
     }
 
 }
