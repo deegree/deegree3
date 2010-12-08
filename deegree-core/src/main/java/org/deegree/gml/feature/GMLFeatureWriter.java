@@ -39,6 +39,7 @@ package org.deegree.gml.feature;
 import static javax.xml.XMLConstants.NULL_NS_URI;
 import static org.deegree.commons.xml.CommonNamespaces.XLNNS;
 import static org.deegree.commons.xml.CommonNamespaces.XSINS;
+import static org.deegree.feature.types.property.ValueRepresentation.REMOTE;
 import static org.deegree.gml.GMLVersion.GML_2;
 import static org.deegree.protocol.wfs.WFSConstants.WFS_NS;
 
@@ -85,31 +86,25 @@ import org.deegree.feature.types.property.MeasurePropertyType;
 import org.deegree.feature.types.property.PropertyType;
 import org.deegree.feature.types.property.SimplePropertyType;
 import org.deegree.feature.types.property.StringOrRefPropertyType;
-import org.deegree.feature.types.property.ValueRepresentation;
 import org.deegree.filter.expression.PropertyName;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.io.CoordinateFormatter;
+import org.deegree.geometry.io.DecimalCoordinateFormatter;
 import org.deegree.gml.GMLObject;
 import org.deegree.gml.GMLReference;
 import org.deegree.gml.GMLVersion;
 import org.deegree.gml.geometry.GML2GeometryWriter;
 import org.deegree.gml.geometry.GML3GeometryWriter;
 import org.deegree.gml.geometry.GMLGeometryWriter;
-import org.deegree.gml.utils.AdditionalObjectHandler;
 import org.deegree.protocol.wfs.getfeature.XLinkPropertyName;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * Stream-based writer for GML-encoded features and feature collections.
- * <p>
- * <h4>XLink handling</h4>
- * This implementation is aware of xlinks (local as well as remote) and allows to set the
- * <code>traverseXlinkDepth</code> parameter, which controls the number of feature levels that are exported inline.
- * </p>
  * 
- * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
+ * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
  * @author last edited by: $Author:$
  * 
@@ -133,7 +128,7 @@ public class GMLFeatureWriter {
 
     private final GMLGeometryWriter geometryWriter;
 
-    private final String referenceTemplate;
+    private final String remoteXlinkTemplate;
 
     // TODO handle properties that are more complex XPath-expressions
     private final Set<QName> propNames = new HashSet<QName>();
@@ -142,19 +137,19 @@ public class GMLFeatureWriter {
     private final Map<QName, XLinkPropertyName> xlinkPropNames = new HashMap<QName, XLinkPropertyName>();
 
     // export all levels by default
-    private int traverseXlinkDepth = -1;
+    private final int traverseXlinkDepth;
 
-    private int traverseXlinkExpiry;
+    // private int traverseXlinkExpiry;
 
-    private boolean exportSf;
+    private final boolean exportSf;
 
-    private boolean outputGeometries = true;
+    private final boolean outputGeometries;
 
     private final Map<String, String> nsToPrefix = new HashMap<String, String>();
 
-    private AdditionalObjectHandler additionalObjectHandler;
+    private final GMLForwardReferenceHandler additionalObjectHandler;
 
-    private boolean exportExtraProps;
+    private final boolean exportExtraProps;
 
     /**
      * Creates a new {@link GMLFeatureWriter} instance.
@@ -162,51 +157,67 @@ public class GMLFeatureWriter {
      * @param version
      *            GML version of the output, must not be <code>null</code>
      * @param writer
+     *            xml stream to write to, must not be <code>null</code>
      * @param outputCRS
      *            crs used for exported geometries, may be <code>null</code> (in this case, the original crs of the
      *            geometries is used)
      * @param formatter
      *            formatter to use for exporting coordinates, e.g. to limit the number of decimal places, may be
-     *            <code>null</code> (use 5 decimal places)
-     * @param referenceTemplate
-     *            URI template used to create references to local objects, e.g. <code>#{}</code>, the substring
-     *            <code>{}</code> is replaced by the object id
+     *            <code>null</code> (fallback to default {@link DecimalCoordinateFormatter})
+     * @param remoteXlinkTemplate
+     *            URI template used to create references to subfeatures that will not be included in the document, e.g.
+     *            <code>#{}</code>, substring <code>{}</code> is replaced by the object id
      * @param requestedProps
      *            properties to be exported, may be <code>null</code> (export all properties)
      * @param traverseXlinkDepth
+     *            number of subfeature levels to export (0...) or -1 (unlimited)
      * @param traverseXlinkExpiry
+     *            timeout for resolving remote feature references (currently unsupported)
      * @param xlinkProps
+     *            properties with special xlink behaviour, can be <code>null</code>
      * @param exportSfGeometries
+     *            if true, geometries are exported as SFS geometries (only applies to complex geometries)
      * @param outputGeometries
+     *            if false, geometry properties are omitted from the output
      * @param prefixToNs
+     *            namespace bindings to use, may be <code>null</code>
      * @param additionalObjectHandler
+     *            handler that is invoked when a feature property has to be expanded, may be <code>null</code>
      * @param exportExtraProps
+     *            if true, {@link ExtraProps} associated with features are exported as property elements
      */
     public GMLFeatureWriter( GMLVersion version, XMLStreamWriter writer, CRS outputCRS, CoordinateFormatter formatter,
-                             String referenceTemplate, PropertyName[] requestedProps, int traverseXlinkDepth,
+                             String remoteXlinkTemplate, PropertyName[] requestedProps, int traverseXlinkDepth,
                              int traverseXlinkExpiry, XLinkPropertyName[] xlinkProps, boolean exportSfGeometries,
                              boolean outputGeometries, Map<String, String> prefixToNs,
-                             AdditionalObjectHandler additionalObjectHandler, boolean exportExtraProps ) {
+                             GMLForwardReferenceHandler additionalObjectHandler, boolean exportExtraProps ) {
+
         this.version = version;
         this.writer = writer;
-        this.referenceTemplate = referenceTemplate;
+        if ( remoteXlinkTemplate != null ) {
+            this.remoteXlinkTemplate = remoteXlinkTemplate;
+        } else {
+            this.remoteXlinkTemplate = "#{}";
+        }
         if ( requestedProps != null ) {
             for ( PropertyName propertyName : requestedProps ) {
-                // TODO what about non-simple property names
                 QName qName = propertyName.getAsQName();
                 if ( qName != null ) {
                     this.propNames.add( qName );
+                } else {
+                    LOG.warn( "Currently, only simple qualified names are supported for restricting output properties." );
                 }
             }
         }
         this.traverseXlinkDepth = traverseXlinkDepth;
-        this.traverseXlinkExpiry = traverseXlinkExpiry;
+        // this.traverseXlinkExpiry = traverseXlinkExpiry;
         if ( xlinkProps != null ) {
             for ( XLinkPropertyName xlinkProp : xlinkProps ) {
-                // TODO what about non-simple property names
                 QName qName = xlinkProp.getPropertyName().getAsQName();
                 if ( qName != null ) {
                     this.xlinkPropNames.put( qName, xlinkProp );
+                } else {
+                    LOG.warn( "Currently, only simple qualified names are supported for setting special XLink property output behaviour." );
                 }
             }
         }
@@ -314,6 +325,17 @@ public class GMLFeatureWriter {
             writer.writeEndElement();
         }
         writer.writeEndElement();
+    }
+
+    /**
+     * Returns whether the specified feature has already been written.
+     * 
+     * @param fid
+     *            feature id, must not be <code>null</code>
+     * @return true, if the feature has been exported, false otherwise
+     */
+    public boolean isExported( String fid ) {
+        return exportedIds.contains( fid );
     }
 
     private void export( Feature feature, int currentLevel, int maxInlineLevels )
@@ -529,8 +551,7 @@ public class GMLFeatureWriter {
             if ( property.isNilled() ) {
                 writeStartElementWithNS( propName.getNamespaceURI(), propName.getLocalPart() );
                 writeAttributeWithNS( XSINS, "nil", "true" );
-                // TODO make sure that only attributes are exported and nothing
-                // else
+                // TODO make sure that only attributes are exported and nothing else
                 export( property.getValue(), currentLevel, maxInlineLevels );
                 writer.writeEndElement();
             } else {
@@ -558,6 +579,89 @@ public class GMLFeatureWriter {
             }
         } else {
             throw new RuntimeException( "Internal error. Unhandled property type '" + propertyType.getClass() + "'" );
+        }
+    }
+
+    private void exportFeatureProperty( FeaturePropertyType pt, Feature subFeature, int currentLevel,
+                                        int maxInlineLevels )
+                            throws XMLStreamException, UnknownCRSException, TransformationException {
+
+        QName propName = pt.getName();
+        LOG.debug( "Exporting feature property '" + propName + "'" );
+        if ( subFeature == null ) {
+            writer.writeEmptyElement( propName.getNamespaceURI(), propName.getLocalPart() );
+        } else if ( !( subFeature instanceof FeatureReference ) || ( (FeatureReference) subFeature ).isLocal() ) {
+            // normal feature or local feature reference
+            String subFid = subFeature.getId();
+            if ( subFid == null ) {
+                // no feature id -> no other chance, but inlining it
+                writeStartElementWithNS( propName.getNamespaceURI(), propName.getLocalPart() );
+                writer.writeComment( "Inlined feature '" + subFid + "'" );
+                export( subFeature, currentLevel + 1, maxInlineLevels );
+                writer.writeEndElement();
+            } else {
+                // has feature id
+                if ( exportedIds.contains( subFid ) ) {
+                    // already exported -> put a local xlink to the feature instance
+                    writer.writeEmptyElement( propName.getNamespaceURI(), propName.getLocalPart() );
+                    writeAttributeWithNS( XLNNS, "href", "#" + subFid );
+                } else {
+                    // not exported yet
+                    if ( maxInlineLevels == -1 || ( maxInlineLevels > 0 && currentLevel < maxInlineLevels ) ) {
+                        // force export (maximum number of inline levels not reached)
+                        if ( pt.getAllowedRepresentation() == REMOTE ) {
+                            // only export by reference possible
+                            writer.writeEmptyElement( propName.getNamespaceURI(), propName.getLocalPart() );
+                            if ( additionalObjectHandler != null ) {
+                                String uri = additionalObjectHandler.requireObject( (GMLReference<?>) subFeature );
+                                writeAttributeWithNS( XLNNS, "href", uri );
+                            } else {
+                                LOG.warn( "No additionalObjectHandler registered. Exporting xlink-only feature property inline." );
+                                String uri = remoteXlinkTemplate.replace( "{}", subFid );
+                                writeAttributeWithNS( XLNNS, "href", uri );
+                            }
+                        } else {
+                            // export inline
+                            exportedIds.add( subFeature.getId() );
+                            writeStartElementWithNS( propName.getNamespaceURI(), propName.getLocalPart() );
+                            writer.writeComment( "Inlined feature '" + subFid + "'" );
+                            export( subFeature, currentLevel + 1, maxInlineLevels );
+                            writer.writeEndElement();
+                        }
+                    } else {
+                        // don't force export (maximum number of inline levels reached)
+                        writer.writeEmptyElement( propName.getNamespaceURI(), propName.getLocalPart() );
+                        if ( additionalObjectHandler != null ) {
+                            String uri = additionalObjectHandler.handleReference( (GMLReference<?>) subFeature );
+                            writeAttributeWithNS( XLNNS, "href", uri );
+                        } else {
+                            LOG.warn( "No additionalObjectHandler registered. Exporting xlink-only feature inline." );
+                            String uri = remoteXlinkTemplate.replace( "{}", subFid );
+                            writeAttributeWithNS( XLNNS, "href", uri );
+                        }
+                    }
+                }
+            }
+        } else {
+            // remote feature reference
+            FeatureReference ref = (FeatureReference) subFeature;
+            if ( ( maxInlineLevels > 0 && currentLevel < maxInlineLevels ) || remoteXlinkTemplate == null
+                 || maxInlineLevels == -1 ) {
+                String uri = ref.getURI();
+                try {
+                    new URL( uri );
+                    throw new UnsupportedOperationException(
+                                                             "Inlining of remote feature references is not implemented yet." );
+                } catch ( MalformedURLException e ) {
+                    LOG.warn( "Not inlining remote feature reference -- not a valid URI." );
+                    writer.writeEmptyElement( propName.getNamespaceURI(), propName.getLocalPart() );
+                    writeAttributeWithNS( XLNNS, "href", ref.getURI() );
+                }
+            } else {
+                // must be exported by reference
+                writer.writeEmptyElement( propName.getNamespaceURI(), propName.getLocalPart() );
+                writeAttributeWithNS( XLNNS, "href", ref.getURI() );
+            }
         }
     }
 
@@ -607,133 +711,6 @@ public class GMLFeatureWriter {
         } else {
             throw new RuntimeException( "Unhandled node type '" + node.getClass() + "'" );
         }
-    }
-
-    private void exportFeatureProperty( FeaturePropertyType pt, Feature subFeature, int currentLevel,
-                                        int maxInlineLevels )
-                            throws XMLStreamException, UnknownCRSException, TransformationException {
-
-        QName propName = pt.getName();
-        LOG.debug( "Exporting feature property '" + propName + "'" );
-
-        if ( subFeature == null ) {
-            writer.writeEmptyElement( propName.getNamespaceURI(), propName.getLocalPart() );
-        } else if ( !( subFeature instanceof FeatureReference ) || ( (FeatureReference) subFeature ).isLocal() ) {
-            // normal feature or local feature reference
-            String subFid = subFeature.getId();
-            if ( subFid == null ) {
-                // no feature id -> no other chance than putting it inline then
-                writeStartElementWithNS( propName.getNamespaceURI(), propName.getLocalPart() );
-                writer.writeComment( "Inlined feature '" + subFid + "'" );
-                export( subFeature, currentLevel + 1, maxInlineLevels );
-                writer.writeEndElement();
-            } else {
-                // has feature id
-                if ( exportedIds.contains( subFid ) ) {
-                    // already exported -> put a local xlink to an already
-                    // exported feature instance
-                    writer.writeEmptyElement( propName.getNamespaceURI(), propName.getLocalPart() );
-                    writeAttributeWithNS( XLNNS, "href", "#" + subFid );
-                } else {
-                    // not exported yet
-                    if ( ( maxInlineLevels > 0 && currentLevel < maxInlineLevels ) || referenceTemplate == null
-                         || maxInlineLevels == -1 ) {
-
-                        if ( pt.getAllowedRepresentation() == ValueRepresentation.REMOTE ) {
-                            writer.writeEmptyElement( propName.getNamespaceURI(), propName.getLocalPart() );
-                            if ( additionalObjectHandler != null ) {
-                                String uri = additionalObjectHandler.additionalObject( (GMLReference<?>) subFeature );
-                                writeAttributeWithNS( XLNNS, "href", uri );
-                            } else {
-                                LOG.warn( "No additionalObjectHandler registered. Exporting xlink-only feature inline." );
-                                String uri = referenceTemplate.replace( "{}", subFid );
-                                writeAttributeWithNS( XLNNS, "href", uri );
-                            }
-                        } else {
-                            // must be exported inline
-                            exportedIds.add( subFeature.getId() );
-                            writeStartElementWithNS( propName.getNamespaceURI(), propName.getLocalPart() );
-                            writer.writeComment( "Inlined feature '" + subFid + "'" );
-                            export( subFeature, currentLevel + 1, maxInlineLevels );
-                            writer.writeEndElement();
-                        }
-                    } else {
-                        // must be exported by reference
-                        writer.writeEmptyElement( propName.getNamespaceURI(), propName.getLocalPart() );
-                        String uri = referenceTemplate.replace( "{}", subFid );
-                        writeAttributeWithNS( XLNNS, "href", uri );
-                    }
-                }
-            }
-        } else {
-            FeatureReference ref = (FeatureReference) subFeature;
-            // remote feature reference
-            if ( ( maxInlineLevels > 0 && currentLevel < maxInlineLevels ) || referenceTemplate == null
-                 || maxInlineLevels == -1 ) {
-                String uri = ref.getURI();
-                try {
-                    new URL( uri );
-                    throw new UnsupportedOperationException(
-                                                             "Inlining of remote feature references is not implemented yet." );
-                    // LOG.warn(
-                    // "Inlining of remote feature references is not implemented yet."
-                    // );
-                    // writeStartElementWithNS( propName.getNamespaceURI(),
-                    // propName.getLocalPart() );
-                    // writeAttributeWithNS( XLNNS, "href", ref.getURI() );
-                    // writer.writeComment( "Reference to remote feature '"
-                    // + ref.getURI()
-                    // +
-                    // "' (should have been inlined, but inlining of remote features is not implemented yet)."
-                    // );
-                    // writer.writeEndElement();
-                } catch ( MalformedURLException e ) {
-                    LOG.warn( "Not inlining remote feature reference -- not a valid URI." );
-                    writer.writeEmptyElement( propName.getNamespaceURI(), propName.getLocalPart() );
-                    writeAttributeWithNS( XLNNS, "href", ref.getURI() );
-                }
-            } else {
-                // must be exported by reference
-                writer.writeEmptyElement( propName.getNamespaceURI(), propName.getLocalPart() );
-                writeAttributeWithNS( XLNNS, "href", ref.getURI() );
-            }
-        }
-        //
-        // if ( subFid != null && exportedIds.contains( subFid ) ) {
-        // // put an xlink to an already exported feature instance
-        // writeStartElementWithNS( propName.getNamespaceURI(),
-        // propName.getLocalPart() );
-        // writeAttributeWithNS( XLNNS, "href", "#" + subFid );
-        // writer.writeComment( "Reference to feature '" + subFid + "'" );
-        // writer.writeEndElement();
-        // } else {
-        // if ( ( subFeature instanceof FeatureReference ) && !(
-        // (FeatureReference) subFeature ).isLocal() ) {
-        // writeStartElementWithNS( propName.getNamespaceURI(),
-        // propName.getLocalPart() );
-        // writeAttributeWithNS( XLNNS, "href", ( (FeatureReference) subFeature
-        // ).getHref() );
-        // writer.writeComment( "Reference to feature '" + subFid + "'" );
-        // writer.writeEndElement();
-        // } else if ( referenceTemplate == null || subFid == null ||
-        // traverseXlinkDepth == -1
-        // || ( traverseXlinkDepth > 0 && ( inlineLevels < traverseXlinkDepth )
-        // ) ) {
-        // exportedIds.add( subFeature.getId() );
-        // writeStartElementWithNS( propName.getNamespaceURI(),
-        // propName.getLocalPart() );
-        // writer.writeComment( "Inlined feature '" + subFid + "'" );
-        // export( subFeature, inlineLevels + 1 );
-        // writer.writeEndElement();
-        // } else {
-        // writeStartElementWithNS( propName.getNamespaceURI(),
-        // propName.getLocalPart() );
-        // String uri = referenceTemplate.replace( "{}", subFid );
-        // writeAttributeWithNS( XLNNS, "href", uri );
-        // writer.writeComment( "Reference to feature '" + subFid + "'" );
-        // writer.writeEndElement();
-        // }
-        // }
     }
 
     private void writeStartElementWithNS( String namespaceURI, String localname )
@@ -791,12 +768,8 @@ public class GMLFeatureWriter {
         }
     }
 
-    public boolean isExported( String memberFid ) {
-        return exportedIds.contains( memberFid );
-    }
-
     private boolean isPropertyRequested( QName propName ) {
         // TODO compare names properly (different types)
-        return ( propNames.size() == 0 || propNames.contains( propName ) ) || xlinkPropNames.containsKey( propName );
+        return ( propNames.isEmpty() || propNames.contains( propName ) ) || xlinkPropNames.containsKey( propName );
     }
 }

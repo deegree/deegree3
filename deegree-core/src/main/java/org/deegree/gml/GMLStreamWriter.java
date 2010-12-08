@@ -60,11 +60,11 @@ import org.deegree.geometry.Geometry;
 import org.deegree.geometry.io.CoordinateFormatter;
 import org.deegree.gml.dictionary.Definition;
 import org.deegree.gml.dictionary.GMLDictionaryWriter;
+import org.deegree.gml.feature.GMLForwardReferenceHandler;
 import org.deegree.gml.feature.GMLFeatureWriter;
 import org.deegree.gml.geometry.GML2GeometryWriter;
 import org.deegree.gml.geometry.GML3GeometryWriter;
 import org.deegree.gml.geometry.GMLGeometryWriter;
-import org.deegree.gml.utils.AdditionalObjectHandler;
 import org.deegree.protocol.wfs.getfeature.XLinkPropertyName;
 
 /**
@@ -109,7 +109,7 @@ public class GMLStreamWriter {
 
     private final Map<String, String> prefixToNs = new HashMap<String, String>();
 
-    private AdditionalObjectHandler additionalObjectHandler;
+    private GMLForwardReferenceHandler additionalObjectHandler;
 
     private boolean exportExtraProps;
 
@@ -217,12 +217,12 @@ public class GMLStreamWriter {
     }
 
     /**
-     * Sets an {@link AdditionalObjectHandler} that copes with {@link GMLReference}s that are processed during export.
+     * Sets an {@link GMLForwardReferenceHandler} that copes with {@link GMLReference}s that are processed during export.
      * 
      * @param handler
      *            handler, may be <code>null</code>
      */
-    public void setAdditionalObjectHandler( AdditionalObjectHandler handler ) {
+    public void setAdditionalObjectHandler( GMLForwardReferenceHandler handler ) {
         this.additionalObjectHandler = handler;
     }
 

@@ -33,19 +33,40 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.gml.utils;
+package org.deegree.gml.feature;
 
+import org.deegree.gml.GMLObject;
 import org.deegree.gml.GMLReference;
 
 /**
- * TODO add class documentation here
+ * Handler that is invoked by the {@link GMLFeatureWriter} when a reference to a {@link GMLObject} is written.
+ * <p>
+ * This interface allows to customize the strategy for dealing with potential forward-references.
+ * </p>
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author: markus $
  * 
  * @version $Revision: $, $Date: $
  */
-public interface AdditionalObjectHandler {
+public interface GMLForwardReferenceHandler {
 
-    public String additionalObject( GMLReference<?> ref );
+    /**
+     * Invoked when the target of the given {@link GMLReference} has to be included in the output.
+     * 
+     * @param ref
+     *            reference, never <code>null</code>
+     * @return URI to write, never <code>null</code>
+     */
+    public String requireObject( GMLReference<?> ref );
+
+    /**
+     * Invoked when the target of the given {@link GMLReference} may be an external reference or a forward reference to
+     * an object exported later.
+     * 
+     * @param ref
+     *            reference, never <code>null</code>
+     * @return URI to write, never <code>null</code>
+     */
+    public String handleReference( GMLReference<?> ref );
 }
