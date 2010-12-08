@@ -40,6 +40,7 @@ import static org.deegree.commons.xml.CommonNamespaces.GMLNS;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Set;
 
 import javax.xml.namespace.QName;
@@ -47,6 +48,7 @@ import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
 
 import org.deegree.commons.xml.stax.SchemaLocationXMLStreamWriter;
+import org.deegree.cs.CRS;
 import org.deegree.feature.Feature;
 import org.deegree.feature.FeatureCollection;
 import org.deegree.feature.property.Property;
@@ -124,11 +126,14 @@ public class SextanteProcesslet implements Processlet {
 
             if ( sfcs.containFeatureCollectionInput() && false) { // feature collection = streaming
                 LOG.info( "STREAMING" );
-                sfcs.execute();
+
+                      sfcs.execute();
+    
+                
             } else { // no feature collection = no streaming
-                
+
                 LOG.info( "NO STREAMING" );
-                
+
                 // sets all input values
                 setInputValues( alg, in );
 
@@ -181,7 +186,7 @@ public class SextanteProcesslet implements Processlet {
      * 
      * @return {@link HashMap} of namespaces. The key is the prefix and the value the namespace URI.
      */
-    private HashMap<String, String> determinePropertyNamespaces( Feature f ) {
+    static HashMap<String, String> determinePropertyNamespaces( Feature f ) {
 
         Feature propertyTypeFeature = f;
 
@@ -211,21 +216,50 @@ public class SextanteProcesslet implements Processlet {
      *            SEXTANTE {@link GeoAlgorithm}.
      * @param in
      *            Input data as {@link ProcessletInputs}.
+     * @throws ProcessletException
+     * @throws ClassNotFoundException
+     * @throws NullParameterValueException
+     * @throws WrongParameterTypeException
+     */
+    static void setInputValues( GeoAlgorithm alg, ProcessletInputs in )
+                            throws WrongParameterTypeException, NullParameterValueException, ClassNotFoundException,
+                            ProcessletException {
+        setInputValues( alg, in, null );
+    }
+
+    /**
+     * Commits the input data (all supported types) to the {@link GeoAlgorithm} input parameter.
+     * 
+     * @param alg
+     *            SEXTANTE {@link GeoAlgorithm}.
+     * @param in
+     *            Input data as {@link ProcessletInputs}.
+     * @param paramIndexes
+     *            Indexes of input parameters for commit, can be null.
      * 
      * @throws ClassNotFoundException
      * @throws NullParameterValueException
      * @throws WrongParameterTypeException
      * @throws ProcessletException
      */
-    private void setInputValues( GeoAlgorithm alg, ProcessletInputs in )
+    static void setInputValues( GeoAlgorithm alg, ProcessletInputs in, List<Integer> paramIndexes )
                             throws ClassNotFoundException, WrongParameterTypeException, NullParameterValueException,
                             ProcessletException {
 
         // input parameters
         ParametersSet paramSet = alg.getParameters();
 
+        // set all parameters
+        if ( paramIndexes == null ) {
+            paramIndexes = new LinkedList<Integer>();
+            for ( int i = 0; i < paramSet.getNumberOfParameters(); i++ ) {
+                paramIndexes.add( i );
+            }
+        }
+
         // traverses the input parameters
-        for ( int i = 0; i < paramSet.getNumberOfParameters(); i++ ) {
+        for ( Integer i : paramIndexes ) {
+
             Parameter param = paramSet.getParameter( i );
 
             // set the correct input parameter value
@@ -274,7 +308,7 @@ public class SextanteProcesslet implements Processlet {
      * @throws UnknownParameterException
      * @throws ProcessletException
      */
-    private void setVectorLayerInputValue( ProcessletInputs in, Parameter param )
+    private static void setVectorLayerInputValue( ProcessletInputs in, Parameter param )
                             throws ClassNotFoundException, ProcessletException {
         // input object
         ComplexInput gmlInput = (ComplexInput) in.getParameter( param.getParameterName() );
@@ -317,7 +351,7 @@ public class SextanteProcesslet implements Processlet {
      * @param param
      *            Input parameter of {@link GeoAlgorithm}.
      */
-    private void setNumericalValueInputValue( ProcessletInputs in, Parameter param ) {
+    private static void setNumericalValueInputValue( ProcessletInputs in, Parameter param ) {
         LiteralInput literalInput = (LiteralInput) in.getParameter( param.getParameterName() );
         param.setParameterValue( Double.parseDouble( literalInput.getValue() ) );
     }
@@ -330,7 +364,7 @@ public class SextanteProcesslet implements Processlet {
      * @param param
      *            Input parameter of {@link GeoAlgorithm}.
      */
-    private void setSelectionInputValue( ProcessletInputs in, Parameter param, GeoAlgorithm alg ) {
+    private static void setSelectionInputValue( ProcessletInputs in, Parameter param, GeoAlgorithm alg ) {
         LiteralInput literalInput = (LiteralInput) in.getParameter( param.getParameterName() );
 
         // value as string
@@ -372,7 +406,7 @@ public class SextanteProcesslet implements Processlet {
      * @param param
      *            Input parameter of {@link GeoAlgorithm}.
      */
-    private void setFilepathInputValue( ProcessletInputs in, Parameter param ) {
+    private static void setFilepathInputValue( ProcessletInputs in, Parameter param ) {
         LOG.error( "'" + param.getParameterTypeName()
                    + "' a is not supported input parameter type (but is in implementation)" );
         // TODO implement this input parameter type
@@ -387,7 +421,7 @@ public class SextanteProcesslet implements Processlet {
      *            Input parameter of {@link GeoAlgorithm}
      * @throws ProcessletException
      */
-    private void setBooleanInputValue( ProcessletInputs in, Parameter param )
+    private static void setBooleanInputValue( ProcessletInputs in, Parameter param )
                             throws ProcessletException {
         LiteralInput literalInput = (LiteralInput) in.getParameter( param.getParameterName() );
 
@@ -414,7 +448,7 @@ public class SextanteProcesslet implements Processlet {
      * @throws NullParameterValueException
      * @throws WrongParameterTypeException
      */
-    private void setStringInputValue( ProcessletInputs in, Parameter param, GeoAlgorithm alg )
+    private static void setStringInputValue( ProcessletInputs in, Parameter param, GeoAlgorithm alg )
                             throws WrongParameterTypeException, NullParameterValueException {
         LiteralInput literalInput = (LiteralInput) in.getParameter( param.getParameterName() );
 
@@ -476,7 +510,7 @@ public class SextanteProcesslet implements Processlet {
      *@param paramSet
      *            Input parameter set of {@link GeoAlgorithm}.
      */
-    private void setMultipleInputInputValue( ProcessletInputs in, Parameter param, GeoAlgorithm paramSet ) {
+    private static void setMultipleInputInputValue( ProcessletInputs in, Parameter param, GeoAlgorithm paramSet ) {
         LOG.error( "Using multiple input input data is not supported." );
     }
 
@@ -488,7 +522,7 @@ public class SextanteProcesslet implements Processlet {
      * @param param
      *            - Input parameter of {@link GeoAlgorithm}.
      */
-    private void setRasterLayerInputValue( ProcessletInputs in, Parameter param ) {
+    private static void setRasterLayerInputValue( ProcessletInputs in, Parameter param ) {
         LOG.error( "'" + param.getParameterTypeName()
                    + "' a is not supported input parameter type (but is in implementation)" );
         // TODO implement this input parameter type
@@ -502,7 +536,7 @@ public class SextanteProcesslet implements Processlet {
      * @param param
      *            Input parameter of {@link GeoAlgorithm}.
      */
-    private void setTableFieldInputValue( ProcessletInputs in, Parameter param ) {
+    private static void setTableFieldInputValue( ProcessletInputs in, Parameter param ) {
         LOG.error( "'" + param.getParameterTypeName()
                    + "' a is not supported input parameter type (but is in implementation)" );
         // TODO implement this input parameter type
@@ -516,7 +550,7 @@ public class SextanteProcesslet implements Processlet {
      * @param param
      *            Input parameter of {@link GeoAlgorithm}.
      */
-    private void setPointInputValue( ProcessletInputs in, Parameter param ) {
+    private static void setPointInputValue( ProcessletInputs in, Parameter param ) {
         LOG.error( "'" + param.getParameterTypeName()
                    + "' a is not supported input parameter type (but is in implementation)" );
         // TODO implement this input parameter type
@@ -530,7 +564,7 @@ public class SextanteProcesslet implements Processlet {
      * @param param
      *            Input parameter of {@link GeoAlgorithm}.
      */
-    private void setBandInputValue( ProcessletInputs in, Parameter param ) {
+    private static void setBandInputValue( ProcessletInputs in, Parameter param ) {
         LOG.error( "'" + param.getParameterTypeName()
                    + "' a is not supported input parameter type (but is in implementation)" );
         // TODO implement this input parameter type
@@ -544,7 +578,7 @@ public class SextanteProcesslet implements Processlet {
      * @param param
      *            Input parameter of {@link GeoAlgorithm}.
      */
-    private void setTableInputValue( ProcessletInputs in, Parameter param ) {
+    private static void setTableInputValue( ProcessletInputs in, Parameter param ) {
         LOG.error( "'" + param.getParameterTypeName()
                    + "' a is not supported input parameter type (but is in implementation)" );
         // TODO implement this input parameter type
@@ -558,7 +592,7 @@ public class SextanteProcesslet implements Processlet {
      * @param param
      *            Input parameter of {@link GeoAlgorithm}.
      */
-    private void setFixedTableInputValue( ProcessletInputs in, Parameter param ) {
+    private static void setFixedTableInputValue( ProcessletInputs in, Parameter param ) {
         LOG.error( "'" + param.getParameterTypeName()
                    + "' a is not supported input parameter type (but is in implementation)" );
         // TODO implement this input parameter type
@@ -572,7 +606,7 @@ public class SextanteProcesslet implements Processlet {
      * @return {@link Geometry}
      * @throws ProcessletException
      */
-    private Geometry readGeometry( ComplexInput gmlInput )
+    private static Geometry readGeometry( ComplexInput gmlInput )
                             throws ProcessletException {
         try {
 
@@ -597,7 +631,7 @@ public class SextanteProcesslet implements Processlet {
      * @return feature collection
      * @throws ProcessletException
      */
-    private FeatureCollection readFeatureCollection( ComplexInput gmlInput )
+    private static FeatureCollection readFeatureCollection( ComplexInput gmlInput )
                             throws ProcessletException {
         try {
 
@@ -617,6 +651,12 @@ public class SextanteProcesslet implements Processlet {
         }
     }
 
+    static void writeResult( GeoAlgorithm alg, ProcessletOutputs out )
+                            throws WrongOutputIDException, IteratorException, IllegalArgumentException,
+                            ProcessletException, InstantiationException, IllegalAccessException {
+        writeResult( alg, out, null );
+    }
+
     /**
      * Writes the output data (all supported types).
      * 
@@ -631,14 +671,24 @@ public class SextanteProcesslet implements Processlet {
      * @throws IllegalAccessException
      * @throws InstantiationException
      */
-    private void writeResult( GeoAlgorithm alg, ProcessletOutputs out )
+    static void writeResult( GeoAlgorithm alg, ProcessletOutputs out, List<Integer> paramIndexes )
                             throws WrongOutputIDException, ProcessletException, IteratorException,
                             IllegalArgumentException, InstantiationException, IllegalAccessException {
 
         OutputObjectsSet outputs = alg.getOutputObjects();
 
+        // write all parameters
+        if ( paramIndexes == null ) {
+            paramIndexes = new LinkedList<Integer>();
+            for ( int i = 0; i < outputs.getOutputObjectsCount(); i++ ) {
+                paramIndexes.add( i );
+            }
+        }
+        
         // traverses the output parameters
-        for ( int i = 0; i < outputs.getOutputObjectsCount(); i++ ) {
+        for ( Integer i : paramIndexes ) {
+            
+            
 
             // output parameter
             Output param = outputs.getOutput( i );
@@ -676,7 +726,7 @@ public class SextanteProcesslet implements Processlet {
      * @throws InstantiationException
      * @throws IllegalArgumentException
      */
-    private void writeVectorLayer( Output obj, ProcessletOutputs out )
+    private static void writeVectorLayer( Output obj, ProcessletOutputs out )
                             throws IteratorException, ProcessletException, IllegalArgumentException,
                             InstantiationException, IllegalAccessException {
         // output object
@@ -718,7 +768,7 @@ public class SextanteProcesslet implements Processlet {
      * @param out
      *            - {@link ProcessletOutputs}
      */
-    private void writeRasterLayer( Output obj, ProcessletOutputs out ) {
+    private static void writeRasterLayer( Output obj, ProcessletOutputs out ) {
         LOG.error( "Writing of '" + obj.getTypeDescription() + "' is not supported (but is in implementation)" );
         // TODO implement this output parameter type
 
@@ -732,7 +782,7 @@ public class SextanteProcesslet implements Processlet {
      * @param out
      *            - {@link ProcessletOutputs}
      */
-    private void writeTable( Output obj, ProcessletOutputs out ) {
+    private static void writeTable( Output obj, ProcessletOutputs out ) {
         LOG.error( "Writing of '" + obj.getTypeDescription() + "' is not supported (but is in implementation)" );
         // TODO implement this output parameter type
     }
@@ -745,7 +795,7 @@ public class SextanteProcesslet implements Processlet {
      * @param out
      *            - {@link ProcessletOutputs}
      */
-    private void writeText( Output obj, ProcessletOutputs out ) {
+    private static void writeText( Output obj, ProcessletOutputs out ) {
         LOG.error( "Writing of '" + obj.getTypeDescription() + "' is not supported (but is in implementation)" );
         // TODO implement this output parameter type
 
@@ -759,7 +809,7 @@ public class SextanteProcesslet implements Processlet {
      * @param out
      *            - {@link ProcessletOutputs}
      */
-    private void writeChart( Output obj, ProcessletOutputs out ) {
+    private static void writeChart( Output obj, ProcessletOutputs out ) {
         LOG.error( "Writing of '" + obj.getTypeDescription() + "' is not supported (but is in implementation)" );
         // TODO implement this output parameter type
     }
@@ -773,7 +823,7 @@ public class SextanteProcesslet implements Processlet {
      *            - {@link Geometry}
      * @throws ProcessletException
      */
-    private void writeGeometry( ComplexOutput gmlOutput, Geometry geometry )
+    private static void writeGeometry( ComplexOutput gmlOutput, Geometry geometry )
                             throws ProcessletException {
         try {
 
@@ -792,6 +842,8 @@ public class SextanteProcesslet implements Processlet {
             sw.setPrefix( "gml", GMLNS );
             GMLStreamWriter gmlWriter = GMLOutputFactory.createGMLStreamWriter( gmlVersion, sw );
 
+           // gmlWriter.setOutputCRS(new CRS( "EPSG:4326" ));
+            
             gmlWriter.write( geometry );
 
         } catch ( Exception e ) {
@@ -809,7 +861,7 @@ public class SextanteProcesslet implements Processlet {
      * 
      * @throws ProcessletException
      */
-    private void writeFeatureCollection( ComplexOutput gmlOutput, FeatureCollection coll )
+    private static void writeFeatureCollection( ComplexOutput gmlOutput, FeatureCollection coll )
                             throws ProcessletException {
         try {
 
@@ -827,7 +879,7 @@ public class SextanteProcesslet implements Processlet {
             GMLStreamWriter gmlWriter = GMLOutputFactory.createGMLStreamWriter(
                                                                                 FormatHelper.determineGMLVersion( gmlOutput ),
                                                                                 sw );
-
+            //gmlWriter.setOutputCRS(new CRS( "EPSG:4326" ));
             gmlWriter.write( coll );
 
         } catch ( Exception e ) {

@@ -35,10 +35,25 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.services.wps.provider.sextante;
 
+import java.io.IOException;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamReader;
+import javax.xml.stream.XMLStreamWriter;
+
+import org.deegree.feature.Feature;
 import org.deegree.feature.FeatureCollection;
+import org.deegree.feature.StreamFeatureCollection;
+import org.deegree.gml.GMLInputFactory;
+import org.deegree.gml.GMLOutputFactory;
+import org.deegree.gml.GMLStreamReader;
+import org.deegree.gml.GMLStreamWriter;
+import org.deegree.services.wps.ProcessletException;
 import org.deegree.services.wps.ProcessletInputs;
 import org.deegree.services.wps.ProcessletOutputs;
 import org.deegree.services.wps.input.ComplexInput;
@@ -48,6 +63,9 @@ import org.deegree.services.wps.provider.sextante.GMLSchema.GMLType;
 import es.unex.sextante.core.GeoAlgorithm;
 import es.unex.sextante.core.OutputObjectsSet;
 import es.unex.sextante.core.ParametersSet;
+import es.unex.sextante.dataObjects.IVectorLayer;
+import es.unex.sextante.exceptions.NullParameterValueException;
+import es.unex.sextante.exceptions.WrongParameterTypeException;
 import es.unex.sextante.outputs.Output;
 import es.unex.sextante.parameters.Parameter;
 
@@ -169,8 +187,108 @@ public class SextanteFeatureCollectionStreamer {
 
     /**
      * Streams input and output {@link FeatureCollection} and execute the process.
+     * 
+     * @throws ProcessletException
+     * @throws ClassNotFoundException
+     * @throws NullParameterValueException
+     * @throws WrongParameterTypeException
+     * 
      */
-    public void execute() {
+    public void execute()
+                            throws ProcessletException, WrongParameterTypeException, NullParameterValueException,
+                            ClassNotFoundException {
 
+        // input parameters
+        // --------------------------------------------------------------------------------------------------------------------------------------------
+
+        // set input parameter without feature collections
+        SextanteProcesslet.setInputValues( alg, in, paramIndexesWithoutFeatureCollectionInput );
+
+        List<SextanteFeatureCollectionStreamReader> featureCollectionsForAExecute = new LinkedList<SextanteFeatureCollectionStreamReader>();
+        Map<Integer, SextanteFeatureCollectionStreamWriter> featuresForWrite = new HashMap<Integer, SextanteFeatureCollectionStreamWriter>();
+
+        try {
+
+            // determine all feature collections for one execute
+            for ( Integer i : featureCollectionIndexesInput ) {
+
+                // VectorLayer for FeatureCollection
+                Parameter param = alg.getParameters().getParameter( i );
+
+                // determine GMLType of input parameter
+                ComplexInput gmlInput = (ComplexInput) in.getParameter( param.getParameterName() );
+                GMLType gmlType = FormatHelper.determineGMLType( gmlInput );
+
+                // create feature collection input stream
+                XMLStreamReader xmlReader = gmlInput.getValueAsXMLStream();
+                GMLStreamReader gmlReader = GMLInputFactory.createGMLStreamReader(
+                                                                                   FormatHelper.determineGMLVersion( gmlInput ),
+                                                                                   xmlReader );
+                StreamFeatureCollection sfc = gmlReader.readStreamFeatureCollection();
+
+                featureCollectionsForAExecute.add( new SextanteFeatureCollectionStreamReader( param, sfc ) );
+            }
+
+            // execute and output parameters
+            // --------------------------------------------------------------------------------------------------------------------------------------------
+            do {
+                // set feature collections for one execute
+                for ( SextanteFeatureCollectionStreamReader fcsc : featureCollectionsForAExecute ) {
+                    Parameter param = fcsc.getParameter();
+                    IVectorLayer layer = fcsc.getNextFeatureAsVectorLayer();
+                    param.setParameterValue( layer );
+                }
+
+                alg.execute( null, new OutputFactoryExt() );
+
+                // write all results without feature collections
+                SextanteProcesslet.writeResult( alg, out, paramIndexesWithoutFeatureCollectionOutput );
+
+                // notice output parameters with their streams
+                OutputObjectsSet outputs = alg.getOutputObjects();
+                for ( Integer i : featureCollectionIndexesOutput ) {
+                    ComplexOutput gmlOutput = (ComplexOutput) out.getParameter( alg.getOutputObjects().getOutput( i ).getName() );
+                    XMLStreamWriter sw = gmlOutput.getXMLStreamWriter();
+                    GMLStreamWriter gmlWriter = GMLOutputFactory.createGMLStreamWriter(
+                                                                                        FormatHelper.determineGMLVersion( gmlOutput ),
+                                                                                        sw );
+                    featuresForWrite.put( i, new SextanteFeatureCollectionStreamWriter( sw, gmlWriter ) );
+                }
+
+                // write features
+                for ( Integer i : featureCollectionIndexesOutput ) {
+                    // result feature
+                    Output output = outputs.getOutput( i );
+                    IVectorLayer layer = (IVectorLayer) output.getOutputObject();
+                    Feature f = VectorLayerAdapter.createFeature( layer );
+
+                    // write feature
+                    SextanteFeatureCollectionStreamWriter con = featuresForWrite.get( i );
+                    con.writeFeature( f );
+                }
+
+            } while ( SextanteFeatureCollectionStreamReader.containOneOfAllContainersFeatures() );
+
+        } catch ( Exception e ) {
+            e.printStackTrace();
+            throw new ProcessletException( "Parsing error!" );
+        } finally {
+            try {
+                SextanteFeatureCollectionStreamReader.closeAll();
+
+                // close feature collections
+                Set<Integer> keys = featuresForWrite.keySet();
+                for ( Integer key : keys ) {
+                    featuresForWrite.get( key ).close();
+                }
+
+            } catch ( IOException e ) {
+                e.printStackTrace();
+                throw new ProcessletException( "Parsing error!" );
+            } catch ( XMLStreamException e ) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+        }
     }
 }
