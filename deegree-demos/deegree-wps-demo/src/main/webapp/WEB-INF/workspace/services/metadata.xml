@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<deegreeServicesMetadata configVersion="3.0.0" xmlns="http://www.deegree.org/services/metadata"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.deegree.org/services/metadata http://schemas.deegree.org/services/metadata/3.0.0/metadata.xsd">
+  <!-- General service information for all services. Used in the GetCapabilities responses. -->
+  <ServiceIdentification>
+    <Title>deegree 3 demo service</Title>
+    <Title>You may supply more than one title (as in OWS 1.1.0)</Title>
+    <Abstract>This is the default deegree 3 service configuration. Change it as you like!</Abstract>
+    <Abstract>More abstracts are possible (as in OWS 1.1.0)</Abstract>
+    <Keywords>
+      <Keyword lang="en">OGC services</Keyword>
+      <Keyword lang="en">deegree 3</Keyword>
+      <Type codeSpace="whatever">TODO: Do we really need this element? What is it supposed to do?</Type>
+    </Keywords>
+    <Fees>None, it is free</Fees>
+    <AccessConstraints>None.</AccessConstraints>
+    <AccessConstraints>24x7</AccessConstraints>
+  </ServiceIdentification>
+  <ServiceProvider>
+    <ProviderName>lat/lon GmbH</ProviderName>
+    <ProviderSite>http://www.lat-lon.de</ProviderSite>
+    <ServiceContact>
+      <IndividualName>Johannes Wilden</IndividualName>
+      <PositionName>Release Manager</PositionName>
+      <Phone>0228/18496-0</Phone>
+      <Facsimile>0228/18496-29</Facsimile>
+      <ElectronicMailAddress>wilden@lat-lon.de</ElectronicMailAddress>
+      <Address>
+        <DeliveryPoint>Aennchenstr. 19</DeliveryPoint>
+        <City>Bonn</City>
+        <AdministrativeArea>NRW</AdministrativeArea>
+        <PostalCode>53177</PostalCode>
+        <Country>Germany</Country>
+      </Address>
+      <OnlineResource>http://www.deegree.org</OnlineResource>
+      <HoursOfService>24x7</HoursOfService>
+      <ContactInstructions>Do not hesitate to call</ContactInstructions>
+      <Role>PointOfContact</Role>
+    </ServiceContact>
+  </ServiceProvider>
+</deegreeServicesMetadata>

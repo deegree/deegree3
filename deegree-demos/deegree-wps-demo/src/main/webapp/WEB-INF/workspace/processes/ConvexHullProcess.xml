@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ProcessDefinition configVersion="3.0.0" processVersion="1.0.0" storeSupported="true" statusSupported="false"
+  xmlns="http://www.deegree.org/processes/java" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.deegree.org/processes/java http://schemas.deegree.org/processes/java/3.0.0/java.xsd">
+  <Identifier>ConvexHull</Identifier>
+  <JavaClass>org.deegree.wps.jts.ConvexHullProcesslet</JavaClass>
+  <Title>Calculating the Convex Hull of a GML geometry.</Title>
+  <Abstract>Calculating the the smallest convex Polygon that contains all the points in the Geometry.</Abstract>
+  <InputParameters>
+    <ComplexInput>
+      <Identifier>GMLInput</Identifier>
+      <Title>GMLInput</Title>
+      <DefaultFormat mimeType="text/xml" encoding="UTF-8" schema="http://schemas.opengis.net/gml/3.1.1/base/gml.xsd" />
+    </ComplexInput>
+  </InputParameters>
+  <OutputParameters>
+    <ComplexOutput>
+      <Identifier>ConvexHull</Identifier>
+      <Title>ConvexHull</Title>
+      <DefaultFormat mimeType="text/xml" encoding="UTF-8" schema="http://schemas.opengis.net/gml/3.1.1/base/gml.xsd" />
+    </ComplexOutput>
+  </OutputParameters>
+</ProcessDefinition>
