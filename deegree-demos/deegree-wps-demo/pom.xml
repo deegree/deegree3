@@ -4,14 +4,14 @@
   <groupId>org.deegree</groupId>
   <artifactId>deegree-wps-demo</artifactId>
   <packaging>war</packaging>
-  <version>3.1-SNAPSHOT</version>
+  <version>3.1-test</version>
   <name>deegree 3 WPS Demo</name>
   <url>http://maven.apache.org</url>
 
   <parent>
     <groupId>org.deegree</groupId>
     <artifactId>deegree-tomcat-parent</artifactId>
-    <version>3.1-SNAPSHOT</version>
+    <version>3.1-test</version>
   </parent>
 
   <repositories>
@@ -31,7 +31,7 @@
     <dependency>
       <groupId>org.deegree</groupId>
       <artifactId>deegree-wps-sextante</artifactId>
-      <version>3.1-SNAPSHOT</version>
+      <version>3.1-test</version>
     </dependency>
   </dependencies>
 
