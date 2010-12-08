@@ -5,7 +5,7 @@
   <groupId>org.deegree</groupId>
   <artifactId>deegree-service-parent</artifactId>
   <packaging>pom</packaging>
-  <version>3.1-SNAPSHOT</version>
+  <version>3.1-test</version>
   <name>deegree-service-parent</name>
   <url>http://www.deegree.org</url>
   <scm>
@@ -16,7 +16,7 @@
   <parent>
     <groupId>org.deegree</groupId>
     <artifactId>deegree-parent</artifactId>
-    <version>3.1-SNAPSHOT</version>
+    <version>3.1-test</version>
   </parent>
 
   <build>
@@ -49,12 +49,12 @@
     <dependency>
       <groupId>org.deegree</groupId>
       <artifactId>deegree-services-console</artifactId>
-      <version>3.1-SNAPSHOT</version>
+      <version>3.1-test</version>
     </dependency>
     <dependency>
       <groupId>org.deegree</groupId>
       <artifactId>deegree-services-console</artifactId>
-      <version>3.1-SNAPSHOT</version>
+      <version>3.1-test</version>
       <type>zip</type>
       <classifier>webapp-template</classifier>
       <scope>compile</scope>
