@@ -12,16 +12,15 @@
     <developerConnection>scm:svn:svn+ssh://developername@svn.wald.intevation.org/deegree/deegree3/trunk/deegree-oraclesupport</developerConnection>
     <url>http://wald.intevation.org/plugins/scmsvn/viewcvs.php/deegree3/trunk/deegree-oraclesupport/?root=deegree</url>
   </scm>
+
+  <parent>
+    <groupId>org.deegree</groupId>
+    <artifactId>deegree-parent</artifactId>
+    <version>3.1-SNAPSHOT</version>
+  </parent>
+
   <build>
     <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-compiler-plugin</artifactId>
-        <configuration>
-          <source>1.6</source>
-          <target>1.6</target>
-        </configuration>
-      </plugin>
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>jaxb2-maven-plugin</artifactId>
@@ -40,11 +39,12 @@
       </plugin>
     </plugins>
   </build>
+
   <repositories>
     <repository>
       <id>deegree-restricted</id>
       <url>http://artefacts.deegree.org/ext-libs-restricted</url>
-     </repository>  
+     </repository>
     <repository>
       <id>deegree-repo</id>
       <url>http://artefacts.deegree.org/repo</url>
@@ -53,16 +53,7 @@
       </snapshots>
     </repository>
   </repositories>
-  <distributionManagement>
-    <repository>
-      <id>deegree-releases</id>
-      <url>http://artefacts.deegree.org/libs-releases-local</url>
-    </repository>  
-    <snapshotRepository>
-      <id>deegree-snapshots</id>
-      <url>http://artefacts.deegree.org/libs-snapshots-local</url>
-    </snapshotRepository>
-  </distributionManagement>
+
   <dependencies>
     <dependency>
       <groupId>org.deegree</groupId>
@@ -83,6 +74,6 @@
       <groupId>com.oracle</groupId>
       <artifactId>sdoutl</artifactId>
       <version>11.2.0.1.0</version>
-    </dependency>    
+    </dependency>
   </dependencies>
 </project>

@@ -7,10 +7,25 @@
   <version>3.1-SNAPSHOT</version>
   <name>log4j-properties generator module</name>
   <url>http://www.deegree.org</url>
-  <properties>
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <buildTimestamp>${maven.build.timestamp}</buildTimestamp>
-  </properties>
+
+  <parent>
+    <groupId>org.deegree</groupId>
+    <artifactId>deegree-parent</artifactId>
+    <version>3.1-SNAPSHOT</version>
+  </parent>
+
+  <repositories>
+    <repository>
+      <id>deegree-repo</id>
+      <url>http://artefacts.deegree.org/repo</url>
+      <releases>
+        <updatePolicy>never</updatePolicy>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+    </repository>
+  </repositories>
 
   <build>
     <plugins>
@@ -87,39 +102,6 @@
 
     </plugins>
   </build>
-
-  <reporting>
-    <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-javadoc-plugin</artifactId>
-        <version>2.7</version>
-        <configuration>
-          <maxmemory>512m</maxmemory>
-        </configuration>
-      </plugin>
-    </plugins>
-  </reporting>
-
-  <repositories>
-    <repository>
-      <id>deegree-repo</id>
-      <url>http://artefacts.deegree.org/repo</url>
-      <snapshots>
-        <enabled>true</enabled>
-      </snapshots>
-    </repository>
-  </repositories>
-  <distributionManagement>
-    <repository>
-      <id>deegree-releases</id>
-      <url>http://artefacts.deegree.org/libs-releases-local</url>
-    </repository>
-    <snapshotRepository>
-      <id>deegree-snapshots</id>
-      <url>http://artefacts.deegree.org/libs-snapshots-local</url>
-    </snapshotRepository>
-  </distributionManagement>
 
   <dependencies>
     <dependency>

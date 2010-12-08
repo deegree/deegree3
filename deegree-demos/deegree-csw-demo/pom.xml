@@ -1,8 +1,8 @@
 <project
-  xmlns="http://maven.apache.org/POM/4.0.0"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd"
->
+    xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd"
+    >
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.deegree</groupId>
   <artifactId>deegree-csw-demo</artifactId>
@@ -10,40 +10,27 @@
   <version>3.1-SNAPSHOT</version>
   <name>deegree 3 CSW Demo</name>
   <url>http://maven.apache.org</url>
+
+  <parent>
+    <groupId>org.deegree</groupId>
+    <artifactId>deegree-tomcat-parent</artifactId>
+    <version>3.1-SNAPSHOT</version>
+  </parent>
+
   <repositories>
     <repository>
       <id>deegree-repo</id>
       <url>http://artefacts.deegree.org/repo</url>
+      <releases>
+        <updatePolicy>never</updatePolicy>
+      </releases>
       <snapshots>
         <enabled>true</enabled>
       </snapshots>
     </repository>
   </repositories>
-  <distributionManagement>
-    <repository>
-      <id>deegree-releases</id>
-      <url>http://artefacts.deegree.org/libs-releases-local</url>
-    </repository>
-    <snapshotRepository>
-      <id>deegree-snapshots</id>
-      <url>http://artefacts.deegree.org/libs-snapshots-local</url>
-    </snapshotRepository>
-  </distributionManagement>
+
   <dependencies>
-    <dependency>
-      <groupId>org.deegree</groupId>
-      <artifactId>deegree-services-console</artifactId>
-      <version>3.1-SNAPSHOT</version>
-      <scope>runtime</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.deegree</groupId>
-      <artifactId>deegree-services-console</artifactId>
-      <version>3.1-SNAPSHOT</version>
-      <type>zip</type>
-      <classifier>webapp-template</classifier>
-      <scope>compile</scope>
-    </dependency>
     <dependency>
       <groupId>org.deegree</groupId>
       <artifactId>deegree-catalogue-manager</artifactId>
@@ -51,69 +38,16 @@
       <type>war</type>
       <scope>compile</scope>
     </dependency>
-    <dependency>
-      <groupId>org.deegree</groupId>
-      <artifactId>deegree-tomcat</artifactId>
-      <version>3.1-SNAPSHOT</version>
-      <type>zip</type>
-      <scope>compile</scope>
-    </dependency>
-    <dependency>
-      <groupId>javax.servlet</groupId>
-      <artifactId>servlet-api</artifactId>
-      <version>2.5</version>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>javax.servlet.jsp</groupId>
-      <artifactId>jsp-api</artifactId>
-      <version>2.1</version>
-      <scope>provided</scope>
-    </dependency>
   </dependencies>
+
   <build>
     <finalName>deegree-csw-demo</finalName>
     <plugins>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-compiler-plugin</artifactId>
-        <configuration>
-          <source>1.6</source>
-          <target>1.6</target>
-        </configuration>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-dependency-plugin</artifactId>
         <version>2.0</version>
         <executions>
-          <execution>
-            <id>unpack-dependencies-zip</id>
-            <phase>generate-resources</phase>
-            <goals>
-              <goal>unpack-dependencies</goal>
-            </goals>
-            <configuration>
-              <classifier>webapp-template</classifier>
-              <type>zip</type>
-              <includeGroupIds>org.deegree</includeGroupIds>
-              <includeArtifactIds>deegree-services-console</includeArtifactIds>
-              <outputDirectory>src/main/webapp</outputDirectory>
-            </configuration>
-          </execution>
-          <execution>
-            <id>package-tomcat</id>
-            <phase>package</phase>
-            <goals>
-              <goal>unpack-dependencies</goal>
-            </goals>
-            <configuration>
-              <type>zip</type>
-              <includeGroupIds>org.deegree</includeGroupIds>
-              <includeArtifactIds>deegree-tomcat</includeArtifactIds>
-              <outputDirectory>target</outputDirectory>
-            </configuration>
-          </execution>
           <execution>
             <id>unzip-catman</id>
             <phase>generate-resources</phase>

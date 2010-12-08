@@ -8,24 +8,24 @@
   <name>deegree-portnumber-plugin</name>
   <url>http://www.deegree.org</url>
 
-  <properties>
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <buildTimestamp>${maven.build.timestamp}</buildTimestamp>
-  </properties>
+  <parent>
+    <groupId>org.deegree</groupId>
+    <artifactId>deegree-parent</artifactId>
+    <version>3.1-SNAPSHOT</version>
+  </parent>
 
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-compiler-plugin</artifactId>
-        <configuration>
-          <source>1.6</source>
-          <target>1.6</target>
-          <encoding>UTF-8</encoding>
-        </configuration>
-      </plugin>
-    </plugins>
-  </build>
+  <repositories>
+    <repository>
+      <id>deegree-repo</id>
+      <url>http://artefacts.deegree.org/repo</url>
+      <releases>
+        <updatePolicy>never</updatePolicy>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+    </repository>
+  </repositories>
 
   <dependencies>
     <dependency>
@@ -52,25 +52,5 @@
       <version>1.4</version>
     </dependency>
   </dependencies>
-
-  <repositories>
-    <repository>
-      <id>deegree-repo</id>
-      <url>http://artefacts.deegree.org/repo</url>
-      <snapshots>
-        <enabled>true</enabled>
-      </snapshots>
-    </repository>
-  </repositories>
-  <distributionManagement>
-    <repository>
-      <id>deegree-releases</id>
-      <url>http://artefacts.deegree.org/libs-releases-local</url>
-    </repository>
-    <snapshotRepository>
-      <id>deegree-snapshots</id>
-      <url>http://artefacts.deegree.org/libs-snapshots-local</url>
-    </snapshotRepository>
-  </distributionManagement>
 
 </project>

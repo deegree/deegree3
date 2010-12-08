@@ -7,164 +7,24 @@
   <version>3.1-SNAPSHOT</version>
   <name>deegree-wms-similarity-tests Webapp</name>
   <url>http://www.deegree.org</url>
-  <properties>
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <buildTimestamp>${maven.build.timestamp}</buildTimestamp>
-  </properties>
 
-  <pluginRepositories>
-    <pluginRepository>
-      <id>deegree-plugin-repo</id>
-      <url>http://artefacts.deegree.org/repo</url>
-      <releases>
-        <enabled>true</enabled>
-      </releases>
-      <snapshots>
-        <enabled>true</enabled>
-      </snapshots>
-    </pluginRepository>
-  </pluginRepositories>
-
-  <build>
-    <testResources>
-      <testResource>
-        <directory>src/test/resources</directory>
-        <filtering>true</filtering>
-      </testResource>
-    </testResources>
-
-    <plugins>
-      <plugin>
-        <groupId>org.deegree</groupId>
-        <artifactId>deegree-portnumber-plugin</artifactId>
-        <version>1.0-SNAPSHOT</version>
-        <executions>
-          <execution>
-            <phase>generate-sources</phase>
-            <goals>
-              <goal>generate</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-compiler-plugin</artifactId>
-        <configuration>
-          <source>1.6</source>
-          <target>1.6</target>
-        </configuration>
-      </plugin>
-
-      <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>tomcat-maven-plugin</artifactId>
-        <version>1.1</version>
-        <executions>
-          <execution>
-            <id>start-tomcat</id>
-            <phase>pre-integration-test</phase>
-            <goals>
-              <goal>run</goal>
-            </goals>
-            <configuration>
-              <port>${portnumber}</port>
-              <fork>true</fork>
-            </configuration>
-          </execution>
-          <execution>
-            <id>stop-tomcat</id>
-            <phase>post-integration-test</phase>
-            <goals>
-              <goal>shutdown</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-surefire-plugin</artifactId>
-        <version>2.5</version>
-        <configuration>
-          <skip>true</skip>
-          <testFailureIgnore>true</testFailureIgnore>
-          <includes>
-            <include>**/*IT.java</include>
-          </includes>
-          <systemProperties>
-            <property>
-              <name>wms.baseurl</name>
-              <value>http://localhost:${portnumber}/deegree-wms-similarity-tests/services</value>
-            </property>
-          </systemProperties>
-        </configuration>
-        <executions>
-          <execution>
-            <id>integration-test</id>
-            <phase>integration-test</phase>
-            <goals>
-              <goal>test</goal>
-            </goals>
-            <configuration>
-              <skip>false</skip>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>exec-maven-plugin</artifactId>
-        <version>1.1</version>
-        <configuration>
-          <mainClass>org.deegree.test.services.wms.SimilarityUpdater</mainClass>
-        </configuration>
-      </plugin>
-    </plugins>
-  </build>
-  <dependencies>
-    <dependency>
-      <groupId>org.deegree</groupId>
-      <artifactId>deegree-services</artifactId>
-      <version>3.1-SNAPSHOT</version>
-      <exclusions>
-        <exclusion>
-          <groupId>org.mortbay.jetty</groupId>
-          <artifactId>servlet-api-2.5</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-    <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <version>4.8.1</version>
-      <scope>test</scope>
-    </dependency>
-
-    <dependency>
-      <groupId>javax.servlet</groupId>
-      <artifactId>servlet-api</artifactId>
-      <version>2.5</version>
-      <scope>provided</scope>
-    </dependency>
-  </dependencies>
+  <parent>
+    <groupId>org.deegree</groupId>
+    <artifactId>deegree-test-parent</artifactId>
+    <version>3.1-SNAPSHOT</version>
+  </parent>
 
   <repositories>
     <repository>
       <id>deegree-repo</id>
       <url>http://artefacts.deegree.org/repo</url>
+      <releases>
+        <updatePolicy>never</updatePolicy>
+      </releases>
       <snapshots>
         <enabled>true</enabled>
       </snapshots>
     </repository>
   </repositories>
-
-  <distributionManagement>
-    <snapshotRepository>
-      <id>deegree-repository</id>
-      <url>http://artefacts.deegree.org/libs-snapshots-local</url>
-    </snapshotRepository>
-  </distributionManagement>
 
 </project>
