@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html"
+				xmlns:composite="http://java.sun.com/jsf/composite">
+<head>
+<title>A collapsible panel composite component</title>
+</head>
+<body>
+<composite:interface>
+				<composite:attribute name="styleClass" default="collapsiblePanel" />
+				<composite:attribute name="collapsed" default="true" />
+				<composite:attribute name="openImg" default="#{resource['deegree:images/plus.png']}" />
+				<composite:attribute name="collapseImg" required="false" default="#{resource['deegree:images/minus.png']}" />
+				<composite:facet name="header" />
+</composite:interface>
+<composite:implementation>
+				<h:outputScript name="javascript/collapsible.js" library="deegree" target="head" />
+				<div class="#{cc.attrs.styleClass}" id="#{cc.clientId}">
+				<h:panelGrid columns="2" styleClass="header" layout="block" style="vertical-align:middle;">
+								<composite:renderFacet name="header" />
+								<h:commandButton id="collapse"
+												onclick="collapse(this, '#{cc.clientId}:content', '#{cc.attrs.openImg}', '#{cc.attrs.collapseImg}');"
+												image="#{cc.attrs.collapsed ? cc.attrs.openImg : cc.attrs.collapseImg }" />
+				</h:panelGrid> <h:panelGroup id="content" style="#{cc.attrs.collapsed ? 'display:none;' : 'display:inline;' }"
+								styleClass="content" layout="block">
+								<composite:insertChildren />
+				</h:panelGroup></div>
+</composite:implementation>
+</body>
+</html>
