@@ -38,10 +38,14 @@ package org.deegree.services.wfs.format.gml;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 
+import javax.xml.stream.XMLStreamException;
+
 import org.deegree.gml.GMLObject;
 import org.deegree.gml.GMLReference;
-import org.deegree.gml.utils.AdditionalObjectHandler;
+import org.deegree.gml.feature.GMLForwardReferenceHandler;
 import org.deegree.protocol.wfs.getfeature.GetFeature;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Keeps track of {@link GMLObject} references that have to be included in a {@link GetFeature} response.
@@ -51,14 +55,44 @@ import org.deegree.protocol.wfs.getfeature.GetFeature;
  * 
  * @version $Revision: $, $Date: $
  */
-class XlinkedObjectsHandler implements AdditionalObjectHandler {
+class XlinkedObjectsHandler implements GMLForwardReferenceHandler {
+
+    private static Logger LOG = LoggerFactory.getLogger( XlinkedObjectsHandler.class );
 
     private LinkedHashMap<String, GMLReference<?>> objectIdToRef = new LinkedHashMap<String, GMLReference<?>>();
 
+    private final BufferableXMLStreamWriter xmlStream;
+
+    private final boolean localReferencesPossible;
+
+    private final String xlinkTemplate;
+
+    XlinkedObjectsHandler( BufferableXMLStreamWriter xmlStream, boolean localReferencesPossible, String xlinkTemplate ) {
+        this.xmlStream = xmlStream;
+        this.localReferencesPossible = localReferencesPossible;
+        this.xlinkTemplate = xlinkTemplate;
+    }
+
     @Override
-    public String additionalObject( GMLReference<?> ref ) {
+    public String requireObject( GMLReference<?> ref ) {
+        LOG.debug( "Exporting forward reference to an object which must be included in the output." );
         objectIdToRef.put( ref.getId(), ref );
         return "#" + ref.getId();
+    }
+
+    @Override
+    public String handleReference( GMLReference<?> ref ) {
+        if ( localReferencesPossible ) {
+            LOG.debug( "Exporting potential forward reference to an object which may or may not be exported later." );
+            try {
+                xmlStream.activateBuffering();
+            } catch ( XMLStreamException e ) {
+                throw new RuntimeException( e.getMessage(), e );
+            }
+            return "{" + ref.getId() + "}";
+        }
+        LOG.info( "Exporting reference as remote reference." );
+        return xlinkTemplate.replace( "{}", ref.getId() );
     }
 
     Collection<GMLReference<?>> getAdditionalRefs() {
