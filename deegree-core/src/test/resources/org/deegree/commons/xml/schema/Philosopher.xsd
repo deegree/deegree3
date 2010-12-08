@@ -1,0 +1,438 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:gml="http://www.opengis.net/gml" xmlns:wfs="http://www.opengis.net/wfs" xmlns:ogc="http://www.opengis.net/ogc" xmlns:deegreewfs="http://www.deegree.org/wfs" xmlns:dgjdbc="http://www.deegree.org/jdbc" xmlns:app="http://www.deegree.org/app" targetNamespace="http://www.deegree.org/app" elementFormDefault="qualified" attributeFormDefault="unqualified">
+  <xsd:import namespace="http://www.opengis.net/gml" schemaLocation="http://schemas.opengis.net/gml/3.1.1/base/feature.xsd"/>
+  <xsd:import namespace="http://www.opengis.net/gml" schemaLocation="http://schemas.opengis.net/gml/3.1.1/base/geometryAggregates.xsd"/>
+  <!-- configuration of the persistence backend to be used -->
+  <xsd:annotation>
+    <xsd:appinfo>
+      <deegreewfs:Prefix>app</deegreewfs:Prefix>
+      <deegreewfs:Backend>POSTGIS</deegreewfs:Backend>
+      <deegreewfs:DefaultSRS>EPSG:4326</deegreewfs:DefaultSRS>
+      <dgjdbc:JDBCConnection>
+        <dgjdbc:Driver>org.postgresql.Driver</dgjdbc:Driver>
+        <dgjdbc:Url>jdbc:postgresql://hurricane:5432/deegreetest</dgjdbc:Url>
+        <dgjdbc:User>deegreetest</dgjdbc:User>
+        <dgjdbc:Password>deegreetest</dgjdbc:Password>
+        <dgjdbc:SecurityConstraints/>
+        <dgjdbc:Encoding>UTF-8</dgjdbc:Encoding>
+      </dgjdbc:JDBCConnection>
+      <deegreewfs:SuppressXLinkOutput>false</deegreewfs:SuppressXLinkOutput>
+    </xsd:appinfo>
+  </xsd:annotation>
+  <!-- ====================================================================== -->
+  <xsd:element name="Philosopher" type="app:PhilosopherType" substitutionGroup="gml:_Feature">
+    <xsd:annotation>
+      <xsd:appinfo>
+        <deegreewfs:table>PHILOSOPHER</deegreewfs:table>
+        <deegreewfs:gmlId prefix="PHILOSOPHER_">
+          <deegreewfs:MappingField field="ID" type="INTEGER"/>
+          <deegreewfs:IdGenerator type="DB_SEQ">
+            <deegreewfs:param name="sequence">FID_seq</deegreewfs:param>
+          </deegreewfs:IdGenerator>
+          <deegreewfs:IdentityPart>false</deegreewfs:IdentityPart>
+        </deegreewfs:gmlId>
+        <deegreewfs:visible>true</deegreewfs:visible>
+        <deegreewfs:transaction update="true" delete="true" insert="true"/>
+        <deegreewfs:DefaultSRS>EPSG:4326</deegreewfs:DefaultSRS>
+        <deegreewfs:OtherSRS>EPSG:23031</deegreewfs:OtherSRS>
+        <deegreewfs:OtherSRS>EPSG:23032</deegreewfs:OtherSRS>
+        <deegreewfs:OtherSRS>EPSG:23033</deegreewfs:OtherSRS>
+        <deegreewfs:OtherSRS>EPSG:31466</deegreewfs:OtherSRS>
+        <deegreewfs:OtherSRS>EPSG:31467</deegreewfs:OtherSRS>
+        <deegreewfs:OtherSRS>EPSG:31468</deegreewfs:OtherSRS>
+        <deegreewfs:OtherSRS>EPSG:31469</deegreewfs:OtherSRS>
+      </xsd:appinfo>
+    </xsd:annotation>
+    <!-- annotation of each element (=feature type definition) contains associated table name and gml:id definition -->
+  </xsd:element>
+  <!-- ====================================================================== -->
+  <xsd:complexType name="PhilosopherType">
+    <xsd:complexContent>
+      <xsd:extension base="gml:AbstractFeatureType">
+        <xsd:sequence>     
+          <!-- simple (integer) valued property 'id' (feature id without prefix) -->
+          <xsd:element name="id" type="xsd:integer">
+            <xsd:annotation>
+              <xsd:appinfo>
+                <deegreewfs:IdentityPart>false</deegreewfs:IdentityPart>
+                <deegreewfs:Content>
+                  <deegreewfs:MappingField field="ID" type="INTEGER"/>
+                </deegreewfs:Content>
+              </xsd:appinfo>
+            </xsd:annotation>
+          </xsd:element>
+          <!-- simple (string) valued property 'name' -->
+          <xsd:element name="name" type="xsd:string">
+            <xsd:annotation>
+              <xsd:appinfo>
+                <deegreewfs:IdentityPart>true</deegreewfs:IdentityPart>
+                <deegreewfs:Content>
+                  <deegreewfs:MappingField field="NAME" type="VARCHAR"/>
+                </deegreewfs:Content>
+              </xsd:appinfo>
+            </xsd:annotation>
+          </xsd:element>
+          <!-- simple (string) valued property 'sex' -->
+          <xsd:element name="sex" type="xsd:string">
+            <xsd:annotation>
+              <xsd:appinfo>
+                <deegreewfs:IdentityPart>false</deegreewfs:IdentityPart>
+                <deegreewfs:Content>
+                  <deegreewfs:MappingField field="SEX" type="CHAR"/>
+                </deegreewfs:Content>
+              </xsd:appinfo>
+            </xsd:annotation>
+          </xsd:element>
+          <!-- simple (string) valued property 'subject', located in related table -->
+          <xsd:element name="subject" type="xsd:string" minOccurs="0" maxOccurs="unbounded">
+            <xsd:annotation>
+              <xsd:appinfo>
+                <deegreewfs:Content>
+                  <deegreewfs:MappingField field="NAME" type="VARCHAR"/>
+                  <deegreewfs:Relation>
+                    <deegreewfs:From>
+                      <deegreewfs:MappingField field="ID" type="INTEGER"/>
+                    </deegreewfs:From>
+                    <deegreewfs:To fk="true">
+                      <deegreewfs:MappingField field="PHILOSOPHER_ID" type="INTEGER" table="SUBJECT"/>
+                    </deegreewfs:To>
+                  </deegreewfs:Relation>
+                </deegreewfs:Content>
+              </xsd:appinfo>
+            </xsd:annotation>
+          </xsd:element>
+          <!-- complex valued property 'isAuthorOf' -->
+          <xsd:element name="isAuthorOf" type="gml:FeaturePropertyType" minOccurs="0" maxOccurs="unbounded">
+            <xsd:annotation>
+              <xsd:appinfo>
+                <deegreewfs:IdentityPart>false</deegreewfs:IdentityPart>
+                <deegreewfs:Content type="app:Book">
+                  <deegreewfs:Relation>
+                    <deegreewfs:From>
+                      <deegreewfs:MappingField field="ID" type="INTEGER"/>
+                    </deegreewfs:From>
+                    <deegreewfs:To fk="true">
+                      <deegreewfs:MappingField field="PHILOSOPHER_ID" type="INTEGER" table="IS_AUTHOR_OF"/>
+                    </deegreewfs:To>
+                  </deegreewfs:Relation>
+                  <deegreewfs:Relation>
+                    <deegreewfs:From fk="true">
+                      <deegreewfs:MappingField field="BOOK_ID" type="INTEGER"/>
+                    </deegreewfs:From>
+                    <deegreewfs:To>
+                      <deegreewfs:MappingField field="ID" type="INTEGER" table="BOOK"/>
+                    </deegreewfs:To>
+                  </deegreewfs:Relation>
+                </deegreewfs:Content>
+              </xsd:appinfo>
+            </xsd:annotation>
+          </xsd:element>
+          <!-- simple (date) valued property 'dateOfBirth' -->
+          <xsd:element name="dateOfBirth" type="xsd:date">
+            <xsd:annotation>
+              <xsd:appinfo>
+                <deegreewfs:IdentityPart>false</deegreewfs:IdentityPart>
+                <deegreewfs:Content>
+                  <deegreewfs:MappingField field="DATE_OF_BIRTH" type="DATE"/>
+                </deegreewfs:Content>
+              </xsd:appinfo>
+            </xsd:annotation>
+          </xsd:element>
+          <!-- complex valued property 'placeOfBirth' -->
+          <xsd:element name="placeOfBirth" type="gml:FeaturePropertyType">
+            <xsd:annotation>
+              <xsd:appinfo>
+                <deegreewfs:IdentityPart>false</deegreewfs:IdentityPart>
+                <deegreewfs:Content type="app:Place">
+                  <deegreewfs:Relation>
+                    <deegreewfs:From fk="true">
+                      <deegreewfs:MappingField field="PLACE_OF_BIRTH" type="INTEGER"/>
+                    </deegreewfs:From>
+                    <deegreewfs:To>
+                      <deegreewfs:MappingField field="ID" type="INTEGER"/>
+                    </deegreewfs:To>
+                  </deegreewfs:Relation>
+                </deegreewfs:Content>
+              </xsd:appinfo>
+            </xsd:annotation>
+          </xsd:element>
+          <!-- simple (date) valued property 'dateOfDeath' -->
+          <xsd:element name="dateOfDeath" type="xsd:date">
+            <xsd:annotation>
+              <xsd:appinfo>
+                <deegreewfs:IdentityPart>false</deegreewfs:IdentityPart>
+                <deegreewfs:Content>
+                  <deegreewfs:MappingField field="DATE_OF_DEATH" type="DATE"/>
+                </deegreewfs:Content>
+              </xsd:appinfo>
+            </xsd:annotation>
+          </xsd:element>
+          <!-- complex valued property 'placeOfDeath' -->
+          <xsd:element name="placeOfDeath" type="gml:FeaturePropertyType">
+            <xsd:annotation>
+              <xsd:appinfo>
+                <deegreewfs:IdentityPart>false</deegreewfs:IdentityPart>
+                <deegreewfs:Content type="app:Place">
+                  <deegreewfs:Relation>
+                    <deegreewfs:From fk="true">
+                      <deegreewfs:MappingField field="PLACE_OF_DEATH" type="INTEGER"/>
+                    </deegreewfs:From>
+                    <deegreewfs:To>
+                      <deegreewfs:MappingField field="ID" type="INTEGER"/>
+                    </deegreewfs:To>
+                  </deegreewfs:Relation>
+                </deegreewfs:Content>
+              </xsd:appinfo>
+            </xsd:annotation>
+          </xsd:element>
+          <!-- complex valued property 'friend' (recursive) -->
+          <xsd:element name="friend" type="gml:FeaturePropertyType" minOccurs="0" maxOccurs="unbounded">
+            <xsd:annotation>
+              <xsd:appinfo>
+                <deegreewfs:IdentityPart>false</deegreewfs:IdentityPart>
+                <deegreewfs:Content type="app:Philosopher">
+                  <deegreewfs:Relation>
+                    <deegreewfs:From>
+                      <deegreewfs:MappingField field="ID" type="INTEGER"/>
+                    </deegreewfs:From>
+                    <deegreewfs:To fk="true">
+                      <deegreewfs:MappingField field="PHILOSOPHER1_ID" type="INTEGER" table="IS_FRIEND_OF"/>
+                    </deegreewfs:To>
+                  </deegreewfs:Relation>
+                  <deegreewfs:Relation>
+                    <deegreewfs:From fk="true">
+                      <deegreewfs:MappingField field="PHILOSOPHER2_ID" type="INTEGER"/>
+                    </deegreewfs:From>
+                    <deegreewfs:To>
+                      <deegreewfs:MappingField field="ID" type="INTEGER" table="PHILOSOPHER"/>
+                    </deegreewfs:To>
+                  </deegreewfs:Relation>
+                </deegreewfs:Content>
+              </xsd:appinfo>
+            </xsd:annotation>
+          </xsd:element>
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <!-- ====================================================================== -->
+  <xsd:element name="Book" type="app:BookType" substitutionGroup="gml:_Feature">
+    <xsd:annotation>
+      <xsd:appinfo>
+        <deegreewfs:table>BOOK</deegreewfs:table>
+        <deegreewfs:gmlId prefix="BOOK_">
+          <deegreewfs:MappingField field="ID" type="INTEGER"/>
+          <deegreewfs:IdGenerator type="DB_SEQ">
+            <deegreewfs:param name="sequence">FID_seq</deegreewfs:param>
+          </deegreewfs:IdGenerator>
+          <deegreewfs:IdentityPart>false</deegreewfs:IdentityPart>
+        </deegreewfs:gmlId>
+        <deegreewfs:visible>false</deegreewfs:visible>
+        <deegreewfs:transaction update="true" delete="false" insert="true"/>
+      </xsd:appinfo>
+    </xsd:annotation>
+  </xsd:element>
+  <!-- ====================================================================== -->
+  <xsd:complexType name="BookType">
+    <xsd:complexContent>
+      <xsd:extension base="gml:AbstractFeatureType">
+        <xsd:sequence>
+          <!-- simple (string) valued property 'title' -->
+          <xsd:element name="title" type="xsd:string">
+            <xsd:annotation>
+              <xsd:appinfo>
+                <deegreewfs:IdentityPart>true</deegreewfs:IdentityPart>
+                <deegreewfs:Content>
+                  <deegreewfs:MappingField field="TITLE" type="VARCHAR"/>
+                </deegreewfs:Content>
+              </xsd:appinfo>
+            </xsd:annotation>
+          </xsd:element>
+          <!-- simple (date) valued property 'publicationDate' -->
+          <xsd:element name="publicationDate" type="xsd:date" minOccurs="0">
+            <xsd:annotation>
+              <xsd:appinfo>
+                <deegreewfs:IdentityPart>false</deegreewfs:IdentityPart>
+                <deegreewfs:Content>
+                  <deegreewfs:MappingField field="PUB_DATE" type="DATE"/>
+                </deegreewfs:Content>
+              </xsd:appinfo>
+            </xsd:annotation>
+          </xsd:element>
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <!-- ====================================================================== -->
+  <xsd:element name="Place" type="app:PlaceType" substitutionGroup="gml:_Feature">
+    <xsd:annotation>
+      <xsd:appinfo>
+        <deegreewfs:table>PLACE</deegreewfs:table>
+        <deegreewfs:gmlId prefix="PLACE_">
+          <deegreewfs:MappingField field="ID" type="INTEGER"/>
+          <deegreewfs:IdGenerator type="DB_SEQ">
+            <deegreewfs:param name="sequence">FID_seq</deegreewfs:param>
+          </deegreewfs:IdGenerator>
+          <deegreewfs:IdentityPart>false</deegreewfs:IdentityPart>
+        </deegreewfs:gmlId>
+        <deegreewfs:visible>true</deegreewfs:visible>
+        <deegreewfs:transaction update="true" delete="true" insert="true"/>
+      </xsd:appinfo>
+    </xsd:annotation>
+  </xsd:element>
+  <!-- ====================================================================== -->
+  <xsd:complexType name="PlaceType">
+    <xsd:complexContent>
+      <xsd:extension base="gml:AbstractFeatureType">
+        <xsd:sequence>
+          <!-- simple (string) valued property 'name' -->
+          <xsd:element name="name" type="xsd:string">
+            <xsd:annotation>
+              <xsd:appinfo>
+                <deegreewfs:IdentityPart>true</deegreewfs:IdentityPart>
+                <deegreewfs:Content>
+                  <deegreewfs:MappingField field="NAME" type="VARCHAR"/>
+                </deegreewfs:Content>
+              </xsd:appinfo>
+            </xsd:annotation>
+          </xsd:element>
+          <!-- complex valued property 'country' -->
+          <xsd:element name="country" type="gml:FeaturePropertyType" minOccurs="0">
+            <xsd:annotation>
+              <xsd:appinfo>
+                <deegreewfs:IdentityPart>true</deegreewfs:IdentityPart>
+                <deegreewfs:Content type="app:Country">
+                  <deegreewfs:Relation>
+                    <deegreewfs:From fk="true">
+                      <deegreewfs:MappingField field="COUNTRY_ID" type="INTEGER"/>
+                    </deegreewfs:From>
+                    <deegreewfs:To>
+                      <deegreewfs:MappingField field="ID" type="INTEGER"/>
+                    </deegreewfs:To>
+                  </deegreewfs:Relation>
+                </deegreewfs:Content>
+              </xsd:appinfo>
+            </xsd:annotation>
+          </xsd:element>
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <!-- ====================================================================== -->
+  <xsd:element name="Country" substitutionGroup="gml:_Feature">
+    <xsd:annotation>
+      <xsd:appinfo>
+        <deegreewfs:table>COUNTRY</deegreewfs:table>
+        <deegreewfs:gmlId prefix="COUNTRY_">
+          <deegreewfs:MappingField field="ID" type="INTEGER"/>
+          <deegreewfs:IdGenerator type="DB_SEQ">
+            <deegreewfs:param name="sequence">FID_seq</deegreewfs:param>
+          </deegreewfs:IdGenerator>
+          <deegreewfs:IdentityPart>false</deegreewfs:IdentityPart>
+        </deegreewfs:gmlId>
+        <deegreewfs:visible>true</deegreewfs:visible>
+        <deegreewfs:transaction update="true" delete="true" insert="true"/>
+        <deegreewfs:DefaultSRS>EPSG:4326</deegreewfs:DefaultSRS>
+        <deegreewfs:OtherSRS>EPSG:23031</deegreewfs:OtherSRS>
+        <deegreewfs:OtherSRS>EPSG:23032</deegreewfs:OtherSRS>
+        <deegreewfs:OtherSRS>EPSG:23033</deegreewfs:OtherSRS>
+        <deegreewfs:OtherSRS>EPSG:31466</deegreewfs:OtherSRS>
+        <deegreewfs:OtherSRS>EPSG:31467</deegreewfs:OtherSRS>
+        <deegreewfs:OtherSRS>EPSG:31468</deegreewfs:OtherSRS>
+        <deegreewfs:OtherSRS>EPSG:31469</deegreewfs:OtherSRS>
+      </xsd:appinfo>
+    </xsd:annotation>
+    <!-- anonymous (inline) complex type definitions are allowed as well -->
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension base="gml:AbstractFeatureType">
+          <xsd:sequence>
+            <!-- simple (string) valued property 'name' -->
+            <xsd:element name="name" type="xsd:string">
+              <xsd:annotation>
+                <xsd:appinfo>
+                  <deegreewfs:IdentityPart>true</deegreewfs:IdentityPart>
+                  <deegreewfs:Content>
+                    <deegreewfs:MappingField field="NAME" type="VARCHAR"/>
+                  </deegreewfs:Content>
+                </xsd:appinfo>
+              </xsd:annotation>
+            </xsd:element>
+            <!-- simple (string) valued property 'upperName', mapped to SQL function call -->
+            <xsd:element name="upperName" type="xsd:string" minOccurs="0">
+              <xsd:annotation>
+                <xsd:appinfo>
+                  <deegreewfs:IdentityPart>false</deegreewfs:IdentityPart>
+                  <deegreewfs:Content>
+                    <deegreewfs:SQLFunctionCall call="UPPER($1)" type="VARCHAR">
+                      <deegreewfs:FunctionParam>
+                        <deegreewfs:MappingField field="NAME" type="VARCHAR"/>
+                      </deegreewfs:FunctionParam>
+                    </deegreewfs:SQLFunctionCall>
+                  </deegreewfs:Content>
+                </xsd:appinfo>
+              </xsd:annotation>
+            </xsd:element>
+            <!-- simple (string) valued property 'dataOrigin',  mapped to constant -->
+            <xsd:element name="dataOrigin" type="xsd:string" minOccurs="0">
+              <xsd:annotation>
+                <xsd:appinfo>
+                  <deegreewfs:IdentityPart>false</deegreewfs:IdentityPart>
+                  <deegreewfs:Content>
+                    <deegreewfs:Constant>Imported from shapefile.</deegreewfs:Constant>
+                  </deegreewfs:Content>
+                </xsd:appinfo>
+              </xsd:annotation>
+            </xsd:element>
+            <!-- simple valued property 'area', mapped to SQL function call -->
+            <xsd:element name="area" type="xsd:float" minOccurs="0">
+              <xsd:annotation>
+                <xsd:appinfo>
+                  <deegreewfs:IdentityPart>false</deegreewfs:IdentityPart>
+                  <deegreewfs:Content>
+                    <deegreewfs:SQLFunctionCall call="area($1)" type="FLOAT">
+                      <deegreewfs:FunctionParam>
+                        <deegreewfs:MappingField field="GEOM" type="GEOMETRY" srs="4326"/>
+                      </deegreewfs:FunctionParam>
+                    </deegreewfs:SQLFunctionCall>
+                  </deegreewfs:Content>
+                </xsd:appinfo>
+              </xsd:annotation>
+            </xsd:element>
+            <!-- simple valued property 'queryBBOXOverlap', mapped to SQL function call -->
+            <xsd:element name="queryBBOXOverlap" type="xsd:float" minOccurs="0">
+              <xsd:annotation>
+                <xsd:appinfo>
+                  <deegreewfs:IdentityPart>false</deegreewfs:IdentityPart>
+                  <deegreewfs:Content>
+                    <deegreewfs:SQLFunctionCall call="area(intersection($1, $2)) / (area($2)  / 100)" type="FLOAT">
+                      <deegreewfs:FunctionParam>
+                        <deegreewfs:SpecialContent>$QUERY.BBOX</deegreewfs:SpecialContent>
+                      </deegreewfs:FunctionParam>
+                      <deegreewfs:FunctionParam>
+                        <deegreewfs:MappingField field="GEOM" type="GEOMETRY" srs="4326"/>
+                      </deegreewfs:FunctionParam>
+                    </deegreewfs:SQLFunctionCall>
+                  </deegreewfs:Content>
+                </xsd:appinfo>
+              </xsd:annotation>
+            </xsd:element>
+            <!-- geometry property 'geom' -->
+            <xsd:element name="geom" type="gml:GeometryPropertyType">
+              <xsd:annotation>
+                <xsd:appinfo>
+                  <deegreewfs:IdentityPart>false</deegreewfs:IdentityPart>
+                  <deegreewfs:Content>
+                    <deegreewfs:SRS>EPSG:4326</deegreewfs:SRS>
+                    <deegreewfs:MappingField field="GEOM" type="GEOMETRY" srs="4326"/>
+                  </deegreewfs:Content>
+                </xsd:appinfo>
+              </xsd:annotation>
+            </xsd:element>
+          </xsd:sequence>
+        </xsd:extension>
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+  <!-- ====================================================================== -->
+</xsd:schema>

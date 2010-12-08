@@ -1,0 +1,3 @@
+org.deegree.coverage.raster.data.container.MemoryRasterDataContainer
+org.deegree.coverage.raster.data.container.CachedRasterDataContainer
+org.deegree.coverage.raster.data.container.LazyRasterDataContainer
