@@ -66,6 +66,7 @@ public class FeaturePropertyType extends GMLObjectPropertyType {
     public FeaturePropertyType( QName name, int minOccurs, int maxOccurs, boolean isAbstract, boolean isNillable,
                                 List<PropertyType> substitutions, QName valueFtName, ValueRepresentation representation ) {
         super( name, minOccurs, maxOccurs, isAbstract, isNillable, substitutions, representation );
+        this.valueFtName = valueFtName;
         this.representation = representation;
     }
 
