@@ -189,7 +189,7 @@ public class RemoteWMSStore implements RemoteOWSStore {
                     LinkedList<String> errors = new LinkedList<String>();
                     Pair<BufferedImage, String> pair = client.getMap( new LinkedList<String>( layers.keySet() ), width,
                                                                       height, envelope, origCrs, imageFormat,
-                                                                      transparent, false, 100, true, errors );
+                                                                      transparent, false, -1, true, errors );
                     LOG.debug( "Parameters that have been replaced for this request: " + errors );
                     if ( pair.first == null ) {
                         LOG.debug( "Error from remote WMS: " + pair.second );

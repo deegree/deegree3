@@ -523,13 +523,13 @@ public class RasterFactory {
                         outputBands[0] = value;
                         break;
                     case RED:
-                        outputBands[2] = value;
+                        outputBands[3] = value;
                         break;
                     case GREEN:
-                        outputBands[1] = value;
+                        outputBands[2] = value;
                         break;
                     case BLUE:
-                        outputBands[0] = value;
+                        outputBands[1] = value;
                         break;
                     default:
                         outputBands[i] = value;
