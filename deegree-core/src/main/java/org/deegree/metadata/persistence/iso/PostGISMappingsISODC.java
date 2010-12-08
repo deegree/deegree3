@@ -76,8 +76,9 @@ import com.vividsolutions.jts.io.ParseException;
 
 /**
  * Implementation of the {@link PostGISMapping}. It's the base class for access to the backend. Is there any change in
- * the database schema for the {@link ISOMetadataStore} then in this class should be changed the binding, as well. TODO
- * boundingbox, crs and association, denominator, distanceUOM, distanceValue put a type in
+ * the database schema for the {@link ISOMetadataStore} then in this class should be changed the binding, as well.
+ * <p>
+ * TODO denominator, distanceUOM, distanceValue put a type in
  * 
  * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
  * @author last edited by: $Author$
@@ -89,16 +90,6 @@ public class PostGISMappingsISODC implements PostGISMapping {
     private static final Logger LOG = getLogger( PostGISMappingsISODC.class );
 
     private static Map<QName, Triple<String, String, PrimitiveType>> propToTableAndCol = new HashMap<QName, Triple<String, String, PrimitiveType>>();
-
-    /**
-     * XML element name in the representation of the response
-     */
-    public final static String BRIEFRECORD = "BriefRecord";
-
-    /**
-     * XML element name in the representation of the response
-     */
-    public final static String SUMMARYRECORD = "SummaryRecord";
 
     /**
      * XML element name in the representation of the response
@@ -117,46 +108,58 @@ public class PostGISMappingsISODC implements PostGISMapping {
 
         addStringProp( APISO_NS, "title", DatabaseTables.isoqp_title, "title" );
         addStringProp( APISO_NS, "Title", DatabaseTables.isoqp_title, "title" );
+        addStringProp( "", "Title", DatabaseTables.isoqp_title, "title" );
         addStringProp( DC_NS, "Title", DatabaseTables.isoqp_title, "title" );
         addStringProp( CSW_202_NS, "Title", DatabaseTables.isoqp_title, "title" );
         addStringProp( APISO_NS, "abstract", DatabaseTables.isoqp_abstract, "abstract" );
         addStringProp( APISO_NS, "Abstract", DatabaseTables.isoqp_abstract, "abstract" );
         addStringProp( DCT_NS, "Abstract", DatabaseTables.isoqp_abstract, "abstract" );
+        addStringProp( "", "Abstract", DatabaseTables.isoqp_abstract, "abstract" );
         addStringProp( CSW_202_NS, "Abstract", DatabaseTables.isoqp_abstract, "abstract" );
         addStringProp( APISO_NS, "BoundingBox", DatabaseTables.isoqp_BoundingBox, "bbox" );
         addStringProp( DC_NS, "coverage", DatabaseTables.isoqp_BoundingBox, "bbox" );
         addStringProp( OWS_NS, "BoundingBox", DatabaseTables.isoqp_BoundingBox, "bbox" );
         addStringProp( OWS_NS, "boundingBox", DatabaseTables.isoqp_BoundingBox, "bbox" );
+        addStringProp( "", "boundingBox", DatabaseTables.isoqp_BoundingBox, "bbox" );
         addStringProp( CSW_202_NS, "BoundingBox", DatabaseTables.isoqp_BoundingBox, "bbox" );
         addStringProp( APISO_NS, "type", DatabaseTables.isoqp_type, "type" );
         addStringProp( APISO_NS, "Type", DatabaseTables.isoqp_type, "type" );
         addStringProp( DC_NS, "Type", DatabaseTables.isoqp_type, "type" );
+        addStringProp( "", "Type", DatabaseTables.isoqp_type, "type" );
         addStringProp( CSW_202_NS, "Type", DatabaseTables.isoqp_type, "type" );
         addStringProp( APISO_NS, "format", DatabaseTables.isoqp_format, "format" );
         addStringProp( APISO_NS, "Format", DatabaseTables.isoqp_format, "format" );
         addStringProp( DC_NS, "Format", DatabaseTables.isoqp_format, "format" );
+        addStringProp( "", "Format", DatabaseTables.isoqp_format, "format" );
         addStringProp( CSW_202_NS, "Format", DatabaseTables.isoqp_format, "format" );
         addStringProp( APISO_NS, "Subject", DatabaseTables.isoqp_keyword, "keyword" );
         addStringProp( APISO_NS, "subject", DatabaseTables.isoqp_keyword, "keyword" );
         addStringProp( DC_NS, "Subject", DatabaseTables.isoqp_keyword, "keyword" );
+        addStringProp( "", "Subject", DatabaseTables.isoqp_keyword, "keyword" );
         addStringProp( CSW_202_NS, "Subject", DatabaseTables.isoqp_keyword, "keyword" );
         addStringProp( APISO_NS, "AnyText", DatabaseTables.datasets, "anytext" );
         addStringProp( APISO_NS, "anyText", DatabaseTables.datasets, "anytext" );
         addStringProp( CSW_202_NS, "AnyText", DatabaseTables.datasets, "anytext" );
+        addStringProp( "", "AnyText", DatabaseTables.datasets, "anytext" );
         addStringProp( APISO_NS, "identifier", DatabaseTables.qp_identifier, "identifier" );
         addStringProp( APISO_NS, "Identifier", DatabaseTables.qp_identifier, "identifier" );
         addStringProp( DC_NS, "Identifier", DatabaseTables.qp_identifier, "identifier" );
+        addStringProp( "", "Identifier", DatabaseTables.qp_identifier, "identifier" );
         addStringProp( CSW_202_NS, "Identifier", DatabaseTables.qp_identifier, "identifier" );
         addDateProp( APISO_NS, "modified", DatabaseTables.datasets, "modified" );
         addDateProp( APISO_NS, "Modified", DatabaseTables.datasets, "modified" );
         addDateProp( DCT_NS, "Modified", DatabaseTables.datasets, "modified" );
+        addDateProp( "", "Modified", DatabaseTables.datasets, "modified" );
         addDateProp( CSW_202_NS, "Modified", DatabaseTables.datasets, "modified" );
         addStringProp( APISO_NS, "CRS", DatabaseTables.isoqp_crs, "crs" );
         addStringProp( DC_NS, "CRS", DatabaseTables.isoqp_crs, "crs" );
+        addStringProp( "", "CRS", DatabaseTables.isoqp_crs, "crs" );
         addStringProp( APISO_NS, "association", DatabaseTables.isoqp_association, "relation" );
         addStringProp( APISO_NS, "Association", DatabaseTables.isoqp_association, "relation" );
         addStringProp( CSW_202_NS, "Association", DatabaseTables.isoqp_association, "relation" );
+        addStringProp( "", "Association", DatabaseTables.isoqp_association, "relation" );
         addStringProp( DC_NS, "Relation", DatabaseTables.isoqp_association, "relation" );
+        addStringProp( "", "Relation", DatabaseTables.isoqp_association, "relation" );
 
         // ----------------------</common queryable properties>------------------------------------
         // ----------------------------------------------------------------------------------------
@@ -444,6 +447,7 @@ public class PostGISMappingsISODC implements PostGISMapping {
             String msg = Messages.getMessage( "WARN_PROPNAME_MAPPING", propName );
             LOG.debug( msg );
         } else {
+
             Triple<String, String, PrimitiveType> tableColumn = propToTableAndCol.get( qName );
             if ( tableColumn != null ) {
                 String datasets = DatabaseTables.datasets.name();
