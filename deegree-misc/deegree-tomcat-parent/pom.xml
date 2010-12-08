@@ -5,7 +5,7 @@
   <groupId>org.deegree</groupId>
   <artifactId>deegree-tomcat-parent</artifactId>
   <packaging>pom</packaging>
-  <version>3.1-SNAPSHOT</version>
+  <version>3.1-test</version>
   <name>deegree-tomcat-parent</name>
   <url>http://www.deegree.org</url>
   <scm>
@@ -16,7 +16,7 @@
   <parent>
     <groupId>org.deegree</groupId>
     <artifactId>deegree-service-parent</artifactId>
-    <version>3.1-SNAPSHOT</version>
+    <version>3.1-test</version>
   </parent>
 
   <build>
@@ -48,7 +48,7 @@
     <dependency>
       <groupId>org.deegree</groupId>
       <artifactId>deegree-tomcat</artifactId>
-      <version>3.1-SNAPSHOT</version>
+      <version>3.1-test</version>
       <type>zip</type>
       <scope>compile</scope>
     </dependency>
