@@ -129,9 +129,9 @@ import org.deegree.services.jaxb.metadata.ServiceProviderType;
 import org.deegree.services.jaxb.wfs.AbstractFormatType;
 import org.deegree.services.jaxb.wfs.CustomFormat;
 import org.deegree.services.jaxb.wfs.DeegreeWFS;
+import org.deegree.services.jaxb.wfs.DeegreeWFS.SupportedVersions;
 import org.deegree.services.jaxb.wfs.FeatureTypeMetadata;
 import org.deegree.services.jaxb.wfs.GMLFormat;
-import org.deegree.services.jaxb.wfs.DeegreeWFS.SupportedVersions;
 import org.deegree.services.wfs.format.Format;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -548,17 +548,16 @@ public class WFSController extends AbstractOGCServiceController {
                 sendServiceException110( e, response );
             }
         } catch ( XMLParsingException e ) {
-            LOG.debug( e.getMessage(), e );
+            LOG.error( e.getMessage(), e );
             sendServiceException110( new OWSException( e.getMessage(), OWSException.INVALID_PARAMETER_VALUE ), response );
         } catch ( MissingParameterException e ) {
-            LOG.debug( e.getMessage(), e );
+            LOG.error( e.getMessage(), e );
             sendServiceException110( new OWSException( e ), response );
         } catch ( InvalidParameterValueException e ) {
-            LOG.debug( e.getMessage(), e );
+            LOG.error( e.getMessage(), e );
             sendServiceException110( new OWSException( e ), response );
         } catch ( Exception e ) {
-            LOG.debug( e.getMessage(), e );
-            e.printStackTrace();
+            LOG.error( e.getMessage(), e );
             sendServiceException110( new OWSException( e.getMessage(), ControllerException.NO_APPLICABLE_CODE ),
                                      response );
         }
