@@ -324,7 +324,7 @@ public class GMLFeatureWriter {
         }
         if ( feature instanceof GenericFeatureCollection ) {
             LOG.debug( "Exporting generic feature collection." );
-            writeStartElementWithNS( "gml", "FeatureCollection" );
+            writeStartElementWithNS( gmlNs, "FeatureCollection" );
             if ( feature.getId() != null ) {
                 if ( fidAttr.getNamespaceURI() == NULL_NS_URI ) {
                     writer.writeAttribute( fidAttr.getLocalPart(), feature.getId() );
