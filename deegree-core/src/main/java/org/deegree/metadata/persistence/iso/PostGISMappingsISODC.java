@@ -96,11 +96,6 @@ public class PostGISMappingsISODC implements PostGISMapping {
      */
     public final static String RECORD = "Record";
 
-    /**
-     * Mapping between tablename and XML element name
-     */
-    // private static Map<String, String> tableRecordType = new HashMap<String, String>();
-
     static {
 
         // ----------------------------------------------------------------------------------------
@@ -539,28 +534,8 @@ public class PostGISMappingsISODC implements PostGISMapping {
 
             QName requestedProperty = null;
             if ( steps.size() == 1 ) {
-                // step must be equal to a property name of the queried feature
-                // if ( ft.getPropertyDeclaration( steps.get( 0 ) ) == null ) {
-                // String msg = "Filter contains an invalid PropertyName '" + propName.getPropertyName()
-                // + "'. The queried feature type '" + ft.getName()
-                // + "' does not have a property with this name.";
-                // throw new FilterEvaluationException( msg );
-                // }
                 requestedProperty = steps.get( 0 );
             } else {
-                // 1. step must be equal to the name or alias of the queried feature
-                // if ( !ft.getName().equals( steps.get( 0 ) ) ) {
-                // String msg = "Filter contains an invalid PropertyName '" + propName.getPropertyName()
-                // + "'. The first step does not equal the queried feature type '" + ft.getName() + "'.";
-                // throw new FilterEvaluationException( msg );
-                // }
-                // // 2. step must be equal to a property name of the queried feature
-                // if ( ft.getPropertyDeclaration( steps.get( 1 ) ) == null ) {
-                // String msg = "Filter contains an invalid PropertyName '" + propName.getPropertyName()
-                // + "'. The second step does not equal any property of the queried feature type '"
-                // + ft.getName() + "'.";
-                // throw new FilterEvaluationException( msg );
-                // }
                 requestedProperty = steps.get( 1 );
             }
 
@@ -568,7 +543,6 @@ public class PostGISMappingsISODC implements PostGISMapping {
 
             if ( column == null ) {
                 throw new FilterEvaluationException( Messages.getMessage( "ERROR_COLUMN_NOT_EXISTS", column ) );
-                // pgValue = literal.getValue().toString();
             }
 
             Object internalValue = XMLValueMangler.xmlToInternal( literal.getValue().toString(),
@@ -576,17 +550,7 @@ public class PostGISMappingsISODC implements PostGISMapping {
                                                                               null ).getTargetFieldType() );
 
             pgValue = SQLValueMangler.internalToSQL( internalValue );
-
-            // // TODO implement properly
-            // PropertyType pt = mapping.first;
-            // if ( pt instanceof SimplePropertyType ) {
-            // Object internalValue = XMLValueMangler.xmlToInternal( literal.getValue().toString(),
-            // ( (SimplePropertyType) pt ).getPrimitiveType() );
-            // pgValue = SQLValueMangler.internalToSQL( internalValue );
-            // } else {
-            // pgValue = literal.getValue().toString();
-            // }
-            LOG.info( "pg_value in mapping: " + pgValue );
+            LOG.debug( "pg_value in mapping: " + pgValue );
 
         }
 
@@ -632,28 +596,8 @@ public class PostGISMappingsISODC implements PostGISMapping {
 
         QName requestedProperty = null;
         if ( steps.size() == 1 ) {
-            // step must be equal to a property name of the queried feature
-            // if ( ft.getPropertyDeclaration( steps.get( 0 ) ) == null ) {
-            // String msg = "Filter contains an invalid PropertyName '" + propName.getPropertyName()
-            // + "'. The queried feature type '" + ft.getName()
-            // + "' does not have a property with this name.";
-            // throw new FilterEvaluationException( msg );
-            // }
             requestedProperty = steps.get( 0 );
         } else {
-            // 1. step must be equal to the name or alias of the queried feature
-            // if ( !ft.getName().equals( steps.get( 0 ) ) ) {
-            // String msg = "Filter contains an invalid PropertyName '" + propName.getPropertyName()
-            // + "'. The first step does not equal the queried feature type '" + ft.getName() + "'.";
-            // throw new FilterEvaluationException( msg );
-            // }
-            // // 2. step must be equal to a property name of the queried feature
-            // if ( ft.getPropertyDeclaration( steps.get( 1 ) ) == null ) {
-            // String msg = "Filter contains an invalid PropertyName '" + propName.getPropertyName()
-            // + "'. The second step does not equal any property of the queried feature type '"
-            // + ft.getName() + "'.";
-            // throw new FilterEvaluationException( msg );
-            // }
             requestedProperty = steps.get( 1 );
         }
 
@@ -661,20 +605,7 @@ public class PostGISMappingsISODC implements PostGISMapping {
 
         if ( column == null ) {
             throw new FilterEvaluationException( Messages.getMessage( "ERROR_COLUMN_NOT_EXISTS", column ) );
-            // pgValue = literal.getValue().toString();
         }
-
-        // pgValue = literal.getValue().toString();
-        // // TODO implement properly
-        // PropertyType pt = mapping.first;
-        // if ( pt instanceof SimplePropertyType<?> ) {
-        // Object internalValue = XMLValueMangler.xmlToInternal(
-        // literal.getValue().toString(),
-        // ( (SimplePropertyType<?>) pt ).getPrimitiveType() );
-        // pgValue = SQLValueMangler.internalToSQL( internalValue );
-        // } else {
-        // pgValue = literal.getValue().toString();
-        // }
 
         try {
             pgValue = WKBWriter.write( literal );
@@ -692,11 +623,4 @@ public class PostGISMappingsISODC implements PostGISMapping {
     public Map<QName, Triple<String, String, PrimitiveType>> getPropToTableAndCol() {
         return propToTableAndCol;
     }
-
-    // /**
-    // * @return the tableRecordType
-    // */
-    // public static Map<String, String> getTableRecordType() {
-    // return tableRecordType;
-    // }
 }
