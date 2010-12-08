@@ -267,7 +267,7 @@ public class GeometryTransformer extends Transformer {
      * @throws IllegalArgumentException
      *             if the coordinates system of the geometry is <code>null</code>
      */
-    public Geometry transform( Geometry geo, CoordinateSystem sourceCRS )
+    public <T extends Geometry> T transform( T geo, CoordinateSystem sourceCRS )
                             throws TransformationException, IllegalArgumentException {
         return transform( geo, sourceCRS, false, null );
     }
