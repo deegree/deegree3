@@ -5,7 +5,7 @@
   <groupId>org.deegree</groupId>
   <artifactId>deegree-parent</artifactId>
   <packaging>pom</packaging>
-  <version>3.1-SNAPSHOT</version>
+  <version>3.1-test</version>
   <name>deegree-parent</name>
   <url>http://www.deegree.org</url>
   <scm>
