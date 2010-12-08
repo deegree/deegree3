@@ -1,0 +1,4 @@
+org.deegree.feature.persistence.memory.MemoryFeatureStoreProvider
+org.deegree.feature.persistence.postgis.PostGISFeatureStoreProvider
+org.deegree.feature.persistence.shape.ShapeFeatureStoreProvider
+org.deegree.feature.persistence.simplesql.SimpleSQLFeatureStoreProvider
