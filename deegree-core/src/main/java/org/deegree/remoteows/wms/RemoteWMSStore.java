@@ -85,7 +85,7 @@ public class RemoteWMSStore implements RemoteOWSStore {
 
     private TreeSet<String> commonSRS;
 
-    private boolean homogenousGroup = true;
+    private boolean homogenousGroup = true, alwaysUseDefaultCRS = false;
 
     private String imageFormat, requestCRS;
 
@@ -154,7 +154,12 @@ public class RemoteWMSStore implements RemoteOWSStore {
 
         if ( homogenousGroup ) {
             imageFormat = format == null ? "image/png" : format;
-            requestCRS = defCrs == null ? commonSRS.first() : defCrs;
+            requestCRS = crs;
+            if ( requestCRS == null ) {
+                requestCRS = defCrs == null ? commonSRS.first() : defCrs;
+            } else {
+                alwaysUseDefaultCRS = true;
+            }
             this.transparent = transparent;
         }
     }
@@ -173,13 +178,13 @@ public class RemoteWMSStore implements RemoteOWSStore {
         return null;
     }
 
-    public List<BufferedImage> getMap( Envelope envelope, int width, int height ) {
+    public List<BufferedImage> getMap( final Envelope envelope, final int width, final int height ) {
         if ( homogenousGroup ) {
             CRS origCrs = envelope.getCoordinateSystem();
             String origCrsName = origCrs.getName();
             try {
 
-                if ( commonSRS.contains( origCrsName ) ) {
+                if ( ( !alwaysUseDefaultCRS && commonSRS.contains( origCrsName ) ) || origCrsName.equals( requestCRS ) ) {
                     LOG.trace( "Will request remote layer(s) in " + origCrsName );
                     LinkedList<String> errors = new LinkedList<String>();
                     Pair<BufferedImage, String> pair = client.getMap( new LinkedList<String>( layers.keySet() ), width,
@@ -193,10 +198,10 @@ public class RemoteWMSStore implements RemoteOWSStore {
                 }
 
                 // case: transform the bbox and image
-                LOG.trace( "Will request remote layer(s) in " + requestCRS + " and transform to " + origCrsName );
+                LOG.trace( "Will request remote layer(s) in {} and transform to {}", requestCRS, origCrsName );
 
                 GeometryTransformer trans = new GeometryTransformer( requestCRS );
-                Envelope bbox = (Envelope) trans.transform( envelope, origCrs.getWrappedCRS() );
+                Envelope bbox = trans.transform( envelope, origCrs.getWrappedCRS() );
 
                 RasterTransformer rtrans = new RasterTransformer( origCrs.getWrappedCRS() );
 
@@ -213,13 +218,13 @@ public class RemoteWMSStore implements RemoteOWSStore {
                                                                   new CRS( requestCRS ), imageFormat, transparent,
                                                                   false, -1, true, errors );
 
-                LOG.debug( "Parameters that have been replaced for this request: " + errors );
+                LOG.debug( "Parameters that have been replaced for this request: {}", errors );
                 if ( pair.first == null ) {
-                    LOG.debug( "Error from remote WMS: " + pair.second );
+                    LOG.debug( "Error from remote WMS: {}", pair.second );
                     return null;
                 }
 
-                RasterGeoReference env = RasterGeoReference.create( OUTER, bbox, width, height );
+                RasterGeoReference env = RasterGeoReference.create( OUTER, bbox, newWidth, newHeight );
                 RasterData data = rasterDataFromImage( pair.first );
                 SimpleRaster raster = new SimpleRaster( data, bbox, env );
 
