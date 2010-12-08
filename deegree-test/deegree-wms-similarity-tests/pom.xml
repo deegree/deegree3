@@ -39,12 +39,9 @@
           <includes>
             <include>**/*IT.java</include>
           </includes>
-          <systemProperties>
-            <property>
-              <name>wms.baseurl</name>
-              <value>http://localhost:${portnumber}/deegree-wms-similarity-tests/services</value>
-            </property>
-          </systemProperties>
+          <systemPropertyVariables>
+            <wms.baseurl>http://localhost:${portnumber}/deegree-wms-similarity-tests/services</wms.baseurl>
+          </systemPropertyVariables>
         </configuration>
         <executions>
           <execution>
