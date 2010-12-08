@@ -116,17 +116,17 @@ import org.deegree.feature.types.property.CodePropertyType;
 import org.deegree.feature.types.property.CustomPropertyType;
 import org.deegree.feature.types.property.FeaturePropertyType;
 import org.deegree.feature.types.property.GeometryPropertyType;
+import org.deegree.feature.types.property.GeometryPropertyType.GeometryType;
 import org.deegree.feature.types.property.MeasurePropertyType;
 import org.deegree.feature.types.property.PropertyType;
 import org.deegree.feature.types.property.SimplePropertyType;
-import org.deegree.feature.types.property.GeometryPropertyType.GeometryType;
 import org.deegree.gml.GMLVersion;
 import org.deegree.gml.schema.GMLSchemaInfoSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Stream-based writer for exporting {@link FeatureType} instances as GML application schemas.
+ * Stream-based writer for exporting {@link FeatureType} instances as a GML application schema.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
@@ -543,8 +543,7 @@ public class ApplicationSchemaXSDEncoder {
             XSTypeDefinition typeDef = elDecl.getTypeDefinition();
             if ( !typeDef.getAnonymous() ) {
                 if ( isGMLNamespace( typeDef.getNamespace() )
-                     && ( typeDef.getName().equals( "AbstractFeatureType" ) || typeDef.getName().equals(
-                                                                                                         "AbstractFeatureCollectionType" ) ) ) {
+                     && ( typeDef.getName().equals( "AbstractFeatureType" ) || typeDef.getName().equals( "AbstractFeatureCollectionType" ) ) ) {
                     if ( ft instanceof FeatureCollectionType && abstractGMLFeatureCollectionElement != null ) {
                         typeName = new QName( gmlNsURI, "AbstractFeatureCollectionType" );
                     } else {
@@ -1030,9 +1029,7 @@ public class ApplicationSchemaXSDEncoder {
                 exportElement( writer, (XSElementDeclaration) term, minOccurs, maxOccurs, maxUnbounded );
             }
         } else if ( term instanceof XSWildcard ) {
-            XSWildcard wildcard = (XSWildcard) term;
-            LOG.warn( "Exporting of wildcards not implemented yet." );
-            // TODO
+            LOG.warn( "Exporting of wildcards is not implemented yet." );
         }
     }
 
@@ -1147,31 +1144,6 @@ public class ApplicationSchemaXSDEncoder {
         }
         }
         return typeFound;
-    }
-
-    private void export( XMLStreamWriter writer, XSSimpleTypeDefinition xsSimpleType )
-                            throws XMLStreamException {
-
-        writer.writeStartElement( "simpleType" );
-        writer.writeAttribute( "name", xsSimpleType.getName() );
-        writer.writeStartElement( "restriction" );
-
-        String baseTypeName = xsSimpleType.getBaseType().getName();
-        if ( baseTypeName == null || xsSimpleType.getLexicalEnumeration().getLength() == 0 ) {
-            LOG.warn( "Custom simple type '{" + xsSimpleType.getNamespace() + "}" + xsSimpleType.getName()
-                      + "' is based on unnamed type. Defaulting to xs:string." );
-            writer.writeAttribute( "base", "string" );
-        } else {
-            writer.writeAttribute( "base", getPrefixedName( new QName( xsSimpleType.getBaseType().getNamespace(),
-                                                                       xsSimpleType.getBaseType().getName() ) ) );
-        }
-        StringList enumValues = xsSimpleType.getLexicalEnumeration();
-        for ( int i = 0; i < enumValues.getLength(); i++ ) {
-            writer.writeEmptyElement( "enumeration" );
-            writer.writeAttribute( "value", enumValues.item( i ) );
-        }
-        writer.writeEndElement();
-        writer.writeEndElement();
     }
 
     private String getPrefixedName( QName name ) {
