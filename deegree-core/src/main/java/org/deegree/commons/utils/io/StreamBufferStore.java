@@ -132,7 +132,7 @@ public class StreamBufferStore extends OutputStream {
     @Override
     public void write( byte[] b )
                             throws IOException {
-        if ( tmpFile == null && bytesWritten + b.length > DEFAULT_LIMIT ) {
+        if ( tmpFile == null && bytesWritten + b.length > limit ) {
             switchToFile();
         }
         os.write( b );
@@ -142,7 +142,7 @@ public class StreamBufferStore extends OutputStream {
     @Override
     public void write( byte[] b, int off, int len )
                             throws IOException {
-        if ( tmpFile == null && bytesWritten + len > DEFAULT_LIMIT ) {
+        if ( tmpFile == null && bytesWritten + len > limit ) {
             switchToFile();
         }
         os.write( b, off, len );
@@ -152,7 +152,7 @@ public class StreamBufferStore extends OutputStream {
     @Override
     public void write( int b )
                             throws IOException {
-        if ( tmpFile == null && bytesWritten == DEFAULT_LIMIT ) {
+        if ( tmpFile == null && bytesWritten == limit ) {
             switchToFile();
         }
         os.write( b );
