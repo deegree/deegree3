@@ -1,0 +1,73 @@
+
+<ui:composition template="/layout.xhtml"
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:c="http://java.sun.com/jsp/jstl/core"
+  xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+  xmlns:dg="http://deegree.org/jsf"
+  xmlns:dgc="http://java.sun.com/jsf/composite/deegree">
+  <ui:define name="center">
+
+    <h:panelGroup rendered="#{!logBean.loggedIn}">
+      <ui:include src="accessForbidden.xhtml" />
+    </h:panelGroup>
+    <h:panelGroup rendered="#{logBean.loggedIn}">
+      <fieldset><legend><h:outputText styleClass="titel"
+        value="#{labels.metadataStores_title}" /></legend> <h:form>
+        <table style="font-size: small" border="0">
+					<tr><td /></tr>
+					<tr><td /></tr>
+          <ui:repeat value="#{configManager.msManager.configs}"
+            var="config">
+            <tr align="left">
+			  <td><h:commandButton styleClass="buttonActivate"
+                rendered="#{!config.deactivated}"
+                value="#{labels.metadataStores_deactivate}"
+                action="#{config.deactivate}" /> 
+                <h:commandButton styleClass="buttonDeactivate"
+                rendered="#{config.deactivated}"
+                value="#{labels.metadataStores_activate}"
+                action="#{config.activate}" /></td>            
+              <td><h:outputFormat styleClass="StatusDeactivated"
+                value="#{labels.metadataStores_id}">
+                <f:param value="#{config.id}" />
+              </h:outputFormat></td>
+              <td><h:commandButton styleClass="buttonEdit"
+                value="#{labels.metadataStores_edit}"
+                action="#{config.edit}" /></td>
+              <td><h:commandButton styleClass="buttonDelete"
+                value="#{labels.metadataStores_delete}"
+                action="#{config.delete}" /></td>
+              <td><h:commandButton styleClass="buttonInfo" 
+                rendered="false"
+                value="#{labels.metadataStores_info}"
+                action="#{config.showInfo}" disabled="true" /></td>
+              <td><h:commandButton styleClass="buttonInfo"
+                rendered="#{config.active}" 
+                value="#{labels.metadataStores_importer}"
+                action="#{config.openImporter}"/></td>
+              <td><h:commandButton styleClass="buttonInfo"
+                rendered="#{config.active &amp;&amp; config.sql}"
+                value="#{labels.metadataStores_setup}"
+                action="#{config.createTables}" /></td>
+            </tr>
+          </ui:repeat>
+        </table>
+        <br />
+      </h:form> <h:form>
+        <div><h:outputLabel styleClass="label" for="newMSBt"
+          value="#{labels.metadataStores_name}" /> <h:inputText styleClass="liste"
+          id="newMSBt" value="#{newMetadataStoreConfig.id}" size="16"
+          required="true"
+          requiredMessage="#{labels.metadataStores_name_req}" /> <h:selectOneMenu styleClass="liste"
+          value="#{newMetadataStoreConfig.type}">
+          <f:selectItems value="#{configManager.msManager.msTypes}" />
+        </h:selectOneMenu> <h:commandButton styleClass="buttonCreateNew" value="#{labels.metadataStores_new}"
+          action="#{newMetadataStoreConfig.create}" /></div>
+        
+      </h:form></fieldset>
+    </h:panelGroup>
+  </ui:define>
+</ui:composition>
