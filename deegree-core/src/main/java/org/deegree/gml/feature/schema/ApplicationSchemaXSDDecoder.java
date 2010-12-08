@@ -268,13 +268,6 @@ public class ApplicationSchemaXSDDecoder {
         return new ApplicationSchema( fts, ftSubstitution, prefixToNs, analyzer );
     }
 
-    private void resolveFtReferences() {
-        for ( FeaturePropertyType pt : featurePropertyTypes ) {
-            LOG.trace( "Resolving reference to feature type: '" + pt.getFTName() + "'" );
-            pt.resolve( ftNameToFt.get( pt.getFTName() ) );
-        }
-    }
-
     private FeatureType buildFeatureType( XSElementDeclaration featureElementDecl ) {
 
         QName ftName = createQName( featureElementDecl.getNamespace(), featureElementDecl.getName() );
