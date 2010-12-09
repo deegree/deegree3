@@ -40,13 +40,14 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.deegree.feature.Feature;
+import org.deegree.feature.FeatureCollection;
 import org.deegree.feature.StreamFeatureCollection;
 import es.unex.sextante.core.GeoAlgorithm;
 import es.unex.sextante.dataObjects.IVectorLayer;
 import es.unex.sextante.parameters.Parameter;
 
 /**
- * TODO add class documentation here
+ * This class will be need to read {@link Feature} for {@link Feature} from {@link FeatureCollection} as Stream.
  * 
  * @author <a href="mailto:pabel@lat-lon.de">Jens Pabel</a>
  * @author last edited by: $Author: pabel $
@@ -63,7 +64,12 @@ public class SextanteFeatureCollectionStreamReader {
 
     private boolean foundFeature = true;
 
-    public static boolean containOneOfAllContainersFeatures() {
+    /**
+     * Checks whether one of {@link SextanteFeatureCollectionStreamReader}s contains {@link Feature}s.
+     * 
+     * @return true = if one of {@link SextanteFeatureCollectionStreamReader}s contains {@link Feature}s.
+     */
+    public static boolean containOneOfAllReadersFeatures() {
 
         int counter = 0;
 
@@ -82,6 +88,11 @@ public class SextanteFeatureCollectionStreamReader {
         }
     }
 
+    /**
+     * Closes all {@link SextanteFeatureCollectionStreamReader}s.
+     * 
+     * @throws IOException
+     */
     public static void closeAll()
                             throws IOException {
         for ( SextanteFeatureCollectionStreamReader container : ALL_CONTAINERS ) {
@@ -124,6 +135,11 @@ public class SextanteFeatureCollectionStreamReader {
         }
     }
 
+    /**
+     * Returns, if {@link Feature} are found.
+     * 
+     * @return If {@link Feature} are found.
+     */
     public boolean foundFeature() {
         return foundFeature;
     }

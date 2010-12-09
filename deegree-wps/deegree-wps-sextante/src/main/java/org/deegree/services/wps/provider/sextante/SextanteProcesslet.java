@@ -48,7 +48,6 @@ import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
 
 import org.deegree.commons.xml.stax.SchemaLocationXMLStreamWriter;
-import org.deegree.cs.CRS;
 import org.deegree.feature.Feature;
 import org.deegree.feature.FeatureCollection;
 import org.deegree.feature.property.Property;
@@ -124,12 +123,11 @@ public class SextanteProcesslet implements Processlet {
 
             SextanteFeatureCollectionStreamer sfcs = new SextanteFeatureCollectionStreamer( alg, in, out );
 
-            if ( sfcs.containFeatureCollectionInput() && false) { // feature collection = streaming
+            if ( sfcs.containFeatureCollectionInput() && SextanteFeatureCollectionStreamer.ENABLED ) { // feature
+                                                                                                       // collection =
+                                                                                                       // streaming
                 LOG.info( "STREAMING" );
-
-                      sfcs.execute();
-    
-                
+                sfcs.execute();
             } else { // no feature collection = no streaming
 
                 LOG.info( "NO STREAMING" );
@@ -684,11 +682,9 @@ public class SextanteProcesslet implements Processlet {
                 paramIndexes.add( i );
             }
         }
-        
+
         // traverses the output parameters
         for ( Integer i : paramIndexes ) {
-            
-            
 
             // output parameter
             Output param = outputs.getOutput( i );
@@ -842,8 +838,8 @@ public class SextanteProcesslet implements Processlet {
             sw.setPrefix( "gml", GMLNS );
             GMLStreamWriter gmlWriter = GMLOutputFactory.createGMLStreamWriter( gmlVersion, sw );
 
-           // gmlWriter.setOutputCRS(new CRS( "EPSG:4326" ));
-            
+            // gmlWriter.setOutputCRS(new CRS( "EPSG:4326" ));
+
             gmlWriter.write( geometry );
 
         } catch ( Exception e ) {
@@ -861,7 +857,7 @@ public class SextanteProcesslet implements Processlet {
      * 
      * @throws ProcessletException
      */
-    private static void writeFeatureCollection( ComplexOutput gmlOutput, FeatureCollection coll )
+    public static void writeFeatureCollection( ComplexOutput gmlOutput, Feature coll )
                             throws ProcessletException {
         try {
 
@@ -879,7 +875,7 @@ public class SextanteProcesslet implements Processlet {
             GMLStreamWriter gmlWriter = GMLOutputFactory.createGMLStreamWriter(
                                                                                 FormatHelper.determineGMLVersion( gmlOutput ),
                                                                                 sw );
-            //gmlWriter.setOutputCRS(new CRS( "EPSG:4326" ));
+            // gmlWriter.setOutputCRS(new CRS( "EPSG:4326" ));
             gmlWriter.write( coll );
 
         } catch ( Exception e ) {

@@ -44,15 +44,12 @@ import java.util.Set;
 
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
-import javax.xml.stream.XMLStreamWriter;
 
 import org.deegree.feature.Feature;
 import org.deegree.feature.FeatureCollection;
 import org.deegree.feature.StreamFeatureCollection;
 import org.deegree.gml.GMLInputFactory;
-import org.deegree.gml.GMLOutputFactory;
 import org.deegree.gml.GMLStreamReader;
-import org.deegree.gml.GMLStreamWriter;
 import org.deegree.services.wps.ProcessletException;
 import org.deegree.services.wps.ProcessletInputs;
 import org.deegree.services.wps.ProcessletOutputs;
@@ -78,6 +75,8 @@ import es.unex.sextante.parameters.Parameter;
  * @version $Revision: $, $Date: $
  */
 public class SextanteFeatureCollectionStreamer {
+    
+    public static final boolean ENABLED = false;
 
     // algorithm and input data
     // ---------------------------------------------------------------------------------------------------
@@ -217,7 +216,6 @@ public class SextanteFeatureCollectionStreamer {
 
                 // determine GMLType of input parameter
                 ComplexInput gmlInput = (ComplexInput) in.getParameter( param.getParameterName() );
-                GMLType gmlType = FormatHelper.determineGMLType( gmlInput );
 
                 // create feature collection input stream
                 XMLStreamReader xmlReader = gmlInput.getValueAsXMLStream();
@@ -231,8 +229,9 @@ public class SextanteFeatureCollectionStreamer {
 
             // execute and output parameters
             // --------------------------------------------------------------------------------------------------------------------------------------------
+            boolean first = true;
             do {
-                // set feature collections for one execute
+                // set feature for one execute
                 for ( SextanteFeatureCollectionStreamReader fcsc : featureCollectionsForAExecute ) {
                     Parameter param = fcsc.getParameter();
                     IVectorLayer layer = fcsc.getNextFeatureAsVectorLayer();
@@ -246,13 +245,15 @@ public class SextanteFeatureCollectionStreamer {
 
                 // notice output parameters with their streams
                 OutputObjectsSet outputs = alg.getOutputObjects();
-                for ( Integer i : featureCollectionIndexesOutput ) {
-                    ComplexOutput gmlOutput = (ComplexOutput) out.getParameter( alg.getOutputObjects().getOutput( i ).getName() );
-                    XMLStreamWriter sw = gmlOutput.getXMLStreamWriter();
-                    GMLStreamWriter gmlWriter = GMLOutputFactory.createGMLStreamWriter(
-                                                                                        FormatHelper.determineGMLVersion( gmlOutput ),
-                                                                                        sw );
-                    featuresForWrite.put( i, new SextanteFeatureCollectionStreamWriter( sw, gmlWriter ) );
+
+                if ( first ) {
+                    first = false;
+
+                    for ( Integer i : featureCollectionIndexesOutput ) {
+                        String identifier = alg.getOutputObjects().getOutput( i ).getName();
+                        featuresForWrite.put( i, new SextanteFeatureCollectionStreamWriter( identifier, out ) );
+                    }
+
                 }
 
                 // write features
@@ -267,11 +268,11 @@ public class SextanteFeatureCollectionStreamer {
                     con.writeFeature( f );
                 }
 
-            } while ( SextanteFeatureCollectionStreamReader.containOneOfAllContainersFeatures() );
+            } while ( SextanteFeatureCollectionStreamReader.containOneOfAllReadersFeatures() );
 
         } catch ( Exception e ) {
             e.printStackTrace();
-            throw new ProcessletException( "Parsing error!" );
+            throw new ProcessletException( "SEXTANTE FeatureCollection-Streaming failed!" );
         } finally {
             try {
                 SextanteFeatureCollectionStreamReader.closeAll();
@@ -284,10 +285,10 @@ public class SextanteFeatureCollectionStreamer {
 
             } catch ( IOException e ) {
                 e.printStackTrace();
-                throw new ProcessletException( "Parsing error!" );
+                throw new ProcessletException( "SEXTANTE FeatureCollection-Streaming failed!" );
             } catch ( XMLStreamException e ) {
-                // TODO Auto-generated catch block
                 e.printStackTrace();
+                throw new ProcessletException( "SEXTANTE FeatureCollection-Streaming failed!" );
             }
         }
     }

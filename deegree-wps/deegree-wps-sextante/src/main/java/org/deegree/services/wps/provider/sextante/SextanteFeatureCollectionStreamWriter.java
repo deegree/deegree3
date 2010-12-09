@@ -39,13 +39,16 @@ import java.util.HashMap;
 import java.util.Set;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
+
 import org.deegree.cs.exceptions.TransformationException;
 import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.feature.Feature;
 import org.deegree.feature.FeatureCollection;
+import org.deegree.gml.GMLOutputFactory;
 import org.deegree.gml.GMLStreamWriter;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.deegree.gml.GMLVersion;
+import org.deegree.services.wps.ProcessletOutputs;
+import org.deegree.services.wps.output.ComplexOutput;
 
 /**
  * This class can be use to write a {@link FeatureCollection}, {@link Feature} for {@link Feature} on a Stream.
@@ -57,22 +60,32 @@ import org.slf4j.LoggerFactory;
  */
 public class SextanteFeatureCollectionStreamWriter {
 
-    private static final Logger LOG = LoggerFactory.getLogger( SextanteFeatureCollectionStreamWriter.class );
+    private static int activeWriterCounter; // number of active writers
+
+    private int writerId; // id of this writer
+
+    private int featureCount; // number of written features of this writer
 
     private final XMLStreamWriter sw;
 
     private final GMLStreamWriter gmlWriter;
 
-    private boolean firstFeature = true;
-    private boolean onlyOne = true;
+    private final GMLVersion gmlVersion;
 
-    private String gmlNSPrefix = "gml";
+    private boolean firstFeature = true; // true if first feature isn't written
 
-    private String gmlNS = "http://www.opengis.net/gml";
+    private String gmlNSPrefix = "gml"; // default gml namespace prefix
 
-    public SextanteFeatureCollectionStreamWriter( XMLStreamWriter sw, GMLStreamWriter gmlWriter ) {
-        this.sw = sw;
-        this.gmlWriter = gmlWriter;
+    private String gmlNS = "http://www.opengis.net/gml"; // default gml namespace
+
+    public SextanteFeatureCollectionStreamWriter( String identifier, ProcessletOutputs out ) throws XMLStreamException {
+        activeWriterCounter++;
+        writerId = activeWriterCounter;
+
+        ComplexOutput gmlOutput = (ComplexOutput) out.getParameter( identifier );
+        this.sw = gmlOutput.getXMLStreamWriter();
+        this.gmlVersion = FormatHelper.determineGMLVersion( gmlOutput );
+        this.gmlWriter = GMLOutputFactory.createGMLStreamWriter( gmlVersion, sw );
     }
 
     /**
@@ -85,8 +98,6 @@ public class SextanteFeatureCollectionStreamWriter {
     private void writeStartElement( Feature f )
                             throws XMLStreamException {
 
-        sw.writeStartDocument();
-        
         // determine and set namespaces
         HashMap<String, String> namespaces = SextanteProcesslet.determinePropertyNamespaces( f );
         Set<String> namespaceURIs = namespaces.keySet();
@@ -97,8 +108,16 @@ public class SextanteFeatureCollectionStreamWriter {
             sw.setPrefix( prefix, uri );
         }
 
-        // write start element for FeatureCollection
+        // write start element of FeatureCollection
         sw.writeStartElement( gmlNSPrefix, "FeatureCollection", gmlNS );
+
+        // set the correct id for feature collection
+        if ( gmlVersion.equals( GMLVersion.GML_2 ) ) {
+            sw.writeAttribute( "fid", "SextanteFeatureCollection" + writerId );
+        } else {
+            sw.writeAttribute( "gml:id", "SextanteFeatureCollection" + writerId );
+        }
+
     }
 
     /**
@@ -114,43 +133,41 @@ public class SextanteFeatureCollectionStreamWriter {
                             throws XMLStreamException, UnknownCRSException, TransformationException {
         if ( f != null ) {
 
-            LOG.info( "WRITE FEATURE" );
+            // LOG.info( "WRITE FEATURE" );
 
+            // write feature collection start element
             if ( firstFeature ) {
                 writeStartElement( f );
                 firstFeature = false;
             }
 
-            if(onlyOne){
-                onlyOne = false;
-           
-            
-            // write start element for featureMember
-            sw.writeStartElement( gmlNSPrefix, "featureMember" ,gmlNS);
+            // write start element of featureMember
+            sw.writeStartElement( gmlNSPrefix, "featureMember", gmlNS );
 
             // write Feature
-            //gmlWriter.write( f );
+            featureCount++;
+            f.setId( "SextanteFeature" + writerId + featureCount );
+            gmlWriter.write( f );
 
-            // write end element for featureMember
+            // write end element of featureMember
             sw.writeEndElement();
-            }
 
         }
 
     }
 
     /**
-     * Closes the Stream.
+     * Closes the feature collection.
      * 
      * @throws XMLStreamException
      */
     public void close()
                             throws XMLStreamException {
-        // write end element
-       //sw.writeEndElement();
-       sw.writeEndDocument();
-        
-       gmlWriter.close();
-       sw.close();
+
+        // write end element of FeatureCollection
+        sw.writeEndElement();
+
+        // Remove active writer
+        activeWriterCounter--;
     }
 }
