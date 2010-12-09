@@ -146,7 +146,7 @@ public class BlobCodec {
         Map<String, String> bindings = new HashMap<String, String>( nsContext );
         gmlWriter.setNamespaceBindings( bindings );
         gmlWriter.setOutputCRS( crs );
-        gmlWriter.setLocalXLinkTemplate( "#{}" );
+        gmlWriter.setRemoteXLinkTemplate( "#{}" );
         gmlWriter.setXLinkDepth( 0 );
         gmlWriter.setExportExtraProps( true );
         gmlWriter.write( object );
@@ -157,7 +157,7 @@ public class BlobCodec {
             xmlWriter = getXMLWriter( os );
             gmlWriter = GMLOutputFactory.createGMLStreamWriter( gmlVersion, xmlWriter );
             gmlWriter.setOutputCRS( crs );
-            gmlWriter.setLocalXLinkTemplate( "#{}" );
+            gmlWriter.setRemoteXLinkTemplate( "#{}" );
             gmlWriter.setXLinkDepth( 0 );
             gmlWriter.write( object );
             gmlWriter.close();

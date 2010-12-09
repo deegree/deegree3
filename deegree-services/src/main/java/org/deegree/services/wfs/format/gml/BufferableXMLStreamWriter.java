@@ -45,6 +45,7 @@ import static javax.xml.stream.XMLStreamConstants.START_ELEMENT;
 import static org.deegree.commons.xml.CommonNamespaces.XLNNS;
 
 import java.io.IOException;
+import java.util.Iterator;
 
 import javax.xml.XMLConstants;
 import javax.xml.namespace.NamespaceContext;
@@ -56,6 +57,7 @@ import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
 
 import org.deegree.commons.utils.io.StreamBufferStore;
+import org.deegree.commons.xml.NamespaceBindings;
 import org.deegree.commons.xml.stax.StAXParsingHelper;
 import org.deegree.gml.GMLStreamWriter;
 import org.slf4j.Logger;
@@ -83,6 +85,9 @@ public class BufferableXMLStreamWriter implements XMLStreamWriter {
     private int openElements;
 
     private final String xLinkTemplate;
+
+    // keeps track of the namespace bindings
+    private final NamespaceBindings nsBindings = new NamespaceBindings();
 
     public BufferableXMLStreamWriter( XMLStreamWriter sink, String xLinkTemplate ) {
         this.sink = sink;
@@ -114,11 +119,14 @@ public class BufferableXMLStreamWriter implements XMLStreamWriter {
                 break;
             }
             case END_ELEMENT: {
-                sink.writeEndElement();
+                if ( !inStream.getLocalName().equals( "WrapperElement" ) ) {
+                    sink.writeEndElement();
+                }
                 break;
             }
             case START_ELEMENT: {
-                if ( !inStream.getLocalName().equals( "DummyElement" ) ) {
+                if ( !inStream.getLocalName().equals( "DummyElement" )
+                     && !inStream.getLocalName().equals( "WrapperElement" ) ) {
                     if ( inStream.getNamespaceURI() == NULL_NS_URI || inStream.getPrefix() == DEFAULT_NS_PREFIX
                          || inStream.getPrefix() == null ) {
                         sink.writeStartElement( inStream.getLocalName() );
@@ -185,14 +193,25 @@ public class BufferableXMLStreamWriter implements XMLStreamWriter {
     public void activateBuffering()
                             throws XMLStreamException {
         if ( activeWriter == sink ) {
-            LOG.info( "Switching to buffered XMLStreamWriter, openElements: " + openElements );
-            buffer = new StreamBufferStore();
+            LOG.debug( "Switching to buffered XMLStreamWriter, openElements: " + openElements );
+            buffer = new StreamBufferStore( 10 * 1024 * 1024 );
             XMLOutputFactory of = XMLOutputFactory.newInstance();
             of.setProperty( XMLOutputFactory.IS_REPAIRING_NAMESPACES, true );
             activeWriter = of.createXMLStreamWriter( buffer, "UTF-8" );
+
+            activeWriter.writeStartElement( "WrapperElement" );
+            Iterator<String> namespaceIter = nsBindings.getNamespaceURIs();
+            while ( namespaceIter.hasNext() ) {
+                String ns = namespaceIter.next();
+                String prefix = nsBindings.getPrefix( ns );
+                activeWriter.writeNamespace( prefix, ns );
+                LOG.debug( prefix + "->" + ns );
+            }
+
             for ( int i = 0; i < openElements; i++ ) {
                 activeWriter.writeStartElement( "DummyElement" );
             }
+            activeWriter.setNamespaceContext( sink.getNamespaceContext() );
         }
     }
 
@@ -213,6 +232,7 @@ public class BufferableXMLStreamWriter implements XMLStreamWriter {
     @Override
     public void writeStartElement( String prefix, String localName, String namespaceURI )
                             throws XMLStreamException {
+        nsBindings.addNamespace( prefix, namespaceURI );
         activeWriter.writeStartElement( prefix, localName, namespaceURI );
         openElements++;
     }
@@ -251,6 +271,9 @@ public class BufferableXMLStreamWriter implements XMLStreamWriter {
     @Override
     public void close()
                             throws XMLStreamException {
+        if ( activeWriter != sink ) {
+            activeWriter.writeEndElement();
+        }
         activeWriter.close();
     }
 
@@ -269,6 +292,7 @@ public class BufferableXMLStreamWriter implements XMLStreamWriter {
     @Override
     public void writeAttribute( String prefix, String namespaceURI, String localName, String value )
                             throws XMLStreamException {
+        nsBindings.addNamespace( prefix, namespaceURI );
         activeWriter.writeAttribute( prefix, namespaceURI, localName, value );
     }
 
@@ -281,12 +305,14 @@ public class BufferableXMLStreamWriter implements XMLStreamWriter {
     @Override
     public void writeNamespace( String prefix, String namespaceURI )
                             throws XMLStreamException {
+        nsBindings.addNamespace( prefix, namespaceURI );
         activeWriter.writeNamespace( prefix, namespaceURI );
     }
 
     @Override
     public void writeDefaultNamespace( String namespaceURI )
                             throws XMLStreamException {
+        nsBindings.addNamespace( DEFAULT_NS_PREFIX, namespaceURI );
         activeWriter.writeDefaultNamespace( namespaceURI );
     }
 
@@ -365,12 +391,14 @@ public class BufferableXMLStreamWriter implements XMLStreamWriter {
     @Override
     public void setPrefix( String prefix, String uri )
                             throws XMLStreamException {
+        nsBindings.addNamespace( prefix, uri );
         activeWriter.setPrefix( prefix, uri );
     }
 
     @Override
     public void setDefaultNamespace( String uri )
                             throws XMLStreamException {
+        nsBindings.addNamespace( DEFAULT_NS_PREFIX, uri );
         activeWriter.setDefaultNamespace( uri );
     }
 

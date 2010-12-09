@@ -1,7 +1,7 @@
 //$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
- Copyright (C) 2001-2009 by:
+ Copyright (C) 2001-2010 by:
  - Department of Geography, University of Bonn -
  and
  - lat/lon GmbH -
@@ -60,8 +60,8 @@ import org.deegree.geometry.Geometry;
 import org.deegree.geometry.io.CoordinateFormatter;
 import org.deegree.gml.dictionary.Definition;
 import org.deegree.gml.dictionary.GMLDictionaryWriter;
-import org.deegree.gml.feature.GMLForwardReferenceHandler;
 import org.deegree.gml.feature.GMLFeatureWriter;
+import org.deegree.gml.feature.GMLForwardReferenceHandler;
 import org.deegree.gml.geometry.GML2GeometryWriter;
 import org.deegree.gml.geometry.GML3GeometryWriter;
 import org.deegree.gml.geometry.GMLGeometryWriter;
@@ -89,7 +89,7 @@ public class GMLStreamWriter {
 
     private int inlineXLinklevels;
 
-    private String localXLinkTemplate;
+    private String remoteXLinkTemplate;
 
     private CRS crs;
 
@@ -184,15 +184,15 @@ public class GMLStreamWriter {
     }
 
     /**
-     * Controls the representation of local xlinks.
+     * Controls the representation of xlinks that point to objects that are not included in the written GML document.
      * 
-     * @param localXLinkTemplate
-     *            template used to create references to local objects, e.g.
+     * @param remoteXLinkTemplate
+     *            template used to create references to document-remote objects, e.g.
      *            <code>http://localhost:8080/d3_wfs_lab/services?SERVICE=WFS&REQUEST=GetGmlObject&VERSION=1.1.0&TRAVERSEXLINKDEPTH=1&GMLOBJECTID={}</code>
      *            , the substring <code>{}</code> is replaced by the object id
      */
-    public void setLocalXLinkTemplate( String localXLinkTemplate ) {
-        this.localXLinkTemplate = localXLinkTemplate;
+    public void setRemoteXLinkTemplate( String remoteXLinkTemplate ) {
+        this.remoteXLinkTemplate = remoteXLinkTemplate;
     }
 
     /**
@@ -217,7 +217,8 @@ public class GMLStreamWriter {
     }
 
     /**
-     * Sets an {@link GMLForwardReferenceHandler} that copes with {@link GMLReference}s that are processed during export.
+     * Sets an {@link GMLForwardReferenceHandler} that copes with {@link GMLReference}s that are processed during
+     * export.
      * 
      * @param handler
      *            handler, may be <code>null</code>
@@ -332,11 +333,11 @@ public class GMLStreamWriter {
         return xmlStream;
     }
 
-    private GMLFeatureWriter getFeatureWriter() {
+    public GMLFeatureWriter getFeatureWriter() {
         if ( featureWriter == null ) {
-            featureWriter = new GMLFeatureWriter( version, xmlStream, crs, formatter, localXLinkTemplate, featureProps,
-                                                  inlineXLinklevels, traverseXLinkExpiry, xlinkProps, false, true,
-                                                  prefixToNs, additionalObjectHandler, exportExtraProps );
+            featureWriter = new GMLFeatureWriter( version, xmlStream, crs, formatter, remoteXLinkTemplate,
+                                                  featureProps, inlineXLinklevels, traverseXLinkExpiry, xlinkProps,
+                                                  false, true, prefixToNs, additionalObjectHandler, exportExtraProps );
         }
         return featureWriter;
     }

@@ -322,7 +322,7 @@ public class PostGISFeatureStoreTest {
                                                                           XMLOutputFactory.newInstance().createXMLStreamWriter(
                                                                                                                                 System.out ) );
                 GMLStreamWriter gmlStream = GMLOutputFactory.createGMLStreamWriter( GMLVersion.GML_31, xmlStream );
-                gmlStream.setLocalXLinkTemplate( "http://bla?fid={}" );
+                gmlStream.setRemoteXLinkTemplate( "http://bla?fid={}" );
                 gmlStream.setXLinkDepth( -1 );
                 gmlStream.write( fc );
                 gmlStream.close();
@@ -365,7 +365,7 @@ public class PostGISFeatureStoreTest {
         xmlFac.setProperty( XMLOutputFactory.IS_REPAIRING_NAMESPACES, true );
         XMLStreamWriter xmlStream = new IndentingXMLStreamWriter( xmlFac.createXMLStreamWriter( System.out ) );
         GMLStreamWriter gmlStream = GMLOutputFactory.createGMLStreamWriter( GMLVersion.GML_31, xmlStream );
-        gmlStream.setLocalXLinkTemplate( "http://bla?fid={}" );
+        gmlStream.setRemoteXLinkTemplate( "http://bla?fid={}" );
         gmlStream.setXLinkDepth( -1 );
         gmlStream.write( fc );
         gmlStream.close();

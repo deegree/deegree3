@@ -65,17 +65,17 @@ class XlinkedObjectsHandler implements GMLForwardReferenceHandler {
 
     private final boolean localReferencesPossible;
 
-    private final String xlinkTemplate;
+    private final String remoteXlinkTemplate;
 
     XlinkedObjectsHandler( BufferableXMLStreamWriter xmlStream, boolean localReferencesPossible, String xlinkTemplate ) {
         this.xmlStream = xmlStream;
         this.localReferencesPossible = localReferencesPossible;
-        this.xlinkTemplate = xlinkTemplate;
+        this.remoteXlinkTemplate = xlinkTemplate;
     }
 
     @Override
     public String requireObject( GMLReference<?> ref ) {
-        LOG.debug( "Exporting forward reference to an object which must be included in the output." );
+        LOG.debug( "Exporting forward reference to object {} which must be included in the output.", ref.getId() );
         objectIdToRef.put( ref.getId(), ref );
         return "#" + ref.getId();
     }
@@ -83,7 +83,8 @@ class XlinkedObjectsHandler implements GMLForwardReferenceHandler {
     @Override
     public String handleReference( GMLReference<?> ref ) {
         if ( localReferencesPossible ) {
-            LOG.debug( "Exporting potential forward reference to an object which may or may not be exported later." );
+            LOG.debug( "Exporting potential forward reference to object {} which may or may not be exported later.",
+                       ref.getId() );
             try {
                 xmlStream.activateBuffering();
             } catch ( XMLStreamException e ) {
@@ -91,8 +92,8 @@ class XlinkedObjectsHandler implements GMLForwardReferenceHandler {
             }
             return "{" + ref.getId() + "}";
         }
-        LOG.info( "Exporting reference as remote reference." );
-        return xlinkTemplate.replace( "{}", ref.getId() );
+        LOG.debug( "Exporting reference to object {} as remote reference.", ref.getId() );
+        return remoteXlinkTemplate.replace( "{}", ref.getId() );
     }
 
     Collection<GMLReference<?>> getAdditionalRefs() {

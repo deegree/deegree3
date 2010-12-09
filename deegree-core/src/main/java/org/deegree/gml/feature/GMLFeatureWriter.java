@@ -260,6 +260,11 @@ public class GMLFeatureWriter {
         export( feature, 0, traverseXlinkDepth );
     }
 
+    public void export( Feature feature, int level )
+                            throws XMLStreamException, UnknownCRSException, TransformationException {
+        export( feature, level, traverseXlinkDepth );
+    }
+
     /**
      * TODO merge with other schema location possibilities
      * 
@@ -465,11 +470,10 @@ public class GMLFeatureWriter {
                     writeAttributeWithNS( XLNNS, "href", "#" + gValue.getId() );
                 } else {
                     writeStartElementWithNS( propName.getNamespaceURI(), propName.getLocalPart() );
-                    // if ( gValue.getId() != null ) {
-                    // // WFS CITE 1.1.0 test requirement
-                    // // (wfs:GetFeature.XLink-POST-XML-10)
-                    // writer.writeComment( "Inlined geometry '" + gValue.getId() + "'" );
-                    // }
+                    if ( gValue.getId() != null ) {
+                        // WFS CITE 1.1.0 test requirement (wfs:GetFeature.XLink-POST-XML-10)
+                        writer.writeComment( "Inlined geometry '" + gValue.getId() + "'" );
+                    }
                     geometryWriter.export( (Geometry) value );
                     writer.writeEndElement();
                 }

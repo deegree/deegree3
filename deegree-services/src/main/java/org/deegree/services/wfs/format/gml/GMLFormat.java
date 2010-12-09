@@ -291,7 +291,7 @@ public class GMLFormat implements Format {
         XMLStreamWriter xmlStream = WFSController.getXMLResponseWriter( response, contentType, schemaLocation );
         GMLStreamWriter gmlStream = GMLOutputFactory.createGMLStreamWriter( gmlVersion, xmlStream );
         gmlStream.setOutputCRS( master.getDefaultQueryCrs() );
-        gmlStream.setLocalXLinkTemplate( master.getObjectXlinkTemplate( request.getVersion(), gmlVersion ) );
+        gmlStream.setRemoteXLinkTemplate( master.getObjectXlinkTemplate( request.getVersion(), gmlVersion ) );
         gmlStream.setXLinkDepth( traverseXLinkDepth );
         gmlStream.setCoordinateFormatter( formatter );
         gmlStream.setNamespaceBindings( service.getPrefixToNs() );
@@ -391,7 +391,7 @@ public class GMLFormat implements Format {
         }
 
         GMLStreamWriter gmlStream = GMLOutputFactory.createGMLStreamWriter( gmlVersion, xmlStream );
-        gmlStream.setLocalXLinkTemplate( xLinkTemplate );
+        gmlStream.setRemoteXLinkTemplate( xLinkTemplate );
         gmlStream.setXLinkDepth( traverseXLinkDepth );
         gmlStream.setXLinkExpiry( traverseXLinkExpiry );
         gmlStream.setXLinkFeatureProperties( analyzer.getXLinkProps() );
@@ -446,7 +446,7 @@ public class GMLFormat implements Format {
                             }
                         }
                     }
-                    LOG.info( "Forward references can be ruled out." );
+                    LOG.debug( "Forward references can be ruled out." );
                     return false;
                 }
             }
@@ -478,7 +478,7 @@ public class GMLFormat implements Format {
             FeatureResultSet rs = fs.query( queries );
             try {
                 for ( Feature member : rs ) {
-                    writeMemberFeature( member, gmlStream, xmlStream, wfsVersion, xLinkTemplate );
+                    writeMemberFeature( member, gmlStream, xmlStream, wfsVersion, xLinkTemplate, 0 );
                     featuresAdded++;
                     if ( featuresAdded == maxFeatures ) {
                         // limit the number of features written to maxfeatures
@@ -535,7 +535,7 @@ public class GMLFormat implements Format {
 
         // retrieve and write result features
         for ( Feature member : allFeatures ) {
-            writeMemberFeature( member, gmlStream, xmlStream, wfsVersion, xLinkTemplate );
+            writeMemberFeature( member, gmlStream, xmlStream, wfsVersion, xLinkTemplate, 0 );
         }
     }
 
@@ -547,18 +547,20 @@ public class GMLFormat implements Format {
         int currentLevel = 1;
         Collection<GMLReference<?>> includeObjects = additionalObjects.getAdditionalRefs();
 
-        while ( ( traverseXLinkDepth == -1 || currentLevel++ <= traverseXLinkDepth ) && !includeObjects.isEmpty() ) {
+        while ( ( traverseXLinkDepth == -1 || currentLevel <= traverseXLinkDepth ) && !includeObjects.isEmpty() ) {
             additionalObjects.clear();
             for ( GMLReference<?> gmlReference : includeObjects ) {
                 Feature feature = (Feature) gmlReference;
-                writeMemberFeature( feature, gmlStream, gmlStream.getXMLStream(), wfsVersion, xLinkTemplate );
+                writeMemberFeature( feature, gmlStream, gmlStream.getXMLStream(), wfsVersion, xLinkTemplate,
+                                    currentLevel );
             }
             includeObjects = additionalObjects.getAdditionalRefs();
+            currentLevel++;
         }
     }
 
     private void writeMemberFeature( Feature member, GMLStreamWriter gmlStream, XMLStreamWriter xmlStream,
-                                     Version wfsVersion, String xLinkTemplate )
+                                     Version wfsVersion, String xLinkTemplate, int level )
                             throws XMLStreamException, UnknownCRSException, TransformationException {
 
         if ( gmlStream.isObjectExported( member.getId() ) ) {
@@ -590,7 +592,7 @@ public class GMLFormat implements Format {
             } else {
                 xmlStream.writeStartElement( "gml", "featureMember", GMLNS );
             }
-            gmlStream.write( member );
+            gmlStream.getFeatureWriter().export( member, level );
             xmlStream.writeEndElement();
         }
     }
