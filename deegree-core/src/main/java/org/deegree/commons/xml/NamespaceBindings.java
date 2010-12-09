@@ -109,6 +109,7 @@ public class NamespaceBindings implements org.jaxen.NamespaceContext, javax.xml.
      */
     public NamespaceBindings addNamespace( String prefix, String namespace ) {
         prefixToNs.put( prefix, namespace );
+        nsToPrefix.put( namespace, prefix );
         return this;
     }
 
@@ -132,6 +133,15 @@ public class NamespaceBindings implements org.jaxen.NamespaceContext, javax.xml.
         return prefixToNs.get( prefix );
     }
 
+    /**
+     * Returns all bound namespaces.
+     * 
+     * @return bound namespaces, never <code>null</code>
+     */
+    public Iterator<String> getNamespaceURIs() {
+        return nsToPrefix.keySet().iterator();
+    }
+
     @Override
     public String getNamespaceURI( String prefix ) {
         String ns = prefixToNs.get( prefix );
@@ -149,6 +159,15 @@ public class NamespaceBindings implements org.jaxen.NamespaceContext, javax.xml.
     @Override
     public Iterator<String> getPrefixes( String ns ) {
         return Collections.singletonList( nsToPrefix.get( ns ) ).iterator();
+    }
+
+    /**
+     * Returns all bound prefixes.
+     * 
+     * @return bound prefixes, never <code>null</code>
+     */
+    public Iterator<String> getPrefixes() {
+        return prefixToNs.keySet().iterator();
     }
 
     @Override
