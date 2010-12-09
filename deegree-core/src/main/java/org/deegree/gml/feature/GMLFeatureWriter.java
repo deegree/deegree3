@@ -412,7 +412,7 @@ public class GMLFeatureWriter {
         return traverseXlinkDepth;
     }
 
-    private void export( Property property, int currentLevel, int maxInlineLevels )
+    private void w( Property property, int currentLevel, int maxInlineLevels )
                             throws XMLStreamException, UnknownCRSException, TransformationException {
 
         QName propName = property.getName();
@@ -620,7 +620,7 @@ public class GMLFeatureWriter {
                                 String uri = additionalObjectHandler.requireObject( (GMLReference<?>) subFeature );
                                 writeAttributeWithNS( XLNNS, "href", uri );
                             } else {
-                                LOG.warn( "No additionalObjectHandler registered. Exporting xlink-only feature property inline." );
+                                LOG.debug( "No additionalObjectHandler registered. Exporting xlink-only feature property inline." );
                                 String uri = remoteXlinkTemplate.replace( "{}", subFid );
                                 writeAttributeWithNS( XLNNS, "href", uri );
                             }
