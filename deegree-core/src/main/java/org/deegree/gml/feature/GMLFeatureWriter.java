@@ -412,7 +412,7 @@ public class GMLFeatureWriter {
         return traverseXlinkDepth;
     }
 
-    private void w( Property property, int currentLevel, int maxInlineLevels )
+    private void export( Property property, int currentLevel, int maxInlineLevels )
                             throws XMLStreamException, UnknownCRSException, TransformationException {
 
         QName propName = property.getName();
