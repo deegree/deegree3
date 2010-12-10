@@ -89,7 +89,7 @@ public class DEMDataset extends Dataset<TerrainRenderingManager> {
      * @param shininess
      */
     public DEMDataset( int numberOfDEMFragmentsCached, int directMeshfragmentPoolSize, float[] ambientColor,
-                              float[] diffuseColor, float[] specularColor, float shininess ) {
+                       float[] diffuseColor, float[] specularColor, float shininess ) {
         this.numberOfDEMFragmentsCached = numberOfDEMFragmentsCached;
         this.ambientColor = ambientColor;
         this.diffuseColor = diffuseColor;
@@ -199,10 +199,7 @@ public class DEMDataset extends Dataset<TerrainRenderingManager> {
                           + " because no files (pointing to a Multiresolution Mesh file) could be resolved." );
             }
         } else {
-            LOG.warn( "Enable to instantiate elevation model: "
-                      + demDataset.getName()
-                      + ": "
-                      + demDataset.getTitle()
+            LOG.warn( "Unable to instantiate elevation model"
                       + " because no files (pointing to a Multiresolution Mesh file) were configured in the elevationmodel datasource element." );
         }
         return sceneEnvelope;
