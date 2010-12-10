@@ -44,6 +44,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.deegree.coverage.filter.CoverageFilter;
 import org.deegree.coverage.rangeset.AxisSubset;
@@ -307,10 +308,10 @@ public class RasterFilter extends CoverageFilter {
                 oldData.getBytePixel( x, y, result );
                 // apply band filters
                 if ( !bandsWithConstraints.isEmpty() ) {
-                    for ( BandType b : bandsWithConstraints.keySet() ) {
-                        int bnr = bandsWithConstraints.get( b );
+                    for ( Entry<BandType, Integer> e : bandsWithConstraints.entrySet() ) {
+                        int bnr = e.getValue();
                         short value = (short) ( result[bnr] & 0xFF );
-                        if ( !isValid( value, bands.get( b ) ) ) {
+                        if ( !isValid( value, bands.get( e.getKey() ) ) ) {
                             result[bnr] = nullVal[bnr];
                         }
                     }
@@ -361,11 +362,6 @@ public class RasterFilter extends CoverageFilter {
         return ( (AbstractRaster) coverage );
     }
 
-    /**
-     * @param sourceRangeSet
-     * @param targetRangeset
-     * @return
-     */
     private Map<BandType, AxisSubset> getReferencedBands( List<AxisSubset> requestedAxis ) {
         List<AxisSubset> copyRA = new ArrayList<AxisSubset>( requestedAxis );
         Map<BandType, AxisSubset> bands = new HashMap<BandType, AxisSubset>( requestedAxis.size() );

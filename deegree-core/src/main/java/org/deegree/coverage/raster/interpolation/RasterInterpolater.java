@@ -59,9 +59,9 @@ public class RasterInterpolater {
 
     private final InterpolationType interpolationType;
 
-    private final int polynomialOrder = 3;
+    private final static int polynomialOrder = 3;
 
-    private final int refPointsGridSize = 10;
+    private final static int refPointsGridSize = 10;
 
     /**
      * @param interpolationType
