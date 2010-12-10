@@ -35,8 +35,6 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.metadata.persistence.iso.generating;
 
-import static org.slf4j.LoggerFactory.getLogger;
-
 import java.text.ParseException;
 import java.util.List;
 
@@ -49,7 +47,6 @@ import org.deegree.metadata.persistence.iso.parsing.QueryableProperties;
 import org.deegree.metadata.persistence.iso.parsing.ReturnableProperties;
 import org.deegree.metadata.persistence.types.Format;
 import org.deegree.metadata.persistence.types.Keyword;
-import org.slf4j.Logger;
 
 /**
  * Generates the metadata-BLOB in DC and ISO in all representation types (brief, summary, full).
@@ -61,7 +58,7 @@ import org.slf4j.Logger;
  */
 public class GenerateMetadata {
 
-    private static final Logger LOG = getLogger( GenerateMetadata.class );
+    // private static final Logger LOG = getLogger( GenerateMetadata.class );
 
     private OMElement identifier;
 
@@ -514,7 +511,7 @@ public class GenerateMetadata {
         // omElement.addChild( omModified );
         // }
 
-        if ( qp.getModified() != null && !qp.getModified().equals( new Date( "0000-00-00" ) ) ) {
+        if ( qp.getModified() != null && !qp.getModified()[0].equals( new Date( "0000-00-00" ) ) ) {
             OMElement omModified = factory.createOMElement( "modified", namespaceDCT );
             omModified.setText( qp.getModified().toString() );
             omElement.addChild( omModified );
@@ -978,7 +975,7 @@ public class GenerateMetadata {
     }
 
     /**
-     * @param QueryableProperties
+     * @param qp
      *            the QueryableProperties to set
      */
     public void setQueryableProperties( QueryableProperties qp ) {
