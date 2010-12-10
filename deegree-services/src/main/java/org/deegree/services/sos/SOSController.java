@@ -74,6 +74,7 @@ import javax.xml.stream.XMLStreamWriter;
 
 import org.apache.axiom.om.OMElement;
 import org.apache.commons.fileupload.FileItem;
+import org.apache.commons.io.IOUtils;
 import org.deegree.commons.tom.ows.Version;
 import org.deegree.commons.utils.Pair;
 import org.deegree.commons.utils.kvp.InvalidParameterValueException;
@@ -229,7 +230,8 @@ public class SOSController extends AbstractOGCServiceController {
         nsContext.addNamespace( "xlink", "http://www.w3.org/1999/xlink" );
 
         XMLAdapter sensorXML = new XMLAdapter( sensorFile );
-        OMElement element = sensorXML.getElement( sensorXML.getRootElement(),
+        OMElement element = sensorXML.getElement(
+                                                  sensorXML.getRootElement(),
                                                   new XPath(
                                                              "/sml:SensorML/sml:identification/sml:IdentifierList/sml:identifier[@name=\"URN\"]/sml:Term/sml:value",
                                                              nsContext ) );
@@ -343,7 +345,8 @@ public class SOSController extends AbstractOGCServiceController {
                                   response );
         } catch ( XMLStreamException e ) {
             LOG.error( "an error occured while processing the request", e );
-            sendServiceException( new OWSException( "an error occured while processing the request", NO_APPLICABLE_CODE ),
+            sendServiceException(
+                                  new OWSException( "an error occured while processing the request", NO_APPLICABLE_CODE ),
                                   response );
         } catch ( XMLProcessingException e ) {
             LOG.error( "an error occured while processing the request", e );
@@ -569,8 +572,9 @@ public class SOSController extends AbstractOGCServiceController {
                     found = true;
                     URL description = proc.getSensorURL();
                     LOG.debug( "trying to read {}", description );
+                    BufferedReader reader = null;
                     try {
-                        BufferedReader reader = new BufferedReader( new InputStreamReader( description.openStream() ) );
+                        reader = new BufferedReader( new InputStreamReader( description.openStream() ) );
                         String line;
                         while ( ( line = reader.readLine() ) != null ) {
                             writer.write( line );
@@ -580,6 +584,8 @@ public class SOSController extends AbstractOGCServiceController {
                         LOG.debug( "couldn't find SensorML file for {} at {}", requestedProcedure, description );
                         throw new OWSException( "an internal error occured while creating the response",
                                                 NO_APPLICABLE_CODE );
+                    } finally {
+                        IOUtils.closeQuietly( reader );
                     }
                     break;
                 }
