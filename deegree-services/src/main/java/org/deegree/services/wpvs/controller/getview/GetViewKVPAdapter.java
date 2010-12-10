@@ -270,7 +270,7 @@ public class GetViewKVPAdapter {
 
         float scale = (float) KVPUtils.getDefaultDouble( requestParams, "SCALE", 1 );
 
-        Color bgColor = new Color( 0.1f, 0.2f, 0.8f );
+        Color bgColor;
         String tmp = KVPUtils.getDefault( requestParams, "BACKGROUNDCOLOR", "" + Color.white.getRGB() );
         try {
             bgColor = Color.decode( tmp );
