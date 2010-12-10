@@ -66,6 +66,7 @@ import java.util.LinkedList;
 import javax.xml.namespace.QName;
 
 import org.deegree.commons.tom.primitive.PrimitiveType;
+import org.deegree.commons.utils.JDBCUtils;
 import org.deegree.commons.utils.log.LoggingNotes;
 import org.deegree.feature.types.GenericFeatureType;
 import org.deegree.feature.types.property.GeometryPropertyType;
@@ -155,30 +156,9 @@ public class Util {
             LOG.trace( "Stack trace:", e );
             return null;
         } finally {
-            if ( set != null ) {
-                try {
-                    set.close();
-                } catch ( SQLException e ) {
-                    LOG.info( "A DB error occurred: '{}'.", e.getLocalizedMessage() );
-                    LOG.trace( "Stack trace:", e );
-                }
-            }
-            if ( stmt != null ) {
-                try {
-                    stmt.close();
-                } catch ( SQLException e ) {
-                    LOG.info( "A DB error occurred: '{}'.", e.getLocalizedMessage() );
-                    LOG.trace( "Stack trace:", e );
-                }
-            }
-            if ( conn != null ) {
-                try {
-                    conn.close();
-                } catch ( SQLException e ) {
-                    LOG.info( "A DB error occurred: '{}'.", e.getLocalizedMessage() );
-                    LOG.trace( "Stack trace:", e );
-                }
-            }
+            JDBCUtils.close( set );
+            JDBCUtils.close( stmt );
+            JDBCUtils.close( conn );
         }
     }
 
@@ -200,9 +180,8 @@ public class Util {
             } catch ( SQLException e ) {
                 LOG.debug( "Could not update the geometry_columns table: '{}'", e.getLocalizedMessage() );
                 LOG.trace( "Stack trace:", e );
-            }
-            if ( stmt != null ) {
-                stmt.close();
+            } finally {
+                JDBCUtils.close( stmt );
             }
             stmt = conn.prepareStatement( "select distinct(f_table_schema) from geometry_columns" );
             set = stmt.executeQuery();
@@ -218,30 +197,9 @@ public class Util {
             LOG.trace( "Stack trace:", e );
             return null;
         } finally {
-            if ( set != null ) {
-                try {
-                    set.close();
-                } catch ( SQLException e ) {
-                    LOG.info( "A DB error occurred: '{}'.", e.getLocalizedMessage() );
-                    LOG.trace( "Stack trace:", e );
-                }
-            }
-            if ( stmt != null ) {
-                try {
-                    stmt.close();
-                } catch ( SQLException e ) {
-                    LOG.info( "A DB error occurred: '{}'.", e.getLocalizedMessage() );
-                    LOG.trace( "Stack trace:", e );
-                }
-            }
-            if ( conn != null ) {
-                try {
-                    conn.close();
-                } catch ( SQLException e ) {
-                    LOG.info( "A DB error occurred: '{}'.", e.getLocalizedMessage() );
-                    LOG.trace( "Stack trace:", e );
-                }
-            }
+            JDBCUtils.close( set );
+            JDBCUtils.close( stmt );
+            JDBCUtils.close( conn );
         }
     }
 
@@ -265,9 +223,7 @@ public class Util {
                 LOG.debug( "Could not update the geometry_columns table: '{}'", e.getLocalizedMessage() );
                 LOG.trace( "Stack trace:", e );
             } finally {
-                if ( stmt != null ) {
-                    stmt.close();
-                }
+                JDBCUtils.close( stmt );
             }
             StringBuilder query = new StringBuilder( "select f_table_name from geometry_columns" );
             if ( schema != null ) {
@@ -294,30 +250,9 @@ public class Util {
             LOG.trace( "Stack trace:", e );
             return null;
         } finally {
-            if ( set != null ) {
-                try {
-                    set.close();
-                } catch ( SQLException e ) {
-                    LOG.info( "A DB error occurred: '{}'.", e.getLocalizedMessage() );
-                    LOG.trace( "Stack trace:", e );
-                }
-            }
-            if ( stmt != null ) {
-                try {
-                    stmt.close();
-                } catch ( SQLException e ) {
-                    LOG.info( "A DB error occurred: '{}'.", e.getLocalizedMessage() );
-                    LOG.trace( "Stack trace:", e );
-                }
-            }
-            if ( conn != null ) {
-                try {
-                    conn.close();
-                } catch ( SQLException e ) {
-                    LOG.info( "A DB error occurred: '{}'.", e.getLocalizedMessage() );
-                    LOG.trace( "Stack trace:", e );
-                }
-            }
+            JDBCUtils.close( set );
+            JDBCUtils.close( stmt );
+            JDBCUtils.close( conn );
         }
     }
 
@@ -347,30 +282,9 @@ public class Util {
             LOG.trace( "Stack trace:", e );
             return -2;
         } finally {
-            if ( rs != null ) {
-                try {
-                    rs.close();
-                } catch ( SQLException e ) {
-                    LOG.info( "A DB error occurred: '{}'.", e.getLocalizedMessage() );
-                    LOG.trace( "Stack trace:", e );
-                }
-            }
-            if ( stmt != null ) {
-                try {
-                    stmt.close();
-                } catch ( SQLException e ) {
-                    LOG.info( "A DB error occurred: '{}'.", e.getLocalizedMessage() );
-                    LOG.trace( "Stack trace:", e );
-                }
-            }
-            if ( conn != null ) {
-                try {
-                    conn.close();
-                } catch ( SQLException e ) {
-                    LOG.info( "A DB error occurred: '{}'.", e.getLocalizedMessage() );
-                    LOG.trace( "Stack trace:", e );
-                }
-            }
+            JDBCUtils.close( rs );
+            JDBCUtils.close( stmt );
+            JDBCUtils.close( conn );
         }
     }
 
