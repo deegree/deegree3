@@ -441,7 +441,7 @@ public class StyledGeometryTTProvider implements TextureTileProvider {
 
         SGTextureCache( long freeSpace ) {
             // 268435456 == maximum size of texture with textureside 8192 and 4 bytes.
-            super( (int) Math.ceil( freeSpace / 268435456 ), 0.75f, false );
+            super( (int) Math.ceil( freeSpace / 268435456d ), 0.75f, false );
             this.freeSpace = freeSpace;
             LOG.info( "Styled geometry dataset cache will use: " + freeSpace / ( 1024 * 1024d ) + " Mb." );
         }
