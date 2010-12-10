@@ -35,6 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.services.wcs;
 
+import static org.apache.commons.io.IOUtils.closeQuietly;
 import static org.deegree.services.controller.OGCFrontController.getServiceWorkspace;
 
 import java.io.File;
@@ -119,7 +120,13 @@ public class WCServiceBuilder {
     public static WCService createService( File conf )
                             throws XMLProcessingException, FileNotFoundException {
         ServiceConfigurationXMLAdapter adapt = new ServiceConfigurationXMLAdapter();
-        adapt.load( new FileInputStream( conf ) );
+        FileInputStream fis = null;
+        try {
+            fis = new FileInputStream( conf );
+            adapt.load( fis );
+        } finally {
+            closeQuietly( fis );
+        }
         return new WCServiceBuilder( adapt ).buildService();
     }
 
@@ -296,7 +303,6 @@ public class WCServiceBuilder {
 
     /**
      * @param confInterpolation
-     * @return
      */
     private List<InterpolationType> mapInterpolation( List<Interpolation> confInterpolation ) {
         List<InterpolationType> result = new ArrayList<InterpolationType>( confInterpolation.size() );
@@ -314,18 +320,6 @@ public class WCServiceBuilder {
             }
         }
         return result;
-    }
-
-    private File getFile( String filename ) {
-        try {
-            URL fileURL = adapter.resolve( filename );
-            return new File( fileURL.toURI() );
-        } catch ( URISyntaxException e ) {
-            LOG.warn( "unable to resolve filename {}", filename );
-        } catch ( MalformedURLException e ) {
-            LOG.warn( "unable to resolve filename {}", filename );
-        }
-        return new File( filename );
     }
 
 }
