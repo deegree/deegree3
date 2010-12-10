@@ -81,7 +81,10 @@ public class CopyMojo extends AbstractMojo {
             log.info( "Copy " + copy.from + " to " + copy.to );
             File from = new File( basedir, copy.from );
             File to = new File( basedir, copy.to );
-            to.getParentFile().mkdirs();
+            if ( !to.getParentFile().mkdirs() ) {
+                log.warn( "Could not create parent directories for " + to + "." );
+                continue;
+            }
             try {
                 copyFile( from, to );
             } catch ( IOException e ) {
