@@ -100,16 +100,6 @@ import org.slf4j.LoggerFactory;
 
 public class RasterFactory {
 
-    private static class ThreadLocalServiceLoader extends ThreadLocal<ServiceLoader<RasterIOProvider>> {
-        @Override
-        public ServiceLoader<RasterIOProvider> initialValue() {
-            return ServiceLoader.load( RasterIOProvider.class );
-        }
-    }
-
-    @SuppressWarnings("synthetic-access")
-    private static ThreadLocalServiceLoader serviceLoader = new ThreadLocalServiceLoader();
-
     private static Logger log = LoggerFactory.getLogger( RasterFactory.class );
 
     /**
@@ -224,7 +214,7 @@ public class RasterFactory {
     }
 
     private static ServiceLoader<RasterIOProvider> getRasterIOLoader() {
-        return serviceLoader.get();
+        return ServiceLoader.load( RasterIOProvider.class );
     }
 
     private static RasterReader getRasterReader( File filename, RasterIOOptions options ) {
