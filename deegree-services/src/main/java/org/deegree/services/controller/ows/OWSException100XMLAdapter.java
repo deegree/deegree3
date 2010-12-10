@@ -73,7 +73,7 @@ public class OWSException100XMLAdapter extends XMLExceptionSerializer<OWSExcepti
             writer.writeAttribute( "locator", ex.getLocator() );
         }
         writer.writeStartElement( OWS_NS, "ExceptionText" );
-        writer.writeCharacters( ex.getMessage() );
+        writer.writeCharacters( ex.getMessage() != null ? ex.getMessage() : "not available" );
         writer.writeEndElement();
         writer.writeEndElement(); // Exception
         writer.writeEndElement(); // ExceptionReport
