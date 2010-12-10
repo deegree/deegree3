@@ -142,7 +142,7 @@ public class SOAPException extends ControllerException {
      * @return the subcodes
      */
     public final String[] getSubcodes() {
-        return subcodes;
+        return subcodes == null ? null : copyOf( subcodes, subcodes.length );
     }
 
 }
