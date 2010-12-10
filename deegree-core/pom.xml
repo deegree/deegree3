@@ -114,6 +114,11 @@
 
   <dependencies>
     <dependency>
+      <groupId>org.codehaus.woodstox</groupId>
+      <artifactId>woodstox-core-lgpl</artifactId>
+      <version>4.0.9</version>
+    </dependency>
+    <dependency>
       <groupId>org.apache.ws.commons.axiom</groupId>
       <artifactId>axiom-impl</artifactId>
       <version>1.2.9-deegreeversion</version>

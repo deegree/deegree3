@@ -71,7 +71,6 @@ import static org.deegree.commons.xml.CommonNamespaces.GML3_2_NS;
 import static org.deegree.commons.xml.CommonNamespaces.GMLNS;
 import static org.deegree.commons.xml.CommonNamespaces.GML_PREFIX;
 import static org.deegree.commons.xml.CommonNamespaces.XLNNS;
-import static org.deegree.commons.xml.CommonNamespaces.XMLNS;
 import static org.deegree.commons.xml.CommonNamespaces.XSNS;
 import static org.deegree.commons.xml.schema.SchemaUtils.writeWrapperDoc;
 import static org.deegree.gml.GMLVersion.GML_2;
@@ -241,7 +240,6 @@ public class ApplicationSchemaXSDEncoder {
         }
         addNsBinding( DEFAULT_NS_PREFIX, XSNS );
         addNsBinding( "gml", gmlNsURI );
-        addNsBinding( "xml", XMLNS );
         addNsBinding( "xlink", XLNNS );
 
         // special treatment needed for GML namespaces
