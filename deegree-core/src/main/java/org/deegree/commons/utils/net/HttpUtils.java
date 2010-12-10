@@ -53,6 +53,7 @@ import java.net.MalformedURLException;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.TreeSet;
+import java.util.Map.Entry;
 
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
@@ -218,8 +219,8 @@ public class HttpUtils {
             url += url.indexOf( "?" ) == -1 ? "?" : "&";
         }
         LinkedList<String> list = new LinkedList<String>();
-        for ( String k : map.keySet() ) {
-            list.add( encode( k, "UTF-8" ) + "=" + encode( map.get( k ), "UTF-8" ) );
+        for ( Entry<String, String> e : map.entrySet() ) {
+            list.add( encode( e.getKey(), "UTF-8" ) + "=" + encode( e.getValue(), "UTF-8" ) );
         }
         url += join( "&", list );
         return retrieve( worker, url );

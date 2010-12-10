@@ -225,7 +225,7 @@ public class LoggingAnnotationProcessor extends AbstractProcessor {
     }
 
     class Tree {
-        String segment;
+        // String segment;
 
         PackageLoggingNotes pnotes;
 
@@ -241,7 +241,7 @@ public class LoggingAnnotationProcessor extends AbstractProcessor {
                 Tree nextNode = node.children.get( next );
                 if ( nextNode == null ) {
                     nextNode = new Tree();
-                    nextNode.segment = next;
+                    // nextNode.segment = next;
                     node.children.put( next, nextNode );
                 }
                 node = nextNode;

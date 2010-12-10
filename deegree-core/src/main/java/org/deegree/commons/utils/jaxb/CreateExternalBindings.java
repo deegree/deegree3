@@ -189,11 +189,6 @@ public class CreateExternalBindings {
         writer.writeEndDocument();
     }
 
-    /**
-     * @param source2
-     * @return
-     * @throws IOException
-     */
     private List<StringPair> findClasses( File sourceDir, String prefix )
                             throws IOException {
 
@@ -304,7 +299,7 @@ public class CreateExternalBindings {
      * @version $Revision$, $Date$
      *
      */
-    class CustomFileFilter implements java.io.FileFilter {
+    static class CustomFileFilter implements java.io.FileFilter {
 
         public boolean accept( File pathname ) {
             if ( pathname.isDirectory() ) {

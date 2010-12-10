@@ -104,17 +104,17 @@ class GrammarPoolManager {
     synchronized static GrammarPool getGrammarPool( String... schemaUris )
                             throws XNIException, IOException {
 
-        String id = "";
+        StringBuilder id = new StringBuilder();
         SortedSet<String> sortedUris = new TreeSet<String>( Arrays.asList( schemaUris ) );
         for ( String uri : sortedUris ) {
-            id += ":" + uri;
+            id.append( ":" ).append( uri );
         }
         LOG.debug( "Looking up grammar pool for combined URI id: '" + id + "'." );
 
-        GrammarPool pool = idToPool.get( id );
+        GrammarPool pool = idToPool.get( id.toString() );
         if ( pool == null ) {
             pool = createGrammarPool( schemaUris );
-            idToPool.put( id, pool );
+            idToPool.put( id.toString(), pool );
         }
         return pool;
     }

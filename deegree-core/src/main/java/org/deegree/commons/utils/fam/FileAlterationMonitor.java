@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,7 +32,7 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 
 package org.deegree.commons.utils.fam;
 
@@ -47,6 +47,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.Map.Entry;
 
 import org.deegree.commons.i18n.Messages;
 import org.slf4j.Logger;
@@ -54,12 +55,12 @@ import org.slf4j.LoggerFactory;
 
 /**
  * File alteration monitor for monitoring changes in a directory. Supports recursive scanning and filters.
- *
+ * 
  * @see FileAlterationListener
- *
+ * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author: schneider $
- *
+ * 
  * @version $Revision: $, $Date: $
  */
 public class FileAlterationMonitor {
@@ -82,7 +83,7 @@ public class FileAlterationMonitor {
 
     /**
      * Creates a new {@link FileAlterationMonitor}.
-     *
+     * 
      * @param dir
      *            directory to be monitored
      * @param interval
@@ -102,7 +103,7 @@ public class FileAlterationMonitor {
 
     /**
      * Registers a {@link FileAlterationListener} which is notified when changes are detected.
-     *
+     * 
      * @param listener
      *            listener to be registered
      */
@@ -112,7 +113,7 @@ public class FileAlterationMonitor {
 
     /**
      * Removes a {@link FileAlterationListener}.
-     *
+     * 
      * @param listener
      *            listener to be removed
      */
@@ -122,7 +123,7 @@ public class FileAlterationMonitor {
 
     /**
      * Starts the file alteration monitor worker thread.
-     *
+     * 
      * @throws RuntimeException
      *             if the worker thread is already running
      */
@@ -140,7 +141,7 @@ public class FileAlterationMonitor {
 
     /**
      * Stops the file alteration monitor worker thread.
-     *
+     * 
      * @throws RuntimeException
      *             if the worker thread wasn't running
      */
@@ -167,8 +168,9 @@ public class FileAlterationMonitor {
             }
             if ( lastFiles != null ) {
                 // check for new / changed files
-                for ( File file : newFiles.keySet() ) {
-                    long modificationTime = newFiles.get( file );
+                for ( Entry<File, Long> entry : newFiles.entrySet() ) {
+                    File file = entry.getKey();
+                    long modificationTime = entry.getValue();
                     if ( !lastFiles.containsKey( file ) ) {
                         newFile( file );
                     } else {
@@ -218,7 +220,7 @@ public class FileAlterationMonitor {
 
         /**
          * Scans the given directory and collects information on all files and their modification times.
-         *
+         * 
          * @param dir
          *            directory to be scanned
          * @param recurse
