@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,8 +32,10 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 package org.deegree.commons.i18n;
+
+import static org.h2.util.IOUtils.closeSilently;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -44,23 +46,24 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
 
+import org.h2.util.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * Responsible for the access to messages that are visible to the user.
  * <p>
- * Messages are read from the properties file <code>messages_LANG.properties</code> (LANG is always a lowercased ISO
- * 639 code), so internationalization is supported. If a certain property (or the property file) for the specific
- * default language of the system is not found, the message is taken from <code>messages_en.properties</code>.
- *
+ * Messages are read from the properties file <code>messages_LANG.properties</code> (LANG is always a lowercased ISO 639
+ * code), so internationalization is supported. If a certain property (or the property file) for the specific default
+ * language of the system is not found, the message is taken from <code>messages_en.properties</code>.
+ * 
  * @see Locale#getLanguage()
- *
+ * 
  * @author <a href="mailto:poth@lat-lon.de">Andreas Poth</a>
  * @author <a href="mailto:taddei@lat-lon.de">Ugo Taddei</a>
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
- *
+ * 
  * @version $Revision$, $Date$
  */
 public class Messages {
@@ -81,10 +84,11 @@ public class Messages {
      * Initialization done at class loading time.
      */
     static {
+        InputStream is = null;
         try {
             // load all messages from default file ("org/deegree/model/i18n/message_en.properties")
             String fileName = "messages_en.properties";
-            InputStream is = Messages.class.getResourceAsStream( fileName );
+            is = Messages.class.getResourceAsStream( fileName );
             if ( is == null ) {
                 LOG.error( "Error while initializing " + Messages.class.getName() + " : " + " default message file: '"
                            + fileName + " not found." );
@@ -108,22 +112,29 @@ public class Messages {
             }
         } catch ( IOException e ) {
             LOG.error( "Error while initializing " + Messages.class.getName() + " : " + e.getMessage(), e );
+        } finally {
+            closeSilently( is );
         }
     }
 
     private static void overrideMessages( String propertiesFile, Properties props )
                             throws IOException {
-        InputStream is = Messages.class.getResourceAsStream( propertiesFile );
-        if ( is != null ) {
-            // override default messages
-            Properties overrideProps = new Properties();
-            overrideProps.load( is );
-            is.close();
-            Iterator<?> iter = overrideProps.keySet().iterator();
-            while ( iter.hasNext() ) {
-                String key = (String) iter.next();
-                props.put( key, overrideProps.get( key ) );
+        InputStream is = null;
+        try {
+            is = Messages.class.getResourceAsStream( propertiesFile );
+            if ( is != null ) {
+                // override default messages
+                Properties overrideProps = new Properties();
+                overrideProps.load( is );
+                is.close();
+                Iterator<?> iter = overrideProps.keySet().iterator();
+                while ( iter.hasNext() ) {
+                    String key = (String) iter.next();
+                    props.put( key, overrideProps.get( key ) );
+                }
             }
+        } finally {
+            IOUtils.closeSilently( is );
         }
     }
 
@@ -184,9 +195,9 @@ public class Messages {
     /**
      * Returns the message assigned to the passed key. If no message is assigned, an error message will be returned that
      * indicates the missing key.
-     *
+     * 
      * @see MessageFormat for conventions on string formatting and escape characters.
-     *
+     * 
      * @param key
      * @param arguments
      * @return the message assigned to the passed key
