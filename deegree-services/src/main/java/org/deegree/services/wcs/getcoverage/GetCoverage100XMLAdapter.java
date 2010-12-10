@@ -115,7 +115,6 @@ public class GetCoverage100XMLAdapter extends WCSRequest100XMLAdapter {
     }
 
     /**
-     * @return
      * @throws OWSException
      * 
      */
@@ -226,10 +225,6 @@ public class GetCoverage100XMLAdapter extends WCSRequest100XMLAdapter {
 
     }
 
-    /**
-     * @param rangeElem
-     * @return
-     */
     private Closure parseClosure( OMElement rootElement ) {
         String closureValue = rootElement.getAttributeValue( new QName( "closure" ) );
         return Closure.fromString( closureValue );
@@ -332,7 +327,7 @@ public class GetCoverage100XMLAdapter extends WCSRequest100XMLAdapter {
                                                                  wcsNSContext ) );
         checkRequiredElement( "Grid", gridElem );
 
-        int dimension = getRequiredNodeAsInteger( gridElem, new XPath( "@dimension", wcsNSContext ) );
+        // int dimension = getRequiredNodeAsInteger( gridElem, new XPath( "@dimension", wcsNSContext ) );
 
         OMElement gridEnvElem = getElement( gridElem, new XPath( "gml:limits/gml:GridEnvelope", wcsNSContext ) );
         double[] min = parseNums( "gml:low", getElement( gridEnvElem, new XPath( "gml:low", wcsNSContext ) ) );
@@ -354,7 +349,7 @@ public class GetCoverage100XMLAdapter extends WCSRequest100XMLAdapter {
             // origin
             OMElement origin = getElement( gridElem, new XPath( "gml:origin", wcsNSContext ) );
             checkRequiredElement( "origin", origin );
-            double[] origPoint = parseNums( "gml:pos", getElement( origin, new XPath( "gml:pos", wcsNSContext ) ) );
+            // double[] origPoint = parseNums( "gml:pos", getElement( origin, new XPath( "gml:pos", wcsNSContext ) ) );
 
             // offsetVector
             String[] offsets = getNodesAsStrings( gridElem, new XPath( "gml:offsetVector", wcsNSContext ) );
