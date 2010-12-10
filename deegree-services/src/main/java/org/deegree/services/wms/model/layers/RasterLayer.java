@@ -255,22 +255,20 @@ public class RasterLayer extends Layer {
             InterpolationType interpol = NEAREST_NEIGHBOR;
             Interpolation fromRequest = null;
             Layer parent = this;
-            while ( interpol == null ) {
+            while ( fromRequest == null ) {
                 fromRequest = gm.getInterpolation().get( parent );
                 parent = getParent();
             }
-            if ( fromRequest != null ) {
-                switch ( fromRequest ) {
-                case BICUBIC:
-                    LOG.warn( "Raster API does not support bicubic interpolation, using bilinear instead." );
-                case BILINEAR:
-                    interpol = BILINEAR;
-                    break;
-                case NEARESTNEIGHBOR:
-                case NEARESTNEIGHBOUR:
-                    interpol = NEAREST_NEIGHBOR;
-                    break;
-                }
+            switch ( fromRequest ) {
+            case BICUBIC:
+                LOG.warn( "Raster API does not support bicubic interpolation, using bilinear instead." );
+            case BILINEAR:
+                interpol = BILINEAR;
+                break;
+            case NEARESTNEIGHBOR:
+            case NEARESTNEIGHBOUR:
+                interpol = NEAREST_NEIGHBOR;
+                break;
             }
 
             raster = CoverageTransform.transform( raster, bbox, Grid.fromSize( gm.getWidth(), gm.getHeight(),
