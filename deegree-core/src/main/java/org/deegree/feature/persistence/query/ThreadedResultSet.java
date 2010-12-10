@@ -209,4 +209,12 @@ public class ThreadedResultSet implements FeatureResultSet {
             }
         }
     }
+
+    /**
+     * 
+     */
+    public static void shutdown() {
+        service.shutdown();
+    }
+
 }
