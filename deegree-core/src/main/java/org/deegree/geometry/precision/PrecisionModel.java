@@ -46,6 +46,6 @@ package org.deegree.geometry.precision;
  */
 public class PrecisionModel {
 
-    public static PrecisionModel DEFAULT_PRECISION_MODEL = null;
+    public static final PrecisionModel DEFAULT_PRECISION_MODEL = null;
     
 }
