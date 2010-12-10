@@ -251,7 +251,9 @@ public class SecureProxy extends HttpServlet {
                                           System.currentTimeMillis(), creds );
                 } else {
                     if ( tmpFile != null ) {
-                        tmpFile.delete();
+                        if ( !tmpFile.delete() ) {
+                            LOG.warn( "Could not delete temporary file {}.", tmpFile );
+                        }
                     }
                 }
             } else {
