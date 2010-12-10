@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,7 +32,7 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 
 package org.deegree.services.controller.exception.serializer;
 
@@ -49,15 +49,15 @@ import org.deegree.services.controller.exception.ControllerException;
 
 /**
  * The <code>XMLExceptionSerializer</code> class TODO add class documentation here.
- *
+ * 
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- *
+ * 
  * @author last edited by: $Author$
- *
+ * 
  * @version $Revision$, $Date$
  * @param <T>
  *            the exception which will be serialized, a subtype of {@link ControllerException}
- *
+ * 
  */
 public abstract class XMLExceptionSerializer<T extends ControllerException> extends XMLAdapter implements
                                                                                               ExceptionSerializer<T> {
@@ -66,7 +66,7 @@ public abstract class XMLExceptionSerializer<T extends ControllerException> exte
      * Wraps a {@link IndentingXMLStreamWriter} around the given output stream and calls
      * {@link #serializeExceptionToXML(XMLStreamWriter, ControllerException)}. The writer will prepare namespaces and
      * will start and end the XML document.
-     *
+     * 
      * @param outputStream
      *            which will be wrapped.
      * @param exception
@@ -79,10 +79,9 @@ public abstract class XMLExceptionSerializer<T extends ControllerException> exte
         factory.setProperty( XMLOutputFactory.IS_REPAIRING_NAMESPACES, Boolean.TRUE );
         try {
             IndentingXMLStreamWriter xmlWriter = new IndentingXMLStreamWriter(
-                                                                                 factory.createXMLStreamWriter(
-                                                                                                                outputStream,
-                                                                                                                requestedEncoding ) );
-            xmlWriter.writeStartDocument("UTF-8", "1.0");
+                                                                               factory.createXMLStreamWriter( outputStream,
+                                                                                                              requestedEncoding ) );
+            xmlWriter.writeStartDocument( "UTF-8", "1.0" );
             serializeExceptionToXML( xmlWriter, exception );
             xmlWriter.writeEndDocument();
         } catch ( XMLStreamException e ) {
@@ -92,7 +91,7 @@ public abstract class XMLExceptionSerializer<T extends ControllerException> exte
 
     /**
      * Implementations can use the xml writer to serialize the given exception as a specific xml representation.
-     *
+     * 
      * @param writer
      *            a formatting xml writer, wrapped around an output stream.
      * @param exception
