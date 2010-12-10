@@ -118,7 +118,7 @@ public class SOAPAuthentication implements CredentialsProvider {
 
         if ( e instanceof InvalidCredentialsException ) {
             doInvalidCredentialsExceptionException( response, (InvalidCredentialsException) e );
-        } else if ( e instanceof SecurityException ) {
+        } else if ( e != null ) {
             doAuthenticationException( response, e );
         }
 
