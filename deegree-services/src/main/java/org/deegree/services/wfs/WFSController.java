@@ -63,6 +63,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.Map.Entry;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -129,9 +130,9 @@ import org.deegree.services.jaxb.metadata.ServiceProviderType;
 import org.deegree.services.jaxb.wfs.AbstractFormatType;
 import org.deegree.services.jaxb.wfs.CustomFormat;
 import org.deegree.services.jaxb.wfs.DeegreeWFS;
-import org.deegree.services.jaxb.wfs.DeegreeWFS.SupportedVersions;
 import org.deegree.services.jaxb.wfs.FeatureTypeMetadata;
 import org.deegree.services.jaxb.wfs.GMLFormat;
+import org.deegree.services.jaxb.wfs.DeegreeWFS.SupportedVersions;
 import org.deegree.services.wfs.format.Format;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -652,9 +653,9 @@ public class WFSController extends AbstractOGCServiceController {
                 if ( !VERSION_100.equals( version ) ) {
                     baseUrl += "&NAMESPACE=xmlns(";
                     int i = 0;
-                    for ( String prefix : bindings.keySet() ) {
-                        baseUrl += URLEncoder.encode( prefix, "UTF-8" ) + "="
-                                   + URLEncoder.encode( bindings.get( prefix ), "UTF-8" );
+                    for ( Entry<String, String> entry : bindings.entrySet() ) {
+                        baseUrl += URLEncoder.encode( entry.getKey(), "UTF-8" ) + "="
+                                   + URLEncoder.encode( entry.getValue(), "UTF-8" );
                         if ( i != bindings.size() - 1 ) {
                             baseUrl += ",";
                         }
