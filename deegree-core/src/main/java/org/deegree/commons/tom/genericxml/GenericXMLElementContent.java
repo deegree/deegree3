@@ -98,13 +98,13 @@ public class GenericXMLElementContent implements TypedObjectNode {
 
     @Override
     public String toString() {
-        String s = "";
+        StringBuilder s = new StringBuilder();
         if ( children != null ) {
             for ( TypedObjectNode child : children ) {
-                s += child.toString();
+                s.append( child.toString() );
             }
         }
-        return s;
+        return s.toString();
     }
 
     public void setChildren( List<TypedObjectNode> newChildren ) {

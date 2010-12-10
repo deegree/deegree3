@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,7 +32,7 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 package org.deegree.commons.tom.ows;
 
 import org.deegree.commons.utils.kvp.InvalidParameterValueException;
@@ -42,19 +42,19 @@ import org.deegree.commons.utils.kvp.InvalidParameterValueException;
  * version negotiation.
  * <p>
  * Description from <code>owsCommon.xsd</code>, version 1.1.0:
- *
+ * 
  * The string value shall contain one x.y.z "version" value (e.g., "2.1.3"). A version number shall contain three
  * non-negative integers separated by decimal points, in the form "x.y.z". The integers y and z shall not exceed 99.
  * <p>
  * Each version shall be for the Implementation Specification (document) and the associated XML Schemas to which
  * requested operations will conform. An Implementation Specification version normally specifies XML Schemas against
  * which an XML encoded operation response must conform and should be validated.
- *
+ * 
  * @see Comparable
- *
+ * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
- *
+ * 
  * @version $Revision:$, $Date:$
  */
 public class Version implements Comparable<Version> {
@@ -67,7 +67,7 @@ public class Version implements Comparable<Version> {
 
     /**
      * Constructs a <code>Version</code> for an OWS operation.
-     *
+     * 
      * @param x
      *            major version. Must be a positive integer.
      * @param y
@@ -94,7 +94,7 @@ public class Version implements Comparable<Version> {
      * <p>
      * The string value shall contain one x.y.z "version" value (e.g., "2.1.3"). A version number shall contain three
      * non-negative integers separated by decimal points, in the form "x.y.z". The integers y and z shall not exceed 99.
-     *
+     * 
      * @param s
      *            a <code>String</code> containing the <code>Version</code> representation to be parsed
      * @return a corresponding <code>Version</code> object
@@ -168,20 +168,20 @@ public class Version implements Comparable<Version> {
 
     /**
      * Returns a formatted string for presenting a series of versions to a human.
-     *
+     * 
      * @param versions
      *            versions to be listed
      * @return formatted, human-readable string
      */
     public static String getVersionsString( Version... versions ) {
         int i = 0;
-        String s = "";
+        StringBuilder s = new StringBuilder();
         for ( Version version : versions ) {
-            s += "'" + version + "'";
+            s.append( "'" ).append( version ).append( "'" );
             if ( i++ != versions.length - 1 ) {
-                s += ", ";
+                s.append( ", " );
             }
         }
-        return s;
+        return s.toString();
     }
 }
