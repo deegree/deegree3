@@ -35,11 +35,11 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.services.resources;
 
+import static org.h2.util.IOUtils.copyAndClose;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -118,15 +118,7 @@ public class ResourcesServlet extends HttpServlet {
         String mimeType = determineMimeType( resource );
         response.setContentType( mimeType );
 
-        byte[] buffer = new byte[4096];
-        InputStream is = new FileInputStream( resource );
-        OutputStream os = response.getOutputStream();
-        int read = -1;
-        while ( ( read = is.read( buffer ) ) > 0 ) {
-            os.write( buffer, 0, read );
-        }
-        is.close();
-        os.close();
+        copyAndClose( new FileInputStream( resource ), response.getOutputStream() );
     }
 
     private String determineMimeType( File resource ) {
