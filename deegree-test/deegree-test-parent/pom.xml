@@ -43,13 +43,13 @@
     <plugins>
       <plugin>
         <groupId>org.deegree</groupId>
-        <artifactId>deegree-portnumber-plugin</artifactId>
+        <artifactId>deegree-maven-plugin</artifactId>
         <version>1.0-SNAPSHOT</version>
         <executions>
           <execution>
             <phase>generate-sources</phase>
             <goals>
-              <goal>generate</goal>
+              <goal>generate-portnumber</goal>
             </goals>
           </execution>
         </executions>
