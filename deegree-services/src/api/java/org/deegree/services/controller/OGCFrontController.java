@@ -960,7 +960,10 @@ public class OGCFrontController extends HttpServlet {
             BufferedReader reader = null;
             try {
                 reader = new BufferedReader( new FileReader( wsNameFile ) );
-                wsName = reader.readLine().trim();
+                wsName = reader.readLine();
+                if ( wsName != null ) {
+                    wsName = wsName.trim();
+                }
             } finally {
                 IOUtils.closeQuietly( reader );
             }

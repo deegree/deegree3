@@ -330,18 +330,18 @@ public abstract class AbstractOGCServiceController implements OWS {
             LOG.error( "" );
             LOG.error( "*** Configuration version mismatch ***", confFileURL );
             LOG.error( "" );
-            String msg = "File uses config version " + configVersion
-                         + ", but this deegree build only supports version(s): ";
+            StringBuilder msg = new StringBuilder( "File uses config version " ).append( configVersion );
+            msg.append( ", but this deegree build only supports version(s): " );
             boolean separatorNeeded = false;
             for ( Version supportedVersion : implementationMetadata.getSupportedConfigVersions() ) {
-                msg += supportedVersion;
+                msg.append( supportedVersion );
                 if ( separatorNeeded ) {
-                    msg += ",";
+                    msg.append( "," );
                 }
                 separatorNeeded = true;
             }
-            msg += " for this file type. Information on resolving this issue can be found at 'http://wiki.deegree.org/deegreeWiki/deegree3/ConfigurationVersions'. ";
-            throw new ControllerInitException( msg );
+            msg.append( " for this file type. Information on resolving this issue can be found at 'http://wiki.deegree.org/deegreeWiki/deegree3/ConfigurationVersions'. " );
+            throw new ControllerInitException( msg.toString() );
         }
     }
 
