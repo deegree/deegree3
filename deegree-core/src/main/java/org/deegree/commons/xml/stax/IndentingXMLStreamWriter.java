@@ -247,7 +247,6 @@ public class IndentingXMLStreamWriter implements XMLStreamWriter {
     public void writeEndDocument()
                             throws XMLStreamException {
         s.writeEndDocument();
-        s.writeCharacters( "\n" );
     }
 
     public void writeEndElement()
