@@ -48,12 +48,10 @@ import java.util.TreeSet;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.xml.XMLConstants;
 import javax.xml.bind.JAXBException;
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
-import javax.xml.validation.SchemaFactory;
 
 import org.apache.axiom.om.OMElement;
 import org.apache.axiom.soap.SOAPEnvelope;
@@ -113,8 +111,6 @@ public abstract class AbstractOGCServiceController implements OWS {
     protected DeegreeServicesMetadataType mainMetadataConf;
 
     protected DeegreeServiceControllerType mainControllerConf;
-
-    private final static SchemaFactory sf = SchemaFactory.newInstance( XMLConstants.W3C_XML_SCHEMA_NS_URI );
 
     /**
      * Versions offered by the {@link AbstractOGCServiceController} instance (depends on configuration).
@@ -298,14 +294,14 @@ public abstract class AbstractOGCServiceController implements OWS {
      */
     public String getOfferedVersionsString() {
         int i = 0;
-        String s = "";
+        StringBuilder s = new StringBuilder();
         for ( Version version : offeredVersions ) {
-            s += "'" + version + "'";
+            s.append( "'" ).append( version ).append( "'" );
             if ( i++ != offeredVersions.size() - 1 ) {
-                s += ", ";
+                s.append( ", " );
             }
         }
-        return s;
+        return s.toString();
     }
 
     /**
@@ -429,7 +425,8 @@ public abstract class AbstractOGCServiceController implements OWS {
                 }
             }
             if ( agreedVersion == null ) {
-                String versionsString = Version.getVersionsString( request.getAcceptVersionsAsVersions().toArray( new Version[request.getAcceptVersions().size()] ) );
+                String versionsString = Version.getVersionsString( request.getAcceptVersionsAsVersions().toArray(
+                                                                                                                  new Version[request.getAcceptVersions().size()] ) );
                 throw new OWSException( "Version negotiation failed. No support for version(s): " + versionsString,
                                         OWSException.VERSION_NEGOTIATION_FAILED );
             }
@@ -581,7 +578,8 @@ public abstract class AbstractOGCServiceController implements OWS {
      *            to be synchronized with the main configuration
      * @return the configured service provider, with missing values filled from the main configuration.
      */
-    protected ServiceProviderType synchronizeServiceProviderWithMainControllerConf( ServiceProviderType configuredServiceProvider ) {
+    protected ServiceProviderType synchronizeServiceProviderWithMainControllerConf(
+                                                                                    ServiceProviderType configuredServiceProvider ) {
         ServiceProviderType mainProvider = mainMetadataConf.getServiceProvider();
         ServiceProviderType result = configuredServiceProvider;
         if ( configuredServiceProvider == null ) {
@@ -603,7 +601,8 @@ public abstract class AbstractOGCServiceController implements OWS {
      * @return the service identification with all missing values filled in from the main controller service
      *         identification.
      */
-    protected ServiceIdentificationType synchronizeServiceIdentificationWithMainController( ServiceIdentificationType serviceIdentification ) {
+    protected ServiceIdentificationType synchronizeServiceIdentificationWithMainController(
+                                                                                            ServiceIdentificationType serviceIdentification ) {
         ServiceIdentificationType mainID = mainMetadataConf.getServiceIdentification();
         ServiceIdentificationType result = serviceIdentification;
         if ( mainID != null ) {
