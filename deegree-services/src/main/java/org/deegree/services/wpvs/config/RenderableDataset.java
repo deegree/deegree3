@@ -134,7 +134,7 @@ public class RenderableDataset extends Dataset<RenderableManager<?>> {
      * 
      * @param result
      *            to add the information to
-     * @param backends
+     * @param backend
      *            to get the information from.
      */
     private void updateBackendInfo( ModelBackendInfo result, ModelBackend<?> backend, ModelBackend.Type infoType ) {
@@ -151,7 +151,7 @@ public class RenderableDataset extends Dataset<RenderableManager<?>> {
      * @param sceneEnvelope
      * 
      * @param configuredTreeDatasets
-     * @param backends
+     * @param backend
      */
     private Envelope initBillboards( Envelope sceneEnvelope, double[] toLocalCRS,
                                      RenderableDatasetConfig configuredTreeDatasets, RenderableStore backend ) {
@@ -179,9 +179,6 @@ public class RenderableDataset extends Dataset<RenderableManager<?>> {
 
     /**
      * @param toLocalCRS
-     * @param parentBBox
-     * @param mb
-     * @return
      */
     private Envelope initEntities( Envelope sceneEnvelope, double[] toLocalCRS,
                                    RenderableDatasetConfig configuredBuildingsDS, RenderableStore backend ) {
@@ -197,7 +194,7 @@ public class RenderableDataset extends Dataset<RenderableManager<?>> {
          * assuming each building has 10 geometries (in average), each geometry has 6 vertices (2 triangles ) and each
          * vertex has 3 ordinates 10*6*3 = 180
          */
-        int numberOfObjectsInLeaf = (int) Math.max( ( info.getOrdinateCount() / 180 ) * 0.01, 25 );
+        int numberOfObjectsInLeaf = (int) Math.max( ( info.getOrdinateCount() / 180d ) * 0.01, 25 );
         DirectGeometryBuffer geometryBuffer = new DirectGeometryBuffer( info.getOrdinateCount(),
                                                                         info.getTextureOrdinateCount() );
 
@@ -232,7 +229,6 @@ public class RenderableDataset extends Dataset<RenderableManager<?>> {
      * Create the Lod switch level class from the configured values.
      * 
      * @param configuredLevels
-     * @return
      */
     private LODSwitcher createLevels( SwitchLevels configuredLevels ) {
         LODSwitcher result = null;
