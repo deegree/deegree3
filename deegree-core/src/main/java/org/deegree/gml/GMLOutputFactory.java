@@ -59,9 +59,10 @@ public class GMLOutputFactory {
      * @param xmlStream
      *            XML stream used to write the output, must not be <code>null</code>
      * @return initialized {@link GMLStreamWriter}
-     * @throws XMLStreamException 
+     * @throws XMLStreamException
      */
-    public static GMLStreamWriter createGMLStreamWriter( GMLVersion version, XMLStreamWriter xmlStream ) throws XMLStreamException {
-        return new GMLStreamWriter( version, xmlStream );
+    public static GMLStreamWriter createGMLStreamWriter( GMLVersion version, XMLStreamWriter xmlStream )
+                            throws XMLStreamException {
+        return new GMLStreamWriter( version, new StaXSetPrefixBugfixXMLStreamWriter( xmlStream ) );
     }
 }
