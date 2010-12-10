@@ -1194,10 +1194,11 @@ public class RTree<T> extends SpatialIndex<T> {
                 }
             }
         }
-        if ( overlap[i] < EPS5 ) {
-            c = i;
-            success = true;
-        }
+        // this has no effect, should it go inside the loop?
+        // if ( overlap[i] < EPS5 ) {
+        // c = i;
+        // success = true;
+        // }
     }
 
     /**
