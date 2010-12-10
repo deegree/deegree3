@@ -85,6 +85,7 @@ import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.LogFactory;
 import org.apache.log4j.LogManager;
+import org.deegree.commons.concurrent.Executor;
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.tom.ows.Version;
 import org.deegree.commons.utils.DeegreeAALogoUtils;
@@ -992,6 +993,8 @@ public class OGCFrontController extends HttpServlet {
      * href="https://wiki.deegree.org/deegreeWiki/ClassLoaderLeaks">ClassLoaderLeaks in deegree wiki</a>.
      */
     private void plugClassLoaderLeaks() {
+        Executor.getInstance().shutdown();
+
         // deregister all JDBC drivers loaded by webapp classloader
         Enumeration<Driver> e = DriverManager.getDrivers();
         while ( e.hasMoreElements() ) {
