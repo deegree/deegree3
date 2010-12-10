@@ -41,6 +41,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+import org.deegree.commons.utils.JDBCUtils;
 import org.deegree.cs.CRS;
 import org.deegree.geometry.Envelope;
 import org.postgis.Geometry;
@@ -63,7 +64,7 @@ public class PostgisBackend extends DBBackend<PGgeometry> {
     /**
      * @param connectionID
      *            pointing to the configured database connection.
-     * @param type 
+     * @param type
      */
     public PostgisBackend( String connectionID, Type type ) {
         super( connectionID, type );
@@ -170,26 +171,33 @@ public class PostgisBackend extends DBBackend<PGgeometry> {
     protected Envelope getDatasetEnvelope( Connection con, String tableName, String geomColumn )
                             throws SQLException {
         Envelope result = null;
-        PreparedStatement statement = con.prepareStatement( "SELECT extent3d(" + geomColumn + ") FROM " + tableName );
-        ResultSet rs = statement.executeQuery();
-        if ( rs.next() ) {
-            Object box3d = rs.getObject( 1 );
-            if ( box3d != null ) {
-                if ( box3d instanceof PGbox3d ) {
-                    PGbox3d bbox = (PGbox3d) box3d;
-                    double[] min = new double[] { bbox.getLLB().x, bbox.getLLB().y, bbox.getLLB().z };
-                    double[] max = new double[] { bbox.getURT().x, bbox.getURT().y, bbox.getURT().z };
-                    double[] trans = getWPVSTranslationVector();
-                    min[0] += trans[0];
-                    min[1] += trans[1];
-                    max[0] += trans[0];
-                    max[1] += trans[1];
-                    result = geomFactory.createEnvelope( min, max, getBaseCRS() );
-                } else {
-                    throw new SQLException( "Could not retrieve wkt from column: " + geomColumn + " of table "
-                                            + tableName + " because the resulting geometry was null." );
+        PreparedStatement statement = null;
+        ResultSet rs = null;
+        try {
+            statement = con.prepareStatement( "SELECT extent3d(" + geomColumn + ") FROM " + tableName );
+            rs = statement.executeQuery();
+            if ( rs.next() ) {
+                Object box3d = rs.getObject( 1 );
+                if ( box3d != null ) {
+                    if ( box3d instanceof PGbox3d ) {
+                        PGbox3d bbox = (PGbox3d) box3d;
+                        double[] min = new double[] { bbox.getLLB().x, bbox.getLLB().y, bbox.getLLB().z };
+                        double[] max = new double[] { bbox.getURT().x, bbox.getURT().y, bbox.getURT().z };
+                        double[] trans = getWPVSTranslationVector();
+                        min[0] += trans[0];
+                        min[1] += trans[1];
+                        max[0] += trans[0];
+                        max[1] += trans[1];
+                        result = geomFactory.createEnvelope( min, max, getBaseCRS() );
+                    } else {
+                        throw new SQLException( "Could not retrieve wkt from column: " + geomColumn + " of table "
+                                                + tableName + " because the resulting geometry was null." );
+                    }
                 }
             }
+        } finally {
+            JDBCUtils.close( rs );
+            JDBCUtils.close( statement );
         }
         return result;
     }

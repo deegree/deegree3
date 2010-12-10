@@ -626,12 +626,16 @@ public abstract class DBBackend<G> extends ModelBackend<G> {
      */
     private void updateBackendInfo( Connection connection, ModelBackendInfo info, Type objectType )
                             throws SQLException {
-        PreparedStatement ps = connection.prepareStatement( UP_INFO );
-        ps.setInt( 1, info.getOrdinateCount() );
-        ps.setInt( 2, info.getTextureOrdinateCount() );
-        ps.setString( 3, objectType.getModelTypeName() );
-        ps.execute();
-        ps.close();
+        PreparedStatement ps = null;
+        try {
+            ps = connection.prepareStatement( UP_INFO );
+            ps.setInt( 1, info.getOrdinateCount() );
+            ps.setInt( 2, info.getTextureOrdinateCount() );
+            ps.setString( 3, objectType.getModelTypeName() );
+            ps.execute();
+        } finally {
+            JDBCUtils.close( ps );
+        }
     }
 
     /**
