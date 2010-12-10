@@ -264,8 +264,6 @@ public abstract class Dataset<CO> {
         /**
          * @param datasource
          * @param createEnvelope
-         * @param min
-         * @param max
          */
         Constraint( DO datasource, Envelope createEnvelope ) {
             this.datasourceObject = datasource;
@@ -282,7 +280,6 @@ public abstract class Dataset<CO> {
 
         /**
          * @param viewParams
-         * @param boundingBox
          * @return true if the given this constraints match the given values.
          */
         boolean matches( ViewParams viewParams ) {
@@ -315,5 +312,35 @@ public abstract class Dataset<CO> {
             }
             return false;
         }
+
+        /**
+         * Implementation as proposed by Joshua Block in Effective Java (Addison-Wesley 2001), which supplies an even
+         * distribution and is relatively fast. It is created from field <b>f</b> as follows:
+         * <ul>
+         * <li>boolean -- code = (f ? 0 : 1)</li>
+         * <li>byte, char, short, int -- code = (int)f</li>
+         * <li>long -- code = (int)(f ^ (f &gt;&gt;&gt;32))</li>
+         * <li>float -- code = Float.floatToIntBits(f);</li>
+         * <li>double -- long l = Double.doubleToLongBits(f); code = (int)(l ^ (l &gt;&gt;&gt; 32))</li>
+         * <li>all Objects, (where equals(&nbsp;) calls equals(&nbsp;) for this field) -- code = f.hashCode(&nbsp;)</li>
+         * <li>Array -- Apply above rules to each element</li>
+         * </ul>
+         * <p>
+         * Combining the hash code(s) computed above: result = 37 * result + code;
+         * </p>
+         * 
+         * @return (int) ( result >>> 32 ) ^ (int) result;
+         * 
+         * @see java.lang.Object#hashCode()
+         */
+        @Override
+        public int hashCode() {
+            // the 2nd millionth prime, :-)
+            long result = 32452843;
+            result = result * 37 + datasourceObject.hashCode();
+            result = result * 37 + validEnvelope.hashCode();
+            return (int) ( result >>> 32 ) ^ (int) result;
+        }
+
     }
 }
