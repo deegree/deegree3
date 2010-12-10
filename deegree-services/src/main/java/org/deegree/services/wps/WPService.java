@@ -36,6 +36,8 @@
 
 package org.deegree.services.wps;
 
+import static org.apache.commons.io.IOUtils.closeQuietly;
+import static org.apache.commons.io.IOUtils.copy;
 import static org.deegree.protocol.wps.WPSConstants.VERSION_100;
 import static org.deegree.protocol.wps.WPSConstants.WPS_100_NS;
 import static org.deegree.services.controller.ows.OWSException.OPERATION_NOT_SUPPORTED;
@@ -167,7 +169,8 @@ public class WPService extends AbstractOGCServiceController {
 
         storageManager = new StorageManager( TempFileManager.getBaseDir() );
 
-        DeegreeWPS sc = (DeegreeWPS) unmarshallConfig( CONFIG_JAXB_PACKAGE, CONFIG_SCHEMA, controllerConf.getRootElement() );
+        DeegreeWPS sc = (DeegreeWPS) unmarshallConfig( CONFIG_JAXB_PACKAGE, CONFIG_SCHEMA,
+                                                       controllerConf.getRootElement() );
 
         URL controllerConfURL;
         try {
@@ -568,19 +571,18 @@ public class WPService extends AbstractOGCServiceController {
                 LOG.debug( "Error sending exception report to client.", e );
             }
         } else {
+            InputStream is = null;
             try {
                 response.setContentType( "text/xml" );
                 response.setContentLength( (int) wsdlFile.length() );
                 OutputStream os = response.getOutputStream();
-                InputStream is = new FileInputStream( wsdlFile );
-                byte[] buffer = new byte[4096];
-                int numBytes = -1;
-                while ( ( numBytes = is.read( buffer ) ) != -1 ) {
-                    os.write( buffer, 0, numBytes );
-                }
+                is = new FileInputStream( wsdlFile );
+                copy( is, os );
                 os.flush();
             } catch ( IOException e ) {
                 LOG.debug( "Error sending WSDL document to client.", e );
+            } finally {
+                closeQuietly( is );
             }
         }
 
