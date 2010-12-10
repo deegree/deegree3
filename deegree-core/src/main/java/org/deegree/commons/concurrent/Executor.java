@@ -306,4 +306,12 @@ public class Executor {
             }
         }
     }
+    
+    /**
+     * 
+     */
+    public void shutdown(){
+        execService.shutdown();
+    }
+    
 }
