@@ -105,9 +105,6 @@ public class GLPBufferPool {
         this.defaultKey = new PBufferKey( this.maxWidth, this.maxHeight );
     }
 
-    /**
-     * @return
-     */
     private int determineMaxPBufferSize() {
         GLPbuffer buffer = createBuffer( 2, 2 );
         if ( buffer.getWidth() == 0 || buffer.getHeight() == 0 ) {
@@ -200,7 +197,7 @@ public class GLPBufferPool {
      * @version $Revision$, $Date$
      * 
      */
-    private class PBufferSizeTest implements GLEventListener {
+    private static class PBufferSizeTest implements GLEventListener {
         PBufferSizeTest() {
             // empty constructor.
         }
@@ -238,7 +235,7 @@ public class GLPBufferPool {
      * @version $Revision$, $Date$
      * 
      */
-    private class PBufferKey {
+    private static class PBufferKey {
 
         private final int width;
 
@@ -247,11 +244,6 @@ public class GLPBufferPool {
         PBufferKey( int width, int height ) {
             this.width = width;
             this.height = height;
-        }
-
-        PBufferKey( ViewParams params ) {
-            this.width = params.getScreenPixelsX();
-            this.height = params.getScreenPixelsY();
         }
 
         /**
