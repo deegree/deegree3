@@ -1354,10 +1354,10 @@ public class SymbologyParser {
                 contn = new Continuation<T>( contn ) {
                     @Override
                     public void updateStep( T base, Feature f, XPathEvaluator<Feature> evaluator ) {
-                        String tmp = "";
+                        StringBuilder tmp = new StringBuilder();
                         for ( Pair<String, Pair<Expression, String>> p : text ) {
                             if ( p.first != null ) {
-                                tmp += p.first;
+                                tmp.append( p.first );
                             }
                             if ( p.second != null ) {
                                 try {
@@ -1365,7 +1365,7 @@ public class SymbologyParser {
                                     if ( evald.length == 0 ) {
                                         LOG.warn( get( "R2D.EXPRESSION_TO_NULL" ), p.second.second );
                                     } else {
-                                        tmp += evald[0];
+                                        tmp.append( evald[0] );
                                     }
                                 } catch ( FilterEvaluationException e ) {
                                     LOG.warn( get( "R2D.ERROR_EVAL" ), e.getLocalizedMessage(), p.second.second );
@@ -1373,7 +1373,7 @@ public class SymbologyParser {
                             }
                         }
 
-                        updater.update( base, tmp );
+                        updater.update( base, tmp.toString() );
                     }
                 };
             }
