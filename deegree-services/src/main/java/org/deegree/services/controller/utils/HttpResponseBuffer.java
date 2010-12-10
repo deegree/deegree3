@@ -90,9 +90,9 @@ import org.slf4j.Logger;
  */
 public class HttpResponseBuffer extends HttpServletResponseWrapper {
 
-    private boolean addEncoding = true;
-
     private static final Logger LOG = getLogger( HttpResponseBuffer.class );
+
+    private boolean addEncoding = true;
 
     // if buffer == null, buffering is disabled
     private StreamBufferStore buffer;
@@ -291,11 +291,6 @@ public class HttpResponseBuffer extends HttpServletResponseWrapper {
     @Override
     public void flushBuffer()
                             throws IOException {
-        if ( buffer != null ) {
-            buffer.flush();
-            buffer.writeTo( super.getOutputStream() );
-            buffer.reset();
-        }
         if ( xmlWriter != null ) {
             try {
                 xmlWriter.flush();
@@ -303,6 +298,11 @@ public class HttpResponseBuffer extends HttpServletResponseWrapper {
                 LOG.debug( e.getLocalizedMessage(), e );
                 throw new IOException( e );
             }
+        }
+        if ( buffer != null ) {
+            buffer.flush();
+            buffer.writeTo( super.getOutputStream() );
+            buffer.reset();
         }
         super.flushBuffer();
     }
@@ -313,6 +313,7 @@ public class HttpResponseBuffer extends HttpServletResponseWrapper {
             buffer.reset();
             super.reset();
             returnType = ReturnType.NOT_DEFINED_YET;
+            xmlWriter = null;
         } else {
             super.reset(); // throws IllegalStateException
         }
