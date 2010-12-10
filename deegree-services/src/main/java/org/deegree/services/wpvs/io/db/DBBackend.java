@@ -51,6 +51,7 @@ import java.util.List;
 
 import org.deegree.commons.index.PositionableModel;
 import org.deegree.commons.jdbc.ConnectionManager;
+import org.deegree.commons.utils.JDBCUtils;
 import org.deegree.cs.CRS;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryFactory;
@@ -240,7 +241,6 @@ public abstract class DBBackend<G> extends ModelBackend<G> {
                                               + RelevantColumns.envelope.getColumnName() + " FROM " + __TABLE__
                                               + " WHERE " + RelevantColumns.uuid.getColumnName() + "=?";
 
-
     private static final String INFO = "SELECT * FROM " + Tables.MODEL_INFO.getTableName() + " WHERE "
                                        + RelevantColumns.type.getColumnName() + "=?";
 
@@ -267,7 +267,7 @@ public abstract class DBBackend<G> extends ModelBackend<G> {
     /**
      * @param connectionID
      *            to be used to get a connection from the {@link ConnectionManager}
-     * @param type 
+     * @param type
      */
     DBBackend( String connectionID, Type type ) {
         this.connectionID = connectionID;
@@ -998,45 +998,55 @@ public abstract class DBBackend<G> extends ModelBackend<G> {
     /**
      * @param connection
      * @param objectType
-     * @return
      * @throws SQLException
      */
     private ModelBackendInfo getBackendInfo( Connection connection, Type objectType )
                             throws SQLException {
         ModelBackendInfo result = new ModelBackendInfo();
-        PreparedStatement ps = connection.prepareStatement( INFO );
-        Envelope env = null;
-        switch ( objectType ) {
-        case BUILDING:
-        case STAGE:
-            ps.setString( 1, Type.BUILDING.getModelTypeName() );
-            env = getDatasetEnvelope( connection, Tables.BUILDINGS.getTableName(),
-                                      RelevantColumns.envelope.getColumnName() );
-            break;
-        case PROTOTYPE:
-            ps.setString( 1, Type.PROTOTYPE.getModelTypeName() );
-            env = getDatasetEnvelope( connection, Tables.PROTOTYPES.getTableName(),
-                                      RelevantColumns.envelope.getColumnName() );
-            break;
-        case TREE:
-            ps.setString( 1, Type.TREE.getModelTypeName() );
-            env = getDatasetEnvelope( connection, Tables.TREES.getTableName(), RelevantColumns.envelope.getColumnName() );
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        try {
+            ps = connection.prepareStatement( INFO );
+            Envelope env = null;
+            switch ( objectType ) {
+            case BUILDING:
+            case STAGE:
+                ps.setString( 1, Type.BUILDING.getModelTypeName() );
+                env = getDatasetEnvelope( connection, Tables.BUILDINGS.getTableName(),
+                                          RelevantColumns.envelope.getColumnName() );
+                break;
+            case PROTOTYPE:
+                ps.setString( 1, Type.PROTOTYPE.getModelTypeName() );
+                env = getDatasetEnvelope( connection, Tables.PROTOTYPES.getTableName(),
+                                          RelevantColumns.envelope.getColumnName() );
+                break;
+            case TREE:
+                ps.setString( 1, Type.TREE.getModelTypeName() );
+                env = getDatasetEnvelope( connection, Tables.TREES.getTableName(),
+                                          RelevantColumns.envelope.getColumnName() );
+            }
+            rs = ps.executeQuery();
+            if ( rs.next() ) {
+                result.addOrdinates( rs.getInt( 2 ) );
+                result.addTextureOrdinates( rs.getInt( 3 ) );
+                result.setDatasetEnvelope( env );
+            } else {
+                // create the type in the db;
+                LOG.info( "No row for objectType: " + objectType.getModelTypeName() + " creating one." );
+                try {
+                    JDBCUtils.close( ps );
+                    ps = connection.prepareStatement( "INSERT INTO " + Tables.MODEL_INFO.getTableName()
+                                                      + " VALUES ( ?, 0, 0 )" );
+                    ps.setString( 1, objectType.getModelTypeName() );
+                    ps.execute();
+                } finally {
+                    JDBCUtils.close( ps );
+                }
+            }
+        } finally {
+            JDBCUtils.close( rs );
+            JDBCUtils.close( ps );
         }
-        ResultSet rs = ps.executeQuery();
-        if ( rs.next() ) {
-            result.addOrdinates( rs.getInt( 2 ) );
-            result.addTextureOrdinates( rs.getInt( 3 ) );
-            result.setDatasetEnvelope( env );
-        } else {
-            // create the type in the db;
-            LOG.info( "No row for objectType: " + objectType.getModelTypeName() + " creating one." );
-            connection.prepareStatement(
-                                         "INSERT INTO " + Tables.MODEL_INFO.getTableName() + " VALUES ( '"
-                                                                 + objectType.getModelTypeName() + "', 0, 0 )" ).execute();
-        }
-
-        rs.close();
-        ps.close();
         return result;
     }
 
@@ -1044,7 +1054,7 @@ public abstract class DBBackend<G> extends ModelBackend<G> {
     public void flush() {
         // nothing
     }
-    
+
     @Override
     public void loadEntities( RenderableManager<?> renderer, CRS baseCRS ) {
         if ( dataType == Type.TREE ) {
