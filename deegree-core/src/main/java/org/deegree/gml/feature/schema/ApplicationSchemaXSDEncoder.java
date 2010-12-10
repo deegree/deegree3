@@ -298,14 +298,13 @@ public class ApplicationSchemaXSDEncoder {
     public void export( XMLStreamWriter writer, List<FeatureType> fts )
                             throws XMLStreamException {
 
+        writer.setDefaultNamespace( XSNS );
+        writer.writeStartElement( XSNS, "schema" );
+        writer.writeNamespace( GML_PREFIX, gmlNsURI );
         for ( String prefix : prefixesToNs.keySet() ) {
             String ns = prefixesToNs.get( prefix );
-            writer.setPrefix( prefix, ns );
+            writer.writeNamespace( prefix, ns );
         }
-
-        writer.writeStartElement( "schema" );
-        writer.writeNamespace( DEFAULT_NS_PREFIX, XSNS );
-        writer.writeNamespace( GML_PREFIX, gmlNsURI );
 
         if ( targetNs != null && !targetNs.isEmpty() ) {
             writer.writeAttribute( "targetNamespace", targetNs );
