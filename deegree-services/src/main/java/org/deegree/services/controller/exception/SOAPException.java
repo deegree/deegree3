@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,21 +32,23 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 
 package org.deegree.services.controller.exception;
+
+import static java.util.Arrays.copyOf;
 
 import org.deegree.services.controller.ows.OWSException;
 
 /**
  * The <code>SoapException</code> class wraps the soap specific fault parameters.
- *
+ * 
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- *
+ * 
  * @author last edited by: $Author$
- *
+ * 
  * @version $Revision$, $Date$
- *
+ * 
  */
 public class SOAPException extends ControllerException {
 
@@ -105,7 +107,7 @@ public class SOAPException extends ControllerException {
      */
     public SOAPException( String reason, String code, String[] subcodes ) {
         super( reason, code );
-        this.subcodes = subcodes;
+        this.subcodes = subcodes == null ? null : copyOf( subcodes, subcodes.length );
     }
 
     /**
