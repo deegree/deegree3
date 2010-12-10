@@ -55,6 +55,7 @@ import org.deegree.commons.jdbc.ConnectionManager;
 import org.deegree.commons.tom.datetime.Date;
 import org.deegree.commons.tom.genericxml.GenericXMLElementContent;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
+import org.deegree.commons.utils.JDBCUtils;
 import org.deegree.commons.utils.Pair;
 import org.deegree.feature.property.Property;
 import org.deegree.feature.property.SimpleProperty;
@@ -229,22 +230,8 @@ public class DBFIndex {
         } catch ( SQLException e ) {
             e.printStackTrace();
         } finally {
-            if ( stmt != null ) {
-                try {
-                    stmt.close();
-                } catch ( SQLException e ) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-                }
-            }
-            if ( conn != null ) {
-                try {
-                    conn.close();
-                } catch ( SQLException e ) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-                }
-            }
+            JDBCUtils.close( stmt );
+            JDBCUtils.close( conn );
         }
 
         LOG.debug( "Done creating h2 db index." );
@@ -306,30 +293,9 @@ public class DBFIndex {
         } catch ( SQLException e ) {
             e.printStackTrace();
         } finally {
-            if ( set != null ) {
-                try {
-                    set.close();
-                } catch ( SQLException e ) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-                }
-            }
-            if ( stmt != null ) {
-                try {
-                    stmt.close();
-                } catch ( SQLException e ) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-                }
-            }
-            if ( conn != null ) {
-                try {
-                    conn.close();
-                } catch ( SQLException e ) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-                }
-            }
+            JDBCUtils.close( set );
+            JDBCUtils.close( stmt );
+            JDBCUtils.close( conn );
         }
 
         return null;
