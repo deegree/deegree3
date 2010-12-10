@@ -59,6 +59,7 @@ import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryFactory;
 import org.deegree.geometry.GeometryTransformer;
+import org.h2.util.IOUtils;
 import org.slf4j.Logger;
 
 /**
@@ -236,10 +237,10 @@ public class FrontControllerStats {
      * @return the time of the first request
      */
     public static long getStartingTime() {
-        InputStreamReader is = null;
+        BufferedReader in = null;
         try {
-            is = new InputStreamReader( ConfigManager.getInputResource( "requests.txt" ), "UTF-8" );
-            BufferedReader in = new BufferedReader( is );
+            InputStreamReader is = new InputStreamReader( ConfigManager.getInputResource( "requests.txt" ), "UTF-8" );
+            in = new BufferedReader( is );
             String s = null;
             if ( ( s = in.readLine() ) != null ) {
                 String[] req = s.split( " " );
@@ -254,13 +255,7 @@ public class FrontControllerStats {
             LOG.debug( "The requests file could not be read: '{}'", e.getLocalizedMessage() );
             LOG.trace( "Stack trace:", e );
         } finally {
-            if ( is != null ) {
-                try {
-                    is.close();
-                } catch ( IOException e ) {
-                    LOG.trace( "Stack trace:", e );
-                }
-            }
+            IOUtils.closeSilently( in );
         }
         return -1;
     }
