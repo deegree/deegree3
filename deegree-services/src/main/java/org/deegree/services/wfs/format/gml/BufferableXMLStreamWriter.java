@@ -211,7 +211,6 @@ public class BufferableXMLStreamWriter implements XMLStreamWriter {
             for ( int i = 0; i < openElements; i++ ) {
                 activeWriter.writeStartElement( "DummyElement" );
             }
-            activeWriter.setNamespaceContext( sink.getNamespaceContext() );
         }
     }
 
