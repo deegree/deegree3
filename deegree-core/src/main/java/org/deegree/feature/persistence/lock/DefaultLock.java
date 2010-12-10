@@ -263,12 +263,13 @@ class DefaultLock implements Lock {
         synchronized ( manager ) {
             if ( isLocked( fid ) ) {
                 Connection conn = null;
-                Statement stmt = null;
+                PreparedStatement stmt = null;
                 ResultSet rs = null;
                 try {
                     conn = ConnectionManager.getConnection( jdbcConnId );
-                    stmt = conn.createStatement();
-                    stmt.executeUpdate( "DELETE FROM LOCKED_FIDS WHERE FID='" + fid + "'" );
+                    stmt = conn.prepareStatement( "DELETE FROM LOCKED_FIDS WHERE FID=?" );
+                    stmt.setString( 1, fid );
+                    stmt.executeUpdate();
                     conn.commit();
                     --numLocked;
                 } catch ( SQLException e ) {

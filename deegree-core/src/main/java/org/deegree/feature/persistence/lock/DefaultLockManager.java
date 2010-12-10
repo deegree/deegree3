@@ -474,13 +474,14 @@ public class DefaultLockManager implements LockManager {
         synchronized ( this ) {
             releaseExpiredLocks();
             Connection conn = null;
-            Statement stmt = null;
+            PreparedStatement stmt = null;
             ResultSet rs = null;
             try {
                 conn = ConnectionManager.getConnection( jdbcConnId );
-                stmt = conn.createStatement();
-                rs = stmt.executeQuery( "SELECT COUNT(*) FROM LOCKED_FIDS WHERE FID='" + fid + "' AND LOCK_ID<>"
-                                        + lockIdInt );
+                stmt = conn.prepareStatement( "SELECT COUNT(*) FROM LOCKED_FIDS WHERE FID=? AND LOCK_ID<>?" + lockIdInt );
+                stmt.setString( 1, fid );
+                stmt.setInt( 2, lockIdInt );
+                rs = stmt.executeQuery();
                 rs.next();
                 int count = rs.getInt( 1 );
                 isModifiable = count == 0;
