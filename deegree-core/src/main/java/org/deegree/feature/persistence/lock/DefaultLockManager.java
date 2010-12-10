@@ -478,7 +478,7 @@ public class DefaultLockManager implements LockManager {
             ResultSet rs = null;
             try {
                 conn = ConnectionManager.getConnection( jdbcConnId );
-                stmt = conn.prepareStatement( "SELECT COUNT(*) FROM LOCKED_FIDS WHERE FID=? AND LOCK_ID<>?" + lockIdInt );
+                stmt = conn.prepareStatement( "SELECT COUNT(*) FROM LOCKED_FIDS WHERE FID=? AND LOCK_ID<>?" );
                 stmt.setString( 1, fid );
                 stmt.setInt( 2, lockIdInt );
                 rs = stmt.executeQuery();
