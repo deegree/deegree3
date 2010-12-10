@@ -46,6 +46,7 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 
+import org.deegree.commons.utils.JDBCUtils;
 import org.deegree.services.controller.Credentials;
 import org.deegree.services.controller.RequestLogger;
 import org.slf4j.Logger;
@@ -149,7 +150,9 @@ public class OSAASRequestLogger implements RequestLogger {
             LOG.debug( "{}", conn );
             stmt.executeUpdate();
 
-            logFile.delete();
+            if ( !logFile.delete() ) {
+                LOG.warn( "Could not delete temporary file {}.", logFile );
+            }
         } catch ( SQLException e ) {
             e.printStackTrace();
             LOG.debug( "Could not log XML request: {}", e.getLocalizedMessage() );
@@ -158,20 +161,8 @@ public class OSAASRequestLogger implements RequestLogger {
             LOG.debug( "XML log file '{}' could not be found: {}", logFile, e.getLocalizedMessage() );
             LOG.trace( "Stack trace:", e );
         } finally {
-            if ( stmt != null ) {
-                try {
-                    stmt.close();
-                } catch ( SQLException e ) {
-                    LOG.trace( "Stack trace:", e );
-                }
-            }
-            if ( conn != null ) {
-                try {
-                    conn.close();
-                } catch ( SQLException e ) {
-                    LOG.trace( "Stack trace:", e );
-                }
-            }
+            JDBCUtils.close( stmt );
+            JDBCUtils.close( conn );
         }
     }
 
