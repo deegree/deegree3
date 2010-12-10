@@ -36,6 +36,8 @@
 
 package org.deegree.services.wms.controller.ops;
 
+import static java.util.Arrays.copyOf;
+
 import java.util.Map;
 
 /**
@@ -61,7 +63,7 @@ public class GetFeatureInfoSchema {
      * @return the requested layers
      */
     public String[] getLayers() {
-        return layers;
+        return copyOf( layers, layers.length );
     }
 
 }

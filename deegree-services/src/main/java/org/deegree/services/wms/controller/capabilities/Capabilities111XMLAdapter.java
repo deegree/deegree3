@@ -213,8 +213,7 @@ public class Capabilities111XMLAdapter extends XMLAdapter {
                     Envelope envelope;
                     try {
                         if ( layerEnv.getCoordinateSystem() == null ) {
-                            envelope = (Envelope) new GeometryTransformer( crs.getWrappedCRS() ).transform( layerEnv,
-                                                                                                            latlon );
+                            envelope = new GeometryTransformer( crs.getWrappedCRS() ).transform( layerEnv, latlon );
                         } else {
                             envelope = new GeometryTransformer( crs.getWrappedCRS() ).transform( layerEnv );
                         }
@@ -258,8 +257,9 @@ public class Capabilities111XMLAdapter extends XMLAdapter {
             writer.writeEndElement();
         }
 
-        for ( String name : dims.keySet() ) {
-            Dimension<?> dim = dims.get( name );
+        for ( Entry<String, Dimension<?>> entry : dims.entrySet() ) {
+            String name = entry.getKey();
+            Dimension<?> dim = entry.getValue();
             writer.writeStartElement( "Extent" );
             writer.writeAttribute( "name", name );
             if ( dim.getDefaultValue() != null ) {

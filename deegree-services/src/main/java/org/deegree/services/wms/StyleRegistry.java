@@ -35,6 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.services.wms;
 
+import static org.apache.commons.io.IOUtils.closeQuietly;
 import static org.deegree.services.wms.controller.sld.SLDParser.getStyles;
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -212,12 +213,13 @@ public class StyleRegistry extends TimerTask {
 
     private Style loadNoImport( String layerName, File file, boolean legend ) {
         XMLInputFactory fac = XMLInputFactory.newInstance();
+        FileInputStream in = null;
         try {
 
             LOG.debug( "Trying to load{} style from '{}'", legend ? "" : " legend", file );
-            FileInputStream in = new FileInputStream( file );
+            in = new FileInputStream( file );
             Style sty = SymbologyParser.INSTANCE.parse( fac.createXMLStreamReader( file.toString(), in ) );
-            in.close();
+
             if ( legend ) {
                 monitoredLegendFiles.put( file, new Pair<Long, String>( file.lastModified(), layerName ) );
             } else {
@@ -231,9 +233,8 @@ public class StyleRegistry extends TimerTask {
             LOG.trace( "Stack trace:", e );
             LOG.info( "Style file '{}' for layer '{}' could not be loaded: '{}'",
                       new Object[] { file, layerName, e.getLocalizedMessage() } );
-        } catch ( IOException e ) {
-            LOG.info( "IO error for style file '{}' for layer '{}': '{}'", new Object[] { file, layerName,
-                                                                                         e.getLocalizedMessage() } );
+        } finally {
+            closeQuietly( in );
         }
         return null;
     }

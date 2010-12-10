@@ -239,7 +239,7 @@ public class Capabilities130XMLAdapter extends XMLAdapter {
                         Envelope src = layerEnv;
                         GeometryTransformer transformer = new GeometryTransformer( srs );
                         if ( src.getCoordinateSystem() == null ) {
-                            envelope = (Envelope) transformer.transform( layerEnv, latlon );
+                            envelope = transformer.transform( layerEnv, latlon );
                         } else {
                             envelope = transformer.transform( layerEnv );
                         }
