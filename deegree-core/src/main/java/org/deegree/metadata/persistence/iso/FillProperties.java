@@ -44,8 +44,6 @@ import java.util.List;
 
 import org.deegree.commons.utils.JDBCUtils;
 import org.deegree.metadata.persistence.MetadataStoreException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * TODO add class documentation here
@@ -57,7 +55,7 @@ import org.slf4j.LoggerFactory;
  */
 public class FillProperties {
 
-    private static Logger LOG = LoggerFactory.getLogger( FillProperties.class );
+    // private static Logger LOG = LoggerFactory.getLogger( FillProperties.class );
 
     private static final String fk_datasets = PostGISMappingsISODC.CommonColumnNames.fk_datasets.name();
 
@@ -81,9 +79,9 @@ public class FillProperties {
 
         try {
             ps = conn.prepareStatement( s.toString() );
-            ps.setString( 0, "title" );
-            ps.setString( 1, "isoqp_title" );
-            ps.setInt( 2, id );
+            ps.setString( 1, "title" );
+            ps.setString( 2, "isoqp_title" );
+            ps.setInt( 3, id );
 
             rs = ps.executeQuery();
             while ( rs.next() ) {

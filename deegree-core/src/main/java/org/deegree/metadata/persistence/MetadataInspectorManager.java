@@ -85,7 +85,7 @@ public class MetadataInspectorManager {
                 for ( MetadataInspectorProvider provider : inspectorLoader ) {
                     LOG.debug( "Metadata inspector provider: " + provider + ", prefix: "
                                + provider.getInspectorKey().name() );
-                    if ( preToInsp.containsKey( provider.getInspectorKey() ) ) {
+                    if ( preToInsp.containsKey( provider.getInspectorKey().name() ) ) {
                         LOG.error( "Multiple metadata inspectors of the same one: '"
                                    + provider.getInspectorKey().name() + "' -- omitting inspector '"
                                    + provider.getClass().getName() + "'." );
@@ -119,7 +119,6 @@ public class MetadataInspectorManager {
     /**
      * 
      * @param configURL
-     * @return
      * @throws MetadataStoreException
      */
     public static void initInspectors( URL configURL )
