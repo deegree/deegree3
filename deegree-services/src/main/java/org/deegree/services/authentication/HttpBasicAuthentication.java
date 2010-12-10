@@ -121,7 +121,6 @@ public class HttpBasicAuthentication implements CredentialsProvider {
      * 
      * @param req
      * @param response
-     * @return
      */
     private Credentials doBasicAuthentication( HttpServletRequest req, HttpServletResponse response ) {
         // look for HTTP Basic Authentification info
@@ -157,7 +156,7 @@ public class HttpBasicAuthentication implements CredentialsProvider {
 
         if ( e instanceof InvalidCredentialsException ) {
             doInvalidCredentialsExceptionException( response, (InvalidCredentialsException) e );
-        } else if ( e instanceof SecurityException ) {
+        } else if ( e != null ) {
             doAuthenticationException( response, e );
         }
 
