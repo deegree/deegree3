@@ -306,7 +306,7 @@ public class ExecutionManager {
 
             // submit the process for asynchronous execution
             ProcessWorker worker = new ProcessWorker( process.getProcesslet(), outputs, state, outputParams,
-                                                      responseStorage, request );
+                                                      responseStorage, request, serviceInstance );
             exec.execute( worker );
         } else {
             // response is directly returned in the HTTP response stream (-> synchronous process execution)
@@ -473,15 +473,18 @@ public class ExecutionManager {
 
         private ExecuteRequest request;
 
+        private URL serviceInstance;
+
         ProcessWorker( Processlet process, ProcessletOutputs outputs, ProcessExecution state,
                        List<RequestedOutput> outputParams, ResponseDocumentStorage responseStorage,
-                       ExecuteRequest request ) {
+                       ExecuteRequest request, URL serviceInstance ) {
             this.process = process;
             this.outputs = outputs;
             this.state = state;
             this.outputParams = outputParams;
             this.responseStorage = responseStorage;
             this.request = request;
+            this.serviceInstance = serviceInstance;
         }
 
         /**
@@ -501,9 +504,6 @@ public class ExecutionManager {
 
             // write final ExecuteResponse document
             try {
-                URL serviceInstance = new URL( OGCFrontController.getHttpGetURL()
-                                               + "service=WPS&request=GetCapabilities&version=1.0.0" );
-
                 ExecuteResponse executeResponse = new ExecuteResponse( responseStorage, serviceInstance, state,
                                                                        outputParams, outputs, request );
 

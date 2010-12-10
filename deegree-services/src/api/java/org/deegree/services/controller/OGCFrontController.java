@@ -161,7 +161,7 @@ public class OGCFrontController extends HttpServlet {
     // make fields transient, serialized servlets are a bad idea IMHO
     private transient DeegreeServiceControllerType mainConfig;
 
-    private transient final InheritableThreadLocal<RequestContext> CONTEXT = new InheritableThreadLocal<RequestContext>();
+    private transient final ThreadLocal<RequestContext> CONTEXT = new ThreadLocal<RequestContext>();
 
     private transient SecurityConfiguration securityConfiguration;
 
@@ -290,72 +290,76 @@ public class OGCFrontController extends HttpServlet {
     @Override
     protected void doGet( HttpServletRequest request, HttpServletResponse response )
                             throws ServletException, IOException {
-        long entryTime = System.currentTimeMillis();
-
-        if ( LOG.isDebugEnabled() ) {
-            LOG.debug( "HTTP headers:" );
-            Enumeration<String> headerEnum = request.getHeaderNames();
-            while ( headerEnum.hasMoreElements() ) {
-                String headerName = headerEnum.nextElement();
-                LOG.debug( "- " + headerName + "='" + request.getHeader( headerName ) + "'" );
-            }
-        }
-
-        String queryString = request.getQueryString();
         try {
-            LOG.debug( "doGet(), query string: '" + queryString + "'" );
+            long entryTime = System.currentTimeMillis();
 
-            if ( queryString == null ) {
-                OWSException ex = new OWSException( "The request did not contain any parameters.",
-                                                    "MissingParameterValue" );
+            if ( LOG.isDebugEnabled() ) {
+                LOG.debug( "HTTP headers:" );
+                Enumeration<String> headerEnum = request.getHeaderNames();
+                while ( headerEnum.hasMoreElements() ) {
+                    String headerName = headerEnum.nextElement();
+                    LOG.debug( "- " + headerName + "='" + request.getHeader( headerName ) + "'" );
+                }
+            }
+
+            String queryString = request.getQueryString();
+            try {
+                LOG.debug( "doGet(), query string: '" + queryString + "'" );
+
+                if ( queryString == null ) {
+                    OWSException ex = new OWSException( "The request did not contain any parameters.",
+                                                        "MissingParameterValue" );
+                    sendException( ex, response, null );
+                    return;
+                }
+
+                // handle as XML, if the request starts with '<'
+                boolean isXML = queryString.startsWith( "<" );
+                List<FileItem> multiParts = checkAndRetrieveMultiparts( request );
+                if ( isXML ) {
+                    XMLStreamReader xmlStream = null;
+                    String dummySystemId = "HTTP Get request from " + request.getRemoteAddr() + ":"
+                                           + request.getRemotePort();
+                    if ( multiParts != null && multiParts.size() > 0 ) {
+                        InputStream is = multiParts.get( 0 ).getInputStream();
+                        xmlStream = XMLInputFactory.newInstance().createXMLStreamReader( dummySystemId, is );
+                    } else {
+                        // decode query string
+                        String decodedString = URLDecoder.decode( queryString, DEFAULT_ENCODING );
+                        StringReader reader = new StringReader( decodedString );
+                        xmlStream = XMLInputFactory.newInstance().createXMLStreamReader( dummySystemId, reader );
+                    }
+                    if ( isSOAPRequest( xmlStream ) ) {
+                        dispatchSOAPRequest( xmlStream, request, response, multiParts );
+                    } else {
+                        dispatchXMLRequest( xmlStream, request, response, multiParts );
+                    }
+                } else {
+                    // for GET requests, there is no standard way for defining the used encoding
+                    Map<String, String> normalizedKVPParams = KVPUtils.getNormalizedKVPMap( request.getQueryString(),
+                                                                                            DEFAULT_ENCODING );
+                    LOG.debug( "parameter map: " + normalizedKVPParams );
+                    dispatchKVPRequest( normalizedKVPParams, request, response, multiParts, entryTime );
+                }
+            } catch ( XMLProcessingException e ) {
+                // the message might be more meaningful
+                OWSException ex = new OWSException( "The request did not contain KVP parameters and no parseable XML.",
+                                                    "MissingParameterValue", "request" );
+                sendException( ex, response, null );
+                return;
+            } catch ( Throwable e ) {
+                LOG.debug( "Handling HTTP-GET request took: " + ( System.currentTimeMillis() - entryTime )
+                           + " ms before sending exception." );
+                LOG.debug( e.getMessage(), e );
+                OWSException ex = new OWSException( e.getLocalizedMessage(), e, "InvalidRequest" );
                 sendException( ex, response, null );
                 return;
             }
-
-            // handle as XML, if the request starts with '<'
-            boolean isXML = queryString.startsWith( "<" );
-            List<FileItem> multiParts = checkAndRetrieveMultiparts( request );
-            if ( isXML ) {
-                XMLStreamReader xmlStream = null;
-                String dummySystemId = "HTTP Get request from " + request.getRemoteAddr() + ":"
-                                       + request.getRemotePort();
-                if ( multiParts != null && multiParts.size() > 0 ) {
-                    InputStream is = multiParts.get( 0 ).getInputStream();
-                    xmlStream = XMLInputFactory.newInstance().createXMLStreamReader( dummySystemId, is );
-                } else {
-                    // decode query string
-                    String decodedString = URLDecoder.decode( queryString, DEFAULT_ENCODING );
-                    StringReader reader = new StringReader( decodedString );
-                    xmlStream = XMLInputFactory.newInstance().createXMLStreamReader( dummySystemId, reader );
-                }
-                if ( isSOAPRequest( xmlStream ) ) {
-                    dispatchSOAPRequest( xmlStream, request, response, multiParts );
-                } else {
-                    dispatchXMLRequest( xmlStream, request, response, multiParts );
-                }
-            } else {
-                // for GET requests, there is no standard way for defining the used encoding
-                Map<String, String> normalizedKVPParams = KVPUtils.getNormalizedKVPMap( request.getQueryString(),
-                                                                                        DEFAULT_ENCODING );
-                LOG.debug( "parameter map: " + normalizedKVPParams );
-                dispatchKVPRequest( normalizedKVPParams, request, response, multiParts, entryTime );
-            }
-        } catch ( XMLProcessingException e ) {
-            // the message might be more meaningful
-            OWSException ex = new OWSException( "The request did not contain KVP parameters and no parseable XML.",
-                                                "MissingParameterValue", "request" );
-            sendException( ex, response, null );
-            return;
-        } catch ( Throwable e ) {
-            LOG.debug( "Handling HTTP-GET request took: " + ( System.currentTimeMillis() - entryTime )
-                       + " ms before sending exception." );
-            LOG.debug( e.getMessage(), e );
-            OWSException ex = new OWSException( e.getLocalizedMessage(), e, "InvalidRequest" );
-            sendException( ex, response, null );
-            return;
+            LOG.debug( "Handling HTTP-GET request with status 'success' took: "
+                       + ( System.currentTimeMillis() - entryTime ) + " ms." );
+        } finally {
+            instance.CONTEXT.remove();
         }
-        LOG.debug( "Handling HTTP-GET request with status 'success' took: " + ( System.currentTimeMillis() - entryTime )
-                   + " ms." );
     }
 
     /**
@@ -379,115 +383,121 @@ public class OGCFrontController extends HttpServlet {
     @Override
     protected void doPost( HttpServletRequest request, HttpServletResponse response )
                             throws ServletException, IOException {
-
-        if ( LOG.isDebugEnabled() ) {
-            LOG.debug( "HTTP headers:" );
-            Enumeration<String> headerEnum = request.getHeaderNames();
-            while ( headerEnum.hasMoreElements() ) {
-                String headerName = headerEnum.nextElement();
-                LOG.debug( "- " + headerName + "='" + request.getHeader( headerName ) + "'" );
-            }
-        }
-
-        LOG.debug( "doPost(), contentType: '" + request.getContentType() + "'" );
-
-        LoggingHttpResponseWrapper logging = null;
-        long entryTime = System.currentTimeMillis();
         try {
-            // check if content-type implies that it's a KVP request
-            String contentType = request.getContentType();
-            boolean isKVP = false;
-            if ( contentType != null ) {
-                isKVP = request.getContentType().startsWith( "application/x-www-form-urlencoded" );
+            if ( LOG.isDebugEnabled() ) {
+                LOG.debug( "HTTP headers:" );
+                Enumeration<String> headerEnum = request.getHeaderNames();
+                while ( headerEnum.hasMoreElements() ) {
+                    String headerName = headerEnum.nextElement();
+                    LOG.debug( "- " + headerName + "='" + request.getHeader( headerName ) + "'" );
+                }
             }
-            List<FileItem> multiParts = checkAndRetrieveMultiparts( request );
-            InputStream is = request.getInputStream();
-            if ( multiParts == null ) {
-                // TODO log multiparts requests
-                if ( !isKVP && serviceConfiguration.getRequestLogger() != null ) {
-                    String dir = mainConfig.getRequestLogging().getOutputDirectory();
-                    File file;
-                    if ( dir == null ) {
-                        file = createTempFile( "request", ".body" );
+
+            LOG.debug( "doPost(), contentType: '" + request.getContentType() + "'" );
+
+            LoggingHttpResponseWrapper logging = null;
+            long entryTime = System.currentTimeMillis();
+            try {
+                // check if content-type implies that it's a KVP request
+                String contentType = request.getContentType();
+                boolean isKVP = false;
+                if ( contentType != null ) {
+                    isKVP = request.getContentType().startsWith( "application/x-www-form-urlencoded" );
+                }
+                List<FileItem> multiParts = checkAndRetrieveMultiparts( request );
+                InputStream is = request.getInputStream();
+                if ( multiParts == null ) {
+                    // TODO log multiparts requests
+                    if ( !isKVP && serviceConfiguration.getRequestLogger() != null ) {
+                        String dir = mainConfig.getRequestLogging().getOutputDirectory();
+                        File file;
+                        if ( dir == null ) {
+                            file = createTempFile( "request", ".body" );
+                        } else {
+                            File directory = new File( dir );
+                            if ( !directory.exists() ) {
+                                directory.mkdirs();
+                            }
+                            file = createTempFile( "request", ".body", directory );
+                        }
+                        is = new LoggingInputStream( is, new FileOutputStream( file ) );
+                        Boolean conf = mainConfig.getRequestLogging().isOnlySuccessful();
+                        boolean onlySuccessful = conf != null && conf;
+                        response = logging = new LoggingHttpResponseWrapper( request.getRequestURL().toString(),
+                                                                             response, file, onlySuccessful, entryTime,
+                                                                             null,
+                                                                             serviceConfiguration.getRequestLogger(),
+                                                                             is );
+                        // TODO obtain/set credentials somewhere
+                    }
+                }
+
+                if ( isKVP ) {
+                    String queryString = readPostBodyAsString( is );
+                    LOG.debug( "Treating POST input stream as KVP parameters. Raw input: '" + queryString + "'." );
+                    Map<String, String> normalizedKVPParams = null;
+                    String encoding = request.getCharacterEncoding();
+                    if ( encoding == null ) {
+                        LOG.debug( "Request has no further encoding information. Defaulting to '" + DEFAULT_ENCODING
+                                   + "'." );
+                        normalizedKVPParams = KVPUtils.getNormalizedKVPMap( queryString, DEFAULT_ENCODING );
                     } else {
-                        File directory = new File( dir );
-                        if ( !directory.exists() ) {
-                            directory.mkdirs();
-                        }
-                        file = createTempFile( "request", ".body", directory );
+                        LOG.debug( "Client encoding information :" + encoding );
+                        normalizedKVPParams = KVPUtils.getNormalizedKVPMap( queryString, encoding );
                     }
-                    is = new LoggingInputStream( is, new FileOutputStream( file ) );
-                    Boolean conf = mainConfig.getRequestLogging().isOnlySuccessful();
-                    boolean onlySuccessful = conf != null && conf;
-                    response = logging = new LoggingHttpResponseWrapper( request.getRequestURL().toString(), response,
-                                                                         file, onlySuccessful, entryTime, null,
-                                                                         serviceConfiguration.getRequestLogger(), is );
-                    // TODO obtain/set credentials somewhere
-                }
-            }
-
-            if ( isKVP ) {
-                String queryString = readPostBodyAsString( is );
-                LOG.debug( "Treating POST input stream as KVP parameters. Raw input: '" + queryString + "'." );
-                Map<String, String> normalizedKVPParams = null;
-                String encoding = request.getCharacterEncoding();
-                if ( encoding == null ) {
-                    LOG.debug( "Request has no further encoding information. Defaulting to '" + DEFAULT_ENCODING + "'." );
-                    normalizedKVPParams = KVPUtils.getNormalizedKVPMap( queryString, DEFAULT_ENCODING );
+                    dispatchKVPRequest( normalizedKVPParams, request, response, multiParts, entryTime );
                 } else {
-                    LOG.debug( "Client encoding information :" + encoding );
-                    normalizedKVPParams = KVPUtils.getNormalizedKVPMap( queryString, encoding );
-                }
-                dispatchKVPRequest( normalizedKVPParams, request, response, multiParts, entryTime );
-            } else {
-                // if( handle multiparts, get first body from multipart (?)
-                // body->requestDoc
+                    // if( handle multiparts, get first body from multipart (?)
+                    // body->requestDoc
 
-                InputStream requestInputStream = null;
-                if ( multiParts != null && multiParts.size() > 0 ) {
-                    for ( int i = 0; i < multiParts.size() && requestInputStream == null; ++i ) {
-                        FileItem item = multiParts.get( i );
-                        if ( item != null ) {
-                            LOG.debug( "Using multipart item: " + i + " with contenttype: " + item.getContentType()
-                                       + " as the request." );
-                            requestInputStream = item.getInputStream();
+                    InputStream requestInputStream = null;
+                    if ( multiParts != null && multiParts.size() > 0 ) {
+                        for ( int i = 0; i < multiParts.size() && requestInputStream == null; ++i ) {
+                            FileItem item = multiParts.get( i );
+                            if ( item != null ) {
+                                LOG.debug( "Using multipart item: " + i + " with contenttype: " + item.getContentType()
+                                           + " as the request." );
+                                requestInputStream = item.getInputStream();
+                            }
                         }
+                    } else {
+                        requestInputStream = is;
                     }
-                } else {
-                    requestInputStream = is;
-                }
-                if ( requestInputStream == null ) {
-                    String msg = "Could not create a valid inputstream from request "
-                                 + ( ( multiParts != null && multiParts.size() > 0 ) ? "without" : "with" )
-                                 + " multiparts.";
-                    LOG.error( msg );
-                    throw new IOException( msg );
-                }
+                    if ( requestInputStream == null ) {
+                        String msg = "Could not create a valid inputstream from request "
+                                     + ( ( multiParts != null && multiParts.size() > 0 ) ? "without" : "with" )
+                                     + " multiparts.";
+                        LOG.error( msg );
+                        throw new IOException( msg );
+                    }
 
-                String dummySystemId = "HTTP Post request from " + request.getRemoteAddr() + ":"
-                                       + request.getRemotePort();
-                XMLStreamReader xmlStream = XMLInputFactory.newInstance().createXMLStreamReader( dummySystemId,
-                                                                                                 requestInputStream );
-                // skip to start tag of root element
-                StAXParsingHelper.nextElement( xmlStream );
-                if ( isSOAPRequest( xmlStream ) ) {
-                    dispatchSOAPRequest( xmlStream, request, response, multiParts );
-                } else {
-                    dispatchXMLRequest( xmlStream, request, response, multiParts );
+                    String dummySystemId = "HTTP Post request from " + request.getRemoteAddr() + ":"
+                                           + request.getRemotePort();
+                    XMLStreamReader xmlStream = XMLInputFactory.newInstance().createXMLStreamReader( dummySystemId,
+                                                                                                     requestInputStream );
+                    // skip to start tag of root element
+                    StAXParsingHelper.nextElement( xmlStream );
+                    if ( isSOAPRequest( xmlStream ) ) {
+                        dispatchSOAPRequest( xmlStream, request, response, multiParts );
+                    } else {
+                        dispatchXMLRequest( xmlStream, request, response, multiParts );
+                    }
+                    if ( logging != null ) {
+                        logging.finalizeLogging();
+                    }
                 }
-                if ( logging != null ) {
-                    logging.finalizeLogging();
-                }
+            } catch ( Throwable e ) {
+                LOG.debug( "Handling HTTP-POST request took: " + ( System.currentTimeMillis() - entryTime )
+                           + " ms before sending exception." );
+                LOG.debug( e.getMessage(), e );
+                OWSException ex = new OWSException( e.getLocalizedMessage(), "InvalidRequest" );
+                sendException( ex, response, null );
             }
-        } catch ( Throwable e ) {
-            LOG.debug( "Handling HTTP-POST request took: " + ( System.currentTimeMillis() - entryTime )
-                       + " ms before sending exception." );
-            LOG.debug( e.getMessage(), e );
-            OWSException ex = new OWSException( e.getLocalizedMessage(), "InvalidRequest" );
-            sendException( ex, response, null );
+            LOG.debug( "Handling HTTP-POST request with status 'success' took: "
+                       + ( System.currentTimeMillis() - entryTime ) + " ms." );
+        } finally {
+            instance.CONTEXT.remove();
         }
-        LOG.debug( "Handling HTTP-POST request with status 'success' took: "
-                   + ( System.currentTimeMillis() - entryTime ) + " ms." );
     }
 
     private String readPostBodyAsString( InputStream is )
@@ -652,8 +662,6 @@ public class OGCFrontController extends HttpServlet {
                 sendException( new OWSException( e.getLocalizedMessage(), ControllerException.NO_APPLICABLE_CODE ),
                                response, null );
             }
-        } finally {
-            instance.CONTEXT.set( null );
         }
     }
 
@@ -726,8 +734,6 @@ public class OGCFrontController extends HttpServlet {
                 sendException( new OWSException( e.getLocalizedMessage(), ControllerException.NO_APPLICABLE_CODE ),
                                response, null );
             }
-        } finally {
-            instance.CONTEXT.set( null );
         }
 
     }
@@ -832,8 +838,6 @@ public class OGCFrontController extends HttpServlet {
                 sendException( new OWSException( e.getLocalizedMessage(), ControllerException.NO_APPLICABLE_CODE ),
                                response, null );
             }
-        } finally {
-            instance.CONTEXT.set( null );
         }
     }
 
@@ -886,6 +890,7 @@ public class OGCFrontController extends HttpServlet {
             LOG.trace( "An unexpected error was caught, stack trace:", e );
         } finally {
             JAXBUtils.fixThreadLocalLeaks();
+            CONTEXT.remove();
         }
     }
 
@@ -977,9 +982,8 @@ public class OGCFrontController extends HttpServlet {
     @Override
     public void destroy() {
         super.destroy();
-        if ( serviceConfiguration != null ) {
-            serviceConfiguration.destroy();
-        }
+        destroyServices();
+        destroyWorkspace();
         plugClassLoaderLeaks();
     }
 
