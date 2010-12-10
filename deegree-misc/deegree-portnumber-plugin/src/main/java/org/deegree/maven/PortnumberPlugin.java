@@ -81,7 +81,20 @@ public class PortnumberPlugin extends AbstractMojo {
                 FileInputStream fis = new FileInputStream( portfile );
                 reader = new BufferedReader( new InputStreamReader( fis ) );
 
-                port = Integer.parseInt( reader.readLine() ) + 1;
+                boolean read = false;
+                while ( !read ) {
+                    try {
+                        port = Integer.parseInt( reader.readLine() ) + 1;
+                        read = true;
+                    } catch ( NumberFormatException e ) {
+                        // someone is currently writing
+                        try {
+                            Thread.sleep( 100 );
+                        } catch ( InterruptedException e1 ) {
+                            return;
+                        }
+                    }
+                }
                 reader.close();
             }
             if ( port > 18000 ) {
@@ -98,7 +111,7 @@ public class PortnumberPlugin extends AbstractMojo {
                 try {
                     Thread.sleep( 100 );
                 } catch ( InterruptedException e ) {
-                    // then we die
+                    return;
                 }
             }
             out.println( "" + port );
