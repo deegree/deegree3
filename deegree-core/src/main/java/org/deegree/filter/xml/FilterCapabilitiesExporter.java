@@ -190,7 +190,7 @@ public class FilterCapabilitiesExporter {
         }
         writer.writeEndElement();
         writer.writeEndElement();
-        
+
         writer.writeEndElement();
 
         writer.writeEndElement();
@@ -225,7 +225,7 @@ public class FilterCapabilitiesExporter {
         writer.writeStartElement( OGCNS, "Spatial_Capabilities" );
 
         writer.writeStartElement( OGCNS, "GeometryOperands" );
-        writer.setPrefix( "gml", GMLNS );
+        writer.writeNamespace( "gml", GMLNS );
         writeElement( writer, OGCNS, "GeometryOperand", "gml:Envelope" );
         writeElement( writer, OGCNS, "GeometryOperand", "gml:Point" );
         writeElement( writer, OGCNS, "GeometryOperand", "gml:LineString" );
