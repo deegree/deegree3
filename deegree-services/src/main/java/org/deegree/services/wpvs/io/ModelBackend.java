@@ -42,7 +42,6 @@ import java.util.List;
 import org.deegree.commons.index.PositionableModel;
 import org.deegree.cs.CRS;
 import org.deegree.geometry.Envelope;
-import org.deegree.geometry.GeometryFactory;
 import org.deegree.rendering.r3d.opengl.rendering.model.geometry.DirectGeometryBuffer;
 import org.deegree.rendering.r3d.opengl.rendering.model.manager.BuildingRenderer;
 import org.deegree.rendering.r3d.opengl.rendering.model.manager.TreeRenderer;
@@ -114,8 +113,6 @@ public abstract class ModelBackend<G> implements RenderableStore {
         }
 
     }
-
-    GeometryFactory geomFactory = new GeometryFactory();
 
     private BillBoardSerializer treeSerializer = new BillBoardSerializer();
 
@@ -280,35 +277,37 @@ public abstract class ModelBackend<G> implements RenderableStore {
     public static ModelBackend<?> getInstance( String id, String fileURL )
                             throws DatasourceException, UnsupportedOperationException {
         RenderableStore renderableStore = RenderableStoreManager.get( id );
-        if( renderableStore == null ){
+        if ( renderableStore == null ) {
             throw new DatasourceException( "could not instantiate a model backend from given id." );
         }
-        if( !( renderableStore instanceof ModelBackend<?> ) ){
-            throw new DatasourceException( "The given id ( " + id + ") instantiates a: " + renderableStore.getClass().getCanonicalName() + " this cannot be cast to Modelbackend." );            
+        if ( !( renderableStore instanceof ModelBackend<?> ) ) {
+            throw new DatasourceException( "The given id ( " + id + ") instantiates a: "
+                                           + renderableStore.getClass().getCanonicalName()
+                                           + " this cannot be cast to Modelbackend." );
         }
         return (ModelBackend<?>) renderableStore;
-                                
-//        renderableStore.
-//        String d = id;
-//        if ( id == null || "".equals( id ) ) {
-//            d = "FileBackend";
-//        }
-//
-//        if ( d.toLowerCase().contains( "filebackend" ) ) {
-//            try {
-//                return new FileBackend( fileURL );
-//            } catch ( IOException e ) {
-//                throw new DatasourceException( "Filebackend could not be loaded because: " + e.getLocalizedMessage(), e );
-//            }
-//
-//        }
-//        try {
-//            ConnectionManager.getConnection( d );
-//        } catch ( SQLException e ) {
-//            throw new DatasourceException( "Given id: " + d + " was not known to the database configuration, "
-//                                           + e.getLocalizedMessage(), e );
-//        }
-//        return new PostgisBackend( d );
+
+        // renderableStore.
+        // String d = id;
+        // if ( id == null || "".equals( id ) ) {
+        // d = "FileBackend";
+        // }
+        //
+        // if ( d.toLowerCase().contains( "filebackend" ) ) {
+        // try {
+        // return new FileBackend( fileURL );
+        // } catch ( IOException e ) {
+        // throw new DatasourceException( "Filebackend could not be loaded because: " + e.getLocalizedMessage(), e );
+        // }
+        //
+        // }
+        // try {
+        // ConnectionManager.getConnection( d );
+        // } catch ( SQLException e ) {
+        // throw new DatasourceException( "Given id: " + d + " was not known to the database configuration, "
+        // + e.getLocalizedMessage(), e );
+        // }
+        // return new PostgisBackend( d );
     }
 
     /**
