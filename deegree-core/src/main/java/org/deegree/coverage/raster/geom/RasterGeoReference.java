@@ -49,7 +49,6 @@ import static org.slf4j.LoggerFactory.getLogger;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.NoninvertibleTransformException;
 import java.awt.geom.Point2D;
-import java.io.Serializable;
 
 import org.deegree.cs.CRS;
 import org.deegree.cs.coordinatesystems.CoordinateSystem;
@@ -77,9 +76,7 @@ import org.slf4j.Logger;
  * @version $Revision$, $Date$
  * 
  */
-public class RasterGeoReference implements Serializable {
-
-    private static final long serialVersionUID = -8610432250384825971L;
+public class RasterGeoReference {
 
     private static final Logger LOG = getLogger( RasterGeoReference.class );
 
