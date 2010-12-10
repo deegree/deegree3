@@ -170,7 +170,9 @@ public class LoggingHttpResponseWrapper extends HttpServletResponseWrapper {
             logger.logXML( address, requestLog, entryTime, currentTimeMillis(), creds );
         }
         if ( requestLog != null ) {
-            requestLog.delete();
+            if ( !requestLog.delete() ) {
+                LOG.warn( "Could not delete temporary file {}.", requestLog );
+            }
         }
     }
 
