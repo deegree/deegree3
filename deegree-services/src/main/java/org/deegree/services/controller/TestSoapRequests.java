@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,7 +32,7 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 
 package org.deegree.services.controller;
 
@@ -40,7 +40,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.StringWriter;
-import java.io.UnsupportedEncodingException;
 import java.util.Iterator;
 
 import javax.xml.stream.XMLOutputFactory;
@@ -77,18 +76,18 @@ import org.deegree.services.controller.ows.OWSException110XMLAdapter;
 
 /**
  * The <code>TestSoapRequests</code> class TODO add class documentation here.
- *
+ * 
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- *
+ * 
  * @author last edited by: $Author$
- *
+ * 
  * @version $Revision$, $Date$
- *
+ * 
  */
 public class TestSoapRequests {
 
     public static void main( String[] args )
-                            throws FileNotFoundException, XMLStreamException, UnsupportedEncodingException {
+                            throws FileNotFoundException, XMLStreamException {
         HttpClient client = new HttpClient();
         File f = new File( System.getProperty( "user.home" ) + "/tra_merc.xml" );
         PostMethod filePost = new PostMethod( "http://localhost:8082/d3_services/services" );
@@ -171,9 +170,9 @@ public class TestSoapRequests {
         writer.writeEndElement(); // code
 
         String[] subCodes = { "sub 1", "sub 2" };
-        if ( subCodes != null && subCodes.length > 0 ) {
+        if ( subCodes.length > 0 ) {
             for ( String subCode : subCodes ) {
-                if ( subCode != null || "".equals( subCode.trim() ) ) {
+                if ( subCode == null || "".equals( subCode.trim() ) ) {
                     SOAPFaultSubCode sc = factory.createSOAPFaultSubCode( code );
                     writer.writeStartElement( ns, sc.getLocalName() );
                     writeAttributes( writer, sc );
@@ -199,17 +198,15 @@ public class TestSoapRequests {
         writer.writeEndElement(); // reason
 
         OWSException detail = new OWSException( "blubber", OWSException.INVALID_PARAMETER_VALUE ); // exception.getDetail();
-        if ( detail != null ) {
 
-            SOAPFaultDetail dElement = factory.createSOAPFaultDetail( fault );
-            writer.writeStartElement( ns, dElement.getLocalName() );
-            writeAttributes( writer, reason );
+        SOAPFaultDetail dElement = factory.createSOAPFaultDetail( fault );
+        writer.writeStartElement( ns, dElement.getLocalName() );
+        writeAttributes( writer, reason );
 
-            OWSException110XMLAdapter adapt = new OWSException110XMLAdapter();
-            adapt.serializeExceptionToXML( writer, detail );
+        OWSException110XMLAdapter adapt = new OWSException110XMLAdapter();
+        adapt.serializeExceptionToXML( writer, detail );
 
-            writer.writeEndElement(); // reason
-        }
+        writer.writeEndElement(); // reason
         writer.writeEndElement(); // fault
         writer.writeEndElement(); // body
         writer.writeEndElement(); // envelope
@@ -219,7 +216,7 @@ public class TestSoapRequests {
 
     private static void writeAttributes( XMLStreamWriter writer, OMElement elem )
                             throws XMLStreamException {
-        Iterator attribs = elem.getAllAttributes();
+        Iterator<?> attribs = elem.getAllAttributes();
         while ( attribs.hasNext() ) {
             writeAttribute( writer, (OMAttribute) attribs.next() );
         }
