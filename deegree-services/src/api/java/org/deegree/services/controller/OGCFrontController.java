@@ -82,6 +82,7 @@ import org.apache.commons.fileupload.FileItemFactory;
 import org.apache.commons.fileupload.FileUploadException;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.LogFactory;
 import org.apache.log4j.LogManager;
 import org.deegree.commons.config.DeegreeWorkspace;
@@ -956,8 +957,13 @@ public class OGCFrontController extends HttpServlet {
         String wsName = "default";
         File wsNameFile = new File( resolveFileLocation( "WEB-INF/workspace_name", getServletContext() ).toURI() );
         if ( wsNameFile.exists() ) {
-            BufferedReader reader = new BufferedReader( new FileReader( wsNameFile ) );
-            wsName = reader.readLine().trim();
+            BufferedReader reader = null;
+            try {
+                reader = new BufferedReader( new FileReader( wsNameFile ) );
+                wsName = reader.readLine().trim();
+            } finally {
+                IOUtils.closeQuietly( reader );
+            }
             LOG.info( "Using workspace name {} (defined in WEB-INF/workspace_name)", wsName, wsNameFile );
         } else {
             LOG.info( "Using default workspace (WEB-INF/workspace_name does not exist)", wsNameFile );
