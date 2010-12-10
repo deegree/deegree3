@@ -53,14 +53,14 @@ import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.project.MavenProject;
 
 /**
- * @goal generate
+ * @goal generate-portnumber
  * 
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
  */
-public class PortnumberPlugin extends AbstractMojo {
+public class PortnumberMojo extends AbstractMojo {
 
     /**
      * @parameter default-value="${project}"

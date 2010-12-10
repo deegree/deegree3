@@ -35,14 +35,16 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.maven;
 
+import static org.apache.commons.io.FileUtils.copyFile;
+
 import java.io.File;
 import java.io.IOException;
 
-import org.apache.commons.io.FileUtils;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugin.logging.Log;
+import org.apache.maven.project.MavenProject;
 
 /**
  * @goal copy
@@ -52,15 +54,14 @@ import org.apache.maven.plugin.logging.Log;
  * 
  * @version $Revision$, $Date$
  */
-public class CopyPlugin extends AbstractMojo {
+public class CopyMojo extends AbstractMojo {
 
     /**
-     * Base directory.
-     * 
-     * @parameter expression="${project.basedir}"
+     * @parameter default-value="${project}"
      * @required
+     * @readonly
      */
-    private File basedir;
+    private MavenProject project;
 
     /**
      * @parameter
@@ -75,15 +76,16 @@ public class CopyPlugin extends AbstractMojo {
             return;
         }
 
+        File basedir = project.getBasedir();
         for ( Copy copy : files ) {
-            log.debug( "Renaming " + copy.from + " to " + copy.to );
+            log.info( "Copy " + copy.from + " to " + copy.to );
             File from = new File( basedir, copy.from );
             File to = new File( basedir, copy.to );
             to.getParentFile().mkdirs();
             try {
-                FileUtils.copyFile( from, to );
+                copyFile( from, to );
             } catch ( IOException e ) {
-                log.warn( "Could not copy " + copy.from + " to " + copy.to + "!" );
+                log.warn( "Could not copy " + copy.from + " to " + copy.to + ": " + e.getLocalizedMessage() );
                 log.debug( e );
             }
         }
