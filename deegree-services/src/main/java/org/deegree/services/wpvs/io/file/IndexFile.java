@@ -222,7 +222,7 @@ public class IndexFile {
         return result;
     }
 
-    private class PositionBlob {
+    private static class PositionBlob {
         String id;
 
         long dataPosition;
