@@ -97,21 +97,22 @@ public class SecureProxy extends HttpServlet {
 
     private static final long serialVersionUID = 6154340524804958669L;
 
-    String proxiedUrl;
+    // make fields transient, serialized servlets are a bad idea IMHO
+    transient String proxiedUrl;
 
-    private CredentialsProvider credentialsProvider;
+    private transient CredentialsProvider credentialsProvider;
 
-    XMLInputFactory inFac = XMLInputFactory.newInstance();
+    transient XMLInputFactory inFac = XMLInputFactory.newInstance();
 
-    XMLOutputFactory outFac = XMLOutputFactory.newInstance();
+    transient XMLOutputFactory outFac = XMLOutputFactory.newInstance();
 
-    private WebServicesConfiguration serviceConfig;
+    private transient WebServicesConfiguration serviceConfig;
 
-    private SecurityConfiguration securityConfiguration;
+    private transient SecurityConfiguration securityConfiguration;
 
-    private DeegreeWorkspace workspace;
+    private transient DeegreeWorkspace workspace;
 
-    private RequestLogger requestLogger;
+    private transient RequestLogger requestLogger;
 
     @Override
     public void init( ServletConfig config )

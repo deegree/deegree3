@@ -157,15 +157,16 @@ public class OGCFrontController extends HttpServlet {
 
     private static OGCFrontController instance;
 
-    private DeegreeServiceControllerType mainConfig;
+    // make fields transient, serialized servlets are a bad idea IMHO
+    private transient DeegreeServiceControllerType mainConfig;
 
-    private final InheritableThreadLocal<RequestContext> CONTEXT = new InheritableThreadLocal<RequestContext>();
+    private transient final InheritableThreadLocal<RequestContext> CONTEXT = new InheritableThreadLocal<RequestContext>();
 
-    private SecurityConfiguration securityConfiguration;
+    private transient SecurityConfiguration securityConfiguration;
 
-    private WebServicesConfiguration serviceConfiguration;
+    private transient WebServicesConfiguration serviceConfiguration;
 
-    private DeegreeWorkspace workspace;
+    private transient DeegreeWorkspace workspace;
 
     /**
      * Returns the only instance of this class.
