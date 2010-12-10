@@ -231,7 +231,7 @@ class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
                     LOG.warn( "Feature type '" + ftName + "' has no prefix!? This should not happen." );
                     prefix = "app";
                 }
-                writer.setPrefix( prefix, ftName.getNamespaceURI() );
+                writer.writeNamespace( prefix, ftName.getNamespaceURI() );
                 writer.writeCharacters( prefix + ":" + ftName.getLocalPart() );
             } else {
                 writer.writeCharacters( ftName.getLocalPart() );
@@ -577,7 +577,7 @@ class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
                 }
                 if ( ftName.getNamespaceURI() != XMLConstants.NULL_NS_URI ) {
                     // TODO what about the namespace prefix?
-                    writer.setPrefix( prefix, ftName.getNamespaceURI() );
+                    writer.writeNamespace( prefix, ftName.getNamespaceURI() );
                     writer.writeCharacters( prefix + ":" + ftName.getLocalPart() );
                 } else {
                     writer.writeCharacters( ftName.getLocalPart() );
