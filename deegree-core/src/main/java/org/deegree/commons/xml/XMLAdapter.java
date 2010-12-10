@@ -121,7 +121,7 @@ public class XMLAdapter {
     /**
      * The context
      */
-    protected static NamespaceBindings nsContext = CommonNamespaces.getNamespaceContext();
+    protected static final NamespaceBindings nsContext = CommonNamespaces.getNamespaceContext();
 
     /**
      * the xlink namespace
