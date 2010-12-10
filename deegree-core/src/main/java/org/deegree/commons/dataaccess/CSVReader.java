@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,10 +32,11 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 
 package org.deegree.commons.dataaccess;
 
+import static java.util.Arrays.copyOf;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.IOException;
@@ -50,11 +51,11 @@ import org.slf4j.Logger;
 /**
  * The <code>CSVReader</code> reads a csv file line by line. Note the regular expression for quotes may not work under
  * all circumstances, a Tokenizer might be a better solution.
- *
+ * 
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
  * @author last edited by: $Author$
  * @version $Revision$, $Date$
- *
+ * 
  */
 public class CSVReader extends LineNumberReader {
     private final static Logger LOG = getLogger( CSVReader.class );
@@ -130,7 +131,7 @@ public class CSVReader extends LineNumberReader {
 
     /**
      * Splits the given line into it's quoted values.
-     *
+     * 
      * @param line
      *            to 'delimiter' separate.
      * @return the splitted string.
@@ -141,7 +142,7 @@ public class CSVReader extends LineNumberReader {
 
     /**
      * Splits the given line into it's (delimiter seperated) values.
-     *
+     * 
      * @param line
      *            to 'delimiter' separate.
      * @return the splitted string.
@@ -171,7 +172,7 @@ public class CSVReader extends LineNumberReader {
      * @return the values of the first row, which may be the column names or the first line of data.
      */
     public final String[] getColumnsNames() {
-        return columnNames;
+        return copyOf( columnNames, columnNames.length );
     }
 
     /**
