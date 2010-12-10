@@ -168,7 +168,7 @@ public class DeegreeWorkspace {
                             throws IOException {
         DeegreeWorkspace ws = getInstance( workspaceName );
         if ( !ws.getLocation().exists() ) {
-            ws = wsRootDirToWs.get( fallbackDir.getCanonicalPath() );
+            ws = wsRootDirToWs.get( fallbackDir.getCanonicalFile() );
             if ( ws == null ) {
                 if ( workspaceName == null ) {
                     workspaceName = DEFAULT_WORKSPACE;
