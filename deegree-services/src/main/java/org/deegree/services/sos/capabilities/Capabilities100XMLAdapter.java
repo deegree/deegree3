@@ -112,14 +112,13 @@ public class Capabilities100XMLAdapter extends OWSCapabilitiesXMLAdapter {
                                DeegreeServicesMetadataType serviceMetadata, ServiceIdentificationType identification,
                                XMLStreamWriter writer )
                             throws XMLStreamException, ObservationDatastoreException {
-        writer.setPrefix( SOS_PREFIX, SOS_NS );
-        writer.setPrefix( OWS_PREFIX, OWS_NS );
-        writer.setPrefix( OGC_PREFIX, OGC_NS );
-        writer.setPrefix( GML_PREFIX, GML_NS );
-        writer.setPrefix( "xsi", XSINS );
-        writer.setPrefix( "xlink", XLN_NS );
 
-        writer.writeStartElement( SOS_NS, "Capabilities" );
+        writer.writeStartElement( SOS_PREFIX, SOS_NS, "Capabilities" );
+        writer.writeNamespace( OWS_PREFIX, OWS_NS );
+        writer.writeNamespace( OGC_PREFIX, OGC_NS );
+        writer.writeNamespace( GML_PREFIX, GML_NS );
+        writer.writeNamespace( "xsi", XSINS );
+        writer.writeNamespace( "xlink", XLN_NS );
         writer.writeAttribute( XSINS, "schemaLocation", SOS_NS + " " + SOS_SCHEMA );
         writer.writeAttribute( "version", "1.0.0" );
 
@@ -320,5 +319,4 @@ public class Capabilities100XMLAdapter extends OWSCapabilitiesXMLAdapter {
             // --> @codSpace optional
         }
     }
-
 }
