@@ -39,6 +39,7 @@ import static javax.xml.XMLConstants.DEFAULT_NS_PREFIX;
 import static javax.xml.XMLConstants.NULL_NS_URI;
 import static javax.xml.stream.XMLStreamConstants.CDATA;
 import static javax.xml.stream.XMLStreamConstants.CHARACTERS;
+import static javax.xml.stream.XMLStreamConstants.COMMENT;
 import static javax.xml.stream.XMLStreamConstants.END_DOCUMENT;
 import static javax.xml.stream.XMLStreamConstants.END_ELEMENT;
 import static javax.xml.stream.XMLStreamConstants.START_ELEMENT;
@@ -116,6 +117,10 @@ public class BufferableXMLStreamWriter implements XMLStreamWriter {
             }
             case CHARACTERS: {
                 sink.writeCharacters( inStream.getTextCharacters(), inStream.getTextStart(), inStream.getTextLength() );
+                break;
+            }
+            case COMMENT: {
+                sink.writeComment( inStream.getText() );
                 break;
             }
             case END_ELEMENT: {
