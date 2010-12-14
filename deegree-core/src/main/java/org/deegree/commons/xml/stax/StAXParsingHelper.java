@@ -161,7 +161,7 @@ public class StAXParsingHelper {
             LOG.debug( "SystemID was not an URL, trying as file." );
         }
 
-        file = new File( url );
+        file = new File( systemId );
 
         URL resolvedURL = new URL( file.toURI().toURL(), url );
         LOG.debug( "-> resolvedURL: '" + resolvedURL + "'" );
@@ -222,7 +222,6 @@ public class StAXParsingHelper {
 
     public static QName getAttributeValueAsQName( XMLStreamReader xmlStream, String namespaceURI, String localName )
                             throws XMLParsingException {
-        QName result = null;
         String s = xmlStream.getAttributeValue( namespaceURI, localName );
         if ( s == null ) {
             throw new XMLParsingException( xmlStream, "No attribute with name {" + namespaceURI + "}" + localName + "." );
@@ -290,7 +289,6 @@ public class StAXParsingHelper {
 
     public static QName getElementTextAsQName( XMLStreamReader xmlStream )
                             throws XMLParsingException, XMLStreamException {
-        QName result = null;
         String s = xmlStream.getElementText();
         if ( s == null ) {
             throw new XMLParsingException( xmlStream, "No element text, but QName expected." );
