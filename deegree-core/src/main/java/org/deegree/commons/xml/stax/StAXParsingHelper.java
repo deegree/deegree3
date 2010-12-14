@@ -152,7 +152,18 @@ public class StAXParsingHelper {
             return file.toURI().toURL();
         }
 
-        URL resolvedURL = new URL( new URL( systemId ), url );
+        try {
+            URL sysIdUrl = new URL( systemId );
+            URL resolvedURL = new URL( sysIdUrl, url );
+            LOG.debug( "-> resolvedURL: '" + resolvedURL + "'" );
+            return resolvedURL;
+        } catch ( MalformedURLException e ) {
+            LOG.debug( "SystemID was not an URL, trying as file." );
+        }
+
+        file = new File( url );
+
+        URL resolvedURL = new URL( file.toURI().toURL(), url );
         LOG.debug( "-> resolvedURL: '" + resolvedURL + "'" );
         return resolvedURL;
     }
