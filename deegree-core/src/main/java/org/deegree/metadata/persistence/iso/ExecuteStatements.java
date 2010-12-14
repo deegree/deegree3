@@ -218,11 +218,6 @@ public class ExecuteStatements implements GenericDatabaseExecution {
             getDatasetIDs.append( builder.getWhere().getSQL() );
         }
 
-        if ( builder.getOrderBy() != null ) {
-            getDatasetIDs.append( " ORDER BY " );
-            getDatasetIDs.append( builder.getOrderBy().getSQL() );
-        }
-
     }
 
     @Override
@@ -236,10 +231,14 @@ public class ExecuteStatements implements GenericDatabaseExecution {
 
             StringBuilder header = getPreparedStatementDatasetIDs( query, false, builder );
             getPSBody( query, conn, builder, header );
-
+            if ( builder.getOrderBy() != null ) {
+                header.append( " ORDER BY " );
+                header.append( builder.getOrderBy().getSQL() );
+            }
             if ( query != null ) {
                 header.append( " OFFSET " ).append( Integer.toString( query.getStartPosition() - 1 ) );
             }
+
             preparedStatement = conn.prepareStatement( header.toString() );
 
             int i = 1;
@@ -261,6 +260,7 @@ public class ExecuteStatements implements GenericDatabaseExecution {
                     }
                 }
             }
+
             if ( builder.getOrderBy() != null ) {
                 for ( SQLLiteral o : builder.getOrderBy().getLiterals() ) {
                     preparedStatement.setObject( i++, o.getValue() );
@@ -290,9 +290,9 @@ public class ExecuteStatements implements GenericDatabaseExecution {
             LOG.info( "new Counting" );
             StringBuilder getDatasetIDs = new StringBuilder();
             getDatasetIDs.append( "SELECT " );
-            getDatasetIDs.append( "COUNT( " );
+            getDatasetIDs.append( "COUNT( DISTINCT(" );
             getDatasetIDs.append( rf );
-            getDatasetIDs.append( ')' );
+            getDatasetIDs.append( "))" );
             getPSBody( query, conn, builder, getDatasetIDs );
             preparedStatement = conn.prepareStatement( getDatasetIDs.toString() );
             int i = 1;
@@ -312,11 +312,6 @@ public class ExecuteStatements implements GenericDatabaseExecution {
                     } else {
                         preparedStatement.setObject( i++, o.getValue() );
                     }
-                }
-            }
-            if ( builder.getOrderBy() != null ) {
-                for ( SQLLiteral o : builder.getOrderBy().getLiterals() ) {
-                    preparedStatement.setObject( i++, o.getValue() );
                 }
             }
 
