@@ -54,15 +54,15 @@ import org.deegree.process.jaxb.java.ComplexInputDefinition;
 import org.deegree.process.jaxb.java.ComplexOutputDefinition;
 import org.deegree.process.jaxb.java.LiteralInputDefinition;
 import org.deegree.process.jaxb.java.LiteralOutputDefinition;
+import org.deegree.process.jaxb.java.LiteralOutputDefinition.DataType;
+import org.deegree.process.jaxb.java.LiteralOutputDefinition.DefaultUOM;
+import org.deegree.process.jaxb.java.LiteralOutputDefinition.OtherUOM;
 import org.deegree.process.jaxb.java.ProcessDefinition;
+import org.deegree.process.jaxb.java.ProcessDefinition.Metadata;
 import org.deegree.process.jaxb.java.ProcessletInputDefinition;
 import org.deegree.process.jaxb.java.ProcessletOutputDefinition;
 import org.deegree.process.jaxb.java.Range;
 import org.deegree.process.jaxb.java.ValidValueReference;
-import org.deegree.process.jaxb.java.LiteralOutputDefinition.DataType;
-import org.deegree.process.jaxb.java.LiteralOutputDefinition.DefaultUOM;
-import org.deegree.process.jaxb.java.LiteralOutputDefinition.OtherUOM;
-import org.deegree.process.jaxb.java.ProcessDefinition.Metadata;
 import org.deegree.services.wps.WPSProcess;
 import org.deegree.services.wps.annotations.ProcessDescription;
 import org.slf4j.Logger;
@@ -108,13 +108,11 @@ public class DescribeProcessResponseXMLAdapter extends XMLAdapter {
                                   List<ProcessDescription> processAnnotations )
                             throws XMLStreamException {
 
-        writer.setPrefix( WPS_PREFIX, WPS_NS );
-        writer.setPrefix( OWS_PREFIX, OWS_NS );
-        writer.setPrefix( OGC_PREFIX, OGC_NS );
-        writer.setPrefix( "xlink", XLN_NS );
-        writer.setPrefix( "xsi", XSINS );
-
-        writer.writeStartElement( WPS_NS, "ProcessDescriptions" );
+        writer.writeStartElement( WPS_PREFIX, "ProcessDescriptions", WPS_NS );
+        writer.writeNamespace( OWS_PREFIX, OWS_NS );
+        writer.writeNamespace( OGC_PREFIX, OGC_NS );
+        writer.writeNamespace( "xlink", XLN_NS );
+        writer.writeNamespace( "xsi", XSINS );
 
         writer.writeAttribute( "service", "WPS" );
         writer.writeAttribute( "version", "1.0.0" );

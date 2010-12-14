@@ -51,8 +51,8 @@ import org.apache.axiom.om.util.Base64;
 import org.deegree.commons.utils.time.DateUtils;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.process.jaxb.java.ProcessDefinition;
-import org.deegree.process.jaxb.java.ProcessletOutputDefinition;
 import org.deegree.process.jaxb.java.ProcessDefinition.Metadata;
+import org.deegree.process.jaxb.java.ProcessletOutputDefinition;
 import org.deegree.protocol.ows.OWSCommonXMLAdapter;
 import org.deegree.protocol.wps.WPSConstants.ExecutionState;
 import org.deegree.services.controller.ows.OWSException110XMLAdapter;
@@ -113,14 +113,12 @@ public class ExecuteResponseXMLWriter extends XMLAdapter {
     public static void export100( XMLStreamWriter writer, ExecuteResponse response )
                             throws XMLStreamException {
 
-        writer.setPrefix( WPS_PREFIX, WPS_NS );
-        writer.setPrefix( OWS_PREFIX, OWS_NS );
-        writer.setPrefix( OGC_PREFIX, OGC_NS );
-        writer.setPrefix( "xlink", XLN_NS );
-        writer.setPrefix( "xsi", XSI_NS );
-
         // "wps:ExecuteResponse" (minOccurs="1", maxOccurs="1")
-        writer.writeStartElement( WPS_NS, "ExecuteResponse" );
+        writer.writeStartElement( WPS_PREFIX, "ExecuteResponse", WPS_NS );
+        writer.writeNamespace( OWS_PREFIX, OWS_NS );
+        writer.writeNamespace( OGC_PREFIX, OGC_NS );
+        writer.writeNamespace( "xlink", XLN_NS );
+        writer.writeNamespace( "xsi", XSI_NS );
 
         writer.writeAttribute( "service", "WPS" );
         writer.writeAttribute( "version", "1.0.0" );

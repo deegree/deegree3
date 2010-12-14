@@ -99,14 +99,12 @@ public class CapabilitiesXMLWriter extends OWSCapabilitiesXMLAdapter {
                                   DeegreeServicesMetadataType serviceMetadata, String serviceWSDLURL )
                             throws XMLStreamException {
 
-        writer.setPrefix( WPS_PREFIX, WPS_NS );
-        writer.setPrefix( OWS_PREFIX, OWS_NS );
-        writer.setPrefix( OGC_PREFIX, OGC_NS );
-        writer.setPrefix( GML_PREFIX, GML_NS );
-        writer.setPrefix( "xlink", XLN_NS );
-        writer.setPrefix( "xsi", XSI_NS );
-
-        writer.writeStartElement( WPS_NS, "Capabilities" );
+        writer.writeStartElement( WPS_PREFIX, "Capabilities", WPS_NS );
+        writer.writeNamespace( OWS_PREFIX, OWS_NS );
+        writer.writeNamespace( OGC_PREFIX, OGC_NS );
+        writer.writeNamespace( GML_PREFIX, GML_NS );
+        writer.writeNamespace( "xlink", XLN_NS );
+        writer.writeNamespace( "xsi", XSI_NS );
         writer.writeAttribute( "service", "WPS" );
         writer.writeAttribute( "version", "1.0.0" );
         writer.writeAttribute( "xml:lang", "en" );
