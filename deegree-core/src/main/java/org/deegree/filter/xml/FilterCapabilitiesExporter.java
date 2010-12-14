@@ -47,7 +47,6 @@ import java.util.TreeSet;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
-import org.deegree.commons.xml.CommonNamespaces;
 import org.deegree.filter.function.FunctionManager;
 import org.deegree.filter.function.FunctionProvider;
 
@@ -76,7 +75,11 @@ public class FilterCapabilitiesExporter {
     public static void export100( XMLStreamWriter writer )
                             throws XMLStreamException {
 
-        writer.writeStartElement( OGCNS, "Filter_Capabilities", OGCNS );
+        writer.setPrefix( OGC_PREFIX, OGCNS );
+        writer.writeStartElement( OGCNS, "Filter_Capabilities" );
+        if ( writer.getPrefix( OGCNS ) == null ) {
+            writer.writeNamespace( OGC_PREFIX, OGCNS );
+        }
 
         exportSpatialCapabilities100( writer );
         exportScalarCapabilities100( writer );
@@ -96,7 +99,11 @@ public class FilterCapabilitiesExporter {
     public static void export110( XMLStreamWriter writer )
                             throws XMLStreamException {
 
-        writer.writeStartElement( OGC_PREFIX, "Filter_Capabilities", OGCNS );
+        writer.setPrefix( OGC_PREFIX, OGCNS );
+        writer.writeStartElement( OGCNS, "Filter_Capabilities" );
+        if ( writer.getPrefix( OGCNS ) == null ) {
+            writer.writeNamespace( OGC_PREFIX, OGCNS );
+        }
 
         exportSpatialCapabilities110( writer );
         exportScalarCapabilities110( writer );
