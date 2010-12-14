@@ -729,13 +729,17 @@ public class GMLFeatureWriter {
             if ( writer.getNamespaceContext().getPrefix( namespaceURI ) == null ) {
                 String prefix = nsToPrefix.get( namespaceURI );
                 if ( prefix != null ) {
+                    writer.setPrefix( prefix, namespaceURI );
+                    writer.writeStartElement( prefix, localname, namespaceURI );
                     writer.writeNamespace( prefix, namespaceURI );
                 } else {
                     LOG.warn( "No prefix for namespace '{}' configured. Depending on XMLStream auto-repairing.",
                               namespaceURI );
+                    writer.writeStartElement( namespaceURI, localname );
                 }
+            } else {
+                writer.writeStartElement( namespaceURI, localname );
             }
-            writer.writeStartElement( namespaceURI, localname );
         }
     }
 
