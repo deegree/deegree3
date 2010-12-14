@@ -35,10 +35,11 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.services.csw.exporthandling;
 
+import static org.deegree.commons.xml.CommonNamespaces.XSINS;
+import static org.deegree.commons.xml.CommonNamespaces.XSI_PREFIX;
 import static org.deegree.protocol.csw.CSWConstants.CSW_202_DISCOVERY_SCHEMA;
 import static org.deegree.protocol.csw.CSWConstants.CSW_202_NS;
 import static org.deegree.protocol.csw.CSWConstants.CSW_202_RECORD;
-import static org.deegree.protocol.csw.CSWConstants.CSW_PREFIX;
 import static org.deegree.protocol.csw.CSWConstants.DC_LOCAL_PART;
 import static org.deegree.protocol.csw.CSWConstants.DC_NS;
 import static org.deegree.protocol.csw.CSWConstants.DC_PREFIX;
@@ -64,7 +65,6 @@ import javax.xml.stream.XMLStreamWriter;
 
 import org.deegree.commons.tom.ows.Version;
 import org.deegree.commons.utils.kvp.InvalidParameterValueException;
-import org.deegree.commons.xml.CommonNamespaces;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.stax.SchemaLocationXMLStreamWriter;
 import org.deegree.metadata.persistence.MetadataStore;
@@ -178,9 +178,10 @@ public class DescribeRecordHandler {
                             throws XMLStreamException, MetadataStoreException {
 
         writer.setDefaultNamespace( CSW_202_NS );
-        writer.writeStartElement( CSW_PREFIX, "DescribeRecordResponse", CSW_202_NS );
-        writer.writeAttribute( "xsi", CommonNamespaces.XSINS, "schemaLocation", CSW_202_NS + " "
-                                                                                + CSW_202_DISCOVERY_SCHEMA );
+        writer.writeStartElement( CSW_202_NS, "DescribeRecordResponse" );
+        writer.writeDefaultNamespace( CSW_202_NS );
+        writer.writeNamespace( XSI_PREFIX, XSINS );
+        writer.writeAttribute( XSINS, "schemaLocation", CSW_202_NS + " " + CSW_202_DISCOVERY_SCHEMA );
 
         URLConnection urlConn = null;
         try {

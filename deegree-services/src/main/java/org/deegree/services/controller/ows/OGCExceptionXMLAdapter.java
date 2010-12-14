@@ -63,8 +63,8 @@ public class OGCExceptionXMLAdapter extends XMLExceptionSerializer<OWSException>
             return;
         }
         writer.setDefaultNamespace( OGCNS );
-
         writer.writeStartElement( OGCNS, "ServiceExceptionReport" );
+        writer.writeDefaultNamespace( OGCNS );
         writer.writeStartElement( OGCNS, "ServiceException" );
         writer.writeAttribute( "code", ex.getExceptionCode() );
         if ( ex.getLocator() != null && !"".equals( ex.getLocator().trim() ) ) {

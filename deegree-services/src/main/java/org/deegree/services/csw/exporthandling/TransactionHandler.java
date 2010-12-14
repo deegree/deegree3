@@ -37,7 +37,6 @@ package org.deegree.services.csw.exporthandling;
 
 import static org.deegree.protocol.csw.CSWConstants.CSW_202_NS;
 import static org.deegree.protocol.csw.CSWConstants.CSW_202_PUBLICATION_SCHEMA;
-import static org.deegree.protocol.csw.CSWConstants.CSW_PREFIX;
 import static org.deegree.protocol.csw.CSWConstants.VERSION_202;
 
 import java.io.IOException;
@@ -169,7 +168,8 @@ public class TransactionHandler {
         int deleteCount = 0;
 
         writer.setDefaultNamespace( CSW_202_NS );
-        writer.writeStartElement( CSW_PREFIX, "TransactionResponse", CSW_202_NS );
+        writer.writeStartElement( CSW_202_NS, "TransactionResponse" );
+        writer.writeDefaultNamespace( CSW_202_NS );
         writer.writeAttribute( "version", version.toString() );
 
         writer.writeStartElement( CSW_202_NS, "TransactionSummary" );
@@ -188,30 +188,20 @@ public class TransactionHandler {
             for ( TransactionOperation transact : transaction.getOperations() ) {
                 currentHandle = transact.getHandle();
                 switch ( transact.getType() ) {
-
                 case INSERT:
-
                     List<String> ids = doInsert( ta, (InsertTransaction) transact );
                     insertHandles.add( transact.getHandle() );
                     insertIds.add( ids );
                     insertCount += ids.size();
-
                     break;
                 case UPDATE:
-
                     updateCount = doUpdate( ta, (UpdateTransaction) transact );
-
                     break;
                 case DELETE:
-
                     deleteCount = doDelete( ta, (DeleteTransaction) transact );
-
                     break;
-
                 }
-
             }
-
             ta.commit();
         } catch ( Throwable e ) {
             ta.rollback();
@@ -281,9 +271,9 @@ public class TransactionHandler {
     private List<String> doInsert( MetadataStoreTransaction ta, InsertTransaction insert )
                             throws MetadataStoreException, OWSException, MetadataInspectorException {
         // TODO the first element determines the metadataStore
-        String uri = insert.getElements().get( 0 ).getNamespace().getNamespaceURI();
-        String localName = insert.getElements().get( 0 ).getLocalName();
-        String prefix = insert.getElements().get( 0 ).getNamespace().getPrefix();
+        // String uri = insert.getElements().get( 0 ).getNamespace().getNamespaceURI();
+        // String localName = insert.getElements().get( 0 ).getLocalName();
+        // String prefix = insert.getElements().get( 0 ).getNamespace().getPrefix();
 
         List<String> ids = ta.performInsert( insert );
         LOG.debug( "inserted metadata: " + ids );
@@ -310,5 +300,4 @@ public class TransactionHandler {
         }
         return new SchemaLocationXMLStreamWriter( writer.getXMLWriter(), schemaLocation );
     }
-
 }

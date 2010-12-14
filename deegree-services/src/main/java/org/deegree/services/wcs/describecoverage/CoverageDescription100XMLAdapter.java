@@ -50,10 +50,10 @@ import org.deegree.commons.utils.ArrayUtils;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.coverage.rangeset.AxisSubset;
 import org.deegree.coverage.rangeset.Interval;
+import org.deegree.coverage.rangeset.Interval.Closure;
 import org.deegree.coverage.rangeset.RangeSet;
 import org.deegree.coverage.rangeset.SingleValue;
 import org.deegree.coverage.rangeset.ValueType;
-import org.deegree.coverage.rangeset.Interval.Closure;
 import org.deegree.coverage.raster.interpolation.InterpolationType;
 import org.deegree.cs.CRSRegistry;
 import org.deegree.cs.coordinatesystems.CoordinateSystem;
@@ -90,16 +90,16 @@ public class CoverageDescription100XMLAdapter extends XMLAdapter {
      */
     public static void export( XMLStreamWriter writer, List<WCSCoverage> coverages, int updateSequence )
                             throws XMLStreamException {
-        writer.setDefaultNamespace( WCS_100_NS );
-        // writer.setPrefix( "wcs", WCS_NS );
-        writer.setPrefix( GML_PREFIX, GML_NS );
-        writer.setPrefix( "xsi", XSINS );
-        writer.setPrefix( "xlink", XLN_NS );
 
+        writer.setDefaultNamespace( WCS_100_NS );
         writer.writeStartElement( WCS_100_NS, "CoverageDescription" );
-        writer.writeAttribute( XSINS, "schemaLocation", WCS_100_NS + " " + WCS_100_SCHEMA );
         writer.writeAttribute( "version", VERSION_100.toString() );
         writer.writeAttribute( "updateSequence", Integer.toString( updateSequence ) );
+        writer.writeDefaultNamespace( WCS_100_NS );
+        writer.writeNamespace( GML_PREFIX, GML_NS );
+        writer.writeNamespace( "xsi", XSINS );
+        writer.writeNamespace( "xlink", XLN_NS );
+        writer.writeAttribute( XSINS, "schemaLocation", WCS_100_NS + " " + WCS_100_SCHEMA );
 
         for ( WCSCoverage coverage : coverages ) {
             exportCoverageOffering( writer, coverage );

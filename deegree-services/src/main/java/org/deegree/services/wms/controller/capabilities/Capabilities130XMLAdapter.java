@@ -125,7 +125,7 @@ public class Capabilities130XMLAdapter extends XMLAdapter {
     }
 
     /**
-     * Writes out a 1.1.1 style capabilities document.
+     * Writes out a 1.3.0 style capabilities document.
      * 
      * @param writer
      * @throws XMLStreamException
@@ -135,11 +135,12 @@ public class Capabilities130XMLAdapter extends XMLAdapter {
 
         writer.setDefaultNamespace( WMSNS );
         writer.writeStartElement( WMSNS, "WMS_Capabilities" );
+        writer.writeAttribute( "version", "1.3.0" );
+        writer.writeAttribute( "updateSequence", "" + service.updateSequence );
+        writer.writeDefaultNamespace( WMSNS );
         writer.writeNamespace( "xsi", XSINS );
         writer.writeNamespace( "xlink", XLNNS );
         writer.writeNamespace( "sld", SLDNS );
-        writer.writeAttribute( "version", "1.3.0" );
-        writer.writeAttribute( "updateSequence", "" + service.updateSequence );
 
         writer.writeAttribute( XSINS,
                                "schemaLocation",

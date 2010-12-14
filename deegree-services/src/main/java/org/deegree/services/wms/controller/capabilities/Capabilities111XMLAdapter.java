@@ -136,7 +136,6 @@ public class Capabilities111XMLAdapter extends XMLAdapter {
         writer.writeStartElement( "WMT_MS_Capabilities" );
         writer.writeAttribute( "version", "1.1.1" );        
         writer.writeAttribute( "updateSequence", "" + service.updateSequence );
-        writer.writeNamespace( XLINK_PREFIX, XLNNS);
 
         writeService( writer );
 
@@ -329,6 +328,7 @@ public class Capabilities111XMLAdapter extends XMLAdapter {
             writer.writeAttribute( "height", "" + legendSize.second );
             writeElement( writer, "Format", "image/png" );
             writer.writeStartElement( "OnlineResource" );
+            writer.writeNamespace( XLINK_PREFIX, XLNNS);            
             writer.writeAttribute( XLNNS, "type", "simple" );
             String style = styleName == null ? "" : ( "&style=" + styleName );
             writer.writeAttribute( XLNNS, "href", getUrl + "?request=GetLegendGraphic&version=1.1.1&service=WMS&layer="
@@ -346,6 +346,7 @@ public class Capabilities111XMLAdapter extends XMLAdapter {
         if ( get ) {
             writer.writeStartElement( "Get" );
             writer.writeStartElement( "OnlineResource" );
+            writer.writeNamespace( XLINK_PREFIX, XLNNS);            
             writer.writeAttribute( XLNNS, "type", "simple" );
             writer.writeAttribute( XLNNS, "href", getUrl + "?" );
             writer.writeEndElement();
