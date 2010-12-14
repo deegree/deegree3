@@ -166,8 +166,7 @@ public class GetRecordByIdHandler {
     private void export202( XMLStreamWriter writer, GetRecordById getRecBI, boolean isSoap )
                             throws XMLStreamException, OWSException, MetadataStoreException {
 
-        writer.setPrefix( CSW_PREFIX, CSW_202_NS );
-        writer.writeStartElement( CSW_202_NS, "GetRecordByIdResponse" );
+        writer.writeStartElement( CSW_PREFIX, "GetRecordByIdResponse", CSW_202_NS );
 
         MetadataResultSet resultSet = null;
         int countIdList = 0;

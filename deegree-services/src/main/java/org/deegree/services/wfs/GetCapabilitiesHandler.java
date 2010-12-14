@@ -192,16 +192,14 @@ class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
      */
     void export100()
                             throws XMLStreamException {
-        writer.setPrefix( WFS_PREFIX, WFS_NS );
-        writer.setPrefix( OWS_PREFIX, OWS_NS );
-        writer.setPrefix( OGC_PREFIX, OGCNS );
-        writer.setPrefix( GML_PREFIX, GMLNS );
-        writer.setPrefix( XLINK_PREFIX, XLN_NS );
 
-        writer.writeStartElement( WFS_NS, "WFS_Capabilities" );
+        writer.writeStartElement( WFS_PREFIX, "WFS_Capabilities", WFS_NS );
+        writer.writeNamespace( OWS_PREFIX, OWS_NS );
+        writer.writeNamespace( OGC_PREFIX, OGCNS );
+        writer.writeNamespace( GML_PREFIX, GMLNS );
+        writer.writeNamespace( XLINK_PREFIX, XLN_NS );
         writer.writeAttribute( "version", "1.0.0" );
-        writer.writeAttribute( "xsi", CommonNamespaces.XSINS, "schemaLocation", WFS_NS + " "
-                                                                                + WFS_100_CAPABILITIES_SCHEMA_URL );
+        writer.writeAttribute( "xsi", XSINS, "schemaLocation", WFS_NS + " " + WFS_100_CAPABILITIES_SCHEMA_URL );
 
         // wfs:Service (type="wfs:ServiceType")
         exportService100();
@@ -465,13 +463,11 @@ class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
     void export110()
                             throws XMLStreamException {
 
-        writer.setPrefix( WFS_PREFIX, WFS_NS );
-        writer.setPrefix( OWS_PREFIX, OWS_NS );
-        writer.setPrefix( OGC_PREFIX, OGCNS );
-        writer.setPrefix( GML_PREFIX, GMLNS );
-        writer.setPrefix( XLINK_PREFIX, XLNNS );
-
-        writer.writeStartElement( WFS_NS, "WFS_Capabilities" );
+        writer.writeStartElement( WFS_PREFIX, "WFS_Capabilities", WFS_NS );
+        writer.writeNamespace( OWS_PREFIX, OWS_NS );
+        writer.writeNamespace( OGC_PREFIX, OGCNS );
+        writer.writeNamespace( GML_PREFIX, GMLNS );
+        writer.writeNamespace( XLINK_PREFIX, XLNNS );
         writer.writeAttribute( "version", "1.1.0" );
         writer.writeAttribute( XSI_PREFIX, XSINS, "schemaLocation", WFS_NS + " " + WFS_110_SCHEMA_URL );
 
@@ -705,13 +701,11 @@ class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
     void export200()
                             throws XMLStreamException {
 
-        writer.setPrefix( WFS_PREFIX, WFS_200_NS );
-        writer.setPrefix( OWS_PREFIX, OWS_NS );
-        writer.setPrefix( OGC_PREFIX, OGCNS );
-        writer.setPrefix( GML_PREFIX, GMLNS );
-        writer.setPrefix( XLINK_PREFIX, XLN_NS );
-
-        writer.writeStartElement( WFS_200_NS, "WFS_Capabilities" );
+        writer.writeStartElement( WFS_PREFIX, "WFS_Capabilities", WFS_200_NS );
+        writer.writeNamespace( OWS_PREFIX, OWS_NS );
+        writer.writeNamespace( OGC_PREFIX, OGCNS );
+        writer.writeNamespace( GML_PREFIX, GMLNS );
+        writer.writeNamespace( XLINK_PREFIX, XLN_NS );
         writer.writeAttribute( "version", "2.0.0" );
         writer.writeAttribute( "xsi", CommonNamespaces.XSINS, "schemaLocation", WFS_200_NS + " " + WFS_200_SCHEMA_URL );
 

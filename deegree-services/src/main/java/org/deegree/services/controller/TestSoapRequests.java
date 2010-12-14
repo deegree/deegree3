@@ -146,8 +146,7 @@ public class TestSoapRequests {
         String ns = factory.getNamespace().getNamespaceURI();
         SOAPEnvelope env = factory.getDefaultEnvelope();
 
-        writer.setPrefix( "soapenv", ns );
-        writer.writeStartElement( ns, env.getLocalName() );
+        writer.writeStartElement( "soapenv", env.getLocalName(), ns );
         writeAttributes( writer, env );
         SOAPBody body = env.getBody();
         writer.writeStartElement( ns, body.getLocalName() );

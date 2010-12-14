@@ -116,6 +116,7 @@ public class Capabilities100XMLAdapter extends XMLAdapter {
                                DeegreeServicesMetadataType serviceMetadata, DeegreeServiceControllerType mainConf,
                                XMLStreamWriter writer, int updateSequence )
                             throws XMLStreamException {
+
         writer.setDefaultNamespace( WCS_100_NS );
         writer.setPrefix( GML_PREFIX, GML_NS );
         writer.setPrefix( "xsi", XSINS );

@@ -99,13 +99,11 @@ public class DescribeProcessFromAnnotation extends XMLAdapter {
     public static void export100( XMLStreamWriter writer, List<ProcessDescription> processAnnotations )
                             throws XMLStreamException {
 
-        writer.setPrefix( WPS_PREFIX, WPS_NS );
-        writer.setPrefix( OWS_PREFIX, OWS_NS );
-        writer.setPrefix( OGC_PREFIX, OGC_NS );
-        writer.setPrefix( "xlink", XLN_NS );
-        writer.setPrefix( "xsi", XSINS );
-
-        writer.writeStartElement( WPS_NS, "ProcessDescriptions" );
+        writer.writeStartElement( WPS_PREFIX, "ProcessDescriptions", WPS_NS );
+        writer.writeNamespace( OWS_PREFIX, OWS_NS );
+        writer.writeNamespace( OGC_PREFIX, OGC_NS );
+        writer.writeNamespace( "xlink", XLN_NS );
+        writer.writeNamespace( "xsi", XSINS );
 
         writer.writeAttribute( "service", "WPS" );
         writer.writeAttribute( "version", "1.0.0" );

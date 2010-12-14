@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,7 +32,7 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 
 package org.deegree.services.controller.exception.serializer;
 
@@ -63,10 +63,10 @@ import org.deegree.services.controller.ows.OWSException;
 
 /**
  * The <code>SoapExceptionSerializer</code> class TODO add class documentation here.
- *
+ * 
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
  * @author last edited by: $Author$
- *
+ * 
  * @version $Revision$, $Date$
  */
 public class SOAPExceptionSerializer extends XMLExceptionSerializer<SOAPException> {
@@ -105,10 +105,8 @@ public class SOAPExceptionSerializer extends XMLExceptionSerializer<SOAPExceptio
         }
         String ns = factory.getNamespace().getNamespaceURI();
 
-        writer.setPrefix( "soapenv", ns );
-        writer.setPrefix( "xsi", XSINS );
-
-        writer.writeStartElement( ns, envelope.getLocalName() );
+        writer.writeStartElement( "soapenv", envelope.getLocalName(), ns );
+        writer.writeNamespace( "xsi", XSINS );
         writer.writeAttribute( XSINS, "schemaLocation",
                                "http://www.w3.org/2003/05/soap-envelope http://www.w3.org/2003/05/soap-envelope" );
 

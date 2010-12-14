@@ -145,8 +145,7 @@ class LockFeatureHandler {
             } else {
                 writer.writeStartElement( "wfs", "LockFeatureResponse", ns );
             }
-            writer.setPrefix( "ogc", OGCNS );
-            writer.setPrefix( "wfs", WFS_NS );
+            writer.writeNamespace( "ogc", OGCNS );
             XMLAdapter.writeElement( writer, WFS_NS, "LockId", lock.getId() );
 
             if ( lock.getNumLocked() > 0 ) {

@@ -231,10 +231,8 @@ public abstract class AbstractOGCServiceController implements OWS {
         XMLStreamWriter xmlWriter = response.getXMLWriter();
         String soapEnvNS = "http://www.w3.org/2003/05/soap-envelope";
         String xsiNS = "http://www.w3.org/2001/XMLSchema-instance";
-        xmlWriter.setPrefix( "soapenv", soapEnvNS );
-        xmlWriter.setPrefix( "xsi", xsiNS );
-
-        xmlWriter.writeStartElement( soapEnvNS, "Envelope" );
+        xmlWriter.writeStartElement( "soapenv", "Envelope", soapEnvNS );
+        xmlWriter.writeNamespace( "xsi", xsiNS );
         xmlWriter.writeAttribute( xsiNS, "schemaLocation",
                                   "http://www.w3.org/2003/05/soap-envelope http://www.w3.org/2003/05/soap-envelope" );
 
@@ -425,8 +423,7 @@ public abstract class AbstractOGCServiceController implements OWS {
                 }
             }
             if ( agreedVersion == null ) {
-                String versionsString = Version.getVersionsString( request.getAcceptVersionsAsVersions().toArray(
-                                                                                                                  new Version[request.getAcceptVersions().size()] ) );
+                String versionsString = Version.getVersionsString( request.getAcceptVersionsAsVersions().toArray( new Version[request.getAcceptVersions().size()] ) );
                 throw new OWSException( "Version negotiation failed. No support for version(s): " + versionsString,
                                         OWSException.VERSION_NEGOTIATION_FAILED );
             }
@@ -578,8 +575,7 @@ public abstract class AbstractOGCServiceController implements OWS {
      *            to be synchronized with the main configuration
      * @return the configured service provider, with missing values filled from the main configuration.
      */
-    protected ServiceProviderType synchronizeServiceProviderWithMainControllerConf(
-                                                                                    ServiceProviderType configuredServiceProvider ) {
+    protected ServiceProviderType synchronizeServiceProviderWithMainControllerConf( ServiceProviderType configuredServiceProvider ) {
         ServiceProviderType mainProvider = mainMetadataConf.getServiceProvider();
         ServiceProviderType result = configuredServiceProvider;
         if ( configuredServiceProvider == null ) {
@@ -601,8 +597,7 @@ public abstract class AbstractOGCServiceController implements OWS {
      * @return the service identification with all missing values filled in from the main controller service
      *         identification.
      */
-    protected ServiceIdentificationType synchronizeServiceIdentificationWithMainController(
-                                                                                            ServiceIdentificationType serviceIdentification ) {
+    protected ServiceIdentificationType synchronizeServiceIdentificationWithMainController( ServiceIdentificationType serviceIdentification ) {
         ServiceIdentificationType mainID = mainMetadataConf.getServiceIdentification();
         ServiceIdentificationType result = serviceIdentification;
         if ( mainID != null ) {

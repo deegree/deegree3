@@ -363,14 +363,13 @@ public class SOSController extends AbstractOGCServiceController {
                             throws IOException, XMLStreamException {
         XMLStreamWriter xmlWriter = response.getXMLWriter();
 
-        xmlWriter.setPrefix( SA_PREFIX, SA_NS );
-        xmlWriter.setPrefix( XSI_PREFIX, XSINS );
-        xmlWriter.setPrefix( XLINK_PREFIX, XLNNS );
-        xmlWriter.setPrefix( GML_PREFIX, GMLNS );
-
         List<String> foiIDs = Arrays.asList( foi.getFoiID() );
 
         xmlWriter.writeStartElement( SA_PREFIX, "SamplingFeatureCollection", SA_NS );
+        xmlWriter.writeNamespace( SA_PREFIX, SA_NS );
+        xmlWriter.writeNamespace( XSI_PREFIX, XSINS );
+        xmlWriter.writeNamespace( XLINK_PREFIX, XLNNS );
+        xmlWriter.writeNamespace( GML_PREFIX, GMLNS );        
 
         xmlWriter.writeAttribute( XSI_PREFIX, XSINS, "schemaLocation",
                                   "http://www.opengis.net/sampling/1.0 http://schemas.opengis.net/sampling/1.0.0/sampling.xsd" );

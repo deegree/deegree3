@@ -96,12 +96,10 @@ public class CapabilitiesXMLAdapter extends OWSCapabilitiesXMLAdapter {
                            ServiceConfiguration serviceConfig )
                             throws XMLStreamException {
 
-        writer.setPrefix( WPVS_PREFIX, WPVS_NS );
-        writer.setPrefix( OWS_PREFIX, OWS110_NS );
-        writer.setPrefix( XSI_PREFIX, XSINS );
-        writer.setPrefix( XLINK_PREFIX, XLNNS );
-
-        writer.writeStartElement( WPVS_NS, "Capabilities" );
+        writer.writeStartElement( WPVS_PREFIX, "Capabilities", WPVS_NS );
+        writer.writeNamespace( OWS_PREFIX, OWS110_NS );
+        writer.writeNamespace( XSI_PREFIX, XSINS );
+        writer.writeNamespace( XLINK_PREFIX, XLNNS );        
         writer.writeAttribute( "service", "WPVS" );
         writer.writeAttribute( "version", "0.5.0" );
         // writer.writeAttribute( XSINS, "schemaLocation",

@@ -115,14 +115,14 @@ public class Observation100XMLAdapter extends XMLAdapter {
 
     private static void export( XMLStreamWriter writer, Observation observation, TYPE type )
                             throws XMLStreamException {
-        writer.setPrefix( OM_PREFIX, OM_NS );
-        writer.setPrefix( SA_PREFIX, SA_NS );
-        writer.setPrefix( GML_PREFIX, GML_NS );
-        writer.setPrefix( "swe", SWE_NS );
-        writer.setPrefix( "xlink", XLN_NS );
-        writer.setPrefix( "xsi", XSINS );
 
-        writer.writeStartElement( OM_NS, "ObservationCollection" );
+        writer.writeStartElement( OM_PREFIX, "ObservationCollection", OM_NS );
+        writer.writeNamespace( OM_PREFIX, OM_NS );
+        writer.writeNamespace( SA_PREFIX, SA_NS );
+        writer.writeNamespace( GML_PREFIX, GML_NS );
+        writer.writeNamespace( "swe", SWE_NS );
+        writer.writeNamespace( "xlink", XLN_NS );
+        writer.writeNamespace( "xsi", XSINS );
         writer.writeAttribute( XSINS, "schemaLocation", OM_NS + " " + OM_SCHEMA + " " + SA_NS + " " + SA_SCHEMA );
 
         if ( observation == null || observation.size() == 0 ) { // empty collection

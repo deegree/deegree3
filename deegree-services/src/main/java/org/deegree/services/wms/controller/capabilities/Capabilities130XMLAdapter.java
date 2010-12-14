@@ -132,16 +132,16 @@ public class Capabilities130XMLAdapter extends XMLAdapter {
      */
     public void export( XMLStreamWriter writer )
                             throws XMLStreamException {
+
         writer.setDefaultNamespace( WMSNS );
-        writer.setPrefix( "xsi", XSINS );
-        writer.setPrefix( "xlink", XLNNS );
-        writer.setPrefix( "sld", SLDNS );
         writer.writeStartElement( WMSNS, "WMS_Capabilities" );
+        writer.writeNamespace( "xsi", XSINS );
+        writer.writeNamespace( "xlink", XLNNS );
+        writer.writeNamespace( "sld", SLDNS );
         writer.writeAttribute( "version", "1.3.0" );
         writer.writeAttribute( "updateSequence", "" + service.updateSequence );
 
-        writer.writeAttribute(
-                               XSINS,
+        writer.writeAttribute( XSINS,
                                "schemaLocation",
                                "http://www.opengis.net/wms http://schemas.opengis.net/wms/1.3.0/capabilities_1_3_0.xsd "
                                                        + "http://www.opengis.net/sld http://schemas.opengis.net/sld/1.1.0/sld_capabilities.xsd" );
@@ -310,8 +310,8 @@ public class Capabilities130XMLAdapter extends XMLAdapter {
             writer.writeAttribute( "units", dim.getUnits() == null ? "CRS:88" : dim.getUnits() );
             writer.writeAttribute( "unitSymbol", dim.getUnitSymbol() == null ? "" : dim.getUnitSymbol() );
             if ( dim.getDefaultValue() != null ) {
-                writer.writeAttribute( "default", formatDimensionValueList( dim.getDefaultValue(),
-                                                                            "time".equals( entry.getKey() ) ) );
+                writer.writeAttribute( "default",
+                                       formatDimensionValueList( dim.getDefaultValue(), "time".equals( entry.getKey() ) ) );
             }
             if ( dim.getNearestValue() ) {
                 writer.writeAttribute( "nearestValue", "1" );

@@ -40,6 +40,7 @@ import static java.lang.Double.MAX_VALUE;
 import static java.lang.Double.MIN_VALUE;
 import static java.lang.Double.NEGATIVE_INFINITY;
 import static java.lang.Double.POSITIVE_INFINITY;
+import static org.deegree.commons.xml.CommonNamespaces.XLINK_PREFIX;
 import static org.deegree.commons.xml.CommonNamespaces.XLNNS;
 import static org.deegree.cs.CRSRegistry.lookup;
 import static org.deegree.services.wms.model.Dimension.formatDimensionValueList;
@@ -133,8 +134,9 @@ public class Capabilities111XMLAdapter extends XMLAdapter {
         writer.writeDTD( "<!DOCTYPE WMT_MS_Capabilities SYSTEM \"" + dtdrequest
                          + "\" [<!ELEMENT VendorSpecificCapabilities EMPTY>]>\n" );
         writer.writeStartElement( "WMT_MS_Capabilities" );
-        writer.writeAttribute( "version", "1.1.1" );
+        writer.writeAttribute( "version", "1.1.1" );        
         writer.writeAttribute( "updateSequence", "" + service.updateSequence );
+        writer.writeNamespace( XLINK_PREFIX, XLNNS);
 
         writeService( writer );
 
@@ -326,7 +328,6 @@ public class Capabilities111XMLAdapter extends XMLAdapter {
             writer.writeAttribute( "width", "" + legendSize.first );
             writer.writeAttribute( "height", "" + legendSize.second );
             writeElement( writer, "Format", "image/png" );
-            writer.setPrefix( "xlink", XLNNS );
             writer.writeStartElement( "OnlineResource" );
             writer.writeAttribute( XLNNS, "type", "simple" );
             String style = styleName == null ? "" : ( "&style=" + styleName );
@@ -345,7 +346,6 @@ public class Capabilities111XMLAdapter extends XMLAdapter {
         if ( get ) {
             writer.writeStartElement( "Get" );
             writer.writeStartElement( "OnlineResource" );
-            writer.setPrefix( "xlink", XLNNS );
             writer.writeAttribute( XLNNS, "type", "simple" );
             writer.writeAttribute( XLNNS, "href", getUrl + "?" );
             writer.writeEndElement();
@@ -354,7 +354,6 @@ public class Capabilities111XMLAdapter extends XMLAdapter {
         if ( post ) {
             writer.writeStartElement( "Post" );
             writer.writeStartElement( "OnlineResource" );
-            writer.setPrefix( "xlink", XLNNS );
             writer.writeAttribute( XLNNS, "type", "simple" );
             writer.writeAttribute( XLNNS, "href", postUrl );
             writer.writeEndElement();
@@ -434,7 +433,6 @@ public class Capabilities111XMLAdapter extends XMLAdapter {
             writer.writeEndElement();
         }
 
-        writer.setPrefix( "xlink", XLNNS );
         writer.writeStartElement( "OnlineResource" );
         writer.writeAttribute( XLNNS, "type", "simple" );
         writer.writeAttribute( XLNNS, "href", getUrl );

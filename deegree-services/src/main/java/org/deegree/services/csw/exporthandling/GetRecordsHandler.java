@@ -187,9 +187,8 @@ public class GetRecordsHandler {
                             throws XMLStreamException, OWSException, MetadataStoreException {
         Version version = new Version( 2, 0, 2 );
 
-        writer.setPrefix( CSW_PREFIX, CSW_202_NS );
         if ( getRec.getResultType() != ResultType.validate ) {
-            writer.writeStartElement( CSW_202_NS, "GetRecordsResponse" );
+            writer.writeStartElement( CSW_PREFIX, "GetRecordsResponse", CSW_202_NS );
 
             searchStatus( writer, version );
             searchResult( writer, getRec, version );
@@ -204,7 +203,7 @@ public class GetRecordsHandler {
                 throw new IllegalArgumentException( errorMessage );
 
             }
-            writer.writeStartElement( CSW_202_NS, "Acknowledgement" );
+            writer.writeStartElement( CSW_PREFIX, "Acknowledgement", CSW_202_NS );
             writer.writeAttribute( "timeStamp", DateUtils.formatISO8601Date( new Date() ) );
             writer.writeStartElement( CSW_202_NS, "EchoedRequest" );
             readXMLFragment( getRec.getHoleRequest().toString(), writer );
@@ -311,16 +310,14 @@ public class GetRecordsHandler {
                     if ( counter < returnedRecords ) {
                         MetadataRecord m = storeSet.getRecord();
                         if ( isElementName == false ) {
-                            if ( getRec.getOutputSchema().equals(
-                                                                  OutputSchema.determineOutputSchema( OutputSchema.ISO_19115 ) ) ) {
+                            if ( getRec.getOutputSchema().equals( OutputSchema.determineOutputSchema( OutputSchema.ISO_19115 ) ) ) {
                                 m.serialize( writer, getRec.getElementSetName() );
                             } else {
                                 DCRecord dc = m.toDublinCore();
                                 dc.serialize( writer, getRec.getElementSetName() );
                             }
                         } else {
-                            if ( getRec.getOutputSchema().equals(
-                                                                  OutputSchema.determineOutputSchema( OutputSchema.ISO_19115 ) ) ) {
+                            if ( getRec.getOutputSchema().equals( OutputSchema.determineOutputSchema( OutputSchema.ISO_19115 ) ) ) {
                                 m.serialize( writer, getRec.getElementName() );
                             } else {
                                 DCRecord dc = m.toDublinCore();

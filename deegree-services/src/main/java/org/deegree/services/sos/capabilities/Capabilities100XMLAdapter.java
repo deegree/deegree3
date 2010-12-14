@@ -84,6 +84,10 @@ public class Capabilities100XMLAdapter extends OWSCapabilitiesXMLAdapter {
 
     private static final String GML_NS = "http://www.opengis.net/gml";
 
+    private static final String OM_NS = "http://www.opengis.net/om/1.0";
+
+    private static final String OM_PREFIX = "om";
+
     /**
      * The sections of the Capabilities document.
      */
@@ -113,10 +117,11 @@ public class Capabilities100XMLAdapter extends OWSCapabilitiesXMLAdapter {
                                XMLStreamWriter writer )
                             throws XMLStreamException, ObservationDatastoreException {
 
-        writer.writeStartElement( SOS_PREFIX, SOS_NS, "Capabilities" );
+        writer.writeStartElement( SOS_PREFIX, "Capabilities", SOS_NS );
         writer.writeNamespace( OWS_PREFIX, OWS_NS );
         writer.writeNamespace( OGC_PREFIX, OGC_NS );
         writer.writeNamespace( GML_PREFIX, GML_NS );
+        writer.writeNamespace( OM_PREFIX, OM_NS );
         writer.writeNamespace( "xsi", XSINS );
         writer.writeNamespace( "xlink", XLN_NS );
         writer.writeAttribute( XSINS, "schemaLocation", SOS_NS + " " + SOS_SCHEMA );

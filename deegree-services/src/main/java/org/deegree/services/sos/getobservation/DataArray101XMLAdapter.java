@@ -75,9 +75,7 @@ public class DataArray101XMLAdapter extends XMLAdapter {
      */
     public static void export( XMLStreamWriter writer, MeasurementCollection collection )
                             throws XMLStreamException {
-        writer.setPrefix( "swe", SWE_NS );
-        writer.writeStartElement( SWE_NS, "DataArray" );
-
+        writer.writeStartElement( "swe", "DataArray", SWE_NS );
         exportCount( writer, collection.size() );
         exportElementType( writer, collection );
         exportEncoding( writer );

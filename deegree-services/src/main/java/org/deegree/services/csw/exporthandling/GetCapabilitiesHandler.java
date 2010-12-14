@@ -41,6 +41,7 @@ import static javax.xml.stream.XMLStreamConstants.CDATA;
 import static javax.xml.stream.XMLStreamConstants.CHARACTERS;
 import static javax.xml.stream.XMLStreamConstants.END_ELEMENT;
 import static javax.xml.stream.XMLStreamConstants.START_ELEMENT;
+import static org.deegree.commons.xml.CommonNamespaces.XSINS;
 import static org.deegree.protocol.csw.CSWConstants.CSW_202_DISCOVERY_SCHEMA;
 import static org.deegree.protocol.csw.CSWConstants.CSW_202_NS;
 import static org.deegree.protocol.csw.CSWConstants.CSW_PREFIX;
@@ -245,15 +246,13 @@ public class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
                             DeegreeServicesMetadataType mainControllerConf, DeegreeServiceControllerType mainConf,
                             boolean isSoap )
                             throws XMLStreamException {
-        writer.setPrefix( CSW_PREFIX, CSW_202_NS );
-        writer.setPrefix( "ows", OWS_NS );
-        writer.setPrefix( OGC_PREFIX, OGC_NS );
-        writer.setPrefix( "xlink", XLN_NS );
 
-        writer.writeStartElement( CSW_202_NS, "Capabilities" );
+        writer.writeStartElement( CSW_PREFIX, "Capabilities", CSW_202_NS );
+        writer.writeNamespace( "ows", OWS_NS );
+        writer.writeNamespace( OGC_PREFIX, OGC_NS );
+        writer.writeNamespace( "xlink", XLN_NS );
         writer.writeAttribute( "version", "2.0.2" );
-        writer.writeAttribute( "xsi", CommonNamespaces.XSINS, "schemaLocation", CSW_202_NS + " "
-                                                                                + CSW_202_DISCOVERY_SCHEMA );
+        writer.writeAttribute( "xsi", XSINS, "schemaLocation", CSW_202_NS + " " + CSW_202_DISCOVERY_SCHEMA );
 
         // ows:ServiceIdentification
         if ( sections.isEmpty() || sections.contains( Sections.ServiceIdentification ) ) {

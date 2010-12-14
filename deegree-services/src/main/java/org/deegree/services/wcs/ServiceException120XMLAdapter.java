@@ -35,6 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.services.wcs;
 
+import static javax.xml.XMLConstants.DEFAULT_NS_PREFIX;
 import static org.deegree.commons.xml.CommonNamespaces.XSINS;
 
 import javax.xml.stream.XMLStreamException;
@@ -61,10 +62,9 @@ public class ServiceException120XMLAdapter extends XMLExceptionSerializer<OWSExc
     @Override
     public void serializeExceptionToXML( XMLStreamWriter writer, OWSException ex )
                             throws XMLStreamException {
-        writer.setDefaultNamespace( OGC_NS );
-        writer.setPrefix( "xsi", XSINS );
 
-        writer.writeStartElement( OGC_NS, "ServiceExceptionReport" );
+        writer.writeStartElement( DEFAULT_NS_PREFIX, "ServiceExceptionReport", OGC_NS );
+        writer.writeNamespace( "xsi", XSINS );
         writer.writeAttribute( XSINS, "schemaLocation", OGC_NS + " " + OGC_SCHEMA );
         writer.writeAttribute( "version", "1.2.0" );
         writer.writeStartElement( OGC_NS, "ServiceException" );

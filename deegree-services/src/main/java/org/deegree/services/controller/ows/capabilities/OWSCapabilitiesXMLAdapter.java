@@ -294,8 +294,7 @@ public class OWSCapabilitiesXMLAdapter extends OWSCommonXMLAdapter {
     private static void exportServiceProvider( XMLStreamWriter writer, ServiceProviderType serviceProvider, String owsNS )
                             throws XMLStreamException {
 
-        writer.setPrefix( OWS_PREFIX, owsNS );
-        writer.writeStartElement( owsNS, "ServiceProvider" );
+        writer.writeStartElement( OWS_PREFIX, "ServiceProvider", owsNS );
 
         // ows:ProviderName (type="string")
         writer.writeStartElement( owsNS, "ProviderName" );

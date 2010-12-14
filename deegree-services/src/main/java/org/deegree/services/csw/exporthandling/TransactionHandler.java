@@ -169,9 +169,7 @@ public class TransactionHandler {
         int deleteCount = 0;
 
         writer.setDefaultNamespace( CSW_202_NS );
-        writer.setPrefix( CSW_PREFIX, CSW_202_NS );
-
-        writer.writeStartElement( CSW_202_NS, "TransactionResponse" );
+        writer.writeStartElement( CSW_PREFIX, "TransactionResponse", CSW_202_NS );
         writer.writeAttribute( "version", version.toString() );
 
         writer.writeStartElement( CSW_202_NS, "TransactionSummary" );

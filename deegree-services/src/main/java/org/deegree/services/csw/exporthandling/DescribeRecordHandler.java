@@ -178,8 +178,7 @@ public class DescribeRecordHandler {
                             throws XMLStreamException, MetadataStoreException {
 
         writer.setDefaultNamespace( CSW_202_NS );
-        writer.setPrefix( CSW_PREFIX, CSW_202_NS );
-        writer.writeStartElement( CSW_202_NS, "DescribeRecordResponse" );
+        writer.writeStartElement( CSW_PREFIX, "DescribeRecordResponse", CSW_202_NS );
         writer.writeAttribute( "xsi", CommonNamespaces.XSINS, "schemaLocation", CSW_202_NS + " "
                                                                                 + CSW_202_DISCOVERY_SCHEMA );
 

@@ -59,14 +59,6 @@ public class Offering100XMLAdapter extends XMLAdapter {
 
     private static final String SOS_NS = "http://www.opengis.net/sos/1.0";
 
-    private static final String SOS_PREFIX = "sos";
-
-    private static final String OM_NS = "http://www.opengis.net/om/1.0";
-
-    private static final String OM_PREFIX = "om";
-
-    private static final String GML_PREFIX = "gml";
-
     private static final String GML_NS = "http://www.opengis.net/gml";
 
     /**
@@ -77,12 +69,8 @@ public class Offering100XMLAdapter extends XMLAdapter {
      *            the ObservationOffering
      * @throws XMLStreamException
      */
-    public static void export( XMLStreamWriter writer, Offering offering, ObservationDatastore datastore )
+    static void export( XMLStreamWriter writer, Offering offering, ObservationDatastore datastore )
                             throws XMLStreamException {
-        writer.setPrefix( SOS_PREFIX, SOS_NS );
-        writer.setPrefix( GML_PREFIX, GML_NS );
-        writer.setPrefix( OM_PREFIX, OM_NS );
-        writer.setPrefix( "xlink", XLN_NS );
 
         writer.writeStartElement( SOS_NS, "ObservationOffering" );
         writer.writeAttribute( GML_NS, "id", offering.getObservationStoreId() );
