@@ -86,4 +86,40 @@ public class StaXBugTest {
         }
         Assert.assertTrue( n <= 1 );
     }
+
+    /**
+     * Test to document a failproof way to bind the default namespace without relying on a specific setting of the
+     * <code>IS_REPAIRING_NAMESPACES</code> property (or a specific StAX implementation).
+     * 
+     * @throws XMLStreamException
+     * @throws UnsupportedEncodingException
+     */
+    @Test
+    public void testBindDefaultNS()
+                            throws XMLStreamException, UnsupportedEncodingException {
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        XMLOutputFactory of = XMLOutputFactory.newInstance();
+        of.setProperty( IS_REPAIRING_NAMESPACES, true );
+        XMLStreamWriter xmlStream = of.createXMLStreamWriter( bos );
+
+        xmlStream.setDefaultNamespace( "http://www.opengis.net/ogc" );
+        xmlStream.writeStartElement( "http://www.opengis.net/ogc", "A" );
+        xmlStream.writeDefaultNamespace( "http://www.opengis.net/ogc" );
+        xmlStream.writeEndElement();
+        xmlStream.close();
+        String s = bos.toString( "UTF-8" );
+        Assert.assertTrue( s.startsWith( "<A xmlns=\"http://www.opengis.net/ogc\"" ) );
+
+        bos = new ByteArrayOutputStream();
+        of = XMLOutputFactory.newInstance();
+        xmlStream = of.createXMLStreamWriter( bos );
+
+        xmlStream.setDefaultNamespace( "http://www.opengis.net/ogc" );
+        xmlStream.writeStartElement( "http://www.opengis.net/ogc", "A" );
+        xmlStream.writeDefaultNamespace( "http://www.opengis.net/ogc" );
+        xmlStream.writeEndElement();
+        xmlStream.close();
+        s = bos.toString( "UTF-8" );
+        Assert.assertTrue( s.startsWith( "<A xmlns=\"http://www.opengis.net/ogc\"" ) );
+    }
 }
