@@ -465,7 +465,7 @@ class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
     void export110()
                             throws XMLStreamException {
 
-        writer.writeDefaultNamespace( WFS_NS );
+        writer.setDefaultNamespace( WFS_NS );
         writer.writeStartElement( WFS_NS, "WFS_Capabilities" );
         writer.writeAttribute( "version", "1.1.0" );
         writer.writeDefaultNamespace( WFS_NS );
