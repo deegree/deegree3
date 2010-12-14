@@ -35,6 +35,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.filter.xml;
 
+import static org.deegree.commons.xml.CommonNamespaces.OGC_PREFIX;
+
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -170,9 +172,7 @@ public class Filter110XMLEncoder {
     public static void export( Filter filter, XMLStreamWriter writer )
                             throws XMLStreamException {
 
-        writer.setPrefix( "ogc", "http://www.opengis.net/ogc" );
-
-        writer.writeStartElement( OGC_NS, "Filter" );
+        writer.writeStartElement( OGC_PREFIX, "Filter", OGC_NS );
         switch ( filter.getType() ) {
         case ID_FILTER:
             Collection<String> ids = ( (IdFilter) filter ).getMatchingIds();

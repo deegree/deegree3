@@ -37,8 +37,10 @@
 package org.deegree.gml.feature;
 
 import static javax.xml.XMLConstants.NULL_NS_URI;
+import static org.deegree.commons.xml.CommonNamespaces.GML_PREFIX;
 import static org.deegree.commons.xml.CommonNamespaces.XLNNS;
 import static org.deegree.commons.xml.CommonNamespaces.XSINS;
+import static org.deegree.commons.xml.CommonNamespaces.XSI_PREFIX;
 import static org.deegree.feature.types.property.ValueRepresentation.REMOTE;
 import static org.deegree.gml.GMLVersion.GML_2;
 import static org.deegree.protocol.wfs.WFSConstants.WFS_NS;
@@ -285,23 +287,25 @@ public class GMLFeatureWriter {
             exportedIds.add( fc.getId() );
         }
 
-        writer.setPrefix( "gml", gmlNs );
-        writer.setPrefix( "wfs", WFS_NS );
-        writeStartElementWithNS( WFS_NS, "FeatureCollection" );
+        writer.setDefaultNamespace( WFS_NS );
+        writer.writeStartElement( WFS_NS, "FeatureCollection" );
+        writer.writeDefaultNamespace( WFS_NS );
+        writer.writeNamespace( XSI_PREFIX, XSINS );
+        writer.writeNamespace( GML_PREFIX, gmlNs );
 
         if ( fc.getId() != null ) {
             if ( fidAttr.getNamespaceURI() == NULL_NS_URI ) {
                 writer.writeAttribute( fidAttr.getLocalPart(), fc.getId() );
             } else {
-                writeAttributeWithNS( fidAttr.getNamespaceURI(), fidAttr.getLocalPart(), fc.getId() );
+                writer.writeAttribute( fidAttr.getNamespaceURI(), fidAttr.getLocalPart(), fc.getId() );
             }
         }
 
         if ( noNamespaceSchemaLocation != null ) {
-            writeAttributeWithNS( XSINS, "noNamespaceSchemaLocation", noNamespaceSchemaLocation );
+            writer.writeAttribute( XSINS, "noNamespaceSchemaLocation", noNamespaceSchemaLocation );
         }
         if ( bindings != null && !bindings.isEmpty() ) {
-            writer.setPrefix( "xsi", XSINS );
+
             String locs = null;
             for ( Entry<String, String> e : bindings.entrySet() ) {
                 if ( locs == null ) {
@@ -311,21 +315,21 @@ public class GMLFeatureWriter {
                 }
                 locs += e.getKey() + " " + e.getValue();
             }
-            writeAttributeWithNS( XSINS, "schemaLocation", locs );
+            writer.writeAttribute( XSINS, "schemaLocation", locs );
         }
 
-        writeStartElementWithNS( gmlNs, "boundedBy" );
+        writer.writeStartElement( gmlNs, "boundedBy" );
         Envelope fcEnv = fc.getEnvelope();
         if ( fcEnv != null ) {
             geometryWriter.exportEnvelope( fc.getEnvelope() );
         } else {
-            writeStartElementWithNS( gmlNs, gmlNull );
+            writer.writeStartElement( gmlNs, gmlNull );
             writer.writeCharacters( "missing" );
             writer.writeEndElement();
         }
         writer.writeEndElement();
         for ( Feature f : fc ) {
-            writeStartElementWithNS( gmlNs, "featureMember" );
+            writer.writeStartElement( gmlNs, "featureMember" );
             export( f );
             writer.writeEndElement();
         }
@@ -725,7 +729,7 @@ public class GMLFeatureWriter {
             if ( writer.getNamespaceContext().getPrefix( namespaceURI ) == null ) {
                 String prefix = nsToPrefix.get( namespaceURI );
                 if ( prefix != null ) {
-                    writer.setPrefix( prefix, namespaceURI );
+                    writer.writeNamespace( prefix, namespaceURI );
                 } else {
                     LOG.warn( "No prefix for namespace '{}' configured. Depending on XMLStream auto-repairing.",
                               namespaceURI );
@@ -744,7 +748,7 @@ public class GMLFeatureWriter {
             if ( prefix == null ) {
                 prefix = nsToPrefix.get( namespaceURI );
                 if ( prefix != null ) {
-                    writer.setPrefix( prefix, namespaceURI );
+                    writer.writeNamespace( prefix, namespaceURI );
                 } else {
                     LOG.warn( "No prefix for namespace '{}' configured. Depending on XMLStream auto-repairing.",
                               namespaceURI );

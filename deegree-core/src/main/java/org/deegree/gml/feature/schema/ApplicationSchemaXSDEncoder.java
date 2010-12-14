@@ -300,6 +300,7 @@ public class ApplicationSchemaXSDEncoder {
 
         writer.setDefaultNamespace( XSNS );
         writer.writeStartElement( XSNS, "schema" );
+        writer.writeDefaultNamespace( XSNS );
         writer.writeNamespace( GML_PREFIX, gmlNsURI );
         for ( String prefix : prefixesToNs.keySet() ) {
             String ns = prefixesToNs.get( prefix );

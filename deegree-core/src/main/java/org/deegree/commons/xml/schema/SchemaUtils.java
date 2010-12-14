@@ -35,7 +35,6 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.commons.xml.schema;
 
-import static javax.xml.XMLConstants.DEFAULT_NS_PREFIX;
 import static org.deegree.commons.xml.CommonNamespaces.XSNS;
 
 import java.util.List;
@@ -70,9 +69,9 @@ public class SchemaUtils {
                                         List<Pair<String, String>> nsImports )
                             throws XMLStreamException {
 
-        writer.setPrefix( DEFAULT_NS_PREFIX, XSNS );
-        writer.writeStartElement( "schema" );
-        writer.writeNamespace( DEFAULT_NS_PREFIX, XSNS );
+        writer.setDefaultNamespace( XSNS );
+        writer.writeStartElement( XSNS, "schema" );
+        writer.writeDefaultNamespace( XSNS );
         writer.writeAttribute( "attributeFormDefault", "unqualified" );
         writer.writeAttribute( "elementFormDefault", "qualified" );
         writer.writeAttribute( "targetNamespace", targetNamespace );
