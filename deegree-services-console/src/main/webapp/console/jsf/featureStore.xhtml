@@ -35,7 +35,7 @@
 							<td><h:commandButton styleClass="buttonEdit"
 								value="#{labels.featureStores_edit}" action="#{config.edit}" /></td>
 							<td><h:commandButton styleClass="buttonDelete"
-								value="#{labels.featureStores_delete}" action="#{config.delete}" /></td>
+								value="#{labels.featureStores_delete}" action="#{config.delete}" onclick="return confirmDelete();" /></td>
 							<td><h:commandButton styleClass="buttonInfo"
 								rendered="#{config.active}" value="#{labels.featureStores_info}"
 								action="#{config.showInfo}" /></td>

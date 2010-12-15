@@ -24,7 +24,7 @@
                             </h:outputFormat></td>
                             <td><h:commandButton styleClass="buttonEdit" value="#{labels.render_edit}" action="#{config.edit}" /></td>
                             <td><h:commandButton styleClass="buttonDelete"
-                                value="#{labels.featureStores_delete}" action="#{config.delete}" /></td>
+                                value="#{labels.featureStores_delete}" action="#{config.delete}" onclick="return confirmDelete();"/></td>
                         </tr>
                     </ui:repeat>
                 </table>

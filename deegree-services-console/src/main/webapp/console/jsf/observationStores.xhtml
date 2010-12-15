@@ -29,7 +29,7 @@
                             <td><h:commandButton styleClass="buttonEdit" value="#{labels.obsStores_edit}"
                                 action="#{config.edit}" /></td>
                             <td><h:commandButton styleClass="buttonDelete" value="#{labels.obsStores_delete}"
-                                action="#{config.delete}" /></td>
+                                action="#{config.delete}" onclick="return confirmDelete();"/></td>
                             <td><h:commandButton rendered="#{config.active}" value="#{labels.obsStores_setup}"
                                 action="#{config.createTables}" /></td>
                         </tr>

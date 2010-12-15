@@ -298,7 +298,7 @@ public class DBFReader {
             case 'F': {
                 buffer.get( bs );
                 String str = getString( bs, encoding ).trim();
-                if ( str.isEmpty() ) {
+                if ( str.isEmpty() || str.startsWith( "*" ) ) {
                     continue;
                 }
                 property = new SimpleProperty( field.propertyType, str, field.propertyType.getPrimitiveType() );

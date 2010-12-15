@@ -64,7 +64,7 @@ public class HtmlInputBBox extends UISelectOne {
     public static final String COMPONENT_TYPE = "HtmlInputBBox";
 
     private static enum AdditionalPropertyKeys {
-        styleClass, crsLabel, crsSize, minxLabel, minyLabel, maxxLabel, maxyLabel
+        showCRS, styleClass, crsLabel, crsSize, minxLabel, minyLabel, maxxLabel, maxyLabel
     }
 
     public HtmlInputBBox() {
@@ -152,6 +152,14 @@ public class HtmlInputBBox extends UISelectOne {
         return (Integer) getStateHelper().eval( AdditionalPropertyKeys.crsSize, -1 );
     }
 
+    public boolean isShowCRS() {
+        return (Boolean) getStateHelper().eval( AdditionalPropertyKeys.showCRS, true );
+    }
+
+    public void setShowCRS( boolean crsLabel ) {
+        getStateHelper().put( AdditionalPropertyKeys.showCRS, crsLabel );
+    }
+
     @Override
     public BBox getValue() {
         Object value = super.getValue();
@@ -172,8 +180,7 @@ public class HtmlInputBBox extends UISelectOne {
         }
 
         if ( isRequired() && isBBoxEmpty( value ) ) {
-            FacesMessage message = MessageUtils.getFacesMessage(
-                                                                 FacesMessage.SEVERITY_ERROR,
+            FacesMessage message = MessageUtils.getFacesMessage( FacesMessage.SEVERITY_ERROR,
                                                                  "org.deegree.client.core.component.HtmlInputBBox.REQUIRED",
                                                                  getClientId() );
             context.addMessage( getClientId( context ), message );
@@ -182,18 +189,15 @@ public class HtmlInputBBox extends UISelectOne {
         }
 
         BBox bbox = (BBox) value;
-
-        if ( bbox.getCrs() == null ) {
-            FacesMessage message = MessageUtils.getFacesMessage(
-                                                                 FacesMessage.SEVERITY_ERROR,
+        if ( isShowCRS() && bbox.getCrs() == null ) {
+            FacesMessage message = MessageUtils.getFacesMessage( FacesMessage.SEVERITY_ERROR,
                                                                  "org.deegree.client.core.component.HtmlInputBBox.INVALID_CRS",
                                                                  getClientId() );
             context.addMessage( getClientId( context ), message );
             setValid( false );
         }
         if ( Double.isNaN( bbox.getMinx() ) ) {
-            FacesMessage message = MessageUtils.getFacesMessage(
-                                                                 FacesMessage.SEVERITY_ERROR,
+            FacesMessage message = MessageUtils.getFacesMessage( FacesMessage.SEVERITY_ERROR,
                                                                  "org.deegree.client.core.component.HtmlInputBBox.INVALID_MINX",
                                                                  getClientId(), bbox.getMinx() );
             context.addMessage( getClientId( context ), message );
@@ -201,24 +205,21 @@ public class HtmlInputBBox extends UISelectOne {
         }
 
         if ( Double.isNaN( bbox.getMinY() ) ) {
-            FacesMessage message = MessageUtils.getFacesMessage(
-                                                                 FacesMessage.SEVERITY_ERROR,
+            FacesMessage message = MessageUtils.getFacesMessage( FacesMessage.SEVERITY_ERROR,
                                                                  "org.deegree.client.core.component.HtmlInputBBox.INVALID_MINY",
                                                                  getClientId(), bbox.getMinY() );
             context.addMessage( getClientId( context ), message );
             setValid( false );
         }
         if ( Double.isNaN( bbox.getMaxX() ) ) {
-            FacesMessage message = MessageUtils.getFacesMessage(
-                                                                 FacesMessage.SEVERITY_ERROR,
+            FacesMessage message = MessageUtils.getFacesMessage( FacesMessage.SEVERITY_ERROR,
                                                                  "org.deegree.client.core.component.HtmlInputBBox.INVALID_MAXX",
                                                                  getClientId(), bbox.getMaxX() );
             context.addMessage( getClientId( context ), message );
             setValid( false );
         }
         if ( Double.isNaN( bbox.getMaxY() ) ) {
-            FacesMessage message = MessageUtils.getFacesMessage(
-                                                                 FacesMessage.SEVERITY_ERROR,
+            FacesMessage message = MessageUtils.getFacesMessage( FacesMessage.SEVERITY_ERROR,
                                                                  "org.deegree.client.core.component.HtmlInputBBox.INVALID_MAXY",
                                                                  getClientId(), bbox.getMaxY() );
             context.addMessage( getClientId( context ), message );
@@ -226,8 +227,7 @@ public class HtmlInputBBox extends UISelectOne {
         }
 
         if ( bbox.getMaxX() < bbox.getMinx() || bbox.getMaxY() < bbox.getMaxY() ) {
-            FacesMessage message = MessageUtils.getFacesMessage(
-                                                                 FacesMessage.SEVERITY_ERROR,
+            FacesMessage message = MessageUtils.getFacesMessage( FacesMessage.SEVERITY_ERROR,
                                                                  "org.deegree.client.core.component.HtmlInputBBox.INVALID_BBOX",
                                                                  getClientId(), bbox.getMinx(), bbox.getMinY(),
                                                                  bbox.getMaxX(), bbox.getMaxY() );
@@ -244,8 +244,9 @@ public class HtmlInputBBox extends UISelectOne {
             return true;
         }
         BBox bbox = (BBox) value;
-        if ( bbox.getCrs() != null && !( bbox.getCrs().length() > 0 ) && Double.isNaN( bbox.getMinx() )
-             && Double.isNaN( bbox.getMinY() ) && Double.isNaN( bbox.getMaxX() ) && Double.isNaN( bbox.getMaxY() ) ) {
+        if ( ( isShowCRS() && bbox.getCrs() != null ) && !( bbox.getCrs().length() > 0 )
+             && Double.isNaN( bbox.getMinx() ) && Double.isNaN( bbox.getMinY() ) && Double.isNaN( bbox.getMaxX() )
+             && Double.isNaN( bbox.getMaxY() ) ) {
             return true;
         }
         return false;

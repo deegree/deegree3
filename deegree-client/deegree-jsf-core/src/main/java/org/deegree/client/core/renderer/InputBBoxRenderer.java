@@ -126,8 +126,9 @@ public class InputBBoxRenderer extends MenuRenderer {
         if ( styleClass != null ) {
             writer.writeAttribute( "class", styleClass, "styleClass" );
         }
-
-        encodeCRSSelect( writer, bbox, clientId, context );
+        if ( bbox.isShowCRS() ) {
+            encodeCRSSelect( writer, bbox, clientId, context );
+        }
         encodeCoordFields( writer, bbox, clientId );
 
         writer.endElement( "table" );
