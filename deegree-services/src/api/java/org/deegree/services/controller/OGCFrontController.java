@@ -1012,8 +1012,6 @@ public class OGCFrontController extends HttpServlet {
         LogFactory.releaseAll();
         LogManager.shutdown();
 
-        // SLF4JLogFactory.releaseAll(); // should be the same as the LogFactory.releaseAll call
-        // IIORegistry.getDefaultInstance().deregisterAll(); // breaks ImageIO
         Iterator<Class<?>> i = IIORegistry.getDefaultInstance().getCategories();
         while ( i.hasNext() ) {
             Class<?> c = i.next();
