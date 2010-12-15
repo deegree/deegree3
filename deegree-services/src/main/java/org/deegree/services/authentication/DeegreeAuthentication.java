@@ -36,7 +36,6 @@
 package org.deegree.services.authentication;
 
 import java.io.IOException;
-import java.security.AccessControlException;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -68,7 +67,7 @@ public class DeegreeAuthentication implements CredentialsProvider {
     @Override
     public Credentials doKVP( Map<String, String> normalizedKVPParams, HttpServletRequest req,
                               HttpServletResponse response )
-                            throws SecurityException, AccessControlException {
+                            throws SecurityException {
 
         // extract (deegree specific) security information and bind to current thread
         String user = normalizedKVPParams.get( "USER" );
@@ -138,5 +137,4 @@ public class DeegreeAuthentication implements CredentialsProvider {
 
     }
 
-    
 }
