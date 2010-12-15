@@ -77,19 +77,14 @@ public class ConnectionManager {
     private static Map<String, ConnectionPool> idToPools = new HashMap<String, ConnectionPool>();
 
     // TODO find a better solution then this static connection
-    private static ConnectionPool derbyConn;
+    private static ConnectionPool h2conn;
 
     static {
         String lockDb = new File( TempFileManager.getBaseDir(), "lockdb" ).getAbsolutePath();
-        LOG.info( "Using '" + lockDb + "' for derby lock database." );
+        LOG.info( "Using '" + lockDb + "' for h2 lock database." );
 
-        try {
-            Class.forName( "org.apache.derby.jdbc.EmbeddedDriver" ).newInstance();
-        } catch ( Exception e ) {
-            LOG.error( "Error loading derby JDBC driver: " + e.getMessage(), e );
-        }
-        derbyConn = getConnection( "LOCK_DB", "jdbc:derby:" + lockDb + ";create=true", null, null, 0, 10 );
-        idToPools.put( "LOCK_DB", derbyConn );
+        h2conn = getConnection( "LOCK_DB", "jdbc:h2:" + lockDb, "SA", "", 0, 10 );
+        idToPools.put( "LOCK_DB", h2conn );
     }
 
     /**
@@ -99,7 +94,7 @@ public class ConnectionManager {
      */
     public static void init( File jdbcDir ) {
 
-        idToPools.put( "LOCK_DB", derbyConn );
+        idToPools.put( "LOCK_DB", h2conn );
 
         if ( !jdbcDir.exists() ) {
             LOG.info( "No 'jdbc' directory -- skipping initialization of JDBC connection pools." );
