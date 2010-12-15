@@ -134,7 +134,7 @@ public class Capabilities111XMLAdapter extends XMLAdapter {
         writer.writeDTD( "<!DOCTYPE WMT_MS_Capabilities SYSTEM \"" + dtdrequest
                          + "\" [<!ELEMENT VendorSpecificCapabilities EMPTY>]>\n" );
         writer.writeStartElement( "WMT_MS_Capabilities" );
-        writer.writeAttribute( "version", "1.1.1" );        
+        writer.writeAttribute( "version", "1.1.1" );
         writer.writeAttribute( "updateSequence", "" + service.updateSequence );
 
         writeService( writer );
@@ -302,10 +302,10 @@ public class Capabilities111XMLAdapter extends XMLAdapter {
         if ( hint.first != NEGATIVE_INFINITY || hint.second != POSITIVE_INFINITY ) {
             double fac = 0.00028;
             writer.writeStartElement( "ScaleHint" );
-            writer.writeAttribute( "min", Double.toString( hint.first == NEGATIVE_INFINITY ? MIN_VALUE : hint.first
-                                                                                                         * fac ) );
-            writer.writeAttribute( "max", Double.toString( hint.second == POSITIVE_INFINITY ? MAX_VALUE : hint.second
-                                                                                                          * fac ) );
+            writer.writeAttribute( "min",
+                                   Double.toString( hint.first == NEGATIVE_INFINITY ? MIN_VALUE : hint.first * fac ) );
+            writer.writeAttribute( "max",
+                                   Double.toString( hint.second == POSITIVE_INFINITY ? MAX_VALUE : hint.second * fac ) );
             writer.writeEndElement();
         }
 
@@ -328,7 +328,7 @@ public class Capabilities111XMLAdapter extends XMLAdapter {
             writer.writeAttribute( "height", "" + legendSize.second );
             writeElement( writer, "Format", "image/png" );
             writer.writeStartElement( "OnlineResource" );
-            writer.writeNamespace( XLINK_PREFIX, XLNNS);            
+            writer.writeNamespace( XLINK_PREFIX, XLNNS );
             writer.writeAttribute( XLNNS, "type", "simple" );
             String style = styleName == null ? "" : ( "&style=" + styleName );
             writer.writeAttribute( XLNNS, "href", getUrl + "?request=GetLegendGraphic&version=1.1.1&service=WMS&layer="
@@ -346,7 +346,7 @@ public class Capabilities111XMLAdapter extends XMLAdapter {
         if ( get ) {
             writer.writeStartElement( "Get" );
             writer.writeStartElement( "OnlineResource" );
-            writer.writeNamespace( XLINK_PREFIX, XLNNS);            
+            writer.writeNamespace( XLINK_PREFIX, XLNNS );
             writer.writeAttribute( XLNNS, "type", "simple" );
             writer.writeAttribute( XLNNS, "href", getUrl + "?" );
             writer.writeEndElement();
@@ -355,6 +355,7 @@ public class Capabilities111XMLAdapter extends XMLAdapter {
         if ( post ) {
             writer.writeStartElement( "Post" );
             writer.writeStartElement( "OnlineResource" );
+            writer.writeNamespace( XLINK_PREFIX, XLNNS );
             writer.writeAttribute( XLNNS, "type", "simple" );
             writer.writeAttribute( XLNNS, "href", postUrl );
             writer.writeEndElement();
@@ -435,6 +436,7 @@ public class Capabilities111XMLAdapter extends XMLAdapter {
         }
 
         writer.writeStartElement( "OnlineResource" );
+        writer.writeNamespace( XLINK_PREFIX, XLNNS );
         writer.writeAttribute( XLNNS, "type", "simple" );
         writer.writeAttribute( XLNNS, "href", getUrl );
         writer.writeEndElement();
@@ -492,5 +494,4 @@ public class Capabilities111XMLAdapter extends XMLAdapter {
 
         writer.writeEndElement();
     }
-
 }
