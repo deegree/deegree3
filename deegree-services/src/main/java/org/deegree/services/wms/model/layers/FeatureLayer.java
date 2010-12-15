@@ -61,8 +61,8 @@ import java.util.List;
 import javax.xml.namespace.QName;
 
 import org.deegree.commons.tom.primitive.PrimitiveValue;
-import org.deegree.commons.utils.Pair;
 import org.deegree.commons.utils.CollectionUtils.Mapper;
+import org.deegree.commons.utils.Pair;
 import org.deegree.commons.utils.log.LoggingNotes;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.cs.CRS;
@@ -380,11 +380,16 @@ public class FeatureLayer extends Layer {
     }
 
     private FeatureCollection clearDuplicates( FeatureResultSet rs ) {
-        FeatureCollection col = new GenericFeatureCollection();
-        for ( Feature f : rs ) {
-            if ( !col.contains( f ) ) {
-                col.add( f );
+        FeatureCollection col = null;
+        try {
+            col = new GenericFeatureCollection();
+            for ( Feature f : rs ) {
+                if ( !col.contains( f ) ) {
+                    col.add( f );
+                }
             }
+        } finally {
+            rs.close();
         }
         return col;
     }
