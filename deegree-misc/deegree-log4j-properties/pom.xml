@@ -4,14 +4,14 @@
   <groupId>org.deegree</groupId>
   <artifactId>deegree-log4j-properties</artifactId>
   <packaging>jar</packaging>
-  <version>3.1-SNAPSHOT</version>
+  <version>3.1-pre2</version>
   <name>log4j-properties generator module</name>
   <url>http://www.deegree.org</url>
 
   <parent>
     <groupId>org.deegree</groupId>
     <artifactId>deegree-parent</artifactId>
-    <version>3.1-SNAPSHOT</version>
+    <version>3.1-pre2</version>
   </parent>
 
   <repositories>
@@ -107,7 +107,7 @@
     <dependency>
       <groupId>org.deegree</groupId>
       <artifactId>deegree-services</artifactId>
-      <version>3.1-SNAPSHOT</version>
+      <version>3.1-pre2</version>
     </dependency>
 
     <dependency>
