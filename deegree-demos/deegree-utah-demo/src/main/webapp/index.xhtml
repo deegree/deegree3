@@ -1,0 +1,57 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:c="http://java.sun.com/jsp/jstl/core"
+  xmlns:fn="http://java.sun.com/jsp/jstl/functions" xmlns:dg="http://deegree.org/jsf"
+  xmlns:dgc="http://java.sun.com/jsf/composite/deegree">
+<h:head>
+  <title>deegree 3 services - Utah demo</title>
+  <h:outputStylesheet name="styles.css" />
+  <h:outputStylesheet name="indexstyle.css" />
+  <h:outputScript name="console.js" />
+</h:head>
+<h:body>
+
+  <div id="PLEASEWAIT_BG"></div>
+  <div id="PLEASEWAIT">
+  <div class="curved"><b class="b1"></b><b class="b2"></b><b class="b3"></b><b class="b4"></b>
+  <div class="boxcontent">
+  <p>Applying changes.<br />
+  Please wait.</p>
+  </div>
+  <b class="b4"></b><b class="b3"></b><b class="b2"></b><b class="b1"></b></div>
+  </div>
+
+  <!-- <pre><h:outputText value="#{applicationBean.logo}" /></pre> -->
+  <div id="wrapper" align="center">
+  <div id="apDivLogo"></div>
+  <div id="apDivMain">
+  <p class="welcome">This server is running deegree utah demo 3.0</p>
+  <h:panelGroup rendered="#{!downloadBean.dataDownloaded}">
+    <h:form id="downloadForm">
+       NOTE: Before you can use this demo, you will have to <h:commandButton styleClass="buttonData" value="download"
+        action="#{downloadBean.download}" onclick="show();" /> the required datasets (about 64 MB). This may take a moment depending on the internet connection of the server.
+  </h:form>
+  </h:panelGroup> <h:panelGroup rendered="#{downloadBean.dataDownloaded}">
+    <p class="inline">Use address below in WFS and WMS clients to access served features types and layers.</p>
+    <br />
+    <p class="inline">OGC service address: <h:outputText styleClass="url"
+      value="#{facesContext.externalContext.requestScheme}://#{facesContext.externalContext.requestServerName}:#{facesContext.externalContext.requestServerPort}#{facesContext.externalContext.requestContextPath}/services" /></p>
+  </h:panelGroup> <br />
+  <p class="explain"><a href="http://wiki.deegree.org/deegreeWiki/deegree3/UtahDemo">Documentation</a>&nbsp;<h:graphicImage styleClass="image" url="#{resource['images:link.png']}" /><br />
+  Access the documentation pages with help on setup and usage.</p>
+  <h:panelGroup rendered="#{downloadBean.dataDownloaded}">
+    <p class="explain"><a href="#{facesContext.externalContext.requestContextPath}/console.jsf"> Services
+    Console</a>&nbsp;<h:graphicImage styleClass="image" url="#{resource['images:link.png']}" /><br />
+    Configure the server settings such as web services and data access.</p>
+    <p class="explain"><a href="#{facesContext.externalContext.requestContextPath}/console/wms/wms.html">View
+    Layers</a>&nbsp;<h:graphicImage styleClass="image" url="#{resource['images:link.png']}" /><br />
+    View the layers offered by the WMS in a simple web client.</p>
+    <p class="explain"><a href="#{facesContext.externalContext.requestContextPath}/console/client/client.xhtml">Send
+    Example Requests</a>&nbsp;<h:graphicImage styleClass="image" url="#{resource['images:link.png']}" /><br />
+    Perform raw OGC services requests.</p>
+  </h:panelGroup></div>
+  <div id="apDivFooter"><a href="http://deegree.org/" target="_blank">deegree.org</a> &nbsp; &nbsp;<a
+    href="http://www.osgeo.org/deegree" target="_blank">OSGeo.org</a></div>
+  </div>
+</h:body>
+</html>
