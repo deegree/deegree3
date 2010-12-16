@@ -1,0 +1,69 @@
+<ui:composition template="/layout.xhtml"
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:dg="http://deegree.org/jsf"
+	xmlns:dgc="http://java.sun.com/jsf/composite/deegree">
+	<ui:define name="center">
+
+		<h:panelGroup rendered="#{!logBean.loggedIn}">
+			<ui:include src="accessForbidden.xhtml" />
+		</h:panelGroup>
+		<h:panelGroup rendered="#{logBean.loggedIn}">
+			<fieldset class="fieldset"><legend><h:outputText styleClass="titel"
+				value="#{labels.featureStores_title}" /></legend> <h:form>
+				<table style="font-size: small" border="0">
+					<tr><td /></tr>
+					<tr><td /></tr>
+					<ui:repeat value="#{configManager.fsManager.configs}" var="config">
+						<tr align="left">
+							<td><h:commandButton styleClass="buttonActivate"
+								rendered="#{!config.deactivated}"
+								value="#{labels.featureStores_deactivate}"
+								action="#{config.deactivate}" /> 
+								<h:commandButton
+								styleClass="buttonDeactivate" rendered="#{config.deactivated}"
+								value="#{labels.featureStores_activate}"
+								action="#{config.activate}" /></td>
+							<td><h:outputFormat styleClass="StatusDeactivated"
+								value="#{labels.featureStores_id}">
+								<f:param value="#{config.id}" />
+							</h:outputFormat></td>
+							<td><h:commandButton styleClass="buttonEdit"
+								value="#{labels.featureStores_edit}" action="#{config.edit}" /></td>
+							<td><h:commandButton styleClass="buttonDelete"
+								value="#{labels.featureStores_delete}" action="#{config.delete}" onclick="return confirmDelete();" /></td>
+							<td><h:commandButton styleClass="buttonInfo"
+								rendered="#{config.active}" value="#{labels.featureStores_info}"
+								action="#{config.showInfo}" /></td>
+							<td><h:commandButton styleClass="buttonInfo"
+								rendered="#{config.active}" value="#{labels.featureStores_loader}"
+								action="#{config.openLoader}" /></td>								
+							<td><h:commandButton styleClass="buttonInfo"
+								rendered="#{config.active &amp;&amp; config.sql}"
+								value="#{labels.featureStores_setup}"
+								action="#{config.createTables}" /></td>
+						</tr>
+					</ui:repeat>
+				</table>
+				<br />
+			</h:form> <h:form>
+				<div><h:outputLabel styleClass="label" for="newFSBt"
+					value="#{labels.featureStores_name}" /> 
+					<h:inputText styleClass="liste" id="newFSBt"
+					value="#{newFeatureStoreConfig.id}" size="16" required="true"
+					requiredMessage="#{labels.featureStores_name_req}" /> 
+					<h:selectOneMenu styleClass="liste"
+					value="#{newFeatureStoreConfig.type}">
+					<f:selectItems value="#{configManager.fsManager.fsTypes}" />
+				</h:selectOneMenu> 
+				<h:commandButton styleClass="buttonCreateNew" value="#{labels.featureStores_new}"
+					action="#{newFeatureStoreConfig.create}" /></div>
+				
+			</h:form></fieldset>
+		</h:panelGroup>
+	</ui:define>
+</ui:composition>
