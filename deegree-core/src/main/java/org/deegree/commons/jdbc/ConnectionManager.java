@@ -83,6 +83,12 @@ public class ConnectionManager {
         String lockDb = new File( TempFileManager.getBaseDir(), "lockdb" ).getAbsolutePath();
         LOG.info( "Using '" + lockDb + "' for h2 lock database." );
 
+        try {
+            Class.forName( "org.h2.Driver" );
+        } catch ( ClassNotFoundException e ) {
+            LOG.error( "Unable to load h2 driver class." );
+        }
+
         h2conn = getConnection( "LOCK_DB", "jdbc:h2:" + lockDb, "SA", "", 0, 10 );
         idToPools.put( "LOCK_DB", h2conn );
     }
@@ -127,12 +133,6 @@ public class ConnectionManager {
      * 
      */
     public static void destroy() {
-        // try {
-        // DriverManager.getConnection( "jdbc:derby:;shutdown=true" );
-        // } catch ( SQLException e ) {
-        // LOG.debug( "Exception caught shutting down derby databases: " + e.getMessage(), e );
-        // }
-        // TODO remove the LOCK_DB
         for ( String id : idToPools.keySet() ) {
             if ( !id.equals( "LOCK_DB" ) ) {
                 try {
@@ -143,6 +143,17 @@ public class ConnectionManager {
             }
         }
         idToPools.clear();
+    }
+
+    /**
+     * 
+     */
+    public static void destroyLockdb() {
+        try {
+            h2conn.destroy();
+        } catch ( Exception e ) {
+            LOG.debug( "Exception caught shutting down h2 lockdb connection pool: " + e.getMessage(), e );
+        }
     }
 
     /**
@@ -190,11 +201,20 @@ public class ConnectionManager {
             String url = jaxbConn.getUrl();
 
             // this should not be necessary for JDBC 4 drivers, but restarting Tomcat requires it (needs investigation)
+            // added note: this may be related to the fact that we remove all loaded drivers from the manager upon
+            // servlet destruction to prevent class loader leaks
             if ( url.startsWith( "jdbc:postgresql:" ) ) {
                 try {
                     Class.forName( "org.postgresql.Driver" );
                 } catch ( ClassNotFoundException e ) {
                     LOG.error( "Unable to load postgresql driver class." );
+                }
+            }
+            if ( url.startsWith( "jdbc:h2:" ) ) {
+                try {
+                    Class.forName( "org.h2.Driver" );
+                } catch ( ClassNotFoundException e ) {
+                    LOG.error( "Unable to load h2 driver class." );
                 }
             }
 

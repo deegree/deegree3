@@ -87,6 +87,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.log4j.LogManager;
 import org.deegree.commons.concurrent.Executor;
 import org.deegree.commons.config.DeegreeWorkspace;
+import org.deegree.commons.jdbc.ConnectionManager;
 import org.deegree.commons.tom.ows.Version;
 import org.deegree.commons.utils.DeegreeAALogoUtils;
 import org.deegree.commons.utils.Pair;
@@ -986,6 +987,7 @@ public class OGCFrontController extends HttpServlet {
         super.destroy();
         destroyServices();
         destroyWorkspace();
+        ConnectionManager.destroyLockdb();
         plugClassLoaderLeaks();
     }
 

@@ -74,8 +74,8 @@ import org.slf4j.LoggerFactory;
 /**
  * {@link LockManager} implementation that is based on an SQL database.
  * <p>
- * TODO Currently this class is only tested with Derby 10, but it should be easy to make it work with PostGIS, Oracle
- * and other SQL DBs.
+ * TODO Currently this class is only tested with Derby 10, h2, but it should be easy to make it work with PostGIS,
+ * Oracle and other SQL DBs.
  * <p/>
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
