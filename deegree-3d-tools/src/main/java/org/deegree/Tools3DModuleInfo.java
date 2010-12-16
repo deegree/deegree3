@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
- Department of Geography, University of Bonn
+   Department of Geography, University of Bonn
  and
- lat/lon GmbH
+   lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,37 +32,26 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
- ----------------------------------------------------------------------------*/
+----------------------------------------------------------------------------*/
 
-package org.deegree.tools.coverage.gridifier.index;
+package org.deegree;
 
-import java.util.Set;
-
-import org.deegree.geometry.Envelope;
-import org.deegree.tools.coverage.gridifier.RasterLevel;
+import org.deegree.commons.version.DeegreeModuleInfo;
 
 /**
- * The <code>MultiLevelRasterTileIndex</code> interface defines simple access to the raster index
- * 
+ * {@link DeegreeModuleInfo} for the tools module.
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author: schneider $
- * 
+ *
  * @version $Revision: $, $Date: $
  */
-public interface MultiLevelRasterTileIndex {
+public class Tools3DModuleInfo extends DeegreeModuleInfo {
 
-    /**
-     * Return the matching tilefiles for the given enveloep
-     * 
-     * @param bbox
-     * @param metersPerPixel
-     * @return a set of matching tiel files
-     */
-    public Set<TileFile> getTiles( Envelope bbox, double metersPerPixel );
+    private static final String MODULE_NAME = "tools3d";
 
-    /**
-     * @return the RasterLevels
-     */
-    public RasterLevel[] getRasterLevels();
-
+    @Override
+    public String getName() {
+        return MODULE_NAME;
+    }
 }

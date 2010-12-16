@@ -37,7 +37,7 @@
 package org.deegree.tools.rendering.dem.builder;
 
 import static java.lang.System.currentTimeMillis;
-import static org.deegree.tools.CommandUtils.OPT_VERBOSE;
+import static org.deegree.commons.tools.CommandUtils.OPT_VERBOSE;
 
 import java.io.File;
 import java.io.IOException;
@@ -56,6 +56,9 @@ import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.PosixParser;
+import org.deegree.commons.tools.CommandUtils;
+import org.deegree.commons.tools.Tool;
+import org.deegree.commons.tools.coverage.RasterOptionsParser;
 import org.deegree.commons.utils.LogUtils;
 import org.deegree.commons.utils.math.MathUtils;
 import org.deegree.coverage.AbstractCoverage;
@@ -76,13 +79,8 @@ import org.deegree.coverage.raster.io.grid.GridWriter;
 import org.deegree.coverage.raster.utils.Rasters;
 import org.deegree.geometry.Envelope;
 import org.deegree.rendering.r3d.multiresolution.MultiresolutionMesh;
-import org.deegree.tools.CommandUtils;
-import org.deegree.tools.annotations.Tool;
-import org.deegree.tools.coverage.utils.RasterOptionsParser;
 import org.deegree.tools.i18n.Messages;
 import org.deegree.tools.rendering.dem.builder.dag.DAGBuilder;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Tool for generating the binary files for {@link MultiresolutionMesh} instances (MRIndex- and PatchData-BLOBs) from
@@ -102,7 +100,7 @@ import org.slf4j.LoggerFactory;
 @Tool("Generates DEM multiresolution datasets from rasters, suitable for the WPVS.")
 public class DEMDatasetGenerator {
 
-    private static final Logger LOG = LoggerFactory.getLogger( DEMDatasetGenerator.class );
+    // private static final Logger LOG = LoggerFactory.getLogger( DEMDatasetGenerator.class );
 	
     /*
      * Command line options
@@ -352,8 +350,6 @@ public class DEMDatasetGenerator {
     }
 
     /**
-     * @param rast
-     * @return
      * @throws IOException
      */
     private TiledRasterData buildGrid( AbstractRaster raster, RasterIOOptions options )
@@ -453,11 +449,6 @@ public class DEMDatasetGenerator {
         return height;
     }
 
-    /**
-     * @param i
-     * @param j
-     * @param k
-     */
     private float getAsFloatSample( int rasterX, int rasterY, int band ) {
         DataType dataType = this.dataBuffer.getDataType();
         switch ( dataType ) {
@@ -537,7 +528,6 @@ public class DEMDatasetGenerator {
          * @param p2
          * @param level
          * @param locationCode
-         * @return
          */
         private float[][] createTriangleTree( Point2f p0, Point2f p1, Point2f p2, int level, String locationCode ) {
 

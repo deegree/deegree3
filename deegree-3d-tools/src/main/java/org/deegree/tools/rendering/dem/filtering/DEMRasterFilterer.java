@@ -36,7 +36,7 @@
 package org.deegree.tools.rendering.dem.filtering;
 
 import static java.lang.System.currentTimeMillis;
-import static org.deegree.tools.CommandUtils.OPT_VERBOSE;
+import static org.deegree.commons.tools.CommandUtils.OPT_VERBOSE;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.File;
@@ -71,9 +71,9 @@ import org.deegree.coverage.raster.io.grid.GridWriter;
 import org.deegree.coverage.raster.utils.RasterFactory;
 import org.deegree.coverage.raster.utils.Rasters;
 import org.deegree.geometry.Envelope;
-import org.deegree.tools.CommandUtils;
-import org.deegree.tools.annotations.Tool;
-import org.deegree.tools.coverage.utils.RasterOptionsParser;
+import org.deegree.commons.tools.CommandUtils;
+import org.deegree.commons.tools.Tool;
+import org.deegree.commons.tools.coverage.RasterOptionsParser;
 import org.deegree.tools.rendering.dem.filtering.filters.DEMFilter;
 import org.deegree.tools.rendering.dem.filtering.filters.SmoothingFilter;
 import org.deegree.tools.rendering.manager.DataManager;

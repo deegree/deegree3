@@ -36,7 +36,7 @@
 
 package org.deegree.tools.rendering.manager;
 
-import static org.deegree.tools.CommandUtils.OPT_VERBOSE;
+import static org.deegree.commons.tools.CommandUtils.OPT_VERBOSE;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -57,8 +57,8 @@ import org.deegree.services.wpvs.io.BackendResult;
 import org.deegree.services.wpvs.io.DataObjectInfo;
 import org.deegree.services.wpvs.io.ModelBackend;
 import org.deegree.services.wpvs.io.ModelBackend.Type;
-import org.deegree.tools.CommandUtils;
-import org.deegree.tools.annotations.Tool;
+import org.deegree.commons.tools.CommandUtils;
+import org.deegree.commons.tools.Tool;
 import org.deegree.tools.rendering.manager.buildings.generalisation.WorldObjectSimplifier;
 
 /**

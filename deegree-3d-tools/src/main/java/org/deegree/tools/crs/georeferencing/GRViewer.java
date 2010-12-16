@@ -38,7 +38,7 @@ package org.deegree.tools.crs.georeferencing;
 
 import java.io.IOException;
 
-import org.deegree.tools.annotations.Tool;
+import org.deegree.commons.tools.Tool;
 import org.deegree.tools.crs.georeferencing.application.Controller;
 import org.deegree.tools.crs.georeferencing.communication.GRViewerGUI;
 import org.slf4j.Logger;

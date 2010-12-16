@@ -107,8 +107,8 @@ import org.deegree.services.wpvs.controller.WPVSController;
 import org.deegree.services.wpvs.controller.getview.GetView;
 import org.deegree.services.wpvs.controller.getview.GetViewKVPAdapter;
 import org.deegree.services.wpvs.rendering.jogl.ConfiguredOpenGLInitValues;
-import org.deegree.tools.CommandUtils;
-import org.deegree.tools.annotations.Tool;
+import org.deegree.commons.tools.CommandUtils;
+import org.deegree.commons.tools.Tool;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
