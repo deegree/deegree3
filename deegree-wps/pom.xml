@@ -5,7 +5,7 @@
   <groupId>org.deegree</groupId>
   <artifactId>deegree-wps</artifactId>
   <packaging>pom</packaging>
-  <version>3.1-SNAPSHOT</version>
+  <version>3.1-pre2</version>
   <name>deegree-wps</name>
   <url>http://www.deegree.org</url>
   <scm>
