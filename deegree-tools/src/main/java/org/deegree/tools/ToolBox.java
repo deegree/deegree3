@@ -61,7 +61,6 @@ import org.deegree.tools.crs.CoordinateTransform;
 import org.deegree.tools.crs.EPSGDBSynchronizer;
 import org.deegree.tools.crs.PolynomialParameterCreator;
 import org.deegree.tools.crs.XMLCoordinateTransform;
-import org.deegree.tools.crs.georeferencing.GRViewer;
 import org.deegree.tools.feature.gml.ApplicationSchemaTool;
 import org.deegree.tools.feature.gml.GMLSchemaAnalyzer;
 import org.deegree.tools.feature.gml.GMLSchemaComparator;
@@ -117,7 +116,6 @@ public class ToolBox {
                                       new ToolInfo( StyleChecker.class ),
                                       new ToolInfo( FeatureTypesToLayerTree.class ),
                                       new ToolInfo( TransformRaster.class ),
-                                      new ToolInfo( GRViewer.class ),
 
                                       // Following classes define public static void main methods, but do not implement
                                       // the tools annotation (maybe fix them?)
