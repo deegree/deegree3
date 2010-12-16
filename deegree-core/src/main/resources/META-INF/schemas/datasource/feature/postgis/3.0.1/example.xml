@@ -1,0 +1,39 @@
+<PostGISFeatureStore configVersion="3.0.0" xmlns="http://www.deegree.org/datasource/feature/postgis"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.deegree.org/datasource/feature/postgis
+http://schemas.deegree.org/datasource/feature/postgis/3.0.0/postgis.xsd">
+
+  <!-- [1] Identifier of JDBC connection -->
+  <JDBCConnId>postgis</JDBCConnId>
+
+  <!-- [0...n] Definitions of feature types (derived from tables) -->
+
+  <!-- Config option 1: Minimal configuration (just table) -->
+  <!--
+    Implicit namespace (xmlns:app="http://www.deegree.org/app"), automatic property mapping (all table fields)
+  -->
+  <FeatureType table="country" />
+
+  <!-- Config option 2: Configuration based on table and explicit name -->
+  <FeatureType table="country" name="Country" />
+
+  <!-- Config option 3: Configuration based on table and explicit name with namespace-->
+  <FeatureType xmlns:myapp="http://www.deegree.org/myapp" table="country2" name="myapp:Country" />
+
+  <!-- Config option 4: Configuration based on table and explicit name with namespace and 
+  explicit property mapping -->
+  <FeatureType xmlns:myapp="http://www.deegree.org/myapp" table="country2" name="myapp:Country">
+    <SimpleProperty mapping="prop1" />
+    <GeometryProperty mapping="the_geom" />
+  </FeatureType>
+
+  <!--
+    Config option 5: Configuration based on table and explicit name with namespace and explicit property mapping
+    specifying CRS
+  -->
+  <FeatureType xmlns:myapp="http://www.deegree.org/myapp" table="country2" name="myapp:Country">
+    <SimpleProperty mapping="prop1" name="property1" />
+    <GeometryProperty mapping="the_geom" crs="EPSG:4326" srid="-1" />
+  </FeatureType>
+
+</PostGISFeatureStore>

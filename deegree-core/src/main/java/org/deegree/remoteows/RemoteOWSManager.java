@@ -1,0 +1,150 @@
+//$HeadURL$
+/*----------------------------------------------------------------------------
+ This file is part of deegree, http://deegree.org/
+ Copyright (C) 2001-2010 by:
+ - Department of Geography, University of Bonn -
+ and
+ - lat/lon GmbH -
+
+ This library is free software; you can redistribute it and/or modify it under
+ the terms of the GNU Lesser General Public License as published by the Free
+ Software Foundation; either version 2.1 of the License, or (at your option)
+ any later version.
+ This library is distributed in the hope that it will be useful, but WITHOUT
+ ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ details.
+ You should have received a copy of the GNU Lesser General Public License
+ along with this library; if not, write to the Free Software Foundation, Inc.,
+ 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+
+ Contact information:
+
+ lat/lon GmbH
+ Aennchenstr. 19, 53177 Bonn
+ Germany
+ http://lat-lon.de/
+
+ Department of Geography, University of Bonn
+ Prof. Dr. Klaus Greve
+ Postfach 1147, 53001 Bonn
+ Germany
+ http://www.geographie.uni-bonn.de/deegree/
+
+ e-mail: info@deegree.org
+ ----------------------------------------------------------------------------*/
+package org.deegree.remoteows;
+
+import static org.slf4j.LoggerFactory.getLogger;
+
+import java.io.File;
+import java.io.FilenameFilter;
+import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.ServiceLoader;
+
+import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.XMLStreamReader;
+
+import org.deegree.commons.xml.stax.StAXParsingHelper;
+import org.slf4j.Logger;
+
+/**
+ * 
+ * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
+ * @author last edited by: $Author$
+ * 
+ * @version $Revision$, $Date$
+ */
+public class RemoteOWSManager {
+
+    private static final Logger LOG = getLogger( RemoteOWSManager.class );
+
+    private ServiceLoader<RemoteOWSProvider> serviceLoader = ServiceLoader.load( RemoteOWSProvider.class );
+
+    private Map<String, RemoteOWSProvider> providers = new HashMap<String, RemoteOWSProvider>();
+
+    private Map<String, RemoteOWSStore> stores = new HashMap<String, RemoteOWSStore>();
+
+    /**
+     * 
+     */
+    public RemoteOWSManager() {
+        for ( RemoteOWSProvider p : serviceLoader ) {
+            providers.put( p.getConfigurationNamespace(), p );
+            if ( p.getCapabilitiesNamespaces() != null ) {
+                for ( String ns : p.getCapabilitiesNamespaces() ) {
+                    providers.put( ns, p );
+                }
+            }
+        }
+    }
+
+    public void init( File dir ) {
+        if ( !dir.exists() ) {
+            LOG.info( "No 'datasources/remoteows' directory -- skipping initialization of remote OWS stores." );
+            return;
+        }
+        LOG.info( "--------------------------------------------------------------------------------" );
+        LOG.info( "Setting up remote OWS stores." );
+        LOG.info( "--------------------------------------------------------------------------------" );
+
+        File[] configFiles = dir.listFiles( new FilenameFilter() {
+            @Override
+            public boolean accept( File dir, String name ) {
+                return name.toLowerCase().endsWith( ".xml" );
+            }
+        } );
+        for ( File conf : configFiles ) {
+            String fileName = conf.getName();
+            // 4 is the length of ".xml"
+            String storeId = fileName.substring( 0, fileName.length() - 4 );
+            LOG.info( "Setting up remote OWS store '" + storeId + "' from file '" + fileName + "'..." + "" );
+            if ( stores.containsKey( storeId ) ) {
+                LOG.warn( "Skipping loading of store with id {}, it was already loaded.", storeId );
+                continue;
+            }
+            try {
+                RemoteOWSStore store = create( conf.toURI().toURL() );
+                stores.put( storeId, store );
+            } catch ( Exception e ) {
+                LOG.warn( "Error creating remote OWS store: {}", e.getMessage() );
+                LOG.trace( "Stack trace:", e );
+            }
+        }
+        LOG.info( "" );
+    }
+
+    /**
+     * @param configURL
+     * @return null, if namespace could not be determined, or no fitting provider was found
+     */
+    public RemoteOWSStore create( URL configURL ) {
+        String namespace = null;
+        try {
+            XMLStreamReader xmlReader = XMLInputFactory.newInstance().createXMLStreamReader( configURL.openStream() );
+            StAXParsingHelper.nextElement( xmlReader );
+            namespace = xmlReader.getNamespaceURI();
+            xmlReader.close();
+        } catch ( Exception e ) {
+            LOG.warn( "Error '{}' while determining configuration namespace for file '{}', skipping it.",
+                      e.getLocalizedMessage(), configURL );
+            LOG.trace( "Stack trace:", e );
+            return null;
+        }
+        LOG.debug( "Config namespace: '{}'", namespace );
+        RemoteOWSProvider provider = providers.get( namespace );
+        if ( provider == null ) {
+            LOG.warn( "No remote OWS store provider for namespace '{}' (file: '{}') registered. Skipping it.",
+                      namespace, configURL );
+            return null;
+        }
+        return provider.create( configURL );
+    }
+
+    public RemoteOWSStore get( String id ) {
+        return stores.get( id );
+    }
+
+}
