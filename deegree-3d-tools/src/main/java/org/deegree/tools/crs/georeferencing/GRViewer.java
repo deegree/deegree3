@@ -68,27 +68,4 @@ public class GRViewer {
 
     }
 
-    // private static void outputHelp() {
-    // StringBuilder sb = new StringBuilder();
-    // sb.append(
-    // "The GRViewer program should help to georeference a scene which has no spatial coordinate reference system\n" );
-    // sb.append( "to a scene which has a real spatial coordinate reference system.\n" );
-    // sb.append( "Following parameters are supported and needed:\n" );
-    // sb.append( "-geoRefSource the source of the georeferencing map, e.g. http://localhost:8080/deegree-wms-cite\n" );
-    // sb.append( "-geoRefCRS the CRS of the georeferencing map, e.g. EPSG:4326\n" );
-    // sb.append( "-geoRefFormat the output format of the georeferencing map, e.g. image/png \n" );
-    // sb.append(
-    // "-geoRefLayers the layers of the georeferncing map that should be requested - look into the GetCapabilities document.\n"
-    // );
-    // sb.append(
-    // "-geoRefBBox the boundingbox of the request in format \'minX minY maxX maxY\', e.g. \"-2.0 -1.0 2.0 6.0\".\n" );
-    // sb.append( "-qor the quality of raster of the georeferenced map in format \'qorX qorY\', e.g. \"500 500\".\n" );
-    // sb.append(
-    // "-source3d the source of the scene that should be georeferenced /path/of/the_3d_scene (CityGML file at the moment) .\n"
-    // );
-    // sb.append( "-?|-h output this text\n" );
-    // System.out.println( sb.toString() );
-    // System.exit( 1 );
-    // }
-
 }
