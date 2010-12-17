@@ -801,6 +801,8 @@ public class Controller {
 
                     optionDialog.setVisible( true );
 
+                } else if ( ( (JMenuItem) source ).getText().startsWith( get( "MENUITEM_EXIT" ) ) ) {
+                    System.exit( 0 );
                 } else if ( ( (JMenuItem) source ).getText().startsWith( get( "MENUITEM_OPEN_BUILDING" ) ) ) {
                     List<String> list = new ArrayList<String>();
                     list.add( "gml" );

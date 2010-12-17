@@ -105,6 +105,8 @@ public class GRViewerGUI extends JFrame {
 
     private CheckboxListTransformation list;
 
+    private JMenuItem exit;
+
     public GRViewerGUI() {
         super( get( "WINDOW_TITLE" ) );
 
@@ -147,10 +149,13 @@ public class GRViewerGUI extends JFrame {
         openWMS.setName( get( "MENUITEM_OPEN_WMS_LAYER" ) );
         openBuilding = new JMenuItem( get( "MENUITEM_OPEN_BUILDING" ) );
         openBuilding.setName( get( "MENUITEM_OPEN_BUILDING" ) );
+        exit = new JMenuItem( get( "MENUITEM_EXIT" ) );
+        exit.setName( get( "MENUITEM_EXIT" ) );
 
         menuFile.add( openShape );
         menuFile.add( openWMS );
         menuFile.add( openBuilding );
+        menuFile.add( exit );
 
         editMenuItem = new JMenuItem( get( "MENUITEM_EDIT_OPTIONS" ) );
         menuEdit.add( editMenuItem );
@@ -227,7 +232,7 @@ public class GRViewerGUI extends JFrame {
         openShape.addActionListener( e );
         openWMS.addActionListener( e );
         openBuilding.addActionListener( e );
-
+        exit.addActionListener( e );
     }
 
     /**
