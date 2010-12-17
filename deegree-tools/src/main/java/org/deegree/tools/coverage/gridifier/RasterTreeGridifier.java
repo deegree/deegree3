@@ -236,7 +236,9 @@ public class RasterTreeGridifier {
         // prepare output directory
         currentOutputDir = new File( outputDir, "" + metersPerPixel );
         if ( !currentOutputDir.exists() ) {
-            currentOutputDir.mkdir();
+            if ( !currentOutputDir.mkdir() ) {
+                LOG.warn( "Could not create directory {}.", currentOutputDir );
+            }
         }
 
         LOG.info( "\nGridifying level: " + level.getLevel() + "\n" );
@@ -398,8 +400,6 @@ public class RasterTreeGridifier {
         } catch ( ParseException exp ) {
             System.err.println( "ERROR: Invalid command line: " + exp.getMessage() );
         }
-
-        System.exit( 0 );
     }
 
     private static long blobSize( String blobsize ) {
@@ -582,7 +582,7 @@ public class RasterTreeGridifier {
 
             // clamp to maximum possible size
             int subWidth = min( targetData.getColumns() - x0, width, sourceRaster.getColumns() );
-            int subHeight = min( targetData.getRows() - y0, height, sourceRaster.getRows());
+            int subHeight = min( targetData.getRows() - y0, height, sourceRaster.getRows() );
 
             byte[] tmp = new byte[targetData.getDataInfo().getDataSize()];
             for ( int y = 0; y < subHeight; y++ ) {
@@ -630,7 +630,7 @@ public class RasterTreeGridifier {
      * @version $Revision: $, $Date: $
      * 
      */
-    private class TileCache extends LinkedHashMap<Integer, AbstractRaster> {
+    private static class TileCache extends LinkedHashMap<Integer, AbstractRaster> {
 
         /**
          * 
@@ -716,7 +716,7 @@ public class RasterTreeGridifier {
                     storeCell( buffer );
                     if ( cellId % 100 == 0 ) {
                         long elapsed = System.currentTimeMillis() - begin;
-                        double rate = ( (double) cellId ) / ( elapsed / 1000 );
+                        double rate = cellId / ( elapsed / 1000d );
                         LOG.info( "Tile generation rate: " + rate + " tiles / second" );
                         LOG.info( "cached tiles: " + tileIdToRaster.size() );
                         LOG.info( "total mem: " + Runtime.getRuntime().totalMemory() );
