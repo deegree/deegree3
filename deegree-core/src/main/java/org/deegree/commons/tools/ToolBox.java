@@ -70,14 +70,14 @@ public class ToolBox {
 
     private ToolInfo[] tools;
 
-    ToolBox (Set<Class<?>> tools){
+    ToolBox( Set<Class<?>> tools ) {
         this.tools = new ToolInfo[tools.size()];
         int i = 0;
-        for(Class<?> cls : tools){
-            this.tools[i++] = new ToolInfo(cls);
+        for ( Class<?> cls : tools ) {
+            this.tools[i++] = new ToolInfo( cls );
         }
     }
-    
+
     /**
      * The list of tools is printed in a readable format
      */
@@ -183,11 +183,11 @@ public class ToolBox {
     public static void main( String[] args )
                             throws SecurityException, NoSuchMethodException, IllegalArgumentException,
                             IllegalAccessException, InvocationTargetException {
-        Reflections reflections = new Reflections("org.deegree.tools");
-        Set<Class<?>> tools = reflections.getTypesAnnotatedWith(Tool.class );
+        Reflections reflections = new Reflections( "org.deegree" );
+        Set<Class<?>> tools = reflections.getTypesAnnotatedWith( Tool.class );
 
-        ToolBox toolbox = new ToolBox(tools);
-        
+        ToolBox toolbox = new ToolBox( tools );
+
         if ( args.length == 0 ) {
             toolbox.printList();
         } else {
