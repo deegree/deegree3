@@ -28,15 +28,18 @@
   <p class="welcome">This server is running deegree utah demo 3.1</p>
   <h:panelGroup rendered="#{!downloadBean.dataDownloaded}">
     <h:form id="downloadForm">
-       NOTE: Before you can use this demo, you will have to <h:commandButton styleClass="buttonData" value="download"
-        action="#{downloadBean.download}" onclick="show();" /> the required datasets (about 64 MB). This may take a moment depending on the internet connection of the server.
-  </h:form>
-  </h:panelGroup> <h:panelGroup rendered="#{downloadBean.dataDownloaded}">
+      NOTE: Before you can use this demo, you will have to <h:commandButton styleClass="buttonData" value="download" action="#{downloadBean.download}" onclick="show();" /> the required datasets (about 64 MB). This may take a moment depending on the internet connection of the server.
+      <p class="explain"><a href="#{facesContext.externalContext.requestContextPath}/console/jsf/proxy.jsf">Proxysettings</a>&nbsp;<h:graphicImage styleClass="image" url="#{resource['images:link.png']}" /><br />
+      NOTE: If you are behind a proxy and the download is not working please configure your proxy settings.<br />
+      The deefault password is "deegree".</p>
+    </h:form>
+  </h:panelGroup> 
+  <h:panelGroup rendered="#{downloadBean.dataDownloaded}">
     <p class="inline">Use address below in WFS and WMS clients to access served features types and layers.</p>
     <br />
     <p class="inline">OGC service address: <h:outputText styleClass="url"
       value="#{facesContext.externalContext.requestScheme}://#{facesContext.externalContext.requestServerName}:#{facesContext.externalContext.requestServerPort}#{facesContext.externalContext.requestContextPath}/services" /></p>
-  </h:panelGroup> <br />
+  </h:panelGroup>
   <p class="explain"><a href="http://wiki.deegree.org/deegreeWiki/deegree3/UtahDemo">Documentation</a>&nbsp;<h:graphicImage styleClass="image" url="#{resource['images:link.png']}" /><br />
   Access the documentation pages with help on setup and usage.</p>
   <h:panelGroup rendered="#{downloadBean.dataDownloaded}">

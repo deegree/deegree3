@@ -34,4 +34,21 @@
         <component-class>org.deegree.client.core.component.HtmlInputConfigurationXML</component-class>
     </component>
     
+    <component>
+        <component-type>HtmlAjaxStatus</component-type>
+        <component-class>org.deegree.client.core.component.HtmlAjaxStatus</component-class>
+    </component>
+    
+    
+    <component>
+        <component-type>HtmlMenuItem</component-type>
+        <component-class>org.deegree.client.core.component.HtmlMenuItem</component-class>
+    </component>
+    
+    <component>
+        <component-type>HtmlMenu</component-type>
+        <component-class>org.deegree.client.core.component.HtmlMenu</component-class>
+    </component>
+    
+    
 </faces-config>

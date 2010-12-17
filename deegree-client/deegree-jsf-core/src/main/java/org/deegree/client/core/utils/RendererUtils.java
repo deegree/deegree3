@@ -57,9 +57,8 @@ public class RendererUtils {
         writer.startElement( "span", null );
         writer.writeAttribute( "class", className, null );
         writer.startElement( "input", null );
-        if ( js == null )
-            js = "";
-        writer.writeAttribute( "onClick", js, null );
+        if ( js != null )
+            writer.writeAttribute( "onclick", js, null );
         writer.writeAttribute( "type", "image", null );
         Resource img = context.getApplication().getResourceHandler().createResource( resourceName, library );
         if ( img != null ) {
