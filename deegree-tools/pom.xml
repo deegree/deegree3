@@ -115,7 +115,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-assembly-plugin</artifactId>
-        <version>2.2-beta-5</version>
+        <version>2.2</version>
         <configuration>
           <descriptors>
             <descriptor>assembly.xml</descriptor>
@@ -125,32 +125,10 @@
           <execution>
             <phase>package</phase>
             <goals>
-              <goal>assembly</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>build-helper-maven-plugin</artifactId>
-        <version>1.2</version>
-        <executions>
-          <execution>
-            <phase>package</phase>
-            <goals>
-              <goal>attach-artifact</goal>
+              <goal>single</goal>
             </goals>
             <configuration>
-              <artifacts>
-                <artifact>
-                  <file>target/${artifactId}-${version}-distribution.tar.gz</file>
-                  <type>tar.gz</type>
-                </artifact>
-                <artifact>
-                  <file>target/${artifactId}-${version}-distribution.zip</file>
-                  <type>zip</type>
-                </artifact>
-              </artifacts>
+              <appendAssemblyId>false</appendAssemblyId>
             </configuration>
           </execution>
         </executions>
@@ -163,32 +141,6 @@
       <groupId>org.deegree</groupId>
       <artifactId>deegree-services</artifactId>
       <version>3.1-SNAPSHOT</version>
-    </dependency>
-    <dependency>
-      <groupId>commons-cli</groupId>
-      <artifactId>commons-cli</artifactId>
-      <version>1.1-deegreeversion</version>
-    </dependency>
-    <dependency>
-      <groupId>java3d</groupId>
-      <artifactId>java3d-core</artifactId>
-      <version>1.5.2</version>
-    </dependency>
-    <dependency>
-      <groupId>java3d</groupId>
-      <artifactId>java3d-utils</artifactId>
-      <version>1.5.2</version>
-    </dependency>
-    <dependency>
-      <groupId>java3d</groupId>
-      <artifactId>java3d-vrml97</artifactId>
-      <version>deegreeversion</version>
-    </dependency>
-    <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <version>4.8.1</version>
-      <scope>test</scope>
     </dependency>
   </dependencies>
 
