@@ -66,7 +66,9 @@ public class ScanEncoding {
         BufferedInputStream in = new BufferedInputStream( new FileInputStream( s ) );
 
         if ( dbf ) {
-            in.skip( 32 );
+            if ( in.skip( 32 ) != 32 ) {
+                LOG.warn( "Could not skip 32 bytes, is the dbf broken?" );
+            }
             int b;
             while ( ( b = in.read() ) != -1 ) {
                 if ( b == 13 ) {
