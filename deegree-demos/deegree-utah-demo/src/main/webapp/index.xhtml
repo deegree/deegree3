@@ -25,7 +25,7 @@
   <div id="wrapper" align="center">
   <div id="apDivLogo"></div>
   <div id="apDivMain">
-  <p class="welcome">This server is running deegree utah demo 3.1</p>
+  <p class="welcome">This server is running deegree utah demo <h:outputText value="#{applicationBean.baseVersion}" /></p>
   <h:panelGroup rendered="#{!downloadBean.dataDownloaded}">
     <h:form id="downloadForm">
       NOTE: Before you can use this demo, you will have to <h:commandButton styleClass="buttonData" value="download" action="#{downloadBean.download}" onclick="show();" /> the required datasets (about 64 MB). This may take a moment depending on the internet connection of the server.

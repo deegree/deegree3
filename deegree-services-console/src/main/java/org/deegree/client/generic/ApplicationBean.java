@@ -44,6 +44,8 @@ import javax.faces.bean.ManagedBean;
 import javax.faces.bean.RequestScoped;
 import javax.faces.context.FacesContext;
 
+import lombok.Getter;
+
 import org.deegree.commons.jdbc.ConnectionManager;
 import org.deegree.commons.utils.DeegreeAALogoUtils;
 import org.deegree.commons.version.DeegreeModuleInfo;
@@ -73,13 +75,22 @@ public class ApplicationBean implements Serializable {
 
     private List<String> nameToController = new ArrayList<String>();
 
+    private String baseVersion;
+
     public ApplicationBean() {
         for ( DeegreeModuleInfo info : DeegreeModuleInfo.getRegisteredModules() ) {
+            if ( baseVersion == null ) {
+                baseVersion = info.getVersion().getVersionNumber();
+            }
             moduleInfos.add( info.toString() );
         }
         for ( String key : OGCFrontController.getServiceConfiguration().getServiceControllers().keySet() ) {
             nameToController.add( key );
         }
+    }
+
+    public String getBaseVersion() {
+        return baseVersion;
     }
 
     public String getLogo() {
