@@ -36,8 +36,7 @@
 package org.deegree.tools.crs.georeferencing.application;
 
 import static java.lang.Math.max;
-import static org.deegree.tools.crs.georeferencing.communication.GUIConstants.JTEXTFIELD_COORDINATE_JUMPER;
-import static org.deegree.tools.crs.georeferencing.communication.GUIConstants.MENUITEM_TRANS_HELMERT;
+import static org.deegree.tools.crs.georeferencing.i18n.Messages.get;
 
 import java.awt.Component;
 import java.awt.Rectangle;
@@ -97,7 +96,6 @@ import org.deegree.tools.crs.georeferencing.application.transformation.Transform
 import org.deegree.tools.crs.georeferencing.application.transformation.TransformationMethod.TransformationType;
 import org.deegree.tools.crs.georeferencing.communication.FileChooser;
 import org.deegree.tools.crs.georeferencing.communication.GRViewerGUI;
-import org.deegree.tools.crs.georeferencing.communication.GUIConstants;
 import org.deegree.tools.crs.georeferencing.communication.PointTableFrame;
 import org.deegree.tools.crs.georeferencing.communication.checkboxlist.CheckboxListTransformation;
 import org.deegree.tools.crs.georeferencing.communication.dialog.ButtonPanel;
@@ -270,7 +268,7 @@ public class Controller {
         // transform = null;
         if ( conModel.getTransformationType() == null ) {
             for ( JCheckBox box : modelTransformation.getList() ) {
-                if ( ( box ).getText().startsWith( MENUITEM_TRANS_HELMERT ) ) {
+                if ( ( box ).getText().startsWith( get( "MENUITEM_TRANS_HELMERT" ) ) ) {
                     conModel.setTransformationType( TransformationType.Helmert_4 );
                     view.activateTransformationCheckbox( box );
                     break;
@@ -548,7 +546,7 @@ public class Controller {
             Object source = e.getSource();
             if ( source instanceof JTextField ) {
                 JTextField tF = (JTextField) source;
-                if ( tF.getName().startsWith( JTEXTFIELD_COORDINATE_JUMPER ) ) {
+                if ( tF.getName().startsWith( get( "JTEXTFIELD_COORDINATE_JUMPER" ) ) ) {
 
                     fireTextfieldJumperDialog();
 
@@ -567,7 +565,7 @@ public class Controller {
                 } else {
                     JToggleButton tb = (JToggleButton) source;
 
-                    if ( tb.getName().startsWith( GUIConstants.JBUTTON_PAN ) ) {
+                    if ( tb.getName().startsWith( get( "JBUTTON_PAN" ) ) ) {
 
                         if ( tb == buttonPanGeoref ) {
                             selectGeorefToggleButton( tb );
@@ -578,14 +576,14 @@ public class Controller {
                             isZoomInFoot = false;
                             isZoomOutFoot = false;
                         }
-                    } else if ( tb.getName().startsWith( GUIConstants.JBUTTON_ZOOM_COORD ) ) {
+                    } else if ( tb.getName().startsWith( get( "JBUTTON_ZOOM_COORD" ) ) ) {
 
                         if ( tb == buttonCoord ) {
                             selectGeorefToggleButton( tb );
                         } else {
                             selectFootprintToggleButton( tb );
                         }
-                    } else if ( tb.getName().startsWith( GUIConstants.JBUTTON_ZOOM_IN ) ) {
+                    } else if ( tb.getName().startsWith( get( "JBUTTON_ZOOM_IN" ) ) ) {
 
                         if ( tb == buttonZoomInGeoref ) {
                             selectGeorefToggleButton( tb );
@@ -596,7 +594,7 @@ public class Controller {
                             isZoomInFoot = true;
                             isZoomOutFoot = false;
                         }
-                    } else if ( tb.getName().startsWith( GUIConstants.JBUTTON_ZOOM_OUT ) ) {
+                    } else if ( tb.getName().startsWith( get( "JBUTTON_ZOOM_OUT" ) ) ) {
 
                         if ( tb == buttonZoomoutGeoref ) {
                             selectGeorefToggleButton( tb );
@@ -662,7 +660,7 @@ public class Controller {
                 } else if ( ( (JButton) source ).getText().startsWith( PointTableFrame.BUTTON_DELETE_ALL ) ) {
                     removeAllFromMappedPoints();
 
-                } else if ( ( (JButton) source ).getText().startsWith( GUIConstants.RESET_VIEW_BUTTON_TEXT ) ) {
+                } else if ( ( (JButton) source ).getText().startsWith( get( "RESET_VIEW_BUTTON_TEXT" ) ) ) {
 
                     initGeoReferencingScene( model );
                     if ( fileChoosed != null ) {
@@ -674,7 +672,7 @@ public class Controller {
                     conModel.getPanel().updatePoints( sceneValues );
                     conModel.getPanel().repaint();
 
-                } else if ( ( (JButton) source ).getText().startsWith( GUIConstants.COMPUTE_BUTTON_TEXT ) ) {
+                } else if ( ( (JButton) source ).getText().startsWith( get( "COMPUTE_BUTTON_TEXT" ) ) ) {
                     // swap the tempPoints into the map now
                     if ( conModel.getFootPanel().getLastAbstractPoint() != null
                          && conModel.getPanel().getLastAbstractPoint() != null ) {
@@ -789,7 +787,7 @@ public class Controller {
                 }
             } else if ( source instanceof JMenuItem ) {
 
-                if ( ( (JMenuItem) source ).getText().startsWith( GUIConstants.MENUITEM_EDIT_OPTIONS ) ) {
+                if ( ( (JMenuItem) source ).getText().startsWith( get( "MENUITEM_EDIT_OPTIONS" ) ) ) {
                     DefaultMutableTreeNode root = new DefaultMutableTreeNode( "Options" );
 
                     conModel.getDialogModel().createNodes( root );
@@ -803,7 +801,7 @@ public class Controller {
 
                     optionDialog.setVisible( true );
 
-                } else if ( ( (JMenuItem) source ).getText().startsWith( GUIConstants.MENUITEM_OPEN_BUILDING ) ) {
+                } else if ( ( (JMenuItem) source ).getText().startsWith( get( "MENUITEM_OPEN_BUILDING" ) ) ) {
                     List<String> list = new ArrayList<String>();
                     list.add( "gml" );
                     list.add( "xml" );
@@ -817,7 +815,7 @@ public class Controller {
                         initFootprintScene( fileChoosed );
                     }
 
-                } else if ( ( (JMenuItem) source ).getText().startsWith( GUIConstants.MENUITEM_OPEN_SHAPEFILE ) ) {
+                } else if ( ( (JMenuItem) source ).getText().startsWith( get( "MENUITEM_OPEN_SHAPEFILE" ) ) ) {
                     List<String> list = new ArrayList<String>();
                     list.add( "shp" );
 
@@ -832,7 +830,7 @@ public class Controller {
                         initGeoReferencingScene( model );
                     }
 
-                } else if ( ( (JMenuItem) source ).getText().startsWith( GUIConstants.MENUITEM_OPEN_WMS_LAYER ) ) {
+                } else if ( ( (JMenuItem) source ).getText().startsWith( get( "MENUITEM_OPEN_WMS_LAYER" ) ) ) {
 
                     wmsStartDialog = new OpenWMS( conModel.getView() );
                     wmsStartDialog.addListeners( new ButtonListener() );

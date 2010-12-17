@@ -46,65 +46,6 @@ import java.awt.Dimension;
  * @version $Revision$, $Date$
  */
 public class GUIConstants {
-
-    public static final String WINDOW_TITLE = " deegree3 Georeferencing Client ";
-
-    /*
-     * JMenu
-     */
-    public static final String MENU_EDIT = "Edit";
-
-    public static final String MENU_FILE = "File";
-
-    public static final String MENU_TRANSFORMATION = "Transformation";
-
-    /*
-     * JMenuItem
-     */
-    public static final String MENUITEM_GETMAP = "Import 2D Map";
-
-    public static final String MENUITEM_GET_3DOBJECT = "Import 3D Object";
-
-    public static final String MENUITEM_TRANS_POLYNOM_FIRST = "Polynomial 1";
-
-    public static final String MENUITEM_TRANS_POLYNOM_SECOND = "Polynomial 2";
-
-    public static final String MENUITEM_TRANS_POLYNOM_THIRD = "Polynomial 3";
-
-    public static final String MENUITEM_TRANS_POLYNOM_FOURTH = "Polynomial 4";
-
-    public static final String MENUITEM_TRANS_HELMERT = "Helmert Transformation";
-
-    public static final String MENUITEM_TRANS_AFFINE = "Affine Transformation";
-
-    public static final String MENUITEM_EDIT_OPTIONS = "Options";
-
-    public static final String MENUITEM_OPEN_SHAPEFILE = "Open Shapefile";
-
-    public static final String MENUITEM_OPEN_WMS_LAYER = "Open WMS layer";
-
-    public static final String MENUITEM_OPEN_BUILDING = "Open Building";
-
-    /*
-     * JTextField
-     */
-    public static final String JTEXTFIELD_COORDINATE_JUMPER = "CoordinateJumper";
-
-    /*
-     * JButton
-     */
-    public static final String JBUTTON_PAN = "Pan";
-
-    public static final String JBUTTON_ZOOM_IN = "Zoom in";
-
-    public static final String JBUTTON_ZOOM_OUT = "Zoom out";
-
-    public static final String JBUTTON_ZOOM_COORD = "Zoom coord";
-
-    public static final String COMPUTE_BUTTON_TEXT = "Compute";
-
-    public static final String RESET_VIEW_BUTTON_TEXT = "Reset view";
-
     /*
      * Bounds
      */

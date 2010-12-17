@@ -36,6 +36,7 @@
 package org.deegree.tools.crs.georeferencing.communication.dialog.coordinatejump;
 
 import static org.deegree.tools.crs.georeferencing.communication.GUIConstants.DIM_COORDINATEJUMPER;
+import static org.deegree.tools.crs.georeferencing.i18n.Messages.get;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
@@ -44,7 +45,6 @@ import java.awt.event.ActionListener;
 import javax.swing.JDialog;
 import javax.swing.JTextField;
 
-import org.deegree.tools.crs.georeferencing.communication.GUIConstants;
 import org.deegree.tools.crs.georeferencing.communication.dialog.ButtonPanel;
 
 /**
@@ -82,7 +82,7 @@ public class CoordinateJumperTextfieldDialog extends JDialog {
         buttons = new ButtonPanel();
 
         coordinateJumper = new JTextField( 15 );
-        coordinateJumper.setName( GUIConstants.JTEXTFIELD_COORDINATE_JUMPER );
+        coordinateJumper.setName( get( "JTEXTFIELD_COORDINATE_JUMPER" ) );
         this.add( coordinateJumper, BorderLayout.CENTER );
         this.add( buttons, BorderLayout.SOUTH );
         this.pack();

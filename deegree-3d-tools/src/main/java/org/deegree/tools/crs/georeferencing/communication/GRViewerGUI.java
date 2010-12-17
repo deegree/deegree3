@@ -35,10 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.tools.crs.georeferencing.communication;
 
-import static org.deegree.tools.crs.georeferencing.communication.GUIConstants.MENUITEM_EDIT_OPTIONS;
-import static org.deegree.tools.crs.georeferencing.communication.GUIConstants.MENU_EDIT;
-import static org.deegree.tools.crs.georeferencing.communication.GUIConstants.MENU_FILE;
-import static org.deegree.tools.crs.georeferencing.communication.GUIConstants.MENU_TRANSFORMATION;
+import static org.deegree.tools.crs.georeferencing.i18n.Messages.get;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -109,7 +106,7 @@ public class GRViewerGUI extends JFrame {
     private CheckboxListTransformation list;
 
     public GRViewerGUI() {
-        super( GUIConstants.WINDOW_TITLE );
+        super( get( "WINDOW_TITLE" ) );
 
         setDefaultCloseOperation( JFrame.EXIT_ON_CLOSE );
 
@@ -136,26 +133,26 @@ public class GRViewerGUI extends JFrame {
         JMenu menuEdit;
 
         menuBar = new JMenuBar();
-        menuFile = new JMenu( MENU_FILE );
-        menuEdit = new JMenu( MENU_EDIT );
-        menuTransformation = new JMenu( MENU_TRANSFORMATION );
+        menuFile = new JMenu( get( "MENU_FILE" ) );
+        menuEdit = new JMenu( get( "MENU_EDIT" ) );
+        menuTransformation = new JMenu( get( "MENU_TRANSFORMATION" ) );
 
         menuBar.add( menuFile );
         menuBar.add( menuEdit );
         menuBar.add( menuTransformation );
 
-        openShape = new JMenuItem( GUIConstants.MENUITEM_OPEN_SHAPEFILE );
-        openShape.setName( GUIConstants.MENUITEM_OPEN_SHAPEFILE );
-        openWMS = new JMenuItem( GUIConstants.MENUITEM_OPEN_WMS_LAYER );
-        openWMS.setName( GUIConstants.MENUITEM_OPEN_WMS_LAYER );
-        openBuilding = new JMenuItem( GUIConstants.MENUITEM_OPEN_BUILDING );
-        openBuilding.setName( GUIConstants.MENUITEM_OPEN_BUILDING );
+        openShape = new JMenuItem( get( "MENUITEM_OPEN_SHAPEFILE" ) );
+        openShape.setName( get( "MENUITEM_OPEN_SHAPEFILE" ) );
+        openWMS = new JMenuItem( get( "MENUITEM_OPEN_WMS_LAYER" ) );
+        openWMS.setName( get( "MENUITEM_OPEN_WMS_LAYER" ) );
+        openBuilding = new JMenuItem( get( "MENUITEM_OPEN_BUILDING" ) );
+        openBuilding.setName( get( "MENUITEM_OPEN_BUILDING" ) );
 
         menuFile.add( openShape );
         menuFile.add( openWMS );
         menuFile.add( openBuilding );
 
-        editMenuItem = new JMenuItem( MENUITEM_EDIT_OPTIONS );
+        editMenuItem = new JMenuItem( get( "MENUITEM_EDIT_OPTIONS" ) );
         menuEdit.add( editMenuItem );
 
         this.getRootPane().setJMenuBar( menuBar );

@@ -36,6 +36,7 @@
 package org.deegree.tools.crs.georeferencing.communication.navigationbar;
 
 import static org.deegree.tools.crs.georeferencing.communication.GUIConstants.DIM_NAVIGATION_BUTTONS;
+import static org.deegree.tools.crs.georeferencing.i18n.Messages.get;
 
 import java.awt.Component;
 import java.awt.event.ActionListener;
@@ -46,8 +47,6 @@ import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JToggleButton;
-
-import org.deegree.tools.crs.georeferencing.communication.GUIConstants;
 
 /**
  * 
@@ -60,16 +59,13 @@ import org.deegree.tools.crs.georeferencing.communication.GUIConstants;
  */
 public class NavigationBarPanelGeoref extends AbstractNavigationBarPanel {
 
-    /**
-     * 
-     */
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = -5768170260779035009L;
 
     public final static String NAVIGATIONBAR_PANEL_NAME_GEOREF = "NavigationBarPanelGeoref";
 
-    private final JButton computeTransform = new JButton( GUIConstants.COMPUTE_BUTTON_TEXT );
+    private final JButton computeTransform = new JButton( get( "COMPUTE_BUTTON_TEXT" ) );
 
-    private final JButton resetView = new JButton( GUIConstants.RESET_VIEW_BUTTON_TEXT );
+    private final JButton resetView = new JButton( get( "RESET_VIEW_BUTTON_TEXT" ) );
 
     private static final String COORD = "/org/deegree/tools/crs/georeferencing/communication/icons/zoombycoord.png";
 
@@ -87,11 +83,11 @@ public class NavigationBarPanelGeoref extends AbstractNavigationBarPanel {
             ImageIcon iconZoomCoord = new ImageIcon( ImageIO.read( inCoord ) );
 
             buttonZoomCoord = new JToggleButton( iconZoomCoord );
-            buttonZoomCoord.setName( GUIConstants.JBUTTON_ZOOM_COORD );
+            buttonZoomCoord.setName( get( "JBUTTON_ZOOM_COORD" ) );
             buttonZoomCoord.setPreferredSize( DIM_NAVIGATION_BUTTONS );
 
-            computeTransform.setName( GUIConstants.COMPUTE_BUTTON_TEXT );
-            resetView.setName( GUIConstants.RESET_VIEW_BUTTON_TEXT );
+            computeTransform.setName( get( "COMPUTE_BUTTON_TEXT" ) );
+            resetView.setName( get( "RESET_VIEW_BUTTON_TEXT" ) );
 
             this.add( buttonZoomCoord );
             this.add( computeTransform, Component.RIGHT_ALIGNMENT );

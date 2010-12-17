@@ -36,6 +36,7 @@
 package org.deegree.tools.crs.georeferencing.communication.navigationbar;
 
 import static org.deegree.tools.crs.georeferencing.communication.GUIConstants.DIM_NAVIGATION_BUTTONS;
+import static org.deegree.tools.crs.georeferencing.i18n.Messages.get;
 
 import java.awt.FlowLayout;
 import java.awt.event.ActionListener;
@@ -46,8 +47,6 @@ import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import javax.swing.JPanel;
 import javax.swing.JToggleButton;
-
-import org.deegree.tools.crs.georeferencing.communication.GUIConstants;
 
 /**
  * Abstract base class for all <Code>NavigationBarPanel</Code>s.
@@ -87,11 +86,11 @@ public abstract class AbstractNavigationBarPanel extends JPanel {
             ImageIcon iconZoomOut = new ImageIcon( ImageIO.read( inZoomOut ) );
 
             buttonPan = new JToggleButton( iconPan );
-            buttonPan.setName( GUIConstants.JBUTTON_PAN );
+            buttonPan.setName( get( "JBUTTON_PAN" ) );
             buttonZoomIn = new JToggleButton( iconZoomIn );
-            buttonZoomIn.setName( GUIConstants.JBUTTON_ZOOM_IN );
+            buttonZoomIn.setName( get( "JBUTTON_ZOOM_IN" ) );
             buttonZoomOut = new JToggleButton( iconZoomOut );
-            buttonZoomOut.setName( GUIConstants.JBUTTON_ZOOM_OUT );
+            buttonZoomOut.setName( get( "JBUTTON_ZOOM_OUT" ) );
 
             buttonPan.setPreferredSize( DIM_NAVIGATION_BUTTONS );
             buttonZoomIn.setPreferredSize( DIM_NAVIGATION_BUTTONS );
