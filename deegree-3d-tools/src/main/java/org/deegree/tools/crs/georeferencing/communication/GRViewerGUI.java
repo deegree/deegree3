@@ -78,10 +78,7 @@ import org.deegree.tools.crs.georeferencing.communication.panel2D.Scene2DPanel;
  */
 public class GRViewerGUI extends JFrame {
 
-    /**
-     * 
-     */
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = -4984396613454027721L;
 
     private final static Dimension SUBCOMPONENT_DIMENSION = new Dimension( 1, 1 );
 
@@ -239,7 +236,6 @@ public class GRViewerGUI extends JFrame {
     /**
      * The {@link Scene2DPanel} is a child of this Container
      * 
-     * @return
      */
     public Scene2DPanel getScenePanel2D() {
         return scenePanel2D;

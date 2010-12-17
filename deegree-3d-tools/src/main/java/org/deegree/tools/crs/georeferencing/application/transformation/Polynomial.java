@@ -158,10 +158,8 @@ public class Polynomial extends AbstractTransformation implements Transformation
             }
 
             return transformedRingList;
-        } else {
-            return null;
         }
-
+        return null;
     }
 
     @Override
@@ -184,9 +182,8 @@ public class Polynomial extends AbstractTransformation implements Transformation
                 getResiduals()[counter++] = new PointResidual( rxLocal, ryLocal );
             }
             return getResiduals();
-        } else {
-            return null;
         }
+        return null;
     }
 
 }

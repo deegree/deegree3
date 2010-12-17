@@ -48,9 +48,9 @@ import javax.swing.JFormattedTextField;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JSpinner;
-import javax.swing.JTextField;
 import javax.swing.SpinnerModel;
 import javax.swing.SpinnerNumberModel;
+import javax.swing.SwingConstants;
 
 /**
  * <Code>GeneralPanel</Code>.
@@ -61,6 +61,8 @@ import javax.swing.SpinnerNumberModel;
  * @version $Revision$, $Date$
  */
 public class GeneralPanel extends GenericSettingsPanel {
+
+    private static final long serialVersionUID = 1977689265593878932L;
 
     public static final String SNAPPING = "snapping";
 
@@ -117,7 +119,7 @@ public class GeneralPanel extends GenericSettingsPanel {
         ftfZoom = getTextField( zoomValue );
         if ( ftfZoom != null ) {
             ftfZoom.setColumns( 5 );
-            ftfZoom.setHorizontalAlignment( JTextField.RIGHT );
+            ftfZoom.setHorizontalAlignment( SwingConstants.RIGHT );
         }
         zoom.setName( ZOOM );
         zoom.add( labelText );

@@ -61,6 +61,8 @@ import org.deegree.tools.crs.georeferencing.communication.dialog.ButtonPanel;
  */
 public class OptionDialog extends JDialog {
 
+    private static final long serialVersionUID = -8716501683054512540L;
+
     /*
      * PANEL_NAVIGATION_WIDTH
      */

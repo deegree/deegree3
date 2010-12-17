@@ -53,6 +53,8 @@ import javax.swing.tree.TreeSelectionModel;
  */
 public class NavigationPanel extends JPanel {
 
+    private static final long serialVersionUID = -8553222069717951804L;
+
     public final static String NAME = "NavigationPanel";
 
     public final static String TREE_NAME = "tree";

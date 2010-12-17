@@ -51,6 +51,8 @@ import javax.swing.JPanel;
  */
 public class ButtonPanel extends JPanel {
 
+    private static final long serialVersionUID = 6170319782484700978L;
+
     public static final String BUTTON_TEXT_OK = "OK";
 
     public static final String BUTTON_NAME_OK = "ButtonPanel_OK";

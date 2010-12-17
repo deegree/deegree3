@@ -68,7 +68,7 @@ public class ParameterStore {
 
     // private final Rectangle rasterEnvelope;
 
-    private final static String separator = "\\p{Space}*[ ;/]\\p{Space}*";
+    // private final static String separator = "\\p{Space}*[ ;/]\\p{Space}*";
 
     public ParameterStore( URL mapURL, CRS CRS, String format, String layers, Envelope bbox, int qor ) {
 

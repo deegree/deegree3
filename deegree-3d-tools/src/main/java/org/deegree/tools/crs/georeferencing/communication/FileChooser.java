@@ -63,8 +63,6 @@ public class FileChooser {
 
     private Preferences prefs;
 
-    private List<Pair<List<String>, String>> supportedFiles;
-
     private List<ViewerFileFilter> supportedOpenFilter = new ArrayList<ViewerFileFilter>();
 
     private JFileChooser fileChooser;
@@ -78,7 +76,6 @@ public class FileChooser {
      */
     public FileChooser( List<Pair<List<String>, String>> supportedFiles, Component parent ) {
         this.parent = parent;
-        this.supportedFiles = supportedFiles;
         prefs = Preferences.userNodeForPackage( FileChooser.class );
         for ( Pair<List<String>, String> pair : supportedFiles ) {
             supportedOpenFilter.add( new ViewerFileFilter( pair.first, pair.second ) );

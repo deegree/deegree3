@@ -105,22 +105,22 @@ public abstract class AbstractTransformation {
         try {
             s = sourceCRS.getWrappedCRS().getCodes();
             t = targetCRS.getWrappedCRS().getCodes();
+            int size = s.length + t.length;
+            int countT = 0;
+            CRSCodeType[] codeTypes = new CRSCodeType[size];
+            for ( int i = 0; i < s.length; i++ ) {
+                codeTypes[i] = s[i];
+            }
+            for ( int i = s.length; i < size; i++ ) {
+                codeTypes[i] = t[countT];
+                countT++;
+            }
+            return codeTypes;
         } catch ( UnknownCRSException e1 ) {
             // TODO Auto-generated catch block
             e1.printStackTrace();
         }
-
-        int size = s.length + t.length;
-        int countT = 0;
-        CRSCodeType[] codeTypes = new CRSCodeType[size];
-        for ( int i = 0; i < s.length; i++ ) {
-            codeTypes[i] = s[i];
-        }
-        for ( int i = s.length; i < size; i++ ) {
-            codeTypes[i] = t[countT];
-            countT++;
-        }
-        return codeTypes;
+        return null;
     }
 
 }

@@ -62,18 +62,13 @@ import org.deegree.tools.crs.georeferencing.communication.dialog.ButtonPanel;
  */
 public class CoordinateJumperSpinnerDialog extends JDialog {
 
-    /**
-     * 
-     */
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 8713815431901554757L;
 
     private ButtonPanel buttons;
 
     private SpinnerModel spinnerModelX;
 
     private SpinnerModel spinnerModelY;
-
-    private SpinnerModel spinnerModelSpan;
 
     private JSpinner xCenter;
 

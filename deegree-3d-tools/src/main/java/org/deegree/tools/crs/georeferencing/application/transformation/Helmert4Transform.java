@@ -151,8 +151,7 @@ public class Helmert4Transform extends AbstractTransformation implements Transfo
     private double[] passPointsN_one;
 
     public Helmert4Transform( List<Triple<Point4Values, Point4Values, PointResidual>> mappedPoints,
-                              Footprint footPrint, Scene2DValues sceneValues, CRS sourceCRS, CRS targetCRS,
-                              final int order ) {
+                              Footprint footPrint, Scene2DValues sceneValues, CRS targetCRS, final int order ) {
         super( mappedPoints, footPrint, sceneValues, targetCRS, targetCRS, order );
 
         arraySize = this.getArraySize();

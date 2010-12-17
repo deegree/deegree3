@@ -45,11 +45,12 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
+import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
+import java.awt.image.ImageObserver;
 import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -61,7 +62,6 @@ import java.util.Vector;
 import javax.swing.ButtonModel;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
-import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
@@ -145,67 +145,94 @@ import org.deegree.tools.rendering.viewer.File3dImporter;
  */
 public class Controller {
 
-    private Scene2D model;
+    Scene2D model;
 
-    private Scene2DValues sceneValues;
+    Scene2DValues sceneValues;
 
-    private PointTableFrame tablePanel;
+    PointTableFrame tablePanel;
 
-    private ParameterStore store;
+    ParameterStore store;
 
     private Footprint footPrint;
 
-    private CoordinateJumperModel textFieldModel;
+    CoordinateJumperModel textFieldModel;
 
     private OpenGLEventHandler glHandler;
 
-    private GeoReferencedMouseModel mouseGeoRef;
+    GeoReferencedMouseModel mouseGeoRef;
 
-    private FootprintMouseModel mouseFootprint;
+    FootprintMouseModel mouseFootprint;
 
-    private Point2d changePoint;
+    Point2d changePoint;
 
-    private boolean isHorizontalRefGeoref, isHorizontalRefFoot, start, isControlDown, selectedGeoref, selectedFoot;
+    boolean isHorizontalRefGeoref;
 
-    private boolean isZoomInGeoref, isZoomInFoot, isZoomOutGeoref, isZoomOutFoot;
+    boolean isHorizontalRefFoot;
+
+    boolean start;
+
+    boolean isControlDown;
+
+    boolean selectedGeoref;
+
+    private boolean selectedFoot;
+
+    boolean isZoomInGeoref;
+
+    boolean isZoomInFoot;
+
+    boolean isZoomOutGeoref;
+
+    boolean isZoomOutFoot;
 
     private boolean isInitGeoref, isInitFoot;
 
     private GeometryFactory geom;
 
-    private String fileChoosed;
+    String fileChoosed;
 
     private CRS sourceCRS, targetCRS;
 
-    private List<Triple<Point4Values, Point4Values, PointResidual>> mappedPoints;
+    List<Triple<Point4Values, Point4Values, PointResidual>> mappedPoints;
 
-    private ControllerModel conModel;
+    ControllerModel conModel;
 
-    private NavigationPanel optionNavPanel;
+    NavigationPanel optionNavPanel;
 
-    private SettingsPanel optionSettPanel;
+    SettingsPanel optionSettPanel;
 
-    private OptionDialog optionDialog;
+    OptionDialog optionDialog;
 
     // private CoordinateJumperSpinnerDialog jumperDialog;
-    private CoordinateJumperTextfieldDialog jumperDialog;
+    CoordinateJumperTextfieldDialog jumperDialog;
 
-    private OpenWMS wmsStartDialog;
+    OpenWMS wmsStartDialog;
 
-    private WMSParameterChooser wmsParameter;
+    WMSParameterChooser wmsParameter;
 
-    private GenericSettingsPanel optionSettingPanel;
+    GenericSettingsPanel optionSettingPanel;
 
-    private JToggleButton buttonPanGeoref, buttonPanFoot, buttonZoomInGeoref, buttonZoominFoot, buttonZoomoutGeoref,
-                            buttonZoomoutFoot, buttonCoord;
+    JToggleButton buttonPanGeoref;
 
-    private ButtonModel buttonModel;
+    private JToggleButton buttonPanFoot;
+
+    JToggleButton buttonZoomInGeoref;
+
+    JToggleButton buttonZoominFoot;
+
+    JToggleButton buttonZoomoutGeoref;
+
+    JToggleButton buttonZoomoutFoot;
+
+    JToggleButton buttonCoord;
+
+    ButtonModel buttonModel;
 
     private CheckboxListTransformation checkBoxListTransform;
 
     private CheckBoxListModel modelTransformation;
 
-    private RowColumn rc;
+    RowColumn rc;
 
     public Controller( GRViewerGUI view ) {
 
@@ -278,7 +305,7 @@ public class Controller {
      * @param t
      *            the toggleButton that should be selected/deselected, not <Code>null</Code>.
      */
-    private void selectGeorefToggleButton( JToggleButton t ) {
+    void selectGeorefToggleButton( JToggleButton t ) {
         boolean checkSelected = false;
         buttonModel = t.getModel();
         selectedGeoref = buttonModel.isSelected();
@@ -318,7 +345,7 @@ public class Controller {
      * @param t
      *            the toggleButton that should be selected/deselected, not <Code>null</Code>.
      */
-    private void selectFootprintToggleButton( JToggleButton t ) {
+    void selectFootprintToggleButton( JToggleButton t ) {
 
         boolean checkSelected = false;
         buttonModel = t.getModel();
@@ -348,7 +375,7 @@ public class Controller {
     /**
      * Initializes the footprint scene.
      */
-    private void initFootprintScene( String filePath ) {
+    void initFootprintScene( String filePath ) {
         isInitFoot = true;
         if ( isInitGeoref ) {
 
@@ -417,7 +444,7 @@ public class Controller {
     /**
      * Initializes the georeferenced scene.
      */
-    private void initGeoReferencingScene( Scene2D scene2d ) {
+    void initGeoReferencingScene( Scene2D scene2d ) {
         isInitGeoref = true;
         if ( isInitFoot ) {
 
@@ -447,7 +474,8 @@ public class Controller {
             String name = method.getName();
             if ( name.startsWith( "remove" ) && name.endsWith( "Listener" ) ) {
 
-                Class[] params = method.getParameterTypes();
+                @SuppressWarnings("unchecked")
+                Class<EventListener>[] params = (Class<EventListener>[]) method.getParameterTypes();
                 if ( params.length == 1 ) {
                     EventListener[] listeners = null;
                     try {
@@ -487,7 +515,7 @@ public class Controller {
      * Updates the panels that are responsible for drawing the georeferenced points so that the once clicked points are
      * drawn into the right position.
      */
-    private void updateDrawingPanels() {
+    void updateDrawingPanels() {
         List<Point4Values> panelList = new ArrayList<Point4Values>();
         List<Point4Values> footPanelList = new ArrayList<Point4Values>();
         for ( Triple<Point4Values, Point4Values, PointResidual> p : mappedPoints ) {
@@ -608,7 +636,7 @@ public class Controller {
                             conModel.getPanel().setLastAbstractPoint( null, null, null );
                         }
                     }
-                    if ( deleteableRows != null || deleteableRows.size() != 0 ) {
+                    if ( deleteableRows.size() != 0 ) {
                         int[] temp = new int[deleteableRows.size()];
                         for ( int i = 0; i < temp.length; i++ ) {
                             temp[i] = deleteableRows.get( i );
@@ -715,11 +743,11 @@ public class Controller {
                             wmsParameter = new WMSParameterChooser( wmsStartDialog, mapURLString );
                             wmsParameter.addCheckBoxListener( new ButtonListener() );
                         } catch ( MalformedURLException e1 ) {
-                            new ErrorDialog( wmsStartDialog, JDialog.ERROR,
+                            new ErrorDialog( wmsStartDialog, ImageObserver.ERROR,
                                              "The requested URL is malformed! There is no response gotten from the server. " );
                             exceptionThrown = true;
                         } catch ( NullPointerException e2 ) {
-                            new ErrorDialog( wmsStartDialog, JDialog.ERROR,
+                            new ErrorDialog( wmsStartDialog, ImageObserver.ERROR,
                                              "The requested URL is malformed! There is no response gotten from the server. " );
                             exceptionThrown = true;
                         }
@@ -737,12 +765,12 @@ public class Controller {
                         String format = wmsParameter.getCheckBoxFormatAsString().toString();
 
                         if ( layers == null || layers.length() == 0 ) {
-                            new ErrorDialog( wmsParameter, JDialog.ERROR,
+                            new ErrorDialog( wmsParameter, ImageObserver.ERROR,
                                              "There is no Layer selected. Please selected at least one. " );
                         } else if ( format == null || format.equals( "" ) ) {
-                            new ErrorDialog( wmsParameter, JDialog.ERROR, "There is no format selected. " );
+                            new ErrorDialog( wmsParameter, ImageObserver.ERROR, "There is no format selected. " );
                         } else if ( crs == null ) {
-                            new ErrorDialog( wmsParameter, JDialog.ERROR, "There is no CRS selected. " );
+                            new ErrorDialog( wmsParameter, ImageObserver.ERROR, "There is no CRS selected. " );
                         } else {
                             Envelope env = wmsParameter.getEnvelope( crs, layerList );
                             if ( env != null ) {
@@ -752,7 +780,8 @@ public class Controller {
                                 initGeoReferencingScene( model );
                                 wmsParameter.setVisible( false );
                             } else {
-                                new ErrorDialog( wmsParameter, JDialog.ERROR, "There is no Envelope for this request. " );
+                                new ErrorDialog( wmsParameter, ImageObserver.ERROR,
+                                                 "There is no Envelope for this request. " );
                             }
                         }
 
@@ -842,7 +871,7 @@ public class Controller {
                 conModel.getPanel().repaint();
 
             } catch ( NumberFormatException e1 ) {
-                new ErrorDialog( conModel.getView(), JDialog.ERROR, e1.getMessage() );
+                new ErrorDialog( conModel.getView(), ImageObserver.ERROR, e1.getMessage() );
             }
 
         }
@@ -924,8 +953,7 @@ public class Controller {
      * @param column
      *            the column to be changed, not <Code>null</Code>.
      */
-    private boolean changePointLocation( Triple<Point4Values, Point4Values, PointResidual> p, Object data, int row,
-                                         int column ) {
+    boolean changePointLocation( Triple<Point4Values, Point4Values, PointResidual> p, Object data, int row, int column ) {
         boolean changed = false;
         AbstractGRPoint pixelValue = null;
         AbstractGRPoint worldCoords = null;
@@ -1041,12 +1069,7 @@ public class Controller {
      * 
      * @version $Revision$, $Date$
      */
-    class Scene2DMouseListener implements MouseListener {
-
-        @Override
-        public void mouseClicked( MouseEvent arg0 ) {
-
-        }
+    class Scene2DMouseListener extends MouseAdapter {
 
         @Override
         public void mouseEntered( MouseEvent m ) {
@@ -1311,6 +1334,7 @@ public class Controller {
 
         }
 
+        @Override
         public void run() {
 
             changePoint = new Point2d( changing.x, changing.y );
@@ -1508,7 +1532,7 @@ public class Controller {
     /**
      * Initializes the computing and the painting of the maps.
      */
-    private void init() {
+    void init() {
 
         if ( model != null ) {
             sceneValues.setGeorefDimension( new Rectangle( conModel.getPanel().getWidth(),
@@ -1524,7 +1548,7 @@ public class Controller {
     /**
      * Sets values to the JTableModel.
      */
-    private void setValues() {
+    void setValues() {
         conModel.getFootPanel().addToSelectedPoints( conModel.getFootPanel().getLastAbstractPoint() );
         conModel.getPanel().addToSelectedPoints( conModel.getPanel().getLastAbstractPoint() );
         if ( mappedPoints != null && mappedPoints.size() >= 1 ) {
@@ -1547,7 +1571,7 @@ public class Controller {
      *            of the transformationMethod, not <Code>null</Code>.
      * @return the transformationMethod to be used.
      */
-    private TransformationMethod determineTransformationType( TransformationType type ) {
+    TransformationMethod determineTransformationType( TransformationType type ) {
         TransformationMethod t = null;
         switch ( type ) {
         case Polynomial:
@@ -1556,7 +1580,7 @@ public class Controller {
 
             break;
         case Helmert_4:
-            t = new Helmert4Transform( mappedPoints, footPrint, sceneValues, sourceCRS, targetCRS, conModel.getOrder() );
+            t = new Helmert4Transform( mappedPoints, footPrint, sceneValues, targetCRS, conModel.getOrder() );
             break;
 
         case Affine:
@@ -1575,7 +1599,7 @@ public class Controller {
      * @param type
      * 
      */
-    private void updateResiduals( TransformationType type ) {
+    void updateResiduals( TransformationType type ) {
 
         TransformationMethod t = determineTransformationType( type );
         PointResidual[] r = t.calculateResiduals();
@@ -1583,7 +1607,7 @@ public class Controller {
             Vector<Vector<? extends Double>> data = new Vector<Vector<? extends Double>>();
             int counter = 0;
             for ( Triple<Point4Values, Point4Values, PointResidual> point : mappedPoints ) {
-                Vector element = new Vector( 6 );
+                Vector<Double> element = new Vector<Double>( 6 );
                 element.add( point.second.getWorldCoords().x );
                 element.add( point.second.getWorldCoords().y );
                 element.add( point.first.getWorldCoords().x );
@@ -1600,7 +1624,7 @@ public class Controller {
         }
     }
 
-    private void updateResidualsWithLastAbstractPoint() {
+    void updateResidualsWithLastAbstractPoint() {
         if ( conModel.getFootPanel().getLastAbstractPoint() != null
              && conModel.getPanel().getLastAbstractPoint() != null ) {
             mappedPoints.add( new Triple<Point4Values, Point4Values, PointResidual>(
@@ -1635,10 +1659,10 @@ public class Controller {
     /**
      * Removes sample points in panels and the table.
      * 
-     * @param pointFromTable
+     * @param tableRows
      *            that should be removed, could be <Code>null</Code>
      */
-    private void removeFromMappedPoints( int[] tableRows ) {
+    void removeFromMappedPoints( int[] tableRows ) {
         for ( int i = tableRows.length - 1; i >= 0; i-- ) {
             mappedPoints.remove( tableRows[i] );
         }
@@ -1679,7 +1703,7 @@ public class Controller {
     /**
      * Removes everything after a complete deletion of the points.
      */
-    private void removeAllFromMappedPoints() {
+    void removeAllFromMappedPoints() {
         mappedPoints = new ArrayList<Triple<Point4Values, Point4Values, PointResidual>>();
         tablePanel.removeAllRows();
         conModel.getPanel().removeAllFromSelectedPoints();
@@ -1696,7 +1720,7 @@ public class Controller {
     /**
      * Resets the focus of the panels and the startPanel.
      */
-    private void reset() {
+    void reset() {
         conModel.getPanel().setFocus( false );
         conModel.getFootPanel().setFocus( false );
         start = false;

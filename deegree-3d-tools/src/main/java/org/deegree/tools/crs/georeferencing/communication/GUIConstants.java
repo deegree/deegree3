@@ -47,10 +47,6 @@ import java.awt.Dimension;
  */
 public class GUIConstants {
 
-    private GUIConstants() {
-
-    }
-
     public static final String WINDOW_TITLE = " deegree3 Georeferencing Client ";
 
     /*

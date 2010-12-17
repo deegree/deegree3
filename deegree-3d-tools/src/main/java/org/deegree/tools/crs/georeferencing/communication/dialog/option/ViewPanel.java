@@ -57,6 +57,8 @@ import org.deegree.tools.crs.georeferencing.model.buttons.ToggleButtonModel;
  */
 public class ViewPanel extends GenericSettingsPanel {
 
+    private static final long serialVersionUID = 4846149540675430877L;
+
     private static final String TWO = "2pt";
 
     private static final String THREE = "3pt";
@@ -67,12 +69,28 @@ public class ViewPanel extends GenericSettingsPanel {
 
     private static final String TEN = "10pt";
 
+    @SuppressWarnings("unchecked")
     private final Pair<AbstractButton, Integer>[] radiobuttons = new Pair[] {
-                                                                             new Pair( new JRadioButton( TWO ), 2 ),
-                                                                             new Pair( new JRadioButton( THREE ), 3 ),
-                                                                             new Pair( new JRadioButton( DEFAULT ), 5 ),
-                                                                             new Pair( new JRadioButton( SEVEN ), 7 ),
-                                                                             new Pair( new JRadioButton( TEN ), 10 ) };
+                                                                             new Pair<JRadioButton, Integer>(
+                                                                                                              new JRadioButton(
+                                                                                                                                TWO ),
+                                                                                                              2 ),
+                                                                             new Pair<JRadioButton, Integer>(
+                                                                                                              new JRadioButton(
+                                                                                                                                THREE ),
+                                                                                                              3 ),
+                                                                             new Pair<JRadioButton, Integer>(
+                                                                                                              new JRadioButton(
+                                                                                                                                DEFAULT ),
+                                                                                                              5 ),
+                                                                             new Pair<JRadioButton, Integer>(
+                                                                                                              new JRadioButton(
+                                                                                                                                SEVEN ),
+                                                                                                              7 ),
+                                                                             new Pair<JRadioButton, Integer>(
+                                                                                                              new JRadioButton(
+                                                                                                                                TEN ),
+                                                                                                              10 ) };
 
     private final ToggleButtonModel tbm;
 

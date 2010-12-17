@@ -36,6 +36,7 @@
 package org.deegree.tools.crs.georeferencing.communication.dialog.error;
 
 import java.awt.Component;
+import java.awt.image.ImageObserver;
 
 import javax.swing.JDialog;
 import javax.swing.JOptionPane;
@@ -72,7 +73,7 @@ public class ErrorDialog extends JDialog {
 
         switch ( messageType ) {
 
-        case JDialog.ERROR:
+        case ImageObserver.ERROR:
             JOptionPane.showMessageDialog( com, messageText, "Error", JOptionPane.ERROR_MESSAGE );
         }
 

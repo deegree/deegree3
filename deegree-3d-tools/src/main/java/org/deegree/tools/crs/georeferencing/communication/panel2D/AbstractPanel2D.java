@@ -64,6 +64,8 @@ import org.deegree.tools.crs.georeferencing.model.points.Point4Values;
  */
 public abstract class AbstractPanel2D extends JPanel {
 
+    private static final long serialVersionUID = 132095136615318676L;
+
     protected boolean focus;
 
     protected List<Point4Values> selectedPoints;
@@ -141,17 +143,6 @@ public abstract class AbstractPanel2D extends JPanel {
         selectedPoints.add( point );
 
     }
-
-    public void updateSelectedPoint( Object value, int row, int column ) {
-        for ( Point4Values p : selectedPoints ) {
-
-        }
-
-    }
-
-    // public void removeFromSelectedPoints( Point4Values point ) {
-    // selectedPoints.remove( point );
-    // }
 
     public void removeAllFromSelectedPoints() {
         selectedPoints = new ArrayList<Point4Values>();

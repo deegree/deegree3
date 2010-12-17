@@ -85,7 +85,6 @@ public class Scene2DValues {
     /**
      * Creates a new instance of <Code>Scene2DValues</Code>
      * 
-     * @param options
      * @param geom
      */
     public Scene2DValues( GeometryFactory geom ) {
@@ -129,6 +128,8 @@ public class Scene2DValues {
             double percentY = getWorldDimension( pixelPoint ).y;
 
             return new FootprintPoint( getMinX + percentX, getMaxY - percentY );
+        case ResidualPoint:
+            break;
 
         }
 
@@ -170,6 +171,8 @@ public class Scene2DValues {
             double percentY = ( dimension.y / dimensionFootprint.height ) * spanY;
 
             return new FootprintPoint( percentX, percentY );
+        case ResidualPoint:
+            break;
 
         }
 
@@ -207,6 +210,8 @@ public class Scene2DValues {
             pixelPointX = new Double( ( percentPoint.x * dimensionFootprint.width ) ).intValue();
             pixelPointY = new Double( ( 1 - percentPoint.y ) * dimensionFootprint.height ).intValue();
             return new int[] { pixelPointX, pixelPointY };
+        case ResidualPoint:
+            break;
         }
 
         return null;
@@ -273,11 +278,9 @@ public class Scene2DValues {
      * @param yCoord
      *            y-coordiante in worldCoordinate-representation, not be <Code>null</Code>.
      * @param spanX
-     *            x-dimension that should be the width of the envelope, if not specified use
-     *            {@link #setCentroidWorldEnvelopePosition(double, double)} instead.
+     *            x-dimension that should be the width of the envelope, if not specified use ?? instead.
      * @param spanY
-     *            y-dimension that should be the height of the envelope, if not specified use
-     *            {@link #setCentroidWorldEnvelopePosition(double, double)} instead.
+     *            y-dimension that should be the height of the envelope, if not specified use ?? instead.
      */
     public void setCentroidWorldEnvelopePosition( double xCoord, double yCoord, double spanX, double spanY,
                                                   PointType type ) {
@@ -324,6 +327,8 @@ public class Scene2DValues {
             // transformProportionFootprint( e );
             // break;
             throw new NotImplementedError();
+        case ResidualPoint:
+            break;
         }
     }
 
@@ -358,6 +363,8 @@ public class Scene2DValues {
 
             percent = computePercentPixel( dimensionFootprint, mouseChange );
             this.envelopeFootprint = createTranslatedEnv( envelopeFootprint, percent );
+            break;
+        case ResidualPoint:
             break;
         }
 
@@ -402,15 +409,17 @@ public class Scene2DValues {
         AbstractGRPoint center;
         switch ( mousePosition.getPointType() ) {
         case GeoreferencedPoint:
-            center = (GeoReferencedPoint) getWorldPoint( mousePosition );
+            center = getWorldPoint( mousePosition );
             envelopeGeoref = createZoomedEnv( this.envelopeGeoref, newSize, center );
             System.out.println( "[Scene2DValues] Subrasterzoomed " + envelopeGeoref + " SPAN: "
                                 + envelopeGeoref.getSpan0() + ", " + envelopeGeoref.getSpan1() );
             break;
         case FootprintPoint:
-            center = (FootprintPoint) getWorldPoint( mousePosition );
+            center = getWorldPoint( mousePosition );
             this.envelopeFootprint = createZoomedEnv( envelopeFootprint, newSize, center );
             System.out.println( "[Scene2DValues] envZoomed " + envelopeFootprint );
+            break;
+        case ResidualPoint:
             break;
         }
     }
@@ -449,9 +458,6 @@ public class Scene2DValues {
     /**
      * Creates a new envelope from an envelope and a centerPoint and translates it to the relative bounds.
      * 
-     * @param env
-     * @param center
-     * @return
      */
     public void createZoomedEnvWithMinPoint( PointType type, Rectangle rect ) {
         double minXRaster = rect.getMinX();
@@ -466,19 +472,20 @@ public class Scene2DValues {
             minPoint = getWorldPoint( new GeoReferencedPoint( minXRaster, minYRaster ) );
             dim = getWorldDimension( new GeoReferencedPoint( width, height ) );
 
-            transformAspectRatioGeorefPartial( geom.createEnvelope( minPoint.x, minPoint.y - dim.y,
-                                                                    minPoint.x + dim.x, minPoint.y, crs ) );
+            transformAspectRatioGeorefPartial( geom.createEnvelope( minPoint.x, minPoint.y - dim.y, minPoint.x + dim.x,
+                                                                    minPoint.y, crs ) );
             break;
 
         case FootprintPoint:
             minPoint = getWorldPoint( new FootprintPoint( minXRaster, minYRaster ) );
             dim = getWorldDimension( new FootprintPoint( width, height ) );
 
-            transformProportionPartialOrientationFoot( geom.createEnvelope( minPoint.x, minPoint.y
-                                                                                             - dim.y,
-                                                                            minPoint.x + dim.x,
+            transformProportionPartialOrientationFoot( geom.createEnvelope( minPoint.x, minPoint.y - dim.y, minPoint.x
+                                                                                                            + dim.x,
                                                                             minPoint.y, null ) );
 
+            break;
+        case ResidualPoint:
             break;
         }
 
@@ -525,10 +532,9 @@ public class Scene2DValues {
             return geom.createEnvelope( grEnv.getMinX(), grEnv.getMinY(), grEnv.getMaxX(), grEnv.getMaxY(),
                                         envelope.getCoordinateSystem() );
 
-        } else {
-            return geom.createEnvelope( grEnv.getMinX(), grEnv.getMinY(), grEnv.getMaxX(), grEnv.getMaxY(),
-                                        envelope.getCoordinateSystem() );
         }
+        return geom.createEnvelope( grEnv.getMinX(), grEnv.getMinY(), grEnv.getMaxX(), grEnv.getMaxY(),
+                                    envelope.getCoordinateSystem() );
     }
 
     /**

@@ -48,8 +48,6 @@ import javax.swing.JPanel;
 import javax.swing.JToggleButton;
 
 import org.deegree.tools.crs.georeferencing.communication.GUIConstants;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Abstract base class for all <Code>NavigationBarPanel</Code>s.
@@ -61,12 +59,7 @@ import org.slf4j.LoggerFactory;
  */
 public abstract class AbstractNavigationBarPanel extends JPanel {
 
-    private static final Logger LOG = LoggerFactory.getLogger( AbstractNavigationBarPanel.class );
-
-    /**
-     * 
-     */
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1263362795629456322L;
 
     private static final String PAN = "/org/deegree/tools/crs/georeferencing/communication/icons/pan.png";
 

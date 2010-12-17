@@ -47,6 +47,8 @@ import javax.swing.JPanel;
  */
 public abstract class GenericSettingsPanel extends JPanel {
 
+    private static final long serialVersionUID = -7391406858300401706L;
+
     /**
      * 
      * The paneltypes that are provided.

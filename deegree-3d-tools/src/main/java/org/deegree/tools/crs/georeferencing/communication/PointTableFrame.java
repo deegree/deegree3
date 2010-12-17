@@ -64,6 +64,8 @@ import org.deegree.tools.crs.georeferencing.model.points.AbstractGRPoint;
  */
 public class PointTableFrame extends JFrame {
 
+    private static final long serialVersionUID = -2324808128799515436L;
+
     public final static String BUTTON_DELETE_SELECTED = "Delete selected";
 
     public final static String BUTTON_DELETE_ALL = "Delete all";
