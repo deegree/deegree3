@@ -45,6 +45,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.deegree.commons.utils.JDBCUtils;
 import org.deegree.coverage.raster.geom.RasterGeoReference.OriginLocation;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryFactory;
@@ -57,7 +58,7 @@ public class MultiLevelMemoryTileGridIndex implements MultiLevelRasterTileIndex 
 
     private final static GeometryFactory geomFac = new GeometryFactory();
 
-    private final int avgLoad;
+    // private final int avgLoad;
 
     // quality levels, ordered descending (best quality first)
     private List<RasterLevel> levels = new ArrayList<RasterLevel>();
@@ -76,13 +77,13 @@ public class MultiLevelMemoryTileGridIndex implements MultiLevelRasterTileIndex 
     private OriginLocation location;
 
     public MultiLevelMemoryTileGridIndex( String jdbcUrl, String tileTableName, String levelTableName, float MIN_X,
-                                          float MIN_Y, float MAX_X, float MAX_Y, int avgLoad, OriginLocation location )
+                                          float MIN_Y, float MAX_X, float MAX_Y, OriginLocation location )
                             throws SQLException {
 
         this.jdbcUrl = jdbcUrl;
         this.tileTableName = tileTableName;
         this.levelTableName = levelTableName;
-        this.avgLoad = avgLoad;
+        // this.avgLoad = avgLoad;
         this.areaMinX = MIN_X;
         this.areaMinY = MIN_Y;
         this.areaMaxX = MAX_X;
@@ -145,55 +146,70 @@ public class MultiLevelMemoryTileGridIndex implements MultiLevelRasterTileIndex 
         String sql = "SELECT id,level,dir,file,bbox FROM " + tileTableName + " WHERE level=" + level.getLevel()
                      + " AND bbox && " + box3dArgument + " AND intersects(bbox," + box3dArgument + ")";
         System.out.println( sql );
-        Statement stmt = conn.createStatement();
-        ResultSet rs = stmt.executeQuery( sql );
-        int num = 0;
-        while ( rs.next() ) {
-            num++;
-            int id = rs.getInt( 1 );
-            int levelNo = rs.getInt( 2 );
-            String dir = rs.getString( 3 );
-            String fileName = rs.getString( 4 );
+        Statement stmt = null;
+        ResultSet rs = null;
+        try {
+            stmt = conn.createStatement();
+            rs = stmt.executeQuery( sql );
+            int num = 0;
+            while ( rs.next() ) {
+                num++;
+                int id = rs.getInt( 1 );
+                int levelNo = rs.getInt( 2 );
+                String dir = rs.getString( 3 );
+                String fileName = rs.getString( 4 );
 
-            // get the bounding box (a bit of a hack)
-            PGgeometry geom = (PGgeometry) rs.getObject( 5 );
-            Polygon bboxPolygon = (Polygon) geom.getGeometry();
-            Point min = bboxPolygon.getFirstPoint();
-            Point max = bboxPolygon.getPoint( bboxPolygon.numPoints() - 3 );
-            float minX = (float) min.x;
-            float minY = (float) min.y;
-            float maxX = (float) max.x;
-            float maxY = (float) max.y;
+                // get the bounding box (a bit of a hack)
+                PGgeometry geom = (PGgeometry) rs.getObject( 5 );
+                Polygon bboxPolygon = (Polygon) geom.getGeometry();
+                Point min = bboxPolygon.getFirstPoint();
+                Point max = bboxPolygon.getPoint( bboxPolygon.numPoints() - 3 );
+                float minX = (float) min.x;
+                float minY = (float) min.y;
+                float maxX = (float) max.x;
+                float maxY = (float) max.y;
 
-            if ( level.getLevel() < 9 ) {
-                tiles.add( new TileFile( id, levelNo, geomFac.createEnvelope( minX, minY, maxX, maxY, null ), dir,
-                                         fileName, (float) level.getMaxScale(), (float) -level.getMaxScale(), location ) );
-            } else {
-                tiles.add( new TileFile( id, levelNo, geomFac.createEnvelope( minX, minY, maxX, maxY, null ), dir,
-                                         fileName, 51.2f, -51.2f, location ) );
+                if ( level.getLevel() < 9 ) {
+                    tiles.add( new TileFile( id, levelNo, geomFac.createEnvelope( minX, minY, maxX, maxY, null ), dir,
+                                             fileName, (float) level.getMaxScale(), (float) -level.getMaxScale(),
+                                             location ) );
+                } else {
+                    tiles.add( new TileFile( id, levelNo, geomFac.createEnvelope( minX, minY, maxX, maxY, null ), dir,
+                                             fileName, 51.2f, -51.2f, location ) );
+                }
             }
+            System.out.println( "Total: " + tiles.size() + " tiles." );
+            return new MemoryRasterTileGridIndex( areaMinX, areaMinY, areaMaxX, areaMaxY, tiles );
+        } finally {
+            JDBCUtils.close( rs );
+            JDBCUtils.close( stmt );
         }
-        System.out.println( "Total: " + tiles.size() + " tiles." );
-        return new MemoryRasterTileGridIndex( areaMinX, areaMinY, areaMaxX, areaMaxY, tiles );
     }
 
     private List<RasterLevel> fetchScaleLevels( Connection conn )
                             throws SQLException {
 
         List<RasterLevel> scaleLevels = new ArrayList<RasterLevel>();
-        Statement stmt = conn.createStatement();
-        ResultSet rs = stmt.executeQuery( "SELECT id, level, minscale, maxscale FROM " + levelTableName
-                                          + " ORDER BY minscale" );
+        Statement stmt = null;
+        ResultSet rs = null;
+        try {
+            stmt = conn.createStatement();
+            rs = stmt.executeQuery( "SELECT id, level, minscale, maxscale FROM " + levelTableName
+                                    + " ORDER BY minscale" );
 
-        while ( rs.next() ) {
-            int id = rs.getInt( 1 );
-            int level = rs.getInt( 2 );
-            double minScale = rs.getDouble( 3 );
-            double maxScale = rs.getDouble( 4 );
-            RasterLevel o = new RasterLevel( id, level, minScale, maxScale );
-            scaleLevels.add( o );
+            while ( rs.next() ) {
+                int id = rs.getInt( 1 );
+                int level = rs.getInt( 2 );
+                double minScale = rs.getDouble( 3 );
+                double maxScale = rs.getDouble( 4 );
+                RasterLevel o = new RasterLevel( id, level, minScale, maxScale );
+                scaleLevels.add( o );
+            }
+            return scaleLevels;
+        } finally {
+            JDBCUtils.close( rs );
+            JDBCUtils.close( stmt );
         }
-        return scaleLevels;
     }
 
     private Connection getDBConnection()
@@ -201,13 +217,4 @@ public class MultiLevelMemoryTileGridIndex implements MultiLevelRasterTileIndex 
         return DriverManager.getConnection( jdbcUrl );
     }
 
-    private void releaseConnection( Connection conn ) {
-        if ( conn != null ) {
-            try {
-                conn.close();
-            } catch ( SQLException e ) {
-                e.printStackTrace();
-            }
-        }
-    }
 }

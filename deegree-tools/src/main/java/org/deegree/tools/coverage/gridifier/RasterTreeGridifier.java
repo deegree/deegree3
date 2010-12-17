@@ -164,9 +164,18 @@ public class RasterTreeGridifier {
     private RasterTreeGridifier( String rtbBaseDir, float minX, float minY, float maxX, float maxY, String jdbcUrl,
                                  String rakTableName, String pyrTableName, String outputDir, int tileHeight,
                                  int tileWidth, long maxBlobSize, OriginLocation location ) throws SQLException {
-        this( rtbBaseDir, minX, minY, maxX, maxY, outputDir, tileHeight, tileWidth, maxBlobSize,
-              new MultiLevelMemoryTileGridIndex( jdbcUrl, rakTableName, pyrTableName, minX, minY, maxX, maxY, 100,
-                                                 location ), location );
+        this(
+              rtbBaseDir,
+              minX,
+              minY,
+              maxX,
+              maxY,
+              outputDir,
+              tileHeight,
+              tileWidth,
+              maxBlobSize,
+              new MultiLevelMemoryTileGridIndex( jdbcUrl, rakTableName, pyrTableName, minX, minY, maxX, maxY, location ),
+              location );
     }
 
     private RasterTreeGridifier( String rtbBaseDir, float minX, float minY, float maxX, float maxY, String outputDir,

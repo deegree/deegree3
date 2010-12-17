@@ -45,6 +45,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.deegree.commons.utils.JDBCUtils;
 import org.deegree.coverage.raster.geom.RasterGeoReference.OriginLocation;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryFactory;
@@ -158,7 +159,8 @@ public class PostGISRasterTileIndex implements MultiLevelRasterTileIndex {
                 break;
             }
         }
-        System.out.println( "Determined Level, max meters per pixels:  " + level.getMaxScale() + ", level: " + level );
+        System.out.println( "Determined Level, max meters per pixels:  " + ( level == null ? -1 : level.getMaxScale() )
+                            + ", level: " + level );
         return level;
     }
 
@@ -166,19 +168,26 @@ public class PostGISRasterTileIndex implements MultiLevelRasterTileIndex {
                             throws SQLException {
 
         List<RasterLevel> scaleLevels = new ArrayList<RasterLevel>();
-        Statement stmt = conn.createStatement();
-        ResultSet rs = stmt.executeQuery( "SELECT id, level, minscale, maxscale FROM " + levelTableName
-                                          + " ORDER BY minscale" );
+        Statement stmt = null;
+        ResultSet rs = null;
+        try {
+            stmt = conn.createStatement();
+            rs = stmt.executeQuery( "SELECT id, level, minscale, maxscale FROM " + levelTableName
+                                    + " ORDER BY minscale" );
 
-        while ( rs.next() ) {
-            int id = rs.getInt( 1 );
-            int level = rs.getInt( 2 );
-            double minScale = rs.getDouble( 3 );
-            double maxScale = rs.getDouble( 4 );
-            RasterLevel o = new RasterLevel( id, level, minScale, maxScale );
-            scaleLevels.add( o );
+            while ( rs.next() ) {
+                int id = rs.getInt( 1 );
+                int level = rs.getInt( 2 );
+                double minScale = rs.getDouble( 3 );
+                double maxScale = rs.getDouble( 4 );
+                RasterLevel o = new RasterLevel( id, level, minScale, maxScale );
+                scaleLevels.add( o );
+            }
+            return scaleLevels.toArray( new RasterLevel[scaleLevels.size()] );
+        } finally {
+            JDBCUtils.close( rs );
+            JDBCUtils.close( stmt );
         }
-        return scaleLevels.toArray( new RasterLevel[scaleLevels.size()] );
     }
 
     private Connection getDBConnection()

@@ -114,7 +114,7 @@ public class RasterConverter {
         try {
             line = parser.parse( options, args );
             verbose = line.hasOption( OPT_VERBOSE );
-            init( line );
+            System.exit( init( line ) );
         } catch ( ParseException exp ) {
             System.err.println( "ERROR: Invalid command line: " + exp.getMessage() );
             printHelp( options );
@@ -138,7 +138,7 @@ public class RasterConverter {
      * @throws ParseException
      * @throws InterruptedException
      */
-    private static void init( CommandLine line )
+    private static int init( CommandLine line )
                             throws IllegalArgumentException, TransformationException, UnknownCRSException, IOException,
                             ParseException, InterruptedException {
 
@@ -154,7 +154,7 @@ public class RasterConverter {
         String ext = line.getOptionValue( OPT_OUTPUT_TYPE );
         AbstractCoverage raster = RasterOptionsParser.loadCoverage( line, options );
         RasterConverter converter = new RasterConverter();
-        converter.convert( raster, outputLoc, numThreads, ext, line.hasOption( OPT_VERBOSE ) );
+        return converter.convert( raster, outputLoc, numThreads, ext, line.hasOption( OPT_VERBOSE ) );
     }
 
     /**
@@ -164,14 +164,14 @@ public class RasterConverter {
      * @throws IOException
      * 
      */
-    private void convert( AbstractCoverage source, String outLoc, int numThreads, String outputFormat,
-                          final boolean verbose )
+    private int convert( AbstractCoverage source, String outLoc, int numThreads, String outputFormat,
+                         final boolean verbose )
                             throws InterruptedException, IOException {
         List<SimpleRaster> tiles = new LinkedList<SimpleRaster>();
         getTiles( source, tiles );
         if ( tiles.isEmpty() ) {
             System.err.println( "Found no raster tiles in source: " + source + ", hence nothing to convert." );
-            System.exit( 1 );
+            return 1;
         }
         ExecutorService executor = Executors.newFixedThreadPool( numThreads );
         SimpleRaster simpleRaster = tiles.get( 0 );
@@ -217,6 +217,7 @@ public class RasterConverter {
 
         }
         shutdownExecutorAndWaitForFinish( executor );
+        return 0;
     }
 
     private File getOutputLocation( File tileFile, String reqOutputLocation, String outputFormat, boolean singleTile )

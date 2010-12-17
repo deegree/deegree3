@@ -68,7 +68,6 @@ public class MultiResolutionTileGrid implements MultiLevelRasterTileIndex {
 
     /**
      * @param topLevelResolutionDir
-     * @param extension
      * @param recursive
      * @param options
      *            containing information about the loaded raster.
@@ -122,7 +121,7 @@ public class MultiResolutionTileGrid implements MultiLevelRasterTileIndex {
         return result;
     }
 
-    private class MyTile extends TileFile {
+    private static class MyTile extends TileFile {
 
         private SimpleRaster raster;
 

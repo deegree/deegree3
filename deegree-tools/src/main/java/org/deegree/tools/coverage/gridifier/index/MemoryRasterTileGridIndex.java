@@ -60,9 +60,9 @@ public class MemoryRasterTileGridIndex {
 
     private final float domainMinY;
 
-    private final float domainMaxX;
+    // private final float domainMaxX;
 
-    private final float domainMaxY;
+    // private final float domainMaxY;
 
     private final float domainWidth;
 
@@ -74,20 +74,20 @@ public class MemoryRasterTileGridIndex {
 
     private List<TileFile>[] gridCells;
 
-    private float cellWidth;
+    // private float cellWidth;
 
-    private float cellHeight;
+    // private float cellHeight;
 
     @SuppressWarnings("unchecked")
     public MemoryRasterTileGridIndex( float minX, float minY, float maxX, float maxY, Collection<TileFile> tileFiles ) {
         this.domainMinX = minX;
         this.domainMinY = minY;
-        this.domainMaxX = maxX;
-        this.domainMaxY = maxY;
+        // this.domainMaxX = maxX;
+        // this.domainMaxY = maxY;
         this.domainWidth = maxX - minX;
         this.domainHeight = maxY - minY;
 
-        int n = (int) ( Math.sqrt( (double) tileFiles.size() / (double) AVG_LOAD ) + 0.5 );
+        int n = (int) ( Math.sqrt( tileFiles.size() / AVG_LOAD ) + 0.5 );
         if ( n == 0 ) {
             n = 1;
         }
@@ -95,8 +95,8 @@ public class MemoryRasterTileGridIndex {
                             + AVG_LOAD );
         rows = n;
         columns = n;
-        cellWidth = domainWidth / columns;
-        cellHeight = domainHeight / columns;
+        // cellWidth = domainWidth / columns;
+        // cellHeight = domainHeight / columns;
         gridCells = new List[rows * columns];
 
         for ( TileFile tileFile : tileFiles ) {
