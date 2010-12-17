@@ -53,6 +53,8 @@ import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.PosixParser;
+import org.deegree.commons.tools.CommandUtils;
+import org.deegree.commons.tools.Tool;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.stax.IndentingXMLStreamWriter;
 import org.deegree.feature.persistence.FeatureStore;
@@ -60,8 +62,6 @@ import org.deegree.feature.persistence.FeatureStoreException;
 import org.deegree.feature.persistence.FeatureStoreManager;
 import org.deegree.feature.types.ApplicationSchema;
 import org.deegree.feature.types.FeatureType;
-import org.deegree.tools.CommandUtils;
-import org.deegree.tools.annotations.Tool;
 import org.deegree.tools.i18n.Messages;
 import org.slf4j.Logger;
 

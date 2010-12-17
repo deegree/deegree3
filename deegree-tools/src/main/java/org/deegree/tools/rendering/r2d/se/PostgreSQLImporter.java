@@ -47,11 +47,11 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.PosixParser;
 import org.deegree.commons.jdbc.ConnectionManager;
+import org.deegree.commons.tools.CommandUtils;
+import org.deegree.commons.tools.Tool;
 import org.deegree.rendering.r2d.se.parser.PostgreSQLWriter;
 import org.deegree.rendering.r2d.se.parser.SymbologyParser;
 import org.deegree.rendering.r2d.se.unevaluated.Style;
-import org.deegree.tools.CommandUtils;
-import org.deegree.tools.annotations.Tool;
 import org.deegree.tools.i18n.Messages;
 
 /**

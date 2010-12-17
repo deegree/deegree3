@@ -35,16 +35,16 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.tools.coverage;
 
-import static org.deegree.tools.CommandUtils.OPT_VERBOSE;
-import static org.deegree.tools.CommandUtils.getFloatOption;
-import static org.deegree.tools.CommandUtils.getIntOption;
-import static org.deegree.tools.coverage.RasterCommandUtils.getInterpolationType;
-import static org.deegree.tools.coverage.RasterCommandUtils.parseBBOX;
-import static org.deegree.tools.coverage.utils.RasterOptionsParser.OPT_OUTPUT_TYPE;
-import static org.deegree.tools.coverage.utils.RasterOptionsParser.OPT_OUTPUT_TYPE_ABBREV;
-import static org.deegree.tools.coverage.utils.RasterOptionsParser.OPT_RASTER_OUT_LOC;
-import static org.deegree.tools.coverage.utils.RasterOptionsParser.OPT_RASTER_OUT_LOC_ABBREV;
-import static org.deegree.tools.coverage.utils.RasterOptionsParser.OPT_TYPE_DESC;
+import static org.deegree.commons.tools.CommandUtils.OPT_VERBOSE;
+import static org.deegree.commons.tools.CommandUtils.getFloatOption;
+import static org.deegree.commons.tools.CommandUtils.getIntOption;
+import static org.deegree.commons.tools.coverage.RasterCommandUtils.getInterpolationType;
+import static org.deegree.commons.tools.coverage.RasterCommandUtils.parseBBOX;
+import static org.deegree.commons.tools.coverage.RasterOptionsParser.OPT_OUTPUT_TYPE;
+import static org.deegree.commons.tools.coverage.RasterOptionsParser.OPT_OUTPUT_TYPE_ABBREV;
+import static org.deegree.commons.tools.coverage.RasterOptionsParser.OPT_RASTER_OUT_LOC;
+import static org.deegree.commons.tools.coverage.RasterOptionsParser.OPT_RASTER_OUT_LOC_ABBREV;
+import static org.deegree.commons.tools.coverage.RasterOptionsParser.OPT_TYPE_DESC;
 
 import java.io.File;
 import java.io.IOException;
@@ -55,6 +55,10 @@ import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.PosixParser;
+import org.deegree.commons.tools.CommandUtils;
+import org.deegree.commons.tools.Tool;
+import org.deegree.commons.tools.coverage.RasterCommandUtils;
+import org.deegree.commons.tools.coverage.RasterOptionsParser;
 import org.deegree.coverage.AbstractCoverage;
 import org.deegree.coverage.raster.AbstractRaster;
 import org.deegree.coverage.raster.interpolation.InterpolationType;
@@ -63,10 +67,7 @@ import org.deegree.cs.CRS;
 import org.deegree.cs.exceptions.TransformationException;
 import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.geometry.Envelope;
-import org.deegree.tools.CommandUtils;
-import org.deegree.tools.annotations.Tool;
 import org.deegree.tools.coverage.rtb.RasterTreeBuilder;
-import org.deegree.tools.coverage.utils.RasterOptionsParser;
 
 /**
   * This is the commandline interface for the {@link RasterTreeBuilder}.

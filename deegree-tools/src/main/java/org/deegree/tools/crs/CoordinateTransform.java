@@ -35,7 +35,7 @@
 
 package org.deegree.tools.crs;
 
-import static org.deegree.tools.CommandUtils.OPT_VERBOSE;
+import static org.deegree.commons.tools.CommandUtils.OPT_VERBOSE;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.BufferedReader;
@@ -51,14 +51,14 @@ import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.PosixParser;
+import org.deegree.commons.tools.CommandUtils;
+import org.deegree.commons.tools.Tool;
 import org.deegree.cs.CRS;
 import org.deegree.cs.CoordinateTransformer;
 import org.deegree.cs.components.Unit;
 import org.deegree.cs.coordinatesystems.CoordinateSystem;
 import org.deegree.cs.exceptions.TransformationException;
 import org.deegree.cs.exceptions.UnknownCRSException;
-import org.deegree.tools.CommandUtils;
-import org.deegree.tools.annotations.Tool;
 import org.slf4j.Logger;
 
 /**

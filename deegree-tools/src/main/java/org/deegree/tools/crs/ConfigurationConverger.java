@@ -38,7 +38,7 @@
 
 package org.deegree.tools.crs;
 
-import static org.deegree.tools.CommandUtils.OPT_VERBOSE;
+import static org.deegree.commons.tools.CommandUtils.OPT_VERBOSE;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -54,6 +54,8 @@ import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.PosixParser;
+import org.deegree.commons.tools.CommandUtils;
+import org.deegree.commons.tools.Tool;
 import org.deegree.cs.configuration.CRSProvider;
 import org.deegree.cs.configuration.deegree.xml.DeegreeCRSProvider;
 import org.deegree.cs.configuration.gml.GMLCRSProvider;
@@ -61,9 +63,6 @@ import org.deegree.cs.configuration.proj4.PROJ4CRSProvider;
 import org.deegree.cs.coordinatesystems.CoordinateSystem;
 import org.deegree.cs.exceptions.TransformationException;
 import org.deegree.cs.exceptions.UnknownCRSException;
-import org.deegree.tools.CommandUtils;
-import org.deegree.tools.annotations.Tool;
-import org.deegree.tools.rendering.manager.DataManager;
 
 /**
  * The <code>ConfigurationConverger</code> class TODO add class documentation here.
@@ -276,7 +275,7 @@ public class ConfigurationConverger {
     }
 
     private static void printHelp( Options options ) {
-        CommandUtils.printHelp( options, DataManager.class.getCanonicalName(), null, null );
+        CommandUtils.printHelp( options, ConfigurationConverger.class.getCanonicalName(), null, null );
     }
 
 }

@@ -59,6 +59,7 @@ import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.PosixParser;
+import org.deegree.commons.tools.Tool;
 import org.deegree.coverage.raster.AbstractRaster;
 import org.deegree.coverage.raster.SimpleRaster;
 import org.deegree.coverage.raster.data.RasterData;
@@ -76,13 +77,12 @@ import org.deegree.coverage.raster.io.grid.GridMetaInfoFile;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.GeometryFactory;
-import org.deegree.tools.CommandUtils;
-import org.deegree.tools.annotations.Tool;
+import org.deegree.commons.tools.CommandUtils;
 import org.deegree.tools.coverage.gridifier.index.MultiLevelMemoryTileGridIndex;
 import org.deegree.tools.coverage.gridifier.index.MultiLevelRasterTileIndex;
 import org.deegree.tools.coverage.gridifier.index.MultiResolutionTileGrid;
 import org.deegree.tools.coverage.gridifier.index.TileFile;
-import org.deegree.tools.coverage.utils.RasterOptionsParser;
+import org.deegree.commons.tools.coverage.RasterOptionsParser;
 
 /**
  * Command line tool for converting a raster tree into a grid of regular, non-overlapping raster cells.

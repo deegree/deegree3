@@ -35,7 +35,7 @@
 
 package org.deegree.tools.crs;
 
-import static org.deegree.tools.CommandUtils.OPT_VERBOSE;
+import static org.deegree.commons.tools.CommandUtils.OPT_VERBOSE;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.File;
@@ -58,6 +58,8 @@ import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.PosixParser;
+import org.deegree.commons.tools.CommandUtils;
+import org.deegree.commons.tools.Tool;
 import org.deegree.commons.xml.stax.IndentingXMLStreamWriter;
 import org.deegree.cs.CRS;
 import org.deegree.cs.CRSRegistry;
@@ -67,8 +69,6 @@ import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.cs.transformations.Transformation;
 import org.deegree.gml.GMLVersion;
 import org.deegree.gml.XMLTransformer;
-import org.deegree.tools.CommandUtils;
-import org.deegree.tools.annotations.Tool;
 import org.slf4j.Logger;
 
 /**

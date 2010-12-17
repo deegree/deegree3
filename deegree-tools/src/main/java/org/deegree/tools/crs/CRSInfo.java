@@ -51,13 +51,12 @@ import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.PosixParser;
+import org.deegree.commons.tools.CommandUtils;
+import org.deegree.commons.tools.Tool;
 import org.deegree.cs.CRSCodeType;
 import org.deegree.cs.configuration.CRSConfiguration;
 import org.deegree.cs.configuration.CRSProvider;
 import org.deegree.cs.coordinatesystems.CoordinateSystem;
-import org.deegree.tools.CommandUtils;
-import org.deegree.tools.annotations.Tool;
-import org.deegree.tools.rendering.manager.DataManager;
 
 /**
  * A utility program to inform the callee about the availability (-isAvailable param) of a certain crs or to retrieve
@@ -282,6 +281,6 @@ public class CRSInfo {
     }
 
     private static void printHelp( Options options ) {
-        CommandUtils.printHelp( options, DataManager.class.getCanonicalName(), null, null );
+        CommandUtils.printHelp( options, CRSInfo.class.getCanonicalName(), null, null );
     }
 }

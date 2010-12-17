@@ -52,10 +52,10 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
+import java.util.Map.Entry;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.namespace.QName;
@@ -65,6 +65,8 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.PosixParser;
 import org.deegree.commons.tom.primitive.PrimitiveType;
+import org.deegree.commons.tools.CommandUtils;
+import org.deegree.commons.tools.Tool;
 import org.deegree.feature.persistence.FeatureStoreException;
 import org.deegree.feature.persistence.FeatureStoreManager;
 import org.deegree.feature.persistence.mapping.FeatureTypeMapping;
@@ -74,8 +76,6 @@ import org.deegree.feature.types.FeatureType;
 import org.deegree.feature.types.property.PropertyType;
 import org.deegree.gml.GMLVersion;
 import org.deegree.gml.feature.schema.ApplicationSchemaXSDDecoder;
-import org.deegree.tools.CommandUtils;
-import org.deegree.tools.annotations.Tool;
 import org.deegree.tools.i18n.Messages;
 
 /**

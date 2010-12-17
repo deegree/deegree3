@@ -46,7 +46,6 @@ import java.util.TreeSet;
 
 import javax.xml.namespace.QName;
 
-import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
@@ -65,8 +64,8 @@ import org.apache.xerces.xs.XSObjectList;
 import org.apache.xerces.xs.XSParticle;
 import org.apache.xerces.xs.XSSimpleTypeDefinition;
 import org.apache.xerces.xs.XSTypeDefinition;
-import org.deegree.tools.CommandUtils;
-import org.deegree.tools.annotations.Tool;
+import org.deegree.commons.tools.CommandUtils;
+import org.deegree.commons.tools.Tool;
 import org.w3c.dom.bootstrap.DOMImplementationRegistry;
 
 /**

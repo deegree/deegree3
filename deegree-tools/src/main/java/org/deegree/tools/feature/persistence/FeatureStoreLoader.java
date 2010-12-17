@@ -50,6 +50,8 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.PosixParser;
 import org.deegree.commons.jdbc.ConnectionManager;
+import org.deegree.commons.tools.CommandUtils;
+import org.deegree.commons.tools.Tool;
 import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.feature.FeatureCollection;
@@ -61,8 +63,6 @@ import org.deegree.feature.persistence.FeatureStoreTransaction.IDGenMode;
 import org.deegree.gml.GMLInputFactory;
 import org.deegree.gml.GMLStreamReader;
 import org.deegree.gml.GMLVersion;
-import org.deegree.tools.CommandUtils;
-import org.deegree.tools.annotations.Tool;
 import org.deegree.tools.i18n.Messages;
 
 /**

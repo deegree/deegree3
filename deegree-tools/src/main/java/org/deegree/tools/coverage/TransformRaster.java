@@ -35,7 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.tools.coverage;
 
-import static org.deegree.tools.coverage.RasterCommandUtils.getInterpolationType;
+import static org.deegree.commons.tools.coverage.RasterCommandUtils.getInterpolationType;
 
 import java.io.File;
 
@@ -45,6 +45,7 @@ import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.PosixParser;
+import org.deegree.commons.tools.Tool;
 import org.deegree.coverage.raster.AbstractRaster;
 import org.deegree.coverage.raster.RasterTransformer;
 import org.deegree.coverage.raster.TiledRaster;
@@ -54,8 +55,7 @@ import org.deegree.coverage.raster.interpolation.InterpolationType;
 import org.deegree.coverage.raster.io.RasterIOOptions;
 import org.deegree.coverage.raster.utils.RasterFactory;
 import org.deegree.cs.CRS;
-import org.deegree.tools.CommandUtils;
-import org.deegree.tools.annotations.Tool;
+import org.deegree.commons.tools.CommandUtils;
 
 /**
  * This is a command line tool to transform raster files between coordinate systems. Multiple input files will be
