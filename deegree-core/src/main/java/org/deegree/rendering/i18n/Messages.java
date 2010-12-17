@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,17 +32,19 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 package org.deegree.rendering.i18n;
+
+import static org.apache.commons.io.IOUtils.closeQuietly;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.MessageFormat;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Map.Entry;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -53,14 +55,14 @@ import org.slf4j.LoggerFactory;
  * Messages are read from the properties file <code>messages_LANG.properties</code> (LANG is always a lowercased ISO 639
  * code), so internationalization is supported. If a certain property (or the property file) for the specific default
  * language of the system is not found, the message is taken from <code>messages_en.properties</code>.
- *
+ * 
  * @see Locale#getLanguage()
- *
+ * 
  * @author <a href="mailto:poth@lat-lon.de">Andreas Poth</a>
  * @author <a href="mailto:taddei@lat-lon.de">Ugo Taddei</a>
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author: rbezema $
- *
+ * 
  * @version $Revision: 15508 $, $Date: 2009-01-06 12:08:22 +0100 (Di, 06. Jan 2009) $
  */
 public class Messages {
@@ -81,49 +83,54 @@ public class Messages {
      * Initialization done at class loading time.
      */
     static {
+        InputStream is = null;
         try {
             // load all messages from default file ("org/deegree/model/i18n/message_en.properties")
             String fileName = "messages_en.properties";
-            InputStream is = Messages.class.getResourceAsStream( fileName );
+            is = Messages.class.getResourceAsStream( fileName );
             if ( is == null ) {
                 LOG.error( "Error while initializing " + Messages.class.getName() + " : " + " default message file: '"
                            + fileName + " not found." );
-            }
-            is = Messages.class.getResourceAsStream( fileName );
-            defaultProps.load( is );
-            is.close();
+            } else {
+                defaultProps.load( is );
 
-            // override messages using file "/message_en.properties"
-            fileName = "/messages_en.properties";
-            overrideMessages( fileName, defaultProps );
+                // override messages using file "/message_en.properties"
+                fileName = "/messages_en.properties";
+                overrideMessages( fileName, defaultProps );
 
-            lang = Locale.getDefault().getLanguage();
-            if ( !"".equals( lang ) && !"en".equals( lang ) ) {
-                // override messages using file "org/deegree/i18n/message_LANG.properties"
-                fileName = "messages_" + lang + ".properties";
-                overrideMessages( fileName, defaultProps );
-                // override messages using file "/message_LANG.properties"
-                fileName = "/messages_" + lang + ".properties";
-                overrideMessages( fileName, defaultProps );
+                lang = Locale.getDefault().getLanguage();
+                if ( !"".equals( lang ) && !"en".equals( lang ) ) {
+                    // override messages using file "org/deegree/i18n/message_LANG.properties"
+                    fileName = "messages_" + lang + ".properties";
+                    overrideMessages( fileName, defaultProps );
+                    // override messages using file "/message_LANG.properties"
+                    fileName = "/messages_" + lang + ".properties";
+                    overrideMessages( fileName, defaultProps );
+                }
             }
         } catch ( IOException e ) {
             LOG.error( "Error while initializing " + Messages.class.getName() + " : " + e.getMessage(), e );
+        } finally {
+            closeQuietly( is );
         }
     }
 
     private static void overrideMessages( String propertiesFile, Properties props )
                             throws IOException {
-        InputStream is = Messages.class.getResourceAsStream( propertiesFile );
-        if ( is != null ) {
-            // override default messages
-            Properties overrideProps = new Properties();
-            overrideProps.load( is );
-            is.close();
-            Iterator<?> iter = overrideProps.keySet().iterator();
-            while ( iter.hasNext() ) {
-                String key = (String) iter.next();
-                props.put( key, overrideProps.get( key ) );
+        InputStream is = null;
+        try {
+            is = Messages.class.getResourceAsStream( propertiesFile );
+            if ( is != null ) {
+                // override default messages
+                Properties overrideProps = new Properties();
+                overrideProps.load( is );
+                is.close();
+                for ( Entry<?, ?> e : overrideProps.entrySet() ) {
+                    props.put( e.getKey(), e.getValue() );
+                }
             }
+        } finally {
+            closeQuietly( is );
         }
     }
 
@@ -184,9 +191,9 @@ public class Messages {
     /**
      * Returns the message assigned to the passed key. If no message is assigned, an error message will be returned that
      * indicates the missing key.
-     *
+     * 
      * @see MessageFormat for conventions on string formatting and escape characters.
-     *
+     * 
      * @param key
      * @param arguments
      * @return the message assigned to the passed key
@@ -196,12 +203,14 @@ public class Messages {
     }
 
     /**
+     * Short version for lazy people.
+     * 
      * @param key
-     * @param args
-     * @return the value
+     * @param arguments
+     * @return the same as #getMessage
      */
-    public static String get( String key, Object... args ) {
-        return getMessage( key, args );
+    public static String get( String key, Object... arguments ) {
+        return getMessage( key, arguments );
     }
 
 }

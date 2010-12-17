@@ -35,14 +35,16 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.metadata.i18n;
 
+import static org.apache.commons.io.IOUtils.closeQuietly;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.MessageFormat;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Map.Entry;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -82,49 +84,54 @@ public class Messages {
      * Initialization done at class loading time.
      */
     static {
+        InputStream is = null;
         try {
             // load all messages from default file ("org/deegree/model/i18n/message_en.properties")
             String fileName = "messages_en.properties";
-            InputStream is = Messages.class.getResourceAsStream( fileName );
+            is = Messages.class.getResourceAsStream( fileName );
             if ( is == null ) {
                 LOG.error( "Error while initializing " + Messages.class.getName() + " : " + " default message file: '"
                            + fileName + " not found." );
-            }
-            is = Messages.class.getResourceAsStream( fileName );
-            defaultProps.load( is );
-            is.close();
+            } else {
+                defaultProps.load( is );
 
-            // override messages using file "/message_en.properties"
-            fileName = "/messages_en.properties";
-            overrideMessages( fileName, defaultProps );
+                // override messages using file "/message_en.properties"
+                fileName = "/messages_en.properties";
+                overrideMessages( fileName, defaultProps );
 
-            lang = Locale.getDefault().getLanguage();
-            if ( !"".equals( lang ) && !"en".equals( lang ) ) {
-                // override messages using file "org/deegree/i18n/message_LANG.properties"
-                fileName = "messages_" + lang + ".properties";
-                overrideMessages( fileName, defaultProps );
-                // override messages using file "/message_LANG.properties"
-                fileName = "/messages_" + lang + ".properties";
-                overrideMessages( fileName, defaultProps );
+                lang = Locale.getDefault().getLanguage();
+                if ( !"".equals( lang ) && !"en".equals( lang ) ) {
+                    // override messages using file "org/deegree/i18n/message_LANG.properties"
+                    fileName = "messages_" + lang + ".properties";
+                    overrideMessages( fileName, defaultProps );
+                    // override messages using file "/message_LANG.properties"
+                    fileName = "/messages_" + lang + ".properties";
+                    overrideMessages( fileName, defaultProps );
+                }
             }
         } catch ( IOException e ) {
             LOG.error( "Error while initializing " + Messages.class.getName() + " : " + e.getMessage(), e );
+        } finally {
+            closeQuietly( is );
         }
     }
 
     private static void overrideMessages( String propertiesFile, Properties props )
                             throws IOException {
-        InputStream is = Messages.class.getResourceAsStream( propertiesFile );
-        if ( is != null ) {
-            // override default messages
-            Properties overrideProps = new Properties();
-            overrideProps.load( is );
-            is.close();
-            Iterator<?> iter = overrideProps.keySet().iterator();
-            while ( iter.hasNext() ) {
-                String key = (String) iter.next();
-                props.put( key, overrideProps.get( key ) );
+        InputStream is = null;
+        try {
+            is = Messages.class.getResourceAsStream( propertiesFile );
+            if ( is != null ) {
+                // override default messages
+                Properties overrideProps = new Properties();
+                overrideProps.load( is );
+                is.close();
+                for ( Entry<?, ?> e : overrideProps.entrySet() ) {
+                    props.put( e.getKey(), e.getValue() );
+                }
             }
+        } finally {
+            closeQuietly( is );
         }
     }
 
@@ -195,4 +202,16 @@ public class Messages {
     public static String getMessage( String key, Object... arguments ) {
         return get( defaultProps, key, arguments );
     }
+
+    /**
+     * Short version for lazy people.
+     * 
+     * @param key
+     * @param arguments
+     * @return the same as #getMessage
+     */
+    public static String get( String key, Object... arguments ) {
+        return getMessage( key, arguments );
+    }
+
 }
