@@ -47,6 +47,8 @@ import javax.vecmath.Point2d;
  */
 public abstract class AbstractGRPoint extends Point2d {
 
+    private static final long serialVersionUID = 6168927293427840693L;
+
     /**
      * Creates a new instance of <Code>AbstractPoint</Code>.
      * 

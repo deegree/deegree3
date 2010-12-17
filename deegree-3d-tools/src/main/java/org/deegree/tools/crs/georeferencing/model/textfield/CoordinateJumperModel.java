@@ -37,10 +37,6 @@ package org.deegree.tools.crs.georeferencing.model.textfield;
 
 import java.util.regex.Pattern;
 
-import org.deegree.tools.crs.georeferencing.model.exceptions.MaximumNumberException;
-import org.deegree.tools.crs.georeferencing.model.exceptions.NumberException;
-import org.deegree.tools.crs.georeferencing.model.exceptions.NumberMissmatch;
-
 /**
  * Model that holds the relevant information for jumping to coordinates.
  * 
@@ -67,17 +63,16 @@ public class CoordinateJumperModel {
      * Creates a new instance of <Code>CoordinateJumperModel</Code>.
      */
     public CoordinateJumperModel() {
-
+        // yes, empty
     }
 
     /**
      * Handles the String that should be computed.
      * 
      * @param textInput
-     * @throws NumberException
      */
     public void setTextInput( String textInput )
-                            throws NumberException {
+                            throws NumberFormatException {
         this.textInput = textInput;
         try {
 
@@ -93,47 +88,45 @@ public class CoordinateJumperModel {
 
                 if ( numberOfParameters < 2 ) {
 
-                    throw new NumberException(
-                                               "If you want to use this function you have to type in at least two parameters - xCoordinate and yCoordinate!" );
+                    throw new NumberFormatException(
+                                                     "If you want to use this function you have to type in at least two parameters - xCoordinate and yCoordinate!" );
 
-                } else {
+                }
+                try {
+                    xCoordinate = Double.parseDouble( inputParameters[i] );
+                    yCoordiante = Double.parseDouble( inputParameters[i + 1] );
+                    spanX = -1;
+                    spanY = -1;
+
+                } catch ( NumberFormatException e ) {
+                    xCoordinate = 0.0;
+                    yCoordiante = 0.0;
+
+                }
+
+                if ( numberOfParameters > 2 ) {
+                    if ( numberOfParameters == 3 ) {
+
+                        throw new NumberFormatException(
+                                                         "You have to specify either non of width and height or both of them! " );
+                    }
                     try {
-                        xCoordinate = Double.parseDouble( inputParameters[i] );
-                        yCoordiante = Double.parseDouble( inputParameters[i + 1] );
+                        spanX = Double.parseDouble( inputParameters[i + 2] );
+                        spanY = Double.parseDouble( inputParameters[i + 3] );
+                    } catch ( NumberFormatException e ) {
                         spanX = -1;
                         spanY = -1;
-
-                    } catch ( NumberFormatException e ) {
-                        xCoordinate = 0.0;
-                        yCoordiante = 0.0;
-
                     }
+                }
+                if ( inputParameters.length > 4 ) {
 
-                    if ( numberOfParameters > 2 ) {
-                        if ( numberOfParameters == 3 ) {
-
-                            throw new NumberMissmatch(
-                                                       "You have to specify either non of width and height or both of them! " );
-                        } else {
-                            try {
-                                spanX = Double.parseDouble( inputParameters[i + 2] );
-                                spanY = Double.parseDouble( inputParameters[i + 3] );
-                            } catch ( NumberFormatException e ) {
-                                spanX = -1;
-                                spanY = -1;
-                            }
-                        }
-                    }
-                    if ( inputParameters.length > 4 ) {
-
-                        throw new MaximumNumberException(
-                                                          "The maximum number of parameters is 4 - xCoordinate, yCoordinate, spanX and spanY! " );
-                    }
+                    throw new NumberFormatException(
+                                                     "The maximum number of parameters is 4 - xCoordinate, yCoordinate, spanX and spanY! " );
                 }
 
             }
         } catch ( NumberFormatException e ) {
-            throw new NumberException( "Insert numbers only into the textField!" );
+            throw new NumberFormatException( "Insert numbers only into the textField!" );
         }
     }
 

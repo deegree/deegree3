@@ -35,7 +35,6 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.tools.crs.georeferencing.model.points;
 
-
 /**
  * TODO add class documentation here
  * 
@@ -45,6 +44,8 @@ package org.deegree.tools.crs.georeferencing.model.points;
  * @version $Revision$, $Date$
  */
 public class PointResidual extends AbstractGRPoint {
+
+    private static final long serialVersionUID = 1825265197977394528L;
 
     public PointResidual( double x, double y ) {
         super( x, y );

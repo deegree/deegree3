@@ -35,7 +35,6 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.tools.crs.georeferencing.model.points;
 
-
 /**
  * 
  * The Point that identifies the point of the georeferenced map.
@@ -46,6 +45,8 @@ package org.deegree.tools.crs.georeferencing.model.points;
  * @version $Revision$, $Date$
  */
 public class GeoReferencedPoint extends AbstractGRPoint {
+
+    private static final long serialVersionUID = -3479460655781729558L;
 
     private double x;
 

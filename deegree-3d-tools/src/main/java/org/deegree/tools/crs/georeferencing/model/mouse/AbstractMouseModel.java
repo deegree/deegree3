@@ -59,17 +59,11 @@ public abstract class AbstractMouseModel {
 
     // private Point2d cumulatedMouseChanging;
 
-    private final static Point2d NULL_POINT = new Point2d( 0.0, 0.0 );
-
     public AbstractMouseModel() {
         reset();
 
     }
 
-    /**
-     * 
-     * @return
-     */
     public Point2d getPointMousePressed() {
         return pointMousePressed;
     }

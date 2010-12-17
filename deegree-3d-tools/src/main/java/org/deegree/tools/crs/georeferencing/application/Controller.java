@@ -124,7 +124,6 @@ import org.deegree.tools.crs.georeferencing.model.Scene2DImplShape;
 import org.deegree.tools.crs.georeferencing.model.Scene2DImplWMS;
 import org.deegree.tools.crs.georeferencing.model.datatransformer.VectorTransformer;
 import org.deegree.tools.crs.georeferencing.model.dialog.OptionDialogModel;
-import org.deegree.tools.crs.georeferencing.model.exceptions.NumberException;
 import org.deegree.tools.crs.georeferencing.model.mouse.FootprintMouseModel;
 import org.deegree.tools.crs.georeferencing.model.mouse.GeoReferencedMouseModel;
 import org.deegree.tools.crs.georeferencing.model.points.AbstractGRPoint;
@@ -842,8 +841,7 @@ public class Controller {
                 conModel.getPanel().updatePoints( sceneValues );
                 conModel.getPanel().repaint();
 
-            } catch ( NumberException e1 ) {
-
+            } catch ( NumberFormatException e1 ) {
                 new ErrorDialog( conModel.getView(), JDialog.ERROR, e1.getMessage() );
             }
 

@@ -46,6 +46,8 @@ package org.deegree.tools.crs.georeferencing.model.points;
  */
 public class FootprintPoint extends AbstractGRPoint {
 
+    private static final long serialVersionUID = -5620897742593246890L;
+
     public FootprintPoint( double x, double y ) {
         super( x, y );
         this.x = x;

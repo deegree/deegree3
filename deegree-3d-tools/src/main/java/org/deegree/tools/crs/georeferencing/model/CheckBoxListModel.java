@@ -50,21 +50,13 @@ import javax.swing.JCheckBox;
  */
 public class CheckBoxListModel {
 
-    /**
-     * 
-     */
-    private static final long serialVersionUID = 1L;
-
     private List<JCheckBox> list;
 
     /**
      * Creates a new instance of <Code>CheckBoxList</Code>.
-     * 
-     * @param checkboxNames
-     *            the names that each checkbox should have. The length of the checkboxNames is the size of the list, not
-     *            <Code>null</Code>.
      */
     public CheckBoxListModel() {
+        // yes, empty
     }
 
     public void addCheckboxs( String[] checkboxNames ) {

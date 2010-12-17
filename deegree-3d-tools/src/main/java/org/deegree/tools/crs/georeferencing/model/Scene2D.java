@@ -55,8 +55,6 @@ public interface Scene2D {
 
     /**
      * Returns the requested image.
-     * 
-     * @return
      */
     public BufferedImage getGeneratedImage();
 

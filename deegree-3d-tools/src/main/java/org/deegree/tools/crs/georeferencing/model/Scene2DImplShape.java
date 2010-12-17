@@ -46,7 +46,6 @@ import javax.vecmath.Point2d;
 
 import jj2000.j2k.NotImplementedError;
 
-import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.cs.CRS;
 import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.feature.Feature;
@@ -92,8 +91,6 @@ public class Scene2DImplShape implements Scene2D {
 
     private ApplicationSchema schema;
 
-    private static DeegreeWorkspace workspace;
-
     public Scene2DImplShape( String filePath, Graphics2D g ) {
         this.filePath = filePath;
         this.g = g;
@@ -122,14 +119,6 @@ public class Scene2DImplShape implements Scene2D {
 
     /**
      * The GetMap()-request to a WMSClient.
-     * 
-     * @param imageWidth
-     * @param iamgeHeight
-     * @param sightWindowMinX
-     * @param sightWindowMaxX
-     * @param sightWindowMinY
-     * @param sightWindowMaxY
-     * @return
      */
     private BufferedImage generateMap( Envelope imageBoundingbox ) {
         BufferedImage i = new BufferedImage( imageWidth, imageHeight, BufferedImage.TYPE_INT_RGB );

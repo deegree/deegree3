@@ -62,14 +62,6 @@ public class ToggleButtonModel {
 
     private int pointSize;
 
-    /**
-     * 
-     * @param buttons
-     * @param radioButtonsValue
-     * @param customTB
-     *            , can be <Code>null</Code>.
-     * @param e
-     */
     public ToggleButtonModel( Pair<AbstractButton, Integer>[] abstractButtons, ActionListener e ) {
         this.abstractButtons = abstractButtons;
 
