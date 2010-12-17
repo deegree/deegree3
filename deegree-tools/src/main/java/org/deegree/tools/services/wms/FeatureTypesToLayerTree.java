@@ -131,6 +131,7 @@ public class FeatureTypesToLayerTree {
             CommandUtils.printHelp( options, FeatureTypesToLayerTree.class.getSimpleName(), null, null );
         }
 
+        XMLStreamWriter out = null;
         try {
             CommandLine line = new PosixParser().parse( options, args );
 
@@ -140,7 +141,7 @@ public class FeatureTypesToLayerTree {
 
             FileOutputStream os = new FileOutputStream( line.getOptionValue( "o" ) );
             XMLOutputFactory fac = XMLOutputFactory.newInstance();
-            XMLStreamWriter out = new IndentingXMLStreamWriter( fac.createXMLStreamWriter( os ) );
+            out = new IndentingXMLStreamWriter( fac.createXMLStreamWriter( os ) );
             out.setDefaultNamespace( ns );
 
             FeatureStore store = FeatureStoreManager.create( new File( storeFile ).toURI().toURL() );
@@ -174,7 +175,6 @@ public class FeatureTypesToLayerTree {
             out.writeEndElement();
             out.writeEndElement();
             out.writeEndDocument();
-            out.close();
         } catch ( ParseException exp ) {
             System.err.println( Messages.getMessage( "TOOL_COMMANDLINE_ERROR", exp.getMessage() ) );
             CommandUtils.printHelp( options, FeatureTypesToLayerTree.class.getSimpleName(), null, null );
@@ -193,6 +193,14 @@ public class FeatureTypesToLayerTree {
         } catch ( FactoryConfigurationError e ) {
             LOG.info( "The XML system could not be initialized: '{}'", e.getLocalizedMessage() );
             LOG.trace( "Stack trace:", e );
+        } finally {
+            if ( out != null ) {
+                try {
+                    out.close();
+                } catch ( XMLStreamException e ) {
+                    LOG.trace( "Stack trace:", e );
+                }
+            }
         }
 
     }
