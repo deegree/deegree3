@@ -1,0 +1,9 @@
+<?xml version="1.0" ?>
+<GetFeature version="1.0.0" service="WFS"
+	xmlns="http://www.opengis.net/wfs" xmlns:myns="http://www.someserver.com/myns"
+	xmlns:yourns="http://demo.cubewerx.com/yourns" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.opengis.net/wfs http://schemas.opengis.net/wfs/1.0.0/WFS-basic.xsd">
+	<Query typeName="myns:INWATERA_1M" />
+	<Query typeName="myns:BUILTUPA_1M" />
+	<Query typeName="yourns:ROADL_1M" />
+</GetFeature>
