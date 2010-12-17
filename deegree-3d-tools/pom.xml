@@ -85,7 +85,7 @@
           <repositoryLayout>flat</repositoryLayout>
           <programs>
             <program>
-              <mainClass>org.deegree.tools.ToolBox</mainClass>
+              <mainClass>org.deegree.commons.tools.ToolBox</mainClass>
               <name>d3toolbox</name>
             </program>
           </programs>
