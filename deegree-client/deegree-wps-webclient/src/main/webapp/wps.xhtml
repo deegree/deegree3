@@ -1,6 +1,5 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core"
   xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:dg="http://deegree.org/jsf"
-  xmlns:dgc="http://java.sun.com/jsf/composite/deegree"
 >
 <h:head>
   <h:outputStylesheet name="style.css" library="wpsclient" />
@@ -12,8 +11,6 @@
     </f:metadata>
     <f:loadBundle basename="org.deegree.wpsclient.gui.labels" var="labels" />
     <f:loadBundle basename="org.deegree.wpsclient.gui.messages" var="messages" />
-
-
     <div id="header" align="center"><h:outputText value="WPS Webclient" /></div>
 
     <div id="container">
@@ -30,20 +27,34 @@
     <fieldset class="field"><legend><h:outputText value="#{labels['wpsFS']}" /></legend> <h:form
       id="selectWPS"
     >
-      <h:outputText id="wpsUrlLabel" value="#{labels['wpsURL']}" />
-      <h:inputText id="wpsUrl" value="#{clientBean.url}" required="true" style="" />
-      <h:commandButton value="#{labels['wpsURLSubmit']}" id="wpsUrlBt">
-        <f:ajax render=":selectProcess :emptyForm :messagePanel :responsePanel selectWPS" execute="@form"
-          listener="#{clientBean.selectWPS}"
-        />
-      </h:commandButton>
-      <h:commandButton id="infoWPSBt" action="#{clientBean.updateInfoText}"
-        image="resources/wpsclient/images/information_icon.png" class="infoText" rendered="#{clientBean.wpsEntered}"
-      >
-        <f:ajax execute="@this" event="action" render=":infoOT">
-          <f:param name="type" value="WPS" />
-        </f:ajax>
-      </h:commandButton>
+      <h:panelGrid columns="4" styleClass="wpsUrlTableGrid" columnClasses="label,input,button,info">
+        <h:outputLabel for="wpsUrl" value="#{labels['wpsURL']}" />
+        <h:inputText id="wpsUrl" value="#{clientBean.url}" required="true" style="" />
+        <h:commandButton value="#{labels['wpsURLSubmit']}" id="wpsUrlBt">
+          <f:ajax render=":selectProcess :emptyForm :messagePanel :responsePanel selectWPS" execute="@form"
+            listener="#{clientBean.selectWPS}"
+          />
+        </h:commandButton>
+        <h:commandButton id="infoWPSBt" action="#{clientBean.updateInfoText}"
+          image="resources/wpsclient/images/information_icon.png" class="infoText" rendered="#{clientBean.wpsEntered}"
+        >
+          <f:ajax execute="@this" event="action" render=":infoOT">
+            <f:param name="type" value="WPS" />
+          </f:ajax>
+        </h:commandButton>
+        <h:panelGroup rendered="#{!clientBean.wpsEntered}" />
+
+        <h:outputLabel id="wpsUrlListLabel" value="#{labels['wpsURLFromList']}" for="wpsUrlList" />
+        <h:selectOneMenu id="wpsUrlList" value="#{clientBean.url}">
+          <f:selectItems value="#{clientBean.urls}" />
+        </h:selectOneMenu>
+        <h:commandButton value="#{labels['wpsURLSubmit']}" id="wpsUrlListBt">
+          <f:ajax render=":selectProcess :emptyForm :messagePanel :responsePanel selectWPS" execute="@form"
+            listener="#{clientBean.selectWPS}"
+          />
+        </h:commandButton>
+      </h:panelGrid>
+
     </h:form></fieldset>
 
     <fieldset class="field"><legend><h:outputText value="#{labels['processFS']}" /></legend>

@@ -48,6 +48,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
+import javax.annotation.PostConstruct;
 import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
@@ -79,10 +80,9 @@ public class ClientBean implements Serializable {
 
     private Set<String> insertedURLs = new HashSet<String>();
 
-    // private String url = "http://deegree3-testing.deegree.org/deegree-wps-demo/services";
-
-    // private String url = "http://localhost:8080/deegree-wps-demo/services";
     private String url = "http://flexigeoweb.lat-lon.de/deegree-wps-demo/services";
+
+    private List<String> urls = new ArrayList<String>();
 
     private WPSClient wpsClient;
 
@@ -101,6 +101,13 @@ public class ClientBean implements Serializable {
     final static String IN_INFOKEY = "INPUT";
 
     final static String OUT_INFOKEY = "OUTPUT";
+
+    @PostConstruct
+    public void init() {
+        urls.add( "http://deegree3-testing.deegree.org/deegree-wps-demo/services" );
+        urls.add( "http://localhost:8080/deegree-wps-demo/services" );
+        urls.add( "http://flexigeoweb.lat-lon.de/deegree-wps-demo/services" );
+    }
 
     /**
      * change the URL of the WPS and update the list of processes
@@ -307,6 +314,10 @@ public class ClientBean implements Serializable {
 
     public Set<String> getInsertedURLs() {
         return insertedURLs;
+    }
+
+    public List<String> getUrls() {
+        return urls;
     }
 
 }

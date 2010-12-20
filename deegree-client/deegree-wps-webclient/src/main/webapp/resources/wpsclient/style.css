@@ -30,9 +30,11 @@
 .clear {
 	clear: both;
 }
+
 #header {
 	font-size: larger;
 }
+
 /**
 #container {
 	max-width: 800px;
@@ -89,4 +91,20 @@ fieldset.field legend {
 
 .msgError,.msgFatal {
 	color: red;
+}
+
+.wpsUrlTableGrid .label {
+	
+}
+
+.wpsUrlTableGrid .input input {
+	width: 100%;
+}
+
+.wpsUrlTableGrid .button {
+	
+}
+
+.wpsUrlTableGrid .info {
+	width: 45px;
 }
