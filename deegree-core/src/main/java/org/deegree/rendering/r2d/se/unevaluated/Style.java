@@ -42,6 +42,7 @@ import static java.lang.Double.POSITIVE_INFINITY;
 import static org.deegree.commons.utils.CollectionUtils.unzip;
 import static org.slf4j.LoggerFactory.getLogger;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -110,6 +111,8 @@ public class Style {
     private PolygonStyling defaultPolygonStyle;
 
     private QName featureType;
+
+    private File legendFile;
 
     /**
      * @param rules
@@ -370,6 +373,20 @@ public class Style {
         }
 
         return list;
+    }
+
+    /**
+     * @param file
+     */
+    public void setLegendFile( File file ) {
+        legendFile = file;
+    }
+
+    /**
+     * @return the legend file or null, if not set
+     */
+    public File getLegendFile() {
+        return legendFile;
     }
 
     static class InsertContinuation<T extends Collection<U>, U> extends Continuation<T> {
