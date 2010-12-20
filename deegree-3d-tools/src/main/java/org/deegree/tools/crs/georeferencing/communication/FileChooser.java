@@ -126,6 +126,9 @@ public class FileChooser {
                 path = selectedFile.getAbsolutePath();
             }
         }
+        if ( path != null ) {
+            prefs.put( OPEN_KEY, path );
+        }
         return path;
     }
 
@@ -138,6 +141,9 @@ public class FileChooser {
         int result = fileChooser.showSaveDialog( parent );
         if ( JFileChooser.APPROVE_OPTION == result ) {
             selectedFile = fileChooser.getSelectedFile();
+        }
+        if ( selectedFile != null ) {
+            prefs.put( OPEN_KEY, selectedFile.toString() );
         }
         return selectedFile;
     }

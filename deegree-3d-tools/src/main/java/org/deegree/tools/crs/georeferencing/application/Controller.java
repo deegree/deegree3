@@ -816,7 +816,6 @@ public class Controller {
                     if ( fileChoosed != null ) {
                         initFootprintScene( fileChoosed );
                     }
-
                 } else if ( ( (JMenuItem) source ).getText().startsWith( get( "MENUITEM_OPEN_SHAPEFILE" ) ) ) {
                     List<String> list = new ArrayList<String>();
                     list.add( "shp" );

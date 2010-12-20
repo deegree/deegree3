@@ -107,6 +107,8 @@ public class GRViewerGUI extends JFrame {
 
     private JMenuItem exit;
 
+    private JMenuItem saveBuilding;
+
     public GRViewerGUI() {
         super( get( "WINDOW_TITLE" ) );
 
@@ -149,6 +151,8 @@ public class GRViewerGUI extends JFrame {
         openWMS.setName( get( "MENUITEM_OPEN_WMS_LAYER" ) );
         openBuilding = new JMenuItem( get( "MENUITEM_OPEN_BUILDING" ) );
         openBuilding.setName( get( "MENUITEM_OPEN_BUILDING" ) );
+        saveBuilding = new JMenuItem( get( "MENUITEM_SAVE_BUILDING" ) );
+        saveBuilding.setName( get( "MENUITEM_SAVE_BUILDING" ) );
         exit = new JMenuItem( get( "MENUITEM_EXIT" ) );
         exit.setName( get( "MENUITEM_EXIT" ) );
 
@@ -232,6 +236,7 @@ public class GRViewerGUI extends JFrame {
         openShape.addActionListener( e );
         openWMS.addActionListener( e );
         openBuilding.addActionListener( e );
+        saveBuilding.addActionListener( e );
         exit.addActionListener( e );
     }
 
