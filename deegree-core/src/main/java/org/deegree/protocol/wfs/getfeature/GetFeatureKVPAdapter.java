@@ -197,6 +197,13 @@ public class GetFeatureKVPAdapter extends AbstractWFSRequestKVPAdapter {
         // optional: FILTER
         String filterStr = kvpParams.get( "FILTER" );
 
+        // optional: SRSNAME (not specified in WFS 1.0.0, deegree extension)
+        String srsName = kvpParams.get( "SRSNAME" );
+        CRS srs = null;
+        if ( srsName != null ) {
+            srs = new CRS( srsName );
+        }
+
         Query[] queries = null;
 
         if ( ( featureIdStr != null && bboxStr != null ) || ( featureIdStr != null && filterStr != null )
@@ -208,7 +215,7 @@ public class GetFeatureKVPAdapter extends AbstractWFSRequestKVPAdapter {
         if ( featureIdStr != null ) {
 
             queries = new Query[1];
-            queries[0] = new FeatureIdQuery( null, typeNames, featureIds, featureVersion, null, propertyNames, null,
+            queries[0] = new FeatureIdQuery( null, typeNames, featureIds, featureVersion, srs, propertyNames, null,
                                              null );
             return new GetFeature( VERSION_100, null, null, null, maxFeatures, null, null, queries );
         }
@@ -220,12 +227,12 @@ public class GetFeatureKVPAdapter extends AbstractWFSRequestKVPAdapter {
             }
 
             String[] coordList = bboxStr.split( "," );
-            CRS srs = null;
+            CRS bboxCrs = null;
             if ( coordList.length % 2 == 1 ) {
-                srs = new CRS( coordList[coordList.length - 1] );
+                bboxCrs = new CRS( coordList[coordList.length - 1] );
             }
 
-            Envelope bbox = createEnvelope( bboxStr, null );
+            Envelope bbox = createEnvelope( bboxStr, bboxCrs );
 
             queries = new Query[1];
             queries[0] = new BBoxQuery( null, typeNames, featureVersion, srs, propertyNames, null, null, bbox );
@@ -265,10 +272,10 @@ public class GetFeatureKVPAdapter extends AbstractWFSRequestKVPAdapter {
                     }
                 }
                 if ( propertyNames != null ) {
-                    queries[i] = new FilterQuery( null, new TypeName[] { typeNames[i] }, featureVersion, null,
+                    queries[i] = new FilterQuery( null, new TypeName[] { typeNames[i] }, featureVersion, srs,
                                                   propertyNames[i], null, null, null, filter );
                 } else {
-                    queries[i] = new FilterQuery( null, new TypeName[] { typeNames[i] }, featureVersion, null, null,
+                    queries[i] = new FilterQuery( null, new TypeName[] { typeNames[i] }, featureVersion, srs, null,
                                                   null, null, null, filter );
                 }
             }
@@ -305,7 +312,7 @@ public class GetFeatureKVPAdapter extends AbstractWFSRequestKVPAdapter {
 
         // optional: SRSNAME
         String srsName = kvpParams.get( "SRSNAME" );
-        CRS srs = null; // TODO should it be WGS:84, or EPSG:4326 ??
+        CRS srs = null;
         if ( srsName != null ) {
             srs = new CRS( srsName );
         }
@@ -400,11 +407,12 @@ public class GetFeatureKVPAdapter extends AbstractWFSRequestKVPAdapter {
             }
 
             String[] coordList = bboxStr.split( "," );
+            CRS bboxCrs = null;
             if ( coordList.length % 2 == 1 ) {
-                srs = new CRS( coordList[coordList.length - 1] );
+                bboxCrs = new CRS( coordList[coordList.length - 1] );
             }
 
-            Envelope bbox = createEnvelope( bboxStr, srs );
+            Envelope bbox = createEnvelope( bboxStr, bboxCrs );
 
             queries = new Query[1];
             queries[0] = new BBoxQuery( null, typeNames, featureVersion, srs, propertyNames, null, sortBy, bbox );
