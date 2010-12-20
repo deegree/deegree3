@@ -143,7 +143,7 @@ public class InteractiveWPVS extends GLCanvas implements GLEventListener, KeyLis
 
     private final static double zNear = 1.0;
 
-    private final static double zFar = 100000.0;
+    private final static double zFar = 300000.0;
 
     private static DeegreeWorkspace workspace;
 
