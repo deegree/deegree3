@@ -42,9 +42,12 @@ import java.util.List;
 import java.util.Map;
 
 import javax.media.jai.WarpPolynomial;
+import javax.vecmath.Point3d;
 
 import org.deegree.commons.utils.Triple;
 import org.deegree.cs.CRS;
+import org.deegree.cs.exceptions.TransformationException;
+import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.geometry.GeometryFactory;
 import org.deegree.geometry.points.Points;
 import org.deegree.geometry.primitive.Point;
@@ -91,7 +94,7 @@ public class Polynomial extends AbstractTransformation implements Transformation
     }
 
     public Polynomial( List<Triple<Point4Values, Point4Values, PointResidual>> mappedPoints, Footprint footPrint,
-                       Scene2DValues sceneValues, CRS sourceCRS, CRS targetCRS, int order ) {
+                       Scene2DValues sceneValues, CRS sourceCRS, CRS targetCRS, int order ) throws UnknownCRSException {
         super( mappedPoints, footPrint, sceneValues, sourceCRS, targetCRS, order );
 
         arraySize = this.getArraySize() * 2;
@@ -184,6 +187,31 @@ public class Polynomial extends AbstractTransformation implements Transformation
             return getResiduals();
         }
         return null;
+    }
+
+    @Override
+    public List<Point3d> doTransform( List<Point3d> srcPts )
+                            throws TransformationException {
+        List<Point3d> list = new ArrayList<Point3d>( srcPts.size() );
+        for ( Point3d src : srcPts ) {
+            Point3d dest = new Point3d();
+            Point2D tmp = new Point2D.Double( src.x, src.y );
+            tmp = warp.mapDestPoint( tmp );
+            dest.x = tmp.getX();
+            dest.y = tmp.getY();
+            list.add( dest );
+        }
+        return list;
+    }
+
+    @Override
+    public String getImplementationName() {
+        return "st1polynomial";
+    }
+
+    @Override
+    public boolean isIdentity() {
+        return false;
     }
 
 }

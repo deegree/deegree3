@@ -42,6 +42,7 @@ import org.deegree.cs.CRS;
 import org.deegree.cs.CRSCodeType;
 import org.deegree.cs.CRSIdentifiable;
 import org.deegree.cs.exceptions.UnknownCRSException;
+import org.deegree.cs.transformations.Transformation;
 import org.deegree.tools.crs.georeferencing.application.Scene2DValues;
 import org.deegree.tools.crs.georeferencing.model.Footprint;
 import org.deegree.tools.crs.georeferencing.model.points.Point4Values;
@@ -55,7 +56,7 @@ import org.deegree.tools.crs.georeferencing.model.points.PointResidual;
  * 
  * @version $Revision$, $Date$
  */
-public abstract class AbstractTransformation {
+public abstract class AbstractTransformation extends Transformation{
 
     protected List<Triple<Point4Values, Point4Values, PointResidual>> mappedPoints;
 
@@ -75,7 +76,8 @@ public abstract class AbstractTransformation {
 
     public AbstractTransformation( List<Triple<Point4Values, Point4Values, PointResidual>> mappedPoints,
                                    Footprint footPrint, Scene2DValues sceneValues, CRS sourceCRS, CRS targetCRS,
-                                   final int order ) {
+                                   final int order ) throws UnknownCRSException {
+        super(sourceCRS.getWrappedCRS(), targetCRS.getWrappedCRS(), new CRSIdentifiable(new CRSCodeType("whatever")));
         this.mappedPoints = mappedPoints;
         this.footPrint = footPrint;
         this.sceneValues = sceneValues;

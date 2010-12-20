@@ -66,8 +66,6 @@ import javax.swing.filechooser.FileFilter;
 
 import org.deegree.rendering.r3d.opengl.display.OpenGLEventHandler;
 import org.deegree.rendering.r3d.opengl.rendering.model.geometry.WorldRenderableObject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * The <code>GLViewer</code> uses the jogl engine to render dataobjects.
@@ -84,8 +82,6 @@ public class GLViewer extends JFrame implements ActionListener {
      * 
      */
     private static final long serialVersionUID = 7698388852544865855L;
-
-    private static Logger LOG = LoggerFactory.getLogger( GLViewer.class );
 
     private Preferences prefs;
 
@@ -280,7 +276,7 @@ public class GLViewer extends JFrame implements ActionListener {
         JFileChooser fileChooser = new JFileChooser( lastFile );
         fileChooser.setMultiSelectionEnabled( false );
         if ( fileFilter != null && fileFilter.size() > 0 ) {
-            // the *.* file fileter is off
+            // the *.* file filter is off
             fileChooser.setAcceptAllFileFilterUsed( false );
             String lastExtension = prefs.get( LAST_EXTENSION, "*" );
             FileFilter selected = fileFilter.get( 0 );

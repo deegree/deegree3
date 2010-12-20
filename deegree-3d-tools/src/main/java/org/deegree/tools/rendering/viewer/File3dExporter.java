@@ -61,7 +61,6 @@ public class File3dExporter {
     /**
      * Shows an export dialog to the user.
      */
-    @SuppressWarnings("unchecked")
     public static boolean save( GLViewer parent, WorldRenderableObject toExport ) {
 
         Export3DFile exportEvaluater = new Export3DFile( parent );

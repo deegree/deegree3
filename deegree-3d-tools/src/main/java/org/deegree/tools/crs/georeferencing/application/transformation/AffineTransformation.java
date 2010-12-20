@@ -38,8 +38,12 @@ package org.deegree.tools.crs.georeferencing.application.transformation;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.vecmath.Point3d;
+
 import org.deegree.commons.utils.Triple;
 import org.deegree.cs.CRS;
+import org.deegree.cs.exceptions.TransformationException;
+import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.geometry.GeometryFactory;
 import org.deegree.geometry.points.Points;
 import org.deegree.geometry.primitive.Point;
@@ -155,7 +159,7 @@ public class AffineTransformation extends AbstractTransformation implements Tran
 
     public AffineTransformation( List<Triple<Point4Values, Point4Values, PointResidual>> mappedPoints,
                                  Footprint footPrint, Scene2DValues sceneValues, CRS sourceCRS, CRS targetCRS,
-                                 final int order ) {
+                                 final int order ) throws UnknownCRSException {
         super( mappedPoints, footPrint, sceneValues, sourceCRS, targetCRS, order );
 
         arraySize = this.getArraySize();
@@ -380,6 +384,28 @@ public class AffineTransformation extends AbstractTransformation implements Tran
 
         }
         return getResiduals();
+    }
+
+    @Override
+    public List<Point3d> doTransform( List<Point3d> srcPts )
+                            throws TransformationException {
+        List<Point3d> list = new ArrayList<Point3d>( srcPts.size() );
+        for ( Point3d src : srcPts ) {
+            Point3d dest = new Point3d();
+            dest.y = balancedPointN + a11 * src.x + a12 * src.y;
+            dest.x = balancedPointE + a21 * src.x + a22 * src.y;
+        }
+        return list;
+    }
+
+    @Override
+    public String getImplementationName() {
+        return "st1affine";
+    }
+
+    @Override
+    public boolean isIdentity() {
+        return false;
     }
 
 }

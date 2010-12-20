@@ -38,8 +38,12 @@ package org.deegree.tools.crs.georeferencing.application.transformation;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.vecmath.Point3d;
+
 import org.deegree.commons.utils.Triple;
 import org.deegree.cs.CRS;
+import org.deegree.cs.exceptions.TransformationException;
+import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.geometry.GeometryFactory;
 import org.deegree.geometry.points.Points;
 import org.deegree.geometry.primitive.Point;
@@ -55,13 +59,13 @@ import org.deegree.tools.crs.georeferencing.model.points.PointResidual;
  * <p>
  * 
  * <li>Build an array of balanced points calculated from the passpoints.</li>
- * <li>Calculate the coodinates to the balancedPoints.</li>
- * <li>Calculate the coodinates to the balancedPoints(the points for E, N, X, Y).</li>
- * <li>Calculate helpers for the caluculation of the needed transformation constants(oMinuend, aMinuend, oSubtrahend,
+ * <li>Calculate the coordinates to the balancedPoints.</li>
+ * <li>Calculate the coordinates to the balancedPoints(the points for E, N, X, Y).</li>
+ * <li>Calculate helpers for the calculation of the needed transformation constants(oMinuend, aMinuend, oSubtrahend,
  * aSubtrahend, divisor).</li>
  * <li>Calculate the transformation constants applied to the helpers.</li>
- * <li>Calculate the residuals for each coordiante.</li>
- * <li>Finally caluculate the coordinates of the footprint polygons.</li>
+ * <li>Calculate the residuals for each coordinate.</li>
+ * <li>Finally calculate the coordinates of the footprint polygons.</li>
  * <p>
  * 
  * <table border="1">
@@ -151,7 +155,8 @@ public class Helmert4Transform extends AbstractTransformation implements Transfo
     private double[] passPointsN_one;
 
     public Helmert4Transform( List<Triple<Point4Values, Point4Values, PointResidual>> mappedPoints,
-                              Footprint footPrint, Scene2DValues sceneValues, CRS targetCRS, final int order ) {
+                              Footprint footPrint, Scene2DValues sceneValues, CRS targetCRS, final int order )
+                            throws UnknownCRSException {
         super( mappedPoints, footPrint, sceneValues, targetCRS, targetCRS, order );
 
         arraySize = this.getArraySize();
@@ -179,7 +184,6 @@ public class Helmert4Transform extends AbstractTransformation implements Transfo
                 counterDst++;
                 Point4Values pValue = p.second;
 
-                // this is strange why is this perverted?? 1/2 later is the second one...
                 y = pValue.getWorldCoords().y;
                 x = pValue.getWorldCoords().x;
 
@@ -323,10 +327,6 @@ public class Helmert4Transform extends AbstractTransformation implements Transfo
 
                 double newX_two = x - balancedPointDstX;
                 double newY_two = y - balancedPointDstY;
-                //
-                // double calculatedX_one = balancedPointE + ( a * newY_two ) + ( o * newX_two );
-                // double calculatedY_one = balancedPointN + ( a * newX_two ) - ( o * newY_two );
-                // and pervert it back... 2/2
 
                 double calculatedE_one = balancedPointE + ( a * newY_two ) + ( o * newX_two );
                 double calculatedN_one = balancedPointN + ( a * newX_two ) - ( o * newY_two );
@@ -344,8 +344,30 @@ public class Helmert4Transform extends AbstractTransformation implements Transfo
 
     @Override
     public TransformationType getType() {
-
         return TransformationType.Helmert_4;
+    }
+
+    @Override
+    public List<Point3d> doTransform( List<Point3d> srcPts )
+                            throws TransformationException {
+        List<Point3d> list = new ArrayList<Point3d>( srcPts.size() );
+        for ( Point3d src : srcPts ) {
+            Point3d dest = new Point3d();
+            dest.y = balancedPointN + a * src.x - o * src.y;
+            dest.x = balancedPointE + a * src.y + o * src.x;
+            list.add( dest );
+        }
+        return list;
+    }
+
+    @Override
+    public String getImplementationName() {
+        return "st1helmert";
+    }
+
+    @Override
+    public boolean isIdentity() {
+        return false;
     }
 
 }

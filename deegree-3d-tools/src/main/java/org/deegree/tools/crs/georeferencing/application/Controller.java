@@ -79,6 +79,7 @@ import javax.vecmath.Point2d;
 import org.deegree.commons.utils.Pair;
 import org.deegree.commons.utils.Triple;
 import org.deegree.cs.CRS;
+import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryFactory;
 import org.deegree.geometry.primitive.Ring;
@@ -187,7 +188,7 @@ public class Controller {
 
     private GeometryFactory geom;
 
-    String fileChoosed;
+    String chosenFile;
 
     private CRS sourceCRS, targetCRS;
 
@@ -376,10 +377,8 @@ public class Controller {
     void initFootprintScene( String filePath ) {
         isInitFoot = true;
         if ( isInitGeoref ) {
-
             tablePanel.getSaveButton().setEnabled( true );
             tablePanel.getLoadButton().setEnabled( true );
-
         }
 
         this.footPrint = new Footprint( sceneValues, geom );
@@ -392,9 +391,7 @@ public class Controller {
         List<WorldRenderableObject> rese = File3dImporter.open( conModel.getView(), filePath );
         sourceCRS = null;
         for ( WorldRenderableObject res : rese ) {
-
             sourceCRS = res.getBbox().getCoordinateSystem();
-
             glHandler.addDataObjectToScene( res );
         }
         List<float[]> geometryThatIsTaken = new ArrayList<float[]>();
@@ -405,7 +402,6 @@ public class Controller {
             float minimalZ = 0;
 
             for ( SimpleAccessGeometry b : h ) {
-
                 float[] a = b.getHorizontalGeometries( b.getGeometry() );
                 if ( a != null ) {
                     if ( isfirstOccurrence == false ) {
@@ -539,6 +535,7 @@ public class Controller {
      * @version $Revision$, $Date$
      */
     class ButtonListener implements ActionListener {
+
         private boolean exceptionThrown = false;
 
         @Override
@@ -547,9 +544,7 @@ public class Controller {
             if ( source instanceof JTextField ) {
                 JTextField tF = (JTextField) source;
                 if ( tF.getName().startsWith( get( "JTEXTFIELD_COORDINATE_JUMPER" ) ) ) {
-
                     fireTextfieldJumperDialog();
-
                 }
 
             } else if ( source instanceof JToggleButton ) {
@@ -663,8 +658,8 @@ public class Controller {
                 } else if ( ( (JButton) source ).getText().startsWith( get( "RESET_VIEW_BUTTON_TEXT" ) ) ) {
 
                     initGeoReferencingScene( model );
-                    if ( fileChoosed != null ) {
-                        initFootprintScene( fileChoosed );
+                    if ( chosenFile != null ) {
+                        initFootprintScene( chosenFile );
 
                         conModel.getFootPanel().updatePoints( sceneValues );
                         conModel.getFootPanel().repaint();
@@ -679,7 +674,12 @@ public class Controller {
                         setValues();
                     }
 
-                    conModel.setTransform( determineTransformationType( conModel.getTransformationType() ) );
+                    try {
+                        conModel.setTransform( determineTransformationType( conModel.getTransformationType() ) );
+                    } catch ( UnknownCRSException e1 ) {
+                        // TODO Auto-generated catch block
+                        e1.printStackTrace();
+                    }
                     List<Ring> polygonRing = conModel.getTransform().computeRingList();
 
                     updateResiduals( conModel.getTransformationType() );
@@ -803,6 +803,21 @@ public class Controller {
 
                 } else if ( ( (JMenuItem) source ).getText().startsWith( get( "MENUITEM_EXIT" ) ) ) {
                     System.exit( 0 );
+                } else if ( ( (JMenuItem) source ).getText().startsWith( get( "MENUITEM_SAVE_BUILDING" ) ) ) {
+                    List<String> list = new ArrayList<String>();
+                    list.add( "gml" );
+                    list.add( "xml" );
+                    String desc = "(*.gml, *.xml) GML or CityGML-Files";
+                    Pair<List<String>, String> supportedFiles = new Pair<List<String>, String>( list, desc );
+                    List<Pair<List<String>, String>> supportedOpenFiles = new ArrayList<Pair<List<String>, String>>();
+                    supportedOpenFiles.add( supportedFiles );
+                    FileChooser fileChooser = new FileChooser( supportedOpenFiles, conModel.getView() );
+                    chosenFile = fileChooser.getSelectedFilePath();
+                    if ( chosenFile != null ) {
+                        List<WorldRenderableObject> rese = File3dImporter.open( conModel.getView(), chosenFile );
+                        for ( WorldRenderableObject res : rese ) {
+                        }
+                    }
                 } else if ( ( (JMenuItem) source ).getText().startsWith( get( "MENUITEM_OPEN_BUILDING" ) ) ) {
                     List<String> list = new ArrayList<String>();
                     list.add( "gml" );
@@ -812,9 +827,9 @@ public class Controller {
                     List<Pair<List<String>, String>> supportedOpenFiles = new ArrayList<Pair<List<String>, String>>();
                     supportedOpenFiles.add( supportedFiles );
                     FileChooser fileChooser = new FileChooser( supportedOpenFiles, conModel.getView() );
-                    fileChoosed = fileChooser.getSelectedFilePath();
-                    if ( fileChoosed != null ) {
-                        initFootprintScene( fileChoosed );
+                    chosenFile = fileChooser.getSelectedFilePath();
+                    if ( chosenFile != null ) {
+                        initFootprintScene( chosenFile );
                     }
                 } else if ( ( (JMenuItem) source ).getText().startsWith( get( "MENUITEM_OPEN_SHAPEFILE" ) ) ) {
                     List<String> list = new ArrayList<String>();
@@ -1569,8 +1584,10 @@ public class Controller {
      * @param type
      *            of the transformationMethod, not <Code>null</Code>.
      * @return the transformationMethod to be used.
+     * @throws UnknownCRSException
      */
-    TransformationMethod determineTransformationType( TransformationType type ) {
+    TransformationMethod determineTransformationType( TransformationType type )
+                            throws UnknownCRSException {
         TransformationMethod t = null;
         switch ( type ) {
         case Polynomial:
@@ -1600,26 +1617,31 @@ public class Controller {
      */
     void updateResiduals( TransformationType type ) {
 
-        TransformationMethod t = determineTransformationType( type );
-        PointResidual[] r = t.calculateResiduals();
-        if ( r != null ) {
-            Vector<Vector<? extends Double>> data = new Vector<Vector<? extends Double>>();
-            int counter = 0;
-            for ( Triple<Point4Values, Point4Values, PointResidual> point : mappedPoints ) {
-                Vector<Double> element = new Vector<Double>( 6 );
-                element.add( point.second.getWorldCoords().x );
-                element.add( point.second.getWorldCoords().y );
-                element.add( point.first.getWorldCoords().x );
-                element.add( point.first.getWorldCoords().y );
-                element.add( r[counter].x );
-                element.add( r[counter].y );
-                data.add( element );
+        try {
+            TransformationMethod t = determineTransformationType( type );
+            PointResidual[] r = t.calculateResiduals();
+            if ( r != null ) {
+                Vector<Vector<? extends Double>> data = new Vector<Vector<? extends Double>>();
+                int counter = 0;
+                for ( Triple<Point4Values, Point4Values, PointResidual> point : mappedPoints ) {
+                    Vector<Double> element = new Vector<Double>( 6 );
+                    element.add( point.second.getWorldCoords().x );
+                    element.add( point.second.getWorldCoords().y );
+                    element.add( point.first.getWorldCoords().x );
+                    element.add( point.first.getWorldCoords().y );
+                    element.add( r[counter].x );
+                    element.add( r[counter].y );
+                    data.add( element );
 
-                point.third = r[counter++];
+                    point.third = r[counter++];
 
+                }
+                tablePanel.getModel().setDataVector( data, tablePanel.getColumnNamesAsVector() );
+                tablePanel.getModel().fireTableDataChanged();
             }
-            tablePanel.getModel().setDataVector( data, tablePanel.getColumnNamesAsVector() );
-            tablePanel.getModel().fireTableDataChanged();
+        } catch ( UnknownCRSException e ) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
         }
     }
 
