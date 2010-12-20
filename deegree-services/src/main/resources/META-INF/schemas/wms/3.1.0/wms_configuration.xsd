@@ -201,7 +201,10 @@
     <sequence>
       <element name="File" type="string" />
       <element name="Name" type="string" minOccurs="0" />
-      <element name="LegendConfigurationFile" type="string" minOccurs="0" />
+      <choice minOccurs="0">
+        <element name="LegendConfigurationFile" type="string" />
+        <element name="LegendGraphicFile" type="string" />
+      </choice>
     </sequence>
   </complexType>
 
@@ -212,7 +215,10 @@
       <sequence minOccurs="0" maxOccurs="unbounded">
         <element name="Name" type="string" minOccurs="0" />
         <element name="UserStyle" type="string" />
-        <element name="LegendConfigurationFile" type="string" minOccurs="0" />
+        <choice minOccurs="0">
+          <element name="LegendConfigurationFile" type="string" />
+          <element name="LegendGraphicFile" type="string" />
+        </choice>
       </sequence>
     </sequence>
   </complexType>

@@ -286,6 +286,10 @@ public class StyleRegistry extends TimerTask {
                         soleStyleFiles.add( file.getName() );
                     }
                     put( layerName, style, false );
+                    if ( sty.getLegendGraphicFile() != null ) {
+                        File legend = new File( adapter.resolve( sty.getLegendGraphicFile() ).toURI() );
+                        style.setLegendFile( legend );
+                    }
                 }
             } catch ( MalformedURLException e ) {
                 LOG.trace( "Stack trace", e );
@@ -331,7 +335,8 @@ public class StyleRegistry extends TimerTask {
                 String namedLayer = sty.getNamedLayer();
                 LOG.debug( "Will read styles from SLD '{}', for named layer '{}'.", file, namedLayer );
                 Map<String, String> map = new HashMap<String, String>();
-                String name = null;
+                Map<String, File> legends = new HashMap<String, File>();
+                String name = null, lastName = null;
                 for ( JAXBElement<String> elem : sty.getNameAndUserStyleAndLegendConfigurationFile() ) {
                     if ( elem.getName().getLocalPart().equals( "Name" ) ) {
                         name = elem.getValue();
@@ -344,6 +349,9 @@ public class StyleRegistry extends TimerTask {
                             }
                             putLegend( layerName, style, false );
                         }
+                    } else if ( elem.getName().getLocalPart().equals( "LegendGraphicFile" ) ) {
+                        File legend = new File( adapter.resolve( elem.getValue() ).toURI() );
+                        legends.put( lastName, legend );
                     } else if ( elem.getName().getLocalPart().equals( "UserStyle" ) ) {
                         if ( name == null ) {
                             name = elem.getValue();
@@ -351,6 +359,7 @@ public class StyleRegistry extends TimerTask {
                         LOG.debug( "Will load user style with name '{}', it will be known as '{}'.", elem.getValue(),
                                    name );
                         map.put( elem.getValue(), name );
+                        lastName = name;
                         name = null;
                     }
                 }
@@ -360,6 +369,7 @@ public class StyleRegistry extends TimerTask {
                 Pair<LinkedList<Filter>, LinkedList<Style>> parsedStyles = getStyles( in, namedLayer, map );
                 for ( Style s : parsedStyles.second ) {
                     put( layerName, s, false );
+                    s.setLegendFile( legends.get( s.getName() ) );
                 }
                 is.close();
             } catch ( MalformedURLException e ) {

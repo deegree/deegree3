@@ -37,12 +37,18 @@ package org.deegree.rendering.r2d.legends;
 
 import static java.lang.Math.max;
 import static org.deegree.rendering.r2d.styling.components.UOM.Metre;
+import static org.slf4j.LoggerFactory.getLogger;
 
 import java.awt.Graphics2D;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+
+import javax.imageio.ImageIO;
 
 import org.deegree.commons.utils.DoublePair;
 import org.deegree.commons.utils.Pair;
@@ -59,6 +65,7 @@ import org.deegree.rendering.r2d.se.unevaluated.Symbolizer;
 import org.deegree.rendering.r2d.styling.RasterStyling;
 import org.deegree.rendering.r2d.styling.Styling;
 import org.deegree.rendering.r2d.styling.TextStyling;
+import org.slf4j.Logger;
 
 /**
  * 
@@ -68,6 +75,8 @@ import org.deegree.rendering.r2d.styling.TextStyling;
  * @version $Revision$, $Date$
  */
 public class Legends {
+
+    private static final Logger LOG = getLogger( Legends.class );
 
     private static final GeometryFactory geofac = new GeometryFactory();
 
@@ -153,6 +162,18 @@ public class Legends {
      * @param g
      */
     public void paintLegend( Style style, int width, int height, Graphics2D g ) {
+        File file = style.getLegendFile();
+        if ( file != null ) {
+            try {
+                BufferedImage legend = ImageIO.read( file );
+                g.drawImage( legend, 0, 0, width, height, null );
+                g.dispose();
+                return;
+            } catch ( IOException e ) {
+                LOG.warn( "Legend file {} could not be read, using dynamic legend: {}", file, e.getLocalizedMessage() );
+                LOG.trace( "Stack trace:", e );
+            }
+        }
         List<LegendItem> items = prepareLegend( style, g, width, height );
         int rowHeight = 2 * opts.spacing + opts.baseHeight;
         int pos = getLegendSize( style ).second;
@@ -166,6 +187,16 @@ public class Legends {
     }
 
     public Pair<Integer, Integer> getLegendSize( Style style ) {
+        File file = style.getLegendFile();
+        if ( file != null ) {
+            try {
+                BufferedImage legend = ImageIO.read( file );
+                return new Pair<Integer, Integer>( legend.getWidth(), legend.getHeight() );
+            } catch ( IOException e ) {
+                LOG.warn( "Legend file {} could not be read, using dynamic legend: {}", file, e.getLocalizedMessage() );
+                LOG.trace( "Stack trace:", e );
+            }
+        }
         Pair<Integer, Integer> res = new Pair<Integer, Integer>( 2 * opts.spacing + opts.baseWidth, 0 );
 
         for ( LegendItem item : prepareLegend( style, null, null, null ) ) {
