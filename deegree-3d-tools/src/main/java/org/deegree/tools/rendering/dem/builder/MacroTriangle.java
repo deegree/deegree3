@@ -41,6 +41,7 @@ import javax.vecmath.Point3f;
 import javax.vecmath.Vector2f;
 import javax.vecmath.Vector3f;
 
+import org.deegree.coverage.raster.cache.RasterCache;
 import org.deegree.coverage.raster.data.RasterData;
 
 /**
@@ -66,8 +67,6 @@ public class MacroTriangle {
 
     private String locationCode;
 
-    private DEMDatasetGenerator builder;
-
     /** The bbox of the macro triangle */
     public float[][] bbox;
 
@@ -82,25 +81,15 @@ public class MacroTriangle {
 
     // private int level;
 
-    private boolean disposeEachRow;
+    private boolean oddLevel;
 
-    /**
-     * Constructs a new <code>MacroTriangle</code> with already initialized bounding box.
-     * 
-     * @param builder
-     * @param p0
-     * @param p1
-     * @param p2
-     * @param level
-     * @param locationCode
-     * @param bbox
-     * @param geometryError
-     */
-    MacroTriangle( DEMDatasetGenerator builder, Point2f p0, Point2f p1, Point2f p2, int level, String locationCode,
-                   float[][] bbox, float geometryError ) {
-        this( builder, p0, p1, p2, level, locationCode, geometryError );
-        this.bbox = bbox;
-    }
+    private MacroTriangle child0;
+
+    private MacroTriangle child1;
+
+    private final HeixelBuffer heixels = new HeixelBuffer();
+
+    private DEMDatasetGenerator builder;
 
     /**
      * Constructs a new <code>MacroTriangle</code> without bounding box.
@@ -116,16 +105,21 @@ public class MacroTriangle {
      * @param geometryError
      */
     MacroTriangle( DEMDatasetGenerator builder, Point2f p0, Point2f p1, Point2f p2, int level, String locationCode,
-                   float geometryError ) {
-        this.builder = builder;
+                   float geometryError, MacroTriangle child0, MacroTriangle child1 ) {
         this.p0 = p0;
         this.p1 = p1;
         this.p2 = p2;
         // this.level = level;
         this.locationCode = locationCode;
         this.geometryError = geometryError;
-        this.disposeEachRow = locationCode.length() == 1;
+        this.oddLevel = locationCode.length() == 1;
         this.orientation = getOrientation();
+        this.child0 = child0;
+        this.child1 = child1;
+        if ( child0 != null && child1 != null ) {
+            bbox = mergeBBoxes( child0.bbox, child1.bbox );
+        }
+        this.builder = builder;
     }
 
     double getError() {
@@ -203,18 +197,12 @@ public class MacroTriangle {
             lastRowLeftEnd = rowStart;
             lastRowRightEnd = currentPos;
             currentPos.sub( stepRight );
-            if ( !disposeEachRow ) {
+            if ( !oddLevel ) {
                 if ( currentPos.y < newHeight ) {
                     newHeight -= tileHeight;
-                    dataBuffer.dispose();
                 }
-            } else {
-                // System.out.println( "Dispose each row." );
-                dataBuffer.dispose();
             }
-
         }
-        dataBuffer.dispose();
 
         // build triangles
         int lastRowFirstVertexId = 0;
@@ -263,9 +251,18 @@ public class MacroTriangle {
             lastRowFirstVertexId = firstVertexId;
             lastRowLastVertexId = rowLastVertexId;
             firstVertexId = rowLastVertexId + 3;
-            // dataBuffer.dispose();
         }
-        // dataBuffer.dispose();
+
+        // clear cache and child references
+        RasterCache.dispose();
+        if ( child0 != null ) {
+            child0.child0 = null;
+            child0.child1 = null;
+        }
+        if ( child1 != null ) {
+            child1.child0 = null;
+            child1.child1 = null;
+        }
     }
 
     private Orientation getOrientation() {
@@ -358,7 +355,7 @@ public class MacroTriangle {
     }
 
     private Point3f build3DPoint( Point2f p ) {
-        float z = builder.getHeight( p.x, p.y );
+        float z = getHeight( p.x, p.y );
         if ( z < minZ ) {
             minZ = z;
         }
@@ -387,7 +384,7 @@ public class MacroTriangle {
     }
 
     private Vector3f getNormal( Point2f p, Vector2f stepRight, Vector2f stepUp ) {
-
+        // return new Vector3f( 0.0f, 0.0f, 1.0f );
         float x = p.x;
         float y = p.y;
 
@@ -396,33 +393,33 @@ public class MacroTriangle {
         // return new Vector3f( 0.0f, 0.0f, 1.0f );
         // }
 
-        Point3f p0 = new Point3f( x, y, builder.getHeight( x, y ) );
+        Point3f p0 = new Point3f( x, y, getHeight( x, y ) );
 
         Point2f p12D = new Point2f( p );
         p12D.sub( stepRight );
-        Point3f p1 = new Point3f( p12D.x, p12D.y, builder.getHeight( p12D ) );
+        Point3f p1 = new Point3f( p12D.x, p12D.y, getHeight( p12D ) );
 
         Point2f p22D = new Point2f( p );
         p22D.add( stepUp );
-        Point3f p2 = new Point3f( p22D.x, p22D.y, builder.getHeight( p22D ) );
+        Point3f p2 = new Point3f( p22D.x, p22D.y, getHeight( p22D ) );
 
         Point2f p32D = new Point2f( p );
         p32D.add( stepUp );
         p32D.add( stepRight );
-        Point3f p3 = new Point3f( p32D.x, p32D.y, builder.getHeight( p32D ) );
+        Point3f p3 = new Point3f( p32D.x, p32D.y, getHeight( p32D ) );
 
         Point2f p42D = new Point2f( p );
         p42D.add( stepRight );
-        Point3f p4 = new Point3f( p42D.x, p42D.y, builder.getHeight( p42D ) );
+        Point3f p4 = new Point3f( p42D.x, p42D.y, getHeight( p42D ) );
 
         Point2f p52D = new Point2f( p );
         p52D.sub( stepUp );
-        Point3f p5 = new Point3f( p52D.x, p52D.y, builder.getHeight( p52D ) );
+        Point3f p5 = new Point3f( p52D.x, p52D.y, getHeight( p52D ) );
 
         Point2f p62D = new Point2f( p );
         p62D.sub( stepUp );
         p62D.sub( stepRight );
-        Point3f p6 = new Point3f( p62D.x, p62D.y, builder.getHeight( p62D ) );
+        Point3f p6 = new Point3f( p62D.x, p62D.y, getHeight( p62D ) );
 
         Vector3f n0 = calculateTriangleNormal( p0, p2, p1 );
         Vector3f n1 = calculateTriangleNormal( p0, p3, p2 );
@@ -450,5 +447,44 @@ public class MacroTriangle {
         normal.cross( first, second );
         normal.normalize();
         return normal;
+    }
+
+    private float getHeight( float x, float y ) {
+        float height = 0.0f;
+        if ( child0 == null ) {
+            height = builder.getHeight( x, y );
+        } else {
+            Float height1 = child0.heixels.getHeight( x, y );
+            if ( height1 == null ) {
+                height1 = child1.heixels.getHeight( x, y );
+            }
+            if ( height1 == null ) {
+//                System.out.println( "No height value for " + Math.round( x ) + ", " + Math.round( y ) + "!?" );
+                height1 = builder.getHeight( x, y );
+            }
+            height = height1;
+        }
+        heixels.putHeight( x, y, height );
+        return height;
+    }
+
+    private float getHeight( Point2f p ) {
+        return getHeight( p.x, p.y );
+    }
+
+    private float[][] mergeBBoxes( float[][] bbox1, float[][] bbox2 ) {
+        float[][] bbox = new float[][] { new float[] { bbox1[0][0], bbox1[0][1], bbox1[0][2] },
+                                        new float[] { bbox1[1][0], bbox1[1][1], bbox1[1][2] } };
+        for ( int i = 0; i <= 2; i++ ) {
+            if ( bbox[0][i] > bbox2[0][i] ) {
+                bbox[0][i] = bbox2[0][i];
+            }
+        }
+        for ( int i = 0; i <= 2; i++ ) {
+            if ( bbox[1][i] < bbox2[1][i] ) {
+                bbox[1][i] = bbox2[1][i];
+            }
+        }
+        return bbox;
     }
 }

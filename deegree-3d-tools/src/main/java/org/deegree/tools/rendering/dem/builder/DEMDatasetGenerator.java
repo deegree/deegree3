@@ -70,8 +70,8 @@ import org.deegree.coverage.raster.data.TiledRasterData;
 import org.deegree.coverage.raster.data.info.DataType;
 import org.deegree.coverage.raster.data.info.RasterDataInfo;
 import org.deegree.coverage.raster.geom.RasterGeoReference;
-import org.deegree.coverage.raster.geom.RasterRect;
 import org.deegree.coverage.raster.geom.RasterGeoReference.OriginLocation;
+import org.deegree.coverage.raster.geom.RasterRect;
 import org.deegree.coverage.raster.io.RasterIOOptions;
 import org.deegree.coverage.raster.io.grid.GridFileReader;
 import org.deegree.coverage.raster.io.grid.GridReader;
@@ -101,7 +101,7 @@ import org.deegree.tools.rendering.dem.builder.dag.DAGBuilder;
 public class DEMDatasetGenerator {
 
     // private static final Logger LOG = LoggerFactory.getLogger( DEMDatasetGenerator.class );
-	
+
     /*
      * Command line options
      */
@@ -173,7 +173,7 @@ public class DEMDatasetGenerator {
      */
     public DEMDatasetGenerator( AbstractRaster raster, RasterIOOptions options, int levels, int rowsPerTile, float maxZ )
                             throws SQLException, IOException {
-   
+
         this.dataBuffer = buildGrid( raster, options );
 
         if ( Float.isNaN( maxZ ) ) {
@@ -340,11 +340,10 @@ public class DEMDatasetGenerator {
     private void outputTriangleHeights( Point2f p0, Point2f p1, Point2f p2, int level ) {
         Point2f midPoint = calcMidPoint( p1, p2 );
         if ( level > 0 ) {
-        	double mtHeight = ( p0.distance( midPoint ));
-        	double sampleDist = mtHeight / rowsPerFragment;
-            System.out.println( "At level " + level + " each macro triangle will have a height of: "
-                                + mtHeight + " meters. Distance between used heixels: "
-                                + sampleDist + " meters");
+            double mtHeight = ( p0.distance( midPoint ) );
+            double sampleDist = mtHeight / rowsPerFragment;
+            System.out.println( "At level " + level + " each macro triangle will have a height of: " + mtHeight
+                                + " meters. Distance between used heixels: " + sampleDist + " meters" );
             outputTriangleHeights( midPoint, p0, p1, level - 1 );
         }
     }
@@ -423,18 +422,18 @@ public class DEMDatasetGenerator {
         long sT = currentTimeMillis();
         // start workers in different threads
         Thread t = new Thread( worker1, "Upper left macro triangle" );
-        t.start();
+        worker1.run();
         Thread.currentThread().setName( "Lower right macro triangle" );
         worker2.run();
 
-        // wait indefinitely for thread t to finish
-        try {
-            t.join();
-            // Finished
-        } catch ( InterruptedException e ) {
-            // Thread was interrupted
-            e.printStackTrace();
-        }
+        // // wait indefinitely for thread t to finish
+        // try {
+        // t.join();
+        // // Finished
+        // } catch ( InterruptedException e ) {
+        // // Thread was interrupted
+        // e.printStackTrace();
+        // }
         System.out.println( LogUtils.createDurationTimeString( "Creation of triangles", sT, true ) );
 
         return triangleManager;
@@ -468,10 +467,6 @@ public class DEMDatasetGenerator {
             return this.dataBuffer.getShortSample( rasterX, rasterY, band ) & 0xffff;
         }
         throw new IllegalArgumentException( "Unknown Data type, this cannot be." );
-    }
-
-    float getHeight( Point2f p ) {
-        return getHeight( p.x, p.y );
     }
 
     Point2f calcMidPoint( Point2f pa, Point2f pb ) {
@@ -529,7 +524,7 @@ public class DEMDatasetGenerator {
          * @param level
          * @param locationCode
          */
-        private float[][] createTriangleTree( Point2f p0, Point2f p1, Point2f p2, int level, String locationCode ) {
+        private MacroTriangle createTriangleTree( Point2f p0, Point2f p1, Point2f p2, int level, String locationCode ) {
 
             float error = estimateError( p0, p1, p2 );
             Point2f midPoint = calcMidPoint( p1, p2 );
@@ -541,26 +536,29 @@ public class DEMDatasetGenerator {
                     time = System.currentTimeMillis();
                 }
 
-                float[][] bbox1 = createTriangleTree( midPoint, p0, p1, level - 1, locationCode + "0" );
-                float[][] bbox2 = createTriangleTree( midPoint, p2, p0, level - 1, locationCode + "1" );
-                float[][] bbox = mergeBBoxes( bbox1, bbox2 );
+                MacroTriangle child1 = createTriangleTree( midPoint, p0, p1, level - 1, locationCode + "0" );
+                MacroTriangle child2 = createTriangleTree( midPoint, p2, p0, level - 1, locationCode + "1" );
                 // long time = System.currentTimeMillis();
 
-                triangle = new MacroTriangle( builder, p0, p1, p2, level, locationCode, bbox, error );
-                if ( !( locationCode.substring( 1 ) ).contains( "1" ) ) {
-                    String message = Thread.currentThread().getName() + " finished creation of level: " + level + " ("
-                                     + locationCode + ")";
-                    System.out.println( LogUtils.createDurationTimeString( message, time, true ) );
-
-                }
+                triangle = new MacroTriangle( builder, p0, p1, p2, level, locationCode, error, child1, child2 );
+                // if ( !( locationCode.substring( 1 ) ).contains( "1" ) ) {
+                // String message = Thread.currentThread().getName() + " finished creation of level: " + level + " ("
+                // + locationCode + ")";
+                // System.out.println( LogUtils.createDurationTimeString( message, time, true ) );
+                //
+                // }
 
                 builtTriangles++;
             } else {
                 if ( level < 1 ) {
                     System.err.println( "The level is smaller than 1, this may not be!" );
                 }
-                triangle = new MacroTriangle( builder, p0, p1, p2, level, locationCode, error );
+                triangle = new MacroTriangle( builder, p0, p1, p2, level, locationCode, error, null, null );
                 builtTriangles++;
+            }
+
+            if ( builtTriangles % 100 == 0 ) {
+                System.out.println( "Generated macro triangles: " + builtTriangles );
             }
 
             try {
@@ -568,7 +566,7 @@ public class DEMDatasetGenerator {
             } catch ( Exception e ) {
                 e.printStackTrace();
             }
-            return triangle.getBBox();
+            return triangle;
         }
 
         private float estimateError( Point2f p0, Point2f p1, Point2f p2 ) {
@@ -577,22 +575,6 @@ public class DEMDatasetGenerator {
             float dist = p0.distance( midPoint );
             float heixelDist = dist / getRowsPerFragment();
             return heixelDist;
-        }
-
-        private float[][] mergeBBoxes( float[][] bbox1, float[][] bbox2 ) {
-            float[][] bbox = new float[][] { new float[] { bbox1[0][0], bbox1[0][1], bbox1[0][2] },
-                                            new float[] { bbox1[1][0], bbox1[1][1], bbox1[1][2] } };
-            for ( int i = 0; i <= 2; i++ ) {
-                if ( bbox[0][i] > bbox2[0][i] ) {
-                    bbox[0][i] = bbox2[0][i];
-                }
-            }
-            for ( int i = 0; i <= 2; i++ ) {
-                if ( bbox[1][i] < bbox2[1][i] ) {
-                    bbox[1][i] = bbox2[1][i];
-                }
-            }
-            return bbox;
         }
 
         private void storeMacroTriangle( MacroTriangle tile )
@@ -643,8 +625,17 @@ public class DEMDatasetGenerator {
      * Please see the code for the initialization of the parameters.
      * 
      * @param args
+     * @throws IOException
      */
-    public static void main( String[] args ) {
+    public static void main( String[] args )
+                            throws IOException {
+
+        // File file = new File( "/tmp/heixel.grid" );
+        // FileInputStream is = new FileInputStream( file );
+        // FileChannel channel = is.getChannel();
+        // MappedByteBuffer buffer = channel.map( READ_ONLY, 0, channel.size() );
+        // System.out.println( buffer.getFloat() );
+
         CommandLineParser parser = new PosixParser();
 
         Options options = initOptions();
@@ -696,8 +687,9 @@ public class DEMDatasetGenerator {
             throw new IllegalArgumentException(
                                                 "Given raster location is a multiresolution raster, this is not supported." );
         }
-        
-        DEMDatasetGenerator builder = new DEMDatasetGenerator( (AbstractRaster) raster, rasterIOOptions, levels, rows, maxZ );
+
+        DEMDatasetGenerator builder = new DEMDatasetGenerator( (AbstractRaster) raster, rasterIOOptions, levels, rows,
+                                                               maxZ );
 
         t = line.getOptionValue( OPT_OUTPUT_DIR );
         File outputDir = new File( t );
