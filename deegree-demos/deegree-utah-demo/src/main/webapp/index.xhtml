@@ -28,10 +28,10 @@
   <p class="welcome">This server is running deegree utah demo <h:outputText value="#{applicationBean.baseVersion}" /></p>
   <h:panelGroup rendered="#{!downloadBean.dataDownloaded}">
     <h:form id="downloadForm">
-      NOTE: Before you can use this demo, you will have to <h:commandButton styleClass="buttonData" value="download" action="#{downloadBean.download}" onclick="show();" /> the required datasets (about 64 MB). This may take a moment depending on the internet connection of the server.
-      <p class="explain"><a href="#{facesContext.externalContext.requestContextPath}/console/jsf/proxy.jsf">Proxysettings</a>&nbsp;<h:graphicImage styleClass="image" url="#{resource['images:link.png']}" /><br />
-      NOTE: If you are behind a proxy and the download is not working please configure your proxy settings.<br />
-      The deefault password is "deegree".</p>
+      NOTE: Before you can use this demo, you will have to <h:commandButton styleClass="buttonData" value="download" action="#{downloadBean.download}" onclick="show();" /> the required datasets (about 64 MB). This may take several minutes depending on the internet connection of the server.
+      <p class="explain"><a href="#{facesContext.externalContext.requestContextPath}/console/jsf/proxy.jsf">Proxy Settings</a>&nbsp;<h:graphicImage styleClass="image" url="#{resource['images:link.png']}" /><br />
+      NOTE: If you are behind a proxy and the download is not working, please configure deegree's <a href="#{facesContext.externalContext.requestContextPath}/console/jsf/proxy.jsf">proxy settings</a>.<br />
+      The default password is "deegree".</p>
     </h:form>
   </h:panelGroup> 
   <h:panelGroup rendered="#{downloadBean.dataDownloaded}">
