@@ -97,6 +97,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Timer;
 
+import javax.imageio.ImageIO;
 import javax.media.jai.PlanarImage;
 import javax.media.jai.RenderedOp;
 import javax.media.jai.operator.BandSelectDescriptor;
@@ -979,6 +980,16 @@ public class MapService {
      */
     public BufferedImage getLegend( GetLegendGraphic req ) {
         Style style = req.getStyle();
+
+        if ( style.getLegendFile() != null ) {
+            try {
+                return ImageIO.read( style.getLegendFile() );
+            } catch ( IOException e ) {
+                LOG.warn( "Legend file {} could not be read: {}", style.getLegendFile(), e.getLocalizedMessage() );
+                LOG.trace( "Stack trace:", e );
+            }
+        }
+
         Pair<Integer, Integer> size = getLegendSize( style );
 
         boolean originalSize = req.getWidth() == size.first && req.getHeight() == size.second;

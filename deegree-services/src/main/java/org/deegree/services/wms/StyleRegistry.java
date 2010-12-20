@@ -229,6 +229,10 @@ public class StyleRegistry extends TimerTask {
                         soleStyleFiles.add( file.getName() );
                     }
                     put( layerName, style, false );
+                    if ( sty.getLegendConfigurationFile() != null ) {
+                        File legend = new File( adapter.resolve( sty.getLegendConfigurationFile() ).toURI() );
+                        style.setLegendFile( legend );
+                    }
                 }
             } catch ( MalformedURLException e ) {
                 LOG.trace( "Stack trace", e );
@@ -252,11 +256,16 @@ public class StyleRegistry extends TimerTask {
                 String namedLayer = sty.getNamedLayer();
                 LOG.debug( "Will read styles from SLD '{}', for named layer '{}'.", file, namedLayer );
                 Map<String, String> map = new HashMap<String, String>();
+                Map<String, File> legends = new HashMap<String, File>();
+                String lastName = null;
                 String name = null;
                 for ( JAXBElement<String> elem : sty.getNameAndUserStyleAndLegendConfigurationFile() ) {
                     // TODO sth w/ the legend file
                     if ( elem.getName().getLocalPart().equals( "Name" ) ) {
                         name = elem.getValue();
+                    } else if ( elem.getName().getLocalPart().equals( "LegendConfigurationFile" ) ) {
+                        File legend = new File( adapter.resolve( elem.getValue() ).toURI() );
+                        legends.put( lastName, legend );
                     } else {
                         if ( name == null ) {
                             name = elem.getValue();
@@ -264,6 +273,7 @@ public class StyleRegistry extends TimerTask {
                         LOG.debug( "Will load user style with name '{}', it will be known as '{}'.", elem.getValue(),
                                    name );
                         map.put( elem.getValue(), name );
+                        lastName = name;
                         name = null;
                     }
                 }
@@ -273,6 +283,9 @@ public class StyleRegistry extends TimerTask {
                 Pair<LinkedList<Filter>, LinkedList<Style>> parsedStyles = getStyles( in, namedLayer, map );
                 for ( Style s : parsedStyles.second ) {
                     put( layerName, s, false );
+                    if ( s.getName() != null ) {
+                        s.setLegendFile( legends.get( s.getName() ) );
+                    }
                 }
                 is.close();
             } catch ( MalformedURLException e ) {
