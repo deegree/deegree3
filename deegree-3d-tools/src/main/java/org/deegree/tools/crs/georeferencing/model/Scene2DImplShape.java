@@ -204,4 +204,8 @@ public class Scene2DImplShape implements Scene2D {
         return predictedImage;
     }
 
+    public CRS getCRS() {
+        return sceneValues.getCrs();
+    }
+
 }

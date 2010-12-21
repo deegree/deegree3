@@ -112,7 +112,7 @@ import org.deegree.tools.crs.georeferencing.model.points.PointResidual;
  * 
  * @version $Revision$, $Date$
  */
-public class AffineTransformation extends AbstractTransformation implements TransformationMethod {
+public class AffineTransformation extends AbstractTransformation {
     private final int arraySize;
 
     private double[] passPointsSrcE;

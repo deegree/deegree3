@@ -40,6 +40,7 @@ import java.awt.image.BufferedImage;
 
 import javax.vecmath.Point2d;
 
+import org.deegree.cs.CRS;
 import org.deegree.geometry.Envelope;
 import org.deegree.tools.crs.georeferencing.application.Scene2DValues;
 
@@ -80,4 +81,6 @@ public interface Scene2D {
 
     BufferedImage generateSubImageFromRaster( Envelope env );
 
+    CRS getCRS();
+    
 }

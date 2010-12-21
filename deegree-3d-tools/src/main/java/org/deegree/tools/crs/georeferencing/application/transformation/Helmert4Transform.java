@@ -112,7 +112,7 @@ import org.deegree.tools.crs.georeferencing.model.points.PointResidual;
  * 
  * @version $Revision$, $Date$
  */
-public class Helmert4Transform extends AbstractTransformation implements TransformationMethod {
+public class Helmert4Transform extends AbstractTransformation {
 
     private final int arraySize;
 

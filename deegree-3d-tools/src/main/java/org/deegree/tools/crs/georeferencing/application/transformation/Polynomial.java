@@ -66,7 +66,7 @@ import org.deegree.tools.crs.georeferencing.model.points.PointResidual;
  * 
  * @version $Revision$, $Date$
  */
-public class Polynomial extends AbstractTransformation implements TransformationMethod {
+public class Polynomial extends AbstractTransformation {
 
     private final int arraySize;
 

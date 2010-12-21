@@ -46,6 +46,7 @@ import javax.vecmath.Point2d;
 import jj2000.j2k.NotImplementedError;
 
 import org.deegree.commons.utils.StringUtils;
+import org.deegree.cs.CRS;
 import org.deegree.geometry.Envelope;
 import org.deegree.protocol.wms.client.WMSClient111;
 import org.deegree.tools.crs.georeferencing.application.ParameterStore;
@@ -197,6 +198,10 @@ public class Scene2DImplWMS implements Scene2D {
     public BufferedImage getPredictedImage() {
 
         return predictedImage;
+    }
+
+    public CRS getCRS() {
+        return sceneValues.getCrs();
     }
 
 }

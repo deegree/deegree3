@@ -50,6 +50,9 @@ import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 import java.awt.image.ImageObserver;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -75,14 +78,23 @@ import javax.swing.event.TreeSelectionListener;
 import javax.swing.table.TableModel;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.vecmath.Point2d;
+import javax.xml.stream.FactoryConfigurationError;
+import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.XMLOutputFactory;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamReader;
+import javax.xml.stream.XMLStreamWriter;
 
 import org.deegree.commons.utils.Pair;
 import org.deegree.commons.utils.Triple;
 import org.deegree.cs.CRS;
+import org.deegree.cs.exceptions.TransformationException;
 import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryFactory;
 import org.deegree.geometry.primitive.Ring;
+import org.deegree.gml.GMLVersion;
+import org.deegree.gml.XMLTransformer;
 import org.deegree.rendering.r3d.model.geometry.GeometryQualityModel;
 import org.deegree.rendering.r3d.model.geometry.SimpleAccessGeometry;
 import org.deegree.rendering.r3d.opengl.display.OpenGLEventHandler;
@@ -90,6 +102,7 @@ import org.deegree.rendering.r3d.opengl.rendering.model.geometry.WorldRenderable
 import org.deegree.tools.crs.georeferencing.application.handler.FileInputHandler;
 import org.deegree.tools.crs.georeferencing.application.handler.FileOutputHandler;
 import org.deegree.tools.crs.georeferencing.application.handler.JCheckboxHandler;
+import org.deegree.tools.crs.georeferencing.application.transformation.AbstractTransformation;
 import org.deegree.tools.crs.georeferencing.application.transformation.AffineTransformation;
 import org.deegree.tools.crs.georeferencing.application.transformation.Helmert4Transform;
 import org.deegree.tools.crs.georeferencing.application.transformation.Polynomial;
@@ -190,7 +203,9 @@ public class Controller {
 
     String chosenFile;
 
-    private CRS sourceCRS, targetCRS;
+    CRS sourceCRS;
+
+    private CRS targetCRS;
 
     List<Triple<Point4Values, Point4Values, PointResidual>> mappedPoints;
 
@@ -449,6 +464,7 @@ public class Controller {
 
         mouseGeoRef = new GeoReferencedMouseModel();
         scene2d.init( sceneValues );
+        targetCRS = scene2d.getCRS();
         init();
         removeListeners( conModel.getPanel() );
         conModel.getPanel().addScene2DMouseListener( new Scene2DMouseListener() );
@@ -814,8 +830,56 @@ public class Controller {
                     FileChooser fileChooser = new FileChooser( supportedOpenFiles, conModel.getView() );
                     chosenFile = fileChooser.getSelectedFilePath();
                     if ( chosenFile != null ) {
-                        List<WorldRenderableObject> rese = File3dImporter.open( conModel.getView(), chosenFile );
-                        for ( WorldRenderableObject res : rese ) {
+                        XMLStreamReader reader = null;
+                        XMLStreamWriter writer = null;
+                        try {
+                            XMLInputFactory inFac = XMLInputFactory.newInstance();
+                            reader = inFac.createXMLStreamReader( new File( chosenFile ).toURI().toURL().openStream() );
+
+                            XMLOutputFactory outFac = XMLOutputFactory.newInstance();
+                            writer = outFac.createXMLStreamWriter( new FileOutputStream( "/tmp/test.xml" ) );
+
+                            XMLTransformer transformer = new XMLTransformer( conModel.getTransform() );
+                            transformer.transform( reader, writer, GMLVersion.GML_31 );
+
+                        } catch ( ClassCastException e1 ) {
+                            // TODO Auto-generated catch block
+                            e1.printStackTrace();
+                        } catch ( MalformedURLException e1 ) {
+                            // TODO Auto-generated catch block
+                            e1.printStackTrace();
+                        } catch ( XMLStreamException e1 ) {
+                            // TODO Auto-generated catch block
+                            e1.printStackTrace();
+                        } catch ( FactoryConfigurationError e1 ) {
+                            // TODO Auto-generated catch block
+                            e1.printStackTrace();
+                        } catch ( IOException e1 ) {
+                            // TODO Auto-generated catch block
+                            e1.printStackTrace();
+                        } catch ( UnknownCRSException e1 ) {
+                            // TODO Auto-generated catch block
+                            e1.printStackTrace();
+                        } catch ( TransformationException e1 ) {
+                            // TODO Auto-generated catch block
+                            e1.printStackTrace();
+                        } finally {
+                            if ( reader != null ) {
+                                try {
+                                    reader.close();
+                                } catch ( XMLStreamException e1 ) {
+                                    // TODO Auto-generated catch block
+                                    e1.printStackTrace();
+                                }
+                            }
+                            if ( writer != null ) {
+                                try {
+                                    writer.close();
+                                } catch ( XMLStreamException e1 ) {
+                                    // TODO Auto-generated catch block
+                                    e1.printStackTrace();
+                                }
+                            }
                         }
                     }
                 } else if ( ( (JMenuItem) source ).getText().startsWith( get( "MENUITEM_OPEN_BUILDING" ) ) ) {
@@ -1586,9 +1650,9 @@ public class Controller {
      * @return the transformationMethod to be used.
      * @throws UnknownCRSException
      */
-    TransformationMethod determineTransformationType( TransformationType type )
+    AbstractTransformation determineTransformationType( TransformationType type )
                             throws UnknownCRSException {
-        TransformationMethod t = null;
+        AbstractTransformation t = null;
         switch ( type ) {
         case Polynomial:
 

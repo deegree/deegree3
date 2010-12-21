@@ -159,6 +159,7 @@ public class GRViewerGUI extends JFrame {
         menuFile.add( openShape );
         menuFile.add( openWMS );
         menuFile.add( openBuilding );
+        menuFile.add( saveBuilding );
         menuFile.add( exit );
 
         editMenuItem = new JMenuItem( get( "MENUITEM_EDIT_OPTIONS" ) );

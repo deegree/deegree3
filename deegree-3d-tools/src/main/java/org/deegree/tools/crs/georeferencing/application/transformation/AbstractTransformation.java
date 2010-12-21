@@ -56,7 +56,7 @@ import org.deegree.tools.crs.georeferencing.model.points.PointResidual;
  * 
  * @version $Revision$, $Date$
  */
-public abstract class AbstractTransformation extends Transformation{
+public abstract class AbstractTransformation extends Transformation implements TransformationMethod {
 
     protected List<Triple<Point4Values, Point4Values, PointResidual>> mappedPoints;
 
@@ -77,7 +77,8 @@ public abstract class AbstractTransformation extends Transformation{
     public AbstractTransformation( List<Triple<Point4Values, Point4Values, PointResidual>> mappedPoints,
                                    Footprint footPrint, Scene2DValues sceneValues, CRS sourceCRS, CRS targetCRS,
                                    final int order ) throws UnknownCRSException {
-        super(sourceCRS.getWrappedCRS(), targetCRS.getWrappedCRS(), new CRSIdentifiable(new CRSCodeType("whatever")));
+        super( sourceCRS.getWrappedCRS(), targetCRS.getWrappedCRS(),
+               new CRSIdentifiable( new CRSCodeType( "whatever" ) ) );
         this.mappedPoints = mappedPoints;
         this.footPrint = footPrint;
         this.sceneValues = sceneValues;
