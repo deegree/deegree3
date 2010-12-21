@@ -37,6 +37,7 @@ package org.deegree.metadata.persistence.iso;
 
 import java.io.BufferedInputStream;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
@@ -70,16 +71,19 @@ public class ISOMetadataResultSet implements MetadataResultSet {
 
     private final Connection conn;
 
-    public ISOMetadataResultSet( ResultSet rs, Connection conn, AnyText anyText ) {
+    private final PreparedStatement stmt;
+
+    public ISOMetadataResultSet( ResultSet rs, Connection conn, PreparedStatement stmt, AnyText anyText ) {
         this.rs = rs;
         this.conn = conn;
+        this.stmt = stmt;
         this.anyText = anyText;
     }
 
     @Override
     public void close()
                             throws MetadataStoreException {
-        JDBCUtils.close( rs, null, conn, LOG );
+        JDBCUtils.close( rs, stmt, conn, LOG );
     }
 
     @Override

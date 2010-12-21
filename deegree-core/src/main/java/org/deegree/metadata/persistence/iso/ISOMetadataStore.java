@@ -38,7 +38,6 @@ package org.deegree.metadata.persistence.iso;
 import static org.deegree.commons.utils.JDBCUtils.close;
 import static org.slf4j.LoggerFactory.getLogger;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -111,7 +110,7 @@ public class ISOMetadataStore implements MetadataStore {
 
     private static final String backendIdentifier = PostGISMappingsISODC.CommonColumnNames.identifier.name();
 
-    private static final String data = PostGISMappingsISODC.CommonColumnNames.data.name();
+    // private static final String data = PostGISMappingsISODC.CommonColumnNames.data.name();
 
     private static final String recordfull = PostGISMappingsISODC.CommonColumnNames.recordfull.name();
 
@@ -280,16 +279,6 @@ public class ISOMetadataStore implements MetadataStore {
     /**
      * The mandatory "resultType" attribute in the GetRecords operation is set to "hits".
      * 
-     * @param writer
-     *            - the XMLStreamWriter
-     * @param typeName
-     *            - the requested typeName
-     * @param profileFormatNumberOutputSchema
-     *            - the format number of the outputSchema
-     * @param propertyAttributes
-     *            - the properties that are identified by the request
-     * @param con
-     *            - the JDBCConnection
      * @throws MetadataStoreException
      */
     public int countMetadata( MetadataQuery query )
@@ -321,7 +310,7 @@ public class ISOMetadataStore implements MetadataStore {
             LOG.debug( msg );
             throw new MetadataStoreException( msg );
         } finally {
-            JDBCUtils.close( rs );
+            JDBCUtils.close( rs, ps, conn, LOG );
         }
 
         return countRows;
@@ -331,19 +320,6 @@ public class ISOMetadataStore implements MetadataStore {
     /**
      * The mandatory "resultType" attribute in the GetRecords operation is set to "results".
      * 
-     * @param writer
-     *            - the XMLStreamWriter
-     * @param typeName
-     *            - the requested typeName
-     * @param profileFormatNumberOutputSchema
-     *            - the format number of the outputSchema
-     * @param recordStoreOptions
-     *            - the properties that are identified by the request
-     * @param con
-     *            - the JDBCConnection
-     * @throws SQLException
-     * @throws XMLStreamException
-     * @throws IOException
      */
     private MetadataResultSet doResultsOnGetRecord( MetadataQuery recordStoreOptions, PostGISWhereBuilder builder,
                                                     Connection conn )
@@ -363,7 +339,7 @@ public class ISOMetadataStore implements MetadataStore {
             throw new MetadataStoreException( msg );
         }
 
-        return new ISOMetadataResultSet( rs, conn, config.getAnyText() );
+        return new ISOMetadataResultSet( rs, conn, preparedStatement, config.getAnyText() );
 
     }
 
@@ -417,7 +393,7 @@ public class ISOMetadataStore implements MetadataStore {
             LOG.debug( msg );
             throw new MetadataStoreException( msg );
         }
-        return new ISOMetadataResultSet( rs, conn, config.getAnyText() );
+        return new ISOMetadataResultSet( rs, conn, stmt, config.getAnyText() );
     }
 
     @Override
