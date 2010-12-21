@@ -68,8 +68,8 @@ public class FileInputHandler {
         Pair<List<String>, String> supportedFiles = new Pair<List<String>, String>( list, desc );
         List<Pair<List<String>, String>> supportedOpenFiles = new ArrayList<Pair<List<String>, String>>();
         supportedOpenFiles.add( supportedFiles );
-        FileChooser fileChooser = new FileChooser( supportedOpenFiles, tablePanel );
-        String fileChoosed = fileChooser.getSelectedFilePath();
+        FileChooser fileChooser = new FileChooser( supportedOpenFiles, tablePanel, true );
+        String fileChoosed = fileChooser.getOpenPath();
         if ( fileChoosed != null ) {
 
             data = new Vector<Vector<Double>>();

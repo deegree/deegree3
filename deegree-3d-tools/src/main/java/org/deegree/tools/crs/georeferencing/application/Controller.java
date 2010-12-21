@@ -37,6 +37,7 @@ package org.deegree.tools.crs.georeferencing.application;
 
 import static java.lang.Math.max;
 import static org.deegree.tools.crs.georeferencing.i18n.Messages.get;
+import static org.slf4j.LoggerFactory.getLogger;
 
 import java.awt.Component;
 import java.awt.Rectangle;
@@ -144,6 +145,7 @@ import org.deegree.tools.crs.georeferencing.model.points.PointResidual;
 import org.deegree.tools.crs.georeferencing.model.points.AbstractGRPoint.PointType;
 import org.deegree.tools.crs.georeferencing.model.textfield.CoordinateJumperModel;
 import org.deegree.tools.rendering.viewer.File3dImporter;
+import org.slf4j.Logger;
 
 /**
  * The <Code>Controller</Code> is responsible to bind the view with the model.
@@ -154,6 +156,8 @@ import org.deegree.tools.rendering.viewer.File3dImporter;
  * @version $Revision$, $Date$
  */
 public class Controller {
+
+    static final Logger LOG = getLogger( Controller.class );
 
     Scene2D model;
 
@@ -808,9 +812,11 @@ public class Controller {
                     Pair<List<String>, String> supportedFiles = new Pair<List<String>, String>( list, desc );
                     List<Pair<List<String>, String>> supportedOpenFiles = new ArrayList<Pair<List<String>, String>>();
                     supportedOpenFiles.add( supportedFiles );
-                    FileChooser fileChooser = new FileChooser( supportedOpenFiles, conModel.getView() );
-                    chosenFile = fileChooser.getSelectedFilePath();
-                    if ( chosenFile != null ) {
+                    FileChooser fileChooser = new FileChooser( supportedOpenFiles, conModel.getView(), true );
+                    chosenFile = fileChooser.getOpenPath();
+                    fileChooser = new FileChooser( supportedOpenFiles, conModel.getView(), false );
+                    File saveFile = fileChooser.getSaveFile();
+                    if ( chosenFile != null && saveFile != null ) {
                         XMLStreamReader reader = null;
                         XMLStreamWriter writer = null;
                         try {
@@ -818,47 +824,38 @@ public class Controller {
                             reader = inFac.createXMLStreamReader( new File( chosenFile ).toURI().toURL().openStream() );
 
                             XMLOutputFactory outFac = XMLOutputFactory.newInstance();
-                            writer = outFac.createXMLStreamWriter( new FileOutputStream( "/tmp/test.xml" ) );
+                            writer = outFac.createXMLStreamWriter( new FileOutputStream( saveFile ) );
 
                             XMLTransformer transformer = new XMLTransformer( conModel.getTransform() );
                             transformer.transform( reader, writer, GMLVersion.GML_31 );
 
                         } catch ( ClassCastException e1 ) {
-                            // TODO Auto-generated catch block
-                            e1.printStackTrace();
+                            LOG.trace( "Stack trace:", e1 );
                         } catch ( MalformedURLException e1 ) {
-                            // TODO Auto-generated catch block
-                            e1.printStackTrace();
+                            LOG.trace( "Stack trace:", e1 );
                         } catch ( XMLStreamException e1 ) {
-                            // TODO Auto-generated catch block
-                            e1.printStackTrace();
+                            LOG.trace( "Stack trace:", e1 );
                         } catch ( FactoryConfigurationError e1 ) {
-                            // TODO Auto-generated catch block
-                            e1.printStackTrace();
+                            LOG.trace( "Stack trace:", e1 );
                         } catch ( IOException e1 ) {
-                            // TODO Auto-generated catch block
-                            e1.printStackTrace();
+                            LOG.trace( "Stack trace:", e1 );
                         } catch ( UnknownCRSException e1 ) {
-                            // TODO Auto-generated catch block
-                            e1.printStackTrace();
+                            LOG.trace( "Stack trace:", e1 );
                         } catch ( TransformationException e1 ) {
-                            // TODO Auto-generated catch block
-                            e1.printStackTrace();
+                            LOG.trace( "Stack trace:", e1 );
                         } finally {
                             if ( reader != null ) {
                                 try {
                                     reader.close();
                                 } catch ( XMLStreamException e1 ) {
-                                    // TODO Auto-generated catch block
-                                    e1.printStackTrace();
+                                    LOG.trace( "Stack trace:", e1 );
                                 }
                             }
                             if ( writer != null ) {
                                 try {
                                     writer.close();
                                 } catch ( XMLStreamException e1 ) {
-                                    // TODO Auto-generated catch block
-                                    e1.printStackTrace();
+                                    LOG.trace( "Stack trace:", e1 );
                                 }
                             }
                         }
@@ -871,8 +868,8 @@ public class Controller {
                     Pair<List<String>, String> supportedFiles = new Pair<List<String>, String>( list, desc );
                     List<Pair<List<String>, String>> supportedOpenFiles = new ArrayList<Pair<List<String>, String>>();
                     supportedOpenFiles.add( supportedFiles );
-                    FileChooser fileChooser = new FileChooser( supportedOpenFiles, conModel.getView() );
-                    chosenFile = fileChooser.getSelectedFilePath();
+                    FileChooser fileChooser = new FileChooser( supportedOpenFiles, conModel.getView(), true );
+                    chosenFile = fileChooser.getOpenPath();
                     if ( chosenFile != null ) {
                         initFootprintScene( chosenFile );
                     }
@@ -884,8 +881,8 @@ public class Controller {
                     Pair<List<String>, String> supportedFiles = new Pair<List<String>, String>( list, desc );
                     List<Pair<List<String>, String>> supportedOpenFiles = new ArrayList<Pair<List<String>, String>>();
                     supportedOpenFiles.add( supportedFiles );
-                    FileChooser fileChooser = new FileChooser( supportedOpenFiles, conModel.getView() );
-                    String fileChoosed = fileChooser.getSelectedFilePath();
+                    FileChooser fileChooser = new FileChooser( supportedOpenFiles, conModel.getView(), true );
+                    String fileChoosed = fileChooser.getOpenPath();
                     if ( fileChoosed != null ) {
                         model = new Scene2DImplShape( fileChoosed, conModel.getPanel().getG2() );
                         initGeoReferencingScene( model );

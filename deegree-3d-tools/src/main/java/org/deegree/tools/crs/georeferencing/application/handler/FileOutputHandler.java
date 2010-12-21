@@ -68,8 +68,8 @@ public class FileOutputHandler {
         Pair<List<String>, String> supportedFiles = new Pair<List<String>, String>( list, desc );
         List<Pair<List<String>, String>> supportedOpenFiles = new ArrayList<Pair<List<String>, String>>();
         supportedOpenFiles.add( supportedFiles );
-        FileChooser fileChooser = new FileChooser( supportedOpenFiles, tablePanel );
-        File file = fileChooser.getSelectedFile();
+        FileChooser fileChooser = new FileChooser( supportedOpenFiles, tablePanel, false );
+        File file = fileChooser.getSaveFile();
 
         Writer fout = null;
         if ( file != null ) {

@@ -59,6 +59,8 @@ public class FileChooser {
 
     public final static String OPEN_KEY = "lastOpenLocation";
 
+    public final static String SAVE_KEY = "lastSaveLocation";
+
     public final static String LAST_EXTENSION = "lastFileExtension";
 
     private Preferences prefs;
@@ -74,24 +76,24 @@ public class FileChooser {
      * @param supportedFiles
      *            an array with extensions and description.
      */
-    public FileChooser( List<Pair<List<String>, String>> supportedFiles, Component parent ) {
+    public FileChooser( List<Pair<List<String>, String>> supportedFiles, Component parent, boolean open ) {
         this.parent = parent;
         prefs = Preferences.userNodeForPackage( FileChooser.class );
         for ( Pair<List<String>, String> pair : supportedFiles ) {
             supportedOpenFilter.add( new ViewerFileFilter( pair.first, pair.second ) );
         }
 
-        fileChooser = createFileChooser( supportedOpenFilter );
+        fileChooser = createFileChooser( supportedOpenFilter, open );
 
     }
 
-    private JFileChooser createFileChooser( List<ViewerFileFilter> fileFilter ) {
+    private JFileChooser createFileChooser( List<ViewerFileFilter> fileFilter, boolean open ) {
         // Setting up the fileChooser.
 
-        String lastLoc = prefs.get( OPEN_KEY, System.getProperty( "user.home" ) );
+        String lastLoc = prefs.get( open ? OPEN_KEY : SAVE_KEY, System.getProperty( "user.home" ) );
 
         File lastFile = new File( lastLoc );
-        if ( !lastFile.exists() ) {
+        if ( !lastFile.exists() && !lastFile.getParentFile().exists() ) {
             lastFile = new File( System.getProperty( "user.home" ) );
         }
         JFileChooser fileChooser = new JFileChooser( lastFile );
@@ -117,7 +119,7 @@ public class FileChooser {
      * 
      * @return the selected file path, could be <Code>null</Code>.
      */
-    public String getSelectedFilePath() {
+    public String getOpenPath() {
         String path = null;
         int result = fileChooser.showOpenDialog( parent );
         if ( JFileChooser.APPROVE_OPTION == result ) {
@@ -136,14 +138,14 @@ public class FileChooser {
      * 
      * @return the selected file, could be <Code>null</Code>.
      */
-    public File getSelectedFile() {
+    public File getSaveFile() {
         File selectedFile = null;
         int result = fileChooser.showSaveDialog( parent );
         if ( JFileChooser.APPROVE_OPTION == result ) {
             selectedFile = fileChooser.getSelectedFile();
         }
         if ( selectedFile != null ) {
-            prefs.put( OPEN_KEY, selectedFile.toString() );
+            prefs.put( SAVE_KEY, selectedFile.toString() );
         }
         return selectedFile;
     }

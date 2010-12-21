@@ -40,6 +40,7 @@ import static org.deegree.tools.crs.georeferencing.i18n.Messages.get;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Graphics2D;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
@@ -207,6 +208,7 @@ public class GRViewerGUI extends JFrame {
         openGLEventListener = new OpenGLEventHandler( testSphere );
 
         GLCanvas canvas = new GLCanvas( caps );
+        canvas.setAutoSwapBufferMode( true );
         canvas.addGLEventListener( openGLEventListener );
         canvas.addMouseListener( openGLEventListener.getTrackBall() );
         canvas.addMouseWheelListener( openGLEventListener.getTrackBall() );
@@ -221,7 +223,9 @@ public class GRViewerGUI extends JFrame {
      * not used at the moment
      */
     public void resetScene2D() {
-        scenePanel2D.paint( new BufferedImage( 0, 0, BufferedImage.TYPE_3BYTE_BGR ).createGraphics() );
+        Graphics2D g = new BufferedImage( 0, 0, BufferedImage.TYPE_3BYTE_BGR ).createGraphics();
+        scenePanel2D.paint( g );
+        g.dispose();
     }
 
     /**
