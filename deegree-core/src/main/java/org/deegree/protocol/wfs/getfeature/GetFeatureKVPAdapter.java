@@ -36,7 +36,6 @@
 
 package org.deegree.protocol.wfs.getfeature;
 
-import static org.deegree.cs.CRS.EPSG_4326;
 import static org.deegree.protocol.wfs.WFSConstants.VERSION_100;
 import static org.deegree.protocol.wfs.WFSConstants.VERSION_110;
 import static org.deegree.protocol.wfs.getfeature.ResultType.HITS;
@@ -228,7 +227,7 @@ public class GetFeatureKVPAdapter extends AbstractWFSRequestKVPAdapter {
             }
 
             String[] coordList = bboxStr.split( "," );
-            CRS bboxCrs = EPSG_4326;
+            CRS bboxCrs = null;
             if ( coordList.length % 2 == 1 ) {
                 bboxCrs = new CRS( coordList[coordList.length - 1] );
             }
@@ -408,8 +407,12 @@ public class GetFeatureKVPAdapter extends AbstractWFSRequestKVPAdapter {
             }
 
             String[] coordList = bboxStr.split( "," );
-            // by default, coordinates are given in EPSG:4326 (WFS 1.1.0 spec, 14.3.3)
-            CRS bboxCrs = EPSG_4326;
+
+            // NOTE: Contradiction between spec and CITE tests (for omitted crsUri)
+            // - WFS 1.1.0 spec, 14.3.3: coordinates should be in WGS84
+            // - CITE tests, wfs:wfs-1.1.0-Basic-GetFeature-tc8.1: If no CRS reference is provided, a service-defined
+            // default value must be assumed.
+            CRS bboxCrs = null;
             if ( coordList.length % 2 == 1 ) {
                 bboxCrs = new CRS( coordList[coordList.length - 1] );
             }
