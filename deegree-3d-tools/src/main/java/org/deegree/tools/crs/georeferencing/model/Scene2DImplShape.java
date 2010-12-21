@@ -38,6 +38,7 @@ package org.deegree.tools.crs.georeferencing.model;
 import static java.lang.Math.max;
 import static org.deegree.gml.GMLVersion.GML_31;
 
+import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
@@ -62,6 +63,7 @@ import org.deegree.geometry.Envelope;
 import org.deegree.protocol.wms.Utils;
 import org.deegree.rendering.r2d.Java2DRenderer;
 import org.deegree.rendering.r2d.Java2DTextRenderer;
+import org.deegree.rendering.r2d.se.unevaluated.Style;
 import org.deegree.services.wms.model.layers.Layer;
 import org.deegree.tools.crs.georeferencing.application.Scene2DValues;
 
@@ -91,10 +93,23 @@ public class Scene2DImplShape implements Scene2D {
 
     private ApplicationSchema schema;
 
+    private static final Color[] colors = new Color[] { new Color( 255, 0, 0 ), new Color( 255, 175, 175 ),
+                                                       new Color( 255, 200, 0 ), new Color( 255, 255, 0 ),
+                                                       new Color( 0, 255, 0 ), new Color( 255, 0, 255 ),
+                                                       new Color( 0, 255, 255 ), new Color( 0, 0, 255 ) };
+
+    private static int colorIndex = 0;
+
+    private Style style;
+
     public Scene2DImplShape( String filePath, Graphics2D g ) {
         this.filePath = filePath;
         this.g = g;
-
+        style = new Style( colors[colorIndex] );
+        ++colorIndex;
+        if ( colorIndex == colors.length ) {
+            colorIndex = 0;
+        }
     }
 
     @Override
@@ -121,7 +136,7 @@ public class Scene2DImplShape implements Scene2D {
      * The GetMap()-request to a WMSClient.
      */
     private BufferedImage generateMap( Envelope imageBoundingbox ) {
-        BufferedImage i = new BufferedImage( imageWidth, imageHeight, BufferedImage.TYPE_INT_RGB );
+        BufferedImage i = new BufferedImage( imageWidth, imageHeight, BufferedImage.TYPE_INT_ARGB );
 
         g = i.createGraphics();
         schema = store.getSchema();
@@ -151,10 +166,8 @@ public class Scene2DImplShape implements Scene2D {
         try {
             FeatureResultSet fs = store.query( query );
             for ( Feature f : fs ) {
-                Layer.render( f, evaluator, null, renderer, textRenderer, Utils.calcScaleWMS130( imageWidth,
-                                                                                                 imageHeight,
-                                                                                                 imageBoundingbox,
-                                                                                                 crs.getWrappedCRS() ),
+                Layer.render( f, evaluator, style, renderer, textRenderer,
+                              Utils.calcScaleWMS130( imageWidth, imageHeight, imageBoundingbox, crs.getWrappedCRS() ),
                               resolution );
             }
         } catch ( FeatureStoreException e ) {
