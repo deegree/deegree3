@@ -35,6 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.filter.xml;
 
+import static javax.xml.stream.XMLStreamConstants.CDATA;
 import static javax.xml.stream.XMLStreamConstants.CHARACTERS;
 import static javax.xml.stream.XMLStreamConstants.END_ELEMENT;
 import static javax.xml.stream.XMLStreamConstants.START_ELEMENT;
@@ -78,7 +79,6 @@ import org.deegree.filter.Operator;
 import org.deegree.filter.OperatorFilter;
 import org.deegree.filter.comparison.BinaryComparisonOperator;
 import org.deegree.filter.comparison.ComparisonOperator;
-import org.deegree.filter.comparison.ComparisonOperator.SubType;
 import org.deegree.filter.comparison.PropertyIsBetween;
 import org.deegree.filter.comparison.PropertyIsEqualTo;
 import org.deegree.filter.comparison.PropertyIsGreaterThan;
@@ -88,6 +88,7 @@ import org.deegree.filter.comparison.PropertyIsLessThanOrEqualTo;
 import org.deegree.filter.comparison.PropertyIsLike;
 import org.deegree.filter.comparison.PropertyIsNotEqualTo;
 import org.deegree.filter.comparison.PropertyIsNull;
+import org.deegree.filter.comparison.ComparisonOperator.SubType;
 import org.deegree.filter.expression.Add;
 import org.deegree.filter.expression.Div;
 import org.deegree.filter.expression.Function;
@@ -496,8 +497,7 @@ public class Filter110XMLDecoder {
         // check if element name is a valid comparison operator element
         ComparisonOperator.SubType type = elementNameToComparisonOperatorType.get( xmlStream.getName() );
         if ( type == null ) {
-            String msg = Messages.getMessage( "FILTER_PARSER_UNEXPECTED_ELEMENT",
-                                              xmlStream.getName(),
+            String msg = Messages.getMessage( "FILTER_PARSER_UNEXPECTED_ELEMENT", xmlStream.getName(),
                                               elemNames( ComparisonOperator.SubType.class,
                                                          comparisonOperatorTypeToElementName ) );
             throw new XMLParsingException( xmlStream, msg );
@@ -654,7 +654,7 @@ public class Filter110XMLDecoder {
             int eventType = xmlStream.getEventType();
             if ( eventType == START_ELEMENT ) {
                 children.add( parseElement( xmlStream ) );
-            } else if ( eventType == CHARACTERS ) {
+            } else if ( eventType == CHARACTERS || eventType == CDATA ) {
                 children.add( new PrimitiveValue( xmlStream.getText() ) );
             }
         }
@@ -770,8 +770,7 @@ public class Filter110XMLDecoder {
         // check if element name is a valid logical operator element
         LogicalOperator.SubType type = elementNameToLogicalOperatorType.get( xmlStream.getName() );
         if ( type == null ) {
-            String msg = Messages.getMessage( "FILTER_PARSER_UNEXPECTED_ELEMENT",
-                                              xmlStream.getName(),
+            String msg = Messages.getMessage( "FILTER_PARSER_UNEXPECTED_ELEMENT", xmlStream.getName(),
                                               elemNames( LogicalOperator.SubType.class,
                                                          logicalOperatorTypeToElementName ) );
             throw new XMLParsingException( xmlStream, msg );
@@ -821,8 +820,7 @@ public class Filter110XMLDecoder {
         // check if element name is a valid spatial operator element name
         SpatialOperator.SubType type = elementNameToSpatialOperatorType.get( xmlStream.getName() );
         if ( type == null ) {
-            String msg = Messages.getMessage( "FILTER_PARSER_UNEXPECTED_ELEMENT",
-                                              xmlStream.getName(),
+            String msg = Messages.getMessage( "FILTER_PARSER_UNEXPECTED_ELEMENT", xmlStream.getName(),
                                               elemNames( SpatialOperator.SubType.class,
                                                          spatialOperatorTypeToElementName ) );
             throw new XMLParsingException( xmlStream, msg );
