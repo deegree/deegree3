@@ -42,6 +42,7 @@ import static java.lang.Double.POSITIVE_INFINITY;
 import static org.deegree.commons.utils.CollectionUtils.unzip;
 import static org.slf4j.LoggerFactory.getLogger;
 
+import java.awt.Color;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -164,6 +165,23 @@ public class Style {
         defaultPolygonStyle = new PolygonStyling();
 
         defaultPolygonStyle.fill = new Fill();
+        defaultPolygonStyle.stroke = new Stroke();
+        defaultPolygonStyle.stroke.color = black;
+    }
+
+    /**
+     * Uses first geometry and default style in specified color.
+     */
+    public Style( Color c ) {
+        useDefault = true;
+        defaultPointStyle = new PointStyling();
+        defaultLineStyle = new LineStyling();
+        defaultPolygonStyle = new PolygonStyling();
+
+        defaultLineStyle.stroke.color = c;
+
+        defaultPolygonStyle.fill = new Fill();
+        defaultPolygonStyle.fill.color = c;
         defaultPolygonStyle.stroke = new Stroke();
         defaultPolygonStyle.stroke.color = black;
     }
