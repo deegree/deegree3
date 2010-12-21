@@ -106,8 +106,6 @@ import org.deegree.tools.crs.georeferencing.application.transformation.AbstractT
 import org.deegree.tools.crs.georeferencing.application.transformation.AffineTransformation;
 import org.deegree.tools.crs.georeferencing.application.transformation.Helmert4Transform;
 import org.deegree.tools.crs.georeferencing.application.transformation.Polynomial;
-import org.deegree.tools.crs.georeferencing.application.transformation.TransformationMethod;
-import org.deegree.tools.crs.georeferencing.application.transformation.TransformationMethod.TransformationType;
 import org.deegree.tools.crs.georeferencing.communication.FileChooser;
 import org.deegree.tools.crs.georeferencing.communication.GRViewerGUI;
 import org.deegree.tools.crs.georeferencing.communication.PointTableFrame;
@@ -177,15 +175,7 @@ public class Controller {
 
     Point2d changePoint;
 
-    boolean isHorizontalRefGeoref;
-
-    boolean isHorizontalRefFoot;
-
-    boolean start;
-
-    boolean isControlDown;
-
-    boolean selectedGeoref;
+    boolean isHorizontalRefGeoref, isHorizontalRefFoot, start, isControlDown, selectedGeoref;
 
     private boolean selectedFoot;
 
@@ -226,19 +216,10 @@ public class Controller {
 
     GenericSettingsPanel optionSettingPanel;
 
-    JToggleButton buttonPanGeoref;
-
     private JToggleButton buttonPanFoot;
 
-    JToggleButton buttonZoomInGeoref;
-
-    JToggleButton buttonZoominFoot;
-
-    JToggleButton buttonZoomoutGeoref;
-
-    JToggleButton buttonZoomoutFoot;
-
-    JToggleButton buttonCoord;
+    JToggleButton buttonZoomInGeoref, buttonZoominFoot, buttonZoomoutGeoref, buttonZoomoutFoot, buttonCoord,
+                            buttonPanGeoref;
 
     ButtonModel buttonModel;
 
@@ -285,7 +266,7 @@ public class Controller {
         if ( conModel.getTransformationType() == null ) {
             for ( JCheckBox box : modelTransformation.getList() ) {
                 if ( ( box ).getText().startsWith( get( "MENUITEM_TRANS_HELMERT" ) ) ) {
-                    conModel.setTransformationType( TransformationType.Helmert_4 );
+                    conModel.setTransformationType( AbstractTransformation.TransformationType.Helmert_4 );
                     view.activateTransformationCheckbox( box );
                     break;
                 }
@@ -1650,7 +1631,7 @@ public class Controller {
      * @return the transformationMethod to be used.
      * @throws UnknownCRSException
      */
-    AbstractTransformation determineTransformationType( TransformationType type )
+    AbstractTransformation determineTransformationType( AbstractTransformation.TransformationType type )
                             throws UnknownCRSException {
         AbstractTransformation t = null;
         switch ( type ) {
@@ -1679,10 +1660,10 @@ public class Controller {
      * @param type
      * 
      */
-    void updateResiduals( TransformationType type ) {
+    void updateResiduals( AbstractTransformation.TransformationType type ) {
 
         try {
-            TransformationMethod t = determineTransformationType( type );
+            AbstractTransformation t = determineTransformationType( type );
             PointResidual[] r = t.calculateResiduals();
             if ( r != null ) {
                 Vector<Vector<? extends Double>> data = new Vector<Vector<? extends Double>>();

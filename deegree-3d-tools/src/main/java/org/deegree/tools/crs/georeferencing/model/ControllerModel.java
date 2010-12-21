@@ -36,7 +36,6 @@
 package org.deegree.tools.crs.georeferencing.model;
 
 import org.deegree.tools.crs.georeferencing.application.transformation.AbstractTransformation;
-import org.deegree.tools.crs.georeferencing.application.transformation.TransformationMethod.TransformationType;
 import org.deegree.tools.crs.georeferencing.communication.GRViewerGUI;
 import org.deegree.tools.crs.georeferencing.communication.panel2D.BuildingFootprintPanel;
 import org.deegree.tools.crs.georeferencing.communication.panel2D.Scene2DPanel;
@@ -51,7 +50,7 @@ import org.deegree.tools.crs.georeferencing.model.dialog.OptionDialogModel;
  * @version $Revision$, $Date$
  */
 public class ControllerModel {
-    private TransformationType transformationType;
+    private AbstractTransformation.TransformationType transformationType;
 
     private AbstractTransformation transform;
 
@@ -97,11 +96,11 @@ public class ControllerModel {
         this.order = order;
     }
 
-    public TransformationType getTransformationType() {
+    public AbstractTransformation.TransformationType getTransformationType() {
         return transformationType;
     }
 
-    public void setTransformationType( TransformationType transformationType ) {
+    public void setTransformationType( AbstractTransformation.TransformationType transformationType ) {
         this.transformationType = transformationType;
     }
 

@@ -362,8 +362,8 @@ public class AffineTransformation extends AbstractTransformation {
     }
 
     @Override
-    public TransformationType getType() {
-        return TransformationType.Affine;
+    public AbstractTransformation.TransformationType getType() {
+        return AbstractTransformation.TransformationType.Affine;
     }
 
     @Override

@@ -166,9 +166,9 @@ public class Polynomial extends AbstractTransformation {
     }
 
     @Override
-    public TransformationType getType() {
+    public AbstractTransformation.TransformationType getType() {
 
-        return TransformationType.Polynomial;
+        return AbstractTransformation.TransformationType.Polynomial;
     }
 
     @Override

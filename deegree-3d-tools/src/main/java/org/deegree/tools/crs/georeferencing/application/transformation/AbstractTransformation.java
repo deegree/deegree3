@@ -43,6 +43,7 @@ import org.deegree.cs.CRSCodeType;
 import org.deegree.cs.CRSIdentifiable;
 import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.cs.transformations.Transformation;
+import org.deegree.geometry.primitive.Ring;
 import org.deegree.tools.crs.georeferencing.application.Scene2DValues;
 import org.deegree.tools.crs.georeferencing.model.Footprint;
 import org.deegree.tools.crs.georeferencing.model.points.Point4Values;
@@ -56,7 +57,15 @@ import org.deegree.tools.crs.georeferencing.model.points.PointResidual;
  * 
  * @version $Revision$, $Date$
  */
-public abstract class AbstractTransformation extends Transformation implements TransformationMethod {
+public abstract class AbstractTransformation extends Transformation {
+
+    public static enum TransformationType {
+        Polynomial,
+
+        Helmert_4,
+
+        Affine
+    }
 
     protected List<Triple<Point4Values, Point4Values, PointResidual>> mappedPoints;
 
@@ -125,5 +134,25 @@ public abstract class AbstractTransformation extends Transformation implements T
         }
         return null;
     }
+
+    /**
+     * 
+     * @return the TransformationType for this transformationmethod.
+     */
+    public abstract TransformationType getType();
+
+    /**
+     * Calculates the Polygons for the transformation.
+     * 
+     * @return a list of RingPolygons, can be <Code>null</Code>.
+     */
+    public abstract List<Ring> computeRingList();
+
+    /**
+     * Calculates the Residuals for the mappedPoints
+     * 
+     * @return a PointResidual object array, can be <Code>null</Code>.
+     */
+    public abstract PointResidual[] calculateResiduals();
 
 }

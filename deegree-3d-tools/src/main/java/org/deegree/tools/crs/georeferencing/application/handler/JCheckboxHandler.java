@@ -39,7 +39,8 @@ import static org.deegree.tools.crs.georeferencing.i18n.Messages.get;
 
 import javax.swing.JCheckBox;
 
-import org.deegree.tools.crs.georeferencing.application.transformation.TransformationMethod.TransformationType;
+import org.deegree.tools.crs.georeferencing.application.transformation.AbstractTransformation;
+import org.deegree.tools.crs.georeferencing.application.transformation.AbstractTransformation.TransformationType;
 import org.deegree.tools.crs.georeferencing.communication.dialog.menuitem.WMSParameterChooser;
 import org.deegree.tools.crs.georeferencing.communication.dialog.option.GeneralPanel;
 import org.deegree.tools.crs.georeferencing.model.ControllerModel;
@@ -69,41 +70,41 @@ public class JCheckboxHandler {
         }
         if ( ( source ).getText().startsWith( get( "MENUITEM_TRANS_POLYNOM_FIRST" ) ) ) {
 
-            cm.setTransformationType( TransformationType.Polynomial );
+            cm.setTransformationType( AbstractTransformation.TransformationType.Polynomial );
             cm.setOrder( 1 );
 
             cm.getView().activateTransformationCheckbox( source );
         }
         if ( ( source ).getText().startsWith( get( "MENUITEM_TRANS_POLYNOM_SECOND" ) ) ) {
 
-            cm.setTransformationType( TransformationType.Polynomial );
+            cm.setTransformationType( AbstractTransformation.TransformationType.Polynomial );
             cm.setOrder( 2 );
 
             cm.getView().activateTransformationCheckbox( source );
         }
         if ( ( source ).getText().startsWith( get( "MENUITEM_TRANS_POLYNOM_THIRD" ) ) ) {
 
-            cm.setTransformationType( TransformationType.Polynomial );
+            cm.setTransformationType( AbstractTransformation.TransformationType.Polynomial );
             cm.setOrder( 3 );
 
             cm.getView().activateTransformationCheckbox( source );
         }
         if ( ( source ).getText().startsWith( get( "MENUITEM_TRANS_POLYNOM_FOURTH" ) ) ) {
 
-            cm.setTransformationType( TransformationType.Polynomial );
+            cm.setTransformationType( AbstractTransformation.TransformationType.Polynomial );
             cm.setOrder( 4 );
 
             cm.getView().activateTransformationCheckbox( source );
         }
         if ( ( source ).getText().startsWith( get( "MENUITEM_TRANS_HELMERT" ) ) ) {
 
-            cm.setTransformationType( TransformationType.Helmert_4 );
+            cm.setTransformationType( AbstractTransformation.TransformationType.Helmert_4 );
             cm.setOrder( 1 );
             cm.getView().activateTransformationCheckbox( source );
         }
         if ( ( source ).getText().startsWith( get( "MENUITEM_TRANS_AFFINE" ) ) ) {
 
-            cm.setTransformationType( TransformationType.Affine );
+            cm.setTransformationType( AbstractTransformation.TransformationType.Affine );
             cm.setOrder( 1 );
             cm.getView().activateTransformationCheckbox( source );
         }

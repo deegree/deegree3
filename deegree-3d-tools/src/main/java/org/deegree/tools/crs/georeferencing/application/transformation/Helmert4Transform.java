@@ -343,8 +343,8 @@ public class Helmert4Transform extends AbstractTransformation {
     }
 
     @Override
-    public TransformationType getType() {
-        return TransformationType.Helmert_4;
+    public AbstractTransformation.TransformationType getType() {
+        return AbstractTransformation.TransformationType.Helmert_4;
     }
 
     @Override
