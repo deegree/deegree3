@@ -36,6 +36,7 @@
 
 package org.deegree.protocol.wfs.getfeature;
 
+import static org.deegree.cs.CRS.EPSG_4326;
 import static org.deegree.protocol.wfs.WFSConstants.VERSION_100;
 import static org.deegree.protocol.wfs.WFSConstants.VERSION_110;
 import static org.deegree.protocol.wfs.getfeature.ResultType.HITS;
@@ -227,7 +228,7 @@ public class GetFeatureKVPAdapter extends AbstractWFSRequestKVPAdapter {
             }
 
             String[] coordList = bboxStr.split( "," );
-            CRS bboxCrs = null;
+            CRS bboxCrs = EPSG_4326;
             if ( coordList.length % 2 == 1 ) {
                 bboxCrs = new CRS( coordList[coordList.length - 1] );
             }
@@ -407,7 +408,8 @@ public class GetFeatureKVPAdapter extends AbstractWFSRequestKVPAdapter {
             }
 
             String[] coordList = bboxStr.split( "," );
-            CRS bboxCrs = null;
+            // by default, coordinates are given in EPSG:4326 (WFS 1.1.0 spec, 14.3.3)
+            CRS bboxCrs = EPSG_4326;
             if ( coordList.length % 2 == 1 ) {
                 bboxCrs = new CRS( coordList[coordList.length - 1] );
             }
