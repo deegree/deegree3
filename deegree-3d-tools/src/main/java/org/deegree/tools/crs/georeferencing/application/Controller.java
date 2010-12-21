@@ -62,7 +62,6 @@ import java.util.EventListener;
 import java.util.List;
 import java.util.Vector;
 
-import javax.swing.ButtonModel;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JFrame;
@@ -120,7 +119,6 @@ import org.deegree.tools.crs.georeferencing.communication.dialog.option.GeneralP
 import org.deegree.tools.crs.georeferencing.communication.dialog.option.GenericSettingsPanel;
 import org.deegree.tools.crs.georeferencing.communication.dialog.option.NavigationPanel;
 import org.deegree.tools.crs.georeferencing.communication.dialog.option.OptionDialog;
-import org.deegree.tools.crs.georeferencing.communication.dialog.option.SettingsPanel;
 import org.deegree.tools.crs.georeferencing.communication.dialog.option.ViewPanel;
 import org.deegree.tools.crs.georeferencing.communication.dialog.option.GenericSettingsPanel.PanelType;
 import org.deegree.tools.crs.georeferencing.communication.panel2D.AbstractPanel2D;
@@ -159,39 +157,11 @@ public class Controller {
 
     static final Logger LOG = getLogger( Controller.class );
 
-    Scene2D model;
-
-    Scene2DValues sceneValues;
-
-    PointTableFrame tablePanel;
-
-    ParameterStore store;
-
     private Footprint footPrint;
-
-    CoordinateJumperModel textFieldModel;
 
     private OpenGLEventHandler glHandler;
 
-    GeoReferencedMouseModel mouseGeoRef;
-
-    FootprintMouseModel mouseFootprint;
-
-    Point2d changePoint;
-
-    boolean isHorizontalRefGeoref, isHorizontalRefFoot, start, isControlDown, selectedGeoref;
-
-    private boolean selectedFoot;
-
-    boolean isZoomInGeoref;
-
-    boolean isZoomInFoot;
-
-    boolean isZoomOutGeoref;
-
-    boolean isZoomOutFoot;
-
-    private boolean isInitGeoref, isInitFoot;
+    ApplicationState state = new ApplicationState();
 
     private GeometryFactory geom;
 
@@ -201,53 +171,22 @@ public class Controller {
 
     private CRS targetCRS;
 
-    List<Triple<Point4Values, Point4Values, PointResidual>> mappedPoints;
-
-    ControllerModel conModel;
-
-    NavigationPanel optionNavPanel;
-
-    SettingsPanel optionSettPanel;
-
-    OptionDialog optionDialog;
-
-    // private CoordinateJumperSpinnerDialog jumperDialog;
-    CoordinateJumperTextfieldDialog jumperDialog;
-
-    OpenWMS wmsStartDialog;
-
-    WMSParameterChooser wmsParameter;
-
-    GenericSettingsPanel optionSettingPanel;
-
-    private JToggleButton buttonPanFoot;
-
-    JToggleButton buttonZoomInGeoref, buttonZoominFoot, buttonZoomoutGeoref, buttonZoomoutFoot, buttonCoord,
-                            buttonPanGeoref;
-
-    ButtonModel buttonModel;
-
-    private CheckboxListTransformation checkBoxListTransform;
-
-    private CheckBoxListModel modelTransformation;
-
-    RowColumn rc;
-
     public Controller( GRViewerGUI view ) {
 
         geom = new GeometryFactory();
-        sceneValues = new Scene2DValues( geom );
+        state.sceneValues = new Scene2DValues( geom );
 
-        conModel = new ControllerModel( view, view.getFootprintPanel(), view.getScenePanel2D(), new OptionDialogModel() );
+        state.conModel = new ControllerModel( view, view.getFootprintPanel(), view.getScenePanel2D(),
+                                              new OptionDialogModel() );
 
-        this.start = false;
+        state.start = false;
 
         this.glHandler = view.getOpenGLEventListener();
-        this.textFieldModel = new CoordinateJumperModel();
-        AbstractPanel2D.selectedPointSize = conModel.getDialogModel().getSelectionPointSize().first;
-        AbstractPanel2D.zoomValue = conModel.getDialogModel().getResizeValue().first;
+        state.textFieldModel = new CoordinateJumperModel();
+        AbstractPanel2D.selectedPointSize = state.conModel.getDialogModel().getSelectionPointSize().first;
+        AbstractPanel2D.zoomValue = state.conModel.getDialogModel().getResizeValue().first;
 
-        this.mappedPoints = new ArrayList<Triple<Point4Values, Point4Values, PointResidual>>();
+        this.state.mappedPoints = new ArrayList<Triple<Point4Values, Point4Values, PointResidual>>();
 
         view.addListeners( new ButtonListener() );
         view.addHoleWindowListener( new HoleWindowListener() );
@@ -255,22 +194,22 @@ public class Controller {
         initToggleButtons();
 
         // init the Checkboxlist for Transformation
-        modelTransformation = new CheckBoxListModel();
-        checkBoxListTransform = new CheckboxListTransformation( modelTransformation );
-        view.addToMenuTransformation( checkBoxListTransform );
-        checkBoxListTransform.addCheckboxListener( new ButtonListener() );
+        state.modelTransformation = new CheckBoxListModel();
+        state.checkBoxListTransform = new CheckboxListTransformation( state.modelTransformation );
+        view.addToMenuTransformation( state.checkBoxListTransform );
+        state.checkBoxListTransform.addCheckboxListener( new ButtonListener() );
 
         // init the transformation method
-        this.tablePanel = new PointTableFrame();
-        this.tablePanel.getSaveButton().setEnabled( false );
-        this.tablePanel.getLoadButton().setEnabled( false );
-        this.tablePanel.addTableModelListener( new TableChangedEventListener() );
-        this.tablePanel.addActionButtonListener( new ButtonListener() );
+        state.tablePanel = new PointTableFrame();
+        state.tablePanel.getSaveButton().setEnabled( false );
+        state.tablePanel.getLoadButton().setEnabled( false );
+        state.tablePanel.addTableModelListener( new TableChangedEventListener() );
+        state.tablePanel.addActionButtonListener( new ButtonListener() );
         // transform = null;
-        if ( conModel.getTransformationType() == null ) {
-            for ( JCheckBox box : modelTransformation.getList() ) {
+        if ( state.conModel.getTransformationType() == null ) {
+            for ( JCheckBox box : state.modelTransformation.getList() ) {
                 if ( ( box ).getText().startsWith( get( "MENUITEM_TRANS_HELMERT" ) ) ) {
-                    conModel.setTransformationType( AbstractTransformation.TransformationType.Helmert_4 );
+                    state.conModel.setTransformationType( AbstractTransformation.TransformationType.Helmert_4 );
                     view.activateTransformationCheckbox( box );
                     break;
                 }
@@ -278,8 +217,8 @@ public class Controller {
 
         }
 
-        isHorizontalRefGeoref = true;
-        isHorizontalRefFoot = true;
+        state.isHorizontalRefGeoref = true;
+        state.isHorizontalRefFoot = true;
 
     }
 
@@ -287,13 +226,13 @@ public class Controller {
      * Initializes the navigation buttons that are registered for each map.
      */
     private void initToggleButtons() {
-        buttonPanGeoref = conModel.getView().getNavigationPanelGeoref().getButtonPan();
-        buttonPanFoot = conModel.getView().getNaviPanelFoot().getButtonPan();
-        buttonZoomInGeoref = conModel.getView().getNavigationPanelGeoref().getButtonZoomIn();
-        buttonZoominFoot = conModel.getView().getNaviPanelFoot().getButtonZoomIn();
-        buttonZoomoutGeoref = conModel.getView().getNavigationPanelGeoref().getButtonZoomOut();
-        buttonZoomoutFoot = conModel.getView().getNaviPanelFoot().getButtonZoomOut();
-        buttonCoord = conModel.getView().getNavigationPanelGeoref().getButtonZoomCoord();
+        state.buttonPanGeoref = state.conModel.getView().getNavigationPanelGeoref().getButtonPan();
+        state.buttonPanFoot = state.conModel.getView().getNaviPanelFoot().getButtonPan();
+        state.buttonZoomInGeoref = state.conModel.getView().getNavigationPanelGeoref().getButtonZoomIn();
+        state.buttonZoominFoot = state.conModel.getView().getNaviPanelFoot().getButtonZoomIn();
+        state.buttonZoomoutGeoref = state.conModel.getView().getNavigationPanelGeoref().getButtonZoomOut();
+        state.buttonZoomoutFoot = state.conModel.getView().getNaviPanelFoot().getButtonZoomOut();
+        state.buttonCoord = state.conModel.getView().getNavigationPanelGeoref().getButtonZoomCoord();
     }
 
     /**
@@ -306,32 +245,32 @@ public class Controller {
      */
     void selectGeorefToggleButton( JToggleButton t ) {
         boolean checkSelected = false;
-        buttonModel = t.getModel();
-        selectedGeoref = buttonModel.isSelected();
-        if ( selectedGeoref == false ) {
-            isHorizontalRefGeoref = true;
+        state.buttonModel = t.getModel();
+        state.selectedGeoref = state.buttonModel.isSelected();
+        if ( state.selectedGeoref == false ) {
+            state.isHorizontalRefGeoref = true;
         } else {
             checkSelected = true;
-            buttonPanGeoref.setSelected( false );
-            buttonZoomInGeoref.setSelected( false );
-            buttonZoomoutGeoref.setSelected( false );
-            buttonCoord.setSelected( false );
-            isHorizontalRefGeoref = false;
+            state.buttonPanGeoref.setSelected( false );
+            state.buttonZoomInGeoref.setSelected( false );
+            state.buttonZoomoutGeoref.setSelected( false );
+            state.buttonCoord.setSelected( false );
+            state.isHorizontalRefGeoref = false;
         }
-        if ( t == buttonPanGeoref ) {
-            buttonPanGeoref.setSelected( checkSelected );
-        } else if ( t == buttonZoomInGeoref ) {
-            buttonZoomInGeoref.setSelected( checkSelected );
-        } else if ( t == buttonZoomoutGeoref ) {
-            buttonZoomoutGeoref.setSelected( checkSelected );
-        } else if ( t == buttonCoord ) {
-            buttonCoord.setSelected( checkSelected );
+        if ( t == state.buttonPanGeoref ) {
+            state.buttonPanGeoref.setSelected( checkSelected );
+        } else if ( t == state.buttonZoomInGeoref ) {
+            state.buttonZoomInGeoref.setSelected( checkSelected );
+        } else if ( t == state.buttonZoomoutGeoref ) {
+            state.buttonZoomoutGeoref.setSelected( checkSelected );
+        } else if ( t == state.buttonCoord ) {
+            state.buttonCoord.setSelected( checkSelected );
             if ( checkSelected == true ) {
-                // jumperDialog = new CoordinateJumperSpinnerDialog( view );
-                jumperDialog = new CoordinateJumperTextfieldDialog( conModel.getView() );
-                jumperDialog.getCoordinateJumper().setToolTipText( textFieldModel.getTooltipText() );
-                jumperDialog.addListeners( new ButtonListener() );
-                jumperDialog.setVisible( true );
+                // state.jumperDialog = new CoordinateJumperSpinnerDialog( view );
+                state.jumperDialog = new CoordinateJumperTextfieldDialog( state.conModel.getView() );
+                state.jumperDialog.getCoordinateJumper().setToolTipText( state.textFieldModel.getTooltipText() );
+                state.jumperDialog.addListeners( new ButtonListener() );
+                state.jumperDialog.setVisible( true );
             }
         }
     }
@@ -347,25 +286,25 @@ public class Controller {
     void selectFootprintToggleButton( JToggleButton t ) {
 
         boolean checkSelected = false;
-        buttonModel = t.getModel();
-        selectedFoot = buttonModel.isSelected();
-        if ( selectedFoot == false ) {
-            isHorizontalRefFoot = true;
+        state.buttonModel = t.getModel();
+        state.selectedFoot = state.buttonModel.isSelected();
+        if ( state.selectedFoot == false ) {
+            state.isHorizontalRefFoot = true;
         } else {
             checkSelected = true;
-            buttonPanFoot.setSelected( false );
-            buttonZoominFoot.setSelected( false );
-            buttonZoomoutFoot.setSelected( false );
-            isHorizontalRefFoot = false;
+            state.buttonPanFoot.setSelected( false );
+            state.buttonZoominFoot.setSelected( false );
+            state.buttonZoomoutFoot.setSelected( false );
+            state.isHorizontalRefFoot = false;
         }
-        if ( t == buttonPanFoot ) {
-            buttonPanFoot.setSelected( checkSelected );
+        if ( t == state.buttonPanFoot ) {
+            state.buttonPanFoot.setSelected( checkSelected );
 
-        } else if ( t == buttonZoominFoot ) {
-            buttonZoominFoot.setSelected( checkSelected );
+        } else if ( t == state.buttonZoominFoot ) {
+            state.buttonZoominFoot.setSelected( checkSelected );
 
-        } else if ( t == buttonZoomoutFoot ) {
-            buttonZoomoutFoot.setSelected( checkSelected );
+        } else if ( t == state.buttonZoomoutFoot ) {
+            state.buttonZoomoutFoot.setSelected( checkSelected );
 
         }
 
@@ -375,20 +314,20 @@ public class Controller {
      * Initializes the footprint scene.
      */
     void initFootprintScene( String filePath ) {
-        isInitFoot = true;
-        if ( isInitGeoref ) {
-            tablePanel.getSaveButton().setEnabled( true );
-            tablePanel.getLoadButton().setEnabled( true );
+        state.isInitFoot = true;
+        if ( state.isInitGeoref ) {
+            state.tablePanel.getSaveButton().setEnabled( true );
+            state.tablePanel.getLoadButton().setEnabled( true );
         }
 
-        this.footPrint = new Footprint( sceneValues, geom );
-        removeListeners( conModel.getFootPanel() );
-        conModel.getFootPanel().addScene2DMouseListener( new Scene2DMouseListener() );
-        conModel.getFootPanel().addScene2DMouseMotionListener( new Scene2DMouseMotionListener() );
-        conModel.getFootPanel().addScene2DMouseWheelListener( new Scene2DMouseWheelListener() );
+        this.footPrint = new Footprint( state.sceneValues, geom );
+        removeListeners( state.conModel.getFootPanel() );
+        state.conModel.getFootPanel().addScene2DMouseListener( new Scene2DMouseListener() );
+        state.conModel.getFootPanel().addScene2DMouseMotionListener( new Scene2DMouseMotionListener() );
+        state.conModel.getFootPanel().addScene2DMouseWheelListener( new Scene2DMouseWheelListener() );
 
-        mouseFootprint = new FootprintMouseModel();
-        List<WorldRenderableObject> rese = File3dImporter.open( conModel.getView(), filePath );
+        state.mouseFootprint = new FootprintMouseModel();
+        List<WorldRenderableObject> rese = File3dImporter.open( state.conModel.getView(), filePath );
         sourceCRS = null;
         for ( WorldRenderableObject res : rese ) {
             sourceCRS = res.getBbox().getCoordinateSystem();
@@ -425,13 +364,13 @@ public class Controller {
 
         footPrint.generateFootprints( geometryThatIsTaken );
 
-        sceneValues.setDimensionFootpanel( new Rectangle( conModel.getFootPanel().getBounds().width,
-                                                          conModel.getFootPanel().getBounds().height ) );
-        conModel.getFootPanel().updatePoints( sceneValues );
+        state.sceneValues.setDimensionFootpanel( new Rectangle( state.conModel.getFootPanel().getBounds().width,
+                                                                state.conModel.getFootPanel().getBounds().height ) );
+        state.conModel.getFootPanel().updatePoints( state.sceneValues );
 
-        conModel.getFootPanel().setPolygonList( footPrint.getWorldCoordinateRingList(), sceneValues );
+        state.conModel.getFootPanel().setPolygonList( footPrint.getWorldCoordinateRingList(), state.sceneValues );
 
-        conModel.getFootPanel().repaint();
+        state.conModel.getFootPanel().repaint();
 
     }
 
@@ -439,22 +378,22 @@ public class Controller {
      * Initializes the georeferenced scene.
      */
     void initGeoReferencingScene( Scene2D scene2d ) {
-        isInitGeoref = true;
-        if ( isInitFoot ) {
+        state.isInitGeoref = true;
+        if ( state.isInitFoot ) {
 
-            tablePanel.getSaveButton().setEnabled( true );
-            tablePanel.getLoadButton().setEnabled( true );
+            state.tablePanel.getSaveButton().setEnabled( true );
+            state.tablePanel.getLoadButton().setEnabled( true );
 
         }
 
-        mouseGeoRef = new GeoReferencedMouseModel();
-        scene2d.init( sceneValues );
+        state.mouseGeoRef = new GeoReferencedMouseModel();
+        scene2d.init( state.sceneValues );
         targetCRS = scene2d.getCRS();
         init();
-        removeListeners( conModel.getPanel() );
-        conModel.getPanel().addScene2DMouseListener( new Scene2DMouseListener() );
-        conModel.getPanel().addScene2DMouseMotionListener( new Scene2DMouseMotionListener() );
-        conModel.getPanel().addScene2DMouseWheelListener( new Scene2DMouseWheelListener() );
+        removeListeners( state.conModel.getPanel() );
+        state.conModel.getPanel().addScene2DMouseListener( new Scene2DMouseListener() );
+        state.conModel.getPanel().addScene2DMouseMotionListener( new Scene2DMouseMotionListener() );
+        state.conModel.getPanel().addScene2DMouseWheelListener( new Scene2DMouseWheelListener() );
     }
 
     /**
@@ -513,16 +452,16 @@ public class Controller {
     void updateDrawingPanels() {
         List<Point4Values> panelList = new ArrayList<Point4Values>();
         List<Point4Values> footPanelList = new ArrayList<Point4Values>();
-        for ( Triple<Point4Values, Point4Values, PointResidual> p : mappedPoints ) {
+        for ( Triple<Point4Values, Point4Values, PointResidual> p : state.mappedPoints ) {
             panelList.add( p.second );
             footPanelList.add( p.first );
         }
 
-        conModel.getPanel().setSelectedPoints( panelList, sceneValues );
-        conModel.getFootPanel().setSelectedPoints( footPanelList, sceneValues );
+        state.conModel.getPanel().setSelectedPoints( panelList, state.sceneValues );
+        state.conModel.getFootPanel().setSelectedPoints( footPanelList, state.sceneValues );
 
-        conModel.getPanel().repaint();
-        conModel.getFootPanel().repaint();
+        state.conModel.getPanel().repaint();
+        state.conModel.getFootPanel().repaint();
 
     }
 
@@ -550,69 +489,69 @@ public class Controller {
 
             } else if ( source instanceof JToggleButton ) {
                 if ( source instanceof JRadioButton ) {
-                    int pointSize = ( (ViewPanel) optionSettingPanel ).getTbm().getButtons().get( source );
-                    conModel.getDialogModel().setSelectionPointSize( pointSize );
+                    int pointSize = ( (ViewPanel) state.optionSettingPanel ).getTbm().getButtons().get( source );
+                    state.conModel.getDialogModel().setSelectionPointSize( pointSize );
 
                 } else if ( source instanceof JCheckBox ) {
                     JCheckBox selectedCheckbox = (JCheckBox) source;
 
-                    new JCheckboxHandler( selectedCheckbox, conModel, wmsParameter );
+                    new JCheckboxHandler( selectedCheckbox, state.conModel, state.wmsParameter );
 
                 } else {
                     JToggleButton tb = (JToggleButton) source;
 
                     if ( tb.getName().startsWith( get( "JBUTTON_PAN" ) ) ) {
 
-                        if ( tb == buttonPanGeoref ) {
+                        if ( tb == state.buttonPanGeoref ) {
                             selectGeorefToggleButton( tb );
-                            isZoomInGeoref = false;
-                            isZoomOutGeoref = false;
+                            state.isZoomInGeoref = false;
+                            state.isZoomOutGeoref = false;
                         } else {
                             selectFootprintToggleButton( tb );
-                            isZoomInFoot = false;
-                            isZoomOutFoot = false;
+                            state.isZoomInFoot = false;
+                            state.isZoomOutFoot = false;
                         }
                     } else if ( tb.getName().startsWith( get( "JBUTTON_ZOOM_COORD" ) ) ) {
 
-                        if ( tb == buttonCoord ) {
+                        if ( tb == state.buttonCoord ) {
                             selectGeorefToggleButton( tb );
                         } else {
                             selectFootprintToggleButton( tb );
                         }
                     } else if ( tb.getName().startsWith( get( "JBUTTON_ZOOM_IN" ) ) ) {
 
-                        if ( tb == buttonZoomInGeoref ) {
+                        if ( tb == state.buttonZoomInGeoref ) {
                             selectGeorefToggleButton( tb );
-                            isZoomInGeoref = true;
-                            isZoomOutGeoref = false;
+                            state.isZoomInGeoref = true;
+                            state.isZoomOutGeoref = false;
                         } else {
                             selectFootprintToggleButton( tb );
-                            isZoomInFoot = true;
-                            isZoomOutFoot = false;
+                            state.isZoomInFoot = true;
+                            state.isZoomOutFoot = false;
                         }
                     } else if ( tb.getName().startsWith( get( "JBUTTON_ZOOM_OUT" ) ) ) {
 
-                        if ( tb == buttonZoomoutGeoref ) {
+                        if ( tb == state.buttonZoomoutGeoref ) {
                             selectGeorefToggleButton( tb );
-                            isZoomInGeoref = false;
-                            isZoomOutGeoref = true;
+                            state.isZoomInGeoref = false;
+                            state.isZoomOutGeoref = true;
                         } else {
                             selectFootprintToggleButton( tb );
-                            isZoomInFoot = true;
-                            isZoomOutFoot = false;
+                            state.isZoomInFoot = true;
+                            state.isZoomOutFoot = false;
                         }
                     }
                 }
             } else if ( source instanceof JButton ) {
 
                 if ( ( (JButton) source ).getText().startsWith( PointTableFrame.BUTTON_DELETE_SELECTED ) ) {
-                    int[] tableRows = tablePanel.getTable().getSelectedRows();
+                    int[] tableRows = state.tablePanel.getTable().getSelectedRows();
                     List<Integer> deleteableRows = new ArrayList<Integer>();
 
                     for ( int tableRow : tableRows ) {
                         boolean contained = false;
 
-                        for ( Triple<Point4Values, Point4Values, PointResidual> p : mappedPoints ) {
+                        for ( Triple<Point4Values, Point4Values, PointResidual> p : state.mappedPoints ) {
                             System.out.println( "[Controller] beforeRemoving: " + p.second + "\n" );
                             if ( p.first.getRc().getRow() == tableRow || p.second.getRc().getRow() == tableRow ) {
 
@@ -626,8 +565,8 @@ public class Controller {
                         }
                         if ( contained == false ) {
 
-                            conModel.getFootPanel().setLastAbstractPoint( null, null, null );
-                            conModel.getPanel().setLastAbstractPoint( null, null, null );
+                            state.conModel.getFootPanel().setLastAbstractPoint( null, null, null );
+                            state.conModel.getPanel().setLastAbstractPoint( null, null, null );
                         }
                     }
                     if ( deleteableRows.size() != 0 ) {
@@ -641,145 +580,147 @@ public class Controller {
                     updateDrawingPanels();
                 } else if ( ( (JButton) source ).getText().startsWith( PointTableFrame.LOAD_POINTTABLE ) ) {
 
-                    FileInputHandler in = new FileInputHandler( tablePanel );
+                    FileInputHandler in = new FileInputHandler( state.tablePanel );
                     if ( in.getData() != null ) {
-                        VectorTransformer vt = new VectorTransformer( in.getData(), sceneValues );
-                        mappedPoints.clear();
-                        mappedPoints.addAll( vt.getMappedPoints() );
+                        VectorTransformer vt = new VectorTransformer( in.getData(), state.sceneValues );
+                        state.mappedPoints.clear();
+                        state.mappedPoints.addAll( vt.getMappedPoints() );
                         updateDrawingPanels();
                     }
 
                 } else if ( ( (JButton) source ).getText().startsWith( PointTableFrame.SAVE_POINTTABLE ) ) {
 
-                    new FileOutputHandler( tablePanel );
+                    new FileOutputHandler( state.tablePanel );
 
                 } else if ( ( (JButton) source ).getText().startsWith( PointTableFrame.BUTTON_DELETE_ALL ) ) {
                     removeAllFromMappedPoints();
 
                 } else if ( ( (JButton) source ).getText().startsWith( get( "RESET_VIEW_BUTTON_TEXT" ) ) ) {
 
-                    initGeoReferencingScene( model );
+                    initGeoReferencingScene( state.model );
                     if ( chosenFile != null ) {
                         initFootprintScene( chosenFile );
 
-                        conModel.getFootPanel().updatePoints( sceneValues );
-                        conModel.getFootPanel().repaint();
+                        state.conModel.getFootPanel().updatePoints( state.sceneValues );
+                        state.conModel.getFootPanel().repaint();
                     }
-                    conModel.getPanel().updatePoints( sceneValues );
-                    conModel.getPanel().repaint();
+                    state.conModel.getPanel().updatePoints( state.sceneValues );
+                    state.conModel.getPanel().repaint();
 
                 } else if ( ( (JButton) source ).getText().startsWith( get( "COMPUTE_BUTTON_TEXT" ) ) ) {
                     // swap the tempPoints into the map now
-                    if ( conModel.getFootPanel().getLastAbstractPoint() != null
-                         && conModel.getPanel().getLastAbstractPoint() != null ) {
+                    if ( state.conModel.getFootPanel().getLastAbstractPoint() != null
+                         && state.conModel.getPanel().getLastAbstractPoint() != null ) {
                         setValues();
                     }
 
                     try {
-                        conModel.setTransform( determineTransformationType( conModel.getTransformationType() ) );
+                        state.conModel.setTransform( determineTransformationType( state.conModel.getTransformationType() ) );
                     } catch ( UnknownCRSException e1 ) {
                         // TODO Auto-generated catch block
                         e1.printStackTrace();
                     }
-                    List<Ring> polygonRing = conModel.getTransform().computeRingList();
+                    List<Ring> polygonRing = state.conModel.getTransform().computeRingList();
 
-                    updateResiduals( conModel.getTransformationType() );
+                    updateResiduals( state.conModel.getTransformationType() );
 
-                    conModel.getPanel().setPolygonList( polygonRing, sceneValues );
+                    state.conModel.getPanel().setPolygonList( polygonRing, state.sceneValues );
 
-                    conModel.getPanel().repaint();
+                    state.conModel.getPanel().repaint();
 
                     reset();
                 } else if ( ( (JButton) source ).getText().startsWith( ButtonPanel.BUTTON_TEXT_CANCEL ) ) {
-                    if ( optionDialog != null && optionDialog.isVisible() == true ) {
-                        conModel.getDialogModel().transferOldToNew();
-                        AbstractPanel2D.selectedPointSize = conModel.getDialogModel().getSelectionPointSize().first;
-                        conModel.getPanel().repaint();
-                        conModel.getFootPanel().repaint();
-                        optionDialog.setVisible( false );
-                    } else if ( jumperDialog != null && jumperDialog.isVisible() == true ) {
-                        jumperDialog.setVisible( false );
+                    if ( state.optionDialog != null && state.optionDialog.isVisible() == true ) {
+                        state.conModel.getDialogModel().transferOldToNew();
+                        AbstractPanel2D.selectedPointSize = state.conModel.getDialogModel().getSelectionPointSize().first;
+                        state.conModel.getPanel().repaint();
+                        state.conModel.getFootPanel().repaint();
+                        state.optionDialog.setVisible( false );
+                    } else if ( state.jumperDialog != null && state.jumperDialog.isVisible() == true ) {
+                        state.jumperDialog.setVisible( false );
 
-                        selectedGeoref = false;
-                        buttonModel.setSelected( false );
-                        isHorizontalRefGeoref = true;
+                        state.selectedGeoref = false;
+                        state.buttonModel.setSelected( false );
+                        state.isHorizontalRefGeoref = true;
 
-                    } else if ( wmsStartDialog != null && wmsStartDialog.isVisible() == true ) {
-                        wmsStartDialog.setVisible( false );
+                    } else if ( state.wmsStartDialog != null && state.wmsStartDialog.isVisible() == true ) {
+                        state.wmsStartDialog.setVisible( false );
 
-                    } else if ( wmsParameter != null && wmsParameter.isVisible() == true ) {
-                        wmsParameter.setVisible( false );
-                        wmsStartDialog.setVisible( true );
+                    } else if ( state.wmsParameter != null && state.wmsParameter.isVisible() == true ) {
+                        state.wmsParameter.setVisible( false );
+                        state.wmsStartDialog.setVisible( true );
                     }
 
                 } else if ( ( (JButton) source ).getText().startsWith( ButtonPanel.BUTTON_TEXT_OK ) ) {
-                    if ( optionDialog != null && optionDialog.isVisible() == true ) {
+                    if ( state.optionDialog != null && state.optionDialog.isVisible() == true ) {
 
-                        if ( optionSettingPanel != null ) {
+                        if ( state.optionSettingPanel != null ) {
 
-                            if ( optionSettingPanel instanceof GeneralPanel ) {
-                                String p = ( (GeneralPanel) optionSettingPanel ).getTextField(
-                                                                                               ( (GeneralPanel) optionSettingPanel ).getZoomValue() ).getText();
+                            if ( state.optionSettingPanel instanceof GeneralPanel ) {
+                                String p = ( (GeneralPanel) state.optionSettingPanel ).getTextField(
+                                                                                                     ( (GeneralPanel) state.optionSettingPanel ).getZoomValue() ).getText();
                                 String p1 = p.replace( ',', '.' );
-                                conModel.getDialogModel().setResizeValue( new Double( p1 ).doubleValue() );
+                                state.conModel.getDialogModel().setResizeValue( new Double( p1 ).doubleValue() );
                                 exceptionThrown = false;
                             }
                         }
                         if ( exceptionThrown == false ) {
-                            conModel.getDialogModel().transferNewToOld();
-                            AbstractPanel2D.selectedPointSize = conModel.getDialogModel().getSelectionPointSize().first;
-                            conModel.getPanel().repaint();
-                            conModel.getFootPanel().repaint();
-                            optionDialog.setVisible( false );
+                            state.conModel.getDialogModel().transferNewToOld();
+                            AbstractPanel2D.selectedPointSize = state.conModel.getDialogModel().getSelectionPointSize().first;
+                            state.conModel.getPanel().repaint();
+                            state.conModel.getFootPanel().repaint();
+                            state.optionDialog.setVisible( false );
                         }
-                    } else if ( jumperDialog != null && jumperDialog.isVisible() == true ) {
+                    } else if ( state.jumperDialog != null && state.jumperDialog.isVisible() == true ) {
 
                         fireTextfieldJumperDialog();
-                    } else if ( wmsStartDialog != null && wmsStartDialog.isVisible() == true ) {
-                        String mapURLString = wmsStartDialog.getTextField().getText();
-                        wmsStartDialog.setVisible( false );
+                    } else if ( state.wmsStartDialog != null && state.wmsStartDialog.isVisible() == true ) {
+                        String mapURLString = state.wmsStartDialog.getTextField().getText();
+                        state.wmsStartDialog.setVisible( false );
                         try {
-                            wmsParameter = new WMSParameterChooser( wmsStartDialog, mapURLString );
-                            wmsParameter.addCheckBoxListener( new ButtonListener() );
+                            state.wmsParameter = new WMSParameterChooser( state.wmsStartDialog, mapURLString );
+                            state.wmsParameter.addCheckBoxListener( new ButtonListener() );
                         } catch ( MalformedURLException e1 ) {
-                            new ErrorDialog( wmsStartDialog, ImageObserver.ERROR,
+                            new ErrorDialog( state.wmsStartDialog, ImageObserver.ERROR,
                                              "The requested URL is malformed! There is no response gotten from the server. " );
                             exceptionThrown = true;
                         } catch ( NullPointerException e2 ) {
-                            new ErrorDialog( wmsStartDialog, ImageObserver.ERROR,
+                            new ErrorDialog( state.wmsStartDialog, ImageObserver.ERROR,
                                              "The requested URL is malformed! There is no response gotten from the server. " );
                             exceptionThrown = true;
                         }
                         if ( exceptionThrown == false ) {
-                            wmsParameter.addListeners( new ButtonListener() );
-                            wmsParameter.setVisible( true );
+                            state.wmsParameter.addListeners( new ButtonListener() );
+                            state.wmsParameter.setVisible( true );
                         }
 
-                    } else if ( wmsParameter != null && wmsParameter.isVisible() == true ) {
+                    } else if ( state.wmsParameter != null && state.wmsParameter.isVisible() == true ) {
 
-                        URL mapURL = wmsParameter.getMapURL();
-                        CRS crs = wmsParameter.getCheckBoxSRS();
-                        String layers = wmsParameter.getCheckBoxListAsString().toString();
-                        List<String> layerList = wmsParameter.getCheckBoxListLayerText();
-                        String format = wmsParameter.getCheckBoxFormatAsString().toString();
+                        URL mapURL = state.wmsParameter.getMapURL();
+                        CRS crs = state.wmsParameter.getCheckBoxSRS();
+                        String layers = state.wmsParameter.getCheckBoxListAsString().toString();
+                        List<String> layerList = state.wmsParameter.getCheckBoxListLayerText();
+                        String format = state.wmsParameter.getCheckBoxFormatAsString().toString();
 
                         if ( layers == null || layers.length() == 0 ) {
-                            new ErrorDialog( wmsParameter, ImageObserver.ERROR,
+                            new ErrorDialog( state.wmsParameter, ImageObserver.ERROR,
                                              "There is no Layer selected. Please selected at least one. " );
                         } else if ( format == null || format.equals( "" ) ) {
-                            new ErrorDialog( wmsParameter, ImageObserver.ERROR, "There is no format selected. " );
+                            new ErrorDialog( state.wmsParameter, ImageObserver.ERROR, "There is no format selected. " );
                         } else if ( crs == null ) {
-                            new ErrorDialog( wmsParameter, ImageObserver.ERROR, "There is no CRS selected. " );
+                            new ErrorDialog( state.wmsParameter, ImageObserver.ERROR, "There is no CRS selected. " );
                         } else {
-                            Envelope env = wmsParameter.getEnvelope( crs, layerList );
+                            Envelope env = state.wmsParameter.getEnvelope( crs, layerList );
                             if ( env != null ) {
-                                int qor = max( conModel.getPanel().getWidth(), conModel.getPanel().getHeight() );
-                                store = new ParameterStore( mapURL, env.getCoordinateSystem(), format, layers, env, qor );
-                                model = new Scene2DImplWMS( store, wmsParameter.getWmsClient() );
-                                initGeoReferencingScene( model );
-                                wmsParameter.setVisible( false );
+                                int qor = max( state.conModel.getPanel().getWidth(),
+                                               state.conModel.getPanel().getHeight() );
+                                state.store = new ParameterStore( mapURL, env.getCoordinateSystem(), format, layers,
+                                                                  env, qor );
+                                state.model = new Scene2DImplWMS( state.store, state.wmsParameter.getWmsClient() );
+                                initGeoReferencingScene( state.model );
+                                state.wmsParameter.setVisible( false );
                             } else {
-                                new ErrorDialog( wmsParameter, ImageObserver.ERROR,
+                                new ErrorDialog( state.wmsParameter, ImageObserver.ERROR,
                                                  "There is no Envelope for this request. " );
                             }
                         }
@@ -791,16 +732,16 @@ public class Controller {
                 if ( ( (JMenuItem) source ).getText().startsWith( get( "MENUITEM_EDIT_OPTIONS" ) ) ) {
                     DefaultMutableTreeNode root = new DefaultMutableTreeNode( "Options" );
 
-                    conModel.getDialogModel().createNodes( root );
-                    optionDialog = new OptionDialog( conModel.getView(), root );
-                    optionDialog.getButtonPanel().addListeners( new ButtonListener() );
-                    optionNavPanel = optionDialog.getNavigationPanel();
-                    optionSettPanel = optionDialog.getSettingsPanel();
+                    state.conModel.getDialogModel().createNodes( root );
+                    state.optionDialog = new OptionDialog( state.conModel.getView(), root );
+                    state.optionDialog.getButtonPanel().addListeners( new ButtonListener() );
+                    state.optionNavPanel = state.optionDialog.getNavigationPanel();
+                    state.optionSettPanel = state.optionDialog.getSettingsPanel();
 
                     // add the listener to the navigation panel
-                    optionNavPanel.addTreeListener( new NavigationTreeSelectionListener() );
+                    state.optionNavPanel.addTreeListener( new NavigationTreeSelectionListener() );
 
-                    optionDialog.setVisible( true );
+                    state.optionDialog.setVisible( true );
 
                 } else if ( ( (JMenuItem) source ).getText().startsWith( get( "MENUITEM_EXIT" ) ) ) {
                     System.exit( 0 );
@@ -812,9 +753,9 @@ public class Controller {
                     Pair<List<String>, String> supportedFiles = new Pair<List<String>, String>( list, desc );
                     List<Pair<List<String>, String>> supportedOpenFiles = new ArrayList<Pair<List<String>, String>>();
                     supportedOpenFiles.add( supportedFiles );
-                    FileChooser fileChooser = new FileChooser( supportedOpenFiles, conModel.getView(), true );
+                    FileChooser fileChooser = new FileChooser( supportedOpenFiles, state.conModel.getView(), true );
                     chosenFile = fileChooser.getOpenPath();
-                    fileChooser = new FileChooser( supportedOpenFiles, conModel.getView(), false );
+                    fileChooser = new FileChooser( supportedOpenFiles, state.conModel.getView(), false );
                     File saveFile = fileChooser.getSaveFile();
                     if ( chosenFile != null && saveFile != null ) {
                         XMLStreamReader reader = null;
@@ -826,7 +767,7 @@ public class Controller {
                             XMLOutputFactory outFac = XMLOutputFactory.newInstance();
                             writer = outFac.createXMLStreamWriter( new FileOutputStream( saveFile ) );
 
-                            XMLTransformer transformer = new XMLTransformer( conModel.getTransform() );
+                            XMLTransformer transformer = new XMLTransformer( state.conModel.getTransform() );
                             transformer.transform( reader, writer, GMLVersion.GML_31 );
 
                         } catch ( ClassCastException e1 ) {
@@ -868,7 +809,7 @@ public class Controller {
                     Pair<List<String>, String> supportedFiles = new Pair<List<String>, String>( list, desc );
                     List<Pair<List<String>, String>> supportedOpenFiles = new ArrayList<Pair<List<String>, String>>();
                     supportedOpenFiles.add( supportedFiles );
-                    FileChooser fileChooser = new FileChooser( supportedOpenFiles, conModel.getView(), true );
+                    FileChooser fileChooser = new FileChooser( supportedOpenFiles, state.conModel.getView(), true );
                     chosenFile = fileChooser.getOpenPath();
                     if ( chosenFile != null ) {
                         initFootprintScene( chosenFile );
@@ -881,18 +822,18 @@ public class Controller {
                     Pair<List<String>, String> supportedFiles = new Pair<List<String>, String>( list, desc );
                     List<Pair<List<String>, String>> supportedOpenFiles = new ArrayList<Pair<List<String>, String>>();
                     supportedOpenFiles.add( supportedFiles );
-                    FileChooser fileChooser = new FileChooser( supportedOpenFiles, conModel.getView(), true );
+                    FileChooser fileChooser = new FileChooser( supportedOpenFiles, state.conModel.getView(), true );
                     String fileChoosed = fileChooser.getOpenPath();
                     if ( fileChoosed != null ) {
-                        model = new Scene2DImplShape( fileChoosed, conModel.getPanel().getG2() );
-                        initGeoReferencingScene( model );
+                        state.model = new Scene2DImplShape( fileChoosed, state.conModel.getPanel().getG2() );
+                        initGeoReferencingScene( state.model );
                     }
 
                 } else if ( ( (JMenuItem) source ).getText().startsWith( get( "MENUITEM_OPEN_WMS_LAYER" ) ) ) {
 
-                    wmsStartDialog = new OpenWMS( conModel.getView() );
-                    wmsStartDialog.addListeners( new ButtonListener() );
-                    wmsStartDialog.setVisible( true );
+                    state.wmsStartDialog = new OpenWMS( state.conModel.getView() );
+                    state.wmsStartDialog.addListeners( new ButtonListener() );
+                    state.wmsStartDialog.setVisible( true );
 
                 }
 
@@ -902,32 +843,33 @@ public class Controller {
 
         private void fireTextfieldJumperDialog() {
             try {
-                textFieldModel.setTextInput( jumperDialog.getCoordinateJumper().getText() );
+                state.textFieldModel.setTextInput( state.jumperDialog.getCoordinateJumper().getText() );
 
-                System.out.println( textFieldModel.toString() );
-                if ( textFieldModel.getSpanX() != -1 && textFieldModel.getSpanY() != -1 ) {
+                if ( state.textFieldModel.getSpanX() != -1 && state.textFieldModel.getSpanY() != -1 ) {
 
-                    sceneValues.setCentroidWorldEnvelopePosition( textFieldModel.getxCoordinate(),
-                                                                  textFieldModel.getyCoordiante(),
-                                                                  textFieldModel.getSpanX(), textFieldModel.getSpanY(),
-                                                                  PointType.GeoreferencedPoint );
+                    state.sceneValues.setCentroidWorldEnvelopePosition( state.textFieldModel.getxCoordinate(),
+                                                                        state.textFieldModel.getyCoordiante(),
+                                                                        state.textFieldModel.getSpanX(),
+                                                                        state.textFieldModel.getSpanY(),
+                                                                        PointType.GeoreferencedPoint );
 
                 } else {
-                    sceneValues.setCentroidWorldEnvelopePosition( textFieldModel.getxCoordinate(),
-                                                                  textFieldModel.getyCoordiante(),
-                                                                  PointType.GeoreferencedPoint );
+                    state.sceneValues.setCentroidWorldEnvelopePosition( state.textFieldModel.getxCoordinate(),
+                                                                        state.textFieldModel.getyCoordiante(),
+                                                                        PointType.GeoreferencedPoint );
 
                 }
-                jumperDialog.setVisible( false );
-                selectedGeoref = false;
-                buttonModel.setSelected( false );
-                isHorizontalRefGeoref = true;
-                conModel.getPanel().setImageToDraw( model.generateSubImageFromRaster( sceneValues.getEnvelopeGeoref() ) );
-                conModel.getPanel().updatePoints( sceneValues );
-                conModel.getPanel().repaint();
+                state.jumperDialog.setVisible( false );
+                state.selectedGeoref = false;
+                state.buttonModel.setSelected( false );
+                state.isHorizontalRefGeoref = true;
+                state.conModel.getPanel().setImageToDraw(
+                                                          state.model.generateSubImageFromRaster( state.sceneValues.getEnvelopeGeoref() ) );
+                state.conModel.getPanel().updatePoints( state.sceneValues );
+                state.conModel.getPanel().repaint();
 
             } catch ( NumberFormatException e1 ) {
-                new ErrorDialog( conModel.getView(), ImageObserver.ERROR, e1.getMessage() );
+                new ErrorDialog( state.conModel.getView(), ImageObserver.ERROR, e1.getMessage() );
             }
 
         }
@@ -957,7 +899,7 @@ public class Controller {
 
                 System.out.println( "[Controller] TableEvent row: " + row + " col: " + column + " colName: "
                                     + columnName + " data: " + data );
-                for ( Triple<Point4Values, Point4Values, PointResidual> p : mappedPoints ) {
+                for ( Triple<Point4Values, Point4Values, PointResidual> p : state.mappedPoints ) {
                     boolean changed = changePointLocation( p, data, row, column );
                     if ( changed ) {
 
@@ -968,25 +910,25 @@ public class Controller {
 
                 if ( row == e.getLastRow() ) {
                     Triple<Point4Values, Point4Values, PointResidual> newLastPair = new Triple<Point4Values, Point4Values, PointResidual>(
-                                                                                                                                           conModel.getFootPanel().getLastAbstractPoint(),
-                                                                                                                                           conModel.getPanel().getLastAbstractPoint(),
+                                                                                                                                           state.conModel.getFootPanel().getLastAbstractPoint(),
+                                                                                                                                           state.conModel.getPanel().getLastAbstractPoint(),
                                                                                                                                            null );
-                    if ( conModel.getFootPanel().getLastAbstractPoint() != null
-                         && conModel.getPanel().getLastAbstractPoint() != null ) {
+                    if ( state.conModel.getFootPanel().getLastAbstractPoint() != null
+                         && state.conModel.getPanel().getLastAbstractPoint() != null ) {
                         boolean changed = changePointLocation( newLastPair, data, row, column );
                         if ( changed ) {
 
-                            if ( conModel.getFootPanel().getLastAbstractPoint() != null
-                                 && conModel.getPanel().getLastAbstractPoint() != null ) {
-                                conModel.getPanel().setLastAbstractPoint( newLastPair.second.getNewValue(),
-                                                                          newLastPair.second.getWorldCoords(),
-                                                                          newLastPair.second.getRc() );
-                                conModel.getFootPanel().setLastAbstractPoint( newLastPair.first.getNewValue(),
-                                                                              newLastPair.first.getWorldCoords(),
-                                                                              newLastPair.first.getRc() );
+                            if ( state.conModel.getFootPanel().getLastAbstractPoint() != null
+                                 && state.conModel.getPanel().getLastAbstractPoint() != null ) {
+                                state.conModel.getPanel().setLastAbstractPoint( newLastPair.second.getNewValue(),
+                                                                                newLastPair.second.getWorldCoords(),
+                                                                                newLastPair.second.getRc() );
+                                state.conModel.getFootPanel().setLastAbstractPoint( newLastPair.first.getNewValue(),
+                                                                                    newLastPair.first.getWorldCoords(),
+                                                                                    newLastPair.first.getRc() );
                             }
-                            conModel.getPanel().repaint();
-                            conModel.getFootPanel().repaint();
+                            state.conModel.getPanel().repaint();
+                            state.conModel.getFootPanel().repaint();
 
                         }
                     }
@@ -1023,7 +965,7 @@ public class Controller {
             if ( column == fcpx ) {
                 worldCoords = new FootprintPoint( new Double( data.toString() ).doubleValue(),
                                                   p.first.getWorldCoords().y );
-                int[] i = sceneValues.getPixelCoord( worldCoords );
+                int[] i = state.sceneValues.getPixelCoord( worldCoords );
                 pixelValue = new FootprintPoint( i[0], i[1] );
 
                 p.first = new Point4Values( pixelValue, pixelValue, pixelValue, worldCoords, p.first.getRc() );
@@ -1031,14 +973,14 @@ public class Controller {
             } else if ( column == fcpy ) {
                 worldCoords = new FootprintPoint( p.first.getWorldCoords().x,
                                                   new Double( data.toString() ).doubleValue() );
-                int[] i = sceneValues.getPixelCoord( worldCoords );
+                int[] i = state.sceneValues.getPixelCoord( worldCoords );
                 pixelValue = new FootprintPoint( i[0], i[1] );
                 p.first = new Point4Values( pixelValue, pixelValue, pixelValue, worldCoords, p.first.getRc() );
                 changed = true;
             } else if ( column == scpx ) {
                 worldCoords = new GeoReferencedPoint( new Double( data.toString() ).doubleValue(),
                                                       p.second.getWorldCoords().y );
-                int[] i = sceneValues.getPixelCoord( worldCoords );
+                int[] i = state.sceneValues.getPixelCoord( worldCoords );
                 pixelValue = new GeoReferencedPoint( i[0], i[1] );
 
                 p.second = new Point4Values( pixelValue, pixelValue, pixelValue, worldCoords, p.second.getRc() );
@@ -1046,7 +988,7 @@ public class Controller {
             } else if ( column == scpy ) {
                 worldCoords = new GeoReferencedPoint( p.second.getWorldCoords().x,
                                                       new Double( data.toString() ).doubleValue() );
-                int[] i = sceneValues.getPixelCoord( worldCoords );
+                int[] i = state.sceneValues.getPixelCoord( worldCoords );
                 pixelValue = new GeoReferencedPoint( i[0], i[1] );
 
                 p.second = new Point4Values( pixelValue, pixelValue, pixelValue, worldCoords, p.second.getRc() );
@@ -1072,7 +1014,7 @@ public class Controller {
         public void valueChanged( TreeSelectionEvent e ) {
             Object source = e.getSource();
             if ( ( (JTree) source ).getName().equals( NavigationPanel.TREE_NAME ) ) {
-                DefaultMutableTreeNode node = (DefaultMutableTreeNode) optionNavPanel.getTree().getLastSelectedPathComponent();
+                DefaultMutableTreeNode node = (DefaultMutableTreeNode) state.optionNavPanel.getTree().getLastSelectedPathComponent();
 
                 if ( node == null )
                     // Nothing is selected.
@@ -1090,25 +1032,25 @@ public class Controller {
 
                     switch ( panelType ) {
                     case GeneralPanel:
-                        optionSettingPanel = new GeneralPanel( optionSettPanel );
-                        ( (GeneralPanel) optionSettingPanel ).addCheckboxListener( new ButtonListener() );
-                        ( (GeneralPanel) optionSettingPanel ).setSnappingOnOff( conModel.getDialogModel().getSnappingOnOff().second );
-                        ( (GeneralPanel) optionSettingPanel ).setInitialZoomValue( conModel.getDialogModel().getResizeValue().second );
+                        state.optionSettingPanel = new GeneralPanel( state.optionSettPanel );
+                        ( (GeneralPanel) state.optionSettingPanel ).addCheckboxListener( new ButtonListener() );
+                        ( (GeneralPanel) state.optionSettingPanel ).setSnappingOnOff( state.conModel.getDialogModel().getSnappingOnOff().second );
+                        ( (GeneralPanel) state.optionSettingPanel ).setInitialZoomValue( state.conModel.getDialogModel().getResizeValue().second );
                         break;
                     case ViewPanel:
-                        optionSettingPanel = new ViewPanel( new ButtonListener() );
-                        ( (ViewPanel) optionSettingPanel ).getTbm().setPointSize(
-                                                                                  conModel.getDialogModel().getSelectionPointSize().second );
-                        // ( (ViewPanel) optionSettingPanel ).addRadioButtonListener( new ButtonListener() );
+                        state.optionSettingPanel = new ViewPanel( new ButtonListener() );
+                        ( (ViewPanel) state.optionSettingPanel ).getTbm().setPointSize(
+                                                                                        state.conModel.getDialogModel().getSelectionPointSize().second );
+                        // ( (ViewPanel) state.optionSettingPanel ).addRadioButtonListener( new ButtonListener() );
 
                         break;
                     }
-                    optionSettPanel.setCurrentPanel( optionSettingPanel );
-                    optionDialog.setSettingsPanel( optionSettPanel );
+                    state.optionSettPanel.setCurrentPanel( state.optionSettingPanel );
+                    state.optionDialog.setSettingsPanel( state.optionSettPanel );
 
                 } else {
-                    optionSettPanel.reset();
-                    optionDialog.reset();
+                    state.optionSettPanel.reset();
+                    state.optionDialog.reset();
                 }
 
             }
@@ -1134,12 +1076,12 @@ public class Controller {
                 // Scene2DPanel
                 if ( ( (JPanel) source ).getName().equals( Scene2DPanel.SCENE2D_PANEL_NAME ) ) {
 
-                    mouseGeoRef.setMouseInside( true );
+                    state.mouseGeoRef.setMouseInside( true );
 
                 }
                 if ( ( (JPanel) source ).getName().equals( BuildingFootprintPanel.BUILDINGFOOTPRINT_PANEL_NAME ) ) {
 
-                    mouseFootprint.setMouseInside( true );
+                    state.mouseFootprint.setMouseInside( true );
 
                 }
             }
@@ -1151,11 +1093,11 @@ public class Controller {
             if ( source instanceof JPanel ) {
                 // Scene2DPanel
                 if ( ( (JPanel) source ).getName().equals( Scene2DPanel.SCENE2D_PANEL_NAME ) ) {
-                    mouseGeoRef.setMouseInside( false );
+                    state.mouseGeoRef.setMouseInside( false );
 
                 }
                 if ( ( (JPanel) source ).getName().equals( BuildingFootprintPanel.BUILDINGFOOTPRINT_PANEL_NAME ) ) {
-                    mouseFootprint.setMouseInside( false );
+                    state.mouseFootprint.setMouseInside( false );
 
                 }
             }
@@ -1167,17 +1109,17 @@ public class Controller {
             if ( source instanceof JPanel ) {
                 // Scene2DPanel
                 if ( ( (JPanel) source ).getName().equals( Scene2DPanel.SCENE2D_PANEL_NAME ) ) {
-                    mouseGeoRef.setPointMousePressed( new Point2d( m.getX(), m.getY() ) );
-                    isControlDown = m.isControlDown();
-                    isZoomInGeoref = buttonZoomInGeoref.isSelected();
-                    isZoomOutGeoref = buttonZoomoutGeoref.isSelected();
+                    state.mouseGeoRef.setPointMousePressed( new Point2d( m.getX(), m.getY() ) );
+                    state.isControlDown = m.isControlDown();
+                    state.isZoomInGeoref = state.buttonZoomInGeoref.isSelected();
+                    state.isZoomOutGeoref = state.buttonZoomoutGeoref.isSelected();
 
                 }
                 if ( ( (JPanel) source ).getName().equals( BuildingFootprintPanel.BUILDINGFOOTPRINT_PANEL_NAME ) ) {
-                    mouseFootprint.setPointMousePressed( new Point2d( m.getX(), m.getY() ) );
-                    isControlDown = m.isControlDown();
-                    isZoomInFoot = buttonZoominFoot.isSelected();
-                    isZoomOutFoot = buttonZoomoutFoot.isSelected();
+                    state.mouseFootprint.setPointMousePressed( new Point2d( m.getX(), m.getY() ) );
+                    state.isControlDown = m.isControlDown();
+                    state.isZoomInFoot = state.buttonZoominFoot.isSelected();
+                    state.isZoomOutFoot = state.buttonZoomoutFoot.isSelected();
                 }
             }
 
@@ -1190,10 +1132,10 @@ public class Controller {
             if ( source instanceof JPanel ) {
                 // Scene2DPanel
                 if ( ( (JPanel) source ).getName().equals( Scene2DPanel.SCENE2D_PANEL_NAME ) ) {
-                    if ( model != null ) {
-                        if ( isControlDown || isZoomInGeoref || isZoomOutGeoref ) {
-                            Point2d pointPressed = new Point2d( mouseGeoRef.getPointMousePressed().x,
-                                                                mouseGeoRef.getPointMousePressed().y );
+                    if ( state.model != null ) {
+                        if ( state.isControlDown || state.isZoomInGeoref || state.isZoomOutGeoref ) {
+                            Point2d pointPressed = new Point2d( state.mouseGeoRef.getPointMousePressed().x,
+                                                                state.mouseGeoRef.getPointMousePressed().y );
                             Point2d pointReleased = new Point2d( m.getX(), m.getY() );
                             Point2d minPoint;
                             Point2d maxPoint;
@@ -1205,12 +1147,13 @@ public class Controller {
                                 maxPoint = pointPressed;
                             }
 
-                            if ( isZoomInGeoref ) {
+                            if ( state.isZoomInGeoref ) {
                                 if ( minPoint.x == maxPoint.x && minPoint.y == maxPoint.y ) {
-                                    sceneValues.computeZoomedEnvelope(
-                                                                       true,
-                                                                       conModel.getDialogModel().getResizeValue().second,
-                                                                       new GeoReferencedPoint( minPoint.x, minPoint.y ) );
+                                    state.sceneValues.computeZoomedEnvelope(
+                                                                             true,
+                                                                             state.conModel.getDialogModel().getResizeValue().second,
+                                                                             new GeoReferencedPoint( minPoint.x,
+                                                                                                     minPoint.y ) );
                                 } else {
                                     Rectangle r = new Rectangle(
                                                                  new Double( minPoint.x ).intValue(),
@@ -1218,63 +1161,64 @@ public class Controller {
                                                                  Math.abs( new Double( maxPoint.x - minPoint.x ).intValue() ),
                                                                  Math.abs( new Double( maxPoint.y - minPoint.y ).intValue() ) );
 
-                                    sceneValues.createZoomedEnvWithMinPoint( PointType.GeoreferencedPoint, r );
+                                    state.sceneValues.createZoomedEnvWithMinPoint( PointType.GeoreferencedPoint, r );
 
                                 }
-                            } else if ( isZoomOutGeoref ) {
-                                sceneValues.computeZoomedEnvelope( false,
-                                                                   conModel.getDialogModel().getResizeValue().second,
-                                                                   new GeoReferencedPoint( maxPoint.x, maxPoint.y ) );
+                            } else if ( state.isZoomOutGeoref ) {
+                                state.sceneValues.computeZoomedEnvelope(
+                                                                         false,
+                                                                         state.conModel.getDialogModel().getResizeValue().second,
+                                                                         new GeoReferencedPoint( maxPoint.x, maxPoint.y ) );
                             }
 
-                            conModel.getPanel().setImageToDraw(
-                                                                model.generateSubImageFromRaster( sceneValues.getEnvelopeGeoref() ) );
-                            conModel.getPanel().updatePoints( sceneValues );
-                            conModel.getPanel().setZoomRect( null );
-                            conModel.getPanel().repaint();
+                            state.conModel.getPanel().setImageToDraw(
+                                                                      state.model.generateSubImageFromRaster( state.sceneValues.getEnvelopeGeoref() ) );
+                            state.conModel.getPanel().updatePoints( state.sceneValues );
+                            state.conModel.getPanel().setZoomRect( null );
+                            state.conModel.getPanel().repaint();
                         }
 
                         else {
-                            if ( isHorizontalRefGeoref == true ) {
-                                if ( start == false ) {
-                                    start = true;
-                                    conModel.getFootPanel().setFocus( false );
-                                    conModel.getPanel().setFocus( true );
+                            if ( state.isHorizontalRefGeoref == true ) {
+                                if ( state.start == false ) {
+                                    state.start = true;
+                                    state.conModel.getFootPanel().setFocus( false );
+                                    state.conModel.getPanel().setFocus( true );
                                 }
-                                if ( conModel.getFootPanel().getLastAbstractPoint() != null
-                                     && conModel.getPanel().getLastAbstractPoint() != null
-                                     && conModel.getPanel().getFocus() == true ) {
+                                if ( state.conModel.getFootPanel().getLastAbstractPoint() != null
+                                     && state.conModel.getPanel().getLastAbstractPoint() != null
+                                     && state.conModel.getPanel().getFocus() == true ) {
                                     setValues();
                                 }
-                                if ( conModel.getFootPanel().getLastAbstractPoint() == null
-                                     && conModel.getPanel().getLastAbstractPoint() == null
-                                     && conModel.getPanel().getFocus() == true ) {
-                                    tablePanel.addRow();
+                                if ( state.conModel.getFootPanel().getLastAbstractPoint() == null
+                                     && state.conModel.getPanel().getLastAbstractPoint() == null
+                                     && state.conModel.getPanel().getFocus() == true ) {
+                                    state.tablePanel.addRow();
                                     isFirstNumber = true;
                                 }
 
                                 double x = m.getX();
                                 double y = m.getY();
                                 GeoReferencedPoint geoReferencedPoint = new GeoReferencedPoint( x, y );
-                                GeoReferencedPoint g = (GeoReferencedPoint) sceneValues.getWorldPoint( geoReferencedPoint );
-                                rc = tablePanel.setCoords( g );
-                                conModel.getPanel().setLastAbstractPoint( geoReferencedPoint, g, rc );
+                                GeoReferencedPoint g = (GeoReferencedPoint) state.sceneValues.getWorldPoint( geoReferencedPoint );
+                                state.rc = state.tablePanel.setCoords( g );
+                                state.conModel.getPanel().setLastAbstractPoint( geoReferencedPoint, g, state.rc );
                                 if ( isFirstNumber == false ) {
                                     updateResidualsWithLastAbstractPoint();
                                 }
                             } else {
                                 // just pan
-                                mouseGeoRef.setMouseChanging( new GeoReferencedPoint(
-                                                                                      ( mouseGeoRef.getPointMousePressed().x - m.getX() ),
-                                                                                      ( mouseGeoRef.getPointMousePressed().y - m.getY() ) ) );
+                                state.mouseGeoRef.setMouseChanging( new GeoReferencedPoint(
+                                                                                            ( state.mouseGeoRef.getPointMousePressed().x - m.getX() ),
+                                                                                            ( state.mouseGeoRef.getPointMousePressed().y - m.getY() ) ) );
 
-                                sceneValues.moveEnvelope( mouseGeoRef.getMouseChanging() );
-                                conModel.getPanel().setImageToDraw(
-                                                                    model.generateSubImageFromRaster( sceneValues.getEnvelopeGeoref() ) );
-                                conModel.getPanel().updatePoints( sceneValues );
+                                state.sceneValues.moveEnvelope( state.mouseGeoRef.getMouseChanging() );
+                                state.conModel.getPanel().setImageToDraw(
+                                                                          state.model.generateSubImageFromRaster( state.sceneValues.getEnvelopeGeoref() ) );
+                                state.conModel.getPanel().updatePoints( state.sceneValues );
                             }
 
-                            conModel.getPanel().repaint();
+                            state.conModel.getPanel().repaint();
                         }
 
                     }
@@ -1282,9 +1226,9 @@ public class Controller {
                 // footprintPanel
                 if ( ( (JPanel) source ).getName().equals( BuildingFootprintPanel.BUILDINGFOOTPRINT_PANEL_NAME ) ) {
 
-                    if ( isControlDown || isZoomInFoot || isZoomOutFoot ) {
-                        Point2d pointPressed = new Point2d( mouseFootprint.getPointMousePressed().x,
-                                                            mouseFootprint.getPointMousePressed().y );
+                    if ( state.isControlDown || state.isZoomInFoot || state.isZoomOutFoot ) {
+                        Point2d pointPressed = new Point2d( state.mouseFootprint.getPointMousePressed().x,
+                                                            state.mouseFootprint.getPointMousePressed().y );
                         Point2d pointReleased = new Point2d( m.getX(), m.getY() );
                         Point2d minPoint;
                         Point2d maxPoint;
@@ -1296,11 +1240,12 @@ public class Controller {
                             maxPoint = pointPressed;
                         }
 
-                        if ( isZoomInFoot ) {
+                        if ( state.isZoomInFoot ) {
                             if ( minPoint.x == maxPoint.x && minPoint.y == maxPoint.y ) {
-                                sceneValues.computeZoomedEnvelope( true,
-                                                                   conModel.getDialogModel().getResizeValue().second,
-                                                                   new FootprintPoint( minPoint.x, minPoint.y ) );
+                                state.sceneValues.computeZoomedEnvelope(
+                                                                         true,
+                                                                         state.conModel.getDialogModel().getResizeValue().second,
+                                                                         new FootprintPoint( minPoint.x, minPoint.y ) );
                             } else {
                                 Rectangle r = new Rectangle(
                                                              new Double( minPoint.x ).intValue(),
@@ -1308,63 +1253,64 @@ public class Controller {
                                                              Math.abs( new Double( maxPoint.x - minPoint.x ).intValue() ),
                                                              Math.abs( new Double( maxPoint.y - minPoint.y ).intValue() ) );
 
-                                sceneValues.createZoomedEnvWithMinPoint( PointType.FootprintPoint, r );
+                                state.sceneValues.createZoomedEnvWithMinPoint( PointType.FootprintPoint, r );
                             }
-                        } else if ( isZoomOutFoot ) {
-                            sceneValues.computeZoomedEnvelope( false,
-                                                               conModel.getDialogModel().getResizeValue().second,
-                                                               new FootprintPoint( maxPoint.x, maxPoint.y ) );
+                        } else if ( state.isZoomOutFoot ) {
+                            state.sceneValues.computeZoomedEnvelope(
+                                                                     false,
+                                                                     state.conModel.getDialogModel().getResizeValue().second,
+                                                                     new FootprintPoint( maxPoint.x, maxPoint.y ) );
                         }
-                        conModel.getFootPanel().setZoomRect( null );
-                        conModel.getFootPanel().updatePoints( sceneValues );
-                        conModel.getFootPanel().repaint();
+                        state.conModel.getFootPanel().setZoomRect( null );
+                        state.conModel.getFootPanel().updatePoints( state.sceneValues );
+                        state.conModel.getFootPanel().repaint();
 
                     } else {
-                        if ( isHorizontalRefFoot == true ) {
+                        if ( state.isHorizontalRefFoot == true ) {
 
-                            if ( start == false ) {
-                                start = true;
-                                conModel.getFootPanel().setFocus( true );
-                                conModel.getPanel().setFocus( false );
+                            if ( state.start == false ) {
+                                state.start = true;
+                                state.conModel.getFootPanel().setFocus( true );
+                                state.conModel.getPanel().setFocus( false );
                             }
-                            if ( conModel.getFootPanel().getLastAbstractPoint() != null
-                                 && conModel.getPanel().getLastAbstractPoint() != null
-                                 && conModel.getFootPanel().getFocus() == true ) {
+                            if ( state.conModel.getFootPanel().getLastAbstractPoint() != null
+                                 && state.conModel.getPanel().getLastAbstractPoint() != null
+                                 && state.conModel.getFootPanel().getFocus() == true ) {
                                 setValues();
                             }
-                            if ( conModel.getFootPanel().getLastAbstractPoint() == null
-                                 && conModel.getPanel().getLastAbstractPoint() == null
-                                 && conModel.getFootPanel().getFocus() == true ) {
-                                tablePanel.addRow();
+                            if ( state.conModel.getFootPanel().getLastAbstractPoint() == null
+                                 && state.conModel.getPanel().getLastAbstractPoint() == null
+                                 && state.conModel.getFootPanel().getFocus() == true ) {
+                                state.tablePanel.addRow();
                                 isFirstNumber = true;
                             }
                             double x = m.getX();
                             double y = m.getY();
                             Pair<AbstractGRPoint, FootprintPoint> point = null;
-                            if ( conModel.getDialogModel().getSnappingOnOff().first ) {
-                                point = conModel.getFootPanel().getClosestPoint( new FootprintPoint( x, y ) );
+                            if ( state.conModel.getDialogModel().getSnappingOnOff().first ) {
+                                point = state.conModel.getFootPanel().getClosestPoint( new FootprintPoint( x, y ) );
                             } else {
                                 point = new Pair<AbstractGRPoint, FootprintPoint>(
                                                                                    new FootprintPoint( x, y ),
-                                                                                   (FootprintPoint) sceneValues.getWorldPoint( new FootprintPoint(
-                                                                                                                                                   x,
-                                                                                                                                                   y ) ) );
+                                                                                   (FootprintPoint) state.sceneValues.getWorldPoint( new FootprintPoint(
+                                                                                                                                                         x,
+                                                                                                                                                         y ) ) );
                             }
-                            rc = tablePanel.setCoords( point.second );
-                            conModel.getFootPanel().setLastAbstractPoint( point.first, point.second, rc );
+                            state.rc = state.tablePanel.setCoords( point.second );
+                            state.conModel.getFootPanel().setLastAbstractPoint( point.first, point.second, state.rc );
                             if ( isFirstNumber == false ) {
                                 updateResidualsWithLastAbstractPoint();
                             }
 
                         } else {
-                            mouseFootprint.setMouseChanging( new FootprintPoint(
-                                                                                 ( mouseFootprint.getPointMousePressed().x - m.getX() ),
-                                                                                 ( mouseFootprint.getPointMousePressed().y - m.getY() ) ) );
+                            state.mouseFootprint.setMouseChanging( new FootprintPoint(
+                                                                                       ( state.mouseFootprint.getPointMousePressed().x - m.getX() ),
+                                                                                       ( state.mouseFootprint.getPointMousePressed().y - m.getY() ) ) );
 
-                            sceneValues.moveEnvelope( mouseFootprint.getMouseChanging() );
-                            conModel.getFootPanel().updatePoints( sceneValues );
+                            state.sceneValues.moveEnvelope( state.mouseFootprint.getMouseChanging() );
+                            state.conModel.getFootPanel().updatePoints( state.sceneValues );
                         }
-                        conModel.getFootPanel().repaint();
+                        state.conModel.getFootPanel().repaint();
                     }
 
                 }
@@ -1393,8 +1339,7 @@ public class Controller {
         @Override
         public void run() {
 
-            changePoint = new Point2d( changing.x, changing.y );
-            System.out.println( "Threadchange: " + changePoint );
+            state.changePoint = new Point2d( changing.x, changing.y );
 
             // model.generatePredictedImage( changing );
             // model.generateImage( changing );
@@ -1422,26 +1367,26 @@ public class Controller {
             if ( source instanceof JPanel ) {
                 // Scene2DPanel
                 if ( ( (JPanel) source ).getName().equals( Scene2DPanel.SCENE2D_PANEL_NAME ) ) {
-                    if ( m.isControlDown() || isZoomInGeoref ) {
-                        int x = new Double( mouseGeoRef.getPointMousePressed().x ).intValue();
-                        int y = new Double( mouseGeoRef.getPointMousePressed().y ).intValue();
-                        int width = new Double( m.getX() - mouseGeoRef.getPointMousePressed().x ).intValue();
-                        int height = new Double( m.getY() - mouseGeoRef.getPointMousePressed().y ).intValue();
+                    if ( m.isControlDown() || state.isZoomInGeoref ) {
+                        int x = new Double( state.mouseGeoRef.getPointMousePressed().x ).intValue();
+                        int y = new Double( state.mouseGeoRef.getPointMousePressed().y ).intValue();
+                        int width = new Double( m.getX() - state.mouseGeoRef.getPointMousePressed().x ).intValue();
+                        int height = new Double( m.getY() - state.mouseGeoRef.getPointMousePressed().y ).intValue();
                         Rectangle rec = new Rectangle( x, y, width, height );
-                        conModel.getPanel().setZoomRect( rec );
-                        conModel.getPanel().repaint();
+                        state.conModel.getPanel().setZoomRect( rec );
+                        state.conModel.getPanel().repaint();
                     }
                 }
                 // footprintPanel
                 if ( ( (JPanel) source ).getName().equals( BuildingFootprintPanel.BUILDINGFOOTPRINT_PANEL_NAME ) ) {
-                    if ( m.isControlDown() || isZoomInFoot ) {
-                        int x = new Double( mouseFootprint.getPointMousePressed().x ).intValue();
-                        int y = new Double( mouseFootprint.getPointMousePressed().y ).intValue();
-                        int width = new Double( m.getX() - mouseFootprint.getPointMousePressed().x ).intValue();
-                        int height = new Double( m.getY() - mouseFootprint.getPointMousePressed().y ).intValue();
+                    if ( m.isControlDown() || state.isZoomInFoot ) {
+                        int x = new Double( state.mouseFootprint.getPointMousePressed().x ).intValue();
+                        int y = new Double( state.mouseFootprint.getPointMousePressed().y ).intValue();
+                        int width = new Double( m.getX() - state.mouseFootprint.getPointMousePressed().x ).intValue();
+                        int height = new Double( m.getY() - state.mouseFootprint.getPointMousePressed().y ).intValue();
                         Rectangle rec = new Rectangle( x, y, width, height );
-                        conModel.getFootPanel().setZoomRect( rec );
-                        conModel.getFootPanel().repaint();
+                        state.conModel.getFootPanel().setZoomRect( rec );
+                        state.conModel.getFootPanel().repaint();
                     }
                 }
             }
@@ -1457,15 +1402,15 @@ public class Controller {
                 // Scene2DPanel
                 if ( ( (JPanel) source ).getName().equals( Scene2DPanel.SCENE2D_PANEL_NAME ) ) {
                     // System.out.println( m.getPoint() );
-                    if ( mouseGeoRef != null ) {
-                        mouseGeoRef.setMouseMoved( new GeoReferencedPoint( m.getX(), m.getY() ) );
+                    if ( state.mouseGeoRef != null ) {
+                        state.mouseGeoRef.setMouseMoved( new GeoReferencedPoint( m.getX(), m.getY() ) );
                     }
                 }
                 // footprintPanel
                 if ( ( (JPanel) source ).getName().equals( BuildingFootprintPanel.BUILDINGFOOTPRINT_PANEL_NAME ) ) {
                     // System.out.println( m.getPoint() );
-                    if ( mouseFootprint != null ) {
-                        mouseFootprint.setMouseMoved( new FootprintPoint( m.getX(), m.getY() ) );
+                    if ( state.mouseFootprint != null ) {
+                        state.mouseFootprint.setMouseMoved( new FootprintPoint( m.getX(), m.getY() ) );
                     }
                 }
             }
@@ -1496,36 +1441,39 @@ public class Controller {
 
                 // Scene2DPanel
                 if ( ( (JPanel) source ).getName().equals( Scene2DPanel.SCENE2D_PANEL_NAME ) ) {
-                    if ( model != null ) {
-                        mouseOver = mouseGeoRef.getMouseMoved();
+                    if ( state.model != null ) {
+                        mouseOver = state.mouseGeoRef.getMouseMoved();
                         // resizing = .05f;
                         if ( m.getWheelRotation() < 0 ) {
                             zoomIn = true;
                         } else {
                             zoomIn = false;
                         }
-                        sceneValues.computeZoomedEnvelope( zoomIn, conModel.getDialogModel().getResizeValue().second,
-                                                           mouseOver );
-                        conModel.getPanel().setImageToDraw(
-                                                            model.generateSubImageFromRaster( sceneValues.getEnvelopeGeoref() ) );
-                        conModel.getPanel().updatePoints( sceneValues );
-                        conModel.getPanel().repaint();
+                        state.sceneValues.computeZoomedEnvelope(
+                                                                 zoomIn,
+                                                                 state.conModel.getDialogModel().getResizeValue().second,
+                                                                 mouseOver );
+                        state.conModel.getPanel().setImageToDraw(
+                                                                  state.model.generateSubImageFromRaster( state.sceneValues.getEnvelopeGeoref() ) );
+                        state.conModel.getPanel().updatePoints( state.sceneValues );
+                        state.conModel.getPanel().repaint();
                     }
                 }
                 // footprintPanel
                 if ( ( (JPanel) source ).getName().equals( BuildingFootprintPanel.BUILDINGFOOTPRINT_PANEL_NAME ) ) {
 
                     // resizing = .1f;
-                    mouseOver = mouseFootprint.getMouseMoved();
+                    mouseOver = state.mouseFootprint.getMouseMoved();
                     if ( m.getWheelRotation() < 0 ) {
                         zoomIn = true;
                     } else {
                         zoomIn = false;
                     }
-                    sceneValues.computeZoomedEnvelope( zoomIn, conModel.getDialogModel().getResizeValue().second,
-                                                       mouseOver );
-                    conModel.getFootPanel().updatePoints( sceneValues );
-                    conModel.getFootPanel().repaint();
+                    state.sceneValues.computeZoomedEnvelope( zoomIn,
+                                                             state.conModel.getDialogModel().getResizeValue().second,
+                                                             mouseOver );
+                    state.conModel.getFootPanel().updatePoints( state.sceneValues );
+                    state.conModel.getFootPanel().repaint();
                 }
             }
 
@@ -1561,15 +1509,16 @@ public class Controller {
             Object source = c.getSource();
 
             if ( source instanceof JFrame ) {
-                if ( model != null && model.getGeneratedImage() != null ) {
+                if ( state.model != null && state.model.getGeneratedImage() != null ) {
                     init();
 
-                    if ( sceneValues != null ) {
+                    if ( state.sceneValues != null ) {
 
-                        sceneValues.setDimensionFootpanel( new Rectangle( conModel.getFootPanel().getBounds().width,
-                                                                          conModel.getFootPanel().getBounds().height ) );
-                        conModel.getFootPanel().updatePoints( sceneValues );
-                        conModel.getFootPanel().repaint();
+                        state.sceneValues.setDimensionFootpanel( new Rectangle(
+                                                                                state.conModel.getFootPanel().getBounds().width,
+                                                                                state.conModel.getFootPanel().getBounds().height ) );
+                        state.conModel.getFootPanel().updatePoints( state.sceneValues );
+                        state.conModel.getFootPanel().repaint();
                     }
 
                 }
@@ -1590,13 +1539,14 @@ public class Controller {
      */
     void init() {
 
-        if ( model != null ) {
-            sceneValues.setGeorefDimension( new Rectangle( conModel.getPanel().getWidth(),
-                                                           conModel.getPanel().getHeight() ) );
-            conModel.getPanel().setImageDimension( sceneValues.getGeorefDimension() );
-            conModel.getPanel().setImageToDraw( model.generateSubImage( sceneValues.getGeorefDimension() ) );
-            conModel.getPanel().updatePoints( sceneValues );
-            conModel.getPanel().repaint();
+        if ( state.model != null ) {
+            state.sceneValues.setGeorefDimension( new Rectangle( state.conModel.getPanel().getWidth(),
+                                                                 state.conModel.getPanel().getHeight() ) );
+            state.conModel.getPanel().setImageDimension( state.sceneValues.getGeorefDimension() );
+            state.conModel.getPanel().setImageToDraw(
+                                                      state.model.generateSubImage( state.sceneValues.getGeorefDimension() ) );
+            state.conModel.getPanel().updatePoints( state.sceneValues );
+            state.conModel.getPanel().repaint();
         }
 
     }
@@ -1605,18 +1555,18 @@ public class Controller {
      * Sets values to the JTableModel.
      */
     void setValues() {
-        conModel.getFootPanel().addToSelectedPoints( conModel.getFootPanel().getLastAbstractPoint() );
-        conModel.getPanel().addToSelectedPoints( conModel.getPanel().getLastAbstractPoint() );
-        if ( mappedPoints != null && mappedPoints.size() >= 1 ) {
-            addToMappedPoints( conModel.getFootPanel().getLastAbstractPoint(),
-                               conModel.getPanel().getLastAbstractPoint(), null );
-            updateResiduals( conModel.getTransformationType() );
+        state.conModel.getFootPanel().addToSelectedPoints( state.conModel.getFootPanel().getLastAbstractPoint() );
+        state.conModel.getPanel().addToSelectedPoints( state.conModel.getPanel().getLastAbstractPoint() );
+        if ( state.mappedPoints != null && state.mappedPoints.size() >= 1 ) {
+            addToMappedPoints( state.conModel.getFootPanel().getLastAbstractPoint(),
+                               state.conModel.getPanel().getLastAbstractPoint(), null );
+            updateResiduals( state.conModel.getTransformationType() );
         } else {
-            addToMappedPoints( conModel.getFootPanel().getLastAbstractPoint(),
-                               conModel.getPanel().getLastAbstractPoint(), null );
+            addToMappedPoints( state.conModel.getFootPanel().getLastAbstractPoint(),
+                               state.conModel.getPanel().getLastAbstractPoint(), null );
         }
-        conModel.getFootPanel().setLastAbstractPoint( null, null, null );
-        conModel.getPanel().setLastAbstractPoint( null, null, null );
+        state.conModel.getFootPanel().setLastAbstractPoint( null, null, null );
+        state.conModel.getPanel().setLastAbstractPoint( null, null, null );
 
     }
 
@@ -1634,16 +1584,18 @@ public class Controller {
         switch ( type ) {
         case Polynomial:
 
-            t = new Polynomial( mappedPoints, footPrint, sceneValues, sourceCRS, targetCRS, conModel.getOrder() );
+            t = new Polynomial( state.mappedPoints, footPrint, state.sceneValues, sourceCRS, targetCRS,
+                                state.conModel.getOrder() );
 
             break;
         case Helmert_4:
-            t = new Helmert4Transform( mappedPoints, footPrint, sceneValues, targetCRS, conModel.getOrder() );
+            t = new Helmert4Transform( state.mappedPoints, footPrint, state.sceneValues, targetCRS,
+                                       state.conModel.getOrder() );
             break;
 
         case Affine:
-            t = new AffineTransformation( mappedPoints, footPrint, sceneValues, sourceCRS, targetCRS,
-                                          conModel.getOrder() );
+            t = new AffineTransformation( state.mappedPoints, footPrint, state.sceneValues, sourceCRS, targetCRS,
+                                          state.conModel.getOrder() );
             break;
         }
 
@@ -1651,7 +1603,7 @@ public class Controller {
     }
 
     /**
-     * Updates the model of the table to show the residuals of the already stored mappedPoints. It is based on the
+     * Updates the model of the table to show the residuals of the already stored state.mappedPoints. It is based on the
      * Helmert transformation.
      * 
      * @param type
@@ -1665,7 +1617,7 @@ public class Controller {
             if ( r != null ) {
                 Vector<Vector<? extends Double>> data = new Vector<Vector<? extends Double>>();
                 int counter = 0;
-                for ( Triple<Point4Values, Point4Values, PointResidual> point : mappedPoints ) {
+                for ( Triple<Point4Values, Point4Values, PointResidual> point : state.mappedPoints ) {
                     Vector<Double> element = new Vector<Double>( 6 );
                     element.add( point.second.getWorldCoords().x );
                     element.add( point.second.getWorldCoords().y );
@@ -1678,8 +1630,8 @@ public class Controller {
                     point.third = r[counter++];
 
                 }
-                tablePanel.getModel().setDataVector( data, tablePanel.getColumnNamesAsVector() );
-                tablePanel.getModel().fireTableDataChanged();
+                state.tablePanel.getModel().setDataVector( data, state.tablePanel.getColumnNamesAsVector() );
+                state.tablePanel.getModel().fireTableDataChanged();
             }
         } catch ( UnknownCRSException e ) {
             // TODO Auto-generated catch block
@@ -1688,20 +1640,20 @@ public class Controller {
     }
 
     void updateResidualsWithLastAbstractPoint() {
-        if ( conModel.getFootPanel().getLastAbstractPoint() != null
-             && conModel.getPanel().getLastAbstractPoint() != null ) {
-            mappedPoints.add( new Triple<Point4Values, Point4Values, PointResidual>(
-                                                                                     conModel.getFootPanel().getLastAbstractPoint(),
-                                                                                     conModel.getPanel().getLastAbstractPoint(),
-                                                                                     null ) );
+        if ( state.conModel.getFootPanel().getLastAbstractPoint() != null
+             && state.conModel.getPanel().getLastAbstractPoint() != null ) {
+            state.mappedPoints.add( new Triple<Point4Values, Point4Values, PointResidual>(
+                                                                                           state.conModel.getFootPanel().getLastAbstractPoint(),
+                                                                                           state.conModel.getPanel().getLastAbstractPoint(),
+                                                                                           null ) );
             updateMappedPoints();
-            updateResiduals( conModel.getTransformationType() );
+            updateResiduals( state.conModel.getTransformationType() );
 
             // remove the last element...should be the before inserted value
-            mappedPoints.remove( mappedPoints.size() - 1 );
+            state.mappedPoints.remove( state.mappedPoints.size() - 1 );
         } else {
             updateMappedPoints();
-            updateResiduals( conModel.getTransformationType() );
+            updateResiduals( state.conModel.getTransformationType() );
         }
     }
 
@@ -1713,8 +1665,9 @@ public class Controller {
      */
     private void addToMappedPoints( Point4Values mappedPointKey, Point4Values mappedPointValue, PointResidual residual ) {
         if ( mappedPointKey != null && mappedPointValue != null ) {
-            this.mappedPoints.add( new Triple<Point4Values, Point4Values, PointResidual>( mappedPointKey,
-                                                                                          mappedPointValue, residual ) );
+            this.state.mappedPoints.add( new Triple<Point4Values, Point4Values, PointResidual>( mappedPointKey,
+                                                                                                mappedPointValue,
+                                                                                                residual ) );
         }
 
     }
@@ -1727,20 +1680,20 @@ public class Controller {
      */
     void removeFromMappedPoints( int[] tableRows ) {
         for ( int i = tableRows.length - 1; i >= 0; i-- ) {
-            mappedPoints.remove( tableRows[i] );
+            state.mappedPoints.remove( tableRows[i] );
         }
 
     }
 
     /**
-     * Updates the rowNumber of the remained mappedPoints
+     * Updates the rowNumber of the remained state.mappedPoints
      */
     private void updateMappedPoints() {
 
         List<Triple<Point4Values, Point4Values, PointResidual>> temp = new ArrayList<Triple<Point4Values, Point4Values, PointResidual>>();
 
         int counter = 0;
-        for ( Triple<Point4Values, Point4Values, PointResidual> p : mappedPoints ) {
+        for ( Triple<Point4Values, Point4Values, PointResidual> p : state.mappedPoints ) {
             System.out.println( "[Controller] before: " + p );
             Point4Values f = new Point4Values( p.first.getOldValue(), p.first.getInitialValue(), p.first.getNewValue(),
                                                p.first.getWorldCoords(), new RowColumn( counter,
@@ -1759,23 +1712,23 @@ public class Controller {
                 temp.add( new Triple<Point4Values, Point4Values, PointResidual>( f, s, null ) );
             }
         }
-        mappedPoints.clear();
-        mappedPoints.addAll( temp );
+        state.mappedPoints.clear();
+        state.mappedPoints.addAll( temp );
     }
 
     /**
      * Removes everything after a complete deletion of the points.
      */
     void removeAllFromMappedPoints() {
-        mappedPoints = new ArrayList<Triple<Point4Values, Point4Values, PointResidual>>();
-        tablePanel.removeAllRows();
-        conModel.getPanel().removeAllFromSelectedPoints();
-        conModel.getFootPanel().removeAllFromSelectedPoints();
-        conModel.getFootPanel().setLastAbstractPoint( null, null, null );
-        conModel.getPanel().setPolygonList( null, null );
-        conModel.getPanel().setLastAbstractPoint( null, null, null );
-        conModel.getPanel().repaint();
-        conModel.getFootPanel().repaint();
+        state.mappedPoints = new ArrayList<Triple<Point4Values, Point4Values, PointResidual>>();
+        state.tablePanel.removeAllRows();
+        state.conModel.getPanel().removeAllFromSelectedPoints();
+        state.conModel.getFootPanel().removeAllFromSelectedPoints();
+        state.conModel.getFootPanel().setLastAbstractPoint( null, null, null );
+        state.conModel.getPanel().setPolygonList( null, null );
+        state.conModel.getPanel().setLastAbstractPoint( null, null, null );
+        state.conModel.getPanel().repaint();
+        state.conModel.getFootPanel().repaint();
         reset();
 
     }
@@ -1784,14 +1737,14 @@ public class Controller {
      * Resets the focus of the panels and the startPanel.
      */
     void reset() {
-        conModel.getPanel().setFocus( false );
-        conModel.getFootPanel().setFocus( false );
-        start = false;
+        state.conModel.getPanel().setFocus( false );
+        state.conModel.getFootPanel().setFocus( false );
+        state.start = false;
 
     }
 
     public ControllerModel getConModel() {
-        return conModel;
+        return state.conModel;
     }
 
 }
