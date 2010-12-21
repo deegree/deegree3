@@ -35,13 +35,31 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.tools.crs.georeferencing.application;
 
+import java.awt.Rectangle;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Vector;
 
 import javax.swing.ButtonModel;
 import javax.swing.JToggleButton;
 import javax.vecmath.Point2d;
 
 import org.deegree.commons.utils.Triple;
+import org.deegree.cs.CRS;
+import org.deegree.cs.exceptions.UnknownCRSException;
+import org.deegree.geometry.GeometryFactory;
+import org.deegree.rendering.r3d.model.geometry.GeometryQualityModel;
+import org.deegree.rendering.r3d.model.geometry.SimpleAccessGeometry;
+import org.deegree.rendering.r3d.opengl.display.OpenGLEventHandler;
+import org.deegree.rendering.r3d.opengl.rendering.model.geometry.WorldRenderableObject;
+import org.deegree.tools.crs.georeferencing.application.listeners.ButtonListener;
+import org.deegree.tools.crs.georeferencing.application.listeners.Scene2DMouseListener;
+import org.deegree.tools.crs.georeferencing.application.listeners.Scene2DMouseMotionListener;
+import org.deegree.tools.crs.georeferencing.application.listeners.Scene2DMouseWheelListener;
+import org.deegree.tools.crs.georeferencing.application.transformation.AbstractTransformation;
+import org.deegree.tools.crs.georeferencing.application.transformation.AffineTransformation;
+import org.deegree.tools.crs.georeferencing.application.transformation.Helmert4Transform;
+import org.deegree.tools.crs.georeferencing.application.transformation.Polynomial;
 import org.deegree.tools.crs.georeferencing.communication.PointTableFrame;
 import org.deegree.tools.crs.georeferencing.communication.checkboxlist.CheckboxListTransformation;
 import org.deegree.tools.crs.georeferencing.communication.dialog.coordinatejump.CoordinateJumperTextfieldDialog;
@@ -53,6 +71,7 @@ import org.deegree.tools.crs.georeferencing.communication.dialog.option.OptionDi
 import org.deegree.tools.crs.georeferencing.communication.dialog.option.SettingsPanel;
 import org.deegree.tools.crs.georeferencing.model.CheckBoxListModel;
 import org.deegree.tools.crs.georeferencing.model.ControllerModel;
+import org.deegree.tools.crs.georeferencing.model.Footprint;
 import org.deegree.tools.crs.georeferencing.model.RowColumn;
 import org.deegree.tools.crs.georeferencing.model.Scene2D;
 import org.deegree.tools.crs.georeferencing.model.mouse.FootprintMouseModel;
@@ -60,6 +79,7 @@ import org.deegree.tools.crs.georeferencing.model.mouse.GeoReferencedMouseModel;
 import org.deegree.tools.crs.georeferencing.model.points.Point4Values;
 import org.deegree.tools.crs.georeferencing.model.points.PointResidual;
 import org.deegree.tools.crs.georeferencing.model.textfield.CoordinateJumperModel;
+import org.deegree.tools.rendering.viewer.File3dImporter;
 
 /**
  * 
@@ -70,55 +90,450 @@ import org.deegree.tools.crs.georeferencing.model.textfield.CoordinateJumperMode
  */
 public class ApplicationState {
 
-    boolean isHorizontalRefGeoref, isHorizontalRefFoot, start, isControlDown, selectedGeoref, selectedFoot,
+    public boolean isHorizontalRefGeoref, isHorizontalRefFoot, start, isControlDown, selectedGeoref, selectedFoot,
                             isZoomInGeoref, isZoomInFoot, isZoomOutGeoref, isZoomOutFoot, isInitGeoref, isInitFoot;
 
-    JToggleButton buttonZoomInGeoref, buttonZoominFoot, buttonZoomoutGeoref, buttonZoomoutFoot, buttonCoord,
+    public JToggleButton buttonZoomInGeoref, buttonZoominFoot, buttonZoomoutGeoref, buttonZoomoutFoot, buttonCoord,
                             buttonPanGeoref;
 
-    ButtonModel buttonModel;
+    public ButtonModel buttonModel;
 
-    Scene2D model;
+    public Scene2D model;
 
-    Scene2DValues sceneValues;
+    public Scene2DValues sceneValues;
 
-    PointTableFrame tablePanel;
+    public PointTableFrame tablePanel;
 
-    ParameterStore store;
+    public ParameterStore store;
 
-    CoordinateJumperModel textFieldModel;
+    public CoordinateJumperModel textFieldModel;
 
-    GeoReferencedMouseModel mouseGeoRef;
+    public GeoReferencedMouseModel mouseGeoRef;
 
-    FootprintMouseModel mouseFootprint;
+    public FootprintMouseModel mouseFootprint;
 
-    Point2d changePoint;
+    public Point2d changePoint;
 
-    List<Triple<Point4Values, Point4Values, PointResidual>> mappedPoints;
+    public List<Triple<Point4Values, Point4Values, PointResidual>> mappedPoints;
 
-    ControllerModel conModel;
+    public ControllerModel conModel;
 
-    NavigationPanel optionNavPanel;
+    public NavigationPanel optionNavPanel;
 
-    SettingsPanel optionSettPanel;
+    public SettingsPanel optionSettPanel;
 
-    OptionDialog optionDialog;
+    public OptionDialog optionDialog;
 
     // private CoordinateJumperSpinnerDialog jumperDialog;
-    CoordinateJumperTextfieldDialog jumperDialog;
+    public CoordinateJumperTextfieldDialog jumperDialog;
 
-    OpenWMS wmsStartDialog;
+    public OpenWMS wmsStartDialog;
 
-    WMSParameterChooser wmsParameter;
+    public WMSParameterChooser wmsParameter;
 
-    GenericSettingsPanel optionSettingPanel;
+    public GenericSettingsPanel optionSettingPanel;
 
-    JToggleButton buttonPanFoot;
+    public JToggleButton buttonPanFoot;
 
-    CheckboxListTransformation checkBoxListTransform;
+    public CheckboxListTransformation checkBoxListTransform;
 
-    CheckBoxListModel modelTransformation;
+    public CheckBoxListModel modelTransformation;
 
-    RowColumn rc;
+    public RowColumn rc;
 
+    public String chosenFile;
+
+    public CRS sourceCRS, targetCRS;
+
+    public Footprint footPrint;
+
+    public OpenGLEventHandler glHandler;
+
+    private GeometryFactory geom = new GeometryFactory();
+
+    /**
+     * Selects one navigation button and deselects the other so that the focus is just on this one button. The
+     * georeferencing for the georeferenced map will be turned off in this case. <br>
+     * If the button is selected already, that will be deselected and there is a horizontal referencing possible again.
+     * 
+     * @param t
+     *            the toggleButton that should be selected/deselected, not <Code>null</Code>.
+     */
+    public void selectGeorefToggleButton( JToggleButton t ) {
+        boolean checkSelected = false;
+        buttonModel = t.getModel();
+        selectedGeoref = buttonModel.isSelected();
+        if ( selectedGeoref == false ) {
+            isHorizontalRefGeoref = true;
+        } else {
+            checkSelected = true;
+            buttonPanGeoref.setSelected( false );
+            buttonZoomInGeoref.setSelected( false );
+            buttonZoomoutGeoref.setSelected( false );
+            buttonCoord.setSelected( false );
+            isHorizontalRefGeoref = false;
+        }
+        if ( t == buttonPanGeoref ) {
+            buttonPanGeoref.setSelected( checkSelected );
+        } else if ( t == buttonZoomInGeoref ) {
+            buttonZoomInGeoref.setSelected( checkSelected );
+        } else if ( t == buttonZoomoutGeoref ) {
+            buttonZoomoutGeoref.setSelected( checkSelected );
+        } else if ( t == buttonCoord ) {
+            buttonCoord.setSelected( checkSelected );
+            if ( checkSelected == true ) {
+                // jumperDialog = new CoordinateJumperSpinnerDialog( view );
+                jumperDialog = new CoordinateJumperTextfieldDialog( conModel.getView() );
+                jumperDialog.getCoordinateJumper().setToolTipText( textFieldModel.getTooltipText() );
+                jumperDialog.addListeners( new ButtonListener( this ) );
+                jumperDialog.setVisible( true );
+            }
+        }
+    }
+
+    /**
+     * Selects one navigation button and deselects the other so that the focus is just on this one button. The
+     * georeferencing for the footprint view will be turned off in this case. <br>
+     * If the button is selected already, that will be deselected and there is a horizontal referencing possible again.
+     * 
+     * @param t
+     *            the toggleButton that should be selected/deselected, not <Code>null</Code>.
+     */
+    public void selectFootprintToggleButton( JToggleButton t ) {
+
+        boolean checkSelected = false;
+        buttonModel = t.getModel();
+        selectedFoot = buttonModel.isSelected();
+        if ( selectedFoot == false ) {
+            isHorizontalRefFoot = true;
+        } else {
+            checkSelected = true;
+            buttonPanFoot.setSelected( false );
+            buttonZoominFoot.setSelected( false );
+            buttonZoomoutFoot.setSelected( false );
+            isHorizontalRefFoot = false;
+        }
+        if ( t == buttonPanFoot ) {
+            buttonPanFoot.setSelected( checkSelected );
+
+        } else if ( t == buttonZoominFoot ) {
+            buttonZoominFoot.setSelected( checkSelected );
+
+        } else if ( t == buttonZoomoutFoot ) {
+            buttonZoomoutFoot.setSelected( checkSelected );
+
+        }
+
+    }
+
+    /**
+     * Removes sample points in panels and the table.
+     * 
+     * @param tableRows
+     *            that should be removed, could be <Code>null</Code>
+     */
+    public void removeFromMappedPoints( int[] tableRows ) {
+        for ( int i = tableRows.length - 1; i >= 0; i-- ) {
+            mappedPoints.remove( tableRows[i] );
+        }
+
+    }
+
+    /**
+     * Initializes the georeferenced scene.
+     */
+    public void initGeoReferencingScene( Scene2D scene2d ) {
+        isInitGeoref = true;
+        if ( isInitFoot ) {
+
+            tablePanel.getSaveButton().setEnabled( true );
+            tablePanel.getLoadButton().setEnabled( true );
+
+        }
+
+        mouseGeoRef = new GeoReferencedMouseModel();
+        scene2d.init( sceneValues );
+        targetCRS = scene2d.getCRS();
+        init();
+        Controller.removeListeners( conModel.getPanel() );
+        conModel.getPanel().addScene2DMouseListener( new Scene2DMouseListener( this ) );
+        conModel.getPanel().addScene2DMouseMotionListener( new Scene2DMouseMotionListener( this ) );
+        conModel.getPanel().addScene2DMouseWheelListener( new Scene2DMouseWheelListener( this ) );
+    }
+
+    /**
+     * Initializes the computing and the painting of the maps.
+     */
+    void init() {
+
+        if ( model != null ) {
+            sceneValues.setGeorefDimension( new Rectangle( conModel.getPanel().getWidth(),
+                                                           conModel.getPanel().getHeight() ) );
+            conModel.getPanel().setImageDimension( sceneValues.getGeorefDimension() );
+            conModel.getPanel().setImageToDraw( model.generateSubImage( sceneValues.getGeorefDimension() ) );
+            conModel.getPanel().updatePoints( sceneValues );
+            conModel.getPanel().repaint();
+        }
+
+    }
+
+    /**
+     * Initializes the footprint scene.
+     */
+    public void initFootprintScene( String filePath ) {
+        isInitFoot = true;
+        if ( isInitGeoref ) {
+            tablePanel.getSaveButton().setEnabled( true );
+            tablePanel.getLoadButton().setEnabled( true );
+        }
+
+        this.footPrint = new Footprint( sceneValues, geom );
+        Controller.removeListeners( conModel.getFootPanel() );
+        conModel.getFootPanel().addScene2DMouseListener( new Scene2DMouseListener( this ) );
+        conModel.getFootPanel().addScene2DMouseMotionListener( new Scene2DMouseMotionListener( this ) );
+        conModel.getFootPanel().addScene2DMouseWheelListener( new Scene2DMouseWheelListener( this ) );
+
+        mouseFootprint = new FootprintMouseModel();
+        List<WorldRenderableObject> rese = File3dImporter.open( conModel.getView(), filePath );
+        sourceCRS = null;
+        for ( WorldRenderableObject res : rese ) {
+            sourceCRS = res.getBbox().getCoordinateSystem();
+            glHandler.addDataObjectToScene( res );
+        }
+        List<float[]> geometryThatIsTaken = new ArrayList<float[]>();
+        for ( GeometryQualityModel g : File3dImporter.gm ) {
+
+            ArrayList<SimpleAccessGeometry> h = g.getQualityModelParts();
+            boolean isfirstOccurrence = false;
+            float minimalZ = 0;
+
+            for ( SimpleAccessGeometry b : h ) {
+                float[] a = b.getHorizontalGeometries( b.getGeometry() );
+                if ( a != null ) {
+                    if ( isfirstOccurrence == false ) {
+                        minimalZ = a[2];
+                        geometryThatIsTaken.add( a );
+                        isfirstOccurrence = true;
+                    } else {
+                        if ( minimalZ < a[2] ) {
+
+                        } else {
+                            geometryThatIsTaken.remove( geometryThatIsTaken.size() - 1 );
+                            minimalZ = a[2];
+                            geometryThatIsTaken.add( a );
+                        }
+                    }
+
+                }
+            }
+
+        }
+
+        footPrint.generateFootprints( geometryThatIsTaken );
+
+        sceneValues.setDimensionFootpanel( new Rectangle( conModel.getFootPanel().getBounds().width,
+                                                          conModel.getFootPanel().getBounds().height ) );
+        conModel.getFootPanel().updatePoints( sceneValues );
+
+        conModel.getFootPanel().setPolygonList( footPrint.getWorldCoordinateRingList(), sceneValues );
+
+        conModel.getFootPanel().repaint();
+
+    }
+
+    public void updateResidualsWithLastAbstractPoint() {
+        if ( conModel.getFootPanel().getLastAbstractPoint() != null
+             && conModel.getPanel().getLastAbstractPoint() != null ) {
+            mappedPoints.add( new Triple<Point4Values, Point4Values, PointResidual>(
+                                                                                     conModel.getFootPanel().getLastAbstractPoint(),
+                                                                                     conModel.getPanel().getLastAbstractPoint(),
+                                                                                     null ) );
+            updateMappedPoints();
+            updateResiduals( conModel.getTransformationType() );
+
+            // remove the last element...should be the before inserted value
+            mappedPoints.remove( mappedPoints.size() - 1 );
+        } else {
+            updateMappedPoints();
+            updateResiduals( conModel.getTransformationType() );
+        }
+    }
+
+    /**
+     * Adds the <Code>AbstractPoint</Code>s to a map, if specified.
+     * 
+     * @param mappedPointKey
+     * @param mappedPointValue
+     */
+    void addToMappedPoints( Point4Values mappedPointKey, Point4Values mappedPointValue, PointResidual residual ) {
+        if ( mappedPointKey != null && mappedPointValue != null ) {
+            this.mappedPoints.add( new Triple<Point4Values, Point4Values, PointResidual>( mappedPointKey,
+                                                                                          mappedPointValue, residual ) );
+        }
+
+    }
+
+    /**
+     * Updates the rowNumber of the remained mappedPoints
+     */
+    private void updateMappedPoints() {
+
+        List<Triple<Point4Values, Point4Values, PointResidual>> temp = new ArrayList<Triple<Point4Values, Point4Values, PointResidual>>();
+
+        int counter = 0;
+        for ( Triple<Point4Values, Point4Values, PointResidual> p : mappedPoints ) {
+            System.out.println( "[Controller] before: " + p );
+            Point4Values f = new Point4Values( p.first.getOldValue(), p.first.getInitialValue(), p.first.getNewValue(),
+                                               p.first.getWorldCoords(), new RowColumn( counter,
+                                                                                        p.first.getRc().getColumnX(),
+                                                                                        p.first.getRc().getColumnY() ) );
+            Point4Values s = new Point4Values( p.second.getOldValue(), p.second.getInitialValue(),
+                                               p.second.getNewValue(), p.second.getWorldCoords(),
+                                               new RowColumn( counter++, p.second.getRc().getColumnX(),
+                                                              p.second.getRc().getColumnY() ) );
+            if ( p.third != null ) {
+
+                PointResidual r = new PointResidual( p.third.x, p.third.y );
+                System.out.println( "\n[Controller] after: " + s );
+                temp.add( new Triple<Point4Values, Point4Values, PointResidual>( f, s, r ) );
+            } else {
+                temp.add( new Triple<Point4Values, Point4Values, PointResidual>( f, s, null ) );
+            }
+        }
+        mappedPoints.clear();
+        mappedPoints.addAll( temp );
+    }
+
+    /**
+     * Updates the model of the table to show the residuals of the already stored mappedPoints. It is based on the
+     * Helmert transformation.
+     * 
+     * @param type
+     * 
+     */
+    public void updateResiduals( AbstractTransformation.TransformationType type ) {
+
+        try {
+            AbstractTransformation t = determineTransformationType( type );
+            PointResidual[] r = t.calculateResiduals();
+            if ( r != null ) {
+                Vector<Vector<? extends Double>> data = new Vector<Vector<? extends Double>>();
+                int counter = 0;
+                for ( Triple<Point4Values, Point4Values, PointResidual> point : mappedPoints ) {
+                    Vector<Double> element = new Vector<Double>( 6 );
+                    element.add( point.second.getWorldCoords().x );
+                    element.add( point.second.getWorldCoords().y );
+                    element.add( point.first.getWorldCoords().x );
+                    element.add( point.first.getWorldCoords().y );
+                    element.add( r[counter].x );
+                    element.add( r[counter].y );
+                    data.add( element );
+
+                    point.third = r[counter++];
+
+                }
+                tablePanel.getModel().setDataVector( data, tablePanel.getColumnNamesAsVector() );
+                tablePanel.getModel().fireTableDataChanged();
+            }
+        } catch ( UnknownCRSException e ) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Removes everything after a complete deletion of the points.
+     */
+    public void removeAllFromMappedPoints() {
+        mappedPoints = new ArrayList<Triple<Point4Values, Point4Values, PointResidual>>();
+        tablePanel.removeAllRows();
+        conModel.getPanel().removeAllFromSelectedPoints();
+        conModel.getFootPanel().removeAllFromSelectedPoints();
+        conModel.getFootPanel().setLastAbstractPoint( null, null, null );
+        conModel.getPanel().setPolygonList( null, null );
+        conModel.getPanel().setLastAbstractPoint( null, null, null );
+        conModel.getPanel().repaint();
+        conModel.getFootPanel().repaint();
+        reset();
+
+    }
+
+    /**
+     * Resets the focus of the panels and the startPanel.
+     */
+    public void reset() {
+        conModel.getPanel().setFocus( false );
+        conModel.getFootPanel().setFocus( false );
+        start = false;
+
+    }
+
+    /**
+     * Determines the transformationMethod by means of the type.
+     * 
+     * @param type
+     *            of the transformationMethod, not <Code>null</Code>.
+     * @return the transformationMethod to be used.
+     * @throws UnknownCRSException
+     */
+    public AbstractTransformation determineTransformationType( AbstractTransformation.TransformationType type )
+                            throws UnknownCRSException {
+        AbstractTransformation t = null;
+        switch ( type ) {
+        case Polynomial:
+
+            t = new Polynomial( mappedPoints, footPrint, sceneValues, sourceCRS, targetCRS, conModel.getOrder() );
+
+            break;
+        case Helmert_4:
+            t = new Helmert4Transform( mappedPoints, footPrint, sceneValues, targetCRS, conModel.getOrder() );
+            break;
+
+        case Affine:
+            t = new AffineTransformation( mappedPoints, footPrint, sceneValues, sourceCRS, targetCRS,
+                                          conModel.getOrder() );
+            break;
+        }
+
+        return t;
+    }
+
+    /**
+     * Updates the panels that are responsible for drawing the georeferenced points so that the once clicked points are
+     * drawn into the right position.
+     */
+    public void updateDrawingPanels() {
+        List<Point4Values> panelList = new ArrayList<Point4Values>();
+        List<Point4Values> footPanelList = new ArrayList<Point4Values>();
+        for ( Triple<Point4Values, Point4Values, PointResidual> p : mappedPoints ) {
+            panelList.add( p.second );
+            footPanelList.add( p.first );
+        }
+
+        conModel.getPanel().setSelectedPoints( panelList, sceneValues );
+        conModel.getFootPanel().setSelectedPoints( footPanelList, sceneValues );
+
+        conModel.getPanel().repaint();
+        conModel.getFootPanel().repaint();
+
+    }
+
+    /**
+     * Sets values to the JTableModel.
+     */
+    public void setValues() {
+        conModel.getFootPanel().addToSelectedPoints( conModel.getFootPanel().getLastAbstractPoint() );
+        conModel.getPanel().addToSelectedPoints( conModel.getPanel().getLastAbstractPoint() );
+        if ( mappedPoints != null && mappedPoints.size() >= 1 ) {
+            addToMappedPoints( conModel.getFootPanel().getLastAbstractPoint(),
+                               conModel.getPanel().getLastAbstractPoint(), null );
+            updateResiduals( conModel.getTransformationType() );
+        } else {
+            addToMappedPoints( conModel.getFootPanel().getLastAbstractPoint(),
+                               conModel.getPanel().getLastAbstractPoint(), null );
+        }
+        conModel.getFootPanel().setLastAbstractPoint( null, null, null );
+        conModel.getPanel().setLastAbstractPoint( null, null, null );
+
+    }
 }
