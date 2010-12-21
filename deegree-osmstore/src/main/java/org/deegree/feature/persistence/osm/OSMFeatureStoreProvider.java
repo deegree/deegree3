@@ -35,7 +35,10 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.feature.persistence.osm;
 
+import java.io.FileNotFoundException;
 import java.net.URL;
+
+import javax.xml.stream.XMLStreamException;
 
 import org.deegree.feature.persistence.FeatureStore;
 import org.deegree.feature.persistence.FeatureStoreException;
@@ -71,6 +74,15 @@ public class OSMFeatureStoreProvider implements FeatureStoreProvider {
     @Override
     public FeatureStore getFeatureStore( URL configURL )
                             throws FeatureStoreException {
-        return new OSMFeatureStore();
+        try {
+            return new OSMFeatureStore();
+        } catch ( FileNotFoundException e ) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch ( XMLStreamException e ) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        return null;
     }
 }
