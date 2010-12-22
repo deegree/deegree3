@@ -259,6 +259,9 @@ public class ButtonListener implements ActionListener {
                     // TODO Auto-generated catch block
                     e1.printStackTrace();
                 }
+                if ( state.conModel.getTransform() == null ) {
+                    return;
+                }
                 List<Ring> polygonRing = state.conModel.getTransform().computeRingList();
 
                 state.updateResiduals( state.conModel.getTransformationType() );

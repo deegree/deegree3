@@ -220,11 +220,8 @@ public class Controller {
             TableModel model = (TableModel) e.getSource();
 
             if ( column != -1 && model.getValueAt( row, column ) != null ) {
-                String columnName = model.getColumnName( column );
                 Object data = model.getValueAt( row, column );
 
-                System.out.println( "[Controller] TableEvent row: " + row + " col: " + column + " colName: "
-                                    + columnName + " data: " + data );
                 for ( Triple<Point4Values, Point4Values, PointResidual> p : state.mappedPoints ) {
                     boolean changed = changePointLocation( p, data, row, column );
                     if ( changed ) {
@@ -235,10 +232,11 @@ public class Controller {
                 }
 
                 if ( row == e.getLastRow() ) {
-                    Triple<Point4Values, Point4Values, PointResidual> newLastPair = new Triple<Point4Values, Point4Values, PointResidual>(
-                                                                                                                                           state.conModel.getFootPanel().getLastAbstractPoint(),
-                                                                                                                                           state.conModel.getPanel().getLastAbstractPoint(),
-                                                                                                                                           null );
+                    Triple<Point4Values, Point4Values, PointResidual> newLastPair;
+                    newLastPair = new Triple<Point4Values, Point4Values, PointResidual>(
+                                                                                         state.conModel.getFootPanel().getLastAbstractPoint(),
+                                                                                         state.conModel.getPanel().getLastAbstractPoint(),
+                                                                                         null );
                     if ( state.conModel.getFootPanel().getLastAbstractPoint() != null
                          && state.conModel.getPanel().getLastAbstractPoint() != null ) {
                         boolean changed = changePointLocation( newLastPair, data, row, column );

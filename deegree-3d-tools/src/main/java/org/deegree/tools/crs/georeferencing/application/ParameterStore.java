@@ -66,20 +66,13 @@ public class ParameterStore {
 
     private final int qor;
 
-    // private final Rectangle rasterEnvelope;
-
-    // private final static String separator = "\\p{Space}*[ ;/]\\p{Space}*";
-
     public ParameterStore( URL mapURL, CRS CRS, String format, String layers, Envelope bbox, int qor ) {
-
         this.mapURL = mapURL;
         this.CRS = CRS;
         this.format = format;
         this.layers = layers;
         this.bbox = bbox;
         this.qor = qor;
-        // this.rasterEnvelope = new Rectangle( qor, qor );
-
     }
 
     public URL getMapURL() {
@@ -108,10 +101,6 @@ public class ParameterStore {
         d[1] = bbox.getMin().get1();
         d[2] = bbox.getMax().get0();
         d[3] = bbox.getMax().get1();
-        // d[0] = bbox.getMin().get1();
-        // d[1] = bbox.getMin().get0();
-        // d[2] = bbox.getMax().get1();
-        // d[3] = bbox.getMax().get0();
         return d;
     }
 
@@ -127,9 +116,5 @@ public class ParameterStore {
     public int getQor() {
         return qor;
     }
-
-    // public Rectangle getRasterEnvelope() {
-    // return rasterEnvelope;
-    // }
 
 }

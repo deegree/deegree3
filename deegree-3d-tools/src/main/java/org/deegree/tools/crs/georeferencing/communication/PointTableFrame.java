@@ -35,6 +35,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.tools.crs.georeferencing.communication;
 
+import static org.deegree.tools.crs.georeferencing.i18n.Messages.get;
+
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.FlowLayout;
@@ -106,6 +108,7 @@ public class PointTableFrame extends JFrame {
         for ( String s : columnNames ) {
             model.addColumn( s );
         }
+        setTitle( get( "POINTS_FRAME" ) );
         table.setName( "PointTable" );
         this.setLayout( new BorderLayout( 5, 5 ) );
         buttonPanel.setLayout( new FlowLayout() );

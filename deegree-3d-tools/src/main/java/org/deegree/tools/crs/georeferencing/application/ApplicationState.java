@@ -252,6 +252,9 @@ public class ApplicationState {
         }
 
         mouseGeoRef = new GeoReferencedMouseModel();
+        if ( scene2d == null ) {
+            return;
+        }
         scene2d.init( sceneValues );
         targetCRS = scene2d.getCRS();
         init();
@@ -265,7 +268,6 @@ public class ApplicationState {
      * Initializes the computing and the painting of the maps.
      */
     void init() {
-
         if ( model != null ) {
             sceneValues.setGeorefDimension( new Rectangle( conModel.getPanel().getWidth(),
                                                            conModel.getPanel().getHeight() ) );
@@ -274,7 +276,6 @@ public class ApplicationState {
             conModel.getPanel().updatePoints( sceneValues );
             conModel.getPanel().repaint();
         }
-
     }
 
     /**
@@ -316,7 +317,7 @@ public class ApplicationState {
                         isfirstOccurrence = true;
                     } else {
                         if ( minimalZ < a[2] ) {
-
+                            // nix
                         } else {
                             geometryThatIsTaken.remove( geometryThatIsTaken.size() - 1 );
                             minimalZ = a[2];
@@ -479,16 +480,16 @@ public class ApplicationState {
     public AbstractTransformation determineTransformationType( AbstractTransformation.TransformationType type )
                             throws UnknownCRSException {
         AbstractTransformation t = null;
+        if ( targetCRS == null ) {
+            return null;
+        }
         switch ( type ) {
         case Polynomial:
-
             t = new Polynomial( mappedPoints, footPrint, sceneValues, targetCRS, targetCRS, conModel.getOrder() );
-
             break;
         case Helmert_4:
             t = new Helmert4Transform( mappedPoints, footPrint, sceneValues, targetCRS, conModel.getOrder() );
             break;
-
         case Affine:
             t = new AffineTransformation( mappedPoints, footPrint, sceneValues, targetCRS, targetCRS,
                                           conModel.getOrder() );

@@ -35,6 +35,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.tools.crs.georeferencing.communication.dialog.menuitem;
 
+import static org.deegree.tools.crs.georeferencing.i18n.Messages.get;
+
 import java.awt.Component;
 import java.awt.Font;
 
@@ -54,19 +56,17 @@ import org.deegree.tools.crs.georeferencing.communication.dialog.AbstractGRDialo
  */
 public class OpenWMS extends AbstractGRDialog {
 
-    /**
-     * 
-     */
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 727805039160135631L;
 
     private JTextField textField;
 
     public OpenWMS( Component parent ) {
         super( parent, GUIConstants.DIM_OPEN_WMS );
 
+        setTitle( get( "WMS_ADDRESS" ) );
+
         textField = new JTextField( 50 );
 
-        // textField.setText( "http://localhost:8080/services?REQUEST=GetCapabilities&VERSION=1.1.1&SERVICE=WMS" );
         textField.setText( "http://www.wms.nrw.de/geobasis/adv_dtk?SERVICE=WMS&REQUEST=GetCapabilities&VERSION=1.1.1" );
         JLabel label = new JLabel( "Please insert a valid WMS Capabilities URL: " );
         JLabel spaceB = new JLabel( " " );

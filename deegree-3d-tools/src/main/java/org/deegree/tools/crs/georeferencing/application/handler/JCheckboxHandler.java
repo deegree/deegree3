@@ -40,7 +40,6 @@ import static org.deegree.tools.crs.georeferencing.i18n.Messages.get;
 import javax.swing.JCheckBox;
 
 import org.deegree.tools.crs.georeferencing.application.transformation.AbstractTransformation;
-import org.deegree.tools.crs.georeferencing.application.transformation.AbstractTransformation.TransformationType;
 import org.deegree.tools.crs.georeferencing.communication.dialog.menuitem.WMSParameterChooser;
 import org.deegree.tools.crs.georeferencing.communication.dialog.option.GeneralPanel;
 import org.deegree.tools.crs.georeferencing.model.ControllerModel;

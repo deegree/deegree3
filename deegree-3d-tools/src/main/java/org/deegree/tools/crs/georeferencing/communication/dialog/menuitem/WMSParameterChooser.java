@@ -36,6 +36,7 @@
 package org.deegree.tools.crs.georeferencing.communication.dialog.menuitem;
 
 import static org.deegree.protocol.wms.WMSConstants.WMSRequestType.GetMap;
+import static org.deegree.tools.crs.georeferencing.i18n.Messages.get;
 
 import java.awt.Component;
 import java.awt.Dimension;
@@ -68,10 +69,7 @@ import org.deegree.tools.crs.georeferencing.communication.dialog.AbstractGRDialo
  */
 public class WMSParameterChooser extends AbstractGRDialog {
 
-    /**
-     * 
-     */
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = -528477946435346926L;
 
     private List<JCheckBox> checkBoxListLayer;
 
@@ -96,6 +94,8 @@ public class WMSParameterChooser extends AbstractGRDialog {
     public WMSParameterChooser( Component parent, String urlString ) throws MalformedURLException, NullPointerException {
         super( parent, new Dimension( 300, 600 ) );
 
+        setTitle( get( "WMS_PARAMETERS" ) );
+
         url = new URL( urlString );
 
         wmsClient = new WMSClient111( url );
@@ -109,7 +109,6 @@ public class WMSParameterChooser extends AbstractGRDialog {
         this.setCheckBoxListFormat( allFormats );
         this.srsList = new ArrayList<String>();
         this.listOfSrsList = new ArrayList<List<String>>();
-
     }
 
     public List<String> getCheckBoxListLayerText() {

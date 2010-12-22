@@ -104,44 +104,8 @@ public class Scene2DImplWMS implements Scene2D {
     private BufferedImage generateMap( Envelope imageBoundingbox ) {
         BufferedImage i = null;
         try {
-
-            // CRSConfiguration crsConfig = CRSConfiguration.getInstance(
-            // "org.deegree.cs.configuration.deegree.xml.DeegreeCRSProvider" );
-            // TransformationFactory fac = crsConfig.getTransformationFactory();
-            // Transformation trans = null;
-            // List<Point3d> l = null;
-            // try {
-            // trans = fac.createFromCoordinateSystems( imageBoundingbox.getCoordinateSystem().getWrappedCRS(),
-            // GeographicCRS.WGS84 );
-            // l = trans.doTransform( getBboxAsPoint3d( imageBoundingbox ) );
-            // } catch ( TransformationException e ) {
-            // // TODO Auto-generated catch block
-            // e.printStackTrace();
-            // } catch ( IllegalArgumentException e ) {
-            // // TODO Auto-generated catch block
-            // e.printStackTrace();
-            // } catch ( UnknownCRSException e ) {
-            // // TODO Auto-generated catch block
-            // e.printStackTrace();
-            // }
-            // double[] d = new double[4];
-            // int counter = 0;
-            // for ( Point3d p : l ) {
-            // d[counter++] = p.x;
-            // d[counter++] = p.y;
-            // }
-            //
-            // Envelope envi = sceneValues.transformProportionGeorefPartialOrientation( geom.createEnvelope(
-            // d[0],
-            // d[1],
-            // d[2],
-            // d[3],
-            // new CRS(
-            // GeographicCRS.WGS84 ) ) );
-            // System.out.println( "[Scene2dImplWMS] " + envi );
             i = wmsClient.getMap( lays, imageWidth, imageHeight, imageBoundingbox, sceneValues.getCrs(), format, true,
                                   false, -1, false, null ).first;
-
         } catch ( IOException e ) {
             e.printStackTrace();
         }
@@ -152,15 +116,12 @@ public class Scene2DImplWMS implements Scene2D {
     @Override
     public BufferedImage generateSubImage( Rectangle bounds ) {
         sceneValues.transformAspectRatioGeorefPartial( sceneValues.getEnvelopeGeoref() );
-        // sceneValues.transformProportionGeorefFullOrientation( store.getBbox() );
         return generatedImage = generateMap( sceneValues.getEnvelopeGeoref() );
-
     }
 
     @Override
     public BufferedImage generateSubImageFromRaster( Envelope env ) {
         return generatedImage = generateMap( env );
-
     }
 
     @Override
@@ -175,28 +136,23 @@ public class Scene2DImplWMS implements Scene2D {
 
     private List<String> getLayers( String layers ) {
         List<String> configuredLayers = new LinkedList<String>();
-        // String layers = options.get( "RASTERIO_WMS_REQUESTED_LAYERS" );
         if ( StringUtils.isSet( layers ) ) {
             String[] layer = layers.split( "," );
             for ( String l : layer ) {
-
                 configuredLayers.add( l );
             }
         }
         if ( configuredLayers.isEmpty() ) {
             List<String> namedLayers = this.wmsClient.getNamedLayers();
             if ( namedLayers != null ) {
-
                 configuredLayers.addAll( namedLayers );
             }
         }
-
         return configuredLayers;
     }
 
     @Override
     public BufferedImage getPredictedImage() {
-
         return predictedImage;
     }
 
