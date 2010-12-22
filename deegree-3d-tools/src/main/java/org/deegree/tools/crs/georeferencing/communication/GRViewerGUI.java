@@ -82,21 +82,13 @@ public class GRViewerGUI extends JFrame {
 
     private Scene2DPanel scenePanel2D;
 
-    private JPanel panelWest;
-
-    private JPanel panelEast;
+    private JPanel panelWest, panelEast;
 
     private OpenGLEventHandler openGLEventListener;
 
     private BuildingFootprintPanel footprintPanel;
 
-    private JMenuItem editMenuItem;
-
-    private JMenuItem openShape;
-
-    private JMenuItem openWMS;
-
-    private JMenuItem openBuilding;
+    private JMenuItem editMenuItem, openShape, openWMS, openBuilding, exit, saveBuilding;
 
     private NavigationBarPanelGeoref naviPanelGeoref;
 
@@ -105,10 +97,6 @@ public class GRViewerGUI extends JFrame {
     private JMenu menuTransformation;
 
     private CheckboxListTransformation list;
-
-    private JMenuItem exit;
-
-    private JMenuItem saveBuilding;
 
     public GRViewerGUI() {
         super( get( "WINDOW_TITLE" ) );
@@ -125,9 +113,9 @@ public class GRViewerGUI extends JFrame {
         setPreferredSize( GUIConstants.FRAME_DIMENSION );
 
         setupMenubar();
-        setup2DScene( gbl );
-        setupPanelFootprint( gbl );
-        setupOpenGL( gbl, false );
+        setup2DScene();
+        setupPanelFootprint();
+        setupOpenGL( false );
         this.pack();
     }
 
@@ -169,7 +157,7 @@ public class GRViewerGUI extends JFrame {
         this.getRootPane().setJMenuBar( menuBar );
     }
 
-    private void setup2DScene( GridBagLayout gbl ) {
+    private void setup2DScene() {
         panelWest = new JPanel( new BorderLayout() );
         scenePanel2D = new Scene2DPanel();
         naviPanelGeoref = new NavigationBarPanelGeoref();
@@ -179,11 +167,11 @@ public class GRViewerGUI extends JFrame {
         panelWest.add( naviPanelGeoref, BorderLayout.NORTH );
         panelWest.add( scenePanel2D, BorderLayout.CENTER );
 
-        GridBagLayoutHelper.addComponent( this.getContentPane(), gbl, panelWest, 0, 1, 2, 2, 1.0, 1.0 );
+        GridBagLayoutHelper.addComponent( this.getContentPane(), panelWest, 0, 1, 2, 2, 1.0, 1.0 );
 
     }
 
-    private void setupPanelFootprint( GridBagLayout gbl ) {
+    private void setupPanelFootprint() {
         panelEast = new JPanel( new BorderLayout() );
         footprintPanel = new BuildingFootprintPanel();
         naviPanelFoot = new NavigationBarPanelFootprint();
@@ -194,12 +182,12 @@ public class GRViewerGUI extends JFrame {
         panelEast.add( naviPanelFoot, BorderLayout.NORTH );
         panelEast.add( footprintPanel, BorderLayout.CENTER );
 
-        GridBagLayoutHelper.addComponent( this.getContentPane(), gbl, panelEast, 2, 1, 1, 1,
-                                          footprintPanel.getInsets(), GridBagConstraints.LINE_END, .5, 1 );
+        GridBagLayoutHelper.addComponent( this.getContentPane(), panelEast, 2, 1, 1, 1, footprintPanel.getInsets(),
+                                          GridBagConstraints.LINE_END, .5, 1 );
 
     }
 
-    private void setupOpenGL( GridBagLayout gbl, boolean testSphere ) {
+    private void setupOpenGL( boolean testSphere ) {
         GLCapabilities caps = new GLCapabilities();
         caps.setDoubleBuffered( true );
         caps.setHardwareAccelerated( true );
@@ -215,7 +203,7 @@ public class GRViewerGUI extends JFrame {
         canvas.addMouseMotionListener( openGLEventListener.getTrackBall() );
         canvas.setPreferredSize( SUBCOMPONENT_DIMENSION );
 
-        GridBagLayoutHelper.addComponent( this.getContentPane(), gbl, canvas, 2, 2, 1, 1, new Insets( 0, 10, 0, 0 ),
+        GridBagLayoutHelper.addComponent( this.getContentPane(), canvas, 2, 2, 1, 1, new Insets( 0, 10, 0, 0 ),
                                           GridBagConstraints.LINE_END, .5, 1 );
     }
 

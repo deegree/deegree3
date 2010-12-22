@@ -57,8 +57,6 @@ class GridBagLayoutHelper {
      * 
      * @param cont
      *            the Container which should be affected
-     * @param gbl
-     *            the GridBagLayout
      * @param c
      *            the Component that should be inserted into the container
      * @param x
@@ -87,9 +85,8 @@ class GridBagLayoutHelper {
      * @param weighty
      *            weights are used to determine how to distribute space among rows
      */
-    public static void addComponent( Container cont, GridBagLayout gbl, Component c, int x, int y, int width,
-                                     int height, int fill, int iPadx, int iPady, Insets insets, int anchor,
-                                     double weightx, double weighty ) {
+    public static void addComponent( Container cont, Component c, int x, int y, int width, int height, int fill,
+                                     int iPadx, int iPady, Insets insets, int anchor, double weightx, double weighty ) {
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.fill = fill;
         gbc.gridx = x;
@@ -102,8 +99,7 @@ class GridBagLayoutHelper {
         gbc.anchor = anchor;
         gbc.weightx = weightx;
         gbc.weighty = weighty;
-        gbl.setConstraints( c, gbc );
-        cont.add( c );
+        cont.add( c, gbc );
 
     }
 
@@ -209,8 +205,6 @@ class GridBagLayoutHelper {
      * 
      * @param cont
      *            the Container which should be affected
-     * @param gbl
-     *            the GridBagLayout
      * @param c
      *            the Component that should be inserted into the container
      * @param x
@@ -229,8 +223,8 @@ class GridBagLayoutHelper {
      * @param weighty
      *            weights are used to determine how to distribute space among rows
      */
-    public static void addComponent( Container cont, GridBagLayout gbl, Component c, int x, int y, int width,
-                                     int height, int fill, double weightx, double weighty ) {
+    public static void addComponent( Container cont, Component c, int x, int y, int width, int height, int fill,
+                                     double weightx, double weighty ) {
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.fill = fill;
         gbc.gridx = x;
@@ -239,8 +233,7 @@ class GridBagLayoutHelper {
         gbc.gridheight = height;
         gbc.weightx = weightx;
         gbc.weighty = weighty;
-        gbl.setConstraints( c, gbc );
-        cont.add( c );
+        cont.add( c, gbc );
 
     }
 
@@ -250,8 +243,6 @@ class GridBagLayoutHelper {
      * 
      * @param cont
      *            the Container which should be affected
-     * @param gbl
-     *            the GridBagLayout
      * @param c
      *            the Component that should be inserted into the container
      * @param x
@@ -267,8 +258,8 @@ class GridBagLayoutHelper {
      * @param weighty
      *            weights are used to determine how to distribute space among rows
      */
-    public static void addComponent( Container cont, GridBagLayout gbl, Component c, int x, int y, int width,
-                                     int height, double weightx, double weighty ) {
+    public static void addComponent( Container cont, Component c, int x, int y, int width, int height, double weightx,
+                                     double weighty ) {
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.fill = GridBagConstraints.BOTH;
         gbc.gridx = x;
@@ -277,8 +268,7 @@ class GridBagLayoutHelper {
         gbc.gridheight = height;
         gbc.weightx = weightx;
         gbc.weighty = weighty;
-        gbl.setConstraints( c, gbc );
-        cont.add( c );
+        cont.add( c, gbc );
 
     }
 
@@ -288,8 +278,6 @@ class GridBagLayoutHelper {
      * 
      * @param cont
      *            the Container which should be affected
-     * @param gbl
-     *            the GridBagLayout
      * @param c
      *            the Component that should be inserted into the container
      * @param x
@@ -301,15 +289,14 @@ class GridBagLayoutHelper {
      * @param height
      *            specifies the number of rows in the component's display area
      */
-    public static void addComponent( Container cont, GridBagLayout gbl, Component c, int x, int y, int width, int height ) {
+    public static void addComponent( Container cont, Component c, int x, int y, int width, int height ) {
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.fill = GridBagConstraints.BOTH;
         gbc.gridx = x;
         gbc.gridy = y;
         gbc.gridwidth = width;
         gbc.gridheight = height;
-        gbl.setConstraints( c, gbc );
-        cont.add( c );
+        cont.add( c, gbc );
 
     }
 
@@ -319,8 +306,6 @@ class GridBagLayoutHelper {
      * 
      * @param cont
      *            the Container which should be affected
-     * @param gbl
-     *            the GridBagLayout
      * @param c
      *            the Component that should be inserted into the container
      * @param x
@@ -342,8 +327,8 @@ class GridBagLayoutHelper {
      * @param weighty
      *            weights are used to determine how to distribute space among rows
      */
-    public static void addComponent( Container cont, GridBagLayout gbl, Component c, int x, int y, int width,
-                                     int height, Insets insets, int anchor, double weightx, double weighty ) {
+    public static void addComponent( Container cont, Component c, int x, int y, int width, int height, Insets insets,
+                                     int anchor, double weightx, double weighty ) {
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.fill = GridBagConstraints.BOTH;
         gbc.gridx = x;
@@ -354,8 +339,7 @@ class GridBagLayoutHelper {
         gbc.anchor = anchor;
         gbc.weightx = weightx;
         gbc.weighty = weighty;
-        gbl.setConstraints( c, gbc );
-        cont.add( c );
+        cont.add( c, gbc );
 
     }
 

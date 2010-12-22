@@ -97,7 +97,6 @@ public class NavigationBarPanelGeoref extends AbstractNavigationBarPanel {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
-
     }
 
     /**
@@ -109,7 +108,6 @@ public class NavigationBarPanelGeoref extends AbstractNavigationBarPanel {
         buttonZoomCoord.addActionListener( c );
         computeTransform.addActionListener( c );
         resetView.addActionListener( c );
-
     }
 
     public JToggleButton getButtonZoomCoord() {
