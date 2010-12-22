@@ -35,6 +35,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.protocol.wps.client.param;
 
+import java.io.Serializable;
+
 /**
  * Encapsulates the parameters needed for defining a complex input / output format.
  * 
@@ -43,7 +45,9 @@ package org.deegree.protocol.wps.client.param;
  * 
  * @version $Revision$, $Date$
  */
-public class ComplexFormat {
+public class ComplexFormat implements Serializable {
+
+    private static final long serialVersionUID = -55302641376503085L;
 
     private String mimeType;
 
@@ -92,5 +96,36 @@ public class ComplexFormat {
      */
     public String getSchema() {
         return schema;
+    }
+
+    @Override
+    public boolean equals( Object arg0 ) {
+        if ( arg0 == null || !( arg0 instanceof ComplexFormat ) )
+            return false;
+        ComplexFormat other = (ComplexFormat) arg0;
+        if ( ( ( this.schema != null && this.schema.equals( other.getSchema() ) ) || ( this.schema == null && other.getSchema() == null ) )
+             && ( ( this.encoding != null && this.encoding.equals( other.getEncoding() ) ) || ( this.encoding == null && other.getEncoding() == null ) )
+             && ( ( this.mimeType != null && this.mimeType.equals( other.getMimeType() ) ) || ( this.mimeType == null && other.getMimeType() == null ) ) ) {
+            return true;
+        }
+
+        return false;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = 0;
+        if ( schema != null )
+            result = schema.hashCode();
+        if ( encoding != null )
+            result = 37 * result + encoding.hashCode();
+        if ( mimeType != null )
+            result = 37 * result + mimeType.hashCode();
+        return result;
+    }
+
+    @Override
+    public String toString() {
+        return schema + "; " + encoding + "; " + mimeType;
     }
 }

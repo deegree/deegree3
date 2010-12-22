@@ -36,6 +36,7 @@
 package org.deegree.protocol.wps.client.process;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.util.List;
@@ -65,7 +66,9 @@ import org.slf4j.LoggerFactory;
  * 
  * @version $Revision$, $Date$
  */
-public class Process {
+public class Process implements Serializable {
+
+    private static final long serialVersionUID = -3360483995269162381L;
 
     private static final Logger LOG = LoggerFactory.getLogger( Process.class );
 
@@ -74,6 +77,7 @@ public class Process {
     private final ProcessInfo processInfo;
 
     private ProcessDetails processDetails;
+
 
     /**
      * Creates a new {@link Process} instance.
