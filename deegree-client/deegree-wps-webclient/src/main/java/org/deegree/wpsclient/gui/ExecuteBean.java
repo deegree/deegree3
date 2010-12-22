@@ -97,6 +97,8 @@ public class ExecuteBean implements Serializable {
 
     private List<String> outputs = new ArrayList<String>();
 
+    private Map<String, ComplexFormat> complexFormats = new HashMap<String, ComplexFormat>();
+
     /**
      * ajax listener to execute the process (the source component of this event must contain an attribute with key
      * {@link PROCESS_ATTRIBUTE_KEY} from type {@link Process} containing the selected process.
@@ -123,12 +125,12 @@ public class ExecuteBean implements Serializable {
                 }
             }
 
-//            Map<String, SimpleLiteralInput> literalInputs2 = cb.getLiteralInputs();
-//            System.out.println( literalInputs2 );
+            // Map<String, SimpleLiteralInput> literalInputs2 = cb.getLiteralInputs();
+            // System.out.println( literalInputs2 );
 
             ProcessExecuter executer = new ProcessExecuter();
             ExecutionOutput[] executionOutput = executer.execute( selectedProcess, literalInputs, bboxInputs,
-                                                                  xmlInputs, binaryInputs, outputs );
+                                                                  xmlInputs, binaryInputs, complexFormats, outputs );
 
             if ( executionOutput != null ) {
                 for ( int i = 0; i < executionOutput.length; i++ ) {
@@ -194,6 +196,14 @@ public class ExecuteBean implements Serializable {
 
     public List<ComplexOutput> getBinaryOutputs() {
         return binaryOutputs;
+    }
+
+    public void setComplexFormats( Map<String, ComplexFormat> complexFormats ) {
+        this.complexFormats = complexFormats;
+    }
+
+    public Map<String, ComplexFormat> getComplexFormats() {
+        return complexFormats;
     }
 
 }

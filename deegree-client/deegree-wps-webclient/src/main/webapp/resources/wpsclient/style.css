@@ -78,11 +78,23 @@ fieldset.field legend {
 	margin-bottom: 10px;
 }
 
+.paramBody .label,.info {
+	vertical-align: top;
+}
+
 .paramHeader {
 	text-align: left;
 	text-decoration: underline;
 	font-style: normal;
 	font-weight: normal;
+}
+
+.selectFormatField table {
+	font-size: small;
+}
+
+.bboxInput select,.bboxInput input {
+	width: 50px;
 }
 
 .form {

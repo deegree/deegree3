@@ -53,6 +53,7 @@ import org.deegree.protocol.wps.client.input.type.ComplexInputType;
 import org.deegree.protocol.wps.client.input.type.InputType;
 import org.deegree.protocol.wps.client.input.type.LiteralInputType;
 import org.deegree.protocol.wps.client.output.ExecutionOutput;
+import org.deegree.protocol.wps.client.param.ComplexFormat;
 import org.deegree.protocol.wps.client.process.Process;
 import org.deegree.protocol.wps.client.process.ProcessExecution;
 import org.deegree.protocol.wps.client.process.execute.ExecutionOutputs;
@@ -89,7 +90,8 @@ public class ProcessExecuter {
      */
     public ExecutionOutput[] execute( Process processToExecute, Map<String, StringPair> literalInputs,
                                       Map<String, BBox> bboxInputs, Map<String, UploadedFile> xmlInputs,
-                                      Map<String, UploadedFile> binaryInputs, List<String> outputs ) {
+                                      Map<String, UploadedFile> binaryInputs,
+                                      Map<String, ComplexFormat> complexFormats, List<String> outputs ) {
 
         FacesContext fc = FacesContext.getCurrentInstance();
         try {
@@ -113,14 +115,21 @@ public class ProcessExecuter {
                     }
                 } else if ( input instanceof ComplexInputType ) {
                     UploadedFile xml = xmlInputs.get( input.getId().toString() );
+                    String schema = null, encoding = null, mimeType = null;
+                    ComplexFormat complexFormat = complexFormats.get( input.getId().toString() );
+                    if ( complexFormat != null ) {
+                        schema = complexFormat.getSchema();
+                        mimeType = complexFormat.getMimeType();
+                        encoding = complexFormat.getEncoding();
+                    }
                     if ( xml != null ) {
                         execution.addXMLInput( input.getId().getCode(), input.getId().getCodeSpace(), xml.getUrl(),
-                                               false, null, null, null );
+                                               false, mimeType, encoding, schema );
                     }
                     UploadedFile binary = binaryInputs.get( input.getId().toString() );
                     if ( binary != null ) {
                         execution.addBinaryInput( input.getId().getCode(), input.getId().getCodeSpace(),
-                                                  binary.getUrl(), false, null, null );
+                                                  binary.getUrl(), false, mimeType, encoding );
                     }
                 } else if ( input instanceof BBoxInputType ) {
                     BBox bbox = bboxInputs.get( input.getId().toString() );

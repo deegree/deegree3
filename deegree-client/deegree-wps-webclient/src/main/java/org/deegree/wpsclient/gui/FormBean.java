@@ -60,6 +60,7 @@ import javax.faces.component.html.HtmlMessage;
 import javax.faces.component.html.HtmlOutputLabel;
 import javax.faces.component.html.HtmlOutputText;
 import javax.faces.component.html.HtmlPanelGrid;
+import javax.faces.component.html.HtmlPanelGroup;
 import javax.faces.component.html.HtmlSelectManyCheckbox;
 import javax.faces.context.FacesContext;
 import javax.faces.event.AbortProcessingException;
@@ -74,9 +75,12 @@ import org.deegree.protocol.wps.client.input.type.ComplexInputType;
 import org.deegree.protocol.wps.client.input.type.InputType;
 import org.deegree.protocol.wps.client.input.type.LiteralInputType;
 import org.deegree.protocol.wps.client.output.type.OutputType;
+import org.deegree.protocol.wps.client.param.ComplexFormat;
 import org.deegree.protocol.wps.client.param.ValueWithRef;
 import org.deegree.protocol.wps.client.process.Process;
 import org.deegree.wpsclient.gui.component.HtmlLiteralInput;
+import org.deegree.wpsclient.gui.component.HtmlSelectFormat;
+import org.deegree.wpsclient.gui.converter.ComplexFormatConverter;
 import org.slf4j.Logger;
 
 /**
@@ -126,8 +130,7 @@ public class FormBean {
             button.setId( "executeButton" );
             button.setValue( "Execute" );
             String buttonEL = "#{executeBean.executeProcess}";
-            MethodExpression action = fc.getApplication().getExpressionFactory().createMethodExpression(
-                                                                                                         fc.getELContext(),
+            MethodExpression action = fc.getApplication().getExpressionFactory().createMethodExpression( fc.getELContext(),
                                                                                                          buttonEL,
                                                                                                          Object.class,
                                                                                                          new Class<?>[] {} );
@@ -142,12 +145,12 @@ public class FormBean {
         HtmlPanelGrid inputGrid = new HtmlPanelGrid();
         inputGrid.setId( getUniqueId() );
         inputGrid.setColumns( 4 );
-        inputGrid.setStyleClass( "paramBody" );
+        inputGrid.setStyleClass( "paramBody inGrid" );
         inputGrid.setHeaderClass( "paramHeader" );
+        inputGrid.setColumnClasses( "label, input, info, message" );
 
         HtmlOutputText headerText = new HtmlOutputText();
-        ValueExpression inputTextVE = fc.getApplication().getExpressionFactory().createValueExpression(
-                                                                                                        fc.getELContext(),
+        ValueExpression inputTextVE = fc.getApplication().getExpressionFactory().createValueExpression( fc.getELContext(),
                                                                                                         "#{labels['inputParams']}",
                                                                                                         String.class );
         headerText.setValueExpression( "value", inputTextVE );
@@ -235,11 +238,32 @@ public class FormBean {
         }
         inputGrid.getChildren().add( upload );
 
+        inputGrid.getChildren().add( new HtmlPanelGroup() );
+
+        inputGrid.getChildren().add( new HtmlPanelGroup() );
+        inputGrid.getChildren().add( new HtmlPanelGroup() );
+        HtmlSelectFormat format = new HtmlSelectFormat();
+        format.setId( input.getId().toString() + "_format" );
+        format.setStyleClass( "selectFormatField" );
+        format.setDefaultFormat( input.getDefaultFormat() );
+        format.setConverter( new ComplexFormatConverter() );
+
+        ComplexFormat[] supportedFormats = input.getSupportedFormats();
+        for ( ComplexFormat complexFormat : supportedFormats ) {
+            UISelectItem item = new UISelectItem();
+            item.setItemLabel( complexFormat.getSchema() );
+            item.setItemDescription( ComplexFormatConverter.getAsDesc( complexFormat ) );
+            item.setItemValue( complexFormat );
+            format.getChildren().add( item );
+        }
+        format.setConverter( new ComplexFormatConverter() );
+        inputGrid.getChildren().add( format );
     }
 
     private void addBBoxInput( FacesContext fc, BBoxInputType input, int minOccurs, int maxOccurs,
                                HtmlPanelGrid inputGrid ) {
         HtmlInputBBox bbox = new HtmlInputBBox();
+        bbox.setStyleClass( "bboxInput" );
         bbox.setId( input.getId().toString() );
         String valueEL = "#{executeBean.bboxInputs['" + input.getId().toString() + "']}";
         ValueExpression valueVE = fc.getApplication().getExpressionFactory().createValueExpression( fc.getELContext(),
@@ -294,8 +318,7 @@ public class FormBean {
         ExpressionFactory ef = FacesContext.getCurrentInstance().getApplication().getExpressionFactory();
         String me = "#{clientBean.updateInfoText}";
 
-        MethodExpression methodExpression = ef.createMethodExpression(
-                                                                       FacesContext.getCurrentInstance().getELContext(),
+        MethodExpression methodExpression = ef.createMethodExpression( FacesContext.getCurrentInstance().getELContext(),
                                                                        me, Object.class, new Class<?>[0] );
         infoBt.setActionExpression( methodExpression );
 
@@ -320,14 +343,13 @@ public class FormBean {
         if ( outputs.length > 1 ) {
             HtmlPanelGrid outputGrid = new HtmlPanelGrid();
             outputGrid.setId( getUniqueId() );
-            outputGrid.setStyleClass( "paramBody" );
+            outputGrid.setStyleClass( "paramBody outGrid" );
             outputGrid.setHeaderClass( "paramHeader" );
             outputGrid.setColumns( 2 );
             HtmlOutputText headerText = new HtmlOutputText();
             headerText.setId( getUniqueId() );
             String headerTextEL = "#{labels['outputParams']}";
-            ValueExpression outputTextVE = fc.getApplication().getExpressionFactory().createValueExpression(
-                                                                                                             fc.getELContext(),
+            ValueExpression outputTextVE = fc.getApplication().getExpressionFactory().createValueExpression( fc.getELContext(),
                                                                                                              headerTextEL,
                                                                                                              String.class );
             headerText.setValueExpression( "value", outputTextVE );
@@ -338,8 +360,7 @@ public class FormBean {
             cb.setId( getUniqueId() );
 
             String valueEL = "#{executeBean.outputs}";
-            ValueExpression valueVE = fc.getApplication().getExpressionFactory().createValueExpression(
-                                                                                                        fc.getELContext(),
+            ValueExpression valueVE = fc.getApplication().getExpressionFactory().createValueExpression( fc.getELContext(),
                                                                                                         valueEL,
                                                                                                         List.class );
             cb.setValueExpression( "value", valueVE );

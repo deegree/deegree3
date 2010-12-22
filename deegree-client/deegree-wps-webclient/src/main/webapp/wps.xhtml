@@ -17,6 +17,7 @@
     <div id="inner">
 
     <div id="right">
+
     <fieldset class="field"><legend><h:outputText value="#{labels['infoFS']}" id="infoFS" /></legend> <h:outputText
       id="infoOT" value="#{clientBean.information != null ? clientBean.information : labels['helpText']}"
     /></fieldset>
@@ -31,7 +32,7 @@
         <h:outputLabel for="wpsUrl" value="#{labels['wpsURL']}" />
         <h:inputText id="wpsUrl" value="#{clientBean.url}" required="true" style="" />
         <h:commandButton value="#{labels['wpsURLSubmit']}" id="wpsUrlBt">
-          <f:ajax render=":selectProcess :emptyForm :messagePanel :responsePanel selectWPS" execute="@form"
+          <f:ajax render=":selectProcess :emptyForm :messagePanel :responsePanel selectWPS" execute="@this wpsUrl"
             listener="#{clientBean.selectWPS}"
           />
         </h:commandButton>
@@ -49,7 +50,7 @@
           <f:selectItems value="#{clientBean.urls}" />
         </h:selectOneMenu>
         <h:commandButton value="#{labels['wpsURLSubmit']}" id="wpsUrlListBt">
-          <f:ajax render=":selectProcess :emptyForm :messagePanel :responsePanel selectWPS" execute="@form"
+          <f:ajax render=":selectProcess :emptyForm :messagePanel :responsePanel selectWPS" execute="@this wpsUrlList"
             listener="#{clientBean.selectWPS}"
           />
         </h:commandButton>
