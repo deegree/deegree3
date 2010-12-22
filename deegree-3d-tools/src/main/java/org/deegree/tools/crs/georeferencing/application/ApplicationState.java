@@ -482,7 +482,7 @@ public class ApplicationState {
         switch ( type ) {
         case Polynomial:
 
-            t = new Polynomial( mappedPoints, footPrint, sceneValues, sourceCRS, targetCRS, conModel.getOrder() );
+            t = new Polynomial( mappedPoints, footPrint, sceneValues, targetCRS, targetCRS, conModel.getOrder() );
 
             break;
         case Helmert_4:
@@ -490,7 +490,7 @@ public class ApplicationState {
             break;
 
         case Affine:
-            t = new AffineTransformation( mappedPoints, footPrint, sceneValues, sourceCRS, targetCRS,
+            t = new AffineTransformation( mappedPoints, footPrint, sceneValues, targetCRS, targetCRS,
                                           conModel.getOrder() );
             break;
         }
