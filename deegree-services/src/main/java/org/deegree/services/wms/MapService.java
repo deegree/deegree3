@@ -223,6 +223,14 @@ public class MapService {
         }
     }
 
+    /**
+     * Empty map service with an empty root layer.
+     */
+    public MapService() {
+        layers = new HashMap<String, Layer>();
+        root = new EmptyLayer( this, null, "Root Layer", null );
+    }
+
     private static <T extends Enum<T>> T handleDefaultValue( String val, Class<T> enumType, T defaultValue ) {
         if ( val == null ) {
             return defaultValue;
