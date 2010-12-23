@@ -39,7 +39,6 @@ import static org.deegree.tools.crs.georeferencing.i18n.Messages.get;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.awt.Component;
-import java.awt.Rectangle;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.lang.reflect.Method;
@@ -355,14 +354,10 @@ public class Controller {
             Object source = c.getSource();
 
             if ( source instanceof JFrame ) {
-                if ( state.model != null && state.model.getGeneratedImage() != null ) {
-                    state.init();
-
+                if ( state.mapController != null ) {
                     if ( state.sceneValues != null ) {
-
-                        state.sceneValues.setDimensionFootpanel( new Rectangle(
-                                                                                state.conModel.getFootPanel().getBounds().width,
-                                                                                state.conModel.getFootPanel().getBounds().height ) );
+                        state.mapController.setSize( state.conModel.getFootPanel().getBounds().width,
+                                                     state.conModel.getFootPanel().getBounds().height );
                         state.conModel.getFootPanel().updatePoints( state.sceneValues );
                         state.conModel.getFootPanel().repaint();
                     }

@@ -75,7 +75,7 @@ public class Scene2DMouseWheelListener implements MouseWheelListener {
 
             // Scene2DPanel
             if ( ( (JPanel) source ).getName().equals( Scene2DPanel.SCENE2D_PANEL_NAME ) ) {
-                if ( state.model != null ) {
+                if ( state.mapController != null ) {
                     mouseOver = state.mouseGeoRef.getMouseMoved();
                     // resizing = .05f;
                     double fac = 1 - state.conModel.getDialogModel().getResizeValue().second;

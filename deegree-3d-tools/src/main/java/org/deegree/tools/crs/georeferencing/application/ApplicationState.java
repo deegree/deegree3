@@ -72,7 +72,6 @@ import org.deegree.tools.crs.georeferencing.model.CheckBoxListModel;
 import org.deegree.tools.crs.georeferencing.model.ControllerModel;
 import org.deegree.tools.crs.georeferencing.model.Footprint;
 import org.deegree.tools.crs.georeferencing.model.RowColumn;
-import org.deegree.tools.crs.georeferencing.model.Scene2D;
 import org.deegree.tools.crs.georeferencing.model.mouse.FootprintMouseModel;
 import org.deegree.tools.crs.georeferencing.model.mouse.GeoReferencedMouseModel;
 import org.deegree.tools.crs.georeferencing.model.points.Point4Values;
@@ -91,8 +90,6 @@ public class ApplicationState {
     public boolean start, isControlDown, isInitGeoref, isInitFoot, referencing, previewing;
 
     public boolean zoomIn, zoomOut, pan;
-
-    public Scene2D model;
 
     public Scene2DValues sceneValues;
 
