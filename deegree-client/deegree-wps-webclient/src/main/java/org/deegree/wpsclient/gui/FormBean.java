@@ -248,6 +248,12 @@ public class FormBean {
         format.setDefaultFormat( input.getDefaultFormat() );
         format.setConverter( new ComplexFormatConverter() );
 
+        String valueFEL = "#{executeBean.complexFormats['" + input.getId().toString() + "']}";
+        ValueExpression valueFVE = fc.getApplication().getExpressionFactory().createValueExpression( fc.getELContext(),
+                                                                                                     valueFEL,
+                                                                                                     Object.class );
+
+        format.setValueExpression( "value", valueFVE );
         ComplexFormat[] supportedFormats = input.getSupportedFormats();
         for ( ComplexFormat complexFormat : supportedFormats ) {
             UISelectItem item = new UISelectItem();
