@@ -70,7 +70,6 @@ import org.deegree.cs.CRS;
 import org.deegree.cs.exceptions.TransformationException;
 import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.geometry.Envelope;
-import org.deegree.geometry.primitive.Ring;
 import org.deegree.gml.GMLVersion;
 import org.deegree.gml.XMLTransformer;
 import org.deegree.tools.crs.georeferencing.application.ApplicationState;
@@ -246,31 +245,6 @@ public class ButtonListener implements ActionListener {
                 state.conModel.getPanel().updatePoints( state.sceneValues );
                 state.conModel.getPanel().repaint();
 
-            } else if ( ( (JButton) source ).getText().startsWith( get( "COMPUTE_BUTTON_TEXT" ) ) ) {
-                // swap the tempPoints into the map now
-                if ( state.conModel.getFootPanel().getLastAbstractPoint() != null
-                     && state.conModel.getPanel().getLastAbstractPoint() != null ) {
-                    state.setValues();
-                }
-
-                try {
-                    state.conModel.setTransform( state.determineTransformationType( state.conModel.getTransformationType() ) );
-                } catch ( UnknownCRSException e1 ) {
-                    // TODO Auto-generated catch block
-                    e1.printStackTrace();
-                }
-                if ( state.conModel.getTransform() == null ) {
-                    return;
-                }
-                List<Ring> polygonRing = state.conModel.getTransform().computeRingList();
-
-                state.updateResiduals( state.conModel.getTransformationType() );
-
-                state.conModel.getPanel().setPolygonList( polygonRing, state.sceneValues );
-
-                state.conModel.getPanel().repaint();
-
-                state.reset();
             } else if ( ( (JButton) source ).getText().startsWith( ButtonPanel.BUTTON_TEXT_CANCEL ) ) {
                 if ( state.optionDialog != null && state.optionDialog.isVisible() == true ) {
                     state.conModel.getDialogModel().transferOldToNew();

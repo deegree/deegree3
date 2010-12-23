@@ -38,11 +38,14 @@ package org.deegree.tools.crs.georeferencing.application.listeners;
 import java.awt.Rectangle;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.List;
 
 import javax.swing.JPanel;
 import javax.vecmath.Point2d;
 
 import org.deegree.commons.utils.Pair;
+import org.deegree.cs.exceptions.UnknownCRSException;
+import org.deegree.geometry.primitive.Ring;
 import org.deegree.tools.crs.georeferencing.application.ApplicationState;
 import org.deegree.tools.crs.georeferencing.communication.panel2D.BuildingFootprintPanel;
 import org.deegree.tools.crs.georeferencing.communication.panel2D.Scene2DPanel;
@@ -204,6 +207,9 @@ public class Scene2DMouseListener extends MouseAdapter {
                             if ( isFirstNumber == false ) {
                                 state.updateResidualsWithLastAbstractPoint();
                             }
+
+                            updateTransformation();
+
                         } else {
                             // just pan
                             state.mouseGeoRef.setMouseChanging( new GeoReferencedPoint(
@@ -313,4 +319,32 @@ public class Scene2DMouseListener extends MouseAdapter {
             }
         }
     }
+
+    void updateTransformation() {
+        // swap the tempPoints into the map now
+        if ( state.conModel.getFootPanel().getLastAbstractPoint() != null
+             && state.conModel.getPanel().getLastAbstractPoint() != null ) {
+            state.setValues();
+        }
+
+        try {
+            state.conModel.setTransform( state.determineTransformationType( state.conModel.getTransformationType() ) );
+        } catch ( UnknownCRSException e1 ) {
+            // TODO Auto-generated catch block
+            e1.printStackTrace();
+        }
+        if ( state.conModel.getTransform() == null ) {
+            return;
+        }
+        List<Ring> polygonRing = state.conModel.getTransform().computeRingList();
+
+        state.updateResiduals( state.conModel.getTransformationType() );
+
+        state.conModel.getPanel().setPolygonList( polygonRing, state.sceneValues );
+
+        state.conModel.getPanel().repaint();
+
+        state.reset();
+    }
+
 }
