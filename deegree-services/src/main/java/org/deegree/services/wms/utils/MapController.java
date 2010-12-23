@@ -38,6 +38,7 @@ package org.deegree.services.wms.utils;
 import static java.awt.Color.white;
 import static java.awt.image.BufferedImage.TYPE_INT_ARGB;
 import static java.lang.Math.abs;
+import static java.lang.Math.max;
 import static java.lang.Math.min;
 import static java.lang.System.currentTimeMillis;
 import static java.util.Collections.singleton;
@@ -101,7 +102,7 @@ public class MapController {
 
     private BufferedImage panImage;
 
-    private int panx, pany;
+    private int panx, pany, panCenterX, panCenterY;
 
     private Layer queryLayer;
 
@@ -210,6 +211,7 @@ public class MapController {
         synchronized ( repaintList ) {
             repaintStart = currentTimeMillis();
         }
+
         repainting = true;
         if ( repaintList.isEmpty() || preview || resizing ) {
             if ( zoomMinx >= 0 && zoomMiny >= 0 && zoomMaxx >= 0 && zoomMaxy >= 0 ) {
@@ -301,10 +303,10 @@ public class MapController {
     /**
      * @param layers
      */
-    public void setLayers( List<Layer> layers ) {
+    public void setLayers( List<? extends Layer> layers ) {
         checkpoint: if ( layers.size() == this.layers.size() ) {
-            Iterator<Layer> myLayers = this.layers.iterator();
-            Iterator<Layer> newLayers = layers.iterator();
+            Iterator<? extends Layer> myLayers = this.layers.iterator();
+            Iterator<? extends Layer> newLayers = layers.iterator();
             while ( myLayers.hasNext() ) {
                 if ( myLayers.next() != newLayers.next() ) {
                     break checkpoint;
@@ -398,6 +400,28 @@ public class MapController {
         double miny = ey + centery * res - h / 2;
         envelope = fac.createEnvelope( minx, miny, minx + w, miny + h, envelope.getCoordinateSystem() );
         ensureAspect();
+    }
+
+    /**
+     * Start panning with x/y as center/start point.
+     * 
+     * @param x
+     * @param y
+     */
+    public void startPanning( int x, int y ) {
+        this.panCenterX = x;
+        this.panCenterY = y;
+        setEnvelope( 0, 0, width, height );
+    }
+
+    /**
+     * @param x
+     * @param y
+     */
+    public void updatePanning( int x, int y ) {
+        setEnvelope( panCenterX - x, panCenterY - y, panCenterX - x + width, panCenterY - y + height );
+        panCenterX = x;
+        panCenterY = y;
     }
 
     /**
@@ -566,13 +590,29 @@ public class MapController {
     }
 
     /**
-     * 
+     * Throw away zoom rectangle.
      */
     public void stopZoomin() {
         zoomMinx = -1;
         zoomMiny = -1;
         zoomMaxx = -1;
         zoomMaxy = -1;
+    }
+
+    /**
+     * Zoom in into zoom rectangle.
+     * 
+     * @return true, if there was a rectangle, false, if the rectangles width and/or height were zero.
+     */
+    public boolean finishZoomin( int x, int y ) {
+        if ( zoomMinx == zoomMaxx || zoomMiny == zoomMaxy || zoomMinx == x || zoomMiny == y ) {
+            stopZoomin();
+            return false;
+        }
+        setEnvelope( min( zoomMinx, zoomMaxx ), min( zoomMiny, zoomMaxy ), max( zoomMinx, zoomMaxx ), max( zoomMaxy,
+                                                                                                           zoomMiny ) );
+        stopZoomin();
+        return true;
     }
 
 }
