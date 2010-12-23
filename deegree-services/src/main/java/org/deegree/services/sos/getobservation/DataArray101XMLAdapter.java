@@ -143,7 +143,7 @@ public class DataArray101XMLAdapter extends XMLAdapter {
                             throws XMLStreamException {
         writer.writeStartElement( SWE_NS, "values" );
         for ( Measurement m : collection ) {
-            exportValue( writer, m, collection.getProperties() );
+            exportValue( writer, m, m.getProperties() );
             writer.writeCharacters( blockSeparator );
         }
         writer.writeEndElement();
