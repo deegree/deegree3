@@ -158,11 +158,7 @@ public class ApplicationState {
     /**
      * Initializes the georeferenced scene.
      */
-    public void initGeoReferencingScene( Scene2D scene2d ) {
-        if ( scene2d == null ) {
-            return;
-        }
-
+    public void initGeoReferencingScene() {
         isInitGeoref = true;
         if ( isInitFoot ) {
             tablePanel.getSaveButton().setEnabled( true );
@@ -170,8 +166,6 @@ public class ApplicationState {
         }
 
         mouseGeoRef = new GeoReferencedMouseModel();
-        scene2d.init( sceneValues );
-        targetCRS = scene2d.getCRS();
         init();
         Controller.removeListeners( conModel.getPanel() );
         conModel.getPanel().addScene2DMouseListener( new Scene2DMouseListener( this ) );
@@ -183,7 +177,7 @@ public class ApplicationState {
      * Initializes the computing and the painting of the maps.
      */
     void init() {
-        if ( model != null ) {
+        if ( mapController != null ) {
             sceneValues.setGeorefDimension( new Rectangle( conModel.getPanel().getWidth(),
                                                            conModel.getPanel().getHeight() ) );
             conModel.getPanel().setImageDimension( sceneValues.getGeorefDimension() );

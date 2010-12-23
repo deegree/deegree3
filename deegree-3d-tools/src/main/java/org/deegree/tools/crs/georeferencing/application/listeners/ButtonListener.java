@@ -35,19 +35,19 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.tools.crs.georeferencing.application.listeners;
 
+import static java.util.Collections.singleton;
 import static org.deegree.tools.crs.georeferencing.i18n.Messages.get;
 import static org.slf4j.LoggerFactory.getLogger;
 
-import java.awt.Rectangle;
+import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.image.BufferedImage;
 import java.awt.image.ImageObserver;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -60,7 +60,6 @@ import javax.swing.JMenuItem;
 import javax.swing.JRadioButton;
 import javax.swing.JToggleButton;
 import javax.swing.tree.DefaultMutableTreeNode;
-import javax.vecmath.Point2d;
 import javax.xml.stream.FactoryConfigurationError;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLOutputFactory;
@@ -73,16 +72,19 @@ import org.deegree.commons.utils.Triple;
 import org.deegree.cs.CRS;
 import org.deegree.cs.exceptions.TransformationException;
 import org.deegree.cs.exceptions.UnknownCRSException;
+import org.deegree.feature.persistence.FeatureStoreException;
 import org.deegree.geometry.Envelope;
 import org.deegree.gml.GMLVersion;
 import org.deegree.gml.XMLTransformer;
 import org.deegree.remoteows.wms.RemoteWMSStore;
 import org.deegree.remoteows.wms.RemoteWMSStore.LayerOptions;
+import org.deegree.rendering.r2d.se.unevaluated.Style;
 import org.deegree.services.wms.MapService;
+import org.deegree.services.wms.model.layers.FeatureLayer;
+import org.deegree.services.wms.model.layers.Layer;
 import org.deegree.services.wms.model.layers.RemoteWMSLayer;
 import org.deegree.services.wms.utils.MapController;
 import org.deegree.tools.crs.georeferencing.application.ApplicationState;
-import org.deegree.tools.crs.georeferencing.application.Scene2DValues;
 import org.deegree.tools.crs.georeferencing.application.handler.FileInputHandler;
 import org.deegree.tools.crs.georeferencing.application.handler.FileOutputHandler;
 import org.deegree.tools.crs.georeferencing.application.handler.JCheckboxHandler;
@@ -96,7 +98,6 @@ import org.deegree.tools.crs.georeferencing.communication.dialog.option.GeneralP
 import org.deegree.tools.crs.georeferencing.communication.dialog.option.OptionDialog;
 import org.deegree.tools.crs.georeferencing.communication.dialog.option.ViewPanel;
 import org.deegree.tools.crs.georeferencing.communication.panel2D.AbstractPanel2D;
-import org.deegree.tools.crs.georeferencing.model.Scene2D;
 import org.deegree.tools.crs.georeferencing.model.datatransformer.VectorTransformer;
 import org.deegree.tools.crs.georeferencing.model.points.Point4Values;
 import org.deegree.tools.crs.georeferencing.model.points.PointResidual;
@@ -114,6 +115,13 @@ import org.slf4j.Logger;
 public class ButtonListener implements ActionListener {
 
     private static final Logger LOG = getLogger( ButtonListener.class );
+
+    private static final Color[] colors = new Color[] { new Color( 255, 0, 0 ), new Color( 255, 175, 175 ),
+                                                       new Color( 255, 200, 0 ), new Color( 255, 255, 0 ),
+                                                       new Color( 0, 255, 0 ), new Color( 255, 0, 255 ),
+                                                       new Color( 0, 255, 255 ), new Color( 0, 0, 255 ) };
+
+    private static int colorIndex = 0;
 
     private boolean exceptionThrown = false;
 
@@ -245,7 +253,6 @@ public class ButtonListener implements ActionListener {
 
                 } else if ( state.wmsParameter != null && state.wmsParameter.isVisible() == true ) {
 
-                    URL mapURL = state.wmsParameter.getMapURL();
                     CRS crs = state.wmsParameter.getCheckBoxSRS();
                     String layers = state.wmsParameter.getCheckBoxListAsString().toString();
                     List<String> layerList = state.wmsParameter.getCheckBoxListLayerText();
@@ -261,8 +268,11 @@ public class ButtonListener implements ActionListener {
                     } else {
                         Envelope env = state.wmsParameter.getEnvelope( crs, layerList );
                         if ( env != null ) {
-                            state.service = new MapService();
-                            state.service.getRootLayer().setSrs( Collections.singleton( env.getCoordinateSystem() ) );
+                            if ( state.service == null ) {
+                                state.service = new MapService();
+                            }
+                            Layer root = state.service.getRootLayer();
+                            root.setSrs( Collections.singleton( env.getCoordinateSystem() ) );
 
                             HashMap<String, LayerOptions> layerMap = new HashMap<String, LayerOptions>();
                             for ( String l : layerList ) {
@@ -272,62 +282,18 @@ public class ButtonListener implements ActionListener {
                                                                        layerList );
                             RemoteWMSLayer layer = new RemoteWMSLayer( state.service, store, "wms", "wms",
                                                                        state.service.getRootLayer() );
-                            state.service.getRootLayer().addOrReplace( layer );
+                            root.addOrReplace( layer );
                             state.service.layers.put( "wms", layer );
-                            state.service.getRootLayer().setBbox(env );
-                            MapService.fillInheritedInformation(state.service.getRootLayer() , new LinkedList<CRS>( state.service.getRootLayer().getSrs() ) );
+                            root.setBbox( env );
+                            MapService.fillInheritedInformation( root, new LinkedList<CRS>( root.getSrs() ) );
 
                             state.mapController = new MapController( state.service, env.getCoordinateSystem(),
                                                                      state.conModel.getPanel().getWidth(),
                                                                      state.conModel.getPanel().getHeight() );
                             state.mapController.setLayers( Collections.singletonList( layer ) );
 
-                            // int qor = max( state.conModel.getPanel().getWidth(),
-                            // state.conModel.getPanel().getHeight() );
-                            // state.store = new ParameterStore( mapURL, env.getCoordinateSystem(), format, layers, env,
-                            // qor );
-                             state.model = new Scene2D( ){
-
-                                @Override
-                                public void generatePredictedImage( Point2d changePoint ) {
-                                    // TODO Auto-generated method stub
-                                    
-                                }
-
-                                @Override
-                                public BufferedImage generateSubImage( Rectangle bounds ) {
-                                    // TODO Auto-generated method stub
-                                    return null;
-                                }
-
-                                @Override
-                                public BufferedImage generateSubImageFromRaster( Envelope env ) {
-                                    // TODO Auto-generated method stub
-                                    return null;
-                                }
-
-                                @Override
-                                public CRS getCRS() {
-                                    return state.mapController.getCRS();
-                                }
-
-                                @Override
-                                public BufferedImage getGeneratedImage() {
-                                    return state.mapController.getCurrentImage();
-                                }
-
-                                @Override
-                                public BufferedImage getPredictedImage() {
-                                    return  state.mapController.getCurrentImage();
-                                }
-
-                                @Override
-                                public void init( Scene2DValues values ) {
-                                    // TODO Auto-generated method stub
-                                    
-                                }
-                             };
-                            state.initGeoReferencingScene( state.model );
+                            state.targetCRS = crs;
+                            state.initGeoReferencingScene();
                             state.wmsParameter.setVisible( false );
                         } else {
                             new ErrorDialog( state.wmsParameter, ImageObserver.ERROR,
@@ -435,8 +401,44 @@ public class ButtonListener implements ActionListener {
                 FileChooser fileChooser = new FileChooser( supportedOpenFiles, state.conModel.getView(), true );
                 String fileChoosed = fileChooser.getOpenPath();
                 if ( fileChoosed != null ) {
-                    // state.model = new Scene2DImplShape( fileChoosed, state.conModel.getPanel().getG2() );
-                    // state.initGeoReferencingScene( state.model );
+                    if ( state.service == null ) {
+                        state.service = new MapService();
+                    }
+
+                    try {
+                        FeatureLayer layer = new FeatureLayer( state.service, "shape", "shape",
+                                                               state.service.getRootLayer(), fileChoosed );
+                        Layer root = state.service.getRootLayer();
+                        root.addOrReplace( layer );
+                        state.service.layers.put( "shape", layer );
+                        root.setBbox( layer.getBbox() );
+                        Envelope bbox = layer.getDataStore().getEnvelope( null );
+                        root.setSrs( singleton( bbox.getCoordinateSystem() ) );
+                        state.service.registry.put( "shape", new Style( colors[colorIndex] ), true );
+                        ++colorIndex;
+                        if ( colorIndex == colors.length ) {
+                            colorIndex = 0;
+                        }
+                        MapService.fillInheritedInformation( root, new LinkedList<CRS>( root.getSrs() ) );
+
+                        state.mapController = new MapController( state.service, bbox.getCoordinateSystem(),
+                                                                 state.conModel.getPanel().getWidth(),
+                                                                 state.conModel.getPanel().getHeight() );
+                        state.mapController.setLayers( Collections.singletonList( layer ) );
+
+                        state.targetCRS = bbox.getCoordinateSystem();
+                        state.initGeoReferencingScene();
+                    } catch ( FileNotFoundException e1 ) {
+                        // TODO Auto-generated catch block
+                        e1.printStackTrace();
+                    } catch ( IOException e1 ) {
+                        // TODO Auto-generated catch block
+                        e1.printStackTrace();
+                    } catch ( FeatureStoreException e1 ) {
+                        // TODO Auto-generated catch block
+                        e1.printStackTrace();
+                    }
+
                 }
 
             } else if ( ( (JMenuItem) source ).getText().startsWith( get( "MENUITEM_OPEN_WMS_LAYER" ) ) ) {

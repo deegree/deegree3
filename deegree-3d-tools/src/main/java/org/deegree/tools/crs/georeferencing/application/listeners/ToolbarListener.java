@@ -88,7 +88,7 @@ public class ToolbarListener implements ActionListener {
             return;
         }
         if ( src == zoomToMaxExtent ) {
-            state.initGeoReferencingScene( state.model );
+            state.mapController.zoomToMaxExtent();
             if ( state.chosenFile != null ) {
                 state.initFootprintScene( state.chosenFile );
 
