@@ -72,13 +72,12 @@ public class Scene2DMouseMotionListener implements MouseMotionListener {
         if ( source instanceof JPanel ) {
             // Scene2DPanel
             if ( ( (JPanel) source ).getName().equals( Scene2DPanel.SCENE2D_PANEL_NAME ) ) {
-                if ( m.isControlDown() || state.zoomIn ) {
-                    int x = new Double( state.mouseGeoRef.getPointMousePressed().x ).intValue();
-                    int y = new Double( state.mouseGeoRef.getPointMousePressed().y ).intValue();
-                    int width = new Double( m.getX() - state.mouseGeoRef.getPointMousePressed().x ).intValue();
-                    int height = new Double( m.getY() - state.mouseGeoRef.getPointMousePressed().y ).intValue();
-                    Rectangle rec = new Rectangle( x, y, width, height );
-                    state.conModel.getPanel().setZoomRect( rec );
+                if ( state.zoomIn ) {
+                    state.mapController.setZoomRectEnd( m.getX(), m.getY() );
+                    state.conModel.getPanel().repaint();
+                }
+                if ( state.pan ) {
+                    state.mapController.updatePanning( m.getX(), m.getY() );
                     state.conModel.getPanel().repaint();
                 }
             }

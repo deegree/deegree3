@@ -35,7 +35,6 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.tools.crs.georeferencing.application.listeners;
 
-import java.awt.Rectangle;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.List;
@@ -46,7 +45,6 @@ import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.geometry.primitive.Ring;
 import org.deegree.tools.crs.georeferencing.application.ApplicationState;
 import org.deegree.tools.crs.georeferencing.model.points.GeoReferencedPoint;
-import org.deegree.tools.crs.georeferencing.model.points.AbstractGRPoint.PointType;
 
 /**
  * 
@@ -77,6 +75,15 @@ public class Scene2DMouseListener extends MouseAdapter {
 
     @Override
     public void mousePressed( MouseEvent m ) {
+        if ( state.mapController != null ) {
+            if ( state.zoomIn ) {
+                state.mapController.setZoomRectStart( m.getX(), m.getY() );
+            }
+            if ( state.pan ) {
+                state.mapController.startPanning( m.getX(), m.getY() );
+                state.previewing = true;
+            }
+        }
         state.mouseGeoRef.setPointMousePressed( new Point2d( m.getX(), m.getY() ) );
         state.isControlDown = m.isControlDown();
     }
@@ -84,46 +91,19 @@ public class Scene2DMouseListener extends MouseAdapter {
     @Override
     public void mouseReleased( MouseEvent m ) {
         boolean isFirstNumber = false;
-        if ( state.model != null ) {
+        if ( state.mapController != null ) {
             if ( state.isControlDown || state.zoomIn || state.zoomOut ) {
-                Point2d pointPressed = new Point2d( state.mouseGeoRef.getPointMousePressed().x,
-                                                    state.mouseGeoRef.getPointMousePressed().y );
-                Point2d pointReleased = new Point2d( m.getX(), m.getY() );
-                Point2d minPoint;
-                Point2d maxPoint;
-                if ( pointPressed.x < pointReleased.x ) {
-                    minPoint = pointPressed;
-                    maxPoint = pointReleased;
-                } else {
-                    minPoint = pointReleased;
-                    maxPoint = pointPressed;
-                }
-
                 if ( state.zoomIn ) {
-                    if ( minPoint.x == maxPoint.x && minPoint.y == maxPoint.y ) {
-                        state.sceneValues.computeZoomedEnvelope(
-                                                                 true,
-                                                                 state.conModel.getDialogModel().getResizeValue().second,
-                                                                 new GeoReferencedPoint( minPoint.x, minPoint.y ) );
-                    } else {
-                        Rectangle r = new Rectangle( new Double( minPoint.x ).intValue(),
-                                                     new Double( minPoint.y ).intValue(),
-                                                     Math.abs( new Double( maxPoint.x - minPoint.x ).intValue() ),
-                                                     Math.abs( new Double( maxPoint.y - minPoint.y ).intValue() ) );
-
-                        state.sceneValues.createZoomedEnvWithMinPoint( PointType.GeoreferencedPoint, r );
-
+                    if ( !state.mapController.finishZoomin( m.getX(), m.getY() ) ) {
+                        state.mapController.zoom( 1 - state.conModel.getDialogModel().getResizeValue().second,
+                                                  m.getX(), m.getY() );
                     }
                 } else if ( state.zoomOut ) {
-                    state.sceneValues.computeZoomedEnvelope( false,
-                                                             state.conModel.getDialogModel().getResizeValue().second,
-                                                             new GeoReferencedPoint( maxPoint.x, maxPoint.y ) );
+                    state.mapController.zoom( 1 / ( 1 - state.conModel.getDialogModel().getResizeValue().second ),
+                                              m.getX(), m.getY() );
                 }
 
-                state.conModel.getPanel().setImageToDraw(
-                                                          state.model.generateSubImageFromRaster( state.sceneValues.getEnvelopeGeoref() ) );
                 state.conModel.getPanel().updatePoints( state.sceneValues );
-                state.conModel.getPanel().setZoomRect( null );
                 state.conModel.getPanel().repaint();
             }
 
@@ -159,14 +139,8 @@ public class Scene2DMouseListener extends MouseAdapter {
                     updateTransformation();
 
                 } else if ( state.pan ) {
-                    // just pan
-                    state.mouseGeoRef.setMouseChanging( new GeoReferencedPoint(
-                                                                                ( state.mouseGeoRef.getPointMousePressed().x - m.getX() ),
-                                                                                ( state.mouseGeoRef.getPointMousePressed().y - m.getY() ) ) );
-
-                    state.sceneValues.moveEnvelope( state.mouseGeoRef.getMouseChanging() );
-                    state.conModel.getPanel().setImageToDraw(
-                                                              state.model.generateSubImageFromRaster( state.sceneValues.getEnvelopeGeoref() ) );
+                    state.previewing = false;
+                    state.mapController.endPanning();
                     state.conModel.getPanel().updatePoints( state.sceneValues );
                 }
 

@@ -97,9 +97,12 @@ public class GRViewerGUI extends JFrame {
 
     private CheckboxListTransformation list;
 
+    private ApplicationState state;
+
     public GRViewerGUI( ApplicationState state ) {
         super( get( "WINDOW_TITLE" ) );
 
+        this.state = state;
         setDefaultCloseOperation( JFrame.EXIT_ON_CLOSE );
         getContentPane().setLayout( new GridBagLayout() );
         setMinimumSize( GUIConstants.FRAME_DIMENSION );
@@ -192,7 +195,7 @@ public class GRViewerGUI extends JFrame {
 
     private void setup2DScene() {
         panelWest = new JPanel( new BorderLayout() );
-        scenePanel2D = new Scene2DPanel();
+        scenePanel2D = new Scene2DPanel( state );
         scenePanel2D.setBorder( BorderFactory.createBevelBorder( BevelBorder.LOWERED ) );
         scenePanel2D.setPreferredSize( SUBCOMPONENT_DIMENSION );
 

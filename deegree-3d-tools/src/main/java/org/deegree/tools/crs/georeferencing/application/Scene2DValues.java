@@ -411,13 +411,10 @@ public class Scene2DValues {
         case GeoreferencedPoint:
             center = getWorldPoint( mousePosition );
             envelopeGeoref = createZoomedEnv( this.envelopeGeoref, newSize, center );
-            System.out.println( "[Scene2DValues] Subrasterzoomed " + envelopeGeoref + " SPAN: "
-                                + envelopeGeoref.getSpan0() + ", " + envelopeGeoref.getSpan1() );
             break;
         case FootprintPoint:
             center = getWorldPoint( mousePosition );
             this.envelopeFootprint = createZoomedEnv( envelopeFootprint, newSize, center );
-            System.out.println( "[Scene2DValues] envZoomed " + envelopeFootprint );
             break;
         case ResidualPoint:
             break;

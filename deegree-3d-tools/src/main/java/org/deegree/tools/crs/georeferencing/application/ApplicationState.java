@@ -50,6 +50,8 @@ import org.deegree.rendering.r3d.model.geometry.GeometryQualityModel;
 import org.deegree.rendering.r3d.model.geometry.SimpleAccessGeometry;
 import org.deegree.rendering.r3d.opengl.display.OpenGLEventHandler;
 import org.deegree.rendering.r3d.opengl.rendering.model.geometry.WorldRenderableObject;
+import org.deegree.services.wms.MapService;
+import org.deegree.services.wms.utils.MapController;
 import org.deegree.tools.crs.georeferencing.application.listeners.FootprintMouseListener;
 import org.deegree.tools.crs.georeferencing.application.listeners.Scene2DMouseListener;
 import org.deegree.tools.crs.georeferencing.application.listeners.Scene2DMouseMotionListener;
@@ -86,7 +88,7 @@ import org.deegree.tools.rendering.viewer.File3dImporter;
  */
 public class ApplicationState {
 
-    public boolean start, isControlDown, isInitGeoref, isInitFoot, referencing;
+    public boolean start, isControlDown, isInitGeoref, isInitFoot, referencing, previewing;
 
     public boolean zoomIn, zoomOut, pan;
 
@@ -136,6 +138,10 @@ public class ApplicationState {
 
     private GeometryFactory geom = new GeometryFactory();
 
+    public MapController mapController;
+
+    public MapService service;
+
     /**
      * Removes sample points in panels and the table.
      * 
@@ -153,18 +159,17 @@ public class ApplicationState {
      * Initializes the georeferenced scene.
      */
     public void initGeoReferencingScene( Scene2D scene2d ) {
-        isInitGeoref = true;
-        if ( isInitFoot ) {
-
-            tablePanel.getSaveButton().setEnabled( true );
-            tablePanel.getLoadButton().setEnabled( true );
-
-        }
-
-        mouseGeoRef = new GeoReferencedMouseModel();
         if ( scene2d == null ) {
             return;
         }
+
+        isInitGeoref = true;
+        if ( isInitFoot ) {
+            tablePanel.getSaveButton().setEnabled( true );
+            tablePanel.getLoadButton().setEnabled( true );
+        }
+
+        mouseGeoRef = new GeoReferencedMouseModel();
         scene2d.init( sceneValues );
         targetCRS = scene2d.getCRS();
         init();
@@ -182,7 +187,6 @@ public class ApplicationState {
             sceneValues.setGeorefDimension( new Rectangle( conModel.getPanel().getWidth(),
                                                            conModel.getPanel().getHeight() ) );
             conModel.getPanel().setImageDimension( sceneValues.getGeorefDimension() );
-            conModel.getPanel().setImageToDraw( model.generateSubImage( sceneValues.getGeorefDimension() ) );
             conModel.getPanel().updatePoints( sceneValues );
             conModel.getPanel().repaint();
         }

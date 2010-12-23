@@ -121,8 +121,6 @@ public class ToolbarListener implements ActionListener {
                         state.sceneValues.setCentroidWorldEnvelopePosition( coords[0], coords[1], coords[2], coords[3],
                                                                             GeoreferencedPoint );
                     }
-                    state.conModel.getPanel().setImageToDraw(
-                                                              state.model.generateSubImageFromRaster( state.sceneValues.getEnvelopeGeoref() ) );
                     state.conModel.getPanel().updatePoints( state.sceneValues );
                     state.conModel.getPanel().repaint();
                 }

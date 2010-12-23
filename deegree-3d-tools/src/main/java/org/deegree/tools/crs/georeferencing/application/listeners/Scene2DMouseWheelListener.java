@@ -78,16 +78,14 @@ public class Scene2DMouseWheelListener implements MouseWheelListener {
                 if ( state.model != null ) {
                     mouseOver = state.mouseGeoRef.getMouseMoved();
                     // resizing = .05f;
+                    double fac = 1 - state.conModel.getDialogModel().getResizeValue().second;
                     if ( m.getWheelRotation() < 0 ) {
                         zoomIn = true;
                     } else {
                         zoomIn = false;
+                        fac = 1 / fac;
                     }
-                    state.sceneValues.computeZoomedEnvelope( zoomIn,
-                                                             state.conModel.getDialogModel().getResizeValue().second,
-                                                             mouseOver );
-                    state.conModel.getPanel().setImageToDraw(
-                                                              state.model.generateSubImageFromRaster( state.sceneValues.getEnvelopeGeoref() ) );
+                    state.mapController.zoom( fac, m.getX(), m.getY() );
                     state.conModel.getPanel().updatePoints( state.sceneValues );
                     state.conModel.getPanel().repaint();
                 }

@@ -35,12 +35,13 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.tools.crs.georeferencing.application.listeners;
 
-import static java.lang.Math.max;
 import static org.deegree.tools.crs.georeferencing.i18n.Messages.get;
 import static org.slf4j.LoggerFactory.getLogger;
 
+import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.image.BufferedImage;
 import java.awt.image.ImageObserver;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -48,6 +49,9 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 
 import javax.swing.JButton;
@@ -56,6 +60,7 @@ import javax.swing.JMenuItem;
 import javax.swing.JRadioButton;
 import javax.swing.JToggleButton;
 import javax.swing.tree.DefaultMutableTreeNode;
+import javax.vecmath.Point2d;
 import javax.xml.stream.FactoryConfigurationError;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLOutputFactory;
@@ -71,8 +76,13 @@ import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.geometry.Envelope;
 import org.deegree.gml.GMLVersion;
 import org.deegree.gml.XMLTransformer;
+import org.deegree.remoteows.wms.RemoteWMSStore;
+import org.deegree.remoteows.wms.RemoteWMSStore.LayerOptions;
+import org.deegree.services.wms.MapService;
+import org.deegree.services.wms.model.layers.RemoteWMSLayer;
+import org.deegree.services.wms.utils.MapController;
 import org.deegree.tools.crs.georeferencing.application.ApplicationState;
-import org.deegree.tools.crs.georeferencing.application.ParameterStore;
+import org.deegree.tools.crs.georeferencing.application.Scene2DValues;
 import org.deegree.tools.crs.georeferencing.application.handler.FileInputHandler;
 import org.deegree.tools.crs.georeferencing.application.handler.FileOutputHandler;
 import org.deegree.tools.crs.georeferencing.application.handler.JCheckboxHandler;
@@ -86,8 +96,7 @@ import org.deegree.tools.crs.georeferencing.communication.dialog.option.GeneralP
 import org.deegree.tools.crs.georeferencing.communication.dialog.option.OptionDialog;
 import org.deegree.tools.crs.georeferencing.communication.dialog.option.ViewPanel;
 import org.deegree.tools.crs.georeferencing.communication.panel2D.AbstractPanel2D;
-import org.deegree.tools.crs.georeferencing.model.Scene2DImplShape;
-import org.deegree.tools.crs.georeferencing.model.Scene2DImplWMS;
+import org.deegree.tools.crs.georeferencing.model.Scene2D;
 import org.deegree.tools.crs.georeferencing.model.datatransformer.VectorTransformer;
 import org.deegree.tools.crs.georeferencing.model.points.Point4Values;
 import org.deegree.tools.crs.georeferencing.model.points.PointResidual;
@@ -252,10 +261,72 @@ public class ButtonListener implements ActionListener {
                     } else {
                         Envelope env = state.wmsParameter.getEnvelope( crs, layerList );
                         if ( env != null ) {
-                            int qor = max( state.conModel.getPanel().getWidth(), state.conModel.getPanel().getHeight() );
-                            state.store = new ParameterStore( mapURL, env.getCoordinateSystem(), format, layers, env,
-                                                              qor );
-                            state.model = new Scene2DImplWMS( state.store, state.wmsParameter.getWmsClient() );
+                            state.service = new MapService();
+                            state.service.getRootLayer().setSrs( Collections.singleton( env.getCoordinateSystem() ) );
+
+                            HashMap<String, LayerOptions> layerMap = new HashMap<String, LayerOptions>();
+                            for ( String l : layerList ) {
+                                layerMap.put( l, new LayerOptions() );
+                            }
+                            RemoteWMSStore store = new RemoteWMSStore( state.wmsParameter.getWmsClient(), layerMap,
+                                                                       layerList );
+                            RemoteWMSLayer layer = new RemoteWMSLayer( state.service, store, "wms", "wms",
+                                                                       state.service.getRootLayer() );
+                            state.service.getRootLayer().addOrReplace( layer );
+                            state.service.layers.put( "wms", layer );
+                            state.service.getRootLayer().setBbox(env );
+                            MapService.fillInheritedInformation(state.service.getRootLayer() , new LinkedList<CRS>( state.service.getRootLayer().getSrs() ) );
+
+                            state.mapController = new MapController( state.service, env.getCoordinateSystem(),
+                                                                     state.conModel.getPanel().getWidth(),
+                                                                     state.conModel.getPanel().getHeight() );
+                            state.mapController.setLayers( Collections.singletonList( layer ) );
+
+                            // int qor = max( state.conModel.getPanel().getWidth(),
+                            // state.conModel.getPanel().getHeight() );
+                            // state.store = new ParameterStore( mapURL, env.getCoordinateSystem(), format, layers, env,
+                            // qor );
+                             state.model = new Scene2D( ){
+
+                                @Override
+                                public void generatePredictedImage( Point2d changePoint ) {
+                                    // TODO Auto-generated method stub
+                                    
+                                }
+
+                                @Override
+                                public BufferedImage generateSubImage( Rectangle bounds ) {
+                                    // TODO Auto-generated method stub
+                                    return null;
+                                }
+
+                                @Override
+                                public BufferedImage generateSubImageFromRaster( Envelope env ) {
+                                    // TODO Auto-generated method stub
+                                    return null;
+                                }
+
+                                @Override
+                                public CRS getCRS() {
+                                    return state.mapController.getCRS();
+                                }
+
+                                @Override
+                                public BufferedImage getGeneratedImage() {
+                                    return state.mapController.getCurrentImage();
+                                }
+
+                                @Override
+                                public BufferedImage getPredictedImage() {
+                                    return  state.mapController.getCurrentImage();
+                                }
+
+                                @Override
+                                public void init( Scene2DValues values ) {
+                                    // TODO Auto-generated method stub
+                                    
+                                }
+                             };
                             state.initGeoReferencingScene( state.model );
                             state.wmsParameter.setVisible( false );
                         } else {
@@ -364,8 +435,8 @@ public class ButtonListener implements ActionListener {
                 FileChooser fileChooser = new FileChooser( supportedOpenFiles, state.conModel.getView(), true );
                 String fileChoosed = fileChooser.getOpenPath();
                 if ( fileChoosed != null ) {
-                    state.model = new Scene2DImplShape( fileChoosed, state.conModel.getPanel().getG2() );
-                    state.initGeoReferencingScene( state.model );
+                    // state.model = new Scene2DImplShape( fileChoosed, state.conModel.getPanel().getG2() );
+                    // state.initGeoReferencingScene( state.model );
                 }
 
             } else if ( ( (JMenuItem) source ).getText().startsWith( get( "MENUITEM_OPEN_WMS_LAYER" ) ) ) {

@@ -39,11 +39,11 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Polygon;
 import java.awt.Rectangle;
-import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.deegree.geometry.primitive.Ring;
+import org.deegree.tools.crs.georeferencing.application.ApplicationState;
 import org.deegree.tools.crs.georeferencing.application.Scene2DValues;
 import org.deegree.tools.crs.georeferencing.model.RowColumn;
 import org.deegree.tools.crs.georeferencing.model.points.AbstractGRPoint;
@@ -60,14 +60,9 @@ import org.deegree.tools.crs.georeferencing.model.points.Point4Values;
  */
 public class Scene2DPanel extends AbstractPanel2D {
 
-    /**
-     * 
-     */
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = -7422188293141335837L;
 
     public final static String SCENE2D_PANEL_NAME = "Scene2DPanel";
-
-    private BufferedImage imageToDraw;
 
     private List<Polygon> polygonList;
 
@@ -77,9 +72,10 @@ public class Scene2DPanel extends AbstractPanel2D {
 
     private ArrayList<Polygon> polygonListTranslated;
 
-    private Graphics2D g2;
+    private ApplicationState state;
 
-    public Scene2DPanel() {
+    public Scene2DPanel( ApplicationState state ) {
+        this.state = state;
         this.setName( SCENE2D_PANEL_NAME );
         this.selectedPoints = new ArrayList<Point4Values>();
     }
@@ -88,22 +84,10 @@ public class Scene2DPanel extends AbstractPanel2D {
     public void paintComponent( Graphics g ) {
 
         super.paintComponent( g );
-        g2 = (Graphics2D) g;
+        Graphics2D g2 = (Graphics2D) g;
 
-        if ( imageToDraw != null ) {
-
-            g2.drawImage( imageToDraw, 0, 0, new Double( imageDimension.width ).intValue(),
-                          new Double( imageDimension.height ).intValue(), this );
-
-        }
-
-        if ( zoomRect != null ) {
-            int x = new Double( zoomRect.x ).intValue();
-            int y = new Double( zoomRect.y ).intValue();
-            int width = new Double( zoomRect.getWidth() ).intValue();
-            int height = new Double( zoomRect.getHeight() ).intValue();
-
-            g2.drawRect( x, y, width, height );
+        if ( state.mapController != null ) {
+            state.mapController.paintMap( g2, state.previewing );
         }
 
         if ( lastAbstractPoint != null ) {
@@ -123,8 +107,8 @@ public class Scene2DPanel extends AbstractPanel2D {
         if ( selectedPoints != null ) {
             for ( Point4Values point : selectedPoints ) {
                 g2.fillOval( new Double( point.getNewValue().x ).intValue() - selectedPointSize,
-                             new Double( point.getNewValue().y ).intValue() - selectedPointSize,
-                             selectedPointSize * 2, selectedPointSize * 2 );
+                             new Double( point.getNewValue().y ).intValue() - selectedPointSize, selectedPointSize * 2,
+                             selectedPointSize * 2 );
             }
         }
 
@@ -136,11 +120,6 @@ public class Scene2DPanel extends AbstractPanel2D {
 
     public void setImageDimension( Rectangle imageDimension ) {
         this.imageDimension = imageDimension;
-    }
-
-    public void setImageToDraw( BufferedImage imageToDraw ) {
-        this.imageToDraw = imageToDraw;
-
     }
 
     private void updateSelectedPoints( Scene2DValues sceneValues ) {
@@ -215,10 +194,6 @@ public class Scene2DPanel extends AbstractPanel2D {
 
     public List<Ring> getWorldPolygonList() {
         return worldPolygonList;
-    }
-
-    public Graphics2D getG2() {
-        return g2;
     }
 
 }
