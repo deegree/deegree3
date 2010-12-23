@@ -51,6 +51,7 @@ import org.deegree.rendering.r3d.model.geometry.GeometryQualityModel;
 import org.deegree.rendering.r3d.model.geometry.SimpleAccessGeometry;
 import org.deegree.rendering.r3d.opengl.display.OpenGLEventHandler;
 import org.deegree.rendering.r3d.opengl.rendering.model.geometry.WorldRenderableObject;
+import org.deegree.tools.crs.georeferencing.application.listeners.FootprintMouseListener;
 import org.deegree.tools.crs.georeferencing.application.listeners.Scene2DMouseListener;
 import org.deegree.tools.crs.georeferencing.application.listeners.Scene2DMouseMotionListener;
 import org.deegree.tools.crs.georeferencing.application.listeners.Scene2DMouseWheelListener;
@@ -209,7 +210,7 @@ public class ApplicationState {
 
         this.footPrint = new Footprint( sceneValues, geom );
         Controller.removeListeners( conModel.getFootPanel() );
-        conModel.getFootPanel().addScene2DMouseListener( new Scene2DMouseListener( this ) );
+        conModel.getFootPanel().addScene2DMouseListener( new FootprintMouseListener( this ) );
         conModel.getFootPanel().addScene2DMouseMotionListener( new Scene2DMouseMotionListener( this ) );
         conModel.getFootPanel().addScene2DMouseWheelListener( new Scene2DMouseWheelListener( this ) );
 
