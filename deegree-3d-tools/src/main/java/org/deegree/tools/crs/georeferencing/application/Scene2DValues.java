@@ -278,9 +278,9 @@ public class Scene2DValues {
      * @param yCoord
      *            y-coordiante in worldCoordinate-representation, not be <Code>null</Code>.
      * @param spanX
-     *            x-dimension that should be the width of the envelope, if not specified use ?? instead.
+     *            x-dimension that should be the width of the envelope, if not specified use -1 instead.
      * @param spanY
-     *            y-dimension that should be the height of the envelope, if not specified use ?? instead.
+     *            y-dimension that should be the height of the envelope, if not specified use -1 instead.
      */
     public void setCentroidWorldEnvelopePosition( double xCoord, double yCoord, double spanX, double spanY,
                                                   PointType type ) {

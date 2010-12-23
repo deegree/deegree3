@@ -94,4 +94,12 @@ public class ButtonPanel extends JPanel {
         buttonCancel.addActionListener( e );
     }
 
+    public JButton getOk() {
+        return buttonOK;
+    }
+
+    public JButton getCancel() {
+        return buttonCancel;
+    }
+
 }

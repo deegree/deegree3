@@ -69,7 +69,6 @@ import org.deegree.tools.crs.georeferencing.model.points.FootprintPoint;
 import org.deegree.tools.crs.georeferencing.model.points.GeoReferencedPoint;
 import org.deegree.tools.crs.georeferencing.model.points.Point4Values;
 import org.deegree.tools.crs.georeferencing.model.points.PointResidual;
-import org.deegree.tools.crs.georeferencing.model.textfield.CoordinateJumperModel;
 import org.slf4j.Logger;
 
 /**
@@ -99,7 +98,6 @@ public class Controller {
         state.start = false;
 
         state.glHandler = view.getOpenGLEventListener();
-        state.textFieldModel = new CoordinateJumperModel();
         AbstractPanel2D.selectedPointSize = state.conModel.getDialogModel().getSelectionPointSize().first;
         AbstractPanel2D.zoomValue = state.conModel.getDialogModel().getResizeValue().first;
 

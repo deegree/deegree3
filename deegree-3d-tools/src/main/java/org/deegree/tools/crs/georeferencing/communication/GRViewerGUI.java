@@ -40,19 +40,18 @@ import static org.deegree.tools.crs.georeferencing.i18n.Messages.get;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.Graphics2D;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionListener;
 import java.awt.event.ComponentListener;
-import java.awt.image.BufferedImage;
 
 import javax.media.opengl.GLCanvas;
 import javax.media.opengl.GLCapabilities;
 import javax.swing.BorderFactory;
 import javax.swing.ButtonGroup;
 import javax.swing.ImageIcon;
+import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
@@ -109,19 +108,25 @@ public class GRViewerGUI extends JFrame {
         setupMenubar();
 
         JToolBar bar = new JToolBar();
+
         String refPng = "/org/deegree/tools/crs/georeferencing/communication/icons/pan.png";
-        ImageIcon iconReference = new ImageIcon( GRViewerGUI.class.getResource( refPng ) );
         String panPng = "/org/deegree/tools/crs/georeferencing/communication/icons/pan.png";
-        ImageIcon iconPan = new ImageIcon( GRViewerGUI.class.getResource( panPng ) );
         String zoomInPng = "/org/deegree/tools/crs/georeferencing/communication/icons/zoomin.png";
-        ImageIcon iconZoomIn = new ImageIcon( GRViewerGUI.class.getResource( zoomInPng ) );
         String zoomOutPng = "/org/deegree/tools/crs/georeferencing/communication/icons/zoomout.png";
+        String zoomCoordPng = "/org/deegree/tools/crs/georeferencing/communication/icons/zoombycoord.png";
+
+        ImageIcon iconReference = new ImageIcon( GRViewerGUI.class.getResource( refPng ) );
+        ImageIcon iconPan = new ImageIcon( GRViewerGUI.class.getResource( panPng ) );
+        ImageIcon iconZoomIn = new ImageIcon( GRViewerGUI.class.getResource( zoomInPng ) );
         ImageIcon iconZoomOut = new ImageIcon( GRViewerGUI.class.getResource( zoomOutPng ) );
+        ImageIcon iconZoomCoord = new ImageIcon( GRViewerGUI.class.getResource( zoomCoordPng ) );
+
         // whyever the f*** JRadioButtons do not work here?!?
         JToggleButton pan = new JToggleButton( iconPan );
         JToggleButton zoomIn = new JToggleButton( iconZoomIn );
         JToggleButton zoomOut = new JToggleButton( iconZoomOut );
         JToggleButton reference = new JToggleButton( iconReference );
+        JButton zoomToCoordinate = new JButton( iconZoomCoord );
         ButtonGroup g = new ButtonGroup();
         g.add( zoomIn );
         g.add( zoomOut );
@@ -131,8 +136,9 @@ public class GRViewerGUI extends JFrame {
         bar.add( zoomOut );
         bar.add( pan );
         bar.add( reference );
+        bar.add( zoomToCoordinate );
         bar.setFloatable( false );
-        new ToolbarListener( state, pan, zoomIn, zoomOut, reference );
+        new ToolbarListener( state, pan, zoomIn, zoomOut, reference, zoomToCoordinate );
 
         GridBagLayoutHelper.addComponent( getContentPane(), bar, 0, 0, 2, 1, 1, 0 );
 
@@ -189,7 +195,6 @@ public class GRViewerGUI extends JFrame {
         panelWest.add( scenePanel2D, BorderLayout.CENTER );
 
         GridBagLayoutHelper.addComponent( this.getContentPane(), panelWest, 0, 1, 2, 2, 1.0, 1.0 );
-
     }
 
     private void setupPanelFootprint() {
@@ -203,7 +208,6 @@ public class GRViewerGUI extends JFrame {
 
         GridBagLayoutHelper.addComponent( this.getContentPane(), panelEast, 2, 1, 1, 1, footprintPanel.getInsets(),
                                           GridBagConstraints.LINE_END, .5, 1 );
-
     }
 
     private void setupOpenGL( boolean testSphere ) {
@@ -224,15 +228,6 @@ public class GRViewerGUI extends JFrame {
 
         GridBagLayoutHelper.addComponent( this.getContentPane(), canvas, 2, 2, 1, 1, new Insets( 0, 10, 0, 0 ),
                                           GridBagConstraints.LINE_END, .5, 1 );
-    }
-
-    /**
-     * not used at the moment
-     */
-    public void resetScene2D() {
-        Graphics2D g = new BufferedImage( 0, 0, BufferedImage.TYPE_3BYTE_BGR ).createGraphics();
-        scenePanel2D.paint( g );
-        g.dispose();
     }
 
     /**

@@ -40,6 +40,7 @@ import static org.deegree.tools.crs.georeferencing.i18n.Messages.get;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
+import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import javax.swing.JDialog;
@@ -57,19 +58,22 @@ import org.deegree.tools.crs.georeferencing.communication.dialog.ButtonPanel;
  * 
  * @version $Revision$, $Date$
  */
-public class CoordinateJumperTextfieldDialog extends JDialog {
+public class CoordinateJumperTextfieldDialog extends JDialog implements ActionListener {
 
-    /**
-     * 
-     */
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 6002369721730648141L;
 
     private JTextField coordinateJumper;
 
     private ButtonPanel buttons;
 
+    private double[] coords;
+
+    private boolean wasOk;
+
     public CoordinateJumperTextfieldDialog( Component parent ) {
         this.setLayout( new BorderLayout() );
+
+        setTitle( get( "ZOOM_COORDINATE" ) );
 
         this.setPreferredSize( DIM_COORDINATEJUMPER );
         this.setBounds(
@@ -80,32 +84,63 @@ public class CoordinateJumperTextfieldDialog extends JDialog {
         this.setModal( true );
         this.setResizable( false );
         buttons = new ButtonPanel();
+        buttons.addListeners( this );
 
         coordinateJumper = new JTextField( 15 );
-        coordinateJumper.setName( get( "JTEXTFIELD_COORDINATE_JUMPER" ) );
         this.add( coordinateJumper, BorderLayout.CENTER );
         this.add( buttons, BorderLayout.SOUTH );
         this.pack();
-
     }
 
-    public JTextField getCoordinateJumper() {
-        return coordinateJumper;
+    public double[] getCoords() {
+        return coords;
     }
 
-    public ButtonPanel getButtons() {
-        return buttons;
+    public boolean wasOk() {
+        return wasOk;
     }
 
-    /**
-     * Adds the actionListener to the visible components to interact with the user.
-     * 
-     * @param e
-     */
-    public void addListeners( ActionListener e ) {
-        coordinateJumper.addActionListener( e );
-        buttons.addListeners( e );
+    private void parse( String s1, String s2 ) {
+        coords[0] = Double.parseDouble( s1 );
+        coords[1] = Double.parseDouble( s2 );
+    }
 
+    public void actionPerformed( ActionEvent evt ) {
+        if ( evt.getSource() == buttons.getOk() ) {
+            wasOk = true;
+            String s = coordinateJumper.getText();
+            if ( s == null || s.isEmpty() ) {
+                setVisible( false );
+                return;
+            }
+            String[] ss = s.split( " " );
+            if ( ss.length == 2 ) {
+                try {
+                    coords = new double[2];
+                    parse( ss[0], ss[1] );
+                } catch ( NumberFormatException e ) {
+                    try {
+                        parse( ss[0].replace( ",", "." ), ss[1].replace( ",", "." ) );
+                    } catch ( NumberFormatException e1 ) {
+                        coords = null;
+                    }
+                }
+            } else {
+                ss = s.split( "," );
+                if ( ss.length == 2 ) {
+                    try {
+                        coords = new double[2];
+                        parse( ss[0], ss[1] );
+                    } catch ( NumberFormatException e ) {
+                        coords = null;
+                    }
+                }
+            }
+        }
+        if ( evt.getSource() == buttons.getCancel() ) {
+            wasOk = false;
+        }
+        setVisible( false );
     }
 
 }

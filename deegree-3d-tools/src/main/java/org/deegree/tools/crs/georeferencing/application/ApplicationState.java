@@ -40,7 +40,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
 
-import javax.swing.ButtonModel;
 import javax.vecmath.Point2d;
 
 import org.deegree.commons.utils.Triple;
@@ -61,7 +60,6 @@ import org.deegree.tools.crs.georeferencing.application.transformation.Helmert4T
 import org.deegree.tools.crs.georeferencing.application.transformation.Polynomial;
 import org.deegree.tools.crs.georeferencing.communication.PointTableFrame;
 import org.deegree.tools.crs.georeferencing.communication.checkboxlist.CheckboxListTransformation;
-import org.deegree.tools.crs.georeferencing.communication.dialog.coordinatejump.CoordinateJumperTextfieldDialog;
 import org.deegree.tools.crs.georeferencing.communication.dialog.menuitem.OpenWMS;
 import org.deegree.tools.crs.georeferencing.communication.dialog.menuitem.WMSParameterChooser;
 import org.deegree.tools.crs.georeferencing.communication.dialog.option.GenericSettingsPanel;
@@ -77,7 +75,6 @@ import org.deegree.tools.crs.georeferencing.model.mouse.FootprintMouseModel;
 import org.deegree.tools.crs.georeferencing.model.mouse.GeoReferencedMouseModel;
 import org.deegree.tools.crs.georeferencing.model.points.Point4Values;
 import org.deegree.tools.crs.georeferencing.model.points.PointResidual;
-import org.deegree.tools.crs.georeferencing.model.textfield.CoordinateJumperModel;
 import org.deegree.tools.rendering.viewer.File3dImporter;
 
 /**
@@ -93,8 +90,6 @@ public class ApplicationState {
 
     public boolean zoomIn, zoomOut, pan;
 
-    public ButtonModel buttonModel;
-
     public Scene2D model;
 
     public Scene2DValues sceneValues;
@@ -102,8 +97,6 @@ public class ApplicationState {
     public PointTableFrame tablePanel;
 
     public ParameterStore store;
-
-    public CoordinateJumperModel textFieldModel;
 
     public GeoReferencedMouseModel mouseGeoRef;
 
@@ -120,9 +113,6 @@ public class ApplicationState {
     public SettingsPanel optionSettPanel;
 
     public OptionDialog optionDialog;
-
-    // private CoordinateJumperSpinnerDialog jumperDialog;
-    public CoordinateJumperTextfieldDialog jumperDialog;
 
     public OpenWMS wmsStartDialog;
 

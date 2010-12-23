@@ -35,12 +35,19 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.tools.crs.georeferencing.application.listeners;
 
+import static javax.swing.JOptionPane.ERROR_MESSAGE;
+import static javax.swing.JOptionPane.showMessageDialog;
+import static org.deegree.tools.crs.georeferencing.i18n.Messages.get;
+
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+import javax.swing.JButton;
 import javax.swing.JToggleButton;
 
 import org.deegree.tools.crs.georeferencing.application.ApplicationState;
+import org.deegree.tools.crs.georeferencing.communication.dialog.coordinatejump.CoordinateJumperTextfieldDialog;
+import org.deegree.tools.crs.georeferencing.model.points.AbstractGRPoint.PointType;
 
 /**
  * 
@@ -55,23 +62,53 @@ public class ToolbarListener implements ActionListener {
 
     private final JToggleButton pan, zoomIn, zoomOut, reference;
 
+    private final JButton zoomToCoordinate;
+
     public ToolbarListener( ApplicationState state, JToggleButton pan, JToggleButton zoomIn, JToggleButton zoomOut,
-                            JToggleButton reference ) {
+                            JToggleButton reference, JButton zoomToCoordinate ) {
         this.state = state;
         this.pan = pan;
         this.zoomIn = zoomIn;
         this.zoomOut = zoomOut;
         this.reference = reference;
+        this.zoomToCoordinate = zoomToCoordinate;
         pan.addActionListener( this );
         zoomIn.addActionListener( this );
         zoomOut.addActionListener( this );
         reference.addActionListener( this );
+        zoomToCoordinate.addActionListener( this );
     }
 
     public void actionPerformed( ActionEvent e ) {
+        if ( e.getSource() == zoomToCoordinate ) {
+            fireTextfieldJumperDialog();
+            return;
+        }
         state.pan = pan.isSelected();
         state.zoomIn = zoomIn.isSelected();
         state.zoomOut = zoomOut.isSelected();
         state.referencing = reference.isSelected();
     }
+
+    private void fireTextfieldJumperDialog() {
+        CoordinateJumperTextfieldDialog dlg = new CoordinateJumperTextfieldDialog( zoomToCoordinate.getParent() );
+
+        dlg.setVisible( true );
+
+        if ( dlg.wasOk() ) {
+            if ( dlg.getCoords() == null ) {
+                showMessageDialog( zoomToCoordinate.getParent(), get( "NUMBERS_ONLY" ), get( "ERROR" ), ERROR_MESSAGE );
+            } else {
+                if ( state.sceneValues.getEnvelopeGeoref() != null ) {
+                    state.sceneValues.setCentroidWorldEnvelopePosition( dlg.getCoords()[0], dlg.getCoords()[1],
+                                                                        PointType.GeoreferencedPoint );
+                    state.conModel.getPanel().setImageToDraw(
+                                                              state.model.generateSubImageFromRaster( state.sceneValues.getEnvelopeGeoref() ) );
+                    state.conModel.getPanel().updatePoints( state.sceneValues );
+                    state.conModel.getPanel().repaint();
+                }
+            }
+        }
+    }
+
 }

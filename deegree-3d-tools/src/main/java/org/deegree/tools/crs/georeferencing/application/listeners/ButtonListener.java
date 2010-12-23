@@ -54,7 +54,6 @@ import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JMenuItem;
 import javax.swing.JRadioButton;
-import javax.swing.JTextField;
 import javax.swing.JToggleButton;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.xml.stream.FactoryConfigurationError;
@@ -92,7 +91,6 @@ import org.deegree.tools.crs.georeferencing.model.Scene2DImplWMS;
 import org.deegree.tools.crs.georeferencing.model.datatransformer.VectorTransformer;
 import org.deegree.tools.crs.georeferencing.model.points.Point4Values;
 import org.deegree.tools.crs.georeferencing.model.points.PointResidual;
-import org.deegree.tools.crs.georeferencing.model.points.AbstractGRPoint.PointType;
 import org.slf4j.Logger;
 
 /**
@@ -119,13 +117,7 @@ public class ButtonListener implements ActionListener {
     @Override
     public void actionPerformed( ActionEvent e ) {
         Object source = e.getSource();
-        if ( source instanceof JTextField ) {
-            JTextField tF = (JTextField) source;
-            if ( tF.getName().startsWith( get( "JTEXTFIELD_COORDINATE_JUMPER" ) ) ) {
-                fireTextfieldJumperDialog();
-            }
-
-        } else if ( source instanceof JToggleButton ) {
+        if ( source instanceof JToggleButton ) {
             if ( source instanceof JRadioButton ) {
                 int pointSize = ( (ViewPanel) state.optionSettingPanel ).getTbm().getButtons().get( source );
                 state.conModel.getDialogModel().setSelectionPointSize( pointSize );
@@ -207,11 +199,6 @@ public class ButtonListener implements ActionListener {
                     state.conModel.getPanel().repaint();
                     state.conModel.getFootPanel().repaint();
                     state.optionDialog.setVisible( false );
-                } else if ( state.jumperDialog != null && state.jumperDialog.isVisible() == true ) {
-                    state.jumperDialog.setVisible( false );
-
-                    state.buttonModel.setSelected( false );
-
                 } else if ( state.wmsStartDialog != null && state.wmsStartDialog.isVisible() == true ) {
                     state.wmsStartDialog.setVisible( false );
 
@@ -240,9 +227,6 @@ public class ButtonListener implements ActionListener {
                         state.conModel.getFootPanel().repaint();
                         state.optionDialog.setVisible( false );
                     }
-                } else if ( state.jumperDialog != null && state.jumperDialog.isVisible() == true ) {
-
-                    fireTextfieldJumperDialog();
                 } else if ( state.wmsStartDialog != null && state.wmsStartDialog.isVisible() == true ) {
                     String mapURLString = state.wmsStartDialog.getTextField().getText();
                     state.wmsStartDialog.setVisible( false );
@@ -409,34 +393,4 @@ public class ButtonListener implements ActionListener {
 
     }
 
-    private void fireTextfieldJumperDialog() {
-        try {
-            state.textFieldModel.setTextInput( state.jumperDialog.getCoordinateJumper().getText() );
-
-            if ( state.textFieldModel.getSpanX() != -1 && state.textFieldModel.getSpanY() != -1 ) {
-
-                state.sceneValues.setCentroidWorldEnvelopePosition( state.textFieldModel.getxCoordinate(),
-                                                                    state.textFieldModel.getyCoordiante(),
-                                                                    state.textFieldModel.getSpanX(),
-                                                                    state.textFieldModel.getSpanY(),
-                                                                    PointType.GeoreferencedPoint );
-
-            } else {
-                state.sceneValues.setCentroidWorldEnvelopePosition( state.textFieldModel.getxCoordinate(),
-                                                                    state.textFieldModel.getyCoordiante(),
-                                                                    PointType.GeoreferencedPoint );
-
-            }
-            state.jumperDialog.setVisible( false );
-            state.buttonModel.setSelected( false );
-            state.conModel.getPanel().setImageToDraw(
-                                                      state.model.generateSubImageFromRaster( state.sceneValues.getEnvelopeGeoref() ) );
-            state.conModel.getPanel().updatePoints( state.sceneValues );
-            state.conModel.getPanel().repaint();
-
-        } catch ( NumberFormatException e1 ) {
-            new ErrorDialog( state.conModel.getView(), ImageObserver.ERROR, e1.getMessage() );
-        }
-
-    }
 }
