@@ -84,12 +84,12 @@ public class Controller {
 
     static final Logger LOG = getLogger( Controller.class );
 
-    ApplicationState state = new ApplicationState();
+    ApplicationState state;
 
     private GeometryFactory geom;
 
-    public Controller( GRViewerGUI view ) {
-
+    public Controller( GRViewerGUI view, ApplicationState state ) {
+        this.state = state;
         geom = new GeometryFactory();
         state.sceneValues = new Scene2DValues( geom );
 
@@ -107,8 +107,6 @@ public class Controller {
 
         view.addListeners( new ButtonListener( state ) );
         view.addHoleWindowListener( new HoleWindowListener( state ) );
-
-        initToggleButtons();
 
         // init the Checkboxlist for Transformation
         state.modelTransformation = new CheckBoxListModel();
@@ -134,22 +132,6 @@ public class Controller {
 
         }
 
-        state.isHorizontalRefGeoref = true;
-        state.isHorizontalRefFoot = true;
-
-    }
-
-    /**
-     * Initializes the navigation buttons that are registered for each map.
-     */
-    private void initToggleButtons() {
-        state.buttonPanGeoref = state.conModel.getView().getNavigationPanelGeoref().getButtonPan();
-        state.buttonPanFoot = state.conModel.getView().getNaviPanelFoot().getButtonPan();
-        state.buttonZoomInGeoref = state.conModel.getView().getNavigationPanelGeoref().getButtonZoomIn();
-        state.buttonZoominFoot = state.conModel.getView().getNaviPanelFoot().getButtonZoomIn();
-        state.buttonZoomoutGeoref = state.conModel.getView().getNavigationPanelGeoref().getButtonZoomOut();
-        state.buttonZoomoutFoot = state.conModel.getView().getNaviPanelFoot().getButtonZoomOut();
-        state.buttonCoord = state.conModel.getView().getNavigationPanelGeoref().getButtonZoomCoord();
     }
 
     /**

@@ -41,7 +41,6 @@ import java.util.List;
 import java.util.Vector;
 
 import javax.swing.ButtonModel;
-import javax.swing.JToggleButton;
 import javax.vecmath.Point2d;
 
 import org.deegree.commons.utils.Triple;
@@ -52,7 +51,6 @@ import org.deegree.rendering.r3d.model.geometry.GeometryQualityModel;
 import org.deegree.rendering.r3d.model.geometry.SimpleAccessGeometry;
 import org.deegree.rendering.r3d.opengl.display.OpenGLEventHandler;
 import org.deegree.rendering.r3d.opengl.rendering.model.geometry.WorldRenderableObject;
-import org.deegree.tools.crs.georeferencing.application.listeners.ButtonListener;
 import org.deegree.tools.crs.georeferencing.application.listeners.Scene2DMouseListener;
 import org.deegree.tools.crs.georeferencing.application.listeners.Scene2DMouseMotionListener;
 import org.deegree.tools.crs.georeferencing.application.listeners.Scene2DMouseWheelListener;
@@ -90,11 +88,9 @@ import org.deegree.tools.rendering.viewer.File3dImporter;
  */
 public class ApplicationState {
 
-    public boolean isHorizontalRefGeoref, isHorizontalRefFoot, start, isControlDown, selectedGeoref, selectedFoot,
-                            isZoomInGeoref, isZoomInFoot, isZoomOutGeoref, isZoomOutFoot, isInitGeoref, isInitFoot;
+    public boolean start, isControlDown, isInitGeoref, isInitFoot, referencing;
 
-    public JToggleButton buttonZoomInGeoref, buttonZoominFoot, buttonZoomoutGeoref, buttonZoomoutFoot, buttonCoord,
-                            buttonPanGeoref;
+    public boolean zoomIn, zoomOut, pan;
 
     public ButtonModel buttonModel;
 
@@ -133,8 +129,6 @@ public class ApplicationState {
 
     public GenericSettingsPanel optionSettingPanel;
 
-    public JToggleButton buttonPanFoot;
-
     public CheckboxListTransformation checkBoxListTransform;
 
     public CheckBoxListModel modelTransformation;
@@ -150,81 +144,6 @@ public class ApplicationState {
     public OpenGLEventHandler glHandler;
 
     private GeometryFactory geom = new GeometryFactory();
-
-    /**
-     * Selects one navigation button and deselects the other so that the focus is just on this one button. The
-     * georeferencing for the georeferenced map will be turned off in this case. <br>
-     * If the button is selected already, that will be deselected and there is a horizontal referencing possible again.
-     * 
-     * @param t
-     *            the toggleButton that should be selected/deselected, not <Code>null</Code>.
-     */
-    public void selectGeorefToggleButton( JToggleButton t ) {
-        boolean checkSelected = false;
-        buttonModel = t.getModel();
-        selectedGeoref = buttonModel.isSelected();
-        if ( selectedGeoref == false ) {
-            isHorizontalRefGeoref = true;
-        } else {
-            checkSelected = true;
-            buttonPanGeoref.setSelected( false );
-            buttonZoomInGeoref.setSelected( false );
-            buttonZoomoutGeoref.setSelected( false );
-            buttonCoord.setSelected( false );
-            isHorizontalRefGeoref = false;
-        }
-        if ( t == buttonPanGeoref ) {
-            buttonPanGeoref.setSelected( checkSelected );
-        } else if ( t == buttonZoomInGeoref ) {
-            buttonZoomInGeoref.setSelected( checkSelected );
-        } else if ( t == buttonZoomoutGeoref ) {
-            buttonZoomoutGeoref.setSelected( checkSelected );
-        } else if ( t == buttonCoord ) {
-            buttonCoord.setSelected( checkSelected );
-            if ( checkSelected == true ) {
-                // jumperDialog = new CoordinateJumperSpinnerDialog( view );
-                jumperDialog = new CoordinateJumperTextfieldDialog( conModel.getView() );
-                jumperDialog.getCoordinateJumper().setToolTipText( textFieldModel.getTooltipText() );
-                jumperDialog.addListeners( new ButtonListener( this ) );
-                jumperDialog.setVisible( true );
-            }
-        }
-    }
-
-    /**
-     * Selects one navigation button and deselects the other so that the focus is just on this one button. The
-     * georeferencing for the footprint view will be turned off in this case. <br>
-     * If the button is selected already, that will be deselected and there is a horizontal referencing possible again.
-     * 
-     * @param t
-     *            the toggleButton that should be selected/deselected, not <Code>null</Code>.
-     */
-    public void selectFootprintToggleButton( JToggleButton t ) {
-
-        boolean checkSelected = false;
-        buttonModel = t.getModel();
-        selectedFoot = buttonModel.isSelected();
-        if ( selectedFoot == false ) {
-            isHorizontalRefFoot = true;
-        } else {
-            checkSelected = true;
-            buttonPanFoot.setSelected( false );
-            buttonZoominFoot.setSelected( false );
-            buttonZoomoutFoot.setSelected( false );
-            isHorizontalRefFoot = false;
-        }
-        if ( t == buttonPanFoot ) {
-            buttonPanFoot.setSelected( checkSelected );
-
-        } else if ( t == buttonZoominFoot ) {
-            buttonZoominFoot.setSelected( checkSelected );
-
-        } else if ( t == buttonZoomoutFoot ) {
-            buttonZoomoutFoot.setSelected( checkSelected );
-
-        }
-
-    }
 
     /**
      * Removes sample points in panels and the table.

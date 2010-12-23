@@ -51,18 +51,22 @@ import java.awt.image.BufferedImage;
 import javax.media.opengl.GLCanvas;
 import javax.media.opengl.GLCapabilities;
 import javax.swing.BorderFactory;
+import javax.swing.ButtonGroup;
+import javax.swing.ImageIcon;
 import javax.swing.JCheckBox;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
+import javax.swing.JToggleButton;
+import javax.swing.JToolBar;
 import javax.swing.border.BevelBorder;
 
 import org.deegree.rendering.r3d.opengl.display.OpenGLEventHandler;
+import org.deegree.tools.crs.georeferencing.application.ApplicationState;
+import org.deegree.tools.crs.georeferencing.application.listeners.ToolbarListener;
 import org.deegree.tools.crs.georeferencing.communication.checkboxlist.CheckboxListTransformation;
-import org.deegree.tools.crs.georeferencing.communication.navigationbar.NavigationBarPanelFootprint;
-import org.deegree.tools.crs.georeferencing.communication.navigationbar.NavigationBarPanelGeoref;
 import org.deegree.tools.crs.georeferencing.communication.panel2D.BuildingFootprintPanel;
 import org.deegree.tools.crs.georeferencing.communication.panel2D.Scene2DPanel;
 
@@ -90,29 +94,48 @@ public class GRViewerGUI extends JFrame {
 
     private JMenuItem editMenuItem, openShape, openWMS, openBuilding, exit, saveBuilding;
 
-    private NavigationBarPanelGeoref naviPanelGeoref;
-
-    private NavigationBarPanelFootprint naviPanelFoot;
-
     private JMenu menuTransformation;
 
     private CheckboxListTransformation list;
 
-    public GRViewerGUI() {
+    public GRViewerGUI( ApplicationState state ) {
         super( get( "WINDOW_TITLE" ) );
 
         setDefaultCloseOperation( JFrame.EXIT_ON_CLOSE );
-
-        GridBagLayout gbl = new GridBagLayout();
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbl.setConstraints( this, gbc );
-
-        setLayout( gbl );
+        getContentPane().setLayout( new GridBagLayout() );
         setMinimumSize( GUIConstants.FRAME_DIMENSION );
-
         setPreferredSize( GUIConstants.FRAME_DIMENSION );
 
         setupMenubar();
+
+        JToolBar bar = new JToolBar();
+        String refPng = "/org/deegree/tools/crs/georeferencing/communication/icons/pan.png";
+        ImageIcon iconReference = new ImageIcon( GRViewerGUI.class.getResource( refPng ) );
+        String panPng = "/org/deegree/tools/crs/georeferencing/communication/icons/pan.png";
+        ImageIcon iconPan = new ImageIcon( GRViewerGUI.class.getResource( panPng ) );
+        String zoomInPng = "/org/deegree/tools/crs/georeferencing/communication/icons/zoomin.png";
+        ImageIcon iconZoomIn = new ImageIcon( GRViewerGUI.class.getResource( zoomInPng ) );
+        String zoomOutPng = "/org/deegree/tools/crs/georeferencing/communication/icons/zoomout.png";
+        ImageIcon iconZoomOut = new ImageIcon( GRViewerGUI.class.getResource( zoomOutPng ) );
+        // whyever the f*** JRadioButtons do not work here?!?
+        JToggleButton pan = new JToggleButton( iconPan );
+        JToggleButton zoomIn = new JToggleButton( iconZoomIn );
+        JToggleButton zoomOut = new JToggleButton( iconZoomOut );
+        JToggleButton reference = new JToggleButton( iconReference );
+        ButtonGroup g = new ButtonGroup();
+        g.add( zoomIn );
+        g.add( zoomOut );
+        g.add( pan );
+        g.add( reference );
+        bar.add( zoomIn, true );
+        bar.add( zoomOut );
+        bar.add( pan );
+        bar.add( reference );
+        bar.setFloatable( false );
+        new ToolbarListener( state, pan, zoomIn, zoomOut, reference );
+
+        GridBagLayoutHelper.addComponent( getContentPane(), bar, 0, 0, 2, 1, 1, 0 );
+
         setup2DScene();
         setupPanelFootprint();
         setupOpenGL( false );
@@ -160,11 +183,9 @@ public class GRViewerGUI extends JFrame {
     private void setup2DScene() {
         panelWest = new JPanel( new BorderLayout() );
         scenePanel2D = new Scene2DPanel();
-        naviPanelGeoref = new NavigationBarPanelGeoref();
         scenePanel2D.setBorder( BorderFactory.createBevelBorder( BevelBorder.LOWERED ) );
         scenePanel2D.setPreferredSize( SUBCOMPONENT_DIMENSION );
 
-        panelWest.add( naviPanelGeoref, BorderLayout.NORTH );
         panelWest.add( scenePanel2D, BorderLayout.CENTER );
 
         GridBagLayoutHelper.addComponent( this.getContentPane(), panelWest, 0, 1, 2, 2, 1.0, 1.0 );
@@ -174,12 +195,10 @@ public class GRViewerGUI extends JFrame {
     private void setupPanelFootprint() {
         panelEast = new JPanel( new BorderLayout() );
         footprintPanel = new BuildingFootprintPanel();
-        naviPanelFoot = new NavigationBarPanelFootprint();
         footprintPanel.setBorder( BorderFactory.createBevelBorder( BevelBorder.LOWERED ) );
         footprintPanel.setBackground( Color.white );
         footprintPanel.setPreferredSize( SUBCOMPONENT_DIMENSION );
 
-        panelEast.add( naviPanelFoot, BorderLayout.NORTH );
         panelEast.add( footprintPanel, BorderLayout.CENTER );
 
         GridBagLayoutHelper.addComponent( this.getContentPane(), panelEast, 2, 1, 1, 1, footprintPanel.getInsets(),
@@ -222,9 +241,6 @@ public class GRViewerGUI extends JFrame {
      * @param e
      */
     public void addListeners( ActionListener e ) {
-        naviPanelGeoref.addCoordListener( e );
-        naviPanelGeoref.addAbstractCoordListener( e );
-        naviPanelFoot.addAbstractCoordListener( e );
         editMenuItem.addActionListener( e );
         openShape.addActionListener( e );
         openWMS.addActionListener( e );
@@ -248,14 +264,6 @@ public class GRViewerGUI extends JFrame {
     public void addHoleWindowListener( ComponentListener c ) {
         this.addComponentListener( c );
 
-    }
-
-    public NavigationBarPanelGeoref getNavigationPanelGeoref() {
-        return naviPanelGeoref;
-    }
-
-    public NavigationBarPanelFootprint getNaviPanelFoot() {
-        return naviPanelFoot;
     }
 
     public OpenGLEventHandler getOpenGLEventListener() {

@@ -1,7 +1,7 @@
-//$HeadURL$$
+//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
- Copyright (C) 2001-2009 by:
+ Copyright (C) 2001-2010 by:
  - Department of Geography, University of Bonn -
  and
  - lat/lon GmbH -
@@ -33,41 +33,45 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
+package org.deegree.tools.crs.georeferencing.application.listeners;
 
-package org.deegree.tools.crs.georeferencing;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
-import java.io.IOException;
+import javax.swing.JToggleButton;
 
-import org.deegree.commons.tools.Tool;
 import org.deegree.tools.crs.georeferencing.application.ApplicationState;
-import org.deegree.tools.crs.georeferencing.application.Controller;
-import org.deegree.tools.crs.georeferencing.communication.GRViewerGUI;
 
 /**
  * 
- * Initialisation class that opens a GUI to transform non-georeferenced buildings into a georeferencing map.
- * 
- * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
+ * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
  */
-@Tool("Initializes the georeferencing tool. ")
-public class GRViewer {
+public class ToolbarListener implements ActionListener {
 
-    /**
-     * @param args
-     * @throws IOException
-     */
-    public static void main( String[] args )
-                            throws IOException {
-        ApplicationState state = new ApplicationState();
-        GRViewerGUI gui = new GRViewerGUI( state );
+    private ApplicationState state;
 
-        new Controller( gui, state );
+    private final JToggleButton pan, zoomIn, zoomOut, reference;
 
-        gui.setVisible( true );
-
+    public ToolbarListener( ApplicationState state, JToggleButton pan, JToggleButton zoomIn, JToggleButton zoomOut,
+                            JToggleButton reference ) {
+        this.state = state;
+        this.pan = pan;
+        this.zoomIn = zoomIn;
+        this.zoomOut = zoomOut;
+        this.reference = reference;
+        pan.addActionListener( this );
+        zoomIn.addActionListener( this );
+        zoomOut.addActionListener( this );
+        reference.addActionListener( this );
     }
 
+    public void actionPerformed( ActionEvent e ) {
+        state.pan = pan.isSelected();
+        state.zoomIn = zoomIn.isSelected();
+        state.zoomOut = zoomOut.isSelected();
+        state.referencing = reference.isSelected();
+    }
 }

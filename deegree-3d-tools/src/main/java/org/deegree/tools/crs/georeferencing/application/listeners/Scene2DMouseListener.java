@@ -113,15 +113,10 @@ public class Scene2DMouseListener extends MouseAdapter {
             if ( ( (JPanel) source ).getName().equals( Scene2DPanel.SCENE2D_PANEL_NAME ) ) {
                 state.mouseGeoRef.setPointMousePressed( new Point2d( m.getX(), m.getY() ) );
                 state.isControlDown = m.isControlDown();
-                state.isZoomInGeoref = state.buttonZoomInGeoref.isSelected();
-                state.isZoomOutGeoref = state.buttonZoomoutGeoref.isSelected();
-
             }
             if ( ( (JPanel) source ).getName().equals( BuildingFootprintPanel.BUILDINGFOOTPRINT_PANEL_NAME ) ) {
                 state.mouseFootprint.setPointMousePressed( new Point2d( m.getX(), m.getY() ) );
                 state.isControlDown = m.isControlDown();
-                state.isZoomInFoot = state.buttonZoominFoot.isSelected();
-                state.isZoomOutFoot = state.buttonZoomoutFoot.isSelected();
             }
         }
 
@@ -135,7 +130,7 @@ public class Scene2DMouseListener extends MouseAdapter {
             // Scene2DPanel
             if ( ( (JPanel) source ).getName().equals( Scene2DPanel.SCENE2D_PANEL_NAME ) ) {
                 if ( state.model != null ) {
-                    if ( state.isControlDown || state.isZoomInGeoref || state.isZoomOutGeoref ) {
+                    if ( state.isControlDown || state.zoomIn || state.zoomOut ) {
                         Point2d pointPressed = new Point2d( state.mouseGeoRef.getPointMousePressed().x,
                                                             state.mouseGeoRef.getPointMousePressed().y );
                         Point2d pointReleased = new Point2d( m.getX(), m.getY() );
@@ -149,7 +144,7 @@ public class Scene2DMouseListener extends MouseAdapter {
                             maxPoint = pointPressed;
                         }
 
-                        if ( state.isZoomInGeoref ) {
+                        if ( state.zoomIn ) {
                             if ( minPoint.x == maxPoint.x && minPoint.y == maxPoint.y ) {
                                 state.sceneValues.computeZoomedEnvelope(
                                                                          true,
@@ -165,7 +160,7 @@ public class Scene2DMouseListener extends MouseAdapter {
                                 state.sceneValues.createZoomedEnvWithMinPoint( PointType.GeoreferencedPoint, r );
 
                             }
-                        } else if ( state.isZoomOutGeoref ) {
+                        } else if ( state.zoomOut ) {
                             state.sceneValues.computeZoomedEnvelope(
                                                                      false,
                                                                      state.conModel.getDialogModel().getResizeValue().second,
@@ -180,7 +175,7 @@ public class Scene2DMouseListener extends MouseAdapter {
                     }
 
                     else {
-                        if ( state.isHorizontalRefGeoref == true ) {
+                        if ( state.referencing ) {
                             if ( state.start == false ) {
                                 state.start = true;
                                 state.conModel.getFootPanel().setFocus( false );
@@ -210,7 +205,7 @@ public class Scene2DMouseListener extends MouseAdapter {
 
                             updateTransformation();
 
-                        } else {
+                        } else if ( state.pan ) {
                             // just pan
                             state.mouseGeoRef.setMouseChanging( new GeoReferencedPoint(
                                                                                         ( state.mouseGeoRef.getPointMousePressed().x - m.getX() ),
@@ -230,7 +225,7 @@ public class Scene2DMouseListener extends MouseAdapter {
             // footprintPanel
             if ( ( (JPanel) source ).getName().equals( BuildingFootprintPanel.BUILDINGFOOTPRINT_PANEL_NAME ) ) {
 
-                if ( state.isControlDown || state.isZoomInFoot || state.isZoomOutFoot ) {
+                if ( state.isControlDown || state.zoomIn || state.zoomOut ) {
                     Point2d pointPressed = new Point2d( state.mouseFootprint.getPointMousePressed().x,
                                                         state.mouseFootprint.getPointMousePressed().y );
                     Point2d pointReleased = new Point2d( m.getX(), m.getY() );
@@ -244,7 +239,7 @@ public class Scene2DMouseListener extends MouseAdapter {
                         maxPoint = pointPressed;
                     }
 
-                    if ( state.isZoomInFoot ) {
+                    if ( state.zoomIn ) {
                         if ( minPoint.x == maxPoint.x && minPoint.y == maxPoint.y ) {
                             state.sceneValues.computeZoomedEnvelope(
                                                                      true,
@@ -258,7 +253,7 @@ public class Scene2DMouseListener extends MouseAdapter {
 
                             state.sceneValues.createZoomedEnvWithMinPoint( PointType.FootprintPoint, r );
                         }
-                    } else if ( state.isZoomOutFoot ) {
+                    } else if ( state.zoomOut ) {
                         state.sceneValues.computeZoomedEnvelope(
                                                                  false,
                                                                  state.conModel.getDialogModel().getResizeValue().second,
@@ -269,7 +264,7 @@ public class Scene2DMouseListener extends MouseAdapter {
                     state.conModel.getFootPanel().repaint();
 
                 } else {
-                    if ( state.isHorizontalRefFoot == true ) {
+                    if ( state.referencing ) {
 
                         if ( state.start == false ) {
                             state.start = true;
@@ -305,7 +300,7 @@ public class Scene2DMouseListener extends MouseAdapter {
                             state.updateResidualsWithLastAbstractPoint();
                         }
 
-                    } else {
+                    } else if ( state.pan ) {
                         state.mouseFootprint.setMouseChanging( new FootprintPoint(
                                                                                    ( state.mouseFootprint.getPointMousePressed().x - m.getX() ),
                                                                                    ( state.mouseFootprint.getPointMousePressed().y - m.getY() ) ) );

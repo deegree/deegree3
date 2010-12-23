@@ -72,7 +72,7 @@ public class Scene2DMouseMotionListener implements MouseMotionListener {
         if ( source instanceof JPanel ) {
             // Scene2DPanel
             if ( ( (JPanel) source ).getName().equals( Scene2DPanel.SCENE2D_PANEL_NAME ) ) {
-                if ( m.isControlDown() || state.isZoomInGeoref ) {
+                if ( m.isControlDown() || state.zoomIn ) {
                     int x = new Double( state.mouseGeoRef.getPointMousePressed().x ).intValue();
                     int y = new Double( state.mouseGeoRef.getPointMousePressed().y ).intValue();
                     int width = new Double( m.getX() - state.mouseGeoRef.getPointMousePressed().x ).intValue();
@@ -84,7 +84,7 @@ public class Scene2DMouseMotionListener implements MouseMotionListener {
             }
             // footprintPanel
             if ( ( (JPanel) source ).getName().equals( BuildingFootprintPanel.BUILDINGFOOTPRINT_PANEL_NAME ) ) {
-                if ( m.isControlDown() || state.isZoomInFoot ) {
+                if ( m.isControlDown() || state.zoomIn ) {
                     int x = new Double( state.mouseFootprint.getPointMousePressed().x ).intValue();
                     int y = new Double( state.mouseFootprint.getPointMousePressed().y ).intValue();
                     int width = new Double( m.getX() - state.mouseFootprint.getPointMousePressed().x ).intValue();

@@ -134,51 +134,6 @@ public class ButtonListener implements ActionListener {
                 JCheckBox selectedCheckbox = (JCheckBox) source;
 
                 new JCheckboxHandler( selectedCheckbox, state.conModel, state.wmsParameter );
-
-            } else {
-                JToggleButton tb = (JToggleButton) source;
-
-                if ( tb.getName().startsWith( get( "JBUTTON_PAN" ) ) ) {
-
-                    if ( tb == state.buttonPanGeoref ) {
-                        state.selectGeorefToggleButton( tb );
-                        state.isZoomInGeoref = false;
-                        state.isZoomOutGeoref = false;
-                    } else {
-                        state.selectFootprintToggleButton( tb );
-                        state.isZoomInFoot = false;
-                        state.isZoomOutFoot = false;
-                    }
-                } else if ( tb.getName().startsWith( get( "JBUTTON_ZOOM_COORD" ) ) ) {
-
-                    if ( tb == state.buttonCoord ) {
-                        state.selectGeorefToggleButton( tb );
-                    } else {
-                        state.selectFootprintToggleButton( tb );
-                    }
-                } else if ( tb.getName().startsWith( get( "JBUTTON_ZOOM_IN" ) ) ) {
-
-                    if ( tb == state.buttonZoomInGeoref ) {
-                        state.selectGeorefToggleButton( tb );
-                        state.isZoomInGeoref = true;
-                        state.isZoomOutGeoref = false;
-                    } else {
-                        state.selectFootprintToggleButton( tb );
-                        state.isZoomInFoot = true;
-                        state.isZoomOutFoot = false;
-                    }
-                } else if ( tb.getName().startsWith( get( "JBUTTON_ZOOM_OUT" ) ) ) {
-
-                    if ( tb == state.buttonZoomoutGeoref ) {
-                        state.selectGeorefToggleButton( tb );
-                        state.isZoomInGeoref = false;
-                        state.isZoomOutGeoref = true;
-                    } else {
-                        state.selectFootprintToggleButton( tb );
-                        state.isZoomInFoot = true;
-                        state.isZoomOutFoot = false;
-                    }
-                }
             }
         } else if ( source instanceof JButton ) {
 
@@ -255,9 +210,7 @@ public class ButtonListener implements ActionListener {
                 } else if ( state.jumperDialog != null && state.jumperDialog.isVisible() == true ) {
                     state.jumperDialog.setVisible( false );
 
-                    state.selectedGeoref = false;
                     state.buttonModel.setSelected( false );
-                    state.isHorizontalRefGeoref = true;
 
                 } else if ( state.wmsStartDialog != null && state.wmsStartDialog.isVisible() == true ) {
                     state.wmsStartDialog.setVisible( false );
@@ -475,9 +428,7 @@ public class ButtonListener implements ActionListener {
 
             }
             state.jumperDialog.setVisible( false );
-            state.selectedGeoref = false;
             state.buttonModel.setSelected( false );
-            state.isHorizontalRefGeoref = true;
             state.conModel.getPanel().setImageToDraw(
                                                       state.model.generateSubImageFromRaster( state.sceneValues.getEnvelopeGeoref() ) );
             state.conModel.getPanel().updatePoints( state.sceneValues );
