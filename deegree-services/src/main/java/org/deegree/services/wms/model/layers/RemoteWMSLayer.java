@@ -99,6 +99,18 @@ public class RemoteWMSLayer extends Layer {
 
     }
 
+    /**
+     * @param service
+     * @param store
+     * @param name
+     * @param title
+     * @param parent
+     */
+    public RemoteWMSLayer( MapService service, RemoteWMSStore store, String name, String title, Layer parent ) {
+        super( service, name, title, parent );
+        wmsStore = store;
+    }
+
     @Override
     public boolean isAvailable() {
         return available;
