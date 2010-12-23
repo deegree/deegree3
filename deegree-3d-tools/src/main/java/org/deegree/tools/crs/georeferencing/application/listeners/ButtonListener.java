@@ -179,19 +179,6 @@ public class ButtonListener implements ActionListener {
 
             } else if ( ( (JButton) source ).getText().startsWith( PointTableFrame.BUTTON_DELETE_ALL ) ) {
                 state.removeAllFromMappedPoints();
-
-            } else if ( ( (JButton) source ).getText().startsWith( get( "RESET_VIEW_BUTTON_TEXT" ) ) ) {
-
-                state.initGeoReferencingScene( state.model );
-                if ( state.chosenFile != null ) {
-                    state.initFootprintScene( state.chosenFile );
-
-                    state.conModel.getFootPanel().updatePoints( state.sceneValues );
-                    state.conModel.getFootPanel().repaint();
-                }
-                state.conModel.getPanel().updatePoints( state.sceneValues );
-                state.conModel.getPanel().repaint();
-
             } else if ( ( (JButton) source ).getText().startsWith( ButtonPanel.BUTTON_TEXT_CANCEL ) ) {
                 if ( state.optionDialog != null && state.optionDialog.isVisible() == true ) {
                     state.conModel.getDialogModel().transferOldToNew();

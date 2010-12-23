@@ -62,27 +62,41 @@ public class ToolbarListener implements ActionListener {
 
     private final JToggleButton pan, zoomIn, zoomOut, reference;
 
-    private final JButton zoomToCoordinate;
+    private final JButton zoomToCoordinate, zoomToMaxExtent;
 
     public ToolbarListener( ApplicationState state, JToggleButton pan, JToggleButton zoomIn, JToggleButton zoomOut,
-                            JToggleButton reference, JButton zoomToCoordinate ) {
+                            JToggleButton reference, JButton zoomToCoordinate, JButton zoomToMaxExtent ) {
         this.state = state;
         this.pan = pan;
         this.zoomIn = zoomIn;
         this.zoomOut = zoomOut;
         this.reference = reference;
         this.zoomToCoordinate = zoomToCoordinate;
+        this.zoomToMaxExtent = zoomToMaxExtent;
         pan.addActionListener( this );
         zoomIn.addActionListener( this );
         zoomOut.addActionListener( this );
         reference.addActionListener( this );
         zoomToCoordinate.addActionListener( this );
+        zoomToMaxExtent.addActionListener( this );
     }
 
     public void actionPerformed( ActionEvent e ) {
-        if ( e.getSource() == zoomToCoordinate ) {
+        Object src = e.getSource();
+        if ( src == zoomToCoordinate ) {
             fireTextfieldJumperDialog();
             return;
+        }
+        if ( src == zoomToMaxExtent ) {
+            state.initGeoReferencingScene( state.model );
+            if ( state.chosenFile != null ) {
+                state.initFootprintScene( state.chosenFile );
+
+                state.conModel.getFootPanel().updatePoints( state.sceneValues );
+                state.conModel.getFootPanel().repaint();
+            }
+            state.conModel.getPanel().updatePoints( state.sceneValues );
+            state.conModel.getPanel().repaint();
         }
         state.pan = pan.isSelected();
         state.zoomIn = zoomIn.isSelected();

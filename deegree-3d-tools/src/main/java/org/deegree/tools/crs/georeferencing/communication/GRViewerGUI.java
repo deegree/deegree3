@@ -109,17 +109,19 @@ public class GRViewerGUI extends JFrame {
 
         JToolBar bar = new JToolBar();
 
-        String refPng = "/org/deegree/tools/crs/georeferencing/communication/icons/pan.png";
+        String refPng = "/org/deegree/tools/crs/georeferencing/communication/icons/reference.png";
         String panPng = "/org/deegree/tools/crs/georeferencing/communication/icons/pan.png";
         String zoomInPng = "/org/deegree/tools/crs/georeferencing/communication/icons/zoomin.png";
         String zoomOutPng = "/org/deegree/tools/crs/georeferencing/communication/icons/zoomout.png";
         String zoomCoordPng = "/org/deegree/tools/crs/georeferencing/communication/icons/zoombycoord.png";
+        String zoomExtent = "/org/deegree/tools/crs/georeferencing/communication/icons/zoomtoextent.png";
 
         ImageIcon iconReference = new ImageIcon( GRViewerGUI.class.getResource( refPng ) );
         ImageIcon iconPan = new ImageIcon( GRViewerGUI.class.getResource( panPng ) );
         ImageIcon iconZoomIn = new ImageIcon( GRViewerGUI.class.getResource( zoomInPng ) );
         ImageIcon iconZoomOut = new ImageIcon( GRViewerGUI.class.getResource( zoomOutPng ) );
         ImageIcon iconZoomCoord = new ImageIcon( GRViewerGUI.class.getResource( zoomCoordPng ) );
+        ImageIcon iconZoomExtent = new ImageIcon( GRViewerGUI.class.getResource( zoomExtent ) );
 
         // whyever the f*** JRadioButtons do not work here?!?
         JToggleButton pan = new JToggleButton( iconPan );
@@ -127,6 +129,7 @@ public class GRViewerGUI extends JFrame {
         JToggleButton zoomOut = new JToggleButton( iconZoomOut );
         JToggleButton reference = new JToggleButton( iconReference );
         JButton zoomToCoordinate = new JButton( iconZoomCoord );
+        JButton zoomToMaxExtent = new JButton( iconZoomExtent );
         ButtonGroup g = new ButtonGroup();
         g.add( zoomIn );
         g.add( zoomOut );
@@ -137,8 +140,9 @@ public class GRViewerGUI extends JFrame {
         bar.add( pan );
         bar.add( reference );
         bar.add( zoomToCoordinate );
+        bar.add( zoomToMaxExtent );
         bar.setFloatable( false );
-        new ToolbarListener( state, pan, zoomIn, zoomOut, reference, zoomToCoordinate );
+        new ToolbarListener( state, pan, zoomIn, zoomOut, reference, zoomToCoordinate, zoomToMaxExtent );
 
         GridBagLayoutHelper.addComponent( getContentPane(), bar, 0, 0, 2, 1, 1, 0 );
 
