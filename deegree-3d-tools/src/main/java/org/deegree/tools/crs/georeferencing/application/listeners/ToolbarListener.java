@@ -38,6 +38,7 @@ package org.deegree.tools.crs.georeferencing.application.listeners;
 import static javax.swing.JOptionPane.ERROR_MESSAGE;
 import static javax.swing.JOptionPane.showMessageDialog;
 import static org.deegree.tools.crs.georeferencing.i18n.Messages.get;
+import static org.deegree.tools.crs.georeferencing.model.points.AbstractGRPoint.PointType.GeoreferencedPoint;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -47,7 +48,6 @@ import javax.swing.JToggleButton;
 
 import org.deegree.tools.crs.georeferencing.application.ApplicationState;
 import org.deegree.tools.crs.georeferencing.communication.dialog.coordinatejump.CoordinateJumperTextfieldDialog;
-import org.deegree.tools.crs.georeferencing.model.points.AbstractGRPoint.PointType;
 
 /**
  * 
@@ -96,12 +96,17 @@ public class ToolbarListener implements ActionListener {
         dlg.setVisible( true );
 
         if ( dlg.wasOk() ) {
-            if ( dlg.getCoords() == null ) {
+            double[] coords = dlg.getCoords();
+            if ( coords == null ) {
                 showMessageDialog( zoomToCoordinate.getParent(), get( "NUMBERS_ONLY" ), get( "ERROR" ), ERROR_MESSAGE );
             } else {
                 if ( state.sceneValues.getEnvelopeGeoref() != null ) {
-                    state.sceneValues.setCentroidWorldEnvelopePosition( dlg.getCoords()[0], dlg.getCoords()[1],
-                                                                        PointType.GeoreferencedPoint );
+                    if ( coords.length == 2 ) {
+                        state.sceneValues.setCentroidWorldEnvelopePosition( coords[0], coords[1], GeoreferencedPoint );
+                    } else {
+                        state.sceneValues.setCentroidWorldEnvelopePosition( coords[0], coords[1], coords[2], coords[3],
+                                                                            GeoreferencedPoint );
+                    }
                     state.conModel.getPanel().setImageToDraw(
                                                               state.model.generateSubImageFromRaster( state.sceneValues.getEnvelopeGeoref() ) );
                     state.conModel.getPanel().updatePoints( state.sceneValues );

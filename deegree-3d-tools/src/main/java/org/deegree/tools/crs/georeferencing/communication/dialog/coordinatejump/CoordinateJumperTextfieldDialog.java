@@ -105,42 +105,74 @@ public class CoordinateJumperTextfieldDialog extends JDialog implements ActionLi
         coords[1] = Double.parseDouble( s2 );
     }
 
+    private void parse( String s1, String s2, String s3, String s4 ) {
+        parse( s1, s2 );
+        coords[2] = Double.parseDouble( s3 );
+        coords[3] = Double.parseDouble( s4 );
+    }
+
     public void actionPerformed( ActionEvent evt ) {
-        if ( evt.getSource() == buttons.getOk() ) {
-            wasOk = true;
-            String s = coordinateJumper.getText();
-            if ( s == null || s.isEmpty() ) {
-                setVisible( false );
-                return;
-            }
-            String[] ss = s.split( " " );
-            if ( ss.length == 2 ) {
-                try {
-                    coords = new double[2];
-                    parse( ss[0], ss[1] );
-                } catch ( NumberFormatException e ) {
-                    try {
-                        parse( ss[0].replace( ",", "." ), ss[1].replace( ",", "." ) );
-                    } catch ( NumberFormatException e1 ) {
-                        coords = null;
-                    }
+        try {
+            if ( evt.getSource() == buttons.getOk() ) {
+                wasOk = true;
+                String s = coordinateJumper.getText();
+                if ( s == null || s.isEmpty() ) {
+                    return;
                 }
-            } else {
+                String[] ss = s.split( " " );
+                if ( ss.length == 2 ) {
+                    coords = new double[2];
+                    try {
+                        parse( ss[0], ss[1] );
+                    } catch ( NumberFormatException e ) {
+                        try {
+                            parse( ss[0].replace( ",", "." ), ss[1].replace( ",", "." ) );
+                        } catch ( NumberFormatException e1 ) {
+                            coords = null;
+                        }
+                    }
+                    return;
+                }
+                if ( ss.length == 4 ) {
+                    coords = new double[4];
+                    try {
+                        parse( ss[0], ss[1], ss[2], ss[3] );
+                    } catch ( NumberFormatException e ) {
+                        try {
+                            parse( ss[0].replace( ",", "." ), ss[1].replace( ",", "." ), ss[2].replace( ",", "." ),
+                                   ss[3].replace( ",", "." ) );
+                        } catch ( NumberFormatException e1 ) {
+                            coords = null;
+                        }
+                    }
+                    return;
+                }
                 ss = s.split( "," );
                 if ( ss.length == 2 ) {
+                    coords = new double[2];
                     try {
-                        coords = new double[2];
                         parse( ss[0], ss[1] );
                     } catch ( NumberFormatException e ) {
                         coords = null;
                     }
+                    return;
+                }
+                if ( ss.length == 4 ) {
+                    coords = new double[4];
+                    try {
+                        parse( ss[0], ss[1], ss[2], ss[3] );
+                    } catch ( NumberFormatException e ) {
+                        coords = null;
+                    }
+                    return;
                 }
             }
+            if ( evt.getSource() == buttons.getCancel() ) {
+                wasOk = false;
+            }
+        } finally {
+            setVisible( false );
         }
-        if ( evt.getSource() == buttons.getCancel() ) {
-            wasOk = false;
-        }
-        setVisible( false );
     }
 
 }
