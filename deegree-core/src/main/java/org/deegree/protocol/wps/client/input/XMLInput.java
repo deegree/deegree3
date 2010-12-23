@@ -89,7 +89,8 @@ public class XMLInput extends ExecutionInput {
         super( id );
         this.url = url;
         this.isWebAccessible = isWebAccessible;
-        this.complexAttribs = new ComplexFormat( mimeType, null, schema );
+        
+        this.complexAttribs = new ComplexFormat( mimeType, encoding, schema );
     }
 
     /**
