@@ -500,6 +500,13 @@ public class MapController {
     }
 
     /**
+     * @return the current envelope
+     */
+    public Envelope getCurrentEnvelope() {
+        return envelope;
+    }
+
+    /**
      * @param sourcex
      * @param sourcey
      * @param currentx
