@@ -108,7 +108,7 @@ public class Scene2DMouseListener extends MouseAdapter {
             }
 
             else {
-                if ( state.referencing ) {
+                if ( state.referencing && state.referencingLeft ) {
                     if ( state.start == false ) {
                         state.start = true;
                         state.conModel.getFootPanel().setFocus( false );
@@ -128,6 +128,7 @@ public class Scene2DMouseListener extends MouseAdapter {
 
                     double x = m.getX();
                     double y = m.getY();
+                    state.sceneValues.setEnvelopeGeoref( state.mapController.getCurrentEnvelope() );
                     GeoReferencedPoint geoReferencedPoint = new GeoReferencedPoint( x, y );
                     GeoReferencedPoint g = (GeoReferencedPoint) state.sceneValues.getWorldPoint( geoReferencedPoint );
                     state.rc = state.tablePanel.setCoords( g );
@@ -135,6 +136,7 @@ public class Scene2DMouseListener extends MouseAdapter {
                     if ( isFirstNumber == false ) {
                         state.updateResidualsWithLastAbstractPoint();
                     }
+                    state.referencingLeft = false;
 
                     updateTransformation();
 

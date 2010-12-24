@@ -87,7 +87,7 @@ import org.deegree.tools.rendering.viewer.File3dImporter;
  */
 public class ApplicationState {
 
-    public boolean start, isControlDown, isInitGeoref, isInitFoot, referencing, previewing;
+    public boolean start, isControlDown, isInitGeoref, isInitFoot, referencing, previewing, referencingLeft;
 
     public boolean zoomIn, zoomOut, pan;
 

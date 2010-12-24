@@ -128,7 +128,7 @@ public class FootprintMouseListener extends MouseAdapter {
             state.conModel.getFootPanel().repaint();
 
         } else {
-            if ( state.referencing ) {
+            if ( state.referencing && !state.referencingLeft ) {
 
                 if ( state.start == false ) {
                     state.start = true;
@@ -160,6 +160,7 @@ public class FootprintMouseListener extends MouseAdapter {
                 }
                 state.rc = state.tablePanel.setCoords( point.second );
                 state.conModel.getFootPanel().setLastAbstractPoint( point.first, point.second, state.rc );
+                state.referencingLeft = true;
                 if ( isFirstNumber == false ) {
                     state.updateResidualsWithLastAbstractPoint();
                 }
