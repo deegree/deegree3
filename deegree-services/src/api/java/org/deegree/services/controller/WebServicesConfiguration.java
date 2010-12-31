@@ -133,30 +133,30 @@ public class WebServicesConfiguration {
             LOG.error( msg );
             throw new ServletException( msg );
         }
+        try {
+            metadataConfig = (DeegreeServicesMetadataType) ( (JAXBElement<?>) JAXBUtils.unmarshall(
+                                                                                                    METADATA_JAXB_PACKAGE,
+                                                                                                    METADATA_CONFIG_SCHEMA,
+                                                                                                    metadata.toURI().toURL() ) ).getValue();
+        } catch ( Exception e ) {
+            String msg = "Could not unmarshall frontcontroller configuration: " + e.getMessage();
+            LOG.error( msg );
+            throw new ServletException( msg, e );
+        }
         if ( !main.exists() ) {
             LOG.debug( "No 'services/main.xml' file, assuming defaults." );
             mainConfig = new DeegreeServiceControllerType();
         } else {
             try {
-                metadataConfig = (DeegreeServicesMetadataType) ( (JAXBElement<?>) JAXBUtils.unmarshall(
-                                                                                                        METADATA_JAXB_PACKAGE,
-                                                                                                        METADATA_CONFIG_SCHEMA,
-                                                                                                        metadata.toURI().toURL() ) ).getValue();
-                try {
-                    mainConfig = (DeegreeServiceControllerType) ( (JAXBElement<?>) JAXBUtils.unmarshall(
-                                                                                                         CONTROLLER_JAXB_PACKAGE,
-                                                                                                         CONTROLLER_CONFIG_SCHEMA,
-                                                                                                         main.toURI().toURL() ) ).getValue();
-                } catch ( Exception e ) {
-                    mainConfig = new DeegreeServiceControllerType();
-                    LOG.info( "main.xml could not be loaded. Proceeding with defaults." );
-                    LOG.debug( "Error was: '{}'.", e.getLocalizedMessage() );
-                    LOG.trace( "Stack trace:", e );
-                }
+                mainConfig = (DeegreeServiceControllerType) ( (JAXBElement<?>) JAXBUtils.unmarshall(
+                                                                                                     CONTROLLER_JAXB_PACKAGE,
+                                                                                                     CONTROLLER_CONFIG_SCHEMA,
+                                                                                                     main.toURI().toURL() ) ).getValue();
             } catch ( Exception e ) {
-                String msg = "Could not unmarshall frontcontroller configuration: " + e.getMessage();
-                LOG.error( msg );
-                throw new ServletException( msg, e );
+                mainConfig = new DeegreeServiceControllerType();
+                LOG.info( "main.xml could not be loaded. Proceeding with defaults." );
+                LOG.debug( "Error was: '{}'.", e.getLocalizedMessage() );
+                LOG.trace( "Stack trace:", e );
             }
         }
 
