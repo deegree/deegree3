@@ -116,10 +116,10 @@ public class ButtonListener implements ActionListener {
 
     private static final Logger LOG = getLogger( ButtonListener.class );
 
-    private static final Color[] colors = new Color[] { new Color( 255, 0, 0 ), new Color( 255, 175, 175 ),
-                                                       new Color( 255, 200, 0 ), new Color( 255, 255, 0 ),
-                                                       new Color( 0, 255, 0 ), new Color( 255, 0, 255 ),
-                                                       new Color( 0, 255, 255 ), new Color( 0, 0, 255 ) };
+    private static final Color[] colors = new Color[] { new Color( 255, 0, 0, 128 ), new Color( 255, 175, 175, 128 ),
+                                                       new Color( 255, 200, 0, 128 ), new Color( 255, 255, 0, 128 ),
+                                                       new Color( 0, 255, 0, 128 ), new Color( 255, 0, 255, 128 ),
+                                                       new Color( 0, 255, 255, 128 ), new Color( 0, 0, 255, 128 ) };
 
     private static int colorIndex = 0;
 
@@ -406,6 +406,9 @@ public class ButtonListener implements ActionListener {
                     }
 
                     try {
+                        if ( state.service.layers.get( "shape" ) != null ) {
+                            state.service.layers.get( "shape" ).close();
+                        }
                         FeatureLayer layer = new FeatureLayer( state.service, "shape", "shape",
                                                                state.service.getRootLayer(), fileChoosed );
                         Layer root = state.service.getRootLayer();
