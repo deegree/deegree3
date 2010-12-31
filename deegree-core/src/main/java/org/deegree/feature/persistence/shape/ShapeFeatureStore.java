@@ -584,6 +584,9 @@ public class ShapeFeatureStore implements FeatureStore {
                 LOG.debug( "DBF could not be closed:", e );
             }
         }
+        if ( dbfIndex != null ) {
+            dbfIndex.destroy();
+        }
     }
 
     /**

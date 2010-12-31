@@ -302,4 +302,11 @@ public class DBFIndex {
 
     }
 
+    /**
+     * Destroys h2 db connection.
+     */
+    public void destroy() {
+        ConnectionManager.destroy( connid );
+    }
+
 }

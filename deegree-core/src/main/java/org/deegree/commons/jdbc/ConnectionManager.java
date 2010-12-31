@@ -145,6 +145,14 @@ public class ConnectionManager {
         idToPools.clear();
     }
 
+    public static void destroy( String connid ) {
+        try {
+            idToPools.remove( connid ).destroy();
+        } catch ( Exception e ) {
+            LOG.debug( "Exception caught shutting down connection pool: " + e.getMessage(), e );
+        }
+    }
+
     /**
      * 
      */
