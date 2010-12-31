@@ -261,6 +261,7 @@ public class ShapeFeatureStore implements FeatureStore {
             LOG.warn( "The shape datastore for '{}' could not be initialized, because the .shp could not be loaded.",
                       shpName );
             available = false;
+            return;
         }
 
         String namespace = ftName.getNamespaceURI();
