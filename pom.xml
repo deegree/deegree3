@@ -47,9 +47,9 @@
     </dependency>
 
     <dependency>
-      <groupId>commons-io</groupId>
-      <artifactId>commons-io</artifactId>
-      <version>1.4</version>
+      <groupId>org.deegree</groupId>
+      <artifactId>deegree-core</artifactId>
+      <version>3.1-SNAPSHOT</version>
     </dependency>
   </dependencies>
 
