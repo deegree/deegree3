@@ -54,6 +54,7 @@ import org.apache.maven.project.MavenProject;
 
 /**
  * @goal generate-portnumber
+ * @phase initialize
  * 
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
  * @author last edited by: $Author$
