@@ -8,7 +8,7 @@
   <includeBaseDirectory>false</includeBaseDirectory>
   <fileSets>
     <fileSet>
-      <directory>src/main/webapp/WEB-INF/conf/</directory>
+      <directory>src/main/webapp/WEB-INF/workspace/</directory>
       <outputDirectory>/</outputDirectory>
     </fileSet>
   </fileSets>

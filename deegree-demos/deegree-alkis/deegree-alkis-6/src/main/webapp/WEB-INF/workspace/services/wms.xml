@@ -1,6 +1,6 @@
 <?xml version="1.0" ?>
-<deegreeWMS xmlns="http://www.deegree.org/services/wms" configVersion="0.6.0"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.deegree.org/services/wms http://schemas.deegree.org/wms/0.6.0/wms_configuration.xsd">
+<deegreeWMS xmlns="http://www.deegree.org/services/wms" configVersion="3.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.deegree.org/services/wms http://schemas.deegree.org/services/wms/3.0.0/wms_configuration.xsd">
   <SupportedVersions>
       <Version>1.1.1</Version>
       <Version>1.3.0</Version>
@@ -232,7 +232,7 @@
           </RequestableLayer>
         </RequestableLayer>
       </RequestableLayer>
-      
+
       <RequestableLayer>
         <Name>Relief</Name>
         <Title>Relief</Title>
@@ -309,7 +309,7 @@
           </RequestableLayer>
         </RequestableLayer>
       </RequestableLayer>
-      
+
       <RequestableLayer>
         <Name>BauwerkeEinrichtungenUndSonstigeAngaben</Name>
         <Title>Bauwerke, Einrichtungen und sonstige Angaben</Title>
@@ -587,7 +587,7 @@
           </RequestableLayer>
         </RequestableLayer>
       </RequestableLayer>
-     
+
       <RequestableLayer>
         <Name>AngabenzumGebaeude</Name>
         <Title>Angaben zum Gebäude</Title>
@@ -624,10 +624,10 @@
           </DirectStyle>
         </RequestableLayer>
       </RequestableLayer>
-      
-      
 
-      
+
+
+
       <UnrequestableLayer>
         <Title>Angaben zum Gebaeude_test</Title>
         <RequestableLayer>
@@ -658,7 +658,7 @@
               </DirectStyle>
             </LogicalLayer>
         </RequestableLayer>
-        
+
         <RequestableLayer>
             <Name>AngabenzumGebaeude_grau</Name>
             <Title>Angaben zum Gebaeude grau</Title>
@@ -716,8 +716,8 @@
               </DirectStyle>
             </LogicalLayer>
         </RequestableLayer>
-      </UnrequestableLayer>     
-      
+      </UnrequestableLayer>
+
       <RequestableLayer>
         <Name>FlurstueckeLagePunkt</Name>
         <Title>Flurstücke, Lage, Punkt</Title>
@@ -1178,23 +1178,23 @@
               </LogicalLayer>
             </RequestableLayer>
             <RequestableLayer>
-              <Name>BergbaubetriebName</Name> 
-              <Title>Bergbaubetrieb, Name</Title> 
+              <Name>BergbaubetriebName</Name>
+              <Title>Bergbaubetrieb, Name</Title>
               <LogicalLayer>
                 <ScaleDenominators max="5000" min="0"/>
                 <FeatureStoreId>aaa-601</FeatureStoreId>
-                <DirectStyle> 
-                  <File>../styles/aaa-601/AX_BergbaubetriebName.se</File> 
-                </DirectStyle> 
+                <DirectStyle>
+                  <File>../styles/aaa-601/AX_BergbaubetriebName.se</File>
+                </DirectStyle>
               </LogicalLayer>
-              <LogicalLayer> 
+              <LogicalLayer>
               <ScaleDenominators max="5000" min="0"/>
-              <FeatureStoreId>aaa-601</FeatureStoreId> 
+              <FeatureStoreId>aaa-601</FeatureStoreId>
               <DirectStyle>
-                <File>../styles/aaa-601/AP_PTO_BergbaubetriebName.se</File> 
-              </DirectStyle> 
+                <File>../styles/aaa-601/AP_PTO_BergbaubetriebName.se</File>
+              </DirectStyle>
               </LogicalLayer>
-            </RequestableLayer>  
+            </RequestableLayer>
             <RequestableLayer>
               <Name>FlaecheGemischterNutzungName</Name>
               <Title>Fläche gemischter Nutzung, Name</Title>
@@ -1489,7 +1489,7 @@
               <RequestableLayer>
                 <Name>SchiffsverkehrName</Name>
                 <Title>Schiffsverkehr, Name</Title>
-                <LogicalLayer> 
+                <LogicalLayer>
                   <ScaleDenominators max="2500" min="0"/>
                   <FeatureStoreId>aaa-601</FeatureStoreId>
                   <DirectStyle>
@@ -1722,5 +1722,5 @@
     </UnrequestableLayer>
 
   </ServiceConfiguration>
-  
+
 </deegreeWMS>
