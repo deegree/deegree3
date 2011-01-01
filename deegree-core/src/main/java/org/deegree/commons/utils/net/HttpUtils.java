@@ -234,6 +234,7 @@ public class HttpUtils {
      * @param url
      * @param postBody
      * @param headers
+     *            may be null
      * @return some object from the url
      * @throws HttpException
      * @throws IOException
