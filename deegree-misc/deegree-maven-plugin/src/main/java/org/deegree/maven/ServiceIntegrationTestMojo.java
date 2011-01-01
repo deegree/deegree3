@@ -260,7 +260,24 @@ public class ServiceIntegrationTestMojo extends AbstractMojo {
         String address = "http://localhost:" + port + "/" + project.getArtifactId() + "/services";
 
         File reqDir = new File( project.getBasedir(), "src/test/requests" );
-        for ( File f : reqDir.listFiles( (FileFilter) new SuffixFileFilter( "kvp" ) ) ) {
+        getLog().info( "---- Searching main requests directory for requests." );
+        testRequestDirectories( address, reqDir );
+    }
+
+    private void testRequestDirectories( String address, File dir )
+                            throws MojoFailureException {
+        testRequestDirectory( address, dir );
+        for ( File f : dir.listFiles() ) {
+            if ( f.isDirectory() && !f.getName().equalsIgnoreCase( ".svn" ) ) {
+                getLog().info( "---- Searching request class " + f.getName() + " for requests." );
+                testRequestDirectories( address, f );
+            }
+        }
+    }
+
+    private void testRequestDirectory( String address, File dir )
+                            throws MojoFailureException {
+        for ( File f : dir.listFiles( (FileFilter) new SuffixFileFilter( "kvp" ) ) ) {
             String name = f.getName();
             name = name.substring( 0, name.length() - 4 );
             getLog().info( "KVP request testing " + name );
@@ -270,13 +287,15 @@ public class ServiceIntegrationTestMojo extends AbstractMojo {
                 File response = new File( f.getParentFile(), name + ".response" );
                 InputStream in2 = new FileInputStream( response );
                 double sim = determineSimilarity( name, in1, in2 );
-                getLog().info( "Request test " + name + " resulted in similarity of " + sim );
+                if ( sim != 1 ) {
+                    getLog().info( "Request test " + name + " resulted in similarity of " + sim );
+                }
             } catch ( IOException e ) {
                 throw new MojoFailureException( "KVP request checking of " + name + " failed: "
                                                 + e.getLocalizedMessage() );
             }
         }
-        for ( File f : reqDir.listFiles( (FileFilter) new SuffixFileFilter( "xml" ) ) ) {
+        for ( File f : dir.listFiles( (FileFilter) new SuffixFileFilter( "xml" ) ) ) {
             String name = f.getName();
             name = name.substring( 0, name.length() - 4 );
             getLog().info( "XML request testing " + name );
