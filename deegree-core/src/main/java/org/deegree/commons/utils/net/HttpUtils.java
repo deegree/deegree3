@@ -244,8 +244,10 @@ public class HttpUtils {
         HttpClient client = enableProxyUsage( new HttpClient(), u );
         PostMethod post = new PostMethod( url );
         post.setRequestEntity( new InputStreamRequestEntity( postBody ) );
-        for ( String key : headers.keySet() ) {
-            post.setRequestHeader( key, headers.get( key ) );
+        if ( headers != null ) {
+            for ( String key : headers.keySet() ) {
+                post.setRequestHeader( key, headers.get( key ) );
+            }
         }
         client.executeMethod( post );
         return worker.work( post.getResponseBodyAsStream() );
