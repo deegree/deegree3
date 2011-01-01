@@ -48,6 +48,7 @@ import org.apache.maven.project.MavenProject;
 
 /**
  * @goal copy
+ * @phase generate-resources
  * 
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
  * @author last edited by: $Author$
