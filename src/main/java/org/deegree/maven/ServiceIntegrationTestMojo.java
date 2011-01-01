@@ -36,12 +36,18 @@
 package org.deegree.maven;
 
 import static java.util.Collections.singletonList;
+import static org.apache.commons.io.FileUtils.readFileToString;
+import static org.apache.commons.io.IOUtils.closeQuietly;
+import static org.apache.commons.io.IOUtils.toByteArray;
 import static org.deegree.cs.CRS.EPSG_4326;
 import static org.deegree.protocol.wms.WMSConstants.WMSRequestType.GetMap;
 
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.FileFilter;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.StringReader;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -53,6 +59,7 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.io.filefilter.SuffixFileFilter;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
@@ -95,6 +102,11 @@ public class ServiceIntegrationTestMojo extends AbstractMojo {
     private boolean testLayers;
 
     /**
+     * @parameter default-value="true"
+     */
+    private boolean testRequests;
+
+    /**
      * @parameter default-value="${project.basedir}/src/main/webapp/WEB-INF/workspace"
      */
     private File workspace;
@@ -124,6 +136,10 @@ public class ServiceIntegrationTestMojo extends AbstractMojo {
                 testLayers( service );
                 getLog().info( "All maps can be requested." );
             }
+        }
+
+        if ( testRequests ) {
+            testRequests();
         }
     }
 
@@ -210,6 +226,46 @@ public class ServiceIntegrationTestMojo extends AbstractMojo {
         } catch ( UnknownCRSException e ) {
             getLog().debug( e );
             throw new MojoFailureException( "Layer " + currentLayer + " had no bounding box." );
+        }
+    }
+
+    private void testRequests()
+                            throws MojoFailureException {
+        Object port = project.getProperties().get( "portnumber" );
+        String address = "http://localhost:" + port + "/" + project.getArtifactId() + "/services";
+
+        File reqDir = new File( project.getBasedir(), "src/test/requests" );
+        for ( File f : reqDir.listFiles( (FileFilter) new SuffixFileFilter( "kvp" ) ) ) {
+            InputStream in1 = null;
+            InputStream in2 = null;
+            String name = f.getName();
+            name = name.substring( 0, name.length() - 4 );
+            getLog().info( "Request testing " + name );
+            try {
+                String req = readFileToString( f ).trim();
+                in1 = new URL( address + ( req.startsWith( "?" ) ? "" : "?" ) + req ).openStream();
+                File response = new File( f.getParentFile(), name + ".response" );
+                in2 = new FileInputStream( response );
+                byte[] buf1 = toByteArray( in1 );
+                byte[] buf2 = toByteArray( in2 );
+                long equal = 0;
+                for ( int i = 0; i < buf1.length; ++i ) {
+                    if ( i < buf2.length && buf1[i] == buf2[i] ) {
+                        ++equal;
+                    }
+                }
+                double sim = (double) equal / (double) buf1.length;
+                if ( sim < 0.999 ) {
+                    throw new MojoFailureException( "Request test " + name + " resulted in a similarity of only " + sim
+                                                    + "!" );
+                }
+                getLog().info( "Request test " + name + " resulted in similarity of " + sim );
+            } catch ( IOException e ) {
+                throw new MojoFailureException( "Request checking of " + name + " failed: " + e.getLocalizedMessage() );
+            } finally {
+                closeQuietly( in1 );
+                closeQuietly( in2 );
+            }
         }
     }
 
