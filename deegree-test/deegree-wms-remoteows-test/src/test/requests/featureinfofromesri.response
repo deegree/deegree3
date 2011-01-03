@@ -1,0 +1,37 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<FeatureCollection xmlns="http://www.opengis.net/wfs" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:gml="http://www.opengis.net/gml" xsi:noNamespaceSchemaLocation="http://localhost:8080/deegree-wms-remoteows-test/services?request=GetFeatureInfoSchema&amp;layers=esri" xsi:schemaLocation="http://www.opengis.net/wfs http://schemas.opengis.net/wfs/1.0.0/WFS-basic.xsd">
+  <gml:boundedBy>
+    <gml:null>missing</gml:null>
+  </gml:boundedBy>
+  <gml:featureMember>
+    <feature fid="esri_1">
+      <ACRES></ACRES>
+      <AREA></AREA>
+      <AUTHORITY>Y</AUTHORITY>
+      <CITY></CITY>
+      <COMMUNITY>040019</COMMUNITY>
+      <CO_FIPS>04005</CO_FIPS>
+      <EFF_DAT></EFF_DAT>
+      <FIPS_CITY></FIPS_CITY>
+      <ITEM_ID>0400191350B</ITEM_ID>
+      <MCC>BAKER</MCC>
+      <NAME>COCONINO CO *</NAME>
+      <NOTE></NOTE>
+      <OBJECTID>1918686</OBJECTID>
+      <PANEL>1350B</PANEL>
+      <PANEL_DTE>437788800000</PANEL_DTE>
+      <PANEL_TYP>CB</PANEL_TYP>
+      <PERIMETER></PERIMETER>
+      <PID></PID>
+      <PRINTED>N</PRINTED>
+      <REGION>09</REGION>
+      <SCANNED>N</SCANNED>
+      <ST_FIPS>04</ST_FIPS>
+      <TYPE></TYPE>
+      <AREA>0.0297028264683259</AREA>
+      <LEN>0.712728100350919</LEN>
+      <_LAYERID_>REF:FLOODMAPINDEX</_LAYERID_>
+      <_SHAPE_>[Geometry]</_SHAPE_>
+    </feature>
+  </gml:featureMember>
+</FeatureCollection>

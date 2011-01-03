@@ -45,6 +45,12 @@
         <wms:RemoteWMSStoreId>timeout</wms:RemoteWMSStoreId>
       </wms:RequestableLayer>
 
+      <wms:RequestableLayer>
+        <wms:Name>esri</wms:Name>
+        <wms:Title>esri</wms:Title>
+        <wms:RemoteWMSStoreId>esri</wms:RemoteWMSStoreId>
+      </wms:RequestableLayer>
+
     </wms:UnrequestableLayer>
 
   </wms:ServiceConfiguration>
