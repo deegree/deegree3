@@ -35,6 +35,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.services.wfs;
 
+import static org.deegree.commons.xml.CommonNamespaces.FES_20_NS;
+import static org.deegree.commons.xml.CommonNamespaces.FES_PREFIX;
 import static org.deegree.commons.xml.CommonNamespaces.GMLNS;
 import static org.deegree.commons.xml.CommonNamespaces.GML_PREFIX;
 import static org.deegree.commons.xml.CommonNamespaces.OGCNS;
@@ -57,7 +59,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -698,7 +699,7 @@ class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
     }
 
     /**
-     * Produces a <code>WFS_Capabilities</code> document that complies to the WFS 2.0.0 specification (tentative).
+     * Produces a <code>WFS_Capabilities</code> document that complies to the WFS 2.0.0 specification.
      * 
      * @throws XMLStreamException
      */
@@ -709,91 +710,195 @@ class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
         writer.writeStartElement( WFS_200_NS, "WFS_Capabilities" );
         writer.writeAttribute( "version", "2.0.0" );
         writer.writeDefaultNamespace( WFS_200_NS );
-        writer.writeNamespace( OWS_PREFIX, OWS_NS );
+        writer.writeNamespace( OWS_PREFIX, OWS110_NS );
         writer.writeNamespace( OGC_PREFIX, OGCNS );
+        writer.writeNamespace( FES_PREFIX, FES_20_NS );
         writer.writeNamespace( GML_PREFIX, GMLNS );
         writer.writeNamespace( XLINK_PREFIX, XLN_NS );
         writer.writeAttribute( "xsi", CommonNamespaces.XSINS, "schemaLocation", WFS_200_NS + " " + WFS_200_SCHEMA_URL );
 
         // ows:ServiceIdentification
-        if ( sections.size() == 0 || sections.contains( "ServiceIdentification" ) ) {
-            // exportServiceIdentification( writer );
+        if ( sections == null || sections.contains( "ServiceIdentification" ) ) {
+            List<Version> serviceVersions = new ArrayList<Version>();
+            serviceVersions.add( Version.parseVersion( "2.0.0" ) );
+            exportServiceIdentification110( writer, serviceId, "WFS", serviceVersions );
         }
 
         // ows:ServiceProvider
-        if ( sections.size() == 0 || sections.contains( "ServiceProvider" ) ) {
-            exportServiceProvider100( writer, serviceProvider );
+        if ( sections == null || sections.contains( "ServiceProvider" ) ) {
+            exportServiceProvider110( writer, serviceProvider );
         }
 
         // ows:OperationsMetadata
-        if ( sections.size() == 0 || sections.contains( "OperationsMetadata" ) ) {
-            List<OWSOperation> operations = new LinkedList<OWSOperation>();
-            // operations.add( WFSRequestType.DescribeFeatureType.name() );
-            // operations.add( WFSRequestType.GetCapabilities.name() );
-            // operations.add( WFSRequestType.GetFeature.name() );
-            // if ( enableTransactions ) {
-            // operations.add( WFSRequestType.GetFeatureWithLock.name() );
-            // }
-            // operations.add( WFSRequestType.GetGmlObject.name() );
-            // if ( enableTransactions ) {
-            // operations.add( WFSRequestType.LockFeature.name() );
-            // operations.add( WFSRequestType.Transaction.name() );
-            // }
-            exportOperationsMetadata100( writer, operations );
+        if ( sections == null || sections.contains( "OPERATIONSMETADATA" ) ) {
+            List<OWSOperation> operations = new ArrayList<OWSOperation>();
+            DCPType dcp = new DCPType();
+            dcp.setHTTPGet( OGCFrontController.getHttpGetURL() );
+            dcp.setHTTPPost( OGCFrontController.getHttpPostURL() );
+
+            // DescribeFeatureType
+            List<Pair<String, List<String>>> params = new ArrayList<Pair<String, List<String>>>();
+            List<String> outputFormats = new ArrayList<String>( master.getOutputFormats() );
+            params.add( new Pair<String, List<String>>( "outputFormat", outputFormats ) );
+            List<Pair<String, List<String>>> constraints = new ArrayList<Pair<String, List<String>>>();
+            operations.add( new OWSOperation( WFSRequestType.DescribeFeatureType.name(), dcp, params, constraints ) );
+
+            // GetCapabilities
+            params = new ArrayList<Pair<String, List<String>>>();
+            params.add( new Pair<String, List<String>>( "AcceptVersions", master.getOfferedVersions() ) );
+            params.add( new Pair<String, List<String>>( "AcceptFormats", Collections.singletonList( "text/xml" ) ) );
+            // List<String> sections = new ArrayList<String>();
+            // sections.add( "ServiceIdentification" );
+            // sections.add( "ServiceProvider" );
+            // sections.add( "OperationsMetadata" );
+            // sections.add( "FeatureTypeList" );
+            // sections.add( "Filter_Capabilities" );
+            // params.add( new Pair<String, List<String>>( "Sections", sections ) );
+            constraints = new ArrayList<Pair<String, List<String>>>();
+            operations.add( new OWSOperation( WFSRequestType.GetCapabilities.name(), dcp, params, constraints ) );
+
+            // GetFeature
+            params = new ArrayList<Pair<String, List<String>>>();
+            params.add( new Pair<String, List<String>>( "resultType",
+                                                        Arrays.asList( new String[] { "results", "hits" } ) ) );
+            params.add( new Pair<String, List<String>>( "outputFormat", outputFormats ) );
+            operations.add( new OWSOperation( WFSRequestType.GetFeature.name(), dcp, params, constraints ) );
+
+            // TODO other operations
+
+            exportOperationsMetadata110( writer, operations );
+        }
+
+        // wfs:WSDL
+        if ( sections == null || sections.contains( "WSDL" ) ) {
+            // TODO
         }
 
         // wfs:FeatureTypeList
-        if ( sections.size() == 0 || sections.contains( "FeatureTypeList" ) ) {
-            // for ( QName ftName : servedFts ) {
-            // writer.writeStartElement( WFS_200_NS, "FeatureType" );
-            // // wfs:Name
-            // writer.writeStartElement( WFS_200_NS, "Name" );
-            // if ( ftName.getNamespaceURI() != XMLConstants.NULL_NS_URI ) {
-            // // TODO evaluate namespace prefix generation strategies
-            // writer.writeAttribute( "xmlns:app", ftName.getNamespaceURI() );
-            // writer.writeCharacters( "app:" + ftName.getLocalPart() );
-            // } else {
-            // writer.writeCharacters( ftName.getLocalPart() );
-            // }
-            // writer.writeEndElement();
-            //
-            // // wfs:Title
-            // writer.writeStartElement( WFS_200_NS, "Title" );
-            // writer.writeCharacters( "title" );
-            // writer.writeEndElement();
-            //
-            // // wfs:Abstract (minOccurs=0, maxOccurs=1)
-            // writer.writeStartElement( WFS_200_NS, "Abstract" );
-            // writer.writeCharacters( "abstract" );
-            // writer.writeEndElement();
-            //
-            // // wfs:Keywords (minOccurs=0, maxOccurs=1)
-            // writer.writeStartElement( WFS_200_NS, "Keywords" );
-            // writer.writeCharacters( "keywords" );
-            // writer.writeEndElement();
-            //
-            // // TODO Operations, OutputFormats, ...
-            //
-            // writer.writeEndElement();
-            // }
+        if ( sections == null || sections.contains( "FeatureTypeList" ) ) {
+            writer.writeStartElement( WFS_200_NS, "FeatureTypeList" );
+            for ( FeatureType ft : servedFts ) {
+                QName ftName = ft.getName();
+                FeatureTypeMetadata ftMd = ftNameToFtMetadata.get( ftName );
+                writer.writeStartElement( WFS_200_NS, "FeatureType" );
+                // wfs:Name
+                writer.writeStartElement( WFS_200_NS, "Name" );
+                String prefix = ftName.getPrefix();
+                if ( prefix == null || prefix.equals( "" ) ) {
+                    LOG.warn( "Feature type '" + ftName + "' has no prefix!? This should not happen." );
+                    prefix = "app";
+                }
+                if ( ftName.getNamespaceURI() != XMLConstants.NULL_NS_URI ) {
+                    // TODO what about the namespace prefix?
+                    writer.writeNamespace( prefix, ftName.getNamespaceURI() );
+                    writer.writeCharacters( prefix + ":" + ftName.getLocalPart() );
+                } else {
+                    writer.writeCharacters( ftName.getLocalPart() );
+                }
+                writer.writeEndElement();
+
+                // wfs:Title
+                writer.writeStartElement( WFS_200_NS, "Title" );
+                if ( ftMd != null && ftMd.getTitle() != null ) {
+                    writer.writeCharacters( ftMd.getTitle() );
+                } else {
+                    writer.writeCharacters( prefix + ":" + ftName.getLocalPart() );
+                }
+                writer.writeEndElement();
+
+                // wfs:Abstract (minOccurs=0, maxOccurs=1)
+                if ( ftMd != null && ftMd.getAbstract() != null ) {
+                    writer.writeStartElement( WFS_200_NS, "Abstract" );
+                    writer.writeCharacters( ftMd.getAbstract() );
+                    writer.writeEndElement();
+                }
+
+                // ows:Keywords (minOccurs=0, maxOccurs=unbounded)
+                // writer.writeStartElement( OWS_NS, "Keywords" );
+                // writer.writeCharacters( "keywords" );
+                // writer.writeEndElement();
+
+                // wfs:DefaultCRS / wfs:NoCRS
+                FeatureStore fs = service.getStore( ftName );
+                writeElement( writer, WFS_200_NS, "DefaultCRS", querySRS.get( 0 ).getName() );
+
+                // wfs:OtherCRS
+                for ( int i = 1; i < querySRS.size(); i++ ) {
+                    writeElement( writer, WFS_200_NS, "OtherCRS", querySRS.get( i ).getName() );
+                }
+
+                writeOutputFormats200( writer );
+
+                // ows:WGS84BoundingBox (minOccurs=0, maxOccurs=unbounded)
+                Envelope env = null;
+                try {
+                    env = fs.getEnvelope( ftName );
+                } catch ( FeatureStoreException e ) {
+                    LOG.error( "Error retrieving envelope from FeatureStore: " + e.getMessage(), e );
+                }
+
+                if ( env != null ) {
+                    try {
+                        env = transformer.transform( env );
+                    } catch ( Exception e ) {
+                        LOG.error( "Cannot transform feature type envelope to WGS84." );
+                    }
+                } else {
+                    env = new SimpleGeometryFactory().createEnvelope( -180, -90, 180, 90, new CRS( "EPSG:4326" ) );
+                }
+
+                writer.writeStartElement( OWS110_NS, "WGS84BoundingBox" );
+                Point min = env.getMin();
+                Point max = env.getMax();
+                double minX = -180.0;
+                double minY = -90.0;
+                double maxX = 180.0;
+                double maxY = 90.0;
+                try {
+                    minX = min.get0();
+                    minY = min.get1();
+                    maxX = max.get0();
+                    maxY = max.get1();
+                } catch ( ArrayIndexOutOfBoundsException e ) {
+                    LOG.error( "Cannot generate WGS84 envelope for feature type '" + ftName + "'. Using full extent.",
+                               e );
+                    minX = -180.0;
+                    minY = -90.0;
+                    maxX = 180.0;
+                    maxY = 90.0;
+                }
+                writer.writeStartElement( OWS110_NS, "LowerCorner" );
+                writer.writeCharacters( formatter.format( minX ) + " " + formatter.format( minY ) );
+                writer.writeEndElement();
+                writer.writeStartElement( OWS110_NS, "UpperCorner" );
+                writer.writeCharacters( formatter.format( maxX ) + " " + formatter.format( maxY ) );
+                writer.writeEndElement();
+                writer.writeEndElement();
+
+                // TODO Operations
+
+                writer.writeEndElement();
+            }
+            writer.writeEndElement();
         }
 
-        // wfs:ServesGMLObjectTypeList
-        if ( sections.size() == 0 || sections.contains( "ServesGMLObjectTypeList" ) ) {
-            // TODO
-        }
-
-        // wfs:SupportsGMLObjectTypeList
-        if ( sections.size() == 0 || sections.contains( "SupportsGMLObjectTypeList" ) ) {
-            // TODO
-        }
-
-        // ogc:Filter_Capabilities
-        if ( sections.size() == 0 || sections.contains( "Filter_Capabilities" ) ) {
-            // TODO
+        // fes:Filter_Capabilities
+        if ( sections == null || sections.contains( "Filter_Capabilities" ) ) {
+            FilterCapabilitiesExporter.export200( writer );
         }
 
         writer.writeEndElement();
         writer.writeEndDocument();
+    }
+
+    private void writeOutputFormats200( XMLStreamWriter writer )
+                            throws XMLStreamException {
+        writer.writeStartElement( WFS_200_NS, "OutputFormats" );
+        for ( String format : master.getOutputFormats() ) {
+            writer.writeStartElement( WFS_200_NS, "Format" );
+            writer.writeCharacters( format );
+            writer.writeEndElement();
+        }
+        writer.writeEndElement();
     }
 }

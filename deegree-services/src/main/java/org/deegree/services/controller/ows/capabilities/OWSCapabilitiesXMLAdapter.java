@@ -217,7 +217,37 @@ public class OWSCapabilitiesXMLAdapter extends OWSCommonXMLAdapter {
      */
     public static void exportOperationsMetadata100( XMLStreamWriter writer, List<OWSOperation> operations )
                             throws XMLStreamException {
-        exportOperationsMetadata( writer, operations, OWS_NS );
+        writer.writeStartElement( OWS_NS, "OperationsMetadata" );
+
+        for ( OWSOperation operation : operations ) {
+            // ows:Operation
+            writer.writeStartElement( OWS_NS, "Operation" );
+            writer.writeAttribute( "name", operation.getName() );
+            exportDCP( writer, operation.getDcp(), OWS_NS );
+            for ( Pair<String, List<String>> param : operation.getParams() ) {
+                writer.writeStartElement( OWS_NS, "Parameter" );
+                writer.writeAttribute( "name", param.first );
+                for ( String value : param.second ) {
+                    writer.writeStartElement( OWS_NS, "Value" );
+                    writer.writeCharacters( value );
+                    writer.writeEndElement();
+                }
+                writer.writeEndElement();
+            }
+            for ( Pair<String, List<String>> constraint : operation.getConstraints() ) {
+                writer.writeStartElement( OWS_NS, "Constraint" );
+                writer.writeAttribute( "name", constraint.first );
+                for ( String value : constraint.second ) {
+                    writer.writeStartElement( OWS_NS, "Value" );
+                    writer.writeCharacters( value );
+                    writer.writeEndElement();
+                }
+                writer.writeEndElement();
+            }
+            writer.writeEndElement();
+        }
+
+        writer.writeEndElement();
     }
 
     /**
@@ -231,7 +261,43 @@ public class OWSCapabilitiesXMLAdapter extends OWSCommonXMLAdapter {
      */
     public static void exportOperationsMetadata110( XMLStreamWriter writer, List<OWSOperation> operations )
                             throws XMLStreamException {
-        exportOperationsMetadata( writer, operations, OWS110_NS );
+        writer.writeStartElement( OWS110_NS, "OperationsMetadata" );
+
+        for ( OWSOperation operation : operations ) {
+            // ows:Operation
+            writer.writeStartElement( OWS110_NS, "Operation" );
+            writer.writeAttribute( "name", operation.getName() );
+            exportDCP( writer, operation.getDcp(), OWS110_NS );
+            for ( Pair<String, List<String>> param : operation.getParams() ) {
+                writer.writeStartElement( OWS110_NS, "Parameter" );
+                writer.writeAttribute( "name", param.first );
+                if ( param.second.isEmpty() ) {
+                    writer.writeEmptyElement( OWS110_NS, "AnyValue" );
+                } else {
+                    writer.writeStartElement( OWS110_NS, "AllowedValues" );
+                    for ( String value : param.second ) {
+                        writer.writeStartElement( OWS110_NS, "Value" );
+                        writer.writeCharacters( value );
+                        writer.writeEndElement();
+                    }
+                    writer.writeEndElement();
+                }
+                writer.writeEndElement();
+            }
+            for ( Pair<String, List<String>> constraint : operation.getConstraints() ) {
+                writer.writeStartElement( OWS110_NS, "Constraint" );
+                writer.writeAttribute( "name", constraint.first );
+                for ( String value : constraint.second ) {
+                    writer.writeStartElement( OWS110_NS, "Value" );
+                    writer.writeCharacters( value );
+                    writer.writeEndElement();
+                }
+                writer.writeEndElement();
+            }
+            writer.writeEndElement();
+        }
+
+        writer.writeEndElement();
     }
 
     /**
@@ -459,83 +525,6 @@ public class OWSCapabilitiesXMLAdapter extends OWSCommonXMLAdapter {
 
             writer.writeEndElement(); // ContactInfo
         }
-    }
-
-    /**
-     * Export a list of operation names as an OWS <code>OperationsMetadata</code> element.
-     * <p>
-     * Please note that the generated <code>OperationsMetadata</code> element only contains a minimum of information,
-     * i.e. it has no information on parameters (<code>Parameter</code> elements) or constraints (
-     * <code>Constraint</code> elements). If information in these sections are necessary, a service implementation has
-     * to generate the <code>OperationsMetadata</code> element itself. It is however possible to use
-     * {@link #exportDCP(XMLStreamWriter, DCPType, String)} in that case for the generation of the contained
-     * <code>DCP</code> elements.
-     * </p>
-     * <p>
-     * The namespace of the produced elements is given as a parameter so it is usable for different OWS versions. It has
-     * been checked that this method produces the correct output for the following OWS versions/namespaces:
-     * <p>
-     * <table border="1">
-     * <tr>
-     * <th>OWS version</th>
-     * <th>OWS namespace</th>
-     * </tr>
-     * <tr>
-     * <td><center>1.0.0</center></td>
-     * <td><center>http://www.opengis.net/ows</center></td>
-     * </tr>
-     * <tr>
-     * <td><center>1.1.0</center></td>
-     * <td><center>http://www.opengis.net/ows/1.1</center></td>
-     * </tr>
-     * </table>
-     * 
-     * @see #exportDCP(XMLStreamWriter, DCPType, String)
-     * 
-     * @param writer
-     *            writer to append the xml
-     * @param operations
-     *            operation names, e.g. "GetCapabilities"
-     * @param dcp
-     *            <code>DCPType</code> to export
-     * @param owsNS
-     *            namespace for the generated elements
-     * @throws XMLStreamException
-     */
-    private static void exportOperationsMetadata( XMLStreamWriter writer, List<OWSOperation> operations, String owsNS )
-                            throws XMLStreamException {
-
-        writer.writeStartElement( owsNS, "OperationsMetadata" );
-
-        for ( OWSOperation operation : operations ) {
-            // ows:Operation
-            writer.writeStartElement( owsNS, "Operation" );
-            writer.writeAttribute( "name", operation.getName() );
-            exportDCP( writer, operation.getDcp(), owsNS );
-            for ( Pair<String, List<String>> param : operation.getParams() ) {
-                writer.writeStartElement( owsNS, "Parameter" );
-                writer.writeAttribute( "name", param.first );
-                for ( String value : param.second ) {
-                    writer.writeStartElement( owsNS, "Value" );
-                    writer.writeCharacters( value );
-                    writer.writeEndElement();
-                }
-                writer.writeEndElement();
-            }
-            for ( Pair<String, List<String>> constraint : operation.getConstraints() ) {
-                writer.writeStartElement( owsNS, "Constraint" );
-                writer.writeAttribute( "name", constraint.first );
-                for ( String value : constraint.second ) {
-                    writer.writeStartElement( owsNS, "Value" );
-                    writer.writeCharacters( value );
-                    writer.writeEndElement();
-                }
-                writer.writeEndElement();
-            }
-            writer.writeEndElement();
-        }
-
-        writer.writeEndElement();
     }
 
     /**
