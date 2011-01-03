@@ -45,6 +45,7 @@ import static org.slf4j.LoggerFactory.getLogger;
 
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -79,17 +80,32 @@ public class RemoteWMSStore implements RemoteOWSStore {
 
     private WMSClient111 client;
 
-    private final Map<String, LayerOptions> layers;
+    private Map<String, LayerOptions> layers;
 
     private List<String> layerOrder;
 
     private TreeSet<String> commonSRS;
 
-    private boolean homogenousGroup = true, alwaysUseDefaultCRS = false;
+    private LayerOptions options;
 
-    private String imageFormat, requestCRS;
+    /**
+     * @param client
+     * @param layers
+     */
+    public RemoteWMSStore( WMSClient111 client, List<String> layers, LayerOptions options ) {
+        this.client = client;
+        this.layerOrder = layers;
+        this.options = options;
 
-    private boolean transparent;
+        for ( String l : layers ) {
+            if ( commonSRS == null ) {
+                commonSRS = new TreeSet<String>( client.getCoordinateSystems( l ) );
+            } else {
+                commonSRS.retainAll( client.getCoordinateSystems( l ) );
+            }
+        }
+        LOG.debug( "Requestable srs common to all cascaded layers: " + commonSRS );
+    }
 
     /**
      * @param client
@@ -99,97 +115,100 @@ public class RemoteWMSStore implements RemoteOWSStore {
         this.client = client;
         this.layers = layers;
         this.layerOrder = layerOrder;
-
-        Boolean transparent = null;
-        String format = null;
-        String crs = null;
-        String defCrs = null;
-        for ( LayerOptions opts : layers.values() ) {
-            if ( transparent == null ) {
-                transparent = opts.transparent;
-            } else {
-                if ( transparent != opts.transparent ) {
-                    homogenousGroup = false;
-                    LOG.debug( "Layer group can not be requested in a single request as transparency settings are not homogenous." );
-                    break;
-                }
-            }
-            if ( opts.imageFormat != null ) {
-                if ( format == null ) {
-                    format = opts.imageFormat;
-                } else {
-                    if ( !opts.imageFormat.equals( format ) ) {
-                        homogenousGroup = false;
-                        LOG.debug( "Layer group can not be requested in a single request as image format settings are not homogenous." );
-                        break;
-                    }
-                }
-            }
-            if ( opts.defaultCRS != null ) {
-                if ( defCrs == null ) {
-                    defCrs = opts.defaultCRS;
-                }
-            }
-            if ( opts.alwaysUseDefaultCRS && opts.defaultCRS != null ) {
-                if ( crs == null ) {
-                    crs = opts.defaultCRS;
-                } else {
-                    if ( !crs.equals( opts.defaultCRS ) ) {
-                        homogenousGroup = false;
-                        LOG.debug( "Layer group can not be requested in a single request as crs settings are not homogenous." );
-                        break;
-                    }
-                }
-            }
-        }
-        commonSRS = null;
-        for ( String l : layers.keySet() ) {
-            if ( commonSRS == null ) {
-                commonSRS = new TreeSet<String>( client.getCoordinateSystems( l ) );
-            } else {
-                commonSRS.retainAll( client.getCoordinateSystems( l ) );
-            }
-        }
-        LOG.debug( "Requestable srs common to all cascaded layers: " + commonSRS );
-
-        if ( homogenousGroup ) {
-            imageFormat = format == null ? "image/png" : format;
-            requestCRS = crs;
-            if ( requestCRS == null ) {
-                requestCRS = defCrs == null ? commonSRS.first() : defCrs;
-            } else {
-                alwaysUseDefaultCRS = true;
-            }
-            this.transparent = transparent;
-        }
     }
 
     /**
-     * @return the pre-configured client
+     * @return true, if all layers can be requested in one request
      */
-    public WMSClient111 getClient() {
-        return client;
+    public boolean isSimple() {
+        return options != null;
     }
 
-    /**
-     * @return the list of configured layers
-     */
-    public List<String> getLayers() {
+    private BufferedImage getMap( final String layer, final Envelope envelope, final int width, final int height,
+                                  LayerOptions opts ) {
+        CRS origCrs = envelope.getCoordinateSystem();
+        String origCrsName = origCrs.getName();
+        try {
+            if ( ( !opts.alwaysUseDefaultCRS && client.getCoordinateSystems( layer ).contains( origCrsName ) )
+                 || origCrsName.equals( opts.defaultCRS ) ) {
+                LOG.trace( "Will request remote layer(s) in " + origCrsName );
+                LinkedList<String> errors = new LinkedList<String>();
+                Pair<BufferedImage, String> pair = client.getMap( new LinkedList<String>( singletonList( layer ) ),
+                                                                  width, height, envelope, origCrs, opts.imageFormat,
+                                                                  opts.transparent, false, -1, true, errors );
+                LOG.debug( "Parameters that have been replaced for this request: " + errors );
+                if ( pair.first == null ) {
+                    LOG.debug( "Error from remote WMS: " + pair.second );
+                }
+                return pair.first;
+            }
+
+            // case: transform the bbox and image
+            LOG.trace( "Will request remote layer(s) in {} and transform to {}", opts.defaultCRS, origCrsName );
+
+            GeometryTransformer trans = new GeometryTransformer( opts.defaultCRS );
+            Envelope bbox = trans.transform( envelope, origCrs.getWrappedCRS() );
+
+            RasterTransformer rtrans = new RasterTransformer( origCrs.getWrappedCRS() );
+
+            double scale = Utils.calcScaleWMS111( width, height, envelope,
+                                                  envelope.getCoordinateSystem().getWrappedCRS() );
+            double newScale = Utils.calcScaleWMS111( width, height, bbox, new CRS( opts.defaultCRS ).getWrappedCRS() );
+            double ratio = scale / newScale;
+
+            int newWidth = round( ratio * width );
+            int newHeight = round( ratio * height );
+
+            LinkedList<String> errors = new LinkedList<String>();
+            Pair<BufferedImage, String> pair = client.getMap( layerOrder, newWidth, newHeight, bbox,
+                                                              new CRS( opts.defaultCRS ), opts.imageFormat,
+                                                              opts.transparent, false, -1, true, errors );
+
+            LOG.debug( "Parameters that have been replaced for this request: {}", errors );
+            if ( pair.first == null ) {
+                LOG.debug( "Error from remote WMS: {}", pair.second );
+                return null;
+            }
+
+            RasterGeoReference env = RasterGeoReference.create( OUTER, bbox, newWidth, newHeight );
+            RasterData data = rasterDataFromImage( pair.first );
+            SimpleRaster raster = new SimpleRaster( data, bbox, env );
+
+            SimpleRaster transformed = rtrans.transform( raster, envelope, width, height, BILINEAR ).getAsSimpleRaster();
+
+            return rasterDataToImage( transformed.getRasterData() );
+        } catch ( IOException e ) {
+            LOG.info( "Error when loading image from remote WMS: {}", e.getLocalizedMessage() );
+            LOG.trace( "Stack trace", e );
+        } catch ( UnknownCRSException e ) {
+            LOG.warn( "Unable to find crs, this is not supposed to happen." );
+            LOG.trace( "Stack trace", e );
+        } catch ( TransformationException e ) {
+            LOG.warn( "Unable to transform bbox from {} to {}", origCrsName, opts.defaultCRS );
+            LOG.trace( "Stack trace", e );
+        }
         return null;
     }
 
+    /**
+     * @param envelope
+     * @param width
+     * @param height
+     * @return a singleton list if #isSimple returns true, or a list of one image per layer
+     */
     public List<BufferedImage> getMap( final Envelope envelope, final int width, final int height ) {
-        if ( homogenousGroup ) {
+        if ( options != null ) {
             CRS origCrs = envelope.getCoordinateSystem();
             String origCrsName = origCrs.getName();
             try {
 
-                if ( ( !alwaysUseDefaultCRS && commonSRS.contains( origCrsName ) ) || origCrsName.equals( requestCRS ) ) {
+                if ( ( !options.alwaysUseDefaultCRS && commonSRS.contains( origCrsName ) )
+                     || origCrsName.equals( options.defaultCRS ) ) {
                     LOG.trace( "Will request remote layer(s) in " + origCrsName );
                     LinkedList<String> errors = new LinkedList<String>();
-                    Pair<BufferedImage, String> pair = client.getMap( new LinkedList<String>( layers.keySet() ), width,
-                                                                      height, envelope, origCrs, imageFormat,
-                                                                      transparent, false, -1, true, errors );
+                    Pair<BufferedImage, String> pair = client.getMap( layerOrder, width, height, envelope, origCrs,
+                                                                      options.imageFormat, options.transparent, false,
+                                                                      -1, true, errors );
                     LOG.debug( "Parameters that have been replaced for this request: " + errors );
                     if ( pair.first == null ) {
                         LOG.debug( "Error from remote WMS: " + pair.second );
@@ -198,16 +217,17 @@ public class RemoteWMSStore implements RemoteOWSStore {
                 }
 
                 // case: transform the bbox and image
-                LOG.trace( "Will request remote layer(s) in {} and transform to {}", requestCRS, origCrsName );
+                LOG.trace( "Will request remote layer(s) in {} and transform to {}", options.defaultCRS, origCrsName );
 
-                GeometryTransformer trans = new GeometryTransformer( requestCRS );
+                GeometryTransformer trans = new GeometryTransformer( options.defaultCRS );
                 Envelope bbox = trans.transform( envelope, origCrs.getWrappedCRS() );
 
                 RasterTransformer rtrans = new RasterTransformer( origCrs.getWrappedCRS() );
 
                 double scale = Utils.calcScaleWMS111( width, height, envelope,
                                                       envelope.getCoordinateSystem().getWrappedCRS() );
-                double newScale = Utils.calcScaleWMS111( width, height, bbox, new CRS( requestCRS ).getWrappedCRS() );
+                double newScale = Utils.calcScaleWMS111( width, height, bbox,
+                                                         new CRS( options.defaultCRS ).getWrappedCRS() );
                 double ratio = scale / newScale;
 
                 int newWidth = round( ratio * width );
@@ -215,8 +235,8 @@ public class RemoteWMSStore implements RemoteOWSStore {
 
                 LinkedList<String> errors = new LinkedList<String>();
                 Pair<BufferedImage, String> pair = client.getMap( layerOrder, newWidth, newHeight, bbox,
-                                                                  new CRS( requestCRS ), imageFormat, transparent,
-                                                                  false, -1, true, errors );
+                                                                  new CRS( options.defaultCRS ), options.imageFormat,
+                                                                  options.transparent, false, -1, true, errors );
 
                 LOG.debug( "Parameters that have been replaced for this request: {}", errors );
                 if ( pair.first == null ) {
@@ -239,16 +259,26 @@ public class RemoteWMSStore implements RemoteOWSStore {
                 LOG.warn( "Unable to find crs, this is not supposed to happen." );
                 LOG.trace( "Stack trace", e );
             } catch ( TransformationException e ) {
-                LOG.warn( "Unable to transform bbox from {} to {}", origCrsName, requestCRS );
+                LOG.warn( "Unable to transform bbox from {} to {}", origCrsName, options.defaultCRS );
                 LOG.trace( "Stack trace", e );
             }
-        } else {
-            LOG.warn( "Sophisticated per layer settings are not supported yet." );
+            return null;
         }
 
-        return null;
+        ArrayList<BufferedImage> list = new ArrayList<BufferedImage>();
+        for ( String l : layerOrder ) {
+            list.add( getMap( l, envelope, width, height, layers.get( l ) ) );
+        }
+        return list;
     }
 
+    /**
+     * 
+     * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
+     * @author last edited by: $Author$
+     * 
+     * @version $Revision$, $Date$
+     */
     public static class LayerOptions {
         public boolean transparent = true, alwaysUseDefaultCRS = false;
 

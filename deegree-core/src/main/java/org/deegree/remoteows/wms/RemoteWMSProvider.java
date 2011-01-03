@@ -91,7 +91,7 @@ public class RemoteWMSProvider implements RemoteOWSProvider {
         return "WMS";
     }
 
-    private static void fillLayerOptions( LayerOptions opts, RequestOptionsType ropts ) {
+    private static boolean fillLayerOptions( LayerOptions opts, RequestOptionsType ropts ) {
         if ( ropts != null ) {
             if ( ropts.getImageFormat() != null ) {
                 opts.imageFormat = ropts.getImageFormat().getValue();
@@ -102,6 +102,7 @@ public class RemoteWMSProvider implements RemoteOWSProvider {
                 opts.alwaysUseDefaultCRS = ropts.getDefaultCRS().isUseAlways();
             }
         }
+        return ropts != null;
     }
 
     public RemoteOWSStore create( URL config ) {
@@ -114,14 +115,22 @@ public class RemoteWMSProvider implements RemoteOWSProvider {
             Map<String, LayerOptions> layers = new HashMap<String, LayerOptions>();
             List<String> layerOrder = new LinkedList<String>();
             RequestOptionsType def = cfg.getDefaultRequestOptions();
+            boolean optionsOverridden = false;
             for ( RequestedLayerType rlt : cfg.getRequestedLayer() ) {
                 layerOrder.add( rlt.getName() );
                 LayerOptions opts = new LayerOptions();
                 fillLayerOptions( opts, def );
-                fillLayerOptions( opts, rlt.getRequestOptions() );
+                optionsOverridden = fillLayerOptions( opts, rlt.getRequestOptions() ) || optionsOverridden;
                 layers.put( rlt.getName(), opts );
             }
-            return new org.deegree.remoteows.wms.RemoteWMSStore( client, layers, layerOrder );
+            if ( optionsOverridden ) {
+                LOG.debug( "Configured remote WMS store with extended options, this will result in one request per layer." );
+                return new org.deegree.remoteows.wms.RemoteWMSStore( client, layers, layerOrder );
+            }
+            LOG.debug( "Configured remote WMS store with standard options, this enables an efficient request for all layers." );
+            LayerOptions opts = new LayerOptions();
+            fillLayerOptions( opts, def );
+            return new org.deegree.remoteows.wms.RemoteWMSStore( client, layerOrder, opts );
         } catch ( JAXBException e ) {
             e.printStackTrace();
             LOG.warn( "Remote WMS store config at '{}' could not be parsed: {}", config, e.getLocalizedMessage() );
