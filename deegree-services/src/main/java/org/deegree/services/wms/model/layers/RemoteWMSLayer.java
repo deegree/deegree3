@@ -124,6 +124,9 @@ public class RemoteWMSLayer extends Layer {
     public LinkedList<String> paintMap( Graphics2D g, GetMap gm, Style style )
                             throws MissingDimensionValue, InvalidDimensionValue {
         List<BufferedImage> images = wmsStore.getMap( gm.getBoundingBox(), gm.getWidth(), gm.getHeight() );
+        if ( images == null ) {
+            return new LinkedList<String>();
+        }
         for ( BufferedImage img : images ) {
             g.drawImage( img, 0, 0, null );
         }
