@@ -39,6 +39,12 @@
         <wms:RemoteWMSStoreId>multipleoptionsmultiplelayers</wms:RemoteWMSStoreId>
       </wms:RequestableLayer>
 
+      <wms:RequestableLayer>
+        <wms:Name>timeout</wms:Name>
+        <wms:Title>timeout</wms:Title>
+        <wms:RemoteWMSStoreId>timeout</wms:RemoteWMSStoreId>
+      </wms:RequestableLayer>
+
     </wms:UnrequestableLayer>
 
   </wms:ServiceConfiguration>
