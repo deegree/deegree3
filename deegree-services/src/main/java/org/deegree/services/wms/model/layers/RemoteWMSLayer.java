@@ -148,13 +148,19 @@ public class RemoteWMSLayer extends Layer {
 
     @Override
     public Pair<FeatureCollection, LinkedList<String>> getFeatures( GetFeatureInfo fi, Style style ) {
-        // TODO Auto-generated method stub
-        return null;
+        FeatureCollection col = wmsStore.getFeatureInfo( fi.getEnvelope(), fi.getWidth(), fi.getHeight(), fi.getX(),
+                                                         fi.getY() );
+        return new Pair<FeatureCollection, LinkedList<String>>( col, new LinkedList<String>() );
     }
 
     @Override
     public FeatureType getFeatureType() {
         return null;
+    }
+
+    @Override
+    public String toString() {
+        return getName();
     }
 
 }

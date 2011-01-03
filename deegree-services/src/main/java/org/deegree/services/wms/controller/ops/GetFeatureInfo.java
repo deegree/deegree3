@@ -406,4 +406,39 @@ public class GetFeatureInfo {
         return dimensions;
     }
 
+    /**
+     * @return the original GetMap envelope
+     */
+    public Envelope getEnvelope() {
+        return bbox;
+    }
+
+    /**
+     * @return the original GetMap width
+     */
+    public int getWidth() {
+        return width;
+    }
+
+    /**
+     * @return the original GetMap height
+     */
+    public int getHeight() {
+        return height;
+    }
+
+    /**
+     * @return the x click point
+     */
+    public int getX() {
+        return x;
+    }
+
+    /**
+     * @return the y click point
+     */
+    public int getY() {
+        return y;
+    }
+
 }
