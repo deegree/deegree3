@@ -33,6 +33,12 @@
         <wms:RemoteWMSStoreId>optionsmultiple</wms:RemoteWMSStoreId>
       </wms:RequestableLayer>
 
+      <wms:RequestableLayer>
+        <wms:Name>multipleoptionsmultiplelayers</wms:Name>
+        <wms:Title>multipleoptionsmultiplelayers</wms:Title>
+        <wms:RemoteWMSStoreId>multipleoptionsmultiplelayers</wms:RemoteWMSStoreId>
+      </wms:RequestableLayer>
+
     </wms:UnrequestableLayer>
 
   </wms:ServiceConfiguration>
