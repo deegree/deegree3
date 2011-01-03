@@ -125,18 +125,21 @@ public class ServiceIntegrationTestMojo extends AbstractMojo {
             getLog().warn( "Default/configured workspace did not exist, using existing " + workspace + " instead." );
         }
 
-        for ( File f : new File( workspace, "services" ).listFiles() ) {
-            String nm = f.getName().toLowerCase();
-            if ( nm.length() != 7 ) {
-                continue;
-            }
-            String service = nm.substring( 0, 3 ).toUpperCase();
-            if ( testCapabilities ) {
-                testCapabilities( service );
-            }
-            if ( testLayers ) {
-                testLayers( service );
-                getLog().info( "All maps can be requested." );
+        File[] listed = new File( workspace, "services" ).listFiles();
+        if ( listed != null ) {
+            for ( File f : listed ) {
+                String nm = f.getName().toLowerCase();
+                if ( nm.length() != 7 ) {
+                    continue;
+                }
+                String service = nm.substring( 0, 3 ).toUpperCase();
+                if ( testCapabilities ) {
+                    testCapabilities( service );
+                }
+                if ( testLayers ) {
+                    testLayers( service );
+                    getLog().info( "All maps can be requested." );
+                }
             }
         }
 
@@ -267,51 +270,60 @@ public class ServiceIntegrationTestMojo extends AbstractMojo {
     private void testRequestDirectories( String address, File dir )
                             throws MojoFailureException {
         testRequestDirectory( address, dir );
-        for ( File f : dir.listFiles() ) {
-            if ( f.isDirectory() && !f.getName().equalsIgnoreCase( ".svn" ) ) {
-                getLog().info( "---- Searching request class " + f.getName() + " for requests." );
-                testRequestDirectories( address, f );
+        File[] listed = dir.listFiles();
+        if ( listed != null ) {
+            for ( File f : listed ) {
+                if ( f.isDirectory() && !f.getName().equalsIgnoreCase( ".svn" ) ) {
+                    getLog().info( "---- Searching request class " + f.getName() + " for requests." );
+                    testRequestDirectories( address, f );
+                }
             }
         }
     }
 
     private void testRequestDirectory( String address, File dir )
                             throws MojoFailureException {
-        for ( File f : dir.listFiles( (FileFilter) new SuffixFileFilter( "kvp" ) ) ) {
-            String name = f.getName();
-            name = name.substring( 0, name.length() - 4 );
-            getLog().info( "KVP request testing " + name );
-            try {
-                String req = readFileToString( f ).trim();
-                InputStream in1 = new URL( address + ( req.startsWith( "?" ) ? "" : "?" ) + req ).openStream();
-                File response = new File( f.getParentFile(), name + ".response" );
-                InputStream in2 = new FileInputStream( response );
-                double sim = determineSimilarity( name, in1, in2 );
-                if ( sim != 1 ) {
-                    getLog().info( "Request test " + name + " resulted in similarity of " + sim );
+        File[] listed = dir.listFiles( (FileFilter) new SuffixFileFilter( "kvp" ) );
+        if ( listed != null ) {
+            for ( File f : listed ) {
+                String name = f.getName();
+                name = name.substring( 0, name.length() - 4 );
+                getLog().info( "KVP request testing " + name );
+                try {
+                    String req = readFileToString( f ).trim();
+                    InputStream in1 = new URL( address + ( req.startsWith( "?" ) ? "" : "?" ) + req ).openStream();
+                    File response = new File( f.getParentFile(), name + ".response" );
+                    InputStream in2 = new FileInputStream( response );
+                    double sim = determineSimilarity( name, in1, in2 );
+                    if ( sim != 1 ) {
+                        getLog().info( "Request test " + name + " resulted in similarity of " + sim );
+                    }
+                } catch ( IOException e ) {
+                    throw new MojoFailureException( "KVP request checking of " + name + " failed: "
+                                                    + e.getLocalizedMessage() );
                 }
-            } catch ( IOException e ) {
-                throw new MojoFailureException( "KVP request checking of " + name + " failed: "
-                                                + e.getLocalizedMessage() );
             }
         }
-        for ( File f : dir.listFiles( (FileFilter) new SuffixFileFilter( "xml" ) ) ) {
-            String name = f.getName();
-            name = name.substring( 0, name.length() - 4 );
-            getLog().info( "XML request testing " + name );
-            FileInputStream reqIn = null;
-            try {
-                reqIn = new FileInputStream( f );
-                InputStream in1 = post( STREAM, address, reqIn, null );
-                File response = new File( f.getParentFile(), name + ".response" );
-                InputStream in2 = new FileInputStream( response );
-                double sim = determineSimilarity( name, in1, in2 );
-                getLog().info( "Request test " + name + " resulted in similarity of " + sim );
-            } catch ( IOException e ) {
-                throw new MojoFailureException( "KVP request checking of " + name + " failed: "
-                                                + e.getLocalizedMessage() );
-            } finally {
-                closeQuietly( reqIn );
+        listed = dir.listFiles( (FileFilter) new SuffixFileFilter( "xml" ) );
+        if ( listed != null ) {
+            for ( File f : listed ) {
+                String name = f.getName();
+                name = name.substring( 0, name.length() - 4 );
+                getLog().info( "XML request testing " + name );
+                FileInputStream reqIn = null;
+                try {
+                    reqIn = new FileInputStream( f );
+                    InputStream in1 = post( STREAM, address, reqIn, null );
+                    File response = new File( f.getParentFile(), name + ".response" );
+                    InputStream in2 = new FileInputStream( response );
+                    double sim = determineSimilarity( name, in1, in2 );
+                    getLog().info( "Request test " + name + " resulted in similarity of " + sim );
+                } catch ( IOException e ) {
+                    throw new MojoFailureException( "KVP request checking of " + name + " failed: "
+                                                    + e.getLocalizedMessage() );
+                } finally {
+                    closeQuietly( reqIn );
+                }
             }
         }
     }
