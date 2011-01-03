@@ -15,6 +15,12 @@
         <wms:RemoteWMSStoreId>single</wms:RemoteWMSStoreId>
       </wms:RequestableLayer>
 
+      <wms:RequestableLayer>
+        <wms:Name>optionssingle</wms:Name>
+        <wms:Title>optionssingle</wms:Title>
+        <wms:RemoteWMSStoreId>optionssingle</wms:RemoteWMSStoreId>
+      </wms:RequestableLayer>
+
     </wms:UnrequestableLayer>
 
   </wms:ServiceConfiguration>
