@@ -134,9 +134,9 @@ public class RemoteWMSStore implements RemoteOWSStore {
                  || origCrsName.equals( opts.defaultCRS ) ) {
                 LOG.trace( "Will request remote layer(s) in " + origCrsName );
                 LinkedList<String> errors = new LinkedList<String>();
-                Pair<BufferedImage, String> pair = client.getMap( new LinkedList<String>( singletonList( layer ) ),
-                                                                  width, height, envelope, origCrs, opts.imageFormat,
-                                                                  opts.transparent, false, -1, true, errors );
+                Pair<BufferedImage, String> pair = client.getMap( singletonList( layer ), width, height, envelope,
+                                                                  origCrs, opts.imageFormat, opts.transparent, false,
+                                                                  -1, true, errors );
                 LOG.debug( "Parameters that have been replaced for this request: " + errors );
                 if ( pair.first == null ) {
                     LOG.debug( "Error from remote WMS: " + pair.second );
@@ -161,7 +161,7 @@ public class RemoteWMSStore implements RemoteOWSStore {
             int newHeight = abs( round( ratio * height ) );
 
             LinkedList<String> errors = new LinkedList<String>();
-            Pair<BufferedImage, String> pair = client.getMap( layerOrder, newWidth, newHeight, bbox,
+            Pair<BufferedImage, String> pair = client.getMap( singletonList( layer ), newWidth, newHeight, bbox,
                                                               new CRS( opts.defaultCRS ), opts.imageFormat,
                                                               opts.transparent, false, -1, true, errors );
 
