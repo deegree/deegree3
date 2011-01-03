@@ -107,6 +107,23 @@ public class WMSClient111 {
     // needed in the worker
     XMLAdapter capabilities;
 
+    int connectionTimeout = 5;
+
+    int requestTimeout = 60;
+
+    /**
+     * @param url
+     * @param connectionTimeout
+     *            default is 5 seconds
+     * @param requestTimeout
+     *            default is 60 seconds
+     */
+    public WMSClient111( URL url, int connectionTimeout, int requestTimeout ) {
+        this( url );
+        this.connectionTimeout = connectionTimeout;
+        this.requestTimeout = requestTimeout;
+    }
+
     /**
      * @param url
      */
@@ -543,6 +560,8 @@ public class WMSClient111 {
                 LOG.debug( "Connecting to URL " + theUrl );
                 URLConnection conn = ProxyUtils.openURLConnection( theUrl, ProxyUtils.getHttpProxyUser( true ),
                                                                    ProxyUtils.getHttpProxyPassword( true ) );
+                conn.setConnectTimeout( connectionTimeout * 1000 );
+                conn.setReadTimeout( requestTimeout * 1000 );
                 conn.connect();
                 LOG.debug( "Connected." );
                 if ( LOG.isTraceEnabled() ) {
@@ -550,9 +569,10 @@ public class WMSClient111 {
                     LOG.trace( "Content type is " + conn.getContentType() );
                     LOG.trace( "Content encoding is " + conn.getContentEncoding() );
                 }
-                if ( conn.getContentType().startsWith( format ) ) {
+                if ( conn.getContentType() != null && conn.getContentType().startsWith( format ) ) {
                     res.first = IMAGE.work( conn.getInputStream() );
-                } else if ( conn.getContentType().startsWith( "application/vnd.ogc.se_xml" ) ) {
+                } else if ( conn.getContentType() != null
+                            && conn.getContentType().startsWith( "application/vnd.ogc.se_xml" ) ) {
                     res.second = XML.work( conn.getInputStream() ).toString();
                 } else { // try and find out the hard way
                     res.first = IMAGE.work( conn.getInputStream() );

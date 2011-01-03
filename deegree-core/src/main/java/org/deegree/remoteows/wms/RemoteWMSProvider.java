@@ -111,7 +111,11 @@ public class RemoteWMSProvider implements RemoteOWSProvider {
             XMLAdapter resolver = new XMLAdapter();
             resolver.setSystemId( config.toString() );
             URL capas = resolver.resolve( cfg.getCapabilitiesDocumentLocation().getLocation() );
-            WMSClient111 client = new WMSClient111( capas );
+
+            int connTimeout = cfg.getConnectionTimeout() == null ? 5 : cfg.getConnectionTimeout();
+            int reqTimeout = cfg.getRequestTimeout() == null ? 60 : cfg.getRequestTimeout();
+
+            WMSClient111 client = new WMSClient111( capas, connTimeout, reqTimeout );
             Map<String, LayerOptions> layers = new HashMap<String, LayerOptions>();
             List<String> layerOrder = new LinkedList<String>();
             RequestOptionsType def = cfg.getDefaultRequestOptions();
