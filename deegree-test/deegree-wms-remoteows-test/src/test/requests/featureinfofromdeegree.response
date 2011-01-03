@@ -1,0 +1,25 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<FeatureCollection xmlns="http://www.opengis.net/wfs" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:gml="http://www.opengis.net/gml" xsi:noNamespaceSchemaLocation="http://localhost:8080/deegree-wms-remoteows-test/services?request=GetFeatureInfoSchema&amp;layers=org.deegree.services.wms.model.layers.RemoteWMSLayer@79826b7a" xsi:schemaLocation="http://www.opengis.net/wfs http://schemas.opengis.net/wfs/1.0.0/WFS-basic.xsd">
+  <gml:boundedBy>
+    <gml:Box srsName="EPSG:26912">
+      <gml:coordinates decimal="." cs="," ts=" ">449735.203,4416586.050 509252.703,4504562.550</gml:coordinates>
+    </gml:Box>
+  </gml:boundedBy>
+  <gml:featureMember>
+    <app0:SGID500_ZipCodes xmlns:app0="http://www.deegree.org/app" fid="SGID500_ZIPCODES_131">
+      <gml:boundedBy>
+        <gml:Box srsName="EPSG:26912">
+          <gml:coordinates decimal="." cs="," ts=" ">449735.203,4416586.050 509252.703,4504562.550</gml:coordinates>
+        </gml:Box>
+      </gml:boundedBy>
+      <app0:OBJECTID>132</app0:OBJECTID>
+      <app0:ZIP>84032</app0:ZIP>
+      <app0:PO_NAME>Heber City</app0:PO_NAME>
+      <app0:STATE>UT</app0:STATE>
+      <app0:SUMBLKPOP>7961.00000000</app0:SUMBLKPOP>
+      <app0:POP1999>10730.00000000</app0:POP1999>
+      <app0:SHAPE_AREA>2873293063.30</app0:SHAPE_AREA>
+      <app0:SHAPE_LEN>319285.894680</app0:SHAPE_LEN>
+    </app0:SGID500_ZipCodes>
+  </gml:featureMember>
+</FeatureCollection>
