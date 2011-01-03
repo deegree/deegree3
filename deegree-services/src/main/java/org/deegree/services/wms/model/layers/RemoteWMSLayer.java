@@ -99,7 +99,7 @@ public class RemoteWMSLayer extends Layer {
         }
 
         wmsStore = (RemoteWMSStore) store;
-
+        setBbox( wmsStore.getEnvelope() );
     }
 
     /**
@@ -112,6 +112,7 @@ public class RemoteWMSLayer extends Layer {
     public RemoteWMSLayer( MapService service, RemoteWMSStore store, String name, String title, Layer parent ) {
         super( service, name, title, parent );
         wmsStore = store;
+        setBbox( wmsStore.getEnvelope() );
     }
 
     @Override
