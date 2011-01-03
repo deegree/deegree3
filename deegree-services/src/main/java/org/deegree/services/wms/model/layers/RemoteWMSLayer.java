@@ -41,6 +41,7 @@ import static org.slf4j.LoggerFactory.getLogger;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.util.LinkedList;
+import java.util.List;
 
 import org.deegree.commons.utils.Pair;
 import org.deegree.commons.utils.log.LoggingNotes;
@@ -53,6 +54,8 @@ import org.deegree.rendering.r2d.se.unevaluated.Style;
 import org.deegree.services.controller.OGCFrontController;
 import org.deegree.services.jaxb.wms.AbstractLayerType;
 import org.deegree.services.wms.MapService;
+import org.deegree.services.wms.WMSException.InvalidDimensionValue;
+import org.deegree.services.wms.WMSException.MissingDimensionValue;
 import org.deegree.services.wms.controller.ops.GetFeatureInfo;
 import org.deegree.services.wms.controller.ops.GetMap;
 import org.slf4j.Logger;
@@ -117,20 +120,26 @@ public class RemoteWMSLayer extends Layer {
     }
 
     @Override
-    public LinkedList<String> paintMap( Graphics2D g, GetMap gm, Style style ) {
-        Pair<BufferedImage, LinkedList<String>> pair = paintMap( gm, style );
-        if ( pair.first != null ) {
-            g.drawImage( pair.first, 0, 0, null );
+    public LinkedList<String> paintMap( Graphics2D g, GetMap gm, Style style )
+                            throws MissingDimensionValue, InvalidDimensionValue {
+        List<BufferedImage> images = wmsStore.getMap( gm.getBoundingBox(), gm.getWidth(), gm.getHeight() );
+        for ( BufferedImage img : images ) {
+            g.drawImage( img, 0, 0, null );
         }
-        return pair.second;
+        return new LinkedList<String>();
     }
 
     @Override
-    public Pair<BufferedImage, LinkedList<String>> paintMap( GetMap gm, Style style ) {
-        // TODO handle multiple resulting images
-        return new Pair<BufferedImage, LinkedList<String>>( wmsStore.getMap( gm.getBoundingBox(), gm.getWidth(),
-                                                                             gm.getHeight() ).get( 0 ),
-                                                            new LinkedList<String>() );
+    public Pair<BufferedImage, LinkedList<String>> paintMap( GetMap gm, Style style )
+                            throws MissingDimensionValue, InvalidDimensionValue {
+        if ( wmsStore.isSimple() ) {
+            List<BufferedImage> images = wmsStore.getMap( gm.getBoundingBox(), gm.getWidth(), gm.getHeight() );
+            return new Pair<BufferedImage, LinkedList<String>>( images.get( 0 ), new LinkedList<String>() );
+        }
+
+        // this assumes that super.paintMap will call paintMap(Graphics2D...)
+        // while not beautiful, this avoids copying the image once more in case the wmsStore is 'simple'
+        return super.paintMap( gm, style );
     }
 
     @Override
