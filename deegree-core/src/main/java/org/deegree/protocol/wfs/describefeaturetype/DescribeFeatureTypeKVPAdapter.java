@@ -75,7 +75,7 @@ public class DescribeFeatureTypeKVPAdapter extends AbstractWFSRequestKVPAdapter 
      * <ul>
      * <li>WFS 1.0.0</li>
      * <li>WFS 1.1.0</li>
-     * <li>WFS 2.0.0 (tentative)</li>
+     * <li>WFS 2.0.0</li>
      * </ul>
      * 
      * @param kvpParams
@@ -120,7 +120,7 @@ public class DescribeFeatureTypeKVPAdapter extends AbstractWFSRequestKVPAdapter 
                             throws InvalidParameterValueException {
 
         // optional: 'NAMESPACE' (deegree specific extension, not mentioned in the WFS 1.0.0 specification)
-        Map<String, String> nsBindings = extractNamespaceBindings( kvpParams );
+        Map<String, String> nsBindings = extractNamespaceBindings110( kvpParams );
 
         // optional: 'TYPENAME'
         QName[] typeNames = extractTypeNames( kvpParams, null );
@@ -144,7 +144,7 @@ public class DescribeFeatureTypeKVPAdapter extends AbstractWFSRequestKVPAdapter 
                             throws InvalidParameterValueException {
 
         // optional: 'NAMESPACE'
-        Map<String, String> nsBindings = extractNamespaceBindings( kvpParams );
+        Map<String, String> nsBindings = extractNamespaceBindings110( kvpParams );
 
         // optional: 'TYPENAME'
         QName[] typeNames = extractTypeNames( kvpParams, nsBindings );
@@ -168,7 +168,7 @@ public class DescribeFeatureTypeKVPAdapter extends AbstractWFSRequestKVPAdapter 
                             throws InvalidParameterValueException {
 
         // optional: 'NAMESPACE'
-        Map<String, String> nsBindings = extractNamespaceBindings( kvpParams );
+        Map<String, String> nsBindings = extractNamespaceBindings110( kvpParams );
 
         // optional: 'TYPENAME'
         QName[] typeNames = extractTypeNames( kvpParams, nsBindings );

@@ -63,6 +63,7 @@ public class GetCapabilitiesKVPAdapter {
      * <ul>
      * <li>WFS 1.0.0</li>
      * <li>WFS 1.1.0</li>
+     * <li>WFS 2.0.0</li>
      * </ul>
      * 
      * @param version
@@ -83,7 +84,7 @@ public class GetCapabilitiesKVPAdapter {
             if ( version.equals( VERSION_100 ) ) {
                 request = new GetCapabilities( version );
             } else {
-                // else treat as WFS 1.1.0 request (-> OWS 1.0.0)
+                // else treat as WFS 1.1.0/2.0.0 request (-> OWS 1.0.0/1.1.0)
                 request = GetCapabilitiesKVPParser.parse( kvpParams );
             }
         }

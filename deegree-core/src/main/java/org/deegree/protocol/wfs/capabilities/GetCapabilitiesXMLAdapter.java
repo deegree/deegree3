@@ -35,6 +35,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.protocol.wfs.capabilities;
 
+import static org.deegree.protocol.wfs.WFSConstants.WFS_200_NS;
+
 import org.deegree.commons.tom.ows.Version;
 import org.deegree.protocol.ows.capabilities.GetCapabilities;
 import org.deegree.protocol.ows.capabilities.GetCapabilitiesXMLParser;
@@ -57,8 +59,9 @@ public class GetCapabilitiesXMLAdapter extends GetCapabilitiesXMLParser {
      * <p>
      * Supported versions:
      * <ul>
-     * <li>WFS 1.0.0</li>
-     * <li>WFS 1.1.0</li>
+     * <li>1.0.0</li>
+     * <li>1.1.0</li>
+     * <li>2.0.0</li>
      * </ul>
      * 
      * @param version
@@ -71,8 +74,13 @@ public class GetCapabilitiesXMLAdapter extends GetCapabilitiesXMLParser {
             // @version present -> treat as WFS 1.0.0 request
             request = new GetCapabilities( version );
         } else {
-            // else treat as WFS 1.1.0 request (OWS 1.0.0)
-            request = parse100();
+            // else treat as WFS 1.1.0 / WFS 2.0.0 request (OWS 1.0.0 / 1.1.0)
+            String wfsNs = getRootElement().getNamespace().getNamespaceURI();
+            if ( WFS_200_NS.equals( wfsNs ) ) {
+                request = parse110();
+            } else {
+                request = parse100();
+            }
         }
         return request;
     }

@@ -55,6 +55,13 @@ public class CommonNamespaces {
     public static final String XMLNS = "http://www.w3.org/2000/xmlns/";
 
     /**
+     * The FES_20_NS namespace is currently bound to: "http://www.opengis.net/fes/2.0"
+     */
+    public static final String FES_20_NS = "http://www.opengis.net/fes/2.0";
+    
+    public static final String FES_PREFIX = "fes";
+
+    /**
      * The GMLNS namespace is currently bound to: "http://www.opengis.net/gml"
      */
     public static final String GMLNS = "http://www.opengis.net/gml";

@@ -49,6 +49,8 @@ import javax.xml.stream.XMLStreamWriter;
 
 import org.deegree.filter.function.FunctionManager;
 import org.deegree.filter.function.FunctionProvider;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Writes (currently static) XML <code>ogc:Filter_Capabilities</code> documents that describes the capabilities of
@@ -62,6 +64,8 @@ import org.deegree.filter.function.FunctionProvider;
  * @version $Revision$, $Date$
  */
 public class FilterCapabilitiesExporter {
+
+    private static Logger LOG = LoggerFactory.getLogger( FilterCapabilitiesExporter.class );
 
     /**
      * Exports an <code>ogc:Filter_Capabilities</code> element (1.0.0) that describes the capabilities of deegree's
@@ -110,6 +114,32 @@ public class FilterCapabilitiesExporter {
         exportIdCapabilities110( writer );
 
         writer.writeEndElement();
+    }
+
+    /**
+     * Exports a <code>fes:Filter_Capabilities</code> element (2.0.0) that describes the capabilities of deegree's
+     * filter implementation.
+     * 
+     * @param writer
+     *            used to write the XML
+     * @throws XMLStreamException
+     *             if the exporting fails
+     */
+    public static void export200( XMLStreamWriter writer )
+                            throws XMLStreamException {
+
+        LOG.warn( "Exporting of 2.0.0 Filter_Capabilities is not implemented yet." );
+        // writer.setPrefix( FES_PREFIX, FES_20_NS );
+        // writer.writeStartElement( FES_20_NS, "Filter_Capabilities" );
+        // if ( writer.getPrefix( FES_20_NS ) == null ) {
+        // writer.writeNamespace( FES_PREFIX, FES_20_NS );
+        // }
+        //
+        // // exportSpatialCapabilities110( writer );
+        // // exportScalarCapabilities110( writer );
+        // // exportIdCapabilities110( writer );
+        //
+        // writer.writeEndElement();
     }
 
     private static void exportIdCapabilities110( XMLStreamWriter writer )

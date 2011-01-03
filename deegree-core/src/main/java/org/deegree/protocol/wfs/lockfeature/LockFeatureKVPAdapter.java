@@ -111,7 +111,7 @@ public class LockFeatureKVPAdapter extends AbstractWFSRequestKVPAdapter {
     private static LockFeature parse110( Map<String, String> kvpParams )
                             throws Exception {
         // optional: 'NAMESPACE'
-        Map<String, String> nsBindings = extractNamespaceBindings( kvpParams );
+        Map<String, String> nsBindings = extractNamespaceBindings110( kvpParams );
 
         NamespaceBindings nsContext = new NamespaceBindings();
         if ( nsBindings != null ) {

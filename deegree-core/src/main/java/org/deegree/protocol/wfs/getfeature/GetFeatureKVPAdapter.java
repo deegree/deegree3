@@ -121,7 +121,8 @@ public class GetFeatureKVPAdapter extends AbstractWFSRequestKVPAdapter {
             // } else if ( VERSION_200.equals( version ) ) {
             // result = parse200( kvpParams );
         } else {
-            String msg = Messages.get( "UNSUPPORTED_VERSION", version, Version.getVersionsString( VERSION_110 ) );
+            String msg = Messages.get( "UNSUPPORTED_VERSION", version,
+                                       Version.getVersionsString( VERSION_100, VERSION_110 ) );
             throw new InvalidParameterValueException( msg );
         }
         return result;
@@ -289,7 +290,7 @@ public class GetFeatureKVPAdapter extends AbstractWFSRequestKVPAdapter {
                             throws Exception {
 
         // optional: 'NAMESPACE'
-        Map<String, String> nsBindings = extractNamespaceBindings( kvpParams );
+        Map<String, String> nsBindings = extractNamespaceBindings110( kvpParams );
         if ( nsBindings == null ) {
             nsBindings = Collections.emptyMap();
         }

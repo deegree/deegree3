@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,7 +32,7 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 
 package org.deegree.protocol.wfs;
 
@@ -46,25 +46,29 @@ import javax.xml.namespace.QName;
 
 import org.deegree.commons.utils.kvp.InvalidParameterValueException;
 import org.deegree.protocol.i18n.Messages;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Provides utility methods for parsing common constructs found in WFS KVP requests.
- *
+ * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author: schneider $
- *
+ * 
  * @version $Revision: $, $Date: $
  */
 public abstract class AbstractWFSRequestKVPAdapter {
 
+    private static Logger LOG = LoggerFactory.getLogger( AbstractWFSRequestKVPAdapter.class );
+
     /**
      * Extracts the qualified type names from the <code>TYPENAME</code> parameter.
-     *
+     * 
      * @param kvpUC
      *            the parameters of the request, normalized
      * @param nsBindings
-     *              namespace bindings, may be null
-     * @return qualified type names or null if no  <code>TYPENAME</code> parameter is present
+     *            namespace bindings, may be null
+     * @return qualified type names or null if no <code>TYPENAME</code> parameter is present
      * @throws InvalidParameterValueException
      *             if the value of the <code>TYPENAME</code> attribute contains a syntactical error or uses unbound
      *             prefices
@@ -85,7 +89,7 @@ public abstract class AbstractWFSRequestKVPAdapter {
     }
 
     /**
-     * Extracts the namespace bindings from the <code>NAMESPACE</code> parameter.
+     * Extracts the namespace bindings from a WFS 1.1.0 <code>NAMESPACE</code> parameter.
      * <p>
      * Example:
      * <ul>
@@ -97,7 +101,7 @@ public abstract class AbstractWFSRequestKVPAdapter {
      * <li><code>NAMESPACE=xmlns(=http://www.someserver.com)</code></li>
      * <li><code>NAMESPACE=xmlns(http://www.someserver.com)</code></li>
      * </ul>
-     *
+     * 
      * @param kvpUC
      *            the parameters of the request, normalized
      * @return mapping between prefices and namespaces (key: prefix, value: namespace), empty string as a key ('') is
@@ -105,7 +109,7 @@ public abstract class AbstractWFSRequestKVPAdapter {
      * @throws InvalidParameterValueException
      *             if the value of the NAMESPACE attribute contains a syntactical error
      */
-    protected static Map<String, String> extractNamespaceBindings( Map<String, String> kvpUC )
+    protected static Map<String, String> extractNamespaceBindings110( Map<String, String> kvpUC )
                             throws InvalidParameterValueException {
 
         Map<String, String> nsContext = null;
@@ -138,8 +142,62 @@ public abstract class AbstractWFSRequestKVPAdapter {
     }
 
     /**
+     * Extracts the namespace bindings from a WFS 2.0.0 <code>NAMESPACE</code> parameter.
+     * <p>
+     * Example:
+     * <ul>
+     * <li><code>NAMESPACE=xmlns(myns,http://www.someserver.com),xmlns(yourns,http://www.someotherserver.com)</code></li>
+     * </ul>
+     * <p>
+     * The default namespace may also be bound (two variants are supported):
+     * <ul>
+     * <li><code>NAMESPACE=xmlns(,http://www.someserver.com)</code></li>
+     * <li><code>NAMESPACE=xmlns(http://www.someserver.com)</code></li>
+     * </ul>
+     * 
+     * @param kvpUC
+     *            the parameters of the request, normalized
+     * @return mapping between prefices and namespaces (key: prefix, value: namespace), empty string as a key ('') is
+     *         the binding of the default namespace, null is returned if no <code>NAMESPACE</code> parameter is present
+     * @throws InvalidParameterValueException
+     *             if the value of the NAMESPACE attribute contains a syntactical error
+     */
+    protected static Map<String, String> extractNamespaceBindings200( Map<String, String> kvpUC )
+                            throws InvalidParameterValueException {
+
+        Map<String, String> nsContext = null;
+        String nsString = kvpUC.get( "NAMESPACE" );
+        LOG.warn( "Needs implementation." );
+        // if ( nsString != null ) {
+        // nsContext = new HashMap<String, String>();
+        // String nsDecls[] = nsString.split( "," );
+        // for ( int i = 0; i < nsDecls.length; i++ ) {
+        // String nsDecl = nsDecls[i];
+        // if ( nsDecl.startsWith( "xmlns(" ) && nsDecl.endsWith( ")" ) ) {
+        // // 6 is the length of "xmlns("
+        // nsDecl = nsDecl.substring( 6, nsDecl.length() - 1 );
+        // int assignIdx = nsDecl.indexOf( '=' );
+        // String prefix = "";
+        // String nsURIString = null;
+        // if ( assignIdx != -1 ) {
+        // prefix = nsDecl.substring( 0, assignIdx );
+        // nsURIString = nsDecl.substring( assignIdx + 1 );
+        // } else {
+        // nsURIString = nsDecl;
+        // }
+        // nsContext.put( prefix, nsURIString );
+        // } else {
+        // String msg = Messages.getMessage( "WFS_NAMESPACE_PARAM_INVALID", nsString );
+        // throw new InvalidParameterValueException( msg );
+        // }
+        // }
+        // }
+        return nsContext;
+    }
+
+    /**
      * Transforms a (possibly prefixed) type name into a qualified name using the given namespace bindings.
-     *
+     * 
      * @param name
      *            possibly prefixed type name
      * @param nsBindings
@@ -153,7 +211,7 @@ public abstract class AbstractWFSRequestKVPAdapter {
         if ( idx != -1 ) {
             prefix = name.substring( 0, idx );
             String localName = name.substring( idx + 1 );
-            if (nsBindings == null) {
+            if ( nsBindings == null ) {
                 typeName = new QName( XMLConstants.NULL_NS_URI, localName, prefix );
             } else {
                 String nsURI = nsBindings.get( prefix );
@@ -170,23 +228,23 @@ public abstract class AbstractWFSRequestKVPAdapter {
         return typeName;
     }
 
-    protected static void appendFirstKVP ( StringBuffer sb, String key, String value ) {
-        sb.append (key);
-        sb.append ('=');
+    protected static void appendFirstKVP( StringBuffer sb, String key, String value ) {
+        sb.append( key );
+        sb.append( '=' );
         try {
-            sb.append (URLEncoder.encode( value, "UTF-8" ));
+            sb.append( URLEncoder.encode( value, "UTF-8" ) );
         } catch ( UnsupportedEncodingException e ) {
             // should never happen
             e.printStackTrace();
         }
     }
 
-    protected static void appendKVP ( StringBuffer sb, String key, String value ) {
-        sb.append ('&');
-        sb.append (key);
-        sb.append ('=');
+    protected static void appendKVP( StringBuffer sb, String key, String value ) {
+        sb.append( '&' );
+        sb.append( key );
+        sb.append( '=' );
         try {
-            sb.append (URLEncoder.encode( value, "UTF-8" ));
+            sb.append( URLEncoder.encode( value, "UTF-8" ) );
         } catch ( UnsupportedEncodingException e ) {
             // should never happen
             e.printStackTrace();

@@ -79,7 +79,7 @@ public class WFSConstants {
     public static final String WFS_110_SCHEMA_URL = "http://schemas.opengis.net/wfs/1.1.0/wfs.xsd";
 
     /** URL of the WFS 2.0.0 schema */
-    public static final String WFS_200_SCHEMA_URL = "http://schemas.opengis.net/wfs/2.0.0/wfs.xsd";    
+    public static final String WFS_200_SCHEMA_URL = "http://schemas.opengis.net/wfs/2.0/wfs.xsd";    
 
     /**
      * Enum type for discriminating between the different types of WebFeatureService (WFS) requests.

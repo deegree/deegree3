@@ -56,7 +56,7 @@ import org.deegree.protocol.ows.OWSCommonXMLAdapter;
  * </ul>
  * </p>
  * <p>
- * Evaluates the <code>language</code> attribute for requests to multilingual services according to OWS Common change
+ * Additionally evaluates the <code>language</code> attribute for requests to multilingual services according to OWS Common change
  * request OGC 08-016r2. This is used by the WPS Specification 1.0.0.
  * </p>
  * 
@@ -101,7 +101,7 @@ public class GetCapabilitiesXMLParser extends OWSCommonXMLAdapter {
         String[] versions = getNodesAsStrings( rootElement, new XPath( "ows:AcceptVersions/ows:Version/text()",
                                                                        nsContext ) );
 
-        // ows110:Sections (optional)
+        // ows:Sections (optional)
         List<String> sections = parseSections( OWS_PREFIX );
 
         // ows:AcceptFormats (optional)
