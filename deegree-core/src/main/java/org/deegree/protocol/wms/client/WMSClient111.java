@@ -521,6 +521,7 @@ public class WMSClient111 {
             List<Property> propValues = new ArrayList<Property>( reader.getAttributeCount() );
             for ( int i = 0; i < reader.getAttributeCount(); ++i ) {
                 String name = reader.getAttributeLocalName( i );
+                name = name.substring( name.lastIndexOf( "." ) + 1 );
                 String value = reader.getAttributeValue( i );
                 SimplePropertyType tp = new SimplePropertyType( new QName( name ), 0, 1, STRING, false, false, null );
                 propValues.add( new SimpleProperty( tp, value, STRING ) );
