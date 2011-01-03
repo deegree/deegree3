@@ -42,8 +42,11 @@ import static org.deegree.commons.utils.net.HttpUtils.IMAGE;
 import static org.deegree.commons.utils.net.HttpUtils.XML;
 import static org.deegree.commons.xml.CommonNamespaces.getNamespaceContext;
 import static org.deegree.cs.coordinatesystems.GeographicCRS.WGS84;
+import static org.deegree.gml.GMLInputFactory.createGMLStreamReader;
+import static org.deegree.gml.GMLVersion.GML_2;
 import static org.deegree.protocol.i18n.Messages.get;
 import static org.deegree.protocol.wms.WMSConstants.WMSRequestType.GetCapabilities;
+import static org.deegree.protocol.wms.WMSConstants.WMSRequestType.GetFeatureInfo;
 import static org.deegree.protocol.wms.WMSConstants.WMSRequestType.GetMap;
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -61,6 +64,8 @@ import java.util.concurrent.Callable;
 
 import javax.imageio.ImageIO;
 import javax.xml.namespace.QName;
+import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.XMLStreamException;
 
 import org.apache.axiom.om.OMElement;
 import org.deegree.commons.concurrent.Executor;
@@ -68,6 +73,7 @@ import org.deegree.commons.utils.Pair;
 import org.deegree.commons.utils.ProxyUtils;
 import org.deegree.commons.xml.NamespaceBindings;
 import org.deegree.commons.xml.XMLAdapter;
+import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.commons.xml.XPath;
 import org.deegree.coverage.raster.SimpleRaster;
 import org.deegree.coverage.raster.data.RasterData;
@@ -76,8 +82,12 @@ import org.deegree.coverage.raster.geom.RasterGeoReference;
 import org.deegree.coverage.raster.geom.RasterGeoReference.OriginLocation;
 import org.deegree.coverage.raster.utils.RasterFactory;
 import org.deegree.cs.CRS;
+import org.deegree.cs.exceptions.UnknownCRSException;
+import org.deegree.feature.FeatureCollection;
+import org.deegree.feature.GenericFeatureCollection;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryFactory;
+import org.deegree.gml.GMLStreamReader;
 import org.deegree.protocol.wms.WMSConstants.WMSRequestType;
 import org.slf4j.Logger;
 
@@ -427,6 +437,53 @@ public class WMSClient111 {
         }
 
         return result;
+    }
+
+    public FeatureCollection getFeatureInfo( List<String> queryLayers, int width, int height, int x, int y,
+                                             Envelope bbox, CRS srs )
+                            throws IOException {
+        GenericFeatureCollection col = new GenericFeatureCollection();
+
+        String url = getAddress( GetFeatureInfo, true );
+        if ( url == null ) {
+            LOG.warn( get( "WMSCLIENT.SERVER_NO_GETMAP_URL" ), "Capabilities: ", capabilities );
+            return null;
+        }
+        if ( !url.endsWith( "?" ) && !url.endsWith( "&" ) ) {
+            url += url.indexOf( "?" ) == -1 ? "?" : "&";
+        }
+        String lays = join( ",", queryLayers );
+        url += "request=GetFeatureInfo&version=1.1.1&service=WMS&layers=" + lays + "&query_layers=" + lays
+               + "&styles=&width=" + width + "&height=" + height + "&bbox=" + bbox.getMin().get0() + ","
+               + bbox.getMin().get1() + "," + bbox.getMax().get0() + "," + bbox.getMax().get1() + "&srs="
+               + srs.getName() + "&format=" + getFormats( GetMap ).getFirst() + "&info_format=application/vnd.ogc.gml"
+               + "&x=" + x + "&y=" + y;
+
+        URL theUrl = new URL( url );
+        LOG.debug( "Connecting to URL " + theUrl );
+        URLConnection conn = ProxyUtils.openURLConnection( theUrl, ProxyUtils.getHttpProxyUser( true ),
+                                                           ProxyUtils.getHttpProxyPassword( true ) );
+        conn.setConnectTimeout( connectionTimeout * 1000 );
+        conn.setReadTimeout( requestTimeout * 1000 );
+        conn.connect();
+        LOG.debug( "Connected." );
+
+        XMLInputFactory fac = XMLInputFactory.newInstance();
+        try {
+            GMLStreamReader reader = createGMLStreamReader( GML_2, fac.createXMLStreamReader( conn.getInputStream() ) );
+            return reader.readFeatureCollection();
+        } catch ( XMLStreamException e ) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch ( XMLParsingException e ) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch ( UnknownCRSException e ) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
+        return col;
     }
 
     /**

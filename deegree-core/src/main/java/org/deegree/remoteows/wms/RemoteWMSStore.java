@@ -61,6 +61,7 @@ import org.deegree.coverage.raster.geom.RasterGeoReference;
 import org.deegree.cs.CRS;
 import org.deegree.cs.exceptions.TransformationException;
 import org.deegree.cs.exceptions.UnknownCRSException;
+import org.deegree.feature.FeatureCollection;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryTransformer;
 import org.deegree.protocol.wms.Utils;
@@ -271,6 +272,24 @@ public class RemoteWMSStore implements RemoteOWSStore {
             list.add( getMap( l, envelope, width, height, layers.get( l ) ) );
         }
         return list;
+    }
+
+    /**
+     * @param envelope
+     * @param width
+     * @param height
+     * @param x
+     * @param y
+     * @return null, if reading the feature collection failed
+     */
+    public FeatureCollection getFeatureInfo( Envelope envelope, int width, int height, int x, int y ) {
+        try {
+            return client.getFeatureInfo( layerOrder, width, height, x, y, envelope, envelope.getCoordinateSystem() );
+        } catch ( IOException e ) {
+            LOG.info( "Error when loading features from remote WMS: {}", e.getLocalizedMessage() );
+            LOG.trace( "Stack trace", e );
+        }
+        return null;
     }
 
     /**
