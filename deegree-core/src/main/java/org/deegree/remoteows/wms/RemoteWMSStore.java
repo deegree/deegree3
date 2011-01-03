@@ -273,6 +273,13 @@ public class RemoteWMSStore implements RemoteOWSStore {
     }
 
     /**
+     * @return null, if cascaded WMS does not have a bbox for the layers in EPSG:4326
+     */
+    public Envelope getEnvelope() {
+        return client.getBoundingBox( "EPSG:4326", layerOrder );
+    }
+
+    /**
      * 
      * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
      * @author last edited by: $Author$
