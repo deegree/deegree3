@@ -21,6 +21,18 @@
         <wms:RemoteWMSStoreId>optionssingle</wms:RemoteWMSStoreId>
       </wms:RequestableLayer>
 
+      <wms:RequestableLayer>
+        <wms:Name>multiple</wms:Name>
+        <wms:Title>multiple</wms:Title>
+        <wms:RemoteWMSStoreId>multiple</wms:RemoteWMSStoreId>
+      </wms:RequestableLayer>
+
+      <wms:RequestableLayer>
+        <wms:Name>optionsmultiple</wms:Name>
+        <wms:Title>optionsmultiple</wms:Title>
+        <wms:RemoteWMSStoreId>optionsmultiple</wms:RemoteWMSStoreId>
+      </wms:RequestableLayer>
+
     </wms:UnrequestableLayer>
 
   </wms:ServiceConfiguration>
