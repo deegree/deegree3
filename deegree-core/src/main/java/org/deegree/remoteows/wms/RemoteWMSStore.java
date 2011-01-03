@@ -35,6 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.remoteows.wms;
 
+import static java.lang.Math.abs;
 import static java.util.Collections.singletonList;
 import static org.deegree.commons.utils.math.MathUtils.round;
 import static org.deegree.coverage.raster.geom.RasterGeoReference.OriginLocation.OUTER;
@@ -156,8 +157,8 @@ public class RemoteWMSStore implements RemoteOWSStore {
             double newScale = Utils.calcScaleWMS111( width, height, bbox, new CRS( opts.defaultCRS ).getWrappedCRS() );
             double ratio = scale / newScale;
 
-            int newWidth = round( ratio * width );
-            int newHeight = round( ratio * height );
+            int newWidth = abs( round( ratio * width ) );
+            int newHeight = abs( round( ratio * height ) );
 
             LinkedList<String> errors = new LinkedList<String>();
             Pair<BufferedImage, String> pair = client.getMap( layerOrder, newWidth, newHeight, bbox,
@@ -230,8 +231,8 @@ public class RemoteWMSStore implements RemoteOWSStore {
                                                          new CRS( options.defaultCRS ).getWrappedCRS() );
                 double ratio = scale / newScale;
 
-                int newWidth = round( ratio * width );
-                int newHeight = round( ratio * height );
+                int newWidth = abs( round( ratio * width ) );
+                int newHeight = abs( round( ratio * height ) );
 
                 LinkedList<String> errors = new LinkedList<String>();
                 Pair<BufferedImage, String> pair = client.getMap( layerOrder, newWidth, newHeight, bbox,
