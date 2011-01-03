@@ -37,10 +37,12 @@
 package org.deegree.protocol.wms.client;
 
 import static java.util.Arrays.asList;
+import static org.deegree.commons.tom.primitive.PrimitiveType.STRING;
 import static org.deegree.commons.utils.ArrayUtils.join;
 import static org.deegree.commons.utils.net.HttpUtils.IMAGE;
 import static org.deegree.commons.utils.net.HttpUtils.XML;
 import static org.deegree.commons.xml.CommonNamespaces.getNamespaceContext;
+import static org.deegree.commons.xml.stax.StAXParsingHelper.nextElement;
 import static org.deegree.cs.coordinatesystems.GeographicCRS.WGS84;
 import static org.deegree.gml.GMLInputFactory.createGMLStreamReader;
 import static org.deegree.gml.GMLVersion.GML_2;
@@ -58,14 +60,17 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.concurrent.Callable;
 
 import javax.imageio.ImageIO;
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamReader;
 
 import org.apache.axiom.om.OMElement;
 import org.deegree.commons.concurrent.Executor;
@@ -84,7 +89,13 @@ import org.deegree.coverage.raster.utils.RasterFactory;
 import org.deegree.cs.CRS;
 import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.feature.FeatureCollection;
+import org.deegree.feature.GenericFeature;
 import org.deegree.feature.GenericFeatureCollection;
+import org.deegree.feature.property.Property;
+import org.deegree.feature.property.SimpleProperty;
+import org.deegree.feature.types.GenericFeatureType;
+import org.deegree.feature.types.property.PropertyType;
+import org.deegree.feature.types.property.SimplePropertyType;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryFactory;
 import org.deegree.gml.GMLStreamReader;
@@ -442,8 +453,6 @@ public class WMSClient111 {
     public FeatureCollection getFeatureInfo( List<String> queryLayers, int width, int height, int x, int y,
                                              Envelope bbox, CRS srs )
                             throws IOException {
-        GenericFeatureCollection col = new GenericFeatureCollection();
-
         String url = getAddress( GetFeatureInfo, true );
         if ( url == null ) {
             LOG.warn( get( "WMSCLIENT.SERVER_NO_GETMAP_URL" ), "Capabilities: ", capabilities );
@@ -469,8 +478,15 @@ public class WMSClient111 {
         LOG.debug( "Connected." );
 
         XMLInputFactory fac = XMLInputFactory.newInstance();
+        XMLStreamReader xmlReader = null;
         try {
-            GMLStreamReader reader = createGMLStreamReader( GML_2, fac.createXMLStreamReader( conn.getInputStream() ) );
+            xmlReader = fac.createXMLStreamReader( conn.getInputStream() );
+            xmlReader.next();
+            if ( ( xmlReader.getNamespaceURI() == null || xmlReader.getNamespaceURI().isEmpty() )
+                 && xmlReader.getLocalName().equals( "FeatureInfoResponse" ) ) {
+                return readESRICollection( xmlReader );
+            }
+            GMLStreamReader reader = createGMLStreamReader( GML_2, xmlReader );
             return reader.readFeatureCollection();
         } catch ( XMLStreamException e ) {
             // TODO Auto-generated catch block
@@ -481,6 +497,38 @@ public class WMSClient111 {
         } catch ( UnknownCRSException e ) {
             // TODO Auto-generated catch block
             e.printStackTrace();
+        } finally {
+            try {
+                if ( xmlReader != null ) {
+                    xmlReader.close();
+                }
+            } catch ( XMLStreamException e ) {
+                LOG.trace( "Stack trace:", e );
+            }
+        }
+
+        return null;
+    }
+
+    private FeatureCollection readESRICollection( XMLStreamReader reader )
+                            throws NoSuchElementException, XMLStreamException {
+        GenericFeatureCollection col = new GenericFeatureCollection();
+
+        int count = 0;
+        nextElement( reader );
+        while ( reader.isStartElement() && reader.getLocalName().equals( "FIELDS" ) ) {
+            List<PropertyType> props = new ArrayList<PropertyType>( reader.getAttributeCount() );
+            List<Property> propValues = new ArrayList<Property>( reader.getAttributeCount() );
+            for ( int i = 0; i < reader.getAttributeCount(); ++i ) {
+                String name = reader.getAttributeLocalName( i );
+                String value = reader.getAttributeValue( i );
+                SimplePropertyType tp = new SimplePropertyType( new QName( name ), 0, 1, STRING, false, false, null );
+                propValues.add( new SimpleProperty( tp, value, STRING ) );
+                props.add( tp );
+            }
+            GenericFeatureType ft = new GenericFeatureType( new QName( "feature" ), props, false );
+            col.add( new GenericFeature( ft, "esri_" + ++count, propValues, GML_2, null ) );
+            nextElement( reader );
         }
 
         return col;
