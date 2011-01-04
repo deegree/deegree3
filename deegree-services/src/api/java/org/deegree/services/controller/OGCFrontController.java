@@ -953,7 +953,7 @@ public class OGCFrontController extends HttpServlet {
             LOG.debug( "Trying old-style workspace directory (WEB-INF/conf)" );
             fallbackDir = new File( resolveFileLocation( "WEB-INF/conf", getServletContext() ).toURI() );
         } else {
-            LOG.debug( "Using old-style workspace directory (WEB-INF/workspace)" );
+            LOG.debug( "Using new-style workspace directory (WEB-INF/workspace)" );
         }
         DeegreeWorkspace ws = DeegreeWorkspace.getInstance( wsName, fallbackDir );
         LOG.info( "Using workspace '{}' at '{}'", ws.getName(), ws.getLocation() );
