@@ -149,7 +149,7 @@ public class RemoteWMSLayer extends Layer {
     @Override
     public Pair<FeatureCollection, LinkedList<String>> getFeatures( GetFeatureInfo fi, Style style ) {
         FeatureCollection col = wmsStore.getFeatureInfo( fi.getEnvelope(), fi.getWidth(), fi.getHeight(), fi.getX(),
-                                                         fi.getY() );
+                                                         fi.getY(), fi.getFeatureCount() );
         return new Pair<FeatureCollection, LinkedList<String>>( col, new LinkedList<String>() );
     }
 
