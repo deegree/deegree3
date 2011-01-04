@@ -280,11 +280,13 @@ public class RemoteWMSStore implements RemoteOWSStore {
      * @param height
      * @param x
      * @param y
+     * @param count
      * @return null, if reading the feature collection failed
      */
-    public FeatureCollection getFeatureInfo( Envelope envelope, int width, int height, int x, int y ) {
+    public FeatureCollection getFeatureInfo( Envelope envelope, int width, int height, int x, int y, int count ) {
         try {
-            return client.getFeatureInfo( layerOrder, width, height, x, y, envelope, envelope.getCoordinateSystem() );
+            return client.getFeatureInfo( layerOrder, width, height, x, y, envelope, envelope.getCoordinateSystem(),
+                                          count );
         } catch ( IOException e ) {
             LOG.info( "Error when loading features from remote WMS: {}", e.getLocalizedMessage() );
             LOG.trace( "Stack trace", e );

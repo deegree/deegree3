@@ -451,7 +451,7 @@ public class WMSClient111 {
     }
 
     public FeatureCollection getFeatureInfo( List<String> queryLayers, int width, int height, int x, int y,
-                                             Envelope bbox, CRS srs )
+                                             Envelope bbox, CRS srs, int count )
                             throws IOException {
         String url = getAddress( GetFeatureInfo, true );
         if ( url == null ) {
@@ -466,7 +466,7 @@ public class WMSClient111 {
                + "&styles=&width=" + width + "&height=" + height + "&bbox=" + bbox.getMin().get0() + ","
                + bbox.getMin().get1() + "," + bbox.getMax().get0() + "," + bbox.getMax().get1() + "&srs="
                + srs.getName() + "&format=" + getFormats( GetMap ).getFirst() + "&info_format=application/vnd.ogc.gml"
-               + "&x=" + x + "&y=" + y;
+               + "&x=" + x + "&y=" + y + "&feature_count=" + count;
 
         URL theUrl = new URL( url );
         LOG.debug( "Connecting to URL " + theUrl );
