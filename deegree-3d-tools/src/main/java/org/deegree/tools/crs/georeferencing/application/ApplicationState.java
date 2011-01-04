@@ -35,11 +35,17 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.tools.crs.georeferencing.application;
 
+import static java.awt.Cursor.getPredefinedCursor;
+
+import java.awt.Component;
+import java.awt.Cursor;
 import java.awt.Rectangle;
+import java.awt.event.MouseAdapter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
 
+import javax.swing.JFrame;
 import javax.vecmath.Point2d;
 
 import org.deegree.commons.utils.Triple;
@@ -179,7 +185,17 @@ public class ApplicationState {
                                                            conModel.getPanel().getHeight() ) );
             conModel.getPanel().setImageDimension( sceneValues.getGeorefDimension() );
             conModel.getPanel().updatePoints( sceneValues );
+            Component glassPane = ( (JFrame) conModel.getPanel().getTopLevelAncestor() ).getGlassPane();
+            MouseAdapter mouseAdapter = new MouseAdapter() {
+                // else the wait cursor will not appear
+            };
+            glassPane.addMouseListener( mouseAdapter );
+            glassPane.setCursor( getPredefinedCursor( Cursor.WAIT_CURSOR ) );
+            glassPane.setVisible( true );
             conModel.getPanel().repaint();
+            glassPane.removeMouseListener( mouseAdapter );
+            glassPane.setCursor( getPredefinedCursor( Cursor.DEFAULT_CURSOR ) );
+            glassPane.setVisible( false );
         }
     }
 

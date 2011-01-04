@@ -93,8 +93,8 @@ public class BuildingFootprintPanel extends AbstractPanel2D {
 
     @Override
     protected void paintComponent( Graphics g ) {
-
         super.paintComponent( g );
+
         Graphics2D g2 = (Graphics2D) g;
 
         if ( polygonList != null ) {
@@ -207,7 +207,7 @@ public class BuildingFootprintPanel extends AbstractPanel2D {
                         if ( point2d instanceof FootprintPoint ) {
                             closestPoint.first = new FootprintPoint( point.x, point.y );
                             closestPoint.second = new FootprintPoint( pointsPixelToWorld.get( point ).x,
-                                                                      pointsPixelToWorld.get( point ).y	 );
+                                                                      pointsPixelToWorld.get( point ).y );
                         }
                     }
                 }

@@ -35,12 +35,20 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.tools.crs.georeferencing.communication.panel2D;
 
+import static java.awt.Cursor.getPredefinedCursor;
+
+import java.awt.Component;
+import java.awt.Cursor;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Polygon;
 import java.awt.Rectangle;
+import java.awt.event.MouseAdapter;
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.swing.JFrame;
+import javax.swing.SwingUtilities;
 
 import org.deegree.geometry.primitive.Ring;
 import org.deegree.tools.crs.georeferencing.application.ApplicationState;
@@ -72,7 +80,7 @@ public class Scene2DPanel extends AbstractPanel2D {
 
     private ArrayList<Polygon> polygonListTranslated;
 
-    private ApplicationState state;
+    ApplicationState state;
 
     public Scene2DPanel( ApplicationState state ) {
         this.state = state;
@@ -82,12 +90,30 @@ public class Scene2DPanel extends AbstractPanel2D {
 
     @Override
     public void paintComponent( Graphics g ) {
-
         super.paintComponent( g );
-        Graphics2D g2 = (Graphics2D) g;
-
+        final Graphics2D g2 = (Graphics2D) g;
         if ( state.mapController != null ) {
-            state.mapController.paintMap( g2, state.previewing );
+            if ( state.mapController.needsRepaint() && !state.previewing ) {
+                SwingUtilities.invokeLater( new Runnable() {
+
+                    @Override
+                    public void run() {
+                        Component glassPane = ( (JFrame) getTopLevelAncestor() ).getGlassPane();
+                        MouseAdapter mouseAdapter = new MouseAdapter() {
+                            // else the wait cursor will not appear
+                        };
+                        glassPane.addMouseListener( mouseAdapter );
+                        glassPane.setCursor( getPredefinedCursor( Cursor.WAIT_CURSOR ) );
+                        glassPane.setVisible( true );
+                        state.mapController.paintMap( g2, state.previewing );
+                        glassPane.removeMouseListener( mouseAdapter );
+                        glassPane.setCursor( getPredefinedCursor( Cursor.DEFAULT_CURSOR ) );
+                        glassPane.setVisible( false );
+                    }
+                } );
+            } else {
+                state.mapController.paintMap( g2, state.previewing );
+            }
         }
 
         if ( lastAbstractPoint != null ) {
@@ -97,11 +123,9 @@ public class Scene2DPanel extends AbstractPanel2D {
         }
 
         if ( polygonList != null ) {
-
             for ( Polygon polygon : polygonList ) {
                 g2.drawPolygon( polygon );
             }
-
         }
 
         if ( selectedPoints != null ) {
@@ -111,7 +135,6 @@ public class Scene2DPanel extends AbstractPanel2D {
                              selectedPointSize * 2 );
             }
         }
-
     }
 
     public Rectangle getImageDimension() {
