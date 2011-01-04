@@ -57,6 +57,12 @@
         <wms:RemoteWMSStoreId>mywms</wms:RemoteWMSStoreId>
       </wms:RequestableLayer>
 
+      <wms:RequestableLayer>
+        <wms:Name>deegree2</wms:Name>
+        <wms:Title>deegree2</wms:Title>
+        <wms:RemoteWMSStoreId>deegree2</wms:RemoteWMSStoreId>
+      </wms:RequestableLayer>
+
     </wms:UnrequestableLayer>
 
   </wms:ServiceConfiguration>
