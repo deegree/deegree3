@@ -482,9 +482,15 @@ public class WMSClient111 {
         try {
             xmlReader = fac.createXMLStreamReader( conn.getInputStream() );
             xmlReader.next();
+            // ESRI workaround
             if ( ( xmlReader.getNamespaceURI() == null || xmlReader.getNamespaceURI().isEmpty() )
                  && xmlReader.getLocalName().equals( "FeatureInfoResponse" ) ) {
                 return readESRICollection( xmlReader );
+            }
+            // myWMS workaround
+            if ( ( xmlReader.getNamespaceURI() == null || xmlReader.getNamespaceURI().isEmpty() )
+                 && xmlReader.getLocalName().equals( "featureInfo" ) ) {
+                return readMyWMSCollection( xmlReader );
             }
             GMLStreamReader reader = createGMLStreamReader( GML_2, xmlReader );
             return reader.readFeatureCollection();
@@ -530,6 +536,43 @@ public class WMSClient111 {
             GenericFeatureType ft = new GenericFeatureType( new QName( "feature" ), props, false );
             col.add( new GenericFeature( ft, "esri_" + ++count, propValues, GML_2, null ) );
             nextElement( reader );
+        }
+
+        return col;
+    }
+
+    private FeatureCollection readMyWMSCollection( XMLStreamReader reader )
+                            throws NoSuchElementException, XMLStreamException {
+        GenericFeatureCollection col = new GenericFeatureCollection();
+
+        nextElement( reader );
+        while ( reader.isStartElement() && reader.getLocalName().equals( "query_layer" ) ) {
+
+            String ftName = reader.getAttributeValue( null, "name" );
+            int count = 0;
+
+            nextElement( reader );
+            while ( reader.isStartElement() && reader.getLocalName().equals( "object" ) ) {
+
+                List<PropertyType> props = new ArrayList<PropertyType>();
+                List<Property> propValues = new ArrayList<Property>();
+
+                nextElement( reader );
+                while ( !( reader.isEndElement() && reader.getLocalName().equals( "object" ) ) ) {
+                    String name = reader.getLocalName();
+                    String value = reader.getElementText();
+                    SimplePropertyType tp = new SimplePropertyType( new QName( name ), 0, 1, STRING, false, false, null );
+                    propValues.add( new SimpleProperty( tp, value, STRING ) );
+                    props.add( tp );
+                    nextElement( reader );
+                }
+
+                GenericFeatureType ft = new GenericFeatureType( new QName( ftName ), props, false );
+                col.add( new GenericFeature( ft, "ftName_" + ++count, propValues, GML_2, null ) );
+                nextElement( reader );
+            }
+            nextElement( reader );
+
         }
 
         return col;
