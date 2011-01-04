@@ -35,6 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.tools.crs.georeferencing.communication;
 
+import static org.deegree.tools.crs.georeferencing.application.listeners.Scene2DMouseListener.updateTransformation;
 import static org.deegree.tools.crs.georeferencing.i18n.Messages.get;
 
 import java.awt.BorderLayout;
@@ -283,6 +284,10 @@ public class GRViewerGUI extends JFrame {
         this.menuTransformation.getPopupMenu().setVisible( false );
         this.menuTransformation.setVisible( true );
         this.menuTransformation.setSelected( false );
+        updateTransformation( state );
+        state.updateDrawingPanels();
+        state.conModel.getPanel().updatePoints( state.sceneValues );
+        state.conModel.getPanel().repaint();
     }
 
     public JMenu getMenuTransformation() {

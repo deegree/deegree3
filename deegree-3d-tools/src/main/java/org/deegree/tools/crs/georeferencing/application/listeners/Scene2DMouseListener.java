@@ -103,6 +103,7 @@ public class Scene2DMouseListener extends MouseAdapter {
                                               m.getX(), m.getY() );
                 }
 
+                updateTransformation( state );
                 state.conModel.getPanel().updatePoints( state.sceneValues );
                 state.conModel.getPanel().repaint();
             }
@@ -138,7 +139,7 @@ public class Scene2DMouseListener extends MouseAdapter {
                     }
                     state.referencingLeft = false;
 
-                    updateTransformation();
+                    updateTransformation( state );
 
                 } else if ( state.pan ) {
                     state.previewing = false;
@@ -152,11 +153,13 @@ public class Scene2DMouseListener extends MouseAdapter {
         }
     }
 
-    void updateTransformation() {
+    public static void updateTransformation( ApplicationState state ) {
         // swap the tempPoints into the map now
         if ( state.conModel.getFootPanel().getLastAbstractPoint() != null
              && state.conModel.getPanel().getLastAbstractPoint() != null ) {
             state.setValues();
+        } else {
+            return;
         }
 
         try {
