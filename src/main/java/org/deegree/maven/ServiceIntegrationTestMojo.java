@@ -246,7 +246,7 @@ public class ServiceIntegrationTestMojo extends AbstractMojo {
                 }
             }
             double sim = (double) equal / (double) buf1.length;
-            if ( sim < 0.999 ) {
+            if ( sim < 0.99 ) {
                 throw new MojoFailureException( "Request test " + name + " resulted in a similarity of only " + sim
                                                 + "!" );
             }
