@@ -7,7 +7,7 @@
 
     <wms:UnrequestableLayer>
       <wms:Title>Remote OWS test WMS root layer</wms:Title>
-      <wms:CRS>EPSG:26912 EPSG:4326 EPSG:31467</wms:CRS>
+      <wms:CRS>EPSG:4326 EPSG:31467 EPSG:26912</wms:CRS>
 
       <wms:RequestableLayer>
         <wms:Name>single</wms:Name>

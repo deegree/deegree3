@@ -5,16 +5,16 @@
   </gml:boundedBy>
   <gml:featureMember>
     <bplan_umringe_mrh fid="ftName_1">
-      <thema>Bar_BP_055</thema>
+      <thema>Bar_BP_007</thema>
       <plantyp>BPL</plantyp>
       <gemeinde>Barmstedt</gemeinde>
-      <plan_nr>155</plan_nr>
+      <plan_nr>163</plan_nr>
       <aenderung>nein</aenderung>
-      <rechtskraf>16.11.1999</rechtskraf>
-      <planname>Bar_BP_055</planname>
-      <bplan_gesamt>http://pin-gis/gisdata/bplan/gesamt/Bar_BP_055.pdf</bplan_gesamt>
-      <legende>http://88.198.18.39/bplan/pdf/Bar_BP_055_T.pdf</legende>
-      <begruendung>http://88.198.18.39/bplan/pdf/Bar_BP_055_B.pdf</begruendung>
+      <rechtskraf>04.09.1969</rechtskraf>
+      <planname>Bar_BP_007</planname>
+      <bplan_gesamt>http://pin-gis/gisdata/bplan/gesamt/Bar_BP_007.pdf</bplan_gesamt>
+      <legende>http://88.198.18.39/bplan/pdf/Bar_BP_007_T.pdf</legende>
+      <begruendung>http://88.198.18.39/bplan/pdf/Bar_BP_007_B.pdf</begruendung>
     </bplan_umringe_mrh>
   </gml:featureMember>
   <gml:featureMember>
@@ -33,16 +33,44 @@
   </gml:featureMember>
   <gml:featureMember>
     <bplan_umringe_mrh fid="ftName_3">
-      <thema>Bar_BP_055_01Ae</thema>
+      <thema>Bar_BP_007_08Ae</thema>
       <plantyp>BPL</plantyp>
       <gemeinde>Barmstedt</gemeinde>
-      <plan_nr>400</plan_nr>
+      <plan_nr>336</plan_nr>
       <aenderung>ja</aenderung>
-      <rechtskraf>20.06.2006</rechtskraf>
-      <planname>Bar_BP_055_01Ae</planname>
-      <bplan_gesamt>http://pin-gis/gisdata/bplan/gesamt/Bar_BP_055_01Ae.pdf</bplan_gesamt>
-      <legende>http://88.198.18.39/bplan/pdf/Bar_BP_055_01Ae_T.pdf</legende>
-      <begruendung>http://88.198.18.39/bplan/pdf/Bar_BP_055_01Ae_B.pdf</begruendung>
+      <rechtskraf>13.10.1981</rechtskraf>
+      <planname>Bar_BP_007_08Ae</planname>
+      <bplan_gesamt>http://pin-gis/gisdata/bplan/gesamt/Bar_BP_007_08Ae.pdf</bplan_gesamt>
+      <legende>http://88.198.18.39/bplan/pdf/Bar_BP_007_08Ae_T.pdf</legende>
+      <begruendung>http://88.198.18.39/bplan/pdf/Bar_BP_007_08Ae_B.pdf</begruendung>
+    </bplan_umringe_mrh>
+  </gml:featureMember>
+  <gml:featureMember>
+    <bplan_umringe_mrh fid="ftName_4">
+      <thema>Bar_BP_007_15Ae</thema>
+      <plantyp>BPL</plantyp>
+      <gemeinde>Barmstedt</gemeinde>
+      <plan_nr>342</plan_nr>
+      <aenderung>ja</aenderung>
+      <rechtskraf>02.04.1987</rechtskraf>
+      <planname>Bar_BP_007_15Ae</planname>
+      <bplan_gesamt>http://pin-gis/gisdata/bplan/gesamt/Bar_BP_007_15Ae.pdf</bplan_gesamt>
+      <legende>http://88.198.18.39/bplan/pdf/Bar_BP_007_15Ae_T.pdf</legende>
+      <begruendung>http://88.198.18.39/bplan/pdf/Bar_BP_007_15Ae_B.pdf</begruendung>
+    </bplan_umringe_mrh>
+  </gml:featureMember>
+  <gml:featureMember>
+    <bplan_umringe_mrh fid="ftName_5">
+      <thema>Bar_BP_007_04Ae</thema>
+      <plantyp>BPL</plantyp>
+      <gemeinde>Barmstedt</gemeinde>
+      <plan_nr>348</plan_nr>
+      <aenderung>ja</aenderung>
+      <rechtskraf>31.10.1972</rechtskraf>
+      <planname>Bar_BP_007_04Ae</planname>
+      <bplan_gesamt>http://pin-gis/gisdata/bplan/gesamt/Bar_BP_007_04Ae.pdf</bplan_gesamt>
+      <legende>http://88.198.18.39/bplan/pdf/Bar_BP_007_04Ae_T.pdf</legende>
+      <begruendung>http://88.198.18.39/bplan/pdf/Bar_BP_007_04Ae_B.pdf</begruendung>
     </bplan_umringe_mrh>
   </gml:featureMember>
 </FeatureCollection>
