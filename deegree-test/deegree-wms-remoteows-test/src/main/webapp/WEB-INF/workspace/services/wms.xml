@@ -7,7 +7,7 @@
 
     <wms:UnrequestableLayer>
       <wms:Title>Remote OWS test WMS root layer</wms:Title>
-      <wms:CRS>EPSG:26912 EPSG:4326</wms:CRS>
+      <wms:CRS>EPSG:26912 EPSG:4326 EPSG:31467</wms:CRS>
 
       <wms:RequestableLayer>
         <wms:Name>single</wms:Name>
@@ -49,6 +49,12 @@
         <wms:Name>esri</wms:Name>
         <wms:Title>esri</wms:Title>
         <wms:RemoteWMSStoreId>esri</wms:RemoteWMSStoreId>
+      </wms:RequestableLayer>
+
+      <wms:RequestableLayer>
+        <wms:Name>mywms</wms:Name>
+        <wms:Title>mywms</wms:Title>
+        <wms:RemoteWMSStoreId>mywms</wms:RemoteWMSStoreId>
       </wms:RequestableLayer>
 
     </wms:UnrequestableLayer>
