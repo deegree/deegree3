@@ -257,7 +257,7 @@ public class TestVectorLayerAdapter {
 
         LinkedList<Geometry> geoms = new LinkedList<Geometry>();
 
-        LinkedList<VectorExampleData> data = VectorExampleData.getAllGeometryies();
+        LinkedList<VectorExampleData> data = VectorExampleData.getAllGeometries();
         for ( VectorExampleData dataGeom : data ) {
             // read file
             GMLStreamReader gmlStreamReader = GMLInputFactory.createGMLStreamReader( dataGeom.getGMLVersion(),

@@ -210,7 +210,7 @@ public class VectorExampleData implements ExampleData {
      * 
      * @return List of {@link VectorExampleData} with {@link Geometry}s.
      */
-    public static LinkedList<VectorExampleData> getAllGeometryies() {
+    public static LinkedList<VectorExampleData> getAllGeometries() {
 
         // all test data
         LinkedList<VectorExampleData> geometries = getAllData();
