@@ -35,6 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.remoteows.wms;
 
+import static java.awt.image.BufferedImage.TYPE_4BYTE_ABGR;
 import static java.lang.Math.abs;
 import static java.util.Collections.singletonList;
 import static org.deegree.commons.utils.math.MathUtils.round;
@@ -44,6 +45,7 @@ import static org.deegree.coverage.raster.utils.RasterFactory.rasterDataFromImag
 import static org.deegree.coverage.raster.utils.RasterFactory.rasterDataToImage;
 import static org.slf4j.LoggerFactory.getLogger;
 
+import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -172,6 +174,16 @@ public class RemoteWMSStore implements RemoteOWSStore {
                 return null;
             }
 
+            // hack to ensure correct raster transformations. 4byte_abgr seems to be working best with current api
+            if ( pair.first.getType() != TYPE_4BYTE_ABGR ) {
+                BufferedImage img = new BufferedImage( pair.first.getWidth(), pair.first.getHeight(),
+                                                       TYPE_4BYTE_ABGR );
+                Graphics2D g = img.createGraphics();
+                g.drawImage( pair.first, 0, 0, null );
+                g.dispose();
+                pair.first = img;
+            }
+
             RasterGeoReference env = RasterGeoReference.create( OUTER, bbox, newWidth, newHeight );
             RasterData data = rasterDataFromImage( pair.first );
             SimpleRaster raster = new SimpleRaster( data, bbox, env );
@@ -247,6 +259,15 @@ public class RemoteWMSStore implements RemoteOWSStore {
                 }
 
                 RasterGeoReference env = RasterGeoReference.create( OUTER, bbox, newWidth, newHeight );
+                // hack to ensure correct raster transformations. 4byte_abgr seems to be working best with current api
+                if ( pair.first.getType() != TYPE_4BYTE_ABGR ) {
+                    BufferedImage img = new BufferedImage( pair.first.getWidth(), pair.first.getHeight(),
+                                                           TYPE_4BYTE_ABGR );
+                    Graphics2D g = img.createGraphics();
+                    g.drawImage( pair.first, 0, 0, null );
+                    g.dispose();
+                    pair.first = img;
+                }
                 RasterData data = rasterDataFromImage( pair.first );
                 SimpleRaster raster = new SimpleRaster( data, bbox, env );
 
