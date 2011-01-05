@@ -7,7 +7,7 @@
 
     <wms:UnrequestableLayer>
       <wms:Title>Remote OWS test WMS root layer</wms:Title>
-      <wms:CRS>EPSG:4326 EPSG:31467 EPSG:26912</wms:CRS>
+      <wms:CRS>EPSG:4326 EPSG:31467 EPSG:26912 EPSG:26913</wms:CRS>
 
       <wms:RequestableLayer>
         <wms:Name>single</wms:Name>
@@ -61,6 +61,12 @@
         <wms:Name>deegree2</wms:Name>
         <wms:Title>deegree2</wms:Title>
         <wms:RemoteWMSStoreId>deegree2</wms:RemoteWMSStoreId>
+      </wms:RequestableLayer>
+
+      <wms:RequestableLayer>
+        <wms:Name>transformedgif</wms:Name>
+        <wms:Title>transformedgif</wms:Title>
+        <wms:RemoteWMSStoreId>transformedgif</wms:RemoteWMSStoreId>
       </wms:RequestableLayer>
 
     </wms:UnrequestableLayer>
