@@ -192,7 +192,7 @@ public class DefaultCurve extends AbstractDefaultGeometry implements Curve {
             } else {
                 // starting with the second segment, skip the first point (as it *must* be identical to
                 // last point of the last segment)
-                coords.addAll( coordinates.subList( 1, coordinates.size() - 1 ) );
+                coords.addAll( coordinates.subList( 1, coordinates.size() ) );
             }
         }
         return jtsFactory.createLineString( coords.toArray( new Coordinate[coords.size()] ) );
