@@ -60,7 +60,7 @@ public class GeoAlgorithmWithData {
     private final LinkedList<LinkedList<ExampleData>> data = new LinkedList<LinkedList<ExampleData>>();
 
     // output formats for the algorithm
-    private final LinkedList<LinkedList<OutputFormat>> outputFormat = new LinkedList<LinkedList<OutputFormat>>();
+    private final LinkedList<LinkedList<OutputFormat>> outputFormats = new LinkedList<LinkedList<OutputFormat>>();
 
     /**
      * Creates a {@link GeoAlgorithmWithData} without test data.
@@ -92,7 +92,7 @@ public class GeoAlgorithmWithData {
             this.data.addAll( data );
 
         if ( format != null )
-            this.outputFormat.addAll( format );
+            this.outputFormats.addAll( format );
     }
 
     /**
@@ -126,7 +126,7 @@ public class GeoAlgorithmWithData {
      *            List of output formats for one execution.
      */
     public void addOutputFormats( LinkedList<OutputFormat> format ) {
-        this.outputFormat.add( format );
+        this.outputFormats.add( format );
     }
 
     /**
@@ -140,7 +140,7 @@ public class GeoAlgorithmWithData {
      *            one execution you need a list of these lists.
      */
     public void addAllOutputFormats( LinkedList<LinkedList<OutputFormat>> format ) {
-        this.outputFormat.addAll( format );
+        this.outputFormats.addAll( format );
     }
 
     /**
@@ -158,7 +158,7 @@ public class GeoAlgorithmWithData {
      * @return All output formats. Every list of {@link OutputFormat} contains output formats for one execution.
      */
     public LinkedList<LinkedList<OutputFormat>> getAllOutputFormats() {
-        return outputFormat;
+        return outputFormats;
     }
 
     /**
