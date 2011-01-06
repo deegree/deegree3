@@ -36,8 +36,8 @@
 package org.deegree.services.wms.dynamic;
 
 import static org.deegree.commons.jdbc.ConnectionManager.getConnection;
-import static org.deegree.commons.jdbc.Util.findSrid;
 import static org.deegree.commons.utils.ArrayUtils.splitAsIntList;
+import static org.deegree.feature.utils.DBUtils.findSrid;
 import static org.deegree.services.wms.MapService.fillInheritedInformation;
 import static org.slf4j.LoggerFactory.getLogger;
 
