@@ -40,7 +40,9 @@ import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.deegree.commons.jdbc.ConnectionManager;
@@ -279,4 +281,29 @@ public class DeegreeWorkspace {
         ObservationStoreManager.destroy();
         ConnectionManager.destroy();
     }
+
+    /**
+     * @return a list of available workspaces
+     */
+    public static List<String> listWorkspaces() {
+        String workspaceRoot = System.getProperty( VAR_WORKSPACE_ROOT );
+        if ( workspaceRoot == null || workspaceRoot.isEmpty() ) {
+            workspaceRoot = System.getProperty( "user.home" ) + separator + ".deegree";
+        }
+
+        File root = new File( workspaceRoot );
+        List<String> workspaces = new ArrayList<String>();
+        if ( root.isDirectory() ) {
+            File[] list = root.listFiles();
+            if ( list != null ) {
+                for ( File f : list ) {
+                    if ( !f.getName().equalsIgnoreCase( ".svn" ) && f.isDirectory() ) {
+                        workspaces.add( f.getName() );
+                    }
+                }
+            }
+        }
+        return workspaces;
+    }
+
 }
