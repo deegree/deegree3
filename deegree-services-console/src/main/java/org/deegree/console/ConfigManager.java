@@ -114,6 +114,10 @@ public class ConfigManager {
     @Setter
     private String workspaceImportUrl;
 
+    @Getter
+    @Setter
+    private String workspaceImportName;
+
     public ConfigManager() {
         File serviceMainConfigFile = new File( OGCFrontController.getServiceWorkspace().getLocation(),
                                                "services/main.xml" );
@@ -278,8 +282,11 @@ public class ConfigManager {
         File root = new File( DeegreeWorkspace.getWorkspaceRoot() );
         try {
             in = url.openStream();
-            String name = new File( url.getPath() ).getName();
-            name = name.substring( 0, name.lastIndexOf( "." ) );
+            String name = workspaceImportName;
+            if ( name == null || name.isEmpty() ) {
+                name = new File( url.getPath() ).getName();
+                name = name.substring( 0, name.lastIndexOf( "." ) );
+            }
             File target = new File( root, name );
             if ( target.exists() ) {
                 lastMessage = "Workspace already exists!";

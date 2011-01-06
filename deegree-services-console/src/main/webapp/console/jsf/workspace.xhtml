@@ -23,11 +23,18 @@
                     </h:outputFormat></td>
                 </tr>
                 <tr>
+                    <td colspan="3" />
+                </tr>
+                <tr>
                     <td colspan="3"><h:form>
                         <h:inputText styleClass="liste" value="#{configManager.workspaceImportUrl}" size="32"
                             required="true" requiredMessage="#{labels.workspace_import_url_req}" />
                         <h:commandButton styleClass="buttonCreateNew" value="#{labels.import_workspace}"
                             onclick="show();" actionListener="#{configManager.importWorkspace}" />
+                        <br />
+                        <br />
+                        <h:outputLabel styleClass="label" value="New workspace name: " />
+                        <h:inputText styleClass="liste" value="#{configManager.workspaceImportName}" size="32" />
                     </h:form></td>
                 </tr>
                 <tr>
@@ -54,7 +61,7 @@
 
                         <td><h:outputText style="margin: 10px 0px; font-size:small" value="#{workspace}" /></td>
                         <td><h:form>
-                            <h:commandButton styleClass="buttonInfo" label="${workspace}"
+                            <h:commandButton styleClass="buttonInfo" label="#{workspace}"
                                 value="#{labels.start_workspace}" onclick="show();"
                                 rendered="#{applicationBean.workspaceName != workspace}"
                                 actionListener="#{configManager.startWorkspace}" />
@@ -62,7 +69,7 @@
                                 rendered="#{applicationBean.workspaceName == workspace}" />
                         </h:form></td>
                         <td><h:form>
-                            <h:commandButton styleClass="buttonInfo" label="${workspace}"
+                            <h:commandButton styleClass="buttonInfo" label="#{workspace}"
                                 onclick="return confirmDelete();" value="#{labels.delete_workspace}"
                                 rendered="#{applicationBean.workspaceName != workspace}"
                                 actionListener="#{configManager.deleteWorkspace}" />
