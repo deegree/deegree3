@@ -37,10 +37,10 @@ package org.deegree.tools.coverage.converter;
 
 import static org.deegree.commons.tools.CommandUtils.OPT_VERBOSE;
 import static org.deegree.commons.tools.CommandUtils.getIntOption;
-import static org.deegree.commons.tools.coverage.RasterOptionsParser.OPT_OUTPUT_TYPE;
-import static org.deegree.commons.tools.coverage.RasterOptionsParser.OPT_OUTPUT_TYPE_ABBREV;
-import static org.deegree.commons.tools.coverage.RasterOptionsParser.OPT_RASTER_OUT_LOC;
-import static org.deegree.commons.tools.coverage.RasterOptionsParser.OPT_TYPE_DESC;
+import static org.deegree.coverage.tools.RasterOptionsParser.OPT_OUTPUT_TYPE;
+import static org.deegree.coverage.tools.RasterOptionsParser.OPT_OUTPUT_TYPE_ABBREV;
+import static org.deegree.coverage.tools.RasterOptionsParser.OPT_RASTER_OUT_LOC;
+import static org.deegree.coverage.tools.RasterOptionsParser.OPT_TYPE_DESC;
 
 import java.io.File;
 import java.io.IOException;
@@ -69,9 +69,9 @@ import org.deegree.coverage.raster.data.nio.ByteBufferRasterData;
 import org.deegree.coverage.raster.io.RasterIOOptions;
 import org.deegree.coverage.raster.io.RasterReader;
 import org.deegree.coverage.raster.utils.RasterFactory;
+import org.deegree.coverage.tools.RasterOptionsParser;
 import org.deegree.cs.exceptions.TransformationException;
 import org.deegree.cs.exceptions.UnknownCRSException;
-import org.deegree.commons.tools.coverage.RasterOptionsParser;
 
 /**
  * Takes a raster file, or a number of raster files and convert it/them to another raster type.

@@ -35,7 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.tools.coverage;
 
-import static org.deegree.commons.tools.coverage.RasterCommandUtils.getInterpolationType;
+import static org.deegree.coverage.tools.RasterCommandUtils.getInterpolationType;
 
 import java.io.File;
 
