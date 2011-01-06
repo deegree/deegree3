@@ -111,10 +111,7 @@ public class DeegreeWorkspace {
     private DeegreeWorkspace( String workspaceName ) {
         String workspaceDir = System.getProperty( VAR_WORKSPACE );
         if ( workspaceDir == null || workspaceDir.isEmpty() ) {
-            String workspaceRoot = System.getProperty( VAR_WORKSPACE_ROOT );
-            if ( workspaceRoot == null || workspaceRoot.isEmpty() ) {
-                workspaceRoot = System.getProperty( "user.home" ) + separator + ".deegree";
-            }
+            String workspaceRoot = getWorkspaceRoot();
             workspaceDir = separator + workspaceRoot + separator + workspaceName;
         }
         dir = new File( workspaceDir );
@@ -283,15 +280,21 @@ public class DeegreeWorkspace {
     }
 
     /**
-     * @return a list of available workspaces
+     * @return the root directory for workspaces
      */
-    public static List<String> listWorkspaces() {
+    public static String getWorkspaceRoot() {
         String workspaceRoot = System.getProperty( VAR_WORKSPACE_ROOT );
         if ( workspaceRoot == null || workspaceRoot.isEmpty() ) {
             workspaceRoot = System.getProperty( "user.home" ) + separator + ".deegree";
         }
+        return workspaceRoot;
+    }
 
-        File root = new File( workspaceRoot );
+    /**
+     * @return a list of available workspaces
+     */
+    public static List<String> listWorkspaces() {
+        File root = new File( getWorkspaceRoot() );
         List<String> workspaces = new ArrayList<String>();
         if ( root.isDirectory() ) {
             File[] list = root.listFiles();
