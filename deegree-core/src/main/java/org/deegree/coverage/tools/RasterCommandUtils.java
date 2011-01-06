@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
 ----------------------------------------------------------------------------*/
-package org.deegree.commons.tools.coverage;
+package org.deegree.coverage.tools;
 
 import java.io.File;
 import java.io.FileFilter;

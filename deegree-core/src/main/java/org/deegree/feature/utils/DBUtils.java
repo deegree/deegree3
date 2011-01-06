@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.commons.jdbc;
+package org.deegree.feature.utils;
 
 import static java.sql.Types.BIGINT;
 import static java.sql.Types.BINARY;
@@ -85,9 +85,9 @@ import org.slf4j.Logger;
  * @version $Revision$, $Date$
  */
 @LoggingNotes(info = "logs SQL connection errors", trace = "logs stack traces")
-public class Util {
+public class DBUtils {
 
-    private static final Logger LOG = getLogger( Util.class );
+    private static final Logger LOG = getLogger( DBUtils.class );
 
     private static final GeometryFactory fac = new GeometryFactory();
 

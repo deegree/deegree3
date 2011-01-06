@@ -36,7 +36,7 @@
  E-Mail: greve@giub.uni-bonn.de
  ---------------------------------------------------------------------------*/
 
-package org.deegree.commons.tools.coverage;
+package org.deegree.coverage.tools;
 
 import static org.slf4j.LoggerFactory.getLogger;
 

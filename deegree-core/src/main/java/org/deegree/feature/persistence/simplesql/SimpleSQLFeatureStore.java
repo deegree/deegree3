@@ -52,7 +52,6 @@ import java.util.TreeMap;
 import javax.xml.namespace.QName;
 
 import org.deegree.commons.jdbc.ResultSetIterator;
-import org.deegree.commons.jdbc.Util;
 import org.deegree.commons.utils.Pair;
 import org.deegree.commons.utils.log.LoggingNotes;
 import org.deegree.cs.CRS;
@@ -78,6 +77,7 @@ import org.deegree.feature.types.GenericFeatureType;
 import org.deegree.feature.types.property.GeometryPropertyType;
 import org.deegree.feature.types.property.PropertyType;
 import org.deegree.feature.types.property.SimplePropertyType;
+import org.deegree.feature.utils.DBUtils;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
@@ -270,7 +270,7 @@ public class SimpleSQLFeatureStore implements FeatureStore {
 
     public void init()
                             throws FeatureStoreException {
-        featureType = Util.determineFeatureType( ftName, connId, lods.values().iterator().next() );
+        featureType = DBUtils.determineFeatureType( ftName, connId, lods.values().iterator().next() );
         if ( featureType == null ) {
             available = false;
         } else {
