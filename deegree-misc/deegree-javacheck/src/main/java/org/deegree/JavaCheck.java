@@ -38,7 +38,10 @@ package org.deegree;
 import java.awt.Button;
 import java.awt.Dialog;
 import java.awt.Frame;
-import java.awt.GridLayout;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
+import java.awt.TextArea;
 import java.awt.TextField;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
@@ -56,13 +59,13 @@ public class JavaCheck {
 
     private static void alert() {
 
-        String msg = "You need to have Java SDK 1.6 (Update 4) or later installed in order to run this software.";
-        String msg2 = "See http://wiki.deegree.org/deegreeWiki/deegree3/SystemRequirements for details.";
+        String msg = "You need to have Java SDK 1.6 (Update 4) or later installed in order to run this software.\n"
+                     + "See http://wiki.deegree.org/deegreeWiki/deegree3/SystemRequirements for details.";
         System.err.println( msg );
 
         try {
             Dialog d = new Dialog( new Frame(), "Incompatible Java installation", true );
-            d.setLayout( new GridLayout( 3, 1 ) );
+            d.setLayout( new GridBagLayout() );
 
             // Create an OK button
             Button ok = new Button( "OK" );
@@ -72,13 +75,18 @@ public class JavaCheck {
                 }
             } );
 
-            TextField field = new TextField( msg );
-            field.setBackground( d.getBackground() );
-            d.add( field );
-            field = new TextField( msg2 );
-            field.setBackground( d.getBackground() );
-            d.add( field );
-            d.add( ok );
+            GridBagConstraints gb = new GridBagConstraints();
+            gb.insets = new Insets( 2, 2, 2, 2 );
+            gb.gridy = 0;
+            gb.fill = GridBagConstraints.HORIZONTAL;
+
+            TextArea field = new TextArea( msg, 3, 80, TextArea.SCROLLBARS_VERTICAL_ONLY );
+            field.setBackground( ok.getBackground() );
+            d.add( field, gb );
+            gb = (GridBagConstraints) gb.clone();
+            gb.fill = GridBagConstraints.NONE;
+            ++gb.gridy;
+            d.add( ok, gb );
 
             // Show dialog
             d.pack();
@@ -102,6 +110,8 @@ public class JavaCheck {
         String[] parts = javaVersion.split( "\\." );
         if ( parts.length != 3 ) {
             System.err.println( "Java VM version (" + javaVersion + ") does not have expected format. Skipping check." );
+            alert();
+            return;
         }
 
         int first = Integer.parseInt( parts[0] );
