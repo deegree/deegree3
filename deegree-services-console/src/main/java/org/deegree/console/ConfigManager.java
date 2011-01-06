@@ -38,6 +38,7 @@ package org.deegree.console;
 import static org.apache.commons.io.FileUtils.writeStringToFile;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.URL;
 import java.util.List;
 
@@ -48,6 +49,7 @@ import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import javax.faces.event.ActionEvent;
 
+import org.apache.commons.io.FileUtils;
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.console.featurestore.FeatureStoreConfigManager;
 import org.deegree.console.jdbc.ConnectionConfigManager;
@@ -225,6 +227,16 @@ public class ConfigManager {
             File file = new File( ctx.getRealPath( "WEB-INF/workspace_name" ) );
             writeStringToFile( file, ws );
             applyChanges();
+        }
+    }
+
+    public void deleteWorkspace( ActionEvent evt ) throws IOException {
+        if ( evt.getSource() instanceof HtmlCommandButton ) {
+            String ws = ( (HtmlCommandButton) evt.getSource() ).getLabel();
+            DeegreeWorkspace dw = DeegreeWorkspace.getInstance( ws );
+            if ( dw.getLocation().isDirectory() ) {
+                FileUtils.deleteDirectory( dw.getLocation() );
+            }
         }
     }
 

@@ -12,28 +12,26 @@
                     value="#{labels.workspace_title}" /></legend>
                 <table style="font-size: small" border="0">
                     <tr>
-                        <td colspan="2"><h:outputFormat value="#{labels.workspace_name}"
+                        <td colspan="3"><h:outputFormat value="#{labels.workspace_name}"
                             style="margin: 10px 0px; font-size:small">
                             <f:param value="#{applicationBean.workspaceName}" />
                         </h:outputFormat></td>
                     </tr>
                     <tr>
-                        <td colspan="2"><h:outputFormat value="#{labels.workspace_dir}"
+                        <td colspan="3"><h:outputFormat value="#{labels.workspace_dir}"
                             style="margin: 10px 0px; font-size:small">
                             <f:param value="#{applicationBean.workspaceDirectory}" />
                         </h:outputFormat></td>
                     </tr>
                     <tr>
-                        <td />
-                        <td />
+                        <td colspan="3" />
                     </tr>
                     <tr>
-                        <td><h:outputText style="margin: 10px 0px; font-size:small" value="Available workspaces:" /></td>
-                        <td />
+                        <td colspan="3"><h:outputText style="margin: 10px 0px; font-size:small"
+                            value="Available workspaces:" /></td>
                     </tr>
                     <tr>
-                        <td />
-                        <td />
+                        <td colspan="3" />
                     </tr>
                     <tr align="left">
                         <td><h:outputText style="margin: 10px 0px; font-size:small" value="Webapp workspace" /></td>
@@ -43,6 +41,10 @@
                             actionListener="#{configManager.startWorkspace}" /><h:outputText
                             style="margin: 10px 0px; font-size:small" value="#{labels.running_workspace}"
                             rendered="#{applicationBean.workspaceName == 'default(external)'}" /></td>
+                        <td><h:commandButton styleClass="buttonInfo" label="" onclick="return confirmDelete();"
+                            value="#{labels.delete_workspace}"
+                            rendered="#{applicationBean.workspaceName != 'default(external)'}"
+                            actionListener="#{configManager.deleteWorkspace}" /></td>
                     </tr>
                     <ui:repeat var="workspace" value="#{configManager.workspaceList}">
                         <tr align="left">
@@ -53,6 +55,10 @@
                                 actionListener="#{configManager.startWorkspace}" /><h:outputText
                                 style="margin: 10px 0px; font-size:small" value="#{labels.running_workspace}"
                                 rendered="#{applicationBean.workspaceName == workspace}" /></td>
+                            <td><h:commandButton styleClass="buttonInfo" label="${workspace}"
+                                onclick="return confirmDelete();" value="#{labels.delete_workspace}"
+                                rendered="#{applicationBean.workspaceName != workspace}"
+                                actionListener="#{configManager.deleteWorkspace}" /></td>
                         </tr>
                     </ui:repeat>
                 </table>
