@@ -261,6 +261,7 @@ public class HttpUtils {
      * @param worker
      * @param url
      * @param headers
+     *            may be null
      * @return some object from the url, null, if url is not valid
      * @throws HttpException
      * @throws IOException
@@ -273,8 +274,10 @@ public class HttpUtils {
         }
         HttpClient client = enableProxyUsage( new HttpClient(), u );
         GetMethod get = new GetMethod( url );
-        for ( String key : headers.keySet() ) {
-            get.setRequestHeader( key, headers.get( key ) );
+        if ( headers != null ) {
+            for ( String key : headers.keySet() ) {
+                get.setRequestHeader( key, headers.get( key ) );
+            }
         }
         client.executeMethod( get );
         return worker.work( get.getResponseBodyAsStream() );
