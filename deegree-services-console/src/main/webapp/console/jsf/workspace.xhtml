@@ -7,63 +7,70 @@
             <ui:include src="accessForbidden.xhtml" />
         </h:panelGroup>
         <h:panelGroup rendered="#{logBean.loggedIn}">
-            <h:form>
-                <fieldset class="fieldset"><legend><h:outputText styleClass="titel"
-                    value="#{labels.workspace_title}" /></legend>
-                <table style="font-size: small" border="0">
-                    <tr>
-                        <td colspan="3"><h:outputFormat value="#{labels.workspace_name}"
-                            style="margin: 10px 0px; font-size:small">
-                            <f:param value="#{applicationBean.workspaceName}" />
-                        </h:outputFormat></td>
-                    </tr>
-                    <tr>
-                        <td colspan="3"><h:outputFormat value="#{labels.workspace_dir}"
-                            style="margin: 10px 0px; font-size:small">
-                            <f:param value="#{applicationBean.workspaceDirectory}" />
-                        </h:outputFormat></td>
-                    </tr>
-                    <tr>
-                        <td colspan="3" />
-                    </tr>
-                    <tr>
-                        <td colspan="3"><h:outputText style="margin: 10px 0px; font-size:small"
-                            value="Available workspaces:" /></td>
-                    </tr>
-                    <tr>
-                        <td colspan="3" />
-                    </tr>
+            <fieldset class="fieldset"><legend><h:outputText styleClass="titel"
+                value="#{labels.workspace_title}" /></legend>
+            <table style="font-size: small" border="0">
+                <tr>
+                    <td colspan="3"><h:outputFormat value="#{labels.workspace_name}"
+                        style="margin: 10px 0px; font-size:small">
+                        <f:param value="#{applicationBean.workspaceName}" />
+                    </h:outputFormat></td>
+                </tr>
+                <tr>
+                    <td colspan="3"><h:outputFormat value="#{labels.workspace_dir}"
+                        style="margin: 10px 0px; font-size:small">
+                        <f:param value="#{applicationBean.workspaceDirectory}" />
+                    </h:outputFormat></td>
+                </tr>
+                <tr>
+                    <td colspan="3"><h:form>
+                        <h:inputText styleClass="liste" value="#{configManager.workspaceImportUrl}" size="32"
+                            required="true" requiredMessage="#{labels.workspace_import_url_req}" />
+                        <h:commandButton styleClass="buttonCreateNew" value="#{labels.import_workspace}"
+                            onclick="show();" actionListener="#{configManager.importWorkspace}" />
+                    </h:form></td>
+                </tr>
+                <tr>
+                    <td colspan="3" />
+                </tr>
+                <tr>
+                    <td colspan="3"><h:outputLabel styleClass="label" value="Available workspaces:" /></td>
+                </tr>
+                <tr>
+                    <td colspan="3" />
+                </tr>
+                <tr align="left">
+                    <td><h:outputText style="margin: 10px 0px; font-size:small" value="Webapp workspace" /></td>
+                    <td colspan="2"><h:form>
+                        <h:commandButton styleClass="buttonInfo" label="" value="#{labels.start_original_workspace}"
+                            onclick="show();" rendered="#{applicationBean.workspaceName != 'default(external)'}"
+                            actionListener="#{configManager.startWorkspace}" />
+                        <h:outputText style="margin: 10px 0px; font-size:small" value="#{labels.running_workspace}"
+                            rendered="#{applicationBean.workspaceName == 'default(external)'}" />
+                    </h:form></td>
+                </tr>
+                <ui:repeat var="workspace" value="#{configManager.workspaceList}">
                     <tr align="left">
-                        <td><h:outputText style="margin: 10px 0px; font-size:small" value="Webapp workspace" /></td>
-                        <td><h:commandButton styleClass="buttonInfo" label=""
-                            value="#{labels.start_original_workspace}" onclick="show();"
-                            rendered="#{applicationBean.workspaceName != 'default(external)'}"
-                            actionListener="#{configManager.startWorkspace}" /><h:outputText
-                            style="margin: 10px 0px; font-size:small" value="#{labels.running_workspace}"
-                            rendered="#{applicationBean.workspaceName == 'default(external)'}" /></td>
-                        <td><h:commandButton styleClass="buttonInfo" label="" onclick="return confirmDelete();"
-                            value="#{labels.delete_workspace}"
-                            rendered="#{applicationBean.workspaceName != 'default(external)'}"
-                            actionListener="#{configManager.deleteWorkspace}" /></td>
-                    </tr>
-                    <ui:repeat var="workspace" value="#{configManager.workspaceList}">
-                        <tr align="left">
-                            <td><h:outputText style="margin: 10px 0px; font-size:small" value="#{workspace}" /></td>
-                            <td><h:commandButton styleClass="buttonInfo" label="${workspace}"
+
+                        <td><h:outputText style="margin: 10px 0px; font-size:small" value="#{workspace}" /></td>
+                        <td><h:form>
+                            <h:commandButton styleClass="buttonInfo" label="${workspace}"
                                 value="#{labels.start_workspace}" onclick="show();"
                                 rendered="#{applicationBean.workspaceName != workspace}"
-                                actionListener="#{configManager.startWorkspace}" /><h:outputText
-                                style="margin: 10px 0px; font-size:small" value="#{labels.running_workspace}"
-                                rendered="#{applicationBean.workspaceName == workspace}" /></td>
-                            <td><h:commandButton styleClass="buttonInfo" label="${workspace}"
+                                actionListener="#{configManager.startWorkspace}" />
+                            <h:outputText style="margin: 10px 0px; font-size:small" value="#{labels.running_workspace}"
+                                rendered="#{applicationBean.workspaceName == workspace}" />
+                        </h:form></td>
+                        <td><h:form>
+                            <h:commandButton styleClass="buttonInfo" label="${workspace}"
                                 onclick="return confirmDelete();" value="#{labels.delete_workspace}"
                                 rendered="#{applicationBean.workspaceName != workspace}"
-                                actionListener="#{configManager.deleteWorkspace}" /></td>
-                        </tr>
-                    </ui:repeat>
-                </table>
-                </fieldset>
-            </h:form>
+                                actionListener="#{configManager.deleteWorkspace}" />
+                        </h:form></td>
+                    </tr>
+                </ui:repeat>
+            </table>
+            </fieldset>
         </h:panelGroup>
     </ui:define>
 </ui:composition>

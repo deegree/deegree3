@@ -36,9 +36,11 @@
 package org.deegree.console;
 
 import static org.apache.commons.io.FileUtils.writeStringToFile;
+import static org.apache.commons.io.IOUtils.closeQuietly;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
 import java.util.List;
 
@@ -49,8 +51,12 @@ import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import javax.faces.event.ActionEvent;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import org.apache.commons.io.FileUtils;
 import org.deegree.commons.config.DeegreeWorkspace;
+import org.deegree.commons.utils.io.Zip;
 import org.deegree.console.featurestore.FeatureStoreConfigManager;
 import org.deegree.console.jdbc.ConnectionConfigManager;
 import org.deegree.console.metadatastore.MetadataStoreConfigManager;
@@ -102,6 +108,10 @@ public class ConfigManager {
     private final XMLConfig proxyConfig;
 
     private String lastMessage = "Workspace initialized.";
+
+    @Getter
+    @Setter
+    private String workspaceImportUrl;
 
     public ConfigManager() {
         File serviceMainConfigFile = new File( OGCFrontController.getServiceWorkspace().getLocation(),
@@ -230,7 +240,8 @@ public class ConfigManager {
         }
     }
 
-    public void deleteWorkspace( ActionEvent evt ) throws IOException {
+    public void deleteWorkspace( ActionEvent evt )
+                            throws IOException {
         if ( evt.getSource() instanceof HtmlCommandButton ) {
             String ws = ( (HtmlCommandButton) evt.getSource() ).getLabel();
             DeegreeWorkspace dw = DeegreeWorkspace.getInstance( ws );
@@ -260,4 +271,21 @@ public class ConfigManager {
         lastMessage = "Workspace changes have been applied.";
         return FacesContext.getCurrentInstance().getViewRoot().getViewId();
     }
+
+    public void importWorkspace()
+                            throws IOException {
+        URL url = new URL( workspaceImportUrl );
+        InputStream in = null;
+        File root = new File( DeegreeWorkspace.getWorkspaceRoot() );
+        try {
+            in = url.openStream();
+            String name = new File( url.getPath() ).getName();
+            name = name.substring( 0, name.lastIndexOf( "." ) );
+            File target = new File( root, name );
+            Zip.unzip( in, target );
+        } finally {
+            closeQuietly( in );
+        }
+    }
+
 }
