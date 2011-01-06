@@ -37,7 +37,7 @@ package org.deegree.client.wms;
 
 import static java.lang.Boolean.FALSE;
 import static java.util.Collections.sort;
-import static org.deegree.commons.jdbc.Util.findSrid;
+import static org.deegree.feature.utils.DBUtils.findSrid;
 import static org.deegree.services.controller.OGCFrontController.getServiceConfiguration;
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -57,7 +57,7 @@ import lombok.Setter;
 
 import org.deegree.commons.jdbc.ConnectionManager;
 import org.deegree.commons.jdbc.LayerDatabaseHelper;
-import org.deegree.commons.jdbc.Util;
+import org.deegree.feature.utils.DBUtils;
 import org.deegree.services.wms.controller.WMSController;
 import org.deegree.services.wms.dynamic.LayerUpdater;
 import org.deegree.services.wms.dynamic.PostGISUpdater;
@@ -230,7 +230,7 @@ public class LayerDatabase implements Serializable {
      * 
      */
     public void fetchSchemas( AjaxBehaviorEvent evt ) {
-        schemas = Util.fetchGeometrySchemas( selectedConnection );
+        schemas = DBUtils.fetchGeometrySchemas( selectedConnection );
         manySchemas = schemas.size() > 1;
         sort( schemas );
         if ( !schemas.isEmpty() ) {
@@ -243,7 +243,7 @@ public class LayerDatabase implements Serializable {
      * @param evt
      */
     public void fetchTables( AjaxBehaviorEvent evt ) {
-        tables = Util.fetchGeometryTables( selectedConnection, selectedSchema );
+        tables = DBUtils.fetchGeometryTables( selectedConnection, selectedSchema );
         sort( tables );
         if ( !tables.isEmpty() ) {
             selectedTable = tables.getFirst();
