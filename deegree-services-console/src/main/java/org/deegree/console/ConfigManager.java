@@ -39,6 +39,8 @@ import static org.apache.commons.io.FileUtils.writeStringToFile;
 import static org.apache.commons.io.IOUtils.closeQuietly;
 import static org.apache.commons.io.IOUtils.readLines;
 import static org.deegree.commons.config.DeegreeWorkspace.getWorkspaceRoot;
+import static org.deegree.commons.utils.net.HttpUtils.STREAM;
+import static org.deegree.commons.utils.net.HttpUtils.get;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.File;
@@ -287,8 +289,8 @@ public class ConfigManager {
         try {
             if ( evt.getSource() instanceof HtmlCommandButton ) {
                 String ws = ( (HtmlCommandButton) evt.getSource() ).getLabel();
-                URL url = new URL( "http://download.deegree.org/deegree3/workspaces/workspaces-3.1" );
-                in = url.openStream();
+
+                in = get( STREAM, "http://download.deegree.org/deegree3/workspaces/workspaces-3.1", null );
 
                 for ( String s : readLines( in ) ) {
                     String[] ss = s.split( " ", 2 );
@@ -309,7 +311,7 @@ public class ConfigManager {
         try {
             URL url = new URL( location );
             File root = new File( getWorkspaceRoot() );
-            in = url.openStream();
+            in = get( STREAM, location, null );
             String name = workspaceImportName;
             if ( name == null || name.isEmpty() ) {
                 name = new File( url.getPath() ).getName();
@@ -338,8 +340,7 @@ public class ConfigManager {
                             throws IOException {
         InputStream in = null;
         try {
-            URL url = new URL( "http://download.deegree.org/deegree3/workspaces/workspaces-3.1" );
-            in = url.openStream();
+            in = get( STREAM, "http://download.deegree.org/deegree3/workspaces/workspaces-3.1", null );
             List<String> list = readLines( in );
             List<String> res = new ArrayList<String>( list.size() );
 
