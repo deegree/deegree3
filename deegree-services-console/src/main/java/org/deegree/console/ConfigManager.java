@@ -107,6 +107,7 @@ public class ConfigManager {
 
     private final XMLConfig proxyConfig;
 
+    @Getter
     private String lastMessage = "Workspace initialized.";
 
     @Getter
@@ -221,10 +222,6 @@ public class ConfigManager {
         return connManager;
     }
 
-    public String getLastMessage() {
-        return lastMessage;
-    }
-
     public List<String> getWorkspaceList() {
         return DeegreeWorkspace.listWorkspaces();
     }
@@ -237,6 +234,7 @@ public class ConfigManager {
             File file = new File( ctx.getRealPath( "WEB-INF/workspace_name" ) );
             writeStringToFile( file, ws );
             applyChanges();
+            lastMessage = "Workspace has been started.";
         }
     }
 
@@ -247,6 +245,7 @@ public class ConfigManager {
             DeegreeWorkspace dw = DeegreeWorkspace.getInstance( ws );
             if ( dw.getLocation().isDirectory() ) {
                 FileUtils.deleteDirectory( dw.getLocation() );
+                lastMessage = "Workspace has been deleted.";
             }
         }
     }
@@ -282,7 +281,12 @@ public class ConfigManager {
             String name = new File( url.getPath() ).getName();
             name = name.substring( 0, name.lastIndexOf( "." ) );
             File target = new File( root, name );
-            Zip.unzip( in, target );
+            if ( target.exists() ) {
+                lastMessage = "Workspace already exists!";
+            } else {
+                Zip.unzip( in, target );
+                lastMessage = "Workspace has been imported.";
+            }
         } finally {
             closeQuietly( in );
         }
