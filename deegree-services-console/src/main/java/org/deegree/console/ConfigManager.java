@@ -37,6 +37,7 @@ package org.deegree.console;
 
 import static org.apache.commons.io.FileUtils.writeStringToFile;
 import static org.apache.commons.io.IOUtils.closeQuietly;
+import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.File;
 import java.io.IOException;
@@ -64,6 +65,7 @@ import org.deegree.console.observationstore.ObservationStoreConfigManager;
 import org.deegree.console.services.ServiceConfigManager;
 import org.deegree.console.styles.StyleConfigManager;
 import org.deegree.services.controller.OGCFrontController;
+import org.slf4j.Logger;
 
 /**
  * TODO add class documentation here
@@ -76,6 +78,8 @@ import org.deegree.services.controller.OGCFrontController;
 @ManagedBean
 @ApplicationScoped
 public class ConfigManager {
+
+    private static final Logger LOG = getLogger( ConfigManager.class );
 
     private static URL MAIN_TEMPLATE = ConnectionConfigManager.class.getResource( "main_template.xml" );
 
@@ -275,12 +279,11 @@ public class ConfigManager {
         return FacesContext.getCurrentInstance().getViewRoot().getViewId();
     }
 
-    public void importWorkspace()
-                            throws IOException {
-        URL url = new URL( workspaceImportUrl );
+    public void importWorkspace() {
         InputStream in = null;
-        File root = new File( DeegreeWorkspace.getWorkspaceRoot() );
         try {
+            URL url = new URL( workspaceImportUrl );
+            File root = new File( DeegreeWorkspace.getWorkspaceRoot() );
             in = url.openStream();
             String name = workspaceImportName;
             if ( name == null || name.isEmpty() ) {
@@ -294,6 +297,9 @@ public class ConfigManager {
                 Zip.unzip( in, target );
                 lastMessage = "Workspace has been imported.";
             }
+        } catch ( Exception e ) {
+            LOG.trace( "Stack trace: ", e );
+            lastMessage = "Workspace could not be imported: " + e.getLocalizedMessage();
         } finally {
             closeQuietly( in );
         }
