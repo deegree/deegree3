@@ -76,6 +76,25 @@
                         </h:form></td>
                     </tr>
                 </ui:repeat>
+                <tr>
+                    <td colspan="3" />
+                </tr>
+                <tr>
+                    <td colspan="3"><h:outputLabel styleClass="label" value="Download an official workspace:" /></td>
+                </tr>
+                <tr>
+                    <td colspan="3" />
+                </tr>
+                <ui:repeat var="workspace" value="#{configManager.remoteWorkspaces}">
+                    <tr align="left">
+                        <td colspan="2"><h:outputText style="margin: 10px 0px; font-size:small"
+                            value="#{workspace}" /></td>
+                        <td><h:form>
+                            <h:commandButton styleClass="buttonInfo" label="#{workspace}" value="Download"
+                                onclick="show();" actionListener="#{configManager.downloadWorkspace}" />
+                        </h:form></td>
+                    </tr>
+                </ui:repeat>
             </table>
             </fieldset>
         </h:panelGroup>

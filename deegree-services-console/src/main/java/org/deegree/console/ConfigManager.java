@@ -37,12 +37,15 @@ package org.deegree.console;
 
 import static org.apache.commons.io.FileUtils.writeStringToFile;
 import static org.apache.commons.io.IOUtils.closeQuietly;
+import static org.apache.commons.io.IOUtils.readLines;
+import static org.deegree.commons.config.DeegreeWorkspace.getWorkspaceRoot;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.faces.bean.ApplicationScoped;
@@ -279,11 +282,33 @@ public class ConfigManager {
         return FacesContext.getCurrentInstance().getViewRoot().getViewId();
     }
 
-    public void importWorkspace() {
+    public void downloadWorkspace( ActionEvent evt ) {
         InputStream in = null;
         try {
-            URL url = new URL( workspaceImportUrl );
-            File root = new File( DeegreeWorkspace.getWorkspaceRoot() );
+            if ( evt.getSource() instanceof HtmlCommandButton ) {
+                String ws = ( (HtmlCommandButton) evt.getSource() ).getLabel();
+                URL url = new URL( "http://download.deegree.org/deegree3/workspaces/workspaces-3.1" );
+                in = url.openStream();
+
+                for ( String s : readLines( in ) ) {
+                    String[] ss = s.split( " ", 2 );
+                    if ( ss[1].equals( ws ) ) {
+                        importWorkspace( ss[0] );
+                    }
+                }
+            }
+        } catch ( IOException e ) {
+            lastMessage = "Workspace could not be loaded: " + e.getLocalizedMessage();
+        } finally {
+            closeQuietly( in );
+        }
+    }
+
+    private void importWorkspace( String location ) {
+        InputStream in = null;
+        try {
+            URL url = new URL( location );
+            File root = new File( getWorkspaceRoot() );
             in = url.openStream();
             String name = workspaceImportName;
             if ( name == null || name.isEmpty() ) {
@@ -300,6 +325,29 @@ public class ConfigManager {
         } catch ( Exception e ) {
             LOG.trace( "Stack trace: ", e );
             lastMessage = "Workspace could not be imported: " + e.getLocalizedMessage();
+        } finally {
+            closeQuietly( in );
+        }
+    }
+
+    public void importWorkspace() {
+        importWorkspace( workspaceImportUrl );
+    }
+
+    public List<String> getRemoteWorkspaces()
+                            throws IOException {
+        InputStream in = null;
+        try {
+            URL url = new URL( "http://download.deegree.org/deegree3/workspaces/workspaces-3.1" );
+            in = url.openStream();
+            List<String> list = readLines( in );
+            List<String> res = new ArrayList<String>( list.size() );
+
+            for ( String s : list ) {
+                res.add( s.split( " ", 2 )[1] );
+            }
+
+            return res;
         } finally {
             closeQuietly( in );
         }
