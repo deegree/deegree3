@@ -35,13 +35,20 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.console;
 
+import static org.apache.commons.io.FileUtils.writeStringToFile;
+
 import java.io.File;
 import java.net.URL;
+import java.util.List;
 
 import javax.faces.bean.ApplicationScoped;
 import javax.faces.bean.ManagedBean;
+import javax.faces.component.html.HtmlCommandButton;
+import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
+import javax.faces.event.ActionEvent;
 
+import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.console.featurestore.FeatureStoreConfigManager;
 import org.deegree.console.jdbc.ConnectionConfigManager;
 import org.deegree.console.metadatastore.MetadataStoreConfigManager;
@@ -204,6 +211,21 @@ public class ConfigManager {
 
     public String getLastMessage() {
         return lastMessage;
+    }
+
+    public List<String> getWorkspaceList() {
+        return DeegreeWorkspace.listWorkspaces();
+    }
+
+    public void startWorkspace( ActionEvent evt )
+                            throws Exception {
+        if ( evt.getSource() instanceof HtmlCommandButton ) {
+            String ws = ( (HtmlCommandButton) evt.getSource() ).getLabel();
+            ExternalContext ctx = FacesContext.getCurrentInstance().getExternalContext();
+            File file = new File( ctx.getRealPath( "WEB-INF/workspace_name" ) );
+            writeStringToFile( file, ws );
+            applyChanges();
+        }
     }
 
     public String applyChanges() {
