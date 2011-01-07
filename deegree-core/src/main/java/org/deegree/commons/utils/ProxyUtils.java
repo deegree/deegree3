@@ -108,11 +108,11 @@ public final class ProxyUtils implements ResourceManager {
     /**
      * Sets/augments the VM's proxy configuration.
      * 
-     * @param proxyConfigFile
      * @throws IllegalArgumentException
      */
-    public synchronized static void setupProxyParameters( File proxyConfigFile )
+    public void startup( DeegreeWorkspace workspace )
                             throws IllegalArgumentException {
+        File proxyConfigFile = new File( workspace.getLocation(), "proxy.xml" );
         if ( !proxyConfigFile.exists() ) {
             LOG.info( "No 'proxy.xml' file -- skipping set up of proxy configuration." );
             return;
@@ -423,7 +423,4 @@ public final class ProxyUtils implements ResourceManager {
         // reset settings?
     }
 
-    public void startup( DeegreeWorkspace workspace ) {
-        setupProxyParameters( new File( workspace.getLocation(), "proxy.xml" ) );
-    }
 }

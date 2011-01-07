@@ -50,6 +50,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamReader;
 
+import org.apache.commons.io.filefilter.SuffixFileFilter;
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceManager;
 import org.deegree.commons.utils.FileUtils;
@@ -76,8 +77,6 @@ public class CoverageBuilderManager implements ResourceManager {
     private static Map<String, CoverageBuilder> nsToBuilder = new ConcurrentHashMap<String, CoverageBuilder>();
 
     private Map<String, AbstractCoverage> idToCov = Collections.synchronizedMap( new HashMap<String, AbstractCoverage>() );
-
-    private File coverageConfigLocation;
 
     /**
      * Load all available {@link CoverageBuilder}s
@@ -107,22 +106,17 @@ public class CoverageBuilderManager implements ResourceManager {
      * (given while constructing).
      * 
      */
-    public void init() {
-        if ( coverageConfigLocation == null || !coverageConfigLocation.exists() ) {
+    public void startup( DeegreeWorkspace workspace ) {
+        File coverageConfigLocation = new File( workspace.getLocation(), "datasources" + File.separator + "coverage" );
+        if ( !coverageConfigLocation.exists() ) {
             LOG.info( "No 'datasources/coverage' directory -- skipping initialization of coverage stores." );
             return;
         }
+
         LOG.info( "--------------------------------------------------------------------------------" );
         LOG.info( "Setting up coverages from '{}'", coverageConfigLocation );
         LOG.info( "--------------------------------------------------------------------------------" );
-        if ( coverageConfigLocation == null ) {
-            LOG.warn( "The coverage config location may not be null." );
-            return;
-        }
-        if ( !coverageConfigLocation.exists() ) {
-            LOG.warn( "The given coverage config location does not exist: " + coverageConfigLocation.getAbsolutePath() );
-            return;
-        }
+
         File[] csConfigFiles = null;
         if ( coverageConfigLocation.isFile() ) {
             String ext = FileUtils.getFileExtension( coverageConfigLocation );
@@ -130,12 +124,7 @@ public class CoverageBuilderManager implements ResourceManager {
                 csConfigFiles = new File[] { coverageConfigLocation };
             }
         } else {
-            csConfigFiles = coverageConfigLocation.listFiles( new FilenameFilter() {
-                @Override
-                public boolean accept( File dir, String name ) {
-                    return name.toLowerCase().endsWith( ".xml" );
-                }
-            } );
+            csConfigFiles = coverageConfigLocation.listFiles( (FilenameFilter) new SuffixFileFilter( ".xml" ) );
         }
         if ( csConfigFiles == null ) {
             LOG.warn( "Did not find any coverage configuration files in directory: "
@@ -228,24 +217,12 @@ public class CoverageBuilderManager implements ResourceManager {
         return builder.buildCoverage( configURL );
     }
 
-    /**
-     * 
-     */
-    public void destroy() {
-        idToCov.clear();
-    }
-
     public Class<? extends ResourceManager>[] getDependencies() {
         return new Class[] { ProxyUtils.class };
     }
 
     public void shutdown() {
-        destroy();
-    }
-
-    public void startup( DeegreeWorkspace workspace ) {
-        coverageConfigLocation = new File( workspace.getLocation(), "datasources" + File.separator + "coverage" );
-        init();
+        idToCov.clear();
     }
 
 }

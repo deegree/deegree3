@@ -48,6 +48,7 @@ import java.util.ServiceLoader;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamReader;
 
+import org.apache.commons.io.filefilter.SuffixFileFilter;
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceManager;
 import org.deegree.commons.utils.ProxyUtils;
@@ -85,7 +86,8 @@ public class RemoteOWSManager implements ResourceManager {
         }
     }
 
-    public void init( File dir ) {
+    public void startup( DeegreeWorkspace workspace ) {
+        File dir = new File( workspace.getLocation(), "datasources" + separator + "remoteows" );
         if ( !dir.exists() ) {
             LOG.info( "No 'datasources/remoteows' directory -- skipping initialization of remote OWS stores." );
             return;
@@ -94,12 +96,7 @@ public class RemoteOWSManager implements ResourceManager {
         LOG.info( "Setting up remote OWS stores." );
         LOG.info( "--------------------------------------------------------------------------------" );
 
-        File[] configFiles = dir.listFiles( new FilenameFilter() {
-            @Override
-            public boolean accept( File dir, String name ) {
-                return name.toLowerCase().endsWith( ".xml" );
-            }
-        } );
+        File[] configFiles = dir.listFiles( (FilenameFilter) new SuffixFileFilter( ".xml" ) );
         for ( File conf : configFiles ) {
             String fileName = conf.getName();
             // 4 is the length of ".xml"
@@ -157,10 +154,6 @@ public class RemoteOWSManager implements ResourceManager {
 
     public void shutdown() {
         // no cleanup needed?
-    }
-
-    public void startup( DeegreeWorkspace workspace ) {
-        init( new File( workspace.getLocation(), "datasources" + separator + "remoteows" ) );
     }
 
 }
