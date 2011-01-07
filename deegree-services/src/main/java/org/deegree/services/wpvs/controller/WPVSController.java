@@ -74,6 +74,7 @@ import org.deegree.protocol.wpvs.WPVSConstants.WPVSRequestType;
 import org.deegree.rendering.r3d.opengl.JOGLChecker;
 import org.deegree.services.controller.AbstractOGCServiceController;
 import org.deegree.services.controller.ImplementationMetadata;
+import org.deegree.services.controller.OGCFrontController;
 import org.deegree.services.controller.exception.ControllerException;
 import org.deegree.services.controller.exception.ControllerInitException;
 import org.deegree.services.controller.exception.serializer.XMLExceptionSerializer;
@@ -160,10 +161,17 @@ public class WPVSController extends AbstractOGCServiceController {
         try {
             publishedInformation = parsePublishedInformation( nsContext, controllerConf );
             ServiceConfiguration sc = parseServerConfiguration( nsContext, controllerConf );
-            service = new PerspectiveViewService( controllerConf, sc, getServiceWorkspace() );
+            service = new PerspectiveViewService( controllerConf, sc, workspace );
         } catch ( ServiceInitException e ) {
             throw new ControllerInitException( e.getMessage(), e );
         }
+    }
+
+    /**
+     * @return the view service
+     */
+    public PerspectiveViewService getService() {
+        return service;
     }
 
     private PublishedInformation parsePublishedInformation( NamespaceBindings nsContext, XMLAdapter controllerConf )

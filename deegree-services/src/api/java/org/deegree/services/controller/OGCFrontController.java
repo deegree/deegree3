@@ -87,6 +87,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.log4j.LogManager;
 import org.deegree.commons.concurrent.Executor;
 import org.deegree.commons.config.DeegreeWorkspace;
+import org.deegree.commons.config.WorkspaceInitializationException;
 import org.deegree.commons.jdbc.ConnectionManager;
 import org.deegree.commons.tom.ows.Version;
 import org.deegree.commons.utils.DeegreeAALogoUtils;
@@ -351,6 +352,7 @@ public class OGCFrontController extends HttpServlet {
                 sendException( ex, response, null );
                 return;
             } catch ( Throwable e ) {
+                e.printStackTrace();
                 LOG.debug( "Handling HTTP-GET request took: " + ( System.currentTimeMillis() - entryTime )
                            + " ms before sending exception." );
                 LOG.debug( e.getMessage(), e );
@@ -881,7 +883,8 @@ public class OGCFrontController extends HttpServlet {
             LOG.info( "" );
 
             initWorkspace();
-            initServices();
+            serviceConfiguration = workspace.getSubsystemManager( WebServicesConfiguration.class );
+            mainConfig = serviceConfiguration.getMainConfiguration();
 
         } catch ( NoClassDefFoundError e ) {
             LOG.error( "Initialization failed!" );
@@ -898,7 +901,7 @@ public class OGCFrontController extends HttpServlet {
     }
 
     private void initWorkspace()
-                            throws IOException, URISyntaxException {
+                            throws IOException, URISyntaxException, WorkspaceInitializationException {
         LOG.info( "--------------------------------------------------------------------------------" );
         LOG.info( "Initializing workspace" );
         LOG.info( "--------------------------------------------------------------------------------" );
@@ -907,27 +910,12 @@ public class OGCFrontController extends HttpServlet {
         LOG.info( "" );
     }
 
-    private void initServices()
-                            throws ServletException {
-        serviceConfiguration = new WebServicesConfiguration( workspace );
-        serviceConfiguration.init();
-        // TODO somehow eliminate the need for this stupid static field
-        mainConfig = serviceConfiguration.getMainConfiguration();
-        securityConfiguration = new SecurityConfiguration( workspace );
-    }
-
     private void destroyWorkspace() {
         LOG.info( "--------------------------------------------------------------------------------" );
         LOG.info( "Destroying workspace" );
         LOG.info( "--------------------------------------------------------------------------------" );
         workspace.destroyAll();
         LOG.info( "" );
-    }
-
-    private void destroyServices() {
-        serviceConfiguration.destroy();
-        mainConfig = null;
-        securityConfiguration = null;
     }
 
     /**
@@ -939,10 +927,12 @@ public class OGCFrontController extends HttpServlet {
      */
     public void reload()
                             throws IOException, URISyntaxException, ServletException {
-        destroyServices();
         destroyWorkspace();
-        initWorkspace();
-        initServices();
+        try {
+            initWorkspace();
+        } catch ( WorkspaceInitializationException e ) {
+            throw new ServletException( e.getLocalizedMessage(), e.getCause() );
+        }
     }
 
     private DeegreeWorkspace getWorkspace()
@@ -985,7 +975,6 @@ public class OGCFrontController extends HttpServlet {
     @Override
     public void destroy() {
         super.destroy();
-        destroyServices();
         destroyWorkspace();
         ConnectionManager.destroyLockdb();
         plugClassLoaderLeaks();

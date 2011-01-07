@@ -76,6 +76,7 @@ import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
 
 import org.deegree.commons.config.DeegreeWorkspace;
+import org.deegree.commons.config.WorkspaceInitializationException;
 import org.deegree.commons.utils.io.LoggingInputStream;
 import org.deegree.commons.utils.kvp.KVPUtils;
 import org.deegree.services.controller.Credentials;
@@ -154,10 +155,15 @@ public class SecureProxy extends HttpServlet {
         // working around unwanted deegree 2 ant artefacts... an URL normalization would be nice
         proxiedUrl = proxiedUrl.replace( ":80", "" );
 
-        workspace.initAll();
+        try {
+            workspace.initAll();
+        } catch ( WorkspaceInitializationException e1 ) {
+            LOG.error( "Initialization of secure proxy failed: {}", e1.getLocalizedMessage() );
+            LOG.trace( "Stack trace: ", e );
+            return;
+        }
 
-        securityConfiguration = new SecurityConfiguration( workspace );
-        securityConfiguration.init();
+        securityConfiguration = workspace.getSubsystemManager( SecurityConfiguration.class );
         credentialsProvider = securityConfiguration.getCredentialsProvider();
         if ( credentialsProvider == null ) {
             String msg = "You need to provide an WEB-INF/conf/services/security/security.xml which defines at least one credentials provider.";
@@ -166,8 +172,7 @@ public class SecureProxy extends HttpServlet {
             throw new ServletException( msg );
         }
 
-        serviceConfig = new WebServicesConfiguration( workspace );
-        serviceConfig.init();
+        serviceConfig = workspace.getSubsystemManager( WebServicesConfiguration.class );
         requestLogger = serviceConfig.getRequestLogger();
 
         LOG.info( "deegree 3 secure proxy initialized." );

@@ -47,19 +47,29 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.servlet.ServletException;
 import javax.xml.bind.JAXBElement;
 
 import org.deegree.commons.config.DeegreeWorkspace;
+import org.deegree.commons.config.ResourceManager;
+import org.deegree.commons.config.WorkspaceInitializationException;
+import org.deegree.commons.jdbc.ConnectionManager;
+import org.deegree.commons.utils.ProxyUtils;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.jaxb.JAXBUtils;
+import org.deegree.coverage.persistence.CoverageBuilderManager;
+import org.deegree.feature.persistence.FeatureStoreManager;
+import org.deegree.metadata.persistence.MetadataStoreManager;
+import org.deegree.observation.persistence.ObservationStoreManager;
+import org.deegree.remoteows.RemoteOWSManager;
+import org.deegree.rendering.r3d.multiresolution.persistence.BatchedMTStoreManager;
+import org.deegree.rendering.r3d.persistence.RenderableStoreManager;
 import org.deegree.services.controller.utils.StandardRequestLogger;
 import org.deegree.services.csw.CSWController;
 import org.deegree.services.jaxb.controller.AllowedServices;
 import org.deegree.services.jaxb.controller.ConfiguredServicesType;
 import org.deegree.services.jaxb.controller.DeegreeServiceControllerType;
-import org.deegree.services.jaxb.controller.DeegreeServiceControllerType.RequestLogging;
 import org.deegree.services.jaxb.controller.ServiceType;
+import org.deegree.services.jaxb.controller.DeegreeServiceControllerType.RequestLogging;
 import org.deegree.services.jaxb.metadata.DeegreeServicesMetadataType;
 import org.deegree.services.sos.SOSController;
 import org.deegree.services.wcs.WCSController;
@@ -76,7 +86,7 @@ import org.slf4j.Logger;
  * 
  * @version $Revision$, $Date$
  */
-public class WebServicesConfiguration {
+public class WebServicesConfiguration implements ResourceManager {
 
     private static final Logger LOG = getLogger( WebServicesConfiguration.class );
 
@@ -98,8 +108,6 @@ public class WebServicesConfiguration {
     // maps request names (e.g. 'GetMap', 'DescribeFeatureType') to the responsible subcontrollers
     private final Map<String, AbstractOGCServiceController> requestNameToController = new HashMap<String, AbstractOGCServiceController>();
 
-    private DeegreeWorkspace workspace;
-
     private DeegreeServicesMetadataType metadataConfig;
 
     private DeegreeServiceControllerType mainConfig;
@@ -108,18 +116,12 @@ public class WebServicesConfiguration {
 
     private boolean logOnlySuccessful;
 
-    /**
-     * @param workspace
-     */
-    public WebServicesConfiguration( DeegreeWorkspace workspace ) {
-        this.workspace = workspace;
-    }
+    private DeegreeWorkspace workspace;
 
-    /**
-     * @throws ServletException
-     */
-    public void init()
-                            throws ServletException {
+    public void startup( DeegreeWorkspace workspace )
+                            throws WorkspaceInitializationException {
+        this.workspace = workspace;
+
         LOG.info( "--------------------------------------------------------------------------------" );
         LOG.info( "Starting webservices." );
         LOG.info( "--------------------------------------------------------------------------------" );
@@ -131,7 +133,7 @@ public class WebServicesConfiguration {
         if ( !metadata.exists() ) {
             String msg = "No 'services/metadata.xml' file, aborting startup!";
             LOG.error( msg );
-            throw new ServletException( msg );
+            throw new WorkspaceInitializationException( msg );
         }
         try {
             metadataConfig = (DeegreeServicesMetadataType) ( (JAXBElement<?>) JAXBUtils.unmarshall(
@@ -141,7 +143,7 @@ public class WebServicesConfiguration {
         } catch ( Exception e ) {
             String msg = "Could not unmarshall frontcontroller configuration: " + e.getMessage();
             LOG.error( msg );
-            throw new ServletException( msg, e );
+            throw new WorkspaceInitializationException( msg, e );
         }
         if ( !main.exists() ) {
             LOG.debug( "No 'services/main.xml' file, assuming defaults." );
@@ -190,7 +192,7 @@ public class WebServicesConfiguration {
             try {
                 services = loadServicesFromDefaultLocation();
             } catch ( MalformedURLException e ) {
-                throw new ServletException( "Error loading service configurations: " + e.getMessage() );
+                throw new WorkspaceInitializationException( "Error loading service configurations: " + e.getMessage() );
             }
         }
         if ( services.size() == 0 ) {
@@ -335,6 +337,7 @@ public class WebServicesConfiguration {
                                                                                                                           OGCFrontController.class.getClassLoader() );
             subController = subControllerClass.newInstance();
             XMLAdapter controllerConf = new XMLAdapter( new URL( configuredService.getConfigurationLocation() ) );
+            subController.setWorkspace( workspace );
             subController.init( controllerConf, metadataConfig, mainConfig );
             LOG.info( "" );
             // round to exactly two decimals, I think their should be a java method for this though
@@ -454,7 +457,7 @@ public class WebServicesConfiguration {
     /**
      * 
      */
-    public void destroy() {
+    public void shutdown() {
         LOG.info( "--------------------------------------------------------------------------------" );
         LOG.info( "Shutting down deegree web services in context..." );
         for ( AllowedServices serviceName : serviceNameToController.keySet() ) {
@@ -545,4 +548,15 @@ public class WebServicesConfiguration {
     public boolean logOnlySuccessful() {
         return logOnlySuccessful;
     }
+
+    public Class<? extends ResourceManager>[] getDependencies() {
+        return new Class[] { ProxyUtils.class, BatchedMTStoreManager.class, ConnectionManager.class,
+                            CoverageBuilderManager.class, FeatureStoreManager.class, MetadataStoreManager.class,
+                            ObservationStoreManager.class, RemoteOWSManager.class, RenderableStoreManager.class };
+    }
+
+    public DeegreeWorkspace getWorkspace() {
+        return workspace;
+    }
+
 }

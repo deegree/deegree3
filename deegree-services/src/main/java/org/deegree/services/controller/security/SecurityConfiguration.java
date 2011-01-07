@@ -55,9 +55,13 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
 import org.deegree.commons.config.DeegreeWorkspace;
+import org.deegree.commons.config.ResourceManager;
+import org.deegree.commons.jdbc.ConnectionManager;
+import org.deegree.commons.utils.ProxyUtils;
 import org.deegree.services.controller.Credentials;
 import org.deegree.services.controller.CredentialsProvider;
 import org.deegree.services.controller.CredentialsProviderManager;
+import org.deegree.services.controller.WebServicesConfiguration;
 import org.deegree.services.controller.security.authorities.AuthenticationAuthority;
 import org.deegree.services.controller.security.authorities.AuthenticationAuthorityProvider;
 import org.slf4j.Logger;
@@ -69,7 +73,7 @@ import org.slf4j.Logger;
  * 
  * @version $Revision$, $Date$
  */
-public class SecurityConfiguration {
+public class SecurityConfiguration implements ResourceManager {
 
     private static final Logger LOG = getLogger( SecurityConfiguration.class );
 
@@ -79,8 +83,6 @@ public class SecurityConfiguration {
 
     private ArrayList<AuthenticationAuthority> authorities = new ArrayList<AuthenticationAuthority>();
 
-    private DeegreeWorkspace workspace;
-
     static {
         ServiceLoader<AuthenticationAuthorityProvider> loader = ServiceLoader.load( AuthenticationAuthorityProvider.class );
         for ( AuthenticationAuthorityProvider auth : loader ) {
@@ -88,17 +90,7 @@ public class SecurityConfiguration {
         }
     }
 
-    /**
-     * @param workspace
-     */
-    public SecurityConfiguration( DeegreeWorkspace workspace ) {
-        this.workspace = workspace;
-    }
-
-    /**
-     * 
-     */
-    public void init() {
+    public void startup( DeegreeWorkspace workspace ) {
         File securityFile = new File( workspace.getLocation(), "services" + separator + "security" + separator
                                                                + "security.xml" );
         if ( !securityFile.exists() ) {
@@ -190,6 +182,14 @@ public class SecurityConfiguration {
             }
         }
         return false;
+    }
+
+    public Class<? extends ResourceManager>[] getDependencies() {
+        return new Class[] { ProxyUtils.class, ConnectionManager.class };
+    }
+
+    public void shutdown() {
+        // no cleanup needed?
     }
 
 }
