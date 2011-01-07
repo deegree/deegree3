@@ -41,9 +41,6 @@ import javax.vecmath.Point3f;
 import javax.vecmath.Vector2f;
 import javax.vecmath.Vector3f;
 
-import org.deegree.coverage.raster.cache.RasterCache;
-import org.deegree.coverage.raster.data.RasterData;
-
 /**
  * A macro triangle that consists of several "normal" triangles.
  * 
@@ -126,8 +123,8 @@ public class MacroTriangle {
         return geometryError;
     }
 
-    void generateTileData( RasterData dataBuffer, double tileHeight, int rowsPerTile, Point3f[] tileVertices,
-                           Vector3f[] vertexNormals, int[][] tileTriangles ) {
+    void generateTileData( double tileHeight, int rowsPerTile, Point3f[] tileVertices, Vector3f[] vertexNormals,
+                           int[][] tileTriangles ) {
 
         // determine helper vectors 'stepRight', 'halftStepDownRight' and 'halfStepDownLeft'
         Vector2f stepRight = new Vector2f();
@@ -254,7 +251,7 @@ public class MacroTriangle {
         }
 
         // clear cache and child references
-        RasterCache.dispose();
+        builder.disposeLoadedRasterData();
         if ( child0 != null ) {
             child0.child0 = null;
             child0.child1 = null;
@@ -384,7 +381,6 @@ public class MacroTriangle {
     }
 
     private Vector3f getNormal( Point2f p, Vector2f stepRight, Vector2f stepUp ) {
-        // return new Vector3f( 0.0f, 0.0f, 1.0f );
         float x = p.x;
         float y = p.y;
 
@@ -459,7 +455,6 @@ public class MacroTriangle {
                 height1 = child1.heixels.getHeight( x, y );
             }
             if ( height1 == null ) {
-//                System.out.println( "No height value for " + Math.round( x ) + ", " + Math.round( y ) + "!?" );
                 height1 = builder.getHeight( x, y );
             }
             height = height1;

@@ -58,7 +58,6 @@ import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.PosixParser;
 import org.deegree.commons.tools.CommandUtils;
 import org.deegree.commons.tools.Tool;
-import org.deegree.commons.utils.LogUtils;
 import org.deegree.commons.utils.math.MathUtils;
 import org.deegree.coverage.AbstractCoverage;
 import org.deegree.coverage.raster.AbstractRaster;
@@ -281,7 +280,6 @@ public class DEMDatasetGenerator {
                             + minY + "\"/>" );
 
         outputTriangleHeights( p0, p1, p2, this.getLevels() );
-
     }
 
     /**
@@ -421,7 +419,7 @@ public class DEMDatasetGenerator {
 
         long sT = currentTimeMillis();
         // start workers in different threads
-        Thread t = new Thread( worker1, "Upper left macro triangle" );
+        // Thread t = new Thread( worker1, "Upper left macro triangle" );
         worker1.run();
         Thread.currentThread().setName( "Lower right macro triangle" );
         worker2.run();
@@ -434,14 +432,32 @@ public class DEMDatasetGenerator {
         // // Thread was interrupted
         // e.printStackTrace();
         // }
-        System.out.println( LogUtils.createDurationTimeString( "Creation of triangles", sT, true ) );
+        // System.out.println( LogUtils.createDurationTimeString( "Creation of triangles", sT, true ) );
 
         return triangleManager;
     }
 
+    float boxMinX = 3398000 - 3396466;
+
+    float boxMaxX = 3418001 - 3396466;
+
+    float boxMinY = 5751999 - 5717999;
+
+    float boxMaxY = 5764000 - 5717999;
+
+    int j = 0;
+
     float getHeight( float x, float y ) {
+
         int[] rasterCoordinate = this.geoReference.getRasterCoordinate( x, y );
+
         float height = getAsFloatSample( rasterCoordinate[0], rasterCoordinate[1], 0 );
+        // float height = 0.0f;
+        // if ( x > boxMinX && x < boxMaxX && y > boxMinY && y < boxMaxY ) {
+        // // height = getAsFloatSample( rasterCoordinate[0], rasterCoordinate[1], 0 );
+        // height = 100.0f + getAsFloatSample( rasterCoordinate[0], rasterCoordinate[1], 0 );
+        // }
+        // // float height = getAsFloatSample( rasterCoordinate[0], rasterCoordinate[1], 0 );
         if ( height > maxZ ) {
             height = maxZ;
         }
@@ -476,6 +492,8 @@ public class DEMDatasetGenerator {
         float midY = ( Math.abs( pb.y - pa.y ) * 0.5f ) + minY;
         return new Point2f( midX, midY );
     }
+
+    private int patchesDone = 0;
 
     private class Worker implements Runnable {
 
@@ -513,8 +531,6 @@ public class DEMDatasetGenerator {
             createTriangleTree( p0, p1, p2, getLevels() - startLocationCode.length() + 1, startLocationCode );
         }
 
-        private int builtTriangles = 0;
-
         /**
          * Recursive method creates the triangles from the given points, which are in world coordinates.
          * 
@@ -548,17 +564,17 @@ public class DEMDatasetGenerator {
                 //
                 // }
 
-                builtTriangles++;
+                patchesDone++;
             } else {
                 if ( level < 1 ) {
                     System.err.println( "The level is smaller than 1, this may not be!" );
                 }
                 triangle = new MacroTriangle( builder, p0, p1, p2, level, locationCode, error, null, null );
-                builtTriangles++;
+                patchesDone++;
             }
 
-            if ( builtTriangles % 100 == 0 ) {
-                System.out.println( "Generated macro triangles: " + builtTriangles );
+            if ( patchesDone % 100 == 0 ) {
+                System.out.println( "Patches: " + patchesDone );
             }
 
             try {
@@ -566,6 +582,7 @@ public class DEMDatasetGenerator {
             } catch ( Exception e ) {
                 e.printStackTrace();
             }
+            System.out.println( locationCode );
             return triangle;
         }
 
@@ -579,8 +596,7 @@ public class DEMDatasetGenerator {
 
         private void storeMacroTriangle( MacroTriangle tile )
                                 throws SQLException {
-            tile.generateTileData( dataBuffer, getTileHeight(), getRowsPerFragment(), tileVertices, vertexNormals,
-                                   tileTriangles );
+            tile.generateTileData( getTileHeight(), getRowsPerFragment(), tileVertices, vertexNormals, tileTriangles );
 
             ByteBuffer rawTileBuffer = ByteBuffer.allocate( getBytesPerTile() );
             rawTileBuffer.order( ByteOrder.nativeOrder() );
@@ -629,12 +645,6 @@ public class DEMDatasetGenerator {
      */
     public static void main( String[] args )
                             throws IOException {
-
-        // File file = new File( "/tmp/heixel.grid" );
-        // FileInputStream is = new FileInputStream( file );
-        // FileChannel channel = is.getChannel();
-        // MappedByteBuffer buffer = channel.map( READ_ONLY, 0, channel.size() );
-        // System.out.println( buffer.getFloat() );
 
         CommandLineParser parser = new PosixParser();
 
@@ -750,5 +760,9 @@ public class DEMDatasetGenerator {
 
     private static void printHelp( Options options ) {
         CommandUtils.printHelp( options, DEMDatasetGenerator.class.getSimpleName(), null, "outputdir" );
+    }
+
+    public void disposeLoadedRasterData() {
+        dataBuffer.dispose();
     }
 }
