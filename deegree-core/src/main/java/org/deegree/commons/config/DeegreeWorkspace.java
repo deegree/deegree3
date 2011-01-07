@@ -248,8 +248,11 @@ public class DeegreeWorkspace {
 
     /**
      * Initializes all managed configurations.
+     * 
+     * @throws WorkspaceInitializationException
      */
-    public synchronized void initAll() {
+    public synchronized void initAll()
+                            throws WorkspaceInitializationException {
         for ( ResourceManager m : managers ) {
             m.startup( this );
         }

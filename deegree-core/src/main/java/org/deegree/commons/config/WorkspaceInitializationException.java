@@ -42,22 +42,23 @@ package org.deegree.commons.config;
  * 
  * @version $Revision$, $Date$
  */
-public interface ResourceManager {
+public class WorkspaceInitializationException extends Exception {
+
+    private static final long serialVersionUID = 1048911724231688270L;
 
     /**
-     * Is called upon workspace startup.
+     * @param msg
+     * @param cause
      */
-    void startup( DeegreeWorkspace workspace )
-                            throws WorkspaceInitializationException;
+    public WorkspaceInitializationException( String msg, Throwable cause ) {
+        super( msg, cause );
+    }
 
     /**
-     * Is called upon workspace shutdown.
+     * @param msg
      */
-    void shutdown();
-
-    /**
-     * @return an empty array if there are no dependencies
-     */
-    Class<? extends ResourceManager>[] getDependencies();
+    public WorkspaceInitializationException( String msg ) {
+        super( msg );
+    }
 
 }
