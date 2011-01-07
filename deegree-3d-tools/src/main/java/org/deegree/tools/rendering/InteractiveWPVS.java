@@ -62,24 +62,21 @@ import javax.media.opengl.glu.GLU;
 import javax.swing.JFrame;
 import javax.vecmath.Point3d;
 import javax.vecmath.Vector3d;
-import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
-import javax.xml.bind.Unmarshaller;
 
-import org.apache.axiom.om.OMElement;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.PosixParser;
 import org.deegree.commons.config.DeegreeWorkspace;
+import org.deegree.commons.config.WorkspaceInitializationException;
 import org.deegree.commons.jdbc.ConnectionManager;
+import org.deegree.commons.tools.CommandUtils;
+import org.deegree.commons.tools.Tool;
 import org.deegree.commons.utils.Pair;
 import org.deegree.commons.utils.SunInfo;
 import org.deegree.commons.utils.math.Vectors3f;
-import org.deegree.commons.xml.NamespaceBindings;
-import org.deegree.commons.xml.XMLAdapter;
-import org.deegree.commons.xml.XPath;
 import org.deegree.rendering.r3d.ViewParams;
 import org.deegree.rendering.r3d.multiresolution.MultiresolutionMesh;
 import org.deegree.rendering.r3d.opengl.JOGLChecker;
@@ -94,9 +91,9 @@ import org.deegree.rendering.r3d.opengl.rendering.model.manager.BuildingRenderer
 import org.deegree.rendering.r3d.opengl.rendering.model.manager.RenderableManager;
 import org.deegree.rendering.r3d.opengl.rendering.model.manager.TreeRenderer;
 import org.deegree.rendering.r3d.opengl.rendering.model.texture.TexturePool;
+import org.deegree.services.controller.WebServicesConfiguration;
 import org.deegree.services.controller.ows.OWSException;
 import org.deegree.services.exception.ServiceInitException;
-import org.deegree.services.jaxb.wpvs.ServiceConfiguration;
 import org.deegree.services.jaxb.wpvs.SkyImages;
 import org.deegree.services.jaxb.wpvs.SkyImages.SkyImage;
 import org.deegree.services.wpvs.PerspectiveViewService;
@@ -107,8 +104,6 @@ import org.deegree.services.wpvs.controller.WPVSController;
 import org.deegree.services.wpvs.controller.getview.GetView;
 import org.deegree.services.wpvs.controller.getview.GetViewKVPAdapter;
 import org.deegree.services.wpvs.rendering.jogl.ConfiguredOpenGLInitValues;
-import org.deegree.commons.tools.CommandUtils;
-import org.deegree.commons.tools.Tool;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -211,17 +206,14 @@ public class InteractiveWPVS extends GLCanvas implements GLEventListener, KeyLis
     /**
      * Creates a new {@link InteractiveWPVS} instance.
      * 
-     * @param configAdapter
-     *            TODO find a better way to resolve relative URLs
-     * @param sc
      * @param params
      * @param zScale
      * @throws IOException
      * @throws UnsupportedOperationException
      * @throws ServiceInitException
      */
-    private InteractiveWPVS( XMLAdapter configAdapter, ServiceConfiguration sc, ViewParams params, float zScale )
-                            throws IOException, UnsupportedOperationException, ServiceInitException {
+    private InteractiveWPVS( DeegreeWorkspace workspace, ViewParams params, float zScale ) throws IOException,
+                            UnsupportedOperationException, ServiceInitException {
 
         this.zScale = zScale;
         setMinimumSize( new Dimension( 0, 0 ) );
@@ -233,7 +225,8 @@ public class InteractiveWPVS extends GLCanvas implements GLEventListener, KeyLis
         lodAnalyzerFrame.setSize( 600, 600 );
         lodAnalyzerFrame.setLocationByPlatform( true );
 
-        this.perspectiveViewService = new PerspectiveViewService( configAdapter, sc, workspace );
+        this.perspectiveViewService = workspace.getSubsystemManager( WebServicesConfiguration.class ).getServiceController(
+                                                                                                                            WPVSController.class ).getService();
 
         this.demRenderer = this.perspectiveViewService.getDefaultDEMRenderer();
         DEMDataset dDW = this.perspectiveViewService.getDEMDatasets();
@@ -291,7 +284,7 @@ public class InteractiveWPVS extends GLCanvas implements GLEventListener, KeyLis
         addMouseWheelListener( flightControls );
         addMouseMotionListener( flightControls );
 
-        initSkyImage( sc.getSkyImages() );
+        initSkyImage( perspectiveViewService.getServiceConfiguration().getSkyImages() );
         this.copyrightID = this.perspectiveViewService.getCopyrightKey();
         initModels();
     }
@@ -900,10 +893,8 @@ public class InteractiveWPVS extends GLCanvas implements GLEventListener, KeyLis
     }
 
     private static InteractiveWPVS createWPVSInstance( String configFile, String getUrl )
-                            throws UnsupportedOperationException, IOException, JAXBException, OWSException,
-                            ServiceInitException {
+                            throws UnsupportedOperationException, IOException, OWSException, ServiceInitException {
         File baseDir = new File( configFile );
-        File wpvsConfig = null;
         if ( !baseDir.exists() ) {
             throw new FileNotFoundException( "Given location: " + configFile
                                              + " does not exist, please supply a valid configuration file / directory." );
@@ -932,7 +923,6 @@ public class InteractiveWPVS extends GLCanvas implements GLEventListener, KeyLis
                                                                          + "../"
                                                                          + " does not exist, no way to load the configuration/datasources, please supply a valid configuration directory." );
             }
-            wpvsConfig = baseDir;
             baseDir = p2;
 
         }
@@ -945,25 +935,21 @@ public class InteractiveWPVS extends GLCanvas implements GLEventListener, KeyLis
             throw new FileNotFoundException( "The expected datasource location " + dsDir.getAbsolutePath()
                                              + ", does not exists, please supply a valid configuration directory." );
         }
-        workspace.initAll();
-
-        if ( wpvsConfig == null ) {
-            wpvsConfig = new File( baseDir, "services/wpvs.xml" );
+        try {
+            workspace.initAll();
+        } catch ( WorkspaceInitializationException e ) {
+            LOG.error( "Initialization failed: {}", e.getLocalizedMessage() );
+            LOG.trace( "Stack trace: ", e );
+            return null;
         }
 
-        if ( !wpvsConfig.exists() ) {
-            throw new FileNotFoundException( "Could not load file: " + wpvsConfig.getAbsolutePath()
-                                             + " don't know where the wpvs configuration file is located." );
+        if ( workspace.getSubsystemManager( WebServicesConfiguration.class ) == null ) {
+            throw new FileNotFoundException( "No web service configurations were found in the workspace." );
         }
-        XMLAdapter controllerConf = new XMLAdapter( wpvsConfig );
-        NamespaceBindings nsContext = new NamespaceBindings();
-        nsContext.addNamespace( "wpvs", "http://www.deegree.org/services/wpvs" );
-        XPath xp = new XPath( "wpvs:ServiceConfiguration", nsContext );
+        if ( workspace.getSubsystemManager( WebServicesConfiguration.class ).getServiceController( WPVSController.class ) == null ) {
+            throw new FileNotFoundException( "No WPVS configuration was found in the workspace." );
+        }
 
-        OMElement elem = controllerConf.getElement( controllerConf.getRootElement(), xp );
-        JAXBContext jc = JAXBContext.newInstance( "org.deegree.services.jaxb.wpvs" );
-        Unmarshaller u = jc.createUnmarshaller();
-        ServiceConfiguration sc = (ServiceConfiguration) u.unmarshal( elem.getXMLStreamReaderWithoutCaching() );
         float zScale = 1;
         ViewParams params = null;
         if ( getUrl != null ) {
@@ -971,7 +957,7 @@ public class InteractiveWPVS extends GLCanvas implements GLEventListener, KeyLis
             zScale = gv.getSceneParameters().getScale();
             params = gv.getViewParameters();
         }
-        return new InteractiveWPVS( controllerConf, sc, params, zScale );
+        return new InteractiveWPVS( workspace, params, zScale );
     }
 
     private ViewParams getViewParams( TerrainRenderingManager demRenderer ) {
