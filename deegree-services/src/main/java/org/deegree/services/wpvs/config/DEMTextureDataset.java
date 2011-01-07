@@ -95,7 +95,7 @@ public class DEMTextureDataset extends Dataset<TextureManager> {
     private final int maxTexturesInGPU;
 
     private final DeegreeWorkspace workspace;
-    
+
     /**
      * 
      * @param textureByteBufferPool
@@ -103,7 +103,8 @@ public class DEMTextureDataset extends Dataset<TextureManager> {
      *            the number of textures in gpu cache
      * @param maxCachedTextureTiles
      *            the number of texture tiles in cache.
-     * @param workspace the workspace to be used to load data
+     * @param workspace
+     *            the workspace to be used to load data
      */
     public DEMTextureDataset( DirectByteBufferPool textureByteBufferPool, int maxTexturesInGPU,
                               int maxCachedTextureTiles, DeegreeWorkspace workspace ) {
@@ -267,7 +268,7 @@ public class DEMTextureDataset extends Dataset<TextureManager> {
      * @param tileProviders
      */
     private Envelope fillFromCoverage( String coverageStoreId, List<TextureTileProvider> tileProviders ) {
-        AbstractCoverage coverage = workspace.getCoverageBuilderManager().get( coverageStoreId );
+        AbstractCoverage coverage = workspace.getSubsystemManager( CoverageBuilderManager.class ).get( coverageStoreId );
         if ( coverage == null ) {
             LOG.warn( "The coverage builder with id: " + coverageStoreId
                       + " could not create a coverage, ignoring dataset." );

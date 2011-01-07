@@ -88,7 +88,7 @@ public class RemoteWMSLayer extends Layer {
     public RemoteWMSLayer( MapService service, AbstractLayerType layer, Layer parent ) {
         super( service, layer, parent );
 
-        RemoteOWSManager manager = OGCFrontController.getServiceWorkspace().getRemoteOWSManager();
+        RemoteOWSManager manager = OGCFrontController.getServiceWorkspace().getSubsystemManager( RemoteOWSManager.class );
         RemoteOWSStore store = manager.get( layer.getRemoteWMSStoreId() );
 
         if ( !( store instanceof RemoteWMSStore ) ) {

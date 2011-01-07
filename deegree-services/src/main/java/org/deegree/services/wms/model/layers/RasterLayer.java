@@ -59,6 +59,7 @@ import org.deegree.commons.utils.Triple;
 import org.deegree.commons.utils.log.LoggingNotes;
 import org.deegree.coverage.AbstractCoverage;
 import org.deegree.coverage.filter.raster.RasterFilter;
+import org.deegree.coverage.persistence.CoverageBuilderManager;
 import org.deegree.coverage.rangeset.AxisSubset;
 import org.deegree.coverage.rangeset.Interval;
 import org.deegree.coverage.rangeset.RangeSet;
@@ -133,7 +134,8 @@ public class RasterLayer extends Layer {
      */
     public RasterLayer( MapService service, AbstractLayerType lay, Layer parent ) {
         super( service, lay, parent );
-        AbstractCoverage cov = getServiceWorkspace().getCoverageBuilderManager().get( lay.getCoverageStoreId() );
+        AbstractCoverage cov = getServiceWorkspace().getSubsystemManager( CoverageBuilderManager.class ).get(
+                                                                                                              lay.getCoverageStoreId() );
         this.raster = (AbstractRaster) ( cov instanceof AbstractRaster ? cov : null );
         this.multiraster = (MultiResolutionRaster) ( cov instanceof MultiResolutionRaster ? cov : null );
 
