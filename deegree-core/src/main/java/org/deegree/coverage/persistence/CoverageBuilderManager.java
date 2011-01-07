@@ -50,7 +50,10 @@ import java.util.concurrent.ConcurrentHashMap;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamReader;
 
+import org.deegree.commons.config.DeegreeWorkspace;
+import org.deegree.commons.config.ResourceManager;
 import org.deegree.commons.utils.FileUtils;
+import org.deegree.commons.utils.ProxyUtils;
 import org.deegree.commons.xml.stax.StAXParsingHelper;
 import org.deegree.coverage.AbstractCoverage;
 import org.slf4j.Logger;
@@ -64,7 +67,7 @@ import org.slf4j.LoggerFactory;
  * 
  * @version $Revision$, $Date$
  */
-public class CoverageBuilderManager {
+public class CoverageBuilderManager implements ResourceManager {
 
     private static final Logger LOG = LoggerFactory.getLogger( CoverageBuilderManager.class );
 
@@ -97,13 +100,6 @@ public class CoverageBuilderManager {
         } catch ( Exception e ) {
             LOG.error( e.getMessage(), e );
         }
-    }
-
-    /**
-     * @param coverageConfigLocation
-     */
-    public CoverageBuilderManager( File coverageConfigLocation ) {
-        this.coverageConfigLocation = coverageConfigLocation;
     }
 
     /**
@@ -235,8 +231,21 @@ public class CoverageBuilderManager {
     /**
      * 
      */
-    public void destroy () {
+    public void destroy() {
         idToCov.clear();
+    }
+
+    public Class<? extends ResourceManager>[] getDependencies() {
+        return new Class[] { ProxyUtils.class };
+    }
+
+    public void shutdown() {
+        destroy();
+    }
+
+    public void startup( DeegreeWorkspace workspace ) {
+        coverageConfigLocation = new File( workspace.getLocation(), "datasources" + File.separator + "coverage" );
+        init();
     }
 
 }

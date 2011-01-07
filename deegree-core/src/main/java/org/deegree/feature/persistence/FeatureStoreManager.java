@@ -47,6 +47,10 @@ import java.util.ServiceLoader;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamReader;
 
+import org.deegree.commons.config.DeegreeWorkspace;
+import org.deegree.commons.config.ResourceManager;
+import org.deegree.commons.jdbc.ConnectionManager;
+import org.deegree.commons.utils.ProxyUtils;
 import org.deegree.commons.xml.stax.StAXParsingHelper;
 import org.deegree.feature.i18n.Messages;
 import org.slf4j.Logger;
@@ -60,7 +64,7 @@ import org.slf4j.LoggerFactory;
  * 
  * @version $Revision$, $Date$
  */
-public class FeatureStoreManager {
+public class FeatureStoreManager implements ResourceManager {
 
     private static final Logger LOG = LoggerFactory.getLogger( FeatureStoreManager.class );
 
@@ -70,10 +74,10 @@ public class FeatureStoreManager {
 
     private static Map<String, FeatureStore> idToFs = Collections.synchronizedMap( new HashMap<String, FeatureStore>() );
 
-    public static Collection<String> getFeatureStoreIds () {
+    public static Collection<String> getFeatureStoreIds() {
         return idToFs.keySet();
     }
-    
+
     /**
      * Returns all available {@link FeatureStore} providers.
      * 
@@ -205,18 +209,31 @@ public class FeatureStoreManager {
                 throw new FeatureStoreException( msg );
             }
             LOG.info( "Registering global feature store with id '" + id + "', type: '" + fs.getClass().getName() + "'" );
-            idToFs.put( id, fs );            
+            idToFs.put( id, fs );
             fs.init();
         }
     }
-    
+
     /**
      * 
      */
-    public static void destroy () {
+    public static void destroy() {
         for ( FeatureStore fs : idToFs.values() ) {
             fs.destroy();
         }
         idToFs.clear();
     }
+
+    public void startup( DeegreeWorkspace workspace ) {
+        init( new File( workspace.getLocation(), "datasources" + File.separator + "feature" ) );
+    }
+
+    public void shutdown() {
+        destroy();
+    }
+
+    public Class<? extends ResourceManager>[] getDependencies() {
+        return new Class[] { ProxyUtils.class, ConnectionManager.class };
+    }
+
 }

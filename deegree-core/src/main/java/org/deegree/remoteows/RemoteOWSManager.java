@@ -35,6 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.remoteows;
 
+import static java.io.File.separator;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.File;
@@ -47,6 +48,9 @@ import java.util.ServiceLoader;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamReader;
 
+import org.deegree.commons.config.DeegreeWorkspace;
+import org.deegree.commons.config.ResourceManager;
+import org.deegree.commons.utils.ProxyUtils;
 import org.deegree.commons.xml.stax.StAXParsingHelper;
 import org.slf4j.Logger;
 
@@ -57,7 +61,7 @@ import org.slf4j.Logger;
  * 
  * @version $Revision$, $Date$
  */
-public class RemoteOWSManager {
+public class RemoteOWSManager implements ResourceManager {
 
     private static final Logger LOG = getLogger( RemoteOWSManager.class );
 
@@ -145,6 +149,18 @@ public class RemoteOWSManager {
 
     public RemoteOWSStore get( String id ) {
         return stores.get( id );
+    }
+
+    public Class<? extends ResourceManager>[] getDependencies() {
+        return new Class[] { ProxyUtils.class };
+    }
+
+    public void shutdown() {
+        // no cleanup needed?
+    }
+
+    public void startup( DeegreeWorkspace workspace ) {
+        init( new File( workspace.getLocation(), "datasources" + separator + "remoteows" ) );
     }
 
 }

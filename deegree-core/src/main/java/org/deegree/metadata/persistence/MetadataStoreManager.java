@@ -46,6 +46,10 @@ import java.util.ServiceLoader;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamReader;
 
+import org.deegree.commons.config.DeegreeWorkspace;
+import org.deegree.commons.config.ResourceManager;
+import org.deegree.commons.jdbc.ConnectionManager;
+import org.deegree.commons.utils.ProxyUtils;
 import org.deegree.commons.xml.stax.StAXParsingHelper;
 import org.deegree.feature.persistence.FeatureStore;
 import org.deegree.metadata.i18n.Messages;
@@ -60,7 +64,7 @@ import org.slf4j.LoggerFactory;
  * 
  * @version $Revision$, $Date$
  */
-public class MetadataStoreManager {
+public class MetadataStoreManager implements ResourceManager {
 
     private static final Logger LOG = LoggerFactory.getLogger( MetadataStoreManager.class );
 
@@ -69,9 +73,6 @@ public class MetadataStoreManager {
     private static Map<String, MetadataStoreProvider> nsToProvider = null;
 
     private static Map<String, MetadataStore> idToRs = Collections.synchronizedMap( new HashMap<String, MetadataStore>() );
-
-    private MetadataStoreManager() {
-    }
 
     /**
      * Returns all available {@link MetadataStoreManager} providers.
@@ -209,5 +210,17 @@ public class MetadataStoreManager {
             ms.destroy();
         }
         idToRs.clear();
+    }
+
+    public Class<? extends ResourceManager>[] getDependencies() {
+        return new Class[] { ProxyUtils.class, ConnectionManager.class };
+    }
+
+    public void shutdown() {
+        destroy();
+    }
+
+    public void startup( DeegreeWorkspace workspace ) {
+        init( new File( workspace.getLocation(), "datasources" + File.separator + "metadata" ) );
     }
 }

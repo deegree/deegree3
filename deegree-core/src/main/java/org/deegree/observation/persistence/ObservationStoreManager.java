@@ -35,6 +35,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.observation.persistence;
 
+import static java.io.File.separator;
+
 import java.io.File;
 import java.io.FilenameFilter;
 import java.net.URL;
@@ -47,6 +49,10 @@ import java.util.ServiceLoader;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamReader;
 
+import org.deegree.commons.config.DeegreeWorkspace;
+import org.deegree.commons.config.ResourceManager;
+import org.deegree.commons.jdbc.ConnectionManager;
+import org.deegree.commons.utils.ProxyUtils;
 import org.deegree.commons.xml.stax.StAXParsingHelper;
 import org.deegree.feature.i18n.Messages;
 import org.slf4j.Logger;
@@ -62,7 +68,7 @@ import org.slf4j.LoggerFactory;
  * @version $Revision$, $Date$
  * 
  */
-public class ObservationStoreManager {
+public class ObservationStoreManager implements ResourceManager {
 
     private static final Logger LOG = LoggerFactory.getLogger( ObservationStoreManager.class );
 
@@ -256,6 +262,18 @@ public class ObservationStoreManager {
     public static void destroy() {
         // the stores do not have destroy yet
         idToOds.clear();
+    }
+
+    public Class<? extends ResourceManager>[] getDependencies() {
+        return new Class[] { ProxyUtils.class, ConnectionManager.class };
+    }
+
+    public void shutdown() {
+        destroy();
+    }
+
+    public void startup( DeegreeWorkspace workspace ) {
+        init( new File( workspace.getLocation(), "datasources" + separator + "observation" ) );
     }
 
 }

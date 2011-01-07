@@ -45,6 +45,8 @@ import java.net.URLConnection;
 import java.util.Properties;
 
 import org.apache.axiom.om.util.Base64;
+import org.deegree.commons.config.DeegreeWorkspace;
+import org.deegree.commons.config.ResourceManager;
 import org.deegree.commons.proxy.jaxb.ProxyConfiguration;
 import org.deegree.commons.xml.jaxb.JAXBUtils;
 import org.slf4j.Logger;
@@ -63,7 +65,7 @@ import org.slf4j.Logger;
  * 
  * @version $Revision: $, $Date: $
  */
-public final class ProxyUtils {
+public final class ProxyUtils implements ResourceManager {
 
     private static final Logger LOG = getLogger( ProxyUtils.class );
 
@@ -411,5 +413,17 @@ public final class ProxyUtils {
                   + ", ftp.proxyPassword=" + getFtpProxyPassword( false ) );
         log.info( "- nonProxyHosts=" + getNonProxyHosts() + ", http.nonProxyHosts=" + getHttpNonProxyHosts( false )
                   + ", ftp.nonProxyHosts=" + getFtpNonProxyHosts( false ) );
+    }
+
+    public Class<? extends ResourceManager>[] getDependencies() {
+        return new Class[] {};
+    }
+
+    public void shutdown() {
+        // reset settings?
+    }
+
+    public void startup( DeegreeWorkspace workspace ) {
+        setupProxyParameters( new File( workspace.getLocation(), "proxy.xml" ) );
     }
 }

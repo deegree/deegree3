@@ -1,7 +1,7 @@
 //$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
- Copyright (C) 2001-2010 by:
+ Copyright (C) 2001-e by:
  - Department of Geography, University of Bonn -
  and
  - lat/lon GmbH -
@@ -36,24 +36,20 @@
 package org.deegree.commons.config;
 
 import static java.io.File.separator;
+import static java.util.Arrays.asList;
+import static org.deegree.commons.utils.CollectionUtils.removeDuplicates;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.ServiceLoader;
 
-import org.deegree.commons.jdbc.ConnectionManager;
-import org.deegree.commons.utils.ProxyUtils;
-import org.deegree.coverage.persistence.CoverageBuilderManager;
-import org.deegree.feature.persistence.FeatureStoreManager;
-import org.deegree.metadata.persistence.MetadataStoreManager;
-import org.deegree.observation.persistence.ObservationStoreManager;
-import org.deegree.remoteows.RemoteOWSManager;
-import org.deegree.rendering.r3d.multiresolution.persistence.BatchedMTStoreManager;
-import org.deegree.rendering.r3d.persistence.RenderableStoreManager;
 import org.slf4j.Logger;
 
 /**
@@ -93,11 +89,50 @@ public class DeegreeWorkspace {
 
     private final File dir;
 
-    private CoverageBuilderManager coverageBuilderManager;
+    private List<ResourceManager> managers = new ArrayList<ResourceManager>();
 
-    private Actions currentAction = Actions.NotInited;
+    private Map<Class<? extends ResourceManager>, ResourceManager> managerMap;
 
-    private RemoteOWSManager remoteOWSManager;
+    private void load() {
+        Iterator<ResourceManager> iter = ServiceLoader.load( ResourceManager.class ).iterator();
+
+        Map<ResourceManager, List<Class<? extends ResourceManager>>> map = new HashMap<ResourceManager, List<Class<? extends ResourceManager>>>();
+        managerMap = new HashMap<Class<? extends ResourceManager>, ResourceManager>();
+
+        // first, collect all manager instances
+        while ( iter.hasNext() ) {
+            List<Class<? extends ResourceManager>> list = new LinkedList<Class<? extends ResourceManager>>();
+            ResourceManager manager = iter.next();
+            map.put( manager, list );
+            managerMap.put( manager.getClass(), manager );
+        }
+
+        // second, check for transitive dependencies
+        for ( ResourceManager m : map.keySet() ) {
+            List<Class<? extends ResourceManager>> list = map.get( m );
+            searchDeps( list, m );
+            removeDuplicates( list );
+        }
+
+        // third, order dependencies using fixed point method
+        LinkedList<ResourceManager> order = new LinkedList<ResourceManager>( map.keySet() );
+        boolean changed = true;
+        outer: while ( changed ) {
+            changed = false;
+            for ( ResourceManager m : order ) {
+                for ( Class<? extends ResourceManager> c : m.getDependencies() ) {
+                    if ( order.indexOf( managerMap.get( c ) ) > order.indexOf( m ) ) {
+                        order.remove( managerMap.get( c ) );
+                        order.add( order.indexOf( m ), managerMap.get( c ) );
+                        changed = true;
+                        continue outer;
+                    }
+                }
+            }
+        }
+
+        managers.addAll( order );
+    }
 
     private DeegreeWorkspace( String workspaceName, File dir ) throws IOException {
         this.dir = new File( dir.getCanonicalPath() );
@@ -106,6 +141,7 @@ public class DeegreeWorkspace {
         nameToWs.put( name, this );
         register();
         LOG.debug( "Created workspace '{}' at '{}'.", this.name, this.dir );
+        load();
     }
 
     private DeegreeWorkspace( String workspaceName ) {
@@ -118,6 +154,7 @@ public class DeegreeWorkspace {
         name = workspaceName;
         register();
         LOG.debug( "Created workspace '{}' at '{}'.", this.name, this.dir );
+        load();
     }
 
     private void register() {
@@ -195,88 +232,36 @@ public class DeegreeWorkspace {
     }
 
     /**
-     * @return the coverage builder manager
+     * @param c
+     * @return null, if no such manager was loaded
      */
-    public synchronized CoverageBuilderManager getCoverageBuilderManager() {
-        if ( coverageBuilderManager == null ) {
-            coverageBuilderManager = new CoverageBuilderManager( new File( dir, "datasources" + separator + "coverage" ) );
-        }
-        return coverageBuilderManager;
+    public <T extends ResourceManager> T getSubsystemManager( Class<T> c ) {
+        return (T) managerMap.get( c );
     }
 
-    /**
-     * @return the remote ows manager
-     */
-    public synchronized RemoteOWSManager getRemoteOWSManager() {
-        if ( remoteOWSManager == null ) {
-            remoteOWSManager = new RemoteOWSManager();
+    private void searchDeps( List<Class<? extends ResourceManager>> list, ResourceManager m ) {
+        list.addAll( asList( m.getDependencies() ) );
+        for ( Class<? extends ResourceManager> c : m.getDependencies() ) {
+            searchDeps( list, managerMap.get( c ) );
         }
-        return remoteOWSManager;
     }
 
     /**
      * Initializes all managed configurations.
      */
     public synchronized void initAll() {
-        currentAction = Actions.Proxy;
-        ProxyUtils.setupProxyParameters( new File( dir, "proxy.xml" ) );
-        currentAction = Actions.ConnectionManager;
-        ConnectionManager.init( new File( dir, "jdbc" ) );
-        getRemoteOWSManager().init( new File( dir, "datasources" + separator + "remoteows" ) );
-        currentAction = Actions.ObservationManager;
-        ObservationStoreManager.init( new File( dir, "datasources" + separator + "observation" ) );
-        currentAction = Actions.FeatureManager;
-        FeatureStoreManager.init( new File( dir, "datasources" + separator + "feature" ) );
-        currentAction = Actions.CoverageManager;
-        getCoverageBuilderManager().init();
-        currentAction = Actions.MetadataManager;
-        MetadataStoreManager.init( new File( dir, "datasources" + separator + "metadata" ) );
-        currentAction = Actions.RenderableManager;
-        RenderableStoreManager.init( new File( dir, "datasources" + separator + "renderable" ) );
-        currentAction = Actions.BatchedMTManager;
-        BatchedMTStoreManager.init( new File( dir, "datasources" + separator + "batchedmt" ) );
-        currentAction = Actions.Inited;
-    }
-
-    /**
-     * @return one of the actions defined in the enum, depending of the state of the workspace.
-     */
-    public Actions getCurrentAction() {
-        return currentAction;
-    }
-
-    /**
-     * Please check back with the TMC when changing these, they're used as keys in i18n files (used for progress bars
-     * when initializing applications)!
-     * 
-     * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
-     * @author last edited by: $Author$
-     * 
-     * @version $Revision$, $Date$
-     */
-    public static enum Actions {
-        /***/
-        NotInited, /***/
-        Proxy, /***/
-        ConnectionManager, /***/
-        ObservationManager, /***/
-        FeatureManager, /***/
-        CoverageManager, /***/
-        MetadataManager, /***/
-        RenderableManager, /***/
-        BatchedMTManager, /***/
-        Inited
+        for ( ResourceManager m : managers ) {
+            m.startup( this );
+        }
     }
 
     /**
      * Unloads all resources associated with this context, as well as ALL STATIC ones.
      */
     public synchronized void destroyAll() {
-        getCoverageBuilderManager().destroy();
-        FeatureStoreManager.destroy();
-        MetadataStoreManager.destroy();
-        ObservationStoreManager.destroy();
-        ConnectionManager.destroy();
+        for ( ResourceManager m : managers ) {
+            m.shutdown();
+        }
     }
 
     /**

@@ -35,6 +35,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.rendering.r3d.persistence;
 
+import static java.io.File.separator;
+
 import java.io.File;
 import java.io.FilenameFilter;
 import java.net.URL;
@@ -48,8 +50,13 @@ import java.util.concurrent.ConcurrentHashMap;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamReader;
 
+import org.deegree.commons.config.DeegreeWorkspace;
+import org.deegree.commons.config.ResourceManager;
+import org.deegree.commons.jdbc.ConnectionManager;
 import org.deegree.commons.utils.FileUtils;
+import org.deegree.commons.utils.ProxyUtils;
 import org.deegree.commons.xml.stax.StAXParsingHelper;
+import org.deegree.coverage.persistence.CoverageBuilderManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -61,7 +68,7 @@ import org.slf4j.LoggerFactory;
  * 
  * @version $Revision$, $Date$
  */
-public class RenderableStoreManager {
+public class RenderableStoreManager implements ResourceManager {
 
     private static final Logger LOG = LoggerFactory.getLogger( RenderableStoreManager.class );
 
@@ -99,7 +106,7 @@ public class RenderableStoreManager {
      *            containing renderable manager configurations
      */
     public static void init( File configLocation ) {
-        if(!configLocation.exists()){
+        if ( !configLocation.exists() ) {
             LOG.info( "No 'datasources/renderable' directory -- skipping initialization of renderable stores." );
             return;
         }
@@ -203,5 +210,18 @@ public class RenderableStoreManager {
             throw new IllegalArgumentException( msg );
         }
         return builder.build( configURL );
+    }
+
+    public Class<? extends ResourceManager>[] getDependencies() {
+        // TODO verify deps
+        return new Class[] { ProxyUtils.class, ConnectionManager.class, CoverageBuilderManager.class };
+    }
+
+    public void shutdown() {
+        // no cleanup needed?
+    }
+
+    public void startup( DeegreeWorkspace workspace ) {
+        init( new File( workspace.getLocation(), "datasources" + separator + "renderable" ) );
     }
 }

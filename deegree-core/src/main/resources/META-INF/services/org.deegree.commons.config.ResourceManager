@@ -1,0 +1,9 @@
+org.deegree.commons.jdbc.ConnectionManager
+org.deegree.commons.utils.ProxyUtils
+org.deegree.coverage.persistence.CoverageBuilderManager
+org.deegree.feature.persistence.FeatureStoreManager
+org.deegree.metadata.persistence.MetadataStoreManager
+org.deegree.observation.persistence.ObservationStoreManager
+org.deegree.remoteows.RemoteOWSManager
+org.deegree.rendering.r3d.multiresolution.persistence.BatchedMTStoreManager
+org.deegree.rendering.r3d.persistence.RenderableStoreManager

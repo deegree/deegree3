@@ -47,8 +47,11 @@ import java.util.Set;
 
 import javax.xml.bind.JAXBException;
 
+import org.deegree.commons.config.DeegreeWorkspace;
+import org.deegree.commons.config.ResourceManager;
 import org.deegree.commons.i18n.Messages;
 import org.deegree.commons.jdbc.jaxb.JDBCConnection;
+import org.deegree.commons.utils.ProxyUtils;
 import org.deegree.commons.utils.TempFileManager;
 import org.deegree.commons.xml.jaxb.JAXBUtils;
 import org.slf4j.Logger;
@@ -66,7 +69,7 @@ import org.slf4j.LoggerFactory;
  * 
  * @version $Revision: $, $Date: $
  */
-public class ConnectionManager {
+public class ConnectionManager implements ResourceManager {
 
     private static Logger LOG = LoggerFactory.getLogger( ConnectionManager.class );
 
@@ -302,4 +305,17 @@ public class ConnectionManager {
         }
         return pool;
     }
+
+    public void shutdown() {
+        destroy();
+    }
+
+    public void startup( DeegreeWorkspace workspace ) {
+        init( new File( workspace.getLocation(), "jdbc" ) );
+    }
+
+    public Class<? extends ResourceManager>[] getDependencies() {
+        return new Class[] { ProxyUtils.class };
+    }
+
 }
