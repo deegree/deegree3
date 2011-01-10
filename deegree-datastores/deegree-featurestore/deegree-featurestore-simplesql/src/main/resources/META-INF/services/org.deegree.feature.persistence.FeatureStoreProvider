@@ -1,1 +1,2 @@
-org.deegree.feature.persistence.shape.ShapeFeatureStoreProvider
+org.deegree.feature.persistence.simplesql.SimpleSQLFeatureStoreProvider
+
