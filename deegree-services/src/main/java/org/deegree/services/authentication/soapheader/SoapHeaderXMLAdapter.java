@@ -38,8 +38,8 @@ package org.deegree.services.authentication.soapheader;
 import java.util.List;
 
 import org.apache.axiom.om.OMElement;
+import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.XPath;
-import org.deegree.services.csw.AbstractCSWRequestXMLAdapter;
 
 /**
  * Encapsulates the method for parsing a {@Link SoapHeader} XML request via Http-POST.
@@ -49,7 +49,15 @@ import org.deegree.services.csw.AbstractCSWRequestXMLAdapter;
  * 
  * @version $Revision$, $Date$
  */
-public class SoapHeaderXMLAdapter extends AbstractCSWRequestXMLAdapter {
+public class SoapHeaderXMLAdapter extends XMLAdapter {
+
+    protected final static String SOAP_10 = "http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd";
+
+    protected final static String SOAP_10_PREFIX = "wsse";
+
+    static {
+        nsContext.addNamespace( SOAP_10_PREFIX, SOAP_10 );
+    }
 
     public SoapHeader parseHeader() {
 
