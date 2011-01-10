@@ -3,14 +3,14 @@
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.deegree</groupId>
-  <artifactId>deegree-featurestore-shape</artifactId>
+  <artifactId>deegree-featurestore-postgis</artifactId>
   <packaging>jar</packaging>
   <version>3.1-SNAPSHOT</version>
-  <name>deegree-featurestore-shape</name>
+  <name>deegree-featurestore-postgis</name>
   <url>http://www.deegree.org</url>
   <scm>
-    <developerConnection>scm:svn:http://svn.wald.intevation.org/svn/deegree/deegree3/trunk/deegree-datastores/deegree-featurestore/deegree-featurestore-shape</developerConnection>
-    <url>http://svn.wald.intevation.org/svn/deegree/deegree3/trunk/deegree-datastores/deegree-featurestore/deegree-featurestore-shape</url>
+    <developerConnection>scm:svn:http://svn.wald.intevation.org/svn/deegree/deegree3/trunk/deegree-datastores/deegree-featurestore/deegree-featurestore-postgis</developerConnection>
+    <url>http://svn.wald.intevation.org/svn/deegree/deegree3/trunk/deegree-datastores/deegree-featurestore/deegree-featurestore-postgis</url>
   </scm>
 
   <parent>
@@ -46,7 +46,7 @@
           </execution>
         </executions>
         <configuration>
-          <schemaFiles>datasource/feature/shape/3.0.0/shape.xsd</schemaFiles>
+          <schemaFiles>datasource/feature/postgis/3.0.1/postgis.xsd</schemaFiles>
           <schemaDirectory>src/main/resources/META-INF/schemas/</schemaDirectory>
         </configuration>
       </plugin>
