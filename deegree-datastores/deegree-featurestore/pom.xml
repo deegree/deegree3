@@ -33,15 +33,16 @@
   </repositories>
 
   <modules>
+    <module>deegree-featurestore-commons</module>
     <module>deegree-featurestore-shape</module>
   </modules>
 
-  <!-- <dependencies> -->
-  <!--   <dependency> -->
-  <!--     <groupId>org.deegree</groupId> -->
-  <!--     <artifactId>deegree-featurestore</artifactId> -->
-  <!--     <version>3.1-SNAPSHOT</version> -->
-  <!--     <type>pom</type> -->
-  <!--   </dependency> -->
-  <!-- </dependencies> -->
+  <dependencies>
+    <dependency>
+      <groupId>org.deegree</groupId>
+      <artifactId>deegree-featurestore-shape</artifactId>
+      <version>3.1-SNAPSHOT</version>
+    </dependency>
+  </dependencies>
+
 </project>
