@@ -137,7 +137,7 @@ import org.slf4j.Logger;
  * @version $Revision$, $Date$
  */
 @LoggingNotes(trace = "logs stack traces", debug = "logs sent exception messages, security information", warn = "logs problems with custom serializer classes", error = "logs unknown errors, problems with GetFeatureInfo templates")
-public class WMSController extends AbstractOGCServiceController {
+public class WMSController extends AbstractOGCServiceController<WMSRequestType> {
 
     private static final Logger LOG = getLogger( WMSController.class );
 
@@ -200,7 +200,7 @@ public class WMSController extends AbstractOGCServiceController {
 
     @Override
     public void init( DeegreeServicesMetadataType serviceMetadata, DeegreeServiceControllerType mainConfig,
-                      ImplementationMetadata<?> md, XMLAdapter controllerConf )
+                      ImplementationMetadata<WMSRequestType> md, XMLAdapter controllerConf )
                             throws ControllerInitException {
 
         super.init( serviceMetadata, mainConfig, IMPLEMENTATION_METADATA, controllerConf );
@@ -316,7 +316,7 @@ public class WMSController extends AbstractOGCServiceController {
 
         WMSRequestType req;
         try {
-            req = (WMSRequestType) serviceInfo.getRequestTypeByName( map.get( "REQUEST" ) );
+            req = serviceInfo.getRequestTypeByName( map.get( "REQUEST" ) );
         } catch ( IllegalArgumentException e ) {
             controllers.get( version ).sendException(
                                                       new OWSException( get( "WMS.OPERATION_NOT_KNOWN",

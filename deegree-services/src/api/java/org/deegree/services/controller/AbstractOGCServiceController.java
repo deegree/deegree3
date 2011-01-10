@@ -103,9 +103,9 @@ import org.slf4j.LoggerFactory;
  * 
  * @version $Revision:$, $Date:$
  */
-public abstract class AbstractOGCServiceController implements OWS {
+public abstract class AbstractOGCServiceController<T extends Enum<T>> implements OWS<T> {
 
-    private ImplementationMetadata<? extends Enum<?>> implementationMetadata;
+    private ImplementationMetadata<?> implementationMetadata;
 
     private static final Logger LOG = LoggerFactory.getLogger( AbstractOGCServiceController.class );
 
@@ -124,9 +124,9 @@ public abstract class AbstractOGCServiceController implements OWS {
 
     protected DeegreeWorkspace workspace;
 
-    protected ImplementationMetadata<? extends Enum<?>> serviceInfo;
+    protected ImplementationMetadata<T> serviceInfo;
 
-    public void init( DeegreeWorkspace workspace, URL configURL, ImplementationMetadata<? extends Enum<?>> serviceInfo )
+    public void init( DeegreeWorkspace workspace, URL configURL, ImplementationMetadata<T> serviceInfo )
                             throws ControllerInitException {
         this.workspace = workspace;
         this.serviceInfo = serviceInfo;
@@ -135,10 +135,10 @@ public abstract class AbstractOGCServiceController implements OWS {
         init( ws.getMetadataConfiguration(), ws.getMainConfiguration(), serviceInfo, adapter );
     }
 
-    public ImplementationMetadata<?> getImplementationMetadata(){
+    public ImplementationMetadata<T> getImplementationMetadata() {
         return serviceInfo;
     }
-    
+
     /**
      * Initializes the {@link AbstractOGCServiceController} instance.
      * 
@@ -150,7 +150,7 @@ public abstract class AbstractOGCServiceController implements OWS {
      *             if the config version does not match one of the supported versions
      */
     protected void init( DeegreeServicesMetadataType mainMetadataConf, DeegreeServiceControllerType mainControllerConf,
-                         ImplementationMetadata<? extends Enum<?>> serviceInformation, XMLAdapter controllerConfig )
+                         ImplementationMetadata<T> serviceInformation, XMLAdapter controllerConfig )
                             throws ControllerInitException {
         this.mainMetadataConf = mainMetadataConf;
         this.mainControllerConf = mainControllerConf;

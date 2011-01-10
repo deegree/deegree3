@@ -129,7 +129,7 @@ import org.slf4j.LoggerFactory;
  * 
  * @version $Revision$, $Date$
  */
-public class WPService extends AbstractOGCServiceController {
+public class WPService extends AbstractOGCServiceController<WPSRequestType> {
 
     private static final Logger LOG = LoggerFactory.getLogger( WPService.class );
 
@@ -151,7 +151,7 @@ public class WPService extends AbstractOGCServiceController {
 
     @Override
     public void init( DeegreeServicesMetadataType serviceMetadata, DeegreeServiceControllerType mainConf,
-                      ImplementationMetadata<?> md, XMLAdapter controllerConf )
+                      ImplementationMetadata<WPSRequestType> md, XMLAdapter controllerConf )
                             throws ControllerInitException {
 
         LOG.info( "Initializing WPS." );
@@ -382,7 +382,7 @@ public class WPService extends AbstractOGCServiceController {
                             throws OWSException {
         WPSRequestType requestType = null;
         try {
-            requestType = (WPSRequestType) serviceInfo.getRequestTypeByName( requestName );
+            requestType = serviceInfo.getRequestTypeByName( requestName );
         } catch ( IllegalArgumentException e ) {
             throw new OWSException( e.getMessage(), OPERATION_NOT_SUPPORTED );
         }

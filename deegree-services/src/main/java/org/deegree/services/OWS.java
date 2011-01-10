@@ -70,7 +70,7 @@ import org.deegree.services.controller.utils.HttpResponseBuffer;
  * 
  * @version $Revision: $, $Date: $
  */
-public interface OWS {
+public interface OWS<T extends Enum<T>> {
 
     /**
      * Called by the {@link OGCFrontController} to allow this {@link OWS} to handle an OGC-KVP request.
@@ -147,7 +147,7 @@ public interface OWS {
      *         for backward compatibility regarding custom controller classes)
      */
     @Deprecated
-    public ImplementationMetadata<?> getImplementationMetadata();
+    public ImplementationMetadata<T> getImplementationMetadata();
 
     /**
      * Called by the {@link OGCFrontController} to indicate to this {@link OWS} that it is being taken into service.
@@ -158,7 +158,7 @@ public interface OWS {
      * @throws ControllerInitException
      *             indicates that the initialization failed
      */
-    public void init( DeegreeWorkspace workspace, URL configURL, ImplementationMetadata<?> metadata )
+    public void init( DeegreeWorkspace workspace, URL configURL, ImplementationMetadata<T> metadata )
                             throws ControllerInitException;
 
     /**

@@ -61,7 +61,7 @@ import org.deegree.commons.tom.ows.Version;
  * @version $Revision$, $Date$
  * @param <T>
  */
-public abstract class ImplementationMetadata<T extends Enum<?>> {
+public abstract class ImplementationMetadata<T extends Enum<T>> {
 
     /**
      * The supportedVersions of this service implementation.

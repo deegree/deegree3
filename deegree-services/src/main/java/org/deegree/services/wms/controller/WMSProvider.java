@@ -53,7 +53,7 @@ import org.deegree.services.controller.ImplementationMetadata;
  * 
  * @version $Revision$, $Date$
  */
-public class WMSProvider implements OWSProvider {
+public class WMSProvider implements OWSProvider<WMSRequestType> {
 
     protected static final ImplementationMetadata<WMSRequestType> IMPLEMENTATION_METADATA = new ImplementationMetadata<WMSRequestType>() {
         {
@@ -77,11 +77,11 @@ public class WMSProvider implements OWSProvider {
         return WMSProvider.class.getResource( "/META-INF/schemas/wms/3.1.0/example.xml" );
     }
 
-    public ImplementationMetadata<?> getImplementationMetadata() {
+    public ImplementationMetadata<WMSRequestType> getImplementationMetadata() {
         return IMPLEMENTATION_METADATA;
     }
 
-    public OWS getService() {
+    public OWS<WMSRequestType> getService() {
         return new WMSController();
     }
 

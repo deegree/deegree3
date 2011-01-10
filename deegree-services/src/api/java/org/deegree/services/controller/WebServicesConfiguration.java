@@ -103,14 +103,14 @@ public class WebServicesConfiguration implements ResourceManager {
     private static final String METADATA_CONFIG_SCHEMA = "/META-INF/schemas/metadata/3.0.0/metadata.xsd";
 
     // maps service names (e.g. 'WMS', 'WFS', ...) to responsible subcontrollers
-    private final Map<String, OWS> serviceNameToController = new HashMap<String, OWS>();
+    private final Map<String, OWS<? extends Enum<?>>> serviceNameToController = new HashMap<String, OWS<? extends Enum<?>>>();
 
     // maps service namespaces (e.g. 'http://www.opengis.net/wms', 'http://www.opengis.net/wfs', ...) to the
     // responsible subcontrollers
-    private final Map<String, OWS> serviceNSToController = new HashMap<String, OWS>();
+    private final Map<String, OWS<? extends Enum<?>>> serviceNSToController = new HashMap<String, OWS<? extends Enum<?>>>();
 
     // maps request names (e.g. 'GetMap', 'DescribeFeatureType') to the responsible subcontrollers
-    private final Map<String, OWS> requestNameToController = new HashMap<String, OWS>();
+    private final Map<String, OWS<? extends Enum<?>>> requestNameToController = new HashMap<String, OWS<? extends Enum<?>>>();
 
     private DeegreeServicesMetadataType metadataConfig;
 
@@ -168,10 +168,11 @@ public class WebServicesConfiguration implements ResourceManager {
 
         initRequestLogger();
 
+        @SuppressWarnings("unchecked")
         Iterator<OWSProvider> iter = ServiceLoader.load( OWSProvider.class ).iterator();
-        Map<String, OWSProvider> providers = new HashMap<String, OWSProvider>();
+        Map<String, OWSProvider<? extends Enum<?>>> providers = new HashMap<String, OWSProvider<? extends Enum<?>>>();
         while ( iter.hasNext() ) {
-            OWSProvider p = iter.next();
+            OWSProvider<?> p = iter.next();
             providers.put( p.getImplementationMetadata().getImplementedServiceName().toUpperCase(), p );
         }
 
@@ -194,7 +195,7 @@ public class WebServicesConfiguration implements ResourceManager {
     }
 
     @Deprecated
-    private void initServicesFromConfig( File main, Map<String, OWSProvider> providers ) {
+    private void initServicesFromConfig( File main, Map<String, OWSProvider<? extends Enum<?>>> providers ) {
         ConfiguredServicesType servicesConfigured = mainConfig.getConfiguredServices();
         List<ServiceType> services = null;
         if ( servicesConfigured != null ) {
@@ -212,7 +213,7 @@ public class WebServicesConfiguration implements ResourceManager {
                     }
                     s.setConfigurationLocation( configLocation.toExternalForm() );
 
-                    OWS serviceController = instantiateServiceController( s, providers );
+                    OWS<? extends Enum<?>> serviceController = instantiateServiceController( s, providers );
                     if ( serviceController != null ) {
                         registerSubController( s, serviceController );
                     }
@@ -224,11 +225,11 @@ public class WebServicesConfiguration implements ResourceManager {
         }
     }
 
-    private void loadServicesFromDefaultLocation( Map<String, OWSProvider> providers ) {
+    private void loadServicesFromDefaultLocation( Map<String, OWSProvider<? extends Enum<?>>> providers ) {
         File serviceConfigDir = new File( workspace.getLocation(), "services" );
 
-        Map<String, OWSProvider> nsToProvider = new HashMap<String, OWSProvider>();
-        for ( OWSProvider p : providers.values() ) {
+        Map<String, OWSProvider<?>> nsToProvider = new HashMap<String, OWSProvider<?>>();
+        for ( OWSProvider<?> p : providers.values() ) {
             nsToProvider.put( p.getConfigNamespace(), p );
         }
 
@@ -278,9 +279,11 @@ public class WebServicesConfiguration implements ResourceManager {
     }
 
     // should sooner or later just be removed along with the option to configure available services
+    @SuppressWarnings("unchecked")
     @Deprecated
-    private OWS instantiateServiceController( ServiceType configuredService, Map<String, OWSProvider> providers ) {
-        OWS subController = null;
+    private OWS<? extends Enum<?>> instantiateServiceController( ServiceType configuredService,
+                                                                 Map<String, OWSProvider<? extends Enum<?>>> providers ) {
+        OWS<? extends Enum<?>> subController = null;
         if ( configuredService == null ) {
             return subController;
         }
@@ -297,14 +300,13 @@ public class WebServicesConfiguration implements ResourceManager {
             long time = System.currentTimeMillis();
             if ( configuredService.getControllerClass() != null ) {
                 LOG.info( "Using custom controller class '{}'.", configuredService.getControllerClass() );
-                subController = (AbstractOGCServiceController) Class.forName( configuredService.getControllerClass(),
-                                                                              false,
-                                                                              OGCFrontController.class.getClassLoader() ).newInstance();
+                subController = (OWS<? extends Enum<?>>) Class.forName( configuredService.getControllerClass(), false,
+                                                                        OGCFrontController.class.getClassLoader() ).newInstance();
                 subController.init( workspace, configURL, null );
             } else {
-                OWSProvider p = providers.get( configuredService.getServiceName() );
+                OWSProvider<? extends Enum<?>> p = providers.get( configuredService.getServiceName() );
                 subController = p.getService();
-                subController.init( workspace, configURL, p.getImplementationMetadata() );
+                subController.init( workspace, configURL, (ImplementationMetadata) p.getImplementationMetadata() );
             }
             LOG.info( "" );
             // round to exactly two decimals, I think their should be a java method for this though
@@ -322,7 +324,7 @@ public class WebServicesConfiguration implements ResourceManager {
     }
 
     @Deprecated
-    private void registerSubController( ServiceType configuredService, OWS serviceController ) {
+    private void registerSubController( ServiceType configuredService, OWS<?> serviceController ) {
 
         // associate service name (abbreviation) with controller instance
         LOG.debug( "Service name '" + configuredService.getServiceName() + "' -> '"
@@ -345,10 +347,10 @@ public class WebServicesConfiguration implements ResourceManager {
         }
     }
 
-    private void loadOWS( OWSProvider p, File configFile ) {
-        OWS ows = p.getService();
+    private <T extends Enum<T>> void loadOWS( OWSProvider<T> p, File configFile ) {
+        OWS<T> ows = p.getService();
         // associate service name (abbreviation) with controller instance
-        ImplementationMetadata<?> md = p.getImplementationMetadata();
+        ImplementationMetadata<T> md = p.getImplementationMetadata();
         try {
             ows.init( workspace, configFile.toURI().toURL(), md );
         } catch ( MalformedURLException e ) {
@@ -389,7 +391,7 @@ public class WebServicesConfiguration implements ResourceManager {
      *            service type code, e.g. "WMS" or "WFS"
      * @return responsible <code>SecuredSubController</code> or null, if no responsible controller was found
      */
-    public OWS determineResponsibleControllerByServiceName( String serviceType ) {
+    public OWS<? extends Enum<?>> determineResponsibleControllerByServiceName( String serviceType ) {
         return serviceNameToController.get( serviceType );
     }
 
@@ -401,7 +403,7 @@ public class WebServicesConfiguration implements ResourceManager {
      *            request name, e.g. "GetMap" or "GetFeature"
      * @return responsible <code>SecuredSubController</code> or null, if no responsible controller was found
      */
-    public OWS determineResponsibleControllerByRequestName( String requestName ) {
+    public OWS<? extends Enum<?>> determineResponsibleControllerByRequestName( String requestName ) {
         return requestNameToController.get( requestName );
     }
 
@@ -413,7 +415,7 @@ public class WebServicesConfiguration implements ResourceManager {
      *            service type code, e.g. "WMS" or "WFS"
      * @return responsible <code>SecuredSubController</code> or null, if no responsible controller was found
      */
-    public OWS determineResponsibleControllerByNS( String ns ) {
+    public OWS<? extends Enum<?>> determineResponsibleControllerByNS( String ns ) {
         return serviceNSToController.get( ns );
     }
 
@@ -423,8 +425,8 @@ public class WebServicesConfiguration implements ResourceManager {
      * @return the instance of the requested service used by OGCFrontController, or null if the service is not
      *         registered.
      */
-    public Map<String, OWS> getServiceControllers() {
-        Map<String, OWS> nameToController = new HashMap<String, OWS>();
+    public Map<String, OWS<? extends Enum<?>>> getServiceControllers() {
+        Map<String, OWS<? extends Enum<?>>> nameToController = new HashMap<String, OWS<? extends Enum<?>>>();
         for ( String serviceName : serviceNameToController.keySet() ) {
             nameToController.put( serviceName, serviceNameToController.get( serviceName ) );
         }
@@ -441,13 +443,13 @@ public class WebServicesConfiguration implements ResourceManager {
      * @return the instance of the requested service used by OGCFrontController, or null if no such service controller
      *         is active
      */
-    public <T extends OWS> T getServiceController( Class<T> c ) {
-        for ( OWS it : serviceNSToController.values() ) {
+    public <T extends Enum<T>, U extends OWS<T>> U getServiceController( Class<U> c ) {
+        for ( OWS<?> it : serviceNSToController.values() ) {
             if ( c == it.getClass() ) {
                 // somehow just annotating the return expression does not work
                 // even annotations to suppress sucking generics suck
                 @SuppressWarnings(value = "unchecked")
-                T result = (T) it;
+                U result = (U) it;
                 return result;
             }
         }
@@ -461,7 +463,7 @@ public class WebServicesConfiguration implements ResourceManager {
         LOG.info( "--------------------------------------------------------------------------------" );
         LOG.info( "Shutting down deegree web services in context..." );
         for ( String serviceName : serviceNameToController.keySet() ) {
-            OWS subcontroller = serviceNameToController.get( serviceName );
+            OWS<?> subcontroller = serviceNameToController.get( serviceName );
             LOG.info( "Shutting down '" + serviceName + "'." );
             try {
                 subcontroller.destroy();

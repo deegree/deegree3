@@ -110,7 +110,7 @@ import org.slf4j.LoggerFactory;
  * 
  * @version $Revision$, $Date$
  */
-public class WPVSController extends AbstractOGCServiceController {
+public class WPVSController extends AbstractOGCServiceController<WPVSRequestType> {
 
     private final static Logger LOG = LoggerFactory.getLogger( WPVSController.class );
 
@@ -132,7 +132,7 @@ public class WPVSController extends AbstractOGCServiceController {
 
     @Override
     public void init( DeegreeServicesMetadataType serviceMetadata, DeegreeServiceControllerType mainConf,
-                      ImplementationMetadata<?> md, XMLAdapter controllerConf )
+                      ImplementationMetadata<WPVSRequestType> md, XMLAdapter controllerConf )
                             throws ControllerInitException {
 
         super.init( serviceMetadata, mainConf, IMPLEMENTATION_METADATA, controllerConf );
@@ -214,7 +214,7 @@ public class WPVSController extends AbstractOGCServiceController {
             sendServiceException( new OWSException( e.getMessage(), OWSException.MISSING_PARAMETER_VALUE ), response );
             return;
         }
-        mappedRequest = (WPVSRequestType) serviceInfo.getRequestTypeByName( requestName );
+        mappedRequest = serviceInfo.getRequestTypeByName( requestName );
 
         if ( mappedRequest == null ) {
             sendServiceException( new OWSException( "Unknown request: " + requestName + " is not known to the WPVS.",

@@ -224,7 +224,7 @@ public class OGCFrontController extends HttpServlet {
      * @return the instance of the requested service used by OGCFrontController, or null if the service is not
      *         registered.
      */
-    public static Map<String, OWS> getServiceControllers() {
+    public static Map<String, OWS<? extends Enum<?>>> getServiceControllers() {
         return instance.serviceConfiguration.getServiceControllers();
     }
 
@@ -236,7 +236,7 @@ public class OGCFrontController extends HttpServlet {
      * @return the instance of the requested service used by OGCFrontController, or null if no such service controller
      *         is active
      */
-    public static OWS getServiceController( Class<? extends OWS> c ) {
+    public static <U extends Enum<U>, T extends OWS<U>> T getServiceController( Class<T> c ) {
         return instance.serviceConfiguration.getServiceController( c );
     }
 
@@ -598,7 +598,7 @@ public class OGCFrontController extends HttpServlet {
                                                                      serviceConfiguration.getRequestLogger(), null );
             }
 
-            OWS subController = null;
+            OWS<? extends Enum<?>> subController = null;
             // first try service parameter, SERVICE-parameter is mandatory for each service and request (except WMS
             // 1.0.0)
             String service = normalizedKVPParams.get( "SERVICE" );
@@ -703,7 +703,7 @@ public class OGCFrontController extends HttpServlet {
             // String sessionId = xmlStream.getAttributeValue( XMLConstants.NULL_NS_URI, "sessionId" );
 
             String ns = xmlStream.getNamespaceURI();
-            OWS subcontroller = serviceConfiguration.determineResponsibleControllerByNS( ns );
+            OWS<? extends Enum<?>> subcontroller = serviceConfiguration.determineResponsibleControllerByNS( ns );
             if ( subcontroller != null ) {
                 LOG.debug( "Dispatching request to subcontroller class: " + subcontroller.getClass().getName() );
                 HttpResponseBuffer responseWrapper = new HttpResponseBuffer( response );
@@ -806,7 +806,7 @@ public class OGCFrontController extends HttpServlet {
             // }
             // }
 
-            OWS subcontroller = serviceConfiguration.determineResponsibleControllerByNS( envelope.getSOAPBodyFirstElementNS().getNamespaceURI() );
+            OWS<? extends Enum<?>> subcontroller = serviceConfiguration.determineResponsibleControllerByNS( envelope.getSOAPBodyFirstElementNS().getNamespaceURI() );
             if ( subcontroller != null ) {
                 LOG.debug( "Dispatching request to subcontroller class: " + subcontroller.getClass().getName() );
                 HttpResponseBuffer responseWrapper = new HttpResponseBuffer( response );
@@ -1080,11 +1080,11 @@ public class OGCFrontController extends HttpServlet {
     private void sendException( OWSException e, HttpServletResponse res, Version requestVersion )
                             throws ServletException {
 
-        Collection<OWS> values = serviceConfiguration.getServiceControllers().values();
+        Collection<OWS<? extends Enum<?>>> values = serviceConfiguration.getServiceControllers().values();
         if ( values.size() > 0 ) {
             // use exception serializer / mime type from first registered controller (fair chance that this will be
             // correct)
-            OWS first = values.iterator().next();
+            OWS<? extends Enum<?>> first = values.iterator().next();
             Pair<XMLExceptionSerializer<OWSException>, String> serializerAndMime = first.getExceptionSerializer( requestVersion );
             AbstractOGCServiceController.sendException( serializerAndMime.second, "UTF-8", null, 200,
                                                         serializerAndMime.first, e, res );

@@ -53,7 +53,7 @@ import org.deegree.services.controller.ImplementationMetadata;
  * 
  * @version $Revision$, $Date$
  */
-public class CSWProvider implements OWSProvider {
+public class CSWProvider implements OWSProvider<CSWRequestType> {
 
     protected static final ImplementationMetadata<CSWRequestType> IMPLEMENTATION_METADATA = new ImplementationMetadata<CSWRequestType>() {
         {
@@ -77,11 +77,11 @@ public class CSWProvider implements OWSProvider {
         return CSWProvider.class.getResource( "/META-INF/schemas/csw/3.0.0/example.xml" );
     }
 
-    public ImplementationMetadata<?> getImplementationMetadata() {
+    public ImplementationMetadata<CSWRequestType> getImplementationMetadata() {
         return IMPLEMENTATION_METADATA;
     }
 
-    public OWS getService() {
+    public OWS<CSWRequestType> getService() {
         return new CSWController();
     }
 

@@ -145,7 +145,7 @@ import org.slf4j.LoggerFactory;
  * 
  * @version $Revision$, $Date$
  */
-public class SOSController extends AbstractOGCServiceController {
+public class SOSController extends AbstractOGCServiceController<SOSRequestType> {
 
     private static final Logger LOG = LoggerFactory.getLogger( SOSController.class );
 
@@ -163,7 +163,7 @@ public class SOSController extends AbstractOGCServiceController {
 
     @Override
     public void init( DeegreeServicesMetadataType serviceMetadata, DeegreeServiceControllerType mainConf,
-                      ImplementationMetadata<?> md, XMLAdapter controllerConf )
+                      ImplementationMetadata<SOSRequestType> md, XMLAdapter controllerConf )
                             throws ControllerInitException {
 
         super.init( serviceMetadata, mainConf, IMPLEMENTATION_METADATA, controllerConf );

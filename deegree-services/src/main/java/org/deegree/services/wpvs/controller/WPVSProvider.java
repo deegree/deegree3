@@ -53,7 +53,7 @@ import org.deegree.services.controller.ImplementationMetadata;
  * 
  * @version $Revision$, $Date$
  */
-public class WPVSProvider implements OWSProvider {
+public class WPVSProvider implements OWSProvider<WPVSRequestType> {
 
     protected static final ImplementationMetadata<WPVSRequestType> IMPLEMENTATION_METADATA = new ImplementationMetadata<WPVSRequestType>() {
         {
@@ -77,11 +77,11 @@ public class WPVSProvider implements OWSProvider {
         return WPVSProvider.class.getResource( "/META-INF/schemas/wpvs/3.0.0/example.xml" );
     }
 
-    public ImplementationMetadata<?> getImplementationMetadata() {
+    public ImplementationMetadata<WPVSRequestType> getImplementationMetadata() {
         return IMPLEMENTATION_METADATA;
     }
 
-    public OWS getService() {
+    public OWS<WPVSRequestType> getService() {
         return new WPVSController();
     }
 

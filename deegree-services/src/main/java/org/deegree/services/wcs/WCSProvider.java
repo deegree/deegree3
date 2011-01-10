@@ -54,7 +54,7 @@ import org.deegree.services.controller.ImplementationMetadata;
  * 
  * @version $Revision$, $Date$
  */
-public class WCSProvider implements OWSProvider {
+public class WCSProvider implements OWSProvider<WCSRequestType> {
 
     protected static final ImplementationMetadata<WCSRequestType> IMPLEMENTATION_METADATA = new ImplementationMetadata<WCSRequestType>() {
         {
@@ -78,11 +78,11 @@ public class WCSProvider implements OWSProvider {
         return WCSProvider.class.getResource( "/META-INF/schemas/wcs/3.0.0/example.xml" );
     }
 
-    public ImplementationMetadata<?> getImplementationMetadata() {
+    public ImplementationMetadata<WCSRequestType> getImplementationMetadata() {
         return IMPLEMENTATION_METADATA;
     }
 
-    public OWS getService() {
+    public OWS<WCSRequestType> getService() {
         return new WCSController();
     }
 

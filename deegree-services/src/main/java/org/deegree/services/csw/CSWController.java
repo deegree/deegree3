@@ -129,7 +129,7 @@ import org.slf4j.LoggerFactory;
  * 
  * @version $Revision: $, $Date: $
  */
-public class CSWController extends AbstractOGCServiceController {
+public class CSWController extends AbstractOGCServiceController<CSWRequestType> {
 
     private static final Logger LOG = LoggerFactory.getLogger( CSWController.class );
 
@@ -155,7 +155,7 @@ public class CSWController extends AbstractOGCServiceController {
 
     @Override
     public void init( DeegreeServicesMetadataType serviceMetadata, DeegreeServiceControllerType mainConf,
-                      ImplementationMetadata<?> md, XMLAdapter controllerConf )
+                      ImplementationMetadata<CSWRequestType> md, XMLAdapter controllerConf )
                             throws ControllerInitException {
 
         LOG.info( "Initializing CSW controller." );
@@ -536,7 +536,7 @@ public class CSWController extends AbstractOGCServiceController {
         CSWRequestType requestType = null;
         try {
 
-            requestType = (CSWRequestType) serviceInfo.getRequestTypeByName( requestName );
+            requestType = serviceInfo.getRequestTypeByName( requestName );
         } catch ( IllegalArgumentException e ) {
             throw new OWSException( e.getMessage(), OWSException.OPERATION_NOT_SUPPORTED );
         }

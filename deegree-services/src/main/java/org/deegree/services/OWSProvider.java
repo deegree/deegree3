@@ -50,7 +50,7 @@ import org.deegree.services.controller.OGCFrontController;
  * 
  * @version $Revision: $, $Date: $
  */
-public interface OWSProvider {
+public interface OWSProvider<T extends Enum<T>> {
 
     /**
      * Returns the namespace for configurations documents that this provider handles.
@@ -78,11 +78,11 @@ public interface OWSProvider {
      * 
      * @return new service instance, not initialized yet
      */
-    OWS getService();
+    OWS<T> getService();
 
     /**
      * @return information about handled requests, namespaces and so on
      */
-    ImplementationMetadata<?> getImplementationMetadata();
+    ImplementationMetadata<T> getImplementationMetadata();
 
 }

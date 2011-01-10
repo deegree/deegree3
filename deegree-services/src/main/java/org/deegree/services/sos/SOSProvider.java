@@ -53,7 +53,7 @@ import org.deegree.services.controller.ImplementationMetadata;
  * 
  * @version $Revision$, $Date$
  */
-public class SOSProvider implements OWSProvider {
+public class SOSProvider implements OWSProvider<SOSRequestType> {
 
     protected static final ImplementationMetadata<SOSRequestType> IMPLEMENTATION_METADATA = new ImplementationMetadata<SOSRequestType>() {
         {
@@ -77,11 +77,11 @@ public class SOSProvider implements OWSProvider {
         return SOSProvider.class.getResource( "/META-INF/schemas/sos/3.0.0/example.xml" );
     }
 
-    public ImplementationMetadata<?> getImplementationMetadata() {
+    public ImplementationMetadata<SOSRequestType> getImplementationMetadata() {
         return IMPLEMENTATION_METADATA;
     }
 
-    public OWS getService() {
+    public OWS<SOSRequestType> getService() {
         return new SOSController();
     }
 
