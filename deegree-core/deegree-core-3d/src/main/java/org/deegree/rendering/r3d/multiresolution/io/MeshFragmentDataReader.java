@@ -43,6 +43,7 @@ import java.nio.Buffer;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
+import java.nio.ShortBuffer;
 import java.nio.channels.FileChannel;
 
 import org.deegree.commons.utils.nio.DirectByteBufferPool;
@@ -69,6 +70,10 @@ public class MeshFragmentDataReader {
 
     private final FileChannel channel;
 
+    private ShortBuffer indexBuffer;
+
+    private final int rowsPerMt;
+
     /**
      * Construct access to a file containing mesh fragments.
      * 
@@ -80,6 +85,21 @@ public class MeshFragmentDataReader {
                             throws FileNotFoundException {
         this.channel = new FileInputStream( meshFragments ).getChannel();
         this.bufferPool = directBufferPool;
+        this.rowsPerMt = -1;
+    }
+
+    /**
+     * Construct access to a file containing mesh fragments.
+     * 
+     * @param meshFragments
+     * @param directBufferPool
+     * @throws FileNotFoundException
+     */
+    public MeshFragmentDataReader( File meshFragments, DirectByteBufferPool directBufferPool, int rowsPerMt )
+                            throws FileNotFoundException {
+        this.channel = new FileInputStream( meshFragments ).getChannel();
+        this.bufferPool = directBufferPool;
+        this.rowsPerMt = rowsPerMt;
     }
 
     /**
@@ -122,20 +142,82 @@ public class MeshFragmentDataReader {
         normalsBuffer = normalsSlice.asFloatBuffer();
         rawTileBuffer.position( rawTileBuffer.position() + numVertices * 4 * 3 );
 
-        rawTileBuffer.limit( length );
         Buffer indexBuffer = null;
-        ByteBuffer indexSlice = rawTileBuffer.slice();
-        indexSlice.order( ByteOrder.nativeOrder() );
+        if ( rowsPerMt == -1 ) {
+            rawTileBuffer.limit( length );
+            ByteBuffer indexSlice = rawTileBuffer.slice();
+            indexSlice.order( ByteOrder.nativeOrder() );
 
-        if ( numVertices <= 255 ) {
-            indexBuffer = indexSlice;
-        } else if ( numVertices <= 65535 ) {
-            indexBuffer = indexSlice.asShortBuffer();
-            indexBuffer.rewind();
+            if ( numVertices <= 255 ) {
+                indexBuffer = indexSlice;
+            } else if ( numVertices <= 65535 ) {
+                indexBuffer = indexSlice.asShortBuffer();
+                indexBuffer.rewind();
+            } else {
+                indexBuffer = indexSlice.asIntBuffer();
+            }
         } else {
-            indexBuffer = indexSlice.asIntBuffer();
+            indexBuffer = getIndexBuffer( rowsPerMt );
         }
         return new MeshFragmentData( pooledByteBuffer, vertexBuffer, normalsBuffer, indexBuffer );
+    }
+
+    private ShortBuffer getIndexBuffer( int rowsPerMt ) {
+        if ( indexBuffer == null ) {
+            indexBuffer = generateMTVertexIds( rowsPerMt );
+        }
+        return indexBuffer;
+    }
+
+    private ShortBuffer generateMTVertexIds( int rowsPerTile ) {
+
+        int trianglesPerFragment = ( 4 * rowsPerTile ) + ( 2 * ( rowsPerTile - 1 ) * rowsPerTile );
+        ByteBuffer buffer = bufferPool.allocate( trianglesPerFragment * 3 * Short.SIZE / 8 ).getBuffer();
+
+        // build triangles
+        int lastRowFirstVertexId = 0;
+        int lastRowLastVertexId = 0;
+        int firstVertexId = 2;
+
+        for ( int row = 1; row <= rowsPerTile; row++ ) {
+            int rowLastVertexId = firstVertexId + row * 2;
+
+            // build the two leftmost triangles
+            buffer.putShort( (short) ( firstVertexId - 1 ) );
+            buffer.putShort( (short) ( firstVertexId + 1 ) );
+            buffer.putShort( (short) ( lastRowFirstVertexId ) );
+            buffer.putShort( (short) ( firstVertexId - 1 ) );
+            buffer.putShort( (short) ( firstVertexId ) );
+            buffer.putShort( (short) ( firstVertexId + 1 ) );
+
+            for ( int i = 0; i < rowLastVertexId - firstVertexId - 2; i++ ) {
+
+                int lastRowLeft = lastRowFirstVertexId + i;
+                int lastRowRight = lastRowLeft + 1;
+                int left = firstVertexId + i + 1;
+                int right = left + 1;
+
+                buffer.putShort( (short) ( lastRowLeft ) );
+                buffer.putShort( (short) ( left ) );
+                buffer.putShort( (short) ( lastRowRight ) );
+                buffer.putShort( (short) ( right ) );
+                buffer.putShort( (short) ( lastRowRight ) );
+                buffer.putShort( (short) ( left ) );
+            }
+            // build the two rightmost triangles
+            buffer.putShort( (short) ( rowLastVertexId + 1 ) );
+            buffer.putShort( (short) ( lastRowLastVertexId ) );
+            buffer.putShort( (short) ( rowLastVertexId - 1 ) );
+            buffer.putShort( (short) ( rowLastVertexId + 1 ) );
+            buffer.putShort( (short) ( rowLastVertexId - 1 ) );
+            buffer.putShort( (short) ( rowLastVertexId ) );
+
+            lastRowFirstVertexId = firstVertexId;
+            lastRowLastVertexId = rowLastVertexId;
+            firstVertexId = rowLastVertexId + 3;
+        }
+        buffer.rewind();
+        return buffer.asShortBuffer();
     }
 
     /**

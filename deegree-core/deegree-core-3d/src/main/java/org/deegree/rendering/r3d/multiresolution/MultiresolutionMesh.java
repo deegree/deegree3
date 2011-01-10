@@ -133,7 +133,8 @@ public class MultiresolutionMesh {
 
         // extract (slice) nodes, arcs and fragmentInfo segments
         begin = System.currentTimeMillis();
-        int flags = blobBuffer.getInt();
+        short flags = blobBuffer.getShort();
+        short rowsPerMt = blobBuffer.getShort();
         int numNodes = blobBuffer.getInt();
         int numArcs = blobBuffer.getInt();
         int numFragments = blobBuffer.getInt();
@@ -153,8 +154,8 @@ public class MultiresolutionMesh {
         blobBuffer.limit( arcsSegmentStart );
         ByteBuffer nodesBuffer = blobBuffer.slice();
 
-        LOG.info( "MultiresolutionMesh: flags=" + flags + ", #fragments: " + numFragments + ", #nodes: " + numNodes
-                  + ", #arcs: " + numArcs );
+        LOG.info( "MultiresolutionMesh: flags=" + flags + ", #rowsPerMt: " + rowsPerMt + ", #fragments: "
+                  + numFragments + ", #nodes: " + numNodes + ", #arcs: " + numArcs );
         LOG.debug( "- nodesBuffer: [" + nodesSegmentStart + '-' + ( arcsSegmentStart - 1 ) + "]" );
         LOG.debug( "- arcsBuffer: [" + arcsSegmentStart + '-' + ( fragmentsSegmentStart - 1 ) + "]" );
         LOG.debug( "- patchesBuffer: [" + fragmentsSegmentStart + '-' + ( blobBuffer.capacity() - 1 ) + "]" );
@@ -163,8 +164,13 @@ public class MultiresolutionMesh {
 
         nodes = createNodes( nodesBuffer );
         arcs = createArcs( arcsBuffer );
-        fragments = createFragmentInfos( fragmentsInfoBuffer, new MeshFragmentDataReader( meshFragments,
-                                                                                          directBufferPool ) );
+        MeshFragmentDataReader fragmentDataReader = null;
+        if ( rowsPerMt == 0 ) {
+            fragmentDataReader = new MeshFragmentDataReader( meshFragments, directBufferPool );
+        } else {
+            fragmentDataReader = new MeshFragmentDataReader( meshFragments, directBufferPool, rowsPerMt );
+        }
+        fragments = createFragmentInfos( fragmentsInfoBuffer, fragmentDataReader );
         if ( fragments != null && fragments[0] != null && fragments[0].bbox != null ) {
             float[][] domain = new float[2][3];
             this.renderDomain = new double[2][3];
