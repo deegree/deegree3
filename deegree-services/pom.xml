@@ -105,6 +105,7 @@
       <groupId>org.deegree</groupId>
       <artifactId>deegree-core</artifactId>
       <version>3.1-SNAPSHOT</version>
+      <type>pom</type>
     </dependency>
     <dependency>
       <groupId>javax.servlet</groupId>
