@@ -36,6 +36,7 @@
 package org.deegree.services;
 
 import java.io.IOException;
+import java.net.URL;
 import java.util.List;
 import java.util.Map;
 
@@ -46,13 +47,17 @@ import javax.xml.stream.XMLStreamReader;
 import org.apache.axiom.soap.SOAPEnvelope;
 import org.apache.axiom.soap.SOAPFactory;
 import org.apache.commons.fileupload.FileItem;
-import org.deegree.commons.xml.XMLAdapter;
+import org.deegree.commons.config.DeegreeWorkspace;
+import org.deegree.commons.tom.ows.Version;
+import org.deegree.commons.utils.Pair;
 import org.deegree.services.authentication.SecurityException;
+import org.deegree.services.controller.ImplementationMetadata;
 import org.deegree.services.controller.OGCFrontController;
 import org.deegree.services.controller.exception.ControllerInitException;
+import org.deegree.services.controller.exception.serializer.ExceptionSerializer;
+import org.deegree.services.controller.exception.serializer.XMLExceptionSerializer;
+import org.deegree.services.controller.ows.OWSException;
 import org.deegree.services.controller.utils.HttpResponseBuffer;
-import org.deegree.services.jaxb.controller.DeegreeServiceControllerType;
-import org.deegree.services.jaxb.metadata.DeegreeServicesMetadataType;
 
 /**
  * Implementations are OGC web services that plug into the {@link OGCFrontController}.
@@ -138,23 +143,36 @@ public interface OWS {
                             throws ServletException, IOException, SecurityException;
 
     /**
+     * @return the same implementation metadata that the accompanying (if available) OWSProvider would return (it's here
+     *         for backward compatibility regarding custom controller classes)
+     */
+    @Deprecated
+    public ImplementationMetadata<?> getImplementationMetadata();
+
+    /**
      * Called by the {@link OGCFrontController} to indicate to this {@link OWS} that it is being taken into service.
      * 
-     * @param controllerConf
-     *            provides access to the (always xml-based) configuration of the controller
-     * @param serviceMetadata
-     *            services metadata from the main service configuration for all services
-     * @param serviceController
-     *            from the main.xml
+     * @param workspace
+     * @param configURL
+     * @param metadata
      * @throws ControllerInitException
      *             indicates that the initialization failed
      */
-    public void init( XMLAdapter controllerConf, DeegreeServicesMetadataType serviceMetadata,
-                      DeegreeServiceControllerType serviceController )
+    public void init( DeegreeWorkspace workspace, URL configURL, ImplementationMetadata<?> metadata )
                             throws ControllerInitException;
 
     /**
      * Called by the {@link OGCFrontController} to indicate to this {@link OWS} that it is being taken out of service.
      */
     public void destroy();
+
+    /**
+     * Returns the {@link ExceptionSerializer} and mime-type suitable for the given request version.
+     * 
+     * @param requestVersion
+     *            version of the request for which the exception has to be produced, may be <code>null</code> (implies
+     *            that the serializer and mime type for the highest supported version shall be returned)
+     * @return never <code>null</code>
+     */
+    public Pair<XMLExceptionSerializer<OWSException>, String> getExceptionSerializer( Version requestVersion );
 }

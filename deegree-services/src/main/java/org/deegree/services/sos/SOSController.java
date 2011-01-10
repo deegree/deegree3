@@ -41,13 +41,12 @@ import static org.deegree.commons.xml.CommonNamespaces.XLINK_PREFIX;
 import static org.deegree.commons.xml.CommonNamespaces.XLNNS;
 import static org.deegree.commons.xml.CommonNamespaces.XSINS;
 import static org.deegree.commons.xml.CommonNamespaces.XSI_PREFIX;
-import static org.deegree.protocol.sos.SOSConstants.SOS_100_NS;
-import static org.deegree.protocol.sos.SOSConstants.VERSION_100;
 import static org.deegree.services.controller.exception.ControllerException.NO_APPLICABLE_CODE;
 import static org.deegree.services.controller.ows.OWSException.INVALID_DATE;
 import static org.deegree.services.controller.ows.OWSException.INVALID_PARAMETER_VALUE;
 import static org.deegree.services.controller.ows.OWSException.MISSING_PARAMETER_VALUE;
 import static org.deegree.services.controller.ows.OWSException.VERSION_NEGOTIATION_FAILED;
+import static org.deegree.services.sos.SOSProvider.IMPLEMENTATION_METADATA;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
@@ -106,10 +105,10 @@ import org.deegree.protocol.sos.filter.ProcedureFilter;
 import org.deegree.protocol.sos.filter.SpatialFilter;
 import org.deegree.protocol.sos.getfeatureofinterest.GetFeatureOfInterest;
 import org.deegree.protocol.sos.getfeatureofinterest.GetFeatureOfInterest100XMLAdapter;
-import org.deegree.protocol.sos.getobservation.EventTime100XMLAdapter.EventTimeXMLParsingException;
 import org.deegree.protocol.sos.getobservation.GetObservation;
 import org.deegree.protocol.sos.getobservation.GetObservation100KVPAdapter;
 import org.deegree.protocol.sos.getobservation.GetObservation100XMLAdapter;
+import org.deegree.protocol.sos.getobservation.EventTime100XMLAdapter.EventTimeXMLParsingException;
 import org.deegree.protocol.sos.getobservation.GetObservation100XMLAdapter.ResultFilterException;
 import org.deegree.services.controller.AbstractOGCServiceController;
 import org.deegree.services.controller.ImplementationMetadata;
@@ -162,21 +161,12 @@ public class SOSController extends AbstractOGCServiceController {
 
     private ServiceProviderType provider;
 
-    private static final ImplementationMetadata<SOSRequestType> IMPLEMENTATION_METADATA = new ImplementationMetadata<SOSRequestType>() {
-        {
-            supportedVersions = new Version[] { VERSION_100 };
-            handledNamespaces = new String[] { SOS_100_NS };
-            handledRequests = SOSRequestType.class;
-            supportedConfigVersions = new Version[] { Version.parseVersion( "3.0.0" ) };
-        }
-    };
-
     @Override
-    public void init( XMLAdapter controllerConf, DeegreeServicesMetadataType serviceMetadata,
-                      DeegreeServiceControllerType mainConf )
+    public void init( DeegreeServicesMetadataType serviceMetadata, DeegreeServiceControllerType mainConf,
+                      ImplementationMetadata<?> md, XMLAdapter controllerConf )
                             throws ControllerInitException {
 
-        init( serviceMetadata, mainConf, IMPLEMENTATION_METADATA, controllerConf );
+        super.init( serviceMetadata, mainConf, IMPLEMENTATION_METADATA, controllerConf );
 
         NamespaceBindings nsContext = new NamespaceBindings();
         nsContext.addNamespace( "sos", "http://www.deegree.org/services/sos" );
@@ -369,7 +359,7 @@ public class SOSController extends AbstractOGCServiceController {
         xmlWriter.writeNamespace( SA_PREFIX, SA_NS );
         xmlWriter.writeNamespace( XSI_PREFIX, XSINS );
         xmlWriter.writeNamespace( XLINK_PREFIX, XLNNS );
-        xmlWriter.writeNamespace( GML_PREFIX, GMLNS );        
+        xmlWriter.writeNamespace( GML_PREFIX, GMLNS );
 
         xmlWriter.writeAttribute( XSI_PREFIX, XSINS, "schemaLocation",
                                   "http://www.opengis.net/sampling/1.0 http://schemas.opengis.net/sampling/1.0.0/sampling.xsd" );

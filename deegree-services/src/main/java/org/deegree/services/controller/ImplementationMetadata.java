@@ -43,7 +43,8 @@ import java.util.Set;
 import org.deegree.commons.tom.ows.Version;
 
 /**
- * This class contains metadata information on the details of an implementation of a {@link AbstractOGCServiceController}.
+ * This class contains metadata information on the details of an implementation of a
+ * {@link AbstractOGCServiceController}.
  * <p>
  * Contained information:
  * <ul>
@@ -76,6 +77,11 @@ public abstract class ImplementationMetadata<T extends Enum<?>> {
      * The namespaces of this service.
      */
     protected String[] handledNamespaces;
+
+    /**
+     * The abbreviated name of the service.
+     */
+    protected String serviceName;
 
     /**
      * should the cite test mode be enabled, meaning, that requests should be in the same case as they were defined in
@@ -183,4 +189,12 @@ public abstract class ImplementationMetadata<T extends Enum<?>> {
         }
         return requestType;
     }
+
+    /**
+     * @return the service name
+     */
+    public String getImplementedServiceName() {
+        return serviceName;
+    }
+
 }

@@ -46,9 +46,8 @@ import static org.deegree.gml.GMLVersion.GML_32;
 import static org.deegree.protocol.wfs.WFSConstants.VERSION_100;
 import static org.deegree.protocol.wfs.WFSConstants.VERSION_110;
 import static org.deegree.protocol.wfs.WFSConstants.VERSION_200;
-import static org.deegree.protocol.wfs.WFSConstants.WFS_200_NS;
-import static org.deegree.protocol.wfs.WFSConstants.WFS_NS;
 import static org.deegree.services.controller.ows.OWSException.INVALID_PARAMETER_VALUE;
+import static org.deegree.services.wfs.WFSProvider.IMPLEMENTATION_METADATA;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -165,15 +164,6 @@ public class WFSController extends AbstractOGCServiceController {
 
     private static final String CONFIG_SCHEMA = "/META-INF/schemas/wfs/3.1.0/wfs_configuration.xsd";
 
-    private static final ImplementationMetadata<WFSRequestType> IMPLEMENTATION_METADATA = new ImplementationMetadata<WFSRequestType>() {
-        {
-            supportedVersions = new Version[] { VERSION_100, VERSION_110, VERSION_200 };
-            handledNamespaces = new String[] { WFS_NS, WFS_200_NS };
-            handledRequests = WFSRequestType.class;
-            supportedConfigVersions = new Version[] { Version.parseVersion( "3.0.0" ), Version.parseVersion( "3.1.0" ) };
-        }
-    };
-
     private static final int DEFAULT_MAX_FEATURES = 15000;
 
     private WFService service;
@@ -201,12 +191,12 @@ public class WFSController extends AbstractOGCServiceController {
     private boolean checkAreaOfUse;
 
     @Override
-    public void init( XMLAdapter controllerConf, DeegreeServicesMetadataType serviceMetadata,
-                      DeegreeServiceControllerType mainConf )
+    public void init( DeegreeServicesMetadataType serviceMetadata, DeegreeServiceControllerType mainConf,
+                      ImplementationMetadata<?> md, XMLAdapter controllerConf )
                             throws ControllerInitException {
 
         LOG.info( "Initializing WFS." );
-        init( serviceMetadata, mainConf, IMPLEMENTATION_METADATA, controllerConf );
+        super.init( serviceMetadata, mainConf, IMPLEMENTATION_METADATA, controllerConf );
 
         // TODO merge with WFS configuration
         serviceId = serviceMetadata.getServiceIdentification();
@@ -249,8 +239,8 @@ public class WFSController extends AbstractOGCServiceController {
         }
         if ( versions == null || versions.isEmpty() ) {
             LOG.info( "No protocol versions configured. Using all implemented versions." );
-            versions = new ArrayList<String>( IMPLEMENTATION_METADATA.getImplementedVersions().size() );
-            for ( Version version : IMPLEMENTATION_METADATA.getImplementedVersions() ) {
+            versions = new ArrayList<String>( serviceInfo.getImplementedVersions().size() );
+            for ( Version version : serviceInfo.getImplementedVersions() ) {
                 versions.add( version.toString() );
             }
         }
@@ -689,7 +679,7 @@ public class WFSController extends AbstractOGCServiceController {
     private WFSRequestType getRequestTypeByName( String requestName )
                             throws OWSException {
 
-        WFSRequestType requestType = IMPLEMENTATION_METADATA.getRequestTypeByName( requestName );
+        WFSRequestType requestType = (WFSRequestType) serviceInfo.getRequestTypeByName( requestName );
         if ( requestType == null ) {
             String msg = "Request type '" + requestName + "' is not supported.";
             throw new OWSException( msg, OWSException.OPERATION_NOT_SUPPORTED, "request" );

@@ -37,15 +37,13 @@ package org.deegree.services;
 
 import java.net.URL;
 
-import org.deegree.feature.persistence.FeatureStore;
-import org.deegree.feature.persistence.FeatureStoreException;
+import org.deegree.services.controller.ImplementationMetadata;
 import org.deegree.services.controller.OGCFrontController;
 
 /**
  * Implementations provide OWS implementations for plugging into the {@link OGCFrontController}.
  * 
- * {@link OWS}
- * {@link OGCFrontController}
+ * {@link OWS} {@link OGCFrontController}
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author: markus $
@@ -59,31 +57,32 @@ public interface OWSProvider {
      * 
      * @return the namespace for configurations documents, never <code>null</code>
      */
-    public String getConfigNamespace();
+    String getConfigNamespace();
 
     /**
      * Returns the URL for retrieving the configuration document schema.
      * 
      * @return the URL for retrieving the configuration document schema, may be <code>null</code>
      */
-    public URL getConfigSchema();
+    URL getConfigSchema();
 
     /**
      * Returns the URL for retrieving the configuration document template.
      * 
      * @return the URL for retrieving the configuration document template, may be <code>null</code>
      */
-    public URL getConfigTemplate();
+    URL getConfigTemplate();
 
     /**
-     * Creates a new {@link FeatureStore} instance from the given configuration document.
+     * Creates a new {@link OWS} instance from the given configuration document.
      * 
-     * @param configURL
-     *            location of the configuration document, must not be <code>null</code>
-     * @return new feature store instance, configured, not initialized yet
-     * @throws FeatureStoreException
-     *             if the configuration contains an error or creation fails
+     * @return new service instance, not initialized yet
      */
-    public FeatureStore getFeatureStore( URL configURL )
-                            throws FeatureStoreException;
+    OWS getService();
+
+    /**
+     * @return information about handled requests, namespaces and so on
+     */
+    ImplementationMetadata<?> getImplementationMetadata();
+
 }

@@ -38,9 +38,8 @@ package org.deegree.services.wps;
 
 import static org.apache.commons.io.IOUtils.closeQuietly;
 import static org.apache.commons.io.IOUtils.copy;
-import static org.deegree.protocol.wps.WPSConstants.VERSION_100;
-import static org.deegree.protocol.wps.WPSConstants.WPS_100_NS;
 import static org.deegree.services.controller.ows.OWSException.OPERATION_NOT_SUPPORTED;
+import static org.deegree.services.wps.WPSProvider.IMPLEMENTATION_METADATA;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -138,15 +137,6 @@ public class WPService extends AbstractOGCServiceController {
 
     private static final String CONFIG_SCHEMA = "/META-INF/schemas/wps/3.0.0/wps_configuration.xsd";
 
-    private static final ImplementationMetadata<WPSRequestType> IMPLEMENTATION_METADATA = new ImplementationMetadata<WPSRequestType>() {
-        {
-            supportedVersions = new Version[] { VERSION_100 };
-            handledNamespaces = new String[] { WPS_100_NS };
-            handledRequests = WPSRequestType.class;
-            supportedConfigVersions = new Version[] { Version.parseVersion( "3.0.0" ) };
-        }
-    };
-
     private static final CodeType ALL_PROCESSES_IDENTIFIER = new CodeType( "ALL" );
 
     private StorageManager storageManager;
@@ -160,12 +150,12 @@ public class WPService extends AbstractOGCServiceController {
     private Map<CodeType, File> processIdToWSDL = new HashMap<CodeType, File>();
 
     @Override
-    public void init( XMLAdapter controllerConf, DeegreeServicesMetadataType serviceMetadata,
-                      DeegreeServiceControllerType mainConf )
+    public void init( DeegreeServicesMetadataType serviceMetadata, DeegreeServiceControllerType mainConf,
+                      ImplementationMetadata<?> md, XMLAdapter controllerConf )
                             throws ControllerInitException {
 
         LOG.info( "Initializing WPS." );
-        init( serviceMetadata, mainConf, IMPLEMENTATION_METADATA, controllerConf );
+        super.init( serviceMetadata, mainConf, IMPLEMENTATION_METADATA, controllerConf );
 
         storageManager = new StorageManager( TempFileManager.getBaseDir() );
 
@@ -392,7 +382,7 @@ public class WPService extends AbstractOGCServiceController {
                             throws OWSException {
         WPSRequestType requestType = null;
         try {
-            requestType = IMPLEMENTATION_METADATA.getRequestTypeByName( requestName );
+            requestType = (WPSRequestType) serviceInfo.getRequestTypeByName( requestName );
         } catch ( IllegalArgumentException e ) {
             throw new OWSException( e.getMessage(), OPERATION_NOT_SUPPORTED );
         }

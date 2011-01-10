@@ -36,25 +36,34 @@
 package org.deegree.services.controller;
 
 import static java.lang.Class.forName;
+import static org.apache.commons.io.IOUtils.closeQuietly;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FilenameFilter;
+import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.ServiceLoader;
 
 import javax.xml.bind.JAXBElement;
+import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamReader;
 
+import org.apache.commons.io.filefilter.SuffixFileFilter;
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceManager;
 import org.deegree.commons.config.WorkspaceInitializationException;
 import org.deegree.commons.jdbc.ConnectionManager;
 import org.deegree.commons.utils.ProxyUtils;
-import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.jaxb.JAXBUtils;
 import org.deegree.coverage.persistence.CoverageBuilderManager;
 import org.deegree.feature.persistence.FeatureStoreManager;
@@ -63,20 +72,15 @@ import org.deegree.observation.persistence.ObservationStoreManager;
 import org.deegree.remoteows.RemoteOWSManager;
 import org.deegree.rendering.r3d.multiresolution.persistence.BatchedMTStoreManager;
 import org.deegree.rendering.r3d.persistence.RenderableStoreManager;
+import org.deegree.services.OWS;
+import org.deegree.services.OWSProvider;
+import org.deegree.services.controller.exception.ControllerInitException;
 import org.deegree.services.controller.utils.StandardRequestLogger;
-import org.deegree.services.csw.CSWController;
-import org.deegree.services.jaxb.controller.AllowedServices;
 import org.deegree.services.jaxb.controller.ConfiguredServicesType;
 import org.deegree.services.jaxb.controller.DeegreeServiceControllerType;
 import org.deegree.services.jaxb.controller.ServiceType;
 import org.deegree.services.jaxb.controller.DeegreeServiceControllerType.RequestLogging;
 import org.deegree.services.jaxb.metadata.DeegreeServicesMetadataType;
-import org.deegree.services.sos.SOSController;
-import org.deegree.services.wcs.WCSController;
-import org.deegree.services.wfs.WFSController;
-import org.deegree.services.wms.controller.WMSController;
-import org.deegree.services.wps.WPService;
-import org.deegree.services.wpvs.controller.WPVSController;
 import org.slf4j.Logger;
 
 /**
@@ -99,14 +103,14 @@ public class WebServicesConfiguration implements ResourceManager {
     private static final String METADATA_CONFIG_SCHEMA = "/META-INF/schemas/metadata/3.0.0/metadata.xsd";
 
     // maps service names (e.g. 'WMS', 'WFS', ...) to responsible subcontrollers
-    private final Map<AllowedServices, AbstractOGCServiceController> serviceNameToController = new HashMap<AllowedServices, AbstractOGCServiceController>();
+    private final Map<String, OWS> serviceNameToController = new HashMap<String, OWS>();
 
     // maps service namespaces (e.g. 'http://www.opengis.net/wms', 'http://www.opengis.net/wfs', ...) to the
     // responsible subcontrollers
-    private final Map<String, AbstractOGCServiceController> serviceNSToController = new HashMap<String, AbstractOGCServiceController>();
+    private final Map<String, OWS> serviceNSToController = new HashMap<String, OWS>();
 
     // maps request names (e.g. 'GetMap', 'DescribeFeatureType') to the responsible subcontrollers
-    private final Map<String, AbstractOGCServiceController> requestNameToController = new HashMap<String, AbstractOGCServiceController>();
+    private final Map<String, OWS> requestNameToController = new HashMap<String, OWS>();
 
     private DeegreeServicesMetadataType metadataConfig;
 
@@ -164,6 +168,33 @@ public class WebServicesConfiguration implements ResourceManager {
 
         initRequestLogger();
 
+        Iterator<OWSProvider> iter = ServiceLoader.load( OWSProvider.class ).iterator();
+        Map<String, OWSProvider> providers = new HashMap<String, OWSProvider>();
+        while ( iter.hasNext() ) {
+            OWSProvider p = iter.next();
+            providers.put( p.getImplementationMetadata().getImplementedServiceName().toUpperCase(), p );
+        }
+
+        if ( mainConfig.getConfiguredServices() != null && mainConfig.getConfiguredServices().getService() != null
+             && !mainConfig.getConfiguredServices().getService().isEmpty() ) {
+            initServicesFromConfig( main, providers );
+        } else {
+            LOG.info( "No service elements were supplied in the file: '" + main
+                      + "' -- trying to use the default loading mechanism." );
+            loadServicesFromDefaultLocation( providers );
+        }
+        if ( this.serviceNameToController.values().size() == 0 ) {
+            LOG.info( "No deegree web services have been loaded." );
+        }
+
+        LOG.info( "" );
+        LOG.info( "--------------------------------------------------------------------------------" );
+        LOG.info( "Webservices started." );
+        LOG.info( "--------------------------------------------------------------------------------" );
+    }
+
+    @Deprecated
+    private void initServicesFromConfig( File main, Map<String, OWSProvider> providers ) {
         ConfiguredServicesType servicesConfigured = mainConfig.getConfiguredServices();
         List<ServiceType> services = null;
         if ( servicesConfigured != null ) {
@@ -181,164 +212,100 @@ public class WebServicesConfiguration implements ResourceManager {
                     }
                     s.setConfigurationLocation( configLocation.toExternalForm() );
 
+                    OWS serviceController = instantiateServiceController( s, providers );
+                    if ( serviceController != null ) {
+                        registerSubController( s, serviceController );
+                    }
+
                     LOG.info( " - " + s.getServiceName() );
                 }
                 LOG.info( "ATTENTION - Skipping the loading of all services in conf/ which are not listed above." );
             }
         }
-        if ( services == null || services.size() == 0 ) {
-            LOG.info( "No service elements were supplied in the file: '" + main
-                      + "' -- trying to use the default loading mechanism." );
-            try {
-                services = loadServicesFromDefaultLocation();
-            } catch ( MalformedURLException e ) {
-                throw new WorkspaceInitializationException( "Error loading service configurations: " + e.getMessage() );
-            }
-        }
-        if ( services.size() == 0 ) {
-            LOG.info( "No deegree web services have been loaded." );
-        }
-
-        for ( ServiceType configuredService : services ) {
-            AbstractOGCServiceController serviceController = instantiateServiceController( configuredService );
-            if ( serviceController != null ) {
-                registerSubController( configuredService, serviceController );
-            }
-        }
-        LOG.info( "" );
-        LOG.info( "--------------------------------------------------------------------------------" );
-        LOG.info( "Webservices started." );
-        LOG.info( "--------------------------------------------------------------------------------" );
     }
 
-    /**
-     * Iterates over all directories in the conf/ directory and returns the service/configuration mappings as a list.
-     * This default service loading mechanism implies the following directory structure:
-     * <ul>
-     * <li>conf/</li>
-     * <li>conf/[SERVICE_NAME]/ (upper-case abbreviation of a deegree web service, please take a look at
-     * {@link AllowedServices})</li>
-     * <li>conf/[SERVICE_NAME]/[SERVICE_NAME]_configuration.xml</li>
-     * </ul>
-     * If all conditions are met the service type is added to resulting list. If none of the underlying directories meet
-     * above criteria, an empty list will be returned.
-     * 
-     * @return the list of services found in the conf directory. Or an empty list if the above conditions are not met
-     *         for any directory in the conf directory.
-     * @throws MalformedURLException
-     */
-    private List<ServiceType> loadServicesFromDefaultLocation()
-                            throws MalformedURLException {
+    private void loadServicesFromDefaultLocation( Map<String, OWSProvider> providers ) {
         File serviceConfigDir = new File( workspace.getLocation(), "services" );
 
-        List<ServiceType> loadedServices = new ArrayList<ServiceType>();
-        if ( !serviceConfigDir.isDirectory() ) {
-            LOG.error( "Could not read from the default service configuration directory (" + serviceConfigDir
-                       + ") because it is not a directory." );
-            return loadedServices;
-
+        Map<String, OWSProvider> nsToProvider = new HashMap<String, OWSProvider>();
+        for ( OWSProvider p : providers.values() ) {
+            nsToProvider.put( p.getConfigNamespace(), p );
         }
+
         LOG.info( "Using default directory: " + serviceConfigDir.getAbsolutePath()
                   + " to scan for webservice configurations." );
-        File[] files = serviceConfigDir.listFiles();
+        File[] files = serviceConfigDir.listFiles( (FilenameFilter) new SuffixFileFilter( ".xml" ) );
         if ( files == null || files.length == 0 ) {
             LOG.error( "No files found in default configuration directory, hence no services to load." );
-            return loadedServices;
+            return;
         }
+        XMLInputFactory fac = XMLInputFactory.newInstance();
         for ( File f : files ) {
-            if ( !f.isDirectory() ) {
-                String fileName = f.getName();
-                if ( fileName != null && !"".equals( fileName.trim() ) ) {
-                    String serviceName = fileName.trim().toUpperCase();
-                    // to avoid the ugly warning we can afford this extra s(hack)
-                    if ( serviceName.equals( ".SVN" ) || !serviceName.endsWith( ".XML" )
-                         || serviceName.equals( "METADATA.XML" ) || serviceName.equals( "MAIN.XML" ) ) {
+            if ( !f.isDirectory() && !f.getName().equalsIgnoreCase( "metadata.xml" )
+                 && !f.getName().equalsIgnoreCase( "main.xml" ) ) {
+                InputStream in = null;
+                try {
+                    XMLStreamReader reader = fac.createXMLStreamReader( in = new FileInputStream( f ) );
+                    reader.next();
+                    String ns = reader.getNamespaceURI();
+                    if ( ns == null ) {
+                        LOG.info( "File {} has no namespace, skipping.", f.getName() );
                         continue;
                     }
-                    serviceName = serviceName.substring( 0, fileName.length() - 4 );
-
-                    AllowedServices as;
-                    try {
-                        as = AllowedServices.fromValue( serviceName );
-                    } catch ( IllegalArgumentException ex ) {
-                        LOG.warn( "File '" + fileName + "' in the configuration directory "
-                                  + "is not a valid deegree webservice, so skipping it." );
+                    if ( ns.isEmpty() ) {
+                        LOG.info( "File {} has null namespace, skipping.", f.getName() );
                         continue;
                     }
-                    LOG.debug( "Trying to create a frontcontroller for service: " + fileName
-                               + " found in the configuration directory." );
-                    ServiceType configuredService = new ServiceType();
-                    configuredService.setConfigurationLocation( f.toURI().toURL().toString() );
-                    configuredService.setServiceName( as );
-                    loadedServices.add( configuredService );
+                    if ( nsToProvider.get( ns ) == null ) {
+                        LOG.info( "File {} has namespace {}, but no appropriate provider was found, skipping.",
+                                  f.getName(), ns );
+                        continue;
+                    }
+                    loadOWS( nsToProvider.get( ns ), f );
+                } catch ( XMLStreamException e ) {
+                    LOG.info( "File {} could not be parsed as XML: {}, skipping.", f.getName(), e.getLocalizedMessage() );
+                    LOG.trace( "Stack trace:", e );
+                    continue;
+                } catch ( FileNotFoundException e ) {
+                    LOG.info( "File {} could not be found: {}, skipping.", f.getName(), e.getLocalizedMessage() );
+                    LOG.trace( "Stack trace:", e );
+                } finally {
+                    closeQuietly( in );
                 }
             }
 
         }
-
-        return loadedServices;
     }
 
-    /**
-     * Creates an instance of a sub controller which is valid for the given configured Service, by applying following
-     * conventions:
-     * <ul>
-     * <li>The sub controller must extend {@link AbstractOGCServiceController}</li>
-     * <li>The package of the controller is the package of this class.[SERVICE_ABBREV_lower_case]</li>
-     * <li>The name of the controller must be [SERVICE_NAME_ABBREV]Controller</li>
-     * <li>The controller must have a constructor with a String parameter</li>
-     * </ul>
-     * If all above conditions are met, the instantiated controller will be returned else <code>null</code>
-     * 
-     * @param configuredService
-     * @return the instantiated secured sub controller or <code>null</code> if an error occurred.
-     */
-    @SuppressWarnings("unchecked")
-    private AbstractOGCServiceController instantiateServiceController( ServiceType configuredService ) {
-        AbstractOGCServiceController subController = null;
+    // should sooner or later just be removed along with the option to configure available services
+    @Deprecated
+    private OWS instantiateServiceController( ServiceType configuredService, Map<String, OWSProvider> providers ) {
+        OWS subController = null;
         if ( configuredService == null ) {
             return subController;
         }
 
         final String serviceName = configuredService.getServiceName().name();
 
-        // TODO outfactor this (maybe use a Map or proper SPI for plugging service implementations?)
-        String controller = null;
-        if ( "CSW".equals( serviceName ) ) {
-            controller = CSWController.class.getName();
-        } else if ( "SOS".equals( serviceName ) ) {
-            controller = SOSController.class.getName();
-        } else if ( "WCS".equals( serviceName ) ) {
-            controller = WCSController.class.getName();
-        } else if ( "WFS".equals( serviceName ) ) {
-            controller = WFSController.class.getName();
-        } else if ( "WMS".equals( serviceName ) ) {
-            controller = WMSController.class.getName();
-        } else if ( "WPS".equals( serviceName ) ) {
-            controller = WPService.class.getName();
-        } else if ( "WPVS".equals( serviceName ) ) {
-            controller = WPVSController.class.getName();
-        }
-
         LOG.info( "" );
         LOG.info( "--------------------------------------------------------------------------------" );
         LOG.info( "Starting " + serviceName + "." );
         LOG.info( "--------------------------------------------------------------------------------" );
         LOG.info( "Configuration file: '" + configuredService.getConfigurationLocation() + "'" );
-        if ( configuredService.getControllerClass() != null ) {
-            LOG.info( "Using custom controller class '{}'.", configuredService.getControllerClass() );
-            controller = configuredService.getControllerClass();
-        }
         try {
+            URL configURL = new URL( configuredService.getConfigurationLocation() );
             long time = System.currentTimeMillis();
-            Class<AbstractOGCServiceController> subControllerClass = (Class<AbstractOGCServiceController>) Class.forName(
-                                                                                                                          controller,
-                                                                                                                          false,
-                                                                                                                          OGCFrontController.class.getClassLoader() );
-            subController = subControllerClass.newInstance();
-            XMLAdapter controllerConf = new XMLAdapter( new URL( configuredService.getConfigurationLocation() ) );
-            subController.setWorkspace( workspace );
-            subController.init( controllerConf, metadataConfig, mainConfig );
+            if ( configuredService.getControllerClass() != null ) {
+                LOG.info( "Using custom controller class '{}'.", configuredService.getControllerClass() );
+                subController = (AbstractOGCServiceController) Class.forName( configuredService.getControllerClass(),
+                                                                              false,
+                                                                              OGCFrontController.class.getClassLoader() ).newInstance();
+                subController.init( workspace, configURL, null );
+            } else {
+                OWSProvider p = providers.get( configuredService.getServiceName() );
+                subController = p.getService();
+                subController.init( workspace, configURL, p.getImplementationMetadata() );
+            }
             LOG.info( "" );
             // round to exactly two decimals, I think their should be a java method for this though
             double startupTime = Math.round( ( ( System.currentTimeMillis() - time ) * 0.1 ) ) * 0.01;
@@ -354,15 +321,16 @@ public class WebServicesConfiguration implements ResourceManager {
         return subController;
     }
 
-    private void registerSubController( ServiceType configuredService, AbstractOGCServiceController serviceController ) {
+    @Deprecated
+    private void registerSubController( ServiceType configuredService, OWS serviceController ) {
 
         // associate service name (abbreviation) with controller instance
         LOG.debug( "Service name '" + configuredService.getServiceName() + "' -> '"
                    + serviceController.getClass().getSimpleName() + "'" );
-        serviceNameToController.put( configuredService.getServiceName(), serviceController );
+        serviceNameToController.put( configuredService.getServiceName().toString().toUpperCase(), serviceController );
 
         // associate request types with controller instance
-        for ( String request : serviceController.getHandledRequests() ) {
+        for ( String request : serviceController.getImplementationMetadata().getHandledRequests() ) {
             // skip GetCapabilities requests
             if ( !( "GetCapabilities".equals( request ) ) ) {
                 LOG.debug( "Request type '" + request + "' -> '" + serviceController.getClass().getSimpleName() + "'" );
@@ -371,9 +339,45 @@ public class WebServicesConfiguration implements ResourceManager {
         }
 
         // associate namespaces with controller instance
-        for ( String ns : serviceController.getHandledNamespaces() ) {
+        for ( String ns : serviceController.getImplementationMetadata().getHandledNamespaces() ) {
             LOG.debug( "Namespace '" + ns + "' -> '" + serviceController.getClass().getSimpleName() + "'" );
             serviceNSToController.put( ns, serviceController );
+        }
+    }
+
+    private void loadOWS( OWSProvider p, File configFile ) {
+        OWS ows = p.getService();
+        // associate service name (abbreviation) with controller instance
+        ImplementationMetadata<?> md = p.getImplementationMetadata();
+        try {
+            ows.init( workspace, configFile.toURI().toURL(), md );
+        } catch ( MalformedURLException e ) {
+            LOG.warn( "Service from file {} could not be initialized: {}", configFile.getName(),
+                      e.getLocalizedMessage() );
+            LOG.trace( "Stack trace: ", e );
+            return;
+        } catch ( ControllerInitException e ) {
+            LOG.warn( "Service from file {} could not be initialized: {}", configFile.getName(),
+                      e.getLocalizedMessage() );
+            LOG.trace( "Stack trace: ", e );
+            return;
+        }
+        LOG.debug( "Service name '" + md.getImplementedServiceName() + "' -> '" + ows.getClass().getSimpleName() + "'" );
+        serviceNameToController.put( md.getImplementedServiceName().toUpperCase(), ows );
+
+        // associate request types with controller instance
+        for ( String request : md.getHandledRequests() ) {
+            // skip GetCapabilities requests
+            if ( !( "GetCapabilities".equals( request ) ) ) {
+                LOG.debug( "Request type '" + request + "' -> '" + ows.getClass().getSimpleName() + "'" );
+                requestNameToController.put( request, ows );
+            }
+        }
+
+        // associate namespaces with controller instance
+        for ( String ns : md.getHandledNamespaces() ) {
+            LOG.debug( "Namespace '" + ns + "' -> '" + ows.getClass().getSimpleName() + "'" );
+            serviceNSToController.put( ns, ows );
         }
     }
 
@@ -385,12 +389,8 @@ public class WebServicesConfiguration implements ResourceManager {
      *            service type code, e.g. "WMS" or "WFS"
      * @return responsible <code>SecuredSubController</code> or null, if no responsible controller was found
      */
-    public AbstractOGCServiceController determineResponsibleControllerByServiceName( String serviceType ) {
-        AllowedServices service = AllowedServices.fromValue( serviceType );
-        if ( service == null ) {
-            return null;
-        }
-        return serviceNameToController.get( service );
+    public OWS determineResponsibleControllerByServiceName( String serviceType ) {
+        return serviceNameToController.get( serviceType );
     }
 
     /**
@@ -401,7 +401,7 @@ public class WebServicesConfiguration implements ResourceManager {
      *            request name, e.g. "GetMap" or "GetFeature"
      * @return responsible <code>SecuredSubController</code> or null, if no responsible controller was found
      */
-    public AbstractOGCServiceController determineResponsibleControllerByRequestName( String requestName ) {
+    public OWS determineResponsibleControllerByRequestName( String requestName ) {
         return requestNameToController.get( requestName );
     }
 
@@ -413,7 +413,7 @@ public class WebServicesConfiguration implements ResourceManager {
      *            service type code, e.g. "WMS" or "WFS"
      * @return responsible <code>SecuredSubController</code> or null, if no responsible controller was found
      */
-    public AbstractOGCServiceController determineResponsibleControllerByNS( String ns ) {
+    public OWS determineResponsibleControllerByNS( String ns ) {
         return serviceNSToController.get( ns );
     }
 
@@ -423,10 +423,10 @@ public class WebServicesConfiguration implements ResourceManager {
      * @return the instance of the requested service used by OGCFrontController, or null if the service is not
      *         registered.
      */
-    public Map<String, AbstractOGCServiceController> getServiceControllers() {
-        Map<String, AbstractOGCServiceController> nameToController = new HashMap<String, AbstractOGCServiceController>();
-        for ( AllowedServices serviceName : serviceNameToController.keySet() ) {
-            nameToController.put( serviceName.value(), serviceNameToController.get( serviceName ) );
+    public Map<String, OWS> getServiceControllers() {
+        Map<String, OWS> nameToController = new HashMap<String, OWS>();
+        for ( String serviceName : serviceNameToController.keySet() ) {
+            nameToController.put( serviceName, serviceNameToController.get( serviceName ) );
         }
         return nameToController;
     }
@@ -441,8 +441,8 @@ public class WebServicesConfiguration implements ResourceManager {
      * @return the instance of the requested service used by OGCFrontController, or null if no such service controller
      *         is active
      */
-    public <T extends AbstractOGCServiceController> T getServiceController( Class<T> c ) {
-        for ( AbstractOGCServiceController it : serviceNSToController.values() ) {
+    public <T extends OWS> T getServiceController( Class<T> c ) {
+        for ( OWS it : serviceNSToController.values() ) {
             if ( c == it.getClass() ) {
                 // somehow just annotating the return expression does not work
                 // even annotations to suppress sucking generics suck
@@ -460,8 +460,8 @@ public class WebServicesConfiguration implements ResourceManager {
     public void shutdown() {
         LOG.info( "--------------------------------------------------------------------------------" );
         LOG.info( "Shutting down deegree web services in context..." );
-        for ( AllowedServices serviceName : serviceNameToController.keySet() ) {
-            AbstractOGCServiceController subcontroller = serviceNameToController.get( serviceName );
+        for ( String serviceName : serviceNameToController.keySet() ) {
+            OWS subcontroller = serviceNameToController.get( serviceName );
             LOG.info( "Shutting down '" + serviceName + "'." );
             try {
                 subcontroller.destroy();
@@ -480,6 +480,13 @@ public class WebServicesConfiguration implements ResourceManager {
      */
     public DeegreeServiceControllerType getMainConfiguration() {
         return mainConfig;
+    }
+
+    /**
+     * @return the JAXB metadata configuration
+     */
+    public DeegreeServicesMetadataType getMetadataConfiguration() {
+        return metadataConfig;
     }
 
     private void initRequestLogger() {
@@ -549,6 +556,7 @@ public class WebServicesConfiguration implements ResourceManager {
         return logOnlySuccessful;
     }
 
+    @SuppressWarnings("unchecked")
     public Class<? extends ResourceManager>[] getDependencies() {
         return new Class[] { ProxyUtils.class, BatchedMTStoreManager.class, ConnectionManager.class,
                             CoverageBuilderManager.class, FeatureStoreManager.class, MetadataStoreManager.class,

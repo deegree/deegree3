@@ -102,6 +102,7 @@ import org.deegree.commons.xml.jaxb.JAXBUtils;
 import org.deegree.commons.xml.stax.StAXParsingHelper;
 import org.deegree.cs.configuration.CRSConfiguration;
 import org.deegree.feature.persistence.query.ThreadedResultSet;
+import org.deegree.services.OWS;
 import org.deegree.services.authentication.SecurityException;
 import org.deegree.services.controller.exception.ControllerException;
 import org.deegree.services.controller.exception.serializer.XMLExceptionSerializer;
@@ -110,7 +111,6 @@ import org.deegree.services.controller.ows.OWSException110XMLAdapter;
 import org.deegree.services.controller.security.SecurityConfiguration;
 import org.deegree.services.controller.utils.HttpResponseBuffer;
 import org.deegree.services.controller.utils.LoggingHttpResponseWrapper;
-import org.deegree.services.i18n.Messages;
 import org.deegree.services.jaxb.controller.DeegreeServiceControllerType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -224,7 +224,7 @@ public class OGCFrontController extends HttpServlet {
      * @return the instance of the requested service used by OGCFrontController, or null if the service is not
      *         registered.
      */
-    public static Map<String, AbstractOGCServiceController> getServiceControllers() {
+    public static Map<String, OWS> getServiceControllers() {
         return instance.serviceConfiguration.getServiceControllers();
     }
 
@@ -236,7 +236,7 @@ public class OGCFrontController extends HttpServlet {
      * @return the instance of the requested service used by OGCFrontController, or null if no such service controller
      *         is active
      */
-    public static AbstractOGCServiceController getServiceController( Class<? extends AbstractOGCServiceController> c ) {
+    public static OWS getServiceController( Class<? extends OWS> c ) {
         return instance.serviceConfiguration.getServiceController( c );
     }
 
@@ -598,7 +598,7 @@ public class OGCFrontController extends HttpServlet {
                                                                      serviceConfiguration.getRequestLogger(), null );
             }
 
-            AbstractOGCServiceController subController = null;
+            OWS subController = null;
             // first try service parameter, SERVICE-parameter is mandatory for each service and request (except WMS
             // 1.0.0)
             String service = normalizedKVPParams.get( "SERVICE" );
@@ -611,18 +611,7 @@ public class OGCFrontController extends HttpServlet {
             }
 
             if ( service != null ) {
-
-                try {
-                    subController = serviceConfiguration.determineResponsibleControllerByServiceName( service );
-                } catch ( IllegalArgumentException e ) {
-                    // I know that the SOS tests test for the appropriate service exception here, so sending a OWS
-                    // commons
-                    // 1.1 one should be fine
-                    OWSException ex = new OWSException( Messages.get( "CONTROLLER_INVALID_SERVICE", service ),
-                                                        "InvalidParameterValue", "service" );
-                    sendException( ex, response, null );
-                    return;
-                }
+                subController = serviceConfiguration.determineResponsibleControllerByServiceName( service );
             } else {
                 // dispatch according to REQUEST-parameter
                 if ( request != null ) {
@@ -648,13 +637,16 @@ public class OGCFrontController extends HttpServlet {
                 }
             } else {
                 String msg = null;
-                if ( service == null && request == null ) {
-                    msg = "Neither 'SERVICE' nor 'REQUEST' parameter is present. Cannot determine responsible subcontroller.";
+                String code;
+                if ( service == null || request == null ) {
+                    msg = "The 'SERVICE' or 'REQUEST' parameter is absent. Cannot determine responsible subcontroller.";
+                    code = "MissingParameterValue";
                 } else {
+                    code = "InvalidParameterValue";
                     msg = "Unable to determine the subcontroller for request type '" + request + "' and service type '"
                           + service + "'.";
                 }
-                OWSException ex = new OWSException( msg, "MissingParameterValue", "service" );
+                OWSException ex = new OWSException( msg, code, "service" );
                 sendException( ex, response, null );
             }
         } catch ( SecurityException e ) {
@@ -711,7 +703,7 @@ public class OGCFrontController extends HttpServlet {
             // String sessionId = xmlStream.getAttributeValue( XMLConstants.NULL_NS_URI, "sessionId" );
 
             String ns = xmlStream.getNamespaceURI();
-            AbstractOGCServiceController subcontroller = serviceConfiguration.determineResponsibleControllerByNS( ns );
+            OWS subcontroller = serviceConfiguration.determineResponsibleControllerByNS( ns );
             if ( subcontroller != null ) {
                 LOG.debug( "Dispatching request to subcontroller class: " + subcontroller.getClass().getName() );
                 HttpResponseBuffer responseWrapper = new HttpResponseBuffer( response );
@@ -814,7 +806,7 @@ public class OGCFrontController extends HttpServlet {
             // }
             // }
 
-            AbstractOGCServiceController subcontroller = serviceConfiguration.determineResponsibleControllerByNS( envelope.getSOAPBodyFirstElementNS().getNamespaceURI() );
+            OWS subcontroller = serviceConfiguration.determineResponsibleControllerByNS( envelope.getSOAPBodyFirstElementNS().getNamespaceURI() );
             if ( subcontroller != null ) {
                 LOG.debug( "Dispatching request to subcontroller class: " + subcontroller.getClass().getName() );
                 HttpResponseBuffer responseWrapper = new HttpResponseBuffer( response );
@@ -1088,11 +1080,11 @@ public class OGCFrontController extends HttpServlet {
     private void sendException( OWSException e, HttpServletResponse res, Version requestVersion )
                             throws ServletException {
 
-        Collection<AbstractOGCServiceController> values = serviceConfiguration.getServiceControllers().values();
+        Collection<OWS> values = serviceConfiguration.getServiceControllers().values();
         if ( values.size() > 0 ) {
             // use exception serializer / mime type from first registered controller (fair chance that this will be
             // correct)
-            AbstractOGCServiceController first = values.iterator().next();
+            OWS first = values.iterator().next();
             Pair<XMLExceptionSerializer<OWSException>, String> serializerAndMime = first.getExceptionSerializer( requestVersion );
             AbstractOGCServiceController.sendException( serializerAndMime.second, "UTF-8", null, 200,
                                                         serializerAndMime.first, e, res );

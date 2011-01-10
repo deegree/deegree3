@@ -37,9 +37,7 @@
 package org.deegree.services.wpvs.controller;
 
 import static javax.xml.stream.XMLOutputFactory.IS_REPAIRING_NAMESPACES;
-import static org.deegree.protocol.wpvs.WPVSConstants.VERSION_040;
-import static org.deegree.protocol.wpvs.WPVSConstants.WPVS_NS;
-import static org.deegree.services.controller.OGCFrontController.getServiceWorkspace;
+import static org.deegree.services.wpvs.controller.WPVSProvider.IMPLEMENTATION_METADATA;
 
 import java.awt.image.BufferedImage;
 import java.io.IOException;
@@ -74,7 +72,6 @@ import org.deegree.protocol.wpvs.WPVSConstants.WPVSRequestType;
 import org.deegree.rendering.r3d.opengl.JOGLChecker;
 import org.deegree.services.controller.AbstractOGCServiceController;
 import org.deegree.services.controller.ImplementationMetadata;
-import org.deegree.services.controller.OGCFrontController;
 import org.deegree.services.controller.exception.ControllerException;
 import org.deegree.services.controller.exception.ControllerInitException;
 import org.deegree.services.controller.exception.serializer.XMLExceptionSerializer;
@@ -89,8 +86,8 @@ import org.deegree.services.jaxb.metadata.DeegreeServicesMetadataType;
 import org.deegree.services.jaxb.metadata.ServiceIdentificationType;
 import org.deegree.services.jaxb.metadata.ServiceProviderType;
 import org.deegree.services.jaxb.wpvs.PublishedInformation;
-import org.deegree.services.jaxb.wpvs.PublishedInformation.AllowedOperations;
 import org.deegree.services.jaxb.wpvs.ServiceConfiguration;
+import org.deegree.services.jaxb.wpvs.PublishedInformation.AllowedOperations;
 import org.deegree.services.wpvs.PerspectiveViewService;
 import org.deegree.services.wpvs.controller.capabilities.CapabilitiesXMLAdapter;
 import org.deegree.services.wpvs.controller.getview.GetView;
@@ -133,21 +130,12 @@ public class WPVSController extends AbstractOGCServiceController {
 
     private List<String> allowedOperations = new LinkedList<String>();
 
-    private static final ImplementationMetadata<WPVSRequestType> IMPLEMENTATION_METADATA = new ImplementationMetadata<WPVSRequestType>() {
-        {
-            supportedVersions = new Version[] { VERSION_040 };
-            handledNamespaces = new String[] { WPVS_NS };
-            handledRequests = WPVSRequestType.class;
-            supportedConfigVersions = new Version[] { Version.parseVersion( "3.0.0" ) };
-        }
-    };
-
     @Override
-    public void init( XMLAdapter controllerConf, DeegreeServicesMetadataType serviceMetadata,
-                      DeegreeServiceControllerType mainConf )
+    public void init( DeegreeServicesMetadataType serviceMetadata, DeegreeServiceControllerType mainConf,
+                      ImplementationMetadata<?> md, XMLAdapter controllerConf )
                             throws ControllerInitException {
 
-        init( serviceMetadata, mainConf, IMPLEMENTATION_METADATA, controllerConf );
+        super.init( serviceMetadata, mainConf, IMPLEMENTATION_METADATA, controllerConf );
 
         LOG.info( "Checking for JOGL." );
         JOGLChecker.check();
@@ -226,7 +214,7 @@ public class WPVSController extends AbstractOGCServiceController {
             sendServiceException( new OWSException( e.getMessage(), OWSException.MISSING_PARAMETER_VALUE ), response );
             return;
         }
-        mappedRequest = IMPLEMENTATION_METADATA.getRequestTypeByName( requestName );
+        mappedRequest = (WPVSRequestType) serviceInfo.getRequestTypeByName( requestName );
 
         if ( mappedRequest == null ) {
             sendServiceException( new OWSException( "Unknown request: " + requestName + " is not known to the WPVS.",

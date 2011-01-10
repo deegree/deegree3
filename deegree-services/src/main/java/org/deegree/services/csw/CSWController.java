@@ -35,8 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.services.csw;
 
-import static org.deegree.protocol.csw.CSWConstants.CSW_202_NS;
-import static org.deegree.protocol.csw.CSWConstants.VERSION_202;
+import static org.deegree.services.csw.CSWProvider.IMPLEMENTATION_METADATA;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -76,6 +75,7 @@ import org.deegree.services.authentication.soapauthentication.FailedAuthenticati
 import org.deegree.services.controller.AbstractOGCServiceController;
 import org.deegree.services.controller.ImplementationMetadata;
 import org.deegree.services.controller.OGCFrontController;
+import org.deegree.services.controller.exception.ControllerException;
 import org.deegree.services.controller.exception.ControllerInitException;
 import org.deegree.services.controller.exception.serializer.XMLExceptionSerializer;
 import org.deegree.services.controller.ows.OWSException;
@@ -153,23 +153,13 @@ public class CSWController extends AbstractOGCServiceController {
 
     private GetRecordByIdHandler getRecordByIdHandler;
 
-    private static final ImplementationMetadata<CSWRequestType> IMPLEMENTATION_METADATA = new ImplementationMetadata<CSWRequestType>() {
-        {
-            supportedVersions = new Version[] { VERSION_202 };
-            handledNamespaces = new String[] { CSW_202_NS };
-            handledRequests = CSWRequestType.class;
-            supportedConfigVersions = new Version[] { Version.parseVersion( "3.0.0" ) };
-
-        }
-    };
-
     @Override
-    public void init( XMLAdapter controllerConf, DeegreeServicesMetadataType serviceMetadata,
-                      DeegreeServiceControllerType mainConf )
+    public void init( DeegreeServicesMetadataType serviceMetadata, DeegreeServiceControllerType mainConf,
+                      ImplementationMetadata<?> md, XMLAdapter controllerConf )
                             throws ControllerInitException {
 
         LOG.info( "Initializing CSW controller." );
-        init( serviceMetadata, mainConf, IMPLEMENTATION_METADATA, controllerConf );
+        super.init( serviceMetadata, mainConf, IMPLEMENTATION_METADATA, controllerConf );
 
         DeegreeCSW jaxbConfig = (DeegreeCSW) unmarshallConfig( CONFIG_JAXB_PACKAGE, CONFIG_SCHEMA, controllerConf );
 
@@ -294,7 +284,7 @@ public class CSWController extends AbstractOGCServiceController {
         } catch ( Throwable t ) {
             LOG.debug( t.getMessage(), t );
             String msg = t.getMessage();
-            sendServiceException( new OWSException( msg, t, OWSException.NO_APPLICABLE_CODE ), response );
+            sendServiceException( new OWSException( msg, t, ControllerException.NO_APPLICABLE_CODE ), response );
         }
 
     }
@@ -399,7 +389,7 @@ public class CSWController extends AbstractOGCServiceController {
         } catch ( Throwable t ) {
             LOG.debug( t.getMessage(), t );
             String msg = t.getMessage();
-            sendServiceException( new OWSException( msg, t, OWSException.NO_APPLICABLE_CODE ), response );
+            sendServiceException( new OWSException( msg, t, ControllerException.NO_APPLICABLE_CODE ), response );
         }
     }
 
@@ -546,7 +536,7 @@ public class CSWController extends AbstractOGCServiceController {
         CSWRequestType requestType = null;
         try {
 
-            requestType = IMPLEMENTATION_METADATA.getRequestTypeByName( requestName );
+            requestType = (CSWRequestType) serviceInfo.getRequestTypeByName( requestName );
         } catch ( IllegalArgumentException e ) {
             throw new OWSException( e.getMessage(), OWSException.OPERATION_NOT_SUPPORTED );
         }

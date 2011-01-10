@@ -48,6 +48,7 @@ import static org.deegree.services.controller.ows.OWSException.INVALID_FORMAT;
 import static org.deegree.services.controller.ows.OWSException.INVALID_PARAMETER_VALUE;
 import static org.deegree.services.controller.ows.OWSException.OPERATION_NOT_SUPPORTED;
 import static org.deegree.services.i18n.Messages.get;
+import static org.deegree.services.wms.controller.WMSProvider.IMPLEMENTATION_METADATA;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.awt.image.BufferedImage;
@@ -113,8 +114,8 @@ import org.deegree.services.jaxb.metadata.DeegreeServicesMetadataType;
 import org.deegree.services.jaxb.metadata.ServiceIdentificationType;
 import org.deegree.services.jaxb.metadata.ServiceProviderType;
 import org.deegree.services.jaxb.wms.DeegreeWMS;
-import org.deegree.services.jaxb.wms.FeatureInfoFormatsType.GetFeatureInfoFormat;
 import org.deegree.services.jaxb.wms.ServiceConfigurationType;
+import org.deegree.services.jaxb.wms.FeatureInfoFormatsType.GetFeatureInfoFormat;
 import org.deegree.services.wms.MapService;
 import org.deegree.services.wms.WMSException.InvalidDimensionValue;
 import org.deegree.services.wms.WMSException.MissingDimensionValue;
@@ -143,15 +144,6 @@ public class WMSController extends AbstractOGCServiceController {
     private static final String CONFIG_JAXB_PACKAGE = "org.deegree.services.jaxb.wms";
 
     private static final String CONFIG_SCHEMA = "/META-INF/schemas/wms/3.1.0/wms_configuration.xsd";
-
-    private static final ImplementationMetadata<WMSRequestType> IMPLEMENTATION_METADATA = new ImplementationMetadata<WMSRequestType>() {
-        {
-            supportedVersions = new Version[] { VERSION_111, VERSION_130 };
-            handledNamespaces = new String[] { "" }; // WMS uses null namespace for SLD GetMap Post requests
-            handledRequests = WMSRequestType.class;
-            supportedConfigVersions = new Version[] { Version.parseVersion( "3.0.0" ), Version.parseVersion( "3.1.0" ) };
-        }
-    };
 
     private final HashMap<String, FeatureInfoSerializer> featureInfoSerializers = new HashMap<String, FeatureInfoSerializer>();
 
@@ -207,11 +199,11 @@ public class WMSController extends AbstractOGCServiceController {
     }
 
     @Override
-    public void init( XMLAdapter controllerConf, DeegreeServicesMetadataType serviceMetadata,
-                      DeegreeServiceControllerType mainConfig )
+    public void init( DeegreeServicesMetadataType serviceMetadata, DeegreeServiceControllerType mainConfig,
+                      ImplementationMetadata<?> md, XMLAdapter controllerConf )
                             throws ControllerInitException {
 
-        init( serviceMetadata, mainConfig, IMPLEMENTATION_METADATA, controllerConf );
+        super.init( serviceMetadata, mainConfig, IMPLEMENTATION_METADATA, controllerConf );
 
         identification = mainMetadataConf.getServiceIdentification();
         provider = mainMetadataConf.getServiceProvider();
@@ -324,7 +316,7 @@ public class WMSController extends AbstractOGCServiceController {
 
         WMSRequestType req;
         try {
-            req = IMPLEMENTATION_METADATA.getRequestTypeByName( map.get( "REQUEST" ) );
+            req = (WMSRequestType) serviceInfo.getRequestTypeByName( map.get( "REQUEST" ) );
         } catch ( IllegalArgumentException e ) {
             controllers.get( version ).sendException(
                                                       new OWSException( get( "WMS.OPERATION_NOT_KNOWN",

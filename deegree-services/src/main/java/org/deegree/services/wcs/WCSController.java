@@ -38,8 +38,8 @@ package org.deegree.services.wcs;
 
 import static javax.xml.stream.XMLOutputFactory.IS_REPAIRING_NAMESPACES;
 import static org.deegree.protocol.wcs.WCSConstants.VERSION_100;
-import static org.deegree.protocol.wcs.WCSConstants.VERSION_110;
 import static org.deegree.protocol.wcs.WCSConstants.WCS_100_NS;
+import static org.deegree.services.wcs.WCSProvider.IMPLEMENTATION_METADATA;
 
 import java.io.IOException;
 import java.io.Writer;
@@ -90,8 +90,8 @@ import org.deegree.services.jaxb.metadata.ServiceProviderType;
 import org.deegree.services.jaxb.wcs.PublishedInformation;
 import org.deegree.services.jaxb.wcs.PublishedInformation.AllowedOperations;
 import org.deegree.services.wcs.capabilities.Capabilities100XMLAdapter;
-import org.deegree.services.wcs.capabilities.Capabilities100XMLAdapter.Sections;
 import org.deegree.services.wcs.capabilities.GetCapabilities100XMLAdapter;
+import org.deegree.services.wcs.capabilities.Capabilities100XMLAdapter.Sections;
 import org.deegree.services.wcs.coverages.WCSCoverage;
 import org.deegree.services.wcs.describecoverage.CoverageDescription100XMLAdapter;
 import org.deegree.services.wcs.describecoverage.DescribeCoverage;
@@ -136,22 +136,13 @@ public class WCSController extends AbstractOGCServiceController {
 
     private final static String PUBLISHED_SCHEMA_FILE = "/META-INF/schemas/wcs/3.0.0/wcs_published_information.xsd";
 
-    private static final ImplementationMetadata<WCSRequestType> IMPLEMENTATION_METADATA = new ImplementationMetadata<WCSRequestType>() {
-        {
-            supportedVersions = new Version[] { VERSION_100, VERSION_110 };
-            handledNamespaces = new String[] { WCS_100_NS };
-            handledRequests = WCSRequestType.class;
-            supportedConfigVersions = new Version[] { Version.parseVersion( "3.0.0" ) };
-        }
-    };
-
     @Override
-    public void init( XMLAdapter controllerConf, DeegreeServicesMetadataType serviceMetadata,
-                      DeegreeServiceControllerType mainConf )
+    public void init( DeegreeServicesMetadataType serviceMetadata, DeegreeServiceControllerType mainConf,
+                      ImplementationMetadata<?> md, XMLAdapter controllerConf )
                             throws ControllerInitException {
 
         LOG.info( "Initializing WCS." );
-        init( serviceMetadata, mainConf, IMPLEMENTATION_METADATA, controllerConf );
+        super.init( serviceMetadata, mainConf, IMPLEMENTATION_METADATA, controllerConf );
         UPDATE_SEQUENCE++;
 
         NamespaceBindings nsContext = new NamespaceBindings();
@@ -531,7 +522,7 @@ public class WCSController extends AbstractOGCServiceController {
                                         OWSException.OPERATION_NOT_SUPPORTED, "REQUEST" );
             }
             String version;
-            if ( IMPLEMENTATION_METADATA.getRequestTypeByName( request ) != WCSRequestType.GetCapabilities ) {
+            if ( serviceInfo.getRequestTypeByName( request ) != WCSRequestType.GetCapabilities ) {
                 // no version required
                 version = KVPUtils.getRequired( param, "VERSION" );
                 if ( version != null && !offeredVersions.contains( Version.parseVersion( version ) ) ) {
@@ -548,7 +539,7 @@ public class WCSController extends AbstractOGCServiceController {
                             throws OWSException {
         try {
             String requestName = KVPUtils.getRequired( param, "REQUEST" );
-            return IMPLEMENTATION_METADATA.getRequestTypeByName( requestName );
+            return WCSProvider.IMPLEMENTATION_METADATA.getRequestTypeByName( requestName );
         } catch ( MissingParameterException e ) {
             throw new OWSException( e.getMessage(), OWSException.MISSING_PARAMETER_VALUE );
         }

@@ -36,6 +36,7 @@
 package org.deegree.services.controller;
 
 import java.io.IOException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -123,10 +124,21 @@ public abstract class AbstractOGCServiceController implements OWS {
 
     protected DeegreeWorkspace workspace;
 
-    protected void setWorkspace( DeegreeWorkspace workspace ) {
+    protected ImplementationMetadata<? extends Enum<?>> serviceInfo;
+
+    public void init( DeegreeWorkspace workspace, URL configURL, ImplementationMetadata<? extends Enum<?>> serviceInfo )
+                            throws ControllerInitException {
         this.workspace = workspace;
+        this.serviceInfo = serviceInfo;
+        WebServicesConfiguration ws = workspace.getSubsystemManager( WebServicesConfiguration.class );
+        XMLAdapter adapter = new XMLAdapter( configURL );
+        init( ws.getMetadataConfiguration(), ws.getMainConfiguration(), serviceInfo, adapter );
     }
 
+    public ImplementationMetadata<?> getImplementationMetadata(){
+        return serviceInfo;
+    }
+    
     /**
      * Initializes the {@link AbstractOGCServiceController} instance.
      * 
