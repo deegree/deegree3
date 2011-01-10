@@ -41,7 +41,7 @@ import static org.slf4j.LoggerFactory.getLogger;
 import java.io.File;
 import java.io.IOException;
 
-import org.apache.derby.iapi.services.io.FileUtil;
+import org.apache.commons.io.FileUtils;
 import org.deegree.services.controller.Credentials;
 import org.deegree.services.controller.RequestLogger;
 import org.slf4j.Logger;
@@ -65,7 +65,7 @@ public class StandardRequestLogger implements RequestLogger {
     public void logXML( String address, File logFile, long startTime, long endTime, Credentials creds ) {
         try {
             File tmp = File.createTempFile( "request", ".xml", logFile.getParentFile() );
-            FileUtil.copyFile( logFile, tmp );
+            FileUtils.copyFile( logFile, tmp );
             LOG.debug( "Logging request to {}", tmp );
         } catch ( IOException e ) {
             LOG.trace( "Stack trace:", e );
