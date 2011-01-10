@@ -1,5 +1,0 @@
-org.deegree.coverage.persistence.CoverageBuilderManager
-org.deegree.feature.persistence.FeatureStoreManager
-org.deegree.metadata.persistence.MetadataStoreManager
-org.deegree.observation.persistence.ObservationStoreManager
-org.deegree.remoteows.RemoteOWSManager
