@@ -74,8 +74,6 @@ public class MacroTriangle {
 
     private float maxZ = Float.MIN_VALUE;
 
-    private Orientation orientation;
-
     // private int level;
 
     private boolean oddLevel;
@@ -110,7 +108,6 @@ public class MacroTriangle {
         this.locationCode = locationCode;
         this.geometryError = geometryError;
         this.oddLevel = locationCode.length() == 1;
-        this.orientation = getOrientation();
         this.child0 = child0;
         this.child1 = child1;
         if ( child0 != null && child1 != null ) {
@@ -126,7 +123,7 @@ public class MacroTriangle {
     void generateTileData( double tileHeight, int rowsPerTile, Point3f[] tileVertices, Vector3f[] vertexNormals,
                            int[][] tileTriangles ) {
 
-        // determine helper vectors 'stepRight', 'halftStepDownRight' and 'halfStepDownLeft'
+        // determine helper vectors 'stepRight', 'halfStepDownRight' and 'halfStepDownLeft'
         Vector2f stepRight = new Vector2f();
         stepRight.sub( p2, p1 );
         stepRight.scale( 1.0f / ( rowsPerTile * 2.0f ) );
@@ -220,25 +217,8 @@ public class MacroTriangle {
                 int left = firstVertexId + i + 1;
                 int right = left + 1;
 
-                switch ( orientation ) {
-                case NORTH:
-                case SOUTH:
-                case NORTH_WEST:
-                case SOUTH_EAST: {
-                    tileTriangles[triangleId++] = new int[] { lastRowLeft, left, lastRowRight };
-                    tileTriangles[triangleId++] = new int[] { right, lastRowRight, left };
-                    break;
-                }
-                case WEST:
-                case EAST:
-                case NORTH_EAST:
-                case SOUTH_WEST: {
-                    tileTriangles[triangleId++] = new int[] { left, right, lastRowLeft };
-                    tileTriangles[triangleId++] = new int[] { lastRowRight, lastRowLeft, right };
-                    break;
-                }
-
-                }
+                tileTriangles[triangleId++] = new int[] { lastRowLeft, left, lastRowRight };
+                tileTriangles[triangleId++] = new int[] { right, lastRowRight, left };
             }
 
             // build the two rightmost triangles
@@ -260,39 +240,6 @@ public class MacroTriangle {
             child1.child0 = null;
             child1.child1 = null;
         }
-    }
-
-    private Orientation getOrientation() {
-        Orientation orientation = null;
-
-        if ( p1.y == p2.y ) {
-            if ( p0.y > p1.y ) {
-                orientation = Orientation.NORTH;
-            } else if ( p0.y < p1.y ) {
-                orientation = Orientation.SOUTH;
-            }
-        } else if ( p1.x == p2.x ) {
-            if ( p0.x > p1.x ) {
-                orientation = Orientation.EAST;
-            } else {
-                orientation = Orientation.WEST;
-            }
-        } else {
-            if ( p0.x == p1.x ) {
-                if ( p0.y == p2.y ) {
-                    orientation = Orientation.NORTH_WEST;
-                } else {
-                    orientation = Orientation.SOUTH_EAST;
-                }
-            } else {
-                if ( p0.x == p2.x ) {
-                    orientation = Orientation.SOUTH_WEST;
-                } else {
-                    orientation = Orientation.NORTH_EAST;
-                }
-            }
-        }
-        return orientation;
     }
 
     /**

@@ -174,14 +174,14 @@ public class DAGBuilder {
         return patches[patchId];
     }
 
-    public void writeBlob(Blob targetBlob) throws SQLException {
+    public void writeBlob(Blob targetBlob, short flags, short rowsPerMt) throws SQLException {
 
         int nodesSegmentSize = Node.SIZE * nodes.length;
         int arcsSegmentSize = Arc.SIZE * arcs.length;
         int patchesSegmentSize = MeshFragment.SIZE * patches.length;
 
         // write segments to blob
-        byte[] headerBytes = buildHeader(nodes.length, arcs.length, patches.length, 0);
+        byte[] headerBytes = buildHeader(nodes.length, arcs.length, patches.length, flags, rowsPerMt);
         int headerSegmentStart = 0;
         int nodesSegmentStart = headerSegmentStart + headerBytes.length;
         int arcsSegmentStart = nodesSegmentStart + nodesSegmentSize;
@@ -540,10 +540,11 @@ public class DAGBuilder {
         }
     }
 
-    private byte[] buildHeader(int numNodes, int numArcs, int numPatches, int flags) {
+    private byte[] buildHeader(int numNodes, int numArcs, int numPatches, short flags, short rowsPerMt) {
         byte[] bytes = new byte[4 * 4];
         ByteBuffer buffer = ByteBuffer.wrap(bytes);
-        buffer.putInt(flags);
+        buffer.putShort(flags);
+        buffer.putShort(rowsPerMt);
         buffer.putInt(numNodes);
         buffer.putInt(numArcs);
         buffer.putInt(numPatches);

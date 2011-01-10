@@ -146,9 +146,6 @@ public class DEMDatasetGenerator {
 
     private final long fileSize;
 
-    // currently fixed to 2 bytes
-    private final static int bytesPerTriangleIndexValue = 2;
-
     private static final int TILE_SIZE = 1000;
 
     /**
@@ -243,8 +240,7 @@ public class DEMDatasetGenerator {
             throw new RuntimeException( Messages.getMessage( "DEMDSGEN_TOO_MANY_VERTICES" ) );
         }
 
-        int bytesPerMacroTrinagle = ( 4 + 4 * 3 * getVerticesPerFragment() + bytesPerTriangleIndexValue * 3
-                                                                             * getTrianglesPerFragment() );
+        int bytesPerMacroTrinagle = ( 4 + 4 * 3 * getVerticesPerFragment() );
 
         // normal vectors
         this.bytesPerTile = ( bytesPerMacroTrinagle + ( 4 * 3 * getVerticesPerFragment() ) );
@@ -621,12 +617,6 @@ public class DEMDatasetGenerator {
                 rawTileBuffer.putFloat( normal.z );
             }
 
-            // store triangles (as vertex indexes)
-            for ( int[] triangle : tileTriangles ) {
-                rawTileBuffer.putShort( (short) triangle[0] );
-                rawTileBuffer.putShort( (short) triangle[1] );
-                rawTileBuffer.putShort( (short) triangle[2] );
-            }
             triangleManager.storePatch( tile, rawTileBuffer );
         }
     }
@@ -724,7 +714,7 @@ public class DEMDatasetGenerator {
         // write mrindex blob
         Blob mrIndexBlob = new FileBlob( new File( outputDir, MultiresolutionMesh.INDEX_FILE_NAME ) );
         DAGBuilder dagBuilder = new DAGBuilder( manager.getLevels(), manager );
-        dagBuilder.writeBlob( mrIndexBlob );
+        dagBuilder.writeBlob( mrIndexBlob, (short) 0, (short) rows );
         dagBuilder.printStats();
         mrIndexBlob.free();
     }
