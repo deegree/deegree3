@@ -54,7 +54,7 @@
           <programs>
             <program>
               <mainClass>org.deegree.commons.tools.ToolBox</mainClass>
-              <name>d3toolbox</name>
+              <name>${toolboxname}</name>
             </program>
           </programs>
           <copyConfigurationDirectory>true</copyConfigurationDirectory>
@@ -69,7 +69,7 @@
               <tasks>
                 <chmod perm="+x">
                   <fileset dir="target/appassembler/bin">
-                    <include name="d3toolbox" />
+                    <include name="${toolboxname}" />
                   </fileset>
                 </chmod>
               </tasks>
