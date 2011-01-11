@@ -20,7 +20,7 @@
   </parent>
   <properties>
     <toolboxname>d3toolbox</toolboxname>
-  </properties>  
+  </properties>
 
   <repositories>
     <repository>
@@ -34,5 +34,18 @@
       </snapshots>
     </repository>
   </repositories>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.deegree</groupId>
+      <artifactId>deegree-core-base</artifactId>
+      <version>3.1-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>org.deegree</groupId>
+      <artifactId>deegree-featurestore-postgis</artifactId>
+      <version>3.1-SNAPSHOT</version>
+    </dependency>
+  </dependencies>
 
 </project>
