@@ -40,6 +40,7 @@ import static org.deegree.protocol.wps.WPSConstants.WPS_100_NS;
 
 import java.net.URL;
 
+import org.deegree.commons.config.ResourceManager;
 import org.deegree.commons.tom.ows.Version;
 import org.deegree.protocol.wps.WPSConstants.WPSRequestType;
 import org.deegree.services.OWS;
@@ -83,6 +84,11 @@ public class WPSProvider implements OWSProvider<WPSRequestType> {
 
     public OWS<WPSRequestType> getService() {
         return new WPService();
+    }
+
+    @SuppressWarnings("unchecked")
+    public Class<? extends ResourceManager>[] getDependencies() {
+        return new Class[] {};
     }
 
 }

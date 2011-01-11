@@ -43,7 +43,9 @@ import static org.deegree.protocol.wfs.WFSConstants.WFS_NS;
 
 import java.net.URL;
 
+import org.deegree.commons.config.ResourceManager;
 import org.deegree.commons.tom.ows.Version;
+import org.deegree.feature.persistence.FeatureStoreManager;
 import org.deegree.protocol.wfs.WFSConstants.WFSRequestType;
 import org.deegree.services.OWS;
 import org.deegree.services.OWSProvider;
@@ -86,6 +88,11 @@ public class WFSProvider implements OWSProvider<WFSRequestType> {
 
     public OWS<WFSRequestType> getService() {
         return new WFSController();
+    }
+
+    @SuppressWarnings("unchecked")
+    public Class<? extends ResourceManager>[] getDependencies() {
+        return new Class[] { FeatureStoreManager.class };
     }
 
 }

@@ -40,7 +40,9 @@ import static org.deegree.protocol.wps.WPSConstants.VERSION_100;
 
 import java.net.URL;
 
+import org.deegree.commons.config.ResourceManager;
 import org.deegree.commons.tom.ows.Version;
+import org.deegree.observation.persistence.ObservationStoreManager;
 import org.deegree.protocol.sos.SOSConstants.SOSRequestType;
 import org.deegree.services.OWS;
 import org.deegree.services.OWSProvider;
@@ -83,6 +85,11 @@ public class SOSProvider implements OWSProvider<SOSRequestType> {
 
     public OWS<SOSRequestType> getService() {
         return new SOSController();
+    }
+
+    @SuppressWarnings("unchecked")
+    public Class<? extends ResourceManager>[] getDependencies() {
+        return new Class[] { ObservationStoreManager.class };
     }
 
 }

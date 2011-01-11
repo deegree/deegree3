@@ -47,8 +47,11 @@ import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.ServiceLoader;
@@ -114,6 +117,23 @@ public class WebServicesConfiguration implements ResourceManager {
     private boolean logOnlySuccessful;
 
     private DeegreeWorkspace workspace;
+
+    private static Class<? extends ResourceManager>[] dependencies;
+
+    static {
+        List<Class<? extends ResourceManager>> deps = new LinkedList<Class<? extends ResourceManager>>();
+
+        deps.add( ProxyUtils.class );
+        deps.add( ConnectionManager.class );
+
+        @SuppressWarnings("unchecked")
+        Iterator<OWSProvider> iter = ServiceLoader.load( OWSProvider.class ).iterator();
+        while ( iter.hasNext() ) {
+            deps.addAll( (Collection) Arrays.asList( iter.next().getDependencies() ) );
+        }
+
+        dependencies = deps.toArray( new Class[deps.size()] );
+    }
 
     public void startup( DeegreeWorkspace workspace )
                             throws WorkspaceInitializationException {
@@ -551,9 +571,8 @@ public class WebServicesConfiguration implements ResourceManager {
         return logOnlySuccessful;
     }
 
-    @SuppressWarnings("unchecked")
     public Class<? extends ResourceManager>[] getDependencies() {
-        return new Class[] { ProxyUtils.class, ConnectionManager.class };
+        return dependencies;
     }
 
     public DeegreeWorkspace getWorkspace() {

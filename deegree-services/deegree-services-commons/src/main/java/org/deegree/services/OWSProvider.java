@@ -37,6 +37,7 @@ package org.deegree.services;
 
 import java.net.URL;
 
+import org.deegree.commons.config.ResourceManager;
 import org.deegree.services.controller.ImplementationMetadata;
 import org.deegree.services.controller.OGCFrontController;
 
@@ -84,5 +85,10 @@ public interface OWSProvider<T extends Enum<T>> {
      * @return information about handled requests, namespaces and so on
      */
     ImplementationMetadata<T> getImplementationMetadata();
+
+    /**
+     * @return an array of resource manager dependencies, never null
+     */
+    Class<? extends ResourceManager>[] getDependencies();
 
 }

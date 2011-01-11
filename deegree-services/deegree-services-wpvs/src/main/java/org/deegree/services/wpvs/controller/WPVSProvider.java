@@ -40,8 +40,11 @@ import static org.deegree.protocol.wpvs.WPVSConstants.WPVS_NS;
 
 import java.net.URL;
 
+import org.deegree.commons.config.ResourceManager;
 import org.deegree.commons.tom.ows.Version;
 import org.deegree.protocol.wpvs.WPVSConstants.WPVSRequestType;
+import org.deegree.rendering.r3d.multiresolution.persistence.BatchedMTStoreManager;
+import org.deegree.rendering.r3d.persistence.RenderableStoreManager;
 import org.deegree.services.OWS;
 import org.deegree.services.OWSProvider;
 import org.deegree.services.controller.ImplementationMetadata;
@@ -83,6 +86,11 @@ public class WPVSProvider implements OWSProvider<WPVSRequestType> {
 
     public OWS<WPVSRequestType> getService() {
         return new WPVSController();
+    }
+
+    @SuppressWarnings("unchecked")
+    public Class<? extends ResourceManager>[] getDependencies() {
+        return new Class[] { RenderableStoreManager.class, BatchedMTStoreManager.class };
     }
 
 }

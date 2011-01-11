@@ -40,8 +40,12 @@ import static org.deegree.protocol.wms.WMSConstants.VERSION_130;
 
 import java.net.URL;
 
+import org.deegree.commons.config.ResourceManager;
 import org.deegree.commons.tom.ows.Version;
+import org.deegree.coverage.persistence.CoverageBuilderManager;
+import org.deegree.feature.persistence.FeatureStoreManager;
 import org.deegree.protocol.wms.WMSConstants.WMSRequestType;
+import org.deegree.remoteows.RemoteOWSManager;
 import org.deegree.services.OWS;
 import org.deegree.services.OWSProvider;
 import org.deegree.services.controller.ImplementationMetadata;
@@ -83,6 +87,10 @@ public class WMSProvider implements OWSProvider<WMSRequestType> {
 
     public OWS<WMSRequestType> getService() {
         return new WMSController();
+    }
+
+    public Class<? extends ResourceManager>[] getDependencies() {
+        return new Class[] { RemoteOWSManager.class, FeatureStoreManager.class, CoverageBuilderManager.class };
     }
 
 }
