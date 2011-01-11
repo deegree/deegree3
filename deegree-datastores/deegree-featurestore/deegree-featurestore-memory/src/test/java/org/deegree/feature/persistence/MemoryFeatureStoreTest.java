@@ -43,7 +43,6 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.net.URL;
 
-import javax.xml.bind.JAXBException;
 import javax.xml.namespace.QName;
 import javax.xml.stream.FactoryConfigurationError;
 import javax.xml.stream.XMLOutputFactory;
@@ -69,7 +68,6 @@ import org.deegree.gml.GMLOutputFactory;
 import org.deegree.gml.GMLStreamWriter;
 import org.deegree.gml.GMLVersion;
 import org.deegree.gml.ReferenceResolvingException;
-import org.deegree.gml.feature.GMLFeatureReaderTest;
 import org.deegree.gml.feature.schema.ApplicationSchemaXSDDecoder;
 import org.deegree.protocol.wfs.getfeature.TypeName;
 import org.junit.Before;
@@ -92,15 +90,14 @@ public class MemoryFeatureStoreTest {
     @Before
     public void setUp()
                             throws XMLParsingException, XMLStreamException, UnknownCRSException,
-                            FactoryConfigurationError, IOException, JAXBException, FeatureStoreException,
-                            ReferenceResolvingException, ClassCastException, ClassNotFoundException,
-                            InstantiationException, IllegalAccessException {
+                            FactoryConfigurationError, IOException, FeatureStoreException, ReferenceResolvingException,
+                            ClassCastException, ClassNotFoundException, InstantiationException, IllegalAccessException {
 
         String schemaURL = this.getClass().getResource( "/org/deegree/gml/feature/testdata/schema/Philosopher.xsd" ).toString();
         ApplicationSchemaXSDDecoder adapter = new ApplicationSchemaXSDDecoder( GMLVersion.GML_31, null, schemaURL );
         ApplicationSchema schema = adapter.extractFeatureTypeSchema();
 
-        URL docURL = GMLFeatureReaderTest.class.getResource( BASE_DIR + "Philosopher_FeatureCollection.xml" );
+        URL docURL = getClass().getResource( BASE_DIR + "Philosopher_FeatureCollection.xml" );
         store = new MemoryFeatureStore( docURL, schema );
     }
 
