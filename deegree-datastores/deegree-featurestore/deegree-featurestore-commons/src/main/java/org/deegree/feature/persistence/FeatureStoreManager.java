@@ -53,6 +53,7 @@ import org.deegree.commons.jdbc.ConnectionManager;
 import org.deegree.commons.utils.ProxyUtils;
 import org.deegree.commons.xml.stax.StAXParsingHelper;
 import org.deegree.feature.i18n.Messages;
+import org.deegree.feature.persistence.query.ThreadedResultSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -230,8 +231,10 @@ public class FeatureStoreManager implements ResourceManager {
 
     public void shutdown() {
         destroy();
+        ThreadedResultSet.shutdown();
     }
 
+    @SuppressWarnings("unchecked")
     public Class<? extends ResourceManager>[] getDependencies() {
         return new Class[] { ProxyUtils.class, ConnectionManager.class };
     }
