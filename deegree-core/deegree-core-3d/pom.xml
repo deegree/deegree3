@@ -56,7 +56,7 @@
   <dependencies>
     <dependency>
       <groupId>org.deegree</groupId>
-      <artifactId>deegree-core-base</artifactId>
+      <artifactId>deegree-featurestore-commons</artifactId>
       <version>3.1-SNAPSHOT</version>
     </dependency>
   </dependencies>

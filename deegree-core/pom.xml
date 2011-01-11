@@ -36,13 +36,14 @@
     <module>deegree-core-commons</module>
     <module>deegree-core-cs</module>
     <module>deegree-core-base</module>
-    <module>deegree-core-3d</module>
+    <!-- TODO remove the datastores from 3d -->
+    <!-- <module>deegree-core-3d</module> -->
   </modules>
 
   <dependencies>
     <dependency>
       <groupId>org.deegree</groupId>
-      <artifactId>deegree-core-3d</artifactId>
+      <artifactId>deegree-core-base</artifactId>
       <version>3.1-SNAPSHOT</version>
     </dependency>
   </dependencies>
