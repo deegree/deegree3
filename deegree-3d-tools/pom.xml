@@ -56,6 +56,11 @@
       <artifactId>java3d-vrml97</artifactId>
       <version>deegreeversion</version>
     </dependency>
+    <dependency>
+      <groupId>org.deegree</groupId>
+      <artifactId>deegree-core-3d</artifactId>
+      <version>3.1-SNAPSHOT</version>
+    </dependency>
   </dependencies>
 
 </project>
