@@ -153,7 +153,7 @@ public class Capabilities100XMLAdapter extends OWSCapabilitiesXMLAdapter {
 
         for ( Offering offering : offerings ) {
             Offering100XMLAdapter.export( writer, offering,
-                                          ObservationStoreManager.getDatastoreById( offering.getOfferingName() ) );
+                                          ObservationStoreManager.getDatastoreById( offering.getObservationStoreId() ) );
         }
         writer.writeEndElement(); // ObservationOfferingList
         writer.writeEndElement(); // Contents
