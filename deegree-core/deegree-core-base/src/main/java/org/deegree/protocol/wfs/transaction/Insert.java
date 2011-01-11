@@ -38,8 +38,6 @@ package org.deegree.protocol.wfs.transaction;
 
 import javax.xml.stream.XMLStreamReader;
 
-import org.deegree.feature.persistence.FeatureStoreTransaction.IDGenMode;
-
 /**
  * Represents a WFS <code>Insert</code> operation (part of a {@link Transaction} request).
  * <p>

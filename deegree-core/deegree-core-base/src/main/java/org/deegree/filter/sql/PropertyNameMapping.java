@@ -42,8 +42,6 @@ import java.util.List;
 
 import org.deegree.commons.tom.primitive.PrimitiveType;
 import org.deegree.cs.CRS;
-import org.deegree.feature.persistence.mapping.DBField;
-import org.deegree.feature.persistence.mapping.Join;
 import org.deegree.filter.expression.PropertyName;
 
 /**

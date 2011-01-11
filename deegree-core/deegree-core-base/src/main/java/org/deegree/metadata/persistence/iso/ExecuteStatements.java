@@ -49,8 +49,8 @@ import java.util.List;
 
 import org.deegree.commons.utils.JDBCUtils;
 import org.deegree.commons.utils.time.DateUtils;
-import org.deegree.feature.persistence.mapping.DBField;
-import org.deegree.feature.persistence.mapping.Join;
+import org.deegree.filter.sql.DBField;
+import org.deegree.filter.sql.Join;
 import org.deegree.filter.sql.PropertyNameMapping;
 import org.deegree.filter.sql.expression.SQLLiteral;
 import org.deegree.filter.sql.postgis.PostGISWhereBuilder;

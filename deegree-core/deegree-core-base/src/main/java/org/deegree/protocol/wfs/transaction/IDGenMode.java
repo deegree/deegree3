@@ -1,7 +1,7 @@
 //$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
- Copyright (C) 2001-2009 by:
+ Copyright (C) 2001-2010 by:
  - Department of Geography, University of Bonn -
  and
  - lat/lon GmbH -
@@ -33,47 +33,24 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.feature.persistence.query;
-
-import java.util.Iterator;
-
-import org.deegree.feature.Feature;
-import org.deegree.feature.FeatureCollection;
+package org.deegree.protocol.wfs.transaction;
 
 /**
- * {@link FeatureResultSet} that stores all features in memory.
+ * Enum type for discriminating the different object id generation policies for inserts.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
  */
-public class MemoryFeatureResultSet implements FeatureResultSet {
+public enum IDGenMode {
 
-    private FeatureCollection fc;
+    /** Use provided ids. */
+    USE_EXISTING,
 
-    /**
-     * Creates a new {@link MemoryFeatureResultSet} that is backed by the given {@link FeatureCollection}.
-     * 
-     * @param fc
-     *            FeatureCollection to back the result set
-     */
-    public MemoryFeatureResultSet( FeatureCollection fc ) {
-        this.fc = fc;
-    }
+    /** Use provided ids, generate new id if object with same id already exists in the FeatureStore. */
+    REPLACE_DUPLICATE,
 
-    @Override
-    public void close() {
-        // noting to do
-    }
-
-    @Override
-    public FeatureCollection toCollection() {
-        return fc;
-    }
-
-    @Override
-    public Iterator<Feature> iterator() {
-        return fc.iterator();
-    }
+    /** Always generate new ids. */
+    GENERATE_NEW
 }

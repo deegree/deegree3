@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
- Department of Geography, University of Bonn
+ - Department of Geography, University of Bonn -
  and
- lat/lon GmbH
+ - lat/lon GmbH -
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -33,43 +33,37 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.feature.persistence;
-
-import org.deegree.gml.GMLObject;
-import org.deegree.gml.GMLReferenceResolver;
-import org.deegree.gml.ReferenceResolvingException;
+package org.deegree.filter.sql;
 
 /**
- * {@link GMLReferenceResolver} that uses a {@link FeatureStore} for resolving local object references.
+ * The <code></code> class TODO add class documentation here.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
  */
-public class FeatureStoreGMLIdResolver implements GMLReferenceResolver {
+public class Join {
 
-    private final FeatureStore fs;
+    private final DBField from;
 
-    /**
-     * Creates a new {@link FeatureStoreGMLIdResolver} instance.
-     * 
-     * @param fs
-     *            feature store to be used for retrieving local features, must not be <code>null</code>
-     */
-    public FeatureStoreGMLIdResolver( FeatureStore fs ) {
-        this.fs = fs;
+    private final DBField to;
+
+    public Join( DBField from, DBField to, DBField pos, int num ) {
+        this.from = from;
+        this.to = to;
+    }
+
+    public DBField getFrom() {
+        return from;
+    }
+
+    public DBField getTo() {
+        return to;
     }
 
     @Override
-    public GMLObject getObject( String uri, String baseURL ) {
-        if ( uri.startsWith( "#" ) ) {
-            try {
-                return fs.getObjectById( uri.substring( 1 ) );
-            } catch ( FeatureStoreException e ) {
-                throw new ReferenceResolvingException( e.getMessage(), e );
-            }
-        }
-        throw new ReferenceResolvingException( "Resolving of remote references is not implemented yet." );
+    public String toString() {
+        return from + "=" + to;
     }
 }

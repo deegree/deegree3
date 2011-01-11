@@ -1,10 +1,10 @@
-//$Header: /deegreerepository/deegree/src/org/deegree/io/datastore/Datastore.java,v 1.28 2007/01/16 13:58:34 mschneider Exp $
+//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
- Department of Geography, University of Bonn
+ - Department of Geography, University of Bonn -
  and
- lat/lon GmbH
+ - lat/lon GmbH -
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -33,54 +33,69 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-
-package org.deegree.feature.persistence;
+package org.deegree.filter.sql;
 
 /**
- * Indicates an exception that occured in the feature persistence layer.
+ * The <code></code> class TODO add class documentation here.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
  */
-public class FeatureStoreException extends Exception {
+public class DBField implements MappingExpression {
 
-    private static final long serialVersionUID = -8171919093492328054L;
+    private String schema;
 
-    /**
-     * Creates a new {@link FeatureStoreException} without detail message.
-     */
-    public FeatureStoreException() {
-        super();
+    private String table;
+
+    private String column;
+
+    private String alias;
+
+    public DBField( String schema, String table, String column ) {
+        this.schema = schema;
+        this.table = table;
+        this.column = column;
     }
 
-    /**
-     * Creates a new {@link FeatureStoreException} with detail message.
-     * 
-     * @param message
-     *            detail message
-     */
-    public FeatureStoreException( String message ) {
-        super( message );
+    public DBField( String table, String column ) {
+        this.table = table;
+        this.column = column;
     }
 
-    /**
-     * Creates a new {@link FeatureStoreException} which wraps the causing exception.
-     * 
-     * @param cause
-     */
-    public FeatureStoreException( Throwable cause ) {
-        super( cause );
+    public DBField( String column ) {
+        this.column = column;
     }
 
-    /**
-     * Creates a new {@link FeatureStoreException} which wraps the causing exception and provides a detail message.
-     * 
-     * @param message
-     * @param cause
-     */
-    public FeatureStoreException( String message, Throwable cause ) {
-        super( message, cause );
+    public String getSchema() {
+        return schema;
+    }
+
+    public String getTable() {
+        return table;
+    }
+
+    public void setAlias( String alias ) {
+        this.alias = alias;
+    }
+
+    public String getAlias() {
+        return alias;
+    }
+
+    public String getColumn() {
+        return column;
+    }
+
+    @Override
+    public String toString() {
+        if ( schema != null ) {
+            return schema + "." + table + "." + column;
+        }
+        if ( table != null ) {
+            return table + "." + column;
+        }
+        return column;
     }
 }

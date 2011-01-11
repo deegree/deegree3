@@ -51,7 +51,6 @@ import org.deegree.commons.config.ResourceManager;
 import org.deegree.commons.jdbc.ConnectionManager;
 import org.deegree.commons.utils.ProxyUtils;
 import org.deegree.commons.xml.stax.StAXParsingHelper;
-import org.deegree.feature.persistence.FeatureStore;
 import org.deegree.metadata.i18n.Messages;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
