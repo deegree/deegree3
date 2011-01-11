@@ -1,6 +1,1 @@
-org.deegree.services.csw.CSWProvider
 org.deegree.services.sos.SOSProvider
-org.deegree.services.wcs.WCSProvider
-org.deegree.services.wfs.WFSProvider
-org.deegree.services.wms.controller.WMSProvider
-
