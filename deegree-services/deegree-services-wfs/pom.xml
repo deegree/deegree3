@@ -59,6 +59,11 @@
       <artifactId>deegree-services-commons</artifactId>
       <version>3.1-SNAPSHOT</version>
     </dependency>
+    <dependency>
+      <groupId>org.deegree</groupId>
+      <artifactId>deegree-featurestore-commons</artifactId>
+      <version>3.1-SNAPSHOT</version>
+    </dependency>
   </dependencies>
 
 </project>
