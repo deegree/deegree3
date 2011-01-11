@@ -37,10 +37,10 @@ package org.deegree.feature.persistence.mapping.property;
 
 import org.deegree.cs.CRS;
 import org.deegree.feature.persistence.mapping.JoinChain;
-import org.deegree.feature.persistence.mapping.MappingExpression;
 import org.deegree.feature.types.property.GeometryPropertyType.CoordinateDimension;
 import org.deegree.feature.types.property.GeometryPropertyType.GeometryType;
 import org.deegree.filter.expression.PropertyName;
+import org.deegree.filter.sql.MappingExpression;
 
 /**
  * The <code></code> class TODO add class documentation here.

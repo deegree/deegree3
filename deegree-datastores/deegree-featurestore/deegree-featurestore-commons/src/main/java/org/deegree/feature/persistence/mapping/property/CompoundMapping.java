@@ -38,8 +38,8 @@ package org.deegree.feature.persistence.mapping.property;
 import java.util.List;
 
 import org.deegree.feature.persistence.mapping.JoinChain;
-import org.deegree.feature.persistence.mapping.MappingExpression;
 import org.deegree.filter.expression.PropertyName;
+import org.deegree.filter.sql.MappingExpression;
 
 /**
  * The <code></code> class TODO add class documentation here.

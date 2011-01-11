@@ -53,7 +53,6 @@ import org.deegree.feature.i18n.Messages;
 import org.deegree.feature.persistence.FeatureStore;
 import org.deegree.feature.persistence.FeatureStoreException;
 import org.deegree.feature.persistence.FeatureStoreTransaction;
-import org.deegree.feature.persistence.FeatureStoreTransaction.IDGenMode;
 import org.deegree.feature.persistence.lock.DefaultLockManager;
 import org.deegree.feature.persistence.lock.LockManager;
 import org.deegree.feature.persistence.query.CombinedResultSet;
@@ -69,6 +68,7 @@ import org.deegree.gml.GMLObject;
 import org.deegree.gml.GMLStreamReader;
 import org.deegree.gml.GMLVersion;
 import org.deegree.gml.ReferenceResolvingException;
+import org.deegree.protocol.wfs.transaction.IDGenMode;
 
 /**
  * {@link FeatureStore} implementation that keeps the feature instances in memory.

@@ -77,6 +77,7 @@ import org.deegree.gml.GMLObject;
 import org.deegree.gml.GMLVersion;
 import org.deegree.gml.utils.GMLObjectVisitor;
 import org.deegree.gml.utils.GMLObjectWalker;
+import org.deegree.protocol.wfs.transaction.IDGenMode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

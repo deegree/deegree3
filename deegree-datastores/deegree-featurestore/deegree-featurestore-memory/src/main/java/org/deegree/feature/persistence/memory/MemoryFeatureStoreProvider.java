@@ -52,7 +52,6 @@ import org.deegree.feature.persistence.FeatureStore;
 import org.deegree.feature.persistence.FeatureStoreException;
 import org.deegree.feature.persistence.FeatureStoreProvider;
 import org.deegree.feature.persistence.FeatureStoreTransaction;
-import org.deegree.feature.persistence.FeatureStoreTransaction.IDGenMode;
 import org.deegree.feature.persistence.memory.jaxb.GMLVersionType;
 import org.deegree.feature.persistence.memory.jaxb.MemoryFeatureStoreConfig;
 import org.deegree.feature.persistence.memory.jaxb.MemoryFeatureStoreConfig.GMLFeatureCollection;
@@ -63,6 +62,7 @@ import org.deegree.gml.GMLInputFactory;
 import org.deegree.gml.GMLStreamReader;
 import org.deegree.gml.GMLVersion;
 import org.deegree.gml.feature.schema.ApplicationSchemaXSDDecoder;
+import org.deegree.protocol.wfs.transaction.IDGenMode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

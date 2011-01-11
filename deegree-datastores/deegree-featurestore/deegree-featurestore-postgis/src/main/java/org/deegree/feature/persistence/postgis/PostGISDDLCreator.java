@@ -42,11 +42,9 @@ import javax.xml.namespace.QName;
 
 import org.deegree.commons.jdbc.QTableName;
 import org.deegree.commons.tom.primitive.PrimitiveType;
-import org.deegree.feature.persistence.mapping.DBField;
 import org.deegree.feature.persistence.mapping.FeatureTypeMapping;
 import org.deegree.feature.persistence.mapping.JoinChain;
 import org.deegree.feature.persistence.mapping.MappedApplicationSchema;
-import org.deegree.feature.persistence.mapping.MappingExpression;
 import org.deegree.feature.persistence.mapping.property.CompoundMapping;
 import org.deegree.feature.persistence.mapping.property.FeatureMapping;
 import org.deegree.feature.persistence.mapping.property.GeometryMapping;
@@ -54,6 +52,8 @@ import org.deegree.feature.persistence.mapping.property.Mapping;
 import org.deegree.feature.persistence.mapping.property.PrimitiveMapping;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.feature.types.property.PropertyType;
+import org.deegree.filter.sql.DBField;
+import org.deegree.filter.sql.MappingExpression;
 
 /**
  * Creates DDL (DataDefinitionLanguage) scripts for the {@link PostGISFeatureStoreProvider}.

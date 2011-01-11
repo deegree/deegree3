@@ -34,7 +34,7 @@
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
 
-package org.deegree.feature.persistence.lock;
+package org.deegree.feature.persistence;
 
 import java.io.IOException;
 import java.net.URL;
@@ -45,8 +45,8 @@ import javax.xml.stream.XMLStreamException;
 
 import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.cs.exceptions.UnknownCRSException;
-import org.deegree.feature.persistence.FeatureStore;
-import org.deegree.feature.persistence.FeatureStoreException;
+import org.deegree.feature.persistence.lock.DefaultLockManager;
+import org.deegree.feature.persistence.lock.LockManager;
 import org.deegree.feature.persistence.memory.MemoryFeatureStore;
 import org.deegree.feature.types.ApplicationSchema;
 import org.deegree.gml.GMLVersion;
@@ -65,7 +65,7 @@ import org.junit.Test;
  */
 public class DefaultLockManagerTest {
 
-    private static final String BASE_DIR = "../../../gml/feature/testdata/features/";
+    private static final String BASE_DIR = "../../gml/feature/testdata/features/";
 
     private LockManager lockManager;
 

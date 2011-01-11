@@ -35,6 +35,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.feature.persistence.mapping;
 
+import org.deegree.filter.sql.MappingExpression;
+
 
 /**
  * The <code></code> class TODO add class documentation here.

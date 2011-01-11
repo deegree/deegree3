@@ -36,9 +36,9 @@
 package org.deegree.feature.persistence.mapping.property;
 
 import org.deegree.feature.persistence.mapping.JoinChain;
-import org.deegree.feature.persistence.mapping.MappingExpression;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.filter.expression.PropertyName;
+import org.deegree.filter.sql.MappingExpression;
 
 /**
  * Defines the mapping of a particle of a {@link FeatureType} to a relational model (tables, columns).

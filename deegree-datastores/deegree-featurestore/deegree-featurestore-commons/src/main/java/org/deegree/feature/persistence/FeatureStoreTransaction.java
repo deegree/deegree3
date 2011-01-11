@@ -46,6 +46,7 @@ import org.deegree.feature.property.Property;
 import org.deegree.filter.Filter;
 import org.deegree.filter.IdFilter;
 import org.deegree.filter.OperatorFilter;
+import org.deegree.protocol.wfs.transaction.IDGenMode;
 
 /**
  * Provides transactional access to a {@link FeatureStore}.
@@ -61,26 +62,6 @@ import org.deegree.filter.OperatorFilter;
  * @version $Revision$, $Date$
  */
 public interface FeatureStoreTransaction {
-
-    /**
-     * Enum type for discriminating the different object id generation policies for inserts.
-     * 
-     * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
-     * @author last edited by: $Author$
-     * 
-     * @version $Revision$, $Date$
-     */
-    public enum IDGenMode {
-
-        /** Use provided ids. */
-        USE_EXISTING,
-
-        /** Use provided ids, generate new id if object with same id already exists in the {@link FeatureStore}. */
-        REPLACE_DUPLICATE,
-
-        /** Always generate new ids. */
-        GENERATE_NEW
-    }
 
     /**
      * Returns the underlying {@link FeatureStore} instance.

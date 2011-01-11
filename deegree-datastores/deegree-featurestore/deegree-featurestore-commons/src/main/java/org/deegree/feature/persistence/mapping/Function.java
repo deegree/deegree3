@@ -38,6 +38,8 @@ package org.deegree.feature.persistence.mapping;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.deegree.filter.sql.MappingExpression;
+
 /**
  * The <code></code> class TODO add class documentation here.
  * 
