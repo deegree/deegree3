@@ -65,13 +65,6 @@ import org.deegree.commons.config.WorkspaceInitializationException;
 import org.deegree.commons.jdbc.ConnectionManager;
 import org.deegree.commons.utils.ProxyUtils;
 import org.deegree.commons.xml.jaxb.JAXBUtils;
-import org.deegree.coverage.persistence.CoverageBuilderManager;
-import org.deegree.feature.persistence.FeatureStoreManager;
-import org.deegree.metadata.persistence.MetadataStoreManager;
-import org.deegree.observation.persistence.ObservationStoreManager;
-import org.deegree.remoteows.RemoteOWSManager;
-import org.deegree.rendering.r3d.multiresolution.persistence.BatchedMTStoreManager;
-import org.deegree.rendering.r3d.persistence.RenderableStoreManager;
 import org.deegree.services.OWS;
 import org.deegree.services.OWSProvider;
 import org.deegree.services.controller.exception.ControllerInitException;
@@ -560,9 +553,7 @@ public class WebServicesConfiguration implements ResourceManager {
 
     @SuppressWarnings("unchecked")
     public Class<? extends ResourceManager>[] getDependencies() {
-        return new Class[] { ProxyUtils.class, BatchedMTStoreManager.class, ConnectionManager.class,
-                            CoverageBuilderManager.class, FeatureStoreManager.class, MetadataStoreManager.class,
-                            ObservationStoreManager.class, RemoteOWSManager.class, RenderableStoreManager.class };
+        return new Class[] { ProxyUtils.class, ConnectionManager.class };
     }
 
     public DeegreeWorkspace getWorkspace() {

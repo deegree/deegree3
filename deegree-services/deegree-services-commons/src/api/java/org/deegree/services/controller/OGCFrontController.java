@@ -101,7 +101,6 @@ import org.deegree.commons.xml.XMLProcessingException;
 import org.deegree.commons.xml.jaxb.JAXBUtils;
 import org.deegree.commons.xml.stax.StAXParsingHelper;
 import org.deegree.cs.configuration.CRSConfiguration;
-import org.deegree.feature.persistence.query.ThreadedResultSet;
 import org.deegree.services.OWS;
 import org.deegree.services.authentication.SecurityException;
 import org.deegree.services.controller.exception.ControllerException;
@@ -978,7 +977,6 @@ public class OGCFrontController extends HttpServlet {
      */
     private void plugClassLoaderLeaks() {
         Executor.getInstance().shutdown();
-        ThreadedResultSet.shutdown();
 
         // deregister all JDBC drivers loaded by webapp classloader
         Enumeration<Driver> e = DriverManager.getDrivers();

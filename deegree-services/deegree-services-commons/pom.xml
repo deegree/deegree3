@@ -103,13 +103,7 @@
   <dependencies>
     <dependency>
       <groupId>org.deegree</groupId>
-      <artifactId>deegree-datastores</artifactId>
-      <version>3.1-SNAPSHOT</version>
-      <type>pom</type>
-    </dependency>
-    <dependency>
-      <groupId>org.deegree</groupId>
-      <artifactId>deegree-core-3d</artifactId>
+      <artifactId>deegree-core-base</artifactId>
       <version>3.1-SNAPSHOT</version>
     </dependency>
     <dependency>
