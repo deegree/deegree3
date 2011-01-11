@@ -8,9 +8,9 @@ options {
 @header {
   package org.deegree.feature.persistence.mapping.antlr;
   import java.util.Collections;
-  import org.deegree.feature.persistence.mapping.MappingExpression;
+  import org.deegree.filter.sql.MappingExpression;
   import org.deegree.feature.persistence.mapping.JoinChain;
-  import org.deegree.feature.persistence.mapping.DBField;
+  import org.deegree.filter.sql.DBField;
   import org.deegree.feature.persistence.mapping.Function;
   import org.deegree.feature.persistence.mapping.StringConst;
 }

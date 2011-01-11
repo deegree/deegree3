@@ -89,6 +89,8 @@ import org.deegree.feature.persistence.mapping.BlobMapping;
 import org.deegree.feature.persistence.mapping.FeatureTypeMapping;
 import org.deegree.feature.persistence.mapping.JoinChain;
 import org.deegree.feature.persistence.mapping.MappedApplicationSchema;
+import org.deegree.feature.persistence.mapping.antlr.FMLLexer;
+import org.deegree.feature.persistence.mapping.antlr.FMLParser;
 import org.deegree.feature.persistence.mapping.id.AutoIDGenerator;
 import org.deegree.feature.persistence.mapping.id.FIDMapping;
 import org.deegree.feature.persistence.mapping.id.IDGenerator;
