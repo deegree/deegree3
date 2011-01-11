@@ -49,6 +49,7 @@ import org.deegree.coverage.rangeset.RangeSet;
 import org.deegree.coverage.rangeset.SingleValue;
 import org.deegree.coverage.rangeset.ValueType;
 import org.deegree.coverage.rangeset.Interval.Closure;
+import org.deegree.coverage.raster.geom.Grid;
 import org.deegree.coverage.raster.interpolation.InterpolationType;
 import org.deegree.cs.CRS;
 import org.deegree.cs.exceptions.TransformationException;
@@ -58,7 +59,6 @@ import org.deegree.geometry.utils.GeometryUtils;
 import org.deegree.protocol.wcs.WCSConstants;
 import org.deegree.services.controller.ows.OWSException;
 import org.deegree.services.wcs.WCSRequest100XMLAdapter;
-import org.deegree.services.wcs.model.Grid;
 
 /**
  * This is an xml adapter for GetCoverage requests after the WCS 1.0.0 spec.

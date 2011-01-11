@@ -40,11 +40,11 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.deegree.coverage.rangeset.RangeSet;
+import org.deegree.coverage.raster.geom.Grid;
 import org.deegree.geometry.Envelope;
-import org.deegree.services.wcs.WCServiceException;
+import org.deegree.protocol.wcs.WCServiceException;
 import org.deegree.services.wcs.model.CoverageOptions;
 import org.deegree.services.wcs.model.CoverageResult;
-import org.deegree.services.wcs.model.Grid;
 
 /**
  * 

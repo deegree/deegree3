@@ -37,8 +37,8 @@ package org.deegree.services.wcs.getcoverage;
 
 import org.deegree.commons.tom.ows.Version;
 import org.deegree.coverage.rangeset.RangeSet;
+import org.deegree.coverage.raster.geom.Grid;
 import org.deegree.geometry.Envelope;
-import org.deegree.services.wcs.model.Grid;
 
 /**
  * 

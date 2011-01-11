@@ -74,6 +74,7 @@ import org.deegree.cs.CRS;
 import org.deegree.geometry.Envelope;
 import org.deegree.protocol.ows.capabilities.GetCapabilities;
 import org.deegree.protocol.wcs.WCSConstants;
+import org.deegree.protocol.wcs.WCServiceException;
 import org.deegree.protocol.wcs.WCSConstants.WCSRequestType;
 import org.deegree.protocol.wcs.capabilities.GetCapabilities100KVPAdapter;
 import org.deegree.services.controller.AbstractOGCServiceController;

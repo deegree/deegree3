@@ -39,11 +39,12 @@ import org.deegree.coverage.filter.raster.RasterFilter;
 import org.deegree.coverage.rangeset.RangeSet;
 import org.deegree.coverage.raster.AbstractRaster;
 import org.deegree.coverage.raster.MultiResolutionRaster;
+import org.deegree.coverage.raster.geom.Grid;
+import org.deegree.coverage.raster.utils.CoverageTransform;
 import org.deegree.geometry.Envelope;
-import org.deegree.services.wcs.WCServiceException;
+import org.deegree.protocol.wcs.WCServiceException;
 import org.deegree.services.wcs.model.CoverageOptions;
 import org.deegree.services.wcs.model.CoverageResult;
-import org.deegree.services.wcs.model.Grid;
 
 /**
  * This is a Coverage implementation for multi-resolution raster.
