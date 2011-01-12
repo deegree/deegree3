@@ -46,7 +46,7 @@
           </execution>
         </executions>
         <configuration>
-          <schemaFiles>datasource/observation/contsql/3.0.0/contsql.xsd</schemaFiles>
+          <schemaFiles>datasource/observation/simplesql/3.0.0/simplesql.xsd,datasource/observation/contsql/3.0.0/contsql.xsd</schemaFiles>
           <schemaDirectory>src/main/resources/META-INF/schemas/</schemaDirectory>
         </configuration>
       </plugin>
