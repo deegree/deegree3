@@ -44,7 +44,6 @@ import org.deegree.observation.model.Offering;
 import org.deegree.observation.model.Procedure;
 import org.deegree.observation.model.Property;
 import org.deegree.observation.persistence.ObservationDatastore;
-import org.deegree.observation.persistence.simple.SimpleObservationDatastore;
 import org.deegree.services.sos.getobservation.EventTime100XMLExporter;
 
 /**
@@ -91,7 +90,7 @@ public class Offering100XMLAdapter extends XMLAdapter {
             writer.writeEndElement();
         }
 
-        for ( Property prop : ( (SimpleObservationDatastore) datastore ).getProperties() ) {
+        for ( Property prop : datastore.getProperties() ) {
             writer.writeStartElement( SOS_NS, "observedProperty" );
             writer.writeAttribute( XLN_NS, "href", prop.getHref() );
             writer.writeEndElement();
