@@ -46,7 +46,7 @@
           </execution>
         </executions>
         <configuration>
-          <schemaFiles>datasource/coverage/raster/3.0.0/raster.xsd,datasource/coverage/wms/3.0.0/wms.xsd,datasource/observation/simplesql/3.0.0/simplesql.xsd,datasource/observation/contsql/3.0.0/contsql.xsd,datasource/metadata/iso19115/3.0.0/iso19115.xsd,datasource/remoteows/wms/3.1.0/remotewms.xsd</schemaFiles>
+          <schemaFiles>datasource/coverage/raster/3.0.0/raster.xsd,datasource/coverage/wms/3.0.0/wms.xsd,datasource/metadata/iso19115/3.0.0/iso19115.xsd,datasource/remoteows/wms/3.1.0/remotewms.xsd</schemaFiles>
           <schemaDirectory>src/main/resources/META-INF/schemas/</schemaDirectory>
         </configuration>
       </plugin>
