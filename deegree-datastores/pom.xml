@@ -36,12 +36,4 @@
     <module>deegree-featurestore</module>
   </modules>
 
-  <dependencies>
-    <dependency>
-      <groupId>org.deegree</groupId>
-      <artifactId>deegree-featurestore</artifactId>
-      <version>3.1-SNAPSHOT</version>
-      <type>pom</type>
-    </dependency>
-  </dependencies>
 </project>
