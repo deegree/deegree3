@@ -2,15 +2,15 @@
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.deegree</groupId>
-  <artifactId>deegree-osmstore</artifactId>
+  <artifactId>deegree-featurestore-osm</artifactId>
   <packaging>jar</packaging>
   <version>3.1-SNAPSHOT</version>
-  <name>deegree-osmstore</name>
+  <name>deegree-featurestore-osm</name>
   <url>http://www.deegree.org</url>
   <scm>
-    <connection>scm:svn:http://svn.wald.intevation.org/svn/deegree/deegree3/trunk/deegree-osmstore</connection>
-    <developerConnection>scm:svn:svn+ssh://developername@svn.wald.intevation.org/deegree/deegree3/trunk/deegree-osmstore</developerConnection>
-    <url>http://wald.intevation.org/plugins/scmsvn/viewcvs.php/deegree3/trunk/deegree-osmstore/?root=deegree</url>
+    <connection>scm:svn:http://svn.wald.intevation.org/svn/deegree/deegree3/trunk/deegree-datastores/deegree-featurestore/deegree-featurestore-osm</connection>
+    <developerConnection>scm:svn:svn+ssh://developername@svn.wald.intevation.org/deegree/deegree3/trunk/deegree-datastores/deegree-featurestore/deegree-featurestore-osm</developerConnection>
+    <url>http://wald.intevation.org/plugins/scmsvn/viewcvs.php/deegree3/trunk/deegree-datastores/deegree-featurestore/deegree-featurestore-osm/?root=deegree</url>
   </scm>
   <build>
     <plugins>

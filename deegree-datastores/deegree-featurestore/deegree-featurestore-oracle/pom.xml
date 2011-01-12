@@ -2,15 +2,15 @@
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.deegree</groupId>
-  <artifactId>deegree-oraclesupport</artifactId>
+  <artifactId>deegree-featurestore-oracle</artifactId>
   <packaging>jar</packaging>
   <version>3.1-SNAPSHOT</version>
-  <name>deegree-oraclesupport</name>
+  <name>deegree-featurestore-oracle</name>
   <url>http://www.deegree.org</url>
   <scm>
-    <connection>scm:svn:http://svn.wald.intevation.org/svn/deegree/deegree3/trunk/deegree-oraclesupport</connection>
-    <developerConnection>scm:svn:svn+ssh://developername@svn.wald.intevation.org/deegree/deegree3/trunk/deegree-oraclesupport</developerConnection>
-    <url>http://wald.intevation.org/plugins/scmsvn/viewcvs.php/deegree3/trunk/deegree-oraclesupport/?root=deegree</url>
+    <connection>scm:svn:http://svn.wald.intevation.org/svn/deegree/deegree3/trunk/deegree-datastores/deegree-featurestore/deegree-featurestore-oracle</connection>
+    <developerConnection>scm:svn:svn+ssh://developername@svn.wald.intevation.org/deegree/deegree3/trunk/deegree-datastores/deegree-featurestore/deegree-featurestore-oracle</developerConnection>
+    <url>http://wald.intevation.org/plugins/scmsvn/viewcvs.php/deegree3/trunk/deegree-datastores-deegree-featurestore/deegree-featurestore-oracle/?root=deegree</url>
   </scm>
 
   <parent>
