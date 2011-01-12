@@ -61,7 +61,7 @@
     </dependency>
     <dependency>
       <groupId>org.deegree</groupId>
-      <artifactId>deegree-commons-observation</artifactId>
+      <artifactId>deegree-core-observation</artifactId>
       <version>3.1-SNAPSHOT</version>
     </dependency>
     <dependency>
