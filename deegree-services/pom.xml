@@ -41,6 +41,7 @@
     <module>deegree-services-sos</module>
     <module>deegree-services-wpvs</module>
     <module>deegree-services-wps</module>
+    <module>deegree-services-console</module>
   </modules>
 
 </project>
