@@ -69,34 +69,34 @@
           </execution>
         </executions>
       </plugin>
-      <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>buildnumber-maven-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>validate</id>
-            <phase>validate</phase>
-            <goals>
-              <goal>create</goal>
-            </goals>
-            <configuration>
-              <doCheck>false</doCheck>
-              <doUpdate>false</doUpdate>
-            </configuration>
-          </execution>
-          <execution>
-            <id>deploy</id>
-            <phase>deploy</phase>
-            <goals>
-              <goal>create</goal>
-            </goals>
-            <configuration>
-              <doCheck>true</doCheck>
-              <doUpdate>false</doUpdate>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
+      <!-- <plugin> -->
+      <!--   <groupId>org.codehaus.mojo</groupId> -->
+      <!--   <artifactId>buildnumber-maven-plugin</artifactId> -->
+      <!--   <executions> -->
+      <!--     <execution> -->
+      <!--       <id>validate</id> -->
+      <!--       <phase>validate</phase> -->
+      <!--       <goals> -->
+      <!--         <goal>create</goal> -->
+      <!--       </goals> -->
+      <!--       <configuration> -->
+      <!--         <doCheck>false</doCheck> -->
+      <!--         <doUpdate>false</doUpdate> -->
+      <!--       </configuration> -->
+      <!--     </execution> -->
+      <!--     <execution> -->
+      <!--       <id>deploy</id> -->
+      <!--       <phase>deploy</phase> -->
+      <!--       <goals> -->
+      <!--         <goal>create</goal> -->
+      <!--       </goals> -->
+      <!--       <configuration> -->
+      <!--         <doCheck>true</doCheck> -->
+      <!--         <doUpdate>false</doUpdate> -->
+      <!--       </configuration> -->
+      <!--     </execution> -->
+      <!--   </executions> -->
+      <!-- </plugin> -->
     </plugins>
   </build>
 
