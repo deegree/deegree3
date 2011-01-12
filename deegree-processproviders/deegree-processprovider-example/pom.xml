@@ -2,15 +2,15 @@
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.deegree</groupId>
-  <artifactId>deegree-wps-example-provider</artifactId>
+  <artifactId>deegree-processprovider-example</artifactId>
   <packaging>war</packaging>
   <version>3.1-SNAPSHOT</version>
-  <name>deegree 3 WPS process provider demo</name>
+  <name>deegree process provider example</name>
   <url>http://maven.apache.org</url>
 
   <parent>
     <groupId>org.deegree</groupId>
-    <artifactId>deegree-services-parent</artifactId>
+    <artifactId>deegree-processprovider-example</artifactId>
     <version>3.1-SNAPSHOT</version>
   </parent>
 
@@ -28,7 +28,7 @@
   </repositories>
 
   <build>
-    <finalName>deegree-wps-example-provider</finalName>
+    <finalName>deegree-processprovider-example</finalName>
   </build>
 
 </project>
