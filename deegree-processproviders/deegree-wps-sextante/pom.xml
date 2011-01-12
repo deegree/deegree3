@@ -2,24 +2,21 @@
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.deegree</groupId>
-  <artifactId>deegree-wps-sextante</artifactId>
+  <artifactId>deegree-processprovider-sextante</artifactId>
   <packaging>jar</packaging>
   <version>3.1-SNAPSHOT</version>
-  <name>deegree-wps-sextante</name>
+  <name>deegree-processprovider-sextante</name>
   <url>http://www.deegree.org</url>
-
   <scm>
-    <connection>scm:svn:http://svn.wald.intevation.org/svn/deegree/deegree3/trunk/deegree-wps/deegree-wps-sextante</connection>
-    <developerConnection>scm:svn:svn+ssh://developername@svn.wald.intevation.org/deegree/deegree3/trunk/deegree-wps/deegree-wps-sextante</developerConnection>
-    <url>http://wald.intevation.org/plugins/scmsvn/viewcvs.php/deegree3/trunk/deegree-wps/deegree-wps-sextante?root=deegree</url>
+    <connection>scm:svn:http://svn.wald.intevation.org/svn/deegree/deegree3/trunk/deegree-processproviders/deegree-processprovider-sextante</connection>
+    <developerConnection>scm:svn:svn+ssh://developername@svn.wald.intevation.org/deegree/deegree3/trunk/deegree-processproviders/deegree-processprovider-sextante</developerConnection>
+    <url>http://wald.intevation.org/plugins/scmsvn/viewcvs.php/deegree3/trunk/deegree-processproviders/deegree-processprovider-sextante?root=deegree</url>
   </scm>
-
   <parent>
     <groupId>org.deegree</groupId>
     <artifactId>deegree-parent</artifactId>
     <version>3.1-SNAPSHOT</version>
   </parent>
-
   <repositories>
     <repository>
       <id>deegree-repo</id>
@@ -32,7 +29,6 @@
       </snapshots>
     </repository>
   </repositories>
-
   <build>
     <plugins>
       <plugin>
@@ -53,8 +49,12 @@
       </plugin>
     </plugins>
   </build>
-
   <dependencies>
+    <dependency>
+      <groupId>org.deegree</groupId>
+      <artifactId>deegree-core-base</artifactId>
+      <version>3.1-SNAPSHOT</version>
+    </dependency>
     <dependency>
       <groupId>org.deegree</groupId>
       <artifactId>deegree-services</artifactId>
