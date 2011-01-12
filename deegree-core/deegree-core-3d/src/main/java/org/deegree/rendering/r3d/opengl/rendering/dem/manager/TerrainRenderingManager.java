@@ -204,10 +204,8 @@ public class TerrainRenderingManager {
                 gl.glDisable( GL.GL_NORMALIZE );
             }
         } catch ( Throwable t ) {
-            // LOG.error( "Rendering did not succeed stack tracke.", t );
-            LOG.error( "Rendering did not succeed because: " + t.getLocalizedMessage() );
+            LOG.error( "Rendering did not succeed because: " + t.getLocalizedMessage(), t );
         }
-
     }
 
     /**
