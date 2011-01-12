@@ -64,6 +64,11 @@
       <artifactId>deegree-featurestore-simplesql</artifactId>
       <version>3.1-SNAPSHOT</version>
     </dependency>
+    <dependency>
+      <groupId>org.deegree</groupId>
+      <artifactId>deegree-featurestore-shape</artifactId>
+      <version>3.1-SNAPSHOT</version>
+    </dependency>
   </dependencies>
 
 </project>
