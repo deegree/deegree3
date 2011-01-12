@@ -35,8 +35,11 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.observation.persistence;
 
+import java.util.List;
+
 import org.deegree.observation.model.Observation;
 import org.deegree.observation.model.Offering;
+import org.deegree.observation.model.Property;
 import org.deegree.protocol.sos.filter.FilterCollection;
 import org.deegree.protocol.sos.time.SamplingTime;
 
@@ -56,7 +59,7 @@ public interface ObservationDatastore {
      * 
      * @param filter
      * @return the resulting measurements
-     * @throws Exception
+     * @throws ObservationDatastoreException
      */
     public Observation getObservation( FilterCollection filter, Offering offering )
                             throws ObservationDatastoreException;
@@ -67,4 +70,6 @@ public interface ObservationDatastore {
      * @return the sampling time of the datastore
      */
     public SamplingTime getSamplingTime();
+
+    public List<Property> getProperties();
 }
