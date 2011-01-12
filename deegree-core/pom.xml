@@ -36,6 +36,7 @@
     <module>deegree-core-commons</module>
     <module>deegree-core-cs</module>
     <module>deegree-core-base</module>
+    <module>deegree-core-observation</module>
     <!-- TODO remove the datastores from 3d -->
     <!-- <module>deegree-core-3d</module> -->
   </modules>
