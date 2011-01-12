@@ -67,6 +67,7 @@ import org.deegree.filter.Filter;
 import org.deegree.filter.IdFilter;
 import org.deegree.filter.OperatorFilter;
 import org.deegree.geometry.Geometry;
+import org.deegree.protocol.wfs.transaction.IDGenMode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

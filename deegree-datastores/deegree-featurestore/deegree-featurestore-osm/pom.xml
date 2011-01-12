@@ -10,21 +10,20 @@
   <scm>
     <connection>scm:svn:http://svn.wald.intevation.org/svn/deegree/deegree3/trunk/deegree-datastores/deegree-featurestore/deegree-featurestore-osm</connection>
     <developerConnection>scm:svn:svn+ssh://developername@svn.wald.intevation.org/deegree/deegree3/trunk/deegree-datastores/deegree-featurestore/deegree-featurestore-osm</developerConnection>
-    <url>http://wald.intevation.org/plugins/scmsvn/viewcvs.php/deegree3/trunk/deegree-datastores/deegree-featurestore/deegree-featurestore-osm/?root=deegree</url>
+    <url>http://wald.intevation.org/plugins/scmsvn/viewcvs.php/deegree3/trunk/deegree-datastores-deegree-featurestore/deegree-featurestore-osm/?root=deegree</url>
   </scm>
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-compiler-plugin</artifactId>
-        <configuration>
-          <source>1.6</source>
-          <target>1.6</target>
-        </configuration>
-      </plugin>
-    </plugins>
-  </build>
+
+  <parent>
+    <groupId>org.deegree</groupId>
+    <artifactId>deegree-parent</artifactId>
+    <version>3.1-SNAPSHOT</version>
+  </parent>
+
   <repositories>
+    <repository>
+      <id>deegree-restricted</id>
+      <url>http://artefacts.deegree.org/ext-libs-restricted</url>
+     </repository>
     <repository>
       <id>deegree-repo</id>
       <url>http://artefacts.deegree.org/repo</url>
@@ -33,20 +32,11 @@
       </snapshots>
     </repository>
   </repositories>
-  <distributionManagement>
-    <repository>
-      <id>deegree-releases</id>
-      <url>http://artefacts.deegree.org/libs-releases-local</url>
-    </repository>
-    <snapshotRepository>
-      <id>deegree-snapshots</id>
-      <url>http://artefacts.deegree.org/libs-snapshots-local</url>
-    </snapshotRepository>
-  </distributionManagement>
+
   <dependencies>
     <dependency>
       <groupId>org.deegree</groupId>
-      <artifactId>deegree-core</artifactId>
+      <artifactId>deegree-featurestore-commons</artifactId>
       <version>3.1-SNAPSHOT</version>
     </dependency>
   </dependencies>

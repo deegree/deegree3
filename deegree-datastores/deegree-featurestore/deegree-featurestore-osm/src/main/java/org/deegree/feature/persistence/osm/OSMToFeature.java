@@ -6,7 +6,6 @@ import static org.deegree.feature.types.property.GeometryPropertyType.Coordinate
 import static org.deegree.feature.types.property.GeometryPropertyType.GeometryType.POINT;
 import static org.deegree.feature.types.property.ValueRepresentation.BOTH;
 
-
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
@@ -273,7 +272,7 @@ public class OSMToFeature {
                 parser.next();
                 parser.next();
                 //this.getTags();
-                Feature node = nodeFt.newFeature( fid, pointProps, null );
+                Feature node = nodeFt.newFeature( fid, pointProps, null, null );
                 nodes.add( node );
                 pointProps.clear();
 
@@ -313,7 +312,7 @@ public class OSMToFeature {
                 nds.clear();
                 this.getTags();
 
-                Feature way = wayFt.newFeature( fid, props, null );
+                Feature way = wayFt.newFeature( fid, props, null, null );
 
             }
 
@@ -388,7 +387,7 @@ public class OSMToFeature {
 
                 }
                 this.getTags();
-                Feature relation = relationFt.newFeature( fid, props, null );
+                Feature relation = relationFt.newFeature( fid, props, null,null );
 
             }
         }
