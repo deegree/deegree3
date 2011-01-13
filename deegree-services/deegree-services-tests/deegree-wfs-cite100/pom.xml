@@ -40,4 +40,17 @@
     </testResources>
   </build>
 
+  <dependencies>
+    <dependency>
+      <groupId>org.deegree</groupId>
+      <artifactId>deegree-services-wfs</artifactId>
+      <version>3.1-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>org.deegree</groupId>
+      <artifactId>deegree-featurestore-memory</artifactId>
+      <version>3.1-SNAPSHOT</version>
+    </dependency>
+  </dependencies>
+
 </project>
