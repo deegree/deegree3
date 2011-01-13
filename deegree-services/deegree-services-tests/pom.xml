@@ -34,6 +34,8 @@
 
   <modules>
     <module>deegree-wms-cite</module>
+    <module>deegree-wms-similarity-tests</module>
+    <module>deegree-wms-remoteows-test</module>
   </modules>
 
 </project>
