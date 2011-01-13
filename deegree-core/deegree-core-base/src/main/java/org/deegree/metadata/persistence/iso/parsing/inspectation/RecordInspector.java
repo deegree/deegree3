@@ -39,7 +39,7 @@ import java.sql.Connection;
 
 import org.apache.axiom.om.OMElement;
 import org.deegree.metadata.persistence.MetadataInspectorException;
-import org.deegree.metadata.persistence.MetadataStoreException;
+import org.deegree.protocol.csw.MetadataStoreException;
 
 /**
  * Abstract base class for all inspector implementations.

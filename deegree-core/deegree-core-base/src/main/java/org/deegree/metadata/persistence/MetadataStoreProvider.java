@@ -39,6 +39,8 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URL;
 
+import org.deegree.protocol.csw.MetadataStoreException;
+
 /**
  * Implementations plug-in {@link MetadataStore}s.
  * 

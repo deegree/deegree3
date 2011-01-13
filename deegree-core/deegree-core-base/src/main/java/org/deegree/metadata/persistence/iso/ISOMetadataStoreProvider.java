@@ -51,9 +51,9 @@ import javax.xml.bind.Unmarshaller;
 
 import org.deegree.metadata.i18n.Messages;
 import org.deegree.metadata.persistence.MetadataStore;
-import org.deegree.metadata.persistence.MetadataStoreException;
 import org.deegree.metadata.persistence.MetadataStoreProvider;
 import org.deegree.metadata.persistence.iso19115.jaxb.ISOMetadataStoreConfig;
+import org.deegree.protocol.csw.MetadataStoreException;
 import org.slf4j.Logger;
 
 /**

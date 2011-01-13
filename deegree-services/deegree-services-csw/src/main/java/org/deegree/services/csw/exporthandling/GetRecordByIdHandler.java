@@ -54,7 +54,7 @@ import org.deegree.commons.xml.stax.TrimmingXMLStreamWriter;
 import org.deegree.metadata.MetadataRecord;
 import org.deegree.metadata.persistence.MetadataResultSet;
 import org.deegree.metadata.persistence.MetadataStore;
-import org.deegree.metadata.persistence.MetadataStoreException;
+import org.deegree.protocol.csw.MetadataStoreException;
 import org.deegree.protocol.csw.CSWConstants.OutputSchema;
 import org.deegree.services.controller.exception.ControllerException;
 import org.deegree.services.controller.ows.OWSException;

@@ -39,6 +39,7 @@ import java.net.URL;
 
 import org.deegree.metadata.persistence.MetadataInspectorManager.InspectorKey;
 import org.deegree.metadata.persistence.iso.parsing.inspectation.RecordInspector;
+import org.deegree.protocol.csw.MetadataStoreException;
 
 /**
  * TODO add class documentation here

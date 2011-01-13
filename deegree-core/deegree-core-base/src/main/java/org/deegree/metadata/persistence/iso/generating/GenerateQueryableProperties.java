@@ -57,13 +57,13 @@ import org.deegree.commons.utils.time.DateUtils;
 import org.deegree.cs.CRSCodeType;
 import org.deegree.metadata.ISORecord;
 import org.deegree.metadata.i18n.Messages;
-import org.deegree.metadata.persistence.MetadataStoreException;
 import org.deegree.metadata.persistence.iso.PostGISMappingsISODC;
 import org.deegree.metadata.persistence.iso.parsing.QueryableProperties;
 import org.deegree.metadata.persistence.types.BoundingBox;
 import org.deegree.metadata.persistence.types.Format;
 import org.deegree.metadata.persistence.types.Keyword;
 import org.deegree.metadata.persistence.types.OperatesOnData;
+import org.deegree.protocol.csw.MetadataStoreException;
 import org.slf4j.Logger;
 
 /**

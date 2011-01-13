@@ -51,8 +51,8 @@ import java.util.regex.Pattern;
 
 import org.deegree.metadata.i18n.Messages;
 import org.deegree.metadata.persistence.MetadataInspectorException;
-import org.deegree.metadata.persistence.MetadataStoreException;
 import org.deegree.metadata.persistence.iso.PostGISMappingsISODC;
+import org.deegree.protocol.csw.MetadataStoreException;
 import org.slf4j.Logger;
 
 /**

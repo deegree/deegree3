@@ -57,7 +57,7 @@ import org.deegree.filter.sql.postgis.PostGISWhereBuilder;
 import org.deegree.metadata.i18n.Messages;
 import org.deegree.metadata.persistence.GenericDatabaseExecution;
 import org.deegree.metadata.persistence.MetadataQuery;
-import org.deegree.metadata.persistence.MetadataStoreException;
+import org.deegree.protocol.csw.MetadataStoreException;
 import org.slf4j.Logger;
 
 /**

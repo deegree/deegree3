@@ -15,7 +15,6 @@ import org.deegree.filter.sql.postgis.PostGISWhereBuilder;
 import org.deegree.metadata.ISORecord;
 import org.deegree.metadata.i18n.Messages;
 import org.deegree.metadata.persistence.MetadataInspectorException;
-import org.deegree.metadata.persistence.MetadataStoreException;
 import org.deegree.metadata.persistence.MetadataStoreTransaction;
 import org.deegree.metadata.persistence.iso.generating.GenerateQueryableProperties;
 import org.deegree.metadata.persistence.iso.parsing.IdUtils;
@@ -24,6 +23,7 @@ import org.deegree.metadata.persistence.iso19115.jaxb.ISOMetadataStoreConfig.Any
 import org.deegree.metadata.publication.DeleteTransaction;
 import org.deegree.metadata.publication.InsertTransaction;
 import org.deegree.metadata.publication.UpdateTransaction;
+import org.deegree.protocol.csw.MetadataStoreException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

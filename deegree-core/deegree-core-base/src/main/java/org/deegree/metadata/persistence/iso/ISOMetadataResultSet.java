@@ -48,8 +48,8 @@ import org.deegree.commons.utils.JDBCUtils;
 import org.deegree.metadata.ISORecord;
 import org.deegree.metadata.MetadataRecord;
 import org.deegree.metadata.persistence.MetadataResultSet;
-import org.deegree.metadata.persistence.MetadataStoreException;
 import org.deegree.metadata.persistence.iso19115.jaxb.ISOMetadataStoreConfig.AnyText;
+import org.deegree.protocol.csw.MetadataStoreException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

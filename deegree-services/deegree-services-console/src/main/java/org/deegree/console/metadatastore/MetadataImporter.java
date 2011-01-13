@@ -52,9 +52,9 @@ import org.apache.axiom.om.OMElement;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.metadata.persistence.MetadataInspectorException;
 import org.deegree.metadata.persistence.MetadataStore;
-import org.deegree.metadata.persistence.MetadataStoreException;
 import org.deegree.metadata.persistence.MetadataStoreTransaction;
 import org.deegree.metadata.publication.InsertTransaction;
+import org.deegree.protocol.csw.MetadataStoreException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

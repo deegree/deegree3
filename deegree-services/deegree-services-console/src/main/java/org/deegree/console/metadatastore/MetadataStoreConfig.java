@@ -43,10 +43,10 @@ import javax.faces.context.FacesContext;
 import org.deegree.console.ManagedXMLConfig;
 import org.deegree.console.SQLExecution;
 import org.deegree.metadata.persistence.MetadataStore;
-import org.deegree.metadata.persistence.MetadataStoreException;
 import org.deegree.metadata.persistence.MetadataStoreManager;
 import org.deegree.metadata.persistence.MetadataStoreProvider;
 import org.deegree.metadata.persistence.iso.ISOMetadataStore;
+import org.deegree.protocol.csw.MetadataStoreException;
 
 /**
  * TODO add class documentation here

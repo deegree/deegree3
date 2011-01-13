@@ -39,6 +39,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 
 import org.deegree.filter.sql.postgis.PostGISWhereBuilder;
+import org.deegree.protocol.csw.MetadataStoreException;
 
 /**
  * Interface for different kinds of implementions of executing SELECT statements against a database.

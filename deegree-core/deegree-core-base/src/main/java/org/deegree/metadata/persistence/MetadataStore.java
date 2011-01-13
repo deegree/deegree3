@@ -37,6 +37,8 @@ package org.deegree.metadata.persistence;
 
 import java.util.List;
 
+import org.deegree.protocol.csw.MetadataStoreException;
+
 /**
  * Base interface of the {@link MetadataStore} persistence layer, provides access to stored {@link MetadataStore}
  * instances and their schemas.

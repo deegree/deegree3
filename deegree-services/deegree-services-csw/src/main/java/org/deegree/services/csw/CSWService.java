@@ -41,8 +41,8 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.deegree.metadata.persistence.MetadataStore;
-import org.deegree.metadata.persistence.MetadataStoreException;
 import org.deegree.metadata.persistence.MetadataStoreManager;
+import org.deegree.protocol.csw.MetadataStoreException;
 import org.deegree.services.jaxb.csw.DeegreeCSW;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

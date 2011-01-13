@@ -38,13 +38,13 @@ package org.deegree.metadata.persistence.iso.testclasses;
 import java.util.List;
 
 import org.deegree.metadata.persistence.MetadataInspectorException;
-import org.deegree.metadata.persistence.MetadataStoreException;
 import org.deegree.metadata.persistence.MetadataStoreTransaction;
 import org.deegree.metadata.persistence.iso.ISOMetadataStore;
 import org.deegree.metadata.persistence.iso.ISOMetadataStoreProvider;
 import org.deegree.metadata.persistence.iso.helper.AbstractISOTest;
 import org.deegree.metadata.persistence.iso.helper.TstConstants;
 import org.deegree.metadata.persistence.iso.helper.TstUtils;
+import org.deegree.protocol.csw.MetadataStoreException;
 import org.junit.Assert;
 import org.junit.Test;
 import org.slf4j.Logger;

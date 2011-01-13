@@ -34,7 +34,7 @@
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
 
-package org.deegree.metadata.persistence;
+package org.deegree.protocol.csw;
 
 /**
  * Indicates an exception that occured in the metadata persistence layer.

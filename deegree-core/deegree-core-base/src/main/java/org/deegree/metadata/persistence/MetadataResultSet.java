@@ -38,6 +38,7 @@ package org.deegree.metadata.persistence;
 import java.sql.ResultSet;
 
 import org.deegree.metadata.MetadataRecord;
+import org.deegree.protocol.csw.MetadataStoreException;
 
 /**
  * Has a {@link MetadataCollection} and the corresponding {@link MetadataResultType} as content.

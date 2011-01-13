@@ -42,7 +42,6 @@ import java.net.URISyntaxException;
 import javax.xml.namespace.QName;
 
 import org.deegree.commons.tom.ows.Version;
-import org.deegree.metadata.persistence.MetadataStoreException;
 
 /**
  * 

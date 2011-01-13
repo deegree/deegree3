@@ -43,7 +43,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.deegree.commons.utils.JDBCUtils;
-import org.deegree.metadata.persistence.MetadataStoreException;
+import org.deegree.protocol.csw.MetadataStoreException;
 
 /**
  * TODO add class documentation here

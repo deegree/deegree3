@@ -54,6 +54,7 @@ import javax.xml.stream.XMLStreamReader;
 
 import org.deegree.commons.xml.stax.StAXParsingHelper;
 import org.deegree.metadata.persistence.iso.parsing.inspectation.RecordInspector;
+import org.deegree.protocol.csw.MetadataStoreException;
 import org.slf4j.Logger;
 
 /**

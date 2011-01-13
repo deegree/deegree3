@@ -45,7 +45,7 @@ import org.deegree.commons.tom.ows.Version;
 import org.deegree.commons.utils.kvp.InvalidParameterValueException;
 import org.deegree.commons.utils.kvp.KVPUtils;
 import org.deegree.commons.utils.kvp.MissingParameterException;
-import org.deegree.metadata.persistence.MetadataStoreException;
+import org.deegree.protocol.csw.MetadataStoreException;
 import org.deegree.protocol.csw.CSWConstants.ReturnableElement;
 import org.deegree.protocol.i18n.Messages;
 import org.slf4j.Logger;

@@ -53,9 +53,9 @@ import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.XPath;
 import org.deegree.metadata.i18n.Messages;
 import org.deegree.metadata.persistence.MetadataInspectorException;
-import org.deegree.metadata.persistence.MetadataStoreException;
 import org.deegree.metadata.persistence.iso19115.jaxb.CoupledResourceInspector;
 import org.deegree.metadata.persistence.types.OperatesOnData;
+import org.deegree.protocol.csw.MetadataStoreException;
 import org.slf4j.Logger;
 
 /**

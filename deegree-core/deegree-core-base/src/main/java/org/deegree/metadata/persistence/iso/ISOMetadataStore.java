@@ -64,7 +64,6 @@ import org.deegree.metadata.persistence.MetadataInspectorException;
 import org.deegree.metadata.persistence.MetadataQuery;
 import org.deegree.metadata.persistence.MetadataResultSet;
 import org.deegree.metadata.persistence.MetadataStore;
-import org.deegree.metadata.persistence.MetadataStoreException;
 import org.deegree.metadata.persistence.MetadataStoreTransaction;
 import org.deegree.metadata.persistence.iso.parsing.inspectation.CoupledDataInspector;
 import org.deegree.metadata.persistence.iso.parsing.inspectation.FIInspector;
@@ -79,6 +78,7 @@ import org.deegree.metadata.persistence.iso19115.jaxb.InspireInspector;
 import org.deegree.metadata.persistence.iso19115.jaxb.SchemaValidator;
 import org.deegree.metadata.persistence.iso19115.jaxb.ISOMetadataStoreConfig.Inspectors;
 import org.deegree.metadata.publication.InsertTransaction;
+import org.deegree.protocol.csw.MetadataStoreException;
 import org.deegree.protocol.csw.CSWConstants.ResultType;
 import org.slf4j.Logger;
 

@@ -44,11 +44,11 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 
 import org.deegree.metadata.persistence.MetadataInspectorProvider;
-import org.deegree.metadata.persistence.MetadataStoreException;
 import org.deegree.metadata.persistence.MetadataInspectorManager.InspectorKey;
 import org.deegree.metadata.persistence.iso.parsing.inspectation.RecordInspector;
 import org.deegree.metadata.persistence.iso19115.jaxb.ISOMetadataStoreConfig;
 import org.deegree.metadata.persistence.iso19115.jaxb.ISOMetadataStoreConfig.Inspectors;
+import org.deegree.protocol.csw.MetadataStoreException;
 import org.slf4j.Logger;
 
 /**
