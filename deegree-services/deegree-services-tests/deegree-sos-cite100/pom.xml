@@ -42,6 +42,11 @@
       <artifactId>deegree-services-sos</artifactId>
       <version>3.1-SNAPSHOT</version>
     </dependency>
+    <dependency>
+      <groupId>org.apache.derby</groupId>
+      <artifactId>derby</artifactId>
+      <version>10.7.1.1</version>
+    </dependency>
   </dependencies>
 
 </project>
