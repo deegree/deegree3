@@ -74,6 +74,7 @@ import org.deegree.cs.exceptions.TransformationException;
 import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.feature.persistence.FeatureStoreException;
 import org.deegree.geometry.Envelope;
+import org.deegree.geometry.GeometryTransformer;
 import org.deegree.gml.GMLVersion;
 import org.deegree.gml.XMLTransformer;
 import org.deegree.remoteows.wms.RemoteWMSStore;
@@ -154,13 +155,11 @@ public class ButtonListener implements ActionListener {
                     boolean contained = false;
 
                     for ( Triple<Point4Values, Point4Values, PointResidual> p : state.mappedPoints ) {
-                        System.out.println( "[Controller] beforeRemoving: " + p.second + "\n" );
                         if ( p.first.getRc().getRow() == tableRow || p.second.getRc().getRow() == tableRow ) {
 
                             contained = true;
                             deleteableRows.add( tableRow );
 
-                            System.out.println( "[Controller] afterRemoving: " + p.second + "\n\n" );
                             break;
                         }
 
@@ -268,6 +267,20 @@ public class ButtonListener implements ActionListener {
                     } else {
                         Envelope env = state.wmsParameter.getEnvelope( crs, layerList );
                         if ( env != null ) {
+
+                            try {
+                                env = new GeometryTransformer( crs ).transform( env );
+                            } catch ( IllegalArgumentException e1 ) {
+                                // TODO Auto-generated catch block
+                                e1.printStackTrace();
+                            } catch ( TransformationException e1 ) {
+                                // TODO Auto-generated catch block
+                                e1.printStackTrace();
+                            } catch ( UnknownCRSException e1 ) {
+                                // TODO Auto-generated catch block
+                                e1.printStackTrace();
+                            }
+
                             if ( state.service == null ) {
                                 state.service = new MapService();
                             }
@@ -290,7 +303,7 @@ public class ButtonListener implements ActionListener {
                             state.mapController = new MapController( state.service, env.getCoordinateSystem(),
                                                                      state.conModel.getPanel().getWidth(),
                                                                      state.conModel.getPanel().getHeight() );
-                            state.mapController.setLayers( Collections.singletonList( layer ) );
+                            state.mapController.setLayers( new LinkedList<Layer>( root.getChildren() ) );
 
                             state.targetCRS = crs;
                             state.initGeoReferencingScene();
@@ -409,13 +422,12 @@ public class ButtonListener implements ActionListener {
                         if ( state.service.layers.get( "shape" ) != null ) {
                             state.service.layers.get( "shape" ).close();
                         }
-                        FeatureLayer layer = new FeatureLayer( state.service, "shape", "shape",
-                                                               state.service.getRootLayer(), fileChoosed );
                         Layer root = state.service.getRootLayer();
+                        FeatureLayer layer = new FeatureLayer( state.service, "shape", "shape", root, fileChoosed );
                         root.addOrReplace( layer );
                         state.service.layers.put( "shape", layer );
-                        root.setBbox( layer.getBbox() );
                         Envelope bbox = layer.getDataStore().getEnvelope( null );
+                        root.setBbox( layer.getBbox() );
                         root.setSrs( singleton( bbox.getCoordinateSystem() ) );
                         state.service.registry.put( "shape", new Style( colors[colorIndex] ), true );
                         ++colorIndex;
@@ -427,7 +439,7 @@ public class ButtonListener implements ActionListener {
                         state.mapController = new MapController( state.service, bbox.getCoordinateSystem(),
                                                                  state.conModel.getPanel().getWidth(),
                                                                  state.conModel.getPanel().getHeight() );
-                        state.mapController.setLayers( Collections.singletonList( layer ) );
+                        state.mapController.setLayers( new LinkedList<Layer>( root.getChildren() ) );
 
                         state.targetCRS = bbox.getCoordinateSystem();
                         state.initGeoReferencingScene();
