@@ -38,6 +38,8 @@ package org.deegree.rendering.r3d.opengl.rendering.dem;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.IOException;
+import java.nio.Buffer;
+import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 import java.nio.ShortBuffer;
 import java.util.Arrays;
@@ -90,6 +92,8 @@ public class RenderMeshFragment implements Comparable<RenderMeshFragment> {
     private int[] glBufferObjectIds;
 
     private float[][] triangle;
+
+    private int normalGLType;
 
     /**
      * @param fragment
@@ -191,17 +195,29 @@ public class RenderMeshFragment implements Comparable<RenderMeshFragment> {
 
             FloatBuffer vertexBuffer = data.getVertices();
             ShortBuffer indexBuffer = (ShortBuffer) data.getTriangles();
-            FloatBuffer normalsBuffer = data.getNormals();
+            Buffer normalsBuffer = data.getNormals();
 
             // bind vertex buffer object (vertices)
             gl.glBindBufferARB( GL.GL_ARRAY_BUFFER_ARB, glBufferObjectIds[0] );
             gl.glBufferDataARB( GL.GL_ARRAY_BUFFER_ARB, vertexBuffer.capacity() * 4, vertexBuffer,
                                 GL.GL_STATIC_DRAW_ARB );
 
-            // bind vertex buffer object (normals)
             gl.glBindBufferARB( GL.GL_ARRAY_BUFFER_ARB, glBufferObjectIds[1] );
-            gl.glBufferDataARB( GL.GL_ARRAY_BUFFER_ARB, normalsBuffer.capacity() * 4, normalsBuffer,
-                                GL.GL_STATIC_DRAW_ARB );
+            if ( normalsBuffer instanceof ByteBuffer ) {
+                normalGLType = GL.GL_BYTE;
+                gl.glBufferDataARB( GL.GL_ARRAY_BUFFER_ARB, normalsBuffer.capacity(), normalsBuffer,
+                                    GL.GL_STATIC_DRAW_ARB );
+            } else if ( normalsBuffer instanceof ShortBuffer ) {
+                normalGLType = GL.GL_SHORT;
+                gl.glBufferDataARB( GL.GL_ARRAY_BUFFER_ARB, normalsBuffer.capacity() * 2, normalsBuffer,
+                                    GL.GL_STATIC_DRAW_ARB );
+            } else if ( normalsBuffer instanceof FloatBuffer ) {
+                normalGLType = GL.GL_FLOAT;
+                gl.glBufferDataARB( GL.GL_ARRAY_BUFFER_ARB, normalsBuffer.capacity() * 4, normalsBuffer,
+                                    GL.GL_STATIC_DRAW_ARB );
+            } else {
+                throw new IllegalArgumentException();
+            }
 
             // bind element buffer object (triangles)
             gl.glBindBufferARB( GL.GL_ELEMENT_ARRAY_BUFFER_ARB, glBufferObjectIds[2] );
@@ -237,7 +253,7 @@ public class RenderMeshFragment implements Comparable<RenderMeshFragment> {
         gl.glVertexPointer( 3, GL.GL_FLOAT, 0, 0 );
 
         gl.glBindBufferARB( GL.GL_ARRAY_BUFFER_ARB, glBufferObjectIds[1] );
-        gl.glNormalPointer( GL.GL_FLOAT, 0, 0 );
+        gl.glNormalPointer( normalGLType, 0, 0 );
 
         gl.glBindBufferARB( GL.GL_ELEMENT_ARRAY_BUFFER_ARB, glBufferObjectIds[2] );
         gl.glDrawElements( GL.GL_TRIANGLES, data.getNumTriangles() * 3, GL.GL_UNSIGNED_SHORT, 0 );
@@ -321,7 +337,8 @@ public class RenderMeshFragment implements Comparable<RenderMeshFragment> {
                     }
 
                 }
-                // activate shader and set texSamplers, the shaderprogram is not null.
+                // activate shader and set texSamplers, the shaderprogram is not
+                // null.
                 shaderProgram.useProgram( gl );
                 for ( int i = 0; i < textures.size(); i++ ) {
                     if ( textures.get( i ) != null ) {

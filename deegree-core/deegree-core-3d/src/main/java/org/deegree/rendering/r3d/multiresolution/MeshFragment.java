@@ -64,7 +64,7 @@ public class MeshFragment implements Comparable<MeshFragment> {
     public final int id;
 
     /**
-     * The bbox of the frament
+     * The bbox of the fragment
      */
     public final float[][] bbox = new float[2][3];
 

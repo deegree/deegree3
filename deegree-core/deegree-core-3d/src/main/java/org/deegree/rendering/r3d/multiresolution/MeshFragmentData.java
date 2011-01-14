@@ -59,7 +59,7 @@ public class MeshFragmentData {
 
     private final Buffer indexBuffer;
 
-    private final FloatBuffer normalsBuffer;
+    private final Buffer normalsBuffer;
 
     /**
      * Construct from the given rawbuffer.
@@ -69,7 +69,7 @@ public class MeshFragmentData {
      * @param normalsBuffer
      * @param indexBuffer
      */
-    public MeshFragmentData( PooledByteBuffer rawBuffer, FloatBuffer vertexBuffer, FloatBuffer normalsBuffer,
+    public MeshFragmentData( PooledByteBuffer rawBuffer, FloatBuffer vertexBuffer, Buffer normalsBuffer,
                              Buffer indexBuffer ) {
         this.rawBuffer = rawBuffer;
         this.vertexBuffer = vertexBuffer;
@@ -112,7 +112,7 @@ public class MeshFragmentData {
     /**
      * @return the normal buffer
      */
-    public FloatBuffer getNormals() {
+    public Buffer getNormals() {
         return normalsBuffer;
     }
 

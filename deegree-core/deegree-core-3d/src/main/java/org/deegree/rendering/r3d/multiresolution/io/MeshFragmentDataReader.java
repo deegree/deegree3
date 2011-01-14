@@ -135,12 +135,20 @@ public class MeshFragmentDataReader {
         FloatBuffer vertexBuffer = verticesSlice.asFloatBuffer();
         rawTileBuffer.position( rawTileBuffer.position() + numVertices * 4 * 3 );
 
-        FloatBuffer normalsBuffer = null;
-        rawTileBuffer.limit( rawTileBuffer.position() + numVertices * 4 * 3 );
+        Buffer normalsBuffer = null;
+        int bytesPerNormalComponent = 1;
+        rawTileBuffer.limit( rawTileBuffer.position() + numVertices * bytesPerNormalComponent * 3 );
         ByteBuffer normalsSlice = rawTileBuffer.slice();
         normalsSlice.order( ByteOrder.nativeOrder() );
-        normalsBuffer = normalsSlice.asFloatBuffer();
-        rawTileBuffer.position( rawTileBuffer.position() + numVertices * 4 * 3 );
+        if ( bytesPerNormalComponent == 1 ) {
+            normalsBuffer = normalsSlice;
+        } else if ( bytesPerNormalComponent == 2 ) {
+            normalsBuffer = normalsSlice.asShortBuffer();
+        } else if ( bytesPerNormalComponent == 4 ) {
+            normalsBuffer = normalsSlice.asFloatBuffer();
+        }
+
+        rawTileBuffer.position( rawTileBuffer.position() + numVertices * bytesPerNormalComponent * 3 );
 
         Buffer indexBuffer = null;
         if ( rowsPerMt == -1 ) {
