@@ -1,6 +1,0 @@
-POINT
-[id=P1,
-metaDataProperty=('', 'Actually, in GML 3.1.1, anything may appear here, content is not constrained.'),
-description='This is just for testing the parsing of standard GML properties.',
-name=('Point P1', 'P1', 'Point')]
-(7.12 50.72)
