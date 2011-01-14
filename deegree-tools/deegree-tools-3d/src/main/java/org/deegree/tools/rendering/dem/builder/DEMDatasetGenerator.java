@@ -96,7 +96,8 @@ import org.deegree.tools.rendering.dem.builder.dag.DAGBuilder;
 @Tool("Generates DEM multiresolution datasets from rasters, suitable for the WPVS.")
 public class DEMDatasetGenerator {
 
-    // private static final Logger LOG = LoggerFactory.getLogger( DEMDatasetGenerator.class );
+    // private static final Logger LOG = LoggerFactory.getLogger(
+    // DEMDatasetGenerator.class );
 
     /*
      * Command line options
@@ -108,7 +109,7 @@ public class DEMDatasetGenerator {
     private static final String OPT_OUTPUT_ROWS = "out_rows";
 
     private static final String OPT_MAX_HEIGHT = "max_z";
-
+    
     final RasterData dataBuffer;
 
     /** Number of points in the heixelBuffer (x-dimension). */
@@ -148,6 +149,8 @@ public class DEMDatasetGenerator {
 
     private static final int TILE_SIZE = 1000;
 
+    private static final int BYTES_PER_NORMAL_COMPONENT = 1;
+
     /**
      * Creates a new <code>PatchGenerator</code> instance.
      * 
@@ -176,7 +179,8 @@ public class DEMDatasetGenerator {
             this.maxZ = maxZ;
         }
 
-        // don't use dataBuffer.getWidth() here, as it seems to be happen that it gets bigger than the input
+        // don't use dataBuffer.getWidth() here, as it seems to be happen that
+        // it gets bigger than the input
         // raster (e.g. 2048 -> 2049)
         this.inputX = raster.getColumns();
         this.inputY = raster.getRows();
@@ -240,10 +244,10 @@ public class DEMDatasetGenerator {
             throw new RuntimeException( Messages.getMessage( "DEMDSGEN_TOO_MANY_VERTICES" ) );
         }
 
-        int bytesPerMacroTrinagle = ( 4 + 4 * 3 * getVerticesPerFragment() );
+        int bytesPerMacroTriangle = ( 4 + 4 * 3 * getVerticesPerFragment() );
 
         // normal vectors
-        this.bytesPerTile = ( bytesPerMacroTrinagle + ( 4 * 3 * getVerticesPerFragment() ) );
+        this.bytesPerTile = ( bytesPerMacroTriangle + ( BYTES_PER_NORMAL_COMPONENT * 3 * getVerticesPerFragment() ) );
 
         long fs = 0;
         int level = 0;
@@ -425,7 +429,8 @@ public class DEMDatasetGenerator {
         // // Thread was interrupted
         // e.printStackTrace();
         // }
-        // System.out.println( LogUtils.createDurationTimeString( "Creation of triangles", sT, true ) );
+        // System.out.println( LogUtils.createDurationTimeString(
+        // "Creation of triangles", sT, true ) );
 
         return triangleManager;
     }
@@ -447,10 +452,13 @@ public class DEMDatasetGenerator {
         float height = getAsFloatSample( rasterCoordinate[0], rasterCoordinate[1], 0 );
         // float height = 0.0f;
         // if ( x > boxMinX && x < boxMaxX && y > boxMinY && y < boxMaxY ) {
-        // // height = getAsFloatSample( rasterCoordinate[0], rasterCoordinate[1], 0 );
-        // height = 100.0f + getAsFloatSample( rasterCoordinate[0], rasterCoordinate[1], 0 );
+        // // height = getAsFloatSample( rasterCoordinate[0],
+        // rasterCoordinate[1], 0 );
+        // height = 100.0f + getAsFloatSample( rasterCoordinate[0],
+        // rasterCoordinate[1], 0 );
         // }
-        // // float height = getAsFloatSample( rasterCoordinate[0], rasterCoordinate[1], 0 );
+        // // float height = getAsFloatSample( rasterCoordinate[0],
+        // rasterCoordinate[1], 0 );
         if ( height > maxZ ) {
             height = maxZ;
         }
@@ -539,7 +547,8 @@ public class DEMDatasetGenerator {
             Point2f midPoint = calcMidPoint( p1, p2 );
             MacroTriangle triangle = null;
             if ( level > 1 ) {
-                // generate deeper levels first (in order to enable bottom-up bbox propagation)
+                // generate deeper levels first (in order to enable bottom-up
+                // bbox propagation)
                 long time = -1;
                 if ( !( locationCode.substring( 1 ) ).contains( "1" ) ) {
                     time = System.currentTimeMillis();
@@ -551,9 +560,11 @@ public class DEMDatasetGenerator {
 
                 triangle = new MacroTriangle( builder, p0, p1, p2, level, locationCode, error, child1, child2 );
                 // if ( !( locationCode.substring( 1 ) ).contains( "1" ) ) {
-                // String message = Thread.currentThread().getName() + " finished creation of level: " + level + " ("
+                // String message = Thread.currentThread().getName() +
+                // " finished creation of level: " + level + " ("
                 // + locationCode + ")";
-                // System.out.println( LogUtils.createDurationTimeString( message, time, true ) );
+                // System.out.println( LogUtils.createDurationTimeString(
+                // message, time, true ) );
                 //
                 // }
 
@@ -612,12 +623,34 @@ public class DEMDatasetGenerator {
 
             // store normals
             for ( Vector3f normal : vertexNormals ) {
-                rawTileBuffer.putFloat( normal.x );
-                rawTileBuffer.putFloat( normal.y );
-                rawTileBuffer.putFloat( normal.z );
+                put( rawTileBuffer, normal.x, BYTES_PER_NORMAL_COMPONENT );
+                put( rawTileBuffer, normal.y, BYTES_PER_NORMAL_COMPONENT );
+                put( rawTileBuffer, normal.z, BYTES_PER_NORMAL_COMPONENT );
             }
 
             triangleManager.storePatch( tile, rawTileBuffer );
+        }
+    }
+
+    private void put( ByteBuffer buffer, float value, int bytesPerValue ) {
+        if ( bytesPerValue == 4 ) {
+            buffer.putFloat( value );
+        } else if ( bytesPerValue == 2 ) {
+            short s = 0;
+            if ( value < 1 ) {
+                s = (short) ( 32768.0f * value );
+            } else {
+                s = (short) ( 32767.0f * value );
+            }
+            buffer.putShort( s );
+        } else if ( bytesPerValue == 1 ) {
+            byte b = 0;
+            if ( value < 1 ) {
+                b = (byte) ( 128.0f * value );
+            } else {
+                b = (byte) ( 127.0f * value );
+            }
+            buffer.put( b );
         }
     }
 
@@ -638,7 +671,8 @@ public class DEMDatasetGenerator {
         Options options = initOptions();
         boolean verbose = false;
 
-        // for the moment, using the CLI API there is no way to respond to a help argument; see
+        // for the moment, using the CLI API there is no way to respond to a
+        // help argument; see
         // https://issues.apache.org/jira/browse/CLI-179
         if ( args != null && args.length > 0 ) {
             for ( String a : args ) {
@@ -739,7 +773,7 @@ public class DEMDatasetGenerator {
 
         opt = new Option( "mh", OPT_MAX_HEIGHT, true, "maximum z-value, every higher value is clipped to no data value" );
         opts.addOption( opt );
-
+        
         CommandUtils.addDefaultOptions( opts );
 
         return opts;
