@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gml:FeatureCollection gml:id="f100"
+  xmlns:gml="http://www.opengis.net/gml" 
+  xmlns:sf="http://cite.opengeospatial.org/gmlsf"
+  xmlns:xlink="http://www.w3.org/1999/xlink"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://cite.opengeospatial.org/gmlsf ../schema/cite/cite-gmlsf1.xsd">
+
+  <gml:description>
+  Test data for assessing compliance with the GMLSF profile at level SF-1.
+  </gml:description>
+  <gml:name>CITE/WFS-1.1</gml:name>
+  <gml:boundedBy>
+    <gml:Envelope srsName="urn:x-ogc:def:crs:EPSG:6.11.2:4326">
+      <gml:lowerCorner>34.94 -10.52</gml:lowerCorner>
+      <gml:upperCorner>71.96 32.19</gml:upperCorner>
+    </gml:Envelope>
+  </gml:boundedBy>
+
+  <gml:featureMember>    
+    <sf:ComplexGeoFeature gml:id="f101">
+      <gml:description>
+      Aliquam sed lorem. Nam non risus ut felis pellentesque consequat. Curabitur 
+      pede. Suspendisse potenti. Mauris lacinia. Donec risus leo, luctus at, 
+      aliquet vel, congue in, mi. Mauris pulvinar mollis felis. Etiam posuere, 
+      ante et luctus blandit, purus metus sollicitudin nisl, eget gravida lorem 
+      elit sed pede. Nunc tristique elementum sem. Nullam feugiat mauris quis 
+      tellus. Nulla cursus augue at ipsum. Mauris volutpat posuere tellus. Quisque 
+      accumsan tellus sit amet elit. Nam tempor libero id urna. Donec ac sapien. 
+      Class aptent taciti sociosqu ad litora torquent per conubia nostra, per 
+      inceptos hymenaeos. Ut sollicitudin dapibus magna. Phasellus erat turpis, 
+      adipiscing eu, lobortis ut, convallis a, nisl. Vivamus rutrum magna eget 
+      metus consectetuer ultrices. Sed ac nisi tincidunt risus euismod condimentum.
+      </gml:description>
+      <gml:name codeSpace="http://cite.opengeospatial.org/gmlsf">name-f101</gml:name>
+      <sf:geometryProperty>
+        <gml:LineString srsName="urn:x-ogc:def:crs:EPSG:4979">
+          <gml:posList>46.074 9.799 600.2 46.652 10.466 781.4</gml:posList>
+        </gml:LineString>
+      </sf:geometryProperty>
+      <sf:observation uom="http://www.bipm.fr/en/si/derived_units/Celsius">2.4</sf:observation>
+      <sf:typeCode codeSpace="https://www.dgiwg.org/FAD">AQ064</sf:typeCode>
+      <sf:auditTrail>
+        <sf:Event>
+          <sf:action>Insert</sf:action>
+          <sf:timestamp>2006-06-29T12:37:00+02:00</sf:timestamp>
+          <sf:userid>Phineas.Fogg</sf:userid>
+        </sf:Event>
+        <sf:Event>
+          <sf:action>Update</sf:action>
+          <sf:timestamp>2006-06-30T10:37:00+02:00</sf:timestamp>
+          <sf:userid>Phineas.Fogg</sf:userid>
+        </sf:Event>
+        <sf:Event>
+          <sf:action>Update</sf:action>
+          <sf:timestamp>2006-06-30T16:07:00+02:00</sf:timestamp>
+          <sf:userid>Axel.Lidenbrock</sf:userid>
+        </sf:Event>
+        <sf:Event>
+          <sf:action>Update</sf:action>
+          <sf:timestamp>2006-07-12T16:16:00+02:00</sf:timestamp>
+          <sf:userid>Axel.Lidenbrock</sf:userid>
+        </sf:Event>
+        <sf:Event>
+          <sf:action>Update</sf:action>
+          <sf:timestamp>2006-09-06T09:47:07Z</sf:timestamp>
+          <sf:userid>Eugène.Rastignac</sf:userid>
+        </sf:Event>
+      </sf:auditTrail>
+    </sf:ComplexGeoFeature>
+  </gml:featureMember>   
+  
+  <gml:featureMember>
+    <sf:ComplexGeoFeature gml:id="f102">
+      <gml:description>
+      Integer euismod risus. Class aptent taciti sociosqu ad litora torquent per 
+      conubia nostra, per inceptos hymenaeos. Phasellus nec risus.
+      </gml:description>
+      <gml:name codeSpace="http://cite.opengeospatial.org/gmlsf">name-f102</gml:name>
+      <gml:name>Vivamus blandit</gml:name>
+      <sf:geometryProperty>
+        <gml:Curve srsName="urn:x-ogc:def:crs:EPSG:4979">
+          <gml:segments>
+            <gml:LineStringSegment interpolation="linear">
+              <gml:posList>45.174 2.899 45.652 2.466 45.891 2.899</gml:posList>
+            </gml:LineStringSegment>
+            <gml:LineStringSegment interpolation="linear">
+              <gml:posList>45.891 2.899 48.174 2.899 48.652 2.466 48.891 2.899 0</gml:posList>
+            </gml:LineStringSegment>
+          </gml:segments>
+        </gml:Curve>
+      </sf:geometryProperty>
+      <sf:observation uom="http://www.bipm.fr/en/si/si_brochure/chapter2/2-1/metre.html">14.1</sf:observation>
+      <sf:typeCode codeSpace="https://www.dgiwg.org/FAD">SA060</sf:typeCode>
+      <sf:auditTrail>
+        <sf:Event>
+          <sf:action>Insert</sf:action>
+          <sf:timestamp>2006-10-21T11:28:00+01:00</sf:timestamp>
+          <sf:userid>Axel.Lidenbrock</sf:userid>
+        </sf:Event>
+        <sf:Event>
+          <sf:action>Update</sf:action>
+          <sf:timestamp>2006-10-30T21:05:00+01:00</sf:timestamp>
+          <sf:userid>Phineas.Fogg</sf:userid>
+        </sf:Event>
+      </sf:auditTrail>
+    </sf:ComplexGeoFeature>
+  </gml:featureMember>   
+  
+  <gml:featureMember>    
+    <sf:ComplexGeoFeature gml:id="f103">
+      <gml:name codeSpace="http://cite.opengeospatial.org/gmlsf">name-f103</gml:name>
+      <sf:geometryProperty>
+        <gml:Surface srsName="urn:x-ogc:def:crs:EPSG:4326">
+          <gml:patches>
+            <gml:PolygonPatch interpolation="planar">
+              <gml:exterior>
+                <gml:LinearRing>
+                  <gml:posList>37.5 6.0 37.5 8.0 40.0 8.0 40.0 6.0 37.5 6.0</gml:posList>
+                </gml:LinearRing>
+              </gml:exterior>
+              <gml:interior>
+                <gml:LinearRing>
+                  <gml:posList>38.0 6.5 39.0 6.5 39.0 7.0 38.0 6.5</gml:posList>
+                </gml:LinearRing>
+              </gml:interior>
+            </gml:PolygonPatch>
+            <gml:PolygonPatch interpolation="planar">
+              <gml:exterior>
+                <gml:LinearRing>
+                  <gml:posList>40.0 6.0 40.0 8.0 42.5 9.0 42.5 5.0 40.0 6.0</gml:posList>
+                </gml:LinearRing>
+              </gml:exterior>
+            </gml:PolygonPatch>
+          </gml:patches>
+        </gml:Surface>
+      </sf:geometryProperty>
+      <sf:observation uom="http://www.bipm.fr/en/si/derived_units/density">2.63E3</sf:observation>
+      <sf:typeCode codeSpace="https://www.dgiwg.org/FAD">DB160</sf:typeCode>
+      <sf:b64BinaryProperty mimeType="text/plain">
+      VHdhcyBicmlsbGlnLCBhbmQgdGhlIHNsaXRoeSB0b3Zlcw==
+      </sf:b64BinaryProperty>
+      <sf:auditTrail>
+        <sf:Event>
+          <sf:action>Insert</sf:action>
+          <sf:timestamp>2006-10-21T11:28:00+01:00</sf:timestamp>
+          <sf:userid>Axel.Lidenbrock</sf:userid>
+        </sf:Event>
+      </sf:auditTrail>
+    </sf:ComplexGeoFeature>
+  </gml:featureMember>   
+
+</gml:FeatureCollection>
+

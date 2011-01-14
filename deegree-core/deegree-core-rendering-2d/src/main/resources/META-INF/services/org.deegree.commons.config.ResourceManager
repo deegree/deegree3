@@ -1,0 +1,3 @@
+org.deegree.coverage.persistence.CoverageBuilderManager
+org.deegree.metadata.persistence.MetadataStoreManager
+org.deegree.remoteows.RemoteOWSManager
