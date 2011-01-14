@@ -59,6 +59,11 @@
     </dependency>
     <dependency>
       <groupId>org.deegree</groupId>
+      <artifactId>deegree-core-metadata</artifactId>
+      <version>3.1-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>org.deegree</groupId>
       <artifactId>deegree-core-base</artifactId>
       <version>3.1-SNAPSHOT</version>
     </dependency>
