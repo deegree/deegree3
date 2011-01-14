@@ -222,7 +222,7 @@ public class ExecuteRequestKVPAdapter {
             if ( actualOccurs < minOccurs ) {
                 throw exceptionCustomizer.inputInvalidOccurence( inputId, minOccurs, maxOccurs, actualOccurs );
             }
-            if ( actualOccurs > minOccurs ) {
+            if ( actualOccurs > maxOccurs ) {
                 throw exceptionCustomizer.inputInvalidOccurence( inputId, minOccurs, maxOccurs, actualOccurs );
             }
         }

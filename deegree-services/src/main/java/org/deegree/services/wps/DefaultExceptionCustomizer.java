@@ -162,7 +162,7 @@ public class DefaultExceptionCustomizer implements ExceptionCustomizer {
     public OWSException inputInvalidOccurence( CodeType inputParameterId, int minOccurs, int maxOccurs, int actualOccurs ) {
         StringBuilder msg = new StringBuilder( processMsg );
         msg.append( "Input parameter '" ).append( inputParameterId ).append( "' is present " ).append( actualOccurs ).append(
-                                                                                                                              " times." );
+                                                                                                                              " times, " );
         if ( minOccurs < actualOccurs ) {
             msg.append( "but at least " ).append( minOccurs );
             msg.append( " occurrence(s) is/are required" );
@@ -170,7 +170,7 @@ public class DefaultExceptionCustomizer implements ExceptionCustomizer {
             msg.append( "but only " ).append( maxOccurs );
             msg.append( " occurrence(s) is/are allowed" );
         }
-        msg.append( "according to the corresponding parameter definition." );
+        msg.append( " according to the corresponding parameter definition." );
 
         return new OWSException( msg.toString(), OWSException.INVALID_PARAMETER_VALUE, inputParameterId.toString() );
 
