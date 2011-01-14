@@ -35,19 +35,12 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.protocol.wms.raster;
 
-import java.util.LinkedList;
-
-import org.deegree.commons.utils.Pair;
 import org.deegree.coverage.raster.SimpleRaster;
 import org.deegree.coverage.raster.data.RasterData;
 import org.deegree.coverage.raster.data.info.BandType;
-import org.deegree.coverage.raster.data.nio.ByteBufferRasterData;
 import org.deegree.coverage.raster.geom.RasterGeoReference;
-import org.deegree.coverage.raster.io.RasterReader;
-import org.deegree.feature.FeatureCollection;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.geometry.Envelope;
-import org.deegree.rendering.r2d.se.unevaluated.Style;
 
 /**
  * TODO add class documentation here
@@ -129,15 +122,15 @@ public class WMSRaster extends SimpleRaster {
      * @param style
      * @return the information on the underlying wms.
      */
-    public Pair<FeatureCollection, LinkedList<String>> getFeatures( GetFeatureInfo fi, Style style ) {
-        ByteBufferRasterData rasterData = (ByteBufferRasterData) getRasterData();
-        RasterReader reader = rasterData.getReader();
-        if ( reader instanceof WMSReader ) {
-            // do feature info
-        }
-        // do a normal lookup
-        return null;
-    }
+    // public Pair<FeatureCollection, LinkedList<String>> getFeatures( GetFeatureInfo fi, Style style ) {
+    // ByteBufferRasterData rasterData = (ByteBufferRasterData) getRasterData();
+    // RasterReader reader = rasterData.getReader();
+    // if ( reader instanceof WMSReader ) {
+    // do feature info
+    // }
+    // do a normal lookup
+    // return null;
+    // }
 
     /**
      * @return null

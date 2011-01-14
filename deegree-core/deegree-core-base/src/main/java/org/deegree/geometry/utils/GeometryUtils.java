@@ -68,7 +68,6 @@ import org.deegree.geometry.primitive.patches.PolygonPatch;
 import org.deegree.geometry.primitive.patches.SurfacePatch;
 import org.deegree.geometry.standard.points.PointsArray;
 import org.deegree.geometry.standard.points.PointsList;
-import org.deegree.rendering.r2d.strokes.TextStroke;
 
 /**
  * <code>GeometryUtils</code>
@@ -219,7 +218,6 @@ public class GeometryUtils {
      * This method flattens the path with a flatness parameter of 1.
      * 
      * @author Jerry Huxtable
-     * @see TextStroke
      * @param shape
      * @return the path segment lengths
      */
