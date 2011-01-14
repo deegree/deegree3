@@ -3,7 +3,7 @@
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.deegree</groupId>
-  <artifactId>deegree-wps</artifactId>
+  <artifactId>deegree-processproviders</artifactId>
   <packaging>pom</packaging>
   <version>3.1-SNAPSHOT</version>
   <name>deegree-wps</name>
@@ -13,7 +13,8 @@
     <url>http://svn.wald.intevation.org/svn/deegree/deegree3/trunk/deegree-wps</url>
   </scm>
   <modules>
-    <module>deegree-wps-sextante</module>
+    <module>deegree-processprovider-example</module>
+    <module>deegree-processprovider-sextante</module>
   </modules>
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
