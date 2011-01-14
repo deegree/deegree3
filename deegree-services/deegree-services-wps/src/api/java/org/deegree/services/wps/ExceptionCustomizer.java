@@ -82,7 +82,7 @@ public interface ExceptionCustomizer {
 
     public OWSException inputInvalidCombination( CodeType inputParameterId, List<Pair<String, String>> conflictingKVPs );
 
-    public OWSException inputInvalidOccurence( CodeType inputParameterId, int minOccurs, int maxOccurs, int actualOccurs );
+    public OWSException inputInvalidOccurrence( CodeType inputParameterId, int minOccurs, int maxOccurs, int actualOccurs );
 
     public OWSException outputNoSuchParameter( CodeType outputParameterId );
 

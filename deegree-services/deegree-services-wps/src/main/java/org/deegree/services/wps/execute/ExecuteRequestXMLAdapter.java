@@ -221,7 +221,7 @@ public class ExecuteRequestXMLAdapter extends OWSCommonXMLAdapter {
             int maxOccurs = inputDef.getMaxOccurs() != null ? inputDef.getMaxOccurs().intValue() : 1;
             int actualOccurs = inputIdToCount.get( inputId ) != null ? inputIdToCount.get( inputId ) : 0;
             if ( actualOccurs < minOccurs || actualOccurs > maxOccurs ) {
-                throw eCustomizer.inputInvalidOccurence( inputId, minOccurs, maxOccurs, actualOccurs );
+                throw eCustomizer.inputInvalidOccurrence( inputId, minOccurs, maxOccurs, actualOccurs );
             }
         }
         return new ProcessletInputs( inputs );

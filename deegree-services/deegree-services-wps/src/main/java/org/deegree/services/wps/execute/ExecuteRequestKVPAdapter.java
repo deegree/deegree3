@@ -95,18 +95,6 @@ import org.slf4j.LoggerFactory;
  */
 public class ExecuteRequestKVPAdapter {
 
-    // http://127.0.0.1:8080/services/services?service=WPS&request=Execute&version=1.0.0
-    // http://127.0.0.1:8080/services/services?service=WPS&request=Execute&version=1.0.0&identifier=TestProcess
-    // http://127.0.0.1:8080/services/services?service=WPS&request=Execute&version=1.0.0&identifier=TestProcess&DataInputs=LiteralInput=5
-    // http://127.0.0.1:8080/services/services?service=WPS&request=Execute&version=1.0.0&identifier=TestProcess&DataInputs=LiteralInput=5@uom=seconds@datatype=integer
-    // http://127.0.0.1:8080/services/services?service=WPS&request=Execute&version=1.0.0&identifier=TestProcess&DataInputs=LiteralInput=5@uom=seconds@datatype=integer;BBOXInput=0,0,90,180,EPSG:4326
-    // http://127.0.0.1:8080/services/services?service=WPS&request=Execute&version=1.0.0&identifier=TestProcess&DataInputs=LiteralInput=5@uom=seconds@datatype=integer;BBOXInput=0,0,90,180,EPSG:4326;XMLInput=@xlink:href=http%3A//testing.deegree.org/deegree-wfs/services%3FREQUEST%3DGetCapabilities%26version%3D1.1.0%26service%3DWFS
-    // http://127.0.0.1:8080/services/services?service=WPS&request=Execute&version=1.0.0&identifier=TestProcess&DataInputs=LiteralInput=5@uom=seconds@datatype=integer;BBOXInput=0,0,90,180,EPSG:4326;XMLInput=@xlink:href=http%3A//testing.deegree.org/deegree-wfs/services%3FREQUEST%3DGetCapabilities%26version%3D1.1.0%26service%3DWFS;BinaryInput=@xlink:href=http%3A//www.deegree.org/deegree/images/deegree/logo-deegree.png
-    // http://127.0.0.1:8080/services/services?service=WPS&request=Execute&version=1.0.0&identifier=TestProcess&DataInputs=LiteralInput=5@uom=seconds@datatype=integer;BBOXInput=0,0,90,180,EPSG:4326;XMLInput=@xlink:href=http%3A//testing.deegree.org/deegree-wfs/services%3FREQUEST%3DGetCapabilities%26version%3D1.1.0%26service%3DWFS;BinaryInput=@xlink:href=http%3A//www.deegree.org/deegree/images/deegree/logo-deegree.png&RawDataOutput=XMLOutput
-    // http://127.0.0.1:8080/services/services?service=WPS&request=Execute&version=1.0.0&identifier=TestProcess&DataInputs=LiteralInput=5@uom=seconds@datatype=integer;BBOXInput=0,0,90,180,EPSG:4326;XMLInput=@xlink:href=http%3A//testing.deegree.org/deegree-wfs/services%3FREQUEST%3DGetCapabilities%26version%3D1.1.0%26service%3DWFS;BinaryInput=@xlink:href=http%3A//www.deegree.org/deegree/images/deegree/logo-deegree.png&RawDataOutput=BinaryOutput
-    // http://127.0.0.1:8080/services/services?service=WPS&request=Execute&version=1.0.0&identifier=TestProcess&DataInputs=LiteralInput=5@uom=seconds@datatype=integer;BBOXInput=0,0,90,180,EPSG:4326;XMLInput=@xlink:href=http%3A//testing.deegree.org/deegree-wfs/services%3FREQUEST%3DGetCapabilities%26version%3D1.1.0%26service%3DWFS;BinaryInput=@xlink:href=http%3A//www.deegree.org/deegree/images/deegree/logo-deegree.png&ResponseDocument=BinaryOutput;XMLOutput&storeExecuteResponse=true
-    // http://127.0.0.1:8080/services/services?service=WPS&request=Execute&version=1.0.0&identifier=TestProcess&DataInputs=LiteralInput=5@uom=seconds@datatype=integer;BBOXInput=0,0,90,180,EPSG:4326;XMLInput=@xlink:href=http%3A//testing.deegree.org/deegree-wfs/services%3FREQUEST%3DGetCapabilities%26version%3D1.1.0%26service%3DWFS;BinaryInput=@xlink:href=http%3A//www.deegree.org/deegree/images/deegree/logo-deegree.png&ResponseDocument=BinaryOutput;XMLOutput&storeExecuteResponse=true&lineage=true
-
     private static final Logger LOG = LoggerFactory.getLogger( ExecuteRequestKVPAdapter.class );
 
     private static final GeometryFactory geomFac = new GeometryFactory();
@@ -220,10 +208,10 @@ public class ExecuteRequestKVPAdapter {
             int maxOccurs = inputDef.getMaxOccurs() != null ? inputDef.getMaxOccurs().intValue() : 1;
             int actualOccurs = inputIdToCount.get( inputId ) != null ? inputIdToCount.get( inputId ) : 0;
             if ( actualOccurs < minOccurs ) {
-                throw exceptionCustomizer.inputInvalidOccurence( inputId, minOccurs, maxOccurs, actualOccurs );
+                throw exceptionCustomizer.inputInvalidOccurrence( inputId, minOccurs, maxOccurs, actualOccurs );
             }
-            if ( actualOccurs > minOccurs ) {
-                throw exceptionCustomizer.inputInvalidOccurence( inputId, minOccurs, maxOccurs, actualOccurs );
+            if ( actualOccurs > maxOccurs ) {
+                throw exceptionCustomizer.inputInvalidOccurrence( inputId, minOccurs, maxOccurs, actualOccurs );
             }
         }
 
