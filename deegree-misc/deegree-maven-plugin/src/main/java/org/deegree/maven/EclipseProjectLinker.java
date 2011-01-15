@@ -73,10 +73,9 @@ public class EclipseProjectLinker extends AbstractMojo {
             throw new MojoExecutionException( "Property 'eclipse.workspace' must point to a directory." );
         }
 
-        File link = new File( f, project.getArtifactId() );
         File target = project.getBasedir();
 
-        String cmd = "ln -sf " + target + " " + link;
+        String cmd = "ln -sf -t " + eclipseWorkspace + " " + target;
         try {
             Runtime.getRuntime().exec( cmd );
         } catch ( IOException e ) {
