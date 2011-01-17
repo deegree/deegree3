@@ -112,7 +112,8 @@ public class WorkspaceMojo extends AbstractMojo {
         }
         ZipOutputStream out = null;
         try {
-            if ( !new File( project.getBasedir(), "target" ).mkdirs() ) {
+            File target = new File( project.getBasedir(), "target" );
+            if ( !target.exists() && !target.mkdirs() ) {
                 throw new MojoFailureException( "Could not create target directory!" );
             }
             File workspaceFile = new File( project.getBasedir(), "target/" + project.getArtifactId() + "-"
