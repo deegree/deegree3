@@ -874,8 +874,6 @@ public class OGCFrontController extends HttpServlet {
             LOG.info( "" );
 
             initWorkspace();
-            serviceConfiguration = workspace.getSubsystemManager( WebServicesConfiguration.class );
-            mainConfig = serviceConfiguration.getMainConfiguration();
 
         } catch ( NoClassDefFoundError e ) {
             LOG.error( "Initialization failed!" );
@@ -898,6 +896,8 @@ public class OGCFrontController extends HttpServlet {
         LOG.info( "--------------------------------------------------------------------------------" );
         workspace = getWorkspace();
         workspace.initAll();
+        serviceConfiguration = workspace.getSubsystemManager( WebServicesConfiguration.class );
+        mainConfig = serviceConfiguration.getMainConfiguration();
         LOG.info( "" );
     }
 
