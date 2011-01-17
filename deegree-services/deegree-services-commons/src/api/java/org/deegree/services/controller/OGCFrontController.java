@@ -47,6 +47,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringReader;
+import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -976,6 +977,18 @@ public class OGCFrontController extends HttpServlet {
      * href="https://wiki.deegree.org/deegreeWiki/ClassLoaderLeaks">ClassLoaderLeaks in deegree wiki</a>.
      */
     private void plugClassLoaderLeaks() {
+        // if the feature store manager does this, it breaks
+        // use dirty reflection hack to avoid code dependency
+        try {
+            Class<?> trs = Class.forName( "org.deegree.feature.persistence.query.ThreadedResultSet" );
+            if ( trs != null ) {
+                Method m = trs.getMethod( "destroy" );
+                m.invoke( null );
+            }
+        } catch ( Exception e ) {
+            // just eat it
+            e.printStackTrace();
+        }
         Executor.getInstance().shutdown();
 
         // deregister all JDBC drivers loaded by webapp classloader
