@@ -63,6 +63,7 @@ import lombok.Setter;
 import org.apache.commons.io.FileUtils;
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.utils.io.Zip;
+import org.deegree.commons.version.DeegreeModuleInfo;
 import org.deegree.console.featurestore.FeatureStoreConfigManager;
 import org.deegree.console.jdbc.ConnectionConfigManager;
 import org.deegree.console.metadatastore.MetadataStoreConfigManager;
@@ -290,7 +291,8 @@ public class ConfigManager {
             if ( evt.getSource() instanceof HtmlCommandButton ) {
                 String ws = ( (HtmlCommandButton) evt.getSource() ).getLabel();
 
-                in = get( STREAM, "http://download.deegree.org/deegree3/workspaces/workspaces-3.1", null );
+                String version = DeegreeModuleInfo.getRegisteredModules().get( 0 ).getVersion().getVersionNumber();
+                in = get( STREAM, "http://download.deegree.org/deegree3/workspaces/workspaces-" + version, null );
 
                 for ( String s : readLines( in ) ) {
                     String[] ss = s.split( " ", 2 );
@@ -325,6 +327,7 @@ public class ConfigManager {
                 lastMessage = "Workspace has been imported.";
             }
         } catch ( Exception e ) {
+            e.printStackTrace();
             LOG.trace( "Stack trace: ", e );
             lastMessage = "Workspace could not be imported: " + e.getLocalizedMessage();
         } finally {
@@ -340,7 +343,8 @@ public class ConfigManager {
                             throws IOException {
         InputStream in = null;
         try {
-            in = get( STREAM, "http://download.deegree.org/deegree3/workspaces/workspaces-3.1", null );
+            String version = DeegreeModuleInfo.getRegisteredModules().get( 0 ).getVersion().getVersionNumber();
+            in = get( STREAM, "http://download.deegree.org/deegree3/workspaces/workspaces-" + version, null );
             List<String> list = readLines( in );
             List<String> res = new ArrayList<String>( list.size() );
 
