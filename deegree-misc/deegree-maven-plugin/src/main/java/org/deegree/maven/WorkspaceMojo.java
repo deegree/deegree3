@@ -110,6 +110,9 @@ public class WorkspaceMojo extends AbstractMojo {
         if ( !dir.isDirectory() ) {
             dir = new File( project.getBasedir(), "src/main/webapp/WEB-INF/conf" );
         }
+        if ( !dir.isDirectory() ) {
+            dir = new File( project.getBasedir(), "src/main/workspace" );
+        }
         ZipOutputStream out = null;
         try {
             File target = new File( project.getBasedir(), "target" );
