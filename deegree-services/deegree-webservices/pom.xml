@@ -40,7 +40,7 @@
     </dependency>
     <dependency>
       <groupId>org.deegree</groupId>
-      <artifactId>deegree-services-wcs</artifactId>
+      <artifactId>deegree-services-csw</artifactId>
       <version>3.1-SNAPSHOT</version>
     </dependency>
     <dependency>
