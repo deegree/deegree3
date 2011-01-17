@@ -235,6 +235,7 @@ public class DeegreeWorkspace {
      * @param c
      * @return null, if no such manager was loaded
      */
+    @SuppressWarnings("unchecked")
     public <T extends ResourceManager> T getSubsystemManager( Class<T> c ) {
         return (T) managerMap.get( c );
     }
@@ -242,7 +243,12 @@ public class DeegreeWorkspace {
     private void searchDeps( List<Class<? extends ResourceManager>> list, ResourceManager m ) {
         list.addAll( asList( m.getDependencies() ) );
         for ( Class<? extends ResourceManager> c : m.getDependencies() ) {
-            searchDeps( list, managerMap.get( c ) );
+            ResourceManager mgr = managerMap.get( c );
+            if ( mgr == null ) {
+                LOG.info( "No resource manager found for {}, skipping. This may lead to problems.", c.getSimpleName() );
+            } else {
+                searchDeps( list, mgr );
+            }
         }
     }
 
