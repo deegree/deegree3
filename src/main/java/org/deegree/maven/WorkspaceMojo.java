@@ -82,8 +82,10 @@ public class WorkspaceMojo extends AbstractMojo {
         }
         String name = workspace.relativize( f.getAbsoluteFile().toURI() ).toString();
         if ( f.isDirectory() ) {
-            ZipEntry e = new ZipEntry( name );
-            out.putNextEntry( e );
+            if ( !name.isEmpty() ) {
+                ZipEntry e = new ZipEntry( name );
+                out.putNextEntry( e );
+            }
             File[] fs = f.listFiles();
             if ( fs != null ) {
                 for ( File f2 : fs ) {
