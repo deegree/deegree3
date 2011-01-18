@@ -38,6 +38,7 @@ package org.deegree.commons.utils.log;
 import static java.lang.Integer.parseInt;
 import static org.slf4j.LoggerFactory.getLogger;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.OutputStreamWriter;
@@ -92,6 +93,10 @@ public class LoggingAnnotationProcessor extends AbstractProcessor {
         if ( outFile == null ) {
             outFile = System.getProperty( "java.io.tmpdir" ) + "/log4j.snippet";
             LOG.info( "Outputting log4j snippet to '{}'.", outFile );
+        }
+        File parentFile = new File( outFile ).getParentFile();
+        if ( !parentFile.exists() && !parentFile.mkdirs() ) {
+            LOG.warn( "Target directory could not be created: {}", parentFile );
         }
     }
 
