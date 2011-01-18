@@ -35,7 +35,6 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.commons.utils.log;
 
-import static java.lang.Integer.parseInt;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.File;
@@ -75,24 +74,22 @@ import org.slf4j.Logger;
 @SupportedAnnotationTypes(value = { "org.deegree.commons.utils.log.PackageLoggingNotes",
                                    "org.deegree.commons.utils.log.LoggingNotes" })
 @SupportedSourceVersion(SourceVersion.RELEASE_6)
-@SupportedOptions( { "log4j.outputfile", "width" })
+@SupportedOptions( { "log4j.outputdir" })
 public class LoggingAnnotationProcessor extends AbstractProcessor {
 
     private static final Logger LOG = getLogger( LoggingAnnotationProcessor.class );
 
     private String outDir;
 
-    private int width;
+    private int width = 120;
 
     @Override
     public void init( ProcessingEnvironment env ) {
         super.init( env );
-        outDir = env.getOptions().get( "log4j.outputfile" );
-        String w = env.getOptions().get( "width" );
-        width = w == null ? 120 : parseInt( w );
+        outDir = env.getOptions().get( "log4j.outputdir" );
         if ( outDir == null ) {
             outDir = System.getProperty( "java.io.tmpdir" ) + "/log4j/";
-            LOG.info( "Outputting log4j snippet to '{}'.", outDir );
+            LOG.info( "Outputting log4j snippets to '{}'.", outDir );
         }
         File parentFile = new File( outDir );
         if ( !parentFile.exists() && !parentFile.mkdirs() ) {

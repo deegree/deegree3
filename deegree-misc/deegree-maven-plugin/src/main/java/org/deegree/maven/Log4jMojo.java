@@ -67,7 +67,7 @@ import com.google.common.base.Predicate;
  */
 public class Log4jMojo extends AbstractMojo {
 
-    private int width = 80;
+    private int width = 120;
 
     /**
      * @parameter default-value="${project}"
