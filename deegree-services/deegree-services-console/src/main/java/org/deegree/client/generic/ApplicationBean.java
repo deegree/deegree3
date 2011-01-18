@@ -35,6 +35,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.client.generic;
 
+import static org.deegree.services.controller.OGCFrontController.getServiceConfiguration;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -75,8 +77,10 @@ public class ApplicationBean implements Serializable {
             }
             moduleInfos.add( info.toString() );
         }
-        for ( String key : OGCFrontController.getServiceConfiguration().getServiceControllers().keySet() ) {
-            nameToController.add( key );
+        if ( getServiceConfiguration() != null && getServiceConfiguration().getServiceControllers() != null ) {
+            for ( String key : getServiceConfiguration().getServiceControllers().keySet() ) {
+                nameToController.add( key );
+            }
         }
     }
 
