@@ -35,8 +35,8 @@
   <modules>
     <!--module>deegree-wcts</module-->
     <!--module>deegree-geosciml-demo</module-->
-    <module>deegree-utah-demo</module>
-    <module>deegree-wps-demo</module>
+    <!-- <module>deegree-utah-demo</module> -->
+    <!-- <module>deegree-wps-demo</module> -->
     <module>deegree-csw-demo</module>
     <!--module>deegree-sos-demo</module-->
   </modules>
