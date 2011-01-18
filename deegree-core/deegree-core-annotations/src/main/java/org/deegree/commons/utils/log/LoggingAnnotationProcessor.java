@@ -80,21 +80,21 @@ public class LoggingAnnotationProcessor extends AbstractProcessor {
 
     private static final Logger LOG = getLogger( LoggingAnnotationProcessor.class );
 
-    private String outFile;
+    private String outDir;
 
     private int width;
 
     @Override
     public void init( ProcessingEnvironment env ) {
         super.init( env );
-        outFile = env.getOptions().get( "log4j.outputfile" );
+        outDir = env.getOptions().get( "log4j.outputfile" );
         String w = env.getOptions().get( "width" );
         width = w == null ? 120 : parseInt( w );
-        if ( outFile == null ) {
-            outFile = System.getProperty( "java.io.tmpdir" ) + "/log4j.snippet";
-            LOG.info( "Outputting log4j snippet to '{}'.", outFile );
+        if ( outDir == null ) {
+            outDir = System.getProperty( "java.io.tmpdir" ) + "/log4j/";
+            LOG.info( "Outputting log4j snippet to '{}'.", outDir );
         }
-        File parentFile = new File( outFile ).getParentFile();
+        File parentFile = new File( outDir );
         if ( !parentFile.exists() && !parentFile.mkdirs() ) {
             LOG.warn( "Target directory could not be created: {}", parentFile );
         }
@@ -181,9 +181,6 @@ public class LoggingAnnotationProcessor extends AbstractProcessor {
     @Override
     public boolean process( Set<? extends TypeElement> annotations, RoundEnvironment roundEnv ) {
         try {
-            PrintWriter pw = new PrintWriter( new OutputStreamWriter( new FileOutputStream( outFile, true ), "UTF-8" ) );
-            RollbackPrintWriter out = new RollbackPrintWriter( pw );
-
             Tree tree = new Tree();
 
             for ( Element e : roundEnv.getRootElements() ) {
@@ -194,19 +191,26 @@ public class LoggingAnnotationProcessor extends AbstractProcessor {
                 return true;
             }
 
-            // first run for errors, warnings, info
-            block( "Errors, warnings and informational messages", out, true );
-            out.flush();
-            tree.print( out, "", true, true, true, false, false );
-            // now get the debugs
-            block( "Debugging messages, useful for in-depth debugging of e.g. service setups", out, true );
-            out.flush();
+            FileOutputStream fos = new FileOutputStream( new File( outDir, "error" ) );
+            PrintWriter pw = new PrintWriter( new OutputStreamWriter( fos, "UTF-8" ) );
+            RollbackPrintWriter out = new RollbackPrintWriter( pw );
+            tree.print( out, "", true, false, false, false, false );
+            out.close();
+            pw = new PrintWriter( new OutputStreamWriter( new FileOutputStream( new File( outDir, "warn" ) ), "UTF-8" ) );
+            out = new RollbackPrintWriter( pw );
+            tree.print( out, "", false, true, false, false, false );
+            out.close();
+            pw = new PrintWriter( new OutputStreamWriter( new FileOutputStream( new File( outDir, "info" ) ), "UTF-8" ) );
+            out = new RollbackPrintWriter( pw );
+            tree.print( out, "", false, false, true, false, false );
+            out.close();
+            pw = new PrintWriter( new OutputStreamWriter( new FileOutputStream( new File( outDir, "debug" ) ), "UTF-8" ) );
+            out = new RollbackPrintWriter( pw );
             tree.print( out, "", false, false, false, true, false );
-            // now for the hardcore devs
-            block( "Tracing messages, for developers only", out, true );
-            out.flush();
+            out.close();
+            pw = new PrintWriter( new OutputStreamWriter( new FileOutputStream( new File( outDir, "trace" ) ), "UTF-8" ) );
+            out = new RollbackPrintWriter( pw );
             tree.print( out, "", false, false, false, false, true );
-
             out.close();
             return true;
         } catch ( UnsupportedEncodingException e ) {
