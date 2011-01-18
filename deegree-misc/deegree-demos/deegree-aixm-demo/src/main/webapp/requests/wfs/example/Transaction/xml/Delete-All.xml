@@ -1,7 +1,0 @@
-<wfs:Transaction xmlns:wfs="http://www.opengis.net/wfs" xmlns:gml="http://www.opengis.net/gml" xmlns:ogc="http://www.opengis.net/ogc" xmlns:aixm="http://www.aixm.aero/schema/5.1" version="1.1.0" service="WFS">
-  <wfs:Delete typeName="aixm:Airspace">
-    <ogc:Filter>
-      <ogc:GmlObjectId gml:id="id.86bef5ed-020d-4c22-8e6c-a96a2c0b4a18"/>
-    </ogc:Filter>
-  </wfs:Delete>
-</wfs:Transaction>
