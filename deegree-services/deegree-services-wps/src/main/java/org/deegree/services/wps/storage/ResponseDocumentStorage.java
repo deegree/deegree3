@@ -38,8 +38,6 @@ package org.deegree.services.wps.storage;
 
 import java.io.File;
 
-import org.deegree.services.controller.OGCFrontController;
-
 /**
  * {@link StorageLocation} for response documents.
  * 
@@ -50,14 +48,16 @@ import org.deegree.services.controller.OGCFrontController;
  */
 public class ResponseDocumentStorage extends StorageLocation {
 
-    ResponseDocumentStorage( File resourceFile, String id ) {
+    private String getUrl;
+
+    ResponseDocumentStorage( File resourceFile, String id, String getUrl ) {
         super( resourceFile, id, "text/xml" );
+        this.getUrl = getUrl;
     }
 
     @Override
     public String getWebURL() {
-        String url = OGCFrontController.getHttpGetURL()
-                     + "service=WPS&version=1.0.0&request=GetResponseDocument&identifier=" + id;
+        String url = getUrl + "service=WPS&version=1.0.0&request=GetResponseDocument&identifier=" + id;
         return url;
     }
 }

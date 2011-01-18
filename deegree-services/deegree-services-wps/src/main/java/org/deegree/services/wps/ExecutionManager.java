@@ -300,7 +300,7 @@ public class ExecutionManager {
             LOG.debug( "Storing response document as web-accessible resource (asynchronous execution)" );
 
             // allocate a storage location for the final response document
-            responseStorage = storageManager.newResponseDocumentStorage();
+            responseStorage = storageManager.newResponseDocumentStorage( OGCFrontController.getHttpGetURL() );
 
             state = createProcessletExecution( request, responseStorage, serviceInstance, outputParams, outputs );
 

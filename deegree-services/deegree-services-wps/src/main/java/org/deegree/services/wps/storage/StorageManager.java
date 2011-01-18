@@ -99,8 +99,7 @@ public class StorageManager {
         return new OutputStorage( resourceFile, outputId, mimeType );
     }
 
-    public ResponseDocumentStorage newResponseDocumentStorage()
-                            throws IOException {
+    public ResponseDocumentStorage newResponseDocumentStorage( String getUrl ) {
         LOG.debug( "Allocating new storage location for publishing response document." );
         String responseId = generateResponseId();
         String resourceName = RESPONSE_PREFIX + responseId;
@@ -109,7 +108,7 @@ public class StorageManager {
             LOG.debug( "File '" + resourceFile + "' already exists. Deleting it." );
             resourceFile.delete();
         }
-        return new ResponseDocumentStorage( resourceFile, responseId );
+        return new ResponseDocumentStorage( resourceFile, responseId, getUrl );
     }
 
     public OutputStorage lookupOutputStorage( String outputId ) {
@@ -125,9 +124,9 @@ public class StorageManager {
         return output;
     }
 
-    public ResponseDocumentStorage lookupResponseDocumentStorage( String responseId ) {
+    public ResponseDocumentStorage lookupResponseDocumentStorage( String responseId, String getUrl ) {
         File resourceFile = new File( baseDir, RESPONSE_PREFIX + responseId );
-        return new ResponseDocumentStorage( resourceFile, responseId );
+        return new ResponseDocumentStorage( resourceFile, responseId, getUrl );
     }
 
     private synchronized String generateOutputId() {

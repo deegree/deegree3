@@ -38,6 +38,7 @@ package org.deegree.services.wps;
 
 import static org.apache.commons.io.IOUtils.closeQuietly;
 import static org.apache.commons.io.IOUtils.copy;
+import static org.deegree.services.controller.OGCFrontController.getHttpGetURL;
 import static org.deegree.services.controller.ows.OWSException.OPERATION_NOT_SUPPORTED;
 import static org.deegree.services.wps.WPSProvider.IMPLEMENTATION_METADATA;
 
@@ -539,7 +540,7 @@ public class WPService extends AbstractOGCServiceController<WPSRequestType> {
     private void doGetResponseDocument( String responseId, HttpResponseBuffer response ) {
 
         LOG.trace( "doGetResponseDocument invoked, requested stored response document: " + responseId );
-        ResponseDocumentStorage resource = storageManager.lookupResponseDocumentStorage( responseId );
+        ResponseDocumentStorage resource = storageManager.lookupResponseDocumentStorage( responseId, getHttpGetURL() );
         executeHandler.sendResponseDocument( response, resource );
 
         LOG.trace( "doGetResponseDocument finished" );
