@@ -33,6 +33,7 @@
   </repositories>
 
   <modules>
+    <module>deegree-core-annotations</module>
     <module>deegree-core-commons</module>
     <module>deegree-core-cs</module>
     <module>deegree-core-base</module>
