@@ -285,7 +285,9 @@ public class ConfigManager {
         lastMessage = "Workspace changes have been applied.";
         FacesContext ctx = FacesContext.getCurrentInstance();
         RequestBean bean = (RequestBean) ctx.getExternalContext().getSessionMap().get( "requestBean" );
-        bean.init();
+        if ( bean != null ) {
+            bean.init();
+        }
         return ctx.getViewRoot().getViewId();
     }
 
