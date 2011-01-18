@@ -67,12 +67,69 @@ import com.google.common.base.Predicate;
  */
 public class Log4jMojo extends AbstractMojo {
 
+    private int width = 80;
+
     /**
      * @parameter default-value="${project}"
      * @required
      * @readonly
      */
     private MavenProject project;
+
+    private void block( String text, PrintWriter out ) {
+        out.print( "# " );
+        for ( int i = 0; i < width - 2; ++i ) {
+            out.print( "=" );
+        }
+        out.println();
+        int odd = text.length() % 2;
+        int len = ( width - text.length() - 4 ) / 2;
+        out.print( "# " );
+        for ( int i = 0; i < len; ++i ) {
+            out.print( "=" );
+        }
+        out.print( " " + text + " " );
+        for ( int i = 0; i < len + odd; ++i ) {
+            out.print( "=" );
+        }
+        out.println();
+        out.print( "# " );
+        for ( int i = 0; i < width - 2; ++i ) {
+            out.print( "=" );
+        }
+        out.println();
+        out.println();
+    }
+
+    private void collect( final Reflections r, final String type, String msg, final PrintWriter out ) {
+        block( msg, out );
+        r.collect( "META-INF/deegree/log4j", new Predicate<String>() {
+            @Override
+            public boolean apply( String input ) {
+                return input != null && input.equals( type );
+            }
+        }, new Serializer() {
+            @Override
+            public Reflections read( InputStream in ) {
+                try {
+                    copy( in, out );
+                } catch ( IOException e ) {
+                    getLog().error( e );
+                }
+                return r;
+            }
+
+            @Override
+            public File save( Reflections reflections, String filename ) {
+                return null;
+            }
+
+            @Override
+            public String toString( Reflections reflections ) {
+                return null;
+            }
+        } );
+    }
 
     @Override
     public void execute()
@@ -86,7 +143,7 @@ public class Log4jMojo extends AbstractMojo {
             if ( !outFile.getParentFile().exists() && !outFile.getParentFile().mkdirs() ) {
                 throw new MojoFailureException( "Could not create parent directory: " + outFile.getParentFile() );
             }
-            out = new PrintWriter(new OutputStreamWriter(new FileOutputStream( outFile ), "UTF-8"));
+            out = new PrintWriter( new OutputStreamWriter( new FileOutputStream( outFile ), "UTF-8" ) );
 
             out.println( "# by default, only log to stdout" );
             out.println( "log4j.rootLogger=INFO, stdout" );
@@ -99,34 +156,14 @@ public class Log4jMojo extends AbstractMojo {
             out.println();
             out.println( "# automatically generated output follows" );
             out.println();
-            
+
             o = out;
-            r.collect( "META-INF/deegree", new Predicate<String>() {
-                @Override
-                public boolean apply( String input ) {
-                    return input != null && input.equals( "log4j.snippet" );
-                }
-            }, new Serializer() {
-                @Override
-                public Reflections read( InputStream in ) {
-                    try {
-                        copy( in, out );
-                    } catch ( IOException e ) {
-                        getLog().error( e );
-                    }
-                    return r;
-                }
 
-                @Override
-                public File save( Reflections reflections, String filename ) {
-                    return null;
-                }
-
-                @Override
-                public String toString( Reflections reflections ) {
-                    return null;
-                }
-            } );
+            collect( r, "error", "Severe error messages", out );
+            collect( r, "warn", "Important warning messages", out );
+            collect( r, "info", "Informational messages", out );
+            collect( r, "debug", "Debugging messages, useful for in-depth debugging of e.g. service setups", out );
+            collect( r, "trace", "Tracing messages, for developers only", out );
         } catch ( FileNotFoundException e ) {
             getLog().error( e );
         } catch ( UnsupportedEncodingException e ) {
