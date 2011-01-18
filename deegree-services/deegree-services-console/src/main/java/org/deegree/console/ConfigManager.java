@@ -61,6 +61,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import org.apache.commons.io.FileUtils;
+import org.deegree.client.generic.RequestBean;
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.utils.io.Zip;
 import org.deegree.commons.version.DeegreeModuleInfo;
@@ -282,7 +283,10 @@ public class ConfigManager {
         msManager.scan();
         connManager.scan();
         lastMessage = "Workspace changes have been applied.";
-        return FacesContext.getCurrentInstance().getViewRoot().getViewId();
+        FacesContext ctx = FacesContext.getCurrentInstance();
+        RequestBean bean = (RequestBean) ctx.getExternalContext().getSessionMap().get( "requestBean" );
+        bean.init();
+        return ctx.getViewRoot().getViewId();
     }
 
     public void downloadWorkspace( ActionEvent evt ) {

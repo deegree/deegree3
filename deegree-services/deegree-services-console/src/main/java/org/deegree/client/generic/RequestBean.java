@@ -169,6 +169,7 @@ public class RequestBean implements Serializable {
 
     @PostConstruct
     public void init() {
+        allRequests.clear();
         ExternalContext ctx = FacesContext.getCurrentInstance().getExternalContext();
         URL url;
         try {
