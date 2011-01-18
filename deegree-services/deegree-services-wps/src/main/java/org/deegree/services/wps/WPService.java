@@ -462,14 +462,7 @@ public class WPService extends AbstractOGCServiceController<WPSRequestType> {
                 }
             }
 
-            // TransformCoordinates tc = new TransformCoordinates();
-            // ProcessDescription pd = tc.getClass().getAnnotation( ProcessDescription.class );
-            // List<ProcessDescription> pdA = new LinkedList<ProcessDescription>();
-            // if ( pd != null ) {
-            // pdA.add( pd );
-            // }
-            // TODO what about annotations?
-            DescribeProcessResponseXMLAdapter.export100( xmlWriter, processes, processDefToWSDLUrl, null );
+            DescribeProcessResponseXMLAdapter.export100( xmlWriter, processes, processDefToWSDLUrl );
             xmlWriter.flush();
         } catch ( XMLStreamException e ) {
             e.printStackTrace();

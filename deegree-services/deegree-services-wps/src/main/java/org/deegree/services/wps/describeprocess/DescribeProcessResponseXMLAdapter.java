@@ -64,7 +64,6 @@ import org.deegree.process.jaxb.java.ProcessletOutputDefinition;
 import org.deegree.process.jaxb.java.Range;
 import org.deegree.process.jaxb.java.ValidValueReference;
 import org.deegree.services.wps.WPSProcess;
-import org.deegree.services.wps.annotations.ProcessDescription;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -100,12 +99,10 @@ public class DescribeProcessResponseXMLAdapter extends XMLAdapter {
      * @param writer
      * @param processes
      * @param processDefToWSDLUrl
-     * @param processAnnotations
      * @throws XMLStreamException
      */
     public static void export100( XMLStreamWriter writer, List<WPSProcess> processes,
-                                  Map<ProcessDefinition, String> processDefToWSDLUrl,
-                                  List<ProcessDescription> processAnnotations )
+                                  Map<ProcessDefinition, String> processDefToWSDLUrl )
                             throws XMLStreamException {
 
         writer.writeStartElement( WPS_PREFIX, "ProcessDescriptions", WPS_NS );
@@ -123,11 +120,6 @@ public class DescribeProcessResponseXMLAdapter extends XMLAdapter {
         if ( processes != null && !processes.isEmpty() ) {
             for ( WPSProcess process : processes ) {
                 exportDescription100( writer, process, processDefToWSDLUrl.get( process ) );
-            }
-        }
-        if ( processAnnotations != null && !processAnnotations.isEmpty() ) {
-            for ( ProcessDescription annotation : processAnnotations ) {
-                DescribeProcessFromAnnotation.exportDescription100( writer, annotation );
             }
         }
 
