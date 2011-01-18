@@ -982,7 +982,7 @@ public class OGCFrontController extends HttpServlet {
         try {
             Class<?> trs = Class.forName( "org.deegree.feature.persistence.query.ThreadedResultSet" );
             if ( trs != null ) {
-                Method m = trs.getMethod( "destroy" );
+                Method m = trs.getMethod( "shutdown" );
                 m.invoke( null );
             }
         } catch ( Exception e ) {
