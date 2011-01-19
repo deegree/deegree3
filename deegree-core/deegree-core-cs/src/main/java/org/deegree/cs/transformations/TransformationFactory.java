@@ -51,23 +51,23 @@ import static org.deegree.cs.utilities.Matrix.toStdValues;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Properties;
 
 import javax.vecmath.Matrix4d;
 
 import org.deegree.commons.utils.log.LoggingNotes;
+import org.deegree.crs.store.AbstractStore;
 import org.deegree.cs.CRSCodeType;
 import org.deegree.cs.CRSIdentifiable;
 import org.deegree.cs.components.Ellipsoid;
 import org.deegree.cs.components.GeodeticDatum;
-import org.deegree.cs.configuration.CRSProvider;
 import org.deegree.cs.coordinatesystems.CompoundCRS;
 import org.deegree.cs.coordinatesystems.CoordinateSystem;
+import org.deegree.cs.coordinatesystems.CoordinateSystem.CRSType;
 import org.deegree.cs.coordinatesystems.GeocentricCRS;
 import org.deegree.cs.coordinatesystems.GeographicCRS;
 import org.deegree.cs.coordinatesystems.ProjectedCRS;
-import org.deegree.cs.coordinatesystems.CoordinateSystem.CRSType;
 import org.deegree.cs.exceptions.TransformationException;
+import org.deegree.cs.persistence.CRSStore;
 import org.deegree.cs.transformations.coordinate.GeocentricTransform;
 import org.deegree.cs.transformations.coordinate.IdentityTransform;
 import org.deegree.cs.transformations.coordinate.MatrixTransform;
@@ -108,7 +108,7 @@ import org.slf4j.LoggerFactory;
 public class TransformationFactory {
     private static Logger LOG = LoggerFactory.getLogger( TransformationFactory.class );
 
-    private CRSProvider provider;
+    private CRSStore provider;
 
     private DSTransform preferredDSTransform;
 
@@ -125,18 +125,19 @@ public class TransformationFactory {
         public final static String DS_PROP = "PREFERRED_DATUM_TRANSFORM";
 
         /**
-         * Create a {@link DSTransform} from the String with bound to the Key {@link #DS_PROP}. If <code>null</code>
+         * Create a {@link DSTransform} from the {@link AbstractStore} TransformationType property. If <code>null</code>
          * {@link #HELMERT} will be returned.
          * 
-         * @param props
-         * @return the value of key {@link #DS_PROP} of {@link #HELMERT} if the value was not known.
+         * @param store
+         *            the {@link AbstractStore}
+         * @return the value of key {@link AbstractStore} TransformationType property of {@link #HELMERT} if the value
+         *         was not known.
          */
-        public static DSTransform fromProperties( Properties props ) {
+        public static DSTransform fromSchema( AbstractStore store ) {
             DSTransform result = DSTransform.HELMERT;
-            String def = props.getProperty( DS_PROP );
-            if ( def != null && "NTv2".equalsIgnoreCase( def ) ) {
+            if ( store != null && store.getTransformationType() != null
+                 && "NTv2".equalsIgnoreCase( store.getTransformationType().value() ) ) {
                 result = NTv2;
-
             }
             return result;
         }
@@ -163,9 +164,9 @@ public class TransformationFactory {
      * @param preferredTransform
      *            to use for datum shift necessities
      */
-    public TransformationFactory( CRSProvider provider, DSTransform preferredTransform ) {
+    public TransformationFactory( CRSStore provider ) {
         this.provider = provider;
-        this.preferredDSTransform = preferredTransform;
+        this.preferredDSTransform = provider.getPreferedTransformationType();
     }
 
     /**
@@ -242,17 +243,21 @@ public class TransformationFactory {
         List<Transformation> toBeUsed = copyTransformations( transformationsToBeUsed );
 
         // Do following steps:
-        // 1) Check if the 'supplied' transformation already contains a path from source to target.
+        // 1) Check if the 'supplied' transformation already contains a path
+        // from source to target.
         // 2) Call crs-config.getTransformation for source and target
         // 3) if no 'direct' transformation try to find an inverse.
-        // 4) if helmert was defined but the provider transformation was NTv2, create a chain.
+        // 4) if helmert was defined but the provider transformation was NTv2,
+        // create a chain.
         // 5) if source has direct transformation to target use this
         // 6) create a chain if none of the above apply.
 
-        // check if the list of required transformations contains a 'direct' transformation.
+        // check if the list of required transformations contains a 'direct'
+        // transformation.
         Transformation result = getRequiredTransformation( toBeUsed, sourceCRS, targetCRS );
         if ( result == null ) {
-            // check if a 'direct' transformation could be loaded from the configuration;
+            // check if a 'direct' transformation could be loaded from the
+            // configuration;
             result = getTransformation( sourceCRS, targetCRS );
             if ( result == null || "Helmert".equals( result.getImplementationName() ) ) {
                 result = getTransformation( targetCRS, sourceCRS );
@@ -265,7 +270,8 @@ public class TransformationFactory {
             if ( result == null
                  || ( "NTv2".equals( result.getImplementationName() ) && this.preferredDSTransform == DSTransform.HELMERT ) ) {
                 // no configured transformation
-                // check if the source crs has an alternative transformation for the given target, if so use it
+                // check if the source crs has an alternative transformation for
+                // the given target, if so use it
                 if ( sourceCRS.hasDirectTransformation( targetCRS ) ) {
                     Transformation direct = sourceCRS.getDirectTransformation( targetCRS );
                     if ( direct != null ) {
@@ -277,19 +283,27 @@ public class TransformationFactory {
                     CRSType type = sourceCRS.getType();
                     switch ( type ) {
                     case COMPOUND:
-                        /** Compound --> Projected, Geographic, Geocentric or Compound */
+                        /**
+                         * Compound --> Projected, Geographic, Geocentric or Compound
+                         */
                         result = createFromCompound( (CompoundCRS) sourceCRS, targetCRS );
                         break;
                     case GEOCENTRIC:
-                        /** Geocentric --> Projected, Geographic, Geocentric or Compound */
+                        /**
+                         * Geocentric --> Projected, Geographic, Geocentric or Compound
+                         */
                         result = createFromGeocentric( (GeocentricCRS) sourceCRS, targetCRS );
                         break;
                     case GEOGRAPHIC:
-                        /** Geographic --> Geographic, Projected, Geocentric or Compound */
+                        /**
+                         * Geographic --> Geographic, Projected, Geocentric or Compound
+                         */
                         result = createFromGeographic( (GeographicCRS) sourceCRS, targetCRS );
                         break;
                     case PROJECTED:
-                        /** Projected --> Projected, Geographic, Geocentric or Compound */
+                        /**
+                         * Projected --> Projected, Geographic, Geocentric or Compound
+                         */
                         result = createFromProjected( (ProjectedCRS) sourceCRS, targetCRS );
                         break;
                     case VERTICAL:
@@ -343,7 +357,8 @@ public class TransformationFactory {
         Transformation result = provider.getTransformation( sourceCRS, targetCRS );
         if ( result != null ) {
             String implName = result.getImplementationName();
-            // make a copy, so inverse can be called without changing the original transformation, which might be cached
+            // make a copy, so inverse can be called without changing the
+            // original transformation, which might be cached
             // somewhere.
             if ( "Helmert".equals( implName ) ) {
                 Helmert h = (Helmert) result;
@@ -380,7 +395,8 @@ public class TransformationFactory {
 
         List<Transformation> result = new ArrayList<Transformation>( originalRequested.size() );
 
-        // create a none duplicate list of the given transformations, remove all 'duplicates'
+        // create a none duplicate list of the given transformations, remove all
+        // 'duplicates'
         for ( Transformation tr : originalRequested ) {
             if ( tr != null ) {
                 Iterator<Transformation> it = result.iterator();
@@ -395,8 +411,10 @@ public class TransformationFactory {
                 }
                 if ( !isDuplicate ) {
                     if ( "NTv2".equalsIgnoreCase( tr.getImplementationName() ) ) {
-                        // rb: dirty hack, ntv2 needs lon/lat incoming coordinates, if not set, swap them.
-                        // the axis must be swapped to fit ntv2 (which is defined on lon/lat.
+                        // rb: dirty hack, ntv2 needs lon/lat incoming
+                        // coordinates, if not set, swap them.
+                        // the axis must be swapped to fit ntv2 (which is
+                        // defined on lon/lat.
                         tr = createAxisAllignedNTv2Transformation( (NTv2Transformation) tr );
                     } else if ( "Helmert".equals( tr.getImplementationName() ) ) {
                         tr = createAxisAllignedTransformedHelmertTransformation( (Helmert) tr );
@@ -638,7 +656,8 @@ public class TransformationFactory {
                                                       targetCRS.getName() + "_Geocentric" );
             }
 
-            // Transformation helmertTransformation = createTransformation( sourceGeocentric, targetGeocentric );
+            // Transformation helmertTransformation = createTransformation(
+            // sourceGeocentric, targetGeocentric );
 
             Transformation sourceTransformationChain = null;
             Transformation targetTransformationChain = null;
@@ -664,7 +683,8 @@ public class TransformationFactory {
                  */
                 // if ( helmertTransformation != null ) {
                 // create a 2d->3d mapping.
-                final Transformation axisAligned = createMatrixTransform( sourceGeographic, sourceGeocentric,
+                final Transformation axisAligned = createMatrixTransform( sourceGeographic,
+                                                                          sourceGeocentric,
                                                                           swapAxis( sourceGeographic,
                                                                                     GeographicCRS.WGS84 ) );
                 if ( LOG.isDebugEnabled() ) {
@@ -678,7 +698,8 @@ public class TransformationFactory {
                     LOG.debug( sb.toString() );
                 }
                 final Transformation geoCentricTransform = new GeocentricTransform( sourceCRS, sourceGeocentric );
-                // concatenate the possible projection with the axis alignment and the geocentric transform.
+                // concatenate the possible projection with the axis alignment
+                // and the geocentric transform.
                 sourceTransformationChain = concatenate( sourceTransformationChain, axisAligned, geoCentricTransform );
                 // }
                 break;
@@ -706,12 +727,14 @@ public class TransformationFactory {
                  */
                 // if ( helmertTransformation != null ) {
                 // create a 2d->3d mapping.
-                final Transformation axisAligned = createMatrixTransform( targetGeocentric, targetGeographic,
+                final Transformation axisAligned = createMatrixTransform( targetGeocentric,
+                                                                          targetGeographic,
                                                                           swapAxis( GeographicCRS.WGS84,
                                                                                     targetGeographic ) );
                 final Transformation geoCentricTransform = new GeocentricTransform( targetCRS, targetGeocentric );
                 geoCentricTransform.inverse();
-                // concatenate the possible projection with the axis alignment and the geocentric transform.
+                // concatenate the possible projection with the axis alignment
+                // and the geocentric transform.
                 targetTransformationChain = concatenate( geoCentricTransform, axisAligned, targetTransformationChain );
                 // }
                 break;
@@ -749,7 +772,8 @@ public class TransformationFactory {
      */
     private Transformation createTransformation( final GeographicCRS sourceCRS, final GeographicCRS targetCRS )
                             throws TransformationException {
-        // check if a 'direct' transformation could be loaded from the configuration;
+        // check if a 'direct' transformation could be loaded from the
+        // configuration;
         Transformation result = getTransformation( sourceCRS, targetCRS );
         if ( result == null ) {
             // maybe an inverse was defined?
@@ -796,7 +820,8 @@ public class TransformationFactory {
                 Transformation targetT = getToWGSTransformation( targetCRS );
                 if ( ( !isIdentity( sourceT ) ) || ( !isIdentity( targetT ) ) ) {
 
-                    // the default implementation uses the WGS84 as a pivot for helmert transformations.
+                    // the default implementation uses the WGS84 as a pivot for
+                    // helmert transformations.
                     if ( ( sourceT != null && "Helmert".equals( sourceT.getImplementationName() ) )
                          || ( targetT != null && "Helmert".equals( targetT.getImplementationName() ) ) ) {
                         Helmert sourceH = (Helmert) sourceT;
@@ -811,7 +836,8 @@ public class TransformationFactory {
                         Transformation step1 = null;
                         Transformation step2 = null;
                         Transformation step3 = null;
-                        // use the WGS84 Geocentric transform if no toWGS84 parameters are given and the datums
+                        // use the WGS84 Geocentric transform if no toWGS84
+                        // parameters are given and the datums
                         // ellipsoid is actually a sphere.
                         String name = sourceCRS.getName() + "_Geocentric";
                         final GeocentricCRS sourceGCS = ( sourceDatum.getEllipsoid().isSphere() && isIdentity( sourceH ) ) ? GeocentricCRS.WGS84
@@ -835,7 +861,8 @@ public class TransformationFactory {
                         step3 = createTransformation( targetCRS, targetGCS );
 
                         if ( step3 != null ) {
-                            step3.inverse();// call inverseTransform from step 3.
+                            step3.inverse();// call inverseTransform from step
+                                            // 3.
                         }
                         return concatenate( step1, step2, step3 );
                     }
@@ -932,7 +959,8 @@ public class TransformationFactory {
                                                                   (Helmert) targetT );
 
                     } else {
-                        // another kind of transformation (NTv2?) exist, handle this..
+                        // another kind of transformation (NTv2?) exist, handle
+                        // this..
                         if ( !isIdentity( sourceT ) ) {
                             if ( isHelmert( sourceT ) ) {
                                 ellipsoidTransform = transformUsingPivot( sourceGeocentric, GeocentricCRS.WGS84,
@@ -958,11 +986,13 @@ public class TransformationFactory {
                         }
                     }
                 } else {
-                    // if no helmert transformation is needed, the targetCRS equals the source-geocentric.
+                    // if no helmert transformation is needed, the targetCRS
+                    // equals the source-geocentric.
                     sourceGeocentric = targetCRS;
                 }
             }
-            final Transformation axisAlign = createMatrixTransform( sourceCRS, createWGSAlligned( sourceCRS ),
+            final Transformation axisAlign = createMatrixTransform( sourceCRS,
+                                                                    createWGSAlligned( sourceCRS ),
                                                                     swapAndRotateGeoAxis( sourceCRS,
                                                                                           GeographicCRS.WGS84 ) );
             if ( LOG.isDebugEnabled() ) {
@@ -1142,7 +1172,8 @@ public class TransformationFactory {
             if ( isEllipsoidTransformNeeded( sourceCRS, targetCRS ) ) {
                 final GeodeticDatum sourceDatum = sourceCRS.getGeodeticDatum();
                 final GeodeticDatum targetDatum = targetCRS.getGeodeticDatum();
-                // convert from the source to target ellipsoid through the geocentric coordinate system.
+                // convert from the source to target ellipsoid through the
+                // geocentric coordinate system.
                 if ( !isIdentity( sourceDatum.getWGS84Conversion() ) || !isIdentity( targetDatum.getWGS84Conversion() ) ) {
                     LOG.debug( "Creating helmert transformation: source(" + sourceCRS.getCode() + ")->target("
                                + targetCRS.getCode() + ")." );
@@ -1151,7 +1182,8 @@ public class TransformationFactory {
                 }
             }
             if ( result == null ) {
-                // Swap axis order, and rotate the longitude coordinate if prime meridians are different.
+                // Swap axis order, and rotate the longitude coordinate if prime
+                // meridians are different.
                 final Matrix matrix = swapAxis( sourceCRS, targetCRS );
                 result = createMatrixTransform( sourceCRS, targetCRS, matrix );
                 if ( LOG.isDebugEnabled() ) {
@@ -1175,7 +1207,8 @@ public class TransformationFactory {
         if ( !sourceDatum.equals( targetDatum ) ) {
             final Ellipsoid sourceEllipsoid = sourceDatum.getEllipsoid();
             final Ellipsoid targetEllipsoid = targetDatum.getEllipsoid();
-            // If the two coordinate systems use different ellipsoid, a transformation needs to take place.
+            // If the two coordinate systems use different ellipsoid, a
+            // transformation needs to take place.
             return sourceEllipsoid != null && !sourceEllipsoid.equals( targetEllipsoid );
         }
         return false;
@@ -1222,7 +1255,8 @@ public class TransformationFactory {
                     LOG.debug( "resultMatrix (after mul with forwardToWGS2): \n " + resultMatrix );
                 }
                 if ( forwardAxisAlign != null ) {
-                    resultMatrix.mul( forwardAxisAlign ); // step4 = step4*step3*step2*step1
+                    resultMatrix.mul( forwardAxisAlign ); // step4 =
+                                                          // step4*step3*step2*step1
                 }
             } else if ( inverseToWGS != null ) {
                 resultMatrix = inverseToWGS;
@@ -1231,7 +1265,8 @@ public class TransformationFactory {
                     LOG.debug( "resultMatrix (after mul with forwardToWGS2): \n " + resultMatrix );
                 }
                 if ( forwardAxisAlign != null ) {
-                    resultMatrix.mul( forwardAxisAlign ); // step4 = step3*step2*step1
+                    resultMatrix.mul( forwardAxisAlign ); // step4 =
+                                                          // step3*step2*step1
                 }
             } else if ( forwardToWGS != null ) {
                 resultMatrix = forwardToWGS;

@@ -36,17 +36,14 @@
 
 package org.deegree.cs.configuration.resources;
 
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Properties;
+import java.net.URL;
 
 import org.apache.axiom.om.OMElement;
 import org.deegree.commons.utils.log.LoggingNotes;
 import org.deegree.commons.xml.XMLAdapter;
-import org.deegree.cs.configuration.AbstractCRSProvider;
-import org.deegree.cs.exceptions.CRSConfigurationException;
-import org.deegree.cs.i18n.Messages;
+import org.deegree.cs.persistence.AbstractCRSStore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -65,7 +62,7 @@ public abstract class XMLFileResource extends XMLAdapter implements XMLResource 
 
     private static Logger LOG = LoggerFactory.getLogger( XMLFileResource.class );
 
-    private AbstractCRSProvider<OMElement> provider = null;
+    private AbstractCRSStore<OMElement> provider = null;
 
     /**
      * @param provider
@@ -79,41 +76,23 @@ public abstract class XMLFileResource extends XMLAdapter implements XMLResource 
      * @param requiredNamespace
      *            check for the root elements namespace, may be <code>null</code>
      */
-    public XMLFileResource( AbstractCRSProvider<OMElement> provider, Properties properties,
-                            String requiredRootLocalName, String requiredNamespace ) {
-        if ( properties == null ) {
-            throw new IllegalArgumentException( "The properties may not be null" );
-        }
+    public XMLFileResource( AbstractCRSStore<OMElement> provider, URL file, String requiredRootLocalName,
+                            String requiredNamespace ) {
         if ( provider == null ) {
             throw new NullPointerException( "The provider is null, this may not be." );
         }
-        String fileName = properties.getProperty( "crs.configuration" );
+        if ( file == null || "".equals( file ) ) {
+            throw new NullPointerException(
+                                            "The CRS_FILE property was not set, this resolver can not function without a file. " );
+        }
         InputStream is = null;
         try {
+            LOG.debug( "Trying to load configuration from file: " + file );
+            is = file.openStream();
 
-            if ( fileName == null || "".equals( fileName ) ) {
-                LOG.debug( "No configuration file given, trying to load default file" );
-                fileName = properties.getProperty( "crs.default.configuration" );
-                if ( fileName == null || "".equals( fileName ) ) {
-                    throw new NullPointerException(
-                                                    "The CRS_FILE property was not set, this resolver can not function without a file. " );
-                }
-                is = provider.getClass().getResourceAsStream( "/" + fileName );
-                if ( is == null ) {
-                    is = provider.getClass().getResourceAsStream( fileName );
-                } else {
-                    LOG.debug( "Using the configuration file loaded from root directory instead of org.deegree.cs.configuration" );
-                }
-                if ( is == null ) {
-                    throw new CRSConfigurationException( Messages.getMessage( "CRS_CONFIG_NO_DEFAULT_CONFIG_FOUND" ) );
-                }
-            } else {
-                LOG.debug( "Trying to load configuration from file: " + fileName );
-                is = new FileInputStream( fileName );
-            }
             load( is );
             if ( getRootElement() == null ) {
-                throw new NullPointerException( "The file: " + fileName + " does not contain a root element. " );
+                throw new NullPointerException( "The file: " + file + " does not contain a root element. " );
             }
             if ( requiredRootLocalName != null && !"".equals( requiredRootLocalName ) ) {
                 if ( !requiredRootLocalName.equalsIgnoreCase( getRootElement().getLocalName() ) ) {
@@ -131,7 +110,7 @@ public abstract class XMLFileResource extends XMLAdapter implements XMLResource 
 
         } catch ( IOException e ) {
             LOG.error( e.getLocalizedMessage(), e );
-            throw new IllegalArgumentException( "File: " + fileName + " is an invalid xml file resource because: "
+            throw new IllegalArgumentException( "File: " + file + " is an invalid xml file resource because: "
                                                 + e.getLocalizedMessage() );
         }
         // rb: no way to close the stream (yet?).
@@ -153,7 +132,7 @@ public abstract class XMLFileResource extends XMLAdapter implements XMLResource 
      *            to be used for callback.
      * @param rootElement
      */
-    public XMLFileResource( AbstractCRSProvider<OMElement> provider, OMElement rootElement ) {
+    public XMLFileResource( AbstractCRSStore<OMElement> provider, OMElement rootElement ) {
         super( rootElement );
         this.provider = provider;
     }
@@ -161,7 +140,7 @@ public abstract class XMLFileResource extends XMLAdapter implements XMLResource 
     /**
      * @return the provider used for reversed look ups, will never be <code>null</code>
      */
-    public AbstractCRSProvider<OMElement> getProvider() {
+    public AbstractCRSStore<OMElement> getProvider() {
         return provider;
     }
 }

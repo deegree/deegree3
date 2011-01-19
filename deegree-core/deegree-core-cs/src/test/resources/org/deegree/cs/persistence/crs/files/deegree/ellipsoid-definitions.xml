@@ -1,0 +1,19 @@
+<?xml version="1.0" ?>
+<crs:EllipsoidDefinitions configVersion="3.0.0" xmlns:crs="http://www.deegree.org/crs" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.deegree.org/crs http://schemas.deegree.org/crs/3.0.0/crsdefinition.xsd">
+    <crs:Ellipsoid>
+      <crs:Id>epsg:7002</crs:Id>
+      <crs:Name>Airy Modified 1849</crs:Name>
+      <crs:Version>2003-06-27</crs:Version>
+      <crs:Description>OSGB Airy 1830 figure (ellipsoid code 7001) rescaled by 0.999965 to best fit the scale of the 19th century primary triangulation of Ireland.</crs:Description>
+      <crs:Units>metre</crs:Units>
+      <crs:SemiMajorAxis>6377340.189</crs:SemiMajorAxis>
+      <crs:InverseFlattening>299.324964599999</crs:InverseFlattening>
+    </crs:Ellipsoid>
+    <crs:Ellipsoid>
+      <crs:Id>epsg:7024</crs:Id>
+      <crs:Name>Krassowsky, 1942</crs:Name>
+      <crs:Units>metre</crs:Units>
+      <crs:SemiMajorAxis>6378245.0</crs:SemiMajorAxis>
+      <crs:InverseFlattening>298.3</crs:InverseFlattening>
+    </crs:Ellipsoid>
+  </crs:EllipsoidDefinitions>

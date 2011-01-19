@@ -35,12 +35,14 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.cs.coordinatesystems;
 
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertNotNull;
+import static junit.framework.Assert.assertTrue;
+
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.vecmath.Point3d;
-
-import junit.framework.TestCase;
 
 import org.deegree.cs.CRS;
 import org.deegree.cs.CoordinateTransformer;
@@ -50,14 +52,14 @@ import org.deegree.cs.exceptions.UnknownCRSException;
 import org.junit.Test;
 
 /**
- * TODO add class documentation here
+ * Test for correctness of AxisOrder, if x/y forced or not.
  * 
  * @author <a href="mailto:buesching@lat-lon.de">Lyn Buesching</a>
  * @author last edited by: $Author: lyn $
  * 
  * @version $Revision: $, $Date: $
  */
-public class AxisOrderTest extends TestCase {
+public class AxisOrderTest {
 
     @Test
     public void testAxisOrderDef()
@@ -174,7 +176,7 @@ public class AxisOrderTest extends TestCase {
     @Test
     public void testTransformDefToDefInverse()
                             throws UnknownCRSException, IllegalArgumentException, TransformationException {
-        CRS sourceCRS = new CRS( "EPSG:31467" );
+        CRS sourceCRS = new CRS( "epsg:31467" );
         CRS targetCRS = new CRS( "4326_AO" );
         CoordinateTransformer tranformer = new CoordinateTransformer( targetCRS.getWrappedCRS() );
         List<Point3d> points = new ArrayList<Point3d>();
@@ -192,7 +194,7 @@ public class AxisOrderTest extends TestCase {
     public void testTransformXYToDef()
                             throws UnknownCRSException, IllegalArgumentException, TransformationException {
         CRS sourceCRS = new CRS( "4326_AO", true );
-        CRS targetCRS = new CRS( "EPSG:31467" );
+        CRS targetCRS = new CRS( "epsg:31467" );
         CoordinateTransformer tranformer = new CoordinateTransformer( targetCRS.getWrappedCRS() );
         List<Point3d> points = new ArrayList<Point3d>();
         points.add( new Point3d( 9.432778, 47.851111, Double.NaN ) );
@@ -208,7 +210,7 @@ public class AxisOrderTest extends TestCase {
     @Test
     public void testTransformDefToXY()
                             throws UnknownCRSException, IllegalArgumentException, TransformationException {
-        CRS sourceCRS = new CRS( "EPSG:31467" );
+        CRS sourceCRS = new CRS( "epsg:31467" );
         CRS targetCRS = new CRS( "4326_AO", true );
         CoordinateTransformer tranformer = new CoordinateTransformer( targetCRS.getWrappedCRS() );
         List<Point3d> points = new ArrayList<Point3d>();

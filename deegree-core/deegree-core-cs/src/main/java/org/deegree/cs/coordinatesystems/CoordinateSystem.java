@@ -47,12 +47,12 @@ import javax.vecmath.Point3d;
 
 import org.deegree.cs.CRSCodeType;
 import org.deegree.cs.CRSIdentifiable;
-import org.deegree.cs.CRSRegistry;
 import org.deegree.cs.CoordinateTransformer;
 import org.deegree.cs.components.Axis;
 import org.deegree.cs.components.Datum;
 import org.deegree.cs.components.GeodeticDatum;
 import org.deegree.cs.components.Unit;
+import org.deegree.cs.persistence.CRSManager;
 import org.deegree.cs.transformations.Transformation;
 import org.slf4j.Logger;
 
@@ -473,7 +473,7 @@ public abstract class CoordinateSystem extends CRSIdentifiable {
                     CoordinateSystem defWGS = GeographicCRS.WGS84;
                     try {
                         // rb: lookup the default WGS84 in the registry, it may be, that the axis are swapped.
-                        defWGS = CRSRegistry.lookup( GeographicCRS.WGS84.getCode() );
+                        defWGS = CRSManager.lookup( GeographicCRS.WGS84.getCode() );
                     } catch ( Exception e ) {
                         // catch any exceptions and use the default.
                     }

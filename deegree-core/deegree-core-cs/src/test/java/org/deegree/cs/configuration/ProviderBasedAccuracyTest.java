@@ -41,6 +41,7 @@ import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertTrue;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import javax.vecmath.Point3d;
@@ -58,6 +59,8 @@ import org.deegree.cs.coordinatesystems.GeocentricCRS;
 import org.deegree.cs.coordinatesystems.GeographicCRS;
 import org.deegree.cs.coordinatesystems.ProjectedCRS;
 import org.deegree.cs.exceptions.TransformationException;
+import org.deegree.cs.persistence.CRSManager;
+import org.deegree.cs.persistence.CRSStore;
 import org.deegree.cs.transformations.TransformationFactory;
 import org.deegree.cs.transformations.TransformationFactory.DSTransform;
 import org.deegree.cs.transformations.helmert.Helmert;
@@ -141,7 +144,8 @@ public class ProviderBasedAccuracyTest {
                                                                              axis_geocentric,
                                                                              new CRSIdentifiable(
                                                                                                   new CRSCodeType[] { new CRSCodeType(
-                                                                                                                                       "NO_REAL_GEOCENTRIC" ) } ) );
+
+                                                                                                  "NO_REAL_GEOCENTRIC" ) } ) );
 
     /**
      * Creates a {@link CoordinateTransformer} for the given coordinate system.
@@ -296,14 +300,18 @@ public class ProviderBasedAccuracyTest {
 
     }
 
-    private CRSProvider getProvider() {
-        CRSProvider provider = CRSConfiguration.getInstance().getProvider();
-        assertNotNull( provider );
-        return provider;
+    private CRSStore getProvider() {
+        Collection<CRSStore> stores = CRSManager.getAll();
+        assertNotNull( stores );
+        assertTrue( stores.size() > 0 );
+        for ( CRSStore store : stores ) {
+            return store;
+        }
+        return null;
     }
 
     private CoordinateSystem getCRS( String id ) {
-        CRSProvider provider = getProvider();
+        CRSStore provider = getProvider();
         CoordinateSystem crs = provider.getCRSByCode( new CRSCodeType( id ) );
         assertNotNull( crs );
         assertTrue( crs.hasId( id, false, true ) );
@@ -555,7 +563,7 @@ public class ProviderBasedAccuracyTest {
     public void testGeographicToGeographicNTv2()
                             throws TransformationException {
 
-        TransformationFactory fac = CRSConfiguration.getInstance().getTransformationFactory();
+        TransformationFactory fac = CRSManager.getTransformationFactory( null );
         fac.setPreferredTransformation( DSTransform.NTv2 );
 
         CoordinateSystem crs = getCRS( "epsg:4314" );

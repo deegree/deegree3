@@ -1,0 +1,69 @@
+<?xml version="1.0" ?>
+<crs:CRSDefinitions xmlns:crs="http://www.deegree.org/crs" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.deegree.org/crs http://schemas.deegree.org/crs/0.5.0/crsdefinition.xsd" version="0.5.0">
+	<crs:GeographicCRS>
+    <crs:Id>epsg:4002</crs:Id>
+    <crs:Id>http://www.opengis.net/gml/srs/epsg.xml#4002</crs:Id>
+    <crs:Id>urn:ogc:def:crs:epsg::4002</crs:Id>
+    <crs:Id>urn:opengis:def:crs:epsg::4002</crs:Id>
+		<crs:Name>Unknown datum based upon the Airy Modified 1849 ellipsoid</crs:Name>
+		<crs:Version>2008-1-16T9:49</crs:Version>
+		<crs:Description>Handmade proj4 geographic crs definition (parsed from nad/epsg).</crs:Description>
+		<crs:AreaOfUse>-180.0,-90.0,180.0,90.0</crs:AreaOfUse>
+		<crs:AreaOfUse>Not specified.</crs:AreaOfUse>
+		<crs:Axis>
+			<crs:Name>longitude</crs:Name>
+			<crs:Units>degree</crs:Units>
+			<crs:AxisOrientation>east</crs:AxisOrientation>
+		</crs:Axis>
+		<crs:Axis>
+			<crs:Name>latitude</crs:Name>
+			<crs:Units>degree</crs:Units>
+			<crs:AxisOrientation>north</crs:AxisOrientation>
+		</crs:Axis>
+		<crs:UsedDatum>epsg:6300</crs:UsedDatum>
+	</crs:GeographicCRS>
+	<crs:GeographicCRS>
+    <crs:Id>epsg:4024</crs:Id>
+    <crs:Id>http://www.opengis.net/gml/srs/epsg.xml#4024</crs:Id>
+    <crs:Id>urn:ogc:def:crs:epsg::4024</crs:Id>
+    <crs:Id>urn:opengis:def:crs:epsg::4024</crs:Id>
+		<crs:Name>Unknown datum based upon the Krassowsky 1940 ellipsoid</crs:Name>
+		<crs:Version>2008-1-16T9:49</crs:Version>
+		<crs:Description>Handmade proj4 geographic crs definition (parsed from nad/epsg).</crs:Description>
+		<crs:AreaOfUse>-180.0,-90.0,180.0,90.0</crs:AreaOfUse>
+		<crs:AreaOfUse>Not specified.</crs:AreaOfUse>
+		<crs:Axis>
+			<crs:Name>longitude</crs:Name>
+			<crs:Units>degree</crs:Units>
+			<crs:AxisOrientation>east</crs:AxisOrientation>
+		</crs:Axis>
+		<crs:Axis>
+			<crs:Name>latitude</crs:Name>
+			<crs:Units>degree</crs:Units>
+			<crs:AxisOrientation>north</crs:AxisOrientation>
+		</crs:Axis>
+		<crs:UsedDatum>epsg:6200</crs:UsedDatum>
+	</crs:GeographicCRS>
+	<crs:ProjectedCRS>
+    <crs:Id>epsg:20010</crs:Id>
+    <crs:Id>http://www.opengis.net/gml/srs/epsg.xml#20010</crs:Id>
+    <crs:Id>urn:ogc:def:crs:epsg::20010</crs:Id>
+    <crs:Id>urn:opengis:def:crs:epsg::20010</crs:Id>
+		<crs:Name>Pulkovo 1995 / Gauss-Kruger zone 10</crs:Name>
+		<crs:Version>2008-1-16T9:49</crs:Version>
+		<crs:AreaOfUse>54.0,50.5,60.0,76.0</crs:AreaOfUse>
+		<crs:AreaOfUse>Russian Federation - between 54°E and 60°E.</crs:AreaOfUse>
+		<crs:Axis>
+			<crs:Name>x</crs:Name>
+			<crs:Units>metre</crs:Units>
+			<crs:AxisOrientation>east</crs:AxisOrientation>
+		</crs:Axis>
+		<crs:Axis>
+			<crs:Name>y</crs:Name>
+			<crs:Units>metre</crs:Units>
+			<crs:AxisOrientation>north</crs:AxisOrientation>
+		</crs:Axis>
+		<crs:UsedGeographicCRS>epsg:4024</crs:UsedGeographicCRS>
+		<crs:UsedProjection>epsg:16210</crs:UsedProjection>
+	</crs:ProjectedCRS>
+</crs:CRSDefinitions>

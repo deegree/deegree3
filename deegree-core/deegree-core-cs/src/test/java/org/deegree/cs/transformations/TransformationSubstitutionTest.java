@@ -46,12 +46,12 @@ import org.deegree.cs.CRSIdentifiable;
 import org.deegree.cs.EPSGCode;
 import org.deegree.cs.components.Axis;
 import org.deegree.cs.components.VerticalDatum;
-import org.deegree.cs.configuration.CRSConfiguration;
-import org.deegree.cs.configuration.deegree.xml.stax.Parser;
 import org.deegree.cs.coordinatesystems.GeocentricCRS;
 import org.deegree.cs.coordinatesystems.ProjectedCRS;
 import org.deegree.cs.coordinatesystems.VerticalCRS;
 import org.deegree.cs.exceptions.TransformationException;
+import org.deegree.cs.persistence.CRSManager;
+import org.deegree.cs.persistence.deegree.d3.Parser;
 import org.deegree.cs.transformations.TransformationFactory.DSTransform;
 import org.deegree.cs.transformations.coordinate.ConcatenatedTransform;
 import org.deegree.cs.transformations.coordinate.GeocentricTransform;
@@ -67,7 +67,6 @@ import org.junit.Test;
  * 
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
  * @author last edited by: $Author$
- * 
  * @version $Revision$, $Date$
  */
 public class TransformationSubstitutionTest implements CRSDefines {
@@ -150,7 +149,7 @@ public class TransformationSubstitutionTest implements CRSDefines {
      * @return the factory to test.
      */
     private TransformationFactory getFactory() {
-        return CRSConfiguration.getInstance().getTransformationFactory();
+        return CRSManager.getTransformationFactory( null );
     }
 
     /**

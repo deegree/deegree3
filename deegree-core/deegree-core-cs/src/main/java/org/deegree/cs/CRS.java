@@ -45,6 +45,7 @@ import org.deegree.cs.configuration.wkt.WKTParser;
 import org.deegree.cs.coordinatesystems.CoordinateSystem;
 import org.deegree.cs.coordinatesystems.GeographicCRS;
 import org.deegree.cs.exceptions.UnknownCRSException;
+import org.deegree.cs.persistence.CRSManager;
 
 /**
  * Represents the name to a {@link CRS} that is not necessarily resolved or resolvable.
@@ -153,7 +154,7 @@ public class CRS implements Serializable {
     public CoordinateSystem getWrappedCRS()
                             throws UnknownCRSException {
         if ( crs == null && crsName != null ) {
-            crs = CRSRegistry.lookup( crsName, forceXY );
+            crs = CRSManager.lookup( crsName, forceXY );
         }
         return crs;
     }

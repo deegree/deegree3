@@ -164,8 +164,7 @@ public class TransformationAccuracyTest implements CRSDefines {
         if ( targetCRS.getDimension() == 3 ) {
             zFail = Math.abs( result.z - targetPoint.z ) > epsilons.z;
             zString = createEpsilonString( zFail, result.z, targetPoint.z, epsilons.z, targetCRS.getAxis()[2] );
-        } else if ( targetCRS.getDimension() == 2 && sourceCRS.getDimension() == 2
-                    && !Double.isNaN( sourcePoint.z ) ) {
+        } else if ( targetCRS.getDimension() == 2 && sourceCRS.getDimension() == 2 && !Double.isNaN( sourcePoint.z ) ) {
             // 3rd coordinate should be passed
             double epsilon = result.z - targetPoint.z;
             zFail = Math.abs( epsilon ) > 0;

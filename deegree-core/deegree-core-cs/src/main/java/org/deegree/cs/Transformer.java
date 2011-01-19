@@ -44,6 +44,7 @@ import org.deegree.cs.coordinatesystems.CoordinateSystem;
 import org.deegree.cs.exceptions.TransformationException;
 import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.cs.i18n.Messages;
+import org.deegree.cs.persistence.CRSManager;
 import org.deegree.cs.transformations.Transformation;
 import org.deegree.cs.transformations.TransformationFactory;
 import org.slf4j.Logger;
@@ -101,7 +102,7 @@ public abstract class Transformer {
             throw new IllegalArgumentException( Messages.getMessage( "CRS_PARAMETER_NOT_NULL", "Transformer(String)",
                                                                      "targetCRS" ) );
         }
-        this.targetCRS = CRSRegistry.lookup( targetCRS );
+        this.targetCRS = CRSManager.lookup( targetCRS );
         this.tCRS = new CRS( targetCRS );
     }
 
@@ -211,7 +212,7 @@ public abstract class Transformer {
                                                                      "createCRSTransformation( CoordinateSystem )",
                                                                      "sourceCRS" ) );
         }
-        return CRSRegistry.getTransformation( null, CRSRegistry.lookup( sourceCRS ), targetCRS );
+        return CRSManager.getTransformation( null, CRSManager.lookup( sourceCRS ), targetCRS );
     }
 
     /**
@@ -244,7 +245,7 @@ public abstract class Transformer {
         if ( definedTransformation == null
              || !( definedTransformation.getSourceCRS().equals( sourceCRS ) && definedTransformation.getTargetCRS().equals(
                                                                                                                             targetCRS ) ) ) {
-            definedTransformation = CRSRegistry.getTransformation( null, sourceCRS, targetCRS, toBeUsedTransformations );
+            definedTransformation = CRSManager.getTransformation( null, sourceCRS, targetCRS, toBeUsedTransformations );
             if ( LOG.isDebugEnabled() ) {
                 if ( definedTransformation == null ) {
                     LOG.debug( "Identity transformation (null)." );
