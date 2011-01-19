@@ -101,7 +101,6 @@ import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.XMLProcessingException;
 import org.deegree.commons.xml.jaxb.JAXBUtils;
 import org.deegree.commons.xml.stax.StAXParsingHelper;
-import org.deegree.cs.configuration.CRSConfiguration;
 import org.deegree.services.OWS;
 import org.deegree.services.authentication.SecurityException;
 import org.deegree.services.controller.exception.ControllerException;
@@ -1022,8 +1021,6 @@ public class OGCFrontController extends HttpServlet {
 
         Introspector.flushCaches();
 
-        // just clear the configurations for now, it does not hurt
-        CRSConfiguration.DEFINED_CONFIGURATIONS.clear();
     }
 
     /**

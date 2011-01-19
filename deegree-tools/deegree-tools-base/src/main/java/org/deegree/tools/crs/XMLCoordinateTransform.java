@@ -62,10 +62,10 @@ import org.deegree.commons.tools.CommandUtils;
 import org.deegree.commons.tools.Tool;
 import org.deegree.commons.xml.stax.IndentingXMLStreamWriter;
 import org.deegree.cs.CRS;
-import org.deegree.cs.CRSRegistry;
 import org.deegree.cs.coordinatesystems.CoordinateSystem;
 import org.deegree.cs.exceptions.TransformationException;
 import org.deegree.cs.exceptions.UnknownCRSException;
+import org.deegree.cs.persistence.CRSManager;
 import org.deegree.cs.transformations.Transformation;
 import org.deegree.gml.GMLVersion;
 import org.deegree.gml.XMLTransformer;
@@ -152,9 +152,9 @@ public class XMLCoordinateTransform {
         String transId = line.getOptionValue( OPT_TRANSFORMATION );
         List<Transformation> trans = null;
         if ( transId != null ) {
-            Transformation t = CRSRegistry.getTransformation( null, transId );
+            Transformation t = CRSManager.getTransformation( null, transId );
             if ( t != null ) {
-                trans = Collections.singletonList( CRSRegistry.getTransformation( null, transId ) );
+                trans = Collections.singletonList( CRSManager.getTransformation( null, transId ) );
             } else {
                 throw new IllegalArgumentException( "Specified transformation id '" + transId
                                                     + "' does not exist in CRS database." );
@@ -172,8 +172,7 @@ public class XMLCoordinateTransform {
         if ( !inputFile.exists() ) {
             throw new IllegalArgumentException( "Input file '" + inputFile + "' does not exist." );
         }
-        XMLStreamReader xmlReader = XMLInputFactory.newInstance().createXMLStreamReader(
-                                                                                         new FileInputStream( inputFile ) );
+        XMLStreamReader xmlReader = XMLInputFactory.newInstance().createXMLStreamReader( new FileInputStream( inputFile ) );
 
         String o = line.getOptionValue( OPT_OUTPUT );
         XMLStreamWriter xmlWriter = null;

@@ -50,16 +50,16 @@ import org.apache.commons.cli.PosixParser;
 import org.deegree.commons.tools.CommandUtils;
 import org.deegree.commons.tools.Tool;
 import org.deegree.cs.CRSCodeType;
-import org.deegree.cs.configuration.CRSConfiguration;
-import org.deegree.cs.configuration.CRSProvider;
 import org.deegree.cs.coordinatesystems.CoordinateSystem;
 import org.deegree.cs.coordinatesystems.ProjectedCRS;
+import org.deegree.cs.persistence.deegree.db.DBCRSStore;
 import org.deegree.cs.projections.Projection;
 import org.deegree.cs.projections.azimuthal.LambertAzimuthalEqualArea;
 import org.deegree.cs.projections.azimuthal.StereographicAlternative;
 import org.deegree.cs.projections.azimuthal.StereographicAzimuthal;
 import org.deegree.cs.projections.conic.LambertConformalConic;
 import org.deegree.cs.projections.cylindric.TransverseMercator;
+import org.deegree.cs.transformations.TransformationFactory.DSTransform;
 import org.deegree.tools.coverage.gridifier.RasterTreeGridifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -114,7 +114,7 @@ public class EPSGDBSynchronizer {
         }
     }
 
-    protected void getCodesForProjections( CRSProvider dbProvider ) {
+    protected void getCodesForProjections( DBCRSStore dbSTore ) {
         try {
             // select the EPSG code of all ProjectedCRS's, and their projection projection codes and type
             PreparedStatement ps = EPSGdbConn.prepareStatement( "SELECT coord_ref_sys_code, "
@@ -129,7 +129,7 @@ public class EPSGDBSynchronizer {
                 int projectionTypeCode = largeRs.getInt( 2 );
                 int projectionCode = largeRs.getInt( 3 );
 
-                CoordinateSystem crs = dbProvider.getCRSByCode( new CRSCodeType( String.valueOf( projectedCRSCode ),
+                CoordinateSystem crs = dbSTore.getCRSByCode( new CRSCodeType( String.valueOf( projectedCRSCode ),
                                                                                  "EPSG" ) );
 
                 if ( crs != null && ( crs instanceof ProjectedCRS ) ) {
@@ -368,9 +368,9 @@ public class EPSGDBSynchronizer {
             sync.connectToEPSGdatabase();
 
             // get the CRS database provider
-            CRSProvider dbProvider = CRSConfiguration.getInstance().getProvider();
+            DBCRSStore dbStore = new DBCRSStore( DSTransform.HELMERT );
 
-            sync.getCodesForProjections( dbProvider );
+            sync.getCodesForProjections( dbStore );
 
             // synchronizer.getCodesForAxes( dbProvider );
 

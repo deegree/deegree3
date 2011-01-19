@@ -46,11 +46,11 @@ import javax.xml.stream.XMLStreamException;
 
 import junit.framework.TestCase;
 
-import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;
 import org.deegree.commons.xml.stax.SchemaLocationXMLStreamWriter;
-import org.deegree.cs.CRSRegistry;
+import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;
 import org.deegree.cs.exceptions.TransformationException;
 import org.deegree.cs.exceptions.UnknownCRSException;
+import org.deegree.cs.persistence.CRSManager;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.multi.MultiGeometry;
 import org.deegree.geometry.multi.MultiLineString;
@@ -128,14 +128,15 @@ public class GML2GeometryTest extends TestCase {
         Assert.assertEquals( 0.0, envelope.getMin().get1(), DELTA );
         Assert.assertEquals( 100.0, envelope.getMax().get0(), DELTA );
         Assert.assertEquals( 100.0, envelope.getMax().get1(), DELTA );
-        Assert.assertEquals( CRSRegistry.lookup( "http://www.opengis.net/gml/srs/epsg.xml#4326" ), envelope.getCoordinateSystem().getWrappedCRS() );
+        Assert.assertEquals( CRSManager.lookup( "http://www.opengis.net/gml/srs/epsg.xml#4326" ),
+                             envelope.getCoordinateSystem().getWrappedCRS() );
 
         XMLOutputFactory outputFactory = XMLOutputFactory.newInstance();
         outputFactory.setProperty( "javax.xml.stream.isRepairingNamespaces", new Boolean( true ) );
         XMLMemoryStreamWriter memoryWriter = new XMLMemoryStreamWriter();
 
         SchemaLocationXMLStreamWriter writer = new SchemaLocationXMLStreamWriter( memoryWriter.getXMLStreamWriter(),
-                                                                    SCHEMA_LOCATION_ATTRIBUTE );
+                                                                                  SCHEMA_LOCATION_ATTRIBUTE );
         GML2GeometryWriter exporter = new GML2GeometryWriter( writer, null, null, new HashSet<String>() );
 
         // writer.setPrefix( "app", "http://www.deegree.org" );
@@ -164,8 +165,7 @@ public class GML2GeometryTest extends TestCase {
                             throws XMLStreamException, FactoryConfigurationError, IOException, UnknownCRSException,
                             TransformationException {
         XMLStreamReaderWrapper xmlReader = new XMLStreamReaderWrapper(
-                                                                       this.getClass().getResource(
-                                                                                                    BASE_DIR
+                                                                       this.getClass().getResource( BASE_DIR
                                                                                                                             + POINT_FILE ) );
         xmlReader.nextTag();
 
@@ -177,14 +177,15 @@ public class GML2GeometryTest extends TestCase {
         Assert.assertEquals( new QName( GML21NS, "Point" ), xmlReader.getName() );
         Assert.assertEquals( 5.0, point.get0(), DELTA );
         Assert.assertEquals( 40.0, point.get1(), DELTA );
-        Assert.assertEquals( CRSRegistry.lookup( "http://www.opengis.net/gml/srs/epsg.xml#4326" ), point.getCoordinateSystem().getWrappedCRS() );
+        Assert.assertEquals( CRSManager.lookup( "http://www.opengis.net/gml/srs/epsg.xml#4326" ),
+                             point.getCoordinateSystem().getWrappedCRS() );
 
         XMLOutputFactory outputFactory = XMLOutputFactory.newInstance();
         outputFactory.setProperty( "javax.xml.stream.isRepairingNamespaces", new Boolean( true ) );
         XMLMemoryStreamWriter memoryWriter = new XMLMemoryStreamWriter();
 
         SchemaLocationXMLStreamWriter writer = new SchemaLocationXMLStreamWriter( memoryWriter.getXMLStreamWriter(),
-                                                                    SCHEMA_LOCATION_ATTRIBUTE );
+                                                                                  SCHEMA_LOCATION_ATTRIBUTE );
         GML2GeometryWriter exporter = new GML2GeometryWriter( writer, null, null, new HashSet<String>() );
 
         writer.setPrefix( "gml", "http://www.opengis.net/gml" );
@@ -207,8 +208,7 @@ public class GML2GeometryTest extends TestCase {
                             throws XMLStreamException, FactoryConfigurationError, IOException, TransformationException,
                             UnknownCRSException {
         XMLStreamReaderWrapper xmlReader = new XMLStreamReaderWrapper(
-                                                                       this.getClass().getResource(
-                                                                                                    BASE_DIR
+                                                                       this.getClass().getResource( BASE_DIR
                                                                                                                             + POINT2_FILE ) );
         xmlReader.nextTag();
         Point point = new GML2GeometryReader().parsePoint( xmlReader, null );
@@ -220,7 +220,7 @@ public class GML2GeometryTest extends TestCase {
         XMLMemoryStreamWriter memoryWriter = new XMLMemoryStreamWriter();
 
         SchemaLocationXMLStreamWriter writer = new SchemaLocationXMLStreamWriter( memoryWriter.getXMLStreamWriter(),
-                                                                    SCHEMA_LOCATION_ATTRIBUTE );
+                                                                                  SCHEMA_LOCATION_ATTRIBUTE );
         GML2GeometryWriter exporter = new GML2GeometryWriter( writer, null, null, new HashSet<String>() );
 
         writer.setPrefix( "gml", "http://www.opengis.net/gml" );
@@ -243,8 +243,7 @@ public class GML2GeometryTest extends TestCase {
                             throws XMLStreamException, FactoryConfigurationError, IOException, UnknownCRSException,
                             TransformationException {
         XMLStreamReaderWrapper xmlReader = new XMLStreamReaderWrapper(
-                                                                       this.getClass().getResource(
-                                                                                                    BASE_DIR
+                                                                       this.getClass().getResource( BASE_DIR
                                                                                                                             + POLYGON_FILE ) );
         xmlReader.nextTag();
 
@@ -277,14 +276,15 @@ public class GML2GeometryTest extends TestCase {
         comparePoint( 90.0, 60.0, points2.get( 3 ) );
         comparePoint( 60.0, 60.0, points2.get( 4 ) );
 
-        Assert.assertEquals( CRSRegistry.lookup( "http://www.opengis.net/gml/srs/epsg.xml#4326" ), polygon.getCoordinateSystem().getWrappedCRS() );
+        Assert.assertEquals( CRSManager.lookup( "http://www.opengis.net/gml/srs/epsg.xml#4326" ),
+                             polygon.getCoordinateSystem().getWrappedCRS() );
 
         XMLOutputFactory outputFactory = XMLOutputFactory.newInstance();
         outputFactory.setProperty( "javax.xml.stream.isRepairingNamespaces", new Boolean( true ) );
         XMLMemoryStreamWriter memoryWriter = new XMLMemoryStreamWriter();
 
         SchemaLocationXMLStreamWriter writer = new SchemaLocationXMLStreamWriter( memoryWriter.getXMLStreamWriter(),
-                                                                    SCHEMA_LOCATION_ATTRIBUTE );
+                                                                                  SCHEMA_LOCATION_ATTRIBUTE );
         GML2GeometryWriter exporter = new GML2GeometryWriter( writer, null, null, new HashSet<String>() );
 
         writer.setPrefix( "gml", "http://www.opengis.net/gml" );
@@ -308,8 +308,7 @@ public class GML2GeometryTest extends TestCase {
                             throws XMLStreamException, FactoryConfigurationError, IOException, UnknownCRSException,
                             TransformationException {
         XMLStreamReaderWrapper xmlReader = new XMLStreamReaderWrapper(
-                                                                       this.getClass().getResource(
-                                                                                                    BASE_DIR
+                                                                       this.getClass().getResource( BASE_DIR
                                                                                                                             + LINESTRING_FILE ) );
         xmlReader.nextTag();
 
@@ -325,14 +324,15 @@ public class GML2GeometryTest extends TestCase {
         comparePoint( 20.0, 35.0, controlPoints.get( 1 ) );
         comparePoint( 100.0, 100.0, controlPoints.get( 2 ) );
 
-        Assert.assertEquals( CRSRegistry.lookup( "http://www.opengis.net/gml/srs/epsg.xml#4326" ), lineString.getCoordinateSystem().getWrappedCRS() );
+        Assert.assertEquals( CRSManager.lookup( "http://www.opengis.net/gml/srs/epsg.xml#4326" ),
+                             lineString.getCoordinateSystem().getWrappedCRS() );
 
         XMLOutputFactory outputFactory = XMLOutputFactory.newInstance();
         outputFactory.setProperty( "javax.xml.stream.isRepairingNamespaces", new Boolean( true ) );
         XMLMemoryStreamWriter memoryWriter = new XMLMemoryStreamWriter();
 
         SchemaLocationXMLStreamWriter writer = new SchemaLocationXMLStreamWriter( memoryWriter.getXMLStreamWriter(),
-                                                                    SCHEMA_LOCATION_ATTRIBUTE );
+                                                                                  SCHEMA_LOCATION_ATTRIBUTE );
         GML2GeometryWriter exporter = new GML2GeometryWriter( writer, null, null, new HashSet<String>() );
 
         writer.setPrefix( "gml", "http://www.opengis.net/gml" );
@@ -356,8 +356,7 @@ public class GML2GeometryTest extends TestCase {
                             throws XMLStreamException, FactoryConfigurationError, IOException, TransformationException,
                             UnknownCRSException {
         XMLStreamReaderWrapper xmlReader = new XMLStreamReaderWrapper(
-                                                                       this.getClass().getResource(
-                                                                                                    BASE_DIR
+                                                                       this.getClass().getResource( BASE_DIR
                                                                                                                             + MULTIGEOMETRY_FILE ) );
         xmlReader.nextTag();
 
@@ -393,7 +392,7 @@ public class GML2GeometryTest extends TestCase {
         XMLMemoryStreamWriter memoryWriter = new XMLMemoryStreamWriter();
 
         SchemaLocationXMLStreamWriter writer = new SchemaLocationXMLStreamWriter( memoryWriter.getXMLStreamWriter(),
-                                                                    SCHEMA_LOCATION_ATTRIBUTE );
+                                                                                  SCHEMA_LOCATION_ATTRIBUTE );
         GML2GeometryWriter exporter = new GML2GeometryWriter( writer, null, null, new HashSet<String>() );
 
         writer.setPrefix( "gml", "http://www.opengis.net/gml" );
@@ -417,8 +416,7 @@ public class GML2GeometryTest extends TestCase {
                             throws XMLStreamException, FactoryConfigurationError, IOException, TransformationException,
                             UnknownCRSException {
         XMLStreamReaderWrapper xmlReader = new XMLStreamReaderWrapper(
-                                                                       this.getClass().getResource(
-                                                                                                    BASE_DIR
+                                                                       this.getClass().getResource( BASE_DIR
                                                                                                                             + MULTILINESTRING_FILE ) );
         xmlReader.nextTag();
 
@@ -449,7 +447,7 @@ public class GML2GeometryTest extends TestCase {
         XMLMemoryStreamWriter memoryWriter = new XMLMemoryStreamWriter();
 
         SchemaLocationXMLStreamWriter writer = new SchemaLocationXMLStreamWriter( memoryWriter.getXMLStreamWriter(),
-                                                                    SCHEMA_LOCATION_ATTRIBUTE );
+                                                                                  SCHEMA_LOCATION_ATTRIBUTE );
         GML2GeometryWriter exporter = new GML2GeometryWriter( writer, null, null, new HashSet<String>() );
 
         writer.setPrefix( "gml", "http://www.opengis.net/gml" );
@@ -473,8 +471,7 @@ public class GML2GeometryTest extends TestCase {
                             throws XMLStreamException, FactoryConfigurationError, IOException, TransformationException,
                             UnknownCRSException {
         XMLStreamReaderWrapper xmlReader = new XMLStreamReaderWrapper(
-                                                                       this.getClass().getResource(
-                                                                                                    BASE_DIR
+                                                                       this.getClass().getResource( BASE_DIR
                                                                                                                             + MULTIPOINT_FILE ) );
         xmlReader.nextTag();
 
@@ -494,7 +491,7 @@ public class GML2GeometryTest extends TestCase {
         XMLMemoryStreamWriter memoryWriter = new XMLMemoryStreamWriter();
 
         SchemaLocationXMLStreamWriter writer = new SchemaLocationXMLStreamWriter( memoryWriter.getXMLStreamWriter(),
-                                                                    SCHEMA_LOCATION_ATTRIBUTE );
+                                                                                  SCHEMA_LOCATION_ATTRIBUTE );
         GML2GeometryWriter exporter = new GML2GeometryWriter( writer, null, null, new HashSet<String>() );
 
         writer.setPrefix( "gml", "http://www.opengis.net/gml" );
@@ -518,8 +515,7 @@ public class GML2GeometryTest extends TestCase {
                             throws XMLStreamException, FactoryConfigurationError, IOException, UnknownCRSException,
                             TransformationException {
         XMLStreamReaderWrapper xmlReader = new XMLStreamReaderWrapper(
-                                                                       this.getClass().getResource(
-                                                                                                    BASE_DIR
+                                                                       this.getClass().getResource( BASE_DIR
                                                                                                                             + MULTIPOLYGON_FILE ) );
         xmlReader.nextTag();
 
@@ -559,14 +555,15 @@ public class GML2GeometryTest extends TestCase {
         comparePoint( 0.0, 100.0, points.get( 3 ) );
         comparePoint( 0.0, 0.0, points.get( 4 ) );
 
-        Assert.assertEquals( CRSRegistry.lookup( "http://www.opengis.net/gml/srs/epsg.xml#4326" ), multiPolygon.getCoordinateSystem().getWrappedCRS() );
+        Assert.assertEquals( CRSManager.lookup( "http://www.opengis.net/gml/srs/epsg.xml#4326" ),
+                             multiPolygon.getCoordinateSystem().getWrappedCRS() );
 
         XMLOutputFactory outputFactory = XMLOutputFactory.newInstance();
         outputFactory.setProperty( "javax.xml.stream.isRepairingNamespaces", new Boolean( true ) );
         XMLMemoryStreamWriter memoryWriter = new XMLMemoryStreamWriter();
 
         SchemaLocationXMLStreamWriter writer = new SchemaLocationXMLStreamWriter( memoryWriter.getXMLStreamWriter(),
-                                                                    SCHEMA_LOCATION_ATTRIBUTE );
+                                                                                  SCHEMA_LOCATION_ATTRIBUTE );
         GML2GeometryWriter exporter = new GML2GeometryWriter( writer, null, null, new HashSet<String>() );
 
         writer.setPrefix( "gml", "http://www.opengis.net/gml" );

@@ -84,9 +84,9 @@ import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.commons.xml.XMLProcessingException;
 import org.deegree.commons.xml.XPath;
-import org.deegree.cs.CRSRegistry;
 import org.deegree.cs.coordinatesystems.CoordinateSystem;
 import org.deegree.cs.exceptions.UnknownCRSException;
+import org.deegree.cs.persistence.CRSManager;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.primitive.Point;
 import org.deegree.observation.model.Observation;
@@ -105,10 +105,10 @@ import org.deegree.protocol.sos.filter.ProcedureFilter;
 import org.deegree.protocol.sos.filter.SpatialFilter;
 import org.deegree.protocol.sos.getfeatureofinterest.GetFeatureOfInterest;
 import org.deegree.protocol.sos.getfeatureofinterest.GetFeatureOfInterest100XMLAdapter;
+import org.deegree.protocol.sos.getobservation.EventTime100XMLAdapter.EventTimeXMLParsingException;
 import org.deegree.protocol.sos.getobservation.GetObservation;
 import org.deegree.protocol.sos.getobservation.GetObservation100KVPAdapter;
 import org.deegree.protocol.sos.getobservation.GetObservation100XMLAdapter;
-import org.deegree.protocol.sos.getobservation.EventTime100XMLAdapter.EventTimeXMLParsingException;
 import org.deegree.protocol.sos.getobservation.GetObservation100XMLAdapter.ResultFilterException;
 import org.deegree.services.controller.AbstractOGCServiceController;
 import org.deegree.services.controller.ImplementationMetadata;
@@ -220,8 +220,7 @@ public class SOSController extends AbstractOGCServiceController<SOSRequestType> 
         nsContext.addNamespace( "xlink", "http://www.w3.org/1999/xlink" );
 
         XMLAdapter sensorXML = new XMLAdapter( sensorFile );
-        OMElement element = sensorXML.getElement(
-                                                  sensorXML.getRootElement(),
+        OMElement element = sensorXML.getElement( sensorXML.getRootElement(),
                                                   new XPath(
                                                              "/sml:SensorML/sml:identification/sml:IdentifierList/sml:identifier[@name=\"URN\"]/sml:Term/sml:value",
                                                              nsContext ) );
@@ -335,8 +334,7 @@ public class SOSController extends AbstractOGCServiceController<SOSRequestType> 
                                   response );
         } catch ( XMLStreamException e ) {
             LOG.error( "an error occured while processing the request", e );
-            sendServiceException(
-                                  new OWSException( "an error occured while processing the request", NO_APPLICABLE_CODE ),
+            sendServiceException( new OWSException( "an error occured while processing the request", NO_APPLICABLE_CODE ),
                                   response );
         } catch ( XMLProcessingException e ) {
             LOG.error( "an error occured while processing the request", e );
@@ -479,7 +477,7 @@ public class SOSController extends AbstractOGCServiceController<SOSRequestType> 
                             throws OWSException {
         if ( observationReq.getSRSName() != null && !observationReq.getSRSName().trim().equals( "" ) ) {
             try {
-                CRSRegistry.lookup( observationReq.getSRSName() );
+                CRSManager.lookup( observationReq.getSRSName() );
             } catch ( UnknownCRSException e ) {
                 throw new OWSException( "Invalid SRS name given: " + observationReq.getSRSName(),
                                         INVALID_PARAMETER_VALUE, "srsName" );

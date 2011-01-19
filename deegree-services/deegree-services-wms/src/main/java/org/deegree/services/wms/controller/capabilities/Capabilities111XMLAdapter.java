@@ -42,7 +42,7 @@ import static java.lang.Double.NEGATIVE_INFINITY;
 import static java.lang.Double.POSITIVE_INFINITY;
 import static org.deegree.commons.xml.CommonNamespaces.XLINK_PREFIX;
 import static org.deegree.commons.xml.CommonNamespaces.XLNNS;
-import static org.deegree.cs.CRSRegistry.lookup;
+import static org.deegree.cs.persistence.CRSManager.lookup;
 import static org.deegree.services.wms.model.Dimension.formatDimensionValueList;
 import static org.slf4j.LoggerFactory.getLogger;
 

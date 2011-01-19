@@ -56,13 +56,16 @@ import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.PosixParser;
 import org.deegree.commons.tools.CommandUtils;
 import org.deegree.commons.tools.Tool;
-import org.deegree.cs.configuration.CRSProvider;
-import org.deegree.cs.configuration.deegree.xml.DeegreeCRSProvider;
-import org.deegree.cs.configuration.gml.GMLCRSProvider;
-import org.deegree.cs.configuration.proj4.PROJ4CRSProvider;
 import org.deegree.cs.coordinatesystems.CoordinateSystem;
 import org.deegree.cs.exceptions.TransformationException;
 import org.deegree.cs.exceptions.UnknownCRSException;
+import org.deegree.cs.io.deegree.CRSExporterBase;
+import org.deegree.cs.persistence.CRSStore;
+import org.deegree.cs.persistence.deegree.DeegreeCRSStore;
+import org.deegree.cs.persistence.deegree.d3.StAXResource;
+import org.deegree.cs.persistence.gml.GMLCRSStore;
+import org.deegree.cs.persistence.proj4.PROJ4CRSStore;
+import org.deegree.cs.transformations.TransformationFactory.DSTransform;
 
 /**
  * The <code>ConfigurationConverger</code> class TODO add class documentation here.
@@ -178,16 +181,17 @@ public class ConfigurationConverger {
         Properties inProps = new Properties();
         inProps.put( "crs.configuration", inFile );
 
-        CRSProvider in = null;
+        DSTransform prefTrans = DSTransform.HELMERT;
+        CRSStore in = null;
         switch ( inFormat ) {
         case DEEGREE:
-            in = DeegreeCRSProvider.getInstance( inProps );
+            in = new DeegreeCRSStore<StAXResource>( prefTrans );
             break;
         case GML:
-            in = new GMLCRSProvider( inProps );
+            in = new GMLCRSStore( prefTrans );
             break;
         case PROJ4:
-            in = new PROJ4CRSProvider( inProps );
+            in = new PROJ4CRSStore( prefTrans );
             break;
         default:
             throw new IllegalArgumentException( "No crs provider for input format: " + inFormat
@@ -195,17 +199,15 @@ public class ConfigurationConverger {
 
         }
 
-        CRSProvider out = null;
+        CRSExporterBase exporter = null;
         switch ( outFormat ) {
 
         case DEEGREE:
-            out = DeegreeCRSProvider.getInstance( null );
+            exporter = new CRSExporterBase();
             break;
         case GML:
-            out = new GMLCRSProvider( null );
             break;
         case PROJ4:
-            out = new PROJ4CRSProvider( null );
             break;
         default:
             throw new IllegalArgumentException( "No crs provider for output format: " + outFormat
@@ -217,8 +219,8 @@ public class ConfigurationConverger {
         // allSystems.add( in.getCRSByCode( new CRSCodeType( "3395", "EPSG" ) ) );
         List<CoordinateSystem> allSystems = in.getAvailableCRSs();
         StringBuilder sb = new StringBuilder( allSystems.size() * 2000 );
-        if ( out.canExport() ) {
-            out.export( sb, allSystems );
+        if ( exporter != null ) {
+            exporter.export( sb, allSystems );
             if ( outFile != null && !"".equals( outFile.trim() ) ) {
                 File outputFile = new File( outFile );
                 BufferedWriter writer = new BufferedWriter( new FileWriter( outputFile ) );

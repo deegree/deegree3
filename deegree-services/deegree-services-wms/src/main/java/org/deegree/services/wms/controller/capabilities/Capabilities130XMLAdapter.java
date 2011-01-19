@@ -42,7 +42,7 @@ import static org.deegree.commons.xml.CommonNamespaces.SLDNS;
 import static org.deegree.commons.xml.CommonNamespaces.WMSNS;
 import static org.deegree.commons.xml.CommonNamespaces.XLNNS;
 import static org.deegree.commons.xml.CommonNamespaces.XSINS;
-import static org.deegree.cs.CRSRegistry.lookup;
+import static org.deegree.cs.persistence.CRSManager.lookup;
 import static org.deegree.services.wms.model.Dimension.formatDimensionValueList;
 import static org.slf4j.LoggerFactory.getLogger;
 

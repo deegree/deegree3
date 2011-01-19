@@ -46,12 +46,12 @@ import javax.vecmath.Point3d;
 
 import org.deegree.commons.uom.Length;
 import org.deegree.cs.CRS;
-import org.deegree.cs.CRSRegistry;
 import org.deegree.cs.Transformer;
 import org.deegree.cs.coordinatesystems.CoordinateSystem;
 import org.deegree.cs.exceptions.OutsideCRSDomainException;
 import org.deegree.cs.exceptions.TransformationException;
 import org.deegree.cs.exceptions.UnknownCRSException;
+import org.deegree.cs.persistence.CRSManager;
 import org.deegree.cs.transformations.Transformation;
 import org.deegree.cs.transformations.TransformationFactory;
 import org.deegree.geometry.Geometry.GeometryType;
@@ -62,15 +62,17 @@ import org.deegree.geometry.composite.CompositeSurface;
 import org.deegree.geometry.i18n.Messages;
 import org.deegree.geometry.multi.MultiCurve;
 import org.deegree.geometry.multi.MultiGeometry;
+import org.deegree.geometry.multi.MultiGeometry.MultiGeometryType;
 import org.deegree.geometry.multi.MultiLineString;
 import org.deegree.geometry.multi.MultiPoint;
 import org.deegree.geometry.multi.MultiPolygon;
 import org.deegree.geometry.multi.MultiSolid;
 import org.deegree.geometry.multi.MultiSurface;
-import org.deegree.geometry.multi.MultiGeometry.MultiGeometryType;
 import org.deegree.geometry.points.Points;
 import org.deegree.geometry.primitive.Curve;
+import org.deegree.geometry.primitive.Curve.CurveType;
 import org.deegree.geometry.primitive.GeometricPrimitive;
+import org.deegree.geometry.primitive.GeometricPrimitive.PrimitiveType;
 import org.deegree.geometry.primitive.LineString;
 import org.deegree.geometry.primitive.LinearRing;
 import org.deegree.geometry.primitive.OrientableCurve;
@@ -79,19 +81,17 @@ import org.deegree.geometry.primitive.Point;
 import org.deegree.geometry.primitive.Polygon;
 import org.deegree.geometry.primitive.Ring;
 import org.deegree.geometry.primitive.Solid;
-import org.deegree.geometry.primitive.Surface;
-import org.deegree.geometry.primitive.Tin;
-import org.deegree.geometry.primitive.Curve.CurveType;
-import org.deegree.geometry.primitive.GeometricPrimitive.PrimitiveType;
 import org.deegree.geometry.primitive.Solid.SolidType;
+import org.deegree.geometry.primitive.Surface;
 import org.deegree.geometry.primitive.Surface.SurfaceType;
+import org.deegree.geometry.primitive.Tin;
 import org.deegree.geometry.primitive.patches.GriddedSurfacePatch;
-import org.deegree.geometry.primitive.patches.PolygonPatch;
-import org.deegree.geometry.primitive.patches.SurfacePatch;
-import org.deegree.geometry.primitive.patches.Triangle;
 import org.deegree.geometry.primitive.patches.GriddedSurfacePatch.GriddedSurfaceType;
+import org.deegree.geometry.primitive.patches.PolygonPatch;
 import org.deegree.geometry.primitive.patches.PolygonPatch.PolygonPatchType;
+import org.deegree.geometry.primitive.patches.SurfacePatch;
 import org.deegree.geometry.primitive.patches.SurfacePatch.SurfacePatchType;
+import org.deegree.geometry.primitive.patches.Triangle;
 import org.deegree.geometry.primitive.segments.Arc;
 import org.deegree.geometry.primitive.segments.ArcByBulge;
 import org.deegree.geometry.primitive.segments.ArcByCenterPoint;
@@ -104,11 +104,11 @@ import org.deegree.geometry.primitive.segments.CircleByCenterPoint;
 import org.deegree.geometry.primitive.segments.Clothoid;
 import org.deegree.geometry.primitive.segments.CubicSpline;
 import org.deegree.geometry.primitive.segments.CurveSegment;
+import org.deegree.geometry.primitive.segments.CurveSegment.CurveSegmentType;
 import org.deegree.geometry.primitive.segments.Geodesic;
 import org.deegree.geometry.primitive.segments.GeodesicString;
 import org.deegree.geometry.primitive.segments.LineStringSegment;
 import org.deegree.geometry.primitive.segments.OffsetCurve;
-import org.deegree.geometry.primitive.segments.CurveSegment.CurveSegmentType;
 import org.deegree.geometry.standard.curvesegments.AffinePlacement;
 import org.deegree.geometry.standard.points.PointsList;
 import org.slf4j.Logger;
@@ -251,7 +251,7 @@ public class GeometryTransformer extends Transformer {
      */
     public Geometry transform( Geometry geo, String sourceCRS )
                             throws TransformationException, IllegalArgumentException, UnknownCRSException {
-        return transform( geo, CRSRegistry.lookup( sourceCRS ), false, null );
+        return transform( geo, CRSManager.lookup( sourceCRS ), false, null );
     }
 
     /**

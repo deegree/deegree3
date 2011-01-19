@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,7 +32,7 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 
 package org.deegree.tools.crs;
 
@@ -48,9 +48,9 @@ import java.util.Map;
 
 import javax.vecmath.Point3d;
 
-import org.deegree.cs.CRSRegistry;
 import org.deegree.cs.coordinatesystems.CoordinateSystem;
 import org.deegree.cs.exceptions.UnknownCRSException;
+import org.deegree.cs.persistence.CRSManager;
 import org.deegree.cs.transformations.polynomial.LeastSquareApproximation;
 import org.deegree.cs.transformations.polynomial.PolynomialTransformation;
 import org.slf4j.Logger;
@@ -58,13 +58,13 @@ import org.slf4j.LoggerFactory;
 
 /**
  * <code>PolynomialParameterCreator</code> allows for the calculation of a
- *
+ * 
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- *
+ * 
  * @author last edited by: $Author: rbezema $
- *
+ * 
  * @version $Revision: 10987 $, $Date: 2008-04-09 16:49:52 +0200 (Mi, 09 Apr 2008) $
- *
+ * 
  */
 public class PolynomialParameterCreator {
 
@@ -73,12 +73,12 @@ public class PolynomialParameterCreator {
     /**
      * Simple constructor which reads coordinate pairs from a different files (using the separator) and stores them in a
      * list.
-     *
+     * 
      * @param sourceFile
      *            to read the source coordinates from
      * @param targetFile
      *            to read the target coordinates from.
-     *
+     * 
      * @param seperator
      *            which separates the coordinates (e.g. ; or , )
      * @param source
@@ -170,7 +170,7 @@ public class PolynomialParameterCreator {
 
     /**
      * a starter method to test the quality of projections.
-     *
+     * 
      * @param args
      */
     public static void main( String[] args ) {
@@ -244,8 +244,8 @@ public class PolynomialParameterCreator {
         log.info( "Trying to convert coordinates from: " + sourceCRS + " to: " + targetCRS );
 
         try {
-            CoordinateSystem source = CRSRegistry.lookup( sourceCRS );
-            CoordinateSystem target = CRSRegistry.lookup( targetCRS );
+            CoordinateSystem source = CRSManager.lookup( sourceCRS );
+            CoordinateSystem target = CRSManager.lookup( targetCRS );
             new PolynomialParameterCreator( new File( sourceFile ), new File( targetFile ), coordSep, source, target,
                                             transformClass, order );
 

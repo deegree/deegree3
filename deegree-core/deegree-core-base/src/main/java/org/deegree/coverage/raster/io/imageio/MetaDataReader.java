@@ -41,9 +41,9 @@ import org.deegree.coverage.raster.geom.RasterGeoReference;
 import org.deegree.coverage.raster.geom.RasterGeoReference.OriginLocation;
 import org.deegree.coverage.raster.io.imageio.geotiff.GeoTiffIIOMetadataAdapter;
 import org.deegree.cs.CRS;
-import org.deegree.cs.CRSRegistry;
 import org.deegree.cs.coordinatesystems.CoordinateSystem;
 import org.deegree.cs.exceptions.UnknownCRSException;
+import org.deegree.cs.persistence.CRSManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -115,7 +115,7 @@ public class MetaDataReader {
             }
             if ( epsgCode != null && epsgCode.length() != 0 ) {
                 try {
-                    crs = CRSRegistry.lookup( "EPSG:" + epsgCode );
+                    crs = CRSManager.lookup( "EPSG:" + epsgCode );
                 } catch ( UnknownCRSException e ) {
                     LOG.error( "No coordinate system found for EPSG:" + epsgCode );
                 }
