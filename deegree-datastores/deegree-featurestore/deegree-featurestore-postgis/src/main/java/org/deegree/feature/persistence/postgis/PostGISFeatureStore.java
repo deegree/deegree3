@@ -962,7 +962,7 @@ public class PostGISFeatureStore implements SQLFeatureStore {
             begin = System.currentTimeMillis();
 
             // TODO make this configurable?
-            stmt.setFetchSize( 5 );
+            stmt.setFetchSize( 1 );
             rs = stmt.executeQuery();
             LOG.debug( "Executing SELECT took {} [ms] ", System.currentTimeMillis() - begin );
 
