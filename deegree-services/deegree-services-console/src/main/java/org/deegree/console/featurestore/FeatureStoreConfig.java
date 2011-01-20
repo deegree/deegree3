@@ -69,7 +69,8 @@ public class FeatureStoreConfig extends ManagedXMLConfig {
 
     public FeatureStoreConfig( String id, boolean active, boolean ignore, FeatureStoreConfigManager manager,
                                FeatureStoreProvider provider ) {
-        super( id, active, ignore, manager, provider != null ? provider.getConfigSchema() : null, provider != null ? provider.getConfigTemplate() : null);
+        super( id, active, ignore, manager, provider != null ? provider.getConfigSchema() : null,
+               provider != null ? provider.getConfigTemplate() : null );
     }
 
     public boolean getSql() {
@@ -105,7 +106,7 @@ public class FeatureStoreConfig extends ManagedXMLConfig {
             throw new Exception( "No feature store with id '" + getId() + "' known / active." );
         }
         FeatureStoreLoader fsLoader = new FeatureStoreLoader( fs );
-        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put( "fsConfig", this );        
+        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put( "fsConfig", this );
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put( "fsLoader", fsLoader );
         return "/console/feature/loader";
     }
@@ -204,7 +205,7 @@ public class FeatureStoreConfig extends ManagedXMLConfig {
             sb.append( indent + "- <i>" + ft.getName().getPrefix() + ":" + ft.getName().getLocalPart()
                        + " (abstract)</i><br/>" );
         } else {
-            Query query = new Query( ft.getName(), null, null, 0, -1, -1 );
+            Query query = new Query( ft.getName(), null, 0, -1, -1 );
             int numInstances = -1;
             try {
                 numInstances = store.queryHits( query );

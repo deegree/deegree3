@@ -35,7 +35,6 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.feature.persistence.query;
 
-import static org.deegree.feature.persistence.query.Query.QueryHint.HINT_LOOSE_BBOX;
 import static org.deegree.feature.persistence.query.Query.QueryHint.HINT_RESOLUTION;
 import static org.deegree.feature.persistence.query.Query.QueryHint.HINT_SCALE;
 import static org.deegree.filter.Filter.Type.OPERATOR_FILTER;
@@ -60,8 +59,8 @@ import org.deegree.filter.spatial.Equals;
 import org.deegree.filter.spatial.Intersects;
 import org.deegree.filter.spatial.Overlaps;
 import org.deegree.filter.spatial.SpatialOperator;
-import org.deegree.filter.spatial.Within;
 import org.deegree.filter.spatial.SpatialOperator.SubType;
+import org.deegree.filter.spatial.Within;
 import org.deegree.geometry.Envelope;
 import org.deegree.protocol.wfs.getfeature.TypeName;
 
@@ -85,8 +84,6 @@ public class Query {
      * @version $Revision$, $Date$
      */
     public enum QueryHint {
-        /** If present, the store shall apply the argument (an {@link Envelope} as a pre-filtering step. */
-        HINT_LOOSE_BBOX,
         /** If present, the store can use a different LOD for the scale. */
         HINT_SCALE,
         /** If present, the store can simplify geometries according to the resolution. */
@@ -112,9 +109,6 @@ public class Query {
      * 
      * @param ftName
      *            name of the requested feature type, must not be <code>null</code>
-     * @param looseBbox
-     *            bounding box used for pre-filtering the features, can be <code>null</code> (no pre-filtering)
-     *            {@link QueryHint#HINT_LOOSE_BBOX}
      * @param filter
      *            additional filter constraints, may be <code>null</code>, if not <code>null</code>, all contained
      *            geometry operands must have a non-null {@link CRS}
@@ -125,13 +119,12 @@ public class Query {
      * @param resolution
      *            if resolution is positive, a pixel resolution hint will be used
      */
-    public Query( QName ftName, Envelope looseBbox, Filter filter, int scale, int maxFeatures, double resolution ) {
+    public Query( QName ftName, Filter filter, int scale, int maxFeatures, double resolution ) {
         this.typeNames = new TypeName[] { new TypeName( ftName, null ) };
         this.filter = filter;
         this.featureVersion = null;
         this.srsName = null;
         this.maxFeatures = maxFeatures;
-        hints.put( HINT_LOOSE_BBOX, looseBbox );
         if ( scale > 0 ) {
             hints.put( HINT_SCALE, scale );
         }
@@ -202,20 +195,18 @@ public class Query {
      * <p>
      * The returned {@link Envelope} is determined by the following strategy:
      * <ul>
-     * <li>If a loose bbox is available ({@link QueryHint#HINT_LOOSE_BBOX}), it is returned.</li>
-     * <li>If no loose bbox is available, but the {@link Query} contains an {@link OperatorFilter}, it is attempted to
-     * extract an {@link Envelope} from it. TODO Note that the envelope is only used when the corresponding property
-     * name targets a property of the root feature (and not a property of a subfeature).</li>
-     * <li>If neither a loose bbox is available, nor a bbox can be extracted from the filter, <code>null</code> is
-     * returned.</li>
+     * <li>If the {@link Query} contains an {@link OperatorFilter}, it is attempted to extract an {@link Envelope} from
+     * it. TODO Note that the envelope is only used when the corresponding property name targets a property of the root
+     * feature (and not a property of a subfeature).</li>
+     * <li>If no bbox can be extracted from the filter, <code>null</code> is returned.</li>
      * </ul>
      * </p>
      * 
      * @return an {@link Envelope} suitable for pre-filtering feature candidates, can be <code>null</code>
      */
     public Envelope getPrefilterBBox() {
-        Envelope env = (Envelope) getHint( HINT_LOOSE_BBOX );
-        if ( env == null && filter != null && filter.getType() == OPERATOR_FILTER ) {
+        Envelope env = null;
+        if ( filter != null && filter.getType() == OPERATOR_FILTER ) {
             OperatorFilter of = (OperatorFilter) filter;
             Operator oper = of.getOperator();
             env = extractBBox( oper );

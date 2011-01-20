@@ -59,7 +59,9 @@ import org.deegree.feature.property.Property;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.feature.types.GenericFeatureType;
 import org.deegree.feature.xpath.FeatureXPathEvaluator;
+import org.deegree.filter.Filter;
 import org.deegree.filter.FilterEvaluationException;
+import org.deegree.filter.Filters;
 import org.deegree.filter.OperatorFilter;
 import org.deegree.filter.expression.PropertyName;
 import org.deegree.filter.spatial.Intersects;
@@ -136,7 +138,8 @@ public class DynamicSQLLayer extends Layer {
             GenericFeatureType ft = datastore.getFeatureType();
             PropertyName propName = new PropertyName( ft.getDefaultGeometryPropertyDeclaration().getName() );
             OperatorFilter fil = new OperatorFilter( new Intersects( propName, clickBox ) );
-            rs = datastore.query( new Query( ft.getName(), clickBox, fil, -1, fi.getFeatureCount(), -1 ) );
+            Filter filter = Filters.addBBoxConstraint( clickBox, fil );
+            rs = datastore.query( new Query( ft.getName(), filter, -1, fi.getFeatureCount(), -1 ) );
             FeatureCollection col = rs.toCollection();
             return new Pair<FeatureCollection, LinkedList<String>>( col, new LinkedList<String>() );
         } catch ( FilterEvaluationException e ) {
@@ -173,7 +176,8 @@ public class DynamicSQLLayer extends Layer {
         FeatureResultSet rs = null;
         final double resolution = gm.getResolution();
         try {
-            rs = datastore.query( new Query( datastore.getFeatureType().getName(), gm.getBoundingBox(), null,
+            rs = datastore.query( new Query( datastore.getFeatureType().getName(),
+                                             Filters.addBBoxConstraint( gm.getBoundingBox(), null ),
                                              round( gm.getScale() ), maxFeatures, resolution ) );
 
             for ( Feature f : rs ) {

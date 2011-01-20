@@ -84,6 +84,7 @@ import org.deegree.feature.types.property.PropertyType;
 import org.deegree.feature.xpath.FeatureXPathEvaluator;
 import org.deegree.filter.Filter;
 import org.deegree.filter.FilterEvaluationException;
+import org.deegree.filter.Filters;
 import org.deegree.filter.Operator;
 import org.deegree.filter.OperatorFilter;
 import org.deegree.filter.comparison.PropertyIsBetween;
@@ -268,12 +269,13 @@ public class FeatureLayer extends Layer {
             queries.addAll( map( datastore.getSchema().getFeatureTypes( null, false, false ),
                                  new Mapper<Query, FeatureType>() {
                                      public Query apply( FeatureType u ) {
-                                         return new Query( u.getName(), bbox, filter, round( gm.getScale() ),
-                                                           maxFeatures, gm.getResolution() );
+                                         return new Query( u.getName(), Filters.addBBoxConstraint( bbox, filter ),
+                                                           round( gm.getScale() ), maxFeatures, gm.getResolution() );
                                      }
                                  } ) );
         } else {
-            Query query = new Query( featureType, bbox, filter, round( gm.getScale() ), maxFeatures, gm.getResolution() );
+            Query query = new Query( featureType, Filters.addBBoxConstraint( bbox, filter ), round( gm.getScale() ),
+                                     maxFeatures, gm.getResolution() );
             queries.add( query );
         }
         return dimFilter == null ? new LinkedList<String>() : dimFilter.second;
@@ -430,8 +432,7 @@ public class FeatureLayer extends Layer {
                                                    if ( u.getDefaultGeometryPropertyDeclaration() == null ) {
                                                        return null;
                                                    }
-                                                   return new Query( u.getName(), clickBox, buildFilter( operator, u,
-                                                                                                         clickBox ),
+                                                   return new Query( u.getName(), buildFilter( operator, u, clickBox ),
                                                                      -1, fi.getFeatureCount(), -1 );
                                                }
                                            } );
@@ -443,8 +444,8 @@ public class FeatureLayer extends Layer {
                     return new Pair<FeatureCollection, LinkedList<String>>( new GenericFeatureCollection(),
                                                                             new LinkedList<String>() );
                 }
-                Query query = new Query( featureType, clickBox, buildFilter( operator, ft, clickBox ), -1,
-                                         fi.getFeatureCount(), -1 );
+                Query query = new Query( featureType, buildFilter( operator, ft, clickBox ), -1, fi.getFeatureCount(),
+                                         -1 );
                 col = clearDuplicates( datastore.query( query ) );
             }
 

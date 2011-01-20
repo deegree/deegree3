@@ -39,7 +39,6 @@ import static org.deegree.commons.utils.JDBCUtils.close;
 import static org.deegree.commons.xml.CommonNamespaces.OGCNS;
 import static org.deegree.commons.xml.CommonNamespaces.XLNNS;
 import static org.deegree.commons.xml.CommonNamespaces.XSINS;
-import static org.deegree.feature.persistence.query.Query.QueryHint.HINT_LOOSE_BBOX;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -792,6 +791,8 @@ public class PostGISFeatureStore implements SQLFeatureStore {
             FeatureTypeMapping ftMapping = getMapping( ftName );
 
             conn = ConnectionManager.getConnection( jdbcConnId );
+            // TODO where to put this?
+            conn.setAutoCommit( false );
 
             PostGISFeatureMapping pgMapping = new PostGISFeatureMapping( schema, ft, ftMapping, this );
             wb = new PostGISWhereBuilder( pgMapping, filter, query.getSortProperties(), useLegacyPredicates );
@@ -959,6 +960,9 @@ public class PostGISFeatureStore implements SQLFeatureStore {
             }
 
             begin = System.currentTimeMillis();
+
+            // TODO make this configurable?
+            stmt.setFetchSize( 5 );
             rs = stmt.executeQuery();
             LOG.debug( "Executing SELECT took {} [ms] ", System.currentTimeMillis() - begin );
 
@@ -1118,12 +1122,12 @@ public class PostGISFeatureStore implements SQLFeatureStore {
 
         // check for most common case: multiple featuretypes, same bbox (WMS), no filter
         boolean wmsStyleQuery = false;
-        Envelope env = (Envelope) queries[0].getHint( HINT_LOOSE_BBOX );
+        Envelope env = (Envelope) queries[0].getPrefilterBBox();
         if ( schema.getBlobMapping() != null && queries[0].getFilter() == null
              && queries[0].getSortProperties().length == 0 ) {
             wmsStyleQuery = true;
             for ( int i = 1; i < queries.length; i++ ) {
-                Envelope queryBBox = (Envelope) queries[i].getHint( HINT_LOOSE_BBOX );
+                Envelope queryBBox = (Envelope) queries[i].getPrefilterBBox();
                 if ( queryBBox != env && queries[i].getFilter() != null && queries[i].getSortProperties() != null ) {
                     wmsStyleQuery = false;
                     break;

@@ -873,7 +873,7 @@ public class PostGISFeatureStoreTransaction implements FeatureStoreTransaction {
     private IdFilter getIdFilter( QName ftName, OperatorFilter filter )
                             throws FeatureStoreException {
         Set<String> ids = new HashSet<String>();
-        Query query = new Query( ftName, null, filter, -1, -1, -1 );
+        Query query = new Query( ftName, filter, -1, -1, -1 );
         FeatureResultSet rs = null;
         try {
             rs = fs.query( query );

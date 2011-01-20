@@ -42,9 +42,14 @@ import java.util.List;
 import org.deegree.cs.CRS;
 import org.deegree.filter.comparison.ComparisonOperator;
 import org.deegree.filter.expression.PropertyName;
+import org.deegree.filter.logical.And;
 import org.deegree.filter.logical.LogicalOperator;
+import org.deegree.filter.spatial.BBOX;
 import org.deegree.filter.spatial.SpatialOperator;
+import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Various static methods for performing standard tasks on {@link Filter} objects.
@@ -57,6 +62,39 @@ import org.deegree.geometry.Geometry;
  * @version $Revision$, $Date$
  */
 public class Filters {
+
+    private static Logger LOG = LoggerFactory.getLogger( Filters.class );
+
+    /**
+     * Adds a bounding box constraint to the given {@link Filter}.
+     * 
+     * @param bbox
+     *            bounding box, can be <code>null</code>
+     * @param filter
+     *            filter expression, can be <code>null</code>
+     * @return combined filter or <code>null</code> (if bbox and filter are <code>null</code>)
+     */
+    public static Filter addBBoxConstraint( Envelope bbox, Filter filter ) {
+
+        if ( bbox == null ) {
+            return filter;
+        }
+
+        if ( filter instanceof IdFilter ) {
+            LOG.warn( "Not adding bbox to filter, as the filter is an IdFilter." );
+            return filter;
+        }
+
+        Filter bboxFilter = null;
+        BBOX bboxOperator = new BBOX( bbox );
+        if ( filter == null ) {
+            bboxFilter = new OperatorFilter( bboxOperator );
+        } else {
+            And andOperator = new And( bboxOperator, ( (OperatorFilter) filter ).getOperator() );
+            bboxFilter = new OperatorFilter( andOperator );
+        }
+        return bboxFilter;
+    }
 
     /**
      * Returns all {@link PropertyName}s contained in the given {@link Filter} (taking nesting into account).
