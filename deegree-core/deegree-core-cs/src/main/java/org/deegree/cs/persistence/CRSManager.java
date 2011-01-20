@@ -39,7 +39,6 @@ import static java.lang.System.currentTimeMillis;
 
 import java.io.File;
 import java.io.FilenameFilter;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Collection;
 import java.util.Collections;
@@ -102,9 +101,9 @@ public class CRSManager implements ResourceManager {
 
             URL defaultConfig = CRSManager.class.getResource( "default.xml" );
             try {
-                handleConfigFile( new File( defaultConfig.toURI() ) );
-            } catch ( URISyntaxException e ) {
-                LOG.error( "The dafult configuration could not be loaded: " + e.getMessage() );
+                handleConfigFile( defaultConfig );
+            } catch ( Throwable t ) {
+                LOG.error( "The default configuration could not be loaded: " + t.getMessage() );
             }
         }
     }
@@ -158,7 +157,11 @@ public class CRSManager implements ResourceManager {
                 }
             } );
             for ( File crsConfigFile : crsConfigFiles ) {
-                handleConfigFile( crsConfigFile );
+                try {
+                    handleConfigFile( crsConfigFile.toURI().toURL() );
+                } catch ( Throwable t ) {
+                    LOG.error( "Unable to read config file '" + crsConfigFile + "'.", t );
+                }
             }
             LOG.info( "" );
             loadDefault = true;
@@ -168,10 +171,11 @@ public class CRSManager implements ResourceManager {
         }
     }
 
-    private static void handleConfigFile( File crsConfigFile ) {
-        String fileName = crsConfigFile.getName();
+    private static void handleConfigFile( URL crsConfigFile ) {
+        String fileName = crsConfigFile.getFile();
+        int fileNameStart = fileName.lastIndexOf( '/' ) + 1;
         // 4 is the length of ".xml"
-        String crsId = fileName.substring( 0, fileName.length() - 4 );
+        String crsId = fileName.substring( fileNameStart, fileName.length() - 4 );
         LOG.info( "Setting up crs store '" + crsId + "' from file '" + fileName + "'..." + "" );
         try {
             CRSStore crss = create( crsConfigFile.toURI().toURL() );
