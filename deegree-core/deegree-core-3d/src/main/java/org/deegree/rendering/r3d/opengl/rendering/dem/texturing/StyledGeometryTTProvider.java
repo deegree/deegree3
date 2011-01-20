@@ -76,6 +76,7 @@ import org.deegree.feature.types.FeatureType;
 import org.deegree.feature.types.property.GeometryPropertyType;
 import org.deegree.feature.xpath.FeatureXPathEvaluator;
 import org.deegree.filter.FilterEvaluationException;
+import org.deegree.filter.Filters;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.GeometryFactory;
@@ -305,7 +306,7 @@ public class StyledGeometryTTProvider implements TextureTileProvider {
             // maxY += dH;
             // }
 
-            Query q = new Query( this.rootFT, tileEnv, null, -1, -1, -1 );
+            Query q = new Query( this.rootFT, Filters.addBBoxConstraint( tileEnv, null ), -1, -1, -1 );
             FeatureResultSet frs = null;
             long sT = currentTimeMillis();
             try {
@@ -396,7 +397,7 @@ public class StyledGeometryTTProvider implements TextureTileProvider {
         } catch ( IOException e ) {
             // could not create a grid writer, don't add to cache
             LOG.debug( "Not adding styled geometry to cache because no grid writer could be created: "
-                       + e.getLocalizedMessage(), e );
+                                               + e.getLocalizedMessage(), e );
             LOG.warn( "Not writing cachefile becaue: " + e.getLocalizedMessage() );
             newCacheFile.delete();
             return;
