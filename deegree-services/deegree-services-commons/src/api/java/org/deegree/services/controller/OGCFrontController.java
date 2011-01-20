@@ -305,6 +305,8 @@ public class OGCFrontController extends HttpServlet {
                 }
             }
 
+            response = handleCompression( request, response );
+
             String queryString = request.getQueryString();
             try {
                 LOG.debug( "doGet(), query string: '" + queryString + "'" );
@@ -396,6 +398,8 @@ public class OGCFrontController extends HttpServlet {
                     LOG.debug( "- " + headerName + "='" + request.getHeader( headerName ) + "'" );
                 }
             }
+
+            response = handleCompression( request, response );
 
             LOG.debug( "doPost(), contentType: '" + request.getContentType() + "'" );
 
@@ -502,6 +506,17 @@ public class OGCFrontController extends HttpServlet {
         } finally {
             instance.CONTEXT.remove();
         }
+    }
+
+    private HttpServletResponse handleCompression( HttpServletRequest request, HttpServletResponse response ) {
+        // TODO check if we should enable this in any case (XML, images, ...)
+//        String encoding = request.getHeader( "Accept-Encoding" );
+//        boolean supportsGzip = encoding != null && encoding.toLowerCase().contains( "gzip" );
+//        if ( supportsGzip ) {
+//            LOG.debug( "Using GZIP-compression" );
+//            response = new GZipHttpServletResponse( response );
+//        }
+        return response;
     }
 
     private String readPostBodyAsString( InputStream is )
