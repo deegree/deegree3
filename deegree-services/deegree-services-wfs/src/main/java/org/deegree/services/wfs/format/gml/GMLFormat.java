@@ -386,7 +386,7 @@ public class GMLFormat implements Format {
         }
 
         int maxFeatures = featureLimit;
-        if ( request.getMaxFeatures() != null && request.getMaxFeatures() < maxFeatures ) {
+        if ( request.getMaxFeatures() != null && ( maxFeatures == -1 || request.getMaxFeatures() < maxFeatures ) ) {
             maxFeatures = request.getMaxFeatures();
         }
 
