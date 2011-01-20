@@ -35,7 +35,6 @@
     <module>deegree-datastores</module>
     <!-- TODO make this independent from deegree-core-->
     <module>deegree-core/deegree-core-3d</module>
-    <module>deegree-demos</module>
     <module>deegree-misc</module>
     <module>deegree-processproviders</module>
     <module>deegree-services</module>
