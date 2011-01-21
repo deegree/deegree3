@@ -35,10 +35,12 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.filter;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.deegree.commons.utils.Pair;
 import org.deegree.cs.CRS;
 import org.deegree.filter.comparison.ComparisonOperator;
 import org.deegree.filter.expression.PropertyName;
@@ -94,6 +96,33 @@ public class Filters {
             bboxFilter = new OperatorFilter( andOperator );
         }
         return bboxFilter;
+    }
+
+    /**
+     * @param filter
+     *            can be null
+     * @return the reverse of #addBBoxConstraint
+     */
+    public static Pair<Filter, Envelope> splitOffBBoxConstraint( Filter filter ) {
+        Pair<Filter, Envelope> p = new Pair<Filter, Envelope>();
+        if ( filter instanceof OperatorFilter ) {
+            OperatorFilter f = (OperatorFilter) filter;
+
+            if ( f.getOperator() instanceof BBOX ) {
+                p.second = ( (BBOX) f.getOperator() ).getBoundingBox();
+            } else if ( f.getOperator() instanceof And && ( (And) f.getOperator() ).getParams()[0] instanceof BBOX ) {
+                Operator[] ops = ( (And) f.getOperator() ).getParams();
+                p.second = ( (BBOX) ops[0] ).getBoundingBox();
+                if ( ops.length == 2 ) {
+                    p.first = new OperatorFilter( ops[1] );
+                } else {
+                    p.first = new OperatorFilter( new And( Arrays.copyOfRange( ops, 1, ops.length - 1 ) ) );
+                }
+            }
+        } else {
+            p.first = filter;
+        }
+        return p;
     }
 
     /**

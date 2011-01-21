@@ -257,8 +257,9 @@ public class DBFIndex {
         // TODO handle filter == null
         H2WhereBuilder where = new H2WhereBuilder( (OperatorFilter) filter, sort );
         SQLExpression generated = where.getWhere();
+
         if ( generated == null ) {
-            return null;
+            return new Pair<Filter, SortProperty[]>( filter, sort );
         }
 
         Connection conn = null;

@@ -38,6 +38,7 @@ package org.deegree.feature.persistence.shape;
 import static org.deegree.commons.utils.CollectionUtils.unzipPair;
 import static org.deegree.feature.types.property.GeometryPropertyType.CoordinateDimension.DIM_2_OR_3;
 import static org.deegree.feature.types.property.ValueRepresentation.BOTH;
+import static org.deegree.filter.Filters.splitOffBBoxConstraint;
 import static org.deegree.geometry.utils.GeometryUtils.createEnvelope;
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -437,13 +438,15 @@ public class ShapeFeatureStore implements FeatureStore {
 
         Filter filter = query.getFilter();
 
-        boolean queryIndex = filter == null || !generateAlphanumericIndexes;
-        Pair<Filter, SortProperty[]> p = queryIndex ? null : dbfIndex.query( recNumsAndPos, filter,
+        Pair<Filter, Envelope> filterPair = splitOffBBoxConstraint( filter );
+
+        boolean queryIndex = filterPair.first == null || !generateAlphanumericIndexes;
+        Pair<Filter, SortProperty[]> p = queryIndex ? null : dbfIndex.query( recNumsAndPos, filterPair.first,
                                                                              query.getSortProperties() );
 
         try {
             HashSet<Integer> recNums = new HashSet<Integer>( unzipPair( recNumsAndPos ).first );
-            recNumsAndPos = shp.query( bbox, filter == null || p == null ? null : recNums );
+            recNumsAndPos = shp.query( bbox, filterPair.first == null || p == null ? null : recNums );
             LOG.debug( "{} records matching after BBOX filtering", recNumsAndPos.size() );
         } catch ( IOException e ) {
             LOG.debug( "Stack trace", e );
