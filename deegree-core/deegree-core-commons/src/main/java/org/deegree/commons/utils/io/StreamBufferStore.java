@@ -50,8 +50,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Scalable alternative to {@link ByteArrayOutputStream} that automatically switches to file storage if the amount of
- * written output exceeds a given limit.
+ * Scalable alternative to {@link ByteArrayOutputStream} that automatically switches to file-based storage if the amount
+ * of written bytes exceeds a given limit.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
@@ -62,7 +62,7 @@ public class StreamBufferStore extends OutputStream {
 
     private static final Logger LOG = LoggerFactory.getLogger( StreamBufferStore.class );
 
-    /** Default limit */
+    /** Default limit (1 MB) */
     public static final int DEFAULT_LIMIT = 1024 * 1024;
 
     private final int limit;
@@ -199,9 +199,9 @@ public class StreamBufferStore extends OutputStream {
 
     private void switchToFile()
                             throws IOException {
-        LOG.info( "Limit of " + limit + " bytes reached. Switching to file based buffering." );
+        LOG.debug( "Memory limit of " + limit + " bytes reached. Switching to file-based storage." );
         tmpFile = File.createTempFile( "store", ".tmp" );
-        LOG.info( "Using file: " + tmpFile );
+        LOG.debug( "Using file: " + tmpFile );
         OutputStream fileOs = new BufferedOutputStream( new FileOutputStream( tmpFile ) );
         ( (ByteArrayOutputStream) os ).writeTo( fileOs );
         os = fileOs;
