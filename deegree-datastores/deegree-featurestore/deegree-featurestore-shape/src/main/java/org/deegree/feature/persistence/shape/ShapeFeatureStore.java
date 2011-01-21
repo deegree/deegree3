@@ -411,7 +411,6 @@ public class ShapeFeatureStore implements FeatureStore {
         return bbox;
     }
 
-    @SuppressWarnings("synthetic-access")
     @Override
     public FeatureResultSet query( Query query )
                             throws FilterEvaluationException, FeatureStoreException {
@@ -433,20 +432,18 @@ public class ShapeFeatureStore implements FeatureStore {
             return null;
         }
 
+        Filter filter = query.getFilter();
+        Pair<Filter, Envelope> filterPair = splitOffBBoxConstraint( filter );
+
         List<Pair<Integer, Long>> recNumsAndPos = new LinkedList<Pair<Integer, Long>>();
         Envelope bbox = getTransformedEnvelope( query.getPrefilterBBox() );
-
-        Filter filter = query.getFilter();
-
-        Pair<Filter, Envelope> filterPair = splitOffBBoxConstraint( filter );
 
         boolean queryIndex = filterPair.first == null || !generateAlphanumericIndexes;
         Pair<Filter, SortProperty[]> p = queryIndex ? null : dbfIndex.query( recNumsAndPos, filterPair.first,
                                                                              query.getSortProperties() );
-
         try {
             HashSet<Integer> recNums = new HashSet<Integer>( unzipPair( recNumsAndPos ).first );
-            recNumsAndPos = shp.query( bbox, filterPair.first == null || p == null ? null : recNums );
+            recNumsAndPos = shp.query( bbox, filter == null || p == null ? null : recNums );
             LOG.debug( "{} records matching after BBOX filtering", recNumsAndPos.size() );
         } catch ( IOException e ) {
             LOG.debug( "Stack trace", e );
@@ -638,7 +635,7 @@ public class ShapeFeatureStore implements FeatureStore {
 
         private final Iterator<Pair<Integer, Long>> recIter;
 
-        private FeatureIterator( Iterator<Pair<Integer, Long>> recIter ) {
+        FeatureIterator( Iterator<Pair<Integer, Long>> recIter ) {
             this.recIter = recIter;
         }
 

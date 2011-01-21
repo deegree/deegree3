@@ -259,7 +259,7 @@ public class DBFIndex {
         SQLExpression generated = where.getWhere();
 
         if ( generated == null ) {
-            return new Pair<Filter, SortProperty[]>( filter, sort );
+            return null;
         }
 
         Connection conn = null;
