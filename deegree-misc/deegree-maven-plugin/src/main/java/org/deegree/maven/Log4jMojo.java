@@ -134,6 +134,10 @@ public class Log4jMojo extends AbstractMojo {
     @Override
     public void execute()
                             throws MojoExecutionException, MojoFailureException {
+        if ( new File( project.getBasedir(), "src/main/resources/log4j.properties" ).exists() ) {
+            getLog().info( "Skipping generation of log4j.properties as it already exists in src/main/resources." );
+            return;
+        }
         final Reflections r = new Reflections( "org.deegree" );
         // to work around stupid initialization compiler error (hey, it's defined to be null if not 'initialized'!)
         PrintWriter o = null;
