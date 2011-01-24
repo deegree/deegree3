@@ -1336,11 +1336,12 @@ public class XMLAdapter {
                 break;
             }
             case START_ELEMENT: {
-                if ( inStream.getNamespaceURI() == NULL_NS_URI || inStream.getPrefix() == DEFAULT_NS_PREFIX
-                     || inStream.getPrefix() == null ) {
+                if ( inStream.getNamespaceURI() == NULL_NS_URI
+                     && ( inStream.getPrefix() == DEFAULT_NS_PREFIX || inStream.getPrefix() == null ) ) {
                     writer.writeStartElement( inStream.getLocalName() );
                 } else {
-                    if ( writer.getNamespaceContext().getPrefix( inStream.getPrefix() ) == XMLConstants.NULL_NS_URI ) {
+                    if ( inStream.getPrefix() != null
+                         && writer.getNamespaceContext().getPrefix( inStream.getPrefix() ) == XMLConstants.NULL_NS_URI ) {
                         // TODO handle special cases for prefix binding, see
                         // http://download.oracle.com/docs/cd/E17409_01/javase/6/docs/api/javax/xml/namespace/NamespaceContext.html#getNamespaceURI(java.lang.String)
                         writer.setPrefix( inStream.getPrefix(), inStream.getNamespaceURI() );
