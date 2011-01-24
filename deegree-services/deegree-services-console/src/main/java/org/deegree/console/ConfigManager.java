@@ -129,6 +129,8 @@ public class ConfigManager {
     @Setter
     private String workspaceImportName;
 
+    private String workspaceName;
+
     public ConfigManager() {
         File serviceMainConfigFile = new File( OGCFrontController.getServiceWorkspace().getLocation(),
                                                "services/main.xml" );
@@ -248,6 +250,7 @@ public class ConfigManager {
             ExternalContext ctx = FacesContext.getCurrentInstance().getExternalContext();
             File file = new File( ctx.getRealPath( "WEB-INF/workspace_name" ) );
             writeStringToFile( file, ws );
+            this.workspaceName = ws;
             applyChanges();
             lastMessage = "Workspace has been started.";
         }
@@ -267,7 +270,7 @@ public class ConfigManager {
 
     public String applyChanges() {
         try {
-            OGCFrontController.getInstance().reload();
+            OGCFrontController.getInstance().reload( workspaceName );
         } catch ( Exception e ) {
             e.printStackTrace();
         }
