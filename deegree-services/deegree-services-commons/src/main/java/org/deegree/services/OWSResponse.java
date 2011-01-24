@@ -41,6 +41,7 @@ import static org.slf4j.LoggerFactory.getLogger;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Map;
+import java.util.zip.GZIPOutputStream;
 
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
@@ -49,7 +50,6 @@ import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
-import org.deegree.commons.utils.io.AutoclosingGZIPOutputStream;
 import org.deegree.commons.utils.io.StreamBufferStore;
 import org.deegree.commons.xml.stax.IndentingXMLStreamWriter;
 import org.deegree.services.controller.OGCFrontController;
@@ -100,7 +100,7 @@ public class OWSResponse {
     private StreamBufferStore bos;
 
     // if null, gzip-compression is not used
-    private AutoclosingGZIPOutputStream gos;
+    private GZIPOutputStream gos;
 
     // if null, no XML output has been requested
     private XMLStreamWriter xmlWriter;
@@ -166,7 +166,7 @@ public class OWSResponse {
             // enable gzip compression, if content is suitable && supported
             if ( supportsGzip ) {
                 if ( contentType.startsWith( "text" ) || contentType.startsWith( "application/xml" ) ) {
-                    gos = new AutoclosingGZIPOutputStream( os );
+                    gos = new GZIPOutputStream( os );
                     os = gos;
                     response.setHeader( "Content-Encoding", "gzip" );
                 }
@@ -205,7 +205,7 @@ public class OWSResponse {
 
         // enable gzip compression, if supported
         if ( supportsGzip ) {
-            gos = new AutoclosingGZIPOutputStream( os );
+            gos = new GZIPOutputStream( os );
             os = gos;
             response.setHeader( "Content-Encoding", "gzip" );
         }
