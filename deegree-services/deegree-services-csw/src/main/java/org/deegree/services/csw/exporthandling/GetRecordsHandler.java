@@ -190,6 +190,9 @@ public class GetRecordsHandler {
         if ( getRec.getResultType() != ResultType.validate ) {
             writer.writeStartElement( CSW_PREFIX, "GetRecordsResponse", CSW_202_NS );
 
+            writer.writeNamespace( CSW_PREFIX, CSW_202_NS );
+            writer.writeNamespace( "xsi", "http://www.w3.org/2001/XMLSchema-instance" );
+
             searchStatus( writer, version );
             searchResult( writer, getRec, version );
 
