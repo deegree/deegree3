@@ -194,7 +194,7 @@ public class OutputXMLRenderer extends Renderer {
                         writer.write( "&#160;" );
                         String nsPrefix = reader.getNamespacePrefix( i );
                         writer.write( "xmlns" );
-                        if ( nsPrefix != null ) {
+                        if ( nsPrefix != null && !nsPrefix.isEmpty() ) {
                             writer.write( ":" + nsPrefix );
                         }
                         writer.endElement( "span" );
