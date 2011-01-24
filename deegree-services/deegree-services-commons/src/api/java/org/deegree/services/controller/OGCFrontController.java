@@ -510,12 +510,12 @@ public class OGCFrontController extends HttpServlet {
 
     private HttpServletResponse handleCompression( HttpServletRequest request, HttpServletResponse response ) {
         // TODO check if we should enable this in any case (XML, images, ...)
-//        String encoding = request.getHeader( "Accept-Encoding" );
-//        boolean supportsGzip = encoding != null && encoding.toLowerCase().contains( "gzip" );
-//        if ( supportsGzip ) {
-//            LOG.debug( "Using GZIP-compression" );
-//            response = new GZipHttpServletResponse( response );
-//        }
+        // String encoding = request.getHeader( "Accept-Encoding" );
+        // boolean supportsGzip = encoding != null && encoding.toLowerCase().contains( "gzip" );
+        // if ( supportsGzip ) {
+        // LOG.debug( "Using GZIP-compression" );
+        // response = new GZipHttpServletResponse( response );
+        // }
         return response;
     }
 
@@ -888,7 +888,7 @@ public class OGCFrontController extends HttpServlet {
             LOG.info( "- temp directory    : " + defaultTMPDir );
             LOG.info( "" );
 
-            initWorkspace();
+            initWorkspace( null );
 
         } catch ( NoClassDefFoundError e ) {
             LOG.error( "Initialization failed!" );
@@ -904,12 +904,12 @@ public class OGCFrontController extends HttpServlet {
         }
     }
 
-    private void initWorkspace()
+    private void initWorkspace( String name )
                             throws IOException, URISyntaxException, WorkspaceInitializationException {
         LOG.info( "--------------------------------------------------------------------------------" );
         LOG.info( "Initializing workspace" );
         LOG.info( "--------------------------------------------------------------------------------" );
-        workspace = getWorkspace();
+        workspace = getWorkspace( name );
         workspace.initAll();
         serviceConfiguration = workspace.getSubsystemManager( WebServicesConfiguration.class );
         mainConfig = serviceConfiguration.getMainConfiguration();
@@ -933,17 +933,31 @@ public class OGCFrontController extends HttpServlet {
      */
     public void reload()
                             throws IOException, URISyntaxException, ServletException {
+        reload( null );
+    }
+
+    /**
+     * Re-initializes the whole workspace, effectively reloading the whole configuration.
+     * 
+     * @param workspaceName
+     *            if not null, the specified workspace will be started after shutting down the currently running one
+     * @throws URISyntaxException
+     * @throws IOException
+     * @throws ServletException
+     */
+    public void reload( String workspaceName )
+                            throws IOException, URISyntaxException, ServletException {
         destroyWorkspace();
         try {
-            initWorkspace();
+            initWorkspace( workspaceName );
         } catch ( WorkspaceInitializationException e ) {
             throw new ServletException( e.getLocalizedMessage(), e.getCause() );
         }
     }
 
-    private DeegreeWorkspace getWorkspace()
+    private DeegreeWorkspace getWorkspace( String name )
                             throws IOException, URISyntaxException {
-        String wsName = getWorkspaceName();
+        String wsName = getWorkspaceName( name );
         File fallbackDir = new File( resolveFileLocation( "WEB-INF/workspace", getServletContext() ).toURI() );
         if ( !fallbackDir.exists() ) {
             LOG.debug( "Trying old-style workspace directory (WEB-INF/conf)" );
@@ -956,11 +970,11 @@ public class OGCFrontController extends HttpServlet {
         return ws;
     }
 
-    private String getWorkspaceName()
+    private String getWorkspaceName( String defaultName )
                             throws URISyntaxException, IOException {
-        String wsName = "default";
+        String wsName = defaultName == null ? "default" : defaultName;
         File wsNameFile = new File( resolveFileLocation( "WEB-INF/workspace_name", getServletContext() ).toURI() );
-        if ( wsNameFile.exists() ) {
+        if ( wsNameFile.exists() && defaultName == null ) {
             BufferedReader reader = null;
             try {
                 reader = new BufferedReader( new FileReader( wsNameFile ) );
@@ -973,7 +987,11 @@ public class OGCFrontController extends HttpServlet {
             }
             LOG.info( "Using workspace name {} (defined in WEB-INF/workspace_name)", wsName, wsNameFile );
         } else {
-            LOG.info( "Using default workspace (WEB-INF/workspace_name does not exist)", wsNameFile );
+            if ( defaultName == null ) {
+                LOG.info( "Using default workspace (WEB-INF/workspace_name does not exist)", wsNameFile );
+            } else {
+                LOG.info( "Using workspace named {}", defaultName );
+            }
         }
         return wsName;
     }
