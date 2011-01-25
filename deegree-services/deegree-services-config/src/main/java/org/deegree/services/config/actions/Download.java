@@ -42,7 +42,6 @@ import static org.deegree.services.controller.OGCFrontController.getServiceWorks
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.zip.ZipOutputStream;
 
@@ -78,17 +77,20 @@ public class Download {
 
         path = path.substring( 1 );
         if ( path.indexOf( "/" ) != -1 ) {
-            DeegreeWorkspace ws = DeegreeWorkspace.getInstance( path.substring( 0, path.indexOf( "/" ) ) );
-            try {
-                download( ws, path.substring( path.indexOf( "/" ) + 1 ), resp );
-            } catch ( FileNotFoundException e ) {
+            String wsName = path.substring( 0, path.indexOf( "/" ) );
+            if ( DeegreeWorkspace.isWorkspace( wsName ) ) {
+                DeegreeWorkspace ws = DeegreeWorkspace.getInstance( wsName );
                 try {
-                    download( getServiceWorkspace(), path, resp );
-                } catch ( IOException e1 ) {
+                    download( ws, path.substring( path.indexOf( "/" ) + 1 ), resp );
+                } catch ( IOException e ) {
                     IOUtils.write( "Error while downloading: " + e.getLocalizedMessage() + "\n", resp.getOutputStream() );
                 }
-            } catch ( IOException e ) {
-                IOUtils.write( "Error while downloading: " + e.getLocalizedMessage() + "\n", resp.getOutputStream() );
+            } else {
+                try {
+                    download( getServiceWorkspace(), path, resp );
+                } catch ( IOException e ) {
+                    IOUtils.write( "Error while downloading: " + e.getLocalizedMessage() + "\n", resp.getOutputStream() );
+                }
             }
             return;
         }

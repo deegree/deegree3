@@ -35,16 +35,21 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.services.config.actions;
 
+import static org.apache.commons.io.FileUtils.copyInputStreamToFile;
+import static org.apache.commons.io.IOUtils.closeQuietly;
 import static org.deegree.commons.config.DeegreeWorkspace.getWorkspaceRoot;
 import static org.deegree.commons.utils.io.Zip.unzip;
+import static org.deegree.services.controller.OGCFrontController.getServiceWorkspace;
 
 import java.io.File;
 import java.io.IOException;
 
+import javax.servlet.ServletInputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.io.IOUtils;
+import org.deegree.commons.config.DeegreeWorkspace;
 
 /**
  * 
@@ -66,14 +71,43 @@ public class Upload {
             IOUtils.write( "No file name given.\n", resp.getOutputStream() );
             return;
         }
-        String wsName = fileName.substring( 0, fileName.length() - 4 );
-        String dirName = fileName.endsWith( ".zip" ) ? wsName : fileName;
-        File dir = new File( getWorkspaceRoot(), dirName );
-        if ( dir.exists() ) {
-            IOUtils.write( "Workspace " + wsName + " exists.\n", resp.getOutputStream() );
-            return;
+
+        boolean isZip = fileName.endsWith( ".zip" ) || req.getContentType() != null
+                        && req.getContentType().equals( "application/zip" );
+
+        ServletInputStream in = null;
+        try {
+            in = req.getInputStream();
+            if ( isZip ) {
+                // unzip a workspace
+                String wsName = fileName.substring( 0, fileName.length() - 4 );
+                String dirName = fileName.endsWith( ".zip" ) ? wsName : fileName;
+                File dir = new File( getWorkspaceRoot(), dirName );
+                if ( dir.exists() ) {
+                    IOUtils.write( "Workspace " + wsName + " exists.\n", resp.getOutputStream() );
+                    return;
+                }
+                unzip( in, dir );
+            } else {
+                if ( path.indexOf( "/" ) == -1 ) {
+                    // proxy.xml or another file in current workspace
+                    copyInputStreamToFile( in, new File( getServiceWorkspace().getLocation(), path ) );
+                    return;
+                }
+                DeegreeWorkspace ws;
+                String wsName = path.substring( 0, path.indexOf( "/" ) );
+                if ( DeegreeWorkspace.isWorkspace( path ) ) {
+                    ws = DeegreeWorkspace.getInstance( wsName );
+                    path = path.substring( path.indexOf( "/" ) + 1 );
+                } else {
+                    ws = getServiceWorkspace();
+                }
+
+                copyInputStreamToFile( in, new File( ws.getLocation(), path ) );
+            }
+        } finally {
+            closeQuietly( in );
         }
-        unzip( req.getInputStream(), dir );
     }
 
 }
