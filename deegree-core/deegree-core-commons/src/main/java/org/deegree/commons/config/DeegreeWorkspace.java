@@ -163,6 +163,14 @@ public class DeegreeWorkspace {
     }
 
     /**
+     * @param name
+     * @return true, if the directory $workspace_root/$name exists
+     */
+    public static boolean isWorkspace( String name ) {
+        return new File( getWorkspaceRoot(), name ).isDirectory();
+    }
+
+    /**
      * Returns the default workspace.
      * 
      * @return the default workspace, never <code>null</code>
