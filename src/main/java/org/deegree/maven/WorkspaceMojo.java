@@ -36,16 +36,12 @@
 package org.deegree.maven;
 
 import static org.apache.commons.io.IOUtils.closeQuietly;
-import static org.h2.util.IOUtils.copy;
+import static org.deegree.commons.utils.io.Zip.zip;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStream;
-import java.net.URI;
-import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
 import org.apache.maven.artifact.Artifact;
@@ -74,36 +70,6 @@ public class WorkspaceMojo extends AbstractMojo {
      * @readonly
      */
     private MavenProject project;
-
-    private void zip( File f, ZipOutputStream out, URI workspace )
-                            throws IOException {
-        if ( f.getName().equalsIgnoreCase( ".svn" ) ) {
-            return;
-        }
-        String name = workspace.relativize( f.getAbsoluteFile().toURI() ).toString();
-        if ( f.isDirectory() ) {
-            if ( !name.isEmpty() ) {
-                ZipEntry e = new ZipEntry( name );
-                out.putNextEntry( e );
-            }
-            File[] fs = f.listFiles();
-            if ( fs != null ) {
-                for ( File f2 : fs ) {
-                    zip( f2, out, workspace );
-                }
-            }
-        } else {
-            ZipEntry e = new ZipEntry( name );
-            out.putNextEntry( e );
-            InputStream is = null;
-            try {
-                is = new FileInputStream( f );
-                copy( is, out );
-            } finally {
-                closeQuietly( is );
-            }
-        }
-    }
 
     public void execute()
                             throws MojoExecutionException, MojoFailureException {
