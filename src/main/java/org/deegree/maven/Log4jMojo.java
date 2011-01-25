@@ -250,8 +250,11 @@ public class Log4jMojo extends AbstractMojo {
             out.println( "log4j.appender.stdout.layout=org.apache.log4j.PatternLayout" );
             out.println( "log4j.appender.stdout.layout.ConversionPattern=[%d{HH:mm:ss}] %5p: [%c{1}] %m%n" );
             out.println();
+            out.println( "# The log level for the org.reflections package (to avoid superfluous messages)." );
+            out.println( "log4j.logger.org.reflections = WARN" );
+            out.println();
             out.println( "# The log level for all classes that are not configured below." );
-            out.println( "log4j.logger.org.deegree=INFO" );
+            out.println( "log4j.logger.org.deegree = INFO" );
             out.println();
             out.println( "# automatically generated output follows" );
             out.println();
