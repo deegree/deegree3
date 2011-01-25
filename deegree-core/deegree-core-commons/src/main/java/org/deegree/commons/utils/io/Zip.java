@@ -35,12 +35,18 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.commons.utils.io;
 
+import static org.apache.commons.io.IOUtils.closeQuietly;
+import static org.apache.commons.io.IOUtils.copy;
+
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URI;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
+import java.util.zip.ZipOutputStream;
 
 /**
  * 
@@ -85,6 +91,50 @@ public class Zip {
         }
 
         in.close();
+    }
+
+    /**
+     * .svn files/directories will be ignored.
+     * 
+     * @param f
+     * @param out
+     * @param parent
+     *            may be null, all written paths in the zip will be relative to this one (default is f.toURI)
+     * @throws IOException
+     */
+    public static void zip( File f, ZipOutputStream out, URI parent )
+                            throws IOException {
+        if ( f.getName().equalsIgnoreCase( ".svn" ) ) {
+            return;
+        }
+
+        if ( parent == null ) {
+            parent = f.toURI();
+        }
+
+        String name = parent.relativize( f.getAbsoluteFile().toURI() ).toString();
+        if ( f.isDirectory() ) {
+            if ( !name.isEmpty() ) {
+                ZipEntry e = new ZipEntry( name );
+                out.putNextEntry( e );
+            }
+            File[] fs = f.listFiles();
+            if ( fs != null ) {
+                for ( File f2 : fs ) {
+                    zip( f2, out, parent );
+                }
+            }
+        } else {
+            ZipEntry e = new ZipEntry( name );
+            out.putNextEntry( e );
+            InputStream is = null;
+            try {
+                is = new FileInputStream( f );
+                copy( is, out );
+            } finally {
+                closeQuietly( is );
+            }
+        }
     }
 
 }
