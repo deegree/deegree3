@@ -35,17 +35,12 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.services.config.servlet;
 
-import static org.apache.commons.io.IOUtils.closeQuietly;
-import static org.deegree.commons.config.DeegreeWorkspace.getWorkspaceRoot;
-import static org.deegree.commons.utils.io.Zip.unzip;
-import static org.deegree.commons.utils.io.Zip.zip;
-import static org.deegree.services.controller.OGCFrontController.getServiceWorkspace;
+import static org.deegree.services.config.actions.Download.download;
+import static org.deegree.services.config.actions.Restart.restart;
+import static org.deegree.services.config.actions.Upload.upload;
 import static org.slf4j.LoggerFactory.getLogger;
 
-import java.io.File;
 import java.io.IOException;
-import java.net.URISyntaxException;
-import java.util.zip.ZipOutputStream;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -53,8 +48,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.io.IOUtils;
-import org.deegree.commons.config.DeegreeWorkspace;
-import org.deegree.services.controller.OGCFrontController;
 import org.slf4j.Logger;
 
 /**
@@ -76,25 +69,6 @@ public class ConfigServlet extends HttpServlet {
         LOG.info( "deegree 3 configuration servlet started." );
     }
 
-    private void download( DeegreeWorkspace ws, HttpServletResponse resp )
-                            throws IOException {
-        File dir = ws.getLocation();
-        if ( !dir.exists() ) {
-            IOUtils.write( "No such workspace.\n", resp.getOutputStream() );
-            return;
-        }
-        resp.setContentType( "application/x-download" );
-        resp.setHeader( "Content-Disposition", "attachment; filename=" + dir.getName() + ".zip" );
-        resp.setContentType( "application/zip" );
-        ZipOutputStream out = null;
-        try {
-            out = new ZipOutputStream( resp.getOutputStream() );
-            zip( dir, out, null );
-        } finally {
-            closeQuietly( out );
-        }
-    }
-
     @Override
     protected void doGet( HttpServletRequest req, HttpServletResponse resp )
                             throws ServletException, IOException {
@@ -109,53 +83,20 @@ public class ConfigServlet extends HttpServlet {
             IOUtils.write( data.toString(), resp.getOutputStream() );
             return;
         }
-        // TODO error responses on IO exception
-        if ( path.equalsIgnoreCase( "/download" ) || path.equalsIgnoreCase( "/download/" ) ) {
-            try {
-                download( getServiceWorkspace(), resp );
-            } catch ( IOException e ) {
-                IOUtils.write( "Error while downloading: " + e.getLocalizedMessage() + "\n", resp.getOutputStream() );
-            }
-            return;
+
+        if ( path.toLowerCase().startsWith( "/download" ) ) {
+            download( path.substring( 9 ), resp );
         }
-        if ( path.toLowerCase().startsWith( "/download/" ) ) {
-            String name = path.substring( 10 );
-            DeegreeWorkspace newWs = DeegreeWorkspace.getInstance( name );
-            if ( newWs != null ) {
-                try {
-                    download( newWs, resp );
-                } catch ( IOException e ) {
-                    IOUtils.write( "Error while downloading: " + e.getLocalizedMessage() + "\n", resp.getOutputStream() );
-                }
-            }
-        }
-        if ( path.equalsIgnoreCase( "/restart" ) || path.equalsIgnoreCase( "/restart/" ) ) {
-            try {
-                OGCFrontController.getInstance().reload();
-            } catch ( IOException e ) {
-                IOUtils.write( "Error while reloading: " + e.getLocalizedMessage() + "\n", resp.getOutputStream() );
-            } catch ( URISyntaxException e ) {
-                IOUtils.write( "Error while reloading: " + e.getLocalizedMessage() + "\n", resp.getOutputStream() );
-            }
-            return;
-        }
-        if ( path.toLowerCase().startsWith( "/restart/" ) ) {
-            String wsName = path.substring( 9 );
-            try {
-                OGCFrontController.getInstance().reload( wsName );
-            } catch ( IOException e ) {
-                IOUtils.write( "Error while reloading: " + e.getLocalizedMessage() + "\n", resp.getOutputStream() );
-            } catch ( URISyntaxException e ) {
-                IOUtils.write( "Error while reloading: " + e.getLocalizedMessage() + "\n", resp.getOutputStream() );
-            }
-            return;
+
+        if ( path.toLowerCase().startsWith( "/restart" ) ) {
+            restart( path.substring( 8 ), resp );
         }
     }
 
     @Override
     protected void doPost( HttpServletRequest req, HttpServletResponse resp )
                             throws ServletException, IOException {
-        super.doPut( req, resp );
+        doPut( req, resp );
     }
 
     @Override
@@ -166,24 +107,8 @@ public class ConfigServlet extends HttpServlet {
             IOUtils.write( "No action specified.\n", resp.getOutputStream() );
             return;
         }
-        if ( path.length() <= 8 ) {
-            IOUtils.write( "No filename specified.\n", resp.getOutputStream() );
-            return;
-        }
-        if ( path.startsWith( "/upload/" ) ) {
-            String fileName = path.substring( 8 );
-            if ( fileName.isEmpty() ) {
-                IOUtils.write( "No file name given.\n", resp.getOutputStream() );
-                return;
-            }
-            String wsName = fileName.substring( 0, fileName.length() - 4 );
-            String dirName = fileName.endsWith( ".zip" ) ? wsName : fileName;
-            File dir = new File( getWorkspaceRoot(), dirName );
-            if ( dir.exists() ) {
-                IOUtils.write( "Workspace " + wsName + " exists.\n", resp.getOutputStream() );
-                return;
-            }
-            unzip( req.getInputStream(), dir );
+        if ( path.startsWith( "/upload" ) ) {
+            upload( path.substring( 7 ), req, resp );
         }
     }
 
