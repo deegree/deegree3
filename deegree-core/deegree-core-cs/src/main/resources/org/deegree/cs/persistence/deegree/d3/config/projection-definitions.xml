@@ -10737,6 +10737,33 @@
 		<crs:FalseEasting>3500000.0</crs:FalseEasting>
 		<crs:FalseNorthing>0.0</crs:FalseNorthing>
 	</crs:TransverseMercator>
+	<crs:TransverseMercator>
+            <crs:Id>projection_for_epsg:31254</crs:Id>
+            <crs:Name>TM - M28</crs:Name>
+            <crs:LatitudeOfNaturalOrigin>0.0</crs:LatitudeOfNaturalOrigin>
+            <crs:LongitudeOfNaturalOrigin>10.33333333333333</crs:LongitudeOfNaturalOrigin>
+            <crs:ScaleFactor>1.0000</crs:ScaleFactor>
+            <crs:FalseEasting>0.0</crs:FalseEasting>
+            <crs:FalseNorthing>-5000000.0</crs:FalseNorthing>
+    </crs:TransverseMercator>
+    <crs:TransverseMercator>
+            <crs:Id>projection_for_epsg:31255</crs:Id>
+            <crs:Name>TM - M31</crs:Name>
+            <crs:LatitudeOfNaturalOrigin>0.0</crs:LatitudeOfNaturalOrigin>
+            <crs:LongitudeOfNaturalOrigin>13.33333333333333</crs:LongitudeOfNaturalOrigin>
+            <crs:ScaleFactor>1.0000</crs:ScaleFactor>
+            <crs:FalseEasting>0.0</crs:FalseEasting>
+            <crs:FalseNorthing>-5000000.0</crs:FalseNorthing>
+    </crs:TransverseMercator>
+    <crs:TransverseMercator>
+            <crs:Id>projection_for_epsg:31256</crs:Id>
+            <crs:Name>TM - M34</crs:Name>
+            <crs:LatitudeOfNaturalOrigin>0.0</crs:LatitudeOfNaturalOrigin>
+            <crs:LongitudeOfNaturalOrigin>16.33333333333333</crs:LongitudeOfNaturalOrigin>
+            <crs:ScaleFactor>1.0000</crs:ScaleFactor>
+            <crs:FalseEasting>0.0</crs:FalseEasting>
+            <crs:FalseNorthing>-5000000.0</crs:FalseNorthing>
+    </crs:TransverseMercator>
 	<crs:Mercator>
 		<crs:Id>epsg:19883</crs:Id>
 		<crs:Name>World Mercator</crs:Name>

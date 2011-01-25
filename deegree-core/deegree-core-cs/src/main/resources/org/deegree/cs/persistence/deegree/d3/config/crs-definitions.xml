@@ -67908,6 +67908,72 @@
                 <crs:UsedGeographicCRS>ETRS89_Lat-Lon</crs:UsedGeographicCRS>
                 <crs:UsedProjection>epsg:19986</crs:UsedProjection>
         </crs:ProjectedCRS>
+        <crs:ProjectedCRS>
+            <crs:Id>epsg:31254</crs:Id>
+            <crs:Id>http://www.opengis.net/gml/srs/epsg.xml#31254</crs:Id>
+            <crs:Id>urn:ogc:def:crs:epsg::31254</crs:Id>
+            <crs:Id>urn:opengis:def:crs:epsg::31254</crs:Id>
+            <crs:Name>MGI / Austria GK West - M28</crs:Name>
+            <crs:Version>2007-02-02T00:00</crs:Version>
+            <crs:AreaOfUse>9.53,46.70,11.83,47.70</crs:AreaOfUse>
+            <crs:AreaOfUse>Austria - west of 11°50'E</crs:AreaOfUse>
+            <crs:Axis>
+                  <crs:Name>y</crs:Name>
+                  <crs:Units>metre</crs:Units>
+                  <crs:AxisOrientation>east</crs:AxisOrientation>
+            </crs:Axis>
+            <crs:Axis>
+                  <crs:Name>x</crs:Name>
+                  <crs:Units>metre</crs:Units>
+                  <crs:AxisOrientation>north</crs:AxisOrientation>
+            </crs:Axis>
+            <crs:UsedGeographicCRS>http://www.opengis.net/gml/srs/epsg.xml#4312</crs:UsedGeographicCRS>
+            <crs:UsedProjection>projection_for_epsg:31254</crs:UsedProjection>
+        </crs:ProjectedCRS>
+        <crs:ProjectedCRS>
+            <crs:Id>epsg:31255</crs:Id>
+            <crs:Id>http://www.opengis.net/gml/srs/epsg.xml#31255</crs:Id>
+            <crs:Id>urn:ogc:def:crs:epsg::31255</crs:Id>
+            <crs:Id>urn:opengis:def:crs:epsg::31255</crs:Id>
+            <crs:Name>MGI / Austria GK Central - M31</crs:Name>
+            <crs:Version>2007-02-02T00:00</crs:Version>
+            <crs:AreaOfUse>11.83,46.30,14.83,48.80</crs:AreaOfUse>
+            <crs:AreaOfUse>Austria - 11°50'E to 14°50'E</crs:AreaOfUse>
+            <crs:Axis>
+                  <crs:Name>y</crs:Name>
+                  <crs:Units>metre</crs:Units>
+                  <crs:AxisOrientation>east</crs:AxisOrientation>
+            </crs:Axis>
+            <crs:Axis>
+                  <crs:Name>x</crs:Name>
+                  <crs:Units>metre</crs:Units>
+                  <crs:AxisOrientation>north</crs:AxisOrientation>
+            </crs:Axis>
+            <crs:UsedGeographicCRS>http://www.opengis.net/gml/srs/epsg.xml#4312</crs:UsedGeographicCRS>
+            <crs:UsedProjection>projection_for_epsg:31255</crs:UsedProjection>
+        </crs:ProjectedCRS>
+        <crs:ProjectedCRS>
+            <crs:Id>epsg:31256</crs:Id>
+            <crs:Id>http://www.opengis.net/gml/srs/epsg.xml#31256</crs:Id>
+            <crs:Id>urn:ogc:def:crs:epsg::31256</crs:Id>
+            <crs:Id>urn:opengis:def:crs:epsg::31256</crs:Id>
+            <crs:Name>MGI / Austria GK East</crs:Name>
+            <crs:Version>2007-02-02T00:00</crs:Version>
+            <crs:AreaOfUse>14.83,46.50,17.17,49.02</crs:AreaOfUse>
+            <crs:AreaOfUse>Austria - east of 14°50'E</crs:AreaOfUse>
+            <crs:Axis>
+                  <crs:Name>y</crs:Name>
+                  <crs:Units>metre</crs:Units>
+                  <crs:AxisOrientation>east</crs:AxisOrientation>
+            </crs:Axis>
+            <crs:Axis>
+                  <crs:Name>x</crs:Name>
+                  <crs:Units>metre</crs:Units>
+                  <crs:AxisOrientation>north</crs:AxisOrientation>
+            </crs:Axis>
+            <crs:UsedGeographicCRS>http://www.opengis.net/gml/srs/epsg.xml#4312</crs:UsedGeographicCRS>
+            <crs:UsedProjection>projection_for_epsg:31256</crs:UsedProjection>
+        </crs:ProjectedCRS>
         <crs:CompoundCRS>
                 <crs:Id>epsg:4979</crs:Id>
                 <crs:Id>http://www.opengis.net/gml/srs/epsg.xml#4979</crs:Id>
