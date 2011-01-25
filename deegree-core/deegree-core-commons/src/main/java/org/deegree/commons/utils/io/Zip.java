@@ -62,7 +62,7 @@ public class Zip {
      * @param dir
      * @throws IOException
      */
-    public static void unzip( final InputStream in, final File dir )
+    public static void unzip( final InputStream in, File dir )
                             throws IOException {
         ZipInputStream zin = new ZipInputStream( in );
         ZipEntry entry;
@@ -71,9 +71,18 @@ public class Zip {
             dir.mkdir();
         }
 
+        boolean rootRead = false;
+
         while ( ( entry = zin.getNextEntry() ) != null ) {
             if ( entry.isDirectory() ) {
                 File f = new File( dir, entry.getName() );
+                // avoid directory-in-directory
+                if ( !rootRead ) {
+                    if ( f.getName().equals( dir.getName() ) ) {
+                        dir = dir.getParentFile();
+                    }
+                }
+                rootRead = true;
                 f.mkdir();
                 continue;
             }
