@@ -27,6 +27,31 @@
     </repository>
   </repositories>
 
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.deegree</groupId>
+        <artifactId>deegree-maven-plugin</artifactId>
+        <version>1.0-SNAPSHOT</version>
+        <executions>
+          <execution>
+            <goals>
+              <goal>copy</goal>
+            </goals>
+            <configuration>
+              <files>
+                <file>
+                  <from>src/main/tomcat/tomcat-users.xml</from>
+                  <to>target/tomcat/conf/tomcat-users.xml</to>
+                </file>
+              </files>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+
   <dependencies>
     <dependency>
       <groupId>org.deegree</groupId>
