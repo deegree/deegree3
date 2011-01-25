@@ -35,6 +35,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.maven;
 
+import static java.lang.Thread.currentThread;
+import static java.security.AccessController.doPrivileged;
 import static java.util.Collections.EMPTY_LIST;
 import static java.util.Collections.EMPTY_MAP;
 import static org.apache.commons.io.IOUtils.closeQuietly;
@@ -52,6 +54,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.security.PrivilegedAction;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
@@ -204,14 +207,22 @@ public class Log4jMojo extends AbstractMojo {
 
         try {
             Set<?> artifacts = resolveDeps();
-            URL[] urls = new URL[artifacts.size()];
+            final URL[] urls = new URL[artifacts.size()];
             Iterator<?> itor = artifacts.iterator();
             int i = 0;
-            while ( itor.hasNext() )
+            while ( itor.hasNext() ) {
                 urls[i++] = ( (Artifact) itor.next() ).getFile().toURI().toURL();
+            }
 
-            URLClassLoader cl = new URLClassLoader( urls, Thread.currentThread().getContextClassLoader() );
-            Thread.currentThread().setContextClassLoader( cl );
+            doPrivileged( new PrivilegedAction<Object>() {
+                @Override
+                public Object run() {
+                    URLClassLoader cl = new URLClassLoader( urls, currentThread().getContextClassLoader() );
+                    currentThread().setContextClassLoader( cl );
+                    return null;
+                }
+            } );
+
         } catch ( MalformedURLException e ) {
             throw new MojoExecutionException( e.getLocalizedMessage(), e );
         } catch ( ArtifactResolutionException e ) {
