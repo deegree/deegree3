@@ -35,8 +35,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.client.generic;
 
-import static java.util.Collections.sort;
 import static org.apache.commons.io.IOUtils.closeQuietly;
+import static org.deegree.commons.utils.CollectionUtils.addAllUncontained;
 import static org.deegree.services.controller.OGCFrontController.getServiceConfiguration;
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -48,6 +48,8 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Properties;
+import java.util.TreeMap;
+import java.util.TreeSet;
 
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.RequestScoped;
@@ -100,6 +102,11 @@ public class ApplicationBean implements Serializable {
             }
         }
 
+        final TreeMap<String, String> versions = new TreeMap<String, String>();
+        final TreeMap<String, String> dates = new TreeMap<String, String>();
+        final TreeMap<String, String> revs = new TreeMap<String, String>();
+        final TreeMap<String, String> authors = new TreeMap<String, String>();
+
         loadedModules = new LinkedList<String>();
 
         final Reflections r = new Reflections( "org.deegree" );
@@ -114,7 +121,45 @@ public class ApplicationBean implements Serializable {
                 try {
                     Properties props = new Properties();
                     props.load( in );
-                    loadedModules.add( props.getProperty( "artifactId" ) + " - " + props.getProperty( "version" ) );
+                    String artId = props.getProperty( "artifactId" );
+                    String version = props.getProperty( "version" );
+                    versions.put( artId, version );
+                } catch ( IOException e ) {
+                    LOG.trace( "Stack trace: ", e );
+                } finally {
+                    closeQuietly( in );
+                }
+                return r;
+            }
+
+            @Override
+            public File save( Reflections reflections, String filename ) {
+                return null;
+            }
+
+            @Override
+            public String toString( Reflections reflections ) {
+                return null;
+            }
+        } );
+        r.collect( "META-INF/deegree", new Predicate<String>() {
+            @Override
+            public boolean apply( String input ) {
+                return input.endsWith( "buildinfo.properties" );
+            }
+        }, new Serializer() {
+            @Override
+            public Reflections read( InputStream in ) {
+                try {
+                    Properties props = new Properties();
+                    props.load( in );
+                    String artId = props.getProperty( "build.artifactId" );
+                    String rev = props.getProperty( "build.svnrev" );
+                    String by = props.getProperty( "build.by" );
+                    String date = props.getProperty( "build.date" );
+                    revs.put( artId, rev );
+                    dates.put( artId, date );
+                    authors.put( artId, by );
                 } catch ( IOException e ) {
                     LOG.trace( "Stack trace: ", e );
                 } finally {
@@ -134,7 +179,23 @@ public class ApplicationBean implements Serializable {
             }
         } );
 
-        sort( loadedModules );
+        TreeSet<String> set = new TreeSet<String>();
+        addAllUncontained( set, authors.keySet() );
+        addAllUncontained( set, versions.keySet() );
+        addAllUncontained( set, revs.keySet() );
+        addAllUncontained( set, dates.keySet() );
+
+        for ( String id : set ) {
+            String by = authors.get( id );
+            String ver = versions.get( id );
+            String rev = revs.get( id );
+            String date = dates.get( id );
+            by = by == null ? "unknown" : by;
+            ver = ver == null ? "unknown" : ver;
+            rev = rev == null ? "unknown" : rev;
+            date = date == null ? "unknown" : date;
+            loadedModules.add( id + " " + ver + " by " + by + " at " + date );
+        }
 
     }
 
