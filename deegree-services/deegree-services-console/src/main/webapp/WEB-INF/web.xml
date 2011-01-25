@@ -35,6 +35,12 @@
         <load-on-startup>1</load-on-startup>
     </servlet>
 
+    <servlet>
+        <servlet-name>config</servlet-name>
+        <servlet-class>org.deegree.services.config.servlet.ConfigServlet</servlet-class>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+
     <servlet-mapping>
         <servlet-name>services</servlet-name>
         <url-pattern>/services</url-pattern>
@@ -43,6 +49,11 @@
     <servlet-mapping>
         <servlet-name>resources</servlet-name>
         <url-pattern>/resources/*</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>config</servlet-name>
+        <url-pattern>/config/*</url-pattern>
     </servlet-mapping>
 
     <servlet>
@@ -74,11 +85,32 @@
         <welcome-file>index.htm</welcome-file>
         <welcome-file>console.xhtml</welcome-file>
     </welcome-file-list>
-    
+
+    <security-constraint>
+        <web-resource-collection>
+            <web-resource-name>Configuration</web-resource-name>
+            <url-pattern>/config/*</url-pattern>
+        </web-resource-collection>
+        <auth-constraint>
+            <role-name>deegree</role-name>
+        </auth-constraint>
+    </security-constraint>
+
+    <login-config>
+        <auth-method>BASIC</auth-method>
+        <realm-name>deegree web configuration API</realm-name>
+    </login-config>
+
+    <security-role>
+        <description>deegree administrator role</description>
+        <role-name>deegree</role-name>
+    </security-role>
+
+
     <!-- http basic auth enable -->
     <!-- Define a security constraint on this application -->
     <!-- User and role must be added to tomcat-users.xml  -->
-    <!-- 
+    <!--
     <security-constraint>
         <web-resource-collection>
             <web-resource-name>Entire Application</web-resource-name>
