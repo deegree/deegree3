@@ -53,6 +53,7 @@ import org.deegree.services.controller.ows.capabilities.OWSCapabilitiesXMLAdapte
 import org.deegree.services.controller.ows.capabilities.OWSOperation;
 import org.deegree.services.jaxb.controller.DCPType;
 import org.deegree.services.jaxb.metadata.DeegreeServicesMetadataType;
+import org.deegree.services.jaxb.metadata.ServiceIdentificationType;
 import org.deegree.services.wps.WPSProcess;
 
 /**
@@ -111,7 +112,7 @@ public class CapabilitiesXMLWriter extends OWSCapabilitiesXMLAdapter {
         writer.writeAttribute( XSI_NS, "schemaLocation",
                                "http://www.opengis.net/wps/1.0.0 http://schemas.opengis.net/wps/1.0.0/wpsGetCapabilities_response.xsd" );
 
-        exportServiceIdentification( writer );
+        exportServiceIdentification( writer, serviceMetadata.getServiceIdentification() );
         exportServiceProvider110( writer, serviceMetadata.getServiceProvider() );
         exportOperationsMetadata( writer );
 
@@ -213,11 +214,19 @@ public class CapabilitiesXMLWriter extends OWSCapabilitiesXMLAdapter {
         exportOperationsMetadata110( writer, operations );
     }
 
-    private static void exportServiceIdentification( XMLStreamWriter writer )
+    private static void exportServiceIdentification( XMLStreamWriter writer, ServiceIdentificationType ident )
                             throws XMLStreamException {
         writer.writeStartElement( OWS_NS, "ServiceIdentification" );
-        writeElement( writer, OWS_NS, "Title", "deegree 3 WPS" );
-        writeElement( writer, OWS_NS, "Abstract", "deegree 3 WPS implementation" );
+        if ( ident == null ) {
+            writeElement( writer, OWS_NS, "Title", "deegree 3 WPS" );
+            writeElement( writer, OWS_NS, "Abstract", "deegree 3 WPS implementation" );
+        } else {
+            List<String> title = ident.getTitle();
+            writeElement( writer, OWS_NS, "Title", title.isEmpty() ? "deegree 3 WPS" : title.get( 0 ) );
+            List<String> _abstract = ident.getAbstract();
+            writeElement( writer, OWS_NS, "Abstract", _abstract.isEmpty() ? "deegree 3 WPS implementation"
+                                                                         : _abstract.get( 0 ) );
+        }
         writeElement( writer, OWS_NS, "ServiceType", "WPS" );
         writeElement( writer, OWS_NS, "ServiceTypeVersion", "1.0.0" );
         writer.writeEndElement();
