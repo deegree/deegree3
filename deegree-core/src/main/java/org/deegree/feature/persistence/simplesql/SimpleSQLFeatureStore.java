@@ -302,6 +302,10 @@ public class SimpleSQLFeatureStore implements FeatureStore {
             for ( final Query q : queries ) {
 
                 Envelope bbox = (Envelope) q.getHint( HINT_LOOSE_BBOX );
+                if ( bbox == null ) {
+                    bbox = getEnvelope( ftName );
+                }
+
                 Object scaleHint = q.getHint( HINT_SCALE );
                 int scale = -1;
                 if ( scaleHint != null ) {
