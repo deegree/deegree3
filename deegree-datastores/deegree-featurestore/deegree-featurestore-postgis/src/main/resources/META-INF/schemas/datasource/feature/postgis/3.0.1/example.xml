@@ -20,7 +20,8 @@ http://schemas.deegree.org/datasource/feature/postgis/3.0.0/postgis.xsd">
   <!-- Config option 3: Configuration based on table and explicit name with namespace-->
   <FeatureType xmlns:myapp="http://www.deegree.org/myapp" table="country2" name="myapp:Country" />
 
-  <!-- Config option 4: Configuration based on table and explicit name with namespace and 
+  <!-- TODO: this creates the properties in a different namespace than expected! 
+  Config option 4: Configuration based on table and explicit name with namespace and 
   explicit property mapping -->
   <FeatureType xmlns:myapp="http://www.deegree.org/myapp" table="country2" name="myapp:Country">
     <SimpleProperty mapping="prop1" />
