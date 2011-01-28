@@ -35,18 +35,10 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.services.config.actions;
 
-import static org.deegree.services.config.actions.Utils.getWorkspaceAndPath;
+import static org.deegree.services.controller.OGCFrontController.getServiceWorkspace;
 
-import java.io.IOException;
-import java.net.URISyntaxException;
-
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletResponse;
-
-import org.apache.commons.io.IOUtils;
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.utils.Pair;
-import org.deegree.services.controller.OGCFrontController;
 
 /**
  * 
@@ -55,25 +47,31 @@ import org.deegree.services.controller.OGCFrontController;
  * 
  * @version $Revision$, $Date$
  */
-public class Restart {
+public class Utils {
 
-    public static void restart( String path, HttpServletResponse resp )
-                            throws IOException, ServletException {
-        Pair<DeegreeWorkspace, String> p = getWorkspaceAndPath( path );
-
-        // TODO handle case of partial workspace restart
-
-        try {
-            OGCFrontController.getInstance().reload( p.first.getName() );
-        } catch ( IOException e ) {
-            IOUtils.write( "Error while reloading: " + e.getLocalizedMessage() + "\n", resp.getOutputStream() );
-            return;
-        } catch ( URISyntaxException e ) {
-            IOUtils.write( "Error while reloading: " + e.getLocalizedMessage() + "\n", resp.getOutputStream() );
-            return;
+    /**
+     * @param path
+     * @return never a null workspace, maybe a null path if none was specified
+     */
+    public static Pair<DeegreeWorkspace, String> getWorkspaceAndPath( String path ) {
+        if ( path == null || path.isEmpty() || path.equals( "/" ) ) {
+            return new Pair<DeegreeWorkspace, String>( getServiceWorkspace(), null );
         }
 
-        IOUtils.write( "Restart complete.", resp.getOutputStream() );
+        path = path.substring( 1 );
+        if ( path.indexOf( "/" ) != -1 ) {
+            String wsName = path.substring( 0, path.indexOf( "/" ) );
+            if ( DeegreeWorkspace.isWorkspace( wsName ) ) {
+                DeegreeWorkspace ws = DeegreeWorkspace.getInstance( wsName );
+                return new Pair<DeegreeWorkspace, String>( ws, path.substring( path.indexOf( "/" ) + 1 ) );
+            }
+            return new Pair<DeegreeWorkspace, String>( getServiceWorkspace(), path );
+        }
+        if ( DeegreeWorkspace.isWorkspace( path ) ) {
+            return new Pair<DeegreeWorkspace, String>( DeegreeWorkspace.getInstance( path ), null );
+        }
+
+        return new Pair<DeegreeWorkspace, String>( getServiceWorkspace(), path.isEmpty() ? null : path );
     }
 
 }

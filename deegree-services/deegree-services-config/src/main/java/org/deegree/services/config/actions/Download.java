@@ -38,7 +38,7 @@ package org.deegree.services.config.actions;
 import static org.apache.commons.io.IOUtils.closeQuietly;
 import static org.apache.commons.io.IOUtils.copy;
 import static org.deegree.commons.utils.io.Zip.zip;
-import static org.deegree.services.controller.OGCFrontController.getServiceWorkspace;
+import static org.deegree.services.config.actions.Utils.getWorkspaceAndPath;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -49,6 +49,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.io.IOUtils;
 import org.deegree.commons.config.DeegreeWorkspace;
+import org.deegree.commons.utils.Pair;
 
 /**
  * 
@@ -66,43 +67,23 @@ public class Download {
      */
     public static void download( String path, HttpServletResponse resp )
                             throws IOException {
-        if ( path.isEmpty() || path.equals( "/" ) ) {
+        Pair<DeegreeWorkspace, String> p = getWorkspaceAndPath( path );
+
+        if ( p.second == null ) {
             try {
-                download( getServiceWorkspace(), resp );
+                download( p.first, resp );
             } catch ( IOException e ) {
                 IOUtils.write( "Error while downloading: " + e.getLocalizedMessage() + "\n", resp.getOutputStream() );
             }
             return;
         }
 
-        path = path.substring( 1 );
-        if ( path.indexOf( "/" ) != -1 ) {
-            String wsName = path.substring( 0, path.indexOf( "/" ) );
-            if ( DeegreeWorkspace.isWorkspace( wsName ) ) {
-                DeegreeWorkspace ws = DeegreeWorkspace.getInstance( wsName );
-                try {
-                    download( ws, path.substring( path.indexOf( "/" ) + 1 ), resp );
-                } catch ( IOException e ) {
-                    IOUtils.write( "Error while downloading: " + e.getLocalizedMessage() + "\n", resp.getOutputStream() );
-                }
-            } else {
-                try {
-                    download( getServiceWorkspace(), path, resp );
-                } catch ( IOException e ) {
-                    IOUtils.write( "Error while downloading: " + e.getLocalizedMessage() + "\n", resp.getOutputStream() );
-                }
-            }
-            return;
+        try {
+            download( p.first, p.second, resp );
+        } catch ( IOException e ) {
+            IOUtils.write( "Error while downloading: " + e.getLocalizedMessage() + "\n", resp.getOutputStream() );
         }
 
-        DeegreeWorkspace newWs = DeegreeWorkspace.getInstance( path );
-        if ( newWs != null ) {
-            try {
-                download( newWs, resp );
-            } catch ( IOException e ) {
-                IOUtils.write( "Error while downloading: " + e.getLocalizedMessage() + "\n", resp.getOutputStream() );
-            }
-        }
     }
 
     private static void download( DeegreeWorkspace ws, String file, HttpServletResponse resp )

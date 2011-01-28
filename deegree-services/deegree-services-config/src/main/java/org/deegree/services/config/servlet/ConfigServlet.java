@@ -36,6 +36,7 @@
 package org.deegree.services.config.servlet;
 
 import static org.deegree.services.config.actions.Download.download;
+import static org.deegree.services.config.actions.List.list;
 import static org.deegree.services.config.actions.Restart.restart;
 import static org.deegree.services.config.actions.Upload.upload;
 import static org.slf4j.LoggerFactory.getLogger;
@@ -75,11 +76,15 @@ public class ConfigServlet extends HttpServlet {
         String path = req.getPathInfo();
         if ( path == null || path.equals( "/" ) ) {
             StringBuilder data = new StringBuilder( "No action specified.\n\nAvailable actions:\n" );
-            data.append( "GET /config/download           - download currently running workspace\n" );
-            data.append( "GET /config/download/wsname    - download workspace with name <wsname>\n" );
-            data.append( "GET /config/restart            - restart currently running workspace\n" );
-            data.append( "GET /config/restart/wsname     - restart with workspace <wsname>\n" );
-            data.append( "PUT /config/upload/wsname.zip  - upload workspace <wsname>\n" );
+            data.append( "GET /config/download[/path]           - download currently running workspace or file in workspace\n" );
+            data.append( "GET /config/download/wsname[/path]    - download workspace with name <wsname> or file in workspace\n" );
+            data.append( "GET /config/restart                   - restart currently running workspace\n" );
+            data.append( "GET /config/restart/wsname            - restart with workspace <wsname>\n" );
+            data.append( "GET /config/list[/path]               - list currently running workspace or directory in workspace\n" );
+            data.append( "GET /config/list/wsname[/path]        - list workspace with name <wsname> or directory in workspace\n" );
+            data.append( "PUT /config/upload/wsname.zip         - upload workspace <wsname>\n" );
+            data.append( "PUT /config/upload/path/file          - upload file into current workspace\n" );
+            data.append( "PUT /config/upload/wsname/path/file   - upload file into workspace with name <wsname>\n" );
             IOUtils.write( data.toString(), resp.getOutputStream() );
             return;
         }
@@ -90,6 +95,10 @@ public class ConfigServlet extends HttpServlet {
 
         if ( path.toLowerCase().startsWith( "/restart" ) ) {
             restart( path.substring( 8 ), resp );
+        }
+
+        if ( path.toLowerCase().startsWith( "/list" ) ) {
+            list( path.substring( 5 ), resp );
         }
     }
 

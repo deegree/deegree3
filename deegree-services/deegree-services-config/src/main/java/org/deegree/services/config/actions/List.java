@@ -35,18 +35,12 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.services.config.actions;
 
-import static org.apache.commons.io.FileUtils.copyInputStreamToFile;
-import static org.apache.commons.io.IOUtils.closeQuietly;
-import static org.deegree.commons.config.DeegreeWorkspace.getWorkspaceRoot;
-import static org.deegree.commons.config.DeegreeWorkspace.isWorkspace;
-import static org.deegree.commons.utils.io.Zip.unzip;
 import static org.deegree.services.config.actions.Utils.getWorkspaceAndPath;
 
 import java.io.File;
 import java.io.IOException;
 
-import javax.servlet.ServletInputStream;
-import javax.servlet.http.HttpServletRequest;
+import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.io.IOUtils;
@@ -60,44 +54,23 @@ import org.deegree.commons.utils.Pair;
  * 
  * @version $Revision$, $Date$
  */
-public class Upload {
+public class List {
 
-    public static void upload( String path, HttpServletRequest req, HttpServletResponse resp )
+    public static void list( String path, HttpServletResponse resp )
                             throws IOException {
-
         Pair<DeegreeWorkspace, String> p = getWorkspaceAndPath( path );
 
-        if ( p.second == null ) {
-            IOUtils.write( "No file name given.\n", resp.getOutputStream() );
-            return;
-        }
+        File dir = p.first.getLocation();
+        dir = p.second == null ? dir : new File( dir, p.second );
 
-        boolean isZip = p.second.endsWith( ".zip" ) || req.getContentType() != null
-                        && req.getContentType().equals( "application/zip" );
-
-        ServletInputStream in = null;
-        try {
-            in = req.getInputStream();
-            if ( isZip ) {
-                // unzip a workspace
-                String wsName = p.second.substring( 0, p.second.length() - 4 );
-                String dirName = p.second.endsWith( ".zip" ) ? wsName : p.second;
-                File dir = new File( getWorkspaceRoot(), dirName );
-                if ( isWorkspace( dirName ) ) {
-                    IOUtils.write( "Workspace " + wsName + " exists.\n", resp.getOutputStream() );
-                    return;
+        File[] ls = dir.listFiles();
+        ServletOutputStream os = resp.getOutputStream();
+        if ( ls != null ) {
+            for ( File f : ls ) {
+                if ( !f.getName().equalsIgnoreCase( ".svn" ) ) {
+                    IOUtils.write( f.getName() + "\n", os );
                 }
-                unzip( in, dir );
-            } else {
-                File dest = new File( p.first.getLocation(), p.second );
-                if ( !dest.getParentFile().exists() && !dest.getParentFile().mkdirs() ) {
-                    IOUtils.write( "Unable to create parent directory for upload.\n", resp.getOutputStream() );
-                    return;
-                }
-                copyInputStreamToFile( in, dest );
             }
-        } finally {
-            closeQuietly( in );
         }
     }
 
