@@ -76,9 +76,7 @@ public class WPSConstants {
         /** deegree WPS specific request for retrieving stored complex outputs. */
         GetOutput,
         /** deegree WPS specific request for retrieving response documents. */
-        GetResponseDocument,
-        /** deegree WPS specific request for retrieving WSDL documents for the full service or single processes. */
-        GetWPSWSDL,
+        GetResponseDocument
     }
 
     /**
