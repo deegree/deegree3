@@ -61,7 +61,6 @@ import org.deegree.commons.utils.ProxyUtils;
 import org.deegree.services.controller.Credentials;
 import org.deegree.services.controller.CredentialsProvider;
 import org.deegree.services.controller.CredentialsProviderManager;
-import org.deegree.services.controller.WebServicesConfiguration;
 import org.deegree.services.controller.security.authorities.AuthenticationAuthority;
 import org.deegree.services.controller.security.authorities.AuthenticationAuthorityProvider;
 import org.slf4j.Logger;
