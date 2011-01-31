@@ -193,7 +193,7 @@ public class ServiceIntegrationTestMojo extends AbstractMojo {
                          + "/services?request=GetCapabilities&version=1.1.1&service=" + service;
         String currentLayer = null;
         try {
-            WMSClient111 client = new WMSClient111( new URL( address ) );
+            WMSClient111 client = new WMSClient111( new URL( address ), 360, 360 );
             for ( String layer : client.getNamedLayers() ) {
                 getLog().info( "Retrieving map for layer " + layer );
                 currentLayer = layer;
