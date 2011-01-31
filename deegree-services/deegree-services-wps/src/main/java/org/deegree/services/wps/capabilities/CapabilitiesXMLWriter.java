@@ -55,6 +55,7 @@ import org.deegree.services.jaxb.controller.DCPType;
 import org.deegree.services.jaxb.metadata.DeegreeServicesMetadataType;
 import org.deegree.services.jaxb.metadata.ServiceIdentificationType;
 import org.deegree.services.wps.WPSProcess;
+import org.deegree.services.wps.wsdl.WSDL;
 
 /**
  * Responsible for the generation of WPS GetCapabilities response documents.
@@ -97,7 +98,7 @@ public class CapabilitiesXMLWriter extends OWSCapabilitiesXMLAdapter {
      * @throws XMLStreamException
      */
     public static void export100( XMLStreamWriter writer, Map<CodeType, WPSProcess> processes,
-                                  DeegreeServicesMetadataType serviceMetadata, String serviceWSDLURL )
+                                  DeegreeServicesMetadataType serviceMetadata, WSDL serviceWSDL )
                             throws XMLStreamException {
 
         writer.writeStartElement( WPS_PREFIX, "Capabilities", WPS_NS );
@@ -119,9 +120,9 @@ public class CapabilitiesXMLWriter extends OWSCapabilitiesXMLAdapter {
         exportProcessOfferings( writer, processes );
         exportLanguages( writer );
 
-        if ( serviceWSDLURL != null ) {
+        if ( serviceWSDL.exists() ) {
             writer.writeStartElement( WPS_NS, "WSDL" );
-            writer.writeAttribute( "xlink:href", serviceWSDLURL );
+            writer.writeAttribute( "xlink:href", serviceWSDL.getRestURL() );
             writer.writeEndElement();
         }
 

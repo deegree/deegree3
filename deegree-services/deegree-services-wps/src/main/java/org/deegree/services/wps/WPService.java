@@ -36,17 +36,12 @@
 
 package org.deegree.services.wps;
 
-import static org.apache.commons.io.IOUtils.closeQuietly;
-import static org.apache.commons.io.IOUtils.copy;
 import static org.deegree.services.controller.OGCFrontController.getHttpGetURL;
 import static org.deegree.services.controller.ows.OWSException.OPERATION_NOT_SUPPORTED;
 import static org.deegree.services.wps.WPSProvider.IMPLEMENTATION_METADATA;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -56,6 +51,7 @@ import java.util.Map;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.core.UriBuilder;
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
@@ -106,6 +102,8 @@ import org.deegree.services.wps.execute.ResponseForm;
 import org.deegree.services.wps.storage.OutputStorage;
 import org.deegree.services.wps.storage.ResponseDocumentStorage;
 import org.deegree.services.wps.storage.StorageManager;
+import org.deegree.services.wps.wsdl.WSDL;
+import org.deegree.services.wps.wsdl.WSDLResource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -146,10 +144,6 @@ public class WPService extends AbstractOGCServiceController<WPSRequestType> {
 
     private ExecutionManager executeHandler;
 
-    private File serviceWSDLFile;
-
-    private Map<CodeType, File> processIdToWSDL = new HashMap<CodeType, File>();
-
     @Override
     public void init( DeegreeServicesMetadataType serviceMetadata, DeegreeServiceControllerType mainConf,
                       ImplementationMetadata<WPSRequestType> md, XMLAdapter controllerConf )
@@ -172,9 +166,6 @@ public class WPService extends AbstractOGCServiceController<WPSRequestType> {
             validateAndSetOfferedVersions( sc.getSupportedVersions().getVersion() );
 
             executeHandler = new ExecutionManager( this, storageManager );
-
-            // WSDL stuff
-            serviceWSDLFile = FileUtils.getAsFile( new URL( controllerConfURL, "service.wsdl" ) );
         } catch ( MalformedURLException e ) {
             throw new ControllerInitException( "Problem resolving file resource: " + e.getMessage() );
         } catch ( ServiceInitException e ) {
@@ -221,11 +212,6 @@ public class WPService extends AbstractOGCServiceController<WPSRequestType> {
                 break;
             case GetResponseDocument:
                 doGetResponseDocument( kvpParamsUC.get( "IDENTIFIER" ), response );
-                break;
-            case GetWPSWSDL:
-                String identifier = kvpParamsUC.get( "IDENTIFIER" );
-                CodeType processId = identifier != null ? new CodeType( identifier ) : null;
-                doGetWSDL( processId, response );
                 break;
             }
         } catch ( MissingParameterException e ) {
@@ -277,7 +263,6 @@ public class WPService extends AbstractOGCServiceController<WPSRequestType> {
                 break;
             case GetOutput:
             case GetResponseDocument:
-            case GetWPSWSDL:
                 String msg = "Request type '" + requestType.name() + "' is only support as KVP request.";
                 throw new OWSException( msg, OWSException.OPERATION_NOT_SUPPORTED );
             }
@@ -339,7 +324,6 @@ public class WPService extends AbstractOGCServiceController<WPSRequestType> {
                 break;
             case GetOutput:
             case GetResponseDocument:
-            case GetWPSWSDL:
                 String msg = "Request type '" + requestType.name() + "' is only support as KVP request.";
                 throw new OWSException( msg, OWSException.OPERATION_NOT_SUPPORTED );
             }
@@ -415,11 +399,8 @@ public class WPService extends AbstractOGCServiceController<WPSRequestType> {
 
         response.setContentType( "text/xml; charset=UTF-8" );
         XMLStreamWriter xmlWriter = response.getXMLWriter();
-        String wsdlURL = null;
-        if ( serviceWSDLFile != null ) {
-            wsdlURL = OGCFrontController.getHttpGetURL() + "service=WPS&version=1.0.0&request=GetWPSWSDL";
-        }
-        CapabilitiesXMLWriter.export100( xmlWriter, service.getProcesses(), mainMetadataConf, wsdlURL );
+        WSDL serviceWSDL = new WSDL( "services" + File.separatorChar + "wps.wsdl" );
+        CapabilitiesXMLWriter.export100( xmlWriter, service.getProcesses(), mainMetadataConf, serviceWSDL );
 
         LOG.trace( "doGetCapabilities finished" );
     }
@@ -455,11 +436,12 @@ public class WPService extends AbstractOGCServiceController<WPSRequestType> {
                 ProcessDefinition processDef = process.getDescription();
                 CodeType processId = new CodeType( processDef.getIdentifier().getValue(),
                                                    processDef.getIdentifier().getCodeSpace() );
-                if ( processIdToWSDL.containsKey( processId ) ) {
-                    String wsdlURL = OGCFrontController.getHttpGetURL()
-                                     + "service=WPS&version=1.0.0&request=GetWPSWSDL&identifier=" + processId.getCode();
-                    processDefToWSDLUrl.put( processDef, wsdlURL );
-                }
+                // TODO WSDL
+//                if ( processIdToWSDL.containsKey( processId ) ) {
+//                    String wsdlURL = OGCFrontController.getHttpGetURL()
+//                                     + "service=WPS&version=1.0.0&request=GetWPSWSDL&identifier=" + processId.getCode();
+//                    processDefToWSDLUrl.put( processDef, wsdlURL );
+//                }
             }
 
             DescribeProcessResponseXMLAdapter.export100( xmlWriter, processes, processDefToWSDLUrl );
@@ -537,40 +519,6 @@ public class WPService extends AbstractOGCServiceController<WPSRequestType> {
         executeHandler.sendResponseDocument( response, resource );
 
         LOG.trace( "doGetResponseDocument finished" );
-    }
-
-    private void doGetWSDL( CodeType processId, HttpResponseBuffer response ) {
-
-        LOG.trace( "doGetWSDL invoked, requested resource: " + processId );
-
-        File wsdlFile = serviceWSDLFile;
-        if ( processId != null ) {
-            wsdlFile = processIdToWSDL.get( processId );
-        }
-
-        if ( wsdlFile == null || !wsdlFile.exists() ) {
-            try {
-                response.sendError( 404, "WSDL document not available." );
-            } catch ( IOException e ) {
-                LOG.debug( "Error sending exception report to client.", e );
-            }
-        } else {
-            InputStream is = null;
-            try {
-                response.setContentType( "text/xml" );
-                response.setContentLength( (int) wsdlFile.length() );
-                OutputStream os = response.getOutputStream();
-                is = new FileInputStream( wsdlFile );
-                copy( is, os );
-                os.flush();
-            } catch ( IOException e ) {
-                LOG.debug( "Error sending WSDL document to client.", e );
-            } finally {
-                closeQuietly( is );
-            }
-        }
-
-        LOG.trace( "doGetWSDL finished" );
     }
 
     private void sendServiceException( OWSException ex, HttpResponseBuffer response )
