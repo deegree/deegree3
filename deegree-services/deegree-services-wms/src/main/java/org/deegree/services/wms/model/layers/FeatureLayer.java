@@ -187,6 +187,10 @@ public class FeatureLayer extends Layer {
 
     @Override
     public Envelope getBbox() {
+        if ( super.getBbox() != null ) {
+            return super.getBbox();
+        }
+
         if ( datastore == null || !datastore.isAvailable() ) {
             return null;
         }
