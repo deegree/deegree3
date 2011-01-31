@@ -88,14 +88,23 @@ public class WorkspaceMojo extends AbstractMojo {
                 throw new MojoFailureException( "Could not create target directory!" );
             }
             File workspaceFile = new File( project.getBasedir(), "target/" + project.getArtifactId() + "-"
-                                                                 + project.getVersion() + "-workspace.zip" );
+                                                                 + project.getVersion() + ".zip" );
             OutputStream os = new FileOutputStream( workspaceFile );
             out = new ZipOutputStream( os );
 
             zip( dir, out, dir.getAbsoluteFile().toURI() );
             log.info( "Attaching " + workspaceFile );
-            Artifact artifact = new AttachedArtifact( project.getArtifact(), "zip", "workspace",
-                                                      new DefaultArtifactHandler( "zip" ) );
+            Artifact artifact = project.getArtifact();
+            if ( artifact.getType() == null || !artifact.getType().equals( "deegree-workspace" ) ) {
+                DefaultArtifactHandler defHandler = new DefaultArtifactHandler( "deegree-workspace" ) {
+                    @Override
+                    public String getExtension() {
+                        return "zip";
+                    }
+                };
+                artifact = new AttachedArtifact( project.getArtifact(), "deegree-workspace", defHandler );
+            }
+
             artifact.setFile( workspaceFile );
             artifact.setResolved( true );
             project.addAttachedArtifact( artifact );
