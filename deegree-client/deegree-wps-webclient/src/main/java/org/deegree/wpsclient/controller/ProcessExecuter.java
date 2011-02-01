@@ -39,6 +39,7 @@ import static org.deegree.client.core.utils.MessageUtils.getFacesMessage;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.File;
+import java.net.URL;
 import java.util.List;
 import java.util.Map;
 
@@ -82,6 +83,7 @@ public class ProcessExecuter {
      *            all bboxInputs; must not be null!
      * @param xmlInputs
      *            all xmlInputs; must not be null!
+     * @param xmlRefInputs
      * @param binaryInputs
      *            all binaryInputs; must not be null!
      * @param outputs
@@ -90,7 +92,7 @@ public class ProcessExecuter {
      */
     public ExecutionOutput[] execute( Process processToExecute, Map<String, StringPair> literalInputs,
                                       Map<String, BBox> bboxInputs, Map<String, UploadedFile> xmlInputs,
-                                      Map<String, UploadedFile> binaryInputs,
+                                      Map<String, String> xmlRefInputs, Map<String, UploadedFile> binaryInputs,
                                       Map<String, ComplexFormat> complexFormats, List<String> outputs ) {
 
         FacesContext fc = FacesContext.getCurrentInstance();
@@ -99,6 +101,7 @@ public class ProcessExecuter {
                 LOG.debug( "execute selected process " + processToExecute.getId() );
                 LOG.debug( "input parameters (LITERAL): " + literalInputs );
                 LOG.debug( "input parameters (XML): " + xmlInputs );
+                LOG.debug( "input parameters (XML-REFS): " + xmlRefInputs );
                 LOG.debug( "input parameters (BINARY): " + binaryInputs );
                 LOG.debug( "input parameters (BBOX): " + bboxInputs );
                 LOG.debug( "outputs: " + outputs );
@@ -107,32 +110,39 @@ public class ProcessExecuter {
             InputType[] inputDescription = processToExecute.getInputTypes();
             for ( int i = 0; i < inputDescription.length; i++ ) {
                 InputType input = inputDescription[i];
+                String id = input.getId().toString();
                 if ( input instanceof LiteralInputType ) {
-                    StringPair literal = literalInputs.get( input.getId().toString() );
+                    StringPair literal = literalInputs.get( id );
                     if ( literal != null ) {
                         execution.addLiteralInput( input.getId().getCode(), input.getId().getCodeSpace(),
                                                    literal.getFirst(), null, literal.getSecond() );
                     }
                 } else if ( input instanceof ComplexInputType ) {
-                    UploadedFile xml = xmlInputs.get( input.getId().toString() );
                     String schema = null, encoding = null, mimeType = null;
-                    ComplexFormat complexFormat = complexFormats.get( input.getId().toString() );
+                    ComplexFormat complexFormat = complexFormats.get( id );
                     if ( complexFormat != null ) {
                         schema = complexFormat.getSchema();
                         mimeType = complexFormat.getMimeType();
                         encoding = complexFormat.getEncoding();
                     }
+
+                    UploadedFile xml = xmlInputs.get( id );
+                    String xmlRef = xmlRefInputs.get( id );
+                    System.out.println( xmlRef );
                     if ( xml != null ) {
                         execution.addXMLInput( input.getId().getCode(), input.getId().getCodeSpace(), xml.getUrl(),
                                                false, mimeType, encoding, schema );
+                    } else if ( xmlRef != null && xmlRef.trim().length() > 0 ) {
+                        execution.addXMLInput( input.getId().getCode(), input.getId().getCodeSpace(),
+                                               new URL( xmlRef ), true, mimeType, encoding, schema );
                     }
-                    UploadedFile binary = binaryInputs.get( input.getId().toString() );
+                    UploadedFile binary = binaryInputs.get( id );
                     if ( binary != null ) {
                         execution.addBinaryInput( input.getId().getCode(), input.getId().getCodeSpace(),
                                                   binary.getUrl(), false, mimeType, encoding );
                     }
                 } else if ( input instanceof BBoxInputType ) {
-                    BBox bbox = bboxInputs.get( input.getId().toString() );
+                    BBox bbox = bboxInputs.get( id );
                     if ( bbox != null ) {
                         execution.addBBoxInput( input.getId().getCode(), input.getId().getCodeSpace(),
                                                 new double[] { bbox.getMinx(), bbox.getMinY() },

@@ -83,6 +83,8 @@ public class ExecuteBean implements Serializable {
 
     private Map<String, UploadedFile> xmlInputs = new HashMap<String, UploadedFile>();
 
+    private Map<String, String> xmlRefInputs = new HashMap<String, String>();
+
     private Map<String, UploadedFile> binaryInputs = new HashMap<String, UploadedFile>();
 
     private Map<String, BBox> bboxInputs = new HashMap<String, BBox>();
@@ -130,7 +132,8 @@ public class ExecuteBean implements Serializable {
 
             ProcessExecuter executer = new ProcessExecuter();
             ExecutionOutput[] executionOutput = executer.execute( selectedProcess, literalInputs, bboxInputs,
-                                                                  xmlInputs, binaryInputs, complexFormats, outputs );
+                                                                  xmlInputs, xmlRefInputs, binaryInputs,
+                                                                  complexFormats, outputs );
 
             if ( executionOutput != null ) {
                 for ( int i = 0; i < executionOutput.length; i++ ) {
@@ -171,6 +174,16 @@ public class ExecuteBean implements Serializable {
 
     public Map<String, UploadedFile> getXmlInputs() {
         return xmlInputs;
+    }
+
+    public Map<String, String> getXmlRefInputs() {
+        System.out.println( "get " + xmlRefInputs );
+        return xmlRefInputs;
+    }
+
+    public void getXmlRefInputs( Map<String, String> xmlRefs ) {
+        System.out.println( "set " + xmlRefInputs );
+        this.xmlRefInputs = xmlRefs;
     }
 
     public Map<String, UploadedFile> getBinaryInputs() {

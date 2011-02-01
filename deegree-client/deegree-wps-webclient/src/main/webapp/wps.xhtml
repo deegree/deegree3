@@ -2,6 +2,7 @@
   xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:dg="http://deegree.org/jsf"
 >
 <h:head>
+  <h:outputScript name="wps.js" library="wpsclient" />
   <h:outputStylesheet name="style.css" library="wpsclient" />
 </h:head>
 <h:body>
@@ -103,56 +104,83 @@
       >
         <fieldset class="field"><legend><h:outputText value="#{labels['responseFS']}"
           id="responseFS"
-        /></legend> <h:panelGrid columns="2" rendered="#{!empty executeBean.literalOutputs}">
-          <ui:repeat value="#{executeBean.literalOutputs}" var="out">
-            <h:outputFormat value="#{labels['literalOutput']}" styleClass="outputHead">
-              <f:param value="#{out.id}" />
-            </h:outputFormat>
-            <br />
-            <h:outputFormat value="#{labels['literalOutput_Value']}" styleClass="output">
-              <f:param value="#{out.value}" />
-              <f:param value="#{out.uom}" />
-            </h:outputFormat>
-            <br />
-            <h:outputFormat value="#{labels['literalOutput_Datatype']}" styleClass="output">
-              <f:param value="#{out.dataType}" />
-            </h:outputFormat>
-          </ui:repeat>
-        </h:panelGrid> <h:panelGrid columns="2" rendered="#{!empty executeBean.bboxOutputs}">
-          <ui:repeat value="#{executeBean.bboxOutputs}" var="out">
-            <h:outputFormat value="#{labels['bboxOutput']}" styleClass="outputHead">
-              <f:param value="#{out.id}" />
-            </h:outputFormat>
-            <br />
-            <h:outputFormat value="#{labels['bboxOutput_coords']}" styleClass="output">
-              <f:param value="#{out.lower[0]}" />
-              <f:param value="#{out.lower[1]}" />
-              <f:param value="#{out.upper[0]}" />
-              <f:param value="#{out.upper[1]}" />
-            </h:outputFormat>
-            <br />
-            <h:outputFormat value="#{labels['bboxOutput_crs']}" styleClass="output">
-              <f:param value="#{out.crs}" />
-            </h:outputFormat>
-            <br />
-          </ui:repeat>
-        </h:panelGrid> <h:panelGrid columns="2">
-          <ui:repeat value="#{executeBean.xmlOutputs}" var="out">
-            <h:outputFormat value="#{labels['complexOutput']}" styleClass="outputHead">
-              <f:param value="#{out.id}" />
-            </h:outputFormat>
-            <br />
-            <dg:externalLink href="#{out.webAccessibleURL}" target="_blank" id="responseLinkXML" styleClass="output" />
-          </ui:repeat>
-        </h:panelGrid> <h:panelGrid columns="2">
-          <ui:repeat value="#{executeBean.binaryOutputs}" var="out">
-            <h:outputFormat value="#{labels['complexOutput']}" styleClass="outputHead">
-              <f:param value="#{out.id}" />
-            </h:outputFormat>
-            <br />
-            <dg:externalLink href="#{out.webAccessibleURL}" target="_blank" id="responseLinkBINARY" styleClass="output" />
-          </ui:repeat>
-        </h:panelGrid></fieldset>
+        /></legend> <h:form id="reqForm">
+          <h:panelGrid columns="2" rendered="#{!empty executeBean.literalOutputs}">
+
+            <ui:repeat value="#{executeBean.literalOutputs}" var="out">
+              <h:outputFormat value="#{labels['literalOutput']}" styleClass="outputHead">
+                <f:param value="#{out.id}" />
+              </h:outputFormat>
+              <br />
+              <h:outputFormat value="#{labels['literalOutput_Value']}" styleClass="output">
+                <f:param value="#{out.value}" />
+                <f:param value="#{out.uom}" />
+              </h:outputFormat>
+              <br />
+              <h:outputFormat value="#{labels['literalOutput_Datatype']}" styleClass="output">
+                <f:param value="#{out.dataType}" />
+              </h:outputFormat>
+              <br />
+              <h:commandButton value="#{labels.takeOver}"
+                onclick="handleLiteralOutput('#{out.value}', '#{out.uom}', '#{out.dataType}');return false;"
+              />
+            </ui:repeat>
+          </h:panelGrid>
+
+          <h:panelGrid columns="2" rendered="#{!empty executeBean.bboxOutputs}">
+            <ui:repeat value="#{executeBean.bboxOutputs}" var="out">
+              <h:outputFormat value="#{labels['bboxOutput']}" styleClass="outputHead">
+                <f:param value="#{out.id}" />
+              </h:outputFormat>
+              <br />
+              <h:outputFormat value="#{labels['bboxOutput_coords']}" styleClass="output">
+                <f:param value="#{out.lower[0]}" />
+                <f:param value="#{out.lower[1]}" />
+                <f:param value="#{out.upper[0]}" />
+                <f:param value="#{out.upper[1]}" />
+              </h:outputFormat>
+              <br />
+              <h:outputFormat value="#{labels['bboxOutput_crs']}" styleClass="output">
+                <f:param value="#{out.crs}" />
+              </h:outputFormat>
+              <br />
+              <h:commandButton value="#{labels.takeOver}"
+                onclick="handleBBoxOutput('#{out.lower[0]}', '#{out.lower[1]}', '#{out.upper[0]}', '#{out.upper[1]}', '#{out.crs}');return false;"
+              />
+            </ui:repeat>
+          </h:panelGrid>
+
+          <h:panelGrid columns="2">
+            <ui:repeat value="#{executeBean.xmlOutputs}" var="out">
+              <h:outputFormat value="#{labels['complexOutput']}" styleClass="outputHead">
+                <f:param value="#{out.id}" />
+              </h:outputFormat>
+              <br />
+              <dg:externalLink href="#{out.webAccessibleURL}" target="_blank" id="responseLinkXML" styleClass="output" />
+              <br />
+              <h:commandButton value="#{labels.takeOver}"
+                onclick="handleXMLOutput('#{out.webAccessibleURL}');return false;"
+              />
+            </ui:repeat>
+          </h:panelGrid>
+
+          <h:panelGrid columns="2">
+            <ui:repeat value="#{executeBean.binaryOutputs}" var="out">
+              <h:outputFormat value="#{labels['complexOutput']}" styleClass="outputHead">
+                <f:param value="#{out.id}" />
+              </h:outputFormat>
+              <br />
+              <dg:externalLink href="#{out.webAccessibleURL}" target="_blank" id="responseLinkBINARY"
+                styleClass="output"
+              />
+              <br />
+              <h:commandButton value="#{labels.takeOver}"
+                onclick="handleBinaryOutput('#{out.webAccessibleURL}');return false;"
+              />
+            </ui:repeat>
+          </h:panelGrid>
+
+        </h:form></fieldset>
       </h:panelGroup>
     </h:panelGroup></div>
 
