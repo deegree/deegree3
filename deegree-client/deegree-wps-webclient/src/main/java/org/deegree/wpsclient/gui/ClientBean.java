@@ -49,7 +49,7 @@ import java.util.Map;
 import javax.annotation.PostConstruct;
 import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
-import javax.faces.bean.SessionScoped;
+import javax.faces.bean.ViewScoped;
 import javax.faces.context.FacesContext;
 import javax.faces.event.AbortProcessingException;
 import javax.faces.event.AjaxBehaviorEvent;
@@ -71,7 +71,7 @@ import org.deegree.protocol.wps.client.process.Process;
  * @version $Revision: $, $Date: $
  */
 @ManagedBean
-@SessionScoped
+@ViewScoped
 public class ClientBean implements Serializable {
 
     private static final long serialVersionUID = -1434783003208250369L;
