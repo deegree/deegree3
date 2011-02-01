@@ -88,4 +88,8 @@ public class FIDMapping {
     public PrimitiveType getColumnType() {
         return pt;
     }
+
+    public IDGenerator getIdGenerator() {
+        return generator;
+    }
 }
