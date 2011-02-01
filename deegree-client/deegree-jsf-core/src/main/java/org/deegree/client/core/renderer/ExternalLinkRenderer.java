@@ -43,6 +43,8 @@ import javax.faces.context.ResponseWriter;
 import javax.faces.render.FacesRenderer;
 import javax.faces.render.Renderer;
 
+import org.deegree.client.core.component.HtmlExternalLink;
+
 /**
  * <code>ExternalLinkRenderer</code> renders a link ignoring the JSF navigation
  * 
@@ -59,33 +61,40 @@ public class ExternalLinkRenderer extends Renderer {
     public void encodeBegin( FacesContext context, UIComponent component )
                             throws IOException {
         ResponseWriter responseWriter = context.getResponseWriter();
-        String clientId = component.getClientId();
+        if ( component instanceof HtmlExternalLink ) {
+            HtmlExternalLink command = (HtmlExternalLink) component;
+            String clientId = command.getClientId();
 
-        responseWriter.startElement( "a", null );
-        responseWriter.writeAttribute( "id", clientId, "id" );
-        responseWriter.writeAttribute( "name", clientId, "clientId" );
-        Object href = component.getAttributes().get( "href" );
-        responseWriter.writeAttribute( "href", href, null );
+            responseWriter.startElement( "a", null );
+            responseWriter.writeAttribute( "id", clientId, "id" );
+            responseWriter.writeAttribute( "name", clientId, "clientId" );
+            String href = command.getHref();
+            responseWriter.writeAttribute( "href", href, null );
 
-        String styleClass = (String) component.getAttributes().get( "styleClass" );
-        if ( styleClass != null ) {
-            responseWriter.writeAttribute( "class", styleClass, "styleClass" );
+            String styleClass = command.getStyleClass();
+            if ( styleClass != null ) {
+                responseWriter.writeAttribute( "class", styleClass, "styleClass" );
+            }
+
+            String style = command.getStyle();
+            if ( style != null ) {
+                responseWriter.writeAttribute( "style", style, "style" );
+            }
+            String target = command.getTarget();
+            if ( target != null ) {
+                responseWriter.writeAttribute( "target", target, "target" );
+            }
+
+            String onclick = command.getOnclick();
+            if ( onclick != null ) {
+                responseWriter.writeAttribute( "onClick", onclick, "onclick" );
+            }
+
+            Object title = command.getTitle();
+            responseWriter.writeText( title != null ? title : ( href != null ? href : "" ), null );
+
+            responseWriter.endElement( "a" );
+            responseWriter.flush();
         }
-
-        String style = (String) component.getAttributes().get( "style" );
-        if ( style != null ) {
-            responseWriter.writeAttribute( "style", style, "style" );
-        }
-        String target = (String) component.getAttributes().get( "target" );
-        if ( target != null ) {
-            responseWriter.writeAttribute( "target", target, "target" );
-        }
-
-        Object title = (String) component.getAttributes().get( "title" );
-        responseWriter.writeText( title != null ? title : ( href != null ? href : "" ), null );
-
-        responseWriter.endElement( "a" );
-        responseWriter.flush();
     }
-
 }

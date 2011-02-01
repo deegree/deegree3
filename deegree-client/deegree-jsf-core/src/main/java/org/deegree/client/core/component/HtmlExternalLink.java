@@ -53,4 +53,55 @@ public class HtmlExternalLink extends UICommand {
         setRendererType( "org.deegree.ExternalLink" );
     }
 
+    private static enum AdditionalPropertyKeys {
+        href, onclick, style, styleClass, title, target
+    }
+
+    public void setHref( String href ) {
+        getStateHelper().put( AdditionalPropertyKeys.href, href );
+    }
+
+    public String getHref() {
+        return (String) getStateHelper().eval( AdditionalPropertyKeys.href, "href" );
+    }
+
+    public void setTarget( String target ) {
+        getStateHelper().put( AdditionalPropertyKeys.target, target );
+    }
+
+    public String getTarget() {
+        return (String) getStateHelper().eval( AdditionalPropertyKeys.target, "target" );
+    }
+
+    public void setTitle( String title ) {
+        getStateHelper().put( AdditionalPropertyKeys.title, title );
+    }
+
+    public String getTitle() {
+        return (String) getStateHelper().eval( AdditionalPropertyKeys.title, "title" );
+    }
+
+    public void setStyleClass( String styleClass ) {
+        getStateHelper().put( AdditionalPropertyKeys.styleClass, styleClass );
+    }
+
+    public String getStyleClass() {
+        return (String) getStateHelper().eval( AdditionalPropertyKeys.styleClass, "styleClass" );
+    }
+
+    public void setStyle( String style ) {
+        getStateHelper().put( AdditionalPropertyKeys.style, style );
+    }
+
+    public String getStyle() {
+        return (String) getStateHelper().eval( AdditionalPropertyKeys.style, "style" );
+    }
+
+    public void setOnclick( String onclick ) {
+        getStateHelper().put( AdditionalPropertyKeys.onclick, onclick );
+    }
+
+    public String getOnclick() {
+        return (String) getStateHelper().eval( AdditionalPropertyKeys.onclick, "onlclick" );
+    }
 }
