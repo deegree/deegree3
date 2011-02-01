@@ -90,7 +90,7 @@ public class MappedApplicationSchema extends ApplicationSchema {
      * @param prefixToNs
      *            preferred namespace prefixes to use, key: prefix, value: namespace, may be <code>null</code>
      * @param xsModel
-     *            the underlying XML schema, may be <code>null</code>
+     *            the underlying GML schema infoset, may be <code>null</code>
      * @param ftMappings
      *            relational mapping information for the feature types, can be <code>null</code> (for BLOB-only
      *            mappings)

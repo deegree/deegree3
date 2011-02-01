@@ -41,7 +41,7 @@ import org.deegree.filter.expression.PropertyName;
 import org.deegree.filter.sql.MappingExpression;
 
 /**
- * The <code></code> class TODO add class documentation here.
+ * {@link Mapping} of a primitive-valued particle.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
@@ -52,6 +52,13 @@ public class PrimitiveMapping extends Mapping {
 
     private PrimitiveType pt;
 
+    /**
+     * 
+     * @param path
+     * @param mapping
+     * @param pt
+     * @param joinedTable
+     */
     public PrimitiveMapping( PropertyName path, MappingExpression mapping, PrimitiveType pt, JoinChain joinedTable ) {
         super( path, mapping, joinedTable );
         this.pt = pt;
