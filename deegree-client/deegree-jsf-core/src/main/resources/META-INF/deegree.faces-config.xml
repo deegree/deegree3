@@ -5,6 +5,11 @@
     version="2.0">
     
     <component>
+        <component-type>HtmlFieldset</component-type>
+        <component-class>org.deegree.client.core.component.HtmlFieldset</component-class>
+    </component>
+    
+    <component>
         <component-type>HtmlInputFile</component-type>
         <component-class>org.deegree.client.core.component.HtmlInputFile</component-class>
     </component>

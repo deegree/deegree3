@@ -4,6 +4,12 @@
   version="2.0">
   <namespace>http://deegree.org/jsf</namespace>
   <tag>
+    <tag-name>fieldset</tag-name>
+    <component>
+      <component-type>HtmlFieldset</component-type>
+    </component>
+  </tag>
+  <tag>
     <tag-name>inputFile</tag-name>
     <component>
       <component-type>HtmlInputFile</component-type>
