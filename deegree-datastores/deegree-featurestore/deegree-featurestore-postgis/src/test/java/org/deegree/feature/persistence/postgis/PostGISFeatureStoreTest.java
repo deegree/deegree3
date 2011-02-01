@@ -35,12 +35,18 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.feature.persistence.postgis;
 
+import static org.deegree.gml.GMLVersion.GML_32;
+
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Collections;
 
 import javax.xml.namespace.QName;
 import javax.xml.stream.FactoryConfigurationError;
@@ -50,6 +56,7 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
 
+import org.apache.commons.io.IOUtils;
 import org.deegree.CoreTstProperties;
 import org.deegree.commons.jdbc.ConnectionManager;
 import org.deegree.commons.utils.JDBCUtils;
@@ -83,9 +90,12 @@ import org.deegree.gml.GMLOutputFactory;
 import org.deegree.gml.GMLStreamReader;
 import org.deegree.gml.GMLStreamWriter;
 import org.deegree.gml.GMLVersion;
+import org.deegree.gml.feature.schema.ApplicationSchemaXSDDecoder;
 import org.deegree.protocol.wfs.getfeature.TypeName;
 import org.junit.Assert;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The <code></code> class TODO add class documentation here.
@@ -97,7 +107,39 @@ import org.junit.Test;
  */
 public class PostGISFeatureStoreTest {
 
+    private static Logger LOG = LoggerFactory.getLogger( PostGISFeatureStoreTest.class );
+
     private static final boolean enable = false;
+
+    @Test
+    public void testMappingInspireAU()
+                            throws ClassCastException, ClassNotFoundException, InstantiationException,
+                            IllegalAccessException, IOException, XMLStreamException, FactoryConfigurationError,
+                            FeatureStoreException {
+
+        ApplicationSchema appSchema = getInspireSchemaAU();
+        if ( appSchema == null ) {
+            return;
+        }
+
+        AppSchemaMapper mapper = new AppSchemaMapper( appSchema );
+        MappedApplicationSchema mappedSchema = new AppSchemaMapper( appSchema ).getMappedSchema();
+
+        PostGISFeatureStoreConfigWriter configWriter = new PostGISFeatureStoreConfigWriter( mappedSchema );
+        File file = File.createTempFile( "inspire-au", ".xml" );
+        FileOutputStream fos = new FileOutputStream( file );
+        XMLStreamWriter xmlWriter = XMLOutputFactory.newInstance().createXMLStreamWriter( fos );
+        xmlWriter = new IndentingXMLStreamWriter( xmlWriter );
+        configWriter.writeConfig( xmlWriter, "EPSG:4258", null, "testconn", Collections.singletonList( "bla.xsd" ) );
+        xmlWriter.close();
+        IOUtils.closeQuietly( fos );
+        System.out.println( "Wrote to file " + file );
+
+//        String[] createStmts = new PostGISFeatureStoreProvider().getDDL( file.toURI().toURL() );
+//        for ( String stmt : createStmts ) {
+//            System.out.println( stmt );
+//        }
+    }
 
     @Test
     public void testInstantiation()
@@ -195,9 +237,9 @@ public class PostGISFeatureStoreTest {
             StreamFeatureCollection fc = gmlReader.readStreamFeatureCollection();
             FeatureStoreTransaction ta = fs.acquireTransaction();
             Feature f = null;
-//            while ((f = fc.read()) != null) { 
-//                ta.performInsert( f, IDGenMode.GENERATE_NEW );
-//            }
+            // while ((f = fc.read()) != null) {
+            // ta.performInsert( f, IDGenMode.GENERATE_NEW );
+            // }
             ta.commit();
         }
     }
@@ -226,12 +268,12 @@ public class PostGISFeatureStoreTest {
         // FeatureResultSet rs = fs.query( query );
         // FeatureCollection fc = rs.toCollection();
         // print( fc );
-        //            
+        //
         // } finally {
         // // ConnectionManager.destroy();
         // }
     }
-    
+
     @Test
     public void testQueryCountry()
                             throws FeatureStoreException, FilterEvaluationException, XMLStreamException,
@@ -287,8 +329,7 @@ public class PostGISFeatureStoreTest {
             try {
                 FeatureCollection fc = rs.toCollection();
                 XMLStreamWriter xmlStream = new IndentingXMLStreamWriter(
-                                                                          XMLOutputFactory.newInstance().createXMLStreamWriter(
-                                                                                                                                System.out ) );
+                                                                          XMLOutputFactory.newInstance().createXMLStreamWriter( System.out ) );
                 GMLStreamWriter gmlStream = GMLOutputFactory.createGMLStreamWriter( GMLVersion.GML_31, xmlStream );
                 gmlStream.write( fc );
                 gmlStream.close();
@@ -318,8 +359,7 @@ public class PostGISFeatureStoreTest {
             try {
                 FeatureCollection fc = rs.toCollection();
                 XMLStreamWriter xmlStream = new IndentingXMLStreamWriter(
-                                                                          XMLOutputFactory.newInstance().createXMLStreamWriter(
-                                                                                                                                System.out ) );
+                                                                          XMLOutputFactory.newInstance().createXMLStreamWriter( System.out ) );
                 GMLStreamWriter gmlStream = GMLOutputFactory.createGMLStreamWriter( GMLVersion.GML_31, xmlStream );
                 gmlStream.setRemoteXLinkTemplate( "http://bla?fid={}" );
                 gmlStream.setXLinkDepth( -1 );
@@ -377,5 +417,19 @@ public class PostGISFeatureStoreTest {
                                                                                          url.openStream() );
         xmlStream.nextTag();
         return Filter110XMLDecoder.parse( xmlStream );
+    }
+
+    private ApplicationSchema getInspireSchemaAU()
+                            throws MalformedURLException, ClassCastException, UnsupportedEncodingException,
+                            ClassNotFoundException, InstantiationException, IllegalAccessException {
+
+        String inspireDir = TestSettings.getProperty( "inspire_annex1_schemas_root" );
+        if ( inspireDir == null ) {
+            return null;
+        }
+        File addressesFile = new File( inspireDir, "AdministrativeUnits.xsd" );
+        URL url = addressesFile.toURI().toURL();
+        ApplicationSchemaXSDDecoder decoder = new ApplicationSchemaXSDDecoder( GML_32, null, addressesFile );
+        return decoder.extractFeatureTypeSchema();
     }
 }

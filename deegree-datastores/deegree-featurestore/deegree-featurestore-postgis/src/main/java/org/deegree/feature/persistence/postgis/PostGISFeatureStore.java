@@ -123,6 +123,8 @@ import org.slf4j.LoggerFactory;
 /**
  * {@link FeatureStore} implementation that uses a PostGIS/PostgreSQL database as backend.
  * 
+ * TODO always ensure that autocommit is false and fetch size is set for (possibly) large SELECTS
+ * 
  * @see FeatureStore
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
