@@ -184,8 +184,7 @@ public class ConfigManager {
     }
 
     public static ConfigManager getApplicationInstance() {
-        return (ConfigManager) FacesContext.getCurrentInstance().getExternalContext().getApplicationMap().get(
-                                                                                                               "configManager" );
+        return (ConfigManager) FacesContext.getCurrentInstance().getExternalContext().getApplicationMap().get( "configManager" );
     }
 
     public XMLConfig getServiceMainConfig() {
@@ -300,7 +299,12 @@ public class ConfigManager {
             if ( evt.getSource() instanceof HtmlCommandButton ) {
                 String ws = ( (HtmlCommandButton) evt.getSource() ).getLabel();
 
+                // deal with missing version information (e.g. when running in Eclipse)
                 String version = DeegreeModuleInfo.getRegisteredModules().get( 0 ).getVersion().getVersionNumber();
+                if ( !version.startsWith( "3" ) ) {
+                    LOG.warn( "No valid version information for module available. Defaulting to 3.1" );
+                    version = "3.1";
+                }
                 in = get( STREAM, "http://download.deegree.org/deegree3/workspaces/workspaces-" + version, null );
 
                 for ( String s : readLines( in ) ) {

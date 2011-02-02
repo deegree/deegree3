@@ -281,7 +281,7 @@ public class GetRecordsHandler {
                                                          getRec.getStartPosition() );
 
                 try {
-                    countRows = rec.countMetadata( query );
+                    countRows = rec.getRecordCount( query );
                     returnedRecords = 0;
                     nextRecord = 1;
                     if ( !isResultTypeHits ) {
