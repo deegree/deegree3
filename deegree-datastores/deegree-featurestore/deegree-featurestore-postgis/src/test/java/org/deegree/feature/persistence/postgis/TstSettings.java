@@ -44,7 +44,7 @@ import org.deegree.commons.config.DeegreeWorkspace;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class TestSettings {
+public class TstSettings {
 
     private static Logger LOG = LoggerFactory.getLogger( CoreTstProperties.class );
 

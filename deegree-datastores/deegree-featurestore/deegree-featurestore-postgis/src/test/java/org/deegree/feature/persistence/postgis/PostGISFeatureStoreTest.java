@@ -423,7 +423,7 @@ public class PostGISFeatureStoreTest {
                             throws MalformedURLException, ClassCastException, UnsupportedEncodingException,
                             ClassNotFoundException, InstantiationException, IllegalAccessException {
 
-        String inspireDir = TestSettings.getProperty( "inspire_annex1_schemas_root" );
+        String inspireDir = TstSettings.getProperty( "inspire_annex1_schemas_root" );
         if ( inspireDir == null ) {
             return null;
         }
