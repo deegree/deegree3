@@ -57,13 +57,13 @@ import org.slf4j.LoggerFactory;
  * 
  * @version $Revision$, $Date$
  */
-public class HierarchieLevelInspector implements RecordInspector {
+public class HierarchyLevelInspector implements RecordInspector {
 
-    private static Logger LOG = LoggerFactory.getLogger( HierarchieLevelInspector.class );
+    private static Logger LOG = LoggerFactory.getLogger( HierarchyLevelInspector.class );
 
     private final XMLAdapter a;
 
-    public HierarchieLevelInspector() {
+    public HierarchyLevelInspector() {
         this.a = new XMLAdapter();
     }
 

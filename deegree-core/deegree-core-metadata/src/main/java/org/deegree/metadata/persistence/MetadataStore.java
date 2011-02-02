@@ -37,15 +37,12 @@ package org.deegree.metadata.persistence;
 
 import java.util.List;
 
+import org.deegree.metadata.MetadataRecord;
 import org.deegree.protocol.csw.MetadataStoreException;
 
 /**
- * Base interface of the {@link MetadataStore} persistence layer, provides access to stored {@link MetadataStore}
- * instances and their schemas.
- * <p>
- * NOTE: One {@link MetadataStore} instance corresponds to one metadata format (e.g. DublinCore, MD_Metadata (ISO
- * TC211), SV_Service (ISO TC211)).
- * </p>
+ * Base interface of the {@link MetadataRecord} persistence layer, provides access to stored {@link MetadataRecord}
+ * instances.
  * 
  * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
@@ -70,49 +67,48 @@ public interface MetadataStore {
     public void destroy();
 
     /**
-     * Returns the JDBC connection id.
-     * 
-     * @return the JDBC connection id, never <code>null</code>
-     */
-    public String getConnId();
-
-    public void setupMetametadata()
-                            throws MetadataStoreException;
-
-    /**
-     * 
-     * Exports the XML for the requested records.
+     * Performs the given {@link MetadataQuery} and provides access to the {@link MetadataRecord}s that match it.
      * 
      * @param query
-     *            {@link MetadataQuery}
+     *            query that selects the records, must not be <code>null</code>
+     * @return result set for accessing the matching records, never <code>null</code>
      * @throws MetadataStoreException
      */
     public MetadataResultSet getRecords( MetadataQuery query )
                             throws MetadataStoreException;
 
     /**
-     * Exports the records by the requested identifier.
+     * Returns the number of {@link MetadataRecord}s that match the given {@link MetadataQuery}.
+     * 
+     * @param query
+     *            query that selects the records, must not be <code>null</code>
+     * @return number of matching records
+     * @throws MetadataStoreException
+     */
+    public int getRecordCount( MetadataQuery query )
+                            throws MetadataStoreException;
+
+    /**
+     * Looks up the given {@link MetadataRecord} identifiers and provides access to matching {@link MetadataRecord}s.
      * 
      * @param idList
-     *            list of the requested identifiers
+     *            list of the requested record identifiers, can be empty, but must not be <code>null</code>
      * @throws MetadataStoreException
      */
     public MetadataResultSet getRecordById( List<String> idList )
                             throws MetadataStoreException;
 
     /**
-     * Acquires transactional access to the metadata store.
+     * Acquires transactional access to this {@link MetadataStore}.
      * 
-     * @return transaction object that allows to perform transactions operations on the metadata store, never
-     *         <code>null</code>
+     * @return transaction object that allows to perform transaction operations on this store, never <code>null</code>
      * @throws MetadataStoreException
-     *             if the transactional access could not be acquired or is not implemented for this
-     *             {@link MetadataStore}
+     *             if the transactional access could not be acquired or is not available for this implementation
      */
     public MetadataStoreTransaction acquireTransaction()
                             throws MetadataStoreException;
 
-    public int countMetadata( MetadataQuery query )
+    // TODO: what does this method do?
+    public void setupMetametadata()
                             throws MetadataStoreException;
-
 }

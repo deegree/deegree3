@@ -67,23 +67,24 @@ import org.deegree.metadata.persistence.MetadataStore;
 import org.deegree.metadata.persistence.MetadataStoreTransaction;
 import org.deegree.metadata.persistence.iso.parsing.inspectation.CoupledDataInspector;
 import org.deegree.metadata.persistence.iso.parsing.inspectation.FIInspector;
-import org.deegree.metadata.persistence.iso.parsing.inspectation.HierarchieLevelInspector;
+import org.deegree.metadata.persistence.iso.parsing.inspectation.HierarchyLevelInspector;
 import org.deegree.metadata.persistence.iso.parsing.inspectation.InspireComplianceInspector;
 import org.deegree.metadata.persistence.iso.parsing.inspectation.MetadataSchemaValidationInspector;
 import org.deegree.metadata.persistence.iso.parsing.inspectation.RecordInspector;
 import org.deegree.metadata.persistence.iso19115.jaxb.CoupledResourceInspector;
 import org.deegree.metadata.persistence.iso19115.jaxb.FileIdentifierInspector;
 import org.deegree.metadata.persistence.iso19115.jaxb.ISOMetadataStoreConfig;
+import org.deegree.metadata.persistence.iso19115.jaxb.ISOMetadataStoreConfig.Inspectors;
 import org.deegree.metadata.persistence.iso19115.jaxb.InspireInspector;
 import org.deegree.metadata.persistence.iso19115.jaxb.SchemaValidator;
-import org.deegree.metadata.persistence.iso19115.jaxb.ISOMetadataStoreConfig.Inspectors;
 import org.deegree.metadata.publication.InsertTransaction;
-import org.deegree.protocol.csw.MetadataStoreException;
 import org.deegree.protocol.csw.CSWConstants.ResultType;
+import org.deegree.protocol.csw.MetadataStoreException;
 import org.slf4j.Logger;
 
 /**
- * {@link MetadataStore} implementation of Dublin Core and ISO Profile.
+ * {@link MetadataStore} implementation for accessing ISO 19115 records stored in spatial SQL databases (currently only
+ * supports PostgreSQL / PostGIS).
  * 
  * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
  * @author last edited by: $Author$
@@ -141,7 +142,11 @@ public class ISOMetadataStore implements MetadataStore {
 
     }
 
-    @Override
+    /**
+     * Returns the JDBC connection id.
+     * 
+     * @return the JDBC connection id, never <code>null</code>
+     */
     public String getConnId() {
         return connectionId;
     }
@@ -281,7 +286,7 @@ public class ISOMetadataStore implements MetadataStore {
      * 
      * @throws MetadataStoreException
      */
-    public int countMetadata( MetadataQuery query )
+    public int getRecordCount( MetadataQuery query )
                             throws MetadataStoreException {
         String resultTypeName = "hits";
         LOG.info( Messages.getMessage( "INFO_EXEC", "do " + resultTypeName + " on getRecords" ) );
@@ -426,12 +431,11 @@ public class ISOMetadataStore implements MetadataStore {
 
             }
             // hard coded because there is no configuration planned
-            ri.add( new HierarchieLevelInspector() );
+            ri.add( new HierarchyLevelInspector() );
             ta = new ISOMetadataStoreTransaction( conn, ri, config.getAnyText(), useLegacyPredicates );
         } catch ( SQLException e ) {
             throw new MetadataStoreException( e.getMessage() );
         }
         return ta;
     }
-
 }
