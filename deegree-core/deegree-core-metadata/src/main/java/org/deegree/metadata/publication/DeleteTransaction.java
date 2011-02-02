@@ -41,7 +41,7 @@ import org.deegree.filter.Filter;
 import org.deegree.protocol.csw.CSWConstants.TransactionType;
 
 /**
- * Represents a CSW <code>Delete</code> action (part of a Transaction operation request).
+ * Represents a CSW <code>Delete</code> action (part of a Transaction request).
  * 
  * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
  * @author last edited by: $Author$
@@ -91,5 +91,4 @@ public class DeleteTransaction extends TransactionOperation {
     public Filter getConstraint() {
         return constraint;
     }
-
 }

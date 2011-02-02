@@ -9,6 +9,7 @@ import java.util.List;
 import javax.xml.stream.XMLStreamException;
 
 import org.apache.axiom.om.OMElement;
+import org.deegree.commons.utils.JDBCUtils;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.OperatorFilter;
 import org.deegree.filter.sql.postgis.PostGISWhereBuilder;
@@ -28,7 +29,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * {@link MetadataStoreException} implementation for the {@link ISOMetadataStore}.
+ * {@link MetadataStoreTransaction} implementation for the {@link ISOMetadataStore}.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
@@ -54,7 +55,6 @@ public class ISOMetadataStoreTransaction implements MetadataStoreTransaction {
         this.inspectors = inspectors;
         this.useLegacyPredicates = useLegacyPredicates;
         conn.setAutoCommit( false );
-
     }
 
     @Override
@@ -63,26 +63,13 @@ public class ISOMetadataStoreTransaction implements MetadataStoreTransaction {
         LOG.debug( Messages.getMessage( "INFO_TA_COMMIT" ) );
         try {
             conn.commit();
-
         } catch ( SQLException e ) {
             String msg = Messages.getMessage( "ERROR_TA_COMMIT", e.getMessage() );
             LOG.debug( msg );
             throw new MetadataStoreException( msg );
         } finally {
-            tearDown();
+            JDBCUtils.close( conn );
         }
-    }
-
-    private void tearDown()
-                            throws MetadataStoreException {
-        try {
-            conn.close();
-        } catch ( SQLException e ) {
-            String msg = Messages.getMessage( "ERROR_TA_COMMIT", e.getMessage() );
-            LOG.debug( msg );
-            throw new MetadataStoreException( msg );
-        }
-
     }
 
     @Override
@@ -198,13 +185,12 @@ public class ISOMetadataStoreTransaction implements MetadataStoreTransaction {
         LOG.debug( Messages.getMessage( "INFO_TA_ROLLBACK" ) );
         try {
             conn.rollback();
-
         } catch ( SQLException e ) {
             String msg = Messages.getMessage( "ERROR_TA_ROLLBACK", e.getMessage() );
             LOG.debug( msg );
             throw new MetadataStoreException( msg );
         } finally {
-            tearDown();
+            JDBCUtils.close( conn );
         }
     }
 }

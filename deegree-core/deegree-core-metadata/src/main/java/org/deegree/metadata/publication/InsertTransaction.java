@@ -43,7 +43,7 @@ import org.apache.axiom.om.OMElement;
 import org.deegree.protocol.csw.CSWConstants.TransactionType;
 
 /**
- * Represents a CSW <code>Insert</code> action (part of a Transaction operation request).
+ * Represents a CSW <code>Insert</code> action (part of a Transaction request).
  * 
  * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
  * @author last edited by: $Author$
@@ -91,5 +91,4 @@ public class InsertTransaction extends TransactionOperation {
     public QName getTypeName() {
         return typeName;
     }
-
 }

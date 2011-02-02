@@ -44,7 +44,7 @@ import org.deegree.filter.Filter;
 import org.deegree.protocol.csw.CSWConstants.TransactionType;
 
 /**
- * Represents a CSW <code>Update</code> action (part of a Transaction operation request).
+ * Represents a CSW <code>Update</code> action (part of a Transaction request).
  * 
  * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
  * @author last edited by: $Author$
@@ -86,7 +86,6 @@ public class UpdateTransaction extends TransactionOperation {
      */
     @Override
     public TransactionType getType() {
-
         return TransactionType.UPDATE;
     }
 
@@ -117,11 +116,4 @@ public class UpdateTransaction extends TransactionOperation {
     public QName getTypeName() {
         return typeName;
     }
-
-    // @Override
-    // public List<OMElement> getElements() {
-    // // TODO Auto-generated method stub
-    // return null;
-    // }
-
 }

@@ -38,7 +38,7 @@ package org.deegree.metadata.publication;
 import org.deegree.protocol.csw.CSWConstants.TransactionType;
 
 /**
- * Abstract base class for the actions that can occur inside a Transaction operation request.
+ * Abstract base class for the operations that can occur inside a CSW Transaction.
  * 
  * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
  * @author last edited by: $Author$
@@ -73,7 +73,4 @@ public abstract class TransactionOperation {
     public String getHandle() {
         return handle;
     }
-
-    // public abstract List<OMElement> getElements();
-
 }
