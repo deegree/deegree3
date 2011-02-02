@@ -42,7 +42,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
 import javax.el.ExpressionFactory;
@@ -58,6 +57,7 @@ import javax.faces.component.behavior.AjaxBehavior;
 import javax.faces.component.html.HtmlCommandButton;
 import javax.faces.component.html.HtmlForm;
 import javax.faces.component.html.HtmlInputText;
+import javax.faces.component.html.HtmlInputTextarea;
 import javax.faces.component.html.HtmlMessage;
 import javax.faces.component.html.HtmlOutputLabel;
 import javax.faces.component.html.HtmlOutputText;
@@ -101,6 +101,8 @@ public class FormBean {
 
     private static final Logger LOG = getLogger( FormBean.class );
 
+    private static final String INPUT_CLASS = "input";
+
     private HtmlForm executeForm;
 
     /**
@@ -119,7 +121,6 @@ public class FormBean {
                 executeForm = new HtmlForm();
             }
             executeForm.getChildren().clear();
-
             try {
                 addInputParams( fc, executeForm, process.getInputTypes() );
                 setOutputParams( fc, executeForm, process.getOutputTypes() );
@@ -220,7 +221,7 @@ public class FormBean {
         HtmlFieldset fieldset = new HtmlFieldset();
         HtmlInputFile upload = new HtmlInputFile();
         upload.setId( input.getId().toString() );
-        upload.setStyleClass( "inputField" );
+        upload.setStyleClass( INPUT_CLASS + " upload" );
         upload.setTarget( "upload" );
         String valueEL = "#{executeBean.binaryInputs['" + input.getId().toString() + "']}";
         ValueExpression valueVE = fc.getApplication().getExpressionFactory().createValueExpression( fc.getELContext(),
@@ -244,7 +245,7 @@ public class FormBean {
 
         HtmlSelectFormat format = new HtmlSelectFormat();
         format.setId( input.getId().toString() + "_format" );
-        format.setStyleClass( "selectFormatField" );
+        format.setStyleClass( INPUT_CLASS + " selectFormat" );
         format.setDefaultFormat( input.getDefaultFormat() );
         format.setConverter( new ComplexFormatConverter() );
 
@@ -268,21 +269,22 @@ public class FormBean {
     }
 
     private HtmlFieldset getXMLInput( FacesContext fc, ComplexInputType input, int minOccurs, int maxOccurs ) {
+
         HtmlFieldset fieldset = new HtmlFieldset();
         String id = input.getId().toString();
         fieldset.setId( id );
-        String enableUpload = fc.getExternalContext().getInitParameter( "org.deegree.ENABLE_XML_FILEUPLOAD" );
+
         // FileUpload
+        String enableUpload = fc.getExternalContext().getInitParameter( "org.deegree.ENABLE_XML_FILEUPLOAD" );
         if ( Boolean.parseBoolean( enableUpload ) ) {
             HtmlInputFile upload = new HtmlInputFile();
             upload.setId( id + "_asFile" );
-            upload.setStyleClass( "inputField" );
+            upload.setStyleClass( INPUT_CLASS + " upload" );
             upload.setTarget( "upload" );
             String valueEL = "#{executeBean.xmlInputs['" + id + "']}";
             ValueExpression valueVE = fc.getApplication().getExpressionFactory().createValueExpression( fc.getELContext(),
                                                                                                         valueEL,
                                                                                                         Object.class );
-
             upload.setValueExpression( "value", valueVE );
             // upload.setRequired( minOccurs > 0 );
             // if ( minOccurs > 0 ) {
@@ -299,19 +301,21 @@ public class FormBean {
             fieldset.getChildren().add( upload );
         }
 
+        // enter a URL as reference
         String loadRef = fc.getExternalContext().getInitParameter( "org.deegree.LOAD_XML_REF" );
         if ( Boolean.parseBoolean( loadRef ) ) {
             HtmlPanelGrid refGrid = new HtmlPanelGrid();
             refGrid.setColumns( 1 );
-            // or enter a URL as reference
+
             HtmlInputText text = new HtmlInputText();
-            text.setId( id + "_asRef" );
-            text.setStyleClass( "inputFieldText" );
-            String valueTextEL = "#{executeBean.xmlRefInputs['" + id + "']}";
-            ValueExpression valueTextVE = fc.getApplication().getExpressionFactory().createValueExpression( fc.getELContext(),
-                                                                                                            valueTextEL,
-                                                                                                            Object.class );
-            text.setValueExpression( "value", valueTextVE );
+            text.setId( id + "asRef" );
+            text.setStyleClass( INPUT_CLASS + " text" );
+            ValueExpression ve = fc.getApplication().getExpressionFactory().createValueExpression( fc.getELContext(),
+                                                                                                   "#{executeBean.xmlRefInputs['"
+                                                                                                                           + id
+                                                                                                                           + "']}",
+                                                                                                   String.class );
+            text.setValueExpression( "value", ve );
             refGrid.getChildren().add( text );
 
             String source = fc.getExternalContext().getInitParameter( "org.deegree.XML_REF_SOURCE" );
@@ -335,14 +339,15 @@ public class FormBean {
                 HtmlCommandButton loadBt = new HtmlCommandButton();
                 String title = MessageUtils.getResourceText( "labels", "loadRefBt" );
                 loadBt.setValue( title );
-                loadBt.setOnclick( "loadReference('" + text.getClientId() + "', '" + sourceId + "'); return false;" );
+                loadBt.setStyleClass( INPUT_CLASS + " button" );
+                loadBt.setOnclick( "loadReference('" + text.getId() + "','" + sourceId + "'); return false;" );
                 refGrid.getChildren().add( loadBt );
             }
             fieldset.getChildren().add( refGrid );
         }
         HtmlSelectFormat format = new HtmlSelectFormat();
         format.setId( input.getId().toString() + "_format" );
-        format.setStyleClass( "selectFormatField" );
+        format.setStyleClass( INPUT_CLASS + " selectFormat" );
         format.setDefaultFormat( input.getDefaultFormat() );
         format.setConverter( new ComplexFormatConverter() );
 
@@ -368,7 +373,7 @@ public class FormBean {
     private HtmlFieldset getBBoxInput( FacesContext fc, BBoxInputType input, int minOccurs, int maxOccurs ) {
         HtmlFieldset fieldset = new HtmlFieldset();
         HtmlInputBBox bbox = new HtmlInputBBox();
-        bbox.setStyleClass( "bboxInput" );
+        bbox.setStyleClass( INPUT_CLASS + " bboxInput" );
         bbox.setId( input.getId().toString() );
         String valueEL = "#{executeBean.bboxInputs['" + input.getId().toString() + "']}";
         ValueExpression valueVE = fc.getApplication().getExpressionFactory().createValueExpression( fc.getELContext(),
@@ -395,7 +400,7 @@ public class FormBean {
         HtmlFieldset fieldset = new HtmlFieldset();
         HtmlLiteralInput literalInput = new HtmlLiteralInput();
         literalInput.setId( input.getId().toString() );
-        literalInput.setStyleClass( "inputField" );
+        literalInput.setStyleClass( INPUT_CLASS + " literal" );
         String valueEL = "#{executeBean.literalInputs['" + input.getId().toString() + "']}";
         ValueExpression valueVE = fc.getApplication().getExpressionFactory().createValueExpression( fc.getELContext(),
                                                                                                     valueEL,

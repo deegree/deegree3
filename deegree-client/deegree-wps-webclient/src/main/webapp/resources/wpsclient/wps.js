@@ -4,7 +4,7 @@ function loadReference(textFieldId, cbId) {
 		for ( var int = 0; int < cb.length; int++) {
 			if (cb[int].checked) {
 				// DO something!
-				var textF = document.getElementById(textFieldId);
+				var textF = document.getElementById("emptyForm:" + textFieldId);
 				textF.value = "Reference from " + cb[int].value;
 			}
 		}
