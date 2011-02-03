@@ -91,11 +91,13 @@ public class WorkspaceITMojo extends AbstractMojo {
             try {
                 String response = get( UTF8STRING, helper.createBaseURL() + "config/delete/iut", null, "deegree",
                                        "deegree" ).trim();
-                getLog().info( "Response after deleting iut was " + response );
+                getLog().info( "Response after initially deleting iut was: " + response );
+                response = get( UTF8STRING, helper.createBaseURL() + "config/restart", null, "deegree", "deegree" ).trim();
+                getLog().info( "Response after initial restart was: " + response );
                 response = post( UTF8STRING, url, file, null, "deegree", "deegree" ).trim();
-                getLog().info( "Response after uploading was " + response );
+                getLog().info( "Response after uploading was: " + response );
                 response = get( UTF8STRING, helper.createBaseURL() + "config/restart/iut", null, "deegree", "deegree" ).trim();
-                getLog().info( "Response after starting workspace was " + response );
+                getLog().info( "Response after starting workspace was: " + response );
             } catch ( IOException e ) {
                 e.printStackTrace();
             }
@@ -117,7 +119,7 @@ public class WorkspaceITMojo extends AbstractMojo {
                 }
                 String response = get( UTF8STRING, helper.createBaseURL() + "config/delete/iut", null, "deegree",
                                        "deegree" ).trim();
-                getLog().info( "Response after deleting iut was " + response );
+                getLog().info( "Response after finally deleting iut was: " + response );
             } catch ( IOException e ) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
