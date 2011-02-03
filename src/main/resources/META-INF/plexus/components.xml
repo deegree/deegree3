@@ -36,9 +36,9 @@
         org.apache.maven.artifact.handler.DefaultArtifactHandler
       </implementation>
       <configuration>
-        <extension>zip</extension>
+        <extension>deegree-workspace</extension>
         <type>deegree-workspace</type>
-        <packaging>zip</packaging>
+        <packaging>deegree-workspace</packaging>
       </configuration>
     </component>
 

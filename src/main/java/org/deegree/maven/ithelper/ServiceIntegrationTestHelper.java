@@ -92,11 +92,14 @@ public class ServiceIntegrationTestHelper {
         this.project = project;
     }
 
+    public String createBaseURL() {
+        Object port = project.getProperties().get( "portnumber" );
+        return "http://localhost:" + port + "/" + project.getArtifactId() + "/";
+    }
+
     public void testCapabilities( String service )
                             throws MojoFailureException {
-        Object port = project.getProperties().get( "portnumber" );
-        String address = "http://localhost:" + port + "/" + project.getArtifactId()
-                         + "/services?request=GetCapabilities&service=" + service;
+        String address = createBaseURL() + "services?request=GetCapabilities&service=" + service;
         try {
             log.info( "Reading capabilities from " + address );
             String input = IOUtils.toString( new URL( address ).openStream(), "UTF-8" );
@@ -132,9 +135,7 @@ public class ServiceIntegrationTestHelper {
         if ( !service.equals( "WMS" ) ) {
             return;
         }
-        Object port = project.getProperties().get( "portnumber" );
-        String address = "http://localhost:" + port + "/" + project.getArtifactId()
-                         + "/services?request=GetCapabilities&version=1.1.1&service=" + service;
+        String address = createBaseURL() + "services?request=GetCapabilities&version=1.1.1&service=" + service;
         String currentLayer = null;
         try {
             WMSClient111 client = new WMSClient111( new URL( address ), 360, 360 );
@@ -203,8 +204,7 @@ public class ServiceIntegrationTestHelper {
 
     public void testRequests()
                             throws MojoFailureException {
-        Object port = project.getProperties().get( "portnumber" );
-        String address = "http://localhost:" + port + "/" + project.getArtifactId() + "/services";
+        String address = createBaseURL() + "services";
 
         File reqDir = new File( project.getBasedir(), "src/test/requests" );
         log.info( "---- Searching main requests directory for requests." );
