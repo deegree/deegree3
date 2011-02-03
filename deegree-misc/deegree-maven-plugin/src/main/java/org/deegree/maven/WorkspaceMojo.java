@@ -102,7 +102,10 @@ public class WorkspaceMojo extends AbstractMojo {
 
             artifact.setFile( workspaceFile );
             artifact.setResolved( true );
-            project.addAttachedArtifact( artifact );
+            if ( project.getArtifact().getType() == null
+                 || !project.getArtifact().getType().equals( "deegree-workspace" ) ) {
+                project.addAttachedArtifact( artifact );
+            }
         } catch ( IOException e ) {
             log.debug( e );
             throw new MojoFailureException( "Could not create workspace zip artifact: " + e.getLocalizedMessage() );
