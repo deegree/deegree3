@@ -139,6 +139,11 @@ public class WebServicesConfiguration implements ResourceManager {
                             throws WorkspaceInitializationException {
         this.workspace = workspace;
 
+        // clear controller maps
+        serviceNameToController.clear();
+        serviceNSToController.clear();
+        requestNameToController.clear();
+
         LOG.info( "--------------------------------------------------------------------------------" );
         LOG.info( "Starting webservices." );
         LOG.info( "--------------------------------------------------------------------------------" );
