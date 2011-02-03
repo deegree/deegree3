@@ -90,11 +90,11 @@ public class WorkspaceITMojo extends AbstractMojo {
             File file = a.getFile();
             try {
                 String response = get( UTF8STRING, helper.createBaseURL() + "config/delete/iut", null, "deegree",
-                                       "deegree" );
+                                       "deegree" ).trim();
                 getLog().info( "Response after deleting iut was " + response );
-                response = post( UTF8STRING, url, file, null, "deegree", "deegree" );
+                response = post( UTF8STRING, url, file, null, "deegree", "deegree" ).trim();
                 getLog().info( "Response after uploading was " + response );
-                response = get( UTF8STRING, helper.createBaseURL() + "config/restart/iut", null, "deegree", "deegree" );
+                response = get( UTF8STRING, helper.createBaseURL() + "config/restart/iut", null, "deegree", "deegree" ).trim();
                 getLog().info( "Response after starting workspace was " + response );
             } catch ( IOException e ) {
                 e.printStackTrace();
@@ -116,7 +116,7 @@ public class WorkspaceITMojo extends AbstractMojo {
                     getLog().info( "All maps can be requested." );
                 }
                 String response = get( UTF8STRING, helper.createBaseURL() + "config/delete/iut", null, "deegree",
-                                       "deegree" );
+                                       "deegree" ).trim();
                 getLog().info( "Response after deleting iut was " + response );
             } catch ( IOException e ) {
                 // TODO Auto-generated catch block
