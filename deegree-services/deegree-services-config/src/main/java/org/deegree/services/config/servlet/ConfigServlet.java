@@ -35,6 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.services.config.servlet;
 
+import static org.deegree.services.config.actions.Delete.delete;
 import static org.deegree.services.config.actions.Download.download;
 import static org.deegree.services.config.actions.List.list;
 import static org.deegree.services.config.actions.Restart.restart;
@@ -85,6 +86,8 @@ public class ConfigServlet extends HttpServlet {
             data.append( "PUT /config/upload/wsname.zip         - upload workspace <wsname>\n" );
             data.append( "PUT /config/upload/path/file          - upload file into current workspace\n" );
             data.append( "PUT /config/upload/wsname/path/file   - upload file into workspace with name <wsname>\n" );
+            data.append( "DELETE /config/delete[/path]          - delete currently running workspace or file in workspace\n" );
+            data.append( "DELETE /config/delete/wsname[/path]   - delete workspace with name <wsname> or file in workspace\n" );
             IOUtils.write( data.toString(), resp.getOutputStream() );
             return;
         }
@@ -100,6 +103,16 @@ public class ConfigServlet extends HttpServlet {
         if ( path.toLowerCase().startsWith( "/list" ) ) {
             list( path.substring( 5 ), resp );
         }
+
+        if ( path.toLowerCase().startsWith( "/delete" ) ) {
+            delete( path.substring( 7 ), resp );
+        }
+    }
+
+    @Override
+    protected void doDelete( HttpServletRequest req, HttpServletResponse resp )
+                            throws ServletException, IOException {
+        doGet( req, resp );
     }
 
     @Override

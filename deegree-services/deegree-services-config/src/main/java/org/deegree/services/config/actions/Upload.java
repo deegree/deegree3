@@ -88,6 +88,7 @@ public class Upload {
                     return;
                 }
                 unzip( in, dir );
+                IOUtils.write( "Workspace " + wsName + " uploaded.\n", resp.getOutputStream() );
             } else {
                 File dest = new File( p.first.getLocation(), p.second );
                 if ( !dest.getParentFile().exists() && !dest.getParentFile().mkdirs() ) {
@@ -95,6 +96,7 @@ public class Upload {
                     return;
                 }
                 copyInputStreamToFile( in, dest );
+                IOUtils.write( dest.getName() + " uploaded.\n", resp.getOutputStream() );
             }
         } finally {
             closeQuietly( in );
