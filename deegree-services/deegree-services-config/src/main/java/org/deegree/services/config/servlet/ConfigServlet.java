@@ -92,20 +92,24 @@ public class ConfigServlet extends HttpServlet {
             return;
         }
 
-        if ( path.toLowerCase().startsWith( "/download" ) ) {
-            download( path.substring( 9 ), resp );
-        }
+        try {
+            if ( path.toLowerCase().startsWith( "/download" ) ) {
+                download( path.substring( 9 ), resp );
+            }
 
-        if ( path.toLowerCase().startsWith( "/restart" ) ) {
-            restart( path.substring( 8 ), resp );
-        }
+            if ( path.toLowerCase().startsWith( "/restart" ) ) {
+                restart( path.substring( 8 ), resp );
+            }
 
-        if ( path.toLowerCase().startsWith( "/list" ) ) {
-            list( path.substring( 5 ), resp );
-        }
+            if ( path.toLowerCase().startsWith( "/list" ) ) {
+                list( path.substring( 5 ), resp );
+            }
 
-        if ( path.toLowerCase().startsWith( "/delete" ) ) {
-            delete( path.substring( 7 ), resp );
+            if ( path.toLowerCase().startsWith( "/delete" ) ) {
+                delete( path.substring( 7 ), resp );
+            }
+        } catch ( ServletException e ) {
+            IOUtils.write( "Error while reloading workspace: " + e.getLocalizedMessage(), resp.getOutputStream() );
         }
     }
 
