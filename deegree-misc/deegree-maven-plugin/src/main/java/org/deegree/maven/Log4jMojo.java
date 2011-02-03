@@ -88,7 +88,23 @@ import com.google.common.base.Predicate;
  */
 public class Log4jMojo extends AbstractMojo {
 
-    private int width = 120;
+    /**
+     * @parameter default-value="120"
+     * @required
+     */
+    private int width;
+
+    /**
+     * @parameter default-value="INFO"
+     * @required
+     */
+    private String deegreeLoggingLevel;
+
+    /**
+     * @parameter default-value="ERROR"
+     * @required
+     */
+    private String rootLoggingLevel;
 
     /**
      * @parameter default-value="${project}"
@@ -245,16 +261,16 @@ public class Log4jMojo extends AbstractMojo {
             out = new PrintWriter( new OutputStreamWriter( new FileOutputStream( outFile ), "UTF-8" ) );
 
             out.println( "# by default, only log to stdout" );
-            out.println( "log4j.rootLogger=INFO, stdout" );
+            out.println( "log4j.rootLogger=" + rootLoggingLevel + ", stdout" );
             out.println( "log4j.appender.stdout=org.apache.log4j.ConsoleAppender" );
             out.println( "log4j.appender.stdout.layout=org.apache.log4j.PatternLayout" );
             out.println( "log4j.appender.stdout.layout.ConversionPattern=[%d{HH:mm:ss}] %5p: [%c{1}] %m%n" );
             out.println();
-            out.println( "# The log level for the org.reflections package (to avoid superfluous messages)." );
-            out.println( "log4j.logger.org.reflections = WARN" );
-            out.println();
+            // out.println( "# The log level for the org.reflections package (to avoid superfluous messages)." );
+            // out.println( "log4j.logger.org.reflections = WARN" );
+            // out.println();
             out.println( "# The log level for all classes that are not configured below." );
-            out.println( "log4j.logger.org.deegree = INFO" );
+            out.println( "log4j.logger.org.deegree = " + deegreeLoggingLevel );
             out.println();
             out.println( "# automatically generated output follows" );
             out.println();
