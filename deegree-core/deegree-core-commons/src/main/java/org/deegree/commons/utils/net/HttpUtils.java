@@ -46,6 +46,7 @@ import static org.slf4j.LoggerFactory.getLogger;
 
 import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -58,15 +59,22 @@ import java.util.Map.Entry;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 
-import org.apache.commons.httpclient.Credentials;
-import org.apache.commons.httpclient.HostConfiguration;
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.HttpException;
-import org.apache.commons.httpclient.UsernamePasswordCredentials;
-import org.apache.commons.httpclient.auth.AuthScope;
-import org.apache.commons.httpclient.methods.GetMethod;
-import org.apache.commons.httpclient.methods.InputStreamRequestEntity;
-import org.apache.commons.httpclient.methods.PostMethod;
+import org.apache.http.HttpHost;
+import org.apache.http.auth.AuthScope;
+import org.apache.http.auth.Credentials;
+import org.apache.http.auth.UsernamePasswordCredentials;
+import org.apache.http.client.AuthCache;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.protocol.ClientContext;
+import org.apache.http.conn.params.ConnRoutePNames;
+import org.apache.http.entity.FileEntity;
+import org.apache.http.entity.InputStreamEntity;
+import org.apache.http.impl.auth.BasicScheme;
+import org.apache.http.impl.client.BasicAuthCache;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.protocol.BasicHttpContext;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;
 import org.slf4j.Logger;
@@ -236,22 +244,65 @@ public class HttpUtils {
      * @param headers
      *            may be null
      * @return some object from the url
-     * @throws HttpException
      * @throws IOException
      */
     public static <T> T post( Worker<T> worker, String url, InputStream postBody, Map<String, String> headers )
-                            throws HttpException, IOException {
+                            throws IOException {
         DURL u = new DURL( url );
-        HttpClient client = enableProxyUsage( new HttpClient(), u );
-        PostMethod post = new PostMethod( url );
-        post.setRequestEntity( new InputStreamRequestEntity( postBody ) );
+        DefaultHttpClient client = enableProxyUsage( new DefaultHttpClient(), u );
+        HttpPost post = new HttpPost( url );
+        post.setEntity( new InputStreamEntity( postBody, -1 ) );
         if ( headers != null ) {
             for ( String key : headers.keySet() ) {
-                post.setRequestHeader( key, headers.get( key ) );
+                post.addHeader( key, headers.get( key ) );
             }
         }
-        client.executeMethod( post );
-        return worker.work( post.getResponseBodyAsStream() );
+        return worker.work( client.execute( post ).getEntity().getContent() );
+    }
+
+    private static void authenticate( DefaultHttpClient client, String user, String pass, DURL u ) {
+        client.getCredentialsProvider().setCredentials( AuthScope.ANY, new UsernamePasswordCredentials( user, pass ) );
+        // preemptive authentication used to be easier in pre-4.x httpclient
+        AuthCache authCache = new BasicAuthCache();
+        BasicScheme basicAuth = new BasicScheme();
+        HttpHost host = new HttpHost( u.getURL().getHost(), u.getURL().getPort() );
+        authCache.put( host, basicAuth );
+        BasicHttpContext localcontext = new BasicHttpContext();
+        localcontext.setAttribute( ClientContext.AUTH_CACHE, authCache );
+    }
+
+    /**
+     * Performs an HTTP-Get request and provides typed access to the response.
+     * 
+     * @param <T>
+     * @param worker
+     * @param url
+     * @param postBody
+     * @param headers
+     *            may be null
+     * @param user
+     *            optional username for HTTP basic authentication
+     * @param pass
+     *            optional password for HTTP basic authentication
+     * @return some object from the url
+     * @throws IOException
+     */
+    public static <T> T post( Worker<T> worker, String url, File postBody, Map<String, String> headers, String user,
+                              String pass )
+                            throws IOException {
+        DURL u = new DURL( url );
+        DefaultHttpClient client = enableProxyUsage( new DefaultHttpClient(), u );
+        HttpPost post = new HttpPost( url );
+        if ( user != null && pass != null ) {
+            authenticate( client, user, pass, u );
+        }
+        post.setEntity( new FileEntity( postBody, null ) );
+        if ( headers != null ) {
+            for ( String key : headers.keySet() ) {
+                post.addHeader( key, headers.get( key ) );
+            }
+        }
+        return worker.work( client.execute( post ).getEntity().getContent() );
     }
 
     /**
@@ -263,27 +314,49 @@ public class HttpUtils {
      * @param headers
      *            may be null
      * @return some object from the url, null, if url is not valid
-     * @throws HttpException
      * @throws IOException
      */
     public static <T> T get( Worker<T> worker, String url, Map<String, String> headers )
-                            throws HttpException, IOException {
+                            throws IOException {
+        return get( worker, url, headers, null, null );
+    }
+
+    /**
+     * Performs an HTTP-Get request and provides typed access to the response.
+     * 
+     * @param <T>
+     * @param worker
+     * @param url
+     * @param headers
+     *            may be null
+     * @param user
+     *            optional username for HTTP basic authentication
+     * @param pass
+     *            optional password for HTTP basic authentication
+     * @return some object from the url, null, if url is not valid
+     * @throws IOException
+     */
+    public static <T> T get( Worker<T> worker, String url, Map<String, String> headers, String user, String pass )
+                            throws IOException {
         DURL u = new DURL( url );
         if ( !u.valid() ) {
             return null;
         }
-        HttpClient client = enableProxyUsage( new HttpClient(), u );
-        GetMethod get = new GetMethod( url );
+        DefaultHttpClient client = enableProxyUsage( new DefaultHttpClient(), u );
+        if ( user != null && pass != null ) {
+            authenticate( client, user, pass, u );
+        }
+        HttpGet get = new HttpGet( url );
         if ( headers != null ) {
             for ( String key : headers.keySet() ) {
-                get.setRequestHeader( key, headers.get( key ) );
+                get.addHeader( key, headers.get( key ) );
             }
         }
-        client.executeMethod( get );
-        return worker.work( get.getResponseBodyAsStream() );
+
+        return worker.work( client.execute( get ).getEntity().getContent() );
     }
 
-    private static void handleProxies( String protocol, HttpClient client, String host ) {
+    private static void handleProxies( String protocol, DefaultHttpClient client, String host ) {
         TreeSet<String> nops = new TreeSet<String>();
 
         String proxyHost = getProperty( ( protocol == null ? "" : protocol + "." ) + "proxyHost" );
@@ -303,16 +376,13 @@ public class HttpUtils {
 
             int proxyPort = parseInt( getProperty( ( protocol == null ? "" : protocol + "." ) + "proxyPort" ) );
 
-            HostConfiguration hc = client.getHostConfiguration();
-
             if ( LOG.isDebugEnabled() ) {
                 LOG.debug( "Found the following no- and nonProxyHosts: {}", nops );
             }
 
             if ( proxyUser != null ) {
                 Credentials creds = new UsernamePasswordCredentials( proxyUser, proxyPass );
-                client.getState().setProxyCredentials( AuthScope.ANY, creds );
-                client.getParams().setAuthenticationPreemptive( true );
+                client.getCredentialsProvider().setCredentials( new AuthScope( proxyHost, proxyPort ), creds );
             }
 
             if ( !nops.contains( host ) ) {
@@ -322,8 +392,8 @@ public class HttpUtils {
                         LOG.debug( "This overrides the protocol specific settings, if there were any." );
                     }
                 }
-                hc.setProxy( proxyHost, proxyPort );
-                client.setHostConfiguration( hc );
+                HttpHost proxy = new HttpHost( proxyHost, proxyPort );
+                client.getParams().setParameter( ConnRoutePNames.DEFAULT_PROXY, proxy );
             } else {
                 if ( LOG.isDebugEnabled() ) {
                     LOG.debug( "Proxy was set, but {} was contained in the no-/nonProxyList!", host );
@@ -342,14 +412,13 @@ public class HttpUtils {
     /**
      * reads proxyHost and proxyPort from system parameters and sets them to the passed HttpClient instance
      * 
-     * @see HostConfiguration of the passed
      * @see HttpClient
      * @param client
      * @param url
      *            must be valid
      * @return HttpClient with proxy configuration
      */
-    public static HttpClient enableProxyUsage( HttpClient client, DURL url ) {
+    public static DefaultHttpClient enableProxyUsage( DefaultHttpClient client, DURL url ) {
         String host = url.getURL().getHost();
         String protocol = url.getURL().getProtocol().toLowerCase();
         handleProxies( protocol, client, host );

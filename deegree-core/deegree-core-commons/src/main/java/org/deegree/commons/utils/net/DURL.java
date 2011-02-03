@@ -36,7 +36,8 @@
 package org.deegree.commons.utils.net;
 
 import static java.util.Collections.synchronizedMap;
-import static org.deegree.commons.utils.net.HttpUtils.enableProxyUsage;
+import static org.deegree.commons.utils.net.HttpUtils.STREAM;
+import static org.deegree.commons.utils.net.HttpUtils.get;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.IOException;
@@ -47,8 +48,6 @@ import java.net.URLStreamHandler;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.methods.GetMethod;
 import org.slf4j.Logger;
 
 /**
@@ -139,10 +138,7 @@ public class DURL {
             return url.openStream();
         }
 
-        HttpClient client = enableProxyUsage( new HttpClient(), this );
-        GetMethod get = new GetMethod( url.toExternalForm() );
-        client.executeMethod( get );
-        return get.getResponseBodyAsStream();
+        return get( STREAM, url.toExternalForm(), null );
     }
 
 }
