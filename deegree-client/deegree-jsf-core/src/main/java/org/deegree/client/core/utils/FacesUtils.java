@@ -86,8 +86,7 @@ public class FacesUtils {
         try {
             if ( target == null ) {
                 target = "";
-            }
-            if ( !target.endsWith( "/" ) ) {
+            } else if ( !target.endsWith( "/" ) ) {
                 target += "/";
             }
             return new URL( getServerURL() + target + fileName );
