@@ -101,32 +101,35 @@ public class InputMultipleTextRenderer extends Renderer {
         if ( style != null ) {
             writer.writeAttribute( "style", style, "style" );
         }
+        boolean disabled = multiple.getDisabled();
 
-        renderChilds( context, writer, multiple );
+        renderChilds( context, writer, multiple, disabled );
         String templateID = getTemplateID( context, multiple );
-        renderInput( context, writer, null, templateID, true );
+        renderInput( context, writer, null, templateID, true, disabled );
 
     }
 
-    private void renderChilds( FacesContext context, ResponseWriter writer, HtmlInputMultipleText multiple )
+    private void renderChilds( FacesContext context, ResponseWriter writer, HtmlInputMultipleText multiple,
+                               boolean disabled )
                             throws IOException {
         List<String> list = multiple.getValue();
-        if ( list.size() > 0 ) {
+        if ( list != null && list.size() > 0 ) {
             for ( String v : list ) {
                 String id = multiple.getClientId( context ) + ":child_" + list.indexOf( v );
-                renderInput( context, writer, v, id, false );
+                renderInput( context, writer, v, id, false, disabled );
             }
         } else {
             String id = multiple.getClientId( context ) + ":child_" + 0;
-            renderInput( context, writer, null, id, false );
+            renderInput( context, writer, null, id, false, disabled );
         }
 
     }
 
-    private void renderInput( FacesContext context, ResponseWriter writer, String value, String id, boolean isHidden )
+    private void renderInput( FacesContext context, ResponseWriter writer, String value, String id, boolean isHidden,
+                              boolean disabled )
                             throws IOException {
 
-       writer.startElement( "div", null );
+        writer.startElement( "div", null );
         if ( isHidden ) {
             writer.writeAttribute( "style", "display:none;", null );
         }
@@ -134,6 +137,8 @@ public class InputMultipleTextRenderer extends Renderer {
         writer.startElement( "input", null );
         writer.writeAttribute( "type", "text", null );
         writer.writeAttribute( "name", id, "clientId" );
+        if ( disabled )
+            writer.writeAttribute( "disabled", "disabled", "disabled" );
 
         // render default text specified
         if ( value != null ) {

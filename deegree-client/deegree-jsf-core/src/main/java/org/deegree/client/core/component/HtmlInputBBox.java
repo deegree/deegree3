@@ -64,7 +64,7 @@ public class HtmlInputBBox extends UISelectOne {
     public static final String COMPONENT_TYPE = "HtmlInputBBox";
 
     private static enum AdditionalPropertyKeys {
-        showCRS, styleClass, crsLabel, crsSize, minxLabel, minyLabel, maxxLabel, maxyLabel
+        showCRS, styleClass, crsLabel, crsSize, minxLabel, minyLabel, maxxLabel, maxyLabel, disabled
     }
 
     public HtmlInputBBox() {
@@ -158,6 +158,14 @@ public class HtmlInputBBox extends UISelectOne {
 
     public void setShowCRS( boolean crsLabel ) {
         getStateHelper().put( AdditionalPropertyKeys.showCRS, crsLabel );
+    }
+
+    public void setDisabled( boolean disabled ) {
+        getStateHelper().put( AdditionalPropertyKeys.disabled, disabled );
+    }
+
+    public boolean getDisabled() {
+        return (Boolean) getStateHelper().eval( AdditionalPropertyKeys.disabled, false );
     }
 
     @Override

@@ -51,14 +51,14 @@ import javax.faces.component.UIInput;
  * 
  * @version $Revision: $, $Date: $
  */
-@ResourceDependencies({  @ResourceDependency(library = "deegree", name = "css/multipleText.css", target = "head"),
-    @ResourceDependency(name = "javascript/multipleText.js", library = "deegree"),
+@ResourceDependencies({ @ResourceDependency(library = "deegree", name = "css/multipleText.css", target = "head"),
+                       @ResourceDependency(name = "javascript/multipleText.js", library = "deegree"),
                        @ResourceDependency(name = "jsf.js", target = "head", library = "javax.faces") })
 @FacesComponent(value = "HtmlInputMultipleText")
 public class HtmlInputMultipleText extends UIInput {
 
     private static enum PropertyKeys {
-        styleClass, style
+        styleClass, style, disabled
     }
 
     public HtmlInputMultipleText() {
@@ -81,10 +81,18 @@ public class HtmlInputMultipleText extends UIInput {
         return (String) getStateHelper().eval( PropertyKeys.styleClass, null );
     }
 
+    public void setDisabled( boolean disabled ) {
+        getStateHelper().put( PropertyKeys.disabled, disabled );
+    }
+
+    public boolean getDisabled() {
+        return (Boolean) getStateHelper().eval( PropertyKeys.disabled, false );
+    }
+
     @SuppressWarnings("unchecked")
     @Override
     public List<String> getValue() {
-        if ( !( super.getValue() instanceof List<?> ) ) {
+        if ( super.getValue() != null && !( super.getValue() instanceof List<?> ) ) {
             throw new FacesException( "value of HtmlInputMultiple must be a list" );
         }
         return (List<String>) super.getValue();
