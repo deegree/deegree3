@@ -78,13 +78,13 @@ import javax.faces.model.SelectItemGroup;
 import lombok.Getter;
 import lombok.Setter;
 
-import org.apache.commons.httpclient.Header;
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.HttpException;
-import org.apache.commons.httpclient.methods.InputStreamRequestEntity;
-import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.input.BoundedInputStream;
+import org.apache.http.Header;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.InputStreamEntity;
+import org.apache.http.impl.client.DefaultHttpClient;
 import org.deegree.client.core.utils.MessageUtils;
 import org.deegree.commons.utils.net.DURL;
 import org.deegree.commons.utils.net.HttpUtils;
@@ -216,16 +216,16 @@ public class RequestBean implements Serializable {
             InputStream is = new ByteArrayInputStream( request.getBytes( "UTF-8" ) );
             try {
                 DURL u = new DURL( targetUrl );
-                HttpClient client = enableProxyUsage( new HttpClient(), u );
-                PostMethod post = new PostMethod( targetUrl );
-                post.setRequestEntity( new InputStreamRequestEntity( is ) );
-                client.executeMethod( post );
-                Header[] headers = post.getResponseHeaders( "Content-Type" );
+                DefaultHttpClient client = enableProxyUsage( new DefaultHttpClient(), u );
+                HttpPost post = new HttpPost( targetUrl );
+                post.setEntity( new InputStreamEntity( is, -1 ) );
+                HttpResponse response = client.execute( post );
+                Header[] headers = response.getHeaders( "Content-Type" );
                 if ( headers.length > 0 ) {
                     mimeType = headers[0].getValue();
                     LOG.debug( "Response mime type: " + mimeType );
                     if ( !mimeType.toLowerCase().contains( "xml" ) ) {
-                        response = null;
+                        this.response = null;
                         FacesMessage fm = MessageUtils.getFacesMessage( FacesMessage.SEVERITY_INFO,
                                                                         "INFO_RESPONSE_NOT_XML" );
                         FacesContext.getCurrentInstance().addMessage( null, fm );
@@ -235,7 +235,7 @@ public class RequestBean implements Serializable {
                     mimeType = "text/plain";
                 }
 
-                InputStream in = post.getResponseBodyAsStream();
+                InputStream in = response.getEntity().getContent();
                 File file = File.createTempFile( "genericclient", ".xml" );
                 responseFile = file.getName().toString();
                 FileOutputStream out = new FileOutputStream( file );
@@ -254,13 +254,10 @@ public class RequestBean implements Serializable {
                     while ( ( s = reader.readLine() ) != null ) {
                         sb.append( s );
                     }
-                    response = sb.toString();
+                    this.response = sb.toString();
                 } finally {
                     IOUtils.closeQuietly( reader );
                 }
-            } catch ( HttpException e ) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
             } catch ( IOException e ) {
                 e.printStackTrace();
             } finally {
@@ -426,9 +423,6 @@ public class RequestBean implements Serializable {
                 } else {
                     this.response = "";
                 }
-            } catch ( HttpException e ) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
             } catch ( IOException e ) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
