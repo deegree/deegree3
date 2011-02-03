@@ -952,6 +952,8 @@ public class OGCFrontController extends HttpServlet {
             initWorkspace( workspaceName );
         } catch ( WorkspaceInitializationException e ) {
             throw new ServletException( e.getLocalizedMessage(), e.getCause() );
+        } finally {
+            JAXBUtils.fixThreadLocalLeaks();
         }
     }
 
