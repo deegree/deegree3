@@ -888,6 +888,17 @@ public class OGCFrontController extends HttpServlet {
             LOG.info( "- temp directory    : " + defaultTMPDir );
             LOG.info( "" );
 
+            LOG.info( "deegree workspace root is located at " + DeegreeWorkspace.getWorkspaceRoot() );
+            File wsRoot = new File( DeegreeWorkspace.getWorkspaceRoot() );
+            if( !wsRoot.isDirectory() && !wsRoot.mkdirs() ) {
+            	LOG.warn( "The workspace root is not a directory and could not be created." );
+            	LOG.warn( "This will lead to problems when you'll try to download workspaces!" );
+            }
+            if( wsRoot.isDirectory() && !wsRoot.canWrite() ) {
+            	LOG.warn( "The workspace root is not writable." );
+            	LOG.warn( "This will lead to problems when you'll try to download workspaces!" );
+            }
+            
             initWorkspace( null );
 
         } catch ( NoClassDefFoundError e ) {
