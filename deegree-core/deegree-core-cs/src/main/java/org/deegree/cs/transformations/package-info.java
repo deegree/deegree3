@@ -36,5 +36,5 @@
 @PackageLoggingNotes(title = "Transformation logging", debug = "Get information about transformations and the creation of transformation chains.")
 package org.deegree.cs.transformations;
 
-import org.deegree.commons.utils.log.PackageLoggingNotes;
+import org.deegree.commons.annotations.PackageLoggingNotes;
 

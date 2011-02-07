@@ -36,5 +36,5 @@
 @PackageLoggingNotes(title = "geometry subsystem", debug = "placeholder to enable quick debugging, please describe further")
 package org.deegree.geometry;
 
-import org.deegree.commons.utils.log.PackageLoggingNotes;
+import org.deegree.commons.annotations.PackageLoggingNotes;
 

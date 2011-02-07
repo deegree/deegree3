@@ -34,6 +34,7 @@
           <target>1.6</target>
           <encoding>UTF-8</encoding>
           <compilerArgument>-Alog4j.outputdir=${project.basedir}/target/classes/META-INF/deegree/log4j/</compilerArgument>
+          <compilerArgument>-Abasedir=${project.basedir}</compilerArgument>
         </configuration>
       </plugin>
       <plugin>

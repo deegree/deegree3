@@ -35,13 +35,9 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.maven;
 
-import static java.lang.Thread.currentThread;
-import static java.security.AccessController.doPrivileged;
-import static java.util.Collections.EMPTY_LIST;
-import static java.util.Collections.EMPTY_MAP;
 import static org.apache.commons.io.IOUtils.closeQuietly;
 import static org.apache.commons.io.IOUtils.copy;
-import static org.apache.maven.project.artifact.MavenMetadataSource.createArtifacts;
+import static org.deegree.maven.utils.ClasspathHelper.addDependenciesToClasspath;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -51,27 +47,15 @@ import java.io.InputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLClassLoader;
-import java.security.PrivilegedAction;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
 
-import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.factory.ArtifactFactory;
 import org.apache.maven.artifact.metadata.ArtifactMetadataSource;
 import org.apache.maven.artifact.repository.ArtifactRepository;
-import org.apache.maven.artifact.resolver.ArtifactNotFoundException;
-import org.apache.maven.artifact.resolver.ArtifactResolutionException;
-import org.apache.maven.artifact.resolver.ArtifactResolutionResult;
 import org.apache.maven.artifact.resolver.ArtifactResolver;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.project.MavenProject;
-import org.apache.maven.project.artifact.InvalidDependencyVersionException;
 import org.reflections.Reflections;
 import org.reflections.serializers.Serializer;
 
@@ -136,28 +120,6 @@ public class Log4jMojo extends AbstractMojo {
      */
     private ArtifactRepository localRepository;
 
-    public Set<?> resolveDeps()
-                            throws InvalidDependencyVersionException, ArtifactResolutionException,
-                            ArtifactNotFoundException {
-
-        List<?> dependencies = project.getDependencies();
-
-        @SuppressWarnings("unchecked")
-        Set<Artifact> dependencyArtifacts = createArtifacts( artifactFactory, dependencies, null, null, null );
-
-        dependencyArtifacts.add( project.getArtifact() );
-
-        ArtifactResolutionResult result = artifactResolver.resolveTransitively(
-                                                                                dependencyArtifacts,
-                                                                                project.getArtifact(),
-                                                                                EMPTY_MAP,
-                                                                                localRepository,
-                                                                                project.getRemoteArtifactRepositories(),
-                                                                                metadataSource, null, EMPTY_LIST );
-
-        return result.getArtifacts();
-    }
-
     private void block( String text, PrintWriter out ) {
         out.print( "# " );
         for ( int i = 0; i < width - 2; ++i ) {
@@ -221,33 +183,7 @@ public class Log4jMojo extends AbstractMojo {
             return;
         }
 
-        try {
-            Set<?> artifacts = resolveDeps();
-            final URL[] urls = new URL[artifacts.size()];
-            Iterator<?> itor = artifacts.iterator();
-            int i = 0;
-            while ( itor.hasNext() ) {
-                urls[i++] = ( (Artifact) itor.next() ).getFile().toURI().toURL();
-            }
-
-            doPrivileged( new PrivilegedAction<Object>() {
-                @Override
-                public Object run() {
-                    URLClassLoader cl = new URLClassLoader( urls, currentThread().getContextClassLoader() );
-                    currentThread().setContextClassLoader( cl );
-                    return null;
-                }
-            } );
-
-        } catch ( MalformedURLException e ) {
-            throw new MojoExecutionException( e.getLocalizedMessage(), e );
-        } catch ( ArtifactResolutionException e ) {
-            throw new MojoExecutionException( e.getLocalizedMessage(), e );
-        } catch ( ArtifactNotFoundException e ) {
-            throw new MojoExecutionException( e.getLocalizedMessage(), e );
-        } catch ( InvalidDependencyVersionException e ) {
-            throw new MojoExecutionException( e.getLocalizedMessage(), e );
-        }
+        addDependenciesToClasspath( project, artifactResolver, artifactFactory, metadataSource, localRepository );
 
         final Reflections r = new Reflections( "/META-INF/deegree" );
         // to work around stupid initialization compiler error (hey, it's defined to be null if not 'initialized'!)

@@ -46,7 +46,7 @@ import org.apache.commons.dbcp.DriverManagerConnectionFactory;
 import org.apache.commons.dbcp.PoolableConnectionFactory;
 import org.apache.commons.dbcp.PoolingDataSource;
 import org.apache.commons.pool.impl.GenericObjectPool;
-import org.deegree.commons.utils.log.LoggingNotes;
+import org.deegree.commons.annotations.LoggingNotes;
 import org.slf4j.Logger;
 
 /**

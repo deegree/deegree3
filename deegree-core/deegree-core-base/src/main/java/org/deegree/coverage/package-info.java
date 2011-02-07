@@ -36,5 +36,5 @@
 @PackageLoggingNotes(title = "coverage subsystem")
 package org.deegree.coverage;
 
-import org.deegree.commons.utils.log.PackageLoggingNotes;
+import org.deegree.commons.annotations.PackageLoggingNotes;
 

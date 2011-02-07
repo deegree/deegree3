@@ -49,6 +49,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
+import org.deegree.commons.annotations.Tool;
 import org.deegree.commons.utils.DeegreeAALogoUtils;
 import org.reflections.Reflections;
 

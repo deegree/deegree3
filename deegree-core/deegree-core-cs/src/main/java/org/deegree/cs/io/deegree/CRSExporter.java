@@ -63,8 +63,8 @@ import java.util.TreeSet;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
+import org.deegree.commons.annotations.LoggingNotes;
 import org.deegree.commons.jdbc.ConnectionManager;
-import org.deegree.commons.utils.log.LoggingNotes;
 import org.deegree.commons.xml.CommonNamespaces;
 import org.deegree.cs.CRSCodeType;
 import org.deegree.cs.CRSIdentifiable;

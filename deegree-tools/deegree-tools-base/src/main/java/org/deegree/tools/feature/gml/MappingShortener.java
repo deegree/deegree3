@@ -46,8 +46,8 @@ import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.PosixParser;
+import org.deegree.commons.annotations.Tool;
 import org.deegree.commons.tools.CommandUtils;
-import org.deegree.commons.tools.Tool;
 import org.deegree.tools.i18n.Messages;
 
 @Tool("Helps creating readable short versions of feature type / property names for mapping to db.")

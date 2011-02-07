@@ -36,5 +36,5 @@
 @PackageLoggingNotes(title = "feature subsystem", debug = "placeholder to enable quick debugging, please describe further")
 package org.deegree.feature;
 
-import org.deegree.commons.utils.log.PackageLoggingNotes;
+import org.deegree.commons.annotations.PackageLoggingNotes;
 

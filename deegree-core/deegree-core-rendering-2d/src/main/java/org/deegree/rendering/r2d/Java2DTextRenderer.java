@@ -54,7 +54,7 @@ import java.awt.geom.Point2D;
 import java.awt.geom.Path2D.Double;
 import java.util.Collection;
 
-import org.deegree.commons.utils.log.LoggingNotes;
+import org.deegree.commons.annotations.LoggingNotes;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.multi.MultiCurve;
 import org.deegree.geometry.multi.MultiGeometry;

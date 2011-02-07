@@ -36,5 +36,5 @@
 @PackageLoggingNotes(debug = "rendering of the interactive components")
 package org.deegree.rendering.r3d.opengl.display;
 
-import org.deegree.commons.utils.log.PackageLoggingNotes;
+import org.deegree.commons.annotations.PackageLoggingNotes;
 

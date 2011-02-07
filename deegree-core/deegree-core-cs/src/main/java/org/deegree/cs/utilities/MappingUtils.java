@@ -45,7 +45,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
 
-import org.deegree.commons.utils.log.LoggingNotes;
+import org.deegree.commons.annotations.LoggingNotes;
 import org.deegree.cs.coordinatesystems.CoordinateSystem;
 import org.deegree.cs.exceptions.TransformationException;
 import org.deegree.cs.transformations.Transformation;

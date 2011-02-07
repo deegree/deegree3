@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.commons.utils.log;
+package org.deegree.commons.processors;
 
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -59,6 +59,8 @@ import javax.lang.model.SourceVersion;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
 
+import org.deegree.commons.annotations.LoggingNotes;
+import org.deegree.commons.annotations.PackageLoggingNotes;
 import org.deegree.commons.utils.io.RollbackPrintWriter;
 import org.slf4j.Logger;
 
@@ -71,8 +73,8 @@ import org.slf4j.Logger;
  * @version $Revision$, $Date$
  */
 
-@SupportedAnnotationTypes(value = { "org.deegree.commons.utils.log.PackageLoggingNotes",
-                                   "org.deegree.commons.utils.log.LoggingNotes" })
+@SupportedAnnotationTypes(value = { "org.deegree.commons.annotations.PackageLoggingNotes",
+                                   "org.deegree.commons.annotations.LoggingNotes" })
 @SupportedSourceVersion(SourceVersion.RELEASE_6)
 @SupportedOptions( { "log4j.outputdir" })
 public class LoggingAnnotationProcessor extends AbstractProcessor {

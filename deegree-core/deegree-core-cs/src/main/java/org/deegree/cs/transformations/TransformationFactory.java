@@ -54,7 +54,7 @@ import java.util.List;
 
 import javax.vecmath.Matrix4d;
 
-import org.deegree.commons.utils.log.LoggingNotes;
+import org.deegree.commons.annotations.LoggingNotes;
 import org.deegree.crs.store.AbstractStore;
 import org.deegree.cs.CRSCodeType;
 import org.deegree.cs.CRSIdentifiable;

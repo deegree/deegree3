@@ -36,5 +36,5 @@
 @PackageLoggingNotes(title = "WMS service specific logging", debug = "logs all kinds of information on the layer/styles structure and how it's created", warn = "logs information on all kinds of possible problems in your requests and your setup")
 package org.deegree.services.wms;
 
-import org.deegree.commons.utils.log.PackageLoggingNotes;
+import org.deegree.commons.annotations.PackageLoggingNotes;
 

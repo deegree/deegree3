@@ -40,7 +40,7 @@ import static org.slf4j.LoggerFactory.getLogger;
 
 import java.util.LinkedHashSet;
 
-import org.deegree.commons.utils.log.LoggingNotes;
+import org.deegree.commons.annotations.LoggingNotes;
 import org.deegree.cs.coordinatesystems.CoordinateSystem;
 import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.geometry.Envelope;

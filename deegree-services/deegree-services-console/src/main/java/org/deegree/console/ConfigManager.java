@@ -71,6 +71,7 @@ import lombok.Setter;
 
 import org.apache.commons.io.FileUtils;
 import org.deegree.client.generic.RequestBean;
+import org.deegree.commons.annotations.ConsoleManaged;
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceManager;
 import org.deegree.commons.config.ResourceManagerMetadata;
@@ -145,6 +146,14 @@ public class ConfigManager {
         }
     }
 
+    public String getViewForResourceManager() {
+        ConsoleManaged ann = currentResourceManager.getClass().getAnnotation( ConsoleManaged.class );
+        if ( ann != null ) {
+            return ann.startPage();
+        }
+        return "/console/jsf/resources";
+    }
+
     public void resourceManagerChanged( ActionEvent evt ) {
         currentResourceManager = resourceManagerMap.get( ( (HtmlCommandLink) evt.getSource() ).getValue().toString() );
         update();
@@ -203,7 +212,8 @@ public class ConfigManager {
                     schemaURL = p.getConfigSchema();
                     template = true;
                     try {
-                        IOUtils.copyAndClose( p.getConfigTemplates().values().iterator().next().openStream(), new FileOutputStream( conf ) );
+                        IOUtils.copyAndClose( p.getConfigTemplates().values().iterator().next().openStream(),
+                                              new FileOutputStream( conf ) );
                     } catch ( FileNotFoundException e ) {
                         // TODO Auto-generated catch block
                         e.printStackTrace();

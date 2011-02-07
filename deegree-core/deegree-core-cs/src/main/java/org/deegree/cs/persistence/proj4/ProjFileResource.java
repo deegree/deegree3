@@ -47,7 +47,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-import org.deegree.commons.utils.log.LoggingNotes;
+import org.deegree.commons.annotations.LoggingNotes;
 import org.deegree.cs.CRSCodeType;
 import org.deegree.cs.configuration.resources.CRSResource;
 import org.deegree.cs.coordinatesystems.CoordinateSystem;

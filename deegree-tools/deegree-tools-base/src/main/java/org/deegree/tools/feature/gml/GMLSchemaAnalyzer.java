@@ -43,8 +43,8 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.PosixParser;
 import org.apache.xerces.xs.XSElementDeclaration;
+import org.deegree.commons.annotations.Tool;
 import org.deegree.commons.tools.CommandUtils;
-import org.deegree.commons.tools.Tool;
 import org.deegree.gml.GMLVersion;
 import org.deegree.tools.i18n.Messages;
 

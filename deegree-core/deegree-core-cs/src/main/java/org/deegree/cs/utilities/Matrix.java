@@ -44,7 +44,7 @@ import java.util.Arrays;
 import javax.vecmath.GMatrix;
 import javax.vecmath.Matrix3d;
 
-import org.deegree.commons.utils.log.LoggingNotes;
+import org.deegree.commons.annotations.LoggingNotes;
 import org.deegree.cs.components.Axis;
 import org.deegree.cs.components.Unit;
 import org.deegree.cs.coordinatesystems.CoordinateSystem;

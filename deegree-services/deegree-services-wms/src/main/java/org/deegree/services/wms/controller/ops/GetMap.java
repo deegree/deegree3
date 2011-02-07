@@ -80,10 +80,10 @@ import java_cup.runtime.Symbol;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 
+import org.deegree.commons.annotations.LoggingNotes;
 import org.deegree.commons.tom.ows.Version;
 import org.deegree.commons.utils.DoublePair;
 import org.deegree.commons.utils.Pair;
-import org.deegree.commons.utils.log.LoggingNotes;
 import org.deegree.cs.CRS;
 import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.filter.Filter;

@@ -55,7 +55,7 @@ import java.util.List;
 
 import javax.vecmath.Point3d;
 
-import org.deegree.commons.utils.log.LoggingNotes;
+import org.deegree.commons.annotations.LoggingNotes;
 import org.deegree.cs.CRSIdentifiable;
 import org.deegree.cs.components.Axis;
 import org.deegree.cs.components.Ellipsoid;

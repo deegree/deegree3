@@ -42,7 +42,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
-import org.deegree.commons.utils.log.LoggingNotes;
+import org.deegree.commons.annotations.LoggingNotes;
 import org.deegree.cs.CRSCodeType;
 import org.deegree.cs.CRSIdentifiable;
 import org.deegree.cs.components.Ellipsoid;

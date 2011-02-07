@@ -1,7 +1,7 @@
 //$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
- Copyright (C) 2001-2009 by:
+ Copyright (C) 2001-2010 by:
  - Department of Geography, University of Bonn -
  and
  - lat/lon GmbH -
@@ -33,54 +33,30 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.commons.utils.log;
+package org.deegree.commons.annotations;
 
-import static java.lang.annotation.ElementType.PACKAGE;
-import static java.lang.annotation.RetentionPolicy.SOURCE;
+import static java.lang.annotation.ElementType.TYPE;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
 /**
- * <code>PackageDebuggingNotes</code>
  * 
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
  */
-@Retention(SOURCE)
-@Target(PACKAGE)
-public @interface PackageLoggingNotes {
+@Retention(RUNTIME)
+@Target(TYPE)
+public @interface ConsoleManaged {
 
     /**
-     * @return the string that can be used as title string delimiting a log4j.properties section
+     * @return a directory where extra console files are lying around
      */
-    String title() default "";
+    String directory() default "src/main/console/";
 
-    /**
-     * @return the string that describes the error level logging for this class
-     */
-    String error() default "";
-
-    /**
-     * @return the string that describes the warn level logging for this class
-     */
-    String warn() default "";
-
-    /**
-     * @return the string that describes the info level logging for this class
-     */
-    String info() default "";
-
-    /**
-     * @return the string that describes the debug level logging for this class
-     */
-    String debug() default "";
-
-    /**
-     * @return the string that describes the trace level logging for this class
-     */
-    String trace() default "";
+    String startPage();
 
 }

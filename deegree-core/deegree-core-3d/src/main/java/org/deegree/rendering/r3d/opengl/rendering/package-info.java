@@ -36,5 +36,5 @@
 @PackageLoggingNotes(debug = "log rendering status information")
 package org.deegree.rendering.r3d.opengl.rendering;
 
-import org.deegree.commons.utils.log.PackageLoggingNotes;
+import org.deegree.commons.annotations.PackageLoggingNotes;
 

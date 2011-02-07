@@ -41,7 +41,7 @@ import static org.deegree.cs.utilities.ProjectionUtils.preCalcedThetaSeries;
 
 import javax.vecmath.Point2d;
 
-import org.deegree.commons.utils.log.LoggingNotes;
+import org.deegree.commons.annotations.LoggingNotes;
 import org.deegree.cs.CRSIdentifiable;
 import org.deegree.cs.EPSGCode;
 import org.deegree.cs.components.Unit;

@@ -36,5 +36,5 @@
 @PackageLoggingNotes(title = "common logging settings for all of deegree")
 package org.deegree.commons;
 
-import org.deegree.commons.utils.log.PackageLoggingNotes;
+import org.deegree.commons.annotations.PackageLoggingNotes;
 

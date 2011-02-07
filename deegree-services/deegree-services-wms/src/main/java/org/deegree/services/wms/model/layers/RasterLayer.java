@@ -53,10 +53,10 @@ import java.util.List;
 
 import javax.xml.namespace.QName;
 
+import org.deegree.commons.annotations.LoggingNotes;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.commons.utils.Pair;
 import org.deegree.commons.utils.Triple;
-import org.deegree.commons.utils.log.LoggingNotes;
 import org.deegree.coverage.AbstractCoverage;
 import org.deegree.coverage.filter.raster.RasterFilter;
 import org.deegree.coverage.persistence.CoverageBuilderManager;

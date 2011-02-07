@@ -54,6 +54,12 @@
               <goal>assemble-log4j</goal>
             </goals>
           </execution>
+          <execution>
+            <id>assemble-console</id>
+            <goals>
+              <goal>assemble-console</goal>
+            </goals>
+          </execution>
         </executions>
       </plugin>
       <plugin>

@@ -39,7 +39,7 @@ import static org.slf4j.LoggerFactory.getLogger;
 
 import java.util.LinkedList;
 
-import org.deegree.commons.utils.log.LoggingNotes;
+import org.deegree.commons.annotations.LoggingNotes;
 import org.deegree.services.wms.MapService;
 import org.deegree.services.wms.model.layers.EmptyLayer;
 import org.deegree.services.wms.model.layers.Layer;

@@ -36,7 +36,7 @@
  E-Mail: greve@giub.uni-bonn.de
  ---------------------------------------------------------------------------*/
 
-package org.deegree.commons.tools;
+package org.deegree.commons.annotations;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;

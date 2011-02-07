@@ -49,6 +49,7 @@ import java.util.ServiceLoader;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamReader;
 
+import org.deegree.commons.annotations.ConsoleManaged;
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceManager;
 import org.deegree.commons.config.ResourceManagerMetadata;
@@ -241,20 +242,23 @@ public class FeatureStoreManager implements ResourceManager {
         return new Class[] { ProxyUtils.class, ConnectionManager.class };
     }
 
+    @ConsoleManaged(startPage = "/console/featurestore/buttons")
+    static class FeatureStoreManagerMetadata implements ResourceManagerMetadata {
+        public String getName() {
+            return "feature stores";
+        }
+
+        public String getPath() {
+            return "datasources/feature/";
+        }
+
+        public List<ResourceProvider> getResourceProviders() {
+            return new LinkedList<ResourceProvider>( nsToProvider.values() );
+        }
+    }
+
     public ResourceManagerMetadata getMetadata() {
-        return new ResourceManagerMetadata() {
-            public String getName() {
-                return "feature stores";
-            }
-
-            public String getPath() {
-                return "datasources/feature/";
-            }
-
-            public List<ResourceProvider> getResourceProviders() {
-                return new LinkedList<ResourceProvider>( nsToProvider.values() );
-            }
-        };
+        return new FeatureStoreManagerMetadata();
     }
 
 }

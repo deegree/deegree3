@@ -73,8 +73,8 @@ import java.awt.geom.Point2D;
 import java.util.LinkedList;
 import java.util.ListIterator;
 
+import org.deegree.commons.annotations.LoggingNotes;
 import org.deegree.commons.utils.Pair;
-import org.deegree.commons.utils.log.LoggingNotes;
 import org.deegree.rendering.r2d.styling.components.LinePlacement;
 import org.slf4j.Logger;
 

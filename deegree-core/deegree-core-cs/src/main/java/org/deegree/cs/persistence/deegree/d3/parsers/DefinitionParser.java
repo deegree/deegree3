@@ -57,8 +57,8 @@ import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
+import org.deegree.commons.annotations.LoggingNotes;
 import org.deegree.commons.utils.ProxyUtils;
-import org.deegree.commons.utils.log.LoggingNotes;
 import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.commons.xml.stax.StAXParsingHelper;
 import org.deegree.cs.CRSCodeType;

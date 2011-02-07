@@ -36,5 +36,5 @@
 @PackageLoggingNotes(title = "security subsystem")
 package org.deegree.security;
 
-import org.deegree.commons.utils.log.PackageLoggingNotes;
+import org.deegree.commons.annotations.PackageLoggingNotes;
 

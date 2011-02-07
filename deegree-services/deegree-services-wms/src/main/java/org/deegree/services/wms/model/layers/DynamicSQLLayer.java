@@ -45,10 +45,10 @@ import java.util.LinkedList;
 
 import javax.xml.namespace.QName;
 
+import org.deegree.commons.annotations.LoggingNotes;
 import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.commons.utils.Pair;
-import org.deegree.commons.utils.log.LoggingNotes;
 import org.deegree.feature.Feature;
 import org.deegree.feature.FeatureCollection;
 import org.deegree.feature.persistence.FeatureStoreException;

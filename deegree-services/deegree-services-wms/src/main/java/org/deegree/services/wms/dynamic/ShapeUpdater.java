@@ -45,7 +45,7 @@ import java.io.IOException;
 
 import javax.xml.stream.FactoryConfigurationError;
 
-import org.deegree.commons.utils.log.LoggingNotes;
+import org.deegree.commons.annotations.LoggingNotes;
 import org.deegree.services.wms.MapService;
 import org.deegree.services.wms.model.layers.EmptyLayer;
 import org.deegree.services.wms.model.layers.FeatureLayer;

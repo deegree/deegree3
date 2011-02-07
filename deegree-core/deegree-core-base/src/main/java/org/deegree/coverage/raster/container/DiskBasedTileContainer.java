@@ -54,8 +54,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
+import org.deegree.commons.annotations.LoggingNotes;
 import org.deegree.commons.index.QTree;
-import org.deegree.commons.utils.log.LoggingNotes;
 import org.deegree.coverage.ResolutionInfo;
 import org.deegree.coverage.raster.AbstractRaster;
 import org.deegree.coverage.raster.data.info.RasterDataInfo;

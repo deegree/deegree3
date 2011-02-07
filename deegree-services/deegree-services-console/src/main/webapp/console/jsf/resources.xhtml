@@ -37,16 +37,6 @@
 							<td><h:commandButton styleClass="buttonDelete"
 								value="#{labels.featureStores_delete}" action="#{config.delete}" onclick="return confirmDelete();" /></td>
                             <ui:insert name="extraButtons" />
-							<td><h:commandButton styleClass="buttonInfo"
-								rendered="#{config.active}" value="#{labels.featureStores_info}"
-								action="#{config.showInfo}" /></td>
-							<td><h:commandButton styleClass="buttonInfo"
-								rendered="#{config.active}" value="#{labels.featureStores_loader}"
-								action="#{config.openLoader}" /></td>								
-							<ui:remove><td><h:commandButton styleClass="buttonInfo"
-								rendered="#{config.active &amp;&amp; config.sql}"
-								value="#{labels.featureStores_setup}"
-								action="#{config.createTables}" /></td></ui:remove>
 						</tr>
 					</ui:repeat>
 				</table>

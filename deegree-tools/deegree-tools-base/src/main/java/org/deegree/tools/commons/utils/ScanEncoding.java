@@ -43,7 +43,7 @@ import java.io.BufferedInputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
 
-import org.deegree.commons.tools.Tool;
+import org.deegree.commons.annotations.Tool;
 import org.slf4j.Logger;
 
 /**

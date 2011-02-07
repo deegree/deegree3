@@ -60,10 +60,10 @@ import javax.xml.stream.FactoryConfigurationError;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 
+import org.deegree.commons.annotations.LoggingNotes;
 import org.deegree.commons.jdbc.ConnectionManager;
 import org.deegree.commons.utils.DoublePair;
 import org.deegree.commons.utils.Triple;
-import org.deegree.commons.utils.log.LoggingNotes;
 import org.deegree.rendering.r2d.se.unevaluated.Style;
 import org.deegree.rendering.r2d.styling.LineStyling;
 import org.deegree.rendering.r2d.styling.PointStyling;

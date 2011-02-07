@@ -41,5 +41,5 @@
  */
 package org.deegree.cs;
 
-import org.deegree.commons.utils.log.PackageLoggingNotes;
+import org.deegree.commons.annotations.PackageLoggingNotes;
 

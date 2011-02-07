@@ -36,5 +36,5 @@
 @PackageLoggingNotes(title = "3D rendering")
 package org.deegree.rendering.r3d;
 
-import org.deegree.commons.utils.log.PackageLoggingNotes;
+import org.deegree.commons.annotations.PackageLoggingNotes;
 

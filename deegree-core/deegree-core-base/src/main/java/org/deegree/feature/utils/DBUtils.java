@@ -65,9 +65,9 @@ import java.util.LinkedList;
 
 import javax.xml.namespace.QName;
 
+import org.deegree.commons.annotations.LoggingNotes;
 import org.deegree.commons.tom.primitive.PrimitiveType;
 import org.deegree.commons.utils.JDBCUtils;
-import org.deegree.commons.utils.log.LoggingNotes;
 import org.deegree.feature.types.GenericFeatureType;
 import org.deegree.feature.types.property.GeometryPropertyType;
 import org.deegree.feature.types.property.PropertyType;

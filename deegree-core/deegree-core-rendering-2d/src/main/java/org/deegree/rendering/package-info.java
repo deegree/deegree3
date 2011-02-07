@@ -36,5 +36,5 @@
 @PackageLoggingNotes(title = "rendering subsystem")
 package org.deegree.rendering;
 
-import org.deegree.commons.utils.log.PackageLoggingNotes;
+import org.deegree.commons.annotations.PackageLoggingNotes;
 

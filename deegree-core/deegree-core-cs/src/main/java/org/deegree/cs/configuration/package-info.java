@@ -36,5 +36,5 @@
 @PackageLoggingNotes(title = "crs configuration logging", debug = "Output logging information on loading of Coordinate Systems from a configuration.")
 package org.deegree.cs.configuration;
 
-import org.deegree.commons.utils.log.PackageLoggingNotes;
+import org.deegree.commons.annotations.PackageLoggingNotes;
 

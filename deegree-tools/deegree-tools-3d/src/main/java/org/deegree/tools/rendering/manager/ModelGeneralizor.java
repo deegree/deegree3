@@ -49,6 +49,7 @@ import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.PosixParser;
+import org.deegree.commons.annotations.Tool;
 import org.deegree.commons.jdbc.ConnectionManager;
 import org.deegree.commons.utils.ArrayUtils;
 import org.deegree.rendering.r3d.opengl.rendering.model.geometry.WorldRenderableObject;
@@ -58,7 +59,6 @@ import org.deegree.services.wpvs.io.DataObjectInfo;
 import org.deegree.services.wpvs.io.ModelBackend;
 import org.deegree.services.wpvs.io.ModelBackend.Type;
 import org.deegree.commons.tools.CommandUtils;
-import org.deegree.commons.tools.Tool;
 import org.deegree.tools.rendering.manager.buildings.generalisation.WorldObjectSimplifier;
 
 /**

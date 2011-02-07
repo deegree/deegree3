@@ -36,5 +36,5 @@
 @PackageLoggingNotes(title = "projections logging", debug = "Get logging information about projections and the execution of projections.")
 package org.deegree.cs.projections;
 
-import org.deegree.commons.utils.log.PackageLoggingNotes;
+import org.deegree.commons.annotations.PackageLoggingNotes;
 

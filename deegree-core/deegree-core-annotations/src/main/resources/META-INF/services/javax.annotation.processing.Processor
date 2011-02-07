@@ -1,1 +1,2 @@
-org.deegree.commons.utils.log.LoggingAnnotationProcessor
+org.deegree.commons.processors.LoggingAnnotationProcessor
+org.deegree.commons.processors.ConsoleManagedProcessor

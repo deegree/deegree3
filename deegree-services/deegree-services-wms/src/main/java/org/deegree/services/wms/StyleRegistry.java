@@ -58,8 +58,8 @@ import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
+import org.deegree.commons.annotations.LoggingNotes;
 import org.deegree.commons.utils.Pair;
-import org.deegree.commons.utils.log.LoggingNotes;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.filter.Filter;
 import org.deegree.rendering.r2d.se.parser.SymbologyParser;

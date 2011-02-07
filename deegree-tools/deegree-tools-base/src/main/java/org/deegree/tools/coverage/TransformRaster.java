@@ -45,7 +45,7 @@ import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.PosixParser;
-import org.deegree.commons.tools.Tool;
+import org.deegree.commons.annotations.Tool;
 import org.deegree.coverage.raster.AbstractRaster;
 import org.deegree.coverage.raster.RasterTransformer;
 import org.deegree.coverage.raster.TiledRaster;

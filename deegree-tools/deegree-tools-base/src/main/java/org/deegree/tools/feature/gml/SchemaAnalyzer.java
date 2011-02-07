@@ -64,8 +64,8 @@ import org.apache.xerces.xs.XSObjectList;
 import org.apache.xerces.xs.XSParticle;
 import org.apache.xerces.xs.XSSimpleTypeDefinition;
 import org.apache.xerces.xs.XSTypeDefinition;
+import org.deegree.commons.annotations.Tool;
 import org.deegree.commons.tools.CommandUtils;
-import org.deegree.commons.tools.Tool;
 import org.w3c.dom.bootstrap.DOMImplementationRegistry;
 
 /**
