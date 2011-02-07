@@ -64,11 +64,19 @@ public class HtmlInputBBox extends UISelectOne {
     public static final String COMPONENT_TYPE = "HtmlInputBBox";
 
     private static enum AdditionalPropertyKeys {
-        showCRS, styleClass, crsLabel, crsSize, minxLabel, minyLabel, maxxLabel, maxyLabel, disabled
+        showCRS, styleClass, crsLabel, crsSize, minxLabel, minyLabel, maxxLabel, maxyLabel, disabled, onchange
     }
 
     public HtmlInputBBox() {
         setRendererType( "org.deegree.InputBBox" );
+    }
+
+    public String getOnchange() {
+        return (String) getStateHelper().eval( AdditionalPropertyKeys.onchange, null );
+    }
+
+    public void setOnchange( String onchange ) {
+        getStateHelper().put( AdditionalPropertyKeys.onchange, onchange );
     }
 
     public String getStyleClass() {
