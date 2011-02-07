@@ -42,7 +42,9 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.xml.bind.JAXBException;
 
@@ -142,7 +144,8 @@ public class RenderableSQLStoreProvider implements RenderableStoreProvider {
         return RenderableSQLStoreProvider.class.getResource( CONFIG_SCHEMA );
     }
 
-    public URL getConfigTemplate() {
-        return null;
+    public Map<String, URL> getConfigTemplates() {
+        // TODO get an example here
+        return new HashMap<String, URL>();
     }
 }

@@ -35,6 +35,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.services.wpvs.io.file;
 
+import static java.util.Collections.singletonMap;
+
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -42,6 +44,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.List;
+import java.util.Map;
 
 import javax.xml.bind.JAXBException;
 
@@ -153,7 +156,8 @@ public class RenderableFileStoreProvider implements RenderableStoreProvider {
         return RenderableFileStoreProvider.class.getResource( CONFIG_SCHEMA );
     }
 
-    public URL getConfigTemplate() {
-        return null;
+    public Map<String, URL> getConfigTemplates() {
+        String path = "/META-INF/schemas/datasource/3d/renderable/3.0.0/file_example.xml";
+        return singletonMap( "example", RenderableFileStoreProvider.class.getResource( path ) );
     }
 }

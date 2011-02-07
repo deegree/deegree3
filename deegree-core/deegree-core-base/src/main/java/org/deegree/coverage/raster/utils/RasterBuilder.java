@@ -46,8 +46,10 @@ import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import javax.xml.bind.JAXBException;
 
@@ -577,8 +579,13 @@ public class RasterBuilder implements CoverageBuilder {
         return RasterBuilder.class.getResource( CONFIG_SCHEMA );
     }
 
-    public URL getConfigTemplate() {
-        return null;
+    public Map<String, URL> getConfigTemplates() {
+        HashMap<String, URL> map = new HashMap<String, URL>();
+        map.put( "singlefile",
+                 RasterBuilder.class.getResource( "/META-INF/schemas/datasource/coverage/raster/3.0.0/single.xml" ) );
+        map.put( "directory",
+                 RasterBuilder.class.getResource( "/META-INF/schemas/datasource/coverage/raster/3.0.0/directory.xml" ) );
+        return map;
     }
 
 }

@@ -77,12 +77,6 @@ import org.deegree.commons.config.ResourceManagerMetadata;
 import org.deegree.commons.config.ResourceProvider;
 import org.deegree.commons.utils.io.Zip;
 import org.deegree.commons.version.DeegreeModuleInfo;
-import org.deegree.console.featurestore.FeatureStoreConfigManager;
-import org.deegree.console.jdbc.ConnectionConfigManager;
-import org.deegree.console.metadatastore.MetadataStoreConfigManager;
-import org.deegree.console.observationstore.ObservationStoreConfigManager;
-import org.deegree.console.services.ServiceConfigManager;
-import org.deegree.console.styles.StyleConfigManager;
 import org.deegree.services.controller.OGCFrontController;
 import org.h2.util.IOUtils;
 import org.slf4j.Logger;
@@ -100,18 +94,6 @@ import org.slf4j.Logger;
 public class ConfigManager {
 
     private static final Logger LOG = getLogger( ConfigManager.class );
-
-    private static URL MAIN_TEMPLATE = ConnectionConfigManager.class.getResource( "main_template.xml" );
-
-    private static URL MAIN_SCHEMA_URL = ConnectionConfigManager.class.getResource( "/META-INF/schemas/controller/3.0.0/controller.xsd" );
-
-    private static URL METADATA_TEMPLATE = ConnectionConfigManager.class.getResource( "metadata_template.xml" );
-
-    private static URL PROXY_SCHEMA_URL = ConnectionConfigManager.class.getResource( "/META-INF/schemas/proxy/3.0.0/proxy.xsd" );
-
-    private static URL PROXY_TEMPLATE = ConnectionConfigManager.class.getResource( "/META-INF/schemas/proxy/3.0.0/example.xml" );
-
-    private static URL METADATA_SCHEMA_URL = ConnectionConfigManager.class.getResource( "/META-INF/schemas/metadata/3.0.0/metadata.xsd" );
 
     @Getter
     private List<ResourceManagerMetadata> resourceManagers;
@@ -135,24 +117,6 @@ public class ConfigManager {
     @Setter
     private String newConfigId;
 
-    private final XMLConfig serviceMainConfig;
-
-    private final XMLConfig serviceMetadataConfig;
-
-    private final ServiceConfigManager serviceManager;
-
-    private final StyleConfigManager styleManager;
-
-    private final FeatureStoreConfigManager fsManager;
-
-    private final ObservationStoreConfigManager osManager;
-
-    private final MetadataStoreConfigManager msManager;
-
-    private final ConnectionConfigManager connManager;
-
-    private final XMLConfig proxyConfig;
-
     @Getter
     private String lastMessage = "Workspace initialized.";
 
@@ -169,23 +133,6 @@ public class ConfigManager {
     private boolean modified;
 
     public ConfigManager() {
-        File serviceMainConfigFile = new File( OGCFrontController.getServiceWorkspace().getLocation(),
-                                               "services/main.xml" );
-        serviceMainConfig = new XMLConfig( true, false, serviceMainConfigFile, MAIN_SCHEMA_URL, MAIN_TEMPLATE, false,
-                                           null );
-        File serviceMetadataConfigFile = new File( OGCFrontController.getServiceWorkspace().getLocation(),
-                                                   "services/metadata.xml" );
-        serviceMetadataConfig = new XMLConfig( true, false, serviceMetadataConfigFile, METADATA_SCHEMA_URL,
-                                               METADATA_TEMPLATE, false, null );
-        this.serviceManager = new ServiceConfigManager();
-        this.styleManager = new StyleConfigManager();
-        this.fsManager = new FeatureStoreConfigManager();
-        this.osManager = new ObservationStoreConfigManager();
-        this.connManager = new ConnectionConfigManager();
-        this.msManager = new MetadataStoreConfigManager();
-        File proxyFile = new File( OGCFrontController.getServiceWorkspace().getLocation(), "proxy.xml" );
-        this.proxyConfig = new XMLConfig( true, false, proxyFile, PROXY_SCHEMA_URL, PROXY_TEMPLATE, true,
-                                          "/console/jsf/proxy.xhtml" );
         resourceManagers = new LinkedList<ResourceManagerMetadata>();
         resourceManagerMap = new HashMap<String, ResourceManagerMetadata>();
         ServiceLoader<ResourceManager> loaded = ServiceLoader.load( ResourceManager.class );
@@ -252,11 +199,11 @@ public class ConfigManager {
         URL schemaURL = null;
         for ( ResourceProvider p : currentResourceManager.getResourceProviders() ) {
             if ( p.getConfigNamespace().endsWith( newConfigType ) ) {
-                if ( p.getConfigTemplate() != null ) {
+                if ( p.getConfigTemplates() != null ) {
                     schemaURL = p.getConfigSchema();
                     template = true;
                     try {
-                        IOUtils.copyAndClose( p.getConfigTemplate().openStream(), new FileOutputStream( conf ) );
+                        IOUtils.copyAndClose( p.getConfigTemplates().values().iterator().next().openStream(), new FileOutputStream( conf ) );
                     } catch ( FileNotFoundException e ) {
                         // TODO Auto-generated catch block
                         e.printStackTrace();
@@ -295,34 +242,6 @@ public class ConfigManager {
     }
 
     public boolean getPendingChanges() {
-        if ( serviceMetadataConfig.isModified() || serviceMainConfig.isModified() || proxyConfig.isModified() ) {
-            lastMessage = "Workspace has been changed.";
-            return true;
-        }
-        if ( serviceManager.needsReloading() ) {
-            lastMessage = "Workspace has been changed.";
-            return true;
-        }
-        if ( styleManager.needsReloading() ) {
-            lastMessage = "Workspace has been changed.";
-            return true;
-        }
-        if ( fsManager.needsReloading() ) {
-            lastMessage = "Workspace has been changed.";
-            return true;
-        }
-        if ( osManager.needsReloading() ) {
-            lastMessage = "Workspace has been changed.";
-            return true;
-        }
-        if ( msManager.needsReloading() ) {
-            lastMessage = "Workspace has been changed.";
-            return true;
-        }
-        if ( connManager.needsReloading() ) {
-            lastMessage = "Workspace has been changed.";
-            return true;
-        }
         if ( modified ) {
             lastMessage = "Workspace has been changed.";
         }
@@ -332,57 +251,6 @@ public class ConfigManager {
     public static ConfigManager getApplicationInstance() {
         return (ConfigManager) FacesContext.getCurrentInstance().getExternalContext().getApplicationMap().get(
                                                                                                                "configManager" );
-    }
-
-    public XMLConfig getServiceMainConfig() {
-        return serviceMainConfig;
-    }
-
-    public XMLConfig getServiceMetadataConfig() {
-        return serviceMetadataConfig;
-    }
-
-    public XMLConfig getProxyConfig() {
-        return proxyConfig;
-    }
-
-    /**
-     * @return the serviceManager
-     */
-    public ServiceConfigManager getServiceManager() {
-        return serviceManager;
-    }
-
-    /**
-     * @return the styleManager
-     */
-    public StyleConfigManager getStyleManager() {
-        return styleManager;
-    }
-
-    /**
-     * @return the fsManager
-     */
-    public FeatureStoreConfigManager getFsManager() {
-        return fsManager;
-    }
-
-    /**
-     * @return the osManager
-     */
-    public ObservationStoreConfigManager getOsManager() {
-        return osManager;
-    }
-
-    public MetadataStoreConfigManager getMsManager() {
-        return msManager;
-    }
-
-    /**
-     * @return the connManager
-     */
-    public ConnectionConfigManager getConnManager() {
-        return connManager;
     }
 
     public List<String> getWorkspaceList() {
@@ -423,16 +291,6 @@ public class ConfigManager {
 
         modified = false;
 
-        serviceMainConfig.setModified( false );
-        serviceMetadataConfig.setModified( false );
-        proxyConfig.setModified( false );
-
-        serviceManager.scan();
-        styleManager.scan();
-        fsManager.scan();
-        osManager.scan();
-        msManager.scan();
-        connManager.scan();
         lastMessage = "Workspace changes have been applied.";
         FacesContext ctx = FacesContext.getCurrentInstance();
         RequestBean bean = (RequestBean) ctx.getExternalContext().getSessionMap().get( "requestBean" );

@@ -35,10 +35,12 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.services.sos;
 
+import static java.util.Collections.singletonMap;
 import static org.deegree.protocol.sos.SOSConstants.SOS_100_NS;
 import static org.deegree.protocol.wps.WPSConstants.VERSION_100;
 
 import java.net.URL;
+import java.util.Map;
 
 import org.deegree.commons.config.ResourceManager;
 import org.deegree.commons.tom.ows.Version;
@@ -75,8 +77,8 @@ public class SOSProvider implements OWSProvider<SOSRequestType> {
         return SOSProvider.class.getResource( "/META-INF/schemas/sos/3.0.0/sos_configuration.xsd" );
     }
 
-    public URL getConfigTemplate() {
-        return SOSProvider.class.getResource( "/META-INF/schemas/sos/3.0.0/example.xml" );
+    public Map<String, URL> getConfigTemplates() {
+        return singletonMap( "example", SOSProvider.class.getResource( "/META-INF/schemas/sos/3.0.0/example.xml" ) );
     }
 
     public ImplementationMetadata<SOSRequestType> getImplementationMetadata() {

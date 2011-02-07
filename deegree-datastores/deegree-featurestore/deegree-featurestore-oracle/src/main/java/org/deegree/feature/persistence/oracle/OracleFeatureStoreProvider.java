@@ -35,6 +35,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.feature.persistence.oracle;
 
+import static java.util.Collections.singletonMap;
+
 import java.net.URL;
 import java.sql.SQLException;
 import java.util.HashMap;
@@ -78,8 +80,9 @@ public class OracleFeatureStoreProvider implements FeatureStoreProvider {
     }
 
     @Override
-    public URL getConfigTemplate() {
-        return OracleFeatureStoreProvider.class.getResource( "/META-INF/schemas/datasource/0.5.0/feature/example.xml" );
+    public Map<String, URL> getConfigTemplates() {
+        String loc = "/META-INF/schemas/datasource/0.5.0/feature/example.xml";
+        return singletonMap( "example", OracleFeatureStoreProvider.class.getResource( loc ) );
     }
 
     @Override

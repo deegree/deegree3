@@ -35,10 +35,12 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.cs.persistence.deegree.d2;
 
+import static java.util.Collections.singletonMap;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Map;
 
 import javax.xml.bind.JAXBException;
 
@@ -81,8 +83,8 @@ public class Deegree2CRSStoreProvider implements CRSStoreProvider {
         return Deegree2CRSStoreProvider.class.getResource( CONFIG_SCHEMA );
     }
 
-    public URL getConfigTemplate() {
-        return Deegree2CRSStoreProvider.class.getResource( CONFIG_TEMPLATE );
+    public Map<String, URL> getConfigTemplates() {
+        return singletonMap( "example", Deegree2CRSStoreProvider.class.getResource( CONFIG_TEMPLATE ) );
     }
 
     public CRSStore getCRSStore( URL configURL )

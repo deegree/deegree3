@@ -35,10 +35,12 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.feature.persistence.simplesql;
 
+import static java.util.Collections.singletonMap;
 import static org.deegree.commons.utils.CollectionUtils.map;
 
 import java.net.URL;
 import java.util.LinkedList;
+import java.util.Map;
 
 import javax.xml.bind.JAXBException;
 
@@ -90,8 +92,8 @@ public class SimpleSQLFeatureStoreProvider implements FeatureStoreProvider {
     }
 
     @Override
-    public URL getConfigTemplate() {
-        return SimpleSQLFeatureStoreProvider.class.getResource( CONFIG_TEMPLATE );
+    public Map<String, URL> getConfigTemplates() {
+        return singletonMap( "example", SimpleSQLFeatureStoreProvider.class.getResource( CONFIG_TEMPLATE ) );
     }
 
     @Override

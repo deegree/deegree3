@@ -35,10 +35,12 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.services.wps;
 
+import static java.util.Collections.singletonMap;
 import static org.deegree.protocol.wps.WPSConstants.VERSION_100;
 import static org.deegree.protocol.wps.WPSConstants.WPS_100_NS;
 
 import java.net.URL;
+import java.util.Map;
 
 import org.deegree.commons.config.ResourceManager;
 import org.deegree.commons.tom.ows.Version;
@@ -74,8 +76,8 @@ public class WPSProvider implements OWSProvider<WPSRequestType> {
         return WPSProvider.class.getResource( "/META-INF/schemas/wps/3.0.0/wps_configuration.xsd" );
     }
 
-    public URL getConfigTemplate() {
-        return WPSProvider.class.getResource( "/META-INF/schemas/wps/3.0.0/example.xml" );
+    public Map<String, URL> getConfigTemplates() {
+        return singletonMap( "example", WPSProvider.class.getResource( "/META-INF/schemas/wps/3.0.0/example.xml" ) );
     }
 
     public ImplementationMetadata<WPSRequestType> getImplementationMetadata() {

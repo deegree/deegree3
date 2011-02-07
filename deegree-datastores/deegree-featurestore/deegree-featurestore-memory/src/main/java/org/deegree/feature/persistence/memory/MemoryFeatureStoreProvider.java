@@ -35,6 +35,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.feature.persistence.memory;
 
+import static java.util.Collections.singletonMap;
+
 import java.io.File;
 import java.net.URL;
 import java.util.HashMap;
@@ -97,8 +99,8 @@ public class MemoryFeatureStoreProvider implements FeatureStoreProvider {
     }
 
     @Override
-    public URL getConfigTemplate() {
-        return MemoryFeatureStoreProvider.class.getResource( CONFIG_TEMPLATE );
+    public Map<String, URL> getConfigTemplates() {
+        return singletonMap( "example", MemoryFeatureStoreProvider.class.getResource( CONFIG_TEMPLATE ) );
     }
 
     @Override

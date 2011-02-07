@@ -35,10 +35,12 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.services.wpvs.controller;
 
+import static java.util.Collections.singletonMap;
 import static org.deegree.protocol.wpvs.WPVSConstants.VERSION_040;
 import static org.deegree.protocol.wpvs.WPVSConstants.WPVS_NS;
 
 import java.net.URL;
+import java.util.Map;
 
 import org.deegree.commons.config.ResourceManager;
 import org.deegree.commons.tom.ows.Version;
@@ -76,8 +78,8 @@ public class WPVSProvider implements OWSProvider<WPVSRequestType> {
         return WPVSProvider.class.getResource( "/META-INF/schemas/wpvs/3.0.0/wpvs_configuration.xsd" );
     }
 
-    public URL getConfigTemplate() {
-        return WPVSProvider.class.getResource( "/META-INF/schemas/wpvs/3.0.0/example.xml" );
+    public Map<String, URL> getConfigTemplates() {
+        return singletonMap( "example", WPVSProvider.class.getResource( "/META-INF/schemas/wpvs/3.0.0/example.xml" ) );
     }
 
     public ImplementationMetadata<WPVSRequestType> getImplementationMetadata() {

@@ -35,6 +35,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.observation.persistence.continuous;
 
+import static java.util.Collections.singletonMap;
+
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -78,8 +80,9 @@ public class ContinuousObservationProvider implements ObservationStoreProvider {
     }
 
     @Override
-    public URL getConfigTemplate() {
-        return ContinuousObservationProvider.class.getResource( "/META-INF/schemas/datasource/observation/contsql/3.0.0/example.xml" );
+    public Map<String, URL> getConfigTemplates() {
+        String path = "/META-INF/schemas/datasource/observation/contsql/3.0.0/example.xml";
+        return singletonMap( "example", ContinuousObservationProvider.class.getResource( path ) );
     }
 
     @Override

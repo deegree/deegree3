@@ -36,6 +36,7 @@
 package org.deegree.commons.config;
 
 import java.net.URL;
+import java.util.Map;
 
 /**
  * 
@@ -63,8 +64,9 @@ public interface ResourceProvider {
     /**
      * Returns the URL for retrieving the configuration document template.
      * 
-     * @return the URL for retrieving the configuration document template, may be <code>null</code>
+     * @return maps a name to the URLs for retrieving the configuration document templates, must include at least one
+     *         template
      */
-    URL getConfigTemplate();
+    Map<String, URL> getConfigTemplates();
 
 }

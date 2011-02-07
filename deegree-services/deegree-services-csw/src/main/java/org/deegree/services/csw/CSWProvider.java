@@ -35,10 +35,12 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.services.csw;
 
+import static java.util.Collections.singletonMap;
 import static org.deegree.protocol.csw.CSWConstants.CSW_202_NS;
 import static org.deegree.protocol.csw.CSWConstants.VERSION_202;
 
 import java.net.URL;
+import java.util.Map;
 
 import org.deegree.commons.config.ResourceManager;
 import org.deegree.commons.tom.ows.Version;
@@ -75,8 +77,8 @@ public class CSWProvider implements OWSProvider<CSWRequestType> {
         return CSWProvider.class.getResource( "/META-INF/schemas/csw/3.0.0/csw_configuration.xsd" );
     }
 
-    public URL getConfigTemplate() {
-        return CSWProvider.class.getResource( "/META-INF/schemas/csw/3.0.0/example.xml" );
+    public Map<String, URL> getConfigTemplates() {
+        return singletonMap( "example", CSWProvider.class.getResource( "/META-INF/schemas/csw/3.0.0/example.xml" ) );
     }
 
     public ImplementationMetadata<CSWRequestType> getImplementationMetadata() {

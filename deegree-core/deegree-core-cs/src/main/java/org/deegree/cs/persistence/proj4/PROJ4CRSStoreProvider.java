@@ -35,11 +35,13 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.cs.persistence.proj4;
 
+import static java.util.Collections.singletonMap;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Map;
 
 import javax.xml.bind.JAXBException;
 
@@ -81,8 +83,8 @@ public class PROJ4CRSStoreProvider implements CRSStoreProvider {
         return GMLCRSStoreProvider.class.getResource( CONFIG_SCHEMA );
     }
 
-    public URL getConfigTemplate() {
-        return GMLCRSStoreProvider.class.getResource( CONFIG_TEMPLATE );
+    public Map<String, URL> getConfigTemplates() {
+        return singletonMap( "example", GMLCRSStoreProvider.class.getResource( CONFIG_TEMPLATE ) );
     }
 
     public CRSStore getCRSStore( URL configURL )

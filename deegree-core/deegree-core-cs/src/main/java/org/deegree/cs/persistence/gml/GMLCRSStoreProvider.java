@@ -35,6 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.cs.persistence.gml;
 
+import static java.util.Collections.singletonMap;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.lang.reflect.Constructor;
@@ -86,8 +87,8 @@ public class GMLCRSStoreProvider implements CRSStoreProvider {
         return GMLCRSStoreProvider.class.getResource( CONFIG_SCHEMA );
     }
 
-    public URL getConfigTemplate() {
-        return GMLCRSStoreProvider.class.getResource( CONFIG_TEMPLATE );
+    public Map<String, URL> getConfigTemplates() {
+        return singletonMap( "example", GMLCRSStoreProvider.class.getResource( CONFIG_TEMPLATE ) );
     }
 
     public CRSStore getCRSStore( URL configURL )
@@ -120,25 +121,32 @@ public class GMLCRSStoreProvider implements CRSStoreProvider {
                 } catch ( InstantiationException e ) {
                     LOG.error( Messages.getMessage( "CRS_CONFIG_INSTANTIATION_ERROR", resourceClassName, e.getMessage() ) );
                 } catch ( IllegalAccessException e ) {
-                    LOG.error( Messages.getMessage( "CRS_CONFIG_INSTANTIATION_ERROR", resourceClassName, e.getMessage() ),
+                    LOG.error(
+                               Messages.getMessage( "CRS_CONFIG_INSTANTIATION_ERROR", resourceClassName, e.getMessage() ),
                                e );
                 } catch ( ClassNotFoundException e ) {
-                    LOG.error( Messages.getMessage( "CRS_CONFIG_INSTANTIATION_ERROR", resourceClassName, e.getMessage() ),
+                    LOG.error(
+                               Messages.getMessage( "CRS_CONFIG_INSTANTIATION_ERROR", resourceClassName, e.getMessage() ),
                                e );
                 } catch ( SecurityException e ) {
-                    LOG.error( Messages.getMessage( "CRS_CONFIG_INSTANTIATION_ERROR", resourceClassName, e.getMessage() ),
+                    LOG.error(
+                               Messages.getMessage( "CRS_CONFIG_INSTANTIATION_ERROR", resourceClassName, e.getMessage() ),
                                e );
                 } catch ( NoSuchMethodException e ) {
-                    LOG.error( Messages.getMessage( "CRS_CONFIG_INSTANTIATION_ERROR", resourceClassName, e.getMessage() ),
+                    LOG.error(
+                               Messages.getMessage( "CRS_CONFIG_INSTANTIATION_ERROR", resourceClassName, e.getMessage() ),
                                e );
                 } catch ( IllegalArgumentException e ) {
-                    LOG.error( Messages.getMessage( "CRS_CONFIG_INSTANTIATION_ERROR", resourceClassName, e.getMessage() ),
+                    LOG.error(
+                               Messages.getMessage( "CRS_CONFIG_INSTANTIATION_ERROR", resourceClassName, e.getMessage() ),
                                e );
                 } catch ( InvocationTargetException e ) {
-                    LOG.error( Messages.getMessage( "CRS_CONFIG_INSTANTIATION_ERROR", resourceClassName, e.getMessage() ),
+                    LOG.error(
+                               Messages.getMessage( "CRS_CONFIG_INSTANTIATION_ERROR", resourceClassName, e.getMessage() ),
                                e );
                 } catch ( Throwable t ) {
-                    LOG.error( Messages.getMessage( "CRS_CONFIG_INSTANTIATION_ERROR", resourceClassName, t.getMessage() ),
+                    LOG.error(
+                               Messages.getMessage( "CRS_CONFIG_INSTANTIATION_ERROR", resourceClassName, t.getMessage() ),
                                t );
                 } finally {
                     LOG.info( "The configured class: " + resourceClassName + " was not instantiated." );

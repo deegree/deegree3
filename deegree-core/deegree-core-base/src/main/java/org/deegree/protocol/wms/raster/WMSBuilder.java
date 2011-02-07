@@ -35,6 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.protocol.wms.raster;
 
+import static java.util.Collections.singletonMap;
 import static org.deegree.protocol.wms.raster.WMSReader.RIO_WMS_DEFAULT_FORMAT;
 import static org.deegree.protocol.wms.raster.WMSReader.RIO_WMS_ENABLE_TRANSPARENT;
 import static org.deegree.protocol.wms.raster.WMSReader.RIO_WMS_LAYERS;
@@ -50,6 +51,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.Map;
 
 import javax.xml.bind.JAXBException;
 
@@ -248,7 +250,8 @@ public class WMSBuilder implements CoverageBuilder {
         return WMSBuilder.class.getResource( CONFIG_SCHEMA );
     }
 
-    public URL getConfigTemplate() {
-        return null;
+    public Map<String, URL> getConfigTemplates() {
+        String path = "/META-INF/schemas/datasource/coverage/wms/3.0.0/example.xml";
+        return singletonMap( "example", WMSBuilder.class.getResource( path ) );
     }
 }

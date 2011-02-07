@@ -111,7 +111,7 @@ public class Config implements Comparable<Config> {
             for ( ResourceProvider p : md.getResourceProviders() ) {
                 if ( p.getConfigNamespace().equals( namespace ) ) {
                     schemaURL = p.getConfigSchema();
-                    template = p.getConfigTemplate();
+                    template = p.getConfigTemplates().values().iterator().next();
                     schemaAsText = schemaURL == null ? null : IOUtils.toString( in2 = schemaURL.openStream() );
                     return;
                 }
@@ -134,7 +134,7 @@ public class Config implements Comparable<Config> {
             for ( ResourceProvider p : md.getResourceProviders() ) {
                 if ( p.getConfigNamespace().endsWith( type ) ) {
                     schemaURL = p.getConfigSchema();
-                    template = p.getConfigTemplate();
+                    template = p.getConfigTemplates().values().iterator().next();
                     schemaAsText = schemaURL == null ? null : IOUtils.toString( in = schemaURL.openStream() );
                     return;
                 }

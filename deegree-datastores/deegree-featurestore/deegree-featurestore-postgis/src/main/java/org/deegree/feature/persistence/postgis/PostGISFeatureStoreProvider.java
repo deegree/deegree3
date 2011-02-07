@@ -35,9 +35,12 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.feature.persistence.postgis;
 
+import static java.util.Collections.singletonMap;
+
 import java.net.URL;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Map;
 
 import javax.xml.bind.JAXBException;
 
@@ -83,8 +86,8 @@ public class PostGISFeatureStoreProvider implements FeatureStoreProvider {
     }
 
     @Override
-    public URL getConfigTemplate() {
-        return PostGISFeatureStoreProvider.class.getResource( CONFIG_TEMPLATE );
+    public Map<String, URL> getConfigTemplates() {
+        return singletonMap( "example", PostGISFeatureStoreProvider.class.getResource( CONFIG_TEMPLATE ) );
     }
 
     @Override
