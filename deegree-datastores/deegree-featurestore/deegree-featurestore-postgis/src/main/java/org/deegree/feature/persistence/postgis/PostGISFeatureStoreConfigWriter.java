@@ -37,11 +37,8 @@ package org.deegree.feature.persistence.postgis;
 
 import static javax.xml.XMLConstants.DEFAULT_NS_PREFIX;
 import static javax.xml.XMLConstants.NULL_NS_URI;
-import static org.apache.xerces.xs.XSComplexTypeDefinition.CONTENTTYPE_ELEMENT;
-import static org.apache.xerces.xs.XSComplexTypeDefinition.CONTENTTYPE_EMPTY;
 import static org.deegree.commons.xml.CommonNamespaces.XSINS;
 
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.SortedSet;
@@ -52,19 +49,9 @@ import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
-import org.apache.xerces.xs.XSAttributeDeclaration;
-import org.apache.xerces.xs.XSAttributeUse;
-import org.apache.xerces.xs.XSComplexTypeDefinition;
-import org.apache.xerces.xs.XSElementDeclaration;
-import org.apache.xerces.xs.XSModelGroup;
-import org.apache.xerces.xs.XSObjectList;
-import org.apache.xerces.xs.XSParticle;
 import org.apache.xerces.xs.XSSimpleTypeDefinition;
-import org.apache.xerces.xs.XSTerm;
 import org.apache.xerces.xs.XSTypeDefinition;
-import org.apache.xerces.xs.XSWildcard;
 import org.deegree.commons.tom.primitive.XMLValueMangler;
-import org.deegree.commons.xml.CommonNamespaces;
 import org.deegree.feature.persistence.mapping.FeatureTypeMapping;
 import org.deegree.feature.persistence.mapping.MappedApplicationSchema;
 import org.deegree.feature.persistence.mapping.id.AutoIDGenerator;
@@ -72,12 +59,15 @@ import org.deegree.feature.persistence.mapping.id.FIDMapping;
 import org.deegree.feature.persistence.mapping.id.IDGenerator;
 import org.deegree.feature.persistence.mapping.id.SequenceIDGenerator;
 import org.deegree.feature.persistence.mapping.id.UUIDGenerator;
+import org.deegree.feature.persistence.mapping.property.CompoundMapping;
+import org.deegree.feature.persistence.mapping.property.FeatureMapping;
+import org.deegree.feature.persistence.mapping.property.GeometryMapping;
 import org.deegree.feature.persistence.mapping.property.Mapping;
+import org.deegree.feature.persistence.mapping.property.PrimitiveMapping;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.feature.types.property.CodePropertyType;
 import org.deegree.feature.types.property.CustomPropertyType;
 import org.deegree.feature.types.property.FeaturePropertyType;
-import org.deegree.feature.types.property.GenericGMLObjectPropertyType;
 import org.deegree.feature.types.property.GeometryPropertyType;
 import org.deegree.feature.types.property.MeasurePropertyType;
 import org.deegree.feature.types.property.PropertyType;
@@ -193,74 +183,76 @@ public class PostGISFeatureStoreConfigWriter {
         for ( PropertyType pt : ft.getPropertyDeclarations() ) {
             Mapping propMapping = ftMapping.getMapping( pt.getName() );
             if ( propMapping != null ) {
-                
+                PropertyType[] substitutions = pt.getSubstitutions();
+                if ( substitutions.length > 1 ) {
+                    LOG.info( "Property '" + pt.getName() + "' has multiple substitutions: " + substitutions.length );
+                }
+                for ( PropertyType substitution : substitutions ) {
+                    if ( !substitution.isAbstract() ) {
+                        writePropertyMapping( writer, substitution, propMapping );
+                    }
+                }
+            } else {
+                LOG.warn( "No mapping for property '" + pt.getName() + "'" );
             }
-            // PropertyType[] substitutions = pt.getSubstitutions();
-            // if ( substitutions.length > 1 ) {
-            // LOG.info( "Property '" + pt.getName() + "' has multiple substitutions: " + substitutions.length );
-            // }
-            // for ( PropertyType substitution : substitutions ) {
-            // if ( !substitution.isAbstract() ) {
-            // writePropertyMapping( writer, substitution, mc );
-            // }
-            // }
         }
 
         writer.writeEndElement();
     }
 
-    private void writePropertyMapping( XMLStreamWriter writer, PropertyType pt, MappingContext mc )
+    private void writePropertyMapping( XMLStreamWriter writer, PropertyType pt, Mapping mapping )
                             throws XMLStreamException {
         LOG.info( "Mapping property type '" + pt.getName() + "'" );
-        if ( pt instanceof CodePropertyType ) {
-            writePropertyMapping( writer, (CodePropertyType) pt, mc );
-        } else if ( pt instanceof CustomPropertyType ) {
-            writePropertyMapping( writer, (CustomPropertyType) pt, mc );
-        } else if ( pt instanceof FeaturePropertyType ) {
-            writePropertyMapping( writer, (FeaturePropertyType) pt, mc );
+        if ( pt instanceof SimplePropertyType ) {
+            writePropertyMapping( writer, (SimplePropertyType) pt, (PrimitiveMapping) mapping );
         } else if ( pt instanceof GeometryPropertyType ) {
-            writePropertyMapping( writer, (GeometryPropertyType) pt, mc );
-        } else if ( pt instanceof GenericGMLObjectPropertyType ) {
-            LOG.info( "Skipping property: " + pt.getName() );
-        } else if ( pt instanceof MeasurePropertyType ) {
-            writePropertyMapping( writer, (MeasurePropertyType) pt, mc );
-        } else if ( pt instanceof SimplePropertyType ) {
-            writePropertyMapping( writer, (SimplePropertyType) pt, mc );
+            writePropertyMapping( writer, (GeometryPropertyType) pt, (GeometryMapping) mapping );
+        } else if ( pt instanceof FeaturePropertyType ) {
+            writePropertyMapping( writer, (FeaturePropertyType) pt, (FeatureMapping) mapping );
+        } else if ( pt instanceof CustomPropertyType ) {
+            writePropertyMapping( writer, (CustomPropertyType) pt, (CompoundMapping) mapping );
         } else {
-            throw new RuntimeException( "Unhandled property type '" + pt.getClass() + "'" );
+            LOG.warn( "Unhandled property type '" + pt.getClass() + "'" );
         }
     }
 
-    private void writePropertyMapping( XMLStreamWriter writer, SimplePropertyType pt, MappingContext mc )
+    private void writePropertyMapping( XMLStreamWriter writer, SimplePropertyType pt, PrimitiveMapping mapping )
                             throws XMLStreamException {
+
         writer.writeStartElement( CONFIG_NS, "SimpleProperty" );
         writeCommonAttrs( writer, pt );
         writer.writeAttribute( "type", pt.getPrimitiveType().getXSTypeName() );
-        if ( pt.getMaxOccurs() == 1 ) {
-            MappingContext simpleValueContext = mcManager.mapOneToOneElement( mc, pt.getName() );
-            writer.writeAttribute( "mapping", simpleValueContext.getColumn() );
-        } else {
-            MappingContext simpleValueContext = mcManager.mapOneToManyElements( mc, pt.getName() );
-            writeJoinedTable( writer, simpleValueContext.getTable() );
-        }
+        writer.writeAttribute( "mapping", mapping.getMapping().toString() );
+        // if ( pt.getMaxOccurs() == 1 ) {
+        // MappingContext simpleValueContext = mcManager.mapOneToOneElement( mc, pt.getName() );
+        // writer.writeAttribute( "mapping", simpleValueContext.getColumn() );
+        // } else {
+        // MappingContext simpleValueContext = mcManager.mapOneToManyElements( mc, pt.getName() );
+        // writeJoinedTable( writer, simpleValueContext.getTable() );
+        // }
         writer.writeEndElement();
     }
 
-    private void writePropertyMapping( XMLStreamWriter writer, GeometryPropertyType pt, MappingContext mc )
+    private void writePropertyMapping( XMLStreamWriter writer, GeometryPropertyType pt, GeometryMapping mapping )
                             throws XMLStreamException {
         writer.writeStartElement( CONFIG_NS, "GeometryProperty" );
         writeCommonAttrs( writer, pt );
-        if ( pt.getMaxOccurs() == 1 ) {
-            MappingContext geometryValueContext = mcManager.mapOneToOneElement( mc, pt.getName() );
-            writer.writeAttribute( "mapping", geometryValueContext.getColumn() );
-        } else {
-            MappingContext geometryValueContext = mcManager.mapOneToManyElements( mc, pt.getName() );
-            writeJoinedTable( writer, geometryValueContext.getTable() );
-        }
+        writer.writeAttribute( "mapping", mapping.getMapping().toString() );
+        writer.writeAttribute( "type", pt.getGeometryType().name() );
+        writer.writeAttribute( "crs", "" );
+        writer.writeAttribute( "srid", "" );
+        writer.writeAttribute( "dim", pt.getCoordinateDimension().name() );
+        // if ( pt.getMaxOccurs() == 1 ) {
+        // MappingContext geometryValueContext = mcManager.mapOneToOneElement( mc, pt.getName() );
+        // writer.writeAttribute( "mapping", geometryValueContext.getColumn() );
+        // } else {
+        // MappingContext geometryValueContext = mcManager.mapOneToManyElements( mc, pt.getName() );
+        // writeJoinedTable( writer, geometryValueContext.getTable() );
+        // }
         writer.writeEndElement();
     }
 
-    private void writePropertyMapping( XMLStreamWriter writer, FeaturePropertyType pt, MappingContext mc )
+    private void writePropertyMapping( XMLStreamWriter writer, FeaturePropertyType pt, FeatureMapping mapping )
                             throws XMLStreamException {
         writer.writeStartElement( CONFIG_NS, "FeatureProperty" );
         writeCommonAttrs( writer, pt );
@@ -268,13 +260,71 @@ public class PostGISFeatureStoreConfigWriter {
             writer.writeAttribute( "type", getName( pt.getFTName() ) );
         }
         if ( pt.getMaxOccurs() == 1 ) {
-            MappingContext featureValueContext = mcManager.mapOneToOneElement( mc, pt.getName() );
-            writer.writeAttribute( "mapping", featureValueContext.getColumn() );
+            writer.writeAttribute( "mapping", mapping.getMapping().toString() );
         } else {
-            MappingContext featureValueContext = mcManager.mapOneToManyElements( mc, ( pt.getName() ) );
-            writeJoinedTable( writer, featureValueContext.getTable() );
+            // MappingContext featureValueContext = mcManager.mapOneToManyElements( mc, ( pt.getName() ) );
+            // writeJoinedTable( writer, featureValueContext.getTable() );
         }
         writer.writeEndElement();
+    }
+
+    private void writePropertyMapping( XMLStreamWriter writer, CustomPropertyType pt, CompoundMapping mapping )
+                            throws XMLStreamException {
+
+        writer.writeStartElement( CONFIG_NS, "CustomProperty" );
+        writeCommonAttrs( writer, pt );
+
+        for ( Mapping particle : mapping.getParticles() ) {
+            writeMapping( writer, particle );
+        }
+
+        // MappingContext customValueContext = null;
+        // if ( pt.getMaxOccurs() == 1 ) {
+        // customValueContext = mcManager.mapOneToOneElement( mc, pt.getName() );
+        // } else {
+        // customValueContext = mcManager.mapOneToManyElements( mc, pt.getName() );
+        // writeJoinedTable( writer, customValueContext.getTable() );
+        // }
+
+        // Map<QName, QName> elements = new LinkedHashMap<QName, QName>();
+        // elements.put( pt.getName(), getQName( pt.getXSDValueType() ) );
+        //
+        // createMapping( writer, pt.getXSDValueType(), customValueContext, elements );
+        writer.writeEndElement();
+    }
+
+    private void writeMapping( XMLStreamWriter writer, Mapping particle )
+                            throws XMLStreamException {
+
+        if ( particle instanceof PrimitiveMapping ) {
+            PrimitiveMapping pm = (PrimitiveMapping) particle;
+            writer.writeStartElement( CONFIG_NS, "PrimitiveMapping" );
+            writer.writeAttribute( "path", particle.getPath().getAsText() );
+            writer.writeAttribute( "type", pm.getType().getXSTypeName() );
+            writer.writeAttribute( "mapping", pm.getMapping().toString() );
+            // TODO
+            writer.writeEndElement();
+        } else if ( particle instanceof GeometryMapping ) {
+            GeometryMapping gm = (GeometryMapping) particle;
+            writer.writeStartElement( CONFIG_NS, "GeometryMapping" );
+            writer.writeAttribute( "path", particle.getPath().getAsText() );
+            writer.writeAttribute( "mapping", gm.getMapping().toString() );
+            // TODO
+            writer.writeEndElement();
+        } else if ( particle instanceof FeatureMapping ) {
+            writer.writeStartElement( CONFIG_NS, "FeatureMapping" );
+            writer.writeAttribute( "path", particle.getPath().getAsText() );
+            // TODO
+            writer.writeEndElement();
+        } else if ( particle instanceof CompoundMapping ) {
+            writer.writeStartElement( CONFIG_NS, "ComplexMapping" );
+            writer.writeAttribute( "path", particle.getPath().getAsText() );
+            CompoundMapping compound = (CompoundMapping) particle;
+            for ( Mapping childMapping : compound.getParticles() ) {
+                writeMapping( writer, childMapping );
+            }
+            writer.writeEndElement();
+        }
     }
 
     private void writePropertyMapping( XMLStreamWriter writer, CodePropertyType pt, MappingContext mc )
@@ -314,27 +364,6 @@ public class PostGISFeatureStoreConfigWriter {
         writer.writeEndElement();
     }
 
-    private void writePropertyMapping( XMLStreamWriter writer, CustomPropertyType pt, MappingContext mc )
-                            throws XMLStreamException {
-
-        writer.writeStartElement( CONFIG_NS, "CustomProperty" );
-        writeCommonAttrs( writer, pt );
-
-        MappingContext customValueContext = null;
-        if ( pt.getMaxOccurs() == 1 ) {
-            customValueContext = mcManager.mapOneToOneElement( mc, pt.getName() );
-        } else {
-            customValueContext = mcManager.mapOneToManyElements( mc, pt.getName() );
-            writeJoinedTable( writer, customValueContext.getTable() );
-        }
-
-        Map<QName, QName> elements = new LinkedHashMap<QName, QName>();
-        elements.put( pt.getName(), getQName( pt.getXSDValueType() ) );
-
-        createMapping( writer, pt.getXSDValueType(), customValueContext, elements );
-        writer.writeEndElement();
-    }
-
     private void writeCommonAttrs( XMLStreamWriter writer, PropertyType pt )
                             throws XMLStreamException {
 
@@ -359,218 +388,6 @@ public class PostGISFeatureStoreConfigWriter {
         writer.writeAttribute( "indexColumn", "idx" );
         writer.writeCharacters( "id=" + table + ".parentfk" );
         writer.writeEndElement();
-    }
-
-    private void createMapping( XMLStreamWriter writer, XSComplexTypeDefinition typeDef, MappingContext mc,
-                                Map<QName, QName> elements )
-                            throws XMLStreamException {
-
-        // attributes
-        XSObjectList attributeUses = typeDef.getAttributeUses();
-        for ( int i = 0; i < attributeUses.getLength(); i++ ) {
-            XSAttributeDeclaration attrDecl = ( (XSAttributeUse) attributeUses.item( i ) ).getAttrDeclaration();
-            QName attrName = new QName( attrDecl.getName() );
-            if ( attrDecl.getNamespace() != null ) {
-                attrName = new QName( attrDecl.getNamespace(), attrDecl.getName() );
-            }
-            writer.writeEmptyElement( CONFIG_NS, "PrimitiveMapping" );
-            writer.writeAttribute( "path", "@" + getName( attrName ) );
-            MappingContext attrMc = mcManager.mapOneToOneAttribute( mc, attrName );
-            writer.writeAttribute( "mapping", attrMc.getColumn() );
-            writer.writeAttribute( "type", getPrimitiveTypeName( attrDecl.getTypeDefinition() ) );
-        }
-
-        // text node
-        if ( typeDef.getContentType() != CONTENTTYPE_EMPTY && typeDef.getContentType() != CONTENTTYPE_ELEMENT ) {
-            writer.writeEmptyElement( CONFIG_NS, "PrimitiveMapping" );
-            writer.writeAttribute( "path", "text()" );
-            MappingContext primitiveMc = mcManager.mapOneToOneElement( mc, new QName( "value" ) );
-            writer.writeAttribute( "mapping", primitiveMc.getColumn() );
-            writer.writeAttribute( "type", getPrimitiveTypeName( typeDef.getSimpleType() ) );
-        }
-
-        // child elements
-        XSParticle particle = typeDef.getParticle();
-        if ( particle != null ) {
-            createMapping( writer, particle, 1, mc, elements );
-        }
-    }
-
-    private void createMapping( XMLStreamWriter writer, XSParticle particle, int maxOccurs, MappingContext mc,
-                                Map<QName, QName> elements )
-                            throws XMLStreamException {
-        if ( particle.getMaxOccursUnbounded() ) {
-            createMapping( writer, particle.getTerm(), -1, mc, elements );
-        } else {
-            for ( int i = 1; i <= particle.getMaxOccurs(); i++ ) {
-                createMapping( writer, particle.getTerm(), i, mc, elements );
-            }
-        }
-    }
-
-    private void createMapping( XMLStreamWriter writer, XSTerm term, int occurence, MappingContext mc,
-                                Map<QName, QName> elements )
-                            throws XMLStreamException {
-        if ( term instanceof XSElementDeclaration ) {
-            createMapping( writer, (XSElementDeclaration) term, occurence, mc, elements );
-        } else if ( term instanceof XSModelGroup ) {
-            createMapping( writer, (XSModelGroup) term, occurence, mc, elements );
-        } else {
-            createMapping( writer, (XSWildcard) term, occurence, mc, elements );
-        }
-    }
-
-    private void createMapping( XMLStreamWriter writer, XSElementDeclaration elDecl, int occurence, MappingContext mc,
-                                Map<QName, QName> elements )
-                            throws XMLStreamException {
-
-        // consider every concrete element substitution
-        List<XSElementDeclaration> substitutions = schema.getXSModel().getSubstitutions( elDecl, null, true, true );
-
-        for ( XSElementDeclaration substitution : substitutions ) {
-
-            Map<QName, QName> elements2 = new LinkedHashMap<QName, QName>( elements );
-
-            QName elName = new QName( substitution.getName() );
-            if ( substitution.getNamespace() != null ) {
-                elName = new QName( substitution.getNamespace(), substitution.getName() );
-            }
-
-            MappingContext elMC = null;
-            if ( occurence == 1 ) {
-                elMC = mcManager.mapOneToOneElement( mc, elName );
-            } else {
-                elMC = mcManager.mapOneToManyElements( mc, elName );
-            }
-
-            String path = getName( elName );
-
-            if ( schema.getFeatureType( elName ) != null ) {
-                writer.writeStartElement( CONFIG_NS, "FeatureMapping" );
-                writer.writeAttribute( "path", path );
-                // TODO
-                writer.writeAttribute( "mapping", elMC.getColumn() );
-
-                if ( occurence == -1 ) {
-                    writeJoinedTable( writer, elMC.getTable() );
-                }
-                writer.writeEndElement();
-            } else if ( schema.getXSModel().getGeometryElement( elName ) != null ) {
-                writer.writeStartElement( CONFIG_NS, "GeometryMapping" );
-                writer.writeAttribute( "path", getName( elName ) );
-                // TODO
-                writer.writeAttribute( "mapping", elMC.getColumn() );
-
-                if ( occurence == -1 ) {
-                    writeJoinedTable( writer, elMC.getTable() );
-                }
-                writer.writeEndElement();
-            } else {
-
-                if ( elName.equals( new QName( "http://www.isotc211.org/2005/gmd", "CI_Citation" ) ) ) {
-                    LOG.warn( "Skipping CI_Citation!!!" );
-                    continue;
-                }
-
-                if ( elName.equals( new QName( "http://www.isotc211.org/2005/gmd", "CI_Contact" ) ) ) {
-                    LOG.warn( "Skipping CI_Contact!!!" );
-                    continue;
-                }
-
-                if ( elName.equals( new QName( "http://www.isotc211.org/2005/gmd", "CI_ResponsibleParty" ) ) ) {
-                    LOG.warn( "Skipping CI_ResponsibleParty!!!" );
-                    continue;
-                }
-
-                if ( elName.equals( new QName( "http://www.isotc211.org/2005/gmd", "MD_Resolution" ) ) ) {
-                    LOG.warn( "Skipping MD_Resolution!!!" );
-                    continue;
-                }
-
-                if ( elName.equals( new QName( "http://www.isotc211.org/2005/gmd", "EX_Extent" ) ) ) {
-                    LOG.warn( "Skipping EX_Extent!!!" );
-                    continue;
-                }
-
-                if ( elName.equals( new QName( "http://www.isotc211.org/2005/gmd", "MD_PixelOrientationCode" ) ) ) {
-                    LOG.warn( "Skipping EX_Extent!!!" );
-                    continue;
-                }
-
-                if ( elName.equals( new QName( CommonNamespaces.GML3_2_NS, "TimeOrdinalEra" ) ) ) {
-                    LOG.warn( "Skipping TimeOrdinalEra!!!" );
-                    continue;
-                }
-
-                if ( elName.equals( new QName( CommonNamespaces.GML3_2_NS, "TimePeriod" ) ) ) {
-                    LOG.warn( "Skipping TimePeriod!!!" );
-                    continue;
-                }
-
-                if ( elName.getNamespaceURI().equals( CommonNamespaces.GML3_2_NS ) ) {
-                    if ( elName.getLocalPart().endsWith( "CRS" ) ) {
-                        LOG.warn( "Skipping " + elName.getLocalPart() + "!!!" );
-                    }
-                    continue;
-                }
-
-                XSTypeDefinition typeDef = substitution.getTypeDefinition();
-                QName complexTypeName = getQName( typeDef );
-                // TODO multiple elements with same name?
-                QName complexTypeName2 = elements2.get( elName );
-                if ( complexTypeName2 != null && complexTypeName2.equals( complexTypeName ) ) {
-                    // during this mapping traversal, there already has been an element with this name and type
-                    StringBuffer sb = new StringBuffer( "Path: " );
-                    for ( QName qName : elements2.keySet() ) {
-                        sb.append( qName );
-                        sb.append( " -> " );
-                    }
-                    sb.append( elName );
-                    LOG.info( "Skipping complex element '" + elName + "' -- detected recursion: " + sb );
-                    continue;
-                }
-                elements2.put( elName, getQName( typeDef ) );
-
-                writer.writeStartElement( CONFIG_NS, "ComplexMapping" );
-                writer.writeAttribute( "path", path );
-
-                if ( occurence == -1 ) {
-                    writeJoinedTable( writer, elMC.getTable() );
-                }
-
-                if ( typeDef instanceof XSComplexTypeDefinition ) {
-                    createMapping( writer, (XSComplexTypeDefinition) typeDef, elMC, elements2 );
-                } else {
-                    writer.writeEmptyElement( CONFIG_NS, "PrimitiveMapping" );
-                    writer.writeAttribute( "path", "text()" );
-                    writer.writeAttribute( "type", getPrimitiveTypeName( (XSSimpleTypeDefinition) typeDef ) );
-                    writer.writeAttribute( "mapping", elMC.getColumn() );
-                }
-                writer.writeEndElement();
-            }
-        }
-    }
-
-    private void createMapping( XMLStreamWriter writer, XSModelGroup modelGroup, int occurrence, MappingContext mc,
-                                Map<QName, QName> elements )
-                            throws XMLStreamException {
-        XSObjectList particles = modelGroup.getParticles();
-        for ( int i = 0; i < particles.getLength(); i++ ) {
-            XSParticle particle = (XSParticle) particles.item( i );
-            createMapping( writer, particle, occurrence, mc, elements );
-        }
-    }
-
-    private void createMapping( XMLStreamWriter writer, XSWildcard wildCard, int occurrence, MappingContext mc,
-                                Map<QName, QName> elements ) {
-        LOG.warn( "Handling of wild cards not implemented yet." );
-        StringBuffer sb = new StringBuffer( "Path: " );
-        for ( QName qName : elements.keySet() ) {
-            sb.append( qName );
-            sb.append( " -> " );
-        }
-        sb.append( "wildcard" );
-        LOG.info( "Skipping wildcard at path: " + sb );
     }
 
     private String getPrimitiveTypeName( XSSimpleTypeDefinition typeDef ) {

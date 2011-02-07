@@ -40,6 +40,7 @@ import static org.deegree.gml.GMLVersion.GML_32;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -126,7 +127,7 @@ public class PostGISFeatureStoreTest {
         MappedApplicationSchema mappedSchema = new AppSchemaMapper( appSchema ).getMappedSchema();
 
         PostGISFeatureStoreConfigWriter configWriter = new PostGISFeatureStoreConfigWriter( mappedSchema );
-        File file = File.createTempFile( "inspire-au", ".xml" );
+        File file = new File( "/tmp/inspire-au.xml" );
         FileOutputStream fos = new FileOutputStream( file );
         XMLStreamWriter xmlWriter = XMLOutputFactory.newInstance().createXMLStreamWriter( fos );
         xmlWriter = new IndentingXMLStreamWriter( xmlWriter );
@@ -134,11 +135,15 @@ public class PostGISFeatureStoreTest {
         xmlWriter.close();
         IOUtils.closeQuietly( fos );
         System.out.println( "Wrote to file " + file );
-
-//        String[] createStmts = new PostGISFeatureStoreProvider().getDDL( file.toURI().toURL() );
-//        for ( String stmt : createStmts ) {
-//            System.out.println( stmt );
-//        }
+        
+        file = new File( "/tmp/inspire-au.sql" );
+        PrintWriter writer = new PrintWriter( file );
+        String[] createStmts = new PostGISDDLCreator( mappedSchema ).getDDL();
+        for ( String stmt : createStmts ) {
+            writer.println( stmt + ";");
+        }
+        IOUtils.closeQuietly( writer );
+        System.out.println( "Wrote to file " + file );        
     }
 
     @Test
