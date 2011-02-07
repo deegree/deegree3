@@ -35,6 +35,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.services.wpvs.io.db;
 
+import static java.util.Collections.singletonMap;
+
 import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URI;
@@ -42,7 +44,6 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -56,6 +57,7 @@ import org.deegree.rendering.r3d.opengl.rendering.model.texture.TexturePool;
 import org.deegree.rendering.r3d.persistence.RenderableStore;
 import org.deegree.rendering.r3d.persistence.RenderableStoreProvider;
 import org.deegree.services.wpvs.io.ModelBackend;
+import org.deegree.services.wpvs.io.file.RenderableFileStoreProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -145,7 +147,7 @@ public class RenderableSQLStoreProvider implements RenderableStoreProvider {
     }
 
     public Map<String, URL> getConfigTemplates() {
-        // TODO get an example here
-        return new HashMap<String, URL>();
+        String path = "/META-INF/schemas/datasource/3d/renderable/3.0.0/sql_example.xml";
+        return singletonMap( "example", RenderableFileStoreProvider.class.getResource( path ) );
     }
 }
