@@ -37,6 +37,8 @@ package org.deegree.rendering.r3d.persistence;
 
 import java.net.URL;
 
+import org.deegree.commons.config.ResourceProvider;
+
 /**
  * The <code></code> class TODO add class documentation here.
  * 
@@ -45,14 +47,7 @@ import java.net.URL;
  * 
  * @version $Revision$, $Date$
  */
-public interface RenderableStoreProvider {
-
-    /**
-     * Returns the namespace for configurations documents that this provider handles.
-     * 
-     * @return the namespace for configurations documents, never <code>null</code>
-     */    
-    public String getConfigNamespace();
+public interface RenderableStoreProvider extends ResourceProvider {
 
     /**
      * Creates a new {@link RenderableStore} instance from the given configuration document.
@@ -62,7 +57,7 @@ public interface RenderableStoreProvider {
      * @return new feature store instance, configured, not initialized yet
      * @throws IllegalArgumentException
      *             if the configuration contains an error or creation fails
-     */    
+     */
     public RenderableStore build( URL configURL );
 
 }

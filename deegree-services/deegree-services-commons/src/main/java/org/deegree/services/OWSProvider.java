@@ -35,9 +35,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.services;
 
-import java.net.URL;
-
 import org.deegree.commons.config.ResourceManager;
+import org.deegree.commons.config.ResourceProvider;
 import org.deegree.services.controller.ImplementationMetadata;
 import org.deegree.services.controller.OGCFrontController;
 
@@ -51,28 +50,7 @@ import org.deegree.services.controller.OGCFrontController;
  * 
  * @version $Revision: $, $Date: $
  */
-public interface OWSProvider<T extends Enum<T>> {
-
-    /**
-     * Returns the namespace for configurations documents that this provider handles.
-     * 
-     * @return the namespace for configurations documents, never <code>null</code>
-     */
-    String getConfigNamespace();
-
-    /**
-     * Returns the URL for retrieving the configuration document schema.
-     * 
-     * @return the URL for retrieving the configuration document schema, may be <code>null</code>
-     */
-    URL getConfigSchema();
-
-    /**
-     * Returns the URL for retrieving the configuration document template.
-     * 
-     * @return the URL for retrieving the configuration document template, may be <code>null</code>
-     */
-    URL getConfigTemplate();
+public interface OWSProvider<T extends Enum<T>> extends ResourceProvider {
 
     /**
      * Creates a new {@link OWS} instance from the given configuration document.

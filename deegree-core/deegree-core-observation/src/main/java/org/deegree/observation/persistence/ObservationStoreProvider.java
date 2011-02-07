@@ -37,6 +37,8 @@ package org.deegree.observation.persistence;
 
 import java.net.URL;
 
+import org.deegree.commons.config.ResourceProvider;
+
 /**
  * The <code>ObservationStoreProvider</code> class makes an observation store model available. This can include a
  * schema, namespace, configuration template and an observation store.
@@ -46,28 +48,7 @@ import java.net.URL;
  * 
  * @version $Revision$, $Date$
  */
-public interface ObservationStoreProvider {
-
-    /**
-     * Returns the namespace for configurations documents that this provider handles.
-     * 
-     * @return the namespace for configurations documents, never <code>null</code>
-     */
-    public String getConfigNamespace();
-
-    /**
-     * Returns the URL for retrieving the configuration document schema.
-     * 
-     * @return the URL for retrieving the configuration document schema, may be <code>null</code>
-     */
-    public URL getConfigSchema();
-
-    /**
-     * Returns the URL for retrieving the configuration document template.
-     * 
-     * @return the URL for retrieving the configuration document template, may be <code>null</code>
-     */
-    public URL getConfigTemplate();
+public interface ObservationStoreProvider extends ResourceProvider {
 
     /**
      * Creates a new {@link ObservationDatastore} instance from the given configuration document.

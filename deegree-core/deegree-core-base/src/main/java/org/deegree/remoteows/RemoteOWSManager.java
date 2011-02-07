@@ -42,6 +42,8 @@ import java.io.File;
 import java.io.FilenameFilter;
 import java.net.URL;
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.ServiceLoader;
 
@@ -51,6 +53,8 @@ import javax.xml.stream.XMLStreamReader;
 import org.apache.commons.io.filefilter.SuffixFileFilter;
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceManager;
+import org.deegree.commons.config.ResourceManagerMetadata;
+import org.deegree.commons.config.ResourceProvider;
 import org.deegree.commons.utils.ProxyUtils;
 import org.deegree.commons.xml.stax.StAXParsingHelper;
 import org.slf4j.Logger;
@@ -68,7 +72,7 @@ public class RemoteOWSManager implements ResourceManager {
 
     private ServiceLoader<RemoteOWSProvider> serviceLoader = ServiceLoader.load( RemoteOWSProvider.class );
 
-    private Map<String, RemoteOWSProvider> providers = new HashMap<String, RemoteOWSProvider>();
+    Map<String, RemoteOWSProvider> providers = new HashMap<String, RemoteOWSProvider>();
 
     private Map<String, RemoteOWSStore> stores = new HashMap<String, RemoteOWSStore>();
 
@@ -77,7 +81,7 @@ public class RemoteOWSManager implements ResourceManager {
      */
     public RemoteOWSManager() {
         for ( RemoteOWSProvider p : serviceLoader ) {
-            providers.put( p.getConfigurationNamespace(), p );
+            providers.put( p.getConfigNamespace(), p );
             if ( p.getCapabilitiesNamespaces() != null ) {
                 for ( String ns : p.getCapabilitiesNamespaces() ) {
                     providers.put( ns, p );
@@ -148,12 +152,29 @@ public class RemoteOWSManager implements ResourceManager {
         return stores.get( id );
     }
 
+    @SuppressWarnings("unchecked")
     public Class<? extends ResourceManager>[] getDependencies() {
         return new Class[] { ProxyUtils.class };
     }
 
     public void shutdown() {
         // no cleanup needed?
+    }
+
+    public ResourceManagerMetadata getMetadata() {
+        return new ResourceManagerMetadata() {
+            public String getName() {
+                return "remote OWS stores";
+            }
+
+            public String getPath() {
+                return "datasources/remoteows/";
+            }
+
+            public List<ResourceProvider> getResourceProviders() {
+                return new LinkedList<ResourceProvider>( providers.values() );
+            }
+        };
     }
 
 }

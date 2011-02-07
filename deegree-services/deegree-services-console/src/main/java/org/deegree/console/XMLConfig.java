@@ -38,6 +38,8 @@ package org.deegree.console;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -49,8 +51,14 @@ import java.net.URL;
 import javax.faces.context.FacesContext;
 import javax.faces.event.AbortProcessingException;
 import javax.faces.event.AjaxBehaviorEvent;
+import javax.xml.stream.FactoryConfigurationError;
+import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamReader;
 
+import org.apache.commons.io.IOUtils;
+import org.deegree.commons.config.ResourceManagerMetadata;
+import org.deegree.commons.config.ResourceProvider;
 import org.deegree.commons.xml.XMLAdapter;
 import org.slf4j.Logger;
 
@@ -85,6 +93,32 @@ public class XMLConfig implements Serializable {
     private final boolean createIfNotExists;
 
     private final String outcome;
+
+    protected XMLConfig( File f, ResourceManagerMetadata md ) throws XMLStreamException, FactoryConfigurationError,
+                            IOException {
+        active = f.getName().endsWith( ".xml" );
+        deactivated = !active;
+        location = f;
+        createIfNotExists = false;
+        outcome = "resources";
+        InputStream in = null;
+        try {
+            in = new FileInputStream( f );
+            XMLStreamReader reader = XMLInputFactory.newInstance().createXMLStreamReader( in );
+            reader.next();
+            String namespace = reader.getNamespaceURI();
+            for ( ResourceProvider p : md.getResourceProviders() ) {
+                if ( p.getConfigNamespace().equals( namespace ) ) {
+                    schema = p.getConfigSchema();
+                    template = p.getConfigTemplate();
+                    return;
+                }
+            }
+            throw new IOException( "No fitting provider found." );
+        } finally {
+            IOUtils.closeQuietly( in );
+        }
+    }
 
     protected XMLConfig( boolean active, boolean ignore, File location, URL schema, URL template,
                          boolean createIfNotExists, String outcome ) {

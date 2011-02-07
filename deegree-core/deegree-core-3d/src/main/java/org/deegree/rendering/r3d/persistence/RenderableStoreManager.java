@@ -43,6 +43,8 @@ import java.net.URL;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.ServiceLoader;
 import java.util.concurrent.ConcurrentHashMap;
@@ -52,6 +54,8 @@ import javax.xml.stream.XMLStreamReader;
 
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceManager;
+import org.deegree.commons.config.ResourceManagerMetadata;
+import org.deegree.commons.config.ResourceProvider;
 import org.deegree.commons.jdbc.ConnectionManager;
 import org.deegree.commons.utils.FileUtils;
 import org.deegree.commons.utils.ProxyUtils;
@@ -74,7 +78,7 @@ public class RenderableStoreManager implements ResourceManager {
 
     private static ServiceLoader<RenderableStoreProvider> providerLoader = ServiceLoader.load( RenderableStoreProvider.class );
 
-    private static Map<String, RenderableStoreProvider> nsToProvider = new ConcurrentHashMap<String, RenderableStoreProvider>();
+    static Map<String, RenderableStoreProvider> nsToProvider = new ConcurrentHashMap<String, RenderableStoreProvider>();
 
     private static Map<String, RenderableStore> idToStore = Collections.synchronizedMap( new HashMap<String, RenderableStore>() );
 
@@ -224,4 +228,21 @@ public class RenderableStoreManager implements ResourceManager {
     public void startup( DeegreeWorkspace workspace ) {
         init( new File( workspace.getLocation(), "datasources" + separator + "renderable" ) );
     }
+
+    public ResourceManagerMetadata getMetadata() {
+        return new ResourceManagerMetadata() {
+            public String getName() {
+                return "renderable stores";
+            }
+
+            public String getPath() {
+                return "datasources/renderable/";
+            }
+
+            public List<ResourceProvider> getResourceProviders() {
+                return new LinkedList<ResourceProvider>( nsToProvider.values() );
+            }
+        };
+    }
+
 }

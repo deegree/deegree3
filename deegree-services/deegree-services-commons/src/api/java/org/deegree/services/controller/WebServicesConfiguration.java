@@ -47,6 +47,7 @@ import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
@@ -64,6 +65,8 @@ import javax.xml.stream.XMLStreamReader;
 import org.apache.commons.io.filefilter.SuffixFileFilter;
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceManager;
+import org.deegree.commons.config.ResourceManagerMetadata;
+import org.deegree.commons.config.ResourceProvider;
 import org.deegree.commons.config.WorkspaceInitializationException;
 import org.deegree.commons.jdbc.ConnectionManager;
 import org.deegree.commons.utils.ProxyUtils;
@@ -118,6 +121,8 @@ public class WebServicesConfiguration implements ResourceManager {
 
     private DeegreeWorkspace workspace;
 
+    static List<ResourceProvider> providers = new ArrayList<ResourceProvider>();
+
     private static Class<? extends ResourceManager>[] dependencies;
 
     static {
@@ -129,7 +134,9 @@ public class WebServicesConfiguration implements ResourceManager {
         @SuppressWarnings("unchecked")
         Iterator<OWSProvider> iter = ServiceLoader.load( OWSProvider.class ).iterator();
         while ( iter.hasNext() ) {
-            deps.addAll( (Collection) Arrays.asList( iter.next().getDependencies() ) );
+            OWSProvider<?> prov = iter.next();
+            providers.add( prov );
+            deps.addAll( (Collection) Arrays.asList( prov.getDependencies() ) );
         }
 
         dependencies = deps.toArray( new Class[deps.size()] );
@@ -367,8 +374,11 @@ public class WebServicesConfiguration implements ResourceManager {
 
     private <T extends Enum<T>> void loadOWS( OWSProvider<T> p, File configFile ) {
         OWS<T> ows = p.getService();
+
         // associate service name (abbreviation) with controller instance
         ImplementationMetadata<T> md = p.getImplementationMetadata();
+        LOG.info( " --- Starting up {}", md.getImplementedServiceName() );
+
         try {
             ows.init( workspace, configFile.toURI().toURL(), md );
         } catch ( MalformedURLException e ) {
@@ -582,6 +592,22 @@ public class WebServicesConfiguration implements ResourceManager {
 
     public DeegreeWorkspace getWorkspace() {
         return workspace;
+    }
+
+    public ResourceManagerMetadata getMetadata() {
+        return new ResourceManagerMetadata() {
+            public String getName() {
+                return "web services";
+            }
+
+            public String getPath() {
+                return "services";
+            }
+
+            public List<ResourceProvider> getResourceProviders() {
+                return providers;
+            }
+        };
     }
 
 }

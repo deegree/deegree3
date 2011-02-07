@@ -148,4 +148,12 @@ public class RenderableFileStoreProvider implements RenderableStoreProvider {
         }
         return resolve;
     }
+
+    public URL getConfigSchema() {
+        return RenderableFileStoreProvider.class.getResource( CONFIG_SCHEMA );
+    }
+
+    public URL getConfigTemplate() {
+        return null;
+    }
 }

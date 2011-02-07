@@ -37,6 +37,8 @@ package org.deegree.rendering.r3d.multiresolution.persistence;
 
 import java.net.URL;
 
+import org.deegree.commons.config.ResourceProvider;
+
 /**
  * The <code></code> class TODO add class documentation here.
  * 
@@ -45,14 +47,7 @@ import java.net.URL;
  * 
  * @version $Revision$, $Date$
  */
-public interface BatchedMTStoreProvider {
-
-    /**
-     * Returns the namespace for configurations documents that this provider handles.
-     * 
-     * @return the namespace for configurations documents, never <code>null</code>
-     */
-    public String getConfigNamespace();
+public interface BatchedMTStoreProvider extends ResourceProvider {
 
     /**
      * Creates a new {@link BatchedMTStore} instance from the given configuration document.

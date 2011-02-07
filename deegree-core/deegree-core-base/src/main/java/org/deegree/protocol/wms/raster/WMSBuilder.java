@@ -243,4 +243,12 @@ public class WMSBuilder implements CoverageBuilder {
         }
         throw new NullPointerException( "The configured raster datasource may not be null." );
     }
+
+    public URL getConfigSchema() {
+        return WMSBuilder.class.getResource( CONFIG_SCHEMA );
+    }
+
+    public URL getConfigTemplate() {
+        return null;
+    }
 }

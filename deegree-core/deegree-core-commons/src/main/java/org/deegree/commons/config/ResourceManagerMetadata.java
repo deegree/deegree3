@@ -1,7 +1,7 @@
 //$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
- Copyright (C) 2001-2009 by:
+ Copyright (C) 2001-2010 by:
  - Department of Geography, University of Bonn -
  and
  - lat/lon GmbH -
@@ -33,43 +33,32 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.metadata.persistence;
+package org.deegree.commons.config;
 
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.net.URL;
-
-import org.deegree.commons.config.ResourceProvider;
-import org.deegree.protocol.csw.MetadataStoreException;
+import java.util.List;
 
 /**
- * Implementations plug-in {@link MetadataStore}s.
  * 
- * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
+ * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
  */
-public interface MetadataStoreProvider extends ResourceProvider {
+public interface ResourceManagerMetadata {
 
     /**
-     * Creates a new {@link MetadataStore} instance from the given configuration document.
-     * 
-     * @param configURL
-     *            location of the configuration document, must not be <code>null</code>
-     * @return new feature store instance, configured, not initialized yet
-     * @throws MetadataStore
-     *             if the configuration contains an error or creation fails
+     * @return the directory path for configuration files within the workspace
      */
-    public MetadataStore getMetadataStore( URL configURL )
-                            throws MetadataStoreException;
+    String getPath();
 
-    public String[] getCreateStatements( URL configURL )
-                            throws UnsupportedEncodingException, IOException;
+    /**
+     * @return display name for the use in the web interface
+     */
+    String getName();
 
-    public String[] getDefaultCreateStatements()
-                            throws UnsupportedEncodingException, IOException;
+    /**
+     * @return a list of resource providers that the manager manages
+     */
+    List<ResourceProvider> getResourceProviders();
 
-    public String[] getDropStatements( URL configURL )
-                            throws UnsupportedEncodingException, IOException;
 }

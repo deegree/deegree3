@@ -44,18 +44,27 @@ import static org.deegree.commons.utils.net.HttpUtils.get;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.ServiceLoader;
 
 import javax.faces.bean.ApplicationScoped;
 import javax.faces.bean.ManagedBean;
 import javax.faces.component.html.HtmlCommandButton;
+import javax.faces.component.html.HtmlCommandLink;
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import javax.faces.event.ActionEvent;
+import javax.xml.stream.FactoryConfigurationError;
+import javax.xml.stream.XMLStreamException;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -63,6 +72,9 @@ import lombok.Setter;
 import org.apache.commons.io.FileUtils;
 import org.deegree.client.generic.RequestBean;
 import org.deegree.commons.config.DeegreeWorkspace;
+import org.deegree.commons.config.ResourceManager;
+import org.deegree.commons.config.ResourceManagerMetadata;
+import org.deegree.commons.config.ResourceProvider;
 import org.deegree.commons.utils.io.Zip;
 import org.deegree.commons.version.DeegreeModuleInfo;
 import org.deegree.console.featurestore.FeatureStoreConfigManager;
@@ -72,6 +84,7 @@ import org.deegree.console.observationstore.ObservationStoreConfigManager;
 import org.deegree.console.services.ServiceConfigManager;
 import org.deegree.console.styles.StyleConfigManager;
 import org.deegree.services.controller.OGCFrontController;
+import org.h2.util.IOUtils;
 import org.slf4j.Logger;
 
 /**
@@ -99,6 +112,28 @@ public class ConfigManager {
     private static URL PROXY_TEMPLATE = ConnectionConfigManager.class.getResource( "/META-INF/schemas/proxy/3.0.0/example.xml" );
 
     private static URL METADATA_SCHEMA_URL = ConnectionConfigManager.class.getResource( "/META-INF/schemas/metadata/3.0.0/metadata.xsd" );
+
+    @Getter
+    private List<ResourceManagerMetadata> resourceManagers;
+
+    private HashMap<String, ResourceManagerMetadata> resourceManagerMap;
+
+    @Getter
+    private ResourceManagerMetadata currentResourceManager;
+
+    @Getter
+    private List<Config> availableResources;
+
+    @Getter
+    private List<String> providers;
+
+    @Getter
+    @Setter
+    private String newConfigType;
+
+    @Getter
+    @Setter
+    private String newConfigId;
 
     private final XMLConfig serviceMainConfig;
 
@@ -131,6 +166,8 @@ public class ConfigManager {
 
     private String workspaceName;
 
+    private boolean modified;
+
     public ConfigManager() {
         File serviceMainConfigFile = new File( OGCFrontController.getServiceWorkspace().getLocation(),
                                                "services/main.xml" );
@@ -149,6 +186,112 @@ public class ConfigManager {
         File proxyFile = new File( OGCFrontController.getServiceWorkspace().getLocation(), "proxy.xml" );
         this.proxyConfig = new XMLConfig( true, false, proxyFile, PROXY_SCHEMA_URL, PROXY_TEMPLATE, true,
                                           "/console/jsf/proxy.xhtml" );
+        resourceManagers = new LinkedList<ResourceManagerMetadata>();
+        resourceManagerMap = new HashMap<String, ResourceManagerMetadata>();
+        ServiceLoader<ResourceManager> loaded = ServiceLoader.load( ResourceManager.class );
+        for ( ResourceManager mgr : loaded ) {
+            ResourceManagerMetadata md = mgr.getMetadata();
+            if ( md != null ) {
+                resourceManagers.add( md );
+                resourceManagerMap.put( md.getName(), md );
+            }
+        }
+    }
+
+    public void resourceManagerChanged( ActionEvent evt ) {
+        currentResourceManager = resourceManagerMap.get( ( (HtmlCommandLink) evt.getSource() ).getValue().toString() );
+        update();
+    }
+
+    public void update() {
+        availableResources = new LinkedList<Config>();
+        if ( currentResourceManager != null ) {
+            providers = new LinkedList<String>();
+            for ( ResourceProvider p : currentResourceManager.getResourceProviders() ) {
+                providers.add( p.getConfigNamespace().substring( p.getConfigNamespace().lastIndexOf( "/" ) + 1 ) );
+            }
+            File dir = new File( OGCFrontController.getServiceWorkspace().getLocation(),
+                                 currentResourceManager.getPath() );
+            if ( dir.isDirectory() ) {
+                File[] fs = dir.listFiles();
+                if ( fs != null ) {
+                    for ( File f : fs ) {
+                        if ( !f.isDirectory() ) {
+                            try {
+                                Config c = new Config( f, currentResourceManager, this );
+                                availableResources.add( c );
+                            } catch ( XMLStreamException e ) {
+                                // TODO Auto-generated catch block
+                                e.printStackTrace();
+                            } catch ( FactoryConfigurationError e ) {
+                                // TODO Auto-generated catch block
+                                e.printStackTrace();
+                            } catch ( IOException e ) {
+                                // TODO Auto-generated catch block
+                                e.printStackTrace();
+                            }
+                        }
+                    }
+                }
+            }
+            Collections.sort( availableResources );
+        }
+    }
+
+    public String createConfig() {
+        File dir = new File( OGCFrontController.getServiceWorkspace().getLocation(), currentResourceManager.getPath() );
+        if ( !dir.exists() && !dir.mkdirs() ) {
+            // TODO error
+            return "resources";
+        }
+        File conf = new File( dir, newConfigId + ".xml" );
+        if ( !conf.getParentFile().isDirectory() && !conf.getParentFile().mkdirs() ) {
+            // TODO error
+        }
+        boolean template = false;
+        URL schemaURL = null;
+        for ( ResourceProvider p : currentResourceManager.getResourceProviders() ) {
+            if ( p.getConfigNamespace().endsWith( newConfigType ) ) {
+                if ( p.getConfigTemplate() != null ) {
+                    schemaURL = p.getConfigSchema();
+                    template = true;
+                    try {
+                        IOUtils.copyAndClose( p.getConfigTemplate().openStream(), new FileOutputStream( conf ) );
+                    } catch ( FileNotFoundException e ) {
+                        // TODO Auto-generated catch block
+                        e.printStackTrace();
+                    } catch ( IOException e ) {
+                        // TODO Auto-generated catch block
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }
+        try {
+            Config c;
+            if ( template ) {
+                c = new Config( conf, currentResourceManager, this );
+            } else {
+                c = new Config( conf, currentResourceManager, this, schemaURL, newConfigType );
+            }
+            availableResources.add( c );
+            Collections.sort( availableResources );
+            return c.edit();
+        } catch ( XMLStreamException e ) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch ( FactoryConfigurationError e ) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch ( IOException e ) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        return "resources";
+    }
+
+    public void setModified() {
+        this.modified = true;
     }
 
     public boolean getPendingChanges() {
@@ -180,11 +323,15 @@ public class ConfigManager {
             lastMessage = "Workspace has been changed.";
             return true;
         }
-        return false;
+        if ( modified ) {
+            lastMessage = "Workspace has been changed.";
+        }
+        return modified;
     }
 
     public static ConfigManager getApplicationInstance() {
-        return (ConfigManager) FacesContext.getCurrentInstance().getExternalContext().getApplicationMap().get( "configManager" );
+        return (ConfigManager) FacesContext.getCurrentInstance().getExternalContext().getApplicationMap().get(
+                                                                                                               "configManager" );
     }
 
     public XMLConfig getServiceMainConfig() {
@@ -273,6 +420,8 @@ public class ConfigManager {
         } catch ( Exception e ) {
             e.printStackTrace();
         }
+
+        modified = false;
 
         serviceMainConfig.setModified( false );
         serviceMetadataConfig.setModified( false );

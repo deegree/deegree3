@@ -43,6 +43,8 @@ import java.net.URL;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.ServiceLoader;
 
@@ -51,6 +53,8 @@ import javax.xml.stream.XMLStreamReader;
 
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceManager;
+import org.deegree.commons.config.ResourceManagerMetadata;
+import org.deegree.commons.config.ResourceProvider;
 import org.deegree.commons.jdbc.ConnectionManager;
 import org.deegree.commons.utils.ProxyUtils;
 import org.deegree.commons.xml.stax.StAXParsingHelper;
@@ -74,7 +78,7 @@ public class ObservationStoreManager implements ResourceManager {
 
     private static ServiceLoader<ObservationStoreProvider> osProviderLoader = ServiceLoader.load( ObservationStoreProvider.class );
 
-    private static Map<String, ObservationStoreProvider> osToProvider = null;
+    static Map<String, ObservationStoreProvider> osToProvider = null;
 
     private static Map<String, ObservationDatastore> idToOds = Collections.synchronizedMap( new HashMap<String, ObservationDatastore>() );
 
@@ -264,6 +268,7 @@ public class ObservationStoreManager implements ResourceManager {
         idToOds.clear();
     }
 
+    @SuppressWarnings("unchecked")
     public Class<? extends ResourceManager>[] getDependencies() {
         return new Class[] { ProxyUtils.class, ConnectionManager.class };
     }
@@ -274,6 +279,22 @@ public class ObservationStoreManager implements ResourceManager {
 
     public void startup( DeegreeWorkspace workspace ) {
         init( new File( workspace.getLocation(), "datasources" + separator + "observation" ) );
+    }
+
+    public ResourceManagerMetadata getMetadata() {
+        return new ResourceManagerMetadata() {
+            public String getName() {
+                return "observation stores";
+            }
+
+            public String getPath() {
+                return "datasources/observation/";
+            }
+
+            public List<ResourceProvider> getResourceProviders() {
+                return new LinkedList<ResourceProvider>( osToProvider.values() );
+            }
+        };
     }
 
 }

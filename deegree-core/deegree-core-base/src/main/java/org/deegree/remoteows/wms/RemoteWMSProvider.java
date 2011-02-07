@@ -83,7 +83,7 @@ public class RemoteWMSProvider implements RemoteOWSProvider {
         return null;
     }
 
-    public String getConfigurationNamespace() {
+    public String getConfigNamespace() {
         return "http://www.deegree.org/datasource/remoteows/wms";
     }
 
@@ -149,6 +149,14 @@ public class RemoteWMSProvider implements RemoteOWSProvider {
             LOG.trace( "Stack trace:", e );
         }
         return null;
+    }
+
+    public URL getConfigSchema() {
+        return RemoteWMSProvider.class.getResource( CONFIG_SCHEMA );
+    }
+
+    public URL getConfigTemplate() {
+        return RemoteWMSProvider.class.getResource( "/META-INF/schemas/datasource/remoteows/wms/3.1.0/example.xml" );
     }
 
 }

@@ -41,6 +41,8 @@ import java.net.URL;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.ServiceLoader;
 
@@ -49,6 +51,8 @@ import javax.xml.stream.XMLStreamReader;
 
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceManager;
+import org.deegree.commons.config.ResourceManagerMetadata;
+import org.deegree.commons.config.ResourceProvider;
 import org.deegree.commons.jdbc.ConnectionManager;
 import org.deegree.commons.utils.ProxyUtils;
 import org.deegree.commons.xml.stax.StAXParsingHelper;
@@ -70,7 +74,7 @@ public class FeatureStoreManager implements ResourceManager {
 
     private static ServiceLoader<FeatureStoreProvider> fsProviderLoader = ServiceLoader.load( FeatureStoreProvider.class );
 
-    private static Map<String, FeatureStoreProvider> nsToProvider = null;
+    static Map<String, FeatureStoreProvider> nsToProvider = null;
 
     private static Map<String, FeatureStore> idToFs = Collections.synchronizedMap( new HashMap<String, FeatureStore>() );
 
@@ -235,6 +239,22 @@ public class FeatureStoreManager implements ResourceManager {
     @SuppressWarnings("unchecked")
     public Class<? extends ResourceManager>[] getDependencies() {
         return new Class[] { ProxyUtils.class, ConnectionManager.class };
+    }
+
+    public ResourceManagerMetadata getMetadata() {
+        return new ResourceManagerMetadata() {
+            public String getName() {
+                return "feature stores";
+            }
+
+            public String getPath() {
+                return "datasources/feature/";
+            }
+
+            public List<ResourceProvider> getResourceProviders() {
+                return new LinkedList<ResourceProvider>( nsToProvider.values() );
+            }
+        };
     }
 
 }

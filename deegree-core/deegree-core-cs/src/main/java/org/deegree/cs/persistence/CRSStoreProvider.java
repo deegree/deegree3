@@ -38,6 +38,7 @@ package org.deegree.cs.persistence;
 import java.net.URL;
 import java.util.ServiceLoader;
 
+import org.deegree.commons.config.ResourceProvider;
 import org.deegree.cs.exceptions.CRSStoreException;
 
 /**
@@ -49,28 +50,7 @@ import org.deegree.cs.exceptions.CRSStoreException;
  * 
  * @version $Revision: $, $Date: $
  */
-public interface CRSStoreProvider {
-
-    /**
-     * Returns the namespace for configurations documents that this provider handles.
-     * 
-     * @return the namespace for configurations documents, never <code>null</code>
-     */
-    public String getConfigNamespace();
-
-    /**
-     * Returns the URL for retrieving the configuration document schema.
-     * 
-     * @return the URL for retrieving the configuration document schema, may be <code>null</code>
-     */
-    public URL getConfigSchema();
-
-    /**
-     * Returns the URL for retrieving the configuration document template.
-     * 
-     * @return the URL for retrieving the configuration document template, may be <code>null</code>
-     */
-    public URL getConfigTemplate();
+public interface CRSStoreProvider extends ResourceProvider {
 
     /**
      * Creates a new {@link CRSStore} instance from the given configuration document.

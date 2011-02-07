@@ -47,6 +47,7 @@ import java.util.Properties;
 import org.apache.axiom.om.util.Base64;
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceManager;
+import org.deegree.commons.config.ResourceManagerMetadata;
 import org.deegree.commons.proxy.jaxb.ProxyConfiguration;
 import org.deegree.commons.xml.jaxb.JAXBUtils;
 import org.slf4j.Logger;
@@ -415,12 +416,17 @@ public final class ProxyUtils implements ResourceManager {
                   + ", ftp.nonProxyHosts=" + getFtpNonProxyHosts( false ) );
     }
 
+    @SuppressWarnings("unchecked")
     public Class<? extends ResourceManager>[] getDependencies() {
         return new Class[] {};
     }
 
     public void shutdown() {
         // reset settings?
+    }
+
+    public ResourceManagerMetadata getMetadata() {
+        return null;
     }
 
 }

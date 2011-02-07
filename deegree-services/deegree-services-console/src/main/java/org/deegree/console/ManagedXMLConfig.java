@@ -42,8 +42,10 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 
+import javax.xml.stream.FactoryConfigurationError;
 import javax.xml.stream.XMLStreamException;
 
+import org.deegree.commons.config.ResourceManagerMetadata;
 import org.deegree.services.controller.OGCFrontController;
 
 /**
@@ -54,13 +56,19 @@ import org.deegree.services.controller.OGCFrontController;
  * 
  * @version $Revision: $, $Date: $
  */
-public abstract class ManagedXMLConfig extends XMLConfig {
+public class ManagedXMLConfig extends XMLConfig {
 
     private static final long serialVersionUID = 1161707801237264353L;
 
     private String id;
 
     private final XMLConfigManager manager;
+
+    protected ManagedXMLConfig( File f, ResourceManagerMetadata md ) throws XMLStreamException, FactoryConfigurationError, IOException {
+        super( f, md );
+        id = f.getName().substring( 0, f.getName().indexOf( "." ) );
+        this.manager = null;
+    }
 
     protected ManagedXMLConfig( String id, boolean active, boolean ignore, XMLConfigManager manager, URL schema,
                                 URL template ) {

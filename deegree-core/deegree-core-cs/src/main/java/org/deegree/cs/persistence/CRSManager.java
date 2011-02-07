@@ -43,6 +43,7 @@ import java.net.URL;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.ServiceLoader;
@@ -52,6 +53,8 @@ import javax.xml.stream.XMLStreamReader;
 
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceManager;
+import org.deegree.commons.config.ResourceManagerMetadata;
+import org.deegree.commons.config.ResourceProvider;
 import org.deegree.commons.config.WorkspaceInitializationException;
 import org.deegree.commons.xml.stax.StAXParsingHelper;
 import org.deegree.cs.CRSCodeType;
@@ -83,7 +86,7 @@ public class CRSManager implements ResourceManager {
 
     private static ServiceLoader<CRSStoreProvider> crssProviderLoader = ServiceLoader.load( CRSStoreProvider.class );
 
-    private static Map<String, CRSStoreProvider> nsToProvider = null;
+    static Map<String, CRSStoreProvider> nsToProvider = null;
 
     private static Map<String, CRSStore> idToCRSStore = Collections.synchronizedMap( new HashMap<String, CRSStore>() );
 
@@ -628,6 +631,22 @@ public class CRSManager implements ResourceManager {
             }
         }
         return null;
+    }
+
+    public ResourceManagerMetadata getMetadata() {
+        return new ResourceManagerMetadata() {
+            public String getName() {
+                return "crs stores";
+            }
+
+            public String getPath() {
+                return "datasources/crs/";
+            }
+
+            public List<ResourceProvider> getResourceProviders() {
+                return new LinkedList<ResourceProvider>( nsToProvider.values() );
+            }
+        };
     }
 
     // TODO: required?

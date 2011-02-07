@@ -137,4 +137,12 @@ public class RenderableSQLStoreProvider implements RenderableStoreProvider {
         }
         return resolve;
     }
+
+    public URL getConfigSchema() {
+        return RenderableSQLStoreProvider.class.getResource( CONFIG_SCHEMA );
+    }
+
+    public URL getConfigTemplate() {
+        return null;
+    }
 }

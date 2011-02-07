@@ -38,6 +38,8 @@ package org.deegree.remoteows;
 import java.net.URL;
 import java.util.List;
 
+import org.deegree.commons.config.ResourceProvider;
+
 /**
  * 
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
@@ -45,12 +47,7 @@ import java.util.List;
  * 
  * @version $Revision$, $Date$
  */
-public interface RemoteOWSProvider {
-
-    /**
-     * @return the configuration namespace of custom configuration. May not be null.
-     */
-    String getConfigurationNamespace();
+public interface RemoteOWSProvider extends ResourceProvider {
 
     /**
      * @return the namespaces of capabilities XML documents the provider can handle. May be null or empty.
@@ -62,6 +59,6 @@ public interface RemoteOWSProvider {
      */
     String getServiceType();
 
-    RemoteOWSStore create(URL config);
-    
+    RemoteOWSStore create( URL config );
+
 }

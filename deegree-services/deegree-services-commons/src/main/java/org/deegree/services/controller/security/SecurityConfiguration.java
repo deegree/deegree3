@@ -56,6 +56,7 @@ import javax.xml.stream.XMLStreamReader;
 
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceManager;
+import org.deegree.commons.config.ResourceManagerMetadata;
 import org.deegree.commons.jdbc.ConnectionManager;
 import org.deegree.commons.utils.ProxyUtils;
 import org.deegree.services.controller.Credentials;
@@ -183,12 +184,17 @@ public class SecurityConfiguration implements ResourceManager {
         return false;
     }
 
+    @SuppressWarnings("unchecked")
     public Class<? extends ResourceManager>[] getDependencies() {
         return new Class[] { ProxyUtils.class, ConnectionManager.class };
     }
 
     public void shutdown() {
         // no cleanup needed?
+    }
+
+    public ResourceManagerMetadata getMetadata() {
+        return null;
     }
 
 }

@@ -62,7 +62,6 @@ public class BatchedMTFileStoreProvider implements BatchedMTStoreProvider {
 
     private static final String CONFIG_SCHEMA = "/META-INF/schemas/datasource/3d/batchedmt/3.0.0/file.xsd";
 
-    @Override
     public String getConfigNamespace() {
         return CONFIG_NS;
     }
@@ -91,4 +90,13 @@ public class BatchedMTFileStoreProvider implements BatchedMTStoreProvider {
         }
         return bs;
     }
+
+    public URL getConfigSchema() {
+        return BatchedMTFileStoreProvider.class.getResource( CONFIG_SCHEMA );
+    }
+
+    public URL getConfigTemplate() {
+        return null;
+    }
+
 }

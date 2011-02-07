@@ -40,6 +40,8 @@ import java.io.FilenameFilter;
 import java.net.URL;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.ServiceLoader;
 
@@ -48,6 +50,8 @@ import javax.xml.stream.XMLStreamReader;
 
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceManager;
+import org.deegree.commons.config.ResourceManagerMetadata;
+import org.deegree.commons.config.ResourceProvider;
 import org.deegree.commons.jdbc.ConnectionManager;
 import org.deegree.commons.utils.ProxyUtils;
 import org.deegree.commons.xml.stax.StAXParsingHelper;
@@ -70,7 +74,7 @@ public class MetadataStoreManager implements ResourceManager {
 
     private static ServiceLoader<MetadataStoreProvider> providerLoader = ServiceLoader.load( MetadataStoreProvider.class );
 
-    private static Map<String, MetadataStoreProvider> nsToProvider = null;
+    static Map<String, MetadataStoreProvider> nsToProvider = null;
 
     private static Map<String, MetadataStore> idToRs = Collections.synchronizedMap( new HashMap<String, MetadataStore>() );
 
@@ -125,7 +129,7 @@ public class MetadataStoreManager implements ResourceManager {
      * 
      * @param configURL
      *            URL of the configuration document, must not be <code>null</code>
-     * @return corresponding {@link FeatureStore} instance, initialized and ready to be used
+     * @return corresponding {@link MetadataStore} instance, initialized and ready to be used
      * @throws MetadataStoreException
      *             if the creation fails, e.g. due to a configuration error
      * 
@@ -212,6 +216,7 @@ public class MetadataStoreManager implements ResourceManager {
         idToRs.clear();
     }
 
+    @SuppressWarnings("unchecked")
     public Class<? extends ResourceManager>[] getDependencies() {
         return new Class[] { ProxyUtils.class, ConnectionManager.class };
     }
@@ -222,5 +227,21 @@ public class MetadataStoreManager implements ResourceManager {
 
     public void startup( DeegreeWorkspace workspace ) {
         init( new File( workspace.getLocation(), "datasources" + File.separator + "metadata" ) );
+    }
+
+    public ResourceManagerMetadata getMetadata() {
+        return new ResourceManagerMetadata() {
+            public String getName() {
+                return "metadata stores";
+            }
+
+            public String getPath() {
+                return "datasources/metadata/";
+            }
+
+            public List<ResourceProvider> getResourceProviders() {
+                return new LinkedList<ResourceProvider>( nsToProvider.values() );
+            }
+        };
     }
 }

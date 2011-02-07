@@ -43,6 +43,8 @@ import java.net.URL;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.ServiceLoader;
 import java.util.concurrent.ConcurrentHashMap;
@@ -52,6 +54,8 @@ import javax.xml.stream.XMLStreamReader;
 
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceManager;
+import org.deegree.commons.config.ResourceManagerMetadata;
+import org.deegree.commons.config.ResourceProvider;
 import org.deegree.commons.jdbc.ConnectionManager;
 import org.deegree.commons.utils.FileUtils;
 import org.deegree.commons.utils.ProxyUtils;
@@ -74,7 +78,7 @@ public class BatchedMTStoreManager implements ResourceManager {
 
     private static ServiceLoader<BatchedMTStoreProvider> providerLoader = ServiceLoader.load( BatchedMTStoreProvider.class );
 
-    private static Map<String, BatchedMTStoreProvider> nsToProvider = new ConcurrentHashMap<String, BatchedMTStoreProvider>();
+    static Map<String, BatchedMTStoreProvider> nsToProvider = new ConcurrentHashMap<String, BatchedMTStoreProvider>();
 
     private static Map<String, BatchedMTStore> idToStore = Collections.synchronizedMap( new HashMap<String, BatchedMTStore>() );
 
@@ -219,6 +223,22 @@ public class BatchedMTStoreManager implements ResourceManager {
 
     public void startup( DeegreeWorkspace workspace ) {
         init( new File( workspace.getLocation(), "datasources" + separator + "batchedmt" ) );
+    }
+
+    public ResourceManagerMetadata getMetadata() {
+        return new ResourceManagerMetadata() {
+            public String getName() {
+                return "batched mt stores";
+            }
+
+            public String getPath() {
+                return "datasources/batchedmt/";
+            }
+
+            public List<ResourceProvider> getResourceProviders() {
+                return new LinkedList<ResourceProvider>( nsToProvider.values() );
+            }
+        };
     }
 
 }

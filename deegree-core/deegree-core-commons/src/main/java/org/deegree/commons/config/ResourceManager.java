@@ -60,4 +60,9 @@ public interface ResourceManager {
      */
     Class<? extends ResourceManager>[] getDependencies();
 
+    /**
+     * @return a metadata object for use in GUIs, may be null
+     */
+    ResourceManagerMetadata getMetadata();
+
 }

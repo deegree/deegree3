@@ -573,4 +573,12 @@ public class RasterBuilder implements CoverageBuilder {
 
     }
 
+    public URL getConfigSchema() {
+        return RasterBuilder.class.getResource( CONFIG_SCHEMA );
+    }
+
+    public URL getConfigTemplate() {
+        return null;
+    }
+
 }

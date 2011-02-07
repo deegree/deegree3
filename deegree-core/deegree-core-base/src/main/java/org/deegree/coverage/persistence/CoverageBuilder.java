@@ -38,16 +38,10 @@ package org.deegree.coverage.persistence;
 import java.io.IOException;
 import java.net.URL;
 
+import org.deegree.commons.config.ResourceProvider;
 import org.deegree.coverage.AbstractCoverage;
 
-public interface CoverageBuilder {
-
-    /**
-     * Returns the namespace for configurations documents that this provider handles.
-     * 
-     * @return the namespace for configurations documents, never <code>null</code>
-     */
-    public abstract String getConfigNamespace();
+public interface CoverageBuilder extends ResourceProvider {
 
     /**
      * Creates a new {@link AbstractCoverage} instance from the given configuration document.

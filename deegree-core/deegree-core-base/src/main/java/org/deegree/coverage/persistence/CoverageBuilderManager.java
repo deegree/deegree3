@@ -43,6 +43,8 @@ import java.net.URL;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.ServiceLoader;
 import java.util.concurrent.ConcurrentHashMap;
@@ -53,6 +55,8 @@ import javax.xml.stream.XMLStreamReader;
 import org.apache.commons.io.filefilter.SuffixFileFilter;
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceManager;
+import org.deegree.commons.config.ResourceManagerMetadata;
+import org.deegree.commons.config.ResourceProvider;
 import org.deegree.commons.utils.FileUtils;
 import org.deegree.commons.utils.ProxyUtils;
 import org.deegree.commons.xml.stax.StAXParsingHelper;
@@ -74,7 +78,7 @@ public class CoverageBuilderManager implements ResourceManager {
 
     private static ServiceLoader<CoverageBuilder> covBuilderLoader = ServiceLoader.load( CoverageBuilder.class );
 
-    private static Map<String, CoverageBuilder> nsToBuilder = new ConcurrentHashMap<String, CoverageBuilder>();
+    static Map<String, CoverageBuilder> nsToBuilder = new ConcurrentHashMap<String, CoverageBuilder>();
 
     private Map<String, AbstractCoverage> idToCov = Collections.synchronizedMap( new HashMap<String, AbstractCoverage>() );
 
@@ -217,12 +221,29 @@ public class CoverageBuilderManager implements ResourceManager {
         return builder.buildCoverage( configURL );
     }
 
+    @SuppressWarnings("unchecked")
     public Class<? extends ResourceManager>[] getDependencies() {
         return new Class[] { ProxyUtils.class };
     }
 
     public void shutdown() {
         idToCov.clear();
+    }
+
+    public ResourceManagerMetadata getMetadata() {
+        return new ResourceManagerMetadata() {
+            public String getName() {
+                return "coverage stores";
+            }
+
+            public String getPath() {
+                return "datasources/coverage/";
+            }
+
+            public List<ResourceProvider> getResourceProviders() {
+                return new LinkedList<ResourceProvider>( nsToBuilder.values() );
+            }
+        };
     }
 
 }
