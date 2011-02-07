@@ -36,12 +36,16 @@
 
 package org.deegree.commons.jdbc;
 
+import static java.util.Collections.singletonMap;
+
 import java.io.File;
 import java.io.FilenameFilter;
 import java.net.URL;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -50,6 +54,7 @@ import javax.xml.bind.JAXBException;
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceManager;
 import org.deegree.commons.config.ResourceManagerMetadata;
+import org.deegree.commons.config.ResourceProvider;
 import org.deegree.commons.i18n.Messages;
 import org.deegree.commons.jdbc.jaxb.JDBCConnection;
 import org.deegree.commons.utils.ProxyUtils;
@@ -70,7 +75,7 @@ import org.slf4j.LoggerFactory;
  * 
  * @version $Revision: $, $Date: $
  */
-public class ConnectionManager implements ResourceManager {
+public class ConnectionManager implements ResourceManager, ResourceProvider {
 
     private static Logger LOG = LoggerFactory.getLogger( ConnectionManager.class );
 
@@ -315,17 +320,38 @@ public class ConnectionManager implements ResourceManager {
         init( new File( workspace.getLocation(), "jdbc" ) );
     }
 
+    @SuppressWarnings("unchecked")
     public Class<? extends ResourceManager>[] getDependencies() {
         return new Class[] { ProxyUtils.class };
     }
 
-    /* (non-Javadoc)
-     * @see org.deegree.commons.config.ResourceManager#getMetadata()
-     */
-    @Override
     public ResourceManagerMetadata getMetadata() {
-        // TODO Auto-generated method stub
-        return null;
+        return new ResourceManagerMetadata() {
+            public String getName() {
+                return "jdbc";
+            }
+
+            public String getPath() {
+                return "jdbc";
+            }
+
+            public List<ResourceProvider> getResourceProviders() {
+                return Collections.singletonList( (ResourceProvider) ConnectionManager.this );
+            }
+        };
+    }
+
+    public String getConfigNamespace() {
+        return "http://www.deegree.org/jdbc";
+    }
+
+    public URL getConfigSchema() {
+        return ConnectionManager.class.getResource( CONFIG_SCHEMA );
+    }
+
+    public Map<String, URL> getConfigTemplates() {
+        return singletonMap( "example",
+                             ConnectionManager.class.getResource( "/META-INF/schemas/jdbc/3.0.0/example.xml" ) );
     }
 
 }
