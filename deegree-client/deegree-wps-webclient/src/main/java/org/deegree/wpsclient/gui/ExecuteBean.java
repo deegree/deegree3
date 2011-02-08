@@ -127,10 +127,8 @@ public class ExecuteBean implements Serializable {
                 }
             }
 
-            // Map<String, SimpleLiteralInput> literalInputs2 = cb.getLiteralInputs();
-            // System.out.println( literalInputs2 );
-
             ProcessExecuter executer = new ProcessExecuter();
+
             ExecutionOutput[] executionOutput = executer.execute( selectedProcess, literalInputs, bboxInputs,
                                                                   xmlInputs, xmlRefInputs, binaryInputs,
                                                                   complexFormats, outputs );
@@ -158,6 +156,7 @@ public class ExecuteBean implements Serializable {
         return null;
     }
 
+
     /******************* GETTER / SETTER ******************/
     public List<String> getOutputs() {
         return outputs;
@@ -177,13 +176,7 @@ public class ExecuteBean implements Serializable {
     }
 
     public Map<String, String> getXmlRefInputs() {
-        System.out.println( "get " + xmlRefInputs );
         return xmlRefInputs;
-    }
-
-    public void getXmlRefInputs( Map<String, String> xmlRefs ) {
-        System.out.println( "set " + xmlRefInputs );
-        this.xmlRefInputs = xmlRefs;
     }
 
     public Map<String, UploadedFile> getBinaryInputs() {

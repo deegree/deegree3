@@ -112,23 +112,36 @@ public class ProcessExecuter {
                 InputType input = inputDescription[i];
                 String id = input.getId().toString();
                 if ( input instanceof LiteralInputType ) {
-                    StringPair literal = literalInputs.get( id );
-                    if ( literal != null ) {
-                        execution.addLiteralInput( input.getId().getCode(), input.getId().getCodeSpace(),
-                                                   literal.getFirst(), null, literal.getSecond() );
-                    }
-                } else if ( input instanceof ComplexInputType ) {
-                    String schema = null, encoding = null, mimeType = null;
-                    ComplexFormat complexFormat = complexFormats.get( id );
-                    if ( complexFormat != null ) {
-                        schema = complexFormat.getSchema();
-                        mimeType = complexFormat.getMimeType();
-                        encoding = complexFormat.getEncoding();
+                    for ( String key : literalInputs.keySet() ) {
+                        if ( matches( id, key ) && literalInputs.get( key ) != null ) {
+                            StringPair literal = literalInputs.get( key );
+                            execution.addLiteralInput( input.getId().getCode(), input.getId().getCodeSpace(),
+                                                       literal.getFirst(), null, literal.getSecond() );
+                        }
                     }
 
-                    UploadedFile xml = xmlInputs.get( id );
-                    String xmlRef = xmlRefInputs.get( id );
-                    System.out.println( xmlRef );
+                } else if ( input instanceof ComplexInputType ) {
+                    String schema = null, encoding = null, mimeType = null;
+                    for ( String key : complexFormats.keySet() ) {
+                        if ( matches( id, key ) && complexFormats.get( key ) != null ) {
+                            ComplexFormat complexFormat = complexFormats.get( key );
+                            if ( complexFormat != null ) {
+                                schema = complexFormat.getSchema();
+                                mimeType = complexFormat.getMimeType();
+                                encoding = complexFormat.getEncoding();
+                            }
+                        }
+                    }
+                    UploadedFile xml = null;
+                    for ( String key : xmlInputs.keySet() ) {
+                        if ( matches( id, key ) && xmlInputs.get( key ) != null )
+                            xml = xmlInputs.get( key );
+                    }
+                    String xmlRef = null;
+                    for ( String key : xmlRefInputs.keySet() ) {
+                        if ( matches( id, key ) && xmlRefInputs.get( key ) != null )
+                            xmlRef = xmlRefInputs.get( key );
+                    }
                     if ( xml != null ) {
                         execution.addXMLInput( input.getId().getCode(), input.getId().getCodeSpace(), xml.getUrl(),
                                                false, mimeType, encoding, schema );
@@ -136,10 +149,10 @@ public class ProcessExecuter {
                         execution.addXMLInput( input.getId().getCode(), input.getId().getCodeSpace(),
                                                new URL( xmlRef ), true, mimeType, encoding, schema );
                     }
-                    UploadedFile binary = binaryInputs.get( id );
-                    if ( binary != null ) {
-                        execution.addBinaryInput( input.getId().getCode(), input.getId().getCodeSpace(),
-                                                  binary.getUrl(), false, mimeType, encoding );
+                    for ( String key : binaryInputs.keySet() ) {
+                        if ( matches( id, key ) && binaryInputs.get( key ) != null )
+                            execution.addBinaryInput( input.getId().getCode(), input.getId().getCodeSpace(),
+                                                      binaryInputs.get( key ).getUrl(), false, mimeType, encoding );
                     }
                 } else if ( input instanceof BBoxInputType ) {
                     BBox bbox = bboxInputs.get( id );
@@ -167,6 +180,10 @@ public class ProcessExecuter {
             fc.addMessage( "ExecuteBean.execute.ERROR_REQUEST", msg );
             return null;
         }
+    }
+
+    private boolean matches( String id, String key ) {
+        return key.matches( "^" + id + ":[0-9]*" );
     }
 
     private void delete( Map<String, UploadedFile> xmlInputs, Map<String, UploadedFile> binaryInputs ) {

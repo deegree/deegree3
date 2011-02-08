@@ -41,7 +41,10 @@ import static org.slf4j.LoggerFactory.getLogger;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import javax.el.ExpressionFactory;
@@ -57,11 +60,11 @@ import javax.faces.component.behavior.AjaxBehavior;
 import javax.faces.component.html.HtmlCommandButton;
 import javax.faces.component.html.HtmlForm;
 import javax.faces.component.html.HtmlInputText;
-import javax.faces.component.html.HtmlInputTextarea;
 import javax.faces.component.html.HtmlMessage;
 import javax.faces.component.html.HtmlOutputLabel;
 import javax.faces.component.html.HtmlOutputText;
 import javax.faces.component.html.HtmlPanelGrid;
+import javax.faces.component.html.HtmlPanelGroup;
 import javax.faces.component.html.HtmlSelectManyCheckbox;
 import javax.faces.component.html.HtmlSelectOneRadio;
 import javax.faces.context.FacesContext;
@@ -73,6 +76,7 @@ import org.deegree.client.core.component.HtmlInputBBox;
 import org.deegree.client.core.component.HtmlInputFile;
 import org.deegree.client.core.model.BBox;
 import org.deegree.client.core.utils.MessageUtils;
+import org.deegree.commons.tom.ows.CodeType;
 import org.deegree.protocol.ows.exception.OWSException;
 import org.deegree.protocol.wps.client.input.type.BBoxInputType;
 import org.deegree.protocol.wps.client.input.type.ComplexInputType;
@@ -82,6 +86,7 @@ import org.deegree.protocol.wps.client.output.type.OutputType;
 import org.deegree.protocol.wps.client.param.ComplexFormat;
 import org.deegree.protocol.wps.client.param.ValueWithRef;
 import org.deegree.protocol.wps.client.process.Process;
+import org.deegree.wpsclient.gui.MultipleComponentListener.MC_TYPE;
 import org.deegree.wpsclient.gui.component.HtmlLiteralInput;
 import org.deegree.wpsclient.gui.component.HtmlSelectFormat;
 import org.deegree.wpsclient.gui.converter.ComplexFormatConverter;
@@ -104,6 +109,49 @@ public class FormBean {
     private static final String INPUT_CLASS = "input";
 
     private HtmlForm executeForm;
+
+    private Map<String, Integer> currentOccurences = new HashMap<String, Integer>();
+
+    // was occurences set from outside? must not be recessed - bean is request scoped!
+    private boolean changedFromOutside = false;
+
+    private void initCurrentOccurences() {
+        currentOccurences.clear();
+        FacesContext fc = FacesContext.getCurrentInstance();
+        ExecuteBean eb = (ExecuteBean) fc.getApplication().getELResolver().getValue( fc.getELContext(), null,
+                                                                                     "executeBean" );
+        if ( eb != null ) {
+            updateOccurences( eb.getLiteralInputs().keySet() );
+            updateOccurences( eb.getBboxInputs().keySet() );
+            updateOccurences( eb.getBinaryInputs().keySet() );
+            updateOccurences( eb.getXmlInputs().keySet() );
+            updateOccurences( eb.getXmlRefInputs().keySet() );
+        }
+    }
+
+    private void updateOccurences( Collection<String> set ) {
+        for ( String key : set ) {
+            String id = key.substring( 0, key.lastIndexOf( ":" ) );
+            if ( currentOccurences.containsKey( id ) && currentOccurences.get( id ) != null ) {
+                currentOccurences.put( id, currentOccurences.get( id ) + 1 );
+            } else {
+                currentOccurences.put( id, 1 );
+            }
+        }
+    }
+
+    public void setOccurence( Map<String, Integer> occurence ) {
+        if ( occurence != null ) {
+            this.currentOccurences = occurence;
+            changedFromOutside = true;
+        }
+    }
+
+    private Map<String, Integer> getOccurences() {
+        if ( !changedFromOutside )
+            initCurrentOccurences();
+        return currentOccurences;
+    }
 
     /**
      * JSF event listener to create the form dependent of the selected process before form is rendered
@@ -167,11 +215,11 @@ public class FormBean {
             HtmlOutputLabel label = new HtmlOutputLabel();
             String labelId = getUniqueId();
             label.setId( labelId );
-            label.setFor( inputId );
+            label.setFor( inputId + "_PANEL" );
             label.setValue( input.getTitle().getString() );
             inputGrid.getChildren().add( label );
 
-            int minOccurs = 0;
+            int minOccurs = 1;
             try {
                 minOccurs = Integer.parseInt( input.getMinOccurs() );
             } catch ( NumberFormatException e ) {
@@ -188,20 +236,53 @@ public class FormBean {
             } catch ( NumberFormatException e ) {
                 // Nothing to do (1 assumed)
             }
+
+            Integer occ = getOccurences().get( input.getId().toString() );
+            if ( occ == null || occ == 0 )
+                occ = 1;
+            if ( occ > maxOccurs && occ > -1 )
+                occ = maxOccurs;
             switch ( input.getType() ) {
             case COMPLEX:
-                if ( ( (ComplexInputType) input ).getDefaultFormat().getMimeType() != null
-                     && ( (ComplexInputType) input ).getDefaultFormat().getMimeType().contains( "xml" ) ) {
-                    inputGrid.getChildren().add( getXMLInput( fc, (ComplexInputType) input, minOccurs, maxOccurs ) );
-                } else {
-                    inputGrid.getChildren().add( getBinaryInput( fc, (ComplexInputType) input, minOccurs, maxOccurs ) );
+                HtmlPanelGrid gridC = new HtmlPanelGrid();
+                gridC.setId( inputId + "_PANEL" );
+                gridC.setColumns( 2 );
+                for ( int j = 0; j < occ; j++ ) {
+                    if ( ( (ComplexInputType) input ).getDefaultFormat().getMimeType() != null
+                         && ( (ComplexInputType) input ).getDefaultFormat().getMimeType().contains( "xml" ) ) {
+                        gridC.getChildren().add( getXMLInput( fc, (ComplexInputType) input, minOccurs, maxOccurs, j ) );
+                    } else {
+                        gridC.getChildren().add( getBinaryInput( fc, (ComplexInputType) input, minOccurs, maxOccurs, j ) );
+                    }
+                    if ( maxOccurs != 1 ) {
+                        gridC.getChildren().add( createOccurenceButtons( input.getId(), j, maxOccurs, minOccurs ) );
+                    }
                 }
+                inputGrid.getChildren().add( gridC );
                 break;
             case BBOX:
-                inputGrid.getChildren().add( getBBoxInput( fc, (BBoxInputType) input, minOccurs, maxOccurs ) );
+                HtmlPanelGrid gridB = new HtmlPanelGrid();
+                gridB.setId( inputId + "_PANEL" );
+                gridB.setColumns( 2 );
+                for ( int j = 0; j < occ; j++ ) {
+                    gridB.getChildren().add( getBBoxInput( fc, (BBoxInputType) input, minOccurs, maxOccurs, j ) );
+                    if ( maxOccurs != 1 ) {
+                        gridB.getChildren().add( createOccurenceButtons( input.getId(), j, maxOccurs, minOccurs ) );
+                    }
+                }
+                inputGrid.getChildren().add( gridB );
                 break;
             case LITERAL:
-                inputGrid.getChildren().add( getLiteralInput( fc, (LiteralInputType) input, minOccurs, maxOccurs ) );
+                HtmlPanelGrid gridL = new HtmlPanelGrid();
+                gridL.setId( inputId + "_PANEL" );
+                gridL.setColumns( 2 );
+                for ( int j = 0; j < occ; j++ ) {
+                    gridL.getChildren().add( getLiteralInput( fc, (LiteralInputType) input, minOccurs, maxOccurs, j ) );
+                    if ( maxOccurs != 1 ) {
+                        gridL.getChildren().add( createOccurenceButtons( input.getId(), j, maxOccurs, minOccurs ) );
+                    }
+                }
+                inputGrid.getChildren().add( gridL );
                 break;
             }
             inputGrid.getChildren().add( createInfoBt( ClientBean.IN_INFOKEY, input.getId().getCode() ) );
@@ -217,13 +298,15 @@ public class FormBean {
         parent.getChildren().add( inputGrid );
     }
 
-    private HtmlFieldset getBinaryInput( FacesContext fc, ComplexInputType input, int minOccurs, int maxOccurs ) {
+    private HtmlFieldset getBinaryInput( FacesContext fc, ComplexInputType input, int minOccurs, int maxOccurs,
+                                         int index ) {
         HtmlFieldset fieldset = new HtmlFieldset();
         HtmlInputFile upload = new HtmlInputFile();
-        upload.setId( input.getId().toString() );
+        String id = input.getId().toString() + index;
+        upload.setId( id );
         upload.setStyleClass( INPUT_CLASS + " upload" );
         upload.setTarget( "upload" );
-        String valueEL = "#{executeBean.binaryInputs['" + input.getId().toString() + "']}";
+        String valueEL = "#{executeBean.binaryInputs['" + getMapId( input.getId(), index ) + "']}";
         ValueExpression valueVE = fc.getApplication().getExpressionFactory().createValueExpression( fc.getELContext(),
                                                                                                     valueEL,
                                                                                                     Object.class );
@@ -244,7 +327,7 @@ public class FormBean {
         fieldset.getChildren().add( upload );
 
         HtmlSelectFormat format = new HtmlSelectFormat();
-        format.setId( input.getId().toString() + "_format" );
+        format.setId( id + "_format" );
         format.setStyleClass( INPUT_CLASS + " selectFormat" );
         format.setDefaultFormat( input.getDefaultFormat() );
         format.setConverter( new ComplexFormatConverter() );
@@ -268,10 +351,10 @@ public class FormBean {
         return fieldset;
     }
 
-    private HtmlFieldset getXMLInput( FacesContext fc, ComplexInputType input, int minOccurs, int maxOccurs ) {
+    private HtmlFieldset getXMLInput( FacesContext fc, ComplexInputType input, int minOccurs, int maxOccurs, int index ) {
 
         HtmlFieldset fieldset = new HtmlFieldset();
-        String id = input.getId().toString();
+        String id = input.getId().toString() + index;
         fieldset.setId( id );
 
         // FileUpload
@@ -281,7 +364,7 @@ public class FormBean {
             upload.setId( id + "_asFile" );
             upload.setStyleClass( INPUT_CLASS + " upload" );
             upload.setTarget( "upload" );
-            String valueEL = "#{executeBean.xmlInputs['" + id + "']}";
+            String valueEL = "#{executeBean.xmlInputs['" + getMapId( input.getId(), index ) + "']}";
             ValueExpression valueVE = fc.getApplication().getExpressionFactory().createValueExpression( fc.getELContext(),
                                                                                                         valueEL,
                                                                                                         Object.class );
@@ -312,7 +395,8 @@ public class FormBean {
             text.setStyleClass( INPUT_CLASS + " text" );
             ValueExpression ve = fc.getApplication().getExpressionFactory().createValueExpression( fc.getELContext(),
                                                                                                    "#{executeBean.xmlRefInputs['"
-                                                                                                                           + id
+                                                                                                                           + getMapId( input.getId(),
+                                                                                                                                       index )
                                                                                                                            + "']}",
                                                                                                    String.class );
             text.setValueExpression( "value", ve );
@@ -346,12 +430,12 @@ public class FormBean {
             fieldset.getChildren().add( refGrid );
         }
         HtmlSelectFormat format = new HtmlSelectFormat();
-        format.setId( input.getId().toString() + "_format" );
+        format.setId( id + "_format" );
         format.setStyleClass( INPUT_CLASS + " selectFormat" );
         format.setDefaultFormat( input.getDefaultFormat() );
         format.setConverter( new ComplexFormatConverter() );
 
-        String valueFEL = "#{executeBean.complexFormats['" + input.getId().toString() + "']}";
+        String valueFEL = "#{executeBean.complexFormats['" + getMapId( input.getId(), index ) + "']}";
         ValueExpression valueFVE = fc.getApplication().getExpressionFactory().createValueExpression( fc.getELContext(),
                                                                                                      valueFEL,
                                                                                                      Object.class );
@@ -370,12 +454,13 @@ public class FormBean {
         return fieldset;
     }
 
-    private HtmlFieldset getBBoxInput( FacesContext fc, BBoxInputType input, int minOccurs, int maxOccurs ) {
+    private HtmlFieldset getBBoxInput( FacesContext fc, BBoxInputType input, int minOccurs, int maxOccurs, int index ) {
         HtmlFieldset fieldset = new HtmlFieldset();
         HtmlInputBBox bbox = new HtmlInputBBox();
         bbox.setStyleClass( INPUT_CLASS + " bboxInput" );
-        bbox.setId( input.getId().toString() );
-        String valueEL = "#{executeBean.bboxInputs['" + input.getId().toString() + "']}";
+        String id = input.getId().toString() + index;
+        bbox.setId( id );
+        String valueEL = "#{executeBean.bboxInputs['" + getMapId( input.getId(), index ) + "']}";
         ValueExpression valueVE = fc.getApplication().getExpressionFactory().createValueExpression( fc.getELContext(),
                                                                                                     valueEL, BBox.class );
 
@@ -396,12 +481,18 @@ public class FormBean {
 
     }
 
-    private HtmlFieldset getLiteralInput( FacesContext fc, LiteralInputType input, int minOccurs, int maxOccurs ) {
+    private String getMapId( CodeType codeType, int index ) {
+        return codeType.toString() + ":" + index;
+    }
+
+    private HtmlFieldset getLiteralInput( FacesContext fc, LiteralInputType input, int minOccurs, int maxOccurs,
+                                          int index ) {
         HtmlFieldset fieldset = new HtmlFieldset();
         HtmlLiteralInput literalInput = new HtmlLiteralInput();
-        literalInput.setId( input.getId().toString() );
+        String id = input.getId().toString() + index;
+        literalInput.setId( id );
         literalInput.setStyleClass( INPUT_CLASS + " literal" );
-        String valueEL = "#{executeBean.literalInputs['" + input.getId().toString() + "']}";
+        String valueEL = "#{executeBean.literalInputs['" + getMapId( input.getId(), index ) + "']}";
         ValueExpression valueVE = fc.getApplication().getExpressionFactory().createValueExpression( fc.getELContext(),
                                                                                                     valueEL,
                                                                                                     Object.class );
@@ -452,12 +543,38 @@ public class FormBean {
         return infoBt;
     }
 
-    private HtmlCommandButton createAddBt( String type, String idCode ) {
-        // TODO
-        HtmlCommandButton addBt = new HtmlCommandButton();
-        addBt.setId( getUniqueId() );
-        addBt.setImage( "resources/wpsclient/images/add.png" );
-        addBt.setAlt( "add" );
+    private HtmlPanelGroup createOccurenceButtons( CodeType id, int index, int minOccurs, int maxOccurs ) {
+        HtmlPanelGroup grp = new HtmlPanelGroup();
+        grp.getChildren().add( createAddBt( id, index, maxOccurs ) );
+        grp.getChildren().add( createRemoveBt( id, index, minOccurs ) );
+        return grp;
+    }
+
+    private HtmlCommandButton createRemoveBt( CodeType id, int index, int minOccurs ) {
+        HtmlCommandButton removeBt = new HtmlCommandButton();
+        removeBt.setId( getUniqueId() );
+        removeBt.setImage( "resources/wpsclient/images/delete.png" );
+        removeBt.setAlt( "remove" );
+
+        UIParameter idParam = new UIParameter();
+        idParam.setValue( id.toString() );
+        idParam.setName( MultipleComponentListener.INPUT_ID_PARAM );
+        removeBt.getChildren().add( idParam );
+
+        UIParameter typeParam = new UIParameter();
+        typeParam.setValue( MC_TYPE.remove );
+        typeParam.setName( MultipleComponentListener.TYPE_PARAM );
+        removeBt.getChildren().add( typeParam );
+
+        UIParameter occParam = new UIParameter();
+        occParam.setValue( getOccurences() );
+        occParam.setName( MultipleComponentListener.OCC_PARAM );
+        removeBt.getChildren().add( occParam );
+
+        UIParameter indexParam = new UIParameter();
+        indexParam.setValue( index );
+        indexParam.setName( MultipleComponentListener.INDEX_PARAM );
+        removeBt.getChildren().add( indexParam );
 
         AjaxBehavior ajaxB = new AjaxBehavior();
         List<String> render = new ArrayList<String>();
@@ -466,8 +583,43 @@ public class FormBean {
         List<String> execute = new ArrayList<String>();
         execute.add( "@form" );
         ajaxB.setExecute( execute );
-        addBt.addClientBehavior( addBt.getDefaultEventName(), ajaxB );
+        ajaxB.addAjaxBehaviorListener( new MultipleComponentListener() );
 
+        removeBt.addClientBehavior( removeBt.getDefaultEventName(), ajaxB );
+        return removeBt;
+    }
+
+    private HtmlCommandButton createAddBt( CodeType id, int index, int maxOccurs ) {
+        HtmlCommandButton addBt = new HtmlCommandButton();
+        addBt.setId( getUniqueId() );
+        addBt.setImage( "resources/wpsclient/images/add.png" );
+        addBt.setAlt( "add" );
+
+        UIParameter idParam = new UIParameter();
+        idParam.setValue( id.toString() );
+        idParam.setName( MultipleComponentListener.INPUT_ID_PARAM );
+        addBt.getChildren().add( idParam );
+
+        UIParameter typeParam = new UIParameter();
+        typeParam.setValue( MC_TYPE.add );
+        typeParam.setName( MultipleComponentListener.TYPE_PARAM );
+        addBt.getChildren().add( typeParam );
+
+        UIParameter occParam = new UIParameter();
+        occParam.setValue( getOccurences() );
+        occParam.setName( MultipleComponentListener.OCC_PARAM );
+        addBt.getChildren().add( occParam );
+
+        AjaxBehavior ajaxB = new AjaxBehavior();
+        List<String> render = new ArrayList<String>();
+        render.add( ":emptyForm" );
+        ajaxB.setRender( render );
+        List<String> execute = new ArrayList<String>();
+        execute.add( "@form" );
+        ajaxB.setExecute( execute );
+        ajaxB.addAjaxBehaviorListener( new MultipleComponentListener() );
+
+        addBt.addClientBehavior( addBt.getDefaultEventName(), ajaxB );
         return addBt;
     }
 
