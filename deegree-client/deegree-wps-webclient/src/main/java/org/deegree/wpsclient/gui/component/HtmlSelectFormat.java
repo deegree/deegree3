@@ -88,7 +88,6 @@ public class HtmlSelectFormat extends UISelectOne {
      */
     @Override
     protected void validateValue( FacesContext context, Object value ) {
-     System.out.println("valis");
         super.validateValue( context, value );
     }
 }
