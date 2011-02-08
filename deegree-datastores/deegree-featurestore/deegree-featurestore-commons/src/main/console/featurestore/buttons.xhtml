@@ -6,11 +6,14 @@
     <ui:define name="extraButtons">
 
         <td><h:commandButton styleClass="buttonInfo" rendered="#{config.active}"
-            value="#{labels.featureStores_info}" action="#{config.showInfo}" /></td>
+            value="#{labels.featureStores_info}" action="#{featureStoreConfig.showInfo}" alt="#{config.id}"
+            actionListener="#{featureStoreConfig.updateId}" /></td>
         <td><h:commandButton styleClass="buttonInfo" rendered="#{config.active}"
-            value="#{labels.featureStores_loader}" action="#{config.openLoader}" /></td>
-        <ui:remove><td><h:commandButton styleClass="buttonInfo" rendered="#{config.active &amp;&amp; config.sql}"
-            value="#{labels.featureStores_setup}" action="#{config.createTables}" /></td></ui:remove>
+            value="#{labels.featureStores_loader}" action="#{featureStoreConfig.openLoader}" alt="#{config.id}"
+            actionListener="#{featureStoreConfig.updateId}" /></td>
+        <td><h:commandButton styleClass="buttonInfo" rendered="#{config.active}"
+            value="#{labels.featureStores_setup}" action="#{featureStoreConfig.createTables}" alt="#{config.id}"
+            actionListener="#{featureStoreConfig.updateId}" /></td>
 
     </ui:define>
 </ui:composition>
