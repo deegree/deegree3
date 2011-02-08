@@ -2,7 +2,7 @@
 <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.deegree.org/se" xmlns="http://www.deegree.org/se"
   xmlns:se="http://www.opengis.net/se" elementFormDefault="qualified">
 
-  <xsd:import namespace="http://www.opengis.net/se" schemaLocation="http://schemas.opengis.net/se/1.1.0/Symbolizer.xsd" />
+  <xsd:import namespace="http://www.opengis.net/se" schemaLocation="http://schemas.opengis.net/se/1.1.0/FeatureStyle.xsd" />
 
   <xsd:element name="ShadedRelief" type="ShadedReliefType" substitutionGroup="se:ShadedRelief">
     <xsd:annotation>

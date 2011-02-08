@@ -32,8 +32,10 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 package org.deegree.rendering.r2d.persistence;
+
+import static java.util.Collections.singletonList;
 
 import java.util.List;
 
@@ -57,11 +59,11 @@ public class StyleManager implements ResourceManager {
 
     @SuppressWarnings("unchecked")
     public Class<? extends ResourceManager>[] getDependencies() {
-        return new Class[]{ProxyUtils.class};
+        return new Class[] { ProxyUtils.class };
     }
 
     public ResourceManagerMetadata getMetadata() {
-        return new ResourceManagerMetadata(){
+        return new ResourceManagerMetadata() {
             public String getName() {
                 return "render styles";
             }
@@ -71,7 +73,7 @@ public class StyleManager implements ResourceManager {
             }
 
             public List<ResourceProvider> getResourceProviders() {
-                return null;
+                return singletonList( (ResourceProvider) new SEProvider() );
             }
         };
     }
@@ -86,4 +88,3 @@ public class StyleManager implements ResourceManager {
     }
 
 }
-
