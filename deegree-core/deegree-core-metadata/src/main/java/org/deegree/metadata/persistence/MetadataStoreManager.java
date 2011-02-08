@@ -48,6 +48,7 @@ import java.util.ServiceLoader;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamReader;
 
+import org.deegree.commons.annotations.ConsoleManaged;
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceManager;
 import org.deegree.commons.config.ResourceManagerMetadata;
@@ -229,19 +230,22 @@ public class MetadataStoreManager implements ResourceManager {
         init( new File( workspace.getLocation(), "datasources" + File.separator + "metadata" ) );
     }
 
+    @ConsoleManaged(startPage = "/console/metadatastore/buttons")
+    static class MetadataStoreManagerMetadata implements ResourceManagerMetadata {
+        public String getName() {
+            return "metadata stores";
+        }
+
+        public String getPath() {
+            return "datasources/metadata/";
+        }
+
+        public List<ResourceProvider> getResourceProviders() {
+            return new LinkedList<ResourceProvider>( nsToProvider.values() );
+        }
+    }
+
     public ResourceManagerMetadata getMetadata() {
-        return new ResourceManagerMetadata() {
-            public String getName() {
-                return "metadata stores";
-            }
-
-            public String getPath() {
-                return "datasources/metadata/";
-            }
-
-            public List<ResourceProvider> getResourceProviders() {
-                return new LinkedList<ResourceProvider>( nsToProvider.values() );
-            }
-        };
+        return new MetadataStoreManagerMetadata();
     }
 }

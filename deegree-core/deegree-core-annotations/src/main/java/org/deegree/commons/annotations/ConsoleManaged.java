@@ -42,6 +42,12 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
 /**
+ * You should annotate an implementation of the ResourceManagerMetadata interface. If you annotate such a class, the
+ * contents of the src/main/console directory will be added into the .jar. The services console extraction mechanism
+ * (actually the deegree-services-parent) takes care to automatically place the .jsf or .html files into the resulting
+ * webapp.
+ * 
+ * If you need custom beans, take care to add an appropriate dependency to your webapp.
  * 
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
  * @author last edited by: $Author$
