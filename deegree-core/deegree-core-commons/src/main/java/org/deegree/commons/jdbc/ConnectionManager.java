@@ -51,6 +51,7 @@ import java.util.Set;
 
 import javax.xml.bind.JAXBException;
 
+import org.deegree.commons.annotations.ConsoleManaged;
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceManager;
 import org.deegree.commons.config.ResourceManagerMetadata;
@@ -325,20 +326,23 @@ public class ConnectionManager implements ResourceManager, ResourceProvider {
         return new Class[] { ProxyUtils.class };
     }
 
+    @ConsoleManaged(startPage = "/console/jdbc/buttons")
+    class ConnectionManagerMetadata implements ResourceManagerMetadata {
+        public String getName() {
+            return "jdbc";
+        }
+
+        public String getPath() {
+            return "jdbc";
+        }
+
+        public List<ResourceProvider> getResourceProviders() {
+            return Collections.singletonList( (ResourceProvider) ConnectionManager.this );
+        }
+    }
+
     public ResourceManagerMetadata getMetadata() {
-        return new ResourceManagerMetadata() {
-            public String getName() {
-                return "jdbc";
-            }
-
-            public String getPath() {
-                return "jdbc";
-            }
-
-            public List<ResourceProvider> getResourceProviders() {
-                return Collections.singletonList( (ResourceProvider) ConnectionManager.this );
-            }
-        };
+        return new ConnectionManagerMetadata();
     }
 
     public String getConfigNamespace() {
