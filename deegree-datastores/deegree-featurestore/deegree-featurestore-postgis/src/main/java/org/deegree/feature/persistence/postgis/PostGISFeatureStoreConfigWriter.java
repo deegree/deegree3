@@ -53,6 +53,7 @@ import org.apache.xerces.xs.XSSimpleTypeDefinition;
 import org.apache.xerces.xs.XSTypeDefinition;
 import org.deegree.commons.tom.primitive.XMLValueMangler;
 import org.deegree.feature.persistence.mapping.FeatureTypeMapping;
+import org.deegree.feature.persistence.mapping.JoinChain;
 import org.deegree.feature.persistence.mapping.MappedApplicationSchema;
 import org.deegree.feature.persistence.mapping.id.AutoIDGenerator;
 import org.deegree.feature.persistence.mapping.id.FIDMapping;
@@ -69,9 +70,13 @@ import org.deegree.feature.types.property.CodePropertyType;
 import org.deegree.feature.types.property.CustomPropertyType;
 import org.deegree.feature.types.property.FeaturePropertyType;
 import org.deegree.feature.types.property.GeometryPropertyType;
+import org.deegree.feature.types.property.GeometryPropertyType.CoordinateDimension;
+import org.deegree.feature.types.property.GeometryPropertyType.GeometryType;
 import org.deegree.feature.types.property.MeasurePropertyType;
 import org.deegree.feature.types.property.PropertyType;
 import org.deegree.feature.types.property.SimplePropertyType;
+import org.deegree.filter.sql.DBField;
+import org.deegree.filter.sql.MappingExpression;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -235,13 +240,69 @@ public class PostGISFeatureStoreConfigWriter {
 
     private void writePropertyMapping( XMLStreamWriter writer, GeometryPropertyType pt, GeometryMapping mapping )
                             throws XMLStreamException {
+
         writer.writeStartElement( CONFIG_NS, "GeometryProperty" );
         writeCommonAttrs( writer, pt );
         writer.writeAttribute( "mapping", mapping.getMapping().toString() );
-        writer.writeAttribute( "type", pt.getGeometryType().name() );
-        writer.writeAttribute( "crs", "" );
-        writer.writeAttribute( "srid", "" );
-        writer.writeAttribute( "dim", pt.getCoordinateDimension().name() );
+
+        GeometryType gt = pt.getGeometryType();
+        switch ( gt ) {
+        case POINT: {
+            writer.writeAttribute( "type", "Point" );
+            break;
+        }
+        case LINE_STRING:
+        case LINEAR_RING:
+        case CURVE: {
+            writer.writeAttribute( "type", "LineString" );
+            break;
+        }
+        case POLYGON:
+        case SURFACE: {
+            writer.writeAttribute( "type", "Polygon" );
+            break;
+        }
+        case MULTI_POINT: {
+            writer.writeAttribute( "type", "MultiPoint" );
+            break;
+        }
+        case MULTI_LINE_STRING:
+        case MULTI_CURVE: {
+            writer.writeAttribute( "type", "MultiLineString" );
+            break;
+        }
+        case MULTI_POLYGON:
+        case MULTI_SURFACE: {
+            writer.writeAttribute( "type", "MultiPolygon" );
+            break;
+        }
+        case MULTI_GEOMETRY: {
+            writer.writeAttribute( "type", "MultiGeometry" );
+            break;
+        }
+        default: {
+            writer.writeAttribute( "type", "Geometry" );
+        }
+        }
+        writer.writeAttribute( "crs", mapping.getCRS().getName() );
+        writer.writeAttribute( "srid", mapping.getSrid() );
+        CoordinateDimension dim = pt.getCoordinateDimension();
+        switch ( dim ) {
+        case DIM_2: {
+            writer.writeAttribute( "dim", "2D" );
+            break;
+        }
+        case DIM_3: {
+            writer.writeAttribute( "dim", "3D" );
+            break;
+        }
+        case DIM_2_OR_3: {
+            // TODO
+            writer.writeAttribute( "dim", "2D" );
+            break;
+        }
+        }
+
         // if ( pt.getMaxOccurs() == 1 ) {
         // MappingContext geometryValueContext = mcManager.mapOneToOneElement( mc, pt.getName() );
         // writer.writeAttribute( "mapping", geometryValueContext.getColumn() );
@@ -259,11 +320,10 @@ public class PostGISFeatureStoreConfigWriter {
         if ( pt.getFTName() != null ) {
             writer.writeAttribute( "type", getName( pt.getFTName() ) );
         }
-        if ( pt.getMaxOccurs() == 1 ) {
-            writer.writeAttribute( "mapping", mapping.getMapping().toString() );
-        } else {
-            // MappingContext featureValueContext = mcManager.mapOneToManyElements( mc, ( pt.getName() ) );
-            // writeJoinedTable( writer, featureValueContext.getTable() );
+        writer.writeAttribute( "mapping", mapping.getMapping().toString() );
+        JoinChain jc = mapping.getJoinedTable();
+        if ( jc != null ) {
+            writeJoinedTable( writer, jc );
         }
         writer.writeEndElement();
     }
@@ -299,9 +359,14 @@ public class PostGISFeatureStoreConfigWriter {
         if ( particle instanceof PrimitiveMapping ) {
             PrimitiveMapping pm = (PrimitiveMapping) particle;
             writer.writeStartElement( CONFIG_NS, "PrimitiveMapping" );
-            writer.writeAttribute( "path", particle.getPath().getAsText() );
+            writer.writeAttribute( "path", particle.getPath().getAsText() );            
             writer.writeAttribute( "type", pm.getType().getXSTypeName() );
-            writer.writeAttribute( "mapping", pm.getMapping().toString() );
+            MappingExpression mapping = pm.getMapping();
+            if (mapping instanceof DBField)  {
+                writer.writeAttribute( "mapping", ((DBField)mapping).getColumn() );   
+            } else {
+                writer.writeAttribute( "mapping", mapping.toString() );                
+            }
             // TODO
             writer.writeEndElement();
         } else if ( particle instanceof GeometryMapping ) {
@@ -340,7 +405,7 @@ public class PostGISFeatureStoreConfigWriter {
             MappingContext codeValueContext = mcManager.mapOneToManyElements( mc, pt.getName() );
             writer.writeAttribute( "mapping", "value" );
             writer.writeAttribute( "codeSpaceMapping", "codespace" );
-            writeJoinedTable( writer, codeValueContext.getTable() );
+            // writeJoinedTable( writer, codeValueContext.getTable() );
         }
         writer.writeEndElement();
     }
@@ -359,7 +424,7 @@ public class PostGISFeatureStoreConfigWriter {
             MappingContext measureContext = mcManager.mapOneToManyElements( mc, pt.getName() );
             writer.writeAttribute( "mapping", "value" );
             writer.writeAttribute( "uomMapping", "uom" );
-            writeJoinedTable( writer, measureContext.getTable() );
+            // writeJoinedTable( writer, measureContext.getTable() );
         }
         writer.writeEndElement();
     }
@@ -382,11 +447,11 @@ public class PostGISFeatureStoreConfigWriter {
         }
     }
 
-    private void writeJoinedTable( XMLStreamWriter writer, String table )
+    private void writeJoinedTable( XMLStreamWriter writer, JoinChain jc )
                             throws XMLStreamException {
         writer.writeStartElement( CONFIG_NS, "JoinedTable" );
         writer.writeAttribute( "indexColumn", "idx" );
-        writer.writeCharacters( "id=" + table + ".parentfk" );
+        writer.writeCharacters( "id=" + jc.getFields().get( 1 ).getTable() + ".parentfk" );
         writer.writeEndElement();
     }
 

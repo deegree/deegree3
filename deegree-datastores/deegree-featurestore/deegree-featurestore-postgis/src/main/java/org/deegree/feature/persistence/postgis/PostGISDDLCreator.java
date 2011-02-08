@@ -45,6 +45,7 @@ import org.deegree.commons.tom.primitive.PrimitiveType;
 import org.deegree.feature.persistence.mapping.FeatureTypeMapping;
 import org.deegree.feature.persistence.mapping.JoinChain;
 import org.deegree.feature.persistence.mapping.MappedApplicationSchema;
+import org.deegree.feature.persistence.mapping.id.FIDMapping;
 import org.deegree.feature.persistence.mapping.property.CompoundMapping;
 import org.deegree.feature.persistence.mapping.property.FeatureMapping;
 import org.deegree.feature.persistence.mapping.property.GeometryMapping;
@@ -67,11 +68,14 @@ public class PostGISDDLCreator {
 
     private final MappedApplicationSchema schema;
 
+    private final boolean hasBlobTable;
+
     /**
      * @param schema
      */
     public PostGISDDLCreator( MappedApplicationSchema schema ) {
         this.schema = schema;
+        hasBlobTable = schema.getBlobMapping() != null;
     }
 
     /**
@@ -79,7 +83,10 @@ public class PostGISDDLCreator {
      */
     public String[] getDDL() {
 
-        List<String> ddl = getBLOBCreates();
+        List<String> ddl = new ArrayList<String>();
+        if ( hasBlobTable ) {
+            ddl.addAll( getBLOBCreates() );
+        }
         for ( StringBuffer sb : getRelationalCreates() ) {
             ddl.add( sb.toString() );
         }
@@ -111,8 +118,8 @@ public class PostGISDDLCreator {
         ddl.add( "CREATE TABLE " + blobTable + " (id serial PRIMARY KEY, "
                  + "gml_id text UNIQUE NOT NULL, ft_type smallint REFERENCES " + ftTable + " , binary_object bytea)" );
         ddl.add( "COMMENT ON TABLE " + blobTable + " IS 'All objects (features and geometries)'" );
-        ddl.add( "SELECT ADDGEOMETRYCOLUMN('" + blobTableSchema.toLowerCase() + "', '" + blobTable.getTable().toLowerCase()
-                 + "','gml_bounded_by','-1','GEOMETRY',2)" );
+        ddl.add( "SELECT ADDGEOMETRYCOLUMN('" + blobTableSchema.toLowerCase() + "', '"
+                 + blobTable.getTable().toLowerCase() + "','gml_bounded_by','-1','GEOMETRY',2)" );
         ddl.add( "ALTER TABLE " + blobTable + " ADD CONSTRAINT gml_objects_geochk CHECK (isvalid(gml_bounded_by))" );
         ddl.add( "CREATE INDEX gml_objects_sidx ON " + blobTable + "  USING GIST (gml_bounded_by GIST_GEOMETRY_OPS)" );
         // ddl.add( "CREATE TABLE gml_names (gml_object_id integer REFERENCES gml_objects,"
@@ -143,7 +150,15 @@ public class PostGISDDLCreator {
         ddls.add( sql );
         sql.append( ftMapping.getFtTable() );
         sql.append( " (\n    " );
-        sql.append( "id integer PRIMARY KEY REFERENCES gml_objects" );
+        if ( hasBlobTable ) {
+            sql.append( "id integer PRIMARY KEY REFERENCES gml_objects" );
+        } else {
+            FIDMapping fidMapping = ftMapping.getFidMapping();
+            String fidColumn = fidMapping.getColumn();
+            sql.append( fidColumn );
+            sql.append( " text PRIMARY KEY" );
+        }
+
         for ( PropertyType pt : ft.getPropertyDeclarations() ) {
             Mapping propMapping = ftMapping.getMapping( pt.getName() );
             if ( propMapping != null ) {

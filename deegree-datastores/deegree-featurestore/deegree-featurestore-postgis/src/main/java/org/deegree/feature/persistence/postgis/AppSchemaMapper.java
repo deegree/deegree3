@@ -41,6 +41,7 @@ import static org.apache.xerces.xs.XSComplexTypeDefinition.CONTENTTYPE_EMPTY;
 import static org.deegree.commons.tom.primitive.PrimitiveType.STRING;
 import static org.deegree.feature.persistence.BlobCodec.Compression.NONE;
 import static org.deegree.feature.types.property.GeometryPropertyType.CoordinateDimension.DIM_2;
+import static org.deegree.gml.GMLVersion.GML_32;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -116,6 +117,12 @@ public class AppSchemaMapper {
 
     private final MappedApplicationSchema mappedSchema;
 
+    private final CRS storageCrs = CRS.EPSG_4326;
+
+    private final String storageSrid = "-1";
+
+    private final CoordinateDimension storageDim = DIM_2;
+
     /**
      * Creates a new {@link AppSchemaMapper} instance for the given schema.
      * 
@@ -135,8 +142,10 @@ public class AppSchemaMapper {
         FeatureTypeMapping[] ftMappings = generateFtMappings( fts );
         // TODO
         CRS storageCRS = CRS.EPSG_4326;
-        BBoxTableMapping bboxMapping = generateBBoxMapping();
-        BlobMapping blobMapping = generateBlobMapping();
+        // TODO
+        BBoxTableMapping bboxMapping = null;
+        // TODO
+        BlobMapping blobMapping = null;
 
         this.mappedSchema = new MappedApplicationSchema( fts, ftToSuperFt, prefixToNs, xsModel, ftMappings, storageCRS,
                                                          bboxMapping, blobMapping );
@@ -181,11 +190,11 @@ public class AppSchemaMapper {
         // TODO
         IDGenerator generator = new UUIDGenerator();
         // TODO
-        FIDMapping fidMapping = new FIDMapping( "", "gml_id", STRING, generator );
+        FIDMapping fidMapping = new FIDMapping( "", "attr_gml_id", STRING, generator );
 
         Map<QName, Mapping> propToMapping = new HashMap<QName, Mapping>();
         // TODO: gml properties
-        for ( PropertyType pt : ft.getPropertyDeclarations() ) {
+        for ( PropertyType pt : ft.getPropertyDeclarations( GML_32 ) ) {
             Mapping propMapping = generatePropMapping( pt, mc );
             propToMapping.put( pt.getName(), propMapping );
         }
@@ -223,45 +232,74 @@ public class AppSchemaMapper {
     private GeometryMapping generatePropMapping( GeometryPropertyType pt, MappingContext mc ) {
         LOG.info( "Mapping geometry property '" + pt.getName() + "'" );
         PropertyName path = new PropertyName( pt.getName() );
-        // TODO
-        String column = pt.getName().getLocalPart().toLowerCase();
-        MappingExpression mapping = new DBField( column );
-        // TODO
-        CoordinateDimension dim = DIM_2;
-        // TODO
-        CRS crs = CRS.EPSG_4326;
-        // TODO
-        String srid = "4326";
-        // TODO
+
+        MappingContext propMc = null;
         JoinChain jc = null;
-        return new GeometryMapping( path, mapping, pt.getGeometryType(), dim, crs, srid, jc );
+        if ( pt.getMaxOccurs() == 1 ) {
+            propMc = mcManager.mapOneToOneElement( mc, pt.getName() );
+        } else {
+            propMc = mcManager.mapOneToManyElements( mc, pt.getName() );
+            // TODO
+            // jc = new JoinChain( dbf1, dbf2 );
+        }
+        MappingExpression mapping = new DBField( propMc.getColumn() );
+        return new GeometryMapping( path, mapping, pt.getGeometryType(), storageDim, storageCrs, storageSrid, jc );
     }
 
     private FeatureMapping generatePropMapping( FeaturePropertyType pt, MappingContext mc ) {
         LOG.info( "Mapping feature property '" + pt.getName() + "'" );
         PropertyName path = new PropertyName( pt.getName() );
-        // TODO
-        String column = pt.getName().getLocalPart().toLowerCase();
-        MappingExpression mapping = new DBField( column );
-        // TODO
+        MappingExpression mapping = null;
         JoinChain jc = null;
+        MappingContext mc2 = null;
+        if ( pt.getMaxOccurs() == 1 ) {
+            mc2 = mcManager.mapOneToOneElement( mc, pt.getName() );
+        } else {
+            mc2 = mcManager.mapOneToManyElements( mc, pt.getName() );
+            jc = new JoinChain( new DBField( mc.getTable(), "id" ), new DBField( mc2.getTable(), "parentfk" ) );
+        }
+        mapping = new DBField( mc2.getColumn() );
         return new FeatureMapping( path, mapping, pt.getFTName(), jc );
     }
 
     private CompoundMapping generatePropMapping( CustomPropertyType pt, MappingContext mc ) {
+
         LOG.info( "Mapping custom property '" + pt.getName() + "'" );
+
+        XSComplexTypeDefinition xsTypeDef = pt.getXSDValueType();
+        if (xsTypeDef == null) {
+            LOG.warn ("No XSD type definition available.");
+            return null;
+        }
+
         PropertyName path = new PropertyName( pt.getName() );
-        // TODO
-        String column = pt.getName().getLocalPart().toLowerCase();
-        MappingExpression mapping = new DBField( column );
-        List<Mapping> particles = createMapping( pt.getXSDValueType(), mc, new HashMap<QName, QName>() );
-        // TODO
+
+        MappingContext propMc = null;
         JoinChain jc = null;
+        if ( pt.getMaxOccurs() == 1 ) {
+            propMc = mcManager.mapOneToOneElement( mc, pt.getName() );
+        } else {
+            propMc = mcManager.mapOneToManyElements( mc, pt.getName() );
+            // TODO
+            // jc =
+        }
+        MappingExpression mapping = new DBField( propMc.getColumn() );
+        List<Mapping> particles = createMapping( pt.getXSDValueType(), propMc, new HashMap<QName, QName>() );
         return new CompoundMapping( path, mapping, particles, jc );
     }
 
     private List<Mapping> createMapping( XSComplexTypeDefinition typeDef, MappingContext mc, Map<QName, QName> elements ) {
         List<Mapping> particles = new ArrayList<Mapping>();
+
+        // text node
+        if ( typeDef.getContentType() != CONTENTTYPE_EMPTY && typeDef.getContentType() != CONTENTTYPE_ELEMENT ) {
+            // TODO
+            NamespaceContext nsContext = null;
+            PropertyName path = new PropertyName( "text()", nsContext );
+            DBField dbField = new DBField( mc.getTable(), mc.getColumn() );
+            PrimitiveType pt = XMLValueMangler.getPrimitiveType( typeDef.getSimpleType() );
+            particles.add( new PrimitiveMapping( path, dbField, pt, null ) );
+        }
 
         // attributes
         XSObjectList attributeUses = typeDef.getAttributeUses();
@@ -275,19 +313,8 @@ public class AppSchemaMapper {
             // TODO
             NamespaceContext nsContext = null;
             PropertyName path = new PropertyName( "@" + getName( attrName ), nsContext );
-            DBField dbField = new DBField( attrMc.getColumn(), attrMc.getTable() );
+            DBField dbField = new DBField( attrMc.getTable(), attrMc.getColumn() );
             PrimitiveType pt = XMLValueMangler.getPrimitiveType( attrDecl.getTypeDefinition() );
-            particles.add( new PrimitiveMapping( path, dbField, pt, null ) );
-        }
-
-        // text node
-        if ( typeDef.getContentType() != CONTENTTYPE_EMPTY && typeDef.getContentType() != CONTENTTYPE_ELEMENT ) {
-            MappingContext primitiveMc = mcManager.mapOneToOneElement( mc, new QName( "value" ) );
-            // TODO
-            NamespaceContext nsContext = null;
-            PropertyName path = new PropertyName( "text()", nsContext );
-            DBField dbField = new DBField( primitiveMc.getColumn(), primitiveMc.getTable() );
-            PrimitiveType pt = XMLValueMangler.getPrimitiveType( typeDef.getSimpleType() );
             particles.add( new PrimitiveMapping( path, dbField, pt, null ) );
         }
 
@@ -381,52 +408,52 @@ public class AppSchemaMapper {
                 }
                 mappings.add( new GeometryMapping( path, mapping, gt, dim, crs, srid, jc ) );
             } else {
-//                if ( elName.equals( new QName( "http://www.isotc211.org/2005/gmd", "CI_Citation" ) ) ) {
-//                    LOG.warn( "Skipping CI_Citation!!!" );
-//                    continue;
-//                }
-//
-//                if ( elName.equals( new QName( "http://www.isotc211.org/2005/gmd", "CI_Contact" ) ) ) {
-//                    LOG.warn( "Skipping CI_Contact!!!" );
-//                    continue;
-//                }
-//
-//                if ( elName.equals( new QName( "http://www.isotc211.org/2005/gmd", "CI_ResponsibleParty" ) ) ) {
-//                    LOG.warn( "Skipping CI_ResponsibleParty!!!" );
-//                    continue;
-//                }
-//
-//                if ( elName.equals( new QName( "http://www.isotc211.org/2005/gmd", "MD_Resolution" ) ) ) {
-//                    LOG.warn( "Skipping MD_Resolution!!!" );
-//                    continue;
-//                }
-//
-//                if ( elName.equals( new QName( "http://www.isotc211.org/2005/gmd", "EX_Extent" ) ) ) {
-//                    LOG.warn( "Skipping EX_Extent!!!" );
-//                    continue;
-//                }
-//
-//                if ( elName.equals( new QName( "http://www.isotc211.org/2005/gmd", "MD_PixelOrientationCode" ) ) ) {
-//                    LOG.warn( "Skipping EX_Extent!!!" );
-//                    continue;
-//                }
-//
-//                if ( elName.equals( new QName( CommonNamespaces.GML3_2_NS, "TimeOrdinalEra" ) ) ) {
-//                    LOG.warn( "Skipping TimeOrdinalEra!!!" );
-//                    continue;
-//                }
-//
-//                if ( elName.equals( new QName( CommonNamespaces.GML3_2_NS, "TimePeriod" ) ) ) {
-//                    LOG.warn( "Skipping TimePeriod!!!" );
-//                    continue;
-//                }
-//
-//                if ( elName.getNamespaceURI().equals( CommonNamespaces.GML3_2_NS ) ) {
-//                    if ( elName.getLocalPart().endsWith( "CRS" ) ) {
-//                        LOG.warn( "Skipping " + elName.getLocalPart() + "!!!" );
-//                    }
-//                    continue;
-//                }
+                // if ( elName.equals( new QName( "http://www.isotc211.org/2005/gmd", "CI_Citation" ) ) ) {
+                // LOG.warn( "Skipping CI_Citation!!!" );
+                // continue;
+                // }
+                //
+                // if ( elName.equals( new QName( "http://www.isotc211.org/2005/gmd", "CI_Contact" ) ) ) {
+                // LOG.warn( "Skipping CI_Contact!!!" );
+                // continue;
+                // }
+                //
+                // if ( elName.equals( new QName( "http://www.isotc211.org/2005/gmd", "CI_ResponsibleParty" ) ) ) {
+                // LOG.warn( "Skipping CI_ResponsibleParty!!!" );
+                // continue;
+                // }
+                //
+                // if ( elName.equals( new QName( "http://www.isotc211.org/2005/gmd", "MD_Resolution" ) ) ) {
+                // LOG.warn( "Skipping MD_Resolution!!!" );
+                // continue;
+                // }
+                //
+                // if ( elName.equals( new QName( "http://www.isotc211.org/2005/gmd", "EX_Extent" ) ) ) {
+                // LOG.warn( "Skipping EX_Extent!!!" );
+                // continue;
+                // }
+                //
+                // if ( elName.equals( new QName( "http://www.isotc211.org/2005/gmd", "MD_PixelOrientationCode" ) ) ) {
+                // LOG.warn( "Skipping EX_Extent!!!" );
+                // continue;
+                // }
+                //
+                // if ( elName.equals( new QName( CommonNamespaces.GML3_2_NS, "TimeOrdinalEra" ) ) ) {
+                // LOG.warn( "Skipping TimeOrdinalEra!!!" );
+                // continue;
+                // }
+                //
+                // if ( elName.equals( new QName( CommonNamespaces.GML3_2_NS, "TimePeriod" ) ) ) {
+                // LOG.warn( "Skipping TimePeriod!!!" );
+                // continue;
+                // }
+                //
+                // if ( elName.getNamespaceURI().equals( CommonNamespaces.GML3_2_NS ) ) {
+                // if ( elName.getLocalPart().endsWith( "CRS" ) ) {
+                // LOG.warn( "Skipping " + elName.getLocalPart() + "!!!" );
+                // }
+                // continue;
+                // }
 
                 XSTypeDefinition typeDef = substitution.getTypeDefinition();
                 QName complexTypeName = getQName( typeDef );
@@ -450,8 +477,8 @@ public class AppSchemaMapper {
                 JoinChain jc = null;
 
                 if ( occurence == -1 ) {
-                    //  TODO
-//                    writeJoinedTable( writer, elMC.getTable() );
+                    // TODO
+                    // writeJoinedTable( writer, elMC.getTable() );
                 }
 
                 if ( typeDef instanceof XSComplexTypeDefinition ) {
