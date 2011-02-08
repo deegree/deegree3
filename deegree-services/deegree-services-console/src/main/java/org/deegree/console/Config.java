@@ -35,6 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.console;
 
+import static org.apache.commons.io.FileUtils.copyURLToFile;
 import static org.apache.commons.io.FileUtils.readFileToString;
 import static org.apache.commons.io.IOUtils.closeQuietly;
 
@@ -145,6 +146,23 @@ public class Config implements Comparable<Config> {
         }
     }
 
+    /**
+     * for single file configs
+     */
+    public Config( File location, URL schemaURL, URL template, ConfigManager manager ) throws IOException {
+        this.location = location;
+        this.manager = manager;
+        active = true;
+        InputStream in = null;
+        try {
+            this.schemaURL = schemaURL;
+            this.template = template;
+            schemaAsText = schemaURL == null ? null : IOUtils.toString( in = schemaURL.openStream() );
+        } finally {
+            closeQuietly( in );
+        }
+    }
+
     public void activate() {
         if ( !active ) {
             File target = new File( location.getParentFile(), id + ".xml" );
@@ -163,6 +181,9 @@ public class Config implements Comparable<Config> {
 
     public String edit()
                             throws IOException {
+        if ( !location.exists() && template != null ) {
+            copyURLToFile( template, location );
+        }
         this.content = readFileToString( location, "UTF-8" );
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put( "editConfig", this );
         return "/console/generic/xmleditor?faces-redirect=true";

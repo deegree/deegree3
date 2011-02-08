@@ -41,6 +41,7 @@ import static org.apache.commons.io.IOUtils.readLines;
 import static org.deegree.commons.config.DeegreeWorkspace.getWorkspaceRoot;
 import static org.deegree.commons.utils.net.HttpUtils.STREAM;
 import static org.deegree.commons.utils.net.HttpUtils.get;
+import static org.deegree.services.controller.OGCFrontController.getServiceWorkspace;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.File;
@@ -129,6 +130,15 @@ public class ConfigManager {
     @Setter
     private String workspaceImportName;
 
+    @Getter
+    private Config proxyConfig;
+
+    @Getter
+    private Config metadataConfig;
+
+    @Getter
+    private Config mainConfig;
+
     private String workspaceName;
 
     private boolean modified;
@@ -143,6 +153,17 @@ public class ConfigManager {
                 resourceManagers.add( md );
                 resourceManagerMap.put( md.getName(), md );
             }
+        }
+
+        File ws = getServiceWorkspace().getLocation();
+        File proxyFile = new File( ws, "proxy.xml" );
+        URL schema = ConfigManager.class.getResource( "/META-INF/schemas/proxy/3.0.0/proxy.xsd" );
+        URL template = ConfigManager.class.getResource( "/META-INF/schemas/proxy/3.0.0/example.xml" );
+        try {
+            proxyConfig = new Config( proxyFile, schema, template, this );
+        } catch ( IOException e ) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
         }
     }
 
