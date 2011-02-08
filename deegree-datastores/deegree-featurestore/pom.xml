@@ -34,6 +34,7 @@
 
   <modules>
     <module>deegree-featurestore-commons</module>
+    <module>deegree-featurestore-console</module>
     <module>deegree-featurestore-shape</module>
     <module>deegree-featurestore-memory</module>
     <module>deegree-featurestore-simplesql</module>
