@@ -40,7 +40,6 @@ import static javax.xml.XMLConstants.NULL_NS_URI;
 import static org.deegree.commons.xml.CommonNamespaces.XSINS;
 
 import java.util.List;
-import java.util.Map;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
@@ -66,13 +65,11 @@ import org.deegree.feature.persistence.mapping.property.GeometryMapping;
 import org.deegree.feature.persistence.mapping.property.Mapping;
 import org.deegree.feature.persistence.mapping.property.PrimitiveMapping;
 import org.deegree.feature.types.FeatureType;
-import org.deegree.feature.types.property.CodePropertyType;
 import org.deegree.feature.types.property.CustomPropertyType;
 import org.deegree.feature.types.property.FeaturePropertyType;
 import org.deegree.feature.types.property.GeometryPropertyType;
 import org.deegree.feature.types.property.GeometryPropertyType.CoordinateDimension;
 import org.deegree.feature.types.property.GeometryPropertyType.GeometryType;
-import org.deegree.feature.types.property.MeasurePropertyType;
 import org.deegree.feature.types.property.PropertyType;
 import org.deegree.feature.types.property.SimplePropertyType;
 import org.deegree.filter.sql.DBField;
@@ -98,15 +95,25 @@ public class PostGISFeatureStoreConfigWriter {
 
     private final MappedApplicationSchema schema;
 
-    private final MappingContextManager mcManager;
-
+    /**
+     * Creates a new {@link PostGISFeatureStoreConfigWriter} instance.
+     * 
+     * @param schema
+     *            the mapped application schema to export, must not be <code>null</code>
+     */
     public PostGISFeatureStoreConfigWriter( MappedApplicationSchema schema ) {
         this.schema = schema;
-        mcManager = new MappingContextManager( schema.getXSModel().getNamespacePrefixes() );
     }
 
-    public void writeConfig( XMLStreamWriter writer, String storageCrs, Map<String, String> namespaceHints,
-                             String connId, List<String> schemaURLs )
+    /**
+     * Exports the configuration document.
+     * 
+     * @param writer
+     * @param connId
+     * @param schemaURLs
+     * @throws XMLStreamException
+     */
+    public void writeConfig( XMLStreamWriter writer, String connId, List<String> schemaURLs )
                             throws XMLStreamException {
 
         writer.writeStartElement( "PostGISFeatureStore" );
@@ -127,12 +134,6 @@ public class PostGISFeatureStoreConfigWriter {
         // writer.writeStartElement( CONFIG_NS, "StorageCRS" );
         // writer.writeCharacters( storageCrs );
         // writer.writeEndElement();
-
-        // for ( Entry<String, String> ns : schema.getNamespaceBindings().entrySet() ) {
-        // writer.writeEmptyElement( CONFIG_NS, "NamespaceHint" );
-        // writer.writeAttribute( "prefix", ns.getKey() );
-        // writer.writeAttribute( "namespaceURI", ns.getValue() );
-        // }
 
         writer.writeStartElement( CONFIG_NS, "JDBCConnId" );
         writer.writeCharacters( connId );
@@ -359,13 +360,13 @@ public class PostGISFeatureStoreConfigWriter {
         if ( particle instanceof PrimitiveMapping ) {
             PrimitiveMapping pm = (PrimitiveMapping) particle;
             writer.writeStartElement( CONFIG_NS, "PrimitiveMapping" );
-            writer.writeAttribute( "path", particle.getPath().getAsText() );            
+            writer.writeAttribute( "path", particle.getPath().getAsText() );
             writer.writeAttribute( "type", pm.getType().getXSTypeName() );
             MappingExpression mapping = pm.getMapping();
-            if (mapping instanceof DBField)  {
-                writer.writeAttribute( "mapping", ((DBField)mapping).getColumn() );   
+            if ( mapping instanceof DBField ) {
+                writer.writeAttribute( "mapping", ( (DBField) mapping ).getColumn() );
             } else {
-                writer.writeAttribute( "mapping", mapping.toString() );                
+                writer.writeAttribute( "mapping", mapping.toString() );
             }
             // TODO
             writer.writeEndElement();
@@ -392,42 +393,42 @@ public class PostGISFeatureStoreConfigWriter {
         }
     }
 
-    private void writePropertyMapping( XMLStreamWriter writer, CodePropertyType pt, MappingContext mc )
-                            throws XMLStreamException {
-        writer.writeStartElement( CONFIG_NS, "CodeProperty" );
-        writeCommonAttrs( writer, pt );
-        if ( pt.getMaxOccurs() == 1 ) {
-            MappingContext codeValueContext = mcManager.mapOneToOneElement( mc, pt.getName() );
-            writer.writeAttribute( "mapping", codeValueContext.getColumn() );
-            MappingContext codeSpaceContext = mcManager.mapOneToOneAttribute( codeValueContext, new QName( "codeSpace" ) );
-            writer.writeAttribute( "codeSpaceMapping", codeSpaceContext.getColumn() );
-        } else {
-            MappingContext codeValueContext = mcManager.mapOneToManyElements( mc, pt.getName() );
-            writer.writeAttribute( "mapping", "value" );
-            writer.writeAttribute( "codeSpaceMapping", "codespace" );
-            // writeJoinedTable( writer, codeValueContext.getTable() );
-        }
-        writer.writeEndElement();
-    }
-
-    private void writePropertyMapping( XMLStreamWriter writer, MeasurePropertyType pt, MappingContext mc )
-                            throws XMLStreamException {
-
-        writer.writeStartElement( CONFIG_NS, "MeasureProperty" );
-        writeCommonAttrs( writer, pt );
-        if ( pt.getMaxOccurs() == 1 ) {
-            MappingContext measureValueContext = mcManager.mapOneToOneElement( mc, pt.getName() );
-            writer.writeAttribute( "mapping", measureValueContext.getColumn() );
-            MappingContext codeSpaceContext = mcManager.mapOneToOneAttribute( measureValueContext, new QName( "uom" ) );
-            writer.writeAttribute( "uomMapping", codeSpaceContext.getColumn() );
-        } else {
-            MappingContext measureContext = mcManager.mapOneToManyElements( mc, pt.getName() );
-            writer.writeAttribute( "mapping", "value" );
-            writer.writeAttribute( "uomMapping", "uom" );
-            // writeJoinedTable( writer, measureContext.getTable() );
-        }
-        writer.writeEndElement();
-    }
+    // private void writePropertyMapping( XMLStreamWriter writer, CodePropertyType pt, MappingContext mc )
+    // throws XMLStreamException {
+    // writer.writeStartElement( CONFIG_NS, "CodeProperty" );
+    // writeCommonAttrs( writer, pt );
+    // if ( pt.getMaxOccurs() == 1 ) {
+    // MappingContext codeValueContext = mcManager.mapOneToOneElement( mc, pt.getName() );
+    // writer.writeAttribute( "mapping", codeValueContext.getColumn() );
+    // MappingContext codeSpaceContext = mcManager.mapOneToOneAttribute( codeValueContext, new QName( "codeSpace" ) );
+    // writer.writeAttribute( "codeSpaceMapping", codeSpaceContext.getColumn() );
+    // } else {
+    // MappingContext codeValueContext = mcManager.mapOneToManyElements( mc, pt.getName() );
+    // writer.writeAttribute( "mapping", "value" );
+    // writer.writeAttribute( "codeSpaceMapping", "codespace" );
+    // // writeJoinedTable( writer, codeValueContext.getTable() );
+    // }
+    // writer.writeEndElement();
+    // }
+    //
+    // private void writePropertyMapping( XMLStreamWriter writer, MeasurePropertyType pt, MappingContext mc )
+    // throws XMLStreamException {
+    //
+    // writer.writeStartElement( CONFIG_NS, "MeasureProperty" );
+    // writeCommonAttrs( writer, pt );
+    // if ( pt.getMaxOccurs() == 1 ) {
+    // MappingContext measureValueContext = mcManager.mapOneToOneElement( mc, pt.getName() );
+    // writer.writeAttribute( "mapping", measureValueContext.getColumn() );
+    // MappingContext codeSpaceContext = mcManager.mapOneToOneAttribute( measureValueContext, new QName( "uom" ) );
+    // writer.writeAttribute( "uomMapping", codeSpaceContext.getColumn() );
+    // } else {
+    // MappingContext measureContext = mcManager.mapOneToManyElements( mc, pt.getName() );
+    // writer.writeAttribute( "mapping", "value" );
+    // writer.writeAttribute( "uomMapping", "uom" );
+    // // writeJoinedTable( writer, measureContext.getTable() );
+    // }
+    // writer.writeEndElement();
+    // }
 
     private void writeCommonAttrs( XMLStreamWriter writer, PropertyType pt )
                             throws XMLStreamException {

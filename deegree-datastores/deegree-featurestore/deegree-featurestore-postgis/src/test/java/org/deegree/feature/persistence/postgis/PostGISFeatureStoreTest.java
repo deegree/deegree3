@@ -63,6 +63,7 @@ import org.deegree.commons.jdbc.ConnectionManager;
 import org.deegree.commons.utils.JDBCUtils;
 import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.commons.xml.stax.IndentingXMLStreamWriter;
+import org.deegree.cs.CRS;
 import org.deegree.cs.exceptions.TransformationException;
 import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.feature.Feature;
@@ -123,27 +124,27 @@ public class PostGISFeatureStoreTest {
             return;
         }
 
-        AppSchemaMapper mapper = new AppSchemaMapper( appSchema );
-        MappedApplicationSchema mappedSchema = new AppSchemaMapper( appSchema ).getMappedSchema();
+        AppSchemaMapper mapper = new AppSchemaMapper( appSchema, false, true, CRS.EPSG_4326, "-1" );
+        MappedApplicationSchema mappedSchema = mapper.getMappedSchema();
 
         PostGISFeatureStoreConfigWriter configWriter = new PostGISFeatureStoreConfigWriter( mappedSchema );
         File file = new File( "/tmp/inspire-au.xml" );
         FileOutputStream fos = new FileOutputStream( file );
         XMLStreamWriter xmlWriter = XMLOutputFactory.newInstance().createXMLStreamWriter( fos );
         xmlWriter = new IndentingXMLStreamWriter( xmlWriter );
-        configWriter.writeConfig( xmlWriter, "EPSG:4258", null, "testconn", Collections.singletonList( "bla.xsd" ) );
+        configWriter.writeConfig( xmlWriter, "testconn", Collections.singletonList( "bla.xsd" ) );
         xmlWriter.close();
         IOUtils.closeQuietly( fos );
         System.out.println( "Wrote to file " + file );
-        
+
         file = new File( "/tmp/inspire-au.sql" );
         PrintWriter writer = new PrintWriter( file );
         String[] createStmts = new PostGISDDLCreator( mappedSchema ).getDDL();
         for ( String stmt : createStmts ) {
-            writer.println( stmt + ";");
+            writer.println( stmt + ";" );
         }
         IOUtils.closeQuietly( writer );
-        System.out.println( "Wrote to file " + file );        
+        System.out.println( "Wrote to file " + file );
     }
 
     @Test

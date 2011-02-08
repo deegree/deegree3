@@ -57,7 +57,7 @@ import org.deegree.filter.sql.DBField;
 import org.deegree.filter.sql.MappingExpression;
 
 /**
- * Creates DDL (DataDefinitionLanguage) scripts for the {@link PostGISFeatureStoreProvider}.
+ * Creates PostGIS-DDL (DataDefinitionLanguage) scripts from {@link MappedApplicationSchema} instances.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
@@ -71,7 +71,10 @@ public class PostGISDDLCreator {
     private final boolean hasBlobTable;
 
     /**
+     * Creates a new {@link PostGISDDLCreator} instance for the given {@link MappedApplicationSchema}.
+     * 
      * @param schema
+     *            mapped application schema, must not be <code>null</code>
      */
     public PostGISDDLCreator( MappedApplicationSchema schema ) {
         this.schema = schema;
@@ -79,7 +82,9 @@ public class PostGISDDLCreator {
     }
 
     /**
-     * @return
+     * Returns the DDL statements for creating the relational schema required by the {@link MappedApplicationSchema}.
+     * 
+     * @return the DDL statements, never <code>null</code>
      */
     public String[] getDDL() {
 
@@ -94,7 +99,7 @@ public class PostGISDDLCreator {
         return ddl.toArray( new String[ddl.size()] );
     }
 
-    public List<String> getBLOBCreates() {
+    private List<String> getBLOBCreates() {
 
         List<String> ddl = new ArrayList<String>();
 
@@ -127,7 +132,7 @@ public class PostGISDDLCreator {
         return ddl;
     }
 
-    public List<StringBuffer> getRelationalCreates() {
+    private List<StringBuffer> getRelationalCreates() {
 
         List<StringBuffer> ddl = new ArrayList<StringBuffer>();
 

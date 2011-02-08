@@ -99,8 +99,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Creates {@link MappedApplicationSchema} instances from {@link ApplicationSchema}s by inferring a canonical relational
- * schema.
+ * Creates {@link MappedApplicationSchema} instances from {@link ApplicationSchema}s by inferring a canonical database
+ * mapping.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
@@ -111,46 +111,61 @@ public class AppSchemaMapper {
 
     private static Logger LOG = LoggerFactory.getLogger( AppSchemaMapper.class );
 
-    private final MappingContextManager mcManager;
-
     private final ApplicationSchema appSchema;
 
-    private final MappedApplicationSchema mappedSchema;
+    private final MappingContextManager mcManager;
 
-    private final CRS storageCrs = CRS.EPSG_4326;
+    private final CRS storageCrs;
 
-    private final String storageSrid = "-1";
+    private final String storageSrid;
 
+    // TODO
     private final CoordinateDimension storageDim = DIM_2;
+
+    private final MappedApplicationSchema mappedSchema;
 
     /**
      * Creates a new {@link AppSchemaMapper} instance for the given schema.
      * 
      * @param appSchema
      *            application schema to be mapped, must not be <code>null</code>
+     * @param createBlobMapping
+     *            true, if BLOB mapping should be performed, false otherwise
+     * @param createRelationalMapping
+     *            true, if relational mapping should be performed, false otherwise
+     * @param storageCrs
+     *            CRS to use for geometry properties, must not be <code>null</code>
+     * @param srid
+     *            native DB-SRS identifier, must not be <code>null</code>
      */
-    public AppSchemaMapper( ApplicationSchema appSchema ) {
+    public AppSchemaMapper( ApplicationSchema appSchema, boolean createBlobMapping, boolean createRelationalMapping,
+                            CRS storageCrs, String srid ) {
         this.appSchema = appSchema;
+        this.storageCrs = storageCrs;
+        this.storageSrid = srid;
 
         FeatureType[] fts = appSchema.getFeatureTypes();
         Map<FeatureType, FeatureType> ftToSuperFt = appSchema.getFtToSuperFt();
         Map<String, String> prefixToNs = appSchema.getNamespaceBindings();
         GMLSchemaInfoSet xsModel = appSchema.getXSModel();
-
+        FeatureTypeMapping[] ftMappings = null;
         mcManager = new MappingContextManager( xsModel.getNamespacePrefixes() );
+        if ( createRelationalMapping ) {
+            ftMappings = generateFtMappings( fts );
+        }
 
-        FeatureTypeMapping[] ftMappings = generateFtMappings( fts );
-        // TODO
-        CRS storageCRS = CRS.EPSG_4326;
-        // TODO
-        BBoxTableMapping bboxMapping = null;
-        // TODO
-        BlobMapping blobMapping = null;
+        BBoxTableMapping bboxMapping = createBlobMapping ? generateBBoxMapping() : null;
+        BlobMapping blobMapping = createBlobMapping ? generateBlobMapping() : null;
 
-        this.mappedSchema = new MappedApplicationSchema( fts, ftToSuperFt, prefixToNs, xsModel, ftMappings, storageCRS,
+        this.mappedSchema = new MappedApplicationSchema( fts, ftToSuperFt, prefixToNs, xsModel, ftMappings, storageCrs,
                                                          bboxMapping, blobMapping );
     }
 
+    /**
+     * Returns the {@link MappedApplicationSchema} instance.
+     * 
+     * @return mapped schema, never <code>null</code>
+     */
     public MappedApplicationSchema getMappedSchema() {
         return mappedSchema;
     }
@@ -159,18 +174,14 @@ public class AppSchemaMapper {
         // TODO
         String table = "GML_OBJECTS";
         // TODO
-        CRS storageCRS = CRS.EPSG_4326;
-        // TODO
         BlobCodec codec = new BlobCodec( GMLVersion.GML_32, NONE );
-        return new BlobMapping( table, storageCRS, codec );
+        return new BlobMapping( table, storageCrs, codec );
     }
 
     private BBoxTableMapping generateBBoxMapping() {
         // TODO
         String ftTable = "FEATURE_TYPES";
-        // TODO
-        CRS crs = CRS.EPSG_4326;
-        return new BBoxTableMapping( ftTable, crs );
+        return new BBoxTableMapping( ftTable, storageCrs );
     }
 
     private FeatureTypeMapping[] generateFtMappings( FeatureType[] fts ) {
@@ -267,8 +278,8 @@ public class AppSchemaMapper {
         LOG.info( "Mapping custom property '" + pt.getName() + "'" );
 
         XSComplexTypeDefinition xsTypeDef = pt.getXSDValueType();
-        if (xsTypeDef == null) {
-            LOG.warn ("No XSD type definition available.");
+        if ( xsTypeDef == null ) {
+            LOG.warn( "No XSD type definition available." );
             return null;
         }
 
@@ -284,11 +295,11 @@ public class AppSchemaMapper {
             // jc =
         }
         MappingExpression mapping = new DBField( propMc.getColumn() );
-        List<Mapping> particles = createMapping( pt.getXSDValueType(), propMc, new HashMap<QName, QName>() );
+        List<Mapping> particles = generateMapping( pt.getXSDValueType(), propMc, new HashMap<QName, QName>() );
         return new CompoundMapping( path, mapping, particles, jc );
     }
 
-    private List<Mapping> createMapping( XSComplexTypeDefinition typeDef, MappingContext mc, Map<QName, QName> elements ) {
+    private List<Mapping> generateMapping( XSComplexTypeDefinition typeDef, MappingContext mc, Map<QName, QName> elements ) {
         List<Mapping> particles = new ArrayList<Mapping>();
 
         // text node
@@ -321,38 +332,38 @@ public class AppSchemaMapper {
         // child elements
         XSParticle particle = typeDef.getParticle();
         if ( particle != null ) {
-            List<Mapping> childElMappings = createMapping( particle, 1, mc, elements );
+            List<Mapping> childElMappings = generateMapping( particle, 1, mc, elements );
             particles.addAll( childElMappings );
         }
         return particles;
     }
 
-    private List<Mapping> createMapping( XSParticle particle, int maxOccurs, MappingContext mc,
+    private List<Mapping> generateMapping( XSParticle particle, int maxOccurs, MappingContext mc,
                                          Map<QName, QName> elements ) {
         List<Mapping> childElMappings = new ArrayList<Mapping>();
         if ( particle.getMaxOccursUnbounded() ) {
-            childElMappings.addAll( createMapping( particle.getTerm(), -1, mc, elements ) );
+            childElMappings.addAll( generateMapping( particle.getTerm(), -1, mc, elements ) );
         } else {
             for ( int i = 1; i <= particle.getMaxOccurs(); i++ ) {
-                childElMappings.addAll( createMapping( particle.getTerm(), i, mc, elements ) );
+                childElMappings.addAll( generateMapping( particle.getTerm(), i, mc, elements ) );
             }
         }
         return childElMappings;
     }
 
-    private List<Mapping> createMapping( XSTerm term, int occurence, MappingContext mc, Map<QName, QName> elements ) {
+    private List<Mapping> generateMapping( XSTerm term, int occurence, MappingContext mc, Map<QName, QName> elements ) {
         List<Mapping> mappings = new ArrayList<Mapping>();
         if ( term instanceof XSElementDeclaration ) {
-            mappings.addAll( createMapping( (XSElementDeclaration) term, occurence, mc, elements ) );
+            mappings.addAll( generateMapping( (XSElementDeclaration) term, occurence, mc, elements ) );
         } else if ( term instanceof XSModelGroup ) {
-            mappings.addAll( createMapping( (XSModelGroup) term, occurence, mc, elements ) );
+            mappings.addAll( generateMapping( (XSModelGroup) term, occurence, mc, elements ) );
         } else {
-            mappings.addAll( createMapping( (XSWildcard) term, occurence, mc, elements ) );
+            mappings.addAll( generateMapping( (XSWildcard) term, occurence, mc, elements ) );
         }
         return mappings;
     }
 
-    private List<Mapping> createMapping( XSElementDeclaration elDecl, int occurence, MappingContext mc,
+    private List<Mapping> generateMapping( XSElementDeclaration elDecl, int occurence, MappingContext mc,
                                          Map<QName, QName> elements ) {
 
         List<Mapping> mappings = new ArrayList<Mapping>();
@@ -397,8 +408,6 @@ public class AppSchemaMapper {
                 // TODO
                 CoordinateDimension dim = CoordinateDimension.DIM_2;
                 // TODO
-                CRS crs = CRS.EPSG_4326;
-                // TODO
                 String srid = "-1";
                 if ( occurence == -1 ) {
                     // TODO
@@ -406,55 +415,8 @@ public class AppSchemaMapper {
                 } else {
                     mapping = new DBField( elMC.getColumn() );
                 }
-                mappings.add( new GeometryMapping( path, mapping, gt, dim, crs, srid, jc ) );
+                mappings.add( new GeometryMapping( path, mapping, gt, dim, storageCrs, srid, jc ) );
             } else {
-                // if ( elName.equals( new QName( "http://www.isotc211.org/2005/gmd", "CI_Citation" ) ) ) {
-                // LOG.warn( "Skipping CI_Citation!!!" );
-                // continue;
-                // }
-                //
-                // if ( elName.equals( new QName( "http://www.isotc211.org/2005/gmd", "CI_Contact" ) ) ) {
-                // LOG.warn( "Skipping CI_Contact!!!" );
-                // continue;
-                // }
-                //
-                // if ( elName.equals( new QName( "http://www.isotc211.org/2005/gmd", "CI_ResponsibleParty" ) ) ) {
-                // LOG.warn( "Skipping CI_ResponsibleParty!!!" );
-                // continue;
-                // }
-                //
-                // if ( elName.equals( new QName( "http://www.isotc211.org/2005/gmd", "MD_Resolution" ) ) ) {
-                // LOG.warn( "Skipping MD_Resolution!!!" );
-                // continue;
-                // }
-                //
-                // if ( elName.equals( new QName( "http://www.isotc211.org/2005/gmd", "EX_Extent" ) ) ) {
-                // LOG.warn( "Skipping EX_Extent!!!" );
-                // continue;
-                // }
-                //
-                // if ( elName.equals( new QName( "http://www.isotc211.org/2005/gmd", "MD_PixelOrientationCode" ) ) ) {
-                // LOG.warn( "Skipping EX_Extent!!!" );
-                // continue;
-                // }
-                //
-                // if ( elName.equals( new QName( CommonNamespaces.GML3_2_NS, "TimeOrdinalEra" ) ) ) {
-                // LOG.warn( "Skipping TimeOrdinalEra!!!" );
-                // continue;
-                // }
-                //
-                // if ( elName.equals( new QName( CommonNamespaces.GML3_2_NS, "TimePeriod" ) ) ) {
-                // LOG.warn( "Skipping TimePeriod!!!" );
-                // continue;
-                // }
-                //
-                // if ( elName.getNamespaceURI().equals( CommonNamespaces.GML3_2_NS ) ) {
-                // if ( elName.getLocalPart().endsWith( "CRS" ) ) {
-                // LOG.warn( "Skipping " + elName.getLocalPart() + "!!!" );
-                // }
-                // continue;
-                // }
-
                 XSTypeDefinition typeDef = substitution.getTypeDefinition();
                 QName complexTypeName = getQName( typeDef );
                 // TODO multiple elements with same name?
@@ -482,7 +444,7 @@ public class AppSchemaMapper {
                 }
 
                 if ( typeDef instanceof XSComplexTypeDefinition ) {
-                    List<Mapping> particles = createMapping( (XSComplexTypeDefinition) typeDef, elMC, elements2 );
+                    List<Mapping> particles = generateMapping( (XSComplexTypeDefinition) typeDef, elMC, elements2 );
                     mappings.add( new CompoundMapping( path, mapping, particles, jc ) );
                 } else {
                     PrimitiveType pt = XMLValueMangler.getPrimitiveType( (XSSimpleTypeDefinition) typeDef );
@@ -493,18 +455,18 @@ public class AppSchemaMapper {
         return mappings;
     }
 
-    private List<Mapping> createMapping( XSModelGroup modelGroup, int occurrence, MappingContext mc,
+    private List<Mapping> generateMapping( XSModelGroup modelGroup, int occurrence, MappingContext mc,
                                          Map<QName, QName> elements ) {
         List<Mapping> mappings = new ArrayList<Mapping>();
         XSObjectList particles = modelGroup.getParticles();
         for ( int i = 0; i < particles.getLength(); i++ ) {
             XSParticle particle = (XSParticle) particles.item( i );
-            mappings.addAll( createMapping( particle, occurrence, mc, elements ) );
+            mappings.addAll( generateMapping( particle, occurrence, mc, elements ) );
         }
         return mappings;
     }
 
-    private List<Mapping> createMapping( XSWildcard wildCard, int occurrence, MappingContext mc,
+    private List<Mapping> generateMapping( XSWildcard wildCard, int occurrence, MappingContext mc,
                                          Map<QName, QName> elements ) {
         LOG.warn( "Handling of wild cards not implemented yet." );
         StringBuffer sb = new StringBuffer( "Path: " );
