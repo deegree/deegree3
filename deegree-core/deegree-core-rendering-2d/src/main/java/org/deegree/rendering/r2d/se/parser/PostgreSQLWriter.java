@@ -280,7 +280,7 @@ public class PostgreSQLWriter {
             stmt.setString( 1, join( ",", font.fontFamily ) );
             stmt.setString( 2, font.fontStyle.toString() );
             stmt.setBoolean( 3, font.bold );
-            stmt.setInt( 4, font.fontSize );
+            stmt.setDouble( 4, font.fontSize );
 
             rs = stmt.executeQuery();
             if ( rs.next() ) {

@@ -136,7 +136,7 @@ id integer not null default nextval('fonts_seq'),
 family varchar,
 style varchar,
 bold boolean,
-size integer
+size float
 );
 
 create table lineplacements (

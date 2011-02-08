@@ -1611,7 +1611,7 @@ public class SymbologyParser {
                     contn = updateOrContinue( in, "Parameter", baseOrEvaluated, new Updater<Font>() {
                         @Override
                         public void update( Font obj, String val ) {
-                            obj.fontSize = Integer.parseInt( val );
+                            obj.fontSize = Double.parseDouble( val );
                         }
                     }, contn ).second;
                 } else if ( name.equals( "font-color" ) ) {

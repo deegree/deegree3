@@ -398,7 +398,7 @@ public class PostgreSQLReader {
                 if ( bold != null ) {
                     res.bold = bold;
                 }
-                Integer size = (Integer) rs.getObject( "size" );
+                Double size = (Double) rs.getObject( "size" );
                 if ( size != null ) {
                     res.fontSize = size;
                 }

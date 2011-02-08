@@ -71,7 +71,7 @@ public class Font implements Copyable<Font> {
     /**
      * Default is 10.
      */
-    public int fontSize = 10;
+    public double fontSize = 10;
 
     /**
      * <code>Style</code>
