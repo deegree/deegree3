@@ -84,10 +84,10 @@ import org.deegree.feature.types.ApplicationSchema;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.feature.types.property.CustomPropertyType;
 import org.deegree.feature.types.property.FeaturePropertyType;
-import org.deegree.feature.types.property.ObjectPropertyType;
 import org.deegree.feature.types.property.GeometryPropertyType;
 import org.deegree.feature.types.property.GeometryPropertyType.CoordinateDimension;
 import org.deegree.feature.types.property.GeometryPropertyType.GeometryType;
+import org.deegree.feature.types.property.ObjectPropertyType;
 import org.deegree.feature.types.property.PropertyType;
 import org.deegree.feature.types.property.SimplePropertyType;
 import org.deegree.filter.expression.PropertyName;
@@ -297,12 +297,11 @@ public class AppSchemaMapper {
             LOG.warn( "TODO: Build JoinChain" );
         }
         MappingExpression mapping = new DBField( propMc.getColumn() );
-        List<Mapping> particles = generateMapping( pt.getName(), pt.getXSDValueType(), propMc,
-                                                   new HashMap<QName, QName>() );
+        List<Mapping> particles = generateMapping( pt.getXSDValueType(), propMc, new HashMap<QName, QName>() );
         return new CompoundMapping( path, mapping, particles, jc );
     }
 
-    private List<Mapping> generateMapping( QName parentEl, XSComplexTypeDefinition typeDef, MappingContext mc,
+    private List<Mapping> generateMapping( XSComplexTypeDefinition typeDef, MappingContext mc,
                                            Map<QName, QName> elements ) {
 
         List<Mapping> particles = new ArrayList<Mapping>();
@@ -337,58 +336,57 @@ public class AppSchemaMapper {
         // child elements
         XSParticle particle = typeDef.getParticle();
         if ( particle != null ) {
-            List<Mapping> childElMappings = generateMapping( parentEl, particle, 1, mc, elements );
+            List<Mapping> childElMappings = generateMapping( particle, 1, mc, elements );
             particles.addAll( childElMappings );
         }
         return particles;
     }
 
-    private List<Mapping> generateMapping( QName parentEl, XSParticle particle, int maxOccurs, MappingContext mc,
+    private List<Mapping> generateMapping( XSParticle particle, int maxOccurs, MappingContext mc,
                                            Map<QName, QName> elements ) {
 
         List<Mapping> childElMappings = new ArrayList<Mapping>();
 
-        // check if the particle term defines a GMLObjectPropertyType
-        if ( particle.getTerm() instanceof XSElementDeclaration ) {
-            XSElementDeclaration elDecl = (XSElementDeclaration) particle.getTerm();
-            QName elName = new QName( elDecl.getNamespace(), elDecl.getName() );
-            int minOccurs = particle.getMinOccurs();
-            maxOccurs = particle.getMaxOccursUnbounded() ? -1 : particle.getMaxOccurs();
-            // TODO
-            List<PropertyType> ptSubstitutions = null;
-            ObjectPropertyType pt = appSchema.getXSModel().getGMLPropertyDecl( elDecl, elName, minOccurs,
-                                                                                  maxOccurs, ptSubstitutions );
-            if ( pt != null ) {
-                if ( pt instanceof GeometryPropertyType ) {
-                    childElMappings.add( generatePropMapping( (GeometryPropertyType) pt, mc ) );
-                } else if ( pt instanceof FeaturePropertyType ) {
-                    childElMappings.add( generatePropMapping( (FeaturePropertyType) pt, mc ) );
-                } else {
-                    LOG.warn( "TODO: Generic object property type " + pt );
-                }
-            }
-        }
+        // // check if the particle term defines a GMLObjectPropertyType
+        // if ( particle.getTerm() instanceof XSElementDeclaration ) {
+        // XSElementDeclaration elDecl = (XSElementDeclaration) particle.getTerm();
+        // QName elName = new QName( elDecl.getNamespace(), elDecl.getName() );
+        // int minOccurs = particle.getMinOccurs();
+        // maxOccurs = particle.getMaxOccursUnbounded() ? -1 : particle.getMaxOccurs();
+        // // TODO
+        // List<PropertyType> ptSubstitutions = null;
+        // ObjectPropertyType pt = appSchema.getXSModel().getGMLPropertyDecl( elDecl, elName, minOccurs, maxOccurs,
+        // ptSubstitutions );
+        // if ( pt != null ) {
+        // if ( pt instanceof GeometryPropertyType ) {
+        // childElMappings.add( generatePropMapping( (GeometryPropertyType) pt, mc ) );
+        // } else if ( pt instanceof FeaturePropertyType ) {
+        // childElMappings.add( generatePropMapping( (FeaturePropertyType) pt, mc ) );
+        // } else {
+        // LOG.warn( "TODO: Generic object property type " + pt );
+        // }
+        // }
+        // }
         if ( childElMappings.isEmpty() ) {
             if ( particle.getMaxOccursUnbounded() ) {
-                childElMappings.addAll( generateMapping( parentEl, particle.getTerm(), -1, mc, elements ) );
+                childElMappings.addAll( generateMapping( particle.getTerm(), -1, mc, elements ) );
             } else {
                 for ( int i = 1; i <= particle.getMaxOccurs(); i++ ) {
-                    childElMappings.addAll( generateMapping( parentEl, particle.getTerm(), i, mc, elements ) );
+                    childElMappings.addAll( generateMapping( particle.getTerm(), i, mc, elements ) );
                 }
             }
         }
         return childElMappings;
     }
 
-    private List<Mapping> generateMapping( QName elDecl, XSTerm term, int occurence, MappingContext mc,
-                                           Map<QName, QName> elements ) {
+    private List<Mapping> generateMapping( XSTerm term, int occurence, MappingContext mc, Map<QName, QName> elements ) {
         List<Mapping> mappings = new ArrayList<Mapping>();
         if ( term instanceof XSElementDeclaration ) {
             mappings.addAll( generateMapping( (XSElementDeclaration) term, occurence, mc, elements ) );
         } else if ( term instanceof XSModelGroup ) {
-            mappings.addAll( generateMapping( elDecl, (XSModelGroup) term, occurence, mc, elements ) );
+            mappings.addAll( generateMapping( (XSModelGroup) term, occurence, mc, elements ) );
         } else {
-            mappings.addAll( generateMapping( elDecl, (XSWildcard) term, occurence, mc, elements ) );
+            mappings.addAll( generateMapping( (XSWildcard) term, occurence, mc, elements ) );
         }
         return mappings;
     }
@@ -402,102 +400,105 @@ public class AppSchemaMapper {
         List<XSElementDeclaration> substitutions = appSchema.getXSModel().getSubstitutions( elDecl, null, true, true );
 
         for ( XSElementDeclaration substitution : substitutions ) {
-
-            Map<QName, QName> elements2 = new LinkedHashMap<QName, QName>( elements );
-
-            QName elName = new QName( substitution.getName() );
-            if ( substitution.getNamespace() != null ) {
-                elName = new QName( substitution.getNamespace(), substitution.getName() );
-            }
-
-            MappingContext elMC = null;
-            if ( occurence == 1 ) {
-                elMC = mcManager.mapOneToOneElement( mc, elName );
+            ObjectPropertyType opt = appSchema.getCustomElDecl( substitution );
+            if ( opt != null ) {
+                mappings.add( generatePropMapping( opt, mc ) );
             } else {
-                elMC = mcManager.mapOneToManyElements( mc, elName );
-            }
+                Map<QName, QName> elements2 = new LinkedHashMap<QName, QName>( elements );
 
-            NamespaceContext nsContext = null;
-            PropertyName path = new PropertyName( getName( elName ), nsContext );
+                QName elName = new QName( substitution.getName() );
+                if ( substitution.getNamespace() != null ) {
+                    elName = new QName( substitution.getNamespace(), substitution.getName() );
+                }
 
-            if ( appSchema.getFeatureType( elName ) != null ) {
-                QName valueFtName = elName;
-                JoinChain jc = null;
-                DBField mapping = null;
-                if ( occurence == -1 ) {
-                    // TODO
+                MappingContext elMC = null;
+                if ( occurence == 1 ) {
+                    elMC = mcManager.mapOneToOneElement( mc, elName );
                 } else {
-                    mapping = new DBField( elMC.getColumn() );
+                    elMC = mcManager.mapOneToManyElements( mc, elName );
                 }
-                mappings.add( new FeatureMapping( path, mapping, valueFtName, jc ) );
-            } else if ( appSchema.getXSModel().getGeometryElement( elName ) != null ) {
-                JoinChain jc = null;
-                DBField mapping = null;
-                // TODO
-                GeometryType gt = GeometryType.GEOMETRY;
-                // TODO
-                CoordinateDimension dim = CoordinateDimension.DIM_2;
-                // TODO
-                String srid = "-1";
-                if ( occurence == -1 ) {
-                    // TODO
-                    // writeJoinedTable( writer, elMC.getTable() );
-                } else {
-                    mapping = new DBField( elMC.getColumn() );
-                }
-                mappings.add( new GeometryMapping( path, mapping, gt, dim, storageCrs, srid, jc ) );
-            } else {
-                XSTypeDefinition typeDef = substitution.getTypeDefinition();
-                QName complexTypeName = getQName( typeDef );
-                // TODO multiple elements with same name?
-                QName complexTypeName2 = elements2.get( elName );
-                if ( complexTypeName2 != null && complexTypeName2.equals( complexTypeName ) ) {
-                    // during this mapping traversal, there already has been an element with this name and type
-                    StringBuffer sb = new StringBuffer( "Path: " );
-                    for ( QName qName : elements2.keySet() ) {
-                        sb.append( qName );
-                        sb.append( " -> " );
+
+                NamespaceContext nsContext = null;
+                PropertyName path = new PropertyName( getName( elName ), nsContext );
+
+                if ( appSchema.getFeatureType( elName ) != null ) {
+                    QName valueFtName = elName;
+                    JoinChain jc = null;
+                    DBField mapping = null;
+                    if ( occurence == -1 ) {
+                        // TODO
+                    } else {
+                        mapping = new DBField( elMC.getColumn() );
                     }
-                    sb.append( elName );
-                    LOG.info( "Skipping complex element '" + elName + "' -- detected recursion: " + sb );
-                    continue;
-                }
-                elements2.put( elName, getQName( typeDef ) );
-
-                MappingExpression mapping = new DBField( elMC.getColumn() );
-
-                JoinChain jc = null;
-
-                if ( occurence == -1 ) {
+                    mappings.add( new FeatureMapping( path, mapping, valueFtName, jc ) );
+                } else if ( appSchema.getXSModel().getGeometryElement( elName ) != null ) {
+                    JoinChain jc = null;
+                    DBField mapping = null;
                     // TODO
-                    // writeJoinedTable( writer, elMC.getTable() );
-                }
-
-                if ( typeDef instanceof XSComplexTypeDefinition ) {
-                    List<Mapping> particles = generateMapping( elName, (XSComplexTypeDefinition) typeDef, elMC,
-                                                               elements2 );
-                    mappings.add( new CompoundMapping( path, mapping, particles, jc ) );
+                    GeometryType gt = GeometryType.GEOMETRY;
+                    // TODO
+                    CoordinateDimension dim = CoordinateDimension.DIM_2;
+                    // TODO
+                    String srid = "-1";
+                    if ( occurence == -1 ) {
+                        // TODO
+                        // writeJoinedTable( writer, elMC.getTable() );
+                    } else {
+                        mapping = new DBField( elMC.getColumn() );
+                    }
+                    mappings.add( new GeometryMapping( path, mapping, gt, dim, storageCrs, srid, jc ) );
                 } else {
-                    PrimitiveType pt = XMLValueMangler.getPrimitiveType( (XSSimpleTypeDefinition) typeDef );
-                    mappings.add( new PrimitiveMapping( path, mapping, pt, jc ) );
+                    XSTypeDefinition typeDef = substitution.getTypeDefinition();
+                    QName complexTypeName = getQName( typeDef );
+                    // TODO multiple elements with same name?
+                    QName complexTypeName2 = elements2.get( elName );
+                    if ( complexTypeName2 != null && complexTypeName2.equals( complexTypeName ) ) {
+                        // during this mapping traversal, there already has been an element with this name and type
+                        StringBuffer sb = new StringBuffer( "Path: " );
+                        for ( QName qName : elements2.keySet() ) {
+                            sb.append( qName );
+                            sb.append( " -> " );
+                        }
+                        sb.append( elName );
+                        LOG.info( "Skipping complex element '" + elName + "' -- detected recursion: " + sb );
+                        continue;
+                    }
+                    elements2.put( elName, getQName( typeDef ) );
+
+                    MappingExpression mapping = new DBField( elMC.getColumn() );
+
+                    JoinChain jc = null;
+
+                    if ( occurence == -1 ) {
+                        // TODO
+                        // writeJoinedTable( writer, elMC.getTable() );
+                    }
+
+                    if ( typeDef instanceof XSComplexTypeDefinition ) {
+                        List<Mapping> particles = generateMapping( (XSComplexTypeDefinition) typeDef, elMC, elements2 );
+                        mappings.add( new CompoundMapping( path, mapping, particles, jc ) );
+                    } else {
+                        PrimitiveType pt = XMLValueMangler.getPrimitiveType( (XSSimpleTypeDefinition) typeDef );
+                        mappings.add( new PrimitiveMapping( path, mapping, pt, jc ) );
+                    }
                 }
             }
         }
         return mappings;
     }
 
-    private List<Mapping> generateMapping( QName parentEl, XSModelGroup modelGroup, int occurrence, MappingContext mc,
+    private List<Mapping> generateMapping( XSModelGroup modelGroup, int occurrence, MappingContext mc,
                                            Map<QName, QName> elements ) {
         List<Mapping> mappings = new ArrayList<Mapping>();
         XSObjectList particles = modelGroup.getParticles();
         for ( int i = 0; i < particles.getLength(); i++ ) {
             XSParticle particle = (XSParticle) particles.item( i );
-            mappings.addAll( generateMapping( parentEl, particle, occurrence, mc, elements ) );
+            mappings.addAll( generateMapping( particle, occurrence, mc, elements ) );
         }
         return mappings;
     }
 
-    private List<Mapping> generateMapping( QName elDecl, XSWildcard wildCard, int occurrence, MappingContext mc,
+    private List<Mapping> generateMapping( XSWildcard wildCard, int occurrence, MappingContext mc,
                                            Map<QName, QName> elements ) {
         LOG.warn( "Handling of wild cards not implemented yet." );
         StringBuffer sb = new StringBuffer( "Path: " );
