@@ -46,14 +46,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * {@link GMLObjectPropertyType} that defines a property with a {@link Feature} value.
+ * {@link ObjectPropertyType} that defines a property with a {@link Feature} value.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
  * 
  * @version $Revision:$, $Date:$
  */
-public class FeaturePropertyType extends GMLObjectPropertyType {
+public class FeaturePropertyType extends ObjectPropertyType {
 
     private static final Logger LOG = LoggerFactory.getLogger( FeaturePropertyType.class );
 

@@ -106,8 +106,8 @@ import org.deegree.feature.types.property.CodePropertyType;
 import org.deegree.feature.types.property.CustomPropertyType;
 import org.deegree.feature.types.property.EnvelopePropertyType;
 import org.deegree.feature.types.property.FeaturePropertyType;
-import org.deegree.feature.types.property.GMLObjectPropertyType;
-import org.deegree.feature.types.property.GenericGMLObjectPropertyType;
+import org.deegree.feature.types.property.ObjectPropertyType;
+import org.deegree.feature.types.property.GenericObjectPropertyType;
 import org.deegree.feature.types.property.GeometryPropertyType;
 import org.deegree.feature.types.property.GeometryPropertyType.GeometryType;
 import org.deegree.feature.types.property.MeasurePropertyType;
@@ -499,8 +499,8 @@ public class GMLFeatureReader extends XMLAdapter {
             property = parseGeometryProperty( xmlStream, (GeometryPropertyType) propDecl, crs, isNilled );
         } else if ( propDecl instanceof FeaturePropertyType ) {
             property = parseFeatureProperty( xmlStream, (FeaturePropertyType) propDecl, crs, isNilled );
-        } else if ( propDecl instanceof GenericGMLObjectPropertyType ) {
-            property = parseGenericGMLObjectProperty( xmlStream, (GenericGMLObjectPropertyType) propDecl, crs, isNilled );
+        } else if ( propDecl instanceof GenericObjectPropertyType ) {
+            property = parseGenericGMLObjectProperty( xmlStream, (GenericObjectPropertyType) propDecl, crs, isNilled );
         } else if ( propDecl instanceof CustomPropertyType ) {
             property = parseCustomProperty( xmlStream, (CustomPropertyType) propDecl, crs, isNilled );
         } else if ( propDecl instanceof EnvelopePropertyType ) {
@@ -541,7 +541,7 @@ public class GMLFeatureReader extends XMLAdapter {
     }
 
     private Property parseGenericGMLObjectProperty( XMLStreamReaderWrapper xmlStream,
-                                                    GenericGMLObjectPropertyType propDecl, CRS crs, boolean isNilled )
+                                                    GenericObjectPropertyType propDecl, CRS crs, boolean isNilled )
                             throws XMLStreamException, XMLParsingException, NoSuchElementException, UnknownCRSException {
 
         Property property = null;
@@ -760,7 +760,7 @@ public class GMLFeatureReader extends XMLAdapter {
         if ( xsdValueType.getTypeCategory() == SIMPLE_TYPE ) {
             node = parseGenericXMLElement( xmlStream, (XSSimpleTypeDefinition) xsdValueType );
         } else {
-            GMLObjectPropertyType propDecl = schema.getCustomElDecl( elDecl );
+            ObjectPropertyType propDecl = schema.getCustomElDecl( elDecl );
             if ( propDecl != null ) {
                 boolean isNilled = false;
                 if ( propDecl.isNillable() ) {
@@ -771,8 +771,8 @@ public class GMLFeatureReader extends XMLAdapter {
                     prop = parseGeometryProperty( xmlStream, (GeometryPropertyType) propDecl, crs, isNilled );
                 } else if ( propDecl instanceof FeaturePropertyType ) {
                     prop = parseFeatureProperty( xmlStream, (FeaturePropertyType) propDecl, crs, isNilled );
-                } else if ( propDecl instanceof GenericGMLObjectPropertyType ) {
-                    prop = parseGenericGMLObjectProperty( xmlStream, (GenericGMLObjectPropertyType) propDecl, crs,
+                } else if ( propDecl instanceof GenericObjectPropertyType ) {
+                    prop = parseGenericGMLObjectProperty( xmlStream, (GenericObjectPropertyType) propDecl, crs,
                                                           isNilled );
                 } else {
                     throw new RuntimeException( "Internal error. Unhandled GML object property type "

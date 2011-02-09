@@ -60,7 +60,7 @@ import org.apache.xerces.xs.XSTerm;
 import org.deegree.commons.xml.CommonNamespaces;
 import org.deegree.feature.i18n.Messages;
 import org.deegree.feature.types.property.FeaturePropertyType;
-import org.deegree.feature.types.property.GMLObjectPropertyType;
+import org.deegree.feature.types.property.ObjectPropertyType;
 import org.deegree.feature.types.property.PropertyType;
 import org.deegree.gml.schema.GMLSchemaInfoSet;
 import org.slf4j.Logger;
@@ -106,7 +106,7 @@ public class ApplicationSchema {
 
     private final Set<String> appNamespaces = new TreeSet<String>();
 
-    private final Map<XSElementDeclaration, GMLObjectPropertyType> elDeclToGMLObjectPropDecl = new HashMap<XSElementDeclaration, GMLObjectPropertyType>();
+    private final Map<XSElementDeclaration, ObjectPropertyType> elDeclToGMLObjectPropDecl = new HashMap<XSElementDeclaration, ObjectPropertyType>();
 
     /**
      * Creates a new {@link ApplicationSchema} instance from the given {@link FeatureType}s and their derivation
@@ -555,8 +555,8 @@ public class ApplicationSchema {
         return nsDependencies;
     }
 
-    public synchronized GMLObjectPropertyType getCustomElDecl( XSElementDeclaration elDecl ) {
-        GMLObjectPropertyType pt = null;
+    public synchronized ObjectPropertyType getCustomElDecl( XSElementDeclaration elDecl ) {
+        ObjectPropertyType pt = null;
         if ( !elDeclToGMLObjectPropDecl.containsKey( elDecl ) ) {
             QName ptName = new QName( elDecl.getNamespace(), elDecl.getName() );
             pt = xsModel.getGMLPropertyDecl( elDecl, ptName, 1, 1, null );

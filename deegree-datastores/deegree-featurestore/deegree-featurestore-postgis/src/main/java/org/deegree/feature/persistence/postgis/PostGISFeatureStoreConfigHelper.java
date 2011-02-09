@@ -80,7 +80,7 @@ import org.deegree.feature.types.FeatureType;
 import org.deegree.feature.types.property.CodePropertyType;
 import org.deegree.feature.types.property.CustomPropertyType;
 import org.deegree.feature.types.property.FeaturePropertyType;
-import org.deegree.feature.types.property.GenericGMLObjectPropertyType;
+import org.deegree.feature.types.property.GenericObjectPropertyType;
 import org.deegree.feature.types.property.GeometryPropertyType;
 import org.deegree.feature.types.property.MeasurePropertyType;
 import org.deegree.feature.types.property.PropertyType;
@@ -204,7 +204,7 @@ public class PostGISFeatureStoreConfigHelper {
             writePropertyMapping( writer, (FeaturePropertyType) pt, mc );
         } else if ( pt instanceof GeometryPropertyType ) {
             writePropertyMapping( writer, (GeometryPropertyType) pt, mc );
-        } else if ( pt instanceof GenericGMLObjectPropertyType ) {
+        } else if ( pt instanceof GenericObjectPropertyType ) {
             LOG.info ("Skipping property: " + pt.getName());
         } else if ( pt instanceof MeasurePropertyType ) {
             writePropertyMapping( writer, (MeasurePropertyType) pt, mc );

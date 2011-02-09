@@ -74,8 +74,8 @@ import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.XPath;
 import org.deegree.commons.xml.schema.XMLSchemaInfoSet;
 import org.deegree.feature.types.property.FeaturePropertyType;
-import org.deegree.feature.types.property.GMLObjectPropertyType;
-import org.deegree.feature.types.property.GenericGMLObjectPropertyType;
+import org.deegree.feature.types.property.ObjectPropertyType;
+import org.deegree.feature.types.property.GenericObjectPropertyType;
 import org.deegree.feature.types.property.GeometryPropertyType;
 import org.deegree.feature.types.property.GeometryPropertyType.CoordinateDimension;
 import org.deegree.feature.types.property.GeometryPropertyType.GeometryType;
@@ -510,7 +510,7 @@ public class GMLSchemaInfoSet extends XMLSchemaInfoSet {
     }
 
     /**
-     * Checks the given element declaration and returns a {@link GMLObjectPropertyType} if it defines a GML object
+     * Checks the given element declaration and returns a {@link ObjectPropertyType} if it defines a GML object
      * property or GML reference property.
      * 
      * @param elDecl
@@ -518,15 +518,15 @@ public class GMLSchemaInfoSet extends XMLSchemaInfoSet {
      * @param minOccurs
      * @param maxOccurs
      * @param ptSubstitutions
-     * @return corresponding {@link GMLObjectPropertyType} or <code>null</code> if it's not a GML object property
+     * @return corresponding {@link ObjectPropertyType} or <code>null</code> if it's not a GML object property
      */
-    public GMLObjectPropertyType getGMLPropertyDecl( XSElementDeclaration elDecl, QName ptName, int minOccurs,
+    public ObjectPropertyType getGMLPropertyDecl( XSElementDeclaration elDecl, QName ptName, int minOccurs,
                                                      int maxOccurs, List<PropertyType> ptSubstitutions ) {
         if ( !( elDecl.getTypeDefinition() instanceof XSComplexTypeDefinition ) ) {
             return null;
         }
         XSComplexTypeDefinition typeDef = (XSComplexTypeDefinition) elDecl.getTypeDefinition();
-        GMLObjectPropertyType pt = buildGeometryPropertyType( ptName, elDecl, typeDef, minOccurs, maxOccurs,
+        ObjectPropertyType pt = buildGeometryPropertyType( ptName, elDecl, typeDef, minOccurs, maxOccurs,
                                                               ptSubstitutions );
         if ( pt == null ) {
             pt = buildFeaturePropertyType( ptName, elDecl, typeDef, minOccurs, maxOccurs, ptSubstitutions );
@@ -534,7 +534,7 @@ public class GMLSchemaInfoSet extends XMLSchemaInfoSet {
         if ( pt == null ) {
             if ( allowsXLink( (XSComplexTypeDefinition) elDecl.getTypeDefinition() ) ) {
                 // TODO actually determine allowed value representations
-                pt = new GenericGMLObjectPropertyType( ptName, minOccurs, maxOccurs, elDecl.getAbstract(),
+                pt = new GenericObjectPropertyType( ptName, minOccurs, maxOccurs, elDecl.getAbstract(),
                                                        elDecl.getNillable(), ptSubstitutions, BOTH, typeDef );
             }
         }

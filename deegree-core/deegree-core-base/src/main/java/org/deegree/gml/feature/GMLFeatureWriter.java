@@ -81,7 +81,7 @@ import org.deegree.feature.types.property.CodePropertyType;
 import org.deegree.feature.types.property.CustomPropertyType;
 import org.deegree.feature.types.property.EnvelopePropertyType;
 import org.deegree.feature.types.property.FeaturePropertyType;
-import org.deegree.feature.types.property.GenericGMLObjectPropertyType;
+import org.deegree.feature.types.property.GenericObjectPropertyType;
 import org.deegree.feature.types.property.GeometryPropertyType;
 import org.deegree.feature.types.property.LengthPropertyType;
 import org.deegree.feature.types.property.MeasurePropertyType;
@@ -567,7 +567,7 @@ public class GMLFeatureWriter {
                 export( property.getValue(), currentLevel, maxInlineLevels );
                 writer.writeEndElement();
             }
-        } else if ( propertyType instanceof GenericGMLObjectPropertyType ) {
+        } else if ( propertyType instanceof GenericObjectPropertyType ) {
             if ( property.isNilled() ) {
                 writeEmptyElementWithNS( propName.getNamespaceURI(), propName.getLocalPart() );
                 writeAttributeWithNS( XSINS, "nil", "true" );

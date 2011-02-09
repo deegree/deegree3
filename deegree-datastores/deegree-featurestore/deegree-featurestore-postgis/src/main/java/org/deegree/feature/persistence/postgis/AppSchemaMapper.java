@@ -84,7 +84,7 @@ import org.deegree.feature.types.ApplicationSchema;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.feature.types.property.CustomPropertyType;
 import org.deegree.feature.types.property.FeaturePropertyType;
-import org.deegree.feature.types.property.GMLObjectPropertyType;
+import org.deegree.feature.types.property.ObjectPropertyType;
 import org.deegree.feature.types.property.GeometryPropertyType;
 import org.deegree.feature.types.property.GeometryPropertyType.CoordinateDimension;
 import org.deegree.feature.types.property.GeometryPropertyType.GeometryType;
@@ -356,7 +356,7 @@ public class AppSchemaMapper {
             maxOccurs = particle.getMaxOccursUnbounded() ? -1 : particle.getMaxOccurs();
             // TODO
             List<PropertyType> ptSubstitutions = null;
-            GMLObjectPropertyType pt = appSchema.getXSModel().getGMLPropertyDecl( elDecl, elName, minOccurs,
+            ObjectPropertyType pt = appSchema.getXSModel().getGMLPropertyDecl( elDecl, elName, minOccurs,
                                                                                   maxOccurs, ptSubstitutions );
             if ( pt != null ) {
                 if ( pt instanceof GeometryPropertyType ) {

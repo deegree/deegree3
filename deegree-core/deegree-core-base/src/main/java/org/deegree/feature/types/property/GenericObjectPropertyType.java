@@ -1,10 +1,10 @@
 //$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
- Copyright (C) 2001-2010 by:
- Department of Geography, University of Bonn
+ Copyright (C) 2001-2009 by:
+ - Department of Geography, University of Bonn -
  and
- lat/lon GmbH
+ - lat/lon GmbH -
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -33,30 +33,28 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-
 package org.deegree.feature.types.property;
 
 import java.util.List;
 
 import javax.xml.namespace.QName;
 
-import org.deegree.gml.GMLObject;
+import org.apache.xerces.xs.XSComplexTypeDefinition;
+import org.deegree.commons.tom.genericxml.GenericObject;
 
 /**
- * {@link PropertyType} that defines a property with a {@link GMLObject} value.
+ * {@link ObjectPropertyType} that defines a property with a {@link GenericObject} value.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
  */
-public abstract class GMLObjectPropertyType extends AbstractPropertyType {
+public class GenericObjectPropertyType extends ObjectPropertyType {
 
-    private final ValueRepresentation representation;
+    private XSComplexTypeDefinition xsdType;
 
     /**
-     * Creates a new {@link GMLObjectPropertyType} instance.
-     * 
      * @param name
      * @param minOccurs
      * @param maxOccurs
@@ -65,18 +63,21 @@ public abstract class GMLObjectPropertyType extends AbstractPropertyType {
      * @param substitutions
      * @param representation
      */
-    protected GMLObjectPropertyType( QName name, int minOccurs, int maxOccurs, boolean isAbstract, boolean isNillable,
-                                     List<PropertyType> substitutions, ValueRepresentation representation ) {
-        super( name, minOccurs, maxOccurs, isAbstract, isNillable, substitutions );
-        this.representation = representation;
+    public GenericObjectPropertyType( QName name, int minOccurs, int maxOccurs, boolean isAbstract,
+                                         boolean isNillable, List<PropertyType> substitutions,
+                                         ValueRepresentation representation, XSComplexTypeDefinition xsdType ) {
+        super( name, minOccurs, maxOccurs, isAbstract, isNillable, substitutions, representation );
+        this.xsdType = xsdType;
     }
 
-    /**
-     * Returns the allowed representation form of the value object.
-     * 
-     * @return the allowed representation form, never <code>null</code>
-     */
-    public ValueRepresentation getAllowedRepresentation() {
-        return representation;
+    public XSComplexTypeDefinition getXSDValueType() {
+        return xsdType;
+    }
+
+    @Override
+    public String toString() {
+        String s = "- generic object property type: '" + name + "', minOccurs=" + minOccurs + ", maxOccurs="
+                   + maxOccurs + ", xsd type: " + xsdType;
+        return s;
     }
 }
