@@ -44,9 +44,9 @@ import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeSet;
-import java.util.Map.Entry;
 
 import javax.xml.namespace.QName;
 
@@ -555,6 +555,13 @@ public class ApplicationSchema {
         return nsDependencies;
     }
 
+    /**
+     * Returns the {@link ObjectPropertyType} for the given element declaration (if it defines an object property).
+     * 
+     * @param elDecl
+     *            element declaration, must not be <code>null</code>
+     * @return property declaration or <code>null</code> (if the element does not declare an {@link ObjectPropertyType})
+     */
     public synchronized ObjectPropertyType getCustomElDecl( XSElementDeclaration elDecl ) {
         ObjectPropertyType pt = null;
         if ( !elDeclToGMLObjectPropDecl.containsKey( elDecl ) ) {
