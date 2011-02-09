@@ -1,7 +1,7 @@
 //$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
- Copyright (C) 2001-2010 by:
+ Copyright (C) 2001-2011 by:
  Department of Geography, University of Bonn
  and
  lat/lon GmbH
@@ -36,17 +36,19 @@
 package org.deegree.commons.tom;
 
 /**
- * Base interface of deegree's "Typed Object Model".
- * 
- * @see org.deegree.gml.GMLObject
- * @see org.deegree.feature.Feature
- * @see org.deegree.geometry.Geometry
+ * {@link TypedObjectNode} with an object semantics, i.e. it can be referenced by its identifier.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
  */
-public interface TypedObjectNode {
-    // just a marker interface
+public interface Object extends TypedObjectNode {
+
+    /**
+     * Returns the id of the object.
+     * 
+     * @return the id of the object, or <code>null</code> if it doesn't have an id
+     */
+    public String getId();
 }
