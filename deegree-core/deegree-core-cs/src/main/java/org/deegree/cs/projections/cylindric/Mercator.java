@@ -47,7 +47,6 @@ import org.deegree.cs.EPSGCode;
 import org.deegree.cs.components.Unit;
 import org.deegree.cs.coordinatesystems.GeographicCRS;
 import org.deegree.cs.exceptions.ProjectionException;
-import org.deegree.cs.projections.Projection;
 import org.deegree.cs.utilities.ProjectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -79,8 +78,6 @@ public class Mercator extends CylindricalProjection {
 
     private static Logger LOG = LoggerFactory.getLogger( Mercator.class );
 
-    private double[] preCalcedPhiSeries;
-
     /**
      * @param geographicCRS
      * @param falseNorthing
@@ -91,10 +88,10 @@ public class Mercator extends CylindricalProjection {
      * @param id
      *            an identifiable instance containing information about this projection
      */
-    public Mercator( GeographicCRS geographicCRS, double falseNorthing, double falseEasting, Point2d naturalOrigin,
-                     Unit units, double scale, CRSIdentifiable id ) {
-        super( geographicCRS, falseNorthing, falseEasting, naturalOrigin, units, scale, true, false, id );
-        preCalcedPhiSeries = preCalcedThetaSeries( getSquaredEccentricity() );
+    public Mercator( double falseNorthing, double falseEasting, Point2d naturalOrigin, Unit units, double scale,
+                     CRSIdentifiable id ) {
+        super( falseNorthing, falseEasting, naturalOrigin, units, scale, true, false, id );
+
     }
 
     /**
@@ -107,40 +104,40 @@ public class Mercator extends CylindricalProjection {
      * @param units
      * @param scale
      */
-    public Mercator( GeographicCRS geographicCRS, double falseNorthing, double falseEasting, Point2d naturalOrigin,
-                     Unit units, double scale ) {
-        this( geographicCRS, falseNorthing, falseEasting, naturalOrigin, units, scale,
-              new CRSIdentifiable( new EPSGCode( 9804 ) ) );
+    public Mercator( double falseNorthing, double falseEasting, Point2d naturalOrigin, Unit units, double scale ) {
+        this( falseNorthing, falseEasting, naturalOrigin, units, scale, new CRSIdentifiable( new EPSGCode( 9804 ) ) );
     }
 
     @Override
-    public Point2d doInverseProjection( double x, double y )
+    public synchronized Point2d doInverseProjection( GeographicCRS geographicCRS, double x, double y )
                             throws ProjectionException {
         Point2d result = new Point2d( 0, 0 );
         LOG.debug( "InverseProjection, incoming points x: " + x + " y: " + y );
         x -= getFalseEasting();
         y -= getFalseNorthing();
 
-        result.x = ( x / getScaleFactor() ) + getProjectionLongitude();
-        result.y = ProjectionUtils.HALFPI - 2. * Math.atan( Math.exp( -y / getScaleFactor() ) );
-        if ( !isSpherical() ) {
+        result.x = ( x / getScaleFactor( geographicCRS ) ) + getProjectionLongitude();
+        result.y = ProjectionUtils.HALFPI - 2. * Math.atan( Math.exp( -y / getScaleFactor( geographicCRS ) ) );
+        if ( !isSpherical( geographicCRS ) ) {
+            double[] preCalcedPhiSeries = preCalcedThetaSeries( getSquaredEccentricity( geographicCRS ) );
             result.y = calcPhiFromConformalLatitude( result.y, preCalcedPhiSeries );
         }
         return result;
     }
 
     @Override
-    public Point2d doProjection( double lambda, double phi )
+    public synchronized Point2d doProjection( GeographicCRS geographicCRS, double lambda, double phi )
                             throws ProjectionException {
         Point2d result = new Point2d( 0, 0 );
         lambda -= getProjectionLongitude();
 
-        result.x = getScaleFactor() * lambda;
-        if ( isSpherical() ) {
-            result.y = getScaleFactor() * Math.log( Math.tan( ProjectionUtils.QUARTERPI + 0.5 * phi ) );
+        result.x = getScaleFactor( geographicCRS ) * lambda;
+        if ( isSpherical( geographicCRS ) ) {
+            result.y = getScaleFactor( geographicCRS ) * Math.log( Math.tan( ProjectionUtils.QUARTERPI + 0.5 * phi ) );
         } else {
-            result.y = -getScaleFactor()
-                       * Math.log( ProjectionUtils.tanHalfCoLatitude( phi, Math.sin( phi ), getEccentricity() ) );
+            result.y = -getScaleFactor( geographicCRS )
+                       * Math.log( ProjectionUtils.tanHalfCoLatitude( phi, Math.sin( phi ),
+                                                                      getEccentricity( geographicCRS ) ) );
         }
         result.x += getFalseEasting();
         result.y += getFalseNorthing();
@@ -150,13 +147,6 @@ public class Mercator extends CylindricalProjection {
     @Override
     public String getImplementationName() {
         return "mercator";
-    }
-
-    @Override
-    public Projection clone( GeographicCRS newCRS ) {
-        return new Mercator( newCRS, getFalseNorthing(), getFalseEasting(), getNaturalOrigin(), getUnits(), getScale(),
-                             new CRSIdentifiable( getCodes(), getNames(), getVersions(), getDescriptions(),
-                                                  getAreasOfUse() ) );
     }
 
 }

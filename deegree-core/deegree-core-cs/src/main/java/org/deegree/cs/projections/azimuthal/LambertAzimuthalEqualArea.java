@@ -45,6 +45,9 @@ import static org.deegree.cs.utilities.ProjectionUtils.calcQForAuthalicLatitude;
 import static org.deegree.cs.utilities.ProjectionUtils.getAuthalicLatitudeSeriesValues;
 import static org.deegree.cs.utilities.ProjectionUtils.length;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import javax.vecmath.Point2d;
 
 import org.deegree.cs.CRSIdentifiable;
@@ -52,7 +55,6 @@ import org.deegree.cs.EPSGCode;
 import org.deegree.cs.components.Unit;
 import org.deegree.cs.coordinatesystems.GeographicCRS;
 import org.deegree.cs.exceptions.ProjectionException;
-import org.deegree.cs.projections.Projection;
 
 /**
  * The <code>LambertAzimuthalEqualArea</code> projection has following properties (From J.S. Snyder, Map Projections a
@@ -98,41 +100,6 @@ import org.deegree.cs.projections.Projection;
 
 public class LambertAzimuthalEqualArea extends AzimuthalProjection {
 
-    private double sinb1;
-
-    private double cosb1;
-
-    /**
-     * qp is q (needed for authalicLatitude Snyder 3-12) evaluated for a phi of 90°.
-     */
-    private double qp;
-
-    /**
-     * Will hold the value D (A slide adjustment for the standardpoint, to achieve a correct scale in all directions at
-     * the center of the projection) calculated by Snyder (24-20).
-     */
-    private double dd;
-
-    /**
-     * Radius for the sphere having the same surface area as the ellipsoid. Calculated with Snyder (3-13).
-     */
-    private double rq;
-
-    /**
-     * precalculated series values to calculate the authalic latitude value from.
-     */
-    private double[] apa;
-
-    /**
-     * A variable to hold a precalculated value for the x parameter of the oblique projection
-     */
-    private double xMultiplyForward;
-
-    /**
-     * A variable to hold a precalculated value for the y parameter of the oblique or equatorial projection
-     */
-    private double yMultiplyForward;
-
     /**
      * @param geographicCRS
      * @param falseNorthing
@@ -143,42 +110,10 @@ public class LambertAzimuthalEqualArea extends AzimuthalProjection {
      * @param id
      *            an identifiable instance containing information about this projection
      */
-    public LambertAzimuthalEqualArea( GeographicCRS geographicCRS, double falseNorthing, double falseEasting,
-                                      Point2d naturalOrigin, Unit units, double scale, CRSIdentifiable id ) {
-        super( geographicCRS, falseNorthing, falseEasting, naturalOrigin, units, scale, false/* not conformal */,
+    public LambertAzimuthalEqualArea( double falseNorthing, double falseEasting, Point2d naturalOrigin, Unit units,
+                                      double scale, CRSIdentifiable id ) {
+        super( falseNorthing, falseEasting, naturalOrigin, units, scale, false/* not conformal */,
                true/* equals-area */, id );
-        if ( !isSpherical() ) {
-            // sin(rad(90)) = 1;
-            qp = calcQForAuthalicLatitude( 1., getEccentricity() );
-            rq = getSemiMajorAxis() * Math.sqrt( .5 * qp );// Snyder (3-13)
-            apa = getAuthalicLatitudeSeriesValues( getSquaredEccentricity() );
-
-            switch ( getMode() ) {
-            case NORTH_POLE:
-            case SOUTH_POLE:
-                xMultiplyForward = getSemiMajorAxis();
-                yMultiplyForward = ( getMode() == NORTH_POLE ) ? -getSemiMajorAxis() : getSemiMajorAxis();
-                dd = 1.;
-                break;
-            case EQUATOR:
-                dd = 1. / ( rq );
-                xMultiplyForward = getSemiMajorAxis();
-                yMultiplyForward = getSemiMajorAxis() * .5 * qp;
-                break;
-            case OBLIQUE:
-                double sinphi = getSinphi0();
-                // arcsin( q/ qp) = beta . Snyder (3-11)
-                sinb1 = calcQForAuthalicLatitude( sinphi, getEccentricity() ) / qp;
-                // sin*sin + cos*cos = 1
-                cosb1 = Math.sqrt( 1. - sinb1 * sinb1 );
-                // (24-20) D = a*m_1 / (Rq*cos(beta_1) )
-                double m_1 = getCosphi0() / Math.sqrt( 1. - getSquaredEccentricity() * sinphi * sinphi );
-                dd = getSemiMajorAxis() * m_1 / ( rq * cosb1 );
-                xMultiplyForward = rq * dd;
-                yMultiplyForward = rq / dd;
-                break;
-            }
-        }
     }
 
     /**
@@ -189,10 +124,9 @@ public class LambertAzimuthalEqualArea extends AzimuthalProjection {
      * @param units
      * @param scale
      */
-    public LambertAzimuthalEqualArea( GeographicCRS geographicCRS, double falseNorthing, double falseEasting,
-                                      Point2d naturalOrigin, Unit units, double scale ) {
-        this( geographicCRS, falseNorthing, falseEasting, naturalOrigin, units, scale,
-              new CRSIdentifiable( new EPSGCode( 9820 ) ) );
+    public LambertAzimuthalEqualArea( double falseNorthing, double falseEasting, Point2d naturalOrigin, Unit units,
+                                      double scale ) {
+        this( falseNorthing, falseEasting, naturalOrigin, units, scale, new CRSIdentifiable( new EPSGCode( 9820 ) ) );
     }
 
     /**
@@ -204,9 +138,9 @@ public class LambertAzimuthalEqualArea extends AzimuthalProjection {
      * @param id
      *            an identifiable instance containing information about this projection
      */
-    public LambertAzimuthalEqualArea( GeographicCRS geographicCRS, double falseNorthing, double falseEasting,
-                                      Point2d naturalOrigin, Unit units, CRSIdentifiable id ) {
-        this( geographicCRS, falseNorthing, falseEasting, naturalOrigin, units, 1, id );
+    public LambertAzimuthalEqualArea( double falseNorthing, double falseEasting, Point2d naturalOrigin, Unit units,
+                                      CRSIdentifiable id ) {
+        this( falseNorthing, falseEasting, naturalOrigin, units, 1, id );
     }
 
     /**
@@ -216,9 +150,8 @@ public class LambertAzimuthalEqualArea extends AzimuthalProjection {
      * @param naturalOrigin
      * @param units
      */
-    public LambertAzimuthalEqualArea( GeographicCRS geographicCRS, double falseNorthing, double falseEasting,
-                                      Point2d naturalOrigin, Unit units ) {
-        this( geographicCRS, falseNorthing, falseEasting, naturalOrigin, units, 1 );
+    public LambertAzimuthalEqualArea( double falseNorthing, double falseEasting, Point2d naturalOrigin, Unit units ) {
+        this( falseNorthing, falseEasting, naturalOrigin, units, 1 );
     }
 
     /*
@@ -227,14 +160,15 @@ public class LambertAzimuthalEqualArea extends AzimuthalProjection {
      * @see org.deegree.cs.projections.Projection#doInverseProjection(double, double)
      */
     @Override
-    public Point2d doInverseProjection( double x, double y )
+    public synchronized Point2d doInverseProjection( GeographicCRS geographicCRS, double x, double y )
                             throws ProjectionException {
+        calculateParameters( geographicCRS );
         Point2d lp = new Point2d( 0, 0 );
         x -= getFalseEasting();
         y -= getFalseNorthing();
         // Snyder (20-18)
         double rho = length( x, y );
-        if ( isSpherical() ) {
+        if ( isSpherical( geographicCRS ) ) {
             double cosC = 0;
             double sinC = 0;
 
@@ -293,6 +227,19 @@ public class LambertAzimuthalEqualArea extends AzimuthalProjection {
             // calculation of the Lamda (Snyder[20-15]) is this correct???
             lp.x = ( ( y == 0. && ( getMode() == EQUATOR || getMode() == OBLIQUE ) ) ? 0. : Math.atan2( x, y ) );
         } else {
+            Map<PARAMS, Double> params = calculateParameters( geographicCRS );
+            double sinb1 = params.get( PARAMS.sinb1 );
+            double qp = params.get( PARAMS.qp );
+            double dd = params.get( PARAMS.dd );
+            double rq = params.get( PARAMS.rq );
+            double cosb1 = params.get( PARAMS.cosb1 );
+            double xMultiplyForward = params.get( PARAMS.xMultiplyForward );
+
+            /**
+             * A variable to hold a precalculated value for the x parameter of the oblique projection
+             */
+            double[] apa = getAuthalicLatitudeSeriesValues( getSquaredEccentricity( geographicCRS ) );
+
             double q = 0;
             double arcSinusBeta = 0;
             switch ( getMode() ) {
@@ -354,15 +301,16 @@ public class LambertAzimuthalEqualArea extends AzimuthalProjection {
      * @see org.deegree.cs.projections.Projection#doProjection(double, double)
      */
     @Override
-    public Point2d doProjection( double lambda, double phi )
+    public synchronized Point2d doProjection( GeographicCRS geographicCRS, double lambda, double phi )
                             throws ProjectionException {
+
         Point2d result = new Point2d( 0, 0 );
         lambda -= getProjectionLongitude();
         double sinphi = Math.sin( phi );
         double cosLamda = Math.cos( lambda );
         double sinLambda = Math.sin( lambda );
 
-        if ( isSpherical() ) {
+        if ( isSpherical( geographicCRS ) ) {
             double cosphi = Math.cos( phi );
             double kAccent = 0;
             switch ( getMode() ) {
@@ -407,16 +355,22 @@ public class LambertAzimuthalEqualArea extends AzimuthalProjection {
                 break;
             }
             // the radius is stil to be multiplied.
-            result.x *= getSemiMajorAxis();
-            result.y *= getSemiMajorAxis();
+            result.x *= getSemiMajorAxis( geographicCRS );
+            result.y *= getSemiMajorAxis( geographicCRS );
         } else {
+            Map<PARAMS, Double> params = calculateParameters( geographicCRS );
+            double sinb1 = params.get( PARAMS.sinb1 );
+            double qp = params.get( PARAMS.qp );
+            double cosb1 = params.get( PARAMS.cosb1 );
+            double xMultiplyForward = params.get( PARAMS.xMultiplyForward );
+            double yMultiplyForward = params.get( PARAMS.yMultiplyForward );
             double sinb = 0;
             double cosb = 0;
 
             // The big B of snyder (24-19), but will also be used as a place holder for the none oblique calculations.
             double bigB = 0;
 
-            double q = calcQForAuthalicLatitude( sinphi, getEccentricity() );
+            double q = calcQForAuthalicLatitude( sinphi, getEccentricity( geographicCRS ) );
             if ( getMode() == OBLIQUE || getMode() == EQUATOR ) {
                 // snyder ( 3-11 )
                 sinb = q / qp;
@@ -487,13 +441,76 @@ public class LambertAzimuthalEqualArea extends AzimuthalProjection {
         return "lambertAzimuthalEqualArea";
     }
 
-    @Override
-    public Projection clone( GeographicCRS newCRS ) {
-        return new LambertAzimuthalEqualArea( newCRS, getFalseNorthing(), getFalseEasting(), getNaturalOrigin(),
-                                              getUnits(), getScale(), new CRSIdentifiable( getCodes(), getNames(),
-                                                                                           getVersions(),
-                                                                                           getDescriptions(),
-                                                                                           getAreasOfUse() ) );
+    private enum PARAMS {
+        sinb1, cosb1, qp, dd, rq, xMultiplyForward, yMultiplyForward
+    }
+
+    private synchronized Map<PARAMS, Double> calculateParameters( GeographicCRS geographicCRS ) {
+        Map<PARAMS, Double> list = new HashMap<LambertAzimuthalEqualArea.PARAMS, Double>();
+        double sinb1 = Double.NaN;
+        double cosb1 = Double.NaN;
+        /**
+         * qp is q (needed for authalicLatitude Snyder 3-12) evaluated for a phi of 90°.
+         */
+        double qp = Double.NaN;
+        /**
+         * Will hold the value D (A slide adjustment for the standardpoint, to achieve a correct scale in all directions
+         * at the center of the projection) calculated by Snyder (24-20).
+         */
+        double dd = Double.NaN;
+        /**
+         * Radius for the sphere having the same surface area as the ellipsoid. Calculated with Snyder (3-13).
+         */
+        double rq = Double.NaN;
+        /**
+         * precalculated series values to calculate the authalic latitude value from.
+         */
+        double xMultiplyForward = Double.NaN;
+        /**
+         * A variable to hold a precalculated value for the y parameter of the oblique or equatorial projection
+         */
+        double yMultiplyForward = Double.NaN;
+
+        if ( !isSpherical( geographicCRS ) ) {
+            // sin(rad(90)) = 1;
+            qp = calcQForAuthalicLatitude( 1., getEccentricity( geographicCRS ) );
+            rq = getSemiMajorAxis( geographicCRS ) * Math.sqrt( .5 * qp );// Snyder (3-13)
+
+            switch ( getMode() ) {
+            case NORTH_POLE:
+            case SOUTH_POLE:
+                xMultiplyForward = getSemiMajorAxis( geographicCRS );
+                yMultiplyForward = ( getMode() == NORTH_POLE ) ? -getSemiMajorAxis( geographicCRS )
+                                                              : getSemiMajorAxis( geographicCRS );
+                dd = 1.;
+                break;
+            case EQUATOR:
+                dd = 1. / ( rq );
+                xMultiplyForward = getSemiMajorAxis( geographicCRS );
+                yMultiplyForward = getSemiMajorAxis( geographicCRS ) * .5 * qp;
+                break;
+            case OBLIQUE:
+                double sinphi = getSinphi0();
+                // arcsin( q/ qp) = beta . Snyder (3-11)
+                sinb1 = calcQForAuthalicLatitude( sinphi, getEccentricity( geographicCRS ) ) / qp;
+                // sin*sin + cos*cos = 1
+                cosb1 = Math.sqrt( 1. - sinb1 * sinb1 );
+                // (24-20) D = a*m_1 / (Rq*cos(beta_1) )
+                double m_1 = getCosphi0() / Math.sqrt( 1. - getSquaredEccentricity( geographicCRS ) * sinphi * sinphi );
+                dd = getSemiMajorAxis( geographicCRS ) * m_1 / ( rq * cosb1 );
+                xMultiplyForward = rq * dd;
+                yMultiplyForward = rq / dd;
+                break;
+            }
+        }
+        list.put( PARAMS.sinb1, sinb1 );
+        list.put( PARAMS.cosb1, cosb1 );
+        list.put( PARAMS.qp, qp );
+        list.put( PARAMS.dd, dd );
+        list.put( PARAMS.rq, rq );
+        list.put( PARAMS.xMultiplyForward, xMultiplyForward );
+        list.put( PARAMS.yMultiplyForward, yMultiplyForward );
+        return list;
     }
 
 }

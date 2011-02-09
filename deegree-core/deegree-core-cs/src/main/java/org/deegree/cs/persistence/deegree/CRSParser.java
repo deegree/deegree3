@@ -153,10 +153,8 @@ public interface CRSParser<T> extends CRSResource<T> {
     /**
      * @param projectionId
      *            of the projection
-     * @param underlyingCRS
-     *            of the projection
      * @return the projection denoted by the given id, or <code>null</code> if no such projection could be loaded.
      */
-    public abstract Projection getProjectionForId( String projectionId, GeographicCRS underlyingCRS );
+    public abstract Projection getProjectionForId( String projectionId );
 
 }

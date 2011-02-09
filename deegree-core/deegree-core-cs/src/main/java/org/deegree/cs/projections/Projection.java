@@ -43,7 +43,6 @@ import static org.deegree.cs.utilities.ProjectionUtils.normalizeLongitude;
 import javax.vecmath.Point2d;
 
 import org.deegree.cs.CRSIdentifiable;
-import org.deegree.cs.components.Datum;
 import org.deegree.cs.components.Ellipsoid;
 import org.deegree.cs.components.PrimeMeridian;
 import org.deegree.cs.components.Unit;
@@ -85,7 +84,7 @@ public abstract class Projection extends CRSIdentifiable {
     /**
      * the scale*semimajor-axis, often revered to as R*k_0 in Snyder.
      */
-    private double scaleFactor;
+    // private double scaleFactor;
 
     private final double falseNorthing;
 
@@ -105,10 +104,6 @@ public abstract class Projection extends CRSIdentifiable {
     private double cosphi0;
 
     private final Unit units;
-
-    private final GeographicCRS geographicCRS;
-
-    private boolean isSpherical;
 
     /**
      * Creates a Projection. <b>Caution</b>, the given natural origin should be given in radians rather then degrees.
@@ -132,25 +127,20 @@ public abstract class Projection extends CRSIdentifiable {
      * @param id
      *            an identifiable instance containing information about this projection.
      */
-    public Projection( GeographicCRS geographicCRS, double falseNorthing, double falseEasting, Point2d naturalOrigin,
-                       Unit units, double scale, boolean conformal, boolean equalArea, CRSIdentifiable id ) {
+    public Projection( double falseNorthing, double falseEasting, Point2d naturalOrigin, Unit units, double scale,
+                       boolean conformal, boolean equalArea, CRSIdentifiable id ) {
         super( id );
         this.scale = scale;
         this.conformal = conformal;
         this.equalArea = equalArea;
-        this.geographicCRS = geographicCRS;
         this.falseNorthing = falseNorthing;
         this.falseEasting = falseEasting;
         this.units = units;
 
-        checkForNullObject( geographicCRS, "Projection", "geographicCRS" );
-        checkForNullObject( geographicCRS.getGeodeticDatum(), "Projection", "geographicCRS.datum" );
-        checkForNullObject( geographicCRS.getGeodeticDatum().getEllipsoid(), "Projection",
-                            "geographicCRS.datum.ellipsoid" );
         checkForNullObject( naturalOrigin, "Projection", "naturalOrigin" );
         checkForNullObject( units, "Projection", "units" );
 
-        this.scaleFactor = scale * getSemiMajorAxis();
+        //
 
         this.naturalOrigin = new Point2d( normalizeLongitude( naturalOrigin.x ), normalizeLatitude( naturalOrigin.y ) );
         this.projectionLongitude = this.naturalOrigin.x;
@@ -159,17 +149,16 @@ public abstract class Projection extends CRSIdentifiable {
         sinphi0 = Math.sin( projectionLatitude );
         cosphi0 = Math.cos( projectionLatitude );
 
-        isSpherical = geographicCRS.getGeodeticDatum().getEllipsoid().getEccentricity() < 0.0000001;
     }
 
-    /**
-     * Creates a copy of this projection with the given {@link GeographicCRS} as the base.
-     * 
-     * @param newBaseCRS
-     *            the new {@link GeographicCRS}
-     * @return a copy of this projection based upon the given crs.
-     */
-    public abstract Projection clone( GeographicCRS newBaseCRS );
+    // /**
+    // * Creates a copy of this projection with the given {@link GeographicCRS} as the base.
+    // *
+    // * @param newBaseCRS
+    // * the new {@link GeographicCRS}
+    // * @return a copy of this projection based upon the given crs.
+    // */
+    // public abstract Projection clone( GeographicCRS newBaseCRS );
 
     /**
      * The actual transform method doing a projection from geographic coordinates to map coordinates.
@@ -182,7 +171,7 @@ public abstract class Projection extends CRSIdentifiable {
      * @throws ProjectionException
      *             if the given lamba and phi coordinates could not be projected to x and y.
      */
-    public abstract Point2d doProjection( double lambda, double phi )
+    public abstract Point2d doProjection( GeographicCRS underlyingCRS, double lambda, double phi )
                             throws ProjectionException;
 
     /**
@@ -196,7 +185,7 @@ public abstract class Projection extends CRSIdentifiable {
      * @throws ProjectionException
      *             if the given x and y coordinates could not be inverted to lambda and phi.
      */
-    public abstract Point2d doInverseProjection( double x, double y )
+    public abstract Point2d doInverseProjection( GeographicCRS underlyingCRS, double x, double y )
                             throws ProjectionException;
 
     /**
@@ -233,22 +222,14 @@ public abstract class Projection extends CRSIdentifiable {
      */
     public void setScale( double scale ) {
         this.scale = scale;
-        this.scaleFactor = scale * getSemiMajorAxis();
     }
 
-    /**
-     * @return the scale*semimajor-axis, often revered to as R*k_0 in Snyder.
-     */
-    public final double getScaleFactor() {
-        return scaleFactor;
-    }
-
-    /**
-     * @return the datum.
-     */
-    public final Datum getDatum() {
-        return geographicCRS.getGeodeticDatum();
-    }
+    // /**
+    // * @return the datum.
+    // */
+    // public final Datum getDatum() {
+    // return geographicCRS.getGeodeticDatum();
+    // }
 
     /**
      * @return the falseEasting.
@@ -291,50 +272,43 @@ public abstract class Projection extends CRSIdentifiable {
     /**
      * @return the primeMeridian of the datum.
      */
-    public final PrimeMeridian getPrimeMeridian() {
+    public final PrimeMeridian getPrimeMeridian( GeographicCRS geographicCRS ) {
         return geographicCRS.getGeodeticDatum().getPrimeMeridian();
     }
 
     /**
      * @return the ellipsoid of the datum.
      */
-    public final Ellipsoid getEllipsoid() {
+    public final Ellipsoid getEllipsoid( GeographicCRS geographicCRS ) {
         return geographicCRS.getGeodeticDatum().getEllipsoid();
     }
 
     /**
      * @return the eccentricity of the ellipsoid of the datum.
      */
-    public final double getEccentricity() {
+    public final double getEccentricity( GeographicCRS geographicCRS ) {
         return geographicCRS.getGeodeticDatum().getEllipsoid().getEccentricity();
     }
 
     /**
      * @return the eccentricity of the ellipsoid of the datum.
      */
-    public final double getSquaredEccentricity() {
+    public final double getSquaredEccentricity( GeographicCRS geographicCRS ) {
         return geographicCRS.getGeodeticDatum().getEllipsoid().getSquaredEccentricity();
     }
 
     /**
      * @return the semiMajorAxis (a) of the ellipsoid of the datum.
      */
-    public final double getSemiMajorAxis() {
+    public final double getSemiMajorAxis( GeographicCRS geographicCRS ) {
         return geographicCRS.getGeodeticDatum().getEllipsoid().getSemiMajorAxis();
     }
 
     /**
      * @return the semiMinorAxis (a) of the ellipsoid of the datum.
      */
-    public final double getSemiMinorAxis() {
+    public final double getSemiMinorAxis( GeographicCRS geographicCRS ) {
         return geographicCRS.getGeodeticDatum().getEllipsoid().getSemiMinorAxis();
-    }
-
-    /**
-     * @return true if the ellipsoid of the datum is a sphere and not an ellipse.
-     */
-    public final boolean isSpherical() {
-        return isSpherical;
     }
 
     /**
@@ -367,12 +341,20 @@ public abstract class Projection extends CRSIdentifiable {
         return cosphi0;
     }
 
-    /**
-     * @return the geographicCRS.
-     */
-    public final GeographicCRS getGeographicCRS() {
-        return geographicCRS;
+    public double getScaleFactor( GeographicCRS geographicCRS ) {
+        return scale * getSemiMajorAxis( geographicCRS );
     }
+
+    public boolean isSpherical( GeographicCRS geographicCRS ) {
+        return geographicCRS.getGeodeticDatum().getEllipsoid().getEccentricity() < 0.0000001;
+    }
+
+    // /**
+    // * @return the geographicCRS.
+    // */
+    // public final GeographicCRS getGeographicCRS() {
+    // return geographicCRS;
+    // }
 
     @Override
     public boolean equals( Object other ) {
@@ -384,7 +366,7 @@ public abstract class Projection extends CRSIdentifiable {
                    && Math.abs( ( this.falseNorthing - that.falseNorthing ) ) < EPS11
                    && Math.abs( ( this.falseEasting - that.falseEasting ) ) < EPS11
                    && Math.abs( ( this.scale - that.scale ) ) < EPS11 && ( this.conformal == that.conformal )
-                   && ( this.equalArea == that.equalArea ) && this.getGeographicCRS().equals( that.getGeographicCRS() );
+                   && ( this.equalArea == that.equalArea );
         }
         return false;
     }
@@ -392,11 +374,9 @@ public abstract class Projection extends CRSIdentifiable {
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder( super.toString() );
-        sb.append( "\n - underlying-geographic-CRS: " ).append( geographicCRS );
         sb.append( "\n - units: " ).append( units );
         sb.append( "\n - projection-longitude: " ).append( projectionLongitude );
         sb.append( "\n - projection-latitude: " ).append( projectionLatitude );
-        sb.append( "\n - is-spherical: " ).append( isSpherical() );
         sb.append( "\n - is-conformal: " ).append( isConformal() );
         sb.append( "\n - natural-origin: " ).append( getNaturalOrigin() );
         sb.append( "\n - false-easting: " ).append( getFalseEasting() );
@@ -451,10 +431,6 @@ public abstract class Projection extends CRSIdentifiable {
 
         code = code * 37 + ( conformal ? 0 : 1 );
         code = code * 37 + ( equalArea ? 0 : 1 );
-        if ( geographicCRS != null ) {
-            code = code * 37 + geographicCRS.hashCode();
-        }
-
         return (int) ( code >>> 32 ) ^ (int) code;
     }
 

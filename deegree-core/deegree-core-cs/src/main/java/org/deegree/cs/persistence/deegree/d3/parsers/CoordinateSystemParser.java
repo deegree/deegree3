@@ -316,14 +316,14 @@ public class CoordinateSystemParser extends DefinitionParser {
         }
 
         // then the projection.
-        Projection projection = getProvider().getProjection( usedProjection, geoCRS );
+        Projection projection = getProvider().getProjection( usedProjection );
         if ( projection == null ) {
             throw new CRSConfigurationException( Messages.getMessage( "CRS_CONFIG_PROJECTEDCRS_FALSE_PROJREF",
                                                                       id.getCode(), usedProjection ) );
         }
 
         // adding to cache will be done in AbstractCRSProvider.
-        return new ProjectedCRS( transformations, projection, axis, id );
+        return new ProjectedCRS( transformations, geoCRS, projection, axis, id );
     }
 
     /**
@@ -390,7 +390,8 @@ public class CoordinateSystemParser extends DefinitionParser {
         try {
             usedCRS = getRequiredText( reader, new QName( CRS_NS, "UsedCRS" ), true );
         } catch ( XMLParsingException e ) {
-            throw new CRSConfigurationException( Messages.getMessage( "CRS_CONFIG_PARSE_ERROR", "usedCRS",
+            throw new CRSConfigurationException( Messages.getMessage( "CRS_CONFIG_PARSE_ERROR",
+                                                                      "usedCRS",
                                                                       ( ( reader == null ) ? "null"
                                                                                           : reader.getLocalName() ),
                                                                       e.getMessage() ), e );

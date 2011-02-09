@@ -913,17 +913,17 @@ public class WKTParser {
         if ( projectionType.equalsIgnoreCase( "transverse_mercator" )
              || ( projectionType.equalsIgnoreCase( "transverse mercator" ) )
              || projectionType.equalsIgnoreCase( "Gauss_Kruger" ) ) {
-            return new ProjectedCRS( new TransverseMercator( true, geographicCRS,
+            return new ProjectedCRS( new TransverseMercator( true, 
                                                              params.get( FALSE_NORTHING.toString() ),
                                                              params.get( FALSE_EASTING.toString() ), pointOrigin, unit,
                                                              params.get( SCALE_AT_NATURAL_ORIGIN.toString() ),
-                                                             baseProjCRS ), axes, baseCRS );
+                                                             baseProjCRS ), geographicCRS, axes, baseCRS );
 
         } else if ( projectionType.equalsIgnoreCase( "Lambert_Conformal_Conic_1SP" ) ) {
-            return new ProjectedCRS( new LambertConformalConic( geographicCRS, params.get( FALSE_NORTHING.toString() ),
+            return new ProjectedCRS( new LambertConformalConic(  params.get( FALSE_NORTHING.toString() ),
                                                                 params.get( FALSE_EASTING.toString() ), pointOrigin,
                                                                 unit, params.get( SCALE_AT_NATURAL_ORIGIN.toString() ),
-                                                                baseProjCRS ), axes, baseCRS );
+                                                                baseProjCRS ),geographicCRS, axes, baseCRS );
 
         } else if ( projectionType.equalsIgnoreCase( "Lambert_Conformal_Conic_2SP" )
                     || projectionType.equalsIgnoreCase( "Lambert_Conformal_Conic" ) ) {
@@ -931,28 +931,28 @@ public class WKTParser {
                                      new LambertConformalConic(
                                                                 DTR * params.get( FIRST_PARALLEL_LATITUDE.toString() ),
                                                                 DTR * params.get( SECOND_PARALLEL_LATITUDE.toString() ),
-                                                                geographicCRS, params.get( FALSE_NORTHING.toString() ),
+                                                                 params.get( FALSE_NORTHING.toString() ),
                                                                 params.get( FALSE_EASTING.toString() ), pointOrigin,
                                                                 unit, params.get( SCALE_AT_NATURAL_ORIGIN.toString() ),
-                                                                baseProjCRS ), axes, baseCRS );
+                                                                baseProjCRS ),geographicCRS, axes, baseCRS );
         } else if ( projectionType.equalsIgnoreCase( "Stereographic_Alternative" )
                     || projectionType.equalsIgnoreCase( "Double_Stereographic" )
                     || projectionType.equalsIgnoreCase( "Oblique_Stereographic" ) ) {
-            return new ProjectedCRS( new StereographicAlternative( geographicCRS,
+            return new ProjectedCRS( new StereographicAlternative( 
                                                                    params.get( FALSE_NORTHING.toString() ),
                                                                    params.get( FALSE_EASTING.toString() ), pointOrigin,
                                                                    unit,
                                                                    params.get( SCALE_AT_NATURAL_ORIGIN.toString() ),
-                                                                   baseProjCRS ), axes, baseCRS );
+                                                                   baseProjCRS ),geographicCRS, axes, baseCRS );
 
         } else if ( projectionType.equalsIgnoreCase( "Stereographic_Azimuthal" ) ) {
             LOG.warn( "True scale latitude is not read from the StereoGraphic azimuthal projection yet." );
-            return new ProjectedCRS( new StereographicAzimuthal( geographicCRS,
+            return new ProjectedCRS( new StereographicAzimuthal( 
                                                                  params.get( FALSE_NORTHING.toString() ),
                                                                  params.get( FALSE_EASTING.toString() ), pointOrigin,
                                                                  unit,
                                                                  params.get( SCALE_AT_NATURAL_ORIGIN.toString() ),
-                                                                 baseProjCRS ), axes, baseCRS );
+                                                                 baseProjCRS ),geographicCRS, axes, baseCRS );
 
         } else {
             throw new WKTParsingException( "The projection type " + projectionType + " is not supported." );

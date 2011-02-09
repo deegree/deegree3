@@ -54,7 +54,6 @@ import org.deegree.cs.EPSGCode;
 import org.deegree.cs.components.Unit;
 import org.deegree.cs.coordinatesystems.GeographicCRS;
 import org.deegree.cs.exceptions.ProjectionException;
-import org.deegree.cs.projections.Projection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -100,13 +99,6 @@ public class TransverseMercator extends CylindricalProjection {
     // 1 for northern hemisphere -1 for southern.
     private int hemisphere;
 
-    // esp will can hold two values, for the sphere it will hold the scale, for the ellipsoid Snyder (p.61 8-12).
-    private double esp;
-
-    private double ml0;
-
-    private double[] en;
-
     /**
      * @param northernHemisphere
      *            true if on the northern hemisphere false otherwise.
@@ -119,22 +111,11 @@ public class TransverseMercator extends CylindricalProjection {
      * @param id
      *            an identifiable instance containing information about this projection
      */
-    public TransverseMercator( boolean northernHemisphere, GeographicCRS geographicCRS, double falseNorthing,
-                               double falseEasting, Point2d naturalOrigin, Unit units, double scale, CRSIdentifiable id ) {
-        super( geographicCRS, falseNorthing, falseEasting, naturalOrigin, units, scale, true,// always conformal
+    public TransverseMercator( boolean northernHemisphere, double falseNorthing, double falseEasting,
+                               Point2d naturalOrigin, Unit units, double scale, CRSIdentifiable id ) {
+        super( falseNorthing, falseEasting, naturalOrigin, units, scale, true,// always conformal
                false/* not equalArea */, id );
         this.hemisphere = ( northernHemisphere ) ? 1 : -1;
-        if ( isSpherical() ) {
-            esp = getScale();
-            ml0 = .5 * esp;
-        } else {
-            en = getRectifiyingLatitudeValues( getSquaredEccentricity() );
-            ml0 = getDistanceAlongMeridian( getProjectionLatitude(), getSinphi0(), getCosphi0(), en );
-            esp = getSquaredEccentricity() / ( 1. - getSquaredEccentricity() );
-            // esp = ( ( getSemiMajorAxis() * getSemiMajorAxis() ) / ( getSemiMinorAxis() * getSemiMinorAxis() ) ) -
-            // 1.0;
-        }
-
     }
 
     /**
@@ -149,9 +130,9 @@ public class TransverseMercator extends CylindricalProjection {
      * @param units
      * @param scale
      */
-    public TransverseMercator( boolean northernHemisphere, GeographicCRS geographicCRS, double falseNorthing,
-                               double falseEasting, Point2d naturalOrigin, Unit units, double scale ) {
-        this( northernHemisphere, geographicCRS, falseNorthing, falseEasting, naturalOrigin, units, scale,
+    public TransverseMercator( boolean northernHemisphere, double falseNorthing, double falseEasting,
+                               Point2d naturalOrigin, Unit units, double scale ) {
+        this( northernHemisphere, falseNorthing, falseEasting, naturalOrigin, units, scale,
               new CRSIdentifiable( new EPSGCode( 9807 ) ) );
     }
 
@@ -169,22 +150,11 @@ public class TransverseMercator extends CylindricalProjection {
      * @param id
      *            an identifiable instance containing information about this projection
      */
-    public TransverseMercator( int zone, boolean northernHemisphere, GeographicCRS geographicCRS, Unit units,
-                               CRSIdentifiable id ) {
-        super( geographicCRS, ( northernHemisphere ? 0 : 10000000 ), 500000, new Point2d( ( --zone + .5 ) * Math.PI
-                                                                                          / 30. - Math.PI, 0 ), units,
-               0.9996, true /* always conformal */, false /* not equalArea */, id );
+    public TransverseMercator( int zone, boolean northernHemisphere, Unit units, CRSIdentifiable id ) {
+        super( ( northernHemisphere ? 0 : 10000000 ), 500000,
+               new Point2d( ( --zone + .5 ) * Math.PI / 30. - Math.PI, 0 ), units, 0.9996, true /* always conformal */,
+               false /* not equalArea */, id );
         this.hemisphere = ( northernHemisphere ) ? 1 : -1;
-        if ( isSpherical() ) {
-            esp = getScale();
-            ml0 = .5 * esp;
-        } else {
-            // recalculate the rectifying latitudes and the distance along the meridian.
-            en = getRectifiyingLatitudeValues( getSquaredEccentricity() );
-            ml0 = getDistanceAlongMeridian( getProjectionLatitude(), getSinphi0(), getCosphi0(), en );
-            esp = getSquaredEccentricity() / ( 1. - getSquaredEccentricity() );
-        }
-
     }
 
     /**
@@ -199,8 +169,8 @@ public class TransverseMercator extends CylindricalProjection {
      * @param geographicCRS
      * @param units
      */
-    public TransverseMercator( int zone, boolean northernHemisphere, GeographicCRS geographicCRS, Unit units ) {
-        this( zone, northernHemisphere, geographicCRS, units, new CRSIdentifiable( new EPSGCode( 9807 ) ) );
+    public TransverseMercator( int zone, boolean northernHemisphere, Unit units ) {
+        this( zone, northernHemisphere, units, new CRSIdentifiable( new EPSGCode( 9807 ) ) );
     }
 
     /**
@@ -212,9 +182,8 @@ public class TransverseMercator extends CylindricalProjection {
      * @param naturalOrigin
      * @param units
      */
-    public TransverseMercator( GeographicCRS geographicCRS, double falseNorthing, double falseEasting,
-                               Point2d naturalOrigin, Unit units ) {
-        this( true, geographicCRS, falseNorthing, falseEasting, naturalOrigin, units, 1. );
+    public TransverseMercator( double falseNorthing, double falseEasting, Point2d naturalOrigin, Unit units ) {
+        this( true, falseNorthing, falseEasting, naturalOrigin, units, 1. );
     }
 
     /**
@@ -228,23 +197,23 @@ public class TransverseMercator extends CylindricalProjection {
      * @param id
      *            an identifiable instance containing information about this projection
      */
-    public TransverseMercator( GeographicCRS geographicCRS, double falseNorthing, double falseEasting,
-                               Point2d naturalOrigin, Unit units, CRSIdentifiable id ) {
-        this( true, geographicCRS, falseNorthing, falseEasting, naturalOrigin, units, 1., id );
+    public TransverseMercator( double falseNorthing, double falseEasting, Point2d naturalOrigin, Unit units,
+                               CRSIdentifiable id ) {
+        this( true, falseNorthing, falseEasting, naturalOrigin, units, 1., id );
     }
 
     @Override
-    public Point2d doInverseProjection( double x, double y )
+    public  synchronized Point2d doInverseProjection( GeographicCRS geographicCRS, double x, double y )
                             throws ProjectionException {
         Point2d result = new Point2d( 0, 0 );
         LOG.debug( "InverseProjection, incoming points x: " + x + " y: " + y );
-        x = ( x - getFalseEasting() ) / getScaleFactor();
-        y = ( y - getFalseNorthing() ) / getScaleFactor();
+        x = ( x - getFalseEasting() ) / getScaleFactor( geographicCRS );
+        y = ( y - getFalseNorthing() ) / getScaleFactor( geographicCRS );
         y *= hemisphere;
 
-        if ( isSpherical() ) {
+        if ( isSpherical( geographicCRS ) ) {
             // h holds e^x, the sinh = 0.5*(e^x - e^-x), cosh = 0.5(e^x + e^-x)
-            double h = Math.exp( x / getScaleFactor() );
+            double h = Math.exp( x / getScaleFactor( geographicCRS ) );
             // sinh holds the sinh from Snyder (p.60 8-7)
             double sinh = .5 * ( h - 1. / h );
 
@@ -262,7 +231,9 @@ public class TransverseMercator extends CylindricalProjection {
             result.x = Math.atan2( sinh, cosD );
         } else {
             // out.y will hold the phi_1 from Snyder (p.63 8-18).
-            result.y = calcPhiFromMeridianDistance( ml0 + ( y/* / getScale() */), getSquaredEccentricity(), en );
+            result.y = calcPhiFromMeridianDistance( calculateMl0( geographicCRS ) + ( y/* / getScale() */),
+                                                    getSquaredEccentricity( geographicCRS ),
+                                                    calculateEn( geographicCRS ) );
             // result.y = calcPhiFromMeridianDistance( ml0 + ( y / getScale() ),
             // getSquaredEccentricity(),
             // en );
@@ -277,11 +248,11 @@ public class TransverseMercator extends CylindricalProjection {
                 double largeT = ( Math.abs( cosphi ) > EPS10 ) ? sinphi / cosphi : 0;
 
                 // will hold the C_1 from Synder (p.64 8-21)
-                double largeC = esp * cosphi * cosphi;
+                double largeC = calculateEsp( geographicCRS ) * cosphi * cosphi;
 
                 // Holds a modified N from Synder (p.64 8-23), multiplied with the largeT, it is the first term fo the
                 // calculation of phi e.g. N*T/R
-                double con = 1. - ( getSquaredEccentricity() * sinphi * sinphi );
+                double con = 1. - ( getSquaredEccentricity( geographicCRS ) * sinphi * sinphi );
                 // largeD holds the D from Snyder (p.64 8-25). (x/(1/N) = x*N)
                 // double largeD = x * Math.sqrt( con ) / getScaleFactor();
                 double largeD = x * Math.sqrt( con )/* / getScale() */;
@@ -292,7 +263,7 @@ public class TransverseMercator extends CylindricalProjection {
                 /**
                  * As for the forward projection, I'm not sure if this is correct, this should be checked!
                  */
-                result.y -= ( con * ds / ( 1. - getSquaredEccentricity() ) )
+                result.y -= ( con * ds / ( 1. - getSquaredEccentricity( geographicCRS ) ) )
                             * FC2
                             * ( 1. - ds
                                      * FC4
@@ -334,7 +305,7 @@ public class TransverseMercator extends CylindricalProjection {
      * @see org.deegree.cs.projections.Projection#doProjection(double, double)
      */
     @Override
-    public Point2d doProjection( double lambda, double phi )
+    public synchronized Point2d doProjection( GeographicCRS geographicCRS, double lambda, double phi )
                             throws ProjectionException {
         // LOG.debug( "Projection, incoming points lambda: " + lambda + " phi: " + phi );
         LOG.debug( "Projection, incoming points lambda: " + Math.toDegrees( lambda ) + " phi: " + Math.toDegrees( phi ) );
@@ -344,11 +315,12 @@ public class TransverseMercator extends CylindricalProjection {
 
         phi *= hemisphere;
         double cosphi = Math.cos( phi );
-        if ( isSpherical() ) {
+        if ( isSpherical( geographicCRS ) ) {
             double b = cosphi * Math.sin( lambda );
 
             // Snyder (p.58 8-1)
-            result.x = ml0 * getScaleFactor() * Math.log( ( 1. + b ) / ( 1. - b ) );
+            result.x = calculateMl0( geographicCRS ) * getScaleFactor( geographicCRS )
+                       * Math.log( ( 1. + b ) / ( 1. - b ) );
 
             // reformed and inserted the k from (p.58 8-4), so no tangens has to be calculated.
             double ty = cosphi * Math.cos( lambda ) / Math.sqrt( 1. - b * b );
@@ -357,7 +329,7 @@ public class TransverseMercator extends CylindricalProjection {
                 ty = -ty;
             }
             // esp just holds the scale
-            result.y = esp * ( ty - getProjectionLatitude() );
+            result.y = calculateEsp( geographicCRS ) * ( ty - getProjectionLatitude() );
         } else {
             double sinphi = Math.sin( phi );
             double largeT = ( Math.abs( cosphi ) > EPS10 ) ? sinphi / cosphi : 0.0;
@@ -366,13 +338,13 @@ public class TransverseMercator extends CylindricalProjection {
             double largeA = cosphi * lambda;
             double squaredLargeA = largeA * largeA;
             // largeA now holds A/N Snyder (p.61 4-20 and 8-15)
-            largeA /= Math.sqrt( 1. - ( getSquaredEccentricity() * sinphi * sinphi ) );
+            largeA /= Math.sqrt( 1. - ( getSquaredEccentricity( geographicCRS ) * sinphi * sinphi ) );
 
             // largeA *= getSemiMajorAxis();
 
             // largeC will hold Snyder (p.61 8-14), esp holds Snyder (p.61 8-12).
-            double largeC = esp * cosphi * cosphi;
-            double largeM = getDistanceAlongMeridian( phi, sinphi, cosphi, en );
+            double largeC = calculateEsp( geographicCRS ) * cosphi * cosphi;
+            double largeM = getDistanceAlongMeridian( phi, sinphi, cosphi, calculateEn( geographicCRS ) );
 
             result.x = largeA
                        * ( FC1 + FC3
@@ -386,7 +358,7 @@ public class TransverseMercator extends CylindricalProjection {
                                                                                                      * ( largeT
                                                                                                          * ( 179. - largeT ) - 479. ) ) ) ) );
 
-            result.y = ( largeM - ml0 )
+            result.y = ( largeM - calculateMl0( geographicCRS ) )
                        + sinphi
                        * largeA
                        * lambda
@@ -404,8 +376,8 @@ public class TransverseMercator extends CylindricalProjection {
 
         }
 
-        result.x = ( result.x * getScaleFactor() ) + getFalseEasting();
-        result.y = ( result.y * getScaleFactor() ) + getFalseNorthing();
+        result.x = ( result.x * getScaleFactor( geographicCRS ) ) + getFalseEasting();
+        result.y = ( result.y * getScaleFactor( geographicCRS ) ) + getFalseNorthing();
 
         return result;
     }
@@ -455,11 +427,25 @@ public class TransverseMercator extends CylindricalProjection {
         return ( hemisphere == 1 );
     }
 
-    @Override
-    public Projection clone( GeographicCRS newCRS ) {
-        return new TransverseMercator( getHemisphere(), newCRS, getFalseNorthing(), getFalseEasting(),
-                                       getNaturalOrigin(), getUnits(), getScale(),
-                                       new CRSIdentifiable( getCodes(), getNames(), getVersions(), getDescriptions(),
-                                                            getAreasOfUse() ) );
+    private synchronized double[] calculateEn( GeographicCRS geographicCRS ) {
+        return getRectifiyingLatitudeValues( getSquaredEccentricity( geographicCRS ) );
+    }
+
+    // esp will can hold two values, for the sphere it will hold the scale, for the ellipsoid Snyder (p.61 8-12).
+    private synchronized double calculateEsp( GeographicCRS geographicCRS ) {
+        if ( isSpherical( geographicCRS ) ) {
+            return getScale();
+        } else {
+            return getSquaredEccentricity( geographicCRS ) / ( 1. - getSquaredEccentricity( geographicCRS ) );
+        }
+    }
+
+    private synchronized double calculateMl0( GeographicCRS geographicCRS ) {
+        if ( isSpherical( geographicCRS ) ) {
+            return .5 * calculateEsp( geographicCRS );
+        } else {
+            return getDistanceAlongMeridian( getProjectionLatitude(), getSinphi0(), getCosphi0(),
+                                             calculateEn( geographicCRS ) );
+        }
     }
 }

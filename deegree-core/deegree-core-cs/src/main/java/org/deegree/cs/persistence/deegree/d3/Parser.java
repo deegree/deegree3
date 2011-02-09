@@ -211,8 +211,8 @@ public class Parser implements CRSParser<StAXResource> {
     }
 
     @Override
-    public Projection getProjectionForId( String id, GeographicCRS underlyingCRS ) {
-        return proj.getProjectionForId( id, underlyingCRS );
+    public Projection getProjectionForId( String id ) {
+        return proj.getProjectionForId( id );
     }
 
     @Override
@@ -240,7 +240,7 @@ public class Parser implements CRSParser<StAXResource> {
             result = pm.getPrimeMeridianForId( id );
         }
         if ( result == null ) {
-            result = proj.getProjectionForId( id, null );
+            result = proj.getProjectionForId( id );
         }
         if ( result == null ) {
             result = trans.getTransformationForId( id );

@@ -45,11 +45,7 @@ import static org.slf4j.LoggerFactory.getLogger;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import javax.vecmath.Point2d;
@@ -59,7 +55,6 @@ import javax.xml.stream.XMLStreamReader;
 
 import org.deegree.commons.annotations.LoggingNotes;
 import org.deegree.commons.xml.stax.StAXParsingHelper;
-import org.deegree.cs.CRSCodeType;
 import org.deegree.cs.CRSIdentifiable;
 import org.deegree.cs.components.Unit;
 import org.deegree.cs.coordinatesystems.GeographicCRS;
@@ -107,15 +102,6 @@ public class ProjectionParser extends DefinitionParser {
 
     private final static Set<QName> knownProjections = new HashSet<QName>( 7 );
 
-    /*
-     * each id maps to the 'default' codetype, which is used to lookup a list of crs's with different underlying
-     * Geographic crs
-     */
-    private final Map<String, CRSCodeType> idToCode = new HashMap<String, CRSCodeType>();
-
-    /* each code type has a list of crs's with different underlying Geographic crs */
-    private final Map<CRSCodeType, List<Projection>> duplicates = new HashMap<CRSCodeType, List<Projection>>();
-
     static {
         knownProjections.add( USER_ELEM );
         knownProjections.add( LAEA_ELEM );
@@ -141,7 +127,7 @@ public class ProjectionParser extends DefinitionParser {
      * @return the next datum on the stream.
      * @throws XMLStreamException
      */
-    protected Projection parseProjection( XMLStreamReader reader, GeographicCRS underlyingCRS )
+    protected Projection parseProjection( XMLStreamReader reader )
                             throws XMLStreamException {
         if ( reader == null || !super.moveReaderToNextIdentifiable( reader, knownProjections ) ) {
             LOG.debug( "Could not get projection, no more definitions left." );
@@ -175,35 +161,34 @@ public class ProjectionParser extends DefinitionParser {
         Unit units = Unit.METRE;
         Projection result = null;
         if ( className != null && !"".equals( className.trim() ) ) {
-            result = instantiateConfiguredClass( reader, className, id, underlyingCRS, falseNorthing, falseEasting,
-                                                 naturalOrigin, units, scaleFactor );
+            result = instantiateConfiguredClass( reader, className, id, falseNorthing, falseEasting, naturalOrigin,
+                                                 units, scaleFactor );
 
         } else {
             if ( TMERC_ELEM.equals( projectionName ) ) {
-                result = new TransverseMercator( tmercNorthern, underlyingCRS, falseNorthing, falseEasting,
-                                                 naturalOrigin, units, scaleFactor, id );
+                result = new TransverseMercator( tmercNorthern, falseNorthing, falseEasting, naturalOrigin, units,
+                                                 scaleFactor, id );
             } else if ( LAEA_ELEM.equals( projectionName ) ) {
-                result = new LambertAzimuthalEqualArea( underlyingCRS, falseNorthing, falseEasting, naturalOrigin,
-                                                        units, scaleFactor, id );
+                result = new LambertAzimuthalEqualArea( falseNorthing, falseEasting, naturalOrigin, units, scaleFactor,
+                                                        id );
             } else if ( LCC_ELEM.equals( projectionName ) ) {
 
                 double firstP = parseLatLonType( reader, new QName( CRS_NS, "FirstParallelLatitude" ), false,
                                                  Double.NaN );
                 double secondP = parseLatLonType( reader, new QName( CRS_NS, "SecondParallelLatitude" ), false,
                                                   Double.NaN );
-                result = new LambertConformalConic( firstP, secondP, underlyingCRS, falseNorthing, falseEasting,
-                                                    naturalOrigin, units, scaleFactor, id );
+                result = new LambertConformalConic( firstP, secondP, falseNorthing, falseEasting, naturalOrigin, units,
+                                                    scaleFactor, id );
             } else if ( SA_ELEM.equals( projectionName ) ) {
                 double trueScaleL = parseLatLonType( reader, new QName( CRS_NS, "TrueScaleLatitude" ), false,
                                                      Double.NaN );
-                result = new StereographicAzimuthal( trueScaleL, underlyingCRS, falseNorthing, falseEasting,
-                                                     naturalOrigin, units, scaleFactor, id );
+                result = new StereographicAzimuthal( trueScaleL, falseNorthing, falseEasting, naturalOrigin, units,
+                                                     scaleFactor, id );
             } else if ( SAA_ELEM.equals( projectionName ) ) {
-                result = new StereographicAlternative( underlyingCRS, falseNorthing, falseEasting, naturalOrigin,
-                                                       units, scaleFactor, id );
+                result = new StereographicAlternative( falseNorthing, falseEasting, naturalOrigin, units, scaleFactor,
+                                                       id );
             } else if ( MERC_ELEM.equals( projectionName ) ) {
-                result = new Mercator( underlyingCRS, falseNorthing, falseEasting, naturalOrigin, units, scaleFactor,
-                                       id );
+                result = new Mercator( falseNorthing, falseEasting, naturalOrigin, units, scaleFactor, id );
             } else {
                 throw new CRSConfigurationException( Messages.getMessage( "CRS_CONFIG_PROJECTEDCRS_INVALID_PROJECTION",
                                                                           projectionName, knownProjections.toString() ) );
@@ -213,48 +198,9 @@ public class ProjectionParser extends DefinitionParser {
         // throw new CRSConfigurationException( Messages.getMessage( "CRS_STAX_CONFIG_PARSE_EXCEPTION",
         // "projection parameters", e.getMessage() ), e );
         if ( result != null ) {
-            addToPrivateCache( result );
             result = getProvider().addIdToCache( result, false );
         }
         return result;
-    }
-
-    private void addToPrivateCache( Projection result ) {
-        if ( result != null ) {
-            CRSCodeType codeKey = idToCode.get( result.getCode().getOriginal().toLowerCase() );
-            if ( codeKey == null ) {
-                codeKey = result.getCode();
-            }
-            List<Projection> dupList = duplicates.get( codeKey );
-            if ( dupList == null ) {
-                dupList = new ArrayList<Projection>();
-                duplicates.put( codeKey, dupList );
-            }
-            dupList.add( result );
-            for ( CRSCodeType code : result.getCodes() ) {
-                String cK = code.getOriginal().toLowerCase();
-                if ( !idToCode.containsKey( cK ) ) {
-                    idToCode.put( cK, codeKey );
-                }
-            }
-
-        }
-    }
-
-    private Projection getFromCache( String id, GeographicCRS underlying ) {
-        CRSCodeType codeKey = idToCode.get( id.toLowerCase() );
-        if ( codeKey != null ) {
-            List<Projection> dupList = duplicates.get( codeKey );
-            if ( dupList != null && !dupList.isEmpty() ) {
-                for ( Projection p : dupList ) {
-                    if ( p != null && p.hasId( id, false, true ) && p.getGeographicCRS().equals( underlying ) ) {
-                        return p;
-                    }
-                }
-            }
-        }
-        return null;
-
     }
 
     /**
@@ -263,9 +209,8 @@ public class ProjectionParser extends DefinitionParser {
      * @return
      */
     private Projection instantiateConfiguredClass( XMLStreamReader reader, String className, CRSIdentifiable id,
-                                                   GeographicCRS underlyingCRS, double falseNorthing,
-                                                   double falseEasting, Point2d naturalOrigin, Unit units,
-                                                   double scaleFactor ) {
+                                                   double falseNorthing, double falseEasting, Point2d naturalOrigin,
+                                                   Unit units, double scaleFactor ) {
         Projection result = null;
         LOG.debug( "Trying to load user defined projection class: " + className );
         try {
@@ -285,8 +230,8 @@ public class ProjectionParser extends DefinitionParser {
             Constructor<?> constructor = t.getConstructor( CRSIdentifiable.class, GeographicCRS.class, double.class,
                                                            double.class, Point2d.class, Unit.class, double.class,
                                                            XMLStreamReader.class );
-            result = (Projection) constructor.newInstance( id, underlyingCRS, falseNorthing, falseEasting,
-                                                           naturalOrigin, units, scaleFactor, reader );
+            result = (Projection) constructor.newInstance( id, falseNorthing, falseEasting, naturalOrigin, units,
+                                                           scaleFactor, reader );
         } catch ( ClassNotFoundException e ) {
             LOG.error( e.getMessage(), e );
         } catch ( SecurityException e ) {
@@ -316,7 +261,7 @@ public class ProjectionParser extends DefinitionParser {
      * @return the
      * @throws CRSConfigurationException
      */
-    public Projection getProjectionForId( String projectionId, GeographicCRS underlyingCRS )
+    public Projection getProjectionForId( String projectionId )
                             throws CRSConfigurationException {
         if ( projectionId == null || "".equals( projectionId.trim() ) ) {
             return null;
@@ -325,26 +270,13 @@ public class ProjectionParser extends DefinitionParser {
         Projection result = getProvider().getCachedIdentifiable( Projection.class, tmpProjectionId );
         if ( result == null ) {
             try {
-                result = parseProjection( getConfigReader(), underlyingCRS );
+                result = parseProjection( getConfigReader() );
                 while ( result != null && !result.hasId( tmpProjectionId, false, true ) ) {
-                    result = parseProjection( getConfigReader(), underlyingCRS );
+                    result = parseProjection( getConfigReader() );
                 }
             } catch ( XMLStreamException e ) {
                 throw new CRSConfigurationException( e );
             }
-        }
-        // rb: found a matching id, but the base geographic may still be different so let's try it
-        if ( result != null ) {
-            if ( underlyingCRS != null && !underlyingCRS.equals( result.getGeographicCRS() ) ) {
-                Projection p = getFromCache( projectionId, underlyingCRS );
-                if ( p == null ) {
-                    result = result.clone( underlyingCRS );
-                    addToPrivateCache( result );
-                } else {
-                    result = p;
-                }
-            }
-
         }
         return result;
     }

@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,7 +32,7 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 
 package org.deegree.cs.projections.cylindric;
 
@@ -48,27 +48,21 @@ import org.junit.Test;
 
 /**
  * <code>StereographicAlternativeTest</code> tests the transverse mercator projection.
- *
+ * 
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- *
+ * 
  * @author last edited by: $Author$
- *
+ * 
  * @version $Revision$, $Date$
- *
+ * 
  */
 public class TransverseMercatorTest extends ProjectionBase {
 
     private static final double DELTA = 0.0000001;
-    
-    private static final TransverseMercator projection_25832 = new TransverseMercator(
-                                                                                       true,
-                                                                                       geographic_4258,
-                                                                                       0,
-                                                                                       500000.0,
-                                                                                       new Point2d(
-                                                                                                    Math.toRadians( 9 ),
-                                                                                                    0 ), Unit.METRE,
-                                                                                       0.9996 );
+
+    private static final TransverseMercator projection_25832 = new TransverseMercator( true,
+
+    0, 500000.0, new Point2d( Math.toRadians( 9 ), 0 ), Unit.METRE, 0.9996 );
 
     /**
      * reference point created with proj4 command : <code>
@@ -76,7 +70,7 @@ public class TransverseMercatorTest extends ProjectionBase {
      * 6.610765 53.235916
      * 340545.99617007 5901178.79904923
      *  </code>
-     *
+     * 
      * @throws ProjectionException
      */
     @Test
@@ -86,7 +80,7 @@ public class TransverseMercatorTest extends ProjectionBase {
         Point2d sourcePoint = new Point2d( Math.toRadians( 6.610765 ), Math.toRadians( 53.235916 ) );
         Point2d targetPoint = new Point2d( 340545.99617007, 5901178.79904923 );
 
-        doForwardAndInverse( projection_25832, sourcePoint, targetPoint );
+        doForwardAndInverse( projection_25832, geographic_4258, sourcePoint, targetPoint );
 
     }
 

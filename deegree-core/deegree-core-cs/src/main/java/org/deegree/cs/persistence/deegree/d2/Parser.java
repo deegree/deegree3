@@ -570,13 +570,13 @@ public class Parser extends XMLFileResource implements CRSParser<OMElement> {
         // "projectionType", id.getIdentifier() ) );
         // }
         // Projection projection = getProjectionByID( usedProjection, (GeographicCRS) geoCRS, axis[0].getUnits() );
-        Projection projection = parseProjection( usedProjection, geoCRS, axis[0].getUnits() );
+        Projection projection = parseProjection( usedProjection, axis[0].getUnits() );
         if ( projection == null ) {
             throw new CRSConfigurationException( Messages.getMessage( "CRS_CONFIG_PROJECTEDCRS_FALSE_PROJREF",
                                                                       id.getCode(), usedProjection ) );
         }
         // adding to cache will be done in AbstractCRSProvider.
-        return new ProjectedCRS( transformations, projection, axis, id );
+        return new ProjectedCRS( transformations, geoCRS, projection, axis, id );
     }
 
     /**
@@ -966,7 +966,7 @@ public class Parser extends XMLFileResource implements CRSParser<OMElement> {
      * @return the configured projection or <code>null</code> if not defined or found.
      * @throws CRSConfigurationException
      */
-    protected Projection parseProjection( OMElement projectionElement, GeographicCRS underlyingCRS, Unit units )
+    protected Projection parseProjection( OMElement projectionElement, Unit units )
                             throws CRSConfigurationException {
         if ( projectionElement == null ) {
             throw new CRSConfigurationException(
@@ -1030,8 +1030,8 @@ public class Parser extends XMLFileResource implements CRSParser<OMElement> {
                      */
                     Constructor<?> constructor = t.getConstructor( GeographicCRS.class, double.class, double.class,
                                                                    Point2d.class, Unit.class, double.class, List.class );
-                    result = (Projection) constructor.newInstance( underlyingCRS, falseNorthing, falseEasting,
-                                                                   naturalOrigin, units, scaleFactor, otherValues );
+                    result = (Projection) constructor.newInstance( falseNorthing, falseEasting, naturalOrigin, units,
+                                                                   scaleFactor, otherValues );
                 } catch ( ClassNotFoundException e ) {
                     LOG.error( e.getMessage(), e );
                 } catch ( SecurityException e ) {
@@ -1057,11 +1057,11 @@ public class Parser extends XMLFileResource implements CRSParser<OMElement> {
                     // change schema to let projection be identifiable. fix method geodetic
                     boolean northernHemi = getNodeAsBoolean( usedProjection, new XPath( PRE + "northernHemisphere",
                                                                                         nsContext ), true );
-                    result = new TransverseMercator( northernHemi, underlyingCRS, falseNorthing, falseEasting,
-                                                     naturalOrigin, units, scaleFactor );
+                    result = new TransverseMercator( northernHemi, falseNorthing, falseEasting, naturalOrigin, units,
+                                                     scaleFactor );
                 } else if ( "lambertAzimuthalEqualArea".equalsIgnoreCase( projectionName ) ) {
-                    result = new LambertAzimuthalEqualArea( underlyingCRS, falseNorthing, falseEasting, naturalOrigin,
-                                                            units, scaleFactor );
+                    result = new LambertAzimuthalEqualArea( falseNorthing, falseEasting, naturalOrigin, units,
+                                                            scaleFactor );
                 } else if ( "lambertConformalConic".equalsIgnoreCase( projectionName ) ) {
                     double firstP = getNodeAsDouble( usedProjection, new XPath( PRE + "firstParallelLatitude",
                                                                                 nsContext ), Double.NaN );
@@ -1074,8 +1074,8 @@ public class Parser extends XMLFileResource implements CRSParser<OMElement> {
                     inDegrees = getNodeAsBoolean( usedProjection, new XPath( PRE + "secondParallelLatitude/@inDegrees",
                                                                              nsContext ), true );
                     secondP = ( !Double.isNaN( secondP ) && inDegrees ) ? Math.toRadians( secondP ) : secondP;
-                    result = new LambertConformalConic( firstP, secondP, underlyingCRS, falseNorthing, falseEasting,
-                                                        naturalOrigin, units, scaleFactor );
+                    result = new LambertConformalConic( firstP, secondP, falseNorthing, falseEasting, naturalOrigin,
+                                                        units, scaleFactor );
                 } else if ( "stereographicAzimuthal".equalsIgnoreCase( projectionName ) ) {
                     double trueScaleL = getNodeAsDouble( usedProjection, new XPath( PRE + "trueScaleLatitude",
                                                                                     nsContext ), Double.NaN );
@@ -1083,14 +1083,13 @@ public class Parser extends XMLFileResource implements CRSParser<OMElement> {
                                                                              nsContext ), true );
                     trueScaleL = ( !Double.isNaN( trueScaleL ) && inDegrees ) ? Math.toRadians( trueScaleL )
                                                                              : trueScaleL;
-                    result = new StereographicAzimuthal( trueScaleL, underlyingCRS, falseNorthing, falseEasting,
-                                                         naturalOrigin, units, scaleFactor );
+                    result = new StereographicAzimuthal( trueScaleL, falseNorthing, falseEasting, naturalOrigin, units,
+                                                         scaleFactor );
                 } else if ( "StereographicAlternative".equalsIgnoreCase( projectionName ) ) {
-                    result = new StereographicAlternative( underlyingCRS, falseNorthing, falseEasting, naturalOrigin,
-                                                           units, scaleFactor );
+                    result = new StereographicAlternative( falseNorthing, falseEasting, naturalOrigin, units,
+                                                           scaleFactor );
                 } else if ( "mercator".equalsIgnoreCase( projectionName ) ) {
-                    result = new Mercator( underlyingCRS, falseNorthing, falseEasting, naturalOrigin, units,
-                                           scaleFactor );
+                    result = new Mercator( falseNorthing, falseEasting, naturalOrigin, units, scaleFactor );
                 } else {
                     throw new CRSConfigurationException(
                                                          Messages.getMessage( "CRS_CONFIG_PROJECTEDCRS_INVALID_PROJECTION",
@@ -1219,7 +1218,7 @@ public class Parser extends XMLFileResource implements CRSParser<OMElement> {
         }
     }
 
-    public Projection getProjectionForId( String usedProjection, GeographicCRS underlyingCRS ) {
+    public Projection getProjectionForId( String usedProjection ) {
         LOG.debug( "Projection on id not supported for crs version < 0.3" );
         return null;
     }

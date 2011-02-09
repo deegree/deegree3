@@ -40,6 +40,9 @@ import static org.deegree.cs.utilities.ProjectionUtils.EPS11;
 import static org.deegree.cs.utilities.ProjectionUtils.HALFPI;
 import static org.deegree.cs.utilities.ProjectionUtils.QUARTERPI;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import javax.vecmath.Point2d;
 
 import org.deegree.cs.CRSIdentifiable;
@@ -47,7 +50,6 @@ import org.deegree.cs.EPSGCode;
 import org.deegree.cs.components.Unit;
 import org.deegree.cs.coordinatesystems.GeographicCRS;
 import org.deegree.cs.exceptions.ProjectionException;
-import org.deegree.cs.projections.Projection;
 
 /**
  * <code>StereographicAlternative</code> projection may be imagined to be a projection of the earth's surface onto a
@@ -102,36 +104,6 @@ import org.deegree.cs.projections.Projection;
  */
 public class StereographicAlternative extends AzimuthalProjection {
 
-    private double sinc0 = 0;
-
-    private double cosc0 = 0;
-
-    /**
-     * Two times the radius of the conformal sphere, which is denoted by Gerald I. Evenden as R_c
-     */
-    private final double R2;
-
-    /**
-     * THe latitude of on the conformal sphere which is denoted by Gerald I. Evenden as Chi_0
-     */
-    private final double latitudeOnCS;
-
-    /**
-     * The exponent of the calculation of conformal latitude Chi in Gerald I. Evenden (3.6)
-     */
-    private final double clExponent;
-
-    /**
-     * The value K in Gerald I. Evenden (3.11)
-     */
-    private final double K;
-
-    /**
-     * The central geographic latitude of the projection on the conformal sphere, denoted by Gerald I. Evenden (3.9)
-     * with C
-     */
-    private final double centralGeographicLatitude;
-
     // private double chi = 0;
 
     // private double radiusOfCS = 0;
@@ -146,29 +118,9 @@ public class StereographicAlternative extends AzimuthalProjection {
      * @param id
      *            an identifiable instance containing information about this projection
      */
-    public StereographicAlternative( GeographicCRS geographicCRS, double falseNorthing, double falseEasting,
-                                     Point2d naturalOrigin, Unit units, double scale, CRSIdentifiable id ) {
-        super( geographicCRS, falseNorthing, falseEasting, naturalOrigin, units, scale, true/* conformal */, false, id );
-
-        // if (!(P->en = pj_gauss_ini(P->e, P->phi0, &(P->phic0), &R))) E_ERROR_0;
-        double es = getSquaredEccentricity();
-        double sinPhi0 = getSinphi0();
-        double cosPhiSquare = getCosphi0() * getCosphi0();// Math.cos( getProjectionLatitude() );
-
-        // R_c
-        double radiusOfCS = Math.sqrt( 1. - es ) / ( 1. - es * sinPhi0 * sinPhi0 );
-        centralGeographicLatitude = Math.sqrt( 1. + es * cosPhiSquare * cosPhiSquare / ( 1. - es ) );
-        // xsi_0
-        latitudeOnCS = Math.asin( sinPhi0 / centralGeographicLatitude );
-        clExponent = 0.5 * centralGeographicLatitude * getEccentricity();
-        K = Math.tan( .5 * latitudeOnCS + QUARTERPI )
-            / ( Math.pow( Math.tan( .5 * getProjectionLatitude() + QUARTERPI ), centralGeographicLatitude ) * srat(
-                                                                                                                    getEccentricity()
-                                                                                                                                            * sinPhi0,
-                                                                                                                    clExponent ) );
-        sinc0 = Math.sin( latitudeOnCS );
-        cosc0 = Math.cos( latitudeOnCS );
-        R2 = 2 * radiusOfCS;
+    public StereographicAlternative( double falseNorthing, double falseEasting, Point2d naturalOrigin, Unit units,
+                                     double scale, CRSIdentifiable id ) {
+        super( falseNorthing, falseEasting, naturalOrigin, units, scale, true/* conformal */, false, id );
     }
 
     /**
@@ -181,10 +133,9 @@ public class StereographicAlternative extends AzimuthalProjection {
      * @param units
      * @param scale
      */
-    public StereographicAlternative( GeographicCRS geographicCRS, double falseNorthing, double falseEasting,
-                                     Point2d naturalOrigin, Unit units, double scale ) {
-        this( geographicCRS, falseNorthing, falseEasting, naturalOrigin, units, scale,
-              new CRSIdentifiable( new EPSGCode( 9809 ) ) );
+    public StereographicAlternative( double falseNorthing, double falseEasting, Point2d naturalOrigin, Unit units,
+                                     double scale ) {
+        this( falseNorthing, falseEasting, naturalOrigin, units, scale, new CRSIdentifiable( new EPSGCode( 9809 ) ) );
     }
 
     /*
@@ -193,14 +144,22 @@ public class StereographicAlternative extends AzimuthalProjection {
      * @see org.deegree.cs.projections.Projection#doInverseProjection(double, double)
      */
     @Override
-    public Point2d doInverseProjection( double x, double y )
+    public synchronized Point2d doInverseProjection( GeographicCRS geographicCRS, double x, double y )
                             throws ProjectionException {
+        Map<PARAMS, Double> params = calculateParameters( geographicCRS );
+        double sinc0 = params.get( PARAMS.sinc0 );
+        double cosc0 = params.get( PARAMS.cosc0 );
+        double R2 = params.get( PARAMS.R2 );
+        double latitudeOnCS = params.get( PARAMS.latitudeOnCS );
+        double K = params.get( PARAMS.K );
+        double centralGeographicLatitude = params.get( PARAMS.centralGeographicLatitude );
+
         Point2d result = new Point2d();
         x -= getFalseEasting();
         y -= getFalseNorthing();
 
-        x /= getScaleFactor();
-        y /= getScaleFactor();
+        x /= getScaleFactor( geographicCRS );
+        y /= getScaleFactor( geographicCRS );
         double rho = Math.hypot( x, y );
 
         if ( rho > EPS11 ) {
@@ -213,7 +172,7 @@ public class StereographicAlternative extends AzimuthalProjection {
             result.y = latitudeOnCS;
             result.x = 0;
         }
-        result = pj_inv_gauss( result );
+        result = pj_inv_gauss( geographicCRS, result, centralGeographicLatitude, K );
         result.x += getProjectionLongitude();
         return result;
     }
@@ -224,16 +183,24 @@ public class StereographicAlternative extends AzimuthalProjection {
      * @see org.deegree.cs.projections.Projection#doProjection(double, double)
      */
     @Override
-    public Point2d doProjection( double lambda, double phi )
+    public synchronized Point2d doProjection( GeographicCRS geographicCRS, double lambda, double phi )
                             throws ProjectionException {
+        Map<PARAMS, Double> params = calculateParameters( geographicCRS );
+        double sinc0 = params.get( PARAMS.sinc0 );
+        double cosc0 = params.get( PARAMS.cosc0 );
+        double R2 = params.get( PARAMS.R2 );
+        double clExponent = params.get( PARAMS.clExponent );
+        double K = params.get( PARAMS.K );
+        double centralGeographicLatitude = params.get( PARAMS.centralGeographicLatitude );
+
         Point2d result = new Point2d();
         lambda -= getProjectionLongitude();
-        Point2d lp = pj_gauss( lambda, phi );
+        Point2d lp = pj_gauss( geographicCRS, lambda, phi, centralGeographicLatitude, K, clExponent );
         double sinc = Math.sin( lp.y );
         double cosc = Math.cos( lp.y );
         double cosl = Math.cos( lp.x );
 
-        double k = getScaleFactor() * ( R2 / ( 1. + sinc0 * sinc + cosc0 * cosc * cosl ) );
+        double k = getScaleFactor( geographicCRS ) * ( R2 / ( 1. + sinc0 * sinc + cosc0 * cosc * cosl ) );
         result.x = k * cosc * Math.sin( lp.x );
         result.y = k * ( cosc0 * sinc - sinc0 * cosc * cosl );
 
@@ -260,8 +227,11 @@ public class StereographicAlternative extends AzimuthalProjection {
      * To determine the inverse solution, geographic coordinates from Gaussian sphere coordinates, execute with the
      * initial value of φi−1 = χ and φi−1 iteratively replaced by φ until |φ − φi−1 | is less than an acceptable error
      * value. (taken from the proj-lib manual.
+     * 
+     * @param centralGeographicLatitude
      */
-    private Point2d pj_inv_gauss( Point2d slp )
+    private synchronized Point2d pj_inv_gauss( GeographicCRS geographicCRS, Point2d slp,
+                                               double centralGeographicLatitude, double K )
                             throws ProjectionException {
         Point2d elp = new Point2d();
 
@@ -270,8 +240,10 @@ public class StereographicAlternative extends AzimuthalProjection {
         int MAX_ITER = 20;
         int i = MAX_ITER;
         for ( ; i > 0; --i ) {
-            elp.y = 2. * Math.atan( num * srat( getEccentricity() * Math.sin( slp.y ), -.5 * getEccentricity() ) )
-                    - HALFPI;
+            elp.y = 2.
+                    * Math.atan( num
+                                 * srat( getEccentricity( geographicCRS ) * Math.sin( slp.y ),
+                                         -.5 * getEccentricity( geographicCRS ) ) ) - HALFPI;
             if ( Math.abs( ( elp.y - slp.y ) ) < EPS11 ) {
                 break;
             }
@@ -289,22 +261,72 @@ public class StereographicAlternative extends AzimuthalProjection {
      * is relative to the longitude of projection origin, R_c is radius of the conformal sphere. χ_0 is the latitude on
      * the conformal sphere at the central geographic latitude of the projection.
      */
-    private Point2d pj_gauss( double lambda, double phi ) {
+    private synchronized Point2d pj_gauss( GeographicCRS geographicCRS, double lambda, double phi,
+                                           double centralGeographicLatitude, double K, double clExponent ) {
         Point2d slp = new Point2d();
         slp.y = 2.
                 * Math.atan( K * Math.pow( Math.tan( .5 * phi + QUARTERPI ), centralGeographicLatitude )
-                             * srat( getEccentricity() * Math.sin( phi ), clExponent ) ) - HALFPI;
+                             * srat( getEccentricity( geographicCRS ) * Math.sin( phi ), clExponent ) ) - HALFPI;
         slp.x = centralGeographicLatitude * ( lambda );
         return slp;
     }
 
-    @Override
-    public Projection clone( GeographicCRS newCRS ) {
-        return new StereographicAlternative( newCRS, getFalseNorthing(), getFalseEasting(), getNaturalOrigin(),
-                                             getUnits(), getScale(), new CRSIdentifiable( getCodes(), getNames(),
-                                                                                          getVersions(),
-                                                                                          getDescriptions(),
-                                                                                          getAreasOfUse() ) );
+    private enum PARAMS {
+        sinc0, cosc0, R2, latitudeOnCS, clExponent, K, centralGeographicLatitude
     }
 
+    private synchronized Map<PARAMS, Double> calculateParameters( GeographicCRS geographicCRS ) {
+        Map<PARAMS, Double> params = new HashMap<StereographicAlternative.PARAMS, Double>();
+
+        double sinc0 = 0;
+        double cosc0 = 0;
+        /**
+         * Two times the radius of the conformal sphere, which is denoted by Gerald I. Evenden as R_c
+         */
+        double R2;
+        /**
+         * THe latitude of on the conformal sphere which is denoted by Gerald I. Evenden as Chi_0
+         */
+        double latitudeOnCS;
+        /**
+         * The exponent of the calculation of conformal latitude Chi in Gerald I. Evenden (3.6)
+         */
+        double clExponent;
+        /**
+         * The value K in Gerald I. Evenden (3.11)
+         */
+        double K;
+        /**
+         * The central geographic latitude of the projection on the conformal sphere, denoted by Gerald I. Evenden (3.9)
+         * with C
+         */
+        double centralGeographicLatitude;
+        // if (!(P->en = pj_gauss_ini(P->e, P->phi0, &(P->phic0), &R))) E_ERROR_0;
+        double es = getSquaredEccentricity( geographicCRS );
+        double sinPhi0 = getSinphi0();
+        double cosPhiSquare = getCosphi0() * getCosphi0();// Math.cos( getProjectionLatitude() );
+
+        // R_c
+        double radiusOfCS = Math.sqrt( 1. - es ) / ( 1. - es * sinPhi0 * sinPhi0 );
+        centralGeographicLatitude = Math.sqrt( 1. + es * cosPhiSquare * cosPhiSquare / ( 1. - es ) );
+        // xsi_0
+        latitudeOnCS = Math.asin( sinPhi0 / centralGeographicLatitude );
+        clExponent = 0.5 * centralGeographicLatitude * getEccentricity( geographicCRS );
+        K = Math.tan( .5 * latitudeOnCS + QUARTERPI )
+            / ( Math.pow( Math.tan( .5 * getProjectionLatitude() + QUARTERPI ), centralGeographicLatitude ) * srat( getEccentricity( geographicCRS )
+                                                                                                                                            * sinPhi0,
+                                                                                                                    clExponent ) );
+        sinc0 = Math.sin( latitudeOnCS );
+        cosc0 = Math.cos( latitudeOnCS );
+        R2 = 2 * radiusOfCS;
+
+        params.put( PARAMS.sinc0, sinc0 );
+        params.put( PARAMS.cosc0, cosc0 );
+        params.put( PARAMS.R2, R2 );
+        params.put( PARAMS.latitudeOnCS, latitudeOnCS );
+        params.put( PARAMS.clExponent, clExponent );
+        params.put( PARAMS.K, K );
+        params.put( PARAMS.centralGeographicLatitude, centralGeographicLatitude );
+        return params;
+    }
 }

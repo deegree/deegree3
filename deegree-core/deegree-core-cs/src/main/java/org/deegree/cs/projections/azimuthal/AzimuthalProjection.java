@@ -43,7 +43,6 @@ import javax.vecmath.Point2d;
 
 import org.deegree.cs.CRSIdentifiable;
 import org.deegree.cs.components.Unit;
-import org.deegree.cs.coordinatesystems.GeographicCRS;
 import org.deegree.cs.projections.Projection;
 
 /**
@@ -105,10 +104,10 @@ public abstract class AzimuthalProjection extends Projection {
      * @param id
      *            an identifiable instance containing information about this projection
      */
-    public AzimuthalProjection( GeographicCRS geographicCRS, double falseNorthing, double falseEasting,
+    public AzimuthalProjection(  double falseNorthing, double falseEasting,
                                 Point2d naturalOrigin, Unit units, double scale, boolean conformal, boolean equalArea,
                                 CRSIdentifiable id ) {
-        super( geographicCRS, falseNorthing, falseEasting, naturalOrigin, units, scale, conformal, equalArea, id );
+        super( falseNorthing, falseEasting, naturalOrigin, units, scale, conformal, equalArea, id );
         if ( Math.abs( Math.abs( getProjectionLatitude() ) - HALFPI ) < EPS10 ) {
             mode = getProjectionLatitude() < 0. ? SOUTH_POLE : NORTH_POLE;
         } else if ( Math.abs( getProjectionLatitude() ) > EPS10 ) {

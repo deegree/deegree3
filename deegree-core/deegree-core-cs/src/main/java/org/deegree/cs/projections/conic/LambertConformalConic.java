@@ -46,13 +46,15 @@ import static org.deegree.cs.utilities.ProjectionUtils.length;
 import static org.deegree.cs.utilities.ProjectionUtils.preCalcedThetaSeries;
 import static org.deegree.cs.utilities.ProjectionUtils.tanHalfCoLatitude;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import javax.vecmath.Point2d;
 
 import org.deegree.cs.CRSIdentifiable;
 import org.deegree.cs.EPSGCode;
 import org.deegree.cs.components.Unit;
 import org.deegree.cs.coordinatesystems.GeographicCRS;
-import org.deegree.cs.projections.Projection;
 
 /**
  * The <code>LambertConformalConic</code> projection has following properties <q>(Snyder p. 104)</q>
@@ -90,29 +92,6 @@ import org.deegree.cs.projections.Projection;
 public class LambertConformalConic extends ConicProjection {
 
     /**
-     * Will contain snyder's variable 'n' from formula (15-3) for the spherical projection or (15-8) for the ellipsoidal
-     * projection.
-     */
-    private double n;
-
-    /**
-     * Snyder (p.108 15-7). or 0 if the projectionlatitude is on one of the poles e.g.± pi*0.5.
-     */
-    private final double rho0;
-
-    /**
-     * Will contain snyder's variable 'F' from formula (15-2) for the spherical projection or (15-10) for the
-     * ellipsoidal projection.
-     */
-    private final double largeF;
-
-    /**
-     * used for the calculation of phi (in the inverse projection with an ellipsoid) by applying the pre calculated
-     * values to the series of Snyder (p.15 3-5), thus avoiding iteration.
-     */
-    private double[] preCalcedPhiSeries;
-
-    /**
      * 
      * @param firstParallelLatitude
      *            the latitude (in radians) of the first parallel. (Snyder phi_1).
@@ -127,71 +106,11 @@ public class LambertConformalConic extends ConicProjection {
      * @param id
      *            an identifiable instance containing information about this projection
      */
-    public LambertConformalConic( double firstParallelLatitude, double secondParallelLatitude,
-                                  GeographicCRS geographicCRS, double falseNorthing, double falseEasting,
-                                  Point2d naturalOrigin, Unit units, double scale, CRSIdentifiable id ) {
-        super( firstParallelLatitude, secondParallelLatitude, geographicCRS, falseNorthing, falseEasting,
-               naturalOrigin, units, scale, true/* conformal */, false /* not equalArea */, id );
-
-        double cosphi, sinphi;
-        boolean secant;
-
-        // If only one tangential parallel is used, the firstparallelLatitude will also have the same value as the
-        // projectionLatitude, in this case the constant 'n' from Snyder will have the value sin(phi).
-        n = sinphi = Math.sin( getFirstParallelLatitude() );
-        cosphi = Math.cos( getFirstParallelLatitude() );
-        secant = Math.abs( getFirstParallelLatitude() - getSecondParallelLatitude() ) >= EPS10;
-        if ( isSpherical() ) {
-            if ( secant ) {
-                // two parallels are used, calc snyder (p.107 15-3), else n will contain sin(firstParallelLatitude),
-                // according to Snyder (p.107 just before 15-4).
-                n = Math.log( cosphi / Math.cos( getSecondParallelLatitude() ) )
-                    / Math.log( Math.tan( QUARTERPI + ( .5 * getSecondParallelLatitude() ) )
-                                / Math.tan( QUARTERPI + ( .5 * getFirstParallelLatitude() ) ) );
-            }
-            // Snyder (p.107 15-2)
-            largeF = ( cosphi * Math.pow( Math.tan( QUARTERPI + ( .5 * getFirstParallelLatitude() ) ), n ) ) / n;
-
-            // Snyder (p.106 15-1a) pay attention to the '-n' power term...
-            rho0 = ( Math.abs( Math.abs( getProjectionLatitude() ) - HALFPI ) < EPS10 ) ? 0.
-                                                                                       : largeF
-                                                                                         * Math.pow(
-                                                                                                     Math.tan( QUARTERPI
-                                                                                                               + ( .5 * getProjectionLatitude() ) ),
-                                                                                                     -n );
-        } else {
-            preCalcedPhiSeries = preCalcedThetaSeries( getSquaredEccentricity() );
-            // Calc
-            double m1 = calcMFromSnyder( sinphi, cosphi, getSquaredEccentricity() );
-            double t1 = tanHalfCoLatitude( getFirstParallelLatitude(), sinphi, getEccentricity() );
-            if ( secant ) {
-                sinphi = Math.sin( getSecondParallelLatitude() );
-                cosphi = Math.cos( getSecondParallelLatitude() );
-                // Basic math, the log ( x/ y ) = log(x) - log(y) if the base is the same.
-                n = Math.log( m1 / calcMFromSnyder( sinphi, cosphi, getSquaredEccentricity() ) );
-                n /= Math.log( t1 / tanHalfCoLatitude( getSecondParallelLatitude(), sinphi, getEccentricity() ) );
-            }
-            if ( Math.abs( n ) > EPS11 ) {
-                // Snyder (p.108 15-10), n will contain sin(getFirstLatitudePhi()) if only a tangential cone is used.
-                largeF = ( m1 * Math.pow( t1, -n ) ) / n;
-
-                // Snyder (p.108 15-7). or 0 if the projectionlatitude is on one of the poles e.g.± pi*0.5.
-                rho0 = ( Math.abs( Math.abs( getProjectionLatitude() ) - HALFPI ) < EPS10 ) ? 0.
-                                                                                           : largeF
-                                                                                             * Math.pow(
-                                                                                                         tanHalfCoLatitude(
-                                                                                                                            getProjectionLatitude(),
-                                                                                                                            getSinphi0(),
-                                                                                                                            getEccentricity() ),
-                                                                                                         n );
-            } else {
-                throw new IllegalArgumentException(
-                                                    "'n' may not  be '0', did you configure the lambert conformal conic with id: "
-                                                                            + id.getCode().getOriginal()
-                                                                            + " correctly?" );
-            }
-
-        }
+    public LambertConformalConic( double firstParallelLatitude, double secondParallelLatitude, double falseNorthing,
+                                  double falseEasting, Point2d naturalOrigin, Unit units, double scale,
+                                  CRSIdentifiable id ) {
+        super( firstParallelLatitude, secondParallelLatitude, falseNorthing, falseEasting, naturalOrigin, units, scale,
+               true/* conformal */, false /* not equalArea */, id );
     }
 
     /**
@@ -207,11 +126,10 @@ public class LambertConformalConic extends ConicProjection {
      * @param units
      * @param scale
      */
-    public LambertConformalConic( double firstParallelLatitude, double secondParallelLatitude,
-                                  GeographicCRS geographicCRS, double falseNorthing, double falseEasting,
-                                  Point2d naturalOrigin, Unit units, double scale ) {
-        this( firstParallelLatitude, secondParallelLatitude, geographicCRS, falseNorthing, falseEasting, naturalOrigin,
-              units, scale, new CRSIdentifiable( new EPSGCode( 9802 ) ) );
+    public LambertConformalConic( double firstParallelLatitude, double secondParallelLatitude, double falseNorthing,
+                                  double falseEasting, Point2d naturalOrigin, Unit units, double scale ) {
+        this( firstParallelLatitude, secondParallelLatitude, falseNorthing, falseEasting, naturalOrigin, units, scale,
+              new CRSIdentifiable( new EPSGCode( 9802 ) ) );
     }
 
     /**
@@ -226,9 +144,9 @@ public class LambertConformalConic extends ConicProjection {
      * @param id
      *            an identifiable instance containing information about this projection
      */
-    public LambertConformalConic( GeographicCRS geographicCRS, double falseNorthing, double falseEasting,
-                                  Point2d naturalOrigin, Unit units, double scale, CRSIdentifiable id ) {
-        this( Double.NaN, Double.NaN, geographicCRS, falseNorthing, falseEasting, naturalOrigin, units, scale, id );
+    public LambertConformalConic( double falseNorthing, double falseEasting, Point2d naturalOrigin, Unit units,
+                                  double scale, CRSIdentifiable id ) {
+        this( Double.NaN, Double.NaN, falseNorthing, falseEasting, naturalOrigin, units, scale, id );
     }
 
     /**
@@ -241,9 +159,9 @@ public class LambertConformalConic extends ConicProjection {
      * @param units
      * @param scale
      */
-    public LambertConformalConic( GeographicCRS geographicCRS, double falseNorthing, double falseEasting,
-                                  Point2d naturalOrigin, Unit units, double scale ) {
-        this( Double.NaN, Double.NaN, geographicCRS, falseNorthing, falseEasting, naturalOrigin, units, scale );
+    public LambertConformalConic( double falseNorthing, double falseEasting, Point2d naturalOrigin, Unit units,
+                                  double scale ) {
+        this( Double.NaN, Double.NaN, falseNorthing, falseEasting, naturalOrigin, units, scale );
     }
 
     /**
@@ -262,11 +180,9 @@ public class LambertConformalConic extends ConicProjection {
      * @param id
      *            an identifiable instance containing information about this projection
      */
-    public LambertConformalConic( double firstParallelLatitude, double secondParallelLatitude,
-                                  GeographicCRS geographicCRS, double falseNorthing, double falseEasting,
-                                  Point2d naturalOrigin, Unit units, CRSIdentifiable id ) {
-        this( firstParallelLatitude, secondParallelLatitude, geographicCRS, falseNorthing, falseEasting, naturalOrigin,
-              units, 1., id );
+    public LambertConformalConic( double firstParallelLatitude, double secondParallelLatitude, double falseNorthing,
+                                  double falseEasting, Point2d naturalOrigin, Unit units, CRSIdentifiable id ) {
+        this( firstParallelLatitude, secondParallelLatitude, falseNorthing, falseEasting, naturalOrigin, units, 1., id );
     }
 
     /**
@@ -283,11 +199,9 @@ public class LambertConformalConic extends ConicProjection {
      * @param naturalOrigin
      * @param units
      */
-    public LambertConformalConic( double firstParallelLatitude, double secondParallelLatitude,
-                                  GeographicCRS geographicCRS, double falseNorthing, double falseEasting,
-                                  Point2d naturalOrigin, Unit units ) {
-        this( firstParallelLatitude, secondParallelLatitude, geographicCRS, falseNorthing, falseEasting, naturalOrigin,
-              units, 1. );
+    public LambertConformalConic( double firstParallelLatitude, double secondParallelLatitude, double falseNorthing,
+                                  double falseEasting, Point2d naturalOrigin, Unit units ) {
+        this( firstParallelLatitude, secondParallelLatitude, falseNorthing, falseEasting, naturalOrigin, units, 1. );
     }
 
     /**
@@ -302,9 +216,9 @@ public class LambertConformalConic extends ConicProjection {
      * @param id
      *            an identifiable instance containing information about this projection
      */
-    public LambertConformalConic( GeographicCRS geographicCRS, double falseNorthing, double falseEasting,
-                                  Point2d naturalOrigin, Unit units, CRSIdentifiable id ) {
-        this( Double.NaN, Double.NaN, geographicCRS, falseNorthing, falseEasting, naturalOrigin, units, 1, id );
+    public LambertConformalConic( double falseNorthing, double falseEasting, Point2d naturalOrigin, Unit units,
+                                  CRSIdentifiable id ) {
+        this( Double.NaN, Double.NaN, falseNorthing, falseEasting, naturalOrigin, units, 1, id );
     }
 
     /**
@@ -317,9 +231,8 @@ public class LambertConformalConic extends ConicProjection {
      * @param naturalOrigin
      * @param units
      */
-    public LambertConformalConic( GeographicCRS geographicCRS, double falseNorthing, double falseEasting,
-                                  Point2d naturalOrigin, Unit units ) {
-        this( Double.NaN, Double.NaN, geographicCRS, falseNorthing, falseEasting, naturalOrigin, units, 1 );
+    public LambertConformalConic( double falseNorthing, double falseEasting, Point2d naturalOrigin, Unit units ) {
+        this( Double.NaN, Double.NaN, falseNorthing, falseEasting, naturalOrigin, units, 1 );
     }
 
     /**
@@ -327,13 +240,24 @@ public class LambertConformalConic extends ConicProjection {
      * @see org.deegree.cs.projections.Projection#doInverseProjection(double, double)
      */
     @Override
-    public Point2d doInverseProjection( double x, double y ) {
+    public synchronized Point2d doInverseProjection( GeographicCRS geographicCRS, double x, double y ) {
+        Map<PARAMS, Double> params = calulateParameters( geographicCRS );
+        double n = params.get( PARAMS.n );
+        double rho0 = params.get( PARAMS.rho0 );
+        double largeF = params.get( PARAMS.largeF );
+
+        /**
+         * used for the calculation of phi (in the inverse projection with an ellipsoid) by applying the pre calculated
+         * values to the series of Snyder (p.15 3-5), thus avoiding iteration.
+         */
+        double[] preCalcedPhiSeries = preCalcedThetaSeries( getSquaredEccentricity( geographicCRS ) );
+
         Point2d out = new Point2d( 0, 0 );
         x -= getFalseEasting();
         y -= getFalseNorthing();
         // why divide by the scale????
-        x /= getScaleFactor();
-        y = rho0 - ( y / getScaleFactor() );
+        x /= getScaleFactor( geographicCRS );
+        y = rho0 - ( y / getScaleFactor( geographicCRS ) );
         double rho = length( x, y );
         if ( rho > EPS11 ) {
             if ( n < 0.0 ) {
@@ -342,7 +266,7 @@ public class LambertConformalConic extends ConicProjection {
                 x = -x;
                 y = -y;
             }
-            if ( isSpherical() ) {
+            if ( isSpherical( geographicCRS ) ) {
                 // Snyder (p.107 15-5).
                 out.y = ( 2.0 * Math.atan( Math.pow( largeF / rho, 1.0 / n ) ) ) - HALFPI;
             } else {
@@ -367,21 +291,27 @@ public class LambertConformalConic extends ConicProjection {
      * @see org.deegree.cs.projections.Projection#doProjection(double, double)
      */
     @Override
-    public Point2d doProjection( double lambda, double phi ) {
+    public synchronized Point2d doProjection( GeographicCRS geographicCRS, double lambda, double phi ) {
+        Map<PARAMS, Double> params = calulateParameters( geographicCRS );
+        double n = params.get( PARAMS.n );
+        double rho0 = params.get( PARAMS.rho0 );
+        double largeF = params.get( PARAMS.largeF );
+
         lambda -= getProjectionLongitude();
         double rho = 0;
         if ( Math.abs( Math.abs( phi ) - HALFPI ) > EPS10 ) {
             // For spherical see Snyder (p.106 15-1) for ellipitical Snyder (p.108 15-7), pay attention to the '-n'
             rho = largeF
-                  * ( isSpherical() ? Math.pow( Math.tan( QUARTERPI + ( .5 * phi ) ), -n )
-                                   : Math.pow( tanHalfCoLatitude( phi, Math.sin( phi ), getEccentricity() ), n ) );
+                  * ( isSpherical( geographicCRS ) ? Math.pow( Math.tan( QUARTERPI + ( .5 * phi ) ), -n )
+                                                  : Math.pow( tanHalfCoLatitude( phi, Math.sin( phi ),
+                                                                                 getEccentricity( geographicCRS ) ), n ) );
         }
         // calc theta Snyder (p.106/108 14-4) multiply lambda with the 'n' constant.
         double theta = lambda * n;
 
         Point2d out = new Point2d( 0, 0 );
-        out.x = getScaleFactor() * ( rho * Math.sin( theta ) ) + getFalseEasting();
-        out.y = getScaleFactor() * ( rho0 - ( rho * Math.cos( theta ) ) ) + getFalseNorthing();
+        out.x = getScaleFactor( geographicCRS ) * ( rho * Math.sin( theta ) ) + getFalseEasting();
+        out.y = getScaleFactor( geographicCRS ) * ( rho0 - ( rho * Math.cos( theta ) ) ) + getFalseNorthing();
         return out;
     }
 
@@ -390,25 +320,86 @@ public class LambertConformalConic extends ConicProjection {
         return "lambertConformalConic";
     }
 
-    //
-    // @Override
-    // public boolean equals( Object other ) {
-    // if ( other != null && other instanceof LambertConformalConic ) {
-    // final LambertConformalConic that = (LambertConformalConic) other;
-    // return super.equals( that ) /*
-    // * && ( Math.abs( this.n - that.n ) < EPS11 ) && ( Math.abs( this.largeF -
-    // * that.largeF ) < EPS11 ) && ( Math.abs( this.rho0 - that.rho0 ) < EPS11 )
-    // */;
-    // }
-    // return false;
-    // }
+    private enum PARAMS {
+        n, rho0, largeF
+    }
 
-    @Override
-    public Projection clone( GeographicCRS newCRS ) {
-        return new LambertConformalConic( getFirstParallelLatitude(), getSecondParallelLatitude(), newCRS,
-                                          getFalseNorthing(), getFalseEasting(), getNaturalOrigin(), getUnits(),
-                                          getScale(), new CRSIdentifiable( getCodes(), getNames(), getVersions(),
-                                                                           getDescriptions(), getAreasOfUse() ) );
+    private synchronized Map<PARAMS, Double> calulateParameters( GeographicCRS geographicCRS ) {
+        Map<PARAMS, Double> params = new HashMap<LambertConformalConic.PARAMS, Double>();
+        /**
+         * Will contain snyder's variable 'n' from formula (15-3) for the spherical projection or (15-8) for the
+         * ellipsoidal projection.
+         */
+        double n;
+        /**
+         * Snyder (p.108 15-7). or 0 if the projectionlatitude is on one of the poles e.g.± pi*0.5.
+         */
+        double rho0;
+        /**
+         * Will contain snyder's variable 'F' from formula (15-2) for the spherical projection or (15-10) for the
+         * ellipsoidal projection.
+         */
+        double largeF;
+
+        double cosphi, sinphi;
+        boolean secant;
+        // If only one tangential parallel is used, the firstparallelLatitude will also have the same value as the
+        // projectionLatitude, in this case the constant 'n' from Snyder will have the value sin(phi).
+        n = sinphi = Math.sin( getFirstParallelLatitude() );
+        cosphi = Math.cos( getFirstParallelLatitude() );
+        secant = Math.abs( getFirstParallelLatitude() - getSecondParallelLatitude() ) >= EPS10;
+        if ( isSpherical( geographicCRS ) ) {
+            if ( secant ) {
+                // two parallels are used, calc snyder (p.107 15-3), else n will contain sin(firstParallelLatitude),
+                // according to Snyder (p.107 just before 15-4).
+                n = Math.log( cosphi / Math.cos( getSecondParallelLatitude() ) )
+                    / Math.log( Math.tan( QUARTERPI + ( .5 * getSecondParallelLatitude() ) )
+                                / Math.tan( QUARTERPI + ( .5 * getFirstParallelLatitude() ) ) );
+            }
+            // Snyder (p.107 15-2)
+            largeF = ( cosphi * Math.pow( Math.tan( QUARTERPI + ( .5 * getFirstParallelLatitude() ) ), n ) ) / n;
+
+            // Snyder (p.106 15-1a) pay attention to the '-n' power term...
+            rho0 = ( Math.abs( Math.abs( getProjectionLatitude() ) - HALFPI ) < EPS10 ) ? 0.
+                                                                                       : largeF
+                                                                                         * Math.pow( Math.tan( QUARTERPI
+                                                                                                               + ( .5 * getProjectionLatitude() ) ),
+                                                                                                     -n );
+        } else {
+
+            // Calc
+            double m1 = calcMFromSnyder( sinphi, cosphi, getSquaredEccentricity( geographicCRS ) );
+            double t1 = tanHalfCoLatitude( getFirstParallelLatitude(), sinphi, getEccentricity( geographicCRS ) );
+            if ( secant ) {
+                sinphi = Math.sin( getSecondParallelLatitude() );
+                cosphi = Math.cos( getSecondParallelLatitude() );
+                // Basic math, the log ( x/ y ) = log(x) - log(y) if the base is the same.
+                n = Math.log( m1 / calcMFromSnyder( sinphi, cosphi, getSquaredEccentricity( geographicCRS ) ) );
+                n /= Math.log( t1
+                               / tanHalfCoLatitude( getSecondParallelLatitude(), sinphi,
+                                                    getEccentricity( geographicCRS ) ) );
+            }
+            if ( Math.abs( n ) > EPS11 ) {
+                // Snyder (p.108 15-10), n will contain sin(getFirstLatitudePhi()) if only a tangential cone is used.
+                largeF = ( m1 * Math.pow( t1, -n ) ) / n;
+
+                // Snyder (p.108 15-7). or 0 if the projectionlatitude is on one of the poles e.g.± pi*0.5.
+                rho0 = ( Math.abs( Math.abs( getProjectionLatitude() ) - HALFPI ) < EPS10 ) ? 0.
+                                                                                           : largeF
+                                                                                             * Math.pow( tanHalfCoLatitude( getProjectionLatitude(),
+                                                                                                                            getSinphi0(),
+                                                                                                                            getEccentricity( geographicCRS ) ),
+                                                                                                         n );
+            } else {
+                throw new IllegalArgumentException(
+                                                    "'n' may not  be '0', did you configure the lambert conformal conic with id: "
+                                                                            + getCode().getOriginal() + " correctly?" );
+            }
+        }
+        params.put( PARAMS.n, n );
+        params.put( PARAMS.rho0, rho0 );
+        params.put( PARAMS.largeF, largeF );
+        return params;
     }
 
 }

@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,7 +32,7 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 
 package org.deegree.cs.projections.azimuthal;
 
@@ -45,24 +45,19 @@ import org.junit.Test;
 
 /**
  * <code>StereographicAlternativeTest</code> test the lambert azimuthal equal area projection.
- *
+ * 
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- *
+ * 
  * @author last edited by: $Author$
- *
+ * 
  * @version $Revision$, $Date$
- *
+ * 
  */
 public class LambertAzimuthalTest extends ProjectionBase {
 
     private static final LambertAzimuthalEqualArea projection_3035 = new LambertAzimuthalEqualArea(
-                                                                                                    geographic_4258,
-                                                                                                    3210000.0,
-                                                                                                    4321000.0,
-                                                                                                    new Point2d(
-                                                                                                                 Math.toRadians( 10 ),
-                                                                                                                 Math.toRadians( 52 ) ),
-                                                                                                    Unit.METRE );
+
+    3210000.0, 4321000.0, new Point2d( Math.toRadians( 10 ), Math.toRadians( 52 ) ), Unit.METRE );
 
     /**
      * reference point created with proj4 command : <code>
@@ -70,7 +65,7 @@ public class LambertAzimuthalTest extends ProjectionBase {
      * 6.610765 53.235916
      * 4094775.23791324        3352810.22470640
      * </code>
-     *
+     * 
      * @throws ProjectionException
      */
     @Test
@@ -80,7 +75,7 @@ public class LambertAzimuthalTest extends ProjectionBase {
         Point2d sourcePoint = new Point2d( Math.toRadians( 6.610765 ), Math.toRadians( 53.235916 ) );
         Point2d targetPoint = new Point2d( 4094775.23791324, 3352810.22470640 );
 
-        doForwardAndInverse( projection_3035, sourcePoint, targetPoint );
+        doForwardAndInverse( projection_3035, geographic_4258, sourcePoint, targetPoint );
     }
 
     /**

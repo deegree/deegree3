@@ -193,7 +193,8 @@ public class TransformationSubstitutionTest implements CRSDefines {
         Assert.assertEquals( projected_31467, created.getSourceCRS() );
         Assert.assertEquals( projected_28992, created.getTargetCRS() );
 
-        ProjectedCRS np = new ProjectedCRS( projected_31467.getProjection(), projected_31467.getAxis(), projected_31467 );
+        ProjectedCRS np = new ProjectedCRS( projected_31467.getProjection(), projected_31467.getGeographicCRS(),
+                                            projected_31467.getAxis(), projected_31467 );
         String name = "The substitute of the old projection.";
         np.setDefaultName( name, true );
         Transformation sub = new ProjectionTransform( np );
@@ -228,7 +229,8 @@ public class TransformationSubstitutionTest implements CRSDefines {
         Assert.assertEquals( projected_31467, created.getSourceCRS() );
         Assert.assertEquals( projected_28992, created.getTargetCRS() );
 
-        ProjectedCRS np = new ProjectedCRS( projected_28992.getProjection(), projected_28992.getAxis(), projected_28992 );
+        ProjectedCRS np = new ProjectedCRS( projected_28992.getProjection(), projected_28992.getGeographicCRS(),
+                                            projected_28992.getAxis(), projected_28992 );
         String name = "The substitute of the old projection.";
         np.setDefaultName( name, true );
         Transformation sub = new ProjectionTransform( np );

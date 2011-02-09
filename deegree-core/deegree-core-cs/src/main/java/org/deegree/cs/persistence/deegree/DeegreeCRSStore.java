@@ -49,7 +49,6 @@ import org.deegree.cs.components.Ellipsoid;
 import org.deegree.cs.components.GeodeticDatum;
 import org.deegree.cs.components.PrimeMeridian;
 import org.deegree.cs.coordinatesystems.CoordinateSystem;
-import org.deegree.cs.coordinatesystems.GeographicCRS;
 import org.deegree.cs.exceptions.CRSConfigurationException;
 import org.deegree.cs.persistence.AbstractCRSStore;
 import org.deegree.cs.persistence.deegree.d3.Parser;
@@ -233,12 +232,11 @@ public class DeegreeCRSStore<T> extends AbstractCRSStore<T> {
 
     /**
      * @param usedProjection
-     * @param underlyingCRS
      * @return the Projection parsed from the configuration or
      *         <code>null<code> if no projection with given id was found.
      */
-    public Projection getProjection( String usedProjection, GeographicCRS underlyingCRS ) {
-        return getResolver().getProjectionForId( usedProjection, underlyingCRS );
+    public Projection getProjection( String usedProjection ) {
+        return getResolver().getProjectionForId( usedProjection );
     }
 
     /**

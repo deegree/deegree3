@@ -679,9 +679,8 @@ public class GMLCRSStore extends AbstractCRSStore<OMElement> {
         OMElement conversionElementProperty = adapter.getRequiredElement( rootElement, new XPath( PRE + "conversion",
                                                                                                   nsContext ) );
         Projection projection = parseProjection( getRequiredXlinkedElement( conversionElementProperty, PRE
-                                                                                                       + "Conversion" ),
-                                                 underlyingCRS );
-        CoordinateSystem result = new ProjectedCRS( projection, axis, id );
+                                                                                                       + "Conversion" ) );
+        CoordinateSystem result = new ProjectedCRS( projection, underlyingCRS, axis, id );
         if ( parsedBaseCRS.getType() == COMPOUND ) {
             result = new CompoundCRS( ( (CompoundCRS) parsedBaseCRS ).getHeightAxis(), result,
                                       ( (CompoundCRS) parsedBaseCRS ).getDefaultHeight(), id );
@@ -1121,7 +1120,7 @@ public class GMLCRSStore extends AbstractCRSStore<OMElement> {
      *             if the dom tree is not consistent or a required element is missing.
      * @throws IOException
      */
-    protected Projection parseProjection( OMElement rootElement, GeographicCRS underlyingCRS )
+    protected Projection parseProjection( OMElement rootElement )
                             throws XMLParsingException, IOException {
         if ( rootElement == null || !"Conversion".equals( rootElement.getLocalName() ) ) {
             LOG.debug( "The given conversion root element is null, returning nothing" );
@@ -1202,24 +1201,22 @@ public class GMLCRSStore extends AbstractCRSStore<OMElement> {
             switch ( projection ) {
             case TRANSVERSE_MERCATOR:
                 boolean northernHemisphere = falseNorthing < 10000000;
-                result = new TransverseMercator( northernHemisphere, underlyingCRS, falseNorthing, falseEasting,
-                                                 naturalOrigin, units, scale, id );
+                result = new TransverseMercator( northernHemisphere, falseNorthing, falseEasting, naturalOrigin, units,
+                                                 scale, id );
                 break;
             case LAMBERT_AZIMUTHAL_EQUAL_AREA:
-                result = new LambertAzimuthalEqualArea( underlyingCRS, falseNorthing, falseEasting, naturalOrigin,
-                                                        units, scale, id );
+                result = new LambertAzimuthalEqualArea( falseNorthing, falseEasting, naturalOrigin, units, scale, id );
                 break;
             case LAMBERT_CONFORMAL:
-                result = new LambertConformalConic( firstParallelLatitude, secondParallelLatitude, underlyingCRS,
-                                                    falseNorthing, falseEasting, naturalOrigin, units, scale, id );
+                result = new LambertConformalConic( firstParallelLatitude, secondParallelLatitude, falseNorthing,
+                                                    falseEasting, naturalOrigin, units, scale, id );
                 break;
             case STEREOGRAPHIC_AZIMUTHAL:
-                result = new StereographicAzimuthal( trueScaleLatitude, underlyingCRS, falseNorthing, falseEasting,
-                                                     naturalOrigin, units, scale, id );
+                result = new StereographicAzimuthal( trueScaleLatitude, falseNorthing, falseEasting, naturalOrigin,
+                                                     units, scale, id );
                 break;
             case STEREOGRAPHIC_AZIMUTHAL_ALTERNATIVE:
-                result = new StereographicAlternative( underlyingCRS, falseNorthing, falseEasting, naturalOrigin,
-                                                       units, scale, id );
+                result = new StereographicAlternative( falseNorthing, falseEasting, naturalOrigin, units, scale, id );
                 break;
             case NOT_SUPPORTED:
             default:
@@ -1471,7 +1468,7 @@ public class GMLCRSStore extends AbstractCRSStore<OMElement> {
                         if ( "Transformation".equals( localName ) ) {
                             result = parseGMLTransformation( idRes, null, null );
                         } else if ( "Conversion".equalsIgnoreCase( localName ) ) {
-                            result = parseProjection( idRes, null );
+                            result = parseProjection( idRes );
                         } else {
                             // try coordinatesystem
                             result = parseCoordinateSystem( idRes );

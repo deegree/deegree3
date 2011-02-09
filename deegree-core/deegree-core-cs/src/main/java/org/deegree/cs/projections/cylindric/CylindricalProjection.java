@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,7 +32,7 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 
 package org.deegree.cs.projections.cylindric;
 
@@ -40,7 +40,6 @@ import javax.vecmath.Point2d;
 
 import org.deegree.cs.CRSIdentifiable;
 import org.deegree.cs.components.Unit;
-import org.deegree.cs.coordinatesystems.GeographicCRS;
 import org.deegree.cs.projections.Projection;
 
 /**
@@ -52,13 +51,13 @@ import org.deegree.cs.projections.Projection;
  * Cylindrical projections are used primarily for complete world maps, or for maps along narrow strips of a great circle
  * arc, such as the Equator, a meridian or an oblique great circle.
  * </p>
- *
+ * 
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- *
+ * 
  * @author last edited by: $Author$
- *
+ * 
  * @version $Revision$, $Date$
- *
+ * 
  */
 
 public abstract class CylindricalProjection extends Projection {
@@ -75,10 +74,9 @@ public abstract class CylindricalProjection extends Projection {
      * @param id
      *            an identifiable instance containing information about this projection
      */
-    public CylindricalProjection( GeographicCRS geographicCRS, double falseNorthing, double falseEasting,
-                                  Point2d naturalOrigin, Unit units, double scale, boolean conformal,
-                                  boolean equalArea, CRSIdentifiable id ) {
-        super( geographicCRS, falseNorthing, falseEasting, naturalOrigin, units, scale, conformal, equalArea, id );
+    public CylindricalProjection( double falseNorthing, double falseEasting, Point2d naturalOrigin, Unit units,
+                                  double scale, boolean conformal, boolean equalArea, CRSIdentifiable id ) {
+        super( falseNorthing, falseEasting, naturalOrigin, units, scale, conformal, equalArea, id );
     }
 
 }

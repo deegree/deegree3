@@ -185,7 +185,7 @@ public interface CRSDefines {
      */
     /** {@link StereographicAlternative} projection with {@link GeographicCRS} {@link #geographic_4289}. */
     public final static Projection projection_28992 = new StereographicAlternative(
-                                                                                    geographic_4289,
+
                                                                                     463000.0,
                                                                                     155000.0,
                                                                                     new Point2d(
@@ -199,7 +199,7 @@ public interface CRSDefines {
 
     /** {@link StereographicAlternative} projection with {@link GeographicCRS} {@link #geographic_4289_lat_lon}. */
     public final static Projection projection_28992_lat_lon = new StereographicAlternative(
-                                                                                            geographic_4289_lat_lon,
+
                                                                                             463000.0,
                                                                                             155000.0,
                                                                                             new Point2d(
@@ -212,33 +212,18 @@ public interface CRSDefines {
                                                                                                                                19914 ) ) );
 
     /** {@link TransverseMercator} projection with {@link GeographicCRS} {@link #geographic_4258}. */
-    public final static Projection projection_25832 = new TransverseMercator(
-                                                                              true,
-                                                                              geographic_4258,
-                                                                              0,
-                                                                              500000.0,
-                                                                              new Point2d( Math.toRadians( 9 ), 0 ),
-                                                                              Unit.METRE,
-                                                                              0.9996,
-                                                                              new CRSIdentifiable( new EPSGCode( 16032 ) ) );
+    public final static Projection projection_25832 = new TransverseMercator( true,
+
+    0, 500000.0, new Point2d( Math.toRadians( 9 ), 0 ), Unit.METRE, 0.9996, new CRSIdentifiable( new EPSGCode( 16032 ) ) );
 
     /** {@link TransverseMercator} projection with {@link GeographicCRS} {@link #geographic_4258_lat_lon}. */
-    public final static Projection projection_25832_lat_lon = new TransverseMercator(
-                                                                                      true,
-                                                                                      geographic_4258_lat_lon,
-                                                                                      0,
-                                                                                      500000.0,
-                                                                                      new Point2d( Math.toRadians( 9 ),
-                                                                                                   0 ),
-                                                                                      Unit.METRE,
-                                                                                      0.9996,
-                                                                                      new CRSIdentifiable(
-                                                                                                           new EPSGCode(
-                                                                                                                         16032 ) ) );
+    public final static Projection projection_25832_lat_lon = new TransverseMercator( true,
+
+    0, 500000.0, new Point2d( Math.toRadians( 9 ), 0 ), Unit.METRE, 0.9996, new CRSIdentifiable( new EPSGCode( 16032 ) ) );
 
     /** {@link TransverseMercator} projection with {@link GeographicCRS} {@link #geographic_4314}. */
     public final static Projection projection_31467 = new TransverseMercator(
-                                                                              geographic_4314,
+
                                                                               0,
                                                                               3500000.0,
                                                                               new Point2d( Math.toRadians( 9 ),
@@ -248,7 +233,7 @@ public interface CRSDefines {
 
     /** {@link TransverseMercator} projection with {@link GeographicCRS} {@link #geographic_4314_lat_lon}. */
     public final static Projection projection_31467_lat_lon = new TransverseMercator(
-                                                                                      geographic_4314_lat_lon,
+
                                                                                       0,
                                                                                       3500000.0,
                                                                                       new Point2d( Math.toRadians( 9 ),
@@ -263,21 +248,25 @@ public interface CRSDefines {
      */
 
     /** {@link ProjectedCRS} based on {@link #projection_28992}, which is based on {@link #geographic_4289} */
-    public final static ProjectedCRS projected_28992 = new ProjectedCRS( projection_28992, axis_projection,
+    public final static ProjectedCRS projected_28992 = new ProjectedCRS( projection_28992, geographic_4289,
+                                                                         axis_projection,
                                                                          new EPSGCode[] { new EPSGCode( 28992 ) } );
 
     /** {@link ProjectedCRS} based on {@link #projection_28992}, which is based on {@link #geographic_4289} */
     public final static ProjectedCRS projected_28992_lat_lon = new ProjectedCRS(
                                                                                  projection_28992_lat_lon,
+                                                                                 geographic_4289_lat_lon,
                                                                                  axis_projection,
                                                                                  new EPSGCode[] { new EPSGCode( 28992 ) } );
 
     /** {@link ProjectedCRS} based on {@link #projection_28992}, which is based on {@link #geographic_4289} */
-    public final static ProjectedCRS projected_28992_yx = new ProjectedCRS( projection_28992, axis_y_x,
+    public final static ProjectedCRS projected_28992_yx = new ProjectedCRS( projection_28992, geographic_4289,
+                                                                            axis_y_x,
                                                                             new EPSGCode[] { new EPSGCode( 28992 ) } );
 
     /** {@link ProjectedCRS} based on {@link #projection_25832}, which is based on {@link #geographic_4258} */
-    public final static ProjectedCRS projected_25832 = new ProjectedCRS( projection_25832, axis_projection,
+    public final static ProjectedCRS projected_25832 = new ProjectedCRS( projection_25832, geographic_4258,
+                                                                         axis_projection,
                                                                          new EPSGCode[] { new EPSGCode( 25832 ) },
                                                                          null /* names */, null/* version */,
                                                                          null/* description */,
@@ -286,6 +275,7 @@ public interface CRSDefines {
     /** {@link ProjectedCRS} based on {@link #projection_25832}, which is based on {@link #geographic_4258} */
     public final static ProjectedCRS projected_25832_lat_lon = new ProjectedCRS(
                                                                                  projection_25832_lat_lon,
+                                                                                 geographic_4258_lat_lon,
                                                                                  axis_projection,
                                                                                  new EPSGCode[] { new EPSGCode( 25832 ) },
                                                                                  null /* names */,
@@ -294,14 +284,16 @@ public interface CRSDefines {
                                                                                  new String[] { "5.05,57.9,12.0,65.67" } );
 
     /** {@link ProjectedCRS} based on {@link #projection_25832}, which is based on {@link #geographic_4258} */
-    public final static ProjectedCRS projected_25832_yx = new ProjectedCRS( projection_25832, axis_y_x,
+    public final static ProjectedCRS projected_25832_yx = new ProjectedCRS( projection_25832, geographic_4258,
+                                                                            axis_y_x,
                                                                             new EPSGCode[] { new EPSGCode( 25832 ) },
                                                                             null /* names */, null/* version */,
                                                                             null/* description */,
                                                                             new String[] { "5.05,57.9,12.0,65.67" } );
 
     /** {@link ProjectedCRS} based on {@link #projection_31467}, which is based on {@link #geographic_4314} */
-    public final static ProjectedCRS projected_31467 = new ProjectedCRS( projection_31467, axis_projection,
+    public final static ProjectedCRS projected_31467 = new ProjectedCRS( projection_31467, geographic_4314,
+                                                                         axis_projection,
                                                                          new EPSGCode[] { new EPSGCode( 31467 ) },
                                                                          null /* names */, null/* version */,
                                                                          null/* description */,
@@ -313,6 +305,7 @@ public interface CRSDefines {
      */
     public final static ProjectedCRS projected_31467_lat_lon = new ProjectedCRS(
                                                                                  projection_31467_lat_lon,
+                                                                                 geographic_4314_lat_lon,
                                                                                  axis_projection,
                                                                                  new EPSGCode[] { new EPSGCode( 31467 ) },
                                                                                  null /* names */,
@@ -324,7 +317,8 @@ public interface CRSDefines {
      * {@link ProjectedCRS} based on {@link #projection_31467} with yx coordinates, which is based on
      * {@link #geographic_4314}
      */
-    public final static ProjectedCRS projected_31467_yx = new ProjectedCRS( projection_31467, axis_y_x,
+    public final static ProjectedCRS projected_31467_yx = new ProjectedCRS( projection_31467, geographic_4314,
+                                                                            axis_y_x,
                                                                             new EPSGCode[] { new EPSGCode( 31467 ) },
                                                                             null /* names */, null/* version */,
                                                                             null/* description */,

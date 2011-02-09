@@ -62,7 +62,7 @@ public class LambertConformalConicTest extends ProjectionBase {
     private static final LambertConformalConic projection_26985 = new LambertConformalConic(
                                                                                              Math.toRadians( 39.45 ),
                                                                                              Math.toRadians( 38.3 ),
-                                                                                             geographic_4258,
+
                                                                                              0,
                                                                                              400000.0,
                                                                                              new Point2d(
@@ -86,7 +86,7 @@ public class LambertConformalConicTest extends ProjectionBase {
         Point2d sourcePoint = new Point2d( Math.toRadians( 6.610765 ), Math.toRadians( 53.235916 ) );
         Point2d targetPoint = new Point2d( 5402441.35292079, 4213918.86230420 );
 
-        doForwardAndInverse( projection_26985, sourcePoint, targetPoint );
+        doForwardAndInverse( projection_26985, geographic_4258, sourcePoint, targetPoint );
     }
 
     /**
@@ -94,9 +94,9 @@ public class LambertConformalConicTest extends ProjectionBase {
      */
     @Test
     public void testConsistency() {
-        consistencyTest( projection_26985, 0, 400000, new Point2d( Math.toRadians( -77 ),
-                                                                   Math.toRadians( 37.66666666666665 ) ), Unit.METRE,
-                         1, true, false, "lambertConformalConic" );
+        consistencyTest( projection_26985, 0, 400000,
+                         new Point2d( Math.toRadians( -77 ), Math.toRadians( 37.66666666666665 ) ), Unit.METRE, 1,
+                         true, false, "lambertConformalConic" );
         assertEquals( Math.toRadians( 39.45 ), projection_26985.getFirstParallelLatitude(), DELTA );
         assertEquals( Math.toRadians( 38.3 ), projection_26985.getSecondParallelLatitude(), DELTA );
     }

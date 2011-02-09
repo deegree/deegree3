@@ -46,6 +46,9 @@ import static org.deegree.cs.utilities.ProjectionUtils.length;
 import static org.deegree.cs.utilities.ProjectionUtils.preCalcedThetaSeries;
 import static org.deegree.cs.utilities.ProjectionUtils.tanHalfCoLatitude;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import javax.vecmath.Point2d;
 
 import org.deegree.cs.CRSCodeType;
@@ -53,7 +56,6 @@ import org.deegree.cs.CRSIdentifiable;
 import org.deegree.cs.components.Unit;
 import org.deegree.cs.coordinatesystems.GeographicCRS;
 import org.deegree.cs.exceptions.ProjectionException;
-import org.deegree.cs.projections.Projection;
 
 /**
  * The <code>StereographicAzimuthal</code> class allows for Stereographic Projections of the Poles, equator as well as
@@ -96,34 +98,7 @@ public class StereographicAzimuthal extends AzimuthalProjection {
 
     private static final long serialVersionUID = 5399110969291553925L;
 
-    /**
-     * This variable will hold different values, for the ellipsoidal projection:
-     * <ul>
-     * <li>for Oblique projection it is the first Part (2*a*k_0*m_1, hence it's name) of A (p.160 21-27)</li>
-     * <li>for the north-south it may hold the rho of (21-33) or (21-34)
-     * <li>for the equatorial it holds 2*scale.</li>
-     * <li>For the
-     * </ul>
-     * For the spherical projection:
-     * <ul>
-     * <li>For oblique and equatorial: 2*scale, which is compliant with 2*k_0 from Snyder (p.157 21-4)</li>
-     * <li>For north and south: cos(truelat) / tan( pi/4 - phi/2) ????</li>
-     * </ul>
-     */
-    private double akm1;
-
-    private double trueScaleLatitude;
-
-    private double[] preCalcedPhiSeries;
-
-    // use for the OBLIQUE projection instead of the projectionLatitude
-    private double conformalLatitude = 0;
-
-    // sine of the conformal latitude
-    private double sinCL = 0;
-
-    // cosine of the conformal latitude
-    private double cosCL = 0;
+    double trueScaleLatitude;
 
     /**
      * @param trueScaleLatitude
@@ -137,73 +112,10 @@ public class StereographicAzimuthal extends AzimuthalProjection {
      * @param id
      *            an identifiable instance containing information about this projection
      */
-    public StereographicAzimuthal( double trueScaleLatitude, GeographicCRS geographicCRS, double falseNorthing,
-                                   double falseEasting, Point2d naturalOrigin, Unit units, double scale,
-                                   CRSIdentifiable id ) {
-        super( geographicCRS, falseNorthing, falseEasting, naturalOrigin, units, scale, true,
-               false/* not equal area */, id );
-
-        preCalcedPhiSeries = preCalcedThetaSeries( getSquaredEccentricity() );
-
+    public StereographicAzimuthal( double trueScaleLatitude, double falseNorthing, double falseEasting,
+                                   Point2d naturalOrigin, Unit units, double scale, CRSIdentifiable id ) {
+        super( falseNorthing, falseEasting, naturalOrigin, units, scale, true, false/* not equal area */, id );
         this.trueScaleLatitude = trueScaleLatitude;
-        if ( !isSpherical() ) {
-            // double X;
-            double tmp = 0;
-            switch ( getMode() ) {
-            case NORTH_POLE:
-            case SOUTH_POLE:
-                /**
-                 * The t from 21-33 and 21-34 is still to be calculated.
-                 */
-                // If true scale or known scale factor k_0 is to occur at the pole, the following applies:
-                if ( Double.isNaN( trueScaleLatitude )
-                     || Math.abs( Math.abs( this.trueScaleLatitude ) - HALFPI ) < EPS10 ) {
-                    // Snyder (p.161 21-33) akm1 = rho.
-                    akm1 = 2.
-                           * getScaleFactor()
-                           / Math.sqrt( Math.pow( 1 + getEccentricity(), 1 + getEccentricity() )
-                                        * Math.pow( 1 - getEccentricity(), 1 - getEccentricity() ) );
-
-                } else {
-                    // For true scale along the circle represented by trueScaleLatitude (phi_c in snyder)..
-                    // akm1 will hold m_c/t_c
-                    // Calculate the rho from Snyder (p.161 21-34) and place in akm1
-                    tmp = Math.sin( this.trueScaleLatitude );
-
-                    // First part of m of Snyder (p.160 14-15)
-                    akm1 = Math.cos( this.trueScaleLatitude )
-                           / tanHalfCoLatitude( this.trueScaleLatitude, tmp, getEccentricity() );
-                    tmp *= getEccentricity();
-                    // Second part of m of Snyder (p.160 14-15), t = (e*sin(phi_c))
-                    akm1 /= Math.sqrt( 1. - tmp * tmp );
-
-                }
-                break;
-            case EQUATOR:
-                akm1 = 2. * getScaleFactor();
-                break;
-            case OBLIQUE:
-                tmp = getSinphi0();// Math.sin( getProjectionLatitude() );
-                // Calculate the ConformalLatitude for this ellipsoid Snyder (p.160 3-1) the X
-                conformalLatitude = ( 2. * Math.atan( conformalLatitudeInnerPart( getProjectionLatitude(), tmp,
-                                                                                  getEccentricity() ) ) )
-                                    - HALFPI;
-
-                sinCL = Math.sin( conformalLatitude );
-                cosCL = Math.cos( conformalLatitude );
-
-                tmp *= getEccentricity();
-                // the first part (2a*k_0*m) of the largeA in Snyder (p.160 21-27) is stored in akm1 it still must be
-                // devided by the cos X ... etc. to get largeA
-                akm1 = 2. * getScaleFactor() * getCosphi0() / Math.sqrt( 1. - tmp * tmp );
-
-                // Setting the sinPhi0 to the conformal Latitude X.
-                // setProjectionLatitude( X );
-                break;
-            }
-        } else {
-            akm1 = 2. * getScaleFactor();
-        }
     }
 
     /**
@@ -218,9 +130,9 @@ public class StereographicAzimuthal extends AzimuthalProjection {
      * @param units
      * @param scale
      */
-    public StereographicAzimuthal( double trueScaleLatitude, GeographicCRS geographicCRS, double falseNorthing,
-                                   double falseEasting, Point2d naturalOrigin, Unit units, double scale ) {
-        this( trueScaleLatitude, geographicCRS, falseNorthing, falseEasting, naturalOrigin, units, scale,
+    public StereographicAzimuthal( double trueScaleLatitude, double falseNorthing, double falseEasting,
+                                   Point2d naturalOrigin, Unit units, double scale ) {
+        this( trueScaleLatitude, falseNorthing, falseEasting, naturalOrigin, units, scale,
               new CRSIdentifiable( CRSCodeType.valueOf( "Snyder-StereoGraphic" ) ) );
     }
 
@@ -236,9 +148,9 @@ public class StereographicAzimuthal extends AzimuthalProjection {
      * @param id
      *            an identifiable instance containing information about this projection
      */
-    public StereographicAzimuthal( GeographicCRS geographicCRS, double falseNorthing, double falseEasting,
-                                   Point2d naturalOrigin, Unit units, double scale, CRSIdentifiable id ) {
-        this( HALFPI, geographicCRS, falseNorthing, falseEasting, naturalOrigin, units, scale, id );
+    public StereographicAzimuthal( double falseNorthing, double falseEasting, Point2d naturalOrigin, Unit units,
+                                   double scale, CRSIdentifiable id ) {
+        this( HALFPI, falseNorthing, falseEasting, naturalOrigin, units, scale, id );
     }
 
     /**
@@ -252,9 +164,9 @@ public class StereographicAzimuthal extends AzimuthalProjection {
      * @param units
      * @param scale
      */
-    public StereographicAzimuthal( GeographicCRS geographicCRS, double falseNorthing, double falseEasting,
-                                   Point2d naturalOrigin, Unit units, double scale ) {
-        this( HALFPI, geographicCRS, falseNorthing, falseEasting, naturalOrigin, units, scale );
+    public StereographicAzimuthal( double falseNorthing, double falseEasting, Point2d naturalOrigin, Unit units,
+                                   double scale ) {
+        this( HALFPI, falseNorthing, falseEasting, naturalOrigin, units, scale );
     }
 
     /**
@@ -270,9 +182,9 @@ public class StereographicAzimuthal extends AzimuthalProjection {
      * @param id
      *            an identifiable instance containing information about this projection
      */
-    public StereographicAzimuthal( double trueScaleLatitude, GeographicCRS geographicCRS, double falseNorthing,
-                                   double falseEasting, Point2d naturalOrigin, Unit units, CRSIdentifiable id ) {
-        this( trueScaleLatitude, geographicCRS, falseNorthing, falseEasting, naturalOrigin, units, 1, id );
+    public StereographicAzimuthal( double trueScaleLatitude, double falseNorthing, double falseEasting,
+                                   Point2d naturalOrigin, Unit units, CRSIdentifiable id ) {
+        this( trueScaleLatitude, falseNorthing, falseEasting, naturalOrigin, units, 1, id );
     }
 
     /**
@@ -287,9 +199,9 @@ public class StereographicAzimuthal extends AzimuthalProjection {
      * @param naturalOrigin
      * @param units
      */
-    public StereographicAzimuthal( double trueScaleLatitude, GeographicCRS geographicCRS, double falseNorthing,
-                                   double falseEasting, Point2d naturalOrigin, Unit units ) {
-        this( trueScaleLatitude, geographicCRS, falseNorthing, falseEasting, naturalOrigin, units, 1 );
+    public StereographicAzimuthal( double trueScaleLatitude, double falseNorthing, double falseEasting,
+                                   Point2d naturalOrigin, Unit units ) {
+        this( trueScaleLatitude, falseNorthing, falseEasting, naturalOrigin, units, 1 );
     }
 
     /**
@@ -303,9 +215,9 @@ public class StereographicAzimuthal extends AzimuthalProjection {
      * @param id
      *            an identifiable instance containing information about this projection
      */
-    public StereographicAzimuthal( GeographicCRS geographicCRS, double falseNorthing, double falseEasting,
-                                   Point2d naturalOrigin, Unit units, CRSIdentifiable id ) {
-        this( HALFPI, geographicCRS, falseNorthing, falseEasting, naturalOrigin, units, 1, id );
+    public StereographicAzimuthal( double falseNorthing, double falseEasting, Point2d naturalOrigin, Unit units,
+                                   CRSIdentifiable id ) {
+        this( HALFPI, falseNorthing, falseEasting, naturalOrigin, units, 1, id );
     }
 
     /**
@@ -318,18 +230,23 @@ public class StereographicAzimuthal extends AzimuthalProjection {
      * @param naturalOrigin
      * @param units
      */
-    public StereographicAzimuthal( GeographicCRS geographicCRS, double falseNorthing, double falseEasting,
-                                   Point2d naturalOrigin, Unit units ) {
-        this( HALFPI, geographicCRS, falseNorthing, falseEasting, naturalOrigin, units, 1 );
+    public StereographicAzimuthal( double falseNorthing, double falseEasting, Point2d naturalOrigin, Unit units ) {
+        this( HALFPI, falseNorthing, falseEasting, naturalOrigin, units, 1 );
     }
 
     @Override
-    public Point2d doInverseProjection( double x, double y ) {
+    public synchronized Point2d doInverseProjection( GeographicCRS geographicCRS, double x, double y ) {
+        Map<PARAMS, Double> params = calculateParameters( geographicCRS );
+        double akm1 = params.get( PARAMS.akm1 );
+        double sinCL = params.get( PARAMS.sinCL );
+        double cosCL = params.get( PARAMS.cosCL );
+
+        double[] preCalcedPhiSeries = preCalcedThetaSeries( getSquaredEccentricity( geographicCRS ) );
         Point2d result = new Point2d( 0, 0 );
         x -= getFalseEasting();
         y -= getFalseNorthing();
         double rho = length( x, y );
-        if ( isSpherical() ) {
+        if ( isSpherical( geographicCRS ) ) {
             // akm1 = 2*scale.
             double c = 2. * Math.atan( rho / akm1 );
             double sinc = Math.sin( c );
@@ -402,7 +319,7 @@ public class StereographicAzimuthal extends AzimuthalProjection {
                  * latitude, the value of akm1 must therefore only be inverted to calculate Snyder (p.162 21-39 or
                  * 21-40).
                  */
-                double t = rho * 1. / this.akm1;
+                double t = rho * 1. / akm1;
                 X = HALFPI - 2 * Math.atan( t );
                 if ( getMode() == SOUTH_POLE ) {
                     X *= -1;
@@ -417,15 +334,20 @@ public class StereographicAzimuthal extends AzimuthalProjection {
     }
 
     @Override
-    public Point2d doProjection( double lambda, double phi )
+    public synchronized Point2d doProjection( GeographicCRS geographicCRS, double lambda, double phi )
                             throws ProjectionException {
+        Map<PARAMS, Double> params = calculateParameters( geographicCRS );
+        double akm1 = params.get( PARAMS.akm1 );
+        double sinCL = params.get( PARAMS.sinCL );
+        double cosCL = params.get( PARAMS.cosCL );
+
         Point2d result = new Point2d( 0, 0 );
         lambda -= getProjectionLongitude();
         double cosLamda = Math.cos( lambda );
         double sinLamda = Math.sin( lambda );
         double sinPhi = Math.sin( phi );
 
-        if ( isSpherical() ) {
+        if ( isSpherical( geographicCRS ) ) {
             double cosphi = Math.cos( phi );
 
             switch ( getMode() ) {
@@ -477,7 +399,8 @@ public class StereographicAzimuthal extends AzimuthalProjection {
 
             if ( getMode() == OBLIQUE || getMode() == EQUATOR ) {
                 // Calculate the conformal latitue Snyder (p.160 3-1).
-                double X = 2. * Math.atan( conformalLatitudeInnerPart( phi, sinPhi, getEccentricity() ) ) - HALFPI;
+                double X = 2. * Math.atan( conformalLatitudeInnerPart( phi, sinPhi, getEccentricity( geographicCRS ) ) )
+                           - HALFPI;
                 sinX = Math.sin( X );
                 cosX = Math.cos( X );
             }
@@ -503,7 +426,7 @@ public class StereographicAzimuthal extends AzimuthalProjection {
             case NORTH_POLE:
                 // akm1 holds the rho's from 21-33 or 21-34, but without the t (==halfColatitude of the conformal
                 // latitude).
-                result.x = akm1 * tanHalfCoLatitude( phi, sinPhi, getEccentricity() );
+                result.x = akm1 * tanHalfCoLatitude( phi, sinPhi, getEccentricity( geographicCRS ) );
                 result.y = -result.x * cosLamda;
                 break;
             }
@@ -527,11 +450,98 @@ public class StereographicAzimuthal extends AzimuthalProjection {
         return trueScaleLatitude;
     }
 
-    @Override
-    public Projection clone( GeographicCRS newCRS ) {
-        return new StereographicAzimuthal( getTrueScaleLatitude(), newCRS, getFalseNorthing(), getFalseEasting(),
-                                           getNaturalOrigin(), getUnits(), getScale(),
-                                           new CRSIdentifiable( getCodes(), getNames(), getVersions(),
-                                                                getDescriptions(), getAreasOfUse() ) );
+    private enum PARAMS {
+        akm1, conformalLatitude, sinCL, cosCL
     }
+
+    private synchronized Map<PARAMS, Double> calculateParameters( GeographicCRS geographicCRS ) {
+        Map<PARAMS, Double> params = new HashMap<StereographicAzimuthal.PARAMS, Double>();
+        /**
+         * This variable will hold different values, for the ellipsoidal projection:
+         * <ul>
+         * <li>for Oblique projection it is the first Part (2*a*k_0*m_1, hence it's name) of A (p.160 21-27)</li>
+         * <li>for the north-south it may hold the rho of (21-33) or (21-34)
+         * <li>for the equatorial it holds 2*scale.</li>
+         * <li>For the
+         * </ul>
+         * For the spherical projection:
+         * <ul>
+         * <li>For oblique and equatorial: 2*scale, which is compliant with 2*k_0 from Snyder (p.157 21-4)</li>
+         * <li>For north and south: cos(truelat) / tan( pi/4 - phi/2) ????</li>
+         * </ul>
+         */
+        double akm1 = Double.NaN;
+        // use for the OBLIQUE projection instead of the projectionLatitude
+        double conformalLatitude = 0;
+        // sine of the conformal latitude
+        double sinCL = 0;
+        // cosine of the conformal latitude
+        double cosCL = 0;
+
+        if ( !isSpherical( geographicCRS ) ) {
+            // double X;
+            double tmp = 0;
+            switch ( getMode() ) {
+            case NORTH_POLE:
+            case SOUTH_POLE:
+                /**
+                 * The t from 21-33 and 21-34 is still to be calculated.
+                 */
+                // If true scale or known scale factor k_0 is to occur at the pole, the following applies:
+                if ( Double.isNaN( trueScaleLatitude ) || Math.abs( Math.abs( trueScaleLatitude ) - HALFPI ) < EPS10 ) {
+                    // Snyder (p.161 21-33) akm1 = rho.
+                    akm1 = 2.
+                           * getScaleFactor( geographicCRS )
+                           / Math.sqrt( Math.pow( 1 + getEccentricity( geographicCRS ),
+                                                  1 + getEccentricity( geographicCRS ) )
+                                        * Math.pow( 1 - getEccentricity( geographicCRS ),
+                                                    1 - getEccentricity( geographicCRS ) ) );
+
+                } else {
+                    // For true scale along the circle represented by trueScaleLatitude (phi_c in snyder)..
+                    // akm1 will hold m_c/t_c
+                    // Calculate the rho from Snyder (p.161 21-34) and place in akm1
+                    tmp = Math.sin( trueScaleLatitude );
+
+                    // First part of m of Snyder (p.160 14-15)
+                    akm1 = Math.cos( trueScaleLatitude )
+                           / tanHalfCoLatitude( trueScaleLatitude, tmp, getEccentricity( geographicCRS ) );
+                    tmp *= getEccentricity( geographicCRS );
+                    // Second part of m of Snyder (p.160 14-15), t = (e*sin(phi_c))
+                    akm1 /= Math.sqrt( 1. - tmp * tmp );
+
+                }
+                break;
+            case EQUATOR:
+                akm1 = 2. * getScaleFactor( geographicCRS );
+                break;
+            case OBLIQUE:
+                tmp = getSinphi0();// Math.sin( getProjectionLatitude() );
+                // Calculate the ConformalLatitude for this ellipsoid Snyder (p.160 3-1) the X
+                conformalLatitude = ( 2. * Math.atan( conformalLatitudeInnerPart( getProjectionLatitude(), tmp,
+                                                                                  getEccentricity( geographicCRS ) ) ) )
+                                    - HALFPI;
+
+                sinCL = Math.sin( conformalLatitude );
+                cosCL = Math.cos( conformalLatitude );
+
+                tmp *= getEccentricity( geographicCRS );
+                // the first part (2a*k_0*m) of the largeA in Snyder (p.160 21-27) is stored in akm1 it still must be
+                // devided by the cos X ... etc. to get largeA
+                akm1 = 2. * getScaleFactor( geographicCRS ) * getCosphi0() / Math.sqrt( 1. - tmp * tmp );
+
+                // Setting the sinPhi0 to the conformal Latitude X.
+                // setProjectionLatitude( X );
+                break;
+            }
+        } else {
+            akm1 = 2. * getScaleFactor( geographicCRS );
+        }
+        params.put( PARAMS.akm1, akm1 );
+        params.put( PARAMS.conformalLatitude, conformalLatitude );
+        params.put( PARAMS.sinCL, sinCL );
+        params.put( PARAMS.cosCL, cosCL );
+        return params;
+    }
+
 }

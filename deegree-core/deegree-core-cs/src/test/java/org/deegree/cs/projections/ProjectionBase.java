@@ -156,6 +156,8 @@ public class ProjectionBase {
      *            for each axis
      * @param projection
      *            to test.
+     * @param geographicCRS
+     *            geographicCRS of the points
      * @param inverse
      *            true if the inverse projection should be tested.
      * @return the result string.
@@ -164,7 +166,7 @@ public class ProjectionBase {
      *             if one of the axis of the transformed point do not lie within the given epsilon range.
      */
     protected String doAccuracyTest( Point2d origPoint, Point2d referencePoint, Point2d forwardEpsilons,
-                                     Projection projection, boolean inverse )
+                                     Projection projection, GeographicCRS geographicCRS, boolean inverse )
                             throws ProjectionException {
         assertNotNull( projection );
         assertNotNull( origPoint );
@@ -175,10 +177,10 @@ public class ProjectionBase {
         // Point point = GeometryFactory.createPoint( origPoint.x, origPoint.y, origPoint.z, sourceCRS );
         Point2d result = null;
         if ( inverse ) {
-            result = projection.doInverseProjection( origPoint.x, origPoint.y );
+            result = projection.doInverseProjection( geographicCRS, origPoint.x, origPoint.y );
             unitToUse = Unit.DEGREE;
         } else {
-            result = projection.doProjection( origPoint.x, origPoint.y );
+            result = projection.doProjection( geographicCRS, origPoint.x, origPoint.y );
         }
 
         assertNotNull( result );
@@ -208,11 +210,13 @@ public class ProjectionBase {
      * Do a forward and inverse accuracy test, using the standard epsilon values.
      * 
      * @param projection
+     * @param geographicCRS
      * @param source
      * @param target
      * @throws ProjectionException
      */
-    protected void doForwardAndInverse( Projection projection, Point2d source, Point2d target )
+    protected void doForwardAndInverse( Projection projection, GeographicCRS geographicCRS, Point2d source,
+                                        Point2d target )
                             throws ProjectionException {
         StringBuilder output = new StringBuilder();
         output.append( "Projecting forward/inverse -> '" );
@@ -222,7 +226,7 @@ public class ProjectionBase {
         boolean forwardSuccess = true;
         try {
             output.append( "Forward Projection: " );
-            output.append( doAccuracyTest( source, target, epsilon, projection, false ) );
+            output.append( doAccuracyTest( source, target, epsilon, projection, geographicCRS, false ) );
         } catch ( AssertionError ae ) {
             output.append( ae.getLocalizedMessage() );
             forwardSuccess = false;
@@ -232,7 +236,7 @@ public class ProjectionBase {
         boolean inverseSuccess = true;
         try {
             output.append( "\nInverse Projection: " );
-            output.append( doAccuracyTest( target, source, epsilonDegree, projection, true ) );
+            output.append( doAccuracyTest( target, source, epsilonDegree, projection, geographicCRS, true ) );
         } catch ( AssertionError ae ) {
             output.append( ae.getLocalizedMessage() );
             inverseSuccess = false;

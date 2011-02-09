@@ -89,12 +89,8 @@ public class StereographicAlternativeTest extends ProjectionBase {
                                                                                                                 "GEO_CRS_204" ) } );
 
     private static final StereographicAlternative projection_28992 = new StereographicAlternative(
-                                                                                                   geographic_204,
-                                                                                                   463000.0,
-                                                                                                   155000.0,
-                                                                                                   new Point2d(
-                                                                                                                Math.toRadians( 5.38763888888889 ),
-                                                                                                                Math.toRadians( 52.15616055555555 ) ),
+
+    463000.0, 155000.0, new Point2d( Math.toRadians( 5.38763888888889 ), Math.toRadians( 52.15616055555555 ) ),
                                                                                                    Unit.METRE,
                                                                                                    0.9999079 );
 
@@ -116,7 +112,7 @@ public class StereographicAlternativeTest extends ProjectionBase {
         Point2d sourcePoint = new Point2d( Math.toRadians( 6.610765 ), Math.toRadians( 53.235916 ) );
         Point2d targetPoint = new Point2d( 236655.91462443, 583827.76880699 );
 
-        doForwardAndInverse( projection_28992, sourcePoint, targetPoint );
+        doForwardAndInverse( projection_28992, geographic_204, sourcePoint, targetPoint );
     }
 
     /**
@@ -124,8 +120,8 @@ public class StereographicAlternativeTest extends ProjectionBase {
      */
     @Test
     public void testConsistency() {
-        consistencyTest( projection_28992, 463000, 155000, new Point2d( Math.toRadians( 5.38763888888889 ),
-                                                                        Math.toRadians( 52.15616055555555 ) ),
+        consistencyTest( projection_28992, 463000, 155000,
+                         new Point2d( Math.toRadians( 5.38763888888889 ), Math.toRadians( 52.15616055555555 ) ),
                          Unit.METRE, 0.9999079, true, false, "stereographicAlternative" );
     }
 }

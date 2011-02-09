@@ -197,12 +197,15 @@ public class PROJ4CRSStore extends AbstractCRSStore<Map<String, String>> {
         } else {
             geographicCRSCount++;
         }
-        GeographicCRS underLyingCRS = createGeographicCRS( geoID, id, params );
-        Projection projection = createProjection( projectionName, underLyingCRS, params );
+        GeographicCRS underlyingCRS = createGeographicCRS( geoID, id, params );
+        Projection projection = createProjection( projectionName, params );
 
-        return new ProjectedCRS( projection, new Axis[] { new Axis( projection.getUnits(), "x", Axis.AO_EAST ),
-                                                         new Axis( projection.getUnits(), "y", Axis.AO_NORTH ) },
-                                 codes, names, versions, descriptions, areasOfUse );
+        return new ProjectedCRS( projection, underlyingCRS, new Axis[] {
+                                                                        new Axis( projection.getUnits(), "x",
+                                                                                  Axis.AO_EAST ),
+                                                                        new Axis( projection.getUnits(), "y",
+                                                                                  Axis.AO_NORTH ) }, codes, names,
+                                 versions, descriptions, areasOfUse );
     }
 
     /**
@@ -834,7 +837,7 @@ public class PROJ4CRSStore extends AbstractCRSStore<Map<String, String>> {
      * @throws CRSConfigurationException
      *             if the projName could not be mapped.
      */
-    private Projection createProjection( String projName, GeographicCRS geoCRS, Map<String, String> params )
+    private Projection createProjection( String projName, Map<String, String> params )
                             throws CRSConfigurationException {
         Projection result = null;
         // in degrees
@@ -940,15 +943,14 @@ public class PROJ4CRSStore extends AbstractCRSStore<Map<String, String>> {
             } else if ( "kav7".equals( projName ) ) {// "Kavraisky VII"
             } else if ( "labrd".equals( projName ) ) {// "Laborde"
             } else if ( "laea".equals( projName ) ) {// "Lambert Azimuthal Equal Area"
-                result = new LambertAzimuthalEqualArea( geoCRS, falseNorthing, falseEasting, naturalOrigin, units,
-                                                        scale );
+                result = new LambertAzimuthalEqualArea( falseNorthing, falseEasting, naturalOrigin, units, scale );
             } else if ( "lagrng".equals( projName ) ) {// "Lagrange"
             } else if ( "larr".equals( projName ) ) {// "Larrivee"
             } else if ( "lask".equals( projName ) ) {// "Laskowski"
             } else if ( "latlong".equals( projName ) ) {// "Lat/Long"
             } else if ( "lcc".equals( projName ) ) {// "Lambert Conformal Conic"
-                result = new LambertConformalConic( firstParallelLatitude, secondParallelLatitude, geoCRS,
-                                                    falseNorthing, falseEasting, naturalOrigin, units, scale );
+                result = new LambertConformalConic( firstParallelLatitude, secondParallelLatitude, falseNorthing,
+                                                    falseEasting, naturalOrigin, units, scale );
             } else if ( "leac".equals( projName ) ) {// "Lambert Equal Area Conic"
             } else if ( "lee_os".equals( projName ) ) {// "Lee Oblated Stereographic"
             } else if ( "loxim".equals( projName ) ) {// "Loximuthal"
@@ -994,10 +996,10 @@ public class PROJ4CRSStore extends AbstractCRSStore<Map<String, String>> {
             } else if ( "sinu".equals( projName ) ) {// "Sinusoidal (Sanson-Flamsteed)"
             } else if ( "somerc".equals( projName ) ) {// "Swiss. Obl. Mercator"
             } else if ( "stere".equals( projName ) ) {// "Oblique Stereographic Alternative"
-                result = new StereographicAzimuthal( trueScaleLatitude, geoCRS, falseNorthing, falseEasting,
-                                                     naturalOrigin, units, scale );
+                result = new StereographicAzimuthal( trueScaleLatitude, falseNorthing, falseEasting, naturalOrigin,
+                                                     units, scale );
             } else if ( "sterea".equals( projName ) ) {
-                result = new StereographicAlternative( geoCRS, falseNorthing, falseEasting, naturalOrigin, units, scale );
+                result = new StereographicAlternative( falseNorthing, falseEasting, naturalOrigin, units, scale );
             } else if ( "tcc".equals( projName ) ) {// "Transverse Central Cylindrical"
             } else if ( "tcea".equals( projName ) ) {// "Transverse Cylindrical Equal Area"
             } else if ( "tissot".equals( projName ) ) {// "Tissot Conic"
@@ -1008,10 +1010,9 @@ public class PROJ4CRSStore extends AbstractCRSStore<Map<String, String>> {
                 s = params.remove( "zone" );
                 if ( s != null && !"".equals( s.trim() ) ) {
                     int zone = Integer.parseInt( s );
-                    result = new TransverseMercator( zone, north, geoCRS, units );
+                    result = new TransverseMercator( zone, north, units );
                 } else {
-                    result = new TransverseMercator( north, geoCRS, falseNorthing, falseEasting, naturalOrigin, units,
-                                                     scale );
+                    result = new TransverseMercator( north, falseNorthing, falseEasting, naturalOrigin, units, scale );
                 }
             } else if ( "tpeqd".equals( projName ) ) {// "Two Point Equidistant"
             } else if ( "tpers".equals( projName ) ) {// "Tilted perspective"
