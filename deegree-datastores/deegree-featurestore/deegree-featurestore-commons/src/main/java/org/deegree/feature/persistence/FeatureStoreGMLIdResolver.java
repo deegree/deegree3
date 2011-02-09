@@ -35,9 +35,9 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.feature.persistence;
 
+import org.deegree.commons.tom.ReferenceResolvingException;
 import org.deegree.gml.GMLObject;
 import org.deegree.gml.GMLReferenceResolver;
-import org.deegree.gml.ReferenceResolvingException;
 
 /**
  * {@link GMLReferenceResolver} that uses a {@link FeatureStore} for resolving local object references.

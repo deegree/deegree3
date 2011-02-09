@@ -55,6 +55,8 @@ import org.deegree.feature.types.FeatureType;
 import org.deegree.feature.types.property.PropertyType;
 import org.deegree.filter.sql.DBField;
 import org.deegree.filter.sql.MappingExpression;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Creates PostGIS-DDL (DataDefinitionLanguage) scripts from {@link MappedApplicationSchema} instances.
@@ -66,6 +68,8 @@ import org.deegree.filter.sql.MappingExpression;
  */
 public class PostGISDDLCreator {
 
+    private static Logger LOG = LoggerFactory.getLogger( PostGISDDLCreator.class );
+    
     private final MappedApplicationSchema schema;
 
     private final boolean hasBlobTable;
@@ -147,6 +151,22 @@ public class PostGISDDLCreator {
         return ddl;
     }
 
+    private List<StringBuffer> getGeometryCreate( GeometryMapping mapping, DBField dbField, QTableName table ) {
+        List<StringBuffer> ddls = new ArrayList<StringBuffer>();
+        StringBuffer sql = new StringBuffer();
+        String schema = table.getSchema() == null ? "" : table.getSchema();
+        String column = dbField.getColumn();
+        String srid = mapping.getSrid();
+        // TODO
+        String geometryType = "GEOMETRY";
+        int dim = 2;
+        sql.append( "SELECT ADDGEOMETRYCOLUMN('" + schema.toLowerCase() + "', '" + table.getTable().toLowerCase()
+                    + "','" + column + "','" + srid + "','" + geometryType + "', " + dim + ")" );
+        ddls.add( sql );
+
+        return ddls;
+    }
+
     private List<StringBuffer> process( FeatureType ft, FeatureTypeMapping ftMapping ) {
 
         List<StringBuffer> ddls = new ArrayList<StringBuffer>();
@@ -199,10 +219,9 @@ public class PostGISDDLCreator {
         } else if ( propMapping instanceof GeometryMapping ) {
             GeometryMapping geometryMapping = (GeometryMapping) propMapping;
             if ( me instanceof DBField ) {
-                DBField dbField = (DBField) me;
-                sql.append( ",\n    " );
-                sql.append( dbField.getColumn() );
-                sql.append( " geometry" );
+                ddls.addAll( getGeometryCreate( geometryMapping, (DBField) me, table ) );
+            } else {
+                LOG.info( "Skipping geometry mapping -- not mapped to a db field. " );
             }
         } else if ( propMapping instanceof FeatureMapping ) {
             if ( me instanceof DBField ) {

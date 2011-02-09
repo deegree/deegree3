@@ -35,7 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.gml;
 
-import org.deegree.commons.tom.TypedObjectNode;
+import org.deegree.commons.tom.Object;
 import org.deegree.cs.coordinatesystems.CoordinateSystem;
 import org.deegree.feature.Feature;
 import org.deegree.geometry.Geometry;
@@ -63,14 +63,7 @@ import org.deegree.gml.props.GMLStdProps;
  * 
  * @version $Revision$, $Date$
  */
-public interface GMLObject extends TypedObjectNode {
-
-    /**
-     * Returns the id of the object.
-     * 
-     * @return the id of the object, or <code>null</code> if it doesn't have an id
-     */
-    public String getId();
+public interface GMLObject extends Object {
 
     /**
      * Returns the standard GML properties (e.g. <code>gml:name</code>).

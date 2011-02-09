@@ -45,6 +45,7 @@ import javax.xml.namespace.QName;
 import javax.xml.stream.FactoryConfigurationError;
 import javax.xml.stream.XMLStreamException;
 
+import org.deegree.commons.tom.ReferenceResolvingException;
 import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.cs.CRS;
 import org.deegree.cs.exceptions.UnknownCRSException;
@@ -67,7 +68,6 @@ import org.deegree.gml.GMLInputFactory;
 import org.deegree.gml.GMLObject;
 import org.deegree.gml.GMLStreamReader;
 import org.deegree.gml.GMLVersion;
-import org.deegree.gml.ReferenceResolvingException;
 import org.deegree.protocol.wfs.transaction.IDGenMode;
 
 /**

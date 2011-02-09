@@ -375,7 +375,63 @@ public class PostGISFeatureStoreConfigWriter {
             writer.writeStartElement( CONFIG_NS, "GeometryMapping" );
             writer.writeAttribute( "path", particle.getPath().getAsText() );
             writer.writeAttribute( "mapping", gm.getMapping().toString() );
-            // TODO
+            GeometryType gt = gm.getType();
+            switch ( gt ) {
+            case POINT: {
+                writer.writeAttribute( "type", "Point" );
+                break;
+            }
+            case LINE_STRING:
+            case LINEAR_RING:
+            case CURVE: {
+                writer.writeAttribute( "type", "LineString" );
+                break;
+            }
+            case POLYGON:
+            case SURFACE: {
+                writer.writeAttribute( "type", "Polygon" );
+                break;
+            }
+            case MULTI_POINT: {
+                writer.writeAttribute( "type", "MultiPoint" );
+                break;
+            }
+            case MULTI_LINE_STRING:
+            case MULTI_CURVE: {
+                writer.writeAttribute( "type", "MultiLineString" );
+                break;
+            }
+            case MULTI_POLYGON:
+            case MULTI_SURFACE: {
+                writer.writeAttribute( "type", "MultiPolygon" );
+                break;
+            }
+            case MULTI_GEOMETRY: {
+                writer.writeAttribute( "type", "MultiGeometry" );
+                break;
+            }
+            default: {
+                writer.writeAttribute( "type", "Geometry" );
+            }
+            }
+            writer.writeAttribute( "crs", gm.getCRS().getName() );
+            writer.writeAttribute( "srid", gm.getSrid() );
+            CoordinateDimension dim = gm.getDim();
+            switch ( dim ) {
+            case DIM_2: {
+                writer.writeAttribute( "dim", "2D" );
+                break;
+            }
+            case DIM_3: {
+                writer.writeAttribute( "dim", "3D" );
+                break;
+            }
+            case DIM_2_OR_3: {
+                // TODO
+                writer.writeAttribute( "dim", "2D" );
+                break;
+            }
+            }
             writer.writeEndElement();
         } else if ( particle instanceof FeatureMapping ) {
             writer.writeStartElement( CONFIG_NS, "FeatureMapping" );

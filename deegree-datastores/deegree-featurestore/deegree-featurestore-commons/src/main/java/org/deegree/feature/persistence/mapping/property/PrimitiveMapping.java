@@ -41,7 +41,7 @@ import org.deegree.filter.expression.PropertyName;
 import org.deegree.filter.sql.MappingExpression;
 
 /**
- * {@link Mapping} of a primitive-valued particle.
+ * {@link Mapping} of a {@link PrimitiveType}.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
@@ -50,7 +50,7 @@ import org.deegree.filter.sql.MappingExpression;
  */
 public class PrimitiveMapping extends Mapping {
 
-    private PrimitiveType pt;
+    private final PrimitiveType pt;
 
     /**
      * 

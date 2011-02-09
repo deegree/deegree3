@@ -35,13 +35,13 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.feature.persistence.mapping.property;
 
+import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.feature.persistence.mapping.JoinChain;
-import org.deegree.feature.types.FeatureType;
 import org.deegree.filter.expression.PropertyName;
 import org.deegree.filter.sql.MappingExpression;
 
 /**
- * Defines the mapping of a particle of a {@link FeatureType} to a relational model (tables, columns).
+ * Abstract base class for mappings of (particles of) {@link TypedObjectNode}s to a relational model (tables, columns).
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$

@@ -43,6 +43,7 @@ import javax.xml.bind.JAXBException;
 import javax.xml.stream.FactoryConfigurationError;
 import javax.xml.stream.XMLStreamException;
 
+import org.deegree.commons.tom.ReferenceResolvingException;
 import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.feature.persistence.lock.DefaultLockManager;
@@ -50,7 +51,6 @@ import org.deegree.feature.persistence.lock.LockManager;
 import org.deegree.feature.persistence.memory.MemoryFeatureStore;
 import org.deegree.feature.types.ApplicationSchema;
 import org.deegree.gml.GMLVersion;
-import org.deegree.gml.ReferenceResolvingException;
 import org.deegree.gml.feature.schema.ApplicationSchemaXSDDecoder;
 import org.junit.Before;
 import org.junit.Test;
@@ -72,10 +72,12 @@ public class DefaultLockManagerTest {
     @Before
     public void setUp()
                             throws XMLParsingException, XMLStreamException, UnknownCRSException,
-                            FactoryConfigurationError, IOException, JAXBException, FeatureStoreException, ReferenceResolvingException, ClassCastException, ClassNotFoundException, InstantiationException, IllegalAccessException {
+                            FactoryConfigurationError, IOException, JAXBException, FeatureStoreException,
+                            ReferenceResolvingException, ClassCastException, ClassNotFoundException,
+                            InstantiationException, IllegalAccessException {
 
         String schemaURL = this.getClass().getResource( "/org/deegree/gml/feature/testdata/schema/Philosopher.xsd" ).toString();
-        ApplicationSchemaXSDDecoder adapter = new ApplicationSchemaXSDDecoder( GMLVersion.GML_31, null, schemaURL );        
+        ApplicationSchemaXSDDecoder adapter = new ApplicationSchemaXSDDecoder( GMLVersion.GML_31, null, schemaURL );
         ApplicationSchema schema = adapter.extractFeatureTypeSchema();
 
         URL docURL = DefaultLockManagerTest.class.getResource( BASE_DIR + "Philosopher_FeatureCollection.xml" );
@@ -87,29 +89,29 @@ public class DefaultLockManagerTest {
     public void testLockAllAndRelease()
                             throws FeatureStoreException {
 
-//        // acquire lock on all Philosopher features
-//        QName ftName = new QName( "http://www.deegree.org/app", "Philosopher" );
-//        LockOperation lockRequest = new FilterLock( null, new TypeName( ftName, null ), null );
-//        Lock lock = lockManager.acquireLock( new LockOperation[] { lockRequest }, true, 600 * 1000 );
-//
-//        // check that all seven instances are locked
-//        List<String> lockedFids = lock.getLockedFeatures().getAsListAndClose();
-//        assertEquals( 7, lockedFids.size() );
-//        for ( String fid : lockedFids ) {
-//            assertTrue( lock.isLocked( fid ) );
-//            assertTrue( lockManager.isFeatureLocked( fid ) );
-//            assertTrue( lockManager.isFeatureModifiable( fid, lock.getId() ) );
-//            // must not be modifiable when specifying any other lock id
-//            assertFalse( lockManager.isFeatureModifiable( fid, lock.getId() + "42" ) );
-//        }
-//
-//        // unlock all features
-//        lock.release();
-//        for ( String fid : lockedFids ) {
-//            assertFalse( lockManager.isFeatureLocked( fid ) );
-//        }
-//
-//        // now zero features must be locked
-//        assertEquals( 0, lock.getLockedFeatures().getAsListAndClose().size() );
+        // // acquire lock on all Philosopher features
+        // QName ftName = new QName( "http://www.deegree.org/app", "Philosopher" );
+        // LockOperation lockRequest = new FilterLock( null, new TypeName( ftName, null ), null );
+        // Lock lock = lockManager.acquireLock( new LockOperation[] { lockRequest }, true, 600 * 1000 );
+        //
+        // // check that all seven instances are locked
+        // List<String> lockedFids = lock.getLockedFeatures().getAsListAndClose();
+        // assertEquals( 7, lockedFids.size() );
+        // for ( String fid : lockedFids ) {
+        // assertTrue( lock.isLocked( fid ) );
+        // assertTrue( lockManager.isFeatureLocked( fid ) );
+        // assertTrue( lockManager.isFeatureModifiable( fid, lock.getId() ) );
+        // // must not be modifiable when specifying any other lock id
+        // assertFalse( lockManager.isFeatureModifiable( fid, lock.getId() + "42" ) );
+        // }
+        //
+        // // unlock all features
+        // lock.release();
+        // for ( String fid : lockedFids ) {
+        // assertFalse( lockManager.isFeatureLocked( fid ) );
+        // }
+        //
+        // // now zero features must be locked
+        // assertEquals( 0, lock.getLockedFeatures().getAsListAndClose().size() );
     }
 }

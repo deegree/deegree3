@@ -126,7 +126,6 @@ public class PostGISFeatureStoreTest {
 
         AppSchemaMapper mapper = new AppSchemaMapper( appSchema, false, true, CRS.EPSG_4326, "-1" );
         MappedApplicationSchema mappedSchema = mapper.getMappedSchema();
-
         PostGISFeatureStoreConfigWriter configWriter = new PostGISFeatureStoreConfigWriter( mappedSchema );
         File file = new File( "/tmp/inspire-au.xml" );
         FileOutputStream fos = new FileOutputStream( file );

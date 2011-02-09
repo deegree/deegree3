@@ -41,6 +41,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.deegree.commons.tom.ReferenceResolvingException;
 import org.deegree.feature.types.ApplicationSchema;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

@@ -55,6 +55,7 @@ import junit.framework.Assert;
 
 import org.apache.xerces.xs.XSComplexTypeDefinition;
 import org.deegree.CoreTstProperties;
+import org.deegree.commons.tom.ReferenceResolvingException;
 import org.deegree.commons.tom.genericxml.GenericXMLElementContent;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.commons.xml.XMLParsingException;
@@ -69,7 +70,6 @@ import org.deegree.feature.types.ApplicationSchema;
 import org.deegree.gml.GMLInputFactory;
 import org.deegree.gml.GMLStreamReader;
 import org.deegree.gml.GMLVersion;
-import org.deegree.gml.ReferenceResolvingException;
 import org.deegree.gml.feature.schema.ApplicationSchemaXSDDecoder;
 import org.junit.Test;
 import org.slf4j.Logger;

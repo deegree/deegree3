@@ -36,6 +36,8 @@
 
 package org.deegree.gml;
 
+import org.deegree.commons.tom.Reference;
+import org.deegree.commons.tom.ReferenceResolver;
 import org.deegree.gml.props.GMLStdProps;
 
 /**
@@ -50,15 +52,7 @@ import org.deegree.gml.props.GMLStdProps;
  * @param <T>
  *            type of the referenced object
  */
-public class GMLReference<T extends GMLObject> implements GMLObject {
-
-    private final GMLReferenceResolver resolver;
-
-    private final String uri;
-
-    private final String baseURL;
-
-    private T object;
+public class GMLReference<T extends GMLObject> extends Reference<T> implements GMLObject {
 
     /**
      * Creates a new {@link GMLReference} instance.
@@ -70,77 +64,8 @@ public class GMLReference<T extends GMLObject> implements GMLObject {
      * @param baseURL
      *            base URL for resolving the uri, may be <code>null</code> (no resolving of relative URLs)
      */
-    public GMLReference( GMLReferenceResolver resolver, String uri, String baseURL ) {
-        this.resolver = resolver;
-        this.uri = uri;
-        // if ( isLocal() ) {
-        // id = uri.substring( 1 );
-        // }
-        this.baseURL = baseURL;
-    }
-
-    /**
-     * Returns the URI of the object.
-     * 
-     * @return the URI of the object, never <code>null</code>
-     */
-    public String getURI() {
-        return uri;
-    }
-
-    /**
-     * Returns whether the reference has been resolved.
-     * 
-     * @return true, if the reference has been resolved, false otherwise
-     */
-    public boolean isResolved() {
-        return object != null;
-    }
-
-    // TODO can we get rid of this method?
-    public boolean isLocal() {
-        return uri.startsWith( "#" );
-    }
-
-    /**
-     * Sets the referenced object.
-     * 
-     * @param object
-     *            the referenced object, may be <code>null</code>
-     */
-    public void resolve( T object ) {
-        this.object = object;
-    }
-
-    /**
-     * Returns the referenced {@link GMLObject} instance (may trigger resolving and fetching it).
-     * 
-     * @return the referenced {@link GMLObject} instance
-     * @throws ReferenceResolvingException
-     *             if the reference cannot be resolved
-     */
-    @SuppressWarnings("unchecked")
-    public T getReferencedObject()
-                            throws ReferenceResolvingException {
-        if ( object == null ) {
-            object = (T) resolver.getObject( uri, baseURL );
-            if ( object == null ) {
-                String msg = "Unable to resolve reference to '" + uri + "'.";
-                throw new ReferenceResolvingException( msg );
-            }
-        }
-        return object;
-    }
-
-    @Override
-    public String getId() {
-        if ( object != null ) {
-            return object.getId();
-        }
-        if ( isLocal() ) {
-            return uri.substring( 1 );
-        }
-        return getReferencedObject().getId();
+    public GMLReference( ReferenceResolver resolver, String uri, String baseURL ) {
+        super( resolver, uri, baseURL );
     }
 
     @Override

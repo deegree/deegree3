@@ -35,7 +35,6 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.gml.schema;
 
-import static org.apache.xerces.xs.XSTypeDefinition.SIMPLE_TYPE;
 import static org.deegree.commons.xml.CommonNamespaces.GML3_2_NS;
 import static org.deegree.commons.xml.CommonNamespaces.GMLNS;
 import static org.deegree.commons.xml.CommonNamespaces.ISOAP10GMDNS;
@@ -523,7 +522,7 @@ public class GMLSchemaInfoSet extends XMLSchemaInfoSet {
      */
     public GMLObjectPropertyType getGMLPropertyDecl( XSElementDeclaration elDecl, QName ptName, int minOccurs,
                                                      int maxOccurs, List<PropertyType> ptSubstitutions ) {
-        if ( elDecl.getType() == SIMPLE_TYPE ) {
+        if ( !( elDecl.getTypeDefinition() instanceof XSComplexTypeDefinition ) ) {
             return null;
         }
         XSComplexTypeDefinition typeDef = (XSComplexTypeDefinition) elDecl.getTypeDefinition();

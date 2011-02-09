@@ -35,6 +35,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.gml;
 
+import org.deegree.commons.tom.ReferenceResolver;
+
 /**
  * Implementations provide the functionality to retrieve {@link GMLObject} instances by their URI (which may be document
  * local or remote).
@@ -49,7 +51,7 @@ package org.deegree.gml;
  * 
  * @version $Revision$, $Date$
  */
-public interface GMLReferenceResolver {
+public interface GMLReferenceResolver extends ReferenceResolver {
 
     /**
      * Returns the {@link GMLObject} that is referenced by the given URI.
