@@ -77,6 +77,10 @@ public class ConsoleManagedProcessor extends AbstractProcessor {
     public void init( ProcessingEnvironment env ) {
         super.init( env );
         basedir = env.getOptions().get( "basedir" );
+        if ( basedir == null ) {
+            LOG.info( "No basedir set - skipping processing of console managed annotations." );
+            return;
+        }
         File parentFile = new File( basedir );
         if ( !parentFile.exists() && !parentFile.mkdirs() ) {
             LOG.warn( "Target directory could not be created: {}", parentFile );
@@ -99,6 +103,9 @@ public class ConsoleManagedProcessor extends AbstractProcessor {
 
     @Override
     public boolean process( Set<? extends TypeElement> annotations, RoundEnvironment roundEnv ) {
+        if ( basedir == null ) {
+            return false;
+        }
 
         for ( Element e : roundEnv.getRootElements() ) {
             try {
