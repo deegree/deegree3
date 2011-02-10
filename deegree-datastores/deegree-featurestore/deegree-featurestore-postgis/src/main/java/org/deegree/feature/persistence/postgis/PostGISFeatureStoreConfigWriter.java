@@ -59,12 +59,14 @@ import org.deegree.feature.persistence.mapping.id.FIDMapping;
 import org.deegree.feature.persistence.mapping.id.IDGenerator;
 import org.deegree.feature.persistence.mapping.id.SequenceIDGenerator;
 import org.deegree.feature.persistence.mapping.id.UUIDGenerator;
+import org.deegree.feature.persistence.mapping.property.CodeMapping;
 import org.deegree.feature.persistence.mapping.property.CompoundMapping;
 import org.deegree.feature.persistence.mapping.property.FeatureMapping;
 import org.deegree.feature.persistence.mapping.property.GeometryMapping;
 import org.deegree.feature.persistence.mapping.property.Mapping;
 import org.deegree.feature.persistence.mapping.property.PrimitiveMapping;
 import org.deegree.feature.types.FeatureType;
+import org.deegree.feature.types.property.CodePropertyType;
 import org.deegree.feature.types.property.CustomPropertyType;
 import org.deegree.feature.types.property.FeaturePropertyType;
 import org.deegree.feature.types.property.GeometryPropertyType;
@@ -217,6 +219,8 @@ public class PostGISFeatureStoreConfigWriter {
             writePropertyMapping( writer, (FeaturePropertyType) pt, (FeatureMapping) mapping );
         } else if ( pt instanceof CustomPropertyType ) {
             writePropertyMapping( writer, (CustomPropertyType) pt, (CompoundMapping) mapping );
+        } else if ( pt instanceof CodePropertyType ) {
+            writePropertyMapping( writer, (CodePropertyType) pt, (CodeMapping) mapping );
         } else {
             LOG.warn( "Unhandled property type '" + pt.getClass() + "'" );
         }
@@ -229,13 +233,22 @@ public class PostGISFeatureStoreConfigWriter {
         writeCommonAttrs( writer, pt );
         writer.writeAttribute( "type", pt.getPrimitiveType().getXSTypeName() );
         writer.writeAttribute( "mapping", mapping.getMapping().toString() );
-        // if ( pt.getMaxOccurs() == 1 ) {
-        // MappingContext simpleValueContext = mcManager.mapOneToOneElement( mc, pt.getName() );
-        // writer.writeAttribute( "mapping", simpleValueContext.getColumn() );
-        // } else {
-        // MappingContext simpleValueContext = mcManager.mapOneToManyElements( mc, pt.getName() );
-        // writeJoinedTable( writer, simpleValueContext.getTable() );
-        // }
+        if ( pt.getMaxOccurs() != 1 ) {
+            LOG.warn( "TODO: write join table" );
+        }
+        writer.writeEndElement();
+    }
+
+    private void writePropertyMapping( XMLStreamWriter writer, CodePropertyType pt, CodeMapping mapping )
+                            throws XMLStreamException {
+
+        writer.writeStartElement( CONFIG_NS, "CodeProperty" );
+        writeCommonAttrs( writer, pt );
+        writer.writeAttribute( "mapping", mapping.getMapping().toString() );
+        writer.writeAttribute( "codeSpaceMapping", mapping.getCodeSpaceMapping().toString() );
+        if ( pt.getMaxOccurs() != 1 ) {
+            LOG.warn( "TODO: write join table" );
+        }
         writer.writeEndElement();
     }
 
@@ -304,13 +317,9 @@ public class PostGISFeatureStoreConfigWriter {
         }
         }
 
-        // if ( pt.getMaxOccurs() == 1 ) {
-        // MappingContext geometryValueContext = mcManager.mapOneToOneElement( mc, pt.getName() );
-        // writer.writeAttribute( "mapping", geometryValueContext.getColumn() );
-        // } else {
-        // MappingContext geometryValueContext = mcManager.mapOneToManyElements( mc, pt.getName() );
-        // writeJoinedTable( writer, geometryValueContext.getTable() );
-        // }
+        if ( pt.getMaxOccurs() != 1 ) {
+            LOG.warn( "TODO: write join table" );
+        }
         writer.writeEndElement();
     }
 
@@ -339,18 +348,9 @@ public class PostGISFeatureStoreConfigWriter {
             writeMapping( writer, particle );
         }
 
-        // MappingContext customValueContext = null;
-        // if ( pt.getMaxOccurs() == 1 ) {
-        // customValueContext = mcManager.mapOneToOneElement( mc, pt.getName() );
-        // } else {
-        // customValueContext = mcManager.mapOneToManyElements( mc, pt.getName() );
-        // writeJoinedTable( writer, customValueContext.getTable() );
-        // }
-
-        // Map<QName, QName> elements = new LinkedHashMap<QName, QName>();
-        // elements.put( pt.getName(), getQName( pt.getXSDValueType() ) );
-        //
-        // createMapping( writer, pt.getXSDValueType(), customValueContext, elements );
+        if ( pt.getMaxOccurs() != 1 ) {
+            LOG.warn( "TODO: write join table" );
+        }
         writer.writeEndElement();
     }
 

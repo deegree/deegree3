@@ -46,6 +46,7 @@ import org.deegree.feature.persistence.mapping.FeatureTypeMapping;
 import org.deegree.feature.persistence.mapping.JoinChain;
 import org.deegree.feature.persistence.mapping.MappedApplicationSchema;
 import org.deegree.feature.persistence.mapping.id.FIDMapping;
+import org.deegree.feature.persistence.mapping.property.CodeMapping;
 import org.deegree.feature.persistence.mapping.property.CompoundMapping;
 import org.deegree.feature.persistence.mapping.property.FeatureMapping;
 import org.deegree.feature.persistence.mapping.property.GeometryMapping;
@@ -232,7 +233,24 @@ public class PostGISDDLCreator {
         } else if ( propMapping instanceof CompoundMapping ) {
             CompoundMapping compoundMapping = (CompoundMapping) propMapping;
             ddls.addAll( process( sql, table, compoundMapping ) );
-        } else {
+        } else if ( propMapping instanceof CodeMapping ) {
+            CodeMapping codeMapping = (CodeMapping) propMapping;
+            if ( me instanceof DBField ) {
+                DBField dbField = (DBField) me;
+                sql.append( ",\n    " );
+                sql.append( dbField.getColumn() );
+                sql.append( " " );
+                sql.append( getPostgreSQLType( PrimitiveType.STRING ) );
+            }
+            MappingExpression codeSpaceMapping = codeMapping.getCodeSpaceMapping();
+            if ( codeSpaceMapping instanceof DBField ) {
+                DBField dbField = (DBField) codeSpaceMapping;
+                sql.append( ",\n    " );
+                sql.append( dbField.getColumn() );
+                sql.append( " " );
+                sql.append( getPostgreSQLType( PrimitiveType.STRING ) );
+            }            
+        }  else {
             throw new RuntimeException( "Internal error. Unhandled mapping type '" + propMapping.getClass() + "'" );
         }
 
@@ -271,7 +289,10 @@ public class PostGISDDLCreator {
                     }
                 } else {
                     for ( Mapping particle : compoundMapping.getParticles() ) {
-                        ddls.addAll( process( sb, table, particle ) );
+                        // TODO get rid of null check
+                        if (particle != null) {
+                            ddls.addAll( process( sb, table, particle ) );
+                        }
                     }
                 }
             } else {

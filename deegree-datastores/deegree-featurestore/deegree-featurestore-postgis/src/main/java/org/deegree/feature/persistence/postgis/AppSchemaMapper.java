@@ -75,6 +75,7 @@ import org.deegree.feature.persistence.mapping.MappedApplicationSchema;
 import org.deegree.feature.persistence.mapping.id.FIDMapping;
 import org.deegree.feature.persistence.mapping.id.IDGenerator;
 import org.deegree.feature.persistence.mapping.id.UUIDGenerator;
+import org.deegree.feature.persistence.mapping.property.CodeMapping;
 import org.deegree.feature.persistence.mapping.property.CompoundMapping;
 import org.deegree.feature.persistence.mapping.property.FeatureMapping;
 import org.deegree.feature.persistence.mapping.property.GeometryMapping;
@@ -82,6 +83,7 @@ import org.deegree.feature.persistence.mapping.property.Mapping;
 import org.deegree.feature.persistence.mapping.property.PrimitiveMapping;
 import org.deegree.feature.types.ApplicationSchema;
 import org.deegree.feature.types.FeatureType;
+import org.deegree.feature.types.property.CodePropertyType;
 import org.deegree.feature.types.property.CustomPropertyType;
 import org.deegree.feature.types.property.FeaturePropertyType;
 import org.deegree.feature.types.property.GeometryPropertyType;
@@ -224,6 +226,8 @@ public class AppSchemaMapper {
             mapping = generatePropMapping( (FeaturePropertyType) pt, mc );
         } else if ( pt instanceof CustomPropertyType ) {
             mapping = generatePropMapping( (CustomPropertyType) pt, mc );
+        } else if ( pt instanceof CodePropertyType ) {
+            mapping = generatePropMapping( (CodePropertyType) pt, mc );
         } else {
             LOG.warn( "Unhandled property type '" + pt.getName() + "': " + pt.getClass().getName() );
         }
@@ -263,16 +267,18 @@ public class AppSchemaMapper {
     private FeatureMapping generatePropMapping( FeaturePropertyType pt, MappingContext mc ) {
         LOG.debug( "Mapping feature property '" + pt.getName() + "'" );
         PropertyName path = new PropertyName( pt.getName() );
-        MappingExpression mapping = null;
         JoinChain jc = null;
         MappingContext mc2 = null;
+        MappingExpression mapping = null;        
         if ( pt.getMaxOccurs() == 1 ) {
             mc2 = mcManager.mapOneToOneElement( mc, pt.getName() );
+            mapping = new DBField( mc2.getColumn() );
         } else {
             mc2 = mcManager.mapOneToManyElements( mc, pt.getName() );
-            jc = new JoinChain( new DBField( mc.getTable(), "id" ), new DBField( mc2.getTable(), "parentfk" ) );
+            jc = generateJoinChain( mc, mc2 );
+            mapping = new DBField( "ref" );
         }
-        mapping = new DBField( mc2.getColumn() );
+        
         return new FeatureMapping( path, mapping, pt.getFTName(), jc );
     }
 
@@ -301,6 +307,31 @@ public class AppSchemaMapper {
         return new CompoundMapping( path, mapping, particles, jc );
     }
 
+    private CodeMapping generatePropMapping( CodePropertyType pt, MappingContext mc ) {
+        LOG.debug( "Mapping code property '" + pt.getName() + "'" );
+        PropertyName path = new PropertyName( pt.getName() );
+        MappingContext propMc = null;
+        MappingContext codeSpaceMc = null;
+        JoinChain jc = null;
+        MappingExpression mapping = null;        
+        if ( pt.getMaxOccurs() == 1 ) {
+            propMc = mcManager.mapOneToOneElement( mc, pt.getName() );
+            codeSpaceMc = mcManager.mapOneToOneAttribute( mc, new QName( "codeSpace" ) );
+            mapping = new DBField( propMc.getColumn() );
+        } else {
+            propMc = mcManager.mapOneToManyElements( mc, pt.getName() );
+            codeSpaceMc = mcManager.mapOneToOneAttribute( propMc, new QName( "codeSpace" ) );
+            jc = generateJoinChain( mc, propMc );
+            mapping = new DBField( "value" );
+        }
+        MappingExpression csMapping = new DBField( codeSpaceMc.getColumn() );
+        return new CodeMapping( path, mapping, STRING, jc, csMapping );
+    }
+
+    private JoinChain generateJoinChain (MappingContext from, MappingContext to ) {
+        return new JoinChain( new DBField( from.getTable(), "id" ), new DBField( to.getTable(), "parentfk" ) );
+    }
+    
     private List<Mapping> generateMapping( XSComplexTypeDefinition typeDef, MappingContext mc,
                                            Map<QName, QName> elements ) {
 
