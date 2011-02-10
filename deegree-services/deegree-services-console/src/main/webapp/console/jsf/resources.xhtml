@@ -1,60 +1,53 @@
-<ui:composition template="/layout.xhtml"
-	xmlns="http://www.w3.org/1999/xhtml"
-	xmlns:h="http://java.sun.com/jsf/html"
-	xmlns:f="http://java.sun.com/jsf/core"
-	xmlns:ui="http://java.sun.com/jsf/facelets"
-	xmlns:c="http://java.sun.com/jsp/jstl/core"
-	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
-	xmlns:dg="http://deegree.org/jsf"
-	xmlns:dgc="http://java.sun.com/jsf/composite/deegree">
-	<ui:define name="center">
+<ui:composition template="/layout.xhtml" xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:f="http://java.sun.com/jsf/core" xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:c="http://java.sun.com/jsp/jstl/core" xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+    xmlns:dg="http://deegree.org/jsf" xmlns:dgc="http://java.sun.com/jsf/composite/deegree">
+    <ui:define name="center">
 
-		<h:panelGroup rendered="#{!logBean.loggedIn}">
-			<ui:include src="accessForbidden.xhtml" />
-		</h:panelGroup>
-		<h:panelGroup rendered="#{logBean.loggedIn}">
-			<fieldset class="fieldset"><legend><h:outputText styleClass="titel"
-				value="#{configManager.currentResourceManager.name}" /></legend> <h:form>
-				<table style="font-size: small" border="0">
-					<tr><td /></tr>
-					<tr><td /></tr>
-					<ui:repeat value="#{configManager.availableResources}" var="config">
-						<tr align="left">
-							<td><h:commandButton styleClass="buttonActivate"
-								rendered="#{config.active}"
-								value="#{labels.featureStores_deactivate}"
-								action="#{config.deactivate}" /> 
-								<h:commandButton
-								styleClass="buttonDeactivate" rendered="#{!config.active}"
-								value="#{labels.featureStores_activate}"
-								action="#{config.activate}" /></td>
-							<td><h:outputFormat styleClass="StatusDeactivated"
-								value="#{labels.featureStores_id}">
-								<f:param value="#{config.id}" />
-							</h:outputFormat></td>
-							<td><h:commandButton styleClass="buttonEdit"
-								value="#{labels.featureStores_edit}" action="#{config.edit}" /></td>
-							<td><h:commandButton styleClass="buttonDelete"
-								value="#{labels.featureStores_delete}" action="#{config.delete}" onclick="return confirmDelete();" /></td>
+        <h:panelGroup rendered="#{!logBean.loggedIn}">
+            <ui:include src="accessForbidden.xhtml" />
+        </h:panelGroup>
+        <h:panelGroup rendered="#{configManager.currentResourceManager == null}">
+            <p class="welcomeText">Please use the links to your left to select an appropriate section.</p>
+        </h:panelGroup>
+        <h:panelGroup rendered="#{logBean.loggedIn &amp;&amp; configManager.currentResourceManager != null}">
+            <fieldset class="fieldset"><legend><h:outputText styleClass="titel"
+                value="#{configManager.currentResourceManager.name}" /></legend> <h:form>
+                <table style="font-size: small" border="0">
+                    <tr>
+                        <td />
+                    </tr>
+                    <tr>
+                        <td />
+                    </tr>
+                    <ui:repeat value="#{configManager.availableResources}" var="config">
+                        <tr align="left">
+                            <td><h:commandButton styleClass="buttonActivate" rendered="#{config.active}"
+                                value="#{labels.featureStores_deactivate}" action="#{config.deactivate}" /> <h:commandButton
+                                styleClass="buttonDeactivate" rendered="#{!config.active}"
+                                value="#{labels.featureStores_activate}" action="#{config.activate}" /></td>
+                            <td><h:outputFormat styleClass="StatusDeactivated" value="#{labels.featureStores_id}">
+                                <f:param value="#{config.id}" />
+                            </h:outputFormat></td>
+                            <td><h:commandButton styleClass="buttonEdit" value="#{labels.featureStores_edit}"
+                                action="#{config.edit}" /></td>
+                            <td><h:commandButton styleClass="buttonDelete" value="#{labels.featureStores_delete}"
+                                action="#{config.delete}" onclick="return confirmDelete();" /></td>
                             <ui:insert name="extraButtons" />
-						</tr>
-					</ui:repeat>
-				</table>
-				<br />
-			</h:form> <h:form>
-				<div><h:outputLabel styleClass="label" for="newFSBt"
-					value="#{labels.featureStores_name}" /> 
-					<h:inputText styleClass="liste" id="newFSBt"
-					value="#{configManager.newConfigId}" size="16" required="true"
-					requiredMessage="#{labels.featureStores_name_req}" /> 
-					<h:selectOneMenu styleClass="liste"
-					value="#{configManager.newConfigType}">
-					<f:selectItems value="#{configManager.providers}" />
-				</h:selectOneMenu> 
-				<h:commandButton styleClass="buttonCreateNew" value="#{labels.featureStores_new}"
-					action="#{configManager.createConfig}" /></div>
-				
-			</h:form></fieldset>
-		</h:panelGroup>
-	</ui:define>
+                        </tr>
+                    </ui:repeat>
+                </table>
+                <br />
+            </h:form> <h:form>
+                <div><h:outputLabel styleClass="label" for="newFSBt" value="#{labels.featureStores_name}" /> <h:inputText
+                    styleClass="liste" id="newFSBt" value="#{configManager.newConfigId}" size="16" required="true"
+                    requiredMessage="#{labels.featureStores_name_req}" /> <h:selectOneMenu styleClass="liste"
+                    value="#{configManager.newConfigType}">
+                    <f:selectItems value="#{configManager.providers}" />
+                </h:selectOneMenu> <h:commandButton styleClass="buttonCreateNew" value="#{labels.featureStores_new}"
+                    action="#{configManager.createConfig}" /></div>
+
+            </h:form></fieldset>
+        </h:panelGroup>
+    </ui:define>
 </ui:composition>

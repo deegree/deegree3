@@ -45,7 +45,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.Serializable;
 import java.io.StringReader;
 import java.net.URL;
 
@@ -70,9 +69,7 @@ import org.deegree.commons.xml.XMLAdapter;
  * 
  * @version $Revision$, $Date$
  */
-public class Config implements Comparable<Config>, Serializable {
-
-    private static final long serialVersionUID = -8641748554909533149L;
+public class Config implements Comparable<Config> {
 
     @Getter
     private File location;
