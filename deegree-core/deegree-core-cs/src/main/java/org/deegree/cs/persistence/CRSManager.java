@@ -75,8 +75,6 @@ import org.deegree.cs.transformations.TransformationFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import sun.security.jca.GetInstance.Instance;
-
 /**
  * Entry point for creating and retrieving {@link CRSStore} and {@link CRSStoreProvider} instances.
  * 
@@ -346,7 +344,7 @@ public class CRSManager implements ResourceManager {
     /***************************************************/
 
     /**
-     * Returns a {@link CRSRef} {@link Instance} which is not resolved.
+     * Returns a {@link CRSRef} instance which is not resolved.
      * 
      * @param uri
      *            the uri of the resource which is used to resolve the reference
