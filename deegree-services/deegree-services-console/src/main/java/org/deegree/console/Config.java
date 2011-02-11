@@ -95,11 +95,12 @@ public class Config implements Comparable<Config> {
 
     private final ConfigManager manager;
 
-    public Config( File location, ResourceManagerMetadata md, ConfigManager manager ) throws XMLStreamException,
-                            FactoryConfigurationError, IOException {
+    public Config( File location, ResourceManagerMetadata md, ConfigManager manager, String prefix )
+                            throws XMLStreamException, FactoryConfigurationError, IOException {
         this.location = location;
         this.manager = manager;
-        this.id = location.getName().substring( 0, location.getName().indexOf( "." ) );
+        this.id = ( prefix == null ? "" : ( prefix + "/" ) )
+                  + location.getName().substring( 0, location.getName().indexOf( "." ) );
         active = location.getName().endsWith( ".xml" );
         InputStream in = null, in2 = null;
         try {

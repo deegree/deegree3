@@ -180,6 +180,33 @@ public class ConfigManager {
         update();
     }
 
+    private void findFiles( File dir, String prefix ) {
+        if ( dir.isDirectory() && !dir.getName().equalsIgnoreCase( ".svn" ) ) {
+            File[] fs = dir.listFiles();
+            if ( fs != null ) {
+                for ( File f : fs ) {
+                    if ( !f.isDirectory() ) {
+                        try {
+                            Config c = new Config( f, currentResourceManager, this, prefix );
+                            availableResources.add( c );
+                        } catch ( XMLStreamException e ) {
+                            // TODO Auto-generated catch block
+                            e.printStackTrace();
+                        } catch ( FactoryConfigurationError e ) {
+                            // TODO Auto-generated catch block
+                            e.printStackTrace();
+                        } catch ( IOException e ) {
+                            // TODO Auto-generated catch block
+                            e.printStackTrace();
+                        }
+                    } else {
+                        findFiles( f, prefix == null ? f.getName() : ( prefix + "/" + f.getName() ) );
+                    }
+                }
+            }
+        }
+    }
+
     public void update() {
         availableResources = new LinkedList<Config>();
         if ( currentResourceManager != null ) {
@@ -189,28 +216,7 @@ public class ConfigManager {
             }
             File dir = new File( OGCFrontController.getServiceWorkspace().getLocation(),
                                  currentResourceManager.getPath() );
-            if ( dir.isDirectory() ) {
-                File[] fs = dir.listFiles();
-                if ( fs != null ) {
-                    for ( File f : fs ) {
-                        if ( !f.isDirectory() ) {
-                            try {
-                                Config c = new Config( f, currentResourceManager, this );
-                                availableResources.add( c );
-                            } catch ( XMLStreamException e ) {
-                                // TODO Auto-generated catch block
-                                e.printStackTrace();
-                            } catch ( FactoryConfigurationError e ) {
-                                // TODO Auto-generated catch block
-                                e.printStackTrace();
-                            } catch ( IOException e ) {
-                                // TODO Auto-generated catch block
-                                e.printStackTrace();
-                            }
-                        }
-                    }
-                }
-            }
+            findFiles( dir, null );
             Collections.sort( availableResources );
         }
     }
@@ -248,7 +254,7 @@ public class ConfigManager {
         try {
             Config c;
             if ( template ) {
-                c = new Config( conf, currentResourceManager, this );
+                c = new Config( conf, currentResourceManager, this, null );
             } else {
                 c = new Config( conf, currentResourceManager, this, schemaURL, newConfigType );
             }
