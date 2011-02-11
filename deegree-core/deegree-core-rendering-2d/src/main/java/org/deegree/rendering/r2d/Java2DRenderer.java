@@ -216,8 +216,18 @@ public class Java2DRenderer implements Renderer {
     }
 
     private Rectangle2D.Double getGraphicBounds( Graphic graphic, double x, double y, UOM uom ) {
-        double width = considerUOM( graphic.size, uom );
-        double height = considerUOM( graphic.size, uom );
+        double width, height;
+        if ( graphic.image != null ) {
+            double max = Math.max( graphic.image.getWidth(), graphic.image.getHeight() );
+            double fac = graphic.size / max;
+            width = fac * graphic.image.getWidth();
+            height = fac * graphic.image.getHeight();
+        } else {
+            width = graphic.size;
+            height = graphic.size;
+        }
+        width = considerUOM( width, uom );
+        height = considerUOM( height, uom );
 
         if ( width < 0 ) {
             if ( graphic.image == null ) {
