@@ -126,7 +126,7 @@ public class MetaDataReader {
         try {
             double[] tiePoints = geoTIFFMetaData.getModelTiePoints();
             double[] scale = geoTIFFMetaData.getModelPixelScales();
-            if ( tiePoints != null && scale != null ) {
+            if ( tiePoints != null && scale != null && crs != null ) {
 
                 if ( definedRasterOrigLoc != null ) {
                     rasterReference = new RasterGeoReference( definedRasterOrigLoc, scale[0], -scale[1], tiePoints[3],
@@ -137,10 +137,12 @@ public class MetaDataReader {
                         // http://www.remotesensing.org/geotiff/spec/geotiff3.html#3.2.1.
                         // search for PixelIsArea/PixelIsPoint to determine center/outer
                         rasterReference = new RasterGeoReference( RasterGeoReference.OriginLocation.CENTER, scale[0],
-                                                                  -scale[1], tiePoints[3], tiePoints[4], CRSManager.getCRSRef( crs ) );
+                                                                  -scale[1], tiePoints[3], tiePoints[4],
+                                                                  CRSManager.getCRSRef( crs ) );
                     } else {
                         rasterReference = new RasterGeoReference( RasterGeoReference.OriginLocation.OUTER, scale[0],
-                                                                  -scale[1], tiePoints[3], tiePoints[4], CRSManager.getCRSRef( crs ) );
+                                                                  -scale[1], tiePoints[3], tiePoints[4],
+                                                                  CRSManager.getCRSRef( crs ) );
                     }
                 }
             }

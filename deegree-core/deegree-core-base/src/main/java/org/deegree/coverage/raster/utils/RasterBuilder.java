@@ -270,7 +270,7 @@ public class RasterBuilder implements CoverageBuilder {
                                   config.getOriginLocation().toString().toUpperCase() );
                 }
                 if ( directory != null ) {
-                    File rasterFiles = new File( adapter.resolve( directory.getValue() ).toURI() );
+                    File rasterFiles = new File( adapter.resolve( directory.getValue().trim() ).toURI() );
                     boolean recursive = directory.isRecursive() == null ? false : directory.isRecursive();
                     if ( crs != null ) {
                         rOptions.add( RasterIOOptions.CRS, crs.getName() );
@@ -278,6 +278,7 @@ public class RasterBuilder implements CoverageBuilder {
                     return buildTiledRaster( rasterFiles, recursive, rOptions );
                 }
                 if ( file != null ) {
+                    file = file.trim();
                     final File loc = new File( adapter.resolve( file ).toURI() );
                     if ( !loc.exists() ) {
                         LOG.warn( "Given raster file location does not exist: " + loc.getAbsolutePath() );
