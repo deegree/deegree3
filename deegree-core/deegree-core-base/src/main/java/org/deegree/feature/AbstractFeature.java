@@ -36,8 +36,10 @@
 package org.deegree.feature;
 
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 import javax.xml.namespace.QName;
 
@@ -137,16 +139,16 @@ public abstract class AbstractFeature implements Feature {
     protected Envelope calcEnvelope() {
         Envelope featureBBox = null;
         for ( Property prop : this.getProperties() ) {
-            featureBBox = mergeEnvelope( prop, featureBBox );
+            featureBBox = mergeEnvelope( prop, featureBBox, getGeometryProperties().length == 0, new HashSet<Feature>() );
         }
         return featureBBox;
     }
 
-    private Envelope mergeEnvelope( TypedObjectNode node, Envelope env ) {
+    private Envelope mergeEnvelope( TypedObjectNode node, Envelope env, boolean useSubfeatures, Set<Feature> visited ) {
         if ( node instanceof Property ) {
             Property prop = (Property) node;
             if ( prop.getValue() != null ) {
-                env = mergeEnvelope( prop.getValue(), env );
+                env = mergeEnvelope( prop.getValue(), env, useSubfeatures, visited );
             }
         } else if ( node instanceof Geometry ) {
             Geometry g = (Geometry) node;
@@ -164,7 +166,17 @@ public abstract class AbstractFeature implements Feature {
         } else if ( node instanceof GenericXMLElementContent ) {
             GenericXMLElementContent xml = (GenericXMLElementContent) node;
             for ( TypedObjectNode child : xml.getChildren() ) {
-                env = mergeEnvelope( child, env );
+                env = mergeEnvelope( child, env, useSubfeatures, visited );
+            }
+        } else if ( useSubfeatures && node instanceof Feature ) {
+            Feature f = (Feature) node;
+            if ( visited.contains( f ) ) {
+                return env;
+            }
+            visited.add( f );
+
+            for ( Property prop : f.getProperties() ) {
+                env = mergeEnvelope( prop, env, false, visited );
             }
         }
         return env;

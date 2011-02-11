@@ -96,6 +96,7 @@ public class BBOX extends SpatialOperator {
      * @return the name of the property, may be <code>null</code> (implies that the default geometry property of the
      *         object should be used)
      */
+    @Override
     public PropertyName getPropName() {
         return propName;
     }
@@ -123,11 +124,19 @@ public class BBOX extends SpatialOperator {
                 }
             }
         }
-        for ( TypedObjectNode paramValue : propName.evaluate( obj, xpathEvaluator ) ) {
-            Geometry param1Value = checkGeometryOrNull( paramValue );
-            if ( param1Value != null ) {
-                Envelope transformedBBox = (Envelope) getCompatibleGeometry( param1Value, bbox );
-                return transformedBBox.intersects( param1Value );
+        if ( propName != null ) {
+            for ( TypedObjectNode paramValue : propName.evaluate( obj, xpathEvaluator ) ) {
+                Geometry param1Value = checkGeometryOrNull( paramValue );
+                if ( param1Value != null ) {
+                    Envelope transformedBBox = (Envelope) getCompatibleGeometry( param1Value, bbox );
+                    return transformedBBox.intersects( param1Value );
+                }
+            }
+        } else if ( obj instanceof Feature ) {
+            Feature f = (Feature) obj;
+            if ( f.getGMLProperties() != null && f.getGMLProperties().getBoundedBy() != null ) {
+                Envelope transformedBBox = (Envelope) getCompatibleGeometry( f.getGMLProperties().getBoundedBy(), bbox );
+                return transformedBBox.intersects( f.getGMLProperties().getBoundedBy() );
             }
         }
         return false;

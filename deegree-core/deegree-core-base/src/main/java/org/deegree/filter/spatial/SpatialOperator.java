@@ -147,10 +147,9 @@ public abstract class SpatialOperator implements Operator {
                 TypedObjectNode maybeGeom = xml.getChildren().get( 0 );
                 if ( maybeGeom instanceof Geometry ) {
                     return (Geometry) maybeGeom;
-                } else {
-                    String msg = Messages.getMessage( "FILTER_EVALUATION_NOT_GEOMETRY", getType().name(), value );
-                    throw new FilterEvaluationException( msg );
                 }
+                String msg = Messages.getMessage( "FILTER_EVALUATION_NOT_GEOMETRY", getType().name(), value );
+                throw new FilterEvaluationException( msg );
             } else {
                 String msg = Messages.getMessage( "FILTER_EVALUATION_NOT_GEOMETRY", getType().name(), value );
                 throw new FilterEvaluationException( msg );
@@ -175,7 +174,7 @@ public abstract class SpatialOperator implements Operator {
         Geometry transformedLiteral = literal;
         CRS paramCRS = param.getCoordinateSystem();
         CRS literalCRS = literal.getCoordinateSystem();
-        if ( literal != null && literalCRS != null && !( paramCRS.equals( literalCRS ) ) ) {
+        if ( literalCRS != null && !( paramCRS.equals( literalCRS ) ) ) {
             LOG.debug( "Need transformed literal geometry for evaluation: " + literalCRS.getName() + " -> "
                        + paramCRS.getName() );
             transformedLiteral = srsNameToTransformedGeometry.get( paramCRS.getName() );
