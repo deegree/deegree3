@@ -42,6 +42,7 @@ import java.util.List;
 import javax.vecmath.Point3d;
 
 import org.deegree.commons.tom.ReferenceResolver;
+import org.deegree.commons.tom.ReferenceResolvingException;
 import org.deegree.cs.components.IAxis;
 import org.deegree.cs.components.IDatum;
 import org.deegree.cs.components.IGeodeticDatum;
@@ -204,6 +205,16 @@ public class CRSRef extends CRSResourceRef<ICRS> implements Serializable, ICRS {
 
     public boolean isXYForced() {
         return forceXY;
+    }
+
+    @Override
+    public ICRS getReferencedObject()
+                            throws ReferenceResolvingException {
+        // ensure that getReferenced object returns a concrete CRS instance!
+        ICRS referencedObject = super.getReferencedObject();
+        if ( referencedObject instanceof CRSRef )
+            return ( (CRSRef) referencedObject ).getReferencedObject();
+        return referencedObject;
     }
 
 }

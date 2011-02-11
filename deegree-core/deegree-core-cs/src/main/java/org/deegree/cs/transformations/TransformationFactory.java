@@ -60,18 +60,19 @@ import org.deegree.cs.CRSCodeType;
 import org.deegree.cs.CRSIdentifiable;
 import org.deegree.cs.components.IEllipsoid;
 import org.deegree.cs.components.IGeodeticDatum;
-import org.deegree.cs.coordinatesystems.CompoundCRS;
 import org.deegree.cs.coordinatesystems.CRS.CRSType;
+import org.deegree.cs.coordinatesystems.CompoundCRS;
 import org.deegree.cs.coordinatesystems.GeocentricCRS;
 import org.deegree.cs.coordinatesystems.GeographicCRS;
-import org.deegree.cs.coordinatesystems.ICompoundCRS;
 import org.deegree.cs.coordinatesystems.ICRS;
+import org.deegree.cs.coordinatesystems.ICompoundCRS;
 import org.deegree.cs.coordinatesystems.IGeocentricCRS;
 import org.deegree.cs.coordinatesystems.IGeographicCRS;
 import org.deegree.cs.coordinatesystems.IProjectedCRS;
 import org.deegree.cs.coordinatesystems.ProjectedCRS;
 import org.deegree.cs.exceptions.TransformationException;
 import org.deegree.cs.persistence.CRSStore;
+import org.deegree.cs.refs.coordinatesystem.CRSRef;
 import org.deegree.cs.transformations.coordinate.GeocentricTransform;
 import org.deegree.cs.transformations.coordinate.IdentityTransform;
 import org.deegree.cs.transformations.coordinate.MatrixTransform;
@@ -199,8 +200,7 @@ public class TransformationFactory {
      *             if the sourceCRS or targetCRS are <code>null</code>.
      * 
      */
-    public Transformation createFromCoordinateSystems( final ICRS sourceCRS,
-                                                       final ICRS targetCRS )
+    public Transformation createFromCoordinateSystems( final ICRS sourceCRS, final ICRS targetCRS )
                             throws TransformationException, IllegalArgumentException {
         return createFromCoordinateSystems( sourceCRS, targetCRS, null );
     }
@@ -222,8 +222,7 @@ public class TransformationFactory {
      *             if the sourceCRS or targetCRS are <code>null</code>.
      * 
      */
-    public Transformation createFromCoordinateSystems( final ICRS sourceCRS,
-                                                       final ICRS targetCRS,
+    public Transformation createFromCoordinateSystems( final ICRS sourceCRS, final ICRS targetCRS,
                                                        List<Transformation> transformationsToBeUsed )
                             throws TransformationException {
         if ( sourceCRS == null ) {
@@ -443,8 +442,8 @@ public class TransformationFactory {
      * @param targetCRS
      * @return the 'required' transformation or <code>null</code> if no fitting transfromation was found.
      */
-    private Transformation getRequiredTransformation( List<Transformation> requiredTransformations,
-                                                      ICRS sourceCRS, ICRS targetCRS ) {
+    private Transformation getRequiredTransformation( List<Transformation> requiredTransformations, ICRS sourceCRS,
+                                                      ICRS targetCRS ) {
         if ( requiredTransformations != null && !requiredTransformations.isEmpty() ) {
             Iterator<Transformation> it = requiredTransformations.iterator();
             while ( it.hasNext() ) {
@@ -487,6 +486,9 @@ public class TransformationFactory {
 
     private Transformation createFromGeocentric( IGeocentricCRS sourceCRS, ICRS targetCRS )
                             throws TransformationException {
+        if ( targetCRS instanceof CRSRef ) {
+            targetCRS = ( (CRSRef) targetCRS ).getReferencedObject();
+        }
         Transformation result = null;
         CRSType type = targetCRS.getType();
         switch ( type ) {
@@ -518,6 +520,9 @@ public class TransformationFactory {
 
     private Transformation createFromProjected( IProjectedCRS sourceCRS, ICRS targetCRS )
                             throws TransformationException {
+        if ( targetCRS instanceof CRSRef ) {
+            targetCRS = ( (CRSRef) targetCRS ).getReferencedObject();
+        }
         Transformation result = null;
         CRSType type = targetCRS.getType();
         switch ( type ) {
@@ -549,6 +554,9 @@ public class TransformationFactory {
 
     private Transformation createFromGeographic( IGeographicCRS sourceCRS, ICRS targetCRS )
                             throws TransformationException {
+        if ( targetCRS instanceof CRSRef ) {
+            targetCRS = ( (CRSRef) targetCRS ).getReferencedObject();
+        }
         Transformation result = null;
         CRSType type = targetCRS.getType();
         switch ( type ) {
