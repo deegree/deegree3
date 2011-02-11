@@ -139,16 +139,32 @@ public abstract class AbstractFeature implements Feature {
     protected Envelope calcEnvelope() {
         Envelope featureBBox = null;
         for ( Property prop : this.getProperties() ) {
-            featureBBox = mergeEnvelope( prop, featureBBox, getGeometryProperties().length == 0, new HashSet<Feature>() );
+            featureBBox = mergeEnvelope( prop, featureBBox );
+        }
+        if ( featureBBox == null ) {
+            Set<Feature> visited = new HashSet<Feature>();
+            for ( Property prop : this.getProperties() ) {
+                if ( prop.getValue() instanceof Feature ) {
+                    Feature f = (Feature) prop.getValue();
+                    if ( visited.contains( f ) ) {
+                        continue;
+                    }
+                    visited.add( f );
+
+                    for ( Property p2 : f.getProperties() ) {
+                        featureBBox = mergeEnvelope( p2, featureBBox );
+                    }
+                }
+            }
         }
         return featureBBox;
     }
 
-    private Envelope mergeEnvelope( TypedObjectNode node, Envelope env, boolean useSubfeatures, Set<Feature> visited ) {
+    private Envelope mergeEnvelope( TypedObjectNode node, Envelope env ) {
         if ( node instanceof Property ) {
             Property prop = (Property) node;
             if ( prop.getValue() != null ) {
-                env = mergeEnvelope( prop.getValue(), env, useSubfeatures, visited );
+                env = mergeEnvelope( prop.getValue(), env );
             }
         } else if ( node instanceof Geometry ) {
             Geometry g = (Geometry) node;
@@ -166,17 +182,7 @@ public abstract class AbstractFeature implements Feature {
         } else if ( node instanceof GenericXMLElementContent ) {
             GenericXMLElementContent xml = (GenericXMLElementContent) node;
             for ( TypedObjectNode child : xml.getChildren() ) {
-                env = mergeEnvelope( child, env, useSubfeatures, visited );
-            }
-        } else if ( useSubfeatures && node instanceof Feature ) {
-            Feature f = (Feature) node;
-            if ( visited.contains( f ) ) {
-                return env;
-            }
-            visited.add( f );
-
-            for ( Property prop : f.getProperties() ) {
-                env = mergeEnvelope( prop, env, false, visited );
+                env = mergeEnvelope( child, env );
             }
         }
         return env;
