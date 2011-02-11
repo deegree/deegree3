@@ -1,7 +1,6 @@
 package org.deegree.feature.persistence.osm;
 
 import static org.deegree.commons.tom.primitive.PrimitiveType.STRING;
-import static org.deegree.cs.CRS.EPSG_4326;
 import static org.deegree.feature.types.property.GeometryPropertyType.CoordinateDimension.DIM_2;
 import static org.deegree.feature.types.property.GeometryPropertyType.GeometryType.POINT;
 import static org.deegree.feature.types.property.ValueRepresentation.BOTH;
@@ -18,6 +17,7 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
 import org.deegree.commons.tom.primitive.PrimitiveValue;
+import org.deegree.cs.CRSUtils;
 import org.deegree.feature.Feature;
 import org.deegree.feature.FeatureCollection;
 import org.deegree.feature.GenericFeatureCollection;
@@ -266,7 +266,7 @@ public class OSMToFeature {
                 lon = Double.parseDouble( lonstr );
 
                 List<Property> pointProps = new ArrayList<Property>();
-                Geometry geom = geomFac.createPoint( null, lon, lat, EPSG_4326 );
+                Geometry geom = geomFac.createPoint( null, lon, lat, CRSUtils.EPSG_4326 );
                 pointProps.add( new GenericProperty( nodeGeomPt, nodeGeomPt.getName(), geom ) );
                 parser.next();
                 parser.next();
@@ -307,7 +307,7 @@ public class OSMToFeature {
                 }
                 List<Property> props = new ArrayList<Property>();
                 Points points = new PointsList( nds );
-                Geometry geom = geomFac.createLineString( null, org.deegree.cs.CRS.EPSG_4326, points );
+                Geometry geom = geomFac.createLineString( null, CRSUtils.EPSG_4326, points );
                 props.add( new GenericProperty( wayGeomPt, wayGeomPt.getName(), geom ) );
                 nds.clear();
                 this.getTags();
@@ -347,7 +347,7 @@ public class OSMToFeature {
                         lat = Double.parseDouble( latstr );
                         lon = Double.parseDouble( lonstr );
                         Point point;
-                        point = geomFac.createPoint( null, lon, lat, org.deegree.cs.CRS.EPSG_4326 );
+                        point = geomFac.createPoint( null, lon, lat, CRSUtils.EPSG_4326 );
                         nds.add( point );
                         System.out.println( "" );
                         System.out.println( "LOCATIONEND: " + parser.getLocation() );
