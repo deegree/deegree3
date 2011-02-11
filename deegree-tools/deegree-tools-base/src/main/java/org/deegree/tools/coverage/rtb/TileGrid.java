@@ -192,7 +192,7 @@ public class TileGrid {
         double diagSize = Math.sqrt( deltaX * deltaX + deltaY * deltaY );
         double pixelSize = diagSize / Math.sqrt( Math.pow( xTiles * tileSize, 2 ) + Math.pow( yTiles * tileSize, 2 ) );
 
-        return pixelSize * 2.0;
+        return pixelSize;
     }
 
     /**
