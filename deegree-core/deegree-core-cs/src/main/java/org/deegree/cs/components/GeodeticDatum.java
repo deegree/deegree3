@@ -38,6 +38,8 @@ package org.deegree.cs.components;
 
 import org.deegree.cs.CRSCodeType;
 import org.deegree.cs.CRSIdentifiable;
+import org.deegree.cs.CRSResource;
+import org.deegree.cs.refs.components.GeodeticDatumRef;
 import org.deegree.cs.transformations.helmert.Helmert;
 
 /**
@@ -51,7 +53,7 @@ import org.deegree.cs.transformations.helmert.Helmert;
  * 
  */
 
-public class GeodeticDatum extends Datum {
+public class GeodeticDatum extends Datum implements IGeodeticDatum {
 
     /**
      * The default WGS 1984 datum, with primeMeridian set to Greenwich and default (no) wgs84 conversion info.
@@ -59,9 +61,9 @@ public class GeodeticDatum extends Datum {
     public static final GeodeticDatum WGS84 = new GeodeticDatum( Ellipsoid.WGS84, new CRSCodeType( "6326", "EPSG" ),
                                                                  "WGS_1984" );
 
-    private PrimeMeridian primeMeridian;
+    private IPrimeMeridian primeMeridian;
 
-    private Ellipsoid ellipsoid;
+    private IEllipsoid ellipsoid;
 
     private Helmert toWGS84;
 
@@ -75,7 +77,7 @@ public class GeodeticDatum extends Datum {
      * @param id
      *            containing all relevant id data.
      */
-    public GeodeticDatum( Ellipsoid ellipsoid, PrimeMeridian primeMeridian, Helmert toWGS84, CRSIdentifiable id ) {
+    public GeodeticDatum( IEllipsoid ellipsoid, IPrimeMeridian primeMeridian, Helmert toWGS84, CRSResource id ) {
         super( id );
         this.ellipsoid = ellipsoid;
         this.primeMeridian = primeMeridian;
@@ -90,7 +92,7 @@ public class GeodeticDatum extends Datum {
      * @param id
      *            containing all relevant id data.
      */
-    public GeodeticDatum( Ellipsoid ellipsoid, PrimeMeridian primeMeridian, CRSIdentifiable id ) {
+    public GeodeticDatum( IEllipsoid ellipsoid, IPrimeMeridian primeMeridian, CRSResource id ) {
         this( ellipsoid, primeMeridian, null, id );
     }
 
@@ -107,7 +109,7 @@ public class GeodeticDatum extends Datum {
      * @param descriptions
      * @param areasOfUse
      */
-    public GeodeticDatum( Ellipsoid ellipsoid, PrimeMeridian primeMeridian, Helmert toWGS84, CRSCodeType[] codes,
+    public GeodeticDatum( IEllipsoid ellipsoid, IPrimeMeridian primeMeridian, Helmert toWGS84, CRSCodeType[] codes,
                           String[] names, String[] versions, String[] descriptions, String[] areasOfUse ) {
         this( ellipsoid, primeMeridian, toWGS84, new CRSIdentifiable( codes, names, versions, descriptions, areasOfUse ) );
     }
@@ -121,7 +123,7 @@ public class GeodeticDatum extends Datum {
      *            bursa-wolf parameters describing the transform from this datum into the wgs84 datum.
      * @param codes
      */
-    public GeodeticDatum( Ellipsoid ellipsoid, Helmert toWGS84, CRSCodeType[] codes ) {
+    public GeodeticDatum( IEllipsoid ellipsoid, Helmert toWGS84, CRSCodeType[] codes ) {
         this( ellipsoid, PrimeMeridian.GREENWICH, toWGS84, new CRSIdentifiable( codes, null, null, null, null ) );
     }
 
@@ -136,7 +138,7 @@ public class GeodeticDatum extends Datum {
      *            bursa-wolf parameters describing the transform from this datum into the wgs84 datum.
      * @param codes
      */
-    public GeodeticDatum( Ellipsoid ellipsoid, PrimeMeridian primeMeridian, Helmert toWGS84, CRSCodeType[] codes ) {
+    public GeodeticDatum( IEllipsoid ellipsoid, IPrimeMeridian primeMeridian, Helmert toWGS84, CRSCodeType[] codes ) {
         this( ellipsoid, primeMeridian, toWGS84, new CRSIdentifiable( codes, null, null, null, null ) );
     }
 
@@ -153,7 +155,7 @@ public class GeodeticDatum extends Datum {
      * @param description
      * @param areaOfUse
      */
-    public GeodeticDatum( Ellipsoid ellipsoid, PrimeMeridian primeMeridian, Helmert toWGS84, CRSCodeType code,
+    public GeodeticDatum( IEllipsoid ellipsoid, IPrimeMeridian primeMeridian, Helmert toWGS84, CRSCodeType code,
                           String name, String version, String description, String areaOfUse ) {
         this( ellipsoid, primeMeridian, toWGS84, new CRSIdentifiable( new CRSCodeType[] { code },
                                                                       new String[] { name }, new String[] { version },
@@ -171,7 +173,7 @@ public class GeodeticDatum extends Datum {
      * @param code
      * @param name
      */
-    public GeodeticDatum( Ellipsoid ellipsoid, Helmert toWGS84, CRSCodeType code, String name ) {
+    public GeodeticDatum( IEllipsoid ellipsoid, Helmert toWGS84, CRSCodeType code, String name ) {
         this( ellipsoid, PrimeMeridian.GREENWICH, toWGS84,
               new CRSIdentifiable( new CRSCodeType[] { code }, new String[] { name }, null, null, null ) );
     }
@@ -184,7 +186,7 @@ public class GeodeticDatum extends Datum {
      * @param code
      * @param name
      */
-    public GeodeticDatum( Ellipsoid ellipsoid, CRSCodeType code, String name ) {
+    public GeodeticDatum( IEllipsoid ellipsoid, CRSCodeType code, String name ) {
         this( ellipsoid, PrimeMeridian.GREENWICH, null, new CRSIdentifiable( new CRSCodeType[] { code },
                                                                              new String[] { name }, null, null, null ) );
     }
@@ -192,21 +194,21 @@ public class GeodeticDatum extends Datum {
     /**
      * @return the ellipsoid.
      */
-    public final Ellipsoid getEllipsoid() {
+    public final IEllipsoid getEllipsoid() {
         return ellipsoid;
     }
 
     /**
      * @return the primeMeridian.
      */
-    public final PrimeMeridian getPrimeMeridian() {
+    public final IPrimeMeridian getPrimeMeridian() {
         return primeMeridian;
     }
 
     /**
      * @param primeMeridian
      */
-    public final void setPrimeMeridian( PrimeMeridian primeMeridian ) {
+    public final void setPrimeMeridian( IPrimeMeridian primeMeridian ) {
         this.primeMeridian = primeMeridian;
     }
 
@@ -228,6 +230,9 @@ public class GeodeticDatum extends Datum {
 
     @Override
     public boolean equals( Object other ) {
+        if ( other instanceof GeodeticDatumRef ) {
+            other = ( (GeodeticDatumRef) other ).getReferencedObject();
+        }
         if ( other != null && other instanceof GeodeticDatum ) {
             GeodeticDatum that = (GeodeticDatum) other;
             return this.getPrimeMeridian().equals( that.getPrimeMeridian() )

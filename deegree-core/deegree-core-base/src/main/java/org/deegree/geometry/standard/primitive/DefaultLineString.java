@@ -37,7 +37,7 @@ package org.deegree.geometry.standard.primitive;
 
 import java.util.Collections;
 
-import org.deegree.cs.CRS;
+import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.geometry.points.Points;
 import org.deegree.geometry.precision.PrecisionModel;
 import org.deegree.geometry.primitive.LineString;
@@ -64,7 +64,7 @@ public class DefaultLineString extends DefaultCurve implements LineString {
      * @param pm
      * @param controlPoints
      */
-    public DefaultLineString( String id, CRS crs, PrecisionModel pm, Points controlPoints ) {
+    public DefaultLineString( String id, ICRS crs, PrecisionModel pm, Points controlPoints ) {
         super( id, crs, pm, Collections.singletonList( (CurveSegment) new DefaultLineStringSegment( controlPoints ) ) );
         singleSegment = (LineStringSegment) getCurveSegments().get( 0 );
     }

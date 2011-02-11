@@ -41,7 +41,7 @@ import java.util.List;
 import javax.vecmath.Point3d;
 
 import org.deegree.commons.utils.Triple;
-import org.deegree.cs.CRS;
+import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.exceptions.TransformationException;
 import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.geometry.GeometryFactory;
@@ -155,7 +155,7 @@ public class Helmert4Transform extends AbstractTransformation {
     private double[] passPointsN_one;
 
     public Helmert4Transform( List<Triple<Point4Values, Point4Values, PointResidual>> mappedPoints,
-                              Footprint footPrint, Scene2DValues sceneValues, CRS targetCRS, final int order )
+                              Footprint footPrint, Scene2DValues sceneValues, ICRS targetCRS, final int order )
                             throws UnknownCRSException {
         super( mappedPoints, footPrint, sceneValues, targetCRS, targetCRS, order );
 

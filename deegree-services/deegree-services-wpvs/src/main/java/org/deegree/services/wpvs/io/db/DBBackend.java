@@ -52,7 +52,7 @@ import java.util.List;
 import org.deegree.commons.index.PositionableModel;
 import org.deegree.commons.jdbc.ConnectionManager;
 import org.deegree.commons.utils.JDBCUtils;
-import org.deegree.cs.CRS;
+import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryFactory;
 import org.deegree.rendering.r3d.opengl.rendering.model.geometry.BillBoard;
@@ -275,7 +275,7 @@ public abstract class DBBackend<G> extends ModelBackend<G> {
     }
 
     @Override
-    public List<RenderablePrototype> loadProtoTypes( DirectGeometryBuffer geometryBuffer, CRS baseCRS ) {
+    public List<RenderablePrototype> loadProtoTypes( DirectGeometryBuffer geometryBuffer, ICRS baseCRS ) {
         List<RenderablePrototype> result = new LinkedList<RenderablePrototype>();
         try {
             PrototypeSerializer serializer = getPrototypeSerializer();
@@ -289,7 +289,7 @@ public abstract class DBBackend<G> extends ModelBackend<G> {
     }
 
     @Override
-    public void loadBuildings( BuildingRenderer bm, CRS baseCRS ) {
+    public void loadBuildings( BuildingRenderer bm, ICRS baseCRS ) {
         try {
             WROSerializer serializer = getBuildingSerializer();
             serializer.setGeometryBuffer( bm.getGeometryBuffer() );
@@ -301,7 +301,7 @@ public abstract class DBBackend<G> extends ModelBackend<G> {
     }
 
     @Override
-    public void loadTrees( TreeRenderer tm, CRS baseCRS ) {
+    public void loadTrees( TreeRenderer tm, ICRS baseCRS ) {
         Connection connection;
         try {
             connection = getConnection();
@@ -1060,7 +1060,7 @@ public abstract class DBBackend<G> extends ModelBackend<G> {
     }
 
     @Override
-    public void loadEntities( RenderableManager<?> renderer, CRS baseCRS ) {
+    public void loadEntities( RenderableManager<?> renderer, ICRS baseCRS ) {
         if ( dataType == Type.TREE ) {
             loadTrees( (TreeRenderer) renderer, baseCRS );
         } else {

@@ -40,7 +40,8 @@ import static java.util.Arrays.asList;
 
 import java.util.Random;
 
-import org.deegree.cs.CRS;
+import org.deegree.cs.coordinatesystems.ICRS;
+import org.deegree.cs.persistence.CRSManager;
 import org.deegree.geometry.GeometryFactory;
 import org.deegree.geometry.primitive.Curve;
 import org.deegree.geometry.primitive.Point;
@@ -61,7 +62,7 @@ public class GeometryGenerator {
 
     private static final GeometryFactory fac = new GeometryFactory();
 
-    private static final CRS mapcs = new CRS( "CRS:1" );
+    private static final ICRS mapcs = CRSManager.getCRSRef( "CRS:1" );
 
     /**
      * @param max

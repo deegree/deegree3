@@ -55,22 +55,27 @@ import org.deegree.commons.annotations.LoggingNotes;
 import org.deegree.commons.xml.CommonNamespaces;
 import org.deegree.commons.xml.stax.IndentingXMLStreamWriter;
 import org.deegree.cs.CRSCodeType;
-import org.deegree.cs.CRSIdentifiable;
-import org.deegree.cs.components.Axis;
-import org.deegree.cs.components.Ellipsoid;
+import org.deegree.cs.CRSResource;
 import org.deegree.cs.components.GeodeticDatum;
-import org.deegree.cs.components.PrimeMeridian;
-import org.deegree.cs.components.Unit;
+import org.deegree.cs.components.IAxis;
+import org.deegree.cs.components.IEllipsoid;
+import org.deegree.cs.components.IGeodeticDatum;
+import org.deegree.cs.components.IPrimeMeridian;
+import org.deegree.cs.components.IUnit;
 import org.deegree.cs.coordinatesystems.CompoundCRS;
-import org.deegree.cs.coordinatesystems.CoordinateSystem;
-import org.deegree.cs.coordinatesystems.CoordinateSystem.CRSType;
+import org.deegree.cs.coordinatesystems.CRS.CRSType;
 import org.deegree.cs.coordinatesystems.GeocentricCRS;
 import org.deegree.cs.coordinatesystems.GeographicCRS;
+import org.deegree.cs.coordinatesystems.ICompoundCRS;
+import org.deegree.cs.coordinatesystems.ICRS;
+import org.deegree.cs.coordinatesystems.IGeocentricCRS;
+import org.deegree.cs.coordinatesystems.IGeographicCRS;
+import org.deegree.cs.coordinatesystems.IProjectedCRS;
 import org.deegree.cs.coordinatesystems.ProjectedCRS;
-import org.deegree.cs.projections.Projection;
-import org.deegree.cs.projections.azimuthal.StereographicAzimuthal;
+import org.deegree.cs.projections.IProjection;
+import org.deegree.cs.projections.azimuthal.IStereographicAzimuthal;
 import org.deegree.cs.projections.conic.LambertConformalConic;
-import org.deegree.cs.projections.cylindric.TransverseMercator;
+import org.deegree.cs.projections.cylindric.ITransverseMercator;
 import org.deegree.cs.transformations.Transformation;
 import org.deegree.cs.transformations.helmert.Helmert;
 import org.deegree.cs.transformations.polynomial.PolynomialTransformation;
@@ -92,7 +97,7 @@ public class CRSExporterBase {
 
     private static Logger LOG = LoggerFactory.getLogger( CRSExporterBase.class );
 
-    public void export( StringBuilder sb, List<CoordinateSystem> crsToExport ) {
+    public void export( StringBuilder sb, List<ICRS> crsToExport ) {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         PrintWriter writer = new PrintWriter( out );
 
@@ -113,7 +118,7 @@ public class CRSExporterBase {
     }
 
     /**
-     * Export the given list of CoordinateSystems into the crs-definition format.
+     * Export the given list of ICoordinateSystems into the crs-definition format.
      * 
      * 
      * @param crsToExport
@@ -122,25 +127,25 @@ public class CRSExporterBase {
      * @throws XMLStreamException
      *             if an error occurred while exporting
      */
-    public void export( List<CoordinateSystem> crsToExport, XMLStreamWriter xmlWriter )
+    public void export( List<ICRS> crsToExport, XMLStreamWriter xmlWriter )
                             throws XMLStreamException {
         if ( crsToExport != null ) {
             if ( crsToExport.size() != 0 ) {
                 LOG.debug( "Trying to export: " + crsToExport.size() + " coordinate systems." );
 
                 // LinkedList<String> exportedIDs = new LinkedList<String>();
-                Set<Ellipsoid> ellipsoids = new HashSet<Ellipsoid>();
-                Set<GeodeticDatum> datums = new HashSet<GeodeticDatum>();
-                Set<GeocentricCRS> geocentrics = new HashSet<GeocentricCRS>();
-                Set<GeographicCRS> geographics = new HashSet<GeographicCRS>();
-                Set<ProjectedCRS> projecteds = new HashSet<ProjectedCRS>();
-                Set<CompoundCRS> compounds = new HashSet<CompoundCRS>();
-                Set<PrimeMeridian> primeMeridians = new HashSet<PrimeMeridian>();
+                Set<IEllipsoid> ellipsoids = new HashSet<IEllipsoid>();
+                Set<IGeodeticDatum> datums = new HashSet<IGeodeticDatum>();
+                Set<IGeocentricCRS> geocentrics = new HashSet<IGeocentricCRS>();
+                Set<IGeographicCRS> geographics = new HashSet<IGeographicCRS>();
+                Set<IProjectedCRS> projecteds = new HashSet<IProjectedCRS>();
+                Set<ICompoundCRS> compounds = new HashSet<ICompoundCRS>();
+                Set<IPrimeMeridian> primeMeridians = new HashSet<IPrimeMeridian>();
                 Set<Helmert> wgs84s = new HashSet<Helmert>();
 
-                for ( CoordinateSystem crs : crsToExport ) {
+                for ( ICRS crs : crsToExport ) {
                     if ( crs != null ) {
-                        GeodeticDatum d = (GeodeticDatum) crs.getDatum();
+                        IGeodeticDatum d = (GeodeticDatum) crs.getDatum();
                         datums.add( d );
                         ellipsoids.add( d.getEllipsoid() );
 
@@ -170,25 +175,25 @@ public class CRSExporterBase {
 
                 initDocument( xmlWriter );
 
-                for ( Ellipsoid e : ellipsoids ) {
+                for ( IEllipsoid e : ellipsoids ) {
                     export( e, xmlWriter );
                 }
-                for ( GeodeticDatum d : datums ) {
+                for ( IGeodeticDatum d : datums ) {
                     export( d, xmlWriter );
                 }
-                for ( ProjectedCRS projected : projecteds ) {
+                for ( IProjectedCRS projected : projecteds ) {
                     export( projected, xmlWriter );
                 }
-                for ( GeographicCRS geographic : geographics ) {
+                for ( IGeographicCRS geographic : geographics ) {
                     export( geographic, xmlWriter );
                 }
-                for ( CompoundCRS compound : compounds ) {
+                for ( ICompoundCRS compound : compounds ) {
                     export( compound, xmlWriter );
                 }
-                for ( GeocentricCRS geocentric : geocentrics ) {
+                for ( IGeocentricCRS geocentric : geocentrics ) {
                     export( geocentric, xmlWriter );
                 }
-                for ( PrimeMeridian pm : primeMeridians ) {
+                for ( IPrimeMeridian pm : primeMeridians ) {
                     export( pm, xmlWriter );
                 }
                 for ( Helmert wgs84 : wgs84s ) {
@@ -292,7 +297,7 @@ public class CRSExporterBase {
      *            to export to.
      * @throws XMLStreamException
      */
-    protected void export( PrimeMeridian pm, XMLStreamWriter xmlWriter )
+    protected void export( IPrimeMeridian pm, XMLStreamWriter xmlWriter )
                             throws XMLStreamException {
         if ( pm != null ) {
             xmlWriter.writeStartElement( CRSNS, "primeMeridian" );
@@ -317,19 +322,19 @@ public class CRSExporterBase {
      *            to export the geographic CRS to.
      * @throws XMLStreamException
      */
-    protected void export( CompoundCRS compoundCRS, XMLStreamWriter xmlWriter )
+    protected void export( ICompoundCRS compoundCRS, XMLStreamWriter xmlWriter )
                             throws XMLStreamException {
         if ( compoundCRS != null ) {
             xmlWriter.writeStartElement( CRSNS, "compoundCRS" );
 
             exportIdentifiable( compoundCRS, xmlWriter );
-            CoordinateSystem underCRS = compoundCRS.getUnderlyingCRS();
+            ICRS underCRS = compoundCRS.getUnderlyingCRS();
             // usedCRS element
             xmlWriter.writeStartElement( CRSNS, "usedCRS" );
             xmlWriter.writeCharacters( underCRS.getCode().toString() );
             xmlWriter.writeEndElement();
             // heightAxis element
-            Axis heightAxis = compoundCRS.getHeightAxis();
+            IAxis heightAxis = compoundCRS.getHeightAxis();
             export( heightAxis, "heightAxis", xmlWriter );
             // defaultHeight element
             double axisHeight = compoundCRS.getDefaultHeight();
@@ -350,7 +355,7 @@ public class CRSExporterBase {
      *            to export the projected CRS to.
      * @throws XMLStreamException
      */
-    protected void export( ProjectedCRS projectedCRS, XMLStreamWriter xmlWriter )
+    protected void export( IProjectedCRS projectedCRS, XMLStreamWriter xmlWriter )
                             throws XMLStreamException {
         if ( projectedCRS != null ) {
             xmlWriter.writeStartElement( CRSNS, "projectedCRS" );
@@ -375,7 +380,7 @@ public class CRSExporterBase {
      *            to export the projection to.
      * @throws XMLStreamException
      */
-    protected void export( Projection projection, XMLStreamWriter xmlWriter )
+    protected void export( IProjection projection, XMLStreamWriter xmlWriter )
                             throws XMLStreamException {
         if ( projection != null ) {
             xmlWriter.writeStartElement( CRSNS, "projection" );
@@ -406,7 +411,7 @@ public class CRSExporterBase {
             xmlWriter.writeEndElement();
             if ( "transverseMercator".equalsIgnoreCase( implName ) ) {
                 xmlWriter.writeStartElement( CRSNS, "northernHemisphere" );
-                xmlWriter.writeCharacters( Boolean.toString( ( (TransverseMercator) projection ).getHemisphere() ) );
+                xmlWriter.writeCharacters( Boolean.toString( ( (ITransverseMercator) projection ).getHemisphere() ) );
                 xmlWriter.writeEndElement();
             } else if ( "lambertConformalConic".equalsIgnoreCase( implName ) ) {
                 double paralellLatitude = ( (LambertConformalConic) projection ).getFirstParallelLatitude();
@@ -428,7 +433,7 @@ public class CRSExporterBase {
             } else if ( "stereographicAzimuthal".equalsIgnoreCase( implName ) ) {
                 xmlWriter.writeStartElement( CRSNS, "trueScaleLatitude" );
                 xmlWriter.writeAttribute( "inDegrees", "true" );
-                xmlWriter.writeCharacters( Double.toString( ( (StereographicAzimuthal) projection ).getTrueScaleLatitude() ) );
+                xmlWriter.writeCharacters( Double.toString( ( (IStereographicAzimuthal) projection ).getTrueScaleLatitude() ) );
                 xmlWriter.writeEndElement();
             }
             xmlWriter.writeEndElement();
@@ -445,7 +450,7 @@ public class CRSExporterBase {
      *            to export the geographic CRS to.
      * @throws XMLStreamException
      */
-    protected void export( GeographicCRS geoGraphicCRS, XMLStreamWriter xmlWriter )
+    protected void export( IGeographicCRS geoGraphicCRS, XMLStreamWriter xmlWriter )
                             throws XMLStreamException {
         if ( geoGraphicCRS != null ) {
             xmlWriter.writeStartElement( CRSNS, "geographicCRS" );
@@ -467,7 +472,7 @@ public class CRSExporterBase {
      *            to export the geocentric CRS to.
      * @throws XMLStreamException
      */
-    protected void export( GeocentricCRS geocentricCRS, XMLStreamWriter xmlWriter )
+    protected void export( IGeocentricCRS geocentricCRS, XMLStreamWriter xmlWriter )
                             throws XMLStreamException {
         if ( geocentricCRS != null ) {
             xmlWriter.writeStartElement( CRSNS, "geocentricCRS" );
@@ -488,16 +493,16 @@ public class CRSExporterBase {
      *            to export to
      * @throws XMLStreamException
      */
-    protected void exportAbstractCRS( CoordinateSystem crs, XMLStreamWriter xmlWriter )
+    protected void exportAbstractCRS( ICRS crs, XMLStreamWriter xmlWriter )
                             throws XMLStreamException {
         if ( crs != null ) {
             exportIdentifiable( crs, xmlWriter );
 
-            Axis[] axes = crs.getAxis();
+            IAxis[] axes = crs.getAxis();
             StringBuilder axisOrder = new StringBuilder( 4 ); // maxOccurs of Axis = 3 in the schema
 
             for ( int i = 0; i < axes.length; ++i ) {
-                Axis a = axes[i];
+                IAxis a = axes[i];
                 export( a, "Axis", xmlWriter );
                 axisOrder.append( a.getName() );
                 if ( ( i + 1 ) < axes.length ) {
@@ -571,7 +576,7 @@ public class CRSExporterBase {
      *            to export to.
      * @throws XMLStreamException
      */
-    protected void export( Axis axis, String elName, XMLStreamWriter xmlWriter )
+    protected void export( IAxis axis, String elName, XMLStreamWriter xmlWriter )
                             throws XMLStreamException {
         if ( axis != null ) {
             xmlWriter.writeStartElement( CRSNS, elName );
@@ -598,7 +603,7 @@ public class CRSExporterBase {
      *            to export to.
      * @throws XMLStreamException
      */
-    protected void export( Unit units, XMLStreamWriter xmlWriter )
+    protected void export( IUnit units, XMLStreamWriter xmlWriter )
                             throws XMLStreamException {
         if ( units != null ) {
             xmlWriter.writeStartElement( CRSNS, "units" );
@@ -617,7 +622,7 @@ public class CRSExporterBase {
      *            to export the datum to.
      * @throws XMLStreamException
      */
-    protected void export( GeodeticDatum datum, XMLStreamWriter xmlWriter )
+    protected void export( IGeodeticDatum datum, XMLStreamWriter xmlWriter )
                             throws XMLStreamException {
         if ( datum != null ) {
             xmlWriter.writeStartElement( CRSNS, "geodeticDatum" );
@@ -627,7 +632,7 @@ public class CRSExporterBase {
             xmlWriter.writeCharacters( datum.getEllipsoid().getCode().toString() );
             xmlWriter.writeEndElement();
             // usedPrimeMeridian element
-            PrimeMeridian pm = datum.getPrimeMeridian();
+            IPrimeMeridian pm = datum.getPrimeMeridian();
             if ( pm != null ) {
                 xmlWriter.writeStartElement( CRSNS, "usedPrimeMeridian" );
                 xmlWriter.writeCharacters( pm.getCode().toString() );
@@ -653,7 +658,7 @@ public class CRSExporterBase {
      *            to export the ellipsoid to.
      * @throws XMLStreamException
      */
-    protected void export( Ellipsoid ellipsoid, XMLStreamWriter xmlWriter )
+    protected void export( IEllipsoid ellipsoid, XMLStreamWriter xmlWriter )
                             throws XMLStreamException {
         if ( ellipsoid != null ) {
             xmlWriter.writeStartElement( CRSNS, "ellipsoid" );
@@ -686,7 +691,7 @@ public class CRSExporterBase {
      *            to export to
      * @throws XMLStreamException
      */
-    protected void exportIdentifiable( CRSIdentifiable identifiable, XMLStreamWriter xmlWriter )
+    protected void exportIdentifiable( CRSResource identifiable, XMLStreamWriter xmlWriter )
                             throws XMLStreamException {
         // ids
         CRSCodeType[] identifiers = identifiable.getCodes();
@@ -752,13 +757,13 @@ public class CRSExporterBase {
     // */
     // public static void main( String[] args )
     // throws XMLStreamException, IOException {
-    // // CoordinateSystem lookup = CRSRegistry.lookup( "EPSG:31466" );
+    // // ICoordinateSystem lookup = CRSRegistry.lookup( "EPSG:31466" );
     // CRSConfiguration config = CRSConfiguration.getInstance();
     // CRSStore provider = config.getProvider();
     //
     // List<CoordinateSystem> one = provider.getAvailableCRSs();
     // // List<CoordinateSystem> one = new ArrayList<CoordinateSystem>();
-    // // CoordinateSystem a = provider.getCRSByCode( new CRSCodeType( "EPSG:31466" ) );
+    // // ICoordinateSystem a = provider.getCRSByCode( new CRSCodeType( "EPSG:31466" ) );
     // // one.add( a );
     // // a = provider.getCRSByCode( new CRSCodeType( "EPSG:4314" ) );
     // // one.add( a );
@@ -786,9 +791,9 @@ public class CRSExporterBase {
     // // a = provider.getCRSByCode( new CRSCodeType( "EPSG:4979" ) );
     // // one.add( a );
     //
-    // // CoordinateSystem a = provider.getCRSByCode( new CRSCodeType( "EPSG:4809" ) );
+    // // ICoordinateSystem a = provider.getCRSByCode( new CRSCodeType( "EPSG:4809" ) );
     // // one.add( a );
-    // // CoordinateSystem a = provider.getCRSByCode( new CRSCodeType( "EPSG:4157" ) );
+    // // ICoordinateSystem a = provider.getCRSByCode( new CRSCodeType( "EPSG:4157" ) );
     // // one.add( a );
     //
     // CRSExporterBase exporter = new CRSExporter( new Properties() );

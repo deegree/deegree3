@@ -52,7 +52,8 @@ import org.deegree.commons.uom.Length;
 import org.deegree.commons.xml.CommonNamespaces;
 import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;
-import org.deegree.cs.CRS;
+import org.deegree.cs.coordinatesystems.CRS;
+import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
@@ -71,6 +72,7 @@ import org.deegree.geometry.multi.MultiSolid;
 import org.deegree.geometry.multi.MultiSurface;
 import org.deegree.geometry.points.Points;
 import org.deegree.geometry.primitive.Curve;
+import org.deegree.geometry.primitive.Curve.CurveType;
 import org.deegree.geometry.primitive.GeometricPrimitive;
 import org.deegree.geometry.primitive.LineString;
 import org.deegree.geometry.primitive.LinearRing;
@@ -80,14 +82,13 @@ import org.deegree.geometry.primitive.Point;
 import org.deegree.geometry.primitive.Polygon;
 import org.deegree.geometry.primitive.PolyhedralSurface;
 import org.deegree.geometry.primitive.Ring;
+import org.deegree.geometry.primitive.Ring.RingType;
 import org.deegree.geometry.primitive.Solid;
+import org.deegree.geometry.primitive.Solid.SolidType;
 import org.deegree.geometry.primitive.Surface;
+import org.deegree.geometry.primitive.Surface.SurfaceType;
 import org.deegree.geometry.primitive.Tin;
 import org.deegree.geometry.primitive.TriangulatedSurface;
-import org.deegree.geometry.primitive.Curve.CurveType;
-import org.deegree.geometry.primitive.Ring.RingType;
-import org.deegree.geometry.primitive.Solid.SolidType;
-import org.deegree.geometry.primitive.Surface.SurfaceType;
 import org.deegree.geometry.primitive.patches.PolygonPatch;
 import org.deegree.geometry.primitive.patches.SurfacePatch;
 import org.deegree.geometry.primitive.patches.Triangle;
@@ -389,7 +390,7 @@ public class GML3GeometryReader extends GML3GeometryBaseReader implements GMLGeo
      * @throws XMLStreamException
      * @throws UnknownCRSException
      */
-    public Geometry parse( XMLStreamReaderWrapper xmlStream, CRS defaultCRS )
+    public Geometry parse( XMLStreamReaderWrapper xmlStream, ICRS defaultCRS )
                             throws XMLParsingException, XMLStreamException, UnknownCRSException {
 
         Geometry geometry = null;
@@ -468,7 +469,7 @@ public class GML3GeometryReader extends GML3GeometryBaseReader implements GMLGeo
      * @throws UnknownCRSException
      */
     @Override
-    public Geometry parseGeometryOrEnvelope( XMLStreamReaderWrapper xmlStream, CRS defaultCRS )
+    public Geometry parseGeometryOrEnvelope( XMLStreamReaderWrapper xmlStream, ICRS defaultCRS )
                             throws XMLParsingException, XMLStreamException, UnknownCRSException {
 
         Geometry geometry = null;
@@ -517,7 +518,7 @@ public class GML3GeometryReader extends GML3GeometryBaseReader implements GMLGeo
      * @throws XMLStreamException
      * @throws UnknownCRSException
      */
-    public GeometricPrimitive parseGeometricPrimitive( XMLStreamReaderWrapper xmlStream, CRS defaultCRS )
+    public GeometricPrimitive parseGeometricPrimitive( XMLStreamReaderWrapper xmlStream, ICRS defaultCRS )
                             throws XMLParsingException, XMLStreamException, UnknownCRSException {
 
         GeometricPrimitive primitive = null;
@@ -580,7 +581,8 @@ public class GML3GeometryReader extends GML3GeometryBaseReader implements GMLGeo
      * @throws XMLStreamException
      * @throws UnknownCRSException
      */
-    public MultiGeometry<? extends Geometry> parseGeometricAggregate( XMLStreamReaderWrapper xmlStream, CRS defaultCRS )
+    public MultiGeometry<? extends Geometry> parseGeometricAggregate( XMLStreamReaderWrapper xmlStream,
+                                                                      ICRS defaultCRS )
                             throws XMLParsingException, XMLStreamException, UnknownCRSException {
 
         MultiGeometry<? extends Geometry> geometry = null;
@@ -703,7 +705,7 @@ public class GML3GeometryReader extends GML3GeometryBaseReader implements GMLGeo
      *             if the element is not a valid "gml:_ImplicitGeometry" element
      * @throws XMLStreamException
      */
-    public Geometry parseImplicitGeometry( XMLStreamReaderWrapper xmlStream, CRS defaultCRS )
+    public Geometry parseImplicitGeometry( XMLStreamReaderWrapper xmlStream, ICRS defaultCRS )
                             throws XMLParsingException, XMLStreamException {
 
         // Geometry geometry = null;
@@ -752,7 +754,7 @@ public class GML3GeometryReader extends GML3GeometryBaseReader implements GMLGeo
      * @throws XMLStreamException
      * @throws UnknownCRSException
      */
-    public Curve parseAbstractCurve( XMLStreamReaderWrapper xmlStream, CRS defaultCRS )
+    public Curve parseAbstractCurve( XMLStreamReaderWrapper xmlStream, ICRS defaultCRS )
                             throws XMLParsingException, XMLStreamException, UnknownCRSException {
 
         Curve curve = null;
@@ -817,7 +819,7 @@ public class GML3GeometryReader extends GML3GeometryBaseReader implements GMLGeo
      * @throws XMLStreamException
      * @throws UnknownCRSException
      */
-    public Ring parseAbstractRing( XMLStreamReaderWrapper xmlStream, CRS defaultCRS )
+    public Ring parseAbstractRing( XMLStreamReaderWrapper xmlStream, ICRS defaultCRS )
                             throws XMLParsingException, XMLStreamException, UnknownCRSException {
 
         Ring ring = null;
@@ -871,7 +873,7 @@ public class GML3GeometryReader extends GML3GeometryBaseReader implements GMLGeo
      *            cursor must point at the <code>START_ELEMENT</code> event (&lt;gml:_Surface&gt;), points at the
      *            corresponding <code>END_ELEMENT</code> event (&lt;/gml:_Surface&gt;) afterwards
      * @param defaultCRS
-     *            default CRS for the geometry, this is only used if the geometry element has no own
+     *            default CRS for the geometry, this is only use CoordinateSystem the geometry element has no own
      *            <code>srsName</code> attribute
      * @return corresponding {@link Surface} object
      * @throws XMLParsingException
@@ -879,7 +881,7 @@ public class GML3GeometryReader extends GML3GeometryBaseReader implements GMLGeo
      * @throws XMLStreamException
      * @throws UnknownCRSException
      */
-    public Surface parseAbstractSurface( XMLStreamReaderWrapper xmlStream, CRS defaultCRS )
+    public Surface parseAbstractSurface( XMLStreamReaderWrapper xmlStream, ICRS defaultCRS )
                             throws XMLParsingException, XMLStreamException, UnknownCRSException {
 
         Surface surface = null;
@@ -956,7 +958,7 @@ public class GML3GeometryReader extends GML3GeometryBaseReader implements GMLGeo
      * @throws XMLStreamException
      * @throws UnknownCRSException
      */
-    public Solid parseAbstractSolid( XMLStreamReaderWrapper xmlStream, CRS defaultCRS )
+    public Solid parseAbstractSolid( XMLStreamReaderWrapper xmlStream, ICRS defaultCRS )
                             throws XMLParsingException, XMLStreamException, UnknownCRSException {
 
         Solid solid = null;
@@ -1011,12 +1013,12 @@ public class GML3GeometryReader extends GML3GeometryBaseReader implements GMLGeo
      * @throws XMLStreamException
      * @throws UnknownCRSException
      */
-    public Point parsePoint( XMLStreamReaderWrapper xmlStream, CRS defaultCRS )
+    public Point parsePoint( XMLStreamReaderWrapper xmlStream, ICRS defaultCRS )
                             throws XMLParsingException, XMLStreamException, UnknownCRSException {
 
         Point point = null;
         String gid = parseGeometryId( xmlStream );
-        CRS crs = determineActiveCRS( xmlStream, defaultCRS );
+        ICRS crs = determineActiveCRS( xmlStream, defaultCRS );
         GMLStdProps standardProps = propsParser.read( xmlStream );
 
         // must contain one of the following child elements: "gml:pos", "gml:coordinates" or "gml:coord"
@@ -1071,11 +1073,11 @@ public class GML3GeometryReader extends GML3GeometryBaseReader implements GMLGeo
      * @throws UnknownCRSException
      * @throws XMLParsingException
      */
-    public LineString parseLineString( XMLStreamReaderWrapper xmlStream, CRS defaultCRS )
+    public LineString parseLineString( XMLStreamReaderWrapper xmlStream, ICRS defaultCRS )
                             throws XMLStreamException, XMLParsingException, UnknownCRSException {
 
         String gid = parseGeometryId( xmlStream );
-        CRS crs = determineActiveCRS( xmlStream, defaultCRS );
+        ICRS crs = determineActiveCRS( xmlStream, defaultCRS );
         GMLStdProps standardProps = propsParser.read( xmlStream );
 
         List<Point> points = null;
@@ -1136,11 +1138,11 @@ public class GML3GeometryReader extends GML3GeometryBaseReader implements GMLGeo
      * @throws UnknownCRSException
      * @throws XMLParsingException
      */
-    public Curve parseCurve( XMLStreamReaderWrapper xmlStream, CRS defaultCRS )
+    public Curve parseCurve( XMLStreamReaderWrapper xmlStream, ICRS defaultCRS )
                             throws XMLStreamException, XMLParsingException, UnknownCRSException {
 
         String gid = parseGeometryId( xmlStream );
-        CRS crs = determineActiveCRS( xmlStream, defaultCRS );
+        ICRS crs = determineActiveCRS( xmlStream, defaultCRS );
         GMLStdProps standardProps = propsParser.read( xmlStream );
 
         xmlStream.require( XMLStreamConstants.START_ELEMENT, gmlNs, "segments" );
@@ -1173,11 +1175,11 @@ public class GML3GeometryReader extends GML3GeometryBaseReader implements GMLGeo
      * @throws UnknownCRSException
      * @throws XMLParsingException
      */
-    public OrientableCurve parseOrientableCurve( XMLStreamReaderWrapper xmlStream, CRS defaultCRS )
+    public OrientableCurve parseOrientableCurve( XMLStreamReaderWrapper xmlStream, ICRS defaultCRS )
                             throws XMLStreamException, UnknownCRSException {
 
         String gid = parseGeometryId( xmlStream );
-        CRS crs = determineActiveCRS( xmlStream, defaultCRS );
+        ICRS crs = determineActiveCRS( xmlStream, defaultCRS );
         boolean isReversed = !parseOrientation( xmlStream );
         GMLStdProps standardProps = propsParser.read( xmlStream );
 
@@ -1207,11 +1209,11 @@ public class GML3GeometryReader extends GML3GeometryBaseReader implements GMLGeo
      * @throws UnknownCRSException
      * @throws XMLParsingException
      */
-    public LinearRing parseLinearRing( XMLStreamReaderWrapper xmlStream, CRS defaultCRS )
+    public LinearRing parseLinearRing( XMLStreamReaderWrapper xmlStream, ICRS defaultCRS )
                             throws XMLStreamException, XMLParsingException, UnknownCRSException {
 
         String gid = parseGeometryId( xmlStream );
-        CRS crs = determineActiveCRS( xmlStream, defaultCRS );
+        ICRS crs = determineActiveCRS( xmlStream, defaultCRS );
         GMLStdProps standardProps = propsParser.read( xmlStream );
 
         Points points = curveSegmentParser.parseControlPoints( xmlStream, crs );
@@ -1241,11 +1243,11 @@ public class GML3GeometryReader extends GML3GeometryBaseReader implements GMLGeo
      * @throws UnknownCRSException
      * @throws XMLParsingException
      */
-    public Ring parseRing( XMLStreamReaderWrapper xmlStream, CRS defaultCRS )
+    public Ring parseRing( XMLStreamReaderWrapper xmlStream, ICRS defaultCRS )
                             throws XMLStreamException, UnknownCRSException {
 
         String gid = parseGeometryId( xmlStream );
-        CRS crs = determineActiveCRS( xmlStream, defaultCRS );
+        ICRS crs = determineActiveCRS( xmlStream, defaultCRS );
         GMLStdProps standardProps = propsParser.read( xmlStream );
 
         List<Curve> memberCurves = new LinkedList<Curve>();
@@ -1282,11 +1284,11 @@ public class GML3GeometryReader extends GML3GeometryBaseReader implements GMLGeo
      * @throws UnknownCRSException
      * @throws XMLParsingException
      */
-    public Polygon parsePolygon( XMLStreamReaderWrapper xmlStream, CRS defaultCRS )
+    public Polygon parsePolygon( XMLStreamReaderWrapper xmlStream, ICRS defaultCRS )
                             throws XMLStreamException, XMLParsingException, UnknownCRSException {
 
         String gid = parseGeometryId( xmlStream );
-        CRS crs = determineActiveCRS( xmlStream, defaultCRS );
+        ICRS crs = determineActiveCRS( xmlStream, defaultCRS );
         GMLStdProps standardProps = propsParser.read( xmlStream );
 
         Ring exteriorRing = null;
@@ -1363,11 +1365,11 @@ public class GML3GeometryReader extends GML3GeometryBaseReader implements GMLGeo
      * @throws UnknownCRSException
      * @throws XMLParsingException
      */
-    public Surface parseSurface( XMLStreamReaderWrapper xmlStream, CRS defaultCRS )
+    public Surface parseSurface( XMLStreamReaderWrapper xmlStream, ICRS defaultCRS )
                             throws XMLStreamException, UnknownCRSException {
 
         String gid = parseGeometryId( xmlStream );
-        CRS crs = determineActiveCRS( xmlStream, defaultCRS );
+        ICRS crs = determineActiveCRS( xmlStream, defaultCRS );
         GMLStdProps standardProps = propsParser.read( xmlStream );
 
         List<SurfacePatch> memberPatches = new LinkedList<SurfacePatch>();
@@ -1409,18 +1411,18 @@ public class GML3GeometryReader extends GML3GeometryBaseReader implements GMLGeo
      *            cursor must point at the <code>START_ELEMENT</code> event (&lt;gml:PolyhedralSurface&gt;), points at
      *            the corresponding <code>END_ELEMENT</code> event (&lt;/gml:PolyhedralSurface&gt;) afterwards
      * @param defaultCRS
-     *            default CRS for the geometry, this is only used if the "gml:PolyhedralSurface" has no
+     *            default CoordinateSystem for the geometry, this is only used if the "gml:PolyhedralSurface" has no
      *            <code>srsName</code> attribute
      * @return corresponding {@link PolyhedralSurface} object
      * @throws XMLStreamException
      * @throws UnknownCRSException
      * @throws XMLParsingException
      */
-    public PolyhedralSurface parsePolyhedralSurface( XMLStreamReaderWrapper xmlStream, CRS defaultCRS )
+    public PolyhedralSurface parsePolyhedralSurface( XMLStreamReaderWrapper xmlStream, ICRS defaultCRS )
                             throws XMLStreamException, UnknownCRSException {
 
         String gid = parseGeometryId( xmlStream );
-        CRS crs = determineActiveCRS( xmlStream, defaultCRS );
+        ICRS crs = determineActiveCRS( xmlStream, defaultCRS );
         GMLStdProps standardProps = propsParser.read( xmlStream );
 
         List<PolygonPatch> memberPatches = new LinkedList<PolygonPatch>();
@@ -1452,11 +1454,11 @@ public class GML3GeometryReader extends GML3GeometryBaseReader implements GMLGeo
      * @throws UnknownCRSException
      * @throws XMLParsingException
      */
-    public TriangulatedSurface parseTriangulatedSurface( XMLStreamReaderWrapper xmlStream, CRS defaultCRS )
+    public TriangulatedSurface parseTriangulatedSurface( XMLStreamReaderWrapper xmlStream, ICRS defaultCRS )
                             throws XMLStreamException, UnknownCRSException {
 
         String gid = parseGeometryId( xmlStream );
-        CRS crs = determineActiveCRS( xmlStream, defaultCRS );
+        ICRS crs = determineActiveCRS( xmlStream, defaultCRS );
         GMLStdProps standardProps = propsParser.read( xmlStream );
 
         List<Triangle> memberPatches = new LinkedList<Triangle>();
@@ -1491,11 +1493,11 @@ public class GML3GeometryReader extends GML3GeometryBaseReader implements GMLGeo
      * @throws UnknownCRSException
      * @throws XMLParsingException
      */
-    public Tin parseTin( XMLStreamReaderWrapper xmlStream, CRS defaultCRS )
+    public Tin parseTin( XMLStreamReaderWrapper xmlStream, ICRS defaultCRS )
                             throws XMLStreamException, XMLParsingException, UnknownCRSException {
 
         String gid = parseGeometryId( xmlStream );
-        CRS crs = determineActiveCRS( xmlStream, defaultCRS );
+        ICRS crs = determineActiveCRS( xmlStream, defaultCRS );
         GMLStdProps standardProps = propsParser.read( xmlStream );
 
         List<Triangle> memberPatches = new LinkedList<Triangle>();
@@ -1592,11 +1594,11 @@ public class GML3GeometryReader extends GML3GeometryBaseReader implements GMLGeo
      * @throws UnknownCRSException
      * @throws XMLParsingException
      */
-    public OrientableSurface parseOrientableSurface( XMLStreamReaderWrapper xmlStream, CRS defaultCRS )
+    public OrientableSurface parseOrientableSurface( XMLStreamReaderWrapper xmlStream, ICRS defaultCRS )
                             throws XMLStreamException, XMLParsingException, UnknownCRSException {
 
         String gid = parseGeometryId( xmlStream );
-        CRS crs = determineActiveCRS( xmlStream, defaultCRS );
+        ICRS crs = determineActiveCRS( xmlStream, defaultCRS );
         boolean isReversed = !parseOrientation( xmlStream );
         GMLStdProps standardProps = propsParser.read( xmlStream );
 
@@ -1627,11 +1629,11 @@ public class GML3GeometryReader extends GML3GeometryBaseReader implements GMLGeo
      * @throws UnknownCRSException
      * @throws XMLParsingException
      */
-    public Solid parseSolid( XMLStreamReaderWrapper xmlStream, CRS defaultCRS )
+    public Solid parseSolid( XMLStreamReaderWrapper xmlStream, ICRS defaultCRS )
                             throws XMLStreamException, XMLParsingException, UnknownCRSException {
 
         String gid = parseGeometryId( xmlStream );
-        CRS crs = determineActiveCRS( xmlStream, defaultCRS );
+        ICRS crs = determineActiveCRS( xmlStream, defaultCRS );
         GMLStdProps standardProps = propsParser.read( xmlStream );
 
         Surface exteriorSurface = null;
@@ -1680,11 +1682,11 @@ public class GML3GeometryReader extends GML3GeometryBaseReader implements GMLGeo
      * @throws UnknownCRSException
      * @throws XMLParsingException
      */
-    public CompositeCurve parseCompositeCurve( XMLStreamReaderWrapper xmlStream, CRS defaultCRS )
+    public CompositeCurve parseCompositeCurve( XMLStreamReaderWrapper xmlStream, ICRS defaultCRS )
                             throws XMLStreamException, UnknownCRSException {
 
         String gid = parseGeometryId( xmlStream );
-        CRS crs = determineActiveCRS( xmlStream, defaultCRS );
+        ICRS crs = determineActiveCRS( xmlStream, defaultCRS );
         GMLStdProps standardProps = propsParser.read( xmlStream );
 
         List<Curve> memberCurves = new LinkedList<Curve>();
@@ -1716,11 +1718,11 @@ public class GML3GeometryReader extends GML3GeometryBaseReader implements GMLGeo
      * @throws UnknownCRSException
      * @throws XMLParsingException
      */
-    public CompositeSurface parseCompositeSurface( XMLStreamReaderWrapper xmlStream, CRS defaultCRS )
+    public CompositeSurface parseCompositeSurface( XMLStreamReaderWrapper xmlStream, ICRS defaultCRS )
                             throws XMLStreamException, XMLParsingException, UnknownCRSException {
 
         String gid = parseGeometryId( xmlStream );
-        CRS crs = determineActiveCRS( xmlStream, defaultCRS );
+        ICRS crs = determineActiveCRS( xmlStream, defaultCRS );
         GMLStdProps standardProps = propsParser.read( xmlStream );
 
         List<Surface> memberSurfaces = new LinkedList<Surface>();
@@ -1752,11 +1754,11 @@ public class GML3GeometryReader extends GML3GeometryBaseReader implements GMLGeo
      * @throws UnknownCRSException
      * @throws XMLParsingException
      */
-    public CompositeSolid parseCompositeSolid( XMLStreamReaderWrapper xmlStream, CRS defaultCRS )
+    public CompositeSolid parseCompositeSolid( XMLStreamReaderWrapper xmlStream, ICRS defaultCRS )
                             throws XMLStreamException, XMLParsingException, UnknownCRSException {
 
         String gid = parseGeometryId( xmlStream );
-        CRS crs = determineActiveCRS( xmlStream, defaultCRS );
+        ICRS crs = determineActiveCRS( xmlStream, defaultCRS );
         GMLStdProps standardProps = propsParser.read( xmlStream );
 
         List<Solid> memberSolids = new LinkedList<Solid>();
@@ -1787,11 +1789,12 @@ public class GML3GeometryReader extends GML3GeometryBaseReader implements GMLGeo
      * @throws UnknownCRSException
      * @throws XMLParsingException
      */
-    public CompositeGeometry<GeometricPrimitive> parseGeometricComplex( XMLStreamReaderWrapper xmlStream, CRS defaultCRS )
+    public CompositeGeometry<GeometricPrimitive> parseGeometricComplex( XMLStreamReaderWrapper xmlStream,
+                                                                        ICRS defaultCRS )
                             throws XMLStreamException, XMLParsingException, UnknownCRSException {
 
         String gid = parseGeometryId( xmlStream );
-        CRS crs = determineActiveCRS( xmlStream, defaultCRS );
+        ICRS crs = determineActiveCRS( xmlStream, defaultCRS );
         GMLStdProps standardProps = propsParser.read( xmlStream );
 
         List<GeometricPrimitive> memberSolids = new LinkedList<GeometricPrimitive>();
@@ -1824,11 +1827,11 @@ public class GML3GeometryReader extends GML3GeometryBaseReader implements GMLGeo
      * @throws UnknownCRSException
      * @throws XMLParsingException
      */
-    public MultiPoint parseMultiPoint( XMLStreamReaderWrapper xmlStream, CRS defaultCRS )
+    public MultiPoint parseMultiPoint( XMLStreamReaderWrapper xmlStream, ICRS defaultCRS )
                             throws XMLStreamException, XMLParsingException, UnknownCRSException {
 
         String gid = parseGeometryId( xmlStream );
-        CRS crs = determineActiveCRS( xmlStream, defaultCRS );
+        ICRS crs = determineActiveCRS( xmlStream, defaultCRS );
         GMLStdProps standardProps = propsParser.read( xmlStream );
 
         List<Point> members = new LinkedList<Point>();
@@ -1876,11 +1879,11 @@ public class GML3GeometryReader extends GML3GeometryBaseReader implements GMLGeo
      * @throws UnknownCRSException
      * @throws XMLParsingException
      */
-    public MultiCurve parseMultiCurve( XMLStreamReaderWrapper xmlStream, CRS defaultCRS )
+    public MultiCurve parseMultiCurve( XMLStreamReaderWrapper xmlStream, ICRS defaultCRS )
                             throws XMLStreamException, XMLParsingException, UnknownCRSException {
 
         String gid = parseGeometryId( xmlStream );
-        CRS crs = determineActiveCRS( xmlStream, defaultCRS );
+        ICRS crs = determineActiveCRS( xmlStream, defaultCRS );
         GMLStdProps standardProps = propsParser.read( xmlStream );
 
         List<Curve> members = new LinkedList<Curve>();
@@ -1927,11 +1930,11 @@ public class GML3GeometryReader extends GML3GeometryBaseReader implements GMLGeo
      * @throws UnknownCRSException
      * @throws XMLParsingException
      */
-    public MultiLineString parseMultiLineString( XMLStreamReaderWrapper xmlStream, CRS defaultCRS )
+    public MultiLineString parseMultiLineString( XMLStreamReaderWrapper xmlStream, ICRS defaultCRS )
                             throws XMLStreamException, XMLParsingException, UnknownCRSException {
 
         String gid = parseGeometryId( xmlStream );
-        CRS crs = determineActiveCRS( xmlStream, defaultCRS );
+        ICRS crs = determineActiveCRS( xmlStream, defaultCRS );
         GMLStdProps standardProps = propsParser.read( xmlStream );
         List<LineString> members = new LinkedList<LineString>();
 
@@ -1971,11 +1974,11 @@ public class GML3GeometryReader extends GML3GeometryBaseReader implements GMLGeo
      * @throws UnknownCRSException
      * @throws XMLParsingException
      */
-    public MultiSurface parseMultiSurface( XMLStreamReaderWrapper xmlStream, CRS defaultCRS )
+    public MultiSurface parseMultiSurface( XMLStreamReaderWrapper xmlStream, ICRS defaultCRS )
                             throws XMLStreamException, XMLParsingException, UnknownCRSException {
 
         String gid = parseGeometryId( xmlStream );
-        CRS crs = determineActiveCRS( xmlStream, defaultCRS );
+        ICRS crs = determineActiveCRS( xmlStream, defaultCRS );
         GMLStdProps standardProps = propsParser.read( xmlStream );
 
         List<Surface> members = new LinkedList<Surface>();
@@ -2022,11 +2025,11 @@ public class GML3GeometryReader extends GML3GeometryBaseReader implements GMLGeo
      * @throws UnknownCRSException
      * @throws XMLParsingException
      */
-    public MultiPolygon parseMultiPolygon( XMLStreamReaderWrapper xmlStream, CRS defaultCRS )
+    public MultiPolygon parseMultiPolygon( XMLStreamReaderWrapper xmlStream, ICRS defaultCRS )
                             throws XMLStreamException, XMLParsingException, UnknownCRSException {
 
         String gid = parseGeometryId( xmlStream );
-        CRS crs = determineActiveCRS( xmlStream, defaultCRS );
+        ICRS crs = determineActiveCRS( xmlStream, defaultCRS );
         GMLStdProps standardProps = propsParser.read( xmlStream );
 
         List<Polygon> members = new LinkedList<Polygon>();
@@ -2066,11 +2069,11 @@ public class GML3GeometryReader extends GML3GeometryBaseReader implements GMLGeo
      * @throws UnknownCRSException
      * @throws XMLParsingException
      */
-    public MultiSolid parseMultiSolid( XMLStreamReaderWrapper xmlStream, CRS defaultCRS )
+    public MultiSolid parseMultiSolid( XMLStreamReaderWrapper xmlStream, ICRS defaultCRS )
                             throws XMLStreamException, XMLParsingException, UnknownCRSException {
 
         String gid = parseGeometryId( xmlStream );
-        CRS crs = determineActiveCRS( xmlStream, defaultCRS );
+        ICRS crs = determineActiveCRS( xmlStream, defaultCRS );
         GMLStdProps standardProps = propsParser.read( xmlStream );
 
         List<Solid> members = new LinkedList<Solid>();
@@ -2117,11 +2120,11 @@ public class GML3GeometryReader extends GML3GeometryBaseReader implements GMLGeo
      * @throws UnknownCRSException
      * @throws XMLParsingException
      */
-    public MultiGeometry<Geometry> parseMultiGeometry( XMLStreamReaderWrapper xmlStream, CRS defaultCRS )
+    public MultiGeometry<Geometry> parseMultiGeometry( XMLStreamReaderWrapper xmlStream, ICRS defaultCRS )
                             throws XMLStreamException, XMLParsingException, UnknownCRSException {
 
         String gid = parseGeometryId( xmlStream );
-        CRS crs = determineActiveCRS( xmlStream, defaultCRS );
+        ICRS crs = determineActiveCRS( xmlStream, defaultCRS );
         GMLStdProps standardProps = propsParser.read( xmlStream );
 
         List<Geometry> members = new LinkedList<Geometry>();
@@ -2184,10 +2187,10 @@ public class GML3GeometryReader extends GML3GeometryBaseReader implements GMLGeo
      * @throws XMLParsingException
      */
     @Override
-    public Envelope parseEnvelope( XMLStreamReaderWrapper xmlStream, CRS defaultCRS )
+    public Envelope parseEnvelope( XMLStreamReaderWrapper xmlStream, ICRS defaultCRS )
                             throws XMLParsingException, XMLStreamException {
 
-        CRS crs = determineActiveCRS( xmlStream, defaultCRS );
+        ICRS crs = determineActiveCRS( xmlStream, defaultCRS );
 
         double[] lowerCorner = null;
         double[] upperCorner = null;
@@ -2265,7 +2268,7 @@ public class GML3GeometryReader extends GML3GeometryBaseReader implements GMLGeo
      * @throws UnknownCRSException
      * @throws XMLParsingException
      */
-    public Point parsePointProperty( XMLStreamReaderWrapper xmlStream, CRS defaultCRS )
+    public Point parsePointProperty( XMLStreamReaderWrapper xmlStream, ICRS defaultCRS )
                             throws XMLStreamException, XMLParsingException, UnknownCRSException {
 
         Point point = null;
@@ -2314,7 +2317,7 @@ public class GML3GeometryReader extends GML3GeometryBaseReader implements GMLGeo
      * @throws UnknownCRSException
      * @throws XMLParsingException
      */
-    public LineString parseLineStringProperty( XMLStreamReaderWrapper xmlStream, CRS defaultCRS )
+    public LineString parseLineStringProperty( XMLStreamReaderWrapper xmlStream, ICRS defaultCRS )
                             throws XMLStreamException, XMLParsingException, UnknownCRSException {
 
         LineString lineString = null;
@@ -2363,7 +2366,7 @@ public class GML3GeometryReader extends GML3GeometryBaseReader implements GMLGeo
      * @throws UnknownCRSException
      * @throws XMLParsingException
      */
-    public Curve parseCurveProperty( XMLStreamReaderWrapper xmlStream, CRS defaultCRS )
+    public Curve parseCurveProperty( XMLStreamReaderWrapper xmlStream, ICRS defaultCRS )
                             throws XMLStreamException, XMLParsingException, UnknownCRSException {
 
         Curve curve = null;
@@ -2407,7 +2410,7 @@ public class GML3GeometryReader extends GML3GeometryBaseReader implements GMLGeo
      * @throws UnknownCRSException
      * @throws XMLParsingException
      */
-    public Polygon parsePolygonProperty( XMLStreamReaderWrapper xmlStream, CRS defaultCRS )
+    public Polygon parsePolygonProperty( XMLStreamReaderWrapper xmlStream, ICRS defaultCRS )
                             throws XMLStreamException, XMLParsingException, UnknownCRSException {
 
         Polygon polygon = null;
@@ -2456,7 +2459,7 @@ public class GML3GeometryReader extends GML3GeometryBaseReader implements GMLGeo
      * @throws UnknownCRSException
      * @throws XMLParsingException
      */
-    public Surface parseSurfaceProperty( XMLStreamReaderWrapper xmlStream, CRS defaultCRS )
+    public Surface parseSurfaceProperty( XMLStreamReaderWrapper xmlStream, ICRS defaultCRS )
                             throws XMLStreamException, XMLParsingException, UnknownCRSException {
 
         Surface surface = null;
@@ -2500,7 +2503,7 @@ public class GML3GeometryReader extends GML3GeometryBaseReader implements GMLGeo
      * @throws UnknownCRSException
      * @throws XMLParsingException
      */
-    public Solid parseSolidProperty( XMLStreamReaderWrapper xmlStream, CRS defaultCRS )
+    public Solid parseSolidProperty( XMLStreamReaderWrapper xmlStream, ICRS defaultCRS )
                             throws XMLStreamException, XMLParsingException, UnknownCRSException {
 
         Solid solid = null;
@@ -2549,7 +2552,8 @@ public class GML3GeometryReader extends GML3GeometryBaseReader implements GMLGeo
      * @throws UnknownCRSException
      * @throws XMLParsingException
      */
-    public GeometricPrimitive parseGeometricPrimitiveProperty( XMLStreamReaderWrapper xmlStream, CRS defaultCRS )
+    public GeometricPrimitive parseGeometricPrimitiveProperty( XMLStreamReaderWrapper xmlStream,
+                                                               ICRS defaultCRS )
                             throws XMLStreamException, XMLParsingException, UnknownCRSException {
 
         GeometricPrimitive primitive = null;
@@ -2593,7 +2597,7 @@ public class GML3GeometryReader extends GML3GeometryBaseReader implements GMLGeo
      * @throws UnknownCRSException
      * @throws XMLParsingException
      */
-    public Geometry parseGeometryProperty( XMLStreamReaderWrapper xmlStream, CRS defaultCRS )
+    public Geometry parseGeometryProperty( XMLStreamReaderWrapper xmlStream, ICRS defaultCRS )
                             throws XMLStreamException, XMLParsingException, UnknownCRSException {
 
         Geometry geometry = null;

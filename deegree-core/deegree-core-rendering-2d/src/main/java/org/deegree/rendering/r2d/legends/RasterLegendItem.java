@@ -57,7 +57,8 @@ import org.deegree.coverage.raster.data.RasterData;
 import org.deegree.coverage.raster.data.info.BandType;
 import org.deegree.coverage.raster.data.info.RasterDataInfo;
 import org.deegree.coverage.raster.geom.RasterGeoReference;
-import org.deegree.cs.CRS;
+import org.deegree.cs.coordinatesystems.ICRS;
+import org.deegree.cs.persistence.CRSManager;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryFactory;
 import org.deegree.geometry.primitive.Polygon;
@@ -80,7 +81,7 @@ public class RasterLegendItem implements LegendItem {
 
     private static final GeometryFactory geofac = new GeometryFactory();
 
-    private static final CRS mapcs = new CRS( "CRS:1" );
+    private static final ICRS mapcs = CRSManager.getCRSRef( "CRS:1" );
 
     private RasterStyling styling;
 

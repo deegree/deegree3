@@ -251,7 +251,7 @@ class MemoryFeatureStoreTransaction implements FeatureStoreTransaction {
             public boolean visitGeometry( Geometry geom ) {
                 if ( geom.getCoordinateSystem() != null && geom.getCoordinateDimension() != 1 ) {
                     try {
-                        geom.getCoordinateSystem().getWrappedCRS();
+                        geom.getCoordinateSystem();
                     } catch ( Exception e ) {
                         throw new IllegalArgumentException( e.getMessage() );
                     }
@@ -419,11 +419,11 @@ class MemoryFeatureStoreTransaction implements FeatureStoreTransaction {
 
         Geometry transformed = value;
         if ( transformed.getCoordinateSystem() == null ) {
-            transformed.setCoordinateSystem( transformer.getWrappedTargetCRS() );
+            transformed.setCoordinateSystem( transformer.getTargetCRS() );
         } else {
             transformed = linearizer.linearize( value, crit );
             if ( !( transformed instanceof Point && transformed.getCoordinateDimension() == 1 ) ) {
-                transformed = transformer.transform( transformed, transformed.getCoordinateSystem().getWrappedCRS() );
+                transformed = transformer.transform( transformed, transformed.getCoordinateSystem() );
             }
         }
         return transformed;
@@ -481,8 +481,7 @@ class MemoryFeatureStoreTransaction implements FeatureStoreTransaction {
                                 // check compatibility (geometry type) for geometry replacements (CITE
                                 // wfs:wfs-1.1.0-Transaction-tc10.1)
                                 if ( !( geom instanceof Surface )
-                                     && replacement.getName().equals(
-                                                                      new QName(
+                                     && replacement.getName().equals( new QName(
                                                                                  "http://cite.opengeospatial.org/gmlsf",
                                                                                  "surfaceProperty" ) ) ) {
                                     throw new InvalidParameterValueException(

@@ -40,6 +40,8 @@ import static org.deegree.cs.utilities.ProjectionUtils.EPS11;
 
 import org.deegree.cs.CRSCodeType;
 import org.deegree.cs.CRSIdentifiable;
+import org.deegree.cs.CRSResource;
+import org.deegree.cs.refs.components.PrimeMeridianRef;
 
 /**
  * The <code>PrimeMeridian</code> class saves the longitude to the greenwich meridian.
@@ -52,11 +54,11 @@ import org.deegree.cs.CRSIdentifiable;
  * 
  */
 
-public class PrimeMeridian extends CRSIdentifiable {
+public class PrimeMeridian extends CRSIdentifiable implements IPrimeMeridian {
 
     private double longitude;
 
-    private Unit units;
+    private IUnit units;
 
     /**
      * The PrimeMeridian of greenwich with epsg:8901 code and radian units.
@@ -83,7 +85,7 @@ public class PrimeMeridian extends CRSIdentifiable {
      * @param id
      *            to be cloned
      */
-    public PrimeMeridian( Unit units, double longitude, CRSIdentifiable id ) {
+    public PrimeMeridian( IUnit units, double longitude, CRSResource id ) {
         super( id );
         this.units = units;
         this.longitude = longitude;
@@ -100,7 +102,7 @@ public class PrimeMeridian extends CRSIdentifiable {
      * @param descriptions
      * @param areasOfUse
      */
-    public PrimeMeridian( Unit units, double longitude, CRSCodeType[] codes, String[] names, String[] versions,
+    public PrimeMeridian( IUnit units, double longitude, CRSCodeType[] codes, String[] names, String[] versions,
                           String[] descriptions, String[] areasOfUse ) {
         this( units, longitude, new CRSIdentifiable( codes, names, versions, descriptions, areasOfUse ) );
     }
@@ -115,7 +117,7 @@ public class PrimeMeridian extends CRSIdentifiable {
      * @param description
      * @param areaOfUse
      */
-    public PrimeMeridian( Unit units, double longitude, CRSCodeType code, String name, String version,
+    public PrimeMeridian( IUnit units, double longitude, CRSCodeType code, String name, String version,
                           String description, String areaOfUse ) {
         this( units, longitude, new CRSCodeType[] { code }, new String[] { name }, new String[] { version },
               new String[] { description }, new String[] { areaOfUse } );
@@ -127,7 +129,7 @@ public class PrimeMeridian extends CRSIdentifiable {
      * @param longitude
      * @param codes
      */
-    public PrimeMeridian( Unit units, double longitude, CRSCodeType[] codes ) {
+    public PrimeMeridian( IUnit units, double longitude, CRSCodeType[] codes ) {
         this( units, longitude, codes, null, null, null, null );
     }
 
@@ -137,7 +139,7 @@ public class PrimeMeridian extends CRSIdentifiable {
      * @param longitude
      * @param code
      */
-    public PrimeMeridian( Unit units, double longitude, CRSCodeType code ) {
+    public PrimeMeridian( IUnit units, double longitude, CRSCodeType code ) {
         this( units, longitude, new CRSCodeType[] { code } );
     }
 
@@ -148,7 +150,7 @@ public class PrimeMeridian extends CRSIdentifiable {
      *            Angular units of longitude.
      * @param codes
      */
-    public PrimeMeridian( Unit units, CRSCodeType[] codes ) {
+    public PrimeMeridian( IUnit units, CRSCodeType[] codes ) {
         this( units, 0, codes );
     }
 
@@ -161,7 +163,7 @@ public class PrimeMeridian extends CRSIdentifiable {
      * @param name
      *            human readable name
      */
-    public PrimeMeridian( Unit units, CRSCodeType code, String name ) {
+    public PrimeMeridian( IUnit units, CRSCodeType code, String name ) {
         this( units, 0, new CRSCodeType[] { code }, new String[] { name }, null, null, null );
     }
 
@@ -180,7 +182,7 @@ public class PrimeMeridian extends CRSIdentifiable {
      *         convenience method make easier to obtains longitude in degrees (<code>getLongitude(Unit.DEGREE)</code>),
      *         no matter the underlying angular unit of this prime meridian.
      */
-    public double getLongitude( final Unit targetUnit ) {
+    public double getLongitude( final IUnit targetUnit ) {
         return getAngularUnit().convert( getLongitude(), targetUnit );
     }
 
@@ -194,7 +196,7 @@ public class PrimeMeridian extends CRSIdentifiable {
     /**
      * @return the angular unit.
      */
-    public Unit getAngularUnit() {
+    public IUnit getAngularUnit() {
         return units;
     }
 
@@ -202,12 +204,15 @@ public class PrimeMeridian extends CRSIdentifiable {
      * @param units
      *            to be used
      */
-    public void setAngularUnit( Unit units ) {
+    public void setAngularUnit( IUnit units ) {
         this.units = units;
     }
 
     @Override
     public boolean equals( Object other ) {
+        if ( other instanceof PrimeMeridianRef ) {
+            other = ((PrimeMeridianRef) other).getReferencedObject();
+        }
         if ( other != null && other instanceof PrimeMeridian ) {
             PrimeMeridian that = (PrimeMeridian) other;
             return ( Math.abs( this.longitude - that.longitude ) < EPS11 )
@@ -261,7 +266,7 @@ public class PrimeMeridian extends CRSIdentifiable {
      * @param longitude
      * @param units
      */
-    public void setLongitude( double longitude, Unit units ) {
+    public void setLongitude( double longitude, IUnit units ) {
         this.longitude = units.convert( longitude, Unit.RADIAN );
     }
 

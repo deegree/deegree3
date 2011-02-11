@@ -102,9 +102,9 @@ public class CompoundCRSTest extends TestCase {
         assertEquals( 100.0, sourceCompound.getDefaultHeight() );
         // standard projection values.
         assertEquals( Math.toRadians( 5.38763888888889 ),
-                      ( (ProjectedCRS) sourceCompound.getUnderlyingCRS() ).getProjection().getProjectionLongitude() );
+                      ( (IProjectedCRS) sourceCompound.getUnderlyingCRS() ).getProjection().getProjectionLongitude() );
         assertEquals( Math.toRadians( 52.15616055555555 ),
-                      ( (ProjectedCRS) sourceCompound.getUnderlyingCRS() ).getProjection().getProjectionLatitude() );
+                      ( (IProjectedCRS) sourceCompound.getUnderlyingCRS() ).getProjection().getProjectionLatitude() );
 
         // wgs84
         assertEquals( 565.04,
@@ -153,8 +153,8 @@ public class CompoundCRSTest extends TestCase {
                                                                                                                 "test_case_2" ) } ) );
         assertEquals( 2., targetCompound.getDefaultHeight() );
         assertEquals( Math.toRadians( 9 ),
-                      ( (ProjectedCRS) targetCompound.getUnderlyingCRS() ).getProjection().getProjectionLongitude() );
-        assertEquals( 0., ( (ProjectedCRS) targetCompound.getUnderlyingCRS() ).getProjection().getProjectionLatitude() );
+                      ( (IProjectedCRS) targetCompound.getUnderlyingCRS() ).getProjection().getProjectionLongitude() );
+        assertEquals( 0., ( (IProjectedCRS) targetCompound.getUnderlyingCRS() ).getProjection().getProjectionLatitude() );
 
         // wgs84
         assertEquals( false,

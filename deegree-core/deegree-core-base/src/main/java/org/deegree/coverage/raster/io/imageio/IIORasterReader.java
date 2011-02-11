@@ -51,14 +51,14 @@ import org.deegree.coverage.raster.cache.RasterCache;
 import org.deegree.coverage.raster.data.container.BufferResult;
 import org.deegree.coverage.raster.data.info.RasterDataInfo;
 import org.deegree.coverage.raster.geom.RasterGeoReference;
-import org.deegree.coverage.raster.geom.RasterRect;
 import org.deegree.coverage.raster.geom.RasterGeoReference.OriginLocation;
+import org.deegree.coverage.raster.geom.RasterRect;
 import org.deegree.coverage.raster.io.RasterIOOptions;
 import org.deegree.coverage.raster.io.RasterReader;
 import org.deegree.coverage.raster.io.WorldFileAccess;
 import org.deegree.coverage.raster.utils.RasterFactory;
-import org.deegree.cs.CRS;
-import org.deegree.cs.coordinatesystems.CoordinateSystem;
+import org.deegree.cs.coordinatesystems.ICRS;
+import org.deegree.cs.persistence.CRSManager;
 import org.deegree.geometry.Envelope;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -145,7 +145,7 @@ public class IIORasterReader implements RasterReader {
 
         OriginLocation definedRasterOrigLoc = opts.getRasterOriginLocation();
         MetaDataReader metaDataReader = new MetaDataReader( reader.getMetaData(), definedRasterOrigLoc );
-        CoordinateSystem crs = metaDataReader.getCRS();
+        ICRS crs = metaDataReader.getCRS();
         rasterReference = metaDataReader.getRasterReference();
 
         if ( rasterReference == null ) {
@@ -168,11 +168,11 @@ public class IIORasterReader implements RasterReader {
 
         // reader.close();
         // read crs from options (if any)
-        CRS readCRS = null;
+        ICRS readCRS = null;
         if ( crs == null ) {
             readCRS = opts.getCRS();
         } else {
-            readCRS = new CRS( crs );
+            readCRS = CRSManager.getCRSRef( crs );
         }
 
         Envelope envelope = rasterReference.getEnvelope( width, height, readCRS );

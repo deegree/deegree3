@@ -59,9 +59,11 @@ import org.deegree.commons.annotations.LoggingNotes;
 import org.deegree.commons.utils.DoublePair;
 import org.deegree.commons.utils.Pair;
 import org.deegree.commons.utils.Triple;
-import org.deegree.cs.CRS;
+import org.deegree.cs.CRSUtils;
+import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.exceptions.TransformationException;
 import org.deegree.cs.exceptions.UnknownCRSException;
+import org.deegree.cs.persistence.CRSManager;
 import org.deegree.feature.Feature;
 import org.deegree.feature.FeatureCollection;
 import org.deegree.feature.types.FeatureType;
@@ -112,7 +114,7 @@ public abstract class Layer {
 
     private Envelope bbox;
 
-    private LinkedList<CRS> srs;
+    private LinkedList<ICRS> srs;
 
     private DoublePair scaleHint;
 
@@ -136,7 +138,7 @@ public abstract class Layer {
         this.title = title;
         this.parent = parent;
         keywords = new LinkedList<LanguageStringType>();
-        srs = new LinkedList<CRS>();
+        srs = new LinkedList<ICRS>();
         children = new LinkedList<Layer>();
     }
 
@@ -150,7 +152,7 @@ public abstract class Layer {
         bbox = parseBoundingBox( layer.getBoundingBox() );
         srs = parseCoordinateSystems( layer.getCRS() );
         if ( srs == null ) {
-            srs = new LinkedList<CRS>();
+            srs = new LinkedList<ICRS>();
         }
         this.parent = parent;
         children = new LinkedList<Layer>();
@@ -264,20 +266,20 @@ public abstract class Layer {
             for ( int i = 0; i < max.length; ++i ) {
                 max[i] = points[i];
             }
-            bbox = new GeometryFactory().createEnvelope( min, max, new CRS( WGS84 ) );
+            bbox = new GeometryFactory().createEnvelope( min, max, CRSManager.getCRSRef( WGS84 ) );
         }
 
         return bbox;
     }
 
-    private LinkedList<CRS> parseCoordinateSystems( String crs ) {
-        LinkedList<CRS> list = new LinkedList<CRS>();
+    private LinkedList<ICRS> parseCoordinateSystems( String crs ) {
+        LinkedList<ICRS> list = new LinkedList<ICRS>();
         if ( crs == null ) {
             return list;
         }
 
         for ( String c : crs.split( "\\s" ) ) {
-            list.add( new CRS( c ) );
+            list.add( CRSManager.getCRSRef( c ) );
         }
 
         return list;
@@ -404,8 +406,8 @@ public abstract class Layer {
             if ( bbox != null && bbox.getCoordinateDimension() <= 1 ) {
                 bbox = null;
             }
-            if ( bbox != null && bbox.getCoordinateSystem() != CRS.EPSG_4326 ) {
-                bbox = new GeometryTransformer( CRS.EPSG_4326.getWrappedCRS() ).transform( bbox );
+            if ( bbox != null && bbox.getCoordinateSystem() != CRSUtils.EPSG_4326 ) {
+                bbox = new GeometryTransformer( CRSUtils.EPSG_4326 ).transform( bbox );
             }
             if ( children != null && !children.isEmpty() ) {
                 for ( Layer l : children ) {
@@ -414,7 +416,7 @@ public abstract class Layer {
                         lbox = null;
                     }
                     if ( lbox != null ) {
-                        lbox = new GeometryTransformer( CRS.EPSG_4326.getWrappedCRS() ).transform( lbox );
+                        lbox = new GeometryTransformer( CRSUtils.EPSG_4326 ).transform( lbox );
                         if ( bbox == null ) {
                             bbox = lbox;
                         } else {
@@ -447,7 +449,7 @@ public abstract class Layer {
     /**
      * @return the live list of srs
      */
-    public LinkedList<CRS> getSrs() {
+    public LinkedList<ICRS> getSrs() {
         return srs;
     }
 
@@ -455,8 +457,8 @@ public abstract class Layer {
      * @param srs
      *            the srs to set (will be copied)
      */
-    public void setSrs( Collection<CRS> srs ) {
-        this.srs = new LinkedList<CRS>( srs );
+    public void setSrs( Collection<ICRS> srs ) {
+        this.srs = new LinkedList<ICRS>( srs );
     }
 
     /**

@@ -43,7 +43,6 @@ import static java.lang.Math.min;
 import static java.lang.System.currentTimeMillis;
 import static java.util.Collections.singleton;
 import static org.deegree.commons.utils.math.MathUtils.round;
-import static org.deegree.cs.CRS.EPSG_4326;
 import static org.deegree.protocol.wms.Utils.calcResolution;
 
 import java.awt.Color;
@@ -57,8 +56,8 @@ import java.util.List;
 import java.util.ListIterator;
 
 import org.deegree.commons.utils.Pair;
-import org.deegree.cs.CRS;
-import org.deegree.cs.coordinatesystems.CoordinateSystem;
+import org.deegree.cs.CRSUtils;
+import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.exceptions.TransformationException;
 import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.feature.FeatureCollection;
@@ -120,15 +119,15 @@ public class MapController {
      * @param width
      * @param height
      */
-    public MapController( MapService service, CRS crs, int width, int height ) {
+    public MapController( MapService service, ICRS crs, int width, int height ) {
         repaintList.add( currentTimeMillis() );
         this.width = width;
         this.height = height;
         this.service = service;
         envelope = service.getRootLayer().getBbox();
-        envelope = envelope == null ? fac.createEnvelope( -180, -90, 180, 90, EPSG_4326 ) : envelope;
+        envelope = envelope == null ? fac.createEnvelope( -180, -90, 180, 90, CRSUtils.EPSG_4326 ) : envelope;
         try {
-            envelope = new GeometryTransformer( crs.getWrappedCRS() ).transform( envelope );
+            envelope = new GeometryTransformer( crs ).transform( envelope );
         } catch ( TransformationException e ) {
             // TODO Auto-generated catch block
             e.printStackTrace();
@@ -156,7 +155,7 @@ public class MapController {
     /**
      * @return the crs of the map
      */
-    public CRS getCRS() {
+    public ICRS getCRS() {
         return envelope.getCoordinateSystem();
     }
 
@@ -544,9 +543,9 @@ public class MapController {
         repaintList.add( currentTimeMillis() );
         try {
             panImage = null;
-            CoordinateSystem crs = envelope.getCoordinateSystem().getWrappedCRS();
+            ICRS crs = envelope.getCoordinateSystem();
             envelope = service.getRootLayer().getBbox();
-            envelope = envelope == null ? fac.createEnvelope( -180, -90, 180, 90, EPSG_4326 ) : envelope;
+            envelope = envelope == null ? fac.createEnvelope( -180, -90, 180, 90, CRSUtils.EPSG_4326 ) : envelope;
             envelope = new GeometryTransformer( crs ).transform( envelope );
         } catch ( TransformationException e ) {
             // TODO Auto-generated catch block
@@ -562,13 +561,7 @@ public class MapController {
      * @return the current scale (0.28 mm pixelsize)
      */
     public double getCurrentScale() {
-        try {
-            return Utils.calcScaleWMS130( width, height, envelope, envelope.getCoordinateSystem().getWrappedCRS() );
-        } catch ( UnknownCRSException e ) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-        return -1;
+        return Utils.calcScaleWMS130( width, height, envelope, envelope.getCoordinateSystem() );
     }
 
     /**
@@ -616,8 +609,8 @@ public class MapController {
             stopZoomin();
             return false;
         }
-        setEnvelope( min( zoomMinx, zoomMaxx ), min( zoomMiny, zoomMaxy ), max( zoomMinx, zoomMaxx ), max( zoomMaxy,
-                                                                                                           zoomMiny ) );
+        setEnvelope( min( zoomMinx, zoomMaxx ), min( zoomMiny, zoomMaxy ), max( zoomMinx, zoomMaxx ),
+                     max( zoomMaxy, zoomMiny ) );
         stopZoomin();
         return true;
     }

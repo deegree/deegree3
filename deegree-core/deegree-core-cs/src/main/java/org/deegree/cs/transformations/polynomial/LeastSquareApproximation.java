@@ -49,8 +49,9 @@ import javax.media.jai.WarpQuadratic;
 import javax.vecmath.Point3d;
 
 import org.deegree.cs.CRSIdentifiable;
+import org.deegree.cs.CRSResource;
 import org.deegree.cs.EPSGCode;
-import org.deegree.cs.coordinatesystems.CoordinateSystem;
+import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.exceptions.TransformationException;
 import org.deegree.cs.i18n.Messages;
 import org.slf4j.Logger;
@@ -95,8 +96,8 @@ public class LeastSquareApproximation extends PolynomialTransformation {
      *            an identifiable instance containing information about this transformation
      */
     public LeastSquareApproximation( List<Double> firstParameters, List<Double> secondParameters,
-                                     CoordinateSystem sourceCRS, CoordinateSystem targetCRS, float scaleX,
-                                     float scaleY, CRSIdentifiable id ) {
+                                     ICRS sourceCRS, ICRS targetCRS, float scaleX,
+                                     float scaleY, CRSResource id ) {
         super( firstParameters, secondParameters, sourceCRS, targetCRS, id );
         if ( getSecondParams().size() != getFirstParams().size() ) {
             throw new IllegalArgumentException( "The given parameter lists do not have equal length" );
@@ -154,7 +155,8 @@ public class LeastSquareApproximation extends PolynomialTransformation {
      *            to apply to incoming data's y value, if 1 (or 0) no scale will be applied.
      */
     public LeastSquareApproximation( List<Double> firstParameters, List<Double> secondParameters,
-                                     CoordinateSystem sourceCRS, CoordinateSystem targetCRS, float scaleX, float scaleY ) {
+                                     ICRS sourceCRS, ICRS targetCRS, float scaleX,
+                                     float scaleY ) {
         this( firstParameters, secondParameters, sourceCRS, targetCRS, scaleX, scaleY,
               new CRSIdentifiable( new EPSGCode( 9645 ) ) );
     }

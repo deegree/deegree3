@@ -40,6 +40,7 @@ import static java.lang.System.currentTimeMillis;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -56,19 +57,25 @@ import org.deegree.commons.config.ResourceManager;
 import org.deegree.commons.config.ResourceManagerMetadata;
 import org.deegree.commons.config.ResourceProvider;
 import org.deegree.commons.config.WorkspaceInitializationException;
+import org.deegree.commons.tom.Object;
+import org.deegree.commons.tom.ReferenceResolver;
+import org.deegree.commons.tom.ows.CodeType;
 import org.deegree.commons.xml.stax.StAXParsingHelper;
 import org.deegree.cs.CRSCodeType;
-import org.deegree.cs.CRSIdentifiable;
-import org.deegree.cs.coordinatesystems.CoordinateSystem;
+import org.deegree.cs.CRSResource;
+import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.exceptions.CRSConfigurationException;
 import org.deegree.cs.exceptions.CRSStoreException;
 import org.deegree.cs.exceptions.TransformationException;
 import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.cs.i18n.Messages;
+import org.deegree.cs.refs.coordinatesystem.CRSRef;
 import org.deegree.cs.transformations.Transformation;
 import org.deegree.cs.transformations.TransformationFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import sun.security.jca.GetInstance.Instance;
 
 /**
  * Entry point for creating and retrieving {@link CRSStore} and {@link CRSStoreProvider} instances.
@@ -86,7 +93,7 @@ public class CRSManager implements ResourceManager {
 
     private static ServiceLoader<CRSStoreProvider> crssProviderLoader = ServiceLoader.load( CRSStoreProvider.class );
 
-    static Map<String, CRSStoreProvider> nsToProvider = null;
+    private static Map<String, CRSStoreProvider> nsToProvider = null;
 
     private static Map<String, CRSStore> idToCRSStore = Collections.synchronizedMap( new HashMap<String, CRSStore>() );
 
@@ -109,10 +116,6 @@ public class CRSManager implements ResourceManager {
                 LOG.error( "The default configuration could not be loaded: " + t.getMessage() );
             }
         }
-    }
-
-    public static Collection<String> getCrsStoreIds() {
-        return idToCRSStore.keySet();
     }
 
     public void startup( DeegreeWorkspace workspace )
@@ -225,7 +228,7 @@ public class CRSManager implements ResourceManager {
      * 
      * @return all available providers, keys: config namespace, value: provider instance
      */
-    public static synchronized Map<String, CRSStoreProvider> getProviders() {
+    private static synchronized Map<String, CRSStoreProvider> getProviders() {
         if ( nsToProvider == null ) {
             nsToProvider = new HashMap<String, CRSStoreProvider>();
             try {
@@ -282,106 +285,209 @@ public class CRSManager implements ResourceManager {
         return idToCRSStore.get( id );
     }
 
-    /*********************************************/
+    public static Collection<String> getCrsStoreIds() {
+        return idToCRSStore.keySet();
+    }
 
-    /**
-     * @param storeId
-     *            identifier of the {@link CRSStore} instance, may be <code>null</code>, then the first transformation
-     *            factory will be returned
-     * @return the {@link TransformationFactory} instance assigned to the store with the given id or the first one in
-     *         the list of {@link TransformationFactory}s if no such instance has been created or <code>null</code> if
-     *         no {@link TransformationFactory} instance could be found.
-     */
-    public static final TransformationFactory getTransformationFactory( String storeId ) {
-        if ( storeId == null ) {
-            for ( TransformationFactory tf : idToTransF.values() ) {
-                return tf;
+    public ResourceManagerMetadata getMetadata() {
+        return new ResourceManagerMetadata() {
+            public String getName() {
+                return "crs stores";
             }
+
+            public String getPath() {
+                return "datasources/crs/";
+            }
+
+            public List<ResourceProvider> getResourceProviders() {
+                return new LinkedList<ResourceProvider>( nsToProvider.values() );
+            }
+        };
+    }
+
+    /*********************************************/
+    /**
+     * This method allows to get all {@link ICRS} from all stores.
+     * 
+     * @return all configured CRSs.
+     * @throws CRSConfigurationException
+     *             if the implementation was confronted by an exception and could not deliver the requested crs. This
+     *             exception should not be thrown if no CoordinateSystems were found, in the latter case an empty List (
+     *             a list with size == 0 ) should be returned.
+     */
+    public List<ICRS> getAvailableCRSs()
+                            throws CRSConfigurationException {
+        List<ICRS> result = new ArrayList<ICRS>();
+        for ( CRSStore store : getAll() ) {
+            result.addAll( store.getAvailableCRSs() );
         }
-        return idToTransF.get( storeId );
+        return result;
     }
 
     /**
-     * Creates a {@link CoordinateSystem} from the given name, if no {@link CoordinateSystem} was found an
-     * {@link UnknownCRSException} will be thrown. All configured {@link CRSStore}s will be considered and the first
-     * match returned.
+     * This methods allows to get all available identifiers and not in the coordinatesystems themselves from all stores.
+     * 
+     * @return the identifiers of all configured CRSs.
+     * @throws CRSConfigurationException
+     *             if the implementation was confronted by an exception and could not deliver the requested crs. This
+     *             exception should not be thrown if no CoordinateSystems were found, in the latter case an empty List (
+     *             a list with size == 0 ) should be returned.
+     */
+    public List<CRSCodeType[]> getAvailableCRSCodes()
+                            throws CRSConfigurationException {
+        List<CRSCodeType[]> result = new ArrayList<CRSCodeType[]>();
+        for ( CRSStore store : getAll() ) {
+            result.addAll( store.getAvailableCRSCodes() );
+        }
+        return result;
+
+    }
+
+    /***************************************************/
+
+    /**
+     * Returns a {@link CRSRef} {@link Instance} which is not resolved.
+     * 
+     * @param uri
+     *            the uri of the resource which is used to resolve the reference
+     * @return an unresolved {@link CRSRef} instance
+     */
+    public static CRSRef getCRSRef( String uri ) {
+        return getCRSRef( uri, false );
+    }
+
+    /**
+     * Return a {@link CRSRef} instance which is not resolved.
+     * 
+     * @param uri
+     *            the uri of the resource which is used to resolve the reference
+     * @param forceXY
+     *            flag indicating if the axis order should be as configured or xy
+     * @return an unresolved {@link CRSRef} instance
+     */
+    public static CRSRef getCRSRef( String uri, final boolean forceXY ) {
+        return new CRSRef( new ReferenceResolver() {
+            @Override
+            public Object getObject( String uri, String baseURL ) {
+                ICRS crs = null;
+                try {
+                    crs = lookup( uri, forceXY );
+                } catch ( UnknownCRSException e ) {
+                    LOG.debug( "Could not find CRS with uri " + uri + "; return null." );
+                }
+                return crs;
+            }
+        }, uri, null, forceXY );
+    }
+
+    /**
+     * Returns a {@link CRSRef} wrapping the given CRS. The uri of the reference is set to the id of the given
+     * {@link ICRS}
+     * 
+     * @param crs
+     *            the {@link ICRS} to wrap
+     * @return
+     */
+    public static CRSRef getCRSRef( final ICRS crs ) {
+        CRSRef newRef = new CRSRef( new ReferenceResolver() {
+            @Override
+            public Object getObject( String uri, String baseURL ) {
+                return crs;
+            }
+        }, crs.getId(), null );
+        return newRef;
+    }
+
+    /**
+     * Creates a direct {@link ICRS} instance from the given name not just a {@link CRSRef}, if no {@link ICRS} was
+     * found an {@link UnknownCRSException} will be thrown. All configured {@link CRSStore}s will be considered and the
+     * first match returned.
      * 
      * @param name
      *            of the crs, e.g. EPSG:4326
-     * @return a {@link CoordinateSystem} corresponding to the given name, using all configured {@link CRSStore}s.
+     * @return a direct {@link ICRS} instance corresponding to the given name not just a {@link CRSRef}, using all
+     *         configured {@link CRSStore}s.
      * @throws UnknownCRSException
-     *             if name is not known
+     *             if a {@link ICRS} with the name is not known
      */
-    public synchronized static CoordinateSystem lookup( String name )
+    public synchronized static ICRS lookup( String name )
                             throws UnknownCRSException {
         return lookup( name, false );
     }
 
     /**
-     * Creates a {@link CoordinateSystem} from the given name, if no {@link CoordinateSystem} was found an
-     * {@link UnknownCRSException} will be thrown. All configured {@link CRSStore}s will be considered and the first
-     * match returned.
+     * Creates a direct {@link ICRS} instance from the given name not just a {@link CRSRef}, if no {@link ICRS} was
+     * found an {@link UnknownCRSException} will be thrown. All configured {@link CRSStore}s will be considered and the
+     * first match returned.
      * 
      * @param name
      *            of the crs, e.g. EPSG:4326
      * @param forceXY
      *            true if the axis order of the coordinate system should be x/y (EAST/NORTH; WEST/SOUTH); false id the
      *            defined axis order should be used
-     * @return a {@link CoordinateSystem} corresponding to the given name, using all configured {@link CRSStore}s.
+     * @return a direct {@link ICRS} instance corresponding to the given name not just a {@link CRSRef}, using all
+     *         configured {@link CRSStore}s.
      * @throws UnknownCRSException
-     *             if name is not known
+     *             if a {@link ICRS} with the name is not known
      */
-    public synchronized static CoordinateSystem lookup( String name, boolean forceXY )
+    public synchronized static ICRS lookup( String name, boolean forceXY )
                             throws UnknownCRSException {
         return lookup( null, name, forceXY );
     }
 
     /**
-     * Get a real coordinate system from the default {@link CRSStore}.
+     * Creates a direct {@link ICRS} instance from the given {@link CRSCodeType} not just a {@link CRSRef}, if no
+     * {@link ICRS} was found an {@link UnknownCRSException} will be thrown. All configured {@link CRSStore}s will be
+     * considered and the first match returned.
      * 
      * @param codeType
-     * @return a real {@link CoordinateSystem} looked up in the default {@link CRSStore}.
+     *            the {@link CodeType} of the CRS to return
+     * @return a direct {@link ICRS} instance with the given {@link CodeType} not just a {@link CRSRef}
      * @throws UnknownCRSException
+     *             if a {@link ICRS} with the name is not known
      */
-    public synchronized static CoordinateSystem lookup( CRSCodeType codeType )
+    public synchronized static ICRS lookup( CRSCodeType codeType )
                             throws UnknownCRSException {
         return lookup( null, codeType );
     }
 
     /**
-     * Creates a {@link CoordinateSystem} from the given name using the given storeID, if no {@link CoordinateSystem}
-     * was found an {@link UnknownCRSException} will be thrown.
+     * Creates a direct {@link ICRS} instance from the given name using not just a {@link CRSRef} the given storeID, if
+     * no {@link ICRS} was found in the given store an {@link UnknownCRSException} will be thrown.
      * 
      * @param storeId
-     *            identifier of the {@link CRSStore} looking for the {@link CoordinateSystem} with the given name, may
-     *            be <code>null</code> if in all {@link CRSStore}s should be searched
+     *            identifier of the {@link CRSStore} looking for the {@link ICRS} with the given name, may be
+     *            <code>null</code> if in all {@link CRSStore}s should be searched
      * @param name
      *            of the crs, e.g. EPSG:31466
-     * @return a {@link CoordinateSystem} corresponding to the given name from the {@link CRSStore} with the given id
+     * @return a direct {@link ICRS} instance not just a {@link CRSRef} corresponding to the given name from the
+     *         {@link CRSStore} with the given id
      * @throws UnknownCRSException
-     *             if name is not known
+     *             if a {@link ICRS} with the name is not known
      */
-    public synchronized static CoordinateSystem lookup( String storeId, String name )
+    public synchronized static ICRS lookup( String storeId, String name )
                             throws UnknownCRSException {
         return lookup( storeId, name, false );
     }
 
     /**
-     * Creates a {@link CoordinateSystem} from the given name using the given storeId, if no {@link CoordinateSystem}
-     * was found an {@link UnknownCRSException} will be thrown.
+     * Creates a direct {@link ICRS} instance with the given name not just a {@link CRSRef} using the given storeId, if
+     * no {@link ICRS} was found an {@link UnknownCRSException} will be thrown.
      * 
      * @param storeId
-     *            identifier of the store, looking for the {@link CoordinateSystem} instance, may be <code>null</code>
-     *            if in all {@link CRSStore}s should be searched
+     *            identifier of the store, looking for the {@link ICRS} instance, may be <code>null</code> if in all
+     *            {@link CRSStore}s should be searched
      * @param name
      *            of the crs, e.g. EPSG:31466
      * @param forceXY
      *            true if the axis order of the coordinate system should be x/y (EAST/NORTH; WEST/SOUTH); false id the
      *            defined axis order should be used
+     * @return a direct {@link ICRS} instance not just a {@link CRSRef} corresponding to the given name from the
+     *         {@link CRSStore} with the given id
      * @throws UnknownCRSException
-     *             if name is not known
+     *             if a {@link ICRS} with the name is not known
      */
-    public static CoordinateSystem lookup( String storeIdName, String name, boolean forceXY )
+    public synchronized static ICRS lookup( String storeIdName, String name, boolean forceXY )
                             throws UnknownCRSException {
         CRSStore crsStore = get( storeIdName );
         if ( crsStore != null ) {
@@ -389,7 +495,7 @@ public class CRSManager implements ResourceManager {
         } else {
             for ( CRSStore store : idToCRSStore.values() ) {
                 try {
-                    CoordinateSystem crs = lookupStore( store, name, forceXY );
+                    ICRS crs = lookupStore( store, name, forceXY );
                     if ( crs != null )
                         return crs;
                 } catch ( UnknownCRSException e ) {
@@ -401,18 +507,19 @@ public class CRSManager implements ResourceManager {
     }
 
     /**
-     * Creates a {@link CoordinateSystem} from the given name using the given storeId, if no {@link CoordinateSystem}
-     * was found an {@link UnknownCRSException} will be thrown.
+     * Creates a direct {@link ICRS} instance from the given {@link CRSCodeType} notjustjust a {@link CRSRef} using the
+     * given storeId, if no {@link ICRS} was found an {@link UnknownCRSException} will be thrown.
      * 
      * @param storeId
-     *            identifier of the store, looking for the {@link CoordinateSystem} instance, may be <code>null</code>
-     *            if in all {@link CRSStore}s should be searched
+     *            identifier of the store, looking for the {@link ICRS} instance, may be <code>null</code> if in all
+     *            {@link CRSStore}s should be searched
      * @param crsCodeType
-     *            of the crs
-     * @return a real {@link CoordinateSystem} not just a wrapper.
+     *            the {@link CRSCodeType} of the ICRS to return
+     * @return a real {@link ICRS} not just a reference.
      * @throws UnknownCRSException
+     *             if a {@link ICRS} with the name is not known
      */
-    public synchronized static CoordinateSystem lookup( String storeId, CRSCodeType crsCodeType )
+    public synchronized static ICRS lookup( String storeId, CRSCodeType crsCodeType )
                             throws UnknownCRSException {
         CRSStore crsStore = get( storeId );
         if ( crsStore != null ) {
@@ -420,7 +527,7 @@ public class CRSManager implements ResourceManager {
         } else {
             for ( CRSStore store : idToCRSStore.values() ) {
                 try {
-                    CoordinateSystem crs = lookupStore( store, crsCodeType, false );
+                    ICRS crs = lookupStore( store, crsCodeType, false );
                     if ( crs != null )
                         return crs;
                 } catch ( UnknownCRSException e ) {
@@ -432,12 +539,12 @@ public class CRSManager implements ResourceManager {
     }
 
     /**
-     * Creates a {@link CoordinateSystem} from the given name using the given {@link CRSStore}, if no
-     * {@link CoordinateSystem} was found an {@link UnknownCRSException} will be thrown.
+     * Creates a {@link ICRS} from the given name using the given {@link CRSStore}, if no {@link ICRS} was found an
+     * {@link UnknownCRSException} will be thrown.
      * 
      * @param crsStore
-     *            {@link CRSStore} instance, looking for the {@link CoordinateSystem} instance, may not be
-     *            <code>null</code>, if in all {@link CRSStore}s should be searched
+     *            {@link CRSStore} instance, looking for the {@link ICRS} instance, may not be <code>null</code>, if in
+     *            all {@link CRSStore}s should be searched
      * @param name
      *            of the crs, e.g. EPSG:31466
      * @param forceXY
@@ -448,7 +555,7 @@ public class CRSManager implements ResourceManager {
      * @throws IllegalArgumentException
      *             if crsStore is null
      */
-    private static CoordinateSystem lookupStore( CRSStore crsStore, String name, boolean forceXY )
+    private static ICRS lookupStore( CRSStore crsStore, String name, boolean forceXY )
                             throws UnknownCRSException {
         if ( crsStore == null ) {
             throw new IllegalArgumentException( Messages.get( "CRSManager.STORE_NULL" ) );
@@ -456,7 +563,7 @@ public class CRSManager implements ResourceManager {
         long sT = currentTimeMillis();
         long eT = currentTimeMillis() - sT;
         LOG.debug( "Getting provider: " + crsStore + " took: " + eT + " ms." );
-        CoordinateSystem realCRS = null;
+        ICRS realCRS = null;
         try {
             sT = currentTimeMillis();
             realCRS = crsStore.getCRSByCode( CRSCodeType.valueOf( name ), forceXY );
@@ -477,12 +584,12 @@ public class CRSManager implements ResourceManager {
     }
 
     /**
-     * Creates a {@link CoordinateSystem} from the given name using the given {@link CRSStore}, if no
-     * {@link CoordinateSystem} was found an {@link UnknownCRSException} will be thrown.
+     * Creates a {@link ICRS} from the given name using the given {@link CRSStore}, if no {@link ICRS} was found an
+     * {@link UnknownCRSException} will be thrown.
      * 
      * @param crsStore
-     *            {@link CRSStore} instance, looking for the {@link CoordinateSystem} instance, may not be
-     *            <code>null</code>, if in all {@link CRSStore}s should be searched
+     *            {@link CRSStore} instance, looking for the {@link ICRS} instance, may not be <code>null</code>, if in
+     *            all {@link CRSStore}s should be searched
      * @param name
      *            of the crs, e.g. EPSG:31466
      * @param forceXY
@@ -493,12 +600,12 @@ public class CRSManager implements ResourceManager {
      * @throws IllegalArgumentException
      *             if crsStore is null
      */
-    private static CoordinateSystem lookupStore( CRSStore crsStore, CRSCodeType crsCodeType, boolean forceXY )
+    private static ICRS lookupStore( CRSStore crsStore, CRSCodeType crsCodeType, boolean forceXY )
                             throws UnknownCRSException {
         if ( crsStore == null ) {
             throw new IllegalArgumentException( Messages.get( "CRSManager.STORE_NULL" ) );
         }
-        CoordinateSystem realCRS = null;
+        ICRS realCRS = null;
         try {
             realCRS = crsStore.getCRSByCode( crsCodeType );
         } catch ( CRSConfigurationException e ) {
@@ -511,45 +618,21 @@ public class CRSManager implements ResourceManager {
         return realCRS;
     }
 
-    // TODO: ?
-    // /**
-    // * Wrapper for the private constructor of the org.deegree.cs class.
-    // *
-    // * @param realCRS
-    // * to wrap
-    // *
-    // * @return a CRSDeliverable corresponding to the given crs.
-    // */
-    // public static CoordinateSystem lookup( CoordinateSystem realCRS ) {
-    // return realCRS;
-    // }
-
     /**
-     * Get a {@link Transformation} with given id, or <code>null</code> if it does not exist.
-     * 
-     * @param crsStore
-     *            {@link CRSStore} instance, looking for the {@link Transformation}, may not be <code>null</code>
-     * @param id
-     *            of the {@link Transformation}
-     * @return the identified {@link Transformation} or <code>null<code> if no transformation is found.
-     * @throws IllegalArgumentException
-     *             if crsStore is null
+     * @param storeId
+     *            identifier of the {@link CRSStore} instance, may be <code>null</code>, then the first transformation
+     *            factory will be returned
+     * @return the {@link TransformationFactory} instance assigned to the store with the given id or the first one in
+     *         the list of {@link TransformationFactory}s if no such instance has been created or <code>null</code> if
+     *         no {@link TransformationFactory} instance could be found.
      */
-    private synchronized static Transformation getTransformation( CRSStore crsStore, String id ) {
-        if ( crsStore == null ) {
-            throw new IllegalArgumentException( Messages.get( "CRSManager.STORE_NULL" ) );
+    public static final TransformationFactory getTransformationFactory( String storeId ) {
+        if ( storeId == null ) {
+            for ( TransformationFactory tf : idToTransF.values() ) {
+                return tf;
+            }
         }
-        CRSIdentifiable t = null;
-        try {
-            t = crsStore.getIdentifiable( CRSCodeType.valueOf( id ) );
-        } catch ( Throwable e ) {
-            LOG.debug( "Could not retrieve a transformation for id: " + id );
-        }
-        if ( t != null && t instanceof Transformation ) {
-            return (Transformation) t;
-        }
-        LOG.debug( "The given id: " + id + " is not of type transformation return null." );
-        return null;
+        return idToTransF.get( storeId );
     }
 
     /**
@@ -583,15 +666,14 @@ public class CRSManager implements ResourceManager {
      *            identifier of the store, looking for the {@link Transformation}, may be <code>null</code> if in all
      *            {@link CRSStore}s should be searched
      * @param sourceCRS
-     *            start {@link CoordinateSystem} of the transformation (chain)
+     *            start {@link ICRS} of the transformation (chain)
      * @param targetCRS
-     *            end {@link CoordinateSystem} of the transformation (chain).
+     *            end {@link ICRS} of the transformation (chain).
      * @return the given {@link Transformation} or <code>null<code> if no such transformation was found.
      * @throws TransformationException
      * @throws IllegalArgumentException
      */
-    public synchronized static Transformation getTransformation( String storeId, CoordinateSystem sourceCRS,
-                                                                 CoordinateSystem targetCRS )
+    public synchronized static Transformation getTransformation( String storeId, ICRS sourceCRS, ICRS targetCRS )
                             throws IllegalArgumentException, TransformationException {
         return getTransformation( storeId, sourceCRS, targetCRS, null );
     }
@@ -605,9 +687,9 @@ public class CRSManager implements ResourceManager {
      *            identifier of the store, looking for the {@link Transformation}, may be <code>null</code> if in all
      *            {@link CRSStore}s should be searched
      * @param sourceCRS
-     *            start {@link CoordinateSystem} of the transformation (chain)
+     *            start {@link ICRS} of the transformation (chain)
      * @param targetCRS
-     *            end {@link CoordinateSystem} of the transformation (chain).
+     *            end {@link ICRS} of the transformation (chain).
      * @param transformationsToBeUsed
      *            a list of transformations which must be used on the resulting transformation chain, may be
      *            <code>null</code> or empty
@@ -615,8 +697,7 @@ public class CRSManager implements ResourceManager {
      * @throws TransformationException
      * @throws IllegalArgumentException
      */
-    public synchronized static Transformation getTransformation( String storeId, CoordinateSystem sourceCRS,
-                                                                 CoordinateSystem targetCRS,
+    public synchronized static Transformation getTransformation( String storeId, ICRS sourceCRS, ICRS targetCRS,
                                                                  List<Transformation> transformationsToBeUsed )
                             throws IllegalArgumentException, TransformationException {
         if ( storeId != null ) {
@@ -633,58 +714,32 @@ public class CRSManager implements ResourceManager {
         return null;
     }
 
-    public ResourceManagerMetadata getMetadata() {
-        return new ResourceManagerMetadata() {
-            public String getName() {
-                return "crs stores";
-            }
-
-            public String getPath() {
-                return "datasources/crs/";
-            }
-
-            public List<ResourceProvider> getResourceProviders() {
-                return new LinkedList<ResourceProvider>( nsToProvider.values() );
-            }
-        };
+    /**
+     * Get a {@link Transformation} with given id, or <code>null</code> if it does not exist.
+     * 
+     * @param crsStore
+     *            {@link CRSStore} instance, looking for the {@link Transformation}, may not be <code>null</code>
+     * @param id
+     *            of the {@link Transformation}
+     * @return the identified {@link Transformation} or <code>null<code> if no transformation is found.
+     * @throws IllegalArgumentException
+     *             if crsStore is null
+     */
+    private synchronized static Transformation getTransformation( CRSStore crsStore, String id ) {
+        if ( crsStore == null ) {
+            throw new IllegalArgumentException( Messages.get( "CRSManager.STORE_NULL" ) );
+        }
+        CRSResource t = null;
+        try {
+            t = crsStore.getDirectTransformation( id );
+        } catch ( Throwable e ) {
+            LOG.debug( "Could not retrieve a transformation for id: " + id );
+        }
+        if ( t != null && t instanceof Transformation ) {
+            return (Transformation) t;
+        }
+        LOG.debug( "The given id: " + id + " is not of type transformation return null." );
+        return null;
     }
-
-    // TODO: required?
-    // /**
-    // * Wrapper for the private constructor to create a dummy projected crs with no projection parameters set, the
-    // * standard wgs84 datum and the given optional name as the identifier. X-Y axis are in metres.
-    // *
-    // * @param name
-    // * optional identifier, if missing, the word 'dummy' will be used.
-    // *
-    // * @return a dummy CoordinateSystem having filled out all the essential values.
-    // */
-    // public static CoordinateSystem lookupDummyCRS( String name ) {
-    // if ( name == null || "".equals( name.trim() ) ) {
-    // name = "dummy";
-    // }
-    // /**
-    // * Standard axis of a geographic crs
-    // */
-    // final Axis[] axis_degree = new Axis[] { new Axis( Unit.DEGREE, "lon", Axis.AO_EAST ),
-    // new Axis( Unit.DEGREE, "lat", Axis.AO_NORTH ) };
-    // final Axis[] axis_projection = new Axis[] { new Axis( "x", Axis.AO_EAST ), new Axis( "y", Axis.AO_NORTH ) };
-    //
-    // final Helmert wgs_info = new Helmert( GeographicCRS.WGS84, GeographicCRS.WGS84, CRSCodeType.valueOf( name
-    // + "_wgs" ) );
-    // final GeodeticDatum datum = new GeodeticDatum( Ellipsoid.WGS84, wgs_info,
-    // new CRSCodeType[] { CRSCodeType.valueOf( name + "_datum" ) } );
-    // final GeographicCRS geographicCRS = new GeographicCRS(
-    // datum,
-    // axis_degree,
-    // new CRSCodeType[] { CRSCodeType.valueOf( name
-    // + "geographic_crs" ) } );
-    // final TransverseMercator projection = new TransverseMercator( true, geographicCRS, 0, 0, new Point2d( 0, 0 ),
-    // Unit.METRE, 1 );
-    //
-    // return new ProjectedCRS( projection, axis_projection,
-    // new CRSCodeType[] { CRSCodeType.valueOf( name + "projected_crs" ) } );
-    //
-    // }
 
 }

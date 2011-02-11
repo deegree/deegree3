@@ -4,7 +4,7 @@
 package org.deegree.feature.persistence.mapping;
 
 import org.deegree.commons.jdbc.QTableName;
-import org.deegree.cs.CRS;
+import org.deegree.cs.coordinatesystems.ICRS;
 
 /**
  * @author markus
@@ -14,9 +14,9 @@ public class BBoxTableMapping {
 
     private final QTableName ftTable;
 
-    private final CRS crs;
+    private final ICRS crs;
 
-    public BBoxTableMapping( String ftTable, CRS crs ) {
+    public BBoxTableMapping( String ftTable, ICRS crs ) {
         this.ftTable = new QTableName( ftTable );
         this.crs = crs;
     }
@@ -25,7 +25,7 @@ public class BBoxTableMapping {
         return ftTable;
     }
 
-    public CRS getCRS() {
+    public ICRS getCRS() {
         return crs;
     }
 

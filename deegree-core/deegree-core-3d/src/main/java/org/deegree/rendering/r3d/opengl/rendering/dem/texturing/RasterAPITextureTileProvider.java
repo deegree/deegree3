@@ -45,9 +45,9 @@ import org.deegree.coverage.raster.data.info.BandType;
 import org.deegree.coverage.raster.data.info.DataType;
 import org.deegree.coverage.raster.data.nio.PixelInterleavedRasterData;
 import org.deegree.coverage.raster.geom.RasterGeoReference;
-import org.deegree.coverage.raster.geom.RasterRect;
 import org.deegree.coverage.raster.geom.RasterGeoReference.OriginLocation;
-import org.deegree.cs.CRS;
+import org.deegree.coverage.raster.geom.RasterRect;
+import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryFactory;
 import org.slf4j.Logger;
@@ -210,7 +210,7 @@ public class RasterAPITextureTileProvider implements TextureTileProvider {
     }
 
     @Override
-    public CRS getCRS() {
+    public ICRS getCRS() {
         return raster.getCoordinateSystem();
     }
 

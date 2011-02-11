@@ -48,7 +48,8 @@ import org.deegree.coverage.raster.data.container.RasterDataContainerFactory.Loa
 import org.deegree.coverage.raster.data.info.DataType;
 import org.deegree.coverage.raster.geom.RasterGeoReference;
 import org.deegree.coverage.raster.geom.RasterGeoReference.OriginLocation;
-import org.deegree.cs.CRS;
+import org.deegree.cs.coordinatesystems.ICRS;
+import org.deegree.cs.persistence.CRSManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -293,12 +294,12 @@ public class RasterIOOptions implements Serializable {
     /**
      * @return the defined crs or null if no crs was defined.
      */
-    public CRS getCRS() {
+    public ICRS getCRS() {
         String s = options.get( CRS );
         if ( s == null || "".equals( s.trim() ) ) {
             return null;
         }
-        return new CRS( s );
+        return CRSManager.getCRSRef( s );
     }
 
     /**

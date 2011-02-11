@@ -38,7 +38,7 @@ package org.deegree.coverage;
 import org.deegree.coverage.raster.AbstractRaster;
 import org.deegree.coverage.raster.SampleResolution;
 import org.deegree.coverage.raster.interpolation.InterpolationType;
-import org.deegree.cs.CRS;
+import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.geometry.Envelope;
 
 /**
@@ -77,7 +77,7 @@ public interface Coverage {
      * 
      * @return the coordinate system of the coverage
      */
-    public CRS getCoordinateSystem();
+    public ICRS getCoordinateSystem();
 
     /**
      * Returns information about the possible sample resolutions of this coverage.

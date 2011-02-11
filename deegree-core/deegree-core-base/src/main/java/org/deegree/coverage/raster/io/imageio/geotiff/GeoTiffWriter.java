@@ -68,12 +68,10 @@ import org.deegree.coverage.raster.AbstractRaster;
 import org.deegree.coverage.raster.geom.RasterGeoReference;
 import org.deegree.coverage.raster.geom.RasterGeoReference.OriginLocation;
 import org.deegree.coverage.raster.utils.RasterFactory;
-import org.deegree.cs.CRS;
 import org.deegree.cs.CRSCodeType;
 import org.deegree.cs.EPSGCode;
-import org.deegree.cs.coordinatesystems.CoordinateSystem;
-import org.deegree.cs.coordinatesystems.CoordinateSystem.CRSType;
-import org.deegree.cs.exceptions.UnknownCRSException;
+import org.deegree.cs.coordinatesystems.CRS.CRSType;
+import org.deegree.cs.coordinatesystems.ICRS;
 
 import com.sun.media.imageio.plugins.tiff.GeoTIFFTagSet;
 import com.sun.media.imageio.plugins.tiff.TIFFDirectory;
@@ -224,21 +222,11 @@ public class GeoTiffWriter {
      * @param crs
      *            to add.
      */
-    private static void addCRS( Map<Integer, char[]> geoKeyDirectoryTag, CRS crs ) {
+    private static void addCRS( Map<Integer, char[]> geoKeyDirectoryTag, ICRS crs ) {
         if ( crs == null ) {
             return;
         }
-        CoordinateSystem srs;
-        try {
-            srs = crs.getWrappedCRS();
-        } catch ( UnknownCRSException e1 ) {
-            if ( LOG.isDebugEnabled() ) {
-                LOG.debug( "(Stack) Could not determine the crs for geotiff writing: " + e1.getLocalizedMessage(), e1 );
-            } else {
-                LOG.error( " Could not determine the crs for geotiff writing: " + e1.getLocalizedMessage() );
-            }
-            return;
-        }
+        ICRS srs = crs;
         if ( srs != null ) {
             CRSCodeType[] codes = srs.getCodes();
             // set to user defined

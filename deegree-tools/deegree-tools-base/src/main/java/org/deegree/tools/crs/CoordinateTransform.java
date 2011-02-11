@@ -53,12 +53,12 @@ import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.PosixParser;
 import org.deegree.commons.annotations.Tool;
 import org.deegree.commons.tools.CommandUtils;
-import org.deegree.cs.CRS;
 import org.deegree.cs.CoordinateTransformer;
-import org.deegree.cs.components.Unit;
-import org.deegree.cs.coordinatesystems.CoordinateSystem;
+import org.deegree.cs.components.IUnit;
+import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.exceptions.TransformationException;
 import org.deegree.cs.exceptions.UnknownCRSException;
+import org.deegree.cs.persistence.CRSManager;
 import org.slf4j.Logger;
 
 /**
@@ -88,9 +88,9 @@ public class CoordinateTransform {
 
     private static final Logger LOG = getLogger( CoordinateTransform.class );
 
-    private CRS sourceCRS;
+    private ICRS sourceCRS;
 
-    private CRS targetCRS;
+    private ICRS targetCRS;
 
     /**
      * Construct a demo crs with following coordinate systems.
@@ -98,7 +98,7 @@ public class CoordinateTransform {
      * @param sourceCRS
      * @param targetCRS
      */
-    public CoordinateTransform( CRS sourceCRS, CRS targetCRS ) {
+    public CoordinateTransform( ICRS sourceCRS, ICRS targetCRS ) {
         this.sourceCRS = sourceCRS;
         this.targetCRS = targetCRS;
     }
@@ -116,34 +116,33 @@ public class CoordinateTransform {
      */
     public void doTransform( double[] coordinate, boolean withInverse )
                             throws IllegalArgumentException, TransformationException, UnknownCRSException {
-        CoordinateTransformer ct = new CoordinateTransformer( targetCRS.getWrappedCRS() );
+        CoordinateTransformer ct = new CoordinateTransformer( targetCRS );
 
         double[] in = Arrays.copyOf( coordinate, 3 );
         // point to transform
         double[] out = new double[3];
 
-        outputPoint( "The original point in crs: " + sourceCRS.getName() + ": ", in, sourceCRS.getWrappedCRS() );
+        outputPoint( "The original point in crs: " + sourceCRS.getName() + ": ", in, sourceCRS );
 
-        ct.transform( sourceCRS.getWrappedCRS(), in, out );
+        ct.transform( sourceCRS, in, out );
 
-        outputPoint( "The transformed point in crs: " + targetCRS.getName() + ": ", out, targetCRS.getWrappedCRS() );
+        outputPoint( "The transformed point in crs: " + targetCRS.getName() + ": ", out, targetCRS );
         if ( withInverse ) {
             // transform back to source CRS
-            ct = new CoordinateTransformer( sourceCRS.getWrappedCRS() );
+            ct = new CoordinateTransformer( sourceCRS );
             double[] nIn = new double[3];
-            ct.transform( targetCRS.getWrappedCRS(), out, nIn );
+            ct.transform( targetCRS, out, nIn );
 
-            outputPoint( "The inversed transformed point in crs: " + sourceCRS.getName() + ": ", nIn,
-                         sourceCRS.getWrappedCRS() );
+            outputPoint( "The inversed transformed point in crs: " + sourceCRS.getName() + ": ", nIn, sourceCRS );
         }
 
     }
 
-    private void outputPoint( String outputString, double[] coord, CoordinateSystem currentCRS ) {
+    private void outputPoint( String outputString, double[] coord, ICRS currentCRS ) {
         double resultX = coord[0];
         double resultY = coord[1];
         double resultZ = coord[2];
-        Unit[] allUnits = currentCRS.getUnits();
+        IUnit[] allUnits = currentCRS.getUnits();
         System.out.println( outputString + resultX + allUnits[0] + ", " + resultY + allUnits[1]
                             + ( ( currentCRS.getDimension() == 3 ) ? ", " + resultZ + allUnits[2] : "" ) );
 
@@ -206,8 +205,8 @@ public class CoordinateTransform {
         String targetCRS = line.getOptionValue( OPT_T_SRS );
         String coord = line.getOptionValue( OPT_COORD );
 
-        CRS source = new CRS( sourceCRS );
-        CRS target = new CRS( targetCRS );
+        ICRS source = CRSManager.lookup( sourceCRS );
+        ICRS target = CRSManager.lookup( targetCRS );
 
         CoordinateTransform demo = new CoordinateTransform( source, target );
 
@@ -225,7 +224,7 @@ public class CoordinateTransform {
                 String coords = br.readLine();
 
                 int lineCount = 1;
-                final int sourceDim = source.getWrappedCRS().getDimension();
+                final int sourceDim = source.getDimension();
                 List<double[]> coordinateList = new LinkedList<double[]>();
                 while ( coords != null ) {
                     if ( !coords.startsWith( "#" ) ) {

@@ -61,8 +61,7 @@ import org.apache.commons.cli.PosixParser;
 import org.deegree.commons.annotations.Tool;
 import org.deegree.commons.tools.CommandUtils;
 import org.deegree.commons.xml.stax.IndentingXMLStreamWriter;
-import org.deegree.cs.CRS;
-import org.deegree.cs.coordinatesystems.CoordinateSystem;
+import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.exceptions.TransformationException;
 import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.cs.persistence.CRSManager;
@@ -140,14 +139,14 @@ public class XMLCoordinateTransform {
                             XMLStreamException, FactoryConfigurationError {
 
         // TODO source srs should actually override all srsName attributes in document, not just be the default
-        CoordinateSystem sourceCRS = null;
+        ICRS sourceCRS = null;
         String sourceCRSId = line.getOptionValue( OPT_S_SRS );
         if ( sourceCRSId != null ) {
-            sourceCRS = new CRS( sourceCRSId ).getWrappedCRS();
+            sourceCRS = CRSManager.lookup( sourceCRSId );
         }
 
         String targetCRSId = line.getOptionValue( OPT_T_SRS );
-        CoordinateSystem targetCRS = new CRS( targetCRSId ).getWrappedCRS();
+        ICRS targetCRS = CRSManager.lookup( targetCRSId );
 
         String transId = line.getOptionValue( OPT_TRANSFORMATION );
         List<Transformation> trans = null;

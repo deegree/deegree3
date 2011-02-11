@@ -54,14 +54,15 @@ import org.deegree.commons.utils.kvp.KVPUtils;
 import org.deegree.commons.utils.kvp.MissingParameterException;
 import org.deegree.coverage.rangeset.AxisSubset;
 import org.deegree.coverage.rangeset.Interval;
+import org.deegree.coverage.rangeset.Interval.Closure;
 import org.deegree.coverage.rangeset.RangeSet;
 import org.deegree.coverage.rangeset.SingleValue;
 import org.deegree.coverage.rangeset.ValueType;
-import org.deegree.coverage.rangeset.Interval.Closure;
 import org.deegree.coverage.raster.geom.Grid;
 import org.deegree.coverage.raster.interpolation.InterpolationType;
-import org.deegree.cs.CRS;
+import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.exceptions.TransformationException;
+import org.deegree.cs.persistence.CRSManager;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryFactory;
 import org.deegree.geometry.utils.GeometryUtils;
@@ -139,12 +140,12 @@ public class GetCoverage100KVPAdapter {
 
         String exceptionFormat = getDefault( kvp, "EXCEPTIONS", WCSConstants.EXCEPTION_FORMAT_100 );
 
-        CRS requestedCRS = new CRS( requestCRS );
+        ICRS requestedCRS = CRSManager.getCRSRef( requestCRS );
 
         Envelope requestedEnvelope = parseEnvelope( bbox, requestedCRS );
         Envelope targetEnvelope;
         try {
-            targetEnvelope = GeometryUtils.createConvertedEnvelope( requestedEnvelope, new CRS( responseCRS ) );
+            targetEnvelope = GeometryUtils.createConvertedEnvelope( requestedEnvelope, CRSManager.getCRSRef( responseCRS ) );
         } catch ( TransformationException e ) {
             throw new OWSException( "Specified envelope can not be converted into the response CRS: "
                                     + e.getLocalizedMessage(), OWSException.OPERATION_NOT_SUPPORTED, "responseCRS" );
@@ -170,7 +171,7 @@ public class GetCoverage100KVPAdapter {
         return coords;
     }
 
-    private static Envelope parseEnvelope( String bbox, CRS crs )
+    private static Envelope parseEnvelope( String bbox, ICRS crs )
                             throws OWSException {
         double[] coords = parseEnvelopeCoords( bbox );
         GeometryFactory geomFactory = new GeometryFactory();

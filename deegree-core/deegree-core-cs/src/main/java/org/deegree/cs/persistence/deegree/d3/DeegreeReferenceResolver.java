@@ -38,27 +38,38 @@
 
 package org.deegree.cs.persistence.deegree.d3;
 
+import org.deegree.commons.tom.Object;
+import org.deegree.commons.tom.ReferenceResolver;
+import org.deegree.commons.tom.ReferenceResolvingException;
+import org.deegree.cs.persistence.AbstractCRSStore.RESOURCETYPE;
+
 /**
- * The <code>StAXResource</code> wraps a string, for marking the usage of resources.
+ * The <code>CRSParser</code> holds the instances to the StAX based crs components parsers.
  * 
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
  * @author last edited by: $Author$
- * @version $Revision$, $Date$
  * 
+ * @version $Revision$, $Date$
  */
-public class StAXResource {
+public class DeegreeReferenceResolver implements ReferenceResolver {
 
-    private final String requestedId;
+    private final DeegreeCRSStore store;
+    
+    private RESOURCETYPE resourceType;
 
-    StAXResource( String id ) {
-        this.requestedId = id;
+    public DeegreeReferenceResolver( DeegreeCRSStore store, RESOURCETYPE resourceType ) {
+        this.store = store;
+        this.resourceType = resourceType;
     }
 
-    /**
-     * @return the requestedId
-     */
-    String getRequestedId() {
-        return requestedId;
+    // TODO: encode type?
+    @Override
+    public Object getObject( String uri, String baseURL ) {
+        if ( uri.startsWith( "#" ) ) {
+            // OBJEKT-> keine REFERENZ!
+            // CACHE
+            return store.getCRSResource(  uri.substring( 1 ), resourceType );
+        }
+        throw new ReferenceResolvingException( "Deegree CRS Resolver does not support remote references." );
     }
-
 }

@@ -55,8 +55,9 @@ import org.deegree.commons.xml.NamespaceBindings;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.XPath;
 import org.deegree.commons.xml.stax.StAXParsingHelper;
-import org.deegree.cs.CRS;
 import org.deegree.cs.CRSCodeType;
+import org.deegree.cs.coordinatesystems.ICRS;
+import org.deegree.cs.persistence.CRSManager;
 import org.deegree.filter.Filter;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryFactory;
@@ -66,8 +67,8 @@ import org.deegree.metadata.persistence.iso19115.jaxb.ISOMetadataStoreConfig.Any
 import org.deegree.metadata.persistence.types.BoundingBox;
 import org.deegree.metadata.persistence.types.Format;
 import org.deegree.metadata.persistence.types.Keyword;
-import org.deegree.protocol.csw.MetadataStoreException;
 import org.deegree.protocol.csw.CSWConstants.ReturnableElement;
+import org.deegree.protocol.csw.MetadataStoreException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -304,7 +305,7 @@ public class ISORecord implements MetadataRecord {
         int counter = 0;
         for ( BoundingBox box : bboxList ) {
             CRSCodeType bboxCRS = pElem.getQueryableProperties().getCrs().get( counter );
-            CRS crs = new CRS( bboxCRS.toString() );
+            ICRS crs = CRSManager.getCRSRef( bboxCRS.toString() );
             env[counter++] = new GeometryFactory().createEnvelope( box.getWestBoundLongitude(),
                                                                    box.getSouthBoundLatitude(),
                                                                    box.getEastBoundLongitude(),

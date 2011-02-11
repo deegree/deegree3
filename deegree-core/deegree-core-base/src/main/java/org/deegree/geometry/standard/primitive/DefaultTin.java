@@ -40,7 +40,7 @@ import java.util.List;
 import org.deegree.commons.uom.Length;
 import org.deegree.commons.uom.Measure;
 import org.deegree.commons.uom.Unit;
-import org.deegree.cs.CRS;
+import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.geometry.points.Points;
 import org.deegree.geometry.precision.PrecisionModel;
 import org.deegree.geometry.primitive.Point;
@@ -81,7 +81,7 @@ public class DefaultTin extends AbstractDefaultGeometry implements Tin {
      * @param patches
      *            the triangle that constitute the result of the triangulation
      */
-    public DefaultTin( String id, CRS crs, PrecisionModel pm, List<Triangle> patches ) {
+    public DefaultTin( String id, ICRS crs, PrecisionModel pm, List<Triangle> patches ) {
         super( id, crs, pm );
         this.patches = patches;
     }
@@ -102,7 +102,7 @@ public class DefaultTin extends AbstractDefaultGeometry implements Tin {
      * @param patches
      *            the triangle that constitute the result of the triangulation
      */
-    public DefaultTin( String id, CRS crs, PrecisionModel pm, List<List<LineStringSegment>> stopLines,
+    public DefaultTin( String id, ICRS crs, PrecisionModel pm, List<List<LineStringSegment>> stopLines,
                        List<List<LineStringSegment>> breakLines, Length maxLength, Points controlPoints,
                        List<Triangle> patches ) {
         super( id, crs, pm );
@@ -166,7 +166,7 @@ public class DefaultTin extends AbstractDefaultGeometry implements Tin {
     }
 
     @Override
-    public Measure getMaxLength(Unit requestedUnit) {
+    public Measure getMaxLength( Unit requestedUnit ) {
         return maxLength;
     }
 

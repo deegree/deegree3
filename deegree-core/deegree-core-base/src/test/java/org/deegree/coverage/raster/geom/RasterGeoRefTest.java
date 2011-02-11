@@ -44,7 +44,8 @@ import static org.deegree.coverage.raster.geom.RasterGeoReference.OriginLocation
 import junit.framework.Assert;
 
 import org.deegree.coverage.raster.geom.RasterGeoReference.OriginLocation;
-import org.deegree.cs.CRS;
+import org.deegree.cs.coordinatesystems.ICRS;
+import org.deegree.cs.persistence.CRSManager;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryFactory;
 import org.junit.Test;
@@ -69,7 +70,7 @@ public class RasterGeoRefTest {
 
     private final static double RES_Y = -10;
 
-    private static CRS defaultCRS = new CRS( "EPSG:31466" );
+    private static ICRS defaultCRS = CRSManager.getCRSRef( "EPSG:31466" );
 
     private final static RasterGeoReference REF_CENTER = new RasterGeoReference(
                                                                                  RasterGeoReference.OriginLocation.CENTER,

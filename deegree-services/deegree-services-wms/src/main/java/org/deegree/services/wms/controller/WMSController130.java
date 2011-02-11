@@ -45,7 +45,8 @@ import javax.servlet.ServletException;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
-import org.deegree.cs.CRS;
+import org.deegree.cs.coordinatesystems.ICRS;
+import org.deegree.cs.persistence.CRSManager;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryFactory;
 import org.deegree.protocol.wms.Utils;
@@ -93,8 +94,8 @@ public class WMSController130 extends WMSControllerBase {
      * @param crs
      * @return a new CRS
      */
-    public static CRS getCRS( String crs ) {
-        return new CRS( crs );
+    public static ICRS getCRS( String crs ) {
+        return CRSManager.getCRSRef( crs );
     }
 
     /**
@@ -114,7 +115,7 @@ public class WMSController130 extends WMSControllerBase {
             return new GeometryFactory().createEnvelope( factor * bbox[0], factor * bbox[1], factor * bbox[2],
                                                          factor * bbox[3], Utils.getAutoCRS( id, lon0, lat0 ) );
         }
-        return new GeometryFactory().createEnvelope( bbox[0], bbox[1], bbox[2], bbox[3], new CRS( crs ) );
+        return new GeometryFactory().createEnvelope( bbox[0], bbox[1], bbox[2], bbox[3], CRSManager.getCRSRef( crs ) );
     }
 
     @Override

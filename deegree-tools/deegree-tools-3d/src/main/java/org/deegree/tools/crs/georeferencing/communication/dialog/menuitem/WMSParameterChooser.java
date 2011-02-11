@@ -52,7 +52,8 @@ import javax.swing.ButtonGroup;
 import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 
-import org.deegree.cs.CRS;
+import org.deegree.cs.coordinatesystems.ICRS;
+import org.deegree.cs.persistence.CRSManager;
 import org.deegree.geometry.Envelope;
 import org.deegree.protocol.wms.client.WMSClient111;
 import org.deegree.tools.crs.georeferencing.communication.dialog.AbstractGRDialog;
@@ -265,13 +266,13 @@ public class WMSParameterChooser extends AbstractGRDialog {
         return list;
     }
 
-    public CRS getCheckBoxSRS() {
-        CRS crs = null;
+    public ICRS getCheckBoxSRS() {
+        ICRS crs = null;
         if ( checkBoxSRSList != null ) {
             for ( JCheckBox check : checkBoxSRSList ) {
 
                 if ( check.isSelected() ) {
-                    crs = new CRS( check.getText() );
+                    crs = CRSManager.getCRSRef( check.getText() );
                     break;
                 }
             }
@@ -279,7 +280,7 @@ public class WMSParameterChooser extends AbstractGRDialog {
         return crs;
     }
 
-    public Envelope getEnvelope( CRS srs, List<String> layerList ) {
+    public Envelope getEnvelope( ICRS srs, List<String> layerList ) {
         Envelope env = wmsClient.getBoundingBox( srs.getName(), layerList );
         if ( env == null ) {
             env = wmsClient.getLatLonBoundingBox( layerList );

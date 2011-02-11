@@ -65,7 +65,7 @@ import org.deegree.coverage.raster.geom.RasterGeoReference;
 import org.deegree.coverage.raster.io.grid.GridFileReader;
 import org.deegree.coverage.raster.io.grid.GridReader;
 import org.deegree.coverage.raster.io.grid.GridWriter;
-import org.deegree.cs.CRS;
+import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.feature.Feature;
 import org.deegree.feature.persistence.FeatureStore;
 import org.deegree.feature.persistence.FeatureStoreException;
@@ -109,7 +109,7 @@ public class StyledGeometryTTProvider implements TextureTileProvider {
 
     private Style style;
 
-    private final CRS wpvsCRS;
+    private final ICRS wpvsCRS;
 
     private final QName rootFT;
 
@@ -139,7 +139,7 @@ public class StyledGeometryTTProvider implements TextureTileProvider {
      * @throws IOException
      * @throws FeatureStoreException
      */
-    public StyledGeometryTTProvider( double[] offsetVector, CRS wpvsCRS, FeatureStore featureStore, Style style,
+    public StyledGeometryTTProvider( double[] offsetVector, ICRS wpvsCRS, FeatureStore featureStore, Style style,
                                      double maxUnitsPerPixel, File cacheDir, long cacheSize ) throws IOException,
                             FeatureStoreException {
 
@@ -504,7 +504,7 @@ public class StyledGeometryTTProvider implements TextureTileProvider {
     }
 
     @Override
-    public CRS getCRS() {
+    public ICRS getCRS() {
         // TODO does this make sense?
         return wpvsCRS;
     }

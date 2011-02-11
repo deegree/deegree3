@@ -56,7 +56,7 @@ import org.slf4j.LoggerFactory;
  * @version $Revision$, $Date$
  */
 @LoggingNotes(debug = "Get information about metadata of Coordinate System components.")
-public class CRSIdentifiable {
+public class CRSIdentifiable implements CRSResource {
 
     private static final Logger LOG = LoggerFactory.getLogger( CRSIdentifiable.class );
 
@@ -78,7 +78,7 @@ public class CRSIdentifiable {
      * @param other
      *            identifiable object.
      */
-    public CRSIdentifiable( CRSIdentifiable other ) {
+    public CRSIdentifiable( CRSResource other ) {
         this( other.getCodes(), other.getNames(), other.getVersions(), other.getDescriptions(), other.getAreasOfUse() );
     }
 
@@ -284,7 +284,7 @@ public class CRSIdentifiable {
     @Override
     public boolean equals( Object other ) {
         if ( other != null && other instanceof CRSIdentifiable ) {
-            CRSIdentifiable that = ( (CRSIdentifiable) other );
+            CRSResource that = ( (CRSResource) other );
             CRSCodeType[] mId = getCodes();
             CRSCodeType[] yId = that.getCodes();
             CRSCodeType[] small = mId.length >= yId.length ? yId : mId;
@@ -632,4 +632,13 @@ public class CRSIdentifiable {
             }
         }
     }
+
+    @Override
+    public String getId() {
+        if ( codes != null && codes.length > 0 ) {
+            return codes[0].getOriginal();
+        }
+        return null;
+    }
+
 }

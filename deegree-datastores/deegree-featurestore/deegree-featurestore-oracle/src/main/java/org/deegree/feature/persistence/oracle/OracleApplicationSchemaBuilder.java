@@ -56,7 +56,7 @@ import org.antlr.runtime.RecognitionException;
 import org.deegree.commons.jdbc.ConnectionManager;
 import org.deegree.commons.tom.primitive.PrimitiveType;
 import org.deegree.commons.utils.Pair;
-import org.deegree.cs.CRS;
+import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.feature.persistence.mapping.BlobMapping;
 import org.deegree.feature.persistence.mapping.FeatureTypeMapping;
 import org.deegree.feature.persistence.mapping.MappedApplicationSchema;
@@ -98,7 +98,7 @@ class OracleApplicationSchemaBuilder {
     private DatabaseMetaData md;
 
     static MappedApplicationSchema build( ApplicationSchema appSchema, List<FeatureTypeDecl> ftDecls,
-                                          String jdbcConnId, String dbSchema, CRS storageSRS )
+                                          String jdbcConnId, String dbSchema, ICRS storageSRS )
                             throws SQLException {
         OracleApplicationSchemaBuilder builder = new OracleApplicationSchemaBuilder( ftDecls, jdbcConnId, dbSchema,
                                                                                      appSchema );

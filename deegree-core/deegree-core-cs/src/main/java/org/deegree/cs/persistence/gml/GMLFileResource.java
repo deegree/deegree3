@@ -29,16 +29,16 @@
  Prof. Dr. Klaus Greve
  Postfach 1147, 53001 Bonn
  Germany
- http://www.geographie.uni-bonn.de/deegree/
+ http://ICompoundCRS.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
 
 package org.deegree.cs.persistence.gml;
 
-import static org.deegree.cs.coordinatesystems.CoordinateSystem.CRSType.COMPOUND;
-import static org.deegree.cs.coordinatesystems.CoordinateSystem.CRSType.GEOGRAPHIC;
-import static org.deegree.cs.coordinatesystems.CoordinateSystem.CRSType.PROJECTED;
+import static org.deegree.cs.coordinatesystems.CRS.CRSType.COMPOUND;
+import static org.deegree.cs.coordinatesystems.CRS.CRSType.GEOGRAPHIC;
+import static org.deegree.cs.coordinatesystems.CRS.CRSType.PROJECTED;
 
 import java.io.IOException;
 import java.net.URL;
@@ -57,10 +57,11 @@ import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.commons.xml.XPath;
 import org.deegree.cs.CRSCodeType;
 import org.deegree.cs.configuration.resources.XMLFileResource;
-import org.deegree.cs.coordinatesystems.CompoundCRS;
-import org.deegree.cs.coordinatesystems.CoordinateSystem;
 import org.deegree.cs.coordinatesystems.GeographicCRS;
-import org.deegree.cs.coordinatesystems.ProjectedCRS;
+import org.deegree.cs.coordinatesystems.ICompoundCRS;
+import org.deegree.cs.coordinatesystems.ICRS;
+import org.deegree.cs.coordinatesystems.IGeographicCRS;
+import org.deegree.cs.coordinatesystems.IProjectedCRS;
 import org.deegree.cs.exceptions.CRSConfigurationException;
 import org.deegree.cs.i18n.Messages;
 import org.deegree.cs.transformations.Transformation;
@@ -83,9 +84,6 @@ import org.slf4j.LoggerFactory;
 @LoggingNotes(debug = "Get information about the currently parsed transformations.")
 public class GMLFileResource extends XMLFileResource implements GMLResource {
 
-    /**
-     * 
-     */
     private static final long serialVersionUID = -4389365894942107300L;
 
     private static Logger LOG = LoggerFactory.getLogger( GMLFileResource.class );
@@ -115,7 +113,7 @@ public class GMLFileResource extends XMLFileResource implements GMLResource {
         adapter = new XMLAdapter();
     }
 
-    public Helmert getWGS84Transformation( GeographicCRS sourceCRS ) {
+    public Helmert getWGS84Transformation( IGeographicCRS sourceCRS ) {
         if ( sourceCRS == null ) {
             return null;
         }
@@ -125,8 +123,8 @@ public class GMLFileResource extends XMLFileResource implements GMLResource {
         if ( parsedTransformation instanceof Helmert ) {
             result = (Helmert) parsedTransformation;
         } else {
-            CoordinateSystem target = parsedTransformation.getTargetCRS();
-            GeographicCRS geoCRS = getGeographicCRS( target );
+            ICRS target = parsedTransformation.getTargetCRS();
+            IGeographicCRS geoCRS = getGeographicCRS( target );
             if ( geoCRS != null ) {
                 result = getWGS84Transformation( geoCRS );
             }
@@ -145,18 +143,18 @@ public class GMLFileResource extends XMLFileResource implements GMLResource {
      *            to get the {@link GeographicCRS} from.
      * @return the {@link GeographicCRS} or <code>null</code> if the crs has no underlying {@link GeographicCRS}.
      */
-    private GeographicCRS getGeographicCRS( CoordinateSystem crs ) {
-        GeographicCRS result = null;
+    private IGeographicCRS getGeographicCRS( ICRS crs ) {
+        IGeographicCRS result = null;
         if ( crs.getType() == COMPOUND ) {
-            if ( ( (CompoundCRS) crs ).getUnderlyingCRS().getType() == PROJECTED ) {
-                result = ( (ProjectedCRS) ( (CompoundCRS) crs ).getUnderlyingCRS() ).getGeographicCRS();
-            } else if ( ( (CompoundCRS) crs ).getUnderlyingCRS().getType() == GEOGRAPHIC ) {
+            if ( ( (ICompoundCRS) crs ).getUnderlyingCRS().getType() == PROJECTED ) {
+                result = ( (IProjectedCRS) ( (ICompoundCRS) crs ).getUnderlyingCRS() ).getGeographicCRS();
+            } else if ( ( (ICompoundCRS) crs ).getUnderlyingCRS().getType() == GEOGRAPHIC ) {
                 result = (GeographicCRS) crs;
             } else {
                 LOG.warn( "Wgs84 Transformation lookup is currently only supported for GeographicCRS-chains." );
             }
         } else if ( crs.getType() == PROJECTED ) {
-            result = ( (ProjectedCRS) crs ).getGeographicCRS();
+            result = ( (IProjectedCRS) crs ).getGeographicCRS();
         } else if ( crs.getType() == GEOGRAPHIC ) {
             result = (GeographicCRS) crs;
         } else {
@@ -165,7 +163,7 @@ public class GMLFileResource extends XMLFileResource implements GMLResource {
         return result;
     }
 
-    public Transformation getTransformation( CoordinateSystem sourceCRS, CoordinateSystem targetCRS ) {
+    public Transformation getTransformation( ICRS sourceCRS, ICRS targetCRS ) {
         if ( sourceCRS == null ) {
             return null;
         }
@@ -211,9 +209,13 @@ public class GMLFileResource extends XMLFileResource implements GMLResource {
      * @throws XMLParsingException
      */
     private Transformation parseTransformation( OMElement transformationElement, List<String> targetIDs,
-                                                CoordinateSystem targetCRS )
+                                                ICRS targetCRS )
                             throws XMLParsingException {
-        Transformation result = getProvider().parseTransformation( transformationElement );
+        // ITransformation result = getProvider().parseTransformation( transformationElement );
+        Transformation result = null;
+        if ( getProvider() instanceof GMLCRSStore ) {
+            result = ( (GMLCRSStore) getProvider() ).parseTransformation( transformationElement );
+        }
         if ( targetCRS == null ) {
             // Trying to find a helmert transformation
             LOG.debug( "Resolving a possible transformation." );
@@ -324,15 +326,16 @@ public class GMLFileResource extends XMLFileResource implements GMLResource {
     }
 
     @Override
-    public List<CoordinateSystem> getAvailableCRSs() {
+    public List<ICRS> getAvailableCRSs() {
         List<CRSCodeType[]> availableCRSIds = getAvailableCRSIds();
-        List<CoordinateSystem> result = new ArrayList<CoordinateSystem>( availableCRSIds.size() );
+        List<ICRS> result = new ArrayList<ICRS>( availableCRSIds.size() );
         for ( CRSCodeType[] s : availableCRSIds ) {
-            CoordinateSystem crs = getProvider().getCRSByCode( s[0] );
+            ICRS crs = getProvider().getCRSByCode( s[0] );
             if ( crs != null ) {
                 result.add( crs );
             }
         }
         return result;
     }
+
 }

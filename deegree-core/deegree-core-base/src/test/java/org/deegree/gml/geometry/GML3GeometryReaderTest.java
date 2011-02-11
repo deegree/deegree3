@@ -119,7 +119,7 @@ public class GML3GeometryReaderTest {
         Assert.assertEquals( 7.12, point.get0(), DELTA );
         Assert.assertEquals( 50.72, point.get1(), DELTA );
         Assert.assertEquals( 2, point.getCoordinateDimension() );
-        Assert.assertEquals( CRSManager.lookup( "EPSG:4326" ), point.getCoordinateSystem().getWrappedCRS() );
+        Assert.assertEquals( CRSManager.lookup( "EPSG:4326" ), point.getCoordinateSystem() );
     }
 
     @Test
@@ -134,7 +134,7 @@ public class GML3GeometryReaderTest {
         Assert.assertEquals( 7.12, point.get0(), DELTA );
         Assert.assertEquals( 50.72, point.get1(), DELTA );
         Assert.assertEquals( 2, point.getCoordinateDimension() );
-        Assert.assertEquals( CRSManager.lookup( "EPSG:4326" ), point.getCoordinateSystem().getWrappedCRS() );
+        Assert.assertEquals( CRSManager.lookup( "EPSG:4326" ), point.getCoordinateSystem() );
     }
 
     @Test
@@ -149,7 +149,7 @@ public class GML3GeometryReaderTest {
         Assert.assertEquals( 7.12, point.get0(), DELTA );
         Assert.assertEquals( 50.72, point.get1(), DELTA );
         Assert.assertEquals( 2, point.getCoordinateDimension() );
-        Assert.assertEquals( CRSManager.lookup( "EPSG:4326" ), point.getCoordinateSystem().getWrappedCRS() );
+        Assert.assertEquals( CRSManager.lookup( "EPSG:4326" ), point.getCoordinateSystem() );
     }
 
     @Test
@@ -438,7 +438,7 @@ public class GML3GeometryReaderTest {
         Assert.assertEquals( XMLStreamConstants.END_ELEMENT, xmlReader.getEventType() );
         Assert.assertEquals( new QName( "http://www.opengis.net/gml", "Solid" ), xmlReader.getName() );
         Assert.assertEquals( SolidType.Solid, solid.getSolidType() );
-        Assert.assertEquals( CRSManager.lookup( "EPSG:31466" ), solid.getCoordinateSystem().getWrappedCRS() );
+        Assert.assertEquals( CRSManager.lookup( "EPSG:31466" ), solid.getCoordinateSystem() );
         Assert.assertEquals( 8, solid.getExteriorSurface().getPatches().size() );
         Assert.assertEquals( 2568786.096,
                              ( (PolygonPatch) solid.getExteriorSurface().getPatches().get( 7 ) ).getExteriorRing().getStartPoint().get0(),
@@ -503,7 +503,7 @@ public class GML3GeometryReaderTest {
         Assert.assertEquals( SolidType.CompositeSolid, compositeSolid.getSolidType() );
         Solid solid = compositeSolid.get( 0 );
         Assert.assertEquals( SolidType.Solid, solid.getSolidType() );
-        Assert.assertEquals( CRSManager.lookup( "EPSG:31466" ), solid.getCoordinateSystem().getWrappedCRS() );
+        Assert.assertEquals( CRSManager.lookup( "EPSG:31466" ), solid.getCoordinateSystem() );
         Assert.assertEquals( 8, solid.getExteriorSurface().getPatches().size() );
         Assert.assertEquals( 2568786.096,
                              ( (PolygonPatch) solid.getExteriorSurface().getPatches().get( 7 ) ).getExteriorRing().getStartPoint().get0(),
@@ -538,7 +538,7 @@ public class GML3GeometryReaderTest {
         Assert.assertEquals( new QName( "http://www.opengis.net/gml", "GeometricComplex" ), xmlReader.getName() );
         Solid solid = (Solid) compositeGeometry.get( 0 );
         Assert.assertEquals( SolidType.Solid, solid.getSolidType() );
-        Assert.assertEquals( CRSManager.lookup( "EPSG:31466" ), solid.getCoordinateSystem().getWrappedCRS() );
+        Assert.assertEquals( CRSManager.lookup( "EPSG:31466" ), solid.getCoordinateSystem() );
         Assert.assertEquals( 8, solid.getExteriorSurface().getPatches().size() );
         Assert.assertEquals( 2568786.096,
                              ( (PolygonPatch) solid.getExteriorSurface().getPatches().get( 7 ) ).getExteriorRing().getStartPoint().get0(),
@@ -719,7 +719,7 @@ public class GML3GeometryReaderTest {
         Assert.assertEquals( 22.0, envelope.getMin().get1(), DELTA );
         Assert.assertEquals( 44.0, envelope.getMax().get0(), DELTA );
         Assert.assertEquals( 88.0, envelope.getMax().get1(), DELTA );
-        Assert.assertEquals( CRSManager.lookup( "EPSG:4326" ), envelope.getCoordinateSystem().getWrappedCRS() );
+        Assert.assertEquals( CRSManager.lookup( "EPSG:4326" ), envelope.getCoordinateSystem() );
     }
 
     @Test
@@ -735,7 +735,7 @@ public class GML3GeometryReaderTest {
         Assert.assertEquals( 22.0, envelope.getMin().get1(), DELTA );
         Assert.assertEquals( 44.0, envelope.getMax().get0(), DELTA );
         Assert.assertEquals( 88.0, envelope.getMax().get1(), DELTA );
-        Assert.assertEquals( CRSManager.lookup( "EPSG:4326" ), envelope.getCoordinateSystem().getWrappedCRS() );
+        Assert.assertEquals( CRSManager.lookup( "EPSG:4326" ), envelope.getCoordinateSystem() );
     }
 
     @Test
@@ -751,7 +751,7 @@ public class GML3GeometryReaderTest {
         Assert.assertEquals( 22.0, envelope.getMin().get1(), DELTA );
         Assert.assertEquals( 44.0, envelope.getMax().get0(), DELTA );
         Assert.assertEquals( 88.0, envelope.getMax().get1(), DELTA );
-        Assert.assertEquals( CRSManager.lookup( "EPSG:4326" ), envelope.getCoordinateSystem().getWrappedCRS() );
+        Assert.assertEquals( CRSManager.lookup( "EPSG:4326" ), envelope.getCoordinateSystem() );
     }
 
     @Test
@@ -767,7 +767,7 @@ public class GML3GeometryReaderTest {
         Assert.assertEquals( 22.0, envelope.getMin().get1(), DELTA );
         Assert.assertEquals( 44.0, envelope.getMax().get0(), DELTA );
         Assert.assertEquals( 88.0, envelope.getMax().get1(), DELTA );
-        Assert.assertEquals( CRSManager.lookup( "EPSG:4326" ), envelope.getCoordinateSystem().getWrappedCRS() );
+        Assert.assertEquals( CRSManager.lookup( "EPSG:4326" ), envelope.getCoordinateSystem() );
     }
 
     @Test
@@ -781,7 +781,7 @@ public class GML3GeometryReaderTest {
         LineString geom = decoder.parseLineString( xmlReader, null );
         Assert.assertEquals( XMLStreamConstants.END_ELEMENT, xmlReader.getEventType() );
         Assert.assertEquals( new QName( "http://www.opengis.net/gml", "LineString" ), xmlReader.getName() );
-        Assert.assertEquals( CRSManager.lookup( "EPSG:4326" ), geom.getCoordinateSystem().getWrappedCRS() );
+        Assert.assertEquals( CRSManager.lookup( "EPSG:4326" ), geom.getCoordinateSystem() );
         decoder.getDocumentIdContext();
 
         for ( Point p : geom.getControlPoints() ) {
@@ -802,7 +802,7 @@ public class GML3GeometryReaderTest {
                                                                                                                                             null );
         Assert.assertEquals( XMLStreamConstants.END_ELEMENT, xmlReader.getEventType() );
         Assert.assertEquals( new QName( "http://www.opengis.net/gml", "MultiGeometry" ), xmlReader.getName() );
-        Assert.assertEquals( CRSManager.lookup( "EPSG:4326" ), geom.getCoordinateSystem().getWrappedCRS() );
+        Assert.assertEquals( CRSManager.lookup( "EPSG:4326" ), geom.getCoordinateSystem() );
 
         idContext.resolveLocalRefs();
         LineString ls = (LineString) geom.get( 2 );
@@ -824,7 +824,7 @@ public class GML3GeometryReaderTest {
         Assert.assertEquals( 7.12, point.get0(), DELTA );
         Assert.assertEquals( 50.72, point.get1(), DELTA );
         Assert.assertEquals( 2, point.getCoordinateDimension() );
-        Assert.assertEquals( CRSManager.lookup( "EPSG:4326" ), point.getCoordinateSystem().getWrappedCRS() );
+        Assert.assertEquals( CRSManager.lookup( "EPSG:4326" ), point.getCoordinateSystem() );
     }
 
     private XMLStreamReaderWrapper getParser( String fileName )

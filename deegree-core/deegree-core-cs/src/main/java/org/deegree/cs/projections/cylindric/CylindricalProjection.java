@@ -38,8 +38,8 @@ package org.deegree.cs.projections.cylindric;
 
 import javax.vecmath.Point2d;
 
-import org.deegree.cs.CRSIdentifiable;
-import org.deegree.cs.components.Unit;
+import org.deegree.cs.CRSResource;
+import org.deegree.cs.components.IUnit;
 import org.deegree.cs.projections.Projection;
 
 /**
@@ -74,8 +74,8 @@ public abstract class CylindricalProjection extends Projection {
      * @param id
      *            an identifiable instance containing information about this projection
      */
-    public CylindricalProjection( double falseNorthing, double falseEasting, Point2d naturalOrigin, Unit units,
-                                  double scale, boolean conformal, boolean equalArea, CRSIdentifiable id ) {
+    public CylindricalProjection( double falseNorthing, double falseEasting, Point2d naturalOrigin, IUnit units,
+                                  double scale, boolean conformal, boolean equalArea, CRSResource id ) {
         super( falseNorthing, falseEasting, naturalOrigin, units, scale, conformal, equalArea, id );
     }
 

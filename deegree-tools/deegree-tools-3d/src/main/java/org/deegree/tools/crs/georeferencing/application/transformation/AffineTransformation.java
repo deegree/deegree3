@@ -41,7 +41,7 @@ import java.util.List;
 import javax.vecmath.Point3d;
 
 import org.deegree.commons.utils.Triple;
-import org.deegree.cs.CRS;
+import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.exceptions.TransformationException;
 import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.geometry.GeometryFactory;
@@ -158,7 +158,7 @@ public class AffineTransformation extends AbstractTransformation {
     private double[] passPointsN_one;
 
     public AffineTransformation( List<Triple<Point4Values, Point4Values, PointResidual>> mappedPoints,
-                                 Footprint footPrint, Scene2DValues sceneValues, CRS sourceCRS, CRS targetCRS,
+                                 Footprint footPrint, Scene2DValues sceneValues, ICRS sourceCRS, ICRS targetCRS,
                                  final int order ) throws UnknownCRSException {
         super( mappedPoints, footPrint, sceneValues, sourceCRS, targetCRS, order );
 

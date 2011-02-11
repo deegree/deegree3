@@ -42,7 +42,8 @@ import javax.xml.stream.XMLStreamReader;
 
 import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;
-import org.deegree.cs.CRS;
+import org.deegree.cs.coordinatesystems.CRS;
+import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.feature.Feature;
 import org.deegree.feature.FeatureCollection;
@@ -83,7 +84,7 @@ public class GMLStreamReader {
 
     private ApplicationSchema schema;
 
-    private CRS defaultCRS;
+    private ICRS defaultCRS;
 
     private int defaultCoordDim = 2;
 
@@ -126,7 +127,7 @@ public class GMLStreamReader {
      * @param defaultCRS
      *            default CRS, can be <code>null</code>
      */
-    public void setDefaultCRS( CRS defaultCRS ) {
+    public void setDefaultCRS( ICRS defaultCRS ) {
         this.defaultCRS = defaultCRS;
     }
 

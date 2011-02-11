@@ -38,7 +38,7 @@ package org.deegree.geometry.standard.points;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
-import org.deegree.cs.CRS;
+import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.geometry.points.Points;
 import org.deegree.geometry.primitive.Point;
 import org.deegree.geometry.standard.primitive.DefaultPoint;
@@ -58,13 +58,13 @@ import com.vividsolutions.jts.geom.Envelope;
  */
 public class PackedPoints implements Points {
 
-    private CRS crs;
-    
+    private ICRS crs;
+
     private int dimension;
 
     private double[] coordinates;
 
-    public PackedPoints( CRS crs, double[] coordinates, int coordinatesDimension ) {
+    public PackedPoints( ICRS crs, double[] coordinates, int coordinatesDimension ) {
         this.crs = crs;
         this.coordinates = coordinates;
         this.dimension = coordinatesDimension;

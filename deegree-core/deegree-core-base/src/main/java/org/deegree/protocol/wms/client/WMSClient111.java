@@ -86,8 +86,9 @@ import org.deegree.coverage.raster.data.nio.PixelInterleavedRasterData;
 import org.deegree.coverage.raster.geom.RasterGeoReference;
 import org.deegree.coverage.raster.geom.RasterGeoReference.OriginLocation;
 import org.deegree.coverage.raster.utils.RasterFactory;
-import org.deegree.cs.CRS;
+import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.exceptions.UnknownCRSException;
+import org.deegree.cs.persistence.CRSManager;
 import org.deegree.feature.FeatureCollection;
 import org.deegree.feature.GenericFeature;
 import org.deegree.feature.GenericFeatureCollection;
@@ -316,7 +317,7 @@ public class WMSClient111 {
                         min[1] = Double.parseDouble( bbox.getAttributeValue( new QName( "miny" ) ) );
                         max[0] = Double.parseDouble( bbox.getAttributeValue( new QName( "maxx" ) ) );
                         max[1] = Double.parseDouble( bbox.getAttributeValue( new QName( "maxy" ) ) );
-                        return new GeometryFactory().createEnvelope( min, max, new CRS( WGS84 ) );
+                        return new GeometryFactory().createEnvelope( min, max, CRSManager.getCRSRef( WGS84 ) );
                     } catch ( NumberFormatException nfe ) {
                         LOG.warn( get( "WMSCLIENT.SERVER_INVALID_NUMERIC_VALUE", nfe.getLocalizedMessage() ) );
                     }
@@ -366,7 +367,7 @@ public class WMSClient111 {
                     min[1] = Double.parseDouble( bbox.getAttributeValue( new QName( "miny" ) ) );
                     max[0] = Double.parseDouble( bbox.getAttributeValue( new QName( "maxx" ) ) );
                     max[1] = Double.parseDouble( bbox.getAttributeValue( new QName( "maxy" ) ) );
-                    return new GeometryFactory().createEnvelope( min, max, new CRS( srs ) );
+                    return new GeometryFactory().createEnvelope( min, max, CRSManager.getCRSRef( srs ) );
                 } catch ( NumberFormatException nfe ) {
                     LOG.warn( get( "WMSCLIENT.SERVER_INVALID_NUMERIC_VALUE", nfe.getLocalizedMessage() ) );
                 }
@@ -427,9 +428,10 @@ public class WMSClient111 {
      * @return an image from the server, or an error message from the service exception
      * @throws IOException
      */
-    public Pair<BufferedImage, String> getMap( List<String> layers, int width, int height, Envelope bbox, CRS srs,
-                                               String format, boolean transparent, boolean errorsInImage, int timeout,
-                                               boolean validate, List<String> validationErrors )
+    public Pair<BufferedImage, String> getMap( List<String> layers, int width, int height, Envelope bbox,
+                                               ICRS srs, String format, boolean transparent,
+                                               boolean errorsInImage, int timeout, boolean validate,
+                                               List<String> validationErrors )
                             throws IOException {
 
         Worker worker = new Worker( layers, width, height, bbox, srs, format, transparent, errorsInImage, validate,
@@ -451,7 +453,7 @@ public class WMSClient111 {
     }
 
     public FeatureCollection getFeatureInfo( List<String> queryLayers, int width, int height, int x, int y,
-                                             Envelope bbox, CRS srs, int count )
+                                             Envelope bbox, ICRS srs, int count )
                             throws IOException {
         String url = getAddress( GetFeatureInfo, true );
         if ( url == null ) {
@@ -602,7 +604,7 @@ public class WMSClient111 {
      * @throws IOException
      */
     public Pair<SimpleRaster, String> getMapAsSimpleRaster( List<String> layers, int width, int height, Envelope bbox,
-                                                            CRS srs, String format, boolean transparent,
+                                                            ICRS srs, String format, boolean transparent,
                                                             boolean errorsInImage, int timeout, boolean validate,
                                                             List<String> validationErrors )
                             throws IOException {
@@ -638,7 +640,7 @@ public class WMSClient111 {
 
         private Envelope bbox;
 
-        private CRS srs;
+        private ICRS srs;
 
         private String format;
 
@@ -650,8 +652,8 @@ public class WMSClient111 {
 
         private List<String> validationErrors;
 
-        Worker( List<String> layers, int width, int height, Envelope bbox, CRS srs, String format, boolean transparent,
-                boolean errorsInImage, boolean validate, List<String> validationErrors ) {
+        Worker( List<String> layers, int width, int height, Envelope bbox, ICRS srs, String format,
+                boolean transparent, boolean errorsInImage, boolean validate, List<String> validationErrors ) {
             this.layers = layers;
             this.width = width;
             this.height = height;
@@ -671,9 +673,10 @@ public class WMSClient111 {
                            validationErrors );
         }
 
-        private Pair<BufferedImage, String> getMap( List<String> layers, int width, int height, Envelope bbox, CRS srs,
-                                                    String format, boolean transparent, boolean errorsInImage,
-                                                    boolean validate, List<String> validationErrors )
+        private Pair<BufferedImage, String> getMap( List<String> layers, int width, int height, Envelope bbox,
+                                                    ICRS srs, String format, boolean transparent,
+                                                    boolean errorsInImage, boolean validate,
+                                                    List<String> validationErrors )
                                 throws IOException {
             if ( ( maxMapWidth != -1 && width > maxMapWidth ) || ( maxMapHeight != -1 && height > maxMapHeight ) ) {
                 return getTiledMap( layers, width, height, bbox, srs, format, transparent, errorsInImage, validate,
@@ -766,7 +769,7 @@ public class WMSClient111 {
 
         // TODO handle axis direction and order correctly, depends on srs
         private Pair<BufferedImage, String> getTiledMap( List<String> layers, int width, int height, Envelope bbox,
-                                                         CRS srs, String format, boolean transparent,
+                                                         ICRS srs, String format, boolean transparent,
                                                          boolean errorsInImage, boolean validate,
                                                          List<String> validationErrors )
                                 throws IOException {
@@ -826,7 +829,7 @@ public class WMSClient111 {
         }
 
         private void getAndSetSubImage( BufferedImage targetImage, List<String> layers, int xMin, int width, int yMin,
-                                        int height, RasterGeoReference rasterEnv, CRS crs, String format,
+                                        int height, RasterGeoReference rasterEnv, ICRS crs, String format,
                                         boolean transparent, boolean errorsInImage )
                                 throws IOException {
 

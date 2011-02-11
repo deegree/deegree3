@@ -47,12 +47,13 @@ import javax.vecmath.Point3d;
 import org.deegree.commons.annotations.LoggingNotes;
 import org.deegree.cs.CRSCodeType;
 import org.deegree.cs.CRSIdentifiable;
-import org.deegree.cs.components.Ellipsoid;
+import org.deegree.cs.CRSResource;
+import org.deegree.cs.components.IEllipsoid;
 import org.deegree.cs.components.Unit;
-import org.deegree.cs.coordinatesystems.CompoundCRS;
-import org.deegree.cs.coordinatesystems.CoordinateSystem;
-import org.deegree.cs.coordinatesystems.GeocentricCRS;
-import org.deegree.cs.coordinatesystems.CoordinateSystem.CRSType;
+import org.deegree.cs.coordinatesystems.CRS.CRSType;
+import org.deegree.cs.coordinatesystems.IGeocentricCRS;
+import org.deegree.cs.coordinatesystems.ICompoundCRS;
+import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.transformations.Transformation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -129,15 +130,15 @@ public class GeocentricTransform extends Transformation {
      * @param id
      *            an identifiable instance containing information about this transformation
      */
-    public GeocentricTransform( CoordinateSystem source, GeocentricCRS target, CRSIdentifiable id ) {
+    public GeocentricTransform( ICRS source, IGeocentricCRS target, CRSResource id ) {
         super( source, target, id );
         calcParams();
     }
 
     private void calcParams() {
         this.hasHeight = ( getSourceCRS().getType() == CRSType.COMPOUND );
-        defaultHeightValue = ( hasHeight ) ? ( (CompoundCRS) getSourceCRS() ).getDefaultHeight() : 0;
-        Ellipsoid ellipsoid = getSourceCRS().getGeodeticDatum().getEllipsoid();
+        defaultHeightValue = ( hasHeight ) ? ( (ICompoundCRS) getSourceCRS() ).getDefaultHeight() : 0;
+        IEllipsoid ellipsoid = getSourceCRS().getGeodeticDatum().getEllipsoid();
         semiMajorAxis = Unit.METRE.convert( ellipsoid.getSemiMajorAxis(), ellipsoid.getUnits() );
         semiMinorAxis = Unit.METRE.convert( ellipsoid.getSemiMinorAxis(), ellipsoid.getUnits() );
         squaredSemiMajorAxis = semiMajorAxis * semiMajorAxis;
@@ -159,7 +160,7 @@ public class GeocentricTransform extends Transformation {
      * @param target
      *            the geocentric crs.
      */
-    public GeocentricTransform( CoordinateSystem source, GeocentricCRS target ) {
+    public GeocentricTransform( ICRS source, IGeocentricCRS target ) {
         this( source, target, new CRSIdentifiable( CRSCodeType.valueOf( createFromTo( source.getCode().toString(),
                                                                                       target.getCode().toString() ) ) ) );
     }

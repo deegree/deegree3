@@ -46,9 +46,11 @@ import javax.vecmath.Matrix3d;
 
 import org.deegree.commons.annotations.LoggingNotes;
 import org.deegree.cs.components.Axis;
+import org.deegree.cs.components.IAxis;
+import org.deegree.cs.components.IUnit;
 import org.deegree.cs.components.Unit;
-import org.deegree.cs.coordinatesystems.CoordinateSystem;
-import org.deegree.cs.coordinatesystems.GeographicCRS;
+import org.deegree.cs.coordinatesystems.ICRS;
+import org.deegree.cs.coordinatesystems.IGeographicCRS;
 import org.deegree.cs.exceptions.TransformationException;
 import org.deegree.cs.i18n.Messages;
 import org.slf4j.Logger;
@@ -168,7 +170,7 @@ public class Matrix extends GMatrix {
      * @throws IllegalArgumentException
      *             if the affine transform can't be created for some other reason.
      */
-    public Matrix( final Axis[] srcAxis, final Axis[] dstAxis ) {
+    public Matrix( final IAxis[] srcAxis, final IAxis[] dstAxis ) {
         this( srcAxis.length + 1 );
         final int dimension = srcAxis.length;
         if ( dstAxis.length != dimension ) {
@@ -275,7 +277,7 @@ public class Matrix extends GMatrix {
      * @throws TransformationException
      *             if some error occurs.
      */
-    public static Matrix swapAxis( final CoordinateSystem sourceCRS, final CoordinateSystem targetCRS )
+    public static Matrix swapAxis( final ICRS sourceCRS, final ICRS targetCRS )
                             throws TransformationException {
         if ( LOG.isDebugEnabled() ) {
             LOG.debug( "Creating swap matrix from: " + sourceCRS.getCode() + " to: " + targetCRS.getCode() );
@@ -303,7 +305,7 @@ public class Matrix extends GMatrix {
      * @throws TransformationException
      *             if some error occurs.
      */
-    public static Matrix swapAndRotateGeoAxis( final GeographicCRS sourceCRS, final GeographicCRS targetCRS )
+    public static Matrix swapAndRotateGeoAxis( final IGeographicCRS sourceCRS, final IGeographicCRS targetCRS )
                             throws TransformationException {
         if ( LOG.isDebugEnabled() ) {
             LOG.debug( "Creating geo swap/rotate matrix from: " + sourceCRS.getCode() + " to: " + targetCRS.getCode() );
@@ -313,7 +315,7 @@ public class Matrix extends GMatrix {
             if ( matrix == null ) {
                 matrix = new Matrix( sourceCRS.getDimension() + 1 );
             }
-            Axis[] targetAxis = targetCRS.getAxis();
+            IAxis[] targetAxis = targetCRS.getAxis();
             final int lastMatrixColumn = matrix.getNumCol() - 1;
             for ( int i = 0; i < targetAxis.length; ++i ) {
                 // Find longitude, and apply a translation if prime meridians are different.
@@ -351,20 +353,19 @@ public class Matrix extends GMatrix {
      * @throws TransformationException
      *             if the unit of one of the axis could not be transformed to one of the base units.
      */
-    public static Matrix toStdValues( CoordinateSystem sourceCRS, boolean invert )
+    public static Matrix toStdValues( ICRS sourceCRS, boolean invert )
                             throws TransformationException {
         final int dim = sourceCRS.getDimension();
         Matrix result = null;
-        Axis[] allAxis = sourceCRS.getAxis();
+        IAxis[] allAxis = sourceCRS.getAxis();
         for ( int i = 0; i < allAxis.length; ++i ) {
-            Axis targetAxis = allAxis[i];
+            IAxis targetAxis = allAxis[i];
             if ( targetAxis != null ) {
-                Unit targetUnit = targetAxis.getUnits();
+                IUnit targetUnit = targetAxis.getUnits();
                 if ( !( Unit.RADIAN.equals( targetUnit ) || Unit.METRE.equals( targetUnit ) ) ) {
                     if ( !( targetUnit.canConvert( Unit.RADIAN ) || targetUnit.canConvert( Unit.METRE ) ) ) {
                         throw new TransformationException(
-                                                           Messages.getMessage(
-                                                                                "CRS_TRANSFORMATION_NO_APLLICABLE_UNIT",
+                                                           Messages.getMessage( "CRS_TRANSFORMATION_NO_APLLICABLE_UNIT",
                                                                                 targetUnit ) );
                     }
                     // lazy instantiation

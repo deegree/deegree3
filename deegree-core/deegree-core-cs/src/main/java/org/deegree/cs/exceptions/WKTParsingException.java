@@ -37,7 +37,7 @@
 package org.deegree.cs.exceptions;
 
 /**
- * The <code></code> class TODO add class documentation here.
+ * The <code>WKTParsingException</code> class can be thrown if the parsing of WKT runs into a problem.
  * 
  * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
  * 

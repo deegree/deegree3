@@ -58,7 +58,7 @@ import org.deegree.commons.jdbc.ConnectionManager;
 import org.deegree.commons.jdbc.ResultSetIterator;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.commons.utils.JDBCUtils;
-import org.deegree.cs.CRS;
+import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.feature.Feature;
 import org.deegree.feature.i18n.Messages;
 import org.deegree.feature.persistence.FeatureStore;
@@ -121,7 +121,7 @@ public class OracleFeatureStore implements FeatureStore {
 
     private final GeometryTransformer geomTransformer;
 
-    private final CRS storageCRS;
+    private final ICRS storageCRS;
 
     private final String connId;
 
@@ -150,7 +150,7 @@ public class OracleFeatureStore implements FeatureStore {
 
         // TODO make Oracle SRID configurable
         try {
-            geomTransformer = new GeometryTransformer( storageCRS.getWrappedCRS() );
+            geomTransformer = new GeometryTransformer( storageCRS );
         } catch ( Exception e ) {
             throw new FeatureStoreException( e.getMessage(), e );
         }
@@ -265,7 +265,7 @@ public class OracleFeatureStore implements FeatureStore {
         return schema;
     }
 
-    public CRS getStorageSRS() {
+    public ICRS getStorageSRS() {
         return storageCRS;
     }
 

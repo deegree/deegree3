@@ -40,7 +40,7 @@ import java.util.List;
 
 import org.deegree.commons.uom.Measure;
 import org.deegree.commons.uom.Unit;
-import org.deegree.cs.CRS;
+import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.points.Points;
@@ -64,7 +64,7 @@ public class DefaultOrientableSurface extends AbstractDefaultGeometry implements
 
     private String id;
 
-    private CRS crs;
+    private ICRS crs;
 
     private Surface baseSurface;
 
@@ -84,7 +84,7 @@ public class DefaultOrientableSurface extends AbstractDefaultGeometry implements
      * @param isReversed
      *            set to true, if the orientation of the base Surface shall be reversed
      */
-    public DefaultOrientableSurface( String id, CRS crs, Surface baseSurface, boolean isReversed ) {
+    public DefaultOrientableSurface( String id, ICRS crs, Surface baseSurface, boolean isReversed ) {
         super( id, crs, null );
         this.baseSurface = baseSurface;
         this.isReversed = isReversed;
@@ -96,7 +96,7 @@ public class DefaultOrientableSurface extends AbstractDefaultGeometry implements
     }
 
     @Override
-    public CRS getCoordinateSystem() {
+    public ICRS getCoordinateSystem() {
         return crs;
     }
 

@@ -56,11 +56,13 @@ import java.util.List;
 import javax.vecmath.Point3d;
 
 import org.deegree.commons.annotations.LoggingNotes;
-import org.deegree.cs.CRSIdentifiable;
+import org.deegree.cs.CRSResource;
 import org.deegree.cs.components.Axis;
-import org.deegree.cs.components.Ellipsoid;
-import org.deegree.cs.coordinatesystems.CoordinateSystem;
+import org.deegree.cs.components.IAxis;
+import org.deegree.cs.components.IEllipsoid;
 import org.deegree.cs.coordinatesystems.GeographicCRS;
+import org.deegree.cs.coordinatesystems.ICRS;
+import org.deegree.cs.coordinatesystems.IGeographicCRS;
 import org.deegree.cs.exceptions.TransformationException;
 import org.deegree.cs.transformations.Transformation;
 import org.deegree.cs.utilities.Matrix;
@@ -96,7 +98,7 @@ public class NTv2Transformation extends Transformation {
 
     private boolean swapToTarget;
 
-    private NTv2Transformation( CoordinateSystem sourceCRS, CoordinateSystem targetCRS, CRSIdentifiable id ) {
+    private NTv2Transformation( ICRS sourceCRS, ICRS targetCRS, CRSResource id ) {
         super( sourceCRS, targetCRS, id );
         swapFromSource = checkAxisOrientation( sourceCRS.getAxis() );
         swapToTarget = checkAxisOrientation( targetCRS.getAxis() );
@@ -108,7 +110,7 @@ public class NTv2Transformation extends Transformation {
      * @param id
      * @param gridURL
      */
-    public NTv2Transformation( CoordinateSystem sourceCRS, CoordinateSystem targetCRS, CRSIdentifiable id, URL gridURL ) {
+    public NTv2Transformation( ICRS sourceCRS, ICRS targetCRS, CRSResource id, URL gridURL ) {
         this( sourceCRS, targetCRS, id );
         if ( gridURL == null ) {
             throw new NullPointerException( "The NTv2 transformation needs a grid file to work on." );
@@ -145,8 +147,8 @@ public class NTv2Transformation extends Transformation {
         String fromEllips = gsf.getFromEllipsoid();
         String toEllips = gsf.getToEllipsoid();
 
-        Ellipsoid sourceEl = sourceCRS.getGeodeticDatum().getEllipsoid();
-        Ellipsoid targetEl = targetCRS.getGeodeticDatum().getEllipsoid();
+        IEllipsoid sourceEl = sourceCRS.getGeodeticDatum().getEllipsoid();
+        IEllipsoid targetEl = targetCRS.getGeodeticDatum().getEllipsoid();
 
         // rb: patched the gridshift file for access to the axis
         if ( Math.abs( sourceEl.getSemiMajorAxis() - gsf.getFromSemiMajor() ) > 0.001
@@ -172,15 +174,15 @@ public class NTv2Transformation extends Transformation {
      * @param gsf
      *            the loaded gridshift file
      */
-    public NTv2Transformation( CoordinateSystem sourceCRS, CoordinateSystem targetCRS, CRSIdentifiable id,
+    public NTv2Transformation( ICRS sourceCRS, ICRS targetCRS, CRSResource id,
                                GridShiftFile gsf ) {
         this( sourceCRS, targetCRS, id );
         this.gsf = gsf;
         String fromEllips = gsf.getFromEllipsoid();
         String toEllips = gsf.getToEllipsoid();
 
-        Ellipsoid sourceEl = sourceCRS.getGeodeticDatum().getEllipsoid();
-        Ellipsoid targetEl = targetCRS.getGeodeticDatum().getEllipsoid();
+        IEllipsoid sourceEl = sourceCRS.getGeodeticDatum().getEllipsoid();
+        IEllipsoid targetEl = targetCRS.getGeodeticDatum().getEllipsoid();
 
         // rb: patched the gridshift file for access to the axis
         if ( Math.abs( sourceEl.getSemiMajorAxis() - gsf.getFromSemiMajor() ) > 0.001
@@ -203,13 +205,13 @@ public class NTv2Transformation extends Transformation {
      * @param axis
      * @return
      */
-    private boolean checkAxisOrientation( Axis[] axis ) {
+    private boolean checkAxisOrientation( IAxis[] axis ) {
         boolean result = false;
         if ( axis == null || axis.length != 2 ) {
             result = false;
         } else {
-            Axis first = axis[0];
-            Axis second = axis[1];
+            IAxis first = axis[0];
+            IAxis second = axis[1];
             LOG.debug( "First crs Axis: " + first );
             LOG.debug( "Second crs Axis: " + second );
             if ( first != null && second != null ) {
@@ -269,12 +271,10 @@ public class NTv2Transformation extends Transformation {
                 LOG.info( sb.toString() );
             } else {
                 StringBuilder sb = new StringBuilder( "Successfully applied " );
-                sb.append( ( isInverseTransform() ? "an inverse" : "a forward" ) ).append(
-                                                                                           " transform for incoming points: " );
+                sb.append( ( isInverseTransform() ? "an inverse" : "a forward" ) ).append( " transform for incoming points: " );
                 sb.append( shifter.getLonPositiveEastDegrees() ).append( "," ).append( shifter.getLatDegrees() );
                 sb.append( ", result->" );
-                sb.append( shifter.getShiftedLonPositiveEastDegrees() ).append( "," ).append(
-                                                                                              shifter.getShiftedLatDegrees() );
+                sb.append( shifter.getShiftedLonPositiveEastDegrees() ).append( "," ).append( shifter.getShiftedLatDegrees() );
                 LOG.debug( sb.toString() );
             }
             // if ( swapToTarget ) {
@@ -333,8 +333,8 @@ public class NTv2Transformation extends Transformation {
         final GeographicCRS sourceCRS = (GeographicCRS) result.getSourceCRS();
         final GeographicCRS targetCRS = (GeographicCRS) result.getTargetCRS();
         if ( sourceCRS != null && targetCRS != null ) {
-            final GeographicCRS alignedSource = createWGSAlligned( sourceCRS );
-            final GeographicCRS alignedTarget = createWGSAlligned( targetCRS );
+            final IGeographicCRS alignedSource = createWGSAlligned( sourceCRS );
+            final IGeographicCRS alignedTarget = createWGSAlligned( targetCRS );
             try {
                 final Matrix first = swapAndRotateGeoAxis( sourceCRS, alignedSource );
                 final Matrix second = swapAndRotateGeoAxis( alignedTarget, targetCRS );

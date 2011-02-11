@@ -46,7 +46,7 @@ import javax.xml.stream.XMLStreamException;
 
 import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;
-import org.deegree.cs.CRS;
+import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.geometry.GeometryFactory;
 import org.deegree.geometry.points.Points;
@@ -123,7 +123,7 @@ class GML3SurfacePatchReader extends GML3GeometryBaseReader {
      * @throws XMLStreamException
      * @throws UnknownCRSException
      */
-    SurfacePatch parseSurfacePatch( XMLStreamReaderWrapper xmlStream, CRS defaultCRS )
+    SurfacePatch parseSurfacePatch( XMLStreamReaderWrapper xmlStream, ICRS defaultCRS )
                             throws XMLParsingException, XMLStreamException, UnknownCRSException {
 
         SurfacePatch patch = null;
@@ -165,14 +165,14 @@ class GML3SurfacePatchReader extends GML3GeometryBaseReader {
      * 
      * @param xmlStream
      * @param defaultCRS
-     *            default CRS for the geometry, this is only used if the "gml:Cone" has no <code>srsName</code>
+     *            default CoordinateSystem for the geometry, this is only used if the "gml:Cone" has no <code>srsName</code>
      *            attribute
      * @return corresponding {@link Cone} object
      * @throws XMLStreamException
      * @throws XMLParsingException
      * @throws UnknownCRSException
      */
-    private Cone parseCone( XMLStreamReaderWrapper xmlStream, CRS defaultCRS )
+    private Cone parseCone( XMLStreamReaderWrapper xmlStream, ICRS defaultCRS )
                             throws XMLStreamException, XMLParsingException, UnknownCRSException {
         validateAttribute( xmlStream, "horizontalCurveType", "circularArc3Points" );
         validateAttribute( xmlStream, "verticalCurveType", "linear" );
@@ -234,7 +234,7 @@ class GML3SurfacePatchReader extends GML3GeometryBaseReader {
      * @throws XMLParsingException
      * @throws UnknownCRSException
      */
-    private Cylinder parseCylinder( XMLStreamReaderWrapper xmlStream, CRS defaultCRS )
+    private Cylinder parseCylinder( XMLStreamReaderWrapper xmlStream, ICRS defaultCRS )
                             throws XMLStreamException, XMLParsingException, UnknownCRSException {
         validateAttribute( xmlStream, "horizontalCurveType", "circularArc3Points" );
         validateAttribute( xmlStream, "verticalCurveType", "linear" );
@@ -296,7 +296,7 @@ class GML3SurfacePatchReader extends GML3GeometryBaseReader {
      * @throws XMLParsingException
      * @throws UnknownCRSException
      */
-    private Sphere parseSphere( XMLStreamReaderWrapper xmlStream, CRS defaultCRS )
+    private Sphere parseSphere( XMLStreamReaderWrapper xmlStream, ICRS defaultCRS )
                             throws XMLStreamException, XMLParsingException, UnknownCRSException {
         validateAttribute( xmlStream, "horizontalCurveType", "circularArc3Points" );
         validateAttribute( xmlStream, "verticalCurveType", "circularArc3Points" );
@@ -358,7 +358,7 @@ class GML3SurfacePatchReader extends GML3GeometryBaseReader {
      * @throws XMLStreamException
      * @throws UnknownCRSException
      */
-    PolygonPatch parsePolygonPatch( XMLStreamReaderWrapper xmlStream, CRS defaultCRS )
+    PolygonPatch parsePolygonPatch( XMLStreamReaderWrapper xmlStream, ICRS defaultCRS )
                             throws XMLParsingException, XMLStreamException, UnknownCRSException {
 
         validateAttribute( xmlStream, "interpolation", "planar" );
@@ -418,7 +418,7 @@ class GML3SurfacePatchReader extends GML3GeometryBaseReader {
      * @throws UnknownCRSException
      * @throws XMLParsingException
      */
-    private Rectangle parseRectangle( XMLStreamReaderWrapper xmlStream, CRS defaultCRS )
+    private Rectangle parseRectangle( XMLStreamReaderWrapper xmlStream, ICRS defaultCRS )
                             throws XMLStreamException, XMLParsingException, UnknownCRSException {
         validateAttribute( xmlStream, "interpolation", "planar" );
 
@@ -462,7 +462,7 @@ class GML3SurfacePatchReader extends GML3GeometryBaseReader {
      * @throws UnknownCRSException
      * @throws XMLParsingException
      */
-    Triangle parseTriangle( XMLStreamReaderWrapper xmlStream, CRS defaultCRS )
+    Triangle parseTriangle( XMLStreamReaderWrapper xmlStream, ICRS defaultCRS )
                             throws XMLStreamException, XMLParsingException, UnknownCRSException {
 
         validateAttribute( xmlStream, "interpolation", "planar" );

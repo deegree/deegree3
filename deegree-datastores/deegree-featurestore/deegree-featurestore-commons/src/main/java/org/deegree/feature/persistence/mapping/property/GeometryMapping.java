@@ -35,7 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.feature.persistence.mapping.property;
 
-import org.deegree.cs.CRS;
+import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.feature.persistence.mapping.JoinChain;
 import org.deegree.feature.types.property.GeometryPropertyType.CoordinateDimension;
 import org.deegree.feature.types.property.GeometryPropertyType.GeometryType;
@@ -56,12 +56,12 @@ public class GeometryMapping extends Mapping {
 
     private CoordinateDimension dim;
 
-    private CRS crs;
+    private ICRS crs;
 
     private String srid;
 
     public GeometryMapping( PropertyName path, MappingExpression mapping, GeometryType type, CoordinateDimension dim,
-                            CRS crs, String srid, JoinChain joinedTable ) {
+                            ICRS crs, String srid, JoinChain joinedTable ) {
         super( path, mapping, joinedTable );
         this.type = type;
         this.dim = dim;
@@ -77,7 +77,7 @@ public class GeometryMapping extends Mapping {
         return dim;
     }
 
-    public CRS getCRS() {
+    public ICRS getCRS() {
         return crs;
     }
 

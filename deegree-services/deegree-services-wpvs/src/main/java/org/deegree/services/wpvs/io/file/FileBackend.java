@@ -45,7 +45,7 @@ import java.util.List;
 
 import org.deegree.commons.index.PositionableModel;
 import org.deegree.commons.utils.FileUtils;
-import org.deegree.cs.CRS;
+import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.geometry.Envelope;
 import org.deegree.rendering.r3d.opengl.rendering.model.geometry.BillBoard;
 import org.deegree.rendering.r3d.opengl.rendering.model.geometry.DirectGeometryBuffer;
@@ -207,7 +207,7 @@ public class FileBackend extends ModelBackend<Envelope> {
     }
 
     @Override
-    public void loadBuildings( BuildingRenderer bm, CRS baseCRS ) {
+    public void loadBuildings( BuildingRenderer bm, ICRS baseCRS ) {
         if ( bm != null ) {
             try {
                 WROSerializer serializer = getBuildingSerializer();
@@ -240,7 +240,7 @@ public class FileBackend extends ModelBackend<Envelope> {
     }
 
     @Override
-    public List<RenderablePrototype> loadProtoTypes( DirectGeometryBuffer geometryBuffer, CRS baseCRS ) {
+    public List<RenderablePrototype> loadProtoTypes( DirectGeometryBuffer geometryBuffer, ICRS baseCRS ) {
         List<RenderablePrototype> result = new LinkedList<RenderablePrototype>();
         try {
             PrototypeSerializer serializer = getPrototypeSerializer();
@@ -268,7 +268,7 @@ public class FileBackend extends ModelBackend<Envelope> {
     }
 
     @Override
-    public void loadTrees( TreeRenderer tm, CRS baseCRS ) {
+    public void loadTrees( TreeRenderer tm, ICRS baseCRS ) {
 
         if ( tm != null ) {
             try {
@@ -356,7 +356,7 @@ public class FileBackend extends ModelBackend<Envelope> {
     }
 
     @Override
-    public void loadEntities( RenderableManager<?> renderer, CRS baseCRS ) {
+    public void loadEntities( RenderableManager<?> renderer, ICRS baseCRS ) {
         if ( this.treeFile != null ) {
             loadTrees( (TreeRenderer) renderer, baseCRS );
         } else {

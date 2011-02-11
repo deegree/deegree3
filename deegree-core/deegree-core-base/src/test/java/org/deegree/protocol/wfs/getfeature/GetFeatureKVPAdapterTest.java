@@ -42,7 +42,7 @@ import javax.xml.namespace.QName;
 import junit.framework.TestCase;
 
 import org.deegree.commons.utils.kvp.KVPUtils;
-import org.deegree.cs.CRS;
+import org.deegree.cs.persistence.CRSManager;
 import org.deegree.filter.Operator;
 import org.deegree.filter.OperatorFilter;
 import org.deegree.filter.expression.PropertyName;
@@ -703,6 +703,6 @@ public class GetFeatureKVPAdapterTest extends TestCase {
 
         assertEquals( "ALL", filterQuery.getFeatureVersion() );
         assertEquals( new Integer( 1000000 ), getFeature.getMaxFeatures() );
-        assertEquals( new CRS( "EPSG:4326" ), filterQuery.getSrsName() );
+        assertEquals( CRSManager.getCRSRef( "EPSG:4326" ), filterQuery.getSrsName() );
     }
 }

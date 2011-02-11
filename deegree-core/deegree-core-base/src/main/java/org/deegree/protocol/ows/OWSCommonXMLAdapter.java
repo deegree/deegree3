@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,7 +32,7 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 package org.deegree.protocol.ows;
 
 import java.util.ArrayList;
@@ -47,18 +47,19 @@ import org.apache.axiom.om.OMElement;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.commons.xml.XPath;
-import org.deegree.cs.CRS;
+import org.deegree.cs.coordinatesystems.ICRS;
+import org.deegree.cs.persistence.CRSManager;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryFactory;
 import org.deegree.geometry.primitive.Point;
 
 /**
  * Supplies some basic exports methods for deegree/commons to ows mappings.
- *
+ * 
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
  * @author last edited by: $Author: rbezema $
  * @version $Revision: $, $Date: $
- *
+ * 
  */
 public class OWSCommonXMLAdapter extends XMLAdapter {
 
@@ -103,7 +104,7 @@ public class OWSCommonXMLAdapter extends XMLAdapter {
 
     /**
      * Parses the given element of type <code>ows:BoundingBoxType</code>.
-     *
+     * 
      * @param boundingBoxDataElement
      *            element of type <code>ows:BoundingBoxType</code>
      * @param defaultCRS
@@ -112,7 +113,7 @@ public class OWSCommonXMLAdapter extends XMLAdapter {
      * @throws XMLParsingException
      *             if a syntactical or semantical error has been encountered in the element's contents
      */
-    public Envelope parseBoundingBoxType( OMElement boundingBoxDataElement, CRS defaultCRS ) {
+    public Envelope parseBoundingBoxType( OMElement boundingBoxDataElement, ICRS defaultCRS ) {
 
         // "ows:LowerCorner" element (minOccurs="1", maxOccurs="1")
         double[] lowerCorner = parseDoubleList( getRequiredElement( boundingBoxDataElement,
@@ -123,10 +124,10 @@ public class OWSCommonXMLAdapter extends XMLAdapter {
                                                                     new XPath( "ows110:UpperCorner", nsContext ) ) );
 
         // "crs" attribute (optional)
-        CRS crs = defaultCRS;
+        ICRS crs = defaultCRS;
         String crsName = boundingBoxDataElement.getAttributeValue( new QName( "crs" ) );
         if ( crsName == null ) {
-            crs = new CRS( crsName );
+            crs = CRSManager.getCRSRef( crsName );
         }
 
         // "dimensions" attribute (optional)
@@ -158,7 +159,7 @@ public class OWSCommonXMLAdapter extends XMLAdapter {
 
     /**
      * Exports an {@link Envelope} as a <code>ows:BoundingBoxType</code>.
-     *
+     * 
      * @param writer
      * @param bbox
      *            envelope to be exported
@@ -169,7 +170,7 @@ public class OWSCommonXMLAdapter extends XMLAdapter {
 
         // "crs" attribute (optional)
         if ( bbox.getCoordinateSystem() != null ) {
-            writer.writeAttribute( "crs", bbox.getCoordinateSystem().getName());
+            writer.writeAttribute( "crs", bbox.getCoordinateSystem().getName() );
         }
 
         // "dimensions" attribute (optional)
@@ -186,52 +187,52 @@ public class OWSCommonXMLAdapter extends XMLAdapter {
         writer.writeEndElement();
     }
 
-//    /**
-//     * Exports an {@link BoundingBoxType} as an <code>ows:BoundingBoxType</code>. Coordinates will be separated with a
-//     * space.
-//     *
-//     * @param writer
-//     * @param bbox
-//     *            to be exported
-//     * @throws XMLStreamException
-//     */
-//    public static void exportBoundingBoxType110( XMLStreamWriter writer, BoundingBoxType bbox )
-//                            throws XMLStreamException {
-//
-//        if ( bbox != null ) {
-//            exportBoundingBoxType( writer, bbox, OWS110_NS );
-//        }
-//    }
-//
-//    /**
-//     * @param writer
-//     * @param bbox
-//     * @param owsNS
-//     * @throws XMLStreamException
-//     */
-//    private static void exportBoundingBoxType( XMLStreamWriter writer, BoundingBoxType bbox, String owsNS )
-//                            throws XMLStreamException {
-//        writer.writeStartElement( owsNS, "BoundingBox" );
-//        // "crs" attribute (optional)
-//        if ( bbox.getCrs() != null ) {
-//            writer.writeAttribute( "crs", bbox.getCrs() );
-//        }
-//
-//        // "dimensions" attribute (optional)
-//        writer.writeAttribute( "dimensions", "" + bbox.getDimensions() );
-//
-//        // "ows:LowerCorner" element (minOccurs="1", maxOccurs="1")
-//        writer.writeStartElement( owsNS, "LowerCorner" );
-//        exportCoordinateList( writer, bbox.getLowerCorner(), " " );
-//        writer.writeEndElement();
-//
-//        // "ows:UpperCorner" element (minOccurs="1", maxOccurs="1")
-//        writer.writeStartElement( owsNS, "UpperCorner" );
-//        exportCoordinateList( writer, bbox.getUpperCorner(), " " );
-//        writer.writeEndElement();
-//        writer.writeEndElement();// OWS110_NS, "BoundingBox"
-//
-//    }
+    // /**
+    // * Exports an {@link BoundingBoxType} as an <code>ows:BoundingBoxType</code>. Coordinates will be separated with a
+    // * space.
+    // *
+    // * @param writer
+    // * @param bbox
+    // * to be exported
+    // * @throws XMLStreamException
+    // */
+    // public static void exportBoundingBoxType110( XMLStreamWriter writer, BoundingBoxType bbox )
+    // throws XMLStreamException {
+    //
+    // if ( bbox != null ) {
+    // exportBoundingBoxType( writer, bbox, OWS110_NS );
+    // }
+    // }
+    //
+    // /**
+    // * @param writer
+    // * @param bbox
+    // * @param owsNS
+    // * @throws XMLStreamException
+    // */
+    // private static void exportBoundingBoxType( XMLStreamWriter writer, BoundingBoxType bbox, String owsNS )
+    // throws XMLStreamException {
+    // writer.writeStartElement( owsNS, "BoundingBox" );
+    // // "crs" attribute (optional)
+    // if ( bbox.getCrs() != null ) {
+    // writer.writeAttribute( "crs", bbox.getCrs() );
+    // }
+    //
+    // // "dimensions" attribute (optional)
+    // writer.writeAttribute( "dimensions", "" + bbox.getDimensions() );
+    //
+    // // "ows:LowerCorner" element (minOccurs="1", maxOccurs="1")
+    // writer.writeStartElement( owsNS, "LowerCorner" );
+    // exportCoordinateList( writer, bbox.getLowerCorner(), " " );
+    // writer.writeEndElement();
+    //
+    // // "ows:UpperCorner" element (minOccurs="1", maxOccurs="1")
+    // writer.writeStartElement( owsNS, "UpperCorner" );
+    // exportCoordinateList( writer, bbox.getUpperCorner(), " " );
+    // writer.writeEndElement();
+    // writer.writeEndElement();// OWS110_NS, "BoundingBox"
+    //
+    // }
 
     /**
      * @param writer
@@ -266,7 +267,7 @@ public class OWSCommonXMLAdapter extends XMLAdapter {
 
     /**
      * Exports a {@link Point} as a <code>ows:PositionType</code>.
-     *
+     * 
      * @param writer
      * @param pos
      *            point to be exported

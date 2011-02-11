@@ -40,7 +40,7 @@ import static java.lang.Math.pow;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.deegree.cs.CRS;
+import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryFactory;
 
@@ -63,9 +63,9 @@ public class TileGrid {
 
     private int xTiles, yTiles;
 
-    private CRS crs;
+    private ICRS crs;
 
-    private TileGrid( double x0, double y0, double width, double height, int xTiles, int yTiles, CRS crs,
+    private TileGrid( double x0, double y0, double width, double height, int xTiles, int yTiles, ICRS crs,
                       double precision ) {
         this.x0 = x0;
         this.y0 = y0;
@@ -105,7 +105,7 @@ public class TileGrid {
         double x0 = dstEnv.getMin().get0();
         double y0 = dstEnv.getMin().get1();
 
-        CRS crs = dstEnv.getCoordinateSystem();
+        ICRS crs = dstEnv.getCoordinateSystem();
 
         return new TileGrid( x0, y0, tileDimension, tileDimension, xTiles, yTiles, crs, precision );
     }

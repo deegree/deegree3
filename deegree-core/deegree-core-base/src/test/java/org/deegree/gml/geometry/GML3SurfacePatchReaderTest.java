@@ -44,8 +44,8 @@ import junit.framework.Assert;
 
 import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;
-import org.deegree.cs.CRS;
 import org.deegree.cs.exceptions.UnknownCRSException;
+import org.deegree.cs.persistence.CRSManager;
 import org.deegree.geometry.GeometryFactory;
 import org.deegree.geometry.primitive.patches.Cone;
 import org.deegree.geometry.primitive.patches.Cylinder;
@@ -81,7 +81,7 @@ public class GML3SurfacePatchReaderTest {
                             throws XMLStreamException, FactoryConfigurationError, IOException, XMLParsingException,
                             UnknownCRSException {
         XMLStreamReaderWrapper parser = getParser( "PolygonPatch.gml" );
-        PolygonPatch patch = (PolygonPatch) getPatchParser().parseSurfacePatch( parser, new CRS( "EPSG:4326" ) );
+        PolygonPatch patch = (PolygonPatch) getPatchParser().parseSurfacePatch( parser, CRSManager.getCRSRef( "EPSG:4326" ) );
         Assert.assertEquals( 2.0, patch.getExteriorRing().getStartPoint().get0() );
         Assert.assertEquals( 0.0, patch.getExteriorRing().getStartPoint().get1() );
         Assert.assertEquals( 2.0, patch.getExteriorRing().getEndPoint().get0() );
@@ -94,7 +94,7 @@ public class GML3SurfacePatchReaderTest {
                             throws XMLStreamException, FactoryConfigurationError, IOException, XMLParsingException,
                             UnknownCRSException {
         XMLStreamReaderWrapper parser = getParser( "Triangle.gml" );
-        Triangle patch = (Triangle) getPatchParser().parseSurfacePatch( parser, new CRS( "EPSG:4326" ) );
+        Triangle patch = (Triangle) getPatchParser().parseSurfacePatch( parser, CRSManager.getCRSRef( "EPSG:4326" ) );
         Assert.assertEquals( 4, patch.getExteriorRing().getControlPoints().size() );
     }
 
@@ -103,7 +103,7 @@ public class GML3SurfacePatchReaderTest {
                             throws XMLStreamException, FactoryConfigurationError, IOException, XMLParsingException,
                             UnknownCRSException {
         XMLStreamReaderWrapper parser = getParser( "Rectangle.gml" );
-        Rectangle patch = (Rectangle) getPatchParser().parseSurfacePatch( parser, new CRS( "EPSG:4326" ) );
+        Rectangle patch = (Rectangle) getPatchParser().parseSurfacePatch( parser, CRSManager.getCRSRef( "EPSG:4326" ) );
         Assert.assertEquals( 5, patch.getExteriorRing().getControlPoints().size() );
     }
 
@@ -112,7 +112,7 @@ public class GML3SurfacePatchReaderTest {
                             throws XMLStreamException, FactoryConfigurationError, IOException, XMLParsingException,
                             UnknownCRSException {
         XMLStreamReaderWrapper parser = getParser( "Cone.gml" );
-        Cone patch = (Cone) getPatchParser().parseSurfacePatch( parser, new CRS( "EPSG:4326" ) );
+        Cone patch = (Cone) getPatchParser().parseSurfacePatch( parser, CRSManager.getCRSRef( "EPSG:4326" ) );
         Assert.assertEquals( 3, patch.getNumColumns() );
         Assert.assertEquals( 2, patch.getNumRows() );
     }
@@ -122,7 +122,7 @@ public class GML3SurfacePatchReaderTest {
                             throws XMLStreamException, FactoryConfigurationError, IOException, XMLParsingException,
                             UnknownCRSException {
         XMLStreamReaderWrapper parser = getParser( "Cylinder.gml" );
-        Cylinder patch = (Cylinder) getPatchParser().parseSurfacePatch( parser, new CRS( "EPSG:4326" ) );
+        Cylinder patch = (Cylinder) getPatchParser().parseSurfacePatch( parser, CRSManager.getCRSRef( "EPSG:4326" ) );
         Assert.assertEquals( 3, patch.getNumColumns() );
         Assert.assertEquals( 2, patch.getNumRows() );
     }
@@ -132,7 +132,7 @@ public class GML3SurfacePatchReaderTest {
                             throws XMLStreamException, FactoryConfigurationError, IOException, XMLParsingException,
                             UnknownCRSException {
         XMLStreamReaderWrapper parser = getParser( "Sphere.gml" );
-        Sphere patch = (Sphere) getPatchParser().parseSurfacePatch( parser, new CRS( "EPSG:4326" ) );
+        Sphere patch = (Sphere) getPatchParser().parseSurfacePatch( parser, CRSManager.getCRSRef( "EPSG:4326" ) );
         Assert.assertEquals( 3, patch.getNumColumns() );
         Assert.assertEquals( 2, patch.getNumRows() );
     }

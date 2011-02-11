@@ -36,18 +36,20 @@
 
 package org.deegree.cs.coordinatesystems;
 
-import static org.deegree.cs.coordinatesystems.CoordinateSystem.CRSType.GEOCENTRIC;
+import static org.deegree.cs.coordinatesystems.CRS.CRSType.GEOCENTRIC;
 
 import java.util.List;
 
 import org.deegree.cs.CRSCodeType;
-import org.deegree.cs.CRSIdentifiable;
+import org.deegree.cs.CRSResource;
 import org.deegree.cs.components.Axis;
 import org.deegree.cs.components.GeodeticDatum;
+import org.deegree.cs.components.IAxis;
+import org.deegree.cs.components.IGeodeticDatum;
 import org.deegree.cs.transformations.Transformation;
 
 /**
- * A <code>GeocentricCRS</code> is a coordinatesystem having three axis and a mass point defined to be equivalent to
+ * A <code>GeocentricCRS</code> is a ICoordinateSystem having three axis and a mass point defined to be equivalent to
  * earths center.
  * 
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
@@ -58,7 +60,7 @@ import org.deegree.cs.transformations.Transformation;
  * 
  */
 
-public class GeocentricCRS extends CoordinateSystem {
+public class GeocentricCRS extends CRS implements IGeocentricCRS {
 
     /**
      * The default geocentric coordinate system. Geocentric datum is WGS84 and linear units are metre. The <var>X</var>
@@ -73,7 +75,7 @@ public class GeocentricCRS extends CoordinateSystem {
      * @param axisOrder
      * @param identity
      */
-    public GeocentricCRS( GeodeticDatum datum, Axis[] axisOrder, CRSIdentifiable identity ) {
+    public GeocentricCRS( IGeodeticDatum datum, IAxis[] axisOrder, CRSResource identity ) {
         this( null, datum, axisOrder, identity );
     }
 
@@ -86,7 +88,7 @@ public class GeocentricCRS extends CoordinateSystem {
      * @param descriptions
      * @param areasOfUse
      */
-    public GeocentricCRS( GeodeticDatum datum, Axis[] axisOrder, CRSCodeType[] codes, String[] names,
+    public GeocentricCRS( IGeodeticDatum datum, IAxis[] axisOrder, CRSCodeType[] codes, String[] names,
                           String[] versions, String[] descriptions, String[] areasOfUse ) {
         super( datum, axisOrder, codes, names, versions, descriptions, areasOfUse );
     }
@@ -100,7 +102,7 @@ public class GeocentricCRS extends CoordinateSystem {
      * @param description
      * @param areaOfUse
      */
-    public GeocentricCRS( GeodeticDatum datum, Axis[] axisOrder, CRSCodeType code, String name, String version,
+    public GeocentricCRS( IGeodeticDatum datum, IAxis[] axisOrder, CRSCodeType code, String name, String version,
                           String description, String areaOfUse ) {
         this( datum, axisOrder, new CRSCodeType[] { code }, new String[] { name }, new String[] { version },
               new String[] { description }, new String[] { areaOfUse } );
@@ -111,7 +113,7 @@ public class GeocentricCRS extends CoordinateSystem {
      * @param axisOrder
      * @param code
      */
-    public GeocentricCRS( GeodeticDatum datum, Axis[] axisOrder, CRSCodeType code ) {
+    public GeocentricCRS( IGeodeticDatum datum, IAxis[] axisOrder, CRSCodeType code ) {
         this( datum, axisOrder, new CRSCodeType[] { code }, null, null, null, null );
     }
 
@@ -122,7 +124,7 @@ public class GeocentricCRS extends CoordinateSystem {
      * @param code
      * @param name
      */
-    public GeocentricCRS( GeodeticDatum datum, CRSCodeType code, String name ) {
+    public GeocentricCRS( IGeodeticDatum datum, CRSCodeType code, String name ) {
         this( datum, new Axis[] { new Axis( "X", Axis.AO_FRONT ), new Axis( "Y", Axis.AO_EAST ),
                                  new Axis( "Z", Axis.AO_NORTH ) }, new CRSCodeType[] { code }, new String[] { name },
               null, null, null );
@@ -134,8 +136,8 @@ public class GeocentricCRS extends CoordinateSystem {
      * @param axisOrder
      * @param identity
      */
-    public GeocentricCRS( List<Transformation> transformations, GeodeticDatum usedDatum, Axis[] axisOrder,
-                          CRSIdentifiable identity ) {
+    public GeocentricCRS( List<Transformation> transformations, IGeodeticDatum usedDatum, IAxis[] axisOrder,
+                          CRSResource identity ) {
         super( transformations, usedDatum, axisOrder, identity );
     }
 

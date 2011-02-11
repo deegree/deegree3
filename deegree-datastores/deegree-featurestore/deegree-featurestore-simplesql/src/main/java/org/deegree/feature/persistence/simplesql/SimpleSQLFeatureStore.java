@@ -37,7 +37,6 @@ package org.deegree.feature.persistence.simplesql;
 
 import static java.lang.System.currentTimeMillis;
 import static org.deegree.commons.jdbc.ConnectionManager.getConnection;
-import static org.deegree.cs.CRS.EPSG_4326;
 import static org.deegree.feature.persistence.query.Query.QueryHint.HINT_SCALE;
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -54,9 +53,11 @@ import javax.xml.namespace.QName;
 import org.deegree.commons.annotations.LoggingNotes;
 import org.deegree.commons.jdbc.ResultSetIterator;
 import org.deegree.commons.utils.Pair;
-import org.deegree.cs.CRS;
+import org.deegree.cs.CRSUtils;
+import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.exceptions.TransformationException;
 import org.deegree.cs.exceptions.UnknownCRSException;
+import org.deegree.cs.persistence.CRSManager;
 import org.deegree.feature.Feature;
 import org.deegree.feature.GenericFeature;
 import org.deegree.feature.persistence.FeatureStore;
@@ -113,7 +114,7 @@ public class SimpleSQLFeatureStore implements FeatureStore {
 
     private String connId;
 
-    CRS crs;
+    ICRS crs;
 
     private ApplicationSchema schema;
 
@@ -142,7 +143,7 @@ public class SimpleSQLFeatureStore implements FeatureStore {
     public SimpleSQLFeatureStore( String connId, String crs, String sql, String ftLocalName, String ftNamespace,
                                   String ftPrefix, String bbox, List<Pair<Integer, String>> lods ) {
         this.connId = connId;
-        this.crs = new CRS( crs );
+
         sql = sql.trim();
         if ( sql.endsWith( ";" ) ) {
             sql = sql.substring( 0, sql.length() - 1 );
@@ -157,7 +158,8 @@ public class SimpleSQLFeatureStore implements FeatureStore {
         this.ftName = new QName( ftNamespace, ftLocalName, ftPrefix );
 
         try {
-            transformer = new GeometryTransformer( this.crs.getWrappedCRS() );
+            this.crs = CRSManager.lookup( crs );
+            transformer = new GeometryTransformer( this.crs );
         } catch ( IllegalArgumentException e ) {
             LOG.error( "The invalid crs '{}' was specified for the simple SQL data store.", crs );
             LOG.trace( "Stack trace:", e );
@@ -200,7 +202,7 @@ public class SimpleSQLFeatureStore implements FeatureStore {
                     String bboxString = set.getString( "bbox" );
                     if ( bboxString == null ) {
                         LOG.info( "Could not determine envelope of database table, using world bbox instead." );
-                        return fac.createEnvelope( -180, -90, 180, 90, EPSG_4326 );
+                        return fac.createEnvelope( -180, -90, 180, 90, CRSUtils.EPSG_4326 );
                     }
                     Geometry g = new WKTReader( crs ).read( bboxString );
                     cachedEnvelope.first = current;
@@ -410,7 +412,7 @@ public class SimpleSQLFeatureStore implements FeatureStore {
      * 
      * @return the CRS of the geometry column, never <code>null</code>
      */
-    public CRS getStorageCRS() {
+    public ICRS getStorageCRS() {
         return crs;
     }
 }

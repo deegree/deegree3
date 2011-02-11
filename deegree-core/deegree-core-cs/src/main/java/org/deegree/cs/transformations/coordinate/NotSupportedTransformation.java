@@ -42,7 +42,8 @@ import javax.vecmath.Point3d;
 
 import org.deegree.cs.CRSCodeType;
 import org.deegree.cs.CRSIdentifiable;
-import org.deegree.cs.coordinatesystems.CoordinateSystem;
+import org.deegree.cs.CRSResource;
+import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.exceptions.TransformationException;
 import org.deegree.cs.transformations.Transformation;
 
@@ -66,7 +67,7 @@ public class NotSupportedTransformation extends Transformation {
      * @param targetCRS
      * @param id
      */
-    public NotSupportedTransformation( CoordinateSystem sourceCRS, CoordinateSystem targetCRS, CRSIdentifiable id ) {
+    public NotSupportedTransformation( ICRS sourceCRS, ICRS targetCRS, CRSResource id ) {
         super( sourceCRS, targetCRS, id );
     }
 
@@ -74,7 +75,7 @@ public class NotSupportedTransformation extends Transformation {
      * @param sourceCRS
      * @param targetCRS
      */
-    public NotSupportedTransformation( CoordinateSystem sourceCRS, CoordinateSystem targetCRS ) {
+    public NotSupportedTransformation( ICRS sourceCRS, ICRS targetCRS ) {
         this( sourceCRS, targetCRS,
               new CRSIdentifiable( CRSCodeType.valueOf( createFromTo( sourceCRS.getCode().toString(),
                                                                       targetCRS.getCode().toString() ) ) ) );

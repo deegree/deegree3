@@ -62,7 +62,7 @@ public abstract class XMLFileResource extends XMLAdapter implements XMLResource 
 
     private static Logger LOG = LoggerFactory.getLogger( XMLFileResource.class );
 
-    private AbstractCRSStore<OMElement> provider = null;
+    private AbstractCRSStore provider = null;
 
     /**
      * @param provider
@@ -76,8 +76,7 @@ public abstract class XMLFileResource extends XMLAdapter implements XMLResource 
      * @param requiredNamespace
      *            check for the root elements namespace, may be <code>null</code>
      */
-    public XMLFileResource( AbstractCRSStore<OMElement> provider, URL file, String requiredRootLocalName,
-                            String requiredNamespace ) {
+    public XMLFileResource( AbstractCRSStore provider, URL file, String requiredRootLocalName, String requiredNamespace ) {
         if ( provider == null ) {
             throw new NullPointerException( "The provider is null, this may not be." );
         }
@@ -132,7 +131,7 @@ public abstract class XMLFileResource extends XMLAdapter implements XMLResource 
      *            to be used for callback.
      * @param rootElement
      */
-    public XMLFileResource( AbstractCRSStore<OMElement> provider, OMElement rootElement ) {
+    public XMLFileResource( AbstractCRSStore provider, OMElement rootElement ) {
         super( rootElement );
         this.provider = provider;
     }
@@ -140,7 +139,7 @@ public abstract class XMLFileResource extends XMLAdapter implements XMLResource 
     /**
      * @return the provider used for reversed look ups, will never be <code>null</code>
      */
-    public AbstractCRSStore<OMElement> getProvider() {
+    public AbstractCRSStore getProvider() {
         return provider;
     }
 }

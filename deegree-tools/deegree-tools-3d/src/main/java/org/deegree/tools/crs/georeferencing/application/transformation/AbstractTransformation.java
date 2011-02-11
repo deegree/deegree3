@@ -38,9 +38,9 @@ package org.deegree.tools.crs.georeferencing.application.transformation;
 import java.util.List;
 
 import org.deegree.commons.utils.Triple;
-import org.deegree.cs.CRS;
 import org.deegree.cs.CRSCodeType;
 import org.deegree.cs.CRSIdentifiable;
+import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.cs.transformations.Transformation;
 import org.deegree.geometry.primitive.Ring;
@@ -73,9 +73,9 @@ public abstract class AbstractTransformation extends Transformation {
 
     protected Scene2DValues sceneValues;
 
-    protected CRS sourceCRS;
+    protected ICRS sourceCRS;
 
-    protected CRS targetCRS;
+    protected ICRS targetCRS;
 
     protected final int order;
 
@@ -84,10 +84,9 @@ public abstract class AbstractTransformation extends Transformation {
     private final int arraySize;
 
     public AbstractTransformation( List<Triple<Point4Values, Point4Values, PointResidual>> mappedPoints,
-                                   Footprint footPrint, Scene2DValues sceneValues, CRS sourceCRS, CRS targetCRS,
-                                   final int order ) throws UnknownCRSException {
-        super( sourceCRS.getWrappedCRS(), targetCRS.getWrappedCRS(),
-               new CRSIdentifiable( new CRSCodeType( "whatever" ) ) );
+                                   Footprint footPrint, Scene2DValues sceneValues, ICRS sourceCRS,
+                                   ICRS targetCRS, final int order ) throws UnknownCRSException {
+        super( sourceCRS, targetCRS, new CRSIdentifiable( new CRSCodeType( "whatever" ) ) );
         this.mappedPoints = mappedPoints;
         this.footPrint = footPrint;
         this.sceneValues = sceneValues;
@@ -114,25 +113,25 @@ public abstract class AbstractTransformation extends Transformation {
     public CRSCodeType[] getCRSCodeType() {
         CRSCodeType[] s = null;
         CRSCodeType[] t = null;
-        try {
-            s = sourceCRS.getWrappedCRS().getCodes();
-            t = targetCRS.getWrappedCRS().getCodes();
-            int size = s.length + t.length;
-            int countT = 0;
-            CRSCodeType[] codeTypes = new CRSCodeType[size];
-            for ( int i = 0; i < s.length; i++ ) {
-                codeTypes[i] = s[i];
-            }
-            for ( int i = s.length; i < size; i++ ) {
-                codeTypes[i] = t[countT];
-                countT++;
-            }
-            return codeTypes;
-        } catch ( UnknownCRSException e1 ) {
-            // TODO Auto-generated catch block
-            e1.printStackTrace();
+        // try {
+        s = sourceCRS.getCodes();
+        t = targetCRS.getCodes();
+        int size = s.length + t.length;
+        int countT = 0;
+        CRSCodeType[] codeTypes = new CRSCodeType[size];
+        for ( int i = 0; i < s.length; i++ ) {
+            codeTypes[i] = s[i];
         }
-        return null;
+        for ( int i = s.length; i < size; i++ ) {
+            codeTypes[i] = t[countT];
+            countT++;
+        }
+        return codeTypes;
+        // } catch ( UnknownCRSException e1 ) {
+        // // TODO Auto-generated catch block
+        // e1.printStackTrace();
+        // }
+//        return null;
     }
 
     /**

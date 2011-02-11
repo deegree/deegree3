@@ -35,7 +35,7 @@
 ----------------------------------------------------------------------------*/
 package org.deegree.geometry.multi;
 
-import org.deegree.cs.coordinatesystems.CoordinateSystem;
+import org.deegree.cs.coordinatesystems.CRS;
 import org.deegree.geometry.primitive.Surface;
 
 /**
@@ -49,7 +49,7 @@ import org.deegree.geometry.primitive.Surface;
 public interface MultiSurface extends MultiGeometry<Surface> {
 
     /**
-     * The are of all contained {@link Surface}s measured in units of the used {@link CoordinateSystem}.
+     * The are of all contained {@link Surface}s measured in units of the used {@link CRS}.
      *
      * @return area
      */

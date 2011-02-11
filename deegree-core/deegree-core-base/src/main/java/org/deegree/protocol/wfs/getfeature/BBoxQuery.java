@@ -35,7 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.protocol.wfs.getfeature;
 
-import org.deegree.cs.CRS;
+import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.filter.expression.PropertyName;
 import org.deegree.filter.sort.SortProperty;
 import org.deegree.geometry.Envelope;
@@ -80,7 +80,7 @@ public class BBoxQuery extends Query {
      * @param bbox
      *            envelope that constraints the query, must not be null
      */
-    public BBoxQuery( String handle, TypeName[] typeNames, String featureVersion, CRS srsName,
+    public BBoxQuery( String handle, TypeName[] typeNames, String featureVersion, ICRS srsName,
                       PropertyName[][] propertyNames, XLinkPropertyName[][] xLinkPropertyNames,
                       SortProperty[] sortBy, Envelope bbox ) {
         super( handle, typeNames, featureVersion, srsName, sortBy );

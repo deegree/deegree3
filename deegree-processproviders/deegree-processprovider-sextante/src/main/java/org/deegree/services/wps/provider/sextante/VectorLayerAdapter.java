@@ -48,7 +48,7 @@ import javax.xml.namespace.QName;
 import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.commons.tom.primitive.PrimitiveType;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
-import org.deegree.cs.CRS;
+import org.deegree.cs.persistence.CRSManager;
 import org.deegree.feature.Feature;
 import org.deegree.feature.FeatureCollection;
 import org.deegree.feature.GenericFeature;
@@ -422,9 +422,9 @@ public class VectorLayerAdapter {
         // default deegree geometry to create a deegree geometry from JTS geometry
         GeometryFactory gFactory = new GeometryFactory();
         AbstractDefaultGeometry gDefault = (AbstractDefaultGeometry) gFactory.createPoint( null, 0, 0,
-                                                                                           new CRS( crsName ) );
+                                                                                           CRSManager.getCRSRef( crsName ) );
 
-        Geometry g = gDefault.createFromJTS( gJTS, new CRS( crsName ) );
+        Geometry g = gDefault.createFromJTS( gJTS, CRSManager.getCRSRef( crsName ) );
 
         return g;
     }

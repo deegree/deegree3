@@ -49,7 +49,7 @@ import javax.xml.namespace.QName;
 
 import org.deegree.commons.index.RTree;
 import org.deegree.commons.utils.Pair;
-import org.deegree.cs.CRS;
+import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.feature.Feature;
 import org.deegree.feature.FeatureCollection;
@@ -88,7 +88,7 @@ class StoredFeatures {
 
     private final ApplicationSchema schema;
 
-    private final CRS storageCRS;
+    private final ICRS storageCRS;
 
     final FeatureXPathEvaluator evaluator = new FeatureXPathEvaluator( GML_31 );
 
@@ -98,7 +98,7 @@ class StoredFeatures {
 
     final Map<FeatureType, RTree<Feature>> ftToIndex;
 
-    StoredFeatures( ApplicationSchema schema, CRS storageCRS, StoredFeatures former ) {
+    StoredFeatures( ApplicationSchema schema, ICRS storageCRS, StoredFeatures former ) {
         this.schema = schema;
         this.storageCRS = storageCRS;
         for ( FeatureType ft : schema.getFeatureTypes( null, true, false ) ) {

@@ -39,7 +39,7 @@ import java.util.List;
 
 import org.deegree.commons.uom.Measure;
 import org.deegree.commons.uom.Unit;
-import org.deegree.cs.CRS;
+import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.geometry.points.Points;
 import org.deegree.geometry.precision.PrecisionModel;
 import org.deegree.geometry.primitive.Point;
@@ -71,7 +71,7 @@ public class DefaultTriangulatedSurface extends AbstractDefaultGeometry implemen
      * @param patches
      *            patches that constitute the surface
      */
-    public DefaultTriangulatedSurface( String id, CRS crs, PrecisionModel pm, List<Triangle> patches ) {
+    public DefaultTriangulatedSurface( String id, ICRS crs, PrecisionModel pm, List<Triangle> patches ) {
         super( id, crs, pm );
         this.patches = patches;
     }

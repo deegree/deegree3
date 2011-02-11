@@ -40,7 +40,7 @@ import java.util.Map;
 
 import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.commons.tom.genericxml.GenericXMLElement;
-import org.deegree.cs.CRS;
+import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.feature.property.Property;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.Operator;
@@ -172,15 +172,15 @@ public abstract class SpatialOperator implements Operator {
     protected Geometry getCompatibleGeometry( Geometry param, Geometry literal )
                             throws FilterEvaluationException {
         Geometry transformedLiteral = literal;
-        CRS paramCRS = param.getCoordinateSystem();
-        CRS literalCRS = literal.getCoordinateSystem();
+        ICRS paramCRS = param.getCoordinateSystem();
+        ICRS literalCRS = literal.getCoordinateSystem();
         if ( literalCRS != null && !( paramCRS.equals( literalCRS ) ) ) {
             LOG.debug( "Need transformed literal geometry for evaluation: " + literalCRS.getName() + " -> "
                        + paramCRS.getName() );
             transformedLiteral = srsNameToTransformedGeometry.get( paramCRS.getName() );
             if ( transformedLiteral == null ) {
                 try {
-                    GeometryTransformer transformer = new GeometryTransformer( paramCRS.getWrappedCRS() );
+                    GeometryTransformer transformer = new GeometryTransformer( paramCRS );
                     transformedLiteral = transformer.transform( literal );
                     srsNameToTransformedGeometry.put( paramCRS.getName(), transformedLiteral );
                 } catch ( Exception e ) {

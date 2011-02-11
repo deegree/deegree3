@@ -42,7 +42,7 @@ import java.util.List;
 import org.deegree.commons.uom.Measure;
 import org.deegree.commons.uom.Unit;
 import org.deegree.commons.utils.Pair;
-import org.deegree.cs.CRS;
+import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.geometry.GeometryFactory;
 import org.deegree.geometry.i18n.Messages;
 import org.deegree.geometry.linearization.CurveLinearizer;
@@ -54,8 +54,8 @@ import org.deegree.geometry.primitive.Curve;
 import org.deegree.geometry.primitive.LineString;
 import org.deegree.geometry.primitive.Point;
 import org.deegree.geometry.primitive.segments.CurveSegment;
-import org.deegree.geometry.primitive.segments.LineStringSegment;
 import org.deegree.geometry.primitive.segments.CurveSegment.CurveSegmentType;
+import org.deegree.geometry.primitive.segments.LineStringSegment;
 import org.deegree.geometry.standard.AbstractDefaultGeometry;
 import org.deegree.geometry.standard.points.PointsPoints;
 import org.deegree.geometry.standard.points.PointsSubsequence;
@@ -86,7 +86,7 @@ public class DefaultCurve extends AbstractDefaultGeometry implements Curve {
      * @param segments
      *            segments that constitute the curve (never null)
      */
-    public DefaultCurve( String id, CRS crs, PrecisionModel pm, List<CurveSegment> segments ) {
+    public DefaultCurve( String id, ICRS crs, PrecisionModel pm, List<CurveSegment> segments ) {
         super( id, crs, pm );
         this.segments = new ArrayList<CurveSegment>( segments );
     }

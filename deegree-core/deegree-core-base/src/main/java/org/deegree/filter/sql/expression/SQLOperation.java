@@ -38,7 +38,7 @@ package org.deegree.filter.sql.expression;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.deegree.cs.CRS;
+import org.deegree.cs.coordinatesystems.CRS;
 
 /**
  * {@link SQLExpression} that represents an operation, e.g. an addition, an intersects predicate or a distance

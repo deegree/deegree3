@@ -65,8 +65,7 @@ import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.commons.utils.CollectionUtils.Mapper;
 import org.deegree.commons.utils.Pair;
 import org.deegree.commons.xml.XMLAdapter;
-import org.deegree.cs.CRS;
-import org.deegree.cs.exceptions.UnknownCRSException;
+import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.feature.Feature;
 import org.deegree.feature.FeatureCollection;
 import org.deegree.feature.GenericFeatureCollection;
@@ -173,16 +172,16 @@ public class FeatureLayer extends Layer {
             LOG.error( "Layer could not be loaded, because the feature store is not available." );
             return;
         }
-        CRS crs = ( (ShapeFeatureStore) datastore ).getStorageCRS();
-        try {
-            LinkedList<CRS> ss = getSrs();
-            if ( !ss.contains( crs ) && !crs.getWrappedCRS().getCode().equals( getUndefined() ) ) {
-                ss.addFirst( crs );
-            }
-        } catch ( UnknownCRSException e ) {
-            LOG.warn( "SRS '{}' of shape datastore '{}' is not known.", crs.getName(), file );
-            LOG.trace( "Stack trace:", e );
+        ICRS crs = ( (ShapeFeatureStore) datastore ).getStorageCRS();
+        // try {
+        LinkedList<ICRS> ss = getSrs();
+        if ( !ss.contains( crs ) && !crs.getCode().equals( getUndefined() ) ) {
+            ss.addFirst( crs );
         }
+        // } catch ( UnknownCRSException e ) {
+        // LOG.warn( "SRS '{}' of shape datastore '{}' is not known.", crs.getName(), file );
+        // LOG.trace( "Stack trace:", e );
+        // }
     }
 
     @Override

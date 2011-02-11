@@ -44,7 +44,7 @@ import oracle.jdbc.OracleConnection;
 import oracle.spatial.geometry.JGeometry;
 import oracle.sql.STRUCT;
 
-import org.deegree.cs.CRS;
+import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.feature.persistence.oracle.JGeometryAdapter;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.OperatorFilter;
@@ -122,7 +122,7 @@ public class OracleWhereBuilder extends AbstractWhereBuilder {
         // throw new FilterEvaluationException( msg );
         // }
 
-        CRS storageCRS = propNameExpr.getCRS();
+        ICRS storageCRS = propNameExpr.getCRS();
 
         switch ( op.getSubType() ) {
         case BBOX: {
@@ -248,13 +248,13 @@ public class OracleWhereBuilder extends AbstractWhereBuilder {
         return sql;
     }
 
-    private SQLExpression toProtoSQL( Geometry geom, CRS targetCRS )
+    private SQLExpression toProtoSQL( Geometry geom, ICRS targetCRS )
                             throws FilterEvaluationException {
 
         Geometry transformedGeom = geom;
         if ( targetCRS != null && !targetCRS.equals( geom.getCoordinateSystem() ) ) {
             try {
-                GeometryTransformer transformer = new GeometryTransformer( targetCRS.getWrappedCRS() );
+                GeometryTransformer transformer = new GeometryTransformer( targetCRS );
                 transformedGeom = transformer.transform( geom );
             } catch ( Exception e ) {
                 String msg = "Transforming of geometry literal to storage CRS failed: " + e.getMessage();

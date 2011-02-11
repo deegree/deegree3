@@ -58,7 +58,7 @@ import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
 
 import org.deegree.commons.xml.XMLParsingException;
-import org.deegree.cs.CRS;
+import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.exceptions.TransformationException;
 import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.feature.Feature;
@@ -136,7 +136,7 @@ public class BlobCodec {
      * @throws TransformationException
      * @throws IOException
      */
-    public void encode( GMLObject object, final Map<String, String> nsContext, OutputStream os, CRS crs )
+    public void encode( GMLObject object, final Map<String, String> nsContext, OutputStream os, ICRS crs )
                             throws FeatureStoreException, XMLStreamException, FactoryConfigurationError,
                             UnknownCRSException, TransformationException, IOException {
 
@@ -207,7 +207,7 @@ public class BlobCodec {
      * @throws FactoryConfigurationError
      * @throws IOException
      */
-    public GMLObject decode( InputStream is, Map<String, String> nsContext, ApplicationSchema schema, CRS crs,
+    public GMLObject decode( InputStream is, Map<String, String> nsContext, ApplicationSchema schema, ICRS crs,
                              GMLReferenceResolver idResolver )
                             throws XMLParsingException, XMLStreamException, UnknownCRSException,
                             FactoryConfigurationError, IOException {

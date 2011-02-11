@@ -60,7 +60,7 @@ import org.deegree.commons.jdbc.ConnectionManager;
 import org.deegree.commons.jdbc.ResultSetIterator;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.commons.tom.primitive.SQLValueMangler;
-import org.deegree.cs.CRS;
+import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.feature.Feature;
 import org.deegree.feature.Features;
 import org.deegree.feature.persistence.BlobCodec;
@@ -264,7 +264,7 @@ public class PostGISFeatureStore implements SQLFeatureStore {
             rs.next();
             PGboxbase pgBox = (PGboxbase) rs.getObject( 1 );
             if ( pgBox != null ) {
-                CRS crs = propMapping.getCRS();
+                ICRS crs = propMapping.getCRS();
                 org.deegree.geometry.primitive.Point min = getPoint( pgBox.getLLB(), crs );
                 org.deegree.geometry.primitive.Point max = getPoint( pgBox.getURT(), crs );
                 env = new DefaultEnvelope( null, crs, null, min, max );
@@ -303,7 +303,7 @@ public class PostGISFeatureStore implements SQLFeatureStore {
             if ( rs.next() ) {
                 PGboxbase pgBox = (PGboxbase) rs.getObject( 1 );
                 if ( pgBox != null ) {
-                    CRS crs = bboxMapping.getCRS();
+                    ICRS crs = bboxMapping.getCRS();
                     org.deegree.geometry.primitive.Point min = getPoint( pgBox.getLLB(), crs );
                     org.deegree.geometry.primitive.Point max = getPoint( pgBox.getURT(), crs );
                     env = new DefaultEnvelope( null, bboxMapping.getCRS(), null, min, max );
@@ -352,7 +352,7 @@ public class PostGISFeatureStore implements SQLFeatureStore {
             rs.next();
             PGboxbase pgBox = (PGboxbase) rs.getObject( 1 );
             if ( pgBox != null ) {
-                CRS crs = blobMapping.getCRS();
+                ICRS crs = blobMapping.getCRS();
                 org.deegree.geometry.primitive.Point min = getPoint( pgBox.getLLB(), crs );
                 org.deegree.geometry.primitive.Point max = getPoint( pgBox.getURT(), crs );
                 env = new DefaultEnvelope( null, blobMapping.getCRS(), null, min, max );
@@ -366,7 +366,7 @@ public class PostGISFeatureStore implements SQLFeatureStore {
         return env;
     }
 
-    private org.deegree.geometry.primitive.Point getPoint( org.postgis.Point p, CRS crs ) {
+    private org.deegree.geometry.primitive.Point getPoint( org.postgis.Point p, ICRS crs ) {
         double[] coords = new double[p.getDimension()];
         coords[0] = p.getX();
         coords[1] = p.getY();
@@ -1199,17 +1199,17 @@ public class PostGISFeatureStore implements SQLFeatureStore {
      * @return transformed version of the geometry, never <code>null</code>
      * @throws FilterEvaluationException
      */
-    Geometry getCompatibleGeometry( Geometry literal, CRS crs )
+    Geometry getCompatibleGeometry( Geometry literal, ICRS crs )
                             throws FilterEvaluationException {
 
         Geometry transformedLiteral = literal;
         if ( literal != null ) {
-            CRS literalCRS = literal.getCoordinateSystem();
+            ICRS literalCRS = literal.getCoordinateSystem();
             if ( literalCRS != null && !( crs.equals( literalCRS ) ) ) {
                 LOG.debug( "Need transformed literal geometry for evaluation: " + literalCRS.getName() + " -> "
                            + crs.getName() );
                 try {
-                    GeometryTransformer transformer = new GeometryTransformer( crs.getWrappedCRS() );
+                    GeometryTransformer transformer = new GeometryTransformer( crs );
                     transformedLiteral = transformer.transform( literal );
                 } catch ( Exception e ) {
                     throw new FilterEvaluationException( e.getMessage() );

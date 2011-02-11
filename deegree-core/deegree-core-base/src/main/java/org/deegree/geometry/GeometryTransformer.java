@@ -45,9 +45,9 @@ import java.util.List;
 import javax.vecmath.Point3d;
 
 import org.deegree.commons.uom.Length;
-import org.deegree.cs.CRS;
 import org.deegree.cs.Transformer;
-import org.deegree.cs.coordinatesystems.CoordinateSystem;
+import org.deegree.cs.coordinatesystems.CRS;
+import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.exceptions.OutsideCRSDomainException;
 import org.deegree.cs.exceptions.TransformationException;
 import org.deegree.cs.exceptions.UnknownCRSException;
@@ -115,8 +115,7 @@ import org.slf4j.Logger;
 
 /**
  * 
- * Transforms a geometry defined in a {@link CoordinateSystem} into a geometry defined in another
- * {@link CoordinateSystem}
+ * Transforms a geometry defined in a {@link CRS} into a geometry defined in another {@link CRS}
  * 
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
  * @author last edited by: $Author$
@@ -135,20 +134,9 @@ public class GeometryTransformer extends Transformer {
      * @param targetCRS
      * @throws IllegalArgumentException
      *             if the given parameter is null.
-     */
-    public GeometryTransformer( CoordinateSystem targetCRS ) throws IllegalArgumentException {
-        super( targetCRS );
-    }
-
-    /**
-     * Creates a new GeometryTransformer object.
-     * 
-     * @param targetCRS
-     * @throws IllegalArgumentException
-     *             if the given parameter is null.
      * @throws UnknownCRSException
      */
-    public GeometryTransformer( CRS targetCRS ) throws IllegalArgumentException, UnknownCRSException {
+    public GeometryTransformer( ICRS targetCRS ) throws IllegalArgumentException {
         super( targetCRS );
     }
 
@@ -225,11 +213,12 @@ public class GeometryTransformer extends Transformer {
      *         AreaOfUse was defined as -180,-90,180,90 BBox or if the envelope could not be transformed
      *         <code>null</code> will be returned.
      */
-    public static Envelope createValidDomain( CoordinateSystem sourceCRS ) {
+    public static Envelope createValidDomain( ICRS sourceCRS ) {
         double[] validDomain = sourceCRS.getValidDomain();
         if ( validDomain != null ) {
             return geomFactory.createEnvelope( new double[] { validDomain[0], validDomain[1] },
-                                               new double[] { validDomain[2], validDomain[3] }, new CRS( sourceCRS ) );
+                                               new double[] { validDomain[2], validDomain[3] },
+                                               CRSManager.getCRSRef( sourceCRS ) );
         }
         return null;
     }
@@ -267,7 +256,7 @@ public class GeometryTransformer extends Transformer {
      * @throws IllegalArgumentException
      *             if the coordinates system of the geometry is <code>null</code>
      */
-    public <T extends Geometry> T transform( T geo, CoordinateSystem sourceCRS )
+    public <T extends Geometry> T transform( T geo, ICRS sourceCRS )
                             throws TransformationException, IllegalArgumentException {
         return transform( geo, sourceCRS, false, null );
     }
@@ -290,21 +279,13 @@ public class GeometryTransformer extends Transformer {
      * @throws TransformationException
      *             if the transformation between the source and target crs cannot be created.
      */
-    public <T extends Geometry> T transform( T geom, CoordinateSystem sourceCRS, boolean testValidArea,
+    public <T extends Geometry> T transform( T geom, ICRS sourceCRS, boolean testValidArea,
                                              List<Transformation> toBeUsedTransformations )
                             throws IllegalArgumentException, TransformationException {
         Envelope sourceEnv = null;
-        CoordinateSystem source = sourceCRS;
+        ICRS source = sourceCRS;
         if ( source == null ) {
-            CRS gCRS = geom.getCoordinateSystem();
-            if ( gCRS != null ) {
-                try {
-                    source = gCRS.getWrappedCRS();
-                } catch ( UnknownCRSException e ) {
-                    LOG.debug( "No sourceCRS was found in geometry: " + e.getLocalizedMessage(), e );
-                    LOG.debug( "No sourceCRS was found in geometry: " + e.getLocalizedMessage() );
-                }
-            }
+            source = geom.getCoordinateSystem();
         }
         if ( testValidArea ) {
             sourceEnv = createValidDomain( source );
@@ -395,7 +376,7 @@ public class GeometryTransformer extends Transformer {
             GeometricPrimitive tGp = transform( gp, trans );
             transformed.add( tGp );
         }
-        return geomFactory.createCompositeGeometry( geom.getId(), getWrappedTargetCRS(), transformed );
+        return geomFactory.createCompositeGeometry( geom.getId(), getTargetCRS(), transformed );
     }
 
     private MultiGeometry<?> transform( MultiGeometry<?> geom, Transformation trans, Envelope domainOfValidity )
@@ -413,7 +394,7 @@ public class GeometryTransformer extends Transformer {
                 Geometry tG = transform( geo, trans, domainOfValidity );
                 mg.add( tG );
             }
-            result = geomFactory.createMultiGeometry( geom.getId(), getWrappedTargetCRS(), mg );
+            result = geomFactory.createMultiGeometry( geom.getId(), getTargetCRS(), mg );
             break;
         case MULTI_LINE_STRING:
             result = transform( (MultiLineString) geom, trans );
@@ -441,7 +422,7 @@ public class GeometryTransformer extends Transformer {
             Solid ts = transform( s, trans );
             transformedSolids.add( ts );
         }
-        return geomFactory.createMultiSolid( geom.getId(), getWrappedTargetCRS(), transformedSolids );
+        return geomFactory.createMultiSolid( geom.getId(), getTargetCRS(), transformedSolids );
     }
 
     private Solid transform( Solid solid, Transformation trans )
@@ -465,7 +446,7 @@ public class GeometryTransformer extends Transformer {
                     }
                 }
             }
-            result = geomFactory.createSolid( solid.getId(), getWrappedTargetCRS(), tExt, tInter );
+            result = geomFactory.createSolid( solid.getId(), getTargetCRS(), tExt, tInter );
             break;
         }
         return result;
@@ -478,18 +459,18 @@ public class GeometryTransformer extends Transformer {
         for ( Solid s : cSolid ) {
             tSolids.add( transform( s, trans ) );
         }
-        return geomFactory.createCompositeSolid( cSolid.getId(), getWrappedTargetCRS(), tSolids );
+        return geomFactory.createCompositeSolid( cSolid.getId(), getTargetCRS(), tSolids );
     }
 
     private boolean insideValidDomain( Envelope validDomain, Geometry geom ) {
         boolean result = false;
         if ( validDomain != null && geom != null ) {
             Geometry inSource = geom;
-            CRS sourceCRS = validDomain.getCoordinateSystem();
+            ICRS sourceCRS = validDomain.getCoordinateSystem();
             if ( sourceCRS != null && geom.getCoordinateSystem() != null
                  && !sourceCRS.equals( geom.getCoordinateSystem() ) ) {
                 try {
-                    GeometryTransformer trans = new GeometryTransformer( sourceCRS.getWrappedCRS() );
+                    GeometryTransformer trans = new GeometryTransformer( sourceCRS );
                     inSource = trans.transform( geom );
                 } catch ( IllegalArgumentException e ) {
                     if ( LOG.isDebugEnabled() ) {
@@ -592,7 +573,7 @@ public class GeometryTransformer extends Transformer {
             max = new double[] { axis0Max, axis1Max };
         }
 
-        return geomFactory.createEnvelope( min, max, new CRS( this.getTargetCRS() ) );
+        return geomFactory.createEnvelope( min, max, CRSManager.getCRSRef( this.getTargetCRS() ) );
     }
 
     private LineString transform( LineString geo, Transformation trans )
@@ -600,7 +581,7 @@ public class GeometryTransformer extends Transformer {
         LineStringSegment segment = (LineStringSegment) geo.getCurveSegments().get( 0 ); // only one for a line string?
         Points pos = segment.getControlPoints();
         pos = transform( pos, trans );
-        return geomFactory.createLineString( geo.getId(), getWrappedTargetCRS(), pos );
+        return geomFactory.createLineString( geo.getId(), getTargetCRS(), pos );
     }
 
     /**
@@ -623,7 +604,7 @@ public class GeometryTransformer extends Transformer {
             for ( CurveSegment segment : curve.getCurveSegments() ) {
                 curveSegments[i++] = transform( segment, trans );
             }
-            result = geomFactory.createCurve( curve.getId(), getWrappedTargetCRS(), curveSegments );
+            result = geomFactory.createCurve( curve.getId(), getTargetCRS(), curveSegments );
             if ( type == CurveType.OrientableCurve ) {
                 result = geomFactory.createOrientableCurve( curve.getId(), result.getCoordinateSystem(), result,
                                                             ( (OrientableCurve) curve ).isReversed() );
@@ -647,7 +628,7 @@ public class GeometryTransformer extends Transformer {
         for ( Curve c : cCurve ) {
             tCurves.add( transform( c, trans ) );
         }
-        return geomFactory.createCompositeCurve( cCurve.getId(), getWrappedTargetCRS(), tCurves );
+        return geomFactory.createCompositeCurve( cCurve.getId(), getTargetCRS(), tCurves );
     }
 
     private CurveSegment transform( CurveSegment segment, Transformation trans )
@@ -770,7 +751,7 @@ public class GeometryTransformer extends Transformer {
         for ( LineString line : geo ) {
             lines.add( transform( line, trans ) );
         }
-        return geomFactory.createMultiLineString( geo.getId(), getWrappedTargetCRS(), lines );
+        return geomFactory.createMultiLineString( geo.getId(), getTargetCRS(), lines );
     }
 
     /**
@@ -784,7 +765,7 @@ public class GeometryTransformer extends Transformer {
         for ( Curve curve : geo ) {
             curves.add( transform( curve, trans ) );
         }
-        return geomFactory.createMultiCurve( geo.getId(), getWrappedTargetCRS(), curves );
+        return geomFactory.createMultiCurve( geo.getId(), getTargetCRS(), curves );
     }
 
     /**
@@ -798,7 +779,7 @@ public class GeometryTransformer extends Transformer {
         for ( Point p : geo ) {
             points.add( transform( p, trans ) );
         }
-        return geomFactory.createMultiPoint( geo.getId(), getWrappedTargetCRS(), points );
+        return geomFactory.createMultiPoint( geo.getId(), getTargetCRS(), points );
     }
 
     /**
@@ -812,7 +793,7 @@ public class GeometryTransformer extends Transformer {
         for ( Surface surface : multiSurface ) {
             surfaces.add( transform( surface, trans ) );
         }
-        return geomFactory.createMultiSurface( multiSurface.getId(), getWrappedTargetCRS(), surfaces );
+        return geomFactory.createMultiSurface( multiSurface.getId(), getTargetCRS(), surfaces );
     }
 
     private MultiPolygon transform( MultiPolygon multiPolygon, Transformation trans )
@@ -822,7 +803,7 @@ public class GeometryTransformer extends Transformer {
         for ( Polygon g : multiPolygon ) {
             polys.add( transform( g, trans ) );
         }
-        return geomFactory.createMultiPolygon( multiPolygon.getId(), getWrappedTargetCRS(), polys );
+        return geomFactory.createMultiPolygon( multiPolygon.getId(), getTargetCRS(), polys );
     }
 
     /**
@@ -841,15 +822,14 @@ public class GeometryTransformer extends Transformer {
             tmp = trans.doTransform( coord );
 
             if ( Double.isNaN( point.get2() ) ) {
-                result.add( geomFactory.createPoint( point.getId(), new double[] { tmp.x, tmp.y },
-                                                     getWrappedTargetCRS() ) );
+                result.add( geomFactory.createPoint( point.getId(), new double[] { tmp.x, tmp.y }, getTargetCRS() ) );
             } else {
                 // pass the 3rd coordinate if exist and dimension of source and target CRS is 2
                 if ( trans.getSourceCRS().getDimension() == 2 && trans.getTargetCRS().getDimension() == 2 ) {
                     tmp.z = point.get2();
                 }
                 result.add( geomFactory.createPoint( point.getId(), new double[] { tmp.x, tmp.y, tmp.z },
-                                                     getWrappedTargetCRS() ) );
+                                                     getTargetCRS() ) );
             }
         }
         return new PointsList( result );
@@ -868,13 +848,12 @@ public class GeometryTransformer extends Transformer {
 
         result = trans.doTransform( coord );
         if ( Double.isNaN( geo.get2() ) ) {
-            return geomFactory.createPoint( geo.getId(), new double[] { result.x, result.y }, getWrappedTargetCRS() );
+            return geomFactory.createPoint( geo.getId(), new double[] { result.x, result.y }, getTargetCRS() );
         } else if ( trans.getSourceCRS().getDimension() == 2 && trans.getTargetCRS().getDimension() == 2 ) {
             // pass the 3rd coordinate if exist and dimension of source and target CRS is 2
             result.z = geo.get2();
         }
-        return geomFactory.createPoint( geo.getId(), new double[] { result.x, result.y, result.z },
-                                        getWrappedTargetCRS() );
+        return geomFactory.createPoint( geo.getId(), new double[] { result.x, result.y, result.z }, getTargetCRS() );
     }
 
     /**
@@ -888,7 +867,7 @@ public class GeometryTransformer extends Transformer {
         Surface result = null;
         SurfaceType surfaceType = surface.getSurfaceType();
         String id = surface.getId();
-        CRS nCRS = getWrappedTargetCRS();
+        ICRS nCRS = getTargetCRS();
         switch ( surfaceType ) {
         case CompositeSurface:
             result = transform( (CompositeSurface) surface, trans );
@@ -974,7 +953,7 @@ public class GeometryTransformer extends Transformer {
         if ( patches != null ) {
             tPatches = (List) transform( patches, trans );
         }
-        return geomFactory.createTin( tin.getId(), getWrappedTargetCRS(), tStopLines, tBreakLines,
+        return geomFactory.createTin( tin.getId(), getTargetCRS(), tStopLines, tBreakLines,
                                       (Length) tin.getMaxLength( null ), tcPoints, tPatches );
     }
 
@@ -991,7 +970,7 @@ public class GeometryTransformer extends Transformer {
                 }
             }
         }
-        return geomFactory.createPolygon( polygon.getId(), getWrappedTargetCRS(), tExteriorRing, tInteriorRings );
+        return geomFactory.createPolygon( polygon.getId(), getTargetCRS(), tExteriorRing, tInteriorRings );
     }
 
     private LinearRing transform( Ring ring, Transformation trans )
@@ -1001,7 +980,7 @@ public class GeometryTransformer extends Transformer {
             // interior.getAsLineString().getControlPoints(),
             Points cP = ring.getControlPoints();
             Points tcP = transform( cP, trans );
-            return geomFactory.createLinearRing( ring.getId(), getWrappedTargetCRS(), tcP );
+            return geomFactory.createLinearRing( ring.getId(), getTargetCRS(), tcP );
         }
         return null;
     }
@@ -1032,7 +1011,7 @@ public class GeometryTransformer extends Transformer {
             Surface ts = transform( s, trans );
             tSurfaces.add( ts );
         }
-        return geomFactory.createCompositeSurface( compositeSurface.getId(), getWrappedTargetCRS(), tSurfaces );
+        return geomFactory.createCompositeSurface( compositeSurface.getId(), getTargetCRS(), tSurfaces );
     }
 
     private PolygonPatch transform( PolygonPatch patch, Transformation trans )

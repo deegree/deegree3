@@ -38,6 +38,7 @@ package org.deegree.geometry.io;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 
+import org.deegree.cs.components.IUnit;
 import org.deegree.cs.components.Unit;
 
 /**
@@ -71,7 +72,7 @@ public class DecimalCoordinateFormatter implements CoordinateFormatter {
      * @param uom
      *            unit-of-measure, may be <code>null</code>
      */
-    public DecimalCoordinateFormatter( Unit uom ) {
+    public DecimalCoordinateFormatter( IUnit uom ) {
         int decimalPlaces = DEFAULT_PLACES;
         if ( uom == Unit.METRE ) {
             decimalPlaces = DEFAULT_PLACES_METRE;

@@ -39,7 +39,7 @@
 package org.deegree.cs.persistence.deegree.d3.parsers;
 
 import static org.deegree.commons.xml.stax.StAXParsingHelper.nextElement;
-import static org.deegree.cs.persistence.deegree.d3.Parser.CRS_NS;
+import static org.deegree.cs.persistence.deegree.d3.DeegreeCRSStore.CRS_NS;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.net.URL;
@@ -49,16 +49,17 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
 import org.deegree.commons.annotations.LoggingNotes;
-import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.commons.xml.stax.StAXParsingHelper;
-import org.deegree.cs.CRSIdentifiable;
-import org.deegree.cs.components.Ellipsoid;
+import org.deegree.cs.CRSResource;
 import org.deegree.cs.components.GeodeticDatum;
-import org.deegree.cs.components.PrimeMeridian;
+import org.deegree.cs.components.IEllipsoid;
+import org.deegree.cs.components.IPrimeMeridian;
 import org.deegree.cs.exceptions.CRSConfigurationException;
 import org.deegree.cs.i18n.Messages;
-import org.deegree.cs.persistence.deegree.DeegreeCRSStore;
-import org.deegree.cs.persistence.deegree.d3.StAXResource;
+import org.deegree.cs.persistence.AbstractCRSStore.RESOURCETYPE;
+import org.deegree.cs.persistence.deegree.d3.DeegreeCRSStore;
+import org.deegree.cs.refs.components.EllipsoidRef;
+import org.deegree.cs.refs.components.PrimeMeridianRef;
 import org.slf4j.Logger;
 
 /**
@@ -82,7 +83,7 @@ public class DatumParser extends DefinitionParser {
      * @param provider
      * @param configURL
      */
-    public DatumParser( DeegreeCRSStore<StAXResource> provider, URL configURL ) {
+    public DatumParser( DeegreeCRSStore provider, URL configURL ) {
         super( provider, configURL );
     }
 
@@ -97,7 +98,7 @@ public class DatumParser extends DefinitionParser {
             return null;
         }
         String tmpDatumID = datumID.trim();
-        GeodeticDatum result = getProvider().getCachedIdentifiable( GeodeticDatum.class, tmpDatumID );
+        GeodeticDatum result = getStore().getCachedIdentifiable( GeodeticDatum.class, tmpDatumID );
         if ( result == null ) {
             try {
                 result = parseDatum( getConfigReader() );
@@ -126,66 +127,26 @@ public class DatumParser extends DefinitionParser {
         }
 
         // get the identifiable.
-        CRSIdentifiable id = parseIdentifiable( reader );
+        CRSResource id = parseIdentifiable( reader );
 
         // get the ellipsoid.
-
-        Ellipsoid ellipsoid = null;
-        try {
-            String ellipsID = StAXParsingHelper.getRequiredText( reader, new QName( CRS_NS, "UsedEllipsoid" ), true );
-            if ( ellipsID != null && !"".equals( ellipsID.trim() ) ) {
-                ellipsoid = getProvider().getEllipsoidForId( ellipsID );
-            }
-        } catch ( XMLParsingException e ) {
-            throw new CRSConfigurationException( Messages.getMessage( "CRS_CONFIG_PARSE_STAX_ERROR", "UsedEllipsoid",
-                                                                      reader.getLocation(), e.getMessage() ), e );
-        }
-
-        if ( ellipsoid == null ) {
+        String ellipsID = StAXParsingHelper.getRequiredText( reader, new QName( CRS_NS, "UsedEllipsoid" ), true );
+        if ( ellipsID == null || ellipsID.trim().length() == 0 ) {
             throw new CRSConfigurationException( Messages.getMessage( "CRS_STAX_CONFIG_DATUM_HAS_NO_ELLIPSOID",
                                                                       reader.getLocation() ) );
         }
+        IEllipsoid ellipsoid = new EllipsoidRef( store.getResolver( RESOURCETYPE.ELLIPSOID ), '#' + ellipsID, null );
 
         // get the primemeridian if any.
-        PrimeMeridian pMeridian = null;
-        try {
-            String pMeridianID = StAXParsingHelper.getText( getConfigReader(),
-                                                            new QName( CRS_NS, "UsedPrimeMeridian" ), null, true );
-
-            if ( pMeridianID != null && !"".equals( pMeridianID.trim() ) ) {
-                pMeridian = getProvider().getPrimeMeridianForId( pMeridianID );
-            }
-            if ( pMeridian == null ) {
-                pMeridian = PrimeMeridian.GREENWICH;
-            }
-        } catch ( XMLParsingException e ) {
-            throw new CRSConfigurationException( Messages.getMessage( "CRS_CONFIG_PARSE_STAX_ERROR",
-                                                                      "UsedPrimeMeridian", reader.getLocation(),
-                                                                      e.getMessage() ), e );
+        String pMeridianID = StAXParsingHelper.getText( getConfigReader(), new QName( CRS_NS, "UsedPrimeMeridian" ),
+                                                        null, true );
+        IPrimeMeridian pMeridian = null;
+        if ( pMeridianID != null && pMeridianID.trim().length() > 0 ) {
+            pMeridian = new PrimeMeridianRef( store.getResolver( RESOURCETYPE.PM ), '#' + pMeridianID, null );
         }
-
-        // // get the WGS84 if any.
-        // Helmert cInfo = null;
-        // try {
-        // String infoID = getNodeAsString( datumElement, new XPath( PRE + "usedWGS84ConversionInfo", nsContext ),
-        // null );
-        //
-        // if ( infoID != null && !"".equals( infoID.trim() ) ) {
-        // cInfo = getConversionInfoFromID( infoID );
-        // }
-        // // if ( cInfo == null ) {
-        // // cInfo = new Helmert( "Created by DeegreeCRSProvider" );
-        // // }
-        // } catch ( XMLParsingException e ) {
-        // throw new CRSConfigurationException(
-        // Messages.getMessage( "CRS_CONFIG_PARSE_ERROR",
-        // "wgs84ConversionInfo",
-        // datumElement.getLocalName(), e.getMessage() ),
-        // e );
-        // }
         nextElement( reader );// end document
 
-        GeodeticDatum result = getProvider().addIdToCache( new GeodeticDatum( ellipsoid, pMeridian, id ), false );
+        GeodeticDatum result = getStore().addIdToCache( new GeodeticDatum( ellipsoid, pMeridian, id ), false );
 
         return result;
     }
@@ -193,5 +154,9 @@ public class DatumParser extends DefinitionParser {
     @Override
     protected QName expectedRootName() {
         return ROOT;
+    }
+
+    public GeodeticDatum getObject( String uri, String baseURL ) {
+        return getGeodeticDatumForId( uri );
     }
 }

@@ -63,7 +63,7 @@ import org.deegree.coverage.raster.geom.RasterGeoReference;
 import org.deegree.coverage.raster.geom.RasterGeoReference.OriginLocation;
 import org.deegree.coverage.raster.io.RasterIOOptions;
 import org.deegree.coverage.raster.utils.RasterBuilder.QTreeInfo;
-import org.deegree.cs.CRS;
+import org.deegree.cs.coordinatesystems.CRS;
 import org.deegree.geometry.Envelope;
 import org.slf4j.Logger;
 

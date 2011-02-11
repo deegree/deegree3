@@ -48,15 +48,16 @@ import javax.vecmath.Point2d;
 
 import org.deegree.commons.annotations.LoggingNotes;
 import org.deegree.cs.CRSCodeType;
-import org.deegree.cs.CRSIdentifiable;
+import org.deegree.cs.CRSResource;
 import org.deegree.cs.EPSGCode;
 import org.deegree.cs.components.Axis;
 import org.deegree.cs.components.Ellipsoid;
 import org.deegree.cs.components.GeodeticDatum;
 import org.deegree.cs.components.PrimeMeridian;
 import org.deegree.cs.components.Unit;
-import org.deegree.cs.coordinatesystems.CoordinateSystem;
+import org.deegree.cs.coordinatesystems.CRS;
 import org.deegree.cs.coordinatesystems.GeographicCRS;
+import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.coordinatesystems.ProjectedCRS;
 import org.deegree.cs.exceptions.CRSConfigurationException;
 import org.deegree.cs.i18n.Messages;
@@ -90,7 +91,7 @@ import org.slf4j.LoggerFactory;
  * 
  */
 @LoggingNotes(debug = "the proj4 format provider")
-public class PROJ4CRSStore extends AbstractCRSStore<Map<String, String>> {
+public class PROJ4CRSStore extends AbstractCRSStore {
 
     private static Logger LOG = LoggerFactory.getLogger( PROJ4CRSStore.class );
 
@@ -110,7 +111,7 @@ public class PROJ4CRSStore extends AbstractCRSStore<Map<String, String>> {
 
     private static final String OGC_URN = "URN:OGC:DEF:CRS:EPSG::";
 
-    private Map<CRSCodeType, CoordinateSystem> coordinateSystems = new HashMap<CRSCodeType, CoordinateSystem>( 10000 );
+    private Map<CRSCodeType, CRS> coordinateSystems = new HashMap<CRSCodeType, CRS>( 10000 );
 
     private String version = null;
 
@@ -119,6 +120,8 @@ public class PROJ4CRSStore extends AbstractCRSStore<Map<String, String>> {
     private String areaOfUse = "Unknown";
 
     private String[] areasOfUse = new String[] { "Unknown" };
+
+    private ProjFileResource resolver;
 
     /**
      * Export constructor, sets the version to current date..
@@ -133,21 +136,16 @@ public class PROJ4CRSStore extends AbstractCRSStore<Map<String, String>> {
         versions = new String[] { version };
     }
 
-    @Override
-    protected ProjFileResource getResolver() {
-        return (ProjFileResource) super.getResolver();
-    }
-
-    public List<CoordinateSystem> getAvailableCRSs()
+    public List<ICRS> getAvailableCRSs()
                             throws CRSConfigurationException {
         Set<CRSCodeType> keys = getResolver().getAvailableCodes();
         if ( LOG.isDebugEnabled() ) {
             LOG.debug( "Found following keys: " + keys );
         }
-        List<CoordinateSystem> allSystems = new LinkedList<CoordinateSystem>();
+        List<ICRS> allSystems = new LinkedList<ICRS>();
         for ( CRSCodeType key : keys ) {
             try {
-                CoordinateSystem result = getCRSByCode( key );
+                ICRS result = getCRSByCode( key );
                 if ( result != null ) {
                     allSystems.add( result );
                 }
@@ -158,7 +156,7 @@ public class PROJ4CRSStore extends AbstractCRSStore<Map<String, String>> {
         // get all already created crs's
         keys = coordinateSystems.keySet();
         for ( CRSCodeType key : keys ) {
-            CoordinateSystem result = coordinateSystems.get( key );
+            ICRS result = coordinateSystems.get( key );
             if ( result != null ) {
                 allSystems.add( result );
             }
@@ -1442,9 +1440,9 @@ public class PROJ4CRSStore extends AbstractCRSStore<Map<String, String>> {
         return result;
     }
 
-    public CRSIdentifiable getIdentifiable( CRSCodeType code )
+    public CRSResource getCRSResource( CRSCodeType code )
                             throws CRSConfigurationException {
-        CRSIdentifiable result = getCachedIdentifiable( code );
+        CRSResource result = getCachedIdentifiable( code );
         if ( result == null ) {
             throw new UnsupportedOperationException(
                                                      "The retrieval of an arbitrary CRSIdentifiable Object is currently not supported by the proj 4 provider." );
@@ -1452,8 +1450,7 @@ public class PROJ4CRSStore extends AbstractCRSStore<Map<String, String>> {
         return result;
     }
 
-    @Override
-    protected CoordinateSystem parseCoordinateSystem( Map<String, String> crsDefinition )
+    protected CRS parseCoordinateSystem( Map<String, String> crsDefinition )
                             throws CRSConfigurationException {
 
         String crsType = crsDefinition.remove( "proj" );
@@ -1470,20 +1467,49 @@ public class PROJ4CRSStore extends AbstractCRSStore<Map<String, String>> {
         return createProjectedCRS( crsType, crsDefinition );
     }
 
-    @Override
-    public Transformation parseTransformation( Map<String, String> transformationDefinition )
-                            throws CRSConfigurationException {
-        throw new UnsupportedOperationException(
-                                                 "Parsing of transformation parameters is not applicable for proj4 configuration files yet." );
-    }
+    // @Override
+    // public Transformation parseTransformation( Map<String, String> transformationDefinition )
+    // throws CRSConfigurationException {
+    // throw new UnsupportedOperationException(
+    // "Parsing of transformation parameters is not applicable for proj4 configuration files yet." );
+    // }
 
-    public Transformation getTransformation( CoordinateSystem sourceCRS, CoordinateSystem targetCRS )
+    public Transformation getDirectTransformation( ICRS sourceCRS, ICRS targetCRS )
                             throws CRSConfigurationException {
         return getResolver().getTransformation( sourceCRS, targetCRS );
     }
 
     @Override
     public void init() {
+    }
+
+    @Override
+    public ICRS getCoordinateSystem( String id ) {
+        throw new UnsupportedOperationException(
+                                                 "The retrieval of an CRS by id is currently not supported by the proj 4 provider." );
+    }
+
+    /**
+     * Set the resolver to the given resolver.
+     * 
+     * @param newResolver
+     */
+    public void setResolver( ProjFileResource newResolver ) {
+        this.resolver = newResolver;
+    }
+
+    /**
+     * @return the resolver for a type.
+     */
+    protected ProjFileResource getResolver() {
+        return resolver;
+    }
+
+    @Override
+    public Transformation getDirectTransformation( String id )
+                            throws CRSConfigurationException {
+        throw new UnsupportedOperationException(
+                                                 "The retrieval of an Transformation by id is currently not supported by the proj 4 provider." );
     }
 
 }

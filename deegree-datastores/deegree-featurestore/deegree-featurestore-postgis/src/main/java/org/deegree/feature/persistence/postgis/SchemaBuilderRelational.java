@@ -73,7 +73,8 @@ import org.deegree.commons.tom.primitive.PrimitiveType;
 import org.deegree.commons.utils.JDBCUtils;
 import org.deegree.commons.utils.Pair;
 import org.deegree.commons.xml.NamespaceBindings;
-import org.deegree.cs.CRS;
+import org.deegree.cs.coordinatesystems.ICRS;
+import org.deegree.cs.persistence.CRSManager;
 import org.deegree.feature.persistence.FeatureStoreException;
 import org.deegree.feature.persistence.mapping.FeatureTypeMapping;
 import org.deegree.feature.persistence.mapping.JoinChain;
@@ -93,17 +94,17 @@ import org.deegree.feature.persistence.mapping.property.PrimitiveMapping;
 import org.deegree.feature.persistence.postgis.jaxb.AbstractIDGeneratorType;
 import org.deegree.feature.persistence.postgis.jaxb.AbstractPropertyDecl;
 import org.deegree.feature.persistence.postgis.jaxb.CustomMapping;
+import org.deegree.feature.persistence.postgis.jaxb.FIDMapping.Column;
 import org.deegree.feature.persistence.postgis.jaxb.FeatureTypeDecl;
 import org.deegree.feature.persistence.postgis.jaxb.GeometryPropertyDecl;
 import org.deegree.feature.persistence.postgis.jaxb.SimplePropertyDecl;
-import org.deegree.feature.persistence.postgis.jaxb.FIDMapping.Column;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.feature.types.GenericFeatureType;
 import org.deegree.feature.types.property.GeometryPropertyType;
-import org.deegree.feature.types.property.PropertyType;
-import org.deegree.feature.types.property.SimplePropertyType;
 import org.deegree.feature.types.property.GeometryPropertyType.CoordinateDimension;
 import org.deegree.feature.types.property.GeometryPropertyType.GeometryType;
+import org.deegree.feature.types.property.PropertyType;
+import org.deegree.feature.types.property.SimplePropertyType;
 import org.deegree.filter.expression.PropertyName;
 import org.deegree.filter.sql.DBField;
 import org.deegree.filter.sql.MappingExpression;
@@ -307,9 +308,9 @@ class SchemaBuilderRelational {
             } else {
                 type = md.geomType;
             }
-            CRS crs = null;
+            ICRS crs = null;
             if ( geomDecl.getCrs() != null ) {
-                crs = new CRS( geomDecl.getCrs() );
+                crs = CRSManager.getCRSRef( geomDecl.getCrs() );
             } else {
                 crs = md.crs;
             }
@@ -425,8 +426,8 @@ class SchemaBuilderRelational {
                                                     null ) );
             } else if ( customMapping instanceof org.deegree.feature.persistence.postgis.jaxb.GeometryMapping ) {
                 org.deegree.feature.persistence.postgis.jaxb.GeometryMapping geometryMapping = (org.deegree.feature.persistence.postgis.jaxb.GeometryMapping) customMapping;
-                mappings.add( new GeometryMapping( propName, mapping, GEOMETRY, DIM_2, new CRS( "EPSG:4326", true ),
-                                                   "-1", null ) );
+                mappings.add( new GeometryMapping( propName, mapping, GEOMETRY, DIM_2,
+                                                   CRSManager.getCRSRef( "EPSG:4326", true ), "-1", null ) );
             } else if ( customMapping instanceof org.deegree.feature.persistence.postgis.jaxb.FeatureMapping ) {
                 org.deegree.feature.persistence.postgis.jaxb.FeatureMapping featureMapping = (org.deegree.feature.persistence.postgis.jaxb.FeatureMapping) customMapping;
                 mappings.add( new FeatureMapping( propName, mapping, featureMapping.getType(), null ) );
@@ -572,7 +573,7 @@ class SchemaBuilderRelational {
 
                     if ( sqlTypeName.equals( "geometry" ) ) {
                         String srid = "-1";
-                        CRS crs = new CRS( "EPSG:4326", true );
+                        ICRS crs = CRSManager.getCRSRef( "EPSG:4326", true );
                         CoordinateDimension dim = DIM_2;
                         GeometryPropertyType.GeometryType geomType = GeometryType.GEOMETRY;
                         Connection conn = getConnection();
@@ -588,8 +589,7 @@ class SchemaBuilderRelational {
                             rs2 = stmt.executeQuery( sql );
                             rs2.next();
                             if ( rs2.getInt( 2 ) != -1 ) {
-                                crs = new CRS( "EPSG:" + rs2.getInt( 2 ), true );
-                                crs.getWrappedCRS();
+                                crs = CRSManager.lookup( "EPSG:" + rs2.getInt( 2 ), true );
                             }
                             if ( rs2.getInt( 1 ) == 3 ) {
                                 dim = DIM_3;
@@ -638,7 +638,7 @@ class ColumnMetadata {
 
     CoordinateDimension dim;
 
-    CRS crs;
+    ICRS crs;
 
     String srid;
 
@@ -651,7 +651,7 @@ class ColumnMetadata {
     }
 
     public ColumnMetadata( String column, int sqlType, String sqlTypeName, boolean isNullable, GeometryType geomType,
-                           CoordinateDimension dim, CRS crs, String srid ) {
+                           CoordinateDimension dim, ICRS crs, String srid ) {
         this.column = column;
         this.sqlType = sqlType;
         this.sqlTypeName = sqlTypeName;

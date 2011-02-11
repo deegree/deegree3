@@ -42,7 +42,6 @@ import static java.lang.Double.NEGATIVE_INFINITY;
 import static java.lang.Double.POSITIVE_INFINITY;
 import static org.deegree.commons.xml.CommonNamespaces.XLINK_PREFIX;
 import static org.deegree.commons.xml.CommonNamespaces.XLNNS;
-import static org.deegree.cs.persistence.CRSManager.lookup;
 import static org.deegree.services.wms.model.Dimension.formatDimensionValueList;
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -59,10 +58,10 @@ import org.deegree.commons.annotations.LoggingNotes;
 import org.deegree.commons.utils.DoublePair;
 import org.deegree.commons.utils.Pair;
 import org.deegree.commons.xml.XMLAdapter;
-import org.deegree.cs.CRS;
-import org.deegree.cs.coordinatesystems.CoordinateSystem;
+import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.exceptions.TransformationException;
 import org.deegree.cs.exceptions.UnknownCRSException;
+import org.deegree.cs.persistence.CRSManager;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryTransformer;
 import org.deegree.rendering.r2d.se.unevaluated.Style;
@@ -183,13 +182,13 @@ public class Capabilities111XMLAdapter extends XMLAdapter {
             writer.writeEndElement();
         }
 
-        for ( CRS crs : layer.getSrs() ) {
+        for ( ICRS crs : layer.getSrs() ) {
             writeElement( writer, "SRS", crs.getName() );
         }
 
-        CoordinateSystem latlon;
+        ICRS latlon;
         try {
-            latlon = lookup( "CRS:84" );
+            latlon = CRSManager.lookup( "CRS:84" );
             Envelope layerEnv = layer.getBbox();
             if ( layerEnv != null && layerEnv.getCoordinateDimension() >= 2 ) {
                 Envelope bbox = new GeometryTransformer( latlon ).transform( layerEnv );
@@ -200,23 +199,23 @@ public class Capabilities111XMLAdapter extends XMLAdapter {
                 writer.writeAttribute( "maxy", Double.toString( bbox.getMax().get1() ) );
                 writer.writeEndElement();
 
-                for ( CRS crs : layer.getSrs() ) {
+                for ( ICRS crs : layer.getSrs() ) {
                     if ( crs.getName().startsWith( "AUTO" ) ) {
                         continue;
                     }
-                    try {
-                        crs.getWrappedCRS();
-                    } catch ( UnknownCRSException e ) {
-                        LOG.warn( "Cannot find: {}", e.getLocalizedMessage() );
-                        LOG.trace( "Stack trace:", e );
-                        continue;
-                    }
+                    // try {
+                    // crs
+                    // } catch ( UnknownCRSException e ) {
+                    // LOG.warn( "Cannot find: {}", e.getLocalizedMessage() );
+                    // LOG.trace( "Stack trace:", e );
+                    // continue;
+                    // }
                     Envelope envelope;
                     try {
                         if ( layerEnv.getCoordinateSystem() == null ) {
-                            envelope = new GeometryTransformer( crs.getWrappedCRS() ).transform( layerEnv, latlon );
+                            envelope = new GeometryTransformer( crs ).transform( layerEnv, latlon );
                         } else {
-                            envelope = new GeometryTransformer( crs.getWrappedCRS() ).transform( layerEnv );
+                            envelope = new GeometryTransformer( crs ).transform( layerEnv );
                         }
                     } catch ( IllegalArgumentException e ) {
                         LOG.warn( "Cannot transform: {}", e.getLocalizedMessage() );

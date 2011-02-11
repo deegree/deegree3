@@ -35,17 +35,13 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.geometry.validation;
 
-import org.deegree.cs.CRS;
-import org.deegree.cs.coordinatesystems.CoordinateSystem;
-import org.deegree.cs.exceptions.UnknownCRSException;
+import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.GeometryInspectionException;
 import org.deegree.geometry.GeometryInspector;
 import org.deegree.geometry.points.Points;
 import org.deegree.geometry.primitive.patches.SurfacePatch;
 import org.deegree.geometry.primitive.segments.CurveSegment;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * {@link GeometryInspector} that rejects geometries with coordinates that don't match the CRS of the geometry.
@@ -57,25 +53,19 @@ import org.slf4j.LoggerFactory;
  */
 public class CoordinateValidityInspector implements GeometryInspector {
 
-    private static final Logger LOG = LoggerFactory.getLogger( CoordinateValidityInspector.class );
-
     @Override
     public Geometry inspect( Geometry geom )
                             throws GeometryInspectionException {
 
-        CRS crs = geom.getCoordinateSystem();
+        ICRS crs = geom.getCoordinateSystem();
         if ( crs != null ) {
-            try {
-                CoordinateSystem cs = crs.getWrappedCRS();
-                int csDim = cs.getDimension();
-                int coordDim = geom.getCoordinateDimension();
-                if ( csDim != coordDim ) {
-                    String msg = "Geometry is invalid. Dimensionality of coordinates (=" + coordDim
-                                 + ") does not match dimensionality of CRS '" + crs.getName() + "' (=" + csDim + ").";
-                    throw new GeometryInspectionException( msg );
-                }
-            } catch ( UnknownCRSException e ) {
-                LOG.warn( "Skipping the check of coordinate validity: crs '" + crs + "' is not known." );
+            ICRS cs = crs;
+            int csDim = cs.getDimension();
+            int coordDim = geom.getCoordinateDimension();
+            if ( csDim != coordDim ) {
+                String msg = "Geometry is invalid. Dimensionality of coordinates (=" + coordDim
+                             + ") does not match dimensionality of CRS '" + crs.getName() + "' (=" + csDim + ").";
+                throw new GeometryInspectionException( msg );
             }
         }
         return geom;

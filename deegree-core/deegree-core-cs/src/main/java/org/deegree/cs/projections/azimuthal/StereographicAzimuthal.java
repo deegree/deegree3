@@ -53,8 +53,9 @@ import javax.vecmath.Point2d;
 
 import org.deegree.cs.CRSCodeType;
 import org.deegree.cs.CRSIdentifiable;
-import org.deegree.cs.components.Unit;
-import org.deegree.cs.coordinatesystems.GeographicCRS;
+import org.deegree.cs.CRSResource;
+import org.deegree.cs.components.IUnit;
+import org.deegree.cs.coordinatesystems.IGeographicCRS;
 import org.deegree.cs.exceptions.ProjectionException;
 
 /**
@@ -113,7 +114,7 @@ public class StereographicAzimuthal extends AzimuthalProjection {
      *            an identifiable instance containing information about this projection
      */
     public StereographicAzimuthal( double trueScaleLatitude, double falseNorthing, double falseEasting,
-                                   Point2d naturalOrigin, Unit units, double scale, CRSIdentifiable id ) {
+                                   Point2d naturalOrigin, IUnit units, double scale, CRSResource id ) {
         super( falseNorthing, falseEasting, naturalOrigin, units, scale, true, false/* not equal area */, id );
         this.trueScaleLatitude = trueScaleLatitude;
     }
@@ -131,7 +132,7 @@ public class StereographicAzimuthal extends AzimuthalProjection {
      * @param scale
      */
     public StereographicAzimuthal( double trueScaleLatitude, double falseNorthing, double falseEasting,
-                                   Point2d naturalOrigin, Unit units, double scale ) {
+                                   Point2d naturalOrigin, IUnit units, double scale ) {
         this( trueScaleLatitude, falseNorthing, falseEasting, naturalOrigin, units, scale,
               new CRSIdentifiable( CRSCodeType.valueOf( "Snyder-StereoGraphic" ) ) );
     }
@@ -148,8 +149,8 @@ public class StereographicAzimuthal extends AzimuthalProjection {
      * @param id
      *            an identifiable instance containing information about this projection
      */
-    public StereographicAzimuthal( double falseNorthing, double falseEasting, Point2d naturalOrigin, Unit units,
-                                   double scale, CRSIdentifiable id ) {
+    public StereographicAzimuthal( double falseNorthing, double falseEasting, Point2d naturalOrigin, IUnit units,
+                                   double scale, CRSResource id ) {
         this( HALFPI, falseNorthing, falseEasting, naturalOrigin, units, scale, id );
     }
 
@@ -164,7 +165,7 @@ public class StereographicAzimuthal extends AzimuthalProjection {
      * @param units
      * @param scale
      */
-    public StereographicAzimuthal( double falseNorthing, double falseEasting, Point2d naturalOrigin, Unit units,
+    public StereographicAzimuthal( double falseNorthing, double falseEasting, Point2d naturalOrigin, IUnit units,
                                    double scale ) {
         this( HALFPI, falseNorthing, falseEasting, naturalOrigin, units, scale );
     }
@@ -183,7 +184,7 @@ public class StereographicAzimuthal extends AzimuthalProjection {
      *            an identifiable instance containing information about this projection
      */
     public StereographicAzimuthal( double trueScaleLatitude, double falseNorthing, double falseEasting,
-                                   Point2d naturalOrigin, Unit units, CRSIdentifiable id ) {
+                                   Point2d naturalOrigin, IUnit units, CRSIdentifiable id ) {
         this( trueScaleLatitude, falseNorthing, falseEasting, naturalOrigin, units, 1, id );
     }
 
@@ -200,7 +201,7 @@ public class StereographicAzimuthal extends AzimuthalProjection {
      * @param units
      */
     public StereographicAzimuthal( double trueScaleLatitude, double falseNorthing, double falseEasting,
-                                   Point2d naturalOrigin, Unit units ) {
+                                   Point2d naturalOrigin, IUnit units ) {
         this( trueScaleLatitude, falseNorthing, falseEasting, naturalOrigin, units, 1 );
     }
 
@@ -215,8 +216,8 @@ public class StereographicAzimuthal extends AzimuthalProjection {
      * @param id
      *            an identifiable instance containing information about this projection
      */
-    public StereographicAzimuthal( double falseNorthing, double falseEasting, Point2d naturalOrigin, Unit units,
-                                   CRSIdentifiable id ) {
+    public StereographicAzimuthal( double falseNorthing, double falseEasting, Point2d naturalOrigin, IUnit units,
+                                   CRSResource id ) {
         this( HALFPI, falseNorthing, falseEasting, naturalOrigin, units, 1, id );
     }
 
@@ -230,12 +231,12 @@ public class StereographicAzimuthal extends AzimuthalProjection {
      * @param naturalOrigin
      * @param units
      */
-    public StereographicAzimuthal( double falseNorthing, double falseEasting, Point2d naturalOrigin, Unit units ) {
+    public StereographicAzimuthal( double falseNorthing, double falseEasting, Point2d naturalOrigin, IUnit units ) {
         this( HALFPI, falseNorthing, falseEasting, naturalOrigin, units, 1 );
     }
 
     @Override
-    public synchronized Point2d doInverseProjection( GeographicCRS geographicCRS, double x, double y ) {
+    public synchronized Point2d doInverseProjection( IGeographicCRS geographicCRS, double x, double y ) {
         Map<PARAMS, Double> params = calculateParameters( geographicCRS );
         double akm1 = params.get( PARAMS.akm1 );
         double sinCL = params.get( PARAMS.sinCL );
@@ -334,7 +335,7 @@ public class StereographicAzimuthal extends AzimuthalProjection {
     }
 
     @Override
-    public synchronized Point2d doProjection( GeographicCRS geographicCRS, double lambda, double phi )
+    public synchronized Point2d doProjection( IGeographicCRS geographicCRS, double lambda, double phi )
                             throws ProjectionException {
         Map<PARAMS, Double> params = calculateParameters( geographicCRS );
         double akm1 = params.get( PARAMS.akm1 );
@@ -454,7 +455,7 @@ public class StereographicAzimuthal extends AzimuthalProjection {
         akm1, conformalLatitude, sinCL, cosCL
     }
 
-    private synchronized Map<PARAMS, Double> calculateParameters( GeographicCRS geographicCRS ) {
+    private synchronized Map<PARAMS, Double> calculateParameters( IGeographicCRS geographicCRS ) {
         Map<PARAMS, Double> params = new HashMap<StereographicAzimuthal.PARAMS, Double>();
         /**
          * This variable will hold different values, for the ellipsoidal projection:

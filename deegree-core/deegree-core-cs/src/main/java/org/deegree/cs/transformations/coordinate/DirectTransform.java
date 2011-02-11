@@ -43,7 +43,8 @@ import javax.vecmath.Point3d;
 import org.deegree.commons.annotations.LoggingNotes;
 import org.deegree.cs.CRSCodeType;
 import org.deegree.cs.CRSIdentifiable;
-import org.deegree.cs.coordinatesystems.CoordinateSystem;
+import org.deegree.cs.CRSResource;
+import org.deegree.cs.coordinatesystems.CRS;
 import org.deegree.cs.exceptions.TransformationException;
 import org.deegree.cs.transformations.Transformation;
 import org.deegree.cs.transformations.polynomial.PolynomialTransformation;
@@ -76,7 +77,7 @@ public class DirectTransform extends Transformation {
      * @param id
      *            an identifiable instance containing information about this transformation
      */
-    public DirectTransform( PolynomialTransformation transformation, CoordinateSystem sourceCRS, CRSIdentifiable id ) {
+    public DirectTransform( PolynomialTransformation transformation, CRS sourceCRS, CRSResource id ) {
         super( sourceCRS, transformation.getTargetCRS(), id );
         this.transformation = transformation;
     }
@@ -87,7 +88,7 @@ public class DirectTransform extends Transformation {
      * @param sourceCRS
      *            in which the points will be defined.
      */
-    public DirectTransform( PolynomialTransformation transformation, CoordinateSystem sourceCRS ) {
+    public DirectTransform( PolynomialTransformation transformation, CRS sourceCRS ) {
         this(
               transformation,
               sourceCRS,

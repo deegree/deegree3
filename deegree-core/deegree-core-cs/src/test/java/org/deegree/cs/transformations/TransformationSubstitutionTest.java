@@ -51,7 +51,7 @@ import org.deegree.cs.coordinatesystems.ProjectedCRS;
 import org.deegree.cs.coordinatesystems.VerticalCRS;
 import org.deegree.cs.exceptions.TransformationException;
 import org.deegree.cs.persistence.CRSManager;
-import org.deegree.cs.persistence.deegree.d3.Parser;
+import org.deegree.cs.persistence.deegree.d3.DeegreeReferenceResolver;
 import org.deegree.cs.transformations.TransformationFactory.DSTransform;
 import org.deegree.cs.transformations.coordinate.ConcatenatedTransform;
 import org.deegree.cs.transformations.coordinate.GeocentricTransform;
@@ -264,7 +264,7 @@ public class TransformationSubstitutionTest implements CRSDefines {
         Assert.assertEquals( projected_31467, created.getSourceCRS() );
         Assert.assertEquals( projected_25832, created.getTargetCRS() );
 
-        URL beta2007 = Parser.class.getResource( "config/ntv2/beta2007.gsb" );
+        URL beta2007 = DeegreeReferenceResolver.class.getResource( "config/ntv2/beta2007.gsb" );
         Transformation sub = new NTv2Transformation(
                                                      geographic_4314,
                                                      geographic_4258,

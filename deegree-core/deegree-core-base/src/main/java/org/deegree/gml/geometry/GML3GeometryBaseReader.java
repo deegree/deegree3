@@ -51,8 +51,8 @@ import org.deegree.commons.uom.Measure;
 import org.deegree.commons.xml.CommonNamespaces;
 import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;
-import org.deegree.cs.CRS;
-import org.deegree.cs.exceptions.UnknownCRSException;
+import org.deegree.cs.coordinatesystems.ICRS;
+import org.deegree.cs.persistence.CRSManager;
 import org.deegree.geometry.GeometryFactory;
 import org.deegree.geometry.primitive.Point;
 import org.deegree.gml.GMLVersion;
@@ -99,10 +99,10 @@ class GML3GeometryBaseReader {
         GML_Z = new QName( gmlNs, "Z" );
     }
 
-    protected Point parseDirectPositionType( XMLStreamReaderWrapper xmlStream, CRS defaultCRS )
+    protected Point parseDirectPositionType( XMLStreamReaderWrapper xmlStream, ICRS defaultCRS )
                             throws XMLParsingException, XMLStreamException {
 
-        CRS crs = determineActiveCRS( xmlStream, defaultCRS );
+        ICRS crs = determineActiveCRS( xmlStream, defaultCRS );
 
         String s = xmlStream.getElementText();
         // don't use String.split(regex) here (speed)
@@ -123,18 +123,12 @@ class GML3GeometryBaseReader {
         return geomFac.createPoint( null, doubles, crs );
     }
 
-    protected List<Point> parsePosList( XMLStreamReaderWrapper xmlStream, CRS crs )
+    protected List<Point> parsePosList( XMLStreamReaderWrapper xmlStream, ICRS crs )
                             throws XMLParsingException, XMLStreamException {
 
         int coordDim = determineCoordDimensions( xmlStream, -1 );
         if ( coordDim == -1 && crs != null ) {
-            try {
-                coordDim = crs.getWrappedCRS().getDimension();
-            } catch ( UnknownCRSException e ) {
-                if ( LOG.isDebugEnabled() ) {
-                    LOG.debug( "Trying to determine dimension of CRS: " + e.getLocalizedMessage(), e );
-                }
-            }
+            coordDim = crs.getDimension();
         }
         if ( coordDim == -1 ) {
             if ( LOG.isDebugEnabled() ) {
@@ -177,7 +171,7 @@ class GML3GeometryBaseReader {
         return points;
     }
 
-    protected List<Point> parseCoordinates( XMLStreamReaderWrapper xmlStream, CRS crs )
+    protected List<Point> parseCoordinates( XMLStreamReaderWrapper xmlStream, ICRS crs )
                             throws XMLParsingException, XMLStreamException {
 
         String decimalSeparator = xmlStream.getAttributeValueWDefault( "decimal", "." );
@@ -325,12 +319,12 @@ class GML3GeometryBaseReader {
      *            attribute
      * @return the applicable CRS, may be null
      */
-    protected CRS determineActiveCRS( XMLStreamReaderWrapper xmlStream, CRS defaultCRS ) {
-        CRS activeCRS = defaultCRS;
+    protected ICRS determineActiveCRS( XMLStreamReaderWrapper xmlStream, ICRS defaultCRS ) {
+        ICRS activeCRS = defaultCRS;
         String srsName = xmlStream.getAttributeValue( null, "srsName" );
         if ( !( srsName == null || srsName.length() == 0 ) ) {
             if ( defaultCRS == null || !srsName.equals( defaultCRS.getName() ) ) {
-                activeCRS = new CRS( srsName );
+                activeCRS = CRSManager.getCRSRef( srsName );
             }
         }
         return activeCRS;

@@ -129,7 +129,7 @@ public class GML2GeometryTest extends TestCase {
         Assert.assertEquals( 100.0, envelope.getMax().get0(), DELTA );
         Assert.assertEquals( 100.0, envelope.getMax().get1(), DELTA );
         Assert.assertEquals( CRSManager.lookup( "http://www.opengis.net/gml/srs/epsg.xml#4326" ),
-                             envelope.getCoordinateSystem().getWrappedCRS() );
+                             envelope.getCoordinateSystem() );
 
         XMLOutputFactory outputFactory = XMLOutputFactory.newInstance();
         outputFactory.setProperty( "javax.xml.stream.isRepairingNamespaces", new Boolean( true ) );
@@ -178,7 +178,7 @@ public class GML2GeometryTest extends TestCase {
         Assert.assertEquals( 5.0, point.get0(), DELTA );
         Assert.assertEquals( 40.0, point.get1(), DELTA );
         Assert.assertEquals( CRSManager.lookup( "http://www.opengis.net/gml/srs/epsg.xml#4326" ),
-                             point.getCoordinateSystem().getWrappedCRS() );
+                             point.getCoordinateSystem() );
 
         XMLOutputFactory outputFactory = XMLOutputFactory.newInstance();
         outputFactory.setProperty( "javax.xml.stream.isRepairingNamespaces", new Boolean( true ) );
@@ -277,7 +277,7 @@ public class GML2GeometryTest extends TestCase {
         comparePoint( 60.0, 60.0, points2.get( 4 ) );
 
         Assert.assertEquals( CRSManager.lookup( "http://www.opengis.net/gml/srs/epsg.xml#4326" ),
-                             polygon.getCoordinateSystem().getWrappedCRS() );
+                             polygon.getCoordinateSystem() );
 
         XMLOutputFactory outputFactory = XMLOutputFactory.newInstance();
         outputFactory.setProperty( "javax.xml.stream.isRepairingNamespaces", new Boolean( true ) );
@@ -325,7 +325,7 @@ public class GML2GeometryTest extends TestCase {
         comparePoint( 100.0, 100.0, controlPoints.get( 2 ) );
 
         Assert.assertEquals( CRSManager.lookup( "http://www.opengis.net/gml/srs/epsg.xml#4326" ),
-                             lineString.getCoordinateSystem().getWrappedCRS() );
+                             lineString.getCoordinateSystem() );
 
         XMLOutputFactory outputFactory = XMLOutputFactory.newInstance();
         outputFactory.setProperty( "javax.xml.stream.isRepairingNamespaces", new Boolean( true ) );
@@ -556,7 +556,7 @@ public class GML2GeometryTest extends TestCase {
         comparePoint( 0.0, 0.0, points.get( 4 ) );
 
         Assert.assertEquals( CRSManager.lookup( "http://www.opengis.net/gml/srs/epsg.xml#4326" ),
-                             multiPolygon.getCoordinateSystem().getWrappedCRS() );
+                             multiPolygon.getCoordinateSystem() );
 
         XMLOutputFactory outputFactory = XMLOutputFactory.newInstance();
         outputFactory.setProperty( "javax.xml.stream.isRepairingNamespaces", new Boolean( true ) );

@@ -40,7 +40,7 @@ package org.deegree.cs.persistence.deegree.d3.parsers;
 
 import static org.deegree.commons.xml.stax.StAXParsingHelper.getAttributeValue;
 import static org.deegree.commons.xml.stax.StAXParsingHelper.getElementTextAsDouble;
-import static org.deegree.cs.persistence.deegree.d3.Parser.CRS_NS;
+import static org.deegree.cs.persistence.deegree.d3.DeegreeCRSStore.CRS_NS;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.lang.reflect.Constructor;
@@ -62,12 +62,13 @@ import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.commons.xml.stax.StAXParsingHelper;
 import org.deegree.cs.CRSCodeType;
 import org.deegree.cs.CRSIdentifiable;
-import org.deegree.cs.coordinatesystems.CoordinateSystem;
+import org.deegree.cs.CRSResource;
+import org.deegree.cs.coordinatesystems.CRS;
 import org.deegree.cs.coordinatesystems.GeographicCRS;
+import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.exceptions.CRSConfigurationException;
 import org.deegree.cs.i18n.Messages;
-import org.deegree.cs.persistence.deegree.DeegreeCRSStore;
-import org.deegree.cs.persistence.deegree.d3.StAXResource;
+import org.deegree.cs.persistence.deegree.d3.DeegreeCRSStore;
 import org.deegree.cs.transformations.Transformation;
 import org.deegree.cs.transformations.TransformationFactory;
 import org.deegree.cs.transformations.TransformationFactory.DSTransform;
@@ -119,7 +120,7 @@ public class TransformationParser extends DefinitionParser {
      * @param confURL
      * @param datumShift
      */
-    public TransformationParser( DeegreeCRSStore<StAXResource> provider, URL confURL, DSTransform datumShift ) {
+    public TransformationParser( DeegreeCRSStore provider, URL confURL, DSTransform datumShift ) {
         super( provider, confURL );
         datumShiftOperation = datumShift;
     }
@@ -136,7 +137,7 @@ public class TransformationParser extends DefinitionParser {
             return null;
         }
         LOG.debug( "Searching for the wgs84 with id: " + infoID );
-        Helmert result = getProvider().getCachedIdentifiable( Helmert.class, infoID );
+        Helmert result = getStore().getCachedIdentifiable( Helmert.class, infoID );
         if ( result == null ) {
             try {
                 Transformation tmpRes = parseTransformation( getConfigReader() );
@@ -165,7 +166,7 @@ public class TransformationParser extends DefinitionParser {
             return null;
         }
         LOG.debug( "Searching for the transformation with id: " + transformId );
-        Transformation result = getProvider().getCachedIdentifiable( Transformation.class, transformId );
+        Transformation result = getStore().getCachedIdentifiable( Transformation.class, transformId );
         if ( result == null ) {
             try {
                 result = parseTransformation( getConfigReader() );
@@ -196,13 +197,13 @@ public class TransformationParser extends DefinitionParser {
         QName transformName = reader.getName();
         String className = getAttributeValue( reader, "class" );
 
-        CRSIdentifiable identifiable = parseIdentifiable( reader );
+        CRSResource identifiable = parseIdentifiable( reader );
 
         String sourceCRS = StAXParsingHelper.getRequiredText( reader, new QName( CRS_NS, "SourceCRS" ), true );
         String targetCRS = StAXParsingHelper.getRequiredText( reader, new QName( CRS_NS, "TargetCRS" ), true );
 
-        CoordinateSystem src = getProvider().getCRSByCode( new CRSCodeType( sourceCRS ) );
-        CoordinateSystem tar = getProvider().getCRSByCode( new CRSCodeType( targetCRS ) );
+        ICRS src = getStore().getCRSByCode( new CRSCodeType( sourceCRS ) );
+        ICRS tar = getStore().getCRSByCode( new CRSCodeType( targetCRS ) );
         if ( src == null ) {
             LOG.debug( reader.getLocation() + ") could not determine referenced source coordinate system." );
         }
@@ -231,7 +232,7 @@ public class TransformationParser extends DefinitionParser {
             }
         }
         if ( result != null ) {
-            getProvider().addIdToCache( result, false );
+            getStore().addIdToCache( result, false );
             Set<Transformation> avTransforms = this.availableTransformations.get( sourceCRS.toLowerCase() );
             if ( avTransforms == null ) {
                 avTransforms = new HashSet<Transformation>();
@@ -247,8 +248,8 @@ public class TransformationParser extends DefinitionParser {
      * @param underlyingCRS
      * @return
      */
-    private Transformation instantiateConfiguredClass( XMLStreamReader reader, String className, CRSIdentifiable id,
-                                                       CoordinateSystem sourceCRS, CoordinateSystem targetCRS ) {
+    private Transformation instantiateConfiguredClass( XMLStreamReader reader, String className, CRSResource id,
+                                                       ICRS sourceCRS, ICRS targetCRS ) {
         Transformation result = null;
         LOG.debug( "Trying to load user defined transformation class: " + className );
         try {
@@ -264,8 +265,8 @@ public class TransformationParser extends DefinitionParser {
             /**
              * Load the constructor with the standard projection values and the element list.
              */
-            Constructor<?> constructor = t.getConstructor( CRSIdentifiable.class, CoordinateSystem.class,
-                                                           CoordinateSystem.class, XMLStreamReader.class );
+            Constructor<?> constructor = t.getConstructor( CRSIdentifiable.class, ICRS.class,
+                                                           ICRS.class, XMLStreamReader.class );
             result = (Transformation) constructor.newInstance( id, sourceCRS, targetCRS, reader );
         } catch ( ClassNotFoundException e ) {
             LOG.error( e.getMessage(), e );
@@ -297,8 +298,8 @@ public class TransformationParser extends DefinitionParser {
      * @return
      * @throws XMLStreamException
      */
-    private Transformation parseLeastSquare( XMLStreamReader reader, CoordinateSystem sourceCRS,
-                                             CoordinateSystem targetCRS, CRSIdentifiable identifiable )
+    private Transformation parseLeastSquare( XMLStreamReader reader, ICRS sourceCRS,
+                                             ICRS targetCRS, CRSResource identifiable )
                             throws XMLStreamException {
         List<Double> aValues = new LinkedList<Double>();
         List<Double> bValues = new LinkedList<Double>();
@@ -355,8 +356,8 @@ public class TransformationParser extends DefinitionParser {
      * @return
      * @throws XMLStreamException
      */
-    private Transformation parseNTv2( XMLStreamReader reader, CoordinateSystem sourceCRS, CoordinateSystem targetCRS,
-                                      CRSIdentifiable identifiable )
+    private Transformation parseNTv2( XMLStreamReader reader, ICRS sourceCRS, ICRS targetCRS,
+                                      CRSResource identifiable )
                             throws XMLStreamException {
         URL gridFile = null;
         try {
@@ -378,8 +379,8 @@ public class TransformationParser extends DefinitionParser {
      * @return
      * @throws XMLStreamException
      */
-    private Transformation parseHelmert( XMLStreamReader reader, CoordinateSystem sourceCRS,
-                                         CoordinateSystem targetCRS, CRSIdentifiable identifiable )
+    private Transformation parseHelmert( XMLStreamReader reader, ICRS sourceCRS,
+                                         ICRS targetCRS, CRSResource identifiable )
                             throws XMLStreamException {
         double xT = 0, yT = 0, zT = 0, xR = 0, yR = 0, zR = 0, scale = 0;
         try {
@@ -407,9 +408,9 @@ public class TransformationParser extends DefinitionParser {
      * @param targetCRS
      * @return the (concatenated) configured transform between the source and the target crs. Calling this method is not
      *         the same as creating a new Transformation chain with the
-     *         {@link TransformationFactory#createFromCoordinateSystems(CoordinateSystem, CoordinateSystem)}
+     *         {@link TransformationFactory#createFromCoordinateSystems(CRS, ICRS)}
      */
-    public Transformation getTransformation( CoordinateSystem sourceCRS, CoordinateSystem targetCRS ) {
+    public Transformation getTransformation( ICRS sourceCRS, ICRS targetCRS ) {
         if ( !super.readEntireFile() ) {
             // first parse the entire configuration file until the end.
             getTransformationForId( "a" );

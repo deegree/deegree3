@@ -73,7 +73,7 @@ import org.deegree.coverage.raster.data.info.DataType;
 import org.deegree.coverage.raster.geom.Grid;
 import org.deegree.coverage.raster.interpolation.InterpolationType;
 import org.deegree.coverage.raster.utils.CoverageTransform;
-import org.deegree.cs.CRS;
+import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.exceptions.TransformationException;
 import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.feature.Feature;
@@ -146,13 +146,13 @@ public class RasterLayer extends Layer {
             return;
         }
 
-        CRS crs = raster == null ? multiraster.getCoordinateSystem() : raster.getCoordinateSystem();
+        ICRS crs = raster == null ? multiraster.getCoordinateSystem() : raster.getCoordinateSystem();
         try {
-            trans = new GeometryTransformer( crs.getWrappedCRS() );
+            trans = new GeometryTransformer( crs );
         } catch ( IllegalArgumentException e ) {
             LOG.warn( "CRS {} of raster data source is not known.", crs );
-        } catch ( UnknownCRSException e ) {
-            LOG.warn( "CRS {} of raster data source is not known.", crs );
+            // } catch ( UnknownCRSException e ) {
+            // LOG.warn( "CRS {} of raster data source is not known.", crs );
         }
 
         List<PropertyType> pts = new LinkedList<PropertyType>();

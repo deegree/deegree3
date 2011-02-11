@@ -38,7 +38,8 @@
 
 package org.deegree.cs.persistence.deegree.d3.parsers;
 
-import static org.deegree.cs.persistence.deegree.d3.Parser.CRS_NS;
+import static org.deegree.cs.persistence.deegree.d3.DeegreeCRSStore.CRS_NS;
+
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.net.URL;
@@ -49,12 +50,11 @@ import javax.xml.stream.XMLStreamReader;
 
 import org.deegree.commons.annotations.LoggingNotes;
 import org.deegree.commons.xml.XMLParsingException;
-import org.deegree.cs.CRSIdentifiable;
+import org.deegree.cs.CRSResource;
 import org.deegree.cs.components.PrimeMeridian;
 import org.deegree.cs.components.Unit;
 import org.deegree.cs.exceptions.CRSConfigurationException;
-import org.deegree.cs.persistence.deegree.DeegreeCRSStore;
-import org.deegree.cs.persistence.deegree.d3.StAXResource;
+import org.deegree.cs.persistence.deegree.d3.DeegreeCRSStore;
 import org.slf4j.Logger;
 
 /**
@@ -77,7 +77,7 @@ public class PrimemeridianParser extends DefinitionParser {
      * @param provider
      * @param primeMeridanFile
      */
-    public PrimemeridianParser( DeegreeCRSStore<StAXResource> provider, URL primeMeridanFile ) {
+    public PrimemeridianParser( DeegreeCRSStore provider, URL primeMeridanFile ) {
         super( provider, primeMeridanFile );
     }
 
@@ -93,7 +93,7 @@ public class PrimemeridianParser extends DefinitionParser {
         if ( meridianId == null || "".equals( meridianId.trim() ) ) {
             return null;
         }
-        PrimeMeridian result = getProvider().getCachedIdentifiable( PrimeMeridian.class, meridianId );
+        PrimeMeridian result = getStore().getCachedIdentifiable( PrimeMeridian.class, meridianId );
         if ( result == null ) {
             try {
                 result = parsePrimeMeridian( getConfigReader() );
@@ -121,7 +121,7 @@ public class PrimemeridianParser extends DefinitionParser {
             return null;
         }
 
-        CRSIdentifiable id = parseIdentifiable( reader );
+        CRSResource id = parseIdentifiable( reader );
         Unit units = parseUnit( reader, true );
         double longitude = 0;
         try {
@@ -129,7 +129,7 @@ public class PrimemeridianParser extends DefinitionParser {
         } catch ( XMLParsingException e ) {
             throw new CRSConfigurationException( e );
         }
-        return getProvider().addIdToCache( new PrimeMeridian( units, longitude, id ), false );
+        return getStore().addIdToCache( new PrimeMeridian( units, longitude, id ), false );
     }
 
     @Override

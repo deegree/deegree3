@@ -41,7 +41,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.deegree.commons.utils.Pair;
-import org.deegree.cs.CRS;
+import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.filter.comparison.ComparisonOperator;
 import org.deegree.filter.expression.PropertyName;
 import org.deegree.filter.logical.And;
@@ -239,7 +239,7 @@ public class Filters {
      * @param crs
      *            crs to set, must not be <code>null</code>
      */
-    public static void setDefaultCRS( Filter filter, CRS crs ) {
+    public static void setDefaultCRS( Filter filter, ICRS crs ) {
         for ( Geometry geom : getGeometries( filter ) ) {
             if ( geom.getCoordinateSystem() == null ) {
                 // TODO propagate to deeper levels / change behavior of setCoordinateSystem()

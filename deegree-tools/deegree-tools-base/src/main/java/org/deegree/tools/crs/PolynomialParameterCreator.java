@@ -48,7 +48,7 @@ import java.util.Map;
 
 import javax.vecmath.Point3d;
 
-import org.deegree.cs.coordinatesystems.CoordinateSystem;
+import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.cs.persistence.CRSManager;
 import org.deegree.cs.transformations.polynomial.LeastSquareApproximation;
@@ -92,8 +92,8 @@ public class PolynomialParameterCreator {
      * @throws IOException
      *             if the file could not be read.
      */
-    public PolynomialParameterCreator( File sourceFile, File targetFile, String seperator, CoordinateSystem source,
-                                       CoordinateSystem target, String transformationClass, final int order )
+    public PolynomialParameterCreator( File sourceFile, File targetFile, String seperator, ICRS source,
+                                       ICRS target, String transformationClass, final int order )
                             throws IOException {
 
         List<Point3d> from = readFromFile( sourceFile, source.getDimension(), seperator );
@@ -244,8 +244,8 @@ public class PolynomialParameterCreator {
         log.info( "Trying to convert coordinates from: " + sourceCRS + " to: " + targetCRS );
 
         try {
-            CoordinateSystem source = CRSManager.lookup( sourceCRS );
-            CoordinateSystem target = CRSManager.lookup( targetCRS );
+            ICRS source = CRSManager.lookup( sourceCRS );
+            ICRS target = CRSManager.lookup( targetCRS );
             new PolynomialParameterCreator( new File( sourceFile ), new File( targetFile ), coordSep, source, target,
                                             transformClass, order );
 

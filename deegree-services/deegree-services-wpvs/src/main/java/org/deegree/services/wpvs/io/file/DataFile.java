@@ -54,7 +54,7 @@ import java.util.TreeSet;
 import org.deegree.commons.index.PositionableModel;
 import org.deegree.commons.utils.Pair;
 import org.deegree.commons.utils.memory.AllocatedHeapMemory;
-import org.deegree.cs.CRS;
+import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryFactory;
 import org.deegree.services.wpvs.io.DataObjectInfo;
@@ -161,7 +161,7 @@ public class DataFile<T extends PositionableModel> {
      * @return all objects from the file, puts nothing in the cache.
      * @throws IOException
      */
-    Pair<Envelope, List<DataObjectInfo<T>>> readAllFromFile( long from, long to, Envelope datasetEnvelope, CRS baseCRS )
+    Pair<Envelope, List<DataObjectInfo<T>>> readAllFromFile( long from, long to, Envelope datasetEnvelope, ICRS baseCRS )
                             throws IOException {
         List<DataObjectInfo<T>> result = new ArrayList<DataObjectInfo<T>>();
         result.addAll( cache.values() );
@@ -204,7 +204,7 @@ public class DataFile<T extends PositionableModel> {
      * @param modelBBox
      * @return
      */
-    private Envelope mergeEnvelopes( Envelope datasetEnv, float[] modelBBox, CRS baseCRS ) {
+    private Envelope mergeEnvelopes( Envelope datasetEnv, float[] modelBBox, ICRS baseCRS ) {
         if ( modelBBox == null ) {
             return datasetEnv;
         }

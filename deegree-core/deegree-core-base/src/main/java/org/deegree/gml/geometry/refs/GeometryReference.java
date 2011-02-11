@@ -38,7 +38,7 @@ package org.deegree.gml.geometry.refs;
 
 import org.deegree.commons.uom.Measure;
 import org.deegree.commons.uom.Unit;
-import org.deegree.cs.CRS;
+import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.precision.PrecisionModel;
@@ -115,7 +115,7 @@ public class GeometryReference<T extends Geometry> extends GMLReference<T> imple
     }
 
     @Override
-    public CRS getCoordinateSystem() {
+    public ICRS getCoordinateSystem() {
         return getReferencedObject().getCoordinateSystem();
     }
 
@@ -195,7 +195,7 @@ public class GeometryReference<T extends Geometry> extends GMLReference<T> imple
     }
 
     @Override
-    public void setCoordinateSystem( CRS crs ) {
+    public void setCoordinateSystem( ICRS crs ) {
         getReferencedObject().setCoordinateSystem( crs );
     }
 

@@ -41,7 +41,7 @@ package org.deegree.cs.persistence.deegree.d3.parsers;
 import static org.deegree.commons.xml.stax.StAXParsingHelper.getElementTextAsDouble;
 import static org.deegree.commons.xml.stax.StAXParsingHelper.getRequiredElementTextAsDouble;
 import static org.deegree.commons.xml.stax.StAXParsingHelper.nextElement;
-import static org.deegree.cs.persistence.deegree.d3.Parser.CRS_NS;
+import static org.deegree.cs.persistence.deegree.d3.DeegreeCRSStore.CRS_NS;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.net.URL;
@@ -52,13 +52,12 @@ import javax.xml.stream.XMLStreamReader;
 
 import org.deegree.commons.annotations.LoggingNotes;
 import org.deegree.commons.xml.XMLParsingException;
-import org.deegree.cs.CRSIdentifiable;
+import org.deegree.cs.CRSResource;
 import org.deegree.cs.components.Ellipsoid;
 import org.deegree.cs.components.Unit;
 import org.deegree.cs.exceptions.CRSConfigurationException;
 import org.deegree.cs.i18n.Messages;
-import org.deegree.cs.persistence.deegree.DeegreeCRSStore;
-import org.deegree.cs.persistence.deegree.d3.StAXResource;
+import org.deegree.cs.persistence.deegree.d3.DeegreeCRSStore;
 import org.slf4j.Logger;
 
 /**
@@ -82,7 +81,7 @@ public class EllipsoidParser extends DefinitionParser {
      * @param provider
      * @param confURL
      */
-    public EllipsoidParser( DeegreeCRSStore<StAXResource> provider, URL confURL ) {
+    public EllipsoidParser( DeegreeCRSStore provider, URL confURL ) {
         super( provider, confURL );
     }
 
@@ -100,7 +99,7 @@ public class EllipsoidParser extends DefinitionParser {
         if ( ellipsoidID == null || "".equals( ellipsoidID.trim() ) ) {
             return null;
         }
-        Ellipsoid result = getProvider().getCachedIdentifiable( Ellipsoid.class, ellipsoidID );
+        Ellipsoid result = getStore().getCachedIdentifiable( Ellipsoid.class, ellipsoidID );
         if ( result == null ) {
             try {
                 result = parseEllipsoid( getConfigReader() );
@@ -127,7 +126,7 @@ public class EllipsoidParser extends DefinitionParser {
             return null;
         }
 
-        CRSIdentifiable id = parseIdentifiable( reader );
+        CRSResource id = parseIdentifiable( reader );
 
         Unit units = parseUnit( reader, true );
 
@@ -161,7 +160,7 @@ public class EllipsoidParser extends DefinitionParser {
             result = new Ellipsoid( units, semiMajor, semiMinorAxis, id.getCodes(), id.getNames(), id.getVersions(),
                                     id.getDescriptions(), id.getAreasOfUse() );
         }
-        result = getProvider().addIdToCache( result, false );
+        result = getStore().addIdToCache( result, false );
         nextElement( reader );// end ellipsoid
 
         return result;
@@ -171,4 +170,5 @@ public class EllipsoidParser extends DefinitionParser {
     protected QName expectedRootName() {
         return ROOT;
     }
+
 }

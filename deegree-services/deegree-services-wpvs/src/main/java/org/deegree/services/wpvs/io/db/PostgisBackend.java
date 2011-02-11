@@ -42,7 +42,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import org.deegree.commons.utils.JDBCUtils;
-import org.deegree.cs.CRS;
+import org.deegree.cs.coordinatesystems.ICRS;
+import org.deegree.cs.persistence.CRSManager;
 import org.deegree.geometry.Envelope;
 import org.postgis.Geometry;
 import org.postgis.LinearRing;
@@ -82,7 +83,7 @@ public class PostgisBackend extends DBBackend<PGgeometry> {
                                                          "Currently only org.postgis.Polygon is supported as PGGeometry." );
             }
             Polygon pgPolygon = (Polygon) geom;
-            CRS crs = new CRS( "EPSG:" + pgPolygon.getSrid() );
+            ICRS crs = CRSManager.getCRSRef( "EPSG:" + pgPolygon.getSrid() );
             org.postgis.LinearRing ring = pgPolygon.getRing( 0 );
             Point min = ring.getPoint( 0 );
             Point max = ring.getPoint( 2 );
@@ -147,7 +148,7 @@ public class PostgisBackend extends DBBackend<PGgeometry> {
 
     }
 
-    private int parseSRID( CRS crs ) {
+    private int parseSRID( ICRS crs ) {
         int result = 31466;
         if ( crs != null ) {
             int index = crs.getName().lastIndexOf( ":" );

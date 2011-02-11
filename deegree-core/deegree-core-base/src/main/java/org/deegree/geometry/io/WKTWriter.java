@@ -45,7 +45,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.deegree.commons.tom.ows.CodeType;
-import org.deegree.cs.CRS;
+import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.GeometryFactory;
@@ -442,7 +442,7 @@ public class WKTWriter {
 
     }
 
-    private void writePolygonPatch( String id, CRS crs, PrecisionModel pm, PolygonPatch polyPatch, Writer writer )
+    private void writePolygonPatch( String id, ICRS crs, PrecisionModel pm, PolygonPatch polyPatch, Writer writer )
                             throws IOException {
         PolygonPatchType type = polyPatch.getPolygonPatchType();
         Polygon poly = null;

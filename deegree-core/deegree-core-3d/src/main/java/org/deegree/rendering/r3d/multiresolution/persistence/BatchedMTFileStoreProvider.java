@@ -42,7 +42,8 @@ import java.util.Map;
 
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.jaxb.JAXBUtils;
-import org.deegree.cs.CRS;
+import org.deegree.cs.coordinatesystems.ICRS;
+import org.deegree.cs.persistence.CRSManager;
 import org.deegree.rendering.r3d.jaxb.batchedmt.BatchedMTFileStoreConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -80,7 +81,7 @@ public class BatchedMTFileStoreProvider implements BatchedMTStoreProvider {
             XMLAdapter resolver = new XMLAdapter();
             resolver.setSystemId( configURL.toString() );
 
-            CRS crs = new CRS( config.getCrs() );
+            ICRS crs = CRSManager.getCRSRef( config.getCrs() );
             URL dir = resolver.resolve( config.getDirectory() );
             int maxDirectMem = config.getMaxDirectMemory().intValue();
             bs = new BatchedMTFileStore( crs, dir, maxDirectMem );

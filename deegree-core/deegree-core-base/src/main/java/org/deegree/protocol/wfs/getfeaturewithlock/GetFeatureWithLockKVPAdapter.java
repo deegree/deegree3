@@ -55,7 +55,8 @@ import org.deegree.commons.xml.NamespaceBindings;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;
-import org.deegree.cs.CRS;
+import org.deegree.cs.coordinatesystems.ICRS;
+import org.deegree.cs.persistence.CRSManager;
 import org.deegree.filter.Filter;
 import org.deegree.filter.expression.PropertyName;
 import org.deegree.filter.sort.SortProperty;
@@ -145,9 +146,9 @@ public class GetFeatureWithLockKVPAdapter extends AbstractWFSRequestKVPAdapter {
 
         // optional: SRSNAME
         String srsName = kvpParams.get( "SRSNAME" );
-        CRS srs = null; // TODO should it be WGS:84, or EPSG:4326 ??
+        ICRS srs = null; // TODO should it be WGS:84, or EPSG:4326 ??
         if ( srsName != null ) {
-            srs = new CRS( srsName );
+            srs = CRSManager.getCRSRef( srsName );
         }
 
         // optional: MAXFEATURES
@@ -248,7 +249,7 @@ public class GetFeatureWithLockKVPAdapter extends AbstractWFSRequestKVPAdapter {
 
             String[] coordList = bboxStr.split( "," );
             if ( coordList.length % 2 == 1 ) {
-                srs = new CRS( coordList[coordList.length - 1] );
+                srs = CRSManager.getCRSRef( coordList[coordList.length - 1] );
             }
 
             Envelope bbox = createEnvelope( bboxStr, srs );
@@ -332,7 +333,7 @@ public class GetFeatureWithLockKVPAdapter extends AbstractWFSRequestKVPAdapter {
     }
 
     @SuppressWarnings("boxing")
-    private static Envelope createEnvelope( String bboxStr, CRS srs ) {
+    private static Envelope createEnvelope( String bboxStr, ICRS srs ) {
         String[] coordList = bboxStr.split( "," );
 
         int n = coordList.length / 2;

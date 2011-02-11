@@ -38,7 +38,7 @@ package org.deegree.filter.sql.expression;
 import java.util.Collections;
 import java.util.List;
 
-import org.deegree.cs.CRS;
+import org.deegree.cs.coordinatesystems.ICRS;
 
 /**
  * {@link SQLExpression} that represents a table column.
@@ -60,7 +60,7 @@ public class SQLColumn implements SQLExpression {
 
     private String srid;
 
-    private CRS crs;
+    private ICRS crs;
 
     public SQLColumn( String column ) {
         this.column = column;
@@ -72,7 +72,7 @@ public class SQLColumn implements SQLExpression {
         this.sqlType = sqlType;
     }
 
-    public SQLColumn( String table, String column, boolean spatial, int sqlType, CRS crs, String srid ) {
+    public SQLColumn( String table, String column, boolean spatial, int sqlType, ICRS crs, String srid ) {
         this.table = table;
         this.column = column;
         this.sqlType = sqlType;
@@ -82,7 +82,7 @@ public class SQLColumn implements SQLExpression {
     }
 
     @Override
-    public CRS getCRS() {
+    public ICRS getCRS() {
         return crs;
     }
 

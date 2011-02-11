@@ -41,7 +41,7 @@ import java.util.List;
 import javax.xml.namespace.QName;
 
 import org.deegree.commons.jdbc.QTableName;
-import org.deegree.cs.CRS;
+import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.feature.persistence.mapping.property.GeometryMapping;
 import org.deegree.feature.persistence.mapping.property.Mapping;
 import org.deegree.feature.types.FeatureType;
@@ -80,7 +80,7 @@ public class MappedXPath {
 
     private String srid;
 
-    private CRS crs;
+    private ICRS crs;
 
     /**
      * @param schema
@@ -305,7 +305,7 @@ public class MappedXPath {
         return valueField;
     }
 
-    public CRS getCRS() {
+    public ICRS getCRS() {
         return crs;
     }
 

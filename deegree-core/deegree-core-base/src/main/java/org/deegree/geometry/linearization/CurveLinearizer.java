@@ -50,7 +50,7 @@ import org.apache.commons.math.linear.LUDecompositionImpl;
 import org.apache.commons.math.linear.RealMatrix;
 import org.apache.commons.math.linear.RealVector;
 import org.apache.commons.math.linear.SingularMatrixException;
-import org.deegree.cs.CRS;
+import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.geometry.GeometryFactory;
 import org.deegree.geometry.points.Points;
 import org.deegree.geometry.precision.PrecisionModel;
@@ -345,7 +345,7 @@ public class CurveLinearizer {
 
         // populate a list of points, so that later a LineStringSegment can be built from it
         List<Point> iPoints = new ArrayList<Point>();
-        CRS crs = spline.getControlPoints().get( 0 ).getCoordinateSystem();
+        ICRS crs = spline.getControlPoints().get( 0 ).getCoordinateSystem();
         PrecisionModel pm = spline.getControlPoints().get( 0 ).getPrecision();
         for ( int i = 0; i < numPoints; i++ ) {
             iPoints.add( new DefaultPoint( null, crs, pm, new double[] { interpolated[2 * i], interpolated[2 * i + 1] } ) );
@@ -511,9 +511,9 @@ public class CurveLinearizer {
         double endAngle = isCircle ? startAngle : Math.atan2( ey, ex );
         double radius = Math.sqrt( dx * dx + dy * dy );
 
-        double angleStep = createAngleStep( startAngle, endAngle, numPoints, isClockwise( p0Shifted, p1Shifted,
-                                                                                          p2Shifted ) );
-        CRS crs = p0Shifted.getCoordinateSystem();
+        double angleStep = createAngleStep( startAngle, endAngle, numPoints,
+                                            isClockwise( p0Shifted, p1Shifted, p2Shifted ) );
+        ICRS crs = p0Shifted.getCoordinateSystem();
         // ensure numerical stability for start point (= use original circle start point)
         interpolationPoints.add( p0Shifted );
 
@@ -589,7 +589,7 @@ public class CurveLinearizer {
             return interpolate( p0, p1, p2, maxNumPoints, isCircle );
         }
 
-        CRS crs = p0Shifted.getCoordinateSystem();
+        ICRS crs = p0Shifted.getCoordinateSystem();
         List<Point> interpolationPoints = new ArrayList<Point>( numPoints );
         // ensure numerical stability for start point (= use original circle start point)
         interpolationPoints.add( p0Shifted );
@@ -695,8 +695,7 @@ public class CurveLinearizer {
         circle.x += minOrd0;
         circle.y += minOrd1;
 
-        return geomFac.createPoint( null, new double[] { circle.x, circle.y },
-                                    p0Shifted.getCoordinateSystem() );
+        return geomFac.createPoint( null, new double[] { circle.x, circle.y }, p0Shifted.getCoordinateSystem() );
     }
 
     /**

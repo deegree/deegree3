@@ -75,7 +75,7 @@ public class CoverageTransform {
                    new Object[] { env, grid, interpolation } );
         AbstractRaster result;
         try {
-            RasterTransformer transf = new RasterTransformer( env.getCoordinateSystem().getWrappedCRS() );
+            RasterTransformer transf = new RasterTransformer( env.getCoordinateSystem() );
             result = transf.transform( raster, env, grid.getWidth(), grid.getHeight(),
                                        InterpolationType.fromString( interpolation ) );
         } catch ( Exception e ) {

@@ -37,7 +37,7 @@ package org.deegree.geometry.standard.multi;
 
 import java.util.List;
 
-import org.deegree.cs.CRS;
+import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.geometry.multi.MultiSolid;
 import org.deegree.geometry.precision.PrecisionModel;
 import org.deegree.geometry.primitive.Solid;
@@ -63,7 +63,7 @@ public class DefaultMultiSolid extends DefaultMultiGeometry<Solid> implements Mu
      *            precision model, may be null
      * @param members
      */
-    public DefaultMultiSolid( String id, CRS crs, PrecisionModel pm, List<Solid> members ) {
+    public DefaultMultiSolid( String id, ICRS crs, PrecisionModel pm, List<Solid> members ) {
         super( id, crs, pm, members );
     }
 

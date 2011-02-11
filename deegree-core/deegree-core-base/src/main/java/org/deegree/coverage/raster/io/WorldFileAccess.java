@@ -48,7 +48,7 @@ import java.io.Reader;
 import org.deegree.commons.utils.FileUtils;
 import org.deegree.coverage.raster.geom.RasterGeoReference;
 import org.deegree.coverage.raster.geom.RasterGeoReference.OriginLocation;
-import org.deegree.cs.CRS;
+import org.deegree.cs.coordinatesystems.ICRS;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -177,7 +177,7 @@ public class WorldFileAccess {
         // ymax = ymax + resy / 2.0;
         // }
         OriginLocation location = OriginLocation.CENTER;
-        CRS crs = null;
+        ICRS crs = null;
         if ( options != null ) {
             location = options.getRasterOriginLocation();
             crs = options.getCRS();

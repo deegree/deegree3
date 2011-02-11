@@ -35,7 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.geometry.standard.primitive;
 
-import org.deegree.cs.CRS;
+import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.precision.PrecisionModel;
@@ -69,7 +69,7 @@ public class DefaultPoint extends AbstractDefaultGeometry implements Point {
      * @param coordinates
      *            coordinates of the point
      */
-    public DefaultPoint( String id, CRS crs, PrecisionModel pm, double[] coordinates ) {
+    public DefaultPoint( String id, ICRS crs, PrecisionModel pm, double[] coordinates ) {
         super( id, crs, pm );
         this.coordinates = coordinates;
     }

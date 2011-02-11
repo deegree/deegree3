@@ -48,10 +48,9 @@ import java.util.UUID;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
-import org.deegree.cs.CRS;
 import org.deegree.cs.CoordinateTransformer;
-import org.deegree.cs.components.Unit;
-import org.deegree.cs.coordinatesystems.CoordinateSystem;
+import org.deegree.cs.components.IUnit;
+import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.exceptions.TransformationException;
 import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.geometry.Envelope;
@@ -142,7 +141,7 @@ public class GML3GeometryWriter implements GMLGeometryWriter {
 
     private final Set<String> exportedIds;
 
-    private final CRS outputCRS;
+    private final ICRS outputCRS;
 
     private final CoordinateFormatter formatter;
 
@@ -189,7 +188,7 @@ public class GML3GeometryWriter implements GMLGeometryWriter {
      * @param exportedIds
      *            for the creation of xlinks, may be <code>null</code>
      */
-    public GML3GeometryWriter( GMLVersion version, XMLStreamWriter writer, CRS outputCrs,
+    public GML3GeometryWriter( GMLVersion version, XMLStreamWriter writer, ICRS outputCrs,
                                CoordinateFormatter formatter, boolean exportSf, Set<String> exportedIds ) {
         this.version = version;
         this.gmlNs = version.getNamespace();
@@ -197,10 +196,10 @@ public class GML3GeometryWriter implements GMLGeometryWriter {
         this.outputCRS = outputCrs;
         // TODO
         this.exportSf = false;
-        Unit crsUnits = null;
+        IUnit crsUnits = null;
         if ( outputCrs != null ) {
             try {
-                CoordinateSystem crs = outputCrs.getWrappedCRS();
+                ICRS crs = outputCrs;
                 crsUnits = crs.getAxis()[0].getUnits();
                 transformer = new CoordinateTransformer( crs );
                 transformedOrdinates = new double[crs.getDimension()];
@@ -1563,13 +1562,13 @@ public class GML3GeometryWriter implements GMLGeometryWriter {
         return UUID.randomUUID().toString();
     }
 
-    private double[] getTransformedCoordinate( CRS inputCRS, double[] inputCoordinate )
+    private double[] getTransformedCoordinate( ICRS inputCRS, double[] inputCoordinate )
                             throws TransformationException, UnknownCRSException {
         if ( inputCRS != null && outputCRS != null && !inputCRS.equals( outputCRS ) ) {
             if ( transformer == null ) {
                 throw new UnknownCRSException( outputCRS.getName() );
             }
-            double[] out = transformer.transform( inputCRS.getWrappedCRS(), inputCoordinate, transformedOrdinates );
+            double[] out = transformer.transform( inputCRS, inputCoordinate, transformedOrdinates );
             return out;
         }
         return inputCoordinate;
@@ -1577,7 +1576,7 @@ public class GML3GeometryWriter implements GMLGeometryWriter {
 
     private Envelope getTransformedEnvelope( Envelope env )
                             throws TransformationException, UnknownCRSException {
-        CRS inputCRS = env.getCoordinateSystem();
+        ICRS inputCRS = env.getCoordinateSystem();
         if ( inputCRS != null && outputCRS != null && !inputCRS.equals( outputCRS ) ) {
             if ( transformer == null ) {
                 throw new UnknownCRSException( outputCRS.getName() );

@@ -36,8 +36,8 @@
 
 package org.deegree.cs.configuration.resources;
 
-import org.deegree.cs.coordinatesystems.CoordinateSystem;
-import org.deegree.cs.coordinatesystems.GeographicCRS;
+import org.deegree.cs.coordinatesystems.ICRS;
+import org.deegree.cs.coordinatesystems.IGeographicCRS;
 import org.deegree.cs.transformations.Transformation;
 import org.deegree.cs.transformations.helmert.Helmert;
 
@@ -65,7 +65,7 @@ public interface CRSResource<T> extends XLinkResolver<T> {
      *            to retrieve the transformation for.
      * @return the {@link Helmert} transformation or <code>null</code> if no such transformation was defined.
      */
-    public abstract Helmert getWGS84Transformation( GeographicCRS sourceCRS );
+    public abstract Helmert getWGS84Transformation( IGeographicCRS sourceCRS );
 
     /**
      * Implementations should find a given transformation (chain) which transforms coordinates of the given coordinate
@@ -78,6 +78,6 @@ public interface CRSResource<T> extends XLinkResolver<T> {
      *            end point of the transformations
      * @return the {@link Transformation} or <code>null</code> if no such transformation was defined.
      */
-    public abstract Transformation getTransformation( CoordinateSystem sourceCRS, CoordinateSystem targetCRS );
+    public abstract Transformation getTransformation( ICRS sourceCRS, ICRS targetCRS );
 
 }

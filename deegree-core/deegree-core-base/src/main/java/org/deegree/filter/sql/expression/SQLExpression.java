@@ -38,7 +38,7 @@ package org.deegree.filter.sql.expression;
 import java.sql.Types;
 import java.util.List;
 
-import org.deegree.cs.CRS;
+import org.deegree.cs.coordinatesystems.ICRS;
 
 /**
  * Marks (a node of) an SQL expression with type information.
@@ -69,7 +69,7 @@ public interface SQLExpression {
      * 
      * @return the CRS, can be <code>null</code> (unknown or not a spatial expression)
      */
-    public CRS getCRS();
+    public ICRS getCRS();
 
     /**
      * Returns the databases' SRID of the expression (only for spatial ones).

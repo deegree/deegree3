@@ -35,7 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.geometry.standard.primitive;
 
-import org.deegree.cs.CRS;
+import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.geometry.points.Points;
 import org.deegree.geometry.precision.PrecisionModel;
 import org.deegree.geometry.primitive.LineString;
@@ -66,7 +66,7 @@ public class DefaultLinearRing extends DefaultRing implements LinearRing {
      *            precision model, may be null
      * @param controlPoints
      */
-    public DefaultLinearRing( String id, CRS crs, PrecisionModel pm, Points controlPoints ) {
+    public DefaultLinearRing( String id, ICRS crs, PrecisionModel pm, Points controlPoints ) {
         super( id, crs, pm, new DefaultLineStringSegment( controlPoints ) );
         this.controlPoints = controlPoints;
     }

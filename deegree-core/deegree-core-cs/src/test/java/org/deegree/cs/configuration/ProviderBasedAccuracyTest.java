@@ -29,7 +29,7 @@
  Prof. Dr. Klaus Greve
  Postfach 1147, 53001 Bonn
  Germany
- http://www.geographie.uni-bonn.de/deegree/
+ http://CoordinateSystem.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
@@ -52,11 +52,12 @@ import org.deegree.cs.CoordinateTransformer;
 import org.deegree.cs.components.Axis;
 import org.deegree.cs.components.Ellipsoid;
 import org.deegree.cs.components.GeodeticDatum;
+import org.deegree.cs.components.IAxis;
 import org.deegree.cs.components.Unit;
 import org.deegree.cs.coordinatesystems.CompoundCRS;
-import org.deegree.cs.coordinatesystems.CoordinateSystem;
 import org.deegree.cs.coordinatesystems.GeocentricCRS;
 import org.deegree.cs.coordinatesystems.GeographicCRS;
+import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.coordinatesystems.ProjectedCRS;
 import org.deegree.cs.exceptions.TransformationException;
 import org.deegree.cs.persistence.CRSManager;
@@ -154,7 +155,7 @@ public class ProviderBasedAccuracyTest {
      *            to which incoming coordinates will be transformed.
      * @return the transformer which is able to transform coordinates to the given crs..
      */
-    private CoordinateTransformer getGeotransformer( CoordinateSystem targetCrs ) {
+    private CoordinateTransformer getGeotransformer( ICRS targetCrs ) {
         assertNotNull( targetCrs );
         return new CoordinateTransformer( targetCrs );
     }
@@ -173,7 +174,7 @@ public class ProviderBasedAccuracyTest {
      * @return a String representation.
      */
     private String createEpsilonString( boolean failure, double sourceCoordinate, double targetCoordinate,
-                                        double allowedEpsilon, Axis axis ) {
+                                        double allowedEpsilon, IAxis axis ) {
         double epsilon = sourceCoordinate - targetCoordinate;
         StringBuilder sb = new StringBuilder( 400 );
         sb.append( axis.getName() ).append( " (result - orig = error [allowedError]): " );
@@ -206,7 +207,7 @@ public class ProviderBasedAccuracyTest {
      *             if one of the axis of the transformed point do not lie within the given epsilon range.
      */
     private String doAccuracyTest( Point3d sourcePoint, Point3d targetPoint, Point3d epsilons,
-                                   CoordinateSystem sourceCRS, CoordinateSystem targetCRS )
+                                   ICRS sourceCRS, ICRS targetCRS )
                             throws TransformationException {
         assertNotNull( sourceCRS );
         assertNotNull( targetCRS );
@@ -262,7 +263,7 @@ public class ProviderBasedAccuracyTest {
      * @param inverseEpsilon
      * @throws TransformationException
      */
-    private void doForwardAndInverse( CoordinateSystem sourceCRS, CoordinateSystem targetCRS, Point3d source,
+    private void doForwardAndInverse( ICRS sourceCRS, ICRS targetCRS, Point3d source,
                                       Point3d target, Point3d forwardEpsilon, Point3d inverseEpsilon )
                             throws TransformationException {
         StringBuilder output = new StringBuilder();
@@ -310,9 +311,9 @@ public class ProviderBasedAccuracyTest {
         return null;
     }
 
-    private CoordinateSystem getCRS( String id ) {
+    private ICRS getCRS( String id ) {
         CRSStore provider = getProvider();
-        CoordinateSystem crs = provider.getCRSByCode( new CRSCodeType( id ) );
+        ICRS crs = provider.getCRSByCode( new CRSCodeType( id ) );
         assertNotNull( crs );
         assertTrue( crs.hasId( id, false, true ) );
         return crs;
@@ -327,7 +328,7 @@ public class ProviderBasedAccuracyTest {
     @Test
     public void testCompoundToCompound()
                             throws TransformationException {
-        CoordinateSystem crs = getCRS( "epsg:28992" );
+        ICRS crs = getCRS( "epsg:28992" );
         assertTrue( crs instanceof ProjectedCRS );
         ProjectedCRS p_28992 = (ProjectedCRS) crs;
         // Source crs espg:28992
@@ -351,7 +352,7 @@ public class ProviderBasedAccuracyTest {
                                                                       new CRSCodeType[] { new CRSCodeType(
                                                                                                            "epsg:25832_compound" ) } ) );
 
-        // reference created with coord tool from http://www.rdnap.nl/ (NL/Amsterdam/dam)
+        // reference created with coord tool from http://CoordinateSystem.rdnap.nl/ (NL/Amsterdam/dam)
         Point3d sourcePoint = new Point3d( 121397.572, 487325.817, 6.029 );
         Point3d targetPoint = new Point3d( 220513.823, 5810438.891, 49 );
         doForwardAndInverse( sourceCRS, targetCRS, sourcePoint, targetPoint, epsilon, epsilon );
@@ -366,7 +367,7 @@ public class ProviderBasedAccuracyTest {
     @Test
     public void testCompoundToGeographic()
                             throws TransformationException {
-        CoordinateSystem crs = getCRS( "epsg:28992" );
+        ICRS crs = getCRS( "epsg:28992" );
         assertTrue( crs instanceof ProjectedCRS );
         ProjectedCRS p_28992 = (ProjectedCRS) crs;
         // Source crs espg:28992
@@ -383,7 +384,7 @@ public class ProviderBasedAccuracyTest {
         // Target crs espg:4258
         GeographicCRS targetCRS = (GeographicCRS) crs;
 
-        // reference created with coord tool from http://www.rdnap.nl/ denoting (NL/Groningen/lichtboei)
+        // reference created with coord tool from http://CoordinateSystem.rdnap.nl/ denoting (NL/Groningen/lichtboei)
         Point3d sourcePoint = new Point3d( 236694.856, 583952.500, 1.307 );
         Point3d targetPoint = new Point3d( 6.610765, 53.235916, 42 );
 
@@ -401,7 +402,7 @@ public class ProviderBasedAccuracyTest {
     public void testCompoundToGeocentric()
                             throws TransformationException {
 
-        CoordinateSystem crs = getCRS( "epsg:31467" );
+        ICRS crs = getCRS( "epsg:31467" );
         assertTrue( crs instanceof ProjectedCRS );
         ProjectedCRS p_31467 = (ProjectedCRS) crs;
         // source crs epsg:31467
@@ -443,7 +444,7 @@ public class ProviderBasedAccuracyTest {
                                                                                                            GeographicCRS.WGS84.getCode().getOriginal()
                                                                                                                                    + "_compound" ) } ) );
 
-        CoordinateSystem crs = getCRS( "epsg:31467" );
+        ICRS crs = getCRS( "epsg:31467" );
         assertTrue( crs instanceof ProjectedCRS );
         // Target EPSG:31467
         ProjectedCRS targetCRS = (ProjectedCRS) crs;
@@ -463,7 +464,7 @@ public class ProviderBasedAccuracyTest {
     @Test
     public void testProjectedToProjected()
                             throws TransformationException {
-        CoordinateSystem crs = getCRS( "epsg:28992" );
+        ICRS crs = getCRS( "epsg:28992" );
         assertTrue( crs instanceof ProjectedCRS );
         // Source crs espg:28992
         ProjectedCRS sourceCRS = (ProjectedCRS) crs;
@@ -473,7 +474,7 @@ public class ProviderBasedAccuracyTest {
         // Target crs espg:25832
         ProjectedCRS targetCRS = (ProjectedCRS) crs;
 
-        // reference created with coord tool from http://www.rdnap.nl/ (NL/hoensbroek)
+        // reference created with coord tool from http://CoordinateSystem.rdnap.nl/ (NL/hoensbroek)
         Point3d sourcePoint = new Point3d( 191968.31999475454, 326455.285005203, Double.NaN );
         Point3d targetPoint = new Point3d( 283065.845, 5646206.125, Double.NaN );
 
@@ -488,7 +489,7 @@ public class ProviderBasedAccuracyTest {
     @Test
     public void testProjectedToGeographic()
                             throws TransformationException {
-        CoordinateSystem crs = getCRS( "epsg:31467" );
+        ICRS crs = getCRS( "epsg:31467" );
         assertTrue( crs instanceof ProjectedCRS );
         // Source crs espg:31467
         ProjectedCRS sourceCRS = (ProjectedCRS) crs;
@@ -513,7 +514,7 @@ public class ProviderBasedAccuracyTest {
     @Test
     public void testProjectedToGeocentric()
                             throws TransformationException {
-        CoordinateSystem crs = getCRS( "epsg:28992" );
+        ICRS crs = getCRS( "epsg:28992" );
         assertTrue( crs instanceof ProjectedCRS );
         // Source crs espg:28992
         ProjectedCRS sourceCRS = (ProjectedCRS) crs;
@@ -536,7 +537,7 @@ public class ProviderBasedAccuracyTest {
     @Test
     public void testGeographicToGeographic()
                             throws TransformationException {
-        CoordinateSystem crs = getCRS( "epsg:4314" );
+        ICRS crs = getCRS( "epsg:4314" );
         assertTrue( crs instanceof GeographicCRS );
         // source crs epsg:4314
         GeographicCRS sourceCRS = (GeographicCRS) crs;
@@ -566,7 +567,7 @@ public class ProviderBasedAccuracyTest {
         TransformationFactory fac = CRSManager.getTransformationFactory( null );
         fac.setPreferredTransformation( DSTransform.NTv2 );
 
-        CoordinateSystem crs = getCRS( "epsg:4314" );
+        ICRS crs = getCRS( "epsg:4314" );
         assertTrue( crs instanceof GeographicCRS );
         // source crs epsg:4314
         GeographicCRS sourceCRS = (GeographicCRS) crs;
@@ -595,7 +596,7 @@ public class ProviderBasedAccuracyTest {
     @Test
     public void testGeographicToGeocentric()
                             throws TransformationException {
-        CoordinateSystem crs = getCRS( "epsg:4314" );
+        ICRS crs = getCRS( "epsg:4314" );
         assertTrue( crs instanceof GeographicCRS );
         // source crs epsg:4314
         GeographicCRS sourceCRS = (GeographicCRS) crs;

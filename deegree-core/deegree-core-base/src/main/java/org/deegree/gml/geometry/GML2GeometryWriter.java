@@ -44,10 +44,9 @@ import java.util.Set;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
-import org.deegree.cs.CRS;
 import org.deegree.cs.CoordinateTransformer;
-import org.deegree.cs.components.Unit;
-import org.deegree.cs.coordinatesystems.CoordinateSystem;
+import org.deegree.cs.components.IUnit;
+import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.exceptions.TransformationException;
 import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.geometry.Envelope;
@@ -107,7 +106,7 @@ public class GML2GeometryWriter implements GMLGeometryWriter {
 
     private GeometryTransformer geoTransformer;
 
-    private CRS outputCRS;
+    private ICRS outputCRS;
 
     /**
      * Creates a new {@link GML2GeometryWriter} instance.
@@ -133,7 +132,7 @@ public class GML2GeometryWriter implements GMLGeometryWriter {
      * @param exportedIds
      *            may be <code>null</code>
      */
-    public GML2GeometryWriter( XMLStreamWriter writer, CRS outputCrs, CoordinateFormatter formatter,
+    public GML2GeometryWriter( XMLStreamWriter writer, ICRS outputCrs, CoordinateFormatter formatter,
                                Set<String> exportedIds ) {
         this.writer = writer;
         this.outputCRS = outputCrs;
@@ -142,10 +141,10 @@ public class GML2GeometryWriter implements GMLGeometryWriter {
         } else {
             this.exportedIds = exportedIds;
         }
-        Unit crsUnits = null;
+        IUnit crsUnits = null;
         if ( outputCrs != null ) {
             try {
-                CoordinateSystem crs = outputCrs.getWrappedCRS();
+                ICRS crs = outputCrs;
                 crsUnits = crs.getAxis()[0].getUnits();
                 transformer = new CoordinateTransformer( crs );
                 transformedOrdinates = new double[crs.getDimension()];
@@ -628,13 +627,13 @@ public class GML2GeometryWriter implements GMLGeometryWriter {
                                                  "Cannot export TriangulatedSurface in GML2.1 as this geometry is not supported in this version of GML." );
     }
 
-    private double[] getTransformedCoordinate( CRS inputCRS, double[] inputCoordinate )
+    private double[] getTransformedCoordinate( ICRS inputCRS, double[] inputCoordinate )
                             throws TransformationException, UnknownCRSException {
         if ( inputCRS != null && outputCRS != null && !inputCRS.equals( outputCRS ) ) {
             if ( transformer == null ) {
                 throw new UnknownCRSException( outputCRS.getName() );
             }
-            double[] out = transformer.transform( inputCRS.getWrappedCRS(), inputCoordinate, transformedOrdinates );
+            double[] out = transformer.transform( inputCRS, inputCoordinate, transformedOrdinates );
             return out;
         }
         return inputCoordinate;
@@ -642,7 +641,7 @@ public class GML2GeometryWriter implements GMLGeometryWriter {
 
     private Envelope getTransformedEnvelope( Envelope env )
                             throws TransformationException, UnknownCRSException {
-        CRS inputCRS = env.getCoordinateSystem();
+        ICRS inputCRS = env.getCoordinateSystem();
         if ( inputCRS != null && outputCRS != null && !inputCRS.equals( outputCRS ) ) {
             if ( transformer == null ) {
                 throw new UnknownCRSException( outputCRS.getName() );
@@ -665,6 +664,7 @@ public class GML2GeometryWriter implements GMLGeometryWriter {
         if ( outputCRS != null ) {
             writer.writeAttribute( "srsName", outputCRS.getName() );
         } else if ( geometry.getCoordinateSystem() != null ) {
+            ICRS coordinateSystem = geometry.getCoordinateSystem();
             writer.writeAttribute( "srsName", geometry.getCoordinateSystem().getName() );
         }
     }

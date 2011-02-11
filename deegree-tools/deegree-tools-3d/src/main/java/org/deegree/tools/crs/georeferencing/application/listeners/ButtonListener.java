@@ -69,7 +69,7 @@ import javax.xml.stream.XMLStreamWriter;
 
 import org.deegree.commons.utils.Pair;
 import org.deegree.commons.utils.Triple;
-import org.deegree.cs.CRS;
+import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.exceptions.TransformationException;
 import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.feature.persistence.FeatureStoreException;
@@ -252,7 +252,7 @@ public class ButtonListener implements ActionListener {
 
                 } else if ( state.wmsParameter != null && state.wmsParameter.isVisible() == true ) {
 
-                    CRS crs = state.wmsParameter.getCheckBoxSRS();
+                    ICRS crs = state.wmsParameter.getCheckBoxSRS();
                     String layers = state.wmsParameter.getCheckBoxListAsString().toString();
                     List<String> layerList = state.wmsParameter.getCheckBoxListLayerText();
                     String format = state.wmsParameter.getCheckBoxFormatAsString().toString();
@@ -298,7 +298,7 @@ public class ButtonListener implements ActionListener {
                             root.addOrReplace( layer );
                             state.service.layers.put( "wms", layer );
                             root.setBbox( env );
-                            MapService.fillInheritedInformation( root, new LinkedList<CRS>( root.getSrs() ) );
+                            MapService.fillInheritedInformation( root, new LinkedList<ICRS>( root.getSrs() ) );
 
                             state.mapController = new MapController( state.service, env.getCoordinateSystem(),
                                                                      state.conModel.getPanel().getWidth(),
@@ -434,7 +434,7 @@ public class ButtonListener implements ActionListener {
                         if ( colorIndex == colors.length ) {
                             colorIndex = 0;
                         }
-                        MapService.fillInheritedInformation( root, new LinkedList<CRS>( root.getSrs() ) );
+                        MapService.fillInheritedInformation( root, new LinkedList<ICRS>( root.getSrs() ) );
 
                         state.mapController = new MapController( state.service, bbox.getCoordinateSystem(),
                                                                  state.conModel.getPanel().getWidth(),

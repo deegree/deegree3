@@ -52,9 +52,10 @@ import java.util.Map;
 import javax.vecmath.Point2d;
 
 import org.deegree.cs.CRSIdentifiable;
+import org.deegree.cs.CRSResource;
 import org.deegree.cs.EPSGCode;
-import org.deegree.cs.components.Unit;
-import org.deegree.cs.coordinatesystems.GeographicCRS;
+import org.deegree.cs.components.IUnit;
+import org.deegree.cs.coordinatesystems.IGeographicCRS;
 
 /**
  * The <code>LambertConformalConic</code> projection has following properties <q>(Snyder p. 104)</q>
@@ -89,7 +90,7 @@ import org.deegree.cs.coordinatesystems.GeographicCRS;
  * 
  */
 
-public class LambertConformalConic extends ConicProjection {
+public class LambertConformalConic extends ConicProjection implements ILambertConformalConic {
 
     /**
      * 
@@ -107,8 +108,7 @@ public class LambertConformalConic extends ConicProjection {
      *            an identifiable instance containing information about this projection
      */
     public LambertConformalConic( double firstParallelLatitude, double secondParallelLatitude, double falseNorthing,
-                                  double falseEasting, Point2d naturalOrigin, Unit units, double scale,
-                                  CRSIdentifiable id ) {
+                                  double falseEasting, Point2d naturalOrigin, IUnit units, double scale, CRSResource id ) {
         super( firstParallelLatitude, secondParallelLatitude, falseNorthing, falseEasting, naturalOrigin, units, scale,
                true/* conformal */, false /* not equalArea */, id );
     }
@@ -127,7 +127,7 @@ public class LambertConformalConic extends ConicProjection {
      * @param scale
      */
     public LambertConformalConic( double firstParallelLatitude, double secondParallelLatitude, double falseNorthing,
-                                  double falseEasting, Point2d naturalOrigin, Unit units, double scale ) {
+                                  double falseEasting, Point2d naturalOrigin, IUnit units, double scale ) {
         this( firstParallelLatitude, secondParallelLatitude, falseNorthing, falseEasting, naturalOrigin, units, scale,
               new CRSIdentifiable( new EPSGCode( 9802 ) ) );
     }
@@ -144,8 +144,8 @@ public class LambertConformalConic extends ConicProjection {
      * @param id
      *            an identifiable instance containing information about this projection
      */
-    public LambertConformalConic( double falseNorthing, double falseEasting, Point2d naturalOrigin, Unit units,
-                                  double scale, CRSIdentifiable id ) {
+    public LambertConformalConic( double falseNorthing, double falseEasting, Point2d naturalOrigin, IUnit units,
+                                  double scale, CRSResource id ) {
         this( Double.NaN, Double.NaN, falseNorthing, falseEasting, naturalOrigin, units, scale, id );
     }
 
@@ -159,7 +159,7 @@ public class LambertConformalConic extends ConicProjection {
      * @param units
      * @param scale
      */
-    public LambertConformalConic( double falseNorthing, double falseEasting, Point2d naturalOrigin, Unit units,
+    public LambertConformalConic( double falseNorthing, double falseEasting, Point2d naturalOrigin, IUnit units,
                                   double scale ) {
         this( Double.NaN, Double.NaN, falseNorthing, falseEasting, naturalOrigin, units, scale );
     }
@@ -181,7 +181,7 @@ public class LambertConformalConic extends ConicProjection {
      *            an identifiable instance containing information about this projection
      */
     public LambertConformalConic( double firstParallelLatitude, double secondParallelLatitude, double falseNorthing,
-                                  double falseEasting, Point2d naturalOrigin, Unit units, CRSIdentifiable id ) {
+                                  double falseEasting, Point2d naturalOrigin, IUnit units, CRSResource id ) {
         this( firstParallelLatitude, secondParallelLatitude, falseNorthing, falseEasting, naturalOrigin, units, 1., id );
     }
 
@@ -200,7 +200,7 @@ public class LambertConformalConic extends ConicProjection {
      * @param units
      */
     public LambertConformalConic( double firstParallelLatitude, double secondParallelLatitude, double falseNorthing,
-                                  double falseEasting, Point2d naturalOrigin, Unit units ) {
+                                  double falseEasting, Point2d naturalOrigin, IUnit units ) {
         this( firstParallelLatitude, secondParallelLatitude, falseNorthing, falseEasting, naturalOrigin, units, 1. );
     }
 
@@ -216,8 +216,8 @@ public class LambertConformalConic extends ConicProjection {
      * @param id
      *            an identifiable instance containing information about this projection
      */
-    public LambertConformalConic( double falseNorthing, double falseEasting, Point2d naturalOrigin, Unit units,
-                                  CRSIdentifiable id ) {
+    public LambertConformalConic( double falseNorthing, double falseEasting, Point2d naturalOrigin, IUnit units,
+                                  CRSResource id ) {
         this( Double.NaN, Double.NaN, falseNorthing, falseEasting, naturalOrigin, units, 1, id );
     }
 
@@ -231,7 +231,7 @@ public class LambertConformalConic extends ConicProjection {
      * @param naturalOrigin
      * @param units
      */
-    public LambertConformalConic( double falseNorthing, double falseEasting, Point2d naturalOrigin, Unit units ) {
+    public LambertConformalConic( double falseNorthing, double falseEasting, Point2d naturalOrigin, IUnit units ) {
         this( Double.NaN, Double.NaN, falseNorthing, falseEasting, naturalOrigin, units, 1 );
     }
 
@@ -240,7 +240,7 @@ public class LambertConformalConic extends ConicProjection {
      * @see org.deegree.cs.projections.Projection#doInverseProjection(double, double)
      */
     @Override
-    public synchronized Point2d doInverseProjection( GeographicCRS geographicCRS, double x, double y ) {
+    public synchronized Point2d doInverseProjection( IGeographicCRS geographicCRS, double x, double y ) {
         Map<PARAMS, Double> params = calulateParameters( geographicCRS );
         double n = params.get( PARAMS.n );
         double rho0 = params.get( PARAMS.rho0 );
@@ -291,7 +291,7 @@ public class LambertConformalConic extends ConicProjection {
      * @see org.deegree.cs.projections.Projection#doProjection(double, double)
      */
     @Override
-    public synchronized Point2d doProjection( GeographicCRS geographicCRS, double lambda, double phi ) {
+    public synchronized Point2d doProjection( IGeographicCRS geographicCRS, double lambda, double phi ) {
         Map<PARAMS, Double> params = calulateParameters( geographicCRS );
         double n = params.get( PARAMS.n );
         double rho0 = params.get( PARAMS.rho0 );
@@ -324,7 +324,7 @@ public class LambertConformalConic extends ConicProjection {
         n, rho0, largeF
     }
 
-    private synchronized Map<PARAMS, Double> calulateParameters( GeographicCRS geographicCRS ) {
+    private synchronized Map<PARAMS, Double> calulateParameters( IGeographicCRS geographicCRS ) {
         Map<PARAMS, Double> params = new HashMap<LambertConformalConic.PARAMS, Double>();
         /**
          * Will contain snyder's variable 'n' from formula (15-3) for the spherical projection or (15-8) for the

@@ -50,7 +50,8 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.deegree.cs.CRS;
+import org.deegree.cs.coordinatesystems.CRS;
+import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.exceptions.TransformationException;
 import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.geometry.Envelope;
@@ -127,18 +128,17 @@ public class GeometryUtils {
                     Ring exterior = ( (PolygonPatch) patch ).getExteriorRing();
                     LinearRing movedExteriorRing = null;
                     if ( exterior != null ) {
-                        movedExteriorRing = fac.createLinearRing( exterior.getId(), exterior.getCoordinateSystem(),
+                        movedExteriorRing = fac.createLinearRing( exterior.getId(),
+                                                                  exterior.getCoordinateSystem(),
                                                                   move( exterior.getAsLineString().getControlPoints(),
                                                                         offx, offy ) );
                     }
                     List<Ring> interiorRings = ( (PolygonPatch) patch ).getInteriorRings();
                     List<Ring> movedInteriorRings = new ArrayList<Ring>( interiorRings.size() );
                     for ( Ring interior : interiorRings ) {
-                        movedInteriorRings.add( fac.createLinearRing(
-                                                                      interior.getId(),
+                        movedInteriorRings.add( fac.createLinearRing( interior.getId(),
                                                                       interior.getCoordinateSystem(),
-                                                                      move(
-                                                                            interior.getAsLineString().getControlPoints(),
+                                                                      move( interior.getAsLineString().getControlPoints(),
                                                                             offx, offy ) ) );
                     }
                     movedPatches.add( fac.createPolygonPatch( movedExteriorRing, movedInteriorRings ) );
@@ -271,13 +271,13 @@ public class GeometryUtils {
      * @throws TransformationException
      *             if the transformation between the source and target crs cannot be created.
      */
-    public static Envelope createConvertedEnvelope( Envelope sourceEnvelope, CRS targetCRS )
+    public static Envelope createConvertedEnvelope( Envelope sourceEnvelope, ICRS targetCRS )
                             throws TransformationException {
         Envelope result = sourceEnvelope;
         if ( sourceEnvelope != null && sourceEnvelope.getCoordinateSystem() != null
              && !sourceEnvelope.getCoordinateSystem().equals( targetCRS ) ) {
             try {
-                result = new GeometryTransformer( targetCRS.getWrappedCRS() ).transform( sourceEnvelope );
+                result = new GeometryTransformer( targetCRS ).transform( sourceEnvelope );
             } catch ( IllegalArgumentException e ) {
                 throw new TransformationException( "Could not transform to given envelope because: "
                                                    + e.getLocalizedMessage(), e );

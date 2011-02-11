@@ -38,7 +38,6 @@ package org.deegree.feature.persistence;
 
 import javax.xml.namespace.QName;
 
-import org.deegree.cs.CRS;
 import org.deegree.feature.Feature;
 import org.deegree.feature.persistence.lock.LockManager;
 import org.deegree.feature.persistence.query.FeatureResultSet;

@@ -38,8 +38,8 @@ package org.deegree.cs.persistence;
 import java.util.List;
 
 import org.deegree.cs.CRSCodeType;
-import org.deegree.cs.CRSIdentifiable;
-import org.deegree.cs.coordinatesystems.CoordinateSystem;
+import org.deegree.cs.CRSResource;
+import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.exceptions.CRSConfigurationException;
 import org.deegree.cs.transformations.Transformation;
 import org.deegree.cs.transformations.TransformationFactory.DSTransform;
@@ -60,9 +60,9 @@ public interface CRSStore {
     public void init();
 
     /**
-     * This method is should retrieve a transformation (chain) which transforms coordinates from the given source into
-     * the given target crs. If no such transformation could be found or the implementation does not support inverse
-     * lookup of transformations <code>null<code> should be returned.
+     * This method is should retrieve a transformation which transforms coordinates from the given source into the given
+     * target crs. If no such transformation could be found or the implementation does not support inverse lookup of
+     * transformations <code>null<code> should be returned.
      * 
      * @param sourceCRS
      *            start of the transformation (chain)
@@ -75,23 +75,39 @@ public interface CRSStore {
      *             exception should not be thrown no Transformation was found, in this case <code>null</code> should be
      *             returned.
      */
-    public Transformation getTransformation( CoordinateSystem sourceCRS, CoordinateSystem targetCRS )
+    public Transformation getDirectTransformation( ICRS sourceCRS, ICRS targetCRS )
+                            throws CRSConfigurationException;
+
+    /**
+     * This method should retrieve a transformation with the given id. If a transformation with the given id could not
+     * be found <code>null<code> should be returned.
+     * 
+     * @param id
+     *            the id of the transformation
+     * 
+     * @return the {@link Transformation} Object or <code>null</code> if no such Object was found.
+     * @throws CRSConfigurationException
+     *             if the implementation was confronted by an exception and could not deliver the requested Object. This
+     *             exception should not be thrown no Transformation was found, in this case <code>null</code> should be
+     *             returned.
+     */
+    public Transformation getDirectTransformation( String id )
                             throws CRSConfigurationException;
 
     /**
      * This method is more general than the {@link #getCRSByCode(CRSCodeType)}, because it represents a possibility to
-     * return an arbitrary {@link CRSIdentifiable} Object from the providers backend.
+     * return an arbitrary {@link CRSResource} Object from the providers backend.
      * 
      * 
      * @param id
      *            string representation of the resource to retrieve
-     * @return the {@link CRSIdentifiable} Object or <code>null</code> if no such Object was found.
+     * @return the {@link CRSResource} Object or <code>null</code> if no such Object was found.
      * @throws CRSConfigurationException
      *             if the implementation was confronted by an exception and could not deliver the requested Object. This
      *             exception should not be thrown if the given id wasn't found, in this case <code>null</code> should be
      *             returned.
      */
-    public CRSIdentifiable getIdentifiable( CRSCodeType id )
+    public CRSResource getCRSResource( CRSCodeType id )
                             throws CRSConfigurationException;
 
     /**
@@ -103,7 +119,7 @@ public interface CRSStore {
      *             exception should not be thrown if the given id wasn't found, in this case <code>null</code> should be
      *             returned.
      */
-    public CoordinateSystem getCRSByCode( CRSCodeType id )
+    public ICRS getCRSByCode( CRSCodeType id )
                             throws CRSConfigurationException;
 
     /**
@@ -118,7 +134,7 @@ public interface CRSStore {
      *             exception should not be thrown if the given id wasn't found, in this case <code>null</code> should be
      *             returned.
      */
-    public CoordinateSystem getCRSByCode( CRSCodeType id, boolean forceXY )
+    public ICRS getCRSByCode( CRSCodeType id, boolean forceXY )
                             throws CRSConfigurationException;
 
     /**
@@ -131,7 +147,7 @@ public interface CRSStore {
      *             exception should not be thrown if no CoordinateSystems were found, in the latter case an empty List (
      *             a list with size == 0 ) should be returned.
      */
-    public List<CoordinateSystem> getAvailableCRSs()
+    public List<ICRS> getAvailableCRSs()
                             throws CRSConfigurationException;
 
     /**

@@ -38,7 +38,7 @@ package org.deegree.geometry.standard.points;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
-import org.deegree.cs.CRS;
+import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.points.Points;
 import org.deegree.geometry.primitive.Point;
@@ -60,11 +60,11 @@ import com.vividsolutions.jts.geom.Envelope;
  */
 public class JTSPoints implements Points {
 
-    private final CRS crs;
+    private final ICRS crs;
 
     private final CoordinateSequence seq;
 
-    public JTSPoints( CRS crs, CoordinateSequence seq ) {
+    public JTSPoints( ICRS crs, CoordinateSequence seq ) {
         this.crs = crs;
         this.seq = seq;
     }

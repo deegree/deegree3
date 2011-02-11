@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,7 +32,7 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 
 package org.deegree.services.wpvs.controller.getview;
 
@@ -59,7 +59,9 @@ import org.deegree.commons.utils.kvp.InvalidParameterValueException;
 import org.deegree.commons.utils.kvp.KVPUtils;
 import org.deegree.commons.utils.kvp.MissingParameterException;
 import org.deegree.commons.utils.time.DateUtils;
-import org.deegree.cs.CRS;
+import org.deegree.cs.coordinatesystems.ICRS;
+import org.deegree.cs.exceptions.UnknownCRSException;
+import org.deegree.cs.persistence.CRSManager;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryFactory;
 import org.deegree.rendering.r3d.ViewFrustum;
@@ -68,10 +70,10 @@ import org.deegree.services.controller.ows.OWSException;
 
 /**
  * The <code>GetViewKVPAdapter</code> class provides a GetView request chopper.
- *
+ * 
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
  * @author last edited by: $Author$
- *
+ * 
  * @version $Revision$, $Date$
  */
 public class GetViewKVPAdapter {
@@ -84,7 +86,7 @@ public class GetViewKVPAdapter {
 
     /**
      * Factory method to create an instance of GetView from teh parameters in <code>model</code>
-     *
+     * 
      * @param requestParams
      *            a map containing request parameters and values
      * @param encoding
@@ -104,7 +106,7 @@ public class GetViewKVPAdapter {
         try {
             String version = KVPUtils.getRequired( requestParams, "VERSION" );
 
-            CRS coordinateSystem = new CRS( KVPUtils.getRequired( requestParams, "CRS" ) );
+            ICRS coordinateSystem = CRSManager.lookup( KVPUtils.getRequired( requestParams, "CRS" ) );
 
             Envelope requestedBBox = getBoundingBox( requestParams, coordinateSystem, encoding, translationVector );
             ViewParams viewParams = getViewParams( requestParams, translationVector, configuredNearClippingPlane,
@@ -118,11 +120,13 @@ public class GetViewKVPAdapter {
             throw new OWSException( e.getMessage(), OWSException.INVALID_PARAMETER_VALUE );
         } catch ( MissingParameterException e ) {
             throw new OWSException( e.getMessage(), OWSException.MISSING_PARAMETER_VALUE );
+        } catch ( UnknownCRSException e ) {
+            throw new OWSException( e.getMessage(), OWSException.INVALID_CRS );
         }
     }
 
-    private static Envelope getBoundingBox( Map<String, String> requestParams, CRS coordinateSystem, String encoding,
-                                            double[] translationVector )
+    private static Envelope getBoundingBox( Map<String, String> requestParams, ICRS coordinateSystem,
+                                            String encoding, double[] translationVector )
                             throws OWSException {
         String boxstring = getRequired( requestParams, "BOUNDINGBOX" );
         try {

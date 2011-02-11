@@ -39,7 +39,7 @@ package org.deegree.geometry;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.deegree.cs.CRS;
+import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.geometry.multi.MultiCurve;
 import org.deegree.geometry.multi.MultiGeometry;
 import org.deegree.geometry.multi.MultiLineString;
@@ -106,14 +106,14 @@ public class SimpleGeometryFactory {
         }
         return inspected;
     }
-    
+
     protected Points inspect( Points points ) {
         Points inspected = points;
         for ( GeometryInspector inspector : inspectors ) {
             inspected = inspector.inspect( inspected );
         }
         return inspected;
-    }    
+    }
 
     /**
      * Creates a {@link Point} in 2D space.
@@ -128,7 +128,7 @@ public class SimpleGeometryFactory {
      *            coordinate reference system, may be null
      * @return created {@link Point}
      */
-    public Point createPoint( String id, double x, double y, CRS crs ) {
+    public Point createPoint( String id, double x, double y, ICRS crs ) {
         return (Point) inspect( new DefaultPoint( id, crs, pm, new double[] { x, y } ) );
     }
 
@@ -147,7 +147,7 @@ public class SimpleGeometryFactory {
      *            coordinate reference system, may be null
      * @return created {@link Point}
      */
-    public Point createPoint( String id, double x, double y, double z, CRS crs ) {
+    public Point createPoint( String id, double x, double y, double z, ICRS crs ) {
         return (Point) inspect( new DefaultPoint( id, crs, pm, new double[] { x, y, z } ) );
     }
 
@@ -162,7 +162,7 @@ public class SimpleGeometryFactory {
      *            coordinate reference system, may be null
      * @return created {@link Point}
      */
-    public Point createPoint( String id, double[] coordinates, CRS crs ) {
+    public Point createPoint( String id, double[] coordinates, ICRS crs ) {
         return (Point) inspect( new DefaultPoint( id, crs, pm, coordinates ) );
     }
 
@@ -173,8 +173,8 @@ public class SimpleGeometryFactory {
      *            list of points, must not be <code>null</code>
      * @return created {@link Points}
      */
-    public Points createPoints (List<Point> points) {
-        return inspect (new PointsList( points ));
+    public Points createPoints( List<Point> points ) {
+        return inspect( new PointsList( points ) );
     }
 
     /**
@@ -190,7 +190,7 @@ public class SimpleGeometryFactory {
      *            list of rings that define the inner boundaries, may be empty or null
      * @return created {@link Polygon}
      */
-    public Polygon createPolygon( String id, CRS crs, Ring exteriorRing, List<Ring> interiorRings ) {
+    public Polygon createPolygon( String id, ICRS crs, Ring exteriorRing, List<Ring> interiorRings ) {
         return (Polygon) inspect( new DefaultPolygon( id, crs, pm, exteriorRing, interiorRings ) );
     }
 
@@ -205,7 +205,7 @@ public class SimpleGeometryFactory {
      *            control points
      * @return created {@link LineString}
      */
-    public LineString createLineString( String id, CRS crs, Points points ) {
+    public LineString createLineString( String id, ICRS crs, Points points ) {
         return (LineString) inspect( new DefaultLineString( id, crs, pm, points ) );
     }
 
@@ -220,7 +220,7 @@ public class SimpleGeometryFactory {
      *            coordinate reference system, may be null
      * @return created {@link Envelope}
      */
-    public Envelope createEnvelope( double[] min, double[] max, CRS crs ) {
+    public Envelope createEnvelope( double[] min, double[] max, ICRS crs ) {
         return (Envelope) inspect( new DefaultEnvelope( null, crs, pm, new DefaultPoint( null, crs, pm, min ),
                                                         new DefaultPoint( null, crs, pm, max ) ) );
     }
@@ -240,7 +240,7 @@ public class SimpleGeometryFactory {
      *            coordinate reference system, may be null
      * @return created {@link Envelope}
      */
-    public Envelope createEnvelope( double minx, double miny, double maxx, double maxy, CRS crs ) {
+    public Envelope createEnvelope( double minx, double miny, double maxx, double maxy, ICRS crs ) {
         return createEnvelope( new double[] { minx, miny }, new double[] { maxx, maxy }, crs );
     }
 
@@ -253,7 +253,7 @@ public class SimpleGeometryFactory {
      *            coordinate reference system, may be null
      * @return the envelope
      */
-    public Envelope createEnvelope( List<Double> lowerCorner, List<Double> upperCorner, CRS crs ) {
+    public Envelope createEnvelope( List<Double> lowerCorner, List<Double> upperCorner, ICRS crs ) {
         if ( lowerCorner.size() != upperCorner.size() ) {
             throw new IllegalArgumentException( "LowerCorner must be of same dimension as upperCorner." );
         }
@@ -277,7 +277,7 @@ public class SimpleGeometryFactory {
      * @return created {@link MultiGeometry}
      */
     @SuppressWarnings("unchecked")
-    public MultiGeometry<Geometry> createMultiGeometry( String id, CRS crs, List<Geometry> members ) {
+    public MultiGeometry<Geometry> createMultiGeometry( String id, ICRS crs, List<Geometry> members ) {
         return (MultiGeometry<Geometry>) inspect( new DefaultMultiGeometry<Geometry>( id, crs, pm, members ) );
     }
 
@@ -292,7 +292,7 @@ public class SimpleGeometryFactory {
      *            points that constitute the collection
      * @return created {@link MultiPoint}
      */
-    public MultiPoint createMultiPoint( String id, CRS crs, List<Point> members ) {
+    public MultiPoint createMultiPoint( String id, ICRS crs, List<Point> members ) {
         return (MultiPoint) inspect( new DefaultMultiPoint( id, crs, pm, members ) );
     }
 
@@ -307,7 +307,7 @@ public class SimpleGeometryFactory {
      *            curves that constitute the collection
      * @return created {@link MultiLineString}
      */
-    public MultiLineString createMultiLineString( String id, CRS crs, List<LineString> members ) {
+    public MultiLineString createMultiLineString( String id, ICRS crs, List<LineString> members ) {
         return (MultiLineString) inspect( new DefaultMultiLineString( id, crs, pm, members ) );
     }
 
@@ -322,7 +322,7 @@ public class SimpleGeometryFactory {
      *            polygons that constitute the collection
      * @return created {@link MultiPolygon}
      */
-    public MultiPolygon createMultiPolygon( String id, CRS crs, List<Polygon> members ) {
+    public MultiPolygon createMultiPolygon( String id, ICRS crs, List<Polygon> members ) {
         return (MultiPolygon) inspect( new DefaultMultiPolygon( id, crs, pm, members ) );
     }
 }

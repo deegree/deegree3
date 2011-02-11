@@ -55,7 +55,7 @@ import org.deegree.coverage.rangeset.RangeSet;
 import org.deegree.coverage.rangeset.SingleValue;
 import org.deegree.coverage.rangeset.ValueType;
 import org.deegree.coverage.raster.interpolation.InterpolationType;
-import org.deegree.cs.coordinatesystems.CoordinateSystem;
+import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.exceptions.TransformationException;
 import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.cs.persistence.CRSManager;
@@ -359,7 +359,7 @@ public class CoverageDescription100XMLAdapter extends XMLAdapter {
     private static void exportLonLatEnvelope( XMLStreamWriter writer, Envelope envelope )
                             throws XMLStreamException {
         try {
-            CoordinateSystem wgs84 = CRSManager.lookup( "EPSG:4326" );
+            ICRS wgs84 = CRSManager.lookup( "EPSG:4326" );
             GeometryTransformer transformer = new GeometryTransformer( wgs84 );
             Envelope lonLatEnv = (Envelope) transformer.transform( envelope );
 

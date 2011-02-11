@@ -49,7 +49,7 @@ import org.deegree.coverage.raster.data.info.RasterDataInfo;
 import org.deegree.coverage.raster.geom.RasterGeoReference;
 import org.deegree.coverage.raster.geom.RasterGeoReference.OriginLocation;
 import org.deegree.coverage.raster.utils.RasterFactory;
-import org.deegree.cs.CRS;
+import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.primitive.Curve;
@@ -114,13 +114,13 @@ public class TiledRaster extends AbstractRaster {
     }
 
     @Override
-    public void setCoordinateSystem( CRS crs ) {
+    public void setCoordinateSystem( ICRS crs ) {
         super.setCoordinateSystem( crs ); // unknown if needed
         tileContainer.getEnvelope().setCoordinateSystem( crs );
     }
 
     @Override
-    public CRS getCoordinateSystem() {
+    public ICRS getCoordinateSystem() {
         return tileContainer.getEnvelope().getCoordinateSystem();
     }
 

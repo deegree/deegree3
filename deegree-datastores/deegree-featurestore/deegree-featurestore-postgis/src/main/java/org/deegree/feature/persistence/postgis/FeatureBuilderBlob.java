@@ -38,7 +38,7 @@ package org.deegree.feature.persistence.postgis;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import org.deegree.cs.CRS;
+import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.feature.Feature;
 import org.deegree.feature.persistence.BlobCodec;
 import org.deegree.feature.persistence.FeatureStoreGMLIdResolver;
@@ -62,7 +62,7 @@ class FeatureBuilderBlob implements FeatureBuilder {
 
     private final BlobCodec codec;
 
-    private final CRS crs;
+    private final ICRS crs;
 
     FeatureBuilderBlob( PostGISFeatureStore fs, BlobMapping blobMapping ) {
         this.fs = fs;

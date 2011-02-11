@@ -60,7 +60,8 @@ import javax.xml.namespace.QName;
 import org.deegree.commons.utils.ComparablePair;
 import org.deegree.commons.utils.Pair;
 import org.deegree.commons.utils.kvp.KVPUtils;
-import org.deegree.cs.CRS;
+import org.deegree.cs.exceptions.UnknownCRSException;
+import org.deegree.cs.persistence.CRSManager;
 import org.deegree.feature.FeatureCollection;
 import org.deegree.feature.GenericFeature;
 import org.deegree.feature.GenericFeatureCollection;
@@ -160,13 +161,15 @@ public class StatisticsLayer extends FeatureLayer {
         GenericFeatureCollection col = new GenericFeatureCollection();
         for ( ComparablePair<Long, String> req : FrontControllerStats.getKVPRequests() ) {
             if ( req.second.toUpperCase().indexOf( "REQUEST=GETMAP" ) != -1 ) {
+                String srs = null;
                 try {
                     Map<String, String> map = KVPUtils.getNormalizedKVPMap( req.second, "UTF-8" );
                     if ( map.get( "LAYERS" ).equals( "statistics" ) ) {
                         continue;
                     }
                     double[] vals = splitAsDoubles( map.get( "BBOX" ), "," );
-                    Envelope box = fac.createEnvelope( vals[0], vals[1], vals[2], vals[3], new CRS( map.get( "SRS" ) ) );
+                    srs = map.get( "SRS" );
+                    Envelope box = fac.createEnvelope( vals[0], vals[1], vals[2], vals[3], CRSManager.lookup( srs ) );
                     if ( !box.intersects( fi.getClickBox() ) ) {
                         continue;
                     }
@@ -188,6 +191,8 @@ public class StatisticsLayer extends FeatureLayer {
 
                 } catch ( UnsupportedEncodingException e ) {
                     LOG.trace( "Stack trace:", e );
+                } catch ( UnknownCRSException e ) {
+                    LOG.warn( "Unknown CRS: " + srs, e );
                 }
             }
         }
@@ -216,13 +221,15 @@ public class StatisticsLayer extends FeatureLayer {
 
         for ( ComparablePair<Long, String> req : FrontControllerStats.getKVPRequests() ) {
             if ( req.second.toUpperCase().indexOf( "REQUEST=GETMAP" ) != -1 ) {
+                String srs = null;
                 try {
                     Map<String, String> map = KVPUtils.getNormalizedKVPMap( req.second, "UTF-8" );
                     if ( map.get( "LAYERS" ).equals( "statistics" ) ) {
                         continue;
                     }
                     double[] vals = splitAsDoubles( map.get( "BBOX" ), "," );
-                    Envelope box = fac.createEnvelope( vals[0], vals[1], vals[2], vals[3], new CRS( map.get( "SRS" ) ) );
+                    srs = map.get( "SRS" );
+                    Envelope box = fac.createEnvelope( vals[0], vals[1], vals[2], vals[3], CRSManager.lookup( srs ) );
                     if ( !box.intersects( gm.getBoundingBox() ) ) {
                         continue;
                     }
@@ -243,6 +250,8 @@ public class StatisticsLayer extends FeatureLayer {
                     render( f, evaluator, style, renderer, null, gm.getScale(), gm.getResolution() );
                 } catch ( UnsupportedEncodingException e ) {
                     LOG.trace( "Stack trace:", e );
+                } catch ( UnknownCRSException e ) {
+                    LOG.warn( "Unknown CRS: " + srs, e );
                 }
             }
         }

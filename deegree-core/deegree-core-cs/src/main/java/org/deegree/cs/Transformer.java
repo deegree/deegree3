@@ -40,7 +40,7 @@ import static org.slf4j.LoggerFactory.getLogger;
 import java.util.List;
 
 import org.deegree.commons.annotations.LoggingNotes;
-import org.deegree.cs.coordinatesystems.CoordinateSystem;
+import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.exceptions.TransformationException;
 import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.cs.i18n.Messages;
@@ -64,9 +64,9 @@ public abstract class Transformer {
 
     private static final Logger LOG = getLogger( Transformer.class );
 
-    private final CoordinateSystem targetCRS;
+    private final ICRS targetCRS;
 
-    private final CRS tCRS;
+    // private final ICoordinateSystemReference tCRS;
 
     private Transformation definedTransformation = null;
 
@@ -76,15 +76,15 @@ public abstract class Transformer {
      * @param targetCRS
      *            to transform incoming coordinates to.
      * @throws IllegalArgumentException
-     *             if the given CoordinateSystem is <code>null</code>
+     *             if the given ICoordinateSystem is <code>null</code>
      */
-    protected Transformer( final CoordinateSystem targetCRS ) throws IllegalArgumentException {
+    protected Transformer( final ICRS targetCRS ) throws IllegalArgumentException {
         if ( targetCRS == null ) {
             throw new IllegalArgumentException( Messages.getMessage( "CRS_PARAMETER_NOT_NULL",
                                                                      "Transformer(CoordinateSystem)", "targetCRS" ) );
         }
         this.targetCRS = targetCRS;
-        this.tCRS = new CRS( targetCRS );
+        // this.tCRS = new ICoordinateSystemReference( targetCRS );
     }
 
     /**
@@ -103,28 +103,29 @@ public abstract class Transformer {
                                                                      "targetCRS" ) );
         }
         this.targetCRS = CRSManager.lookup( targetCRS );
-        this.tCRS = new CRS( targetCRS );
+        // this.tCRS = new ICoordinateSystemReference( targetCRS );
     }
 
-    /**
-     * Creates a new Transformer object, with the given target CRS.
-     * 
-     * @param targetCRS
-     *            to transform incoming coordinates to.
-     * @throws IllegalArgumentException
-     *             if the given CoordinateSystem is <code>null</code>
-     * @throws UnknownCRSException
-     *             if the wrapped crs was null
-     */
-    protected Transformer( final CRS targetCRS ) throws IllegalArgumentException, UnknownCRSException {
-        if ( targetCRS == null ) {
-            throw new IllegalArgumentException( Messages.getMessage( "CRS_PARAMETER_NOT_NULL",
-                                                                     "Transformer(CoordinateSystem)", "targetCRS" ) );
-        }
-
-        this.targetCRS = targetCRS.getWrappedCRS();
-        this.tCRS = targetCRS;
-    }
+    // /**
+    // * Creates a new Transformer object, with the given target CRS.
+    // *
+    // * @param targetCRS
+    // * to transform incoming coordinates to.
+    // * @throws IllegalArgumentException
+    // * if the given ICoordinateSystem is <code>null</code>
+    // * @throws UnknownCRSException
+    // * if the wrapped crs was null
+    // */
+    // protected Transformer( final AbstractCoordinateSystem targetCRS ) throws IllegalArgumentException,
+    // UnknownCRSException {
+    // if ( targetCRS == null ) {
+    // throw new IllegalArgumentException( Messages.getMessage( "CRS_PARAMETER_NOT_NULL",
+    // "Transformer(CoordinateSystem)", "targetCRS" ) );
+    // }
+    // this.targetCRS = targetCRS;
+    // // this.targetCRS = targetCRS.getWrappedCRS();
+    // // this.tCRS = targetCRS;
+    // }
 
     /**
      * @param definedTransformation
@@ -139,7 +140,7 @@ public abstract class Transformer {
                                                                      "definedTransformation" ) );
         }
         targetCRS = definedTransformation.getTargetCRS();
-        this.tCRS = new CRS( targetCRS );
+        // this.tCRS = new ICoordinateSystemReference( targetCRS );
         this.definedTransformation = definedTransformation;
     }
 
@@ -153,10 +154,10 @@ public abstract class Transformer {
      * @throws TransformationException
      *             if no transformation chain could be created.
      * @throws IllegalArgumentException
-     *             if the given CoordinateSystem is <code>null</code>
+     *             if the given ICoordinateSystem is <code>null</code>
      * 
      */
-    protected Transformation createCRSTransformation( CoordinateSystem sourceCRS )
+    protected Transformation createCRSTransformation( ICRS sourceCRS )
                             throws TransformationException, IllegalArgumentException {
         return createCRSTransformation( sourceCRS, null );
     }
@@ -176,15 +177,15 @@ public abstract class Transformer {
      * @throws TransformationException
      *             if no transformation chain could be created.
      * @throws IllegalArgumentException
-     *             if the given CoordinateSystem is <code>null</code>
+     *             if the given ICoordinateSystem is <code>null</code>
      * 
      */
-    protected Transformation createCRSTransformation( CoordinateSystem sourceCRS,
+    protected Transformation createCRSTransformation( ICRS sourceCRS,
                                                       List<Transformation> toBeUsedTransformations )
                             throws TransformationException {
         if ( sourceCRS == null ) {
             throw new IllegalArgumentException( Messages.getMessage( "CRS_PARAMETER_NOT_NULL",
-                                                                     "createCRSTransformation( CoordinateSystem )",
+                                                                     "createCRSTransformation( ICoordinateSystem )",
                                                                      "sourceCRS" ) );
         }
         return checkOrCreateTransformation( sourceCRS, toBeUsedTransformations );
@@ -200,7 +201,7 @@ public abstract class Transformer {
      * @throws TransformationException
      *             if no transformation chain could be created.
      * @throws IllegalArgumentException
-     *             if the given CoordinateSystem is <code>null</code>
+     *             if the given ICoordinateSystem is <code>null</code>
      * @throws UnknownCRSException
      *             if the given crs name could not be mapped to a valid (configured) crs.
      * 
@@ -209,7 +210,7 @@ public abstract class Transformer {
                             throws TransformationException, IllegalArgumentException, UnknownCRSException {
         if ( sourceCRS == null ) {
             throw new IllegalArgumentException( Messages.getMessage( "CRS_PARAMETER_NOT_NULL",
-                                                                     "createCRSTransformation( CoordinateSystem )",
+                                                                     "createCRSTransformation( ICoordinateSystem )",
                                                                      "sourceCRS" ) );
         }
         return CRSManager.getTransformation( null, CRSManager.lookup( sourceCRS ), targetCRS );
@@ -218,15 +219,8 @@ public abstract class Transformer {
     /**
      * @return the targetCRS
      */
-    public final CoordinateSystem getTargetCRS() {
+    public final ICRS getTargetCRS() {
         return targetCRS;
-    }
-
-    /**
-     * @return the target crs as a wrapped {@link CRS}
-     */
-    public final CRS getWrappedTargetCRS() {
-        return this.tCRS;
     }
 
     /**
@@ -239,12 +233,11 @@ public abstract class Transformer {
      * @return the transformation needed to convert from given source to the constructed target crs.
      * @throws TransformationException
      */
-    private synchronized Transformation checkOrCreateTransformation( CoordinateSystem sourceCRS,
+    private synchronized Transformation checkOrCreateTransformation( ICRS sourceCRS,
                                                                      List<Transformation> toBeUsedTransformations )
                             throws TransformationException {
         if ( definedTransformation == null
-             || !( definedTransformation.getSourceCRS().equals( sourceCRS ) && definedTransformation.getTargetCRS().equals(
-                                                                                                                            targetCRS ) ) ) {
+             || !( definedTransformation.getSourceCRS().equals( sourceCRS ) && definedTransformation.getTargetCRS().equals( targetCRS ) ) ) {
             definedTransformation = CRSManager.getTransformation( null, sourceCRS, targetCRS, toBeUsedTransformations );
             if ( LOG.isDebugEnabled() ) {
                 if ( definedTransformation == null ) {

@@ -48,15 +48,15 @@ import java.io.IOException;
 
 import junit.framework.Assert;
 
-import org.deegree.cs.components.Datum;
-import org.deegree.cs.components.Ellipsoid;
 import org.deegree.cs.components.GeodeticDatum;
-import org.deegree.cs.components.PrimeMeridian;
+import org.deegree.cs.components.IDatum;
+import org.deegree.cs.components.IEllipsoid;
+import org.deegree.cs.components.IPrimeMeridian;
 import org.deegree.cs.components.Unit;
-import org.deegree.cs.coordinatesystems.CoordinateSystem;
-import org.deegree.cs.coordinatesystems.GeographicCRS;
+import org.deegree.cs.coordinatesystems.CRS;
+import org.deegree.cs.coordinatesystems.IGeographicCRS;
 import org.deegree.cs.coordinatesystems.ProjectedCRS;
-import org.deegree.cs.projections.Projection;
+import org.deegree.cs.projections.IProjection;
 import org.deegree.cs.projections.conic.LambertConformalConic;
 import org.deegree.cs.utilities.ProjectionUtils;
 import org.junit.Test;
@@ -117,7 +117,7 @@ public class WKTParserTest {
                             throws IOException {
         String s = buildPROJCS( projCRSName, projCRSCode, "Meter", 1.0 );
 
-        CoordinateSystem cs = WKTParser.parse( s );
+        CRS cs = WKTParser.parse( s );
         Assert.assertTrue( cs instanceof ProjectedCRS );
         ProjectedCRS projCRS = (ProjectedCRS) cs;
         Assert.assertEquals( projCRSName, projCRS.getName() );
@@ -127,7 +127,7 @@ public class WKTParserTest {
         Assert.assertEquals( "y", projCRS.getAxis()[1].getName() );
         Assert.assertEquals( "north", projCRS.getAxis()[1].getOrientationAsString() );
 
-        GeographicCRS geographicCRS = projCRS.getGeographicCRS();
+        IGeographicCRS geographicCRS = projCRS.getGeographicCRS();
         Assert.assertEquals( geogCRSName, geographicCRS.getName() );
         Assert.assertEquals( geogCRSName + ":" + geogCRSCode, geographicCRS.getCode().getOriginal() );
         Assert.assertEquals( "Longitude", geographicCRS.getAxis()[0].getName() );
@@ -135,20 +135,20 @@ public class WKTParserTest {
         Assert.assertEquals( "Latitude", geographicCRS.getAxis()[1].getName() );
         Assert.assertEquals( "north", geographicCRS.getAxis()[1].getOrientationAsString() );
 
-        Datum datum = geographicCRS.getDatum();
+        IDatum datum = geographicCRS.getDatum();
         Assert.assertEquals( datumName, datum.getName() );
-        Ellipsoid ellipsoid = ( (GeodeticDatum) datum ).getEllipsoid();
+        IEllipsoid ellipsoid = ( (GeodeticDatum) datum ).getEllipsoid();
         Assert.assertEquals( ellipsoidName, ellipsoid.getName() );
         Assert.assertEquals( ellipsoidName + ":" + ellipsoidCode, ellipsoid.getCode().getOriginal() );
         Assert.assertEquals( semiMajorAxis, ellipsoid.getSemiMajorAxis() );
         Assert.assertEquals( inverseFlattening, ellipsoid.getInverseFlattening() );
 
-        PrimeMeridian pm = ( (GeodeticDatum) datum ).getPrimeMeridian();
+        IPrimeMeridian pm = ( (GeodeticDatum) datum ).getPrimeMeridian();
         Assert.assertEquals( pmName, pm.getName() );
         Assert.assertEquals( pmName + ":" + pmCode, pm.getCode().getOriginal() );
         Assert.assertEquals( Unit.DEGREE, pm.getAngularUnit() );
         Assert.assertEquals( pmLongitude, pm.getLongitude() );
-        Projection proj = projCRS.getProjection();
+        IProjection proj = projCRS.getProjection();
         Assert.assertTrue( proj instanceof LambertConformalConic );
 
         LambertConformalConic lcc = (LambertConformalConic) proj;

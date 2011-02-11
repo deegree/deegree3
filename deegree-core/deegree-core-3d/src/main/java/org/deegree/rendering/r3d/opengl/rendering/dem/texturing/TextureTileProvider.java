@@ -36,7 +36,7 @@
 
 package org.deegree.rendering.r3d.opengl.rendering.dem.texturing;
 
-import org.deegree.cs.CRS;
+import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.geometry.Envelope;
 import org.deegree.rendering.r3d.opengl.rendering.dem.RenderMeshFragment;
 
@@ -81,5 +81,5 @@ public interface TextureTileProvider {
     /**
      * @return the crs of the texture tile provider
      */
-    public CRS getCRS();
+    public ICRS getCRS();
 }

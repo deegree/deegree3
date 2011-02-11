@@ -45,10 +45,10 @@ import static org.slf4j.LoggerFactory.getLogger;
 import java.io.IOException;
 
 import org.deegree.commons.utils.MapUtils;
-import org.deegree.cs.CRS;
 import org.deegree.cs.configuration.wkt.WKTParser;
-import org.deegree.cs.coordinatesystems.CoordinateSystem;
+import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.exceptions.TransformationException;
+import org.deegree.cs.persistence.CRSManager;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryTransformer;
 import org.slf4j.Logger;
@@ -71,7 +71,7 @@ public class Utils {
      * @param lat0
      * @return the corresponding auto generated crs
      */
-    public static CRS getAutoCRS( int id, double lon0, double lat0 ) {
+    public static ICRS getAutoCRS( int id, double lon0, double lat0 ) {
         switch ( id ) {
         case 42001: {
             double zone = min( floor( ( lon0 + 180.0 ) / 6.0 ) + 1, 60 );
@@ -95,7 +95,7 @@ public class Utils {
             LOG.debug( "Generated wkt: {}", wkt );
 
             try {
-                return new CRS( WKTParser.parse( wkt ) );
+                return CRSManager.getCRSRef( WKTParser.parse( wkt ) );
             } catch ( IOException e ) {
                 LOG.debug( "Unknown error", e );
             }
@@ -122,7 +122,7 @@ public class Utils {
             LOG.debug( "Generated wkt: {}", wkt );
 
             try {
-                return new CRS( WKTParser.parse( wkt ) );
+                return CRSManager.getCRSRef( WKTParser.parse( wkt ) );
             } catch ( IOException e ) {
                 LOG.debug( "Unknown error", e );
             }
@@ -146,7 +146,7 @@ public class Utils {
             LOG.debug( "Generated wkt: {}", wkt );
 
             try {
-                return new CRS( WKTParser.parse( wkt ) );
+                return CRSManager.getCRSRef( WKTParser.parse( wkt ) );
             } catch ( IOException e ) {
                 LOG.debug( "Unknown error", e );
             }
@@ -171,7 +171,7 @@ public class Utils {
             LOG.debug( "Generated wkt: {}", wkt );
 
             try {
-                return new CRS( WKTParser.parse( wkt ) );
+                return CRSManager.getCRSRef( WKTParser.parse( wkt ) );
             } catch ( IOException e ) {
                 LOG.debug( "Unknown error", e );
             }
@@ -193,7 +193,7 @@ public class Utils {
             LOG.debug( "Generated wkt: {}", wkt );
 
             try {
-                return new CRS( WKTParser.parse( wkt ) );
+                return CRSManager.getCRSRef( WKTParser.parse( wkt ) );
             } catch ( IOException e ) {
                 LOG.debug( "Unknown error", e );
             }
@@ -213,7 +213,7 @@ public class Utils {
      * @param crs
      * @return the WMS 1.1.1 scale (size of the diagonal pixel)
      */
-    public static double calcScaleWMS111( int mapWidth, int mapHeight, Envelope bbox, CoordinateSystem crs ) {
+    public static double calcScaleWMS111( int mapWidth, int mapHeight, Envelope bbox, ICRS crs ) {
         if ( mapWidth == 0 || mapHeight == 0 ) {
             return 0;
         }
@@ -267,7 +267,7 @@ public class Utils {
      * @param crs
      * @return the WMS 1.3.0 scale (horizontal size of the pixel, pixel size == 0.28mm)
      */
-    public static double calcScaleWMS130( int mapWidth, int mapHeight, Envelope bbox, CoordinateSystem crs ) {
+    public static double calcScaleWMS130( int mapWidth, int mapHeight, Envelope bbox, ICRS crs ) {
         if ( mapWidth == 0 || mapHeight == 0 ) {
             return 0;
         }

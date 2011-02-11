@@ -36,11 +36,10 @@
 
 package org.deegree.cs.coordinatesystems;
 
-import static org.deegree.cs.coordinatesystems.CoordinateSystem.CRSType.COMPOUND;
-
-import org.deegree.cs.CRSIdentifiable;
+import org.deegree.cs.CRSResource;
 import org.deegree.cs.components.Axis;
-import org.deegree.cs.components.Unit;
+import org.deegree.cs.components.IAxis;
+import org.deegree.cs.components.IUnit;
 
 /**
  * A <code>CompoundCRS</code> is a {@link GeographicCRS} with a third axis (the height axis) attached. This axis denotes
@@ -53,11 +52,11 @@ import org.deegree.cs.components.Unit;
  * @version $Revision$, $Date$
  * 
  */
-public class CompoundCRS extends CoordinateSystem {
+public class CompoundCRS extends CRS implements ICompoundCRS {
 
-    private CoordinateSystem underlyingCRS;
+    private ICRS underlyingCRS;
 
-    private final Axis[] axis;
+    private final IAxis[] axis;
 
     private final double defaultHeight;
 
@@ -74,7 +73,7 @@ public class CompoundCRS extends CoordinateSystem {
      *             if the underlying crs is not of type geographic, geocentric or projected or one of the other values
      *             is <code>null</code>.
      */
-    public CompoundCRS( Axis heightAxis, CoordinateSystem underlyingCRS, double defaultHeight, CRSIdentifiable identity )
+    public CompoundCRS( IAxis heightAxis, ICRS underlyingCRS, double defaultHeight, CRSResource identity )
                             throws IllegalArgumentException {
         super( underlyingCRS.getGeodeticDatum(), underlyingCRS.getAxis(), identity );
         CRSType tmp = underlyingCRS.getType();
@@ -98,20 +97,20 @@ public class CompoundCRS extends CoordinateSystem {
 
     @Override
     public final CRSType getType() {
-        return COMPOUND;
+        return CRSType.COMPOUND;
     }
 
     /**
      * @return the heightAxis.
      */
-    public final Axis getHeightAxis() {
+    public final IAxis getHeightAxis() {
         return axis[2];
     }
 
     /**
      * @return the units of the heightAxis.
      */
-    public final Unit getHeightUnits() {
+    public final IUnit getHeightUnits() {
         return axis[2].getUnits();
     }
 
@@ -119,8 +118,8 @@ public class CompoundCRS extends CoordinateSystem {
      * @return the geographic Axis and the heightAxis as the third component.
      */
     @Override
-    public Axis[] getAxis() {
-        Axis[] result = new Axis[axis.length];
+    public IAxis[] getAxis() {
+        IAxis[] result = new IAxis[axis.length];
         for ( int i = 0; i < axis.length; ++i ) {
             result[i] = axis[i];
         }
@@ -130,7 +129,7 @@ public class CompoundCRS extends CoordinateSystem {
     /**
      * @return the underlyingCRS.
      */
-    public final CoordinateSystem getUnderlyingCRS() {
+    public final ICRS getUnderlyingCRS() {
         return underlyingCRS;
     }
 

@@ -36,7 +36,7 @@
 package org.deegree.gml;
 
 import org.deegree.commons.tom.Object;
-import org.deegree.cs.coordinatesystems.CoordinateSystem;
+import org.deegree.cs.coordinatesystems.CRS;
 import org.deegree.feature.Feature;
 import org.deegree.geometry.Geometry;
 import org.deegree.gml.dictionary.Definition;
@@ -50,13 +50,13 @@ import org.deegree.gml.props.GMLStdProps;
  * <li>{@link Feature}</li>
  * <li>{@link Geometry}</li>
  * <li>{@link Definition}</li>
- * <li>{@link CoordinateSystem} (TODO needs integration with the GML package)</li>
+ * <li>{@link CRS} (TODO needs integration with the GML package)</li>
  * </ul>
  * 
  * @see Feature
  * @see Geometry
  * @see Definition
- * @see CoordinateSystem
+ * @see CRS
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$

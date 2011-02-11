@@ -38,6 +38,7 @@ package org.deegree.cs.components;
 
 import org.deegree.cs.CRSCodeType;
 import org.deegree.cs.CRSIdentifiable;
+import org.deegree.cs.CRSResource;
 
 /**
  * The <code>Datum</code> is a generic type for all datums.
@@ -50,13 +51,13 @@ import org.deegree.cs.CRSIdentifiable;
  * 
  */
 
-public class Datum extends CRSIdentifiable {
+public class Datum extends CRSIdentifiable implements IDatum {
 
     /**
      * @param id
      *            containing all relevant id data.
      */
-    public Datum( CRSIdentifiable id ) {
+    public Datum( CRSResource id ) {
         super( id );
 
     }

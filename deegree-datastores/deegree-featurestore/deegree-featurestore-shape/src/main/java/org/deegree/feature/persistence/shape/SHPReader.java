@@ -59,7 +59,7 @@ import java.util.List;
 
 import org.deegree.commons.index.SpatialIndex;
 import org.deegree.commons.utils.Pair;
-import org.deegree.cs.CRS;
+import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.feature.types.property.GeometryPropertyType.GeometryType;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
@@ -207,7 +207,7 @@ public class SHPReader {
 
     private int type;
 
-    private final CRS crs;
+    private final ICRS crs;
 
     private Envelope bbox;
 
@@ -229,7 +229,7 @@ public class SHPReader {
      * @param startsWithZero
      * @throws IOException
      */
-    public SHPReader( RandomAccessFile inFile, CRS crs, SpatialIndex<Long> rtree, boolean startsWithZero )
+    public SHPReader( RandomAccessFile inFile, ICRS crs, SpatialIndex<Long> rtree, boolean startsWithZero )
                             throws IOException {
         file = inFile;
         channel = file.getChannel();

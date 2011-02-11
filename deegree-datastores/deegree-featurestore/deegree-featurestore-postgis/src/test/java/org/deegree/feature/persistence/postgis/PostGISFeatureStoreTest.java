@@ -63,7 +63,7 @@ import org.deegree.commons.jdbc.ConnectionManager;
 import org.deegree.commons.utils.JDBCUtils;
 import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.commons.xml.stax.IndentingXMLStreamWriter;
-import org.deegree.cs.CRS;
+import org.deegree.cs.CRSUtils;
 import org.deegree.cs.exceptions.TransformationException;
 import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.feature.Feature;
@@ -124,7 +124,7 @@ public class PostGISFeatureStoreTest {
             return;
         }
 
-        AppSchemaMapper mapper = new AppSchemaMapper( appSchema, false, true, CRS.EPSG_4326, "-1" );
+        AppSchemaMapper mapper = new AppSchemaMapper( appSchema, false, true, CRSUtils.EPSG_4326, "-1" );
         MappedApplicationSchema mappedSchema = mapper.getMappedSchema();
         PostGISFeatureStoreConfigWriter configWriter = new PostGISFeatureStoreConfigWriter( mappedSchema );
         File file = new File( "/tmp/inspire-au.xml" );

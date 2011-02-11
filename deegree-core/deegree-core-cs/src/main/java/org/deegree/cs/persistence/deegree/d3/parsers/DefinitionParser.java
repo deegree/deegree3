@@ -41,7 +41,7 @@ package org.deegree.cs.persistence.deegree.d3.parsers;
 import static org.deegree.commons.xml.stax.StAXParsingHelper.getSimpleUnboundedAsStrings;
 import static org.deegree.commons.xml.stax.StAXParsingHelper.moveReaderToFirstMatch;
 import static org.deegree.commons.xml.stax.StAXParsingHelper.nextElement;
-import static org.deegree.cs.persistence.deegree.d3.Parser.CRS_NS;
+import static org.deegree.cs.persistence.deegree.d3.DeegreeCRSStore.CRS_NS;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.IOException;
@@ -63,11 +63,11 @@ import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.commons.xml.stax.StAXParsingHelper;
 import org.deegree.cs.CRSCodeType;
 import org.deegree.cs.CRSIdentifiable;
+import org.deegree.cs.CRSResource;
 import org.deegree.cs.components.Unit;
 import org.deegree.cs.exceptions.CRSConfigurationException;
 import org.deegree.cs.i18n.Messages;
-import org.deegree.cs.persistence.deegree.DeegreeCRSStore;
-import org.deegree.cs.persistence.deegree.d3.StAXResource;
+import org.deegree.cs.persistence.deegree.d3.DeegreeCRSStore;
 import org.slf4j.Logger;
 
 /**
@@ -86,7 +86,7 @@ public abstract class DefinitionParser {
 
     private final Object LOCK = new Object();
 
-    private DeegreeCRSStore<StAXResource> provider = null;
+    protected DeegreeCRSStore store = null;
 
     private XMLStreamReader configReader;
 
@@ -97,12 +97,12 @@ public abstract class DefinitionParser {
     private boolean readEntireFile = false;
 
     /**
-     * @param provider
+     * @param store
      * @param configURL
      */
-    protected DefinitionParser( DeegreeCRSStore<StAXResource> provider, URL configURL ) {
+    protected DefinitionParser( DeegreeCRSStore store, URL configURL ) {
         this.configURL = configURL;
-        this.provider = provider;
+        this.store = store;
     }
 
     /**
@@ -157,7 +157,7 @@ public abstract class DefinitionParser {
      * @return the identifiable object or <code>null</code> if no id was given.
      * @throws CRSConfigurationException
      */
-    protected CRSIdentifiable parseIdentifiable( XMLStreamReader reader )
+    protected CRSResource parseIdentifiable( XMLStreamReader reader )
                             throws CRSConfigurationException {
         QName parent = reader.getName();
         try {
@@ -198,7 +198,7 @@ public abstract class DefinitionParser {
     private void openReader() {
         try {
             synchronized ( LOCK ) {
-                configStream = ProxyUtils.openURLConnection( configURL).getInputStream();
+                configStream = ProxyUtils.openURLConnection( configURL ).getInputStream();
                 this.configReader = XMLInputFactory.newInstance().createXMLStreamReader( configURL.toExternalForm(),
                                                                                          this.configStream );
                 // move from start document.
@@ -254,7 +254,7 @@ public abstract class DefinitionParser {
                                                  Messages.getMessage( "CRS_CONFIG_PARSE_ERROR", "Units", e.getMessage() ),
                                                  e );
         }
-        Unit result = getProvider().getCachedIdentifiable( Unit.class, unitId );
+        Unit result = getStore().getCachedIdentifiable( Unit.class, unitId );
         if ( result == null ) {
             result = Unit.createUnitFromString( unitId );
             if ( result == null ) {
@@ -268,8 +268,8 @@ public abstract class DefinitionParser {
     /**
      * @return the provider used for reversed look ups, will never be <code>null</code>
      */
-    public DeegreeCRSStore<StAXResource> getProvider() {
-        return provider;
+    public DeegreeCRSStore getStore() {
+        return store;
     }
 
     /**

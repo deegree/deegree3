@@ -87,11 +87,11 @@ import javax.xml.namespace.QName;
 
 import org.deegree.commons.annotations.LoggingNotes;
 import org.deegree.commons.utils.CollectionUtils;
+import org.deegree.commons.utils.CollectionUtils.Mapper;
 import org.deegree.commons.utils.DoublePair;
 import org.deegree.commons.utils.Pair;
-import org.deegree.commons.utils.CollectionUtils.Mapper;
 import org.deegree.commons.xml.XMLAdapter;
-import org.deegree.cs.CRS;
+import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.feature.Feature;
 import org.deegree.feature.FeatureCollection;
 import org.deegree.feature.GenericFeatureCollection;
@@ -214,7 +214,7 @@ public class MapService {
                 LOG.debug( "Using default feature info radius of {}.", globalFeatureInfoRadius );
             }
             root = parseLayer( conf.getAbstractLayer().getValue(), null, adapter, alias, interpol, quali );
-            fillInheritedInformation( root, new LinkedList<CRS>( root.getSrs() ) );
+            fillInheritedInformation( root, new LinkedList<ICRS>( root.getSrs() ) );
             // update the dynamic layers once on startup to avoid having a disappointingly long initial GetCapabilities
             // request...
             update();
@@ -248,7 +248,7 @@ public class MapService {
      * @param layer
      * @param srs
      */
-    public static void fillInheritedInformation( Layer layer, List<CRS> srs ) {
+    public static void fillInheritedInformation( Layer layer, List<ICRS> srs ) {
         if ( layer.getParent() == null ) {
             if ( layer.getScaleHint() == null ) {
                 layer.setScaleHint( new DoublePair( NEGATIVE_INFINITY, POSITIVE_INFINITY ) );
@@ -256,7 +256,7 @@ public class MapService {
         }
 
         for ( Layer l : layer.getChildren() ) {
-            List<CRS> curSrs = new LinkedList<CRS>( srs );
+            List<ICRS> curSrs = new LinkedList<ICRS>( srs );
             curSrs.addAll( l.getSrs() );
             removeDuplicates( curSrs );
             l.setSrs( curSrs );

@@ -65,7 +65,7 @@ import org.apache.xerces.xs.XSWildcard;
 import org.deegree.commons.jdbc.QTableName;
 import org.deegree.commons.tom.primitive.PrimitiveType;
 import org.deegree.commons.tom.primitive.XMLValueMangler;
-import org.deegree.cs.CRS;
+import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.feature.persistence.BlobCodec;
 import org.deegree.feature.persistence.mapping.BBoxTableMapping;
 import org.deegree.feature.persistence.mapping.BlobMapping;
@@ -118,7 +118,7 @@ public class AppSchemaMapper {
 
     private final MappingContextManager mcManager;
 
-    private final CRS storageCrs;
+    private final ICRS storageCrs;
 
     private final String storageSrid;
 
@@ -142,7 +142,7 @@ public class AppSchemaMapper {
      *            native DB-SRS identifier, must not be <code>null</code>
      */
     public AppSchemaMapper( ApplicationSchema appSchema, boolean createBlobMapping, boolean createRelationalMapping,
-                            CRS storageCrs, String srid ) {
+                            ICRS storageCrs, String srid ) {
         this.appSchema = appSchema;
         this.storageCrs = storageCrs;
         this.storageSrid = srid;

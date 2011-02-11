@@ -68,7 +68,7 @@ import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.commons.uom.Length;
 import org.deegree.commons.uom.Measure;
 import org.deegree.commons.xml.stax.StAXExportingHelper;
-import org.deegree.cs.CRS;
+import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.exceptions.TransformationException;
 import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.feature.Feature;
@@ -188,7 +188,7 @@ public class GMLFeatureWriter {
      * @param exportExtraProps
      *            if true, {@link ExtraProps} associated with features are exported as property elements
      */
-    public GMLFeatureWriter( GMLVersion version, XMLStreamWriter writer, CRS outputCRS, CoordinateFormatter formatter,
+    public GMLFeatureWriter( GMLVersion version, XMLStreamWriter writer, ICRS outputCRS, CoordinateFormatter formatter,
                              String remoteXlinkTemplate, PropertyName[] requestedProps, int traverseXlinkDepth,
                              int traverseXlinkExpiry, XLinkPropertyName[] xlinkProps, boolean exportSfGeometries,
                              boolean outputGeometries, Map<String, String> prefixToNs,

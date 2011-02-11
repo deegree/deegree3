@@ -35,7 +35,7 @@
 ----------------------------------------------------------------------------*/
 package org.deegree.geometry.multi;
 
-import org.deegree.cs.coordinatesystems.CoordinateSystem;
+import org.deegree.cs.coordinatesystems.CRS;
 import org.deegree.geometry.primitive.Polygon;
 
 /**
@@ -49,7 +49,7 @@ import org.deegree.geometry.primitive.Polygon;
 public interface MultiPolygon extends MultiGeometry<Polygon> {
 
     /**
-     * The are of all contained {@link Polygon}s measured in units of the used {@link CoordinateSystem}.
+     * The are of all contained {@link Polygon}s measured in units of the used {@link CRS}.
      *
      * @return area
      */

@@ -35,7 +35,7 @@
 ----------------------------------------------------------------------------*/
 package org.deegree.geometry.multi;
 
-import org.deegree.cs.coordinatesystems.CoordinateSystem;
+import org.deegree.cs.coordinatesystems.CRS;
 import org.deegree.geometry.primitive.Solid;
 
 /**
@@ -49,7 +49,7 @@ import org.deegree.geometry.primitive.Solid;
 public interface MultiSolid extends MultiGeometry<Solid> {
 
     /**
-     * The volume of all contained {@link Solid}s measured in units of the used {@link CoordinateSystem}.
+     * The volume of all contained {@link Solid}s measured in units of the used {@link CRS}.
      *
      * @return volume
      */

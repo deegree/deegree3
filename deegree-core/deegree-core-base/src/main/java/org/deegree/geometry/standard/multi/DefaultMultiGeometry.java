@@ -40,7 +40,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 
-import org.deegree.cs.CRS;
+import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.multi.MultiGeometry;
@@ -75,7 +75,7 @@ public class DefaultMultiGeometry<T extends Geometry> extends AbstractDefaultGeo
      *            precision model, may be null
      * @param members
      */
-    public DefaultMultiGeometry( String id, CRS crs, PrecisionModel pm, List<T> members ) {
+    public DefaultMultiGeometry( String id, ICRS crs, PrecisionModel pm, List<T> members ) {
         super( id, crs, pm );
         this.members = members;
     }

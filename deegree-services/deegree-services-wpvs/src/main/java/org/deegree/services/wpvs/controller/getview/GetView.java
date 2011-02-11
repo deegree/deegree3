@@ -39,7 +39,7 @@ package org.deegree.services.wpvs.controller.getview;
 import java.awt.Color;
 import java.util.List;
 
-import org.deegree.cs.CRS;
+import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.geometry.Envelope;
 import org.deegree.rendering.r3d.ViewParams;
 
@@ -59,7 +59,7 @@ public class GetView {
 
     private final String version;
 
-    private final CRS coordinateSystem;
+    private final ICRS coordinateSystem;
 
     private final Envelope requestedBBox;
 
@@ -78,7 +78,7 @@ public class GetView {
      * @param responseParameters
      * @param sceneParameters
      */
-    public GetView( String id, String version, CRS coordinateSystem, Envelope requestedBBox, ViewParams viewParameters,
+    public GetView( String id, String version, ICRS coordinateSystem, Envelope requestedBBox, ViewParams viewParameters,
                     GetViewResponseParameters responseParameters, GetViewSceneParameters sceneParameters ) {
         this.id = id;
         this.version = version;
@@ -163,7 +163,7 @@ public class GetView {
     /**
      * @return the coordinateSystem
      */
-    public final CRS getCoordinateSystem() {
+    public final ICRS getCoordinateSystem() {
         return coordinateSystem;
     }
 

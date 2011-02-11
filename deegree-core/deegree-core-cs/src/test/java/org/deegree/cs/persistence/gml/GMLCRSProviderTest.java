@@ -29,7 +29,7 @@
  Prof. Dr. Klaus Greve
  Postfach 1147, 53001 Bonn
  Germany
- http://www.geographie.uni-bonn.de/deegree/
+ http://ICoordinateSystem.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
@@ -42,15 +42,17 @@ import junit.framework.TestCase;
 
 import org.deegree.cs.CRSCodeType;
 import org.deegree.cs.components.Axis;
-import org.deegree.cs.components.Ellipsoid;
-import org.deegree.cs.components.GeodeticDatum;
+import org.deegree.cs.components.IAxis;
+import org.deegree.cs.components.IEllipsoid;
+import org.deegree.cs.components.IGeodeticDatum;
 import org.deegree.cs.components.Unit;
-import org.deegree.cs.coordinatesystems.CoordinateSystem;
 import org.deegree.cs.coordinatesystems.GeographicCRS;
+import org.deegree.cs.coordinatesystems.ICRS;
+import org.deegree.cs.coordinatesystems.IGeographicCRS;
 import org.deegree.cs.coordinatesystems.ProjectedCRS;
 import org.deegree.cs.persistence.CRSManager;
 import org.deegree.cs.persistence.CRSStore;
-import org.deegree.cs.projections.Projection;
+import org.deegree.cs.projections.IProjection;
 import org.deegree.cs.projections.cylindric.TransverseMercator;
 import org.deegree.cs.transformations.Transformation;
 import org.deegree.cs.transformations.helmert.Helmert;
@@ -98,18 +100,18 @@ public class GMLCRSProviderTest extends TestCase {
         // }
         // try loading the gaus krueger zone 3.
         // LOG.debug( CRSCodeType.valueOf( "urn:ogc:def:crs:EPSG::31467" ) );
-        CoordinateSystem testCRS = gmlStore.getCRSByCode( CRSCodeType.valueOf( "urn:ogc:def:crs:EPSG::31467" ) );
+        ICRS testCRS = gmlStore.getCRSByCode( CRSCodeType.valueOf( "urn:ogc:def:crs:EPSG::31467" ) );
         testCRS_31467( testCRS, gmlStore );
         testCRS = gmlStore.getCRSByCode( CRSCodeType.valueOf( "SOME_DUMMY_CODE" ) );
         assertTrue( testCRS == null );
     }
 
-    private void testCRS_31467( CoordinateSystem testCRS, CRSStore provider ) {
+    private void testCRS_31467( ICRS testCRS, CRSStore provider ) {
         assertNotNull( testCRS );
         assertTrue( testCRS instanceof ProjectedCRS );
         ProjectedCRS realCRS = (ProjectedCRS) testCRS;
         assertNotNull( realCRS.getProjection() );
-        Projection projection = realCRS.getProjection();
+        IProjection projection = realCRS.getProjection();
         assertTrue( projection instanceof TransverseMercator );
         // do stuff with projection
         TransverseMercator proj = (TransverseMercator) projection;
@@ -121,7 +123,7 @@ public class GMLCRSProviderTest extends TestCase {
         assertTrue( proj.getHemisphere() );
 
         // test the datum.
-        GeodeticDatum datum = realCRS.getGeodeticDatum();
+        IGeodeticDatum datum = realCRS.getGeodeticDatum();
         assertNotNull( datum );
         // assertEquals( "EPSG:6314", datum.getIdentifier() );
         assertEquals( "urn:ogc:def:datum:EPSG::6314", datum.getCode().getOriginal() );
@@ -129,7 +131,7 @@ public class GMLCRSProviderTest extends TestCase {
         // assertEquals( "urn:adv:meridian:Greenwich", datum.getPrimeMeridian().getIdentifier() );
 
         // test the ellips
-        Ellipsoid ellips = datum.getEllipsoid();
+        IEllipsoid ellips = datum.getEllipsoid();
         assertNotNull( ellips );
         // assertEquals( "EPSG:7004", ellips.getIdentifier() );
         assertEquals( "urn:ogc:def:ellipsoid:EPSG::7004", ellips.getCode().getOriginal() );
@@ -140,7 +142,7 @@ public class GMLCRSProviderTest extends TestCase {
         // test towgs84 params
         Helmert toWGS = datum.getWGS84Conversion();
         if ( toWGS == null ) {
-            Transformation trans = provider.getTransformation( realCRS.getGeographicCRS(), GeographicCRS.WGS84 );
+            Transformation trans = provider.getDirectTransformation( realCRS.getGeographicCRS(), GeographicCRS.WGS84 );
             assertNotNull( trans );
             assertTrue( trans instanceof Helmert );
             toWGS = (Helmert) trans;
@@ -157,11 +159,11 @@ public class GMLCRSProviderTest extends TestCase {
         assertEquals( 6.7, toWGS.ppm );
 
         // test the geographic
-        GeographicCRS geographic = realCRS.getGeographicCRS();
+        IGeographicCRS geographic = realCRS.getGeographicCRS();
         assertNotNull( geographic );
         assertEquals( "urn:ogc:def:crs:EPSG::4314", geographic.getCode().getOriginal() );
         // assertEquals( "EPSG:4314", geographic.getIdentifier() );
-        Axis[] ax = geographic.getAxis();
+        IAxis[] ax = geographic.getAxis();
         assertEquals( 2, ax.length );
         assertEquals( Axis.AO_EAST, ax[1].getOrientation() );
         assertEquals( Unit.DEGREE, ax[1].getUnits() );
@@ -178,7 +180,7 @@ public class GMLCRSProviderTest extends TestCase {
                             throws Exception {
         CRSStore gmlStore = CRSManager.create( GMLCRSProviderTest.class.getResource( CONFIG_FILE ) );
 
-        CoordinateSystem testCRS = gmlStore.getCRSByCode( CRSCodeType.valueOf( "urn:ogc:def:crs:EPSG::31467" ) );
+        ICRS testCRS = gmlStore.getCRSByCode( CRSCodeType.valueOf( "urn:ogc:def:crs:EPSG::31467" ) );
         testCRS_31467( testCRS, gmlStore );
 
         testCRS = gmlStore.getCRSByCode( CRSCodeType.valueOf( "urn:ogc:def:crs:EPSG::31467" ) );

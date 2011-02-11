@@ -36,17 +36,18 @@
 
 package org.deegree.cs.coordinatesystems;
 
-import static org.deegree.cs.coordinatesystems.CoordinateSystem.CRSType.PROJECTED;
+import static org.deegree.cs.coordinatesystems.CRS.CRSType.PROJECTED;
 
 import java.util.List;
 
 import javax.vecmath.Point2d;
 
 import org.deegree.cs.CRSCodeType;
-import org.deegree.cs.CRSIdentifiable;
-import org.deegree.cs.components.Axis;
+import org.deegree.cs.CRSResource;
+import org.deegree.cs.components.IAxis;
 import org.deegree.cs.exceptions.ProjectionException;
-import org.deegree.cs.projections.Projection;
+import org.deegree.cs.projections.IProjection;
+import org.deegree.cs.refs.coordinatesystem.CRSRef;
 import org.deegree.cs.transformations.Transformation;
 
 /**
@@ -62,11 +63,11 @@ import org.deegree.cs.transformations.Transformation;
  * 
  */
 
-public class ProjectedCRS extends CoordinateSystem {
+public class ProjectedCRS extends CRS implements IProjectedCRS {
 
-    private final GeographicCRS underlyingCRS;
+    private final IGeographicCRS underlyingCRS;
 
-    private Projection projection;
+    private IProjection projection;
 
     /**
      * @param projection
@@ -76,7 +77,7 @@ public class ProjectedCRS extends CoordinateSystem {
      *            of this projection.
      * @param identity
      */
-    public ProjectedCRS( Projection projection, GeographicCRS geographicCRS, Axis[] axisOrder, CRSIdentifiable identity ) {
+    public ProjectedCRS( IProjection projection, IGeographicCRS geographicCRS, IAxis[] axisOrder, CRSResource identity ) {
         this( null, geographicCRS, projection, axisOrder, identity );
     }
 
@@ -92,7 +93,7 @@ public class ProjectedCRS extends CoordinateSystem {
      * @param descriptions
      * @param areasOfUse
      */
-    public ProjectedCRS( Projection projection, GeographicCRS geographicCRS, Axis[] axisOrder, CRSCodeType[] codes,
+    public ProjectedCRS( IProjection projection, IGeographicCRS geographicCRS, IAxis[] axisOrder, CRSCodeType[] codes,
                          String[] names, String[] versions, String[] descriptions, String[] areasOfUse ) {
         super( geographicCRS.getGeodeticDatum(), axisOrder, codes, names, versions, descriptions, areasOfUse );
         this.underlyingCRS = geographicCRS;
@@ -108,7 +109,7 @@ public class ProjectedCRS extends CoordinateSystem {
      *            of this projection.
      * @param codes
      */
-    public ProjectedCRS( Projection projection, GeographicCRS geographicCRS, Axis[] axisOrder, CRSCodeType[] codes ) {
+    public ProjectedCRS( IProjection projection, IGeographicCRS geographicCRS, IAxis[] axisOrder, CRSCodeType[] codes ) {
         this( projection, geographicCRS, axisOrder, codes, null, null, null, null );
     }
 
@@ -124,7 +125,7 @@ public class ProjectedCRS extends CoordinateSystem {
      * @param description
      * @param areaOfUse
      */
-    public ProjectedCRS( Projection projection, GeographicCRS geographicCRS, Axis[] axisOrder, CRSCodeType code,
+    public ProjectedCRS( IProjection projection, IGeographicCRS geographicCRS, IAxis[] axisOrder, CRSCodeType code,
                          String name, String version, String description, String areaOfUse ) {
         this( projection, geographicCRS, axisOrder, new CRSCodeType[] { code }, new String[] { name },
               new String[] { version }, new String[] { description }, new String[] { areaOfUse } );
@@ -139,7 +140,7 @@ public class ProjectedCRS extends CoordinateSystem {
      *            of this projection.
      * @param code
      */
-    public ProjectedCRS( Projection projection, GeographicCRS geographicCRS, Axis[] axisOrder, CRSCodeType code ) {
+    public ProjectedCRS( IProjection projection, IGeographicCRS geographicCRS, IAxis[] axisOrder, CRSCodeType code ) {
         this( projection, geographicCRS, axisOrder, code, null, null, null, null );
     }
 
@@ -153,8 +154,8 @@ public class ProjectedCRS extends CoordinateSystem {
      *            of this projection.
      * @param identity
      */
-    public ProjectedCRS( List<Transformation> transformations, GeographicCRS geographicCRS, Projection projection,
-                         Axis[] axisOrder, CRSIdentifiable identity ) {
+    public ProjectedCRS( List<Transformation> transformations, IGeographicCRS geographicCRS, IProjection projection,
+                         IAxis[] axisOrder, CRSResource identity ) {
         super( transformations, geographicCRS.getGeodeticDatum(), axisOrder, identity );
         this.underlyingCRS = geographicCRS;
         this.projection = projection;
@@ -170,10 +171,7 @@ public class ProjectedCRS extends CoordinateSystem {
         return getAxis().length;
     }
 
-    /**
-     * @return the underlyingCRS.
-     */
-    public final GeographicCRS getGeographicCRS() {
+    public final IGeographicCRS getGeographicCRS() {
         return underlyingCRS;
     }
 
@@ -182,48 +180,29 @@ public class ProjectedCRS extends CoordinateSystem {
         return PROJECTED;
     }
 
-    /**
-     * @return the projection.
-     */
-    public final Projection getProjection() {
+    public final IProjection getProjection() {
         return projection;
     }
 
-    /**
-     * The actual transform method doing a projection from geographic coordinates to map coordinates.
-     * 
-     * @param lambda
-     *            the longitude
-     * @param phi
-     *            the latitude
-     * @return the projected Point or Point(Double.NAN, Double.NAN) if an error occurred.
-     * @throws ProjectionException
-     *             if the given lamba and phi coordinates could not be projected to x and y.
-     */
     public Point2d doProjection( double lambda, double phi )
                             throws ProjectionException {
         return projection.doProjection( this.underlyingCRS, lambda, phi );
     }
 
-    /**
-     * Do an inverse projection from projected (map) coordinates to geographic coordinates.
-     * 
-     * @param x
-     *            coordinate on the map
-     * @param y
-     *            coordinate on the map
-     * @return the projected Point with x = lambda and y = phi;
-     * @throws ProjectionException
-     *             if the given x and y coordinates could not be inverted to lambda and phi.
-     */
     public Point2d doInverseProjection( double x, double y )
                             throws ProjectionException {
         return projection.doInverseProjection( this.underlyingCRS, x, y );
     }
 
     public boolean equals( Object other ) {
-        if ( other != null && other instanceof ProjectedCRS ) {
-            final ProjectedCRS that = (ProjectedCRS) other;
+        if ( other != null && other instanceof ICRS
+             && this.getType().equals( ( (ICRS) other ).getType() ) ) {
+            final ProjectedCRS that;
+            if ( other instanceof CRSRef ) {
+                that = (ProjectedCRS) ( (CRSRef) other ).getReferencedObject();
+            } else {
+                that = (ProjectedCRS) other;
+            }
             return super.equals( that ) && this.projection.equals( that.projection );
         }
         return false;

@@ -43,7 +43,8 @@ import java.util.List;
 import org.deegree.commons.uom.Measure;
 import org.deegree.commons.uom.Unit;
 import org.deegree.commons.utils.Pair;
-import org.deegree.cs.CRS;
+import org.deegree.cs.coordinatesystems.CRS;
+import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.geometry.GeometryFactory;
 import org.deegree.geometry.i18n.Messages;
 import org.deegree.geometry.linearization.CurveLinearizer;
@@ -56,8 +57,8 @@ import org.deegree.geometry.primitive.LineString;
 import org.deegree.geometry.primitive.Point;
 import org.deegree.geometry.primitive.Ring;
 import org.deegree.geometry.primitive.segments.CurveSegment;
-import org.deegree.geometry.primitive.segments.LineStringSegment;
 import org.deegree.geometry.primitive.segments.CurveSegment.CurveSegmentType;
+import org.deegree.geometry.primitive.segments.LineStringSegment;
 import org.deegree.geometry.standard.AbstractDefaultGeometry;
 import org.deegree.geometry.standard.points.PointsPoints;
 
@@ -91,7 +92,7 @@ public class DefaultRing extends AbstractDefaultGeometry implements Ring {
      * @param members
      *            the <code>Curve</code>s that compose the <code>Ring</code>
      */
-    public DefaultRing( String id, CRS crs, PrecisionModel pm, List<Curve> members ) {
+    public DefaultRing( String id, ICRS crs, PrecisionModel pm, List<Curve> members ) {
         super( id, crs, pm );
         this.members = members;
         for ( Curve curve : members ) {
@@ -111,7 +112,7 @@ public class DefaultRing extends AbstractDefaultGeometry implements Ring {
      * @param segment
      *            the segment that composes the <code>Ring</code>
      */
-    public DefaultRing( String id, CRS crs, PrecisionModel pm, LineStringSegment segment ) {
+    public DefaultRing( String id, ICRS crs, PrecisionModel pm, LineStringSegment segment ) {
         super( id, crs, pm );
         this.members = new ArrayList<Curve>( 1 );
         this.members.add( new DefaultLineString( null, crs, pm, segment.getControlPoints() ) );
@@ -180,8 +181,8 @@ public class DefaultRing extends AbstractDefaultGeometry implements Ring {
     @Override
     public Measure getLength( Unit requestedUnit ) {
         // TODO respect requested unit
-        double length = ( (com.vividsolutions.jts.geom.LineString) getJTSGeometry() ).getLength(); 
-        return new Measure( Double.toString( length), null );
+        double length = ( (com.vividsolutions.jts.geom.LineString) getJTSGeometry() ).getLength();
+        return new Measure( Double.toString( length ), null );
     }
 
     @Override

@@ -36,15 +36,17 @@
 
 package org.deegree.cs.coordinatesystems;
 
-import static org.deegree.cs.coordinatesystems.CoordinateSystem.CRSType.GEOGRAPHIC;
+import static org.deegree.cs.coordinatesystems.CRS.CRSType.GEOGRAPHIC;
 
 import java.util.List;
 
 import org.deegree.cs.CRSCodeType;
-import org.deegree.cs.CRSIdentifiable;
+import org.deegree.cs.CRSResource;
 import org.deegree.cs.EPSGCode;
 import org.deegree.cs.components.Axis;
 import org.deegree.cs.components.GeodeticDatum;
+import org.deegree.cs.components.IAxis;
+import org.deegree.cs.components.IGeodeticDatum;
 import org.deegree.cs.components.Unit;
 import org.deegree.cs.i18n.Messages;
 import org.deegree.cs.transformations.Transformation;
@@ -60,7 +62,7 @@ import org.deegree.cs.transformations.Transformation;
  * 
  */
 
-public class GeographicCRS extends CoordinateSystem {
+public class GeographicCRS extends CRS implements IGeographicCRS {
 
     /**
      * A geographic coordinate system using WGS84 datum. This coordinate system use
@@ -99,7 +101,7 @@ public class GeographicCRS extends CoordinateSystem {
      * @throws IllegalArgumentException
      *             if the axisOrder.length != 2.
      */
-    public GeographicCRS( GeodeticDatum datum, Axis[] axisOrder, CRSIdentifiable identity )
+    public GeographicCRS( IGeodeticDatum datum, IAxis[] axisOrder, CRSResource identity )
                             throws IllegalArgumentException {
         this( null, datum, axisOrder, identity );
     }
@@ -115,7 +117,7 @@ public class GeographicCRS extends CoordinateSystem {
      * @throws IllegalArgumentException
      *             if the axisOrder.length != 2.
      */
-    public GeographicCRS( GeodeticDatum datum, Axis[] axisOrder, CRSCodeType[] codes, String[] names,
+    public GeographicCRS( IGeodeticDatum datum, IAxis[] axisOrder, CRSCodeType[] codes, String[] names,
                           String[] versions, String[] descriptions, String[] areasOfUse )
                             throws IllegalArgumentException {
         super( datum, axisOrder, codes, names, versions, descriptions, areasOfUse );
@@ -130,7 +132,7 @@ public class GeographicCRS extends CoordinateSystem {
      * @param axisOrder
      * @param codes
      */
-    public GeographicCRS( GeodeticDatum datum, Axis[] axisOrder, CRSCodeType[] codes ) {
+    public GeographicCRS( IGeodeticDatum datum, IAxis[] axisOrder, CRSCodeType[] codes ) {
         this( datum, axisOrder, codes, null, null, null, null );
     }
 
@@ -143,7 +145,7 @@ public class GeographicCRS extends CoordinateSystem {
      * @param description
      * @param areaOfUse
      */
-    public GeographicCRS( GeodeticDatum datum, Axis[] axisOrder, CRSCodeType code, String name, String version,
+    public GeographicCRS( IGeodeticDatum datum, IAxis[] axisOrder, CRSCodeType code, String name, String version,
                           String description, String areaOfUse ) {
         this( datum, axisOrder, new CRSCodeType[] { code }, new String[] { name }, new String[] { version },
               new String[] { description }, new String[] { areaOfUse } );
@@ -155,7 +157,7 @@ public class GeographicCRS extends CoordinateSystem {
      * @param code
      * @param name
      */
-    public GeographicCRS( GeodeticDatum datum, Axis[] axisOrder, CRSCodeType code, String name ) {
+    public GeographicCRS( IGeodeticDatum datum, IAxis[] axisOrder, CRSCodeType code, String name ) {
         this( datum, axisOrder, new CRSCodeType[] { code }, new String[] { name }, null, null, null );
     }
 
@@ -164,7 +166,7 @@ public class GeographicCRS extends CoordinateSystem {
      * @param axisOrder
      * @param code
      */
-    public GeographicCRS( GeodeticDatum datum, Axis[] axisOrder, CRSCodeType code ) {
+    public GeographicCRS( IGeodeticDatum datum, IAxis[] axisOrder, CRSCodeType code ) {
         this( datum, axisOrder, new CRSCodeType[] { code }, null, null, null, null );
     }
 
@@ -174,8 +176,8 @@ public class GeographicCRS extends CoordinateSystem {
      * @param axisOrder
      * @param id
      */
-    public GeographicCRS( List<Transformation> transformations, GeodeticDatum usedDatum, Axis[] axisOrder,
-                          CRSIdentifiable id ) {
+    public GeographicCRS( List<Transformation> transformations, IGeodeticDatum usedDatum, IAxis[] axisOrder,
+                          CRSResource id ) {
         super( transformations, usedDatum, axisOrder, id );
         if ( axisOrder.length != 2 ) {
             throw new IllegalArgumentException( Messages.getMessage( "CRS_COORDINATESYSTEMS_WRONG_AXIS_DIM",

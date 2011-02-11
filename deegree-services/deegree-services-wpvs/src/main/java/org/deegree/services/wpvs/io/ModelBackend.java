@@ -40,7 +40,7 @@ import java.io.IOException;
 import java.util.List;
 
 import org.deegree.commons.index.PositionableModel;
-import org.deegree.cs.CRS;
+import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.geometry.Envelope;
 import org.deegree.rendering.r3d.opengl.rendering.model.geometry.DirectGeometryBuffer;
 import org.deegree.rendering.r3d.opengl.rendering.model.manager.BuildingRenderer;
@@ -120,7 +120,7 @@ public abstract class ModelBackend<G> implements RenderableStore {
 
     private PrototypeSerializer prototypeSerializer = new PrototypeSerializer();
 
-    private CRS baseCRS;
+    private ICRS baseCRS;
 
     /**
      * @return the treeSerializer
@@ -160,7 +160,8 @@ public abstract class ModelBackend<G> implements RenderableStore {
      * 
      * @return the list of prototypes or the empty list if an error occurred, never <code>null</code>.
      */
-    public abstract List<RenderablePrototype> loadProtoTypes( DirectGeometryBuffer geometryBuffer, CRS baseCRS );
+    public abstract List<RenderablePrototype> loadProtoTypes( DirectGeometryBuffer geometryBuffer,
+                                                              ICRS baseCRS );
 
     /**
      * Retrieves the WorldRenderable objects from the backend.
@@ -170,7 +171,7 @@ public abstract class ModelBackend<G> implements RenderableStore {
      * @param baseCRS
      *            the crs of the WPVS scene
      */
-    public abstract void loadBuildings( BuildingRenderer bm, CRS baseCRS );
+    public abstract void loadBuildings( BuildingRenderer bm, ICRS baseCRS );
 
     /**
      * Retrieves the Billboard objects from the backend.
@@ -180,7 +181,7 @@ public abstract class ModelBackend<G> implements RenderableStore {
      * @param baseCRS
      *            the crs of the WPVS scene
      */
-    public abstract void loadTrees( TreeRenderer tm, CRS baseCRS );
+    public abstract void loadTrees( TreeRenderer tm, ICRS baseCRS );
 
     /**
      * Retrieves and deserializes objects from the given type.
@@ -363,14 +364,14 @@ public abstract class ModelBackend<G> implements RenderableStore {
      * @param baseCRS
      *            of the wpvs
      */
-    public final void setWPVSBaseCRS( CRS baseCRS ) {
+    public final void setWPVSBaseCRS( ICRS baseCRS ) {
         this.baseCRS = baseCRS;
     }
 
     /**
      * @return the baseCRS (or <code>null</code> if not set)
      */
-    public CRS getBaseCRS() {
+    public ICRS getBaseCRS() {
         return baseCRS;
     }
 

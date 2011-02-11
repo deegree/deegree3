@@ -41,7 +41,7 @@ import java.util.List;
 
 import org.deegree.commons.uom.Measure;
 import org.deegree.commons.uom.Unit;
-import org.deegree.cs.CRS;
+import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.geometry.GeometryFactory;
 import org.deegree.geometry.i18n.Messages;
 import org.deegree.geometry.points.Points;
@@ -81,7 +81,7 @@ public class DefaultSurface extends AbstractDefaultGeometry implements Surface {
      * @param patches
      *            patches that constitute the surface
      */
-    public DefaultSurface( String id, CRS crs, PrecisionModel pm, List<? extends SurfacePatch> patches ) {
+    public DefaultSurface( String id, ICRS crs, PrecisionModel pm, List<? extends SurfacePatch> patches ) {
         super( id, crs, pm );
         this.patches = patches;
     }

@@ -43,9 +43,10 @@ import javax.vecmath.Point3d;
 
 import org.deegree.cs.CRSCodeType;
 import org.deegree.cs.CRSIdentifiable;
-import org.deegree.cs.coordinatesystems.CoordinateSystem;
+import org.deegree.cs.CRSResource;
 import org.deegree.cs.coordinatesystems.GeocentricCRS;
-import org.deegree.cs.coordinatesystems.ProjectedCRS;
+import org.deegree.cs.coordinatesystems.ICRS;
+import org.deegree.cs.coordinatesystems.IProjectedCRS;
 import org.deegree.cs.exceptions.TransformationException;
 import org.deegree.cs.i18n.Messages;
 import org.deegree.cs.transformations.coordinate.ConcatenatedTransform;
@@ -82,9 +83,9 @@ import org.deegree.cs.transformations.polynomial.LeastSquareApproximation;
  */
 public abstract class Transformation extends CRSIdentifiable {
 
-    private CoordinateSystem sourceCRS;
+    private ICRS sourceCRS;
 
-    private CoordinateSystem targetCRS;
+    private ICRS targetCRS;
 
     /**
      * Signaling this transformation as inverse
@@ -97,7 +98,7 @@ public abstract class Transformation extends CRSIdentifiable {
      * @param id
      *            an identifiable instance containing information about this transformation
      */
-    public Transformation( CoordinateSystem sourceCRS, CoordinateSystem targetCRS, CRSIdentifiable id ) {
+    public Transformation( ICRS sourceCRS, ICRS targetCRS, CRSResource id ) {
         super( id );
         checkForNullObject( targetCRS, "Transformation", "targetCRS" );
         // checkForNullObject( sourceCRS, "Transformation", "sourceCRS" );
@@ -281,26 +282,26 @@ public abstract class Transformation extends CRSIdentifiable {
     /**
      * @return the sourceCRS.
      */
-    public final CoordinateSystem getSourceCRS() {
+    public final ICRS getSourceCRS() {
         return isInverse ? targetCRS : sourceCRS;
     }
 
     /**
      * @return the targetCRS.
      */
-    public final CoordinateSystem getTargetCRS() {
+    public final ICRS getTargetCRS() {
         return isInverse ? sourceCRS : targetCRS;
     }
 
     /**
-     * @return the dimension of the source coordinateSystem.
+     * @return the dimension of the source ICoordinateSystem.
      */
     public int getSourceDimension() {
         return getSourceCRS().getDimension();
     }
 
     /**
-     * @return the dimension of the target coordinateSystem.
+     * @return the dimension of the target ICoordinateSystem.
      */
     public int getTargetDimension() {
         return getTargetCRS().getDimension();
@@ -385,7 +386,7 @@ public abstract class Transformation extends CRSIdentifiable {
      *            to check for
      * @return true if the given crs is used in this transformation.
      */
-    public boolean contains( CoordinateSystem crs ) {
+    public boolean contains( ICRS crs ) {
         boolean result = getSourceCRS() == null ? crs == null : getSourceCRS().equals( crs );
         if ( !result ) {
             result = getTargetCRS() == null ? crs == null : getTargetCRS().equals( crs );
@@ -398,7 +399,7 @@ public abstract class Transformation extends CRSIdentifiable {
      * @param newSource
      *            to be used as the new source coordinate system.
      */
-    public void setSourceCRS( CoordinateSystem newSource ) {
+    public void setSourceCRS( ICRS newSource ) {
         this.sourceCRS = newSource;
     }
 
@@ -409,7 +410,7 @@ public abstract class Transformation extends CRSIdentifiable {
      *            to which ordinates will be transformed.
      * @return true if this transformation can transform from the given source CRS to the target CRS.
      */
-    public boolean canTransform( CoordinateSystem sourceCRS, CoordinateSystem targetCRS ) {
+    public boolean canTransform( ICRS sourceCRS, ICRS targetCRS ) {
         return getSourceCRS().equals( sourceCRS ) && getTargetCRS().equals( targetCRS );
     }
 
@@ -423,7 +424,7 @@ public abstract class Transformation extends CRSIdentifiable {
         return false;
     }
 
-    public Transformation copyTransformation( CRSIdentifiable newId ) {
+    public Transformation copyTransformation( CRSResource newId ) {
         Transformation result = null;
         if ( "Concatenated-Transform".equals( this.getImplementationName() ) ) {
             // deep copy!
@@ -456,7 +457,7 @@ public abstract class Transformation extends CRSIdentifiable {
             result = new NTv2Transformation( sourceCRS, targetCRS, newId,
                                              ( (NTv2Transformation) this ).getGridfileRef() );
         } else if ( "Projection-Transform".equals( this.getImplementationName() ) ) {
-            result = new ProjectionTransform( (ProjectedCRS) targetCRS, newId );
+            result = new ProjectionTransform( (IProjectedCRS) targetCRS, newId );
         }
         if ( result != null && this.isInverseTransform() ) {
             result.inverse();

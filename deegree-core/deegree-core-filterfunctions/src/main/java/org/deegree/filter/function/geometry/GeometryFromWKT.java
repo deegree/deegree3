@@ -40,7 +40,8 @@ import static org.slf4j.LoggerFactory.getLogger;
 import java.util.List;
 
 import org.deegree.commons.tom.TypedObjectNode;
-import org.deegree.cs.CRS;
+import org.deegree.cs.coordinatesystems.ICRS;
+import org.deegree.cs.persistence.CRSManager;
 import org.deegree.filter.Expression;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.XPathEvaluator;
@@ -91,7 +92,7 @@ public class GeometryFromWKT implements FunctionProvider {
                     throw new FilterEvaluationException( "The GeometryFromWKT function's second argument must "
                                                          + "evaluate to exactly one value." );
                 }
-                CRS srs = new CRS( crs[0].toString() );
+                ICRS srs = CRSManager.getCRSRef( crs[0].toString() );
                 String wkt = geom[0].toString();
                 WKTReader reader = new WKTReader( srs );
                 try {

@@ -38,9 +38,7 @@ package org.deegree.cs.persistence.deegree.d3.parsers;
 
 import static org.deegree.commons.xml.stax.StAXParsingHelper.getRequiredText;
 import static org.deegree.commons.xml.stax.StAXParsingHelper.nextElement;
-import static org.deegree.cs.coordinatesystems.CoordinateSystem.CRSType.GEOGRAPHIC;
-import static org.deegree.cs.coordinatesystems.CoordinateSystem.CRSType.PROJECTED;
-import static org.deegree.cs.persistence.deegree.d3.Parser.CRS_NS;
+import static org.deegree.cs.persistence.deegree.d3.DeegreeCRSStore.CRS_NS;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -61,20 +59,26 @@ import org.deegree.commons.annotations.LoggingNotes;
 import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.commons.xml.stax.StAXParsingHelper;
 import org.deegree.cs.CRSCodeType;
-import org.deegree.cs.CRSIdentifiable;
+import org.deegree.cs.CRSResource;
 import org.deegree.cs.components.Axis;
-import org.deegree.cs.components.GeodeticDatum;
+import org.deegree.cs.components.IGeodeticDatum;
 import org.deegree.cs.components.Unit;
+import org.deegree.cs.coordinatesystems.CRS;
 import org.deegree.cs.coordinatesystems.CompoundCRS;
-import org.deegree.cs.coordinatesystems.CoordinateSystem;
 import org.deegree.cs.coordinatesystems.GeocentricCRS;
 import org.deegree.cs.coordinatesystems.GeographicCRS;
+import org.deegree.cs.coordinatesystems.ICRS;
+import org.deegree.cs.coordinatesystems.IGeographicCRS;
 import org.deegree.cs.coordinatesystems.ProjectedCRS;
 import org.deegree.cs.exceptions.CRSConfigurationException;
 import org.deegree.cs.i18n.Messages;
-import org.deegree.cs.persistence.deegree.DeegreeCRSStore;
-import org.deegree.cs.persistence.deegree.d3.StAXResource;
-import org.deegree.cs.projections.Projection;
+import org.deegree.cs.persistence.AbstractCRSStore.RESOURCETYPE;
+import org.deegree.cs.persistence.deegree.d3.DeegreeCRSStore;
+import org.deegree.cs.projections.IProjection;
+import org.deegree.cs.refs.components.GeodeticDatumRef;
+import org.deegree.cs.refs.coordinatesystem.CRSRef;
+import org.deegree.cs.refs.coordinatesystem.GeographicCRSRef;
+import org.deegree.cs.refs.projections.ProjectionRef;
 import org.deegree.cs.transformations.Transformation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -117,7 +121,7 @@ public class CoordinateSystemParser extends DefinitionParser {
      * @param configURL
      *            to be used for the configuration.
      */
-    public CoordinateSystemParser( DeegreeCRSStore<StAXResource> provider, URL configURL ) {
+    public CoordinateSystemParser( DeegreeCRSStore provider, URL configURL ) {
         super( provider, configURL );
     }
 
@@ -126,24 +130,24 @@ public class CoordinateSystemParser extends DefinitionParser {
      * @return the
      * @throws CRSConfigurationException
      */
-    public CoordinateSystem getCRSForId( String crsId )
+    public ICRS getCRSForId( String crsId )
                             throws CRSConfigurationException {
         if ( crsId == null || "".equals( crsId.trim() ) ) {
             return null;
         }
         String tmpCRSId = crsId.trim();
-        CoordinateSystem result = getProvider().getCachedIdentifiable( CoordinateSystem.class, tmpCRSId );
+        CRS result = getStore().getCachedIdentifiable( CRS.class, tmpCRSId );
         if ( result == null ) {
             try {
                 final XMLStreamReader configReader = getConfigReader();
                 result = parseCoordinateSystem( configReader );
                 if ( result != null ) {
-                    getProvider().addIdToCache( result, false );
+                    getStore().addIdToCache( result, false );
                 }
                 while ( result != null && !result.hasId( tmpCRSId, false, true ) ) {
                     result = parseCoordinateSystem( configReader );
                     if ( result != null ) {
-                        getProvider().addIdToCache( result, false );
+                        getStore().addIdToCache( result, false );
                     }
                 }
 
@@ -163,7 +167,7 @@ public class CoordinateSystemParser extends DefinitionParser {
      *             if something went wrong while constructing the crs.
      * @throws XMLStreamException
      */
-    public CoordinateSystem parseCoordinateSystem( XMLStreamReader reader )
+    public CRS parseCoordinateSystem( XMLStreamReader reader )
                             throws CRSConfigurationException, XMLStreamException {
         if ( reader == null || !super.moveReaderToNextIdentifiable( reader, knownCRS ) ) {
             LOG.debug( "Could not get a crs, no more definitions left." );
@@ -172,7 +176,7 @@ public class CoordinateSystemParser extends DefinitionParser {
         QName crsType = reader.getName();
 
         // the crsDefinition should point to the correct crs.
-        CoordinateSystem result = null;
+        CRS result = null;
         try {
             if ( GEO_ELEM.equals( crsType ) ) {
                 result = parseGeographicCRS( reader );
@@ -275,13 +279,13 @@ public class CoordinateSystemParser extends DefinitionParser {
      *             if a required element could not be found, or an xmlParsingException occurred.
      * @throws XMLStreamException
      */
-    protected CoordinateSystem parseProjectedCRS( XMLStreamReader reader )
+    protected CRS parseProjectedCRS( XMLStreamReader reader )
                             throws CRSConfigurationException, XMLStreamException {
         if ( reader == null ) {
             return null;
         }
         // no need to get it from the cache, because the abstract provider checked it already.
-        CRSIdentifiable id = parseIdentifiable( reader );
+        CRSResource id = parseIdentifiable( reader );
 
         Axis[] axis = parseAxisOrder( reader );
 
@@ -309,19 +313,10 @@ public class CoordinateSystemParser extends DefinitionParser {
             throw new CRSConfigurationException( Messages.getMessage( "CRS_CONFIG_REFERENCE_ID_IS_EMPTY",
                                                                       "UsedGeographicCRS", id.getCode() ) );
         }
-        GeographicCRS geoCRS = (GeographicCRS) getProvider().getCRSByCode( CRSCodeType.valueOf( usedGeographicCRS ) );
-        if ( geoCRS == null || geoCRS.getType() != GEOGRAPHIC ) {
-            throw new CRSConfigurationException( Messages.getMessage( "CRS_CONFIG_PROJECTEDCRS_FALSE_CRSREF",
-                                                                      id.getCode(), usedGeographicCRS ) );
-        }
-
-        // then the projection.
-        Projection projection = getProvider().getProjection( usedProjection );
-        if ( projection == null ) {
-            throw new CRSConfigurationException( Messages.getMessage( "CRS_CONFIG_PROJECTEDCRS_FALSE_PROJREF",
-                                                                      id.getCode(), usedProjection ) );
-        }
-
+        IGeographicCRS geoCRS = new GeographicCRSRef( store.getResolver( RESOURCETYPE.CRS ), '#' + usedGeographicCRS,
+                                                            null );
+        IProjection projection = new ProjectionRef( store.getResolver( RESOURCETYPE.PROJECTION ), '#' + usedProjection,
+                                                          null );
         // adding to cache will be done in AbstractCRSProvider.
         return new ProjectedCRS( transformations, geoCRS, projection, axis, id );
     }
@@ -335,18 +330,18 @@ public class CoordinateSystemParser extends DefinitionParser {
      *             if a required element could not be found, or an xmlParsingException occurred.
      * @throws XMLStreamException
      */
-    protected CoordinateSystem parseGeographicCRS( XMLStreamReader reader )
+    protected CRS parseGeographicCRS( XMLStreamReader reader )
                             throws CRSConfigurationException, XMLStreamException {
         if ( reader == null ) {
             return null;
         }
-        CRSIdentifiable id = parseIdentifiable( reader );
+        CRSResource id = parseIdentifiable( reader );
         // no need to get it from the cache, because the abstract provider checked it already.
         Axis[] axis = parseAxisOrder( reader );
 
         List<Transformation> transformations = parseAlternativeTransformations( reader );
         // get the datum
-        GeodeticDatum usedDatum = parseReferencedGeodeticDatum( reader, id.getCode().getOriginal() );
+        IGeodeticDatum usedDatum = parseReferencedGeodeticDatum( reader, id.getCode().getOriginal() );
 
         GeographicCRS result = new GeographicCRS( transformations, usedDatum, axis, id );
         // adding to cache will be done in AbstractCRSProvider.
@@ -361,13 +356,13 @@ public class CoordinateSystemParser extends DefinitionParser {
      *             if a required element could not be found, or an xmlParsingException occurred.
      * @throws XMLStreamException
      */
-    protected CoordinateSystem parseGeocentricCRS( XMLStreamReader reader )
+    protected CRS parseGeocentricCRS( XMLStreamReader reader )
                             throws CRSConfigurationException, XMLStreamException {
         // no need to get it from the cache, because the abstract provider checked it already.
-        CRSIdentifiable id = parseIdentifiable( reader );
+        CRSResource id = parseIdentifiable( reader );
         Axis[] axis = parseAxisOrder( reader );
         List<Transformation> transformations = parseAlternativeTransformations( reader );
-        GeodeticDatum usedDatum = parseReferencedGeodeticDatum( reader, id.getCode().getOriginal() );
+        IGeodeticDatum usedDatum = parseReferencedGeodeticDatum( reader, id.getCode().getOriginal() );
         GeocentricCRS result = new GeocentricCRS( transformations, usedDatum, axis, id );
         // adding to cache will be done in AbstractCRSProvider.
         return result;
@@ -382,10 +377,10 @@ public class CoordinateSystemParser extends DefinitionParser {
      * @throws CRSConfigurationException
      *             if a required element could not be found, or an xmlParsingException occurred.
      */
-    protected CoordinateSystem parseCompoundCRS( XMLStreamReader reader )
+    protected CRS parseCompoundCRS( XMLStreamReader reader )
                             throws XMLStreamException {
         // no need to get it from the cache, because the abstract provider checked it already.
-        CRSIdentifiable id = parseIdentifiable( reader );
+        CRSResource id = parseIdentifiable( reader );
         String usedCRS = null;
         try {
             usedCRS = getRequiredText( reader, new QName( CRS_NS, "UsedCRS" ), true );
@@ -402,13 +397,8 @@ public class CoordinateSystemParser extends DefinitionParser {
                                                                       id.getCode() ) );
         }
 
-        CoordinateSystem usedCoordinateSystem = getProvider().getCRSByCode( CRSCodeType.valueOf( usedCRS ) );
-        if ( usedCoordinateSystem == null
-             || ( usedCoordinateSystem.getType() != GEOGRAPHIC && usedCoordinateSystem.getType() != PROJECTED ) ) {
-            throw new CRSConfigurationException( Messages.getMessage( "CRS_CONFIG_COMPOUND_FALSE_CRSREF", id.getCode(),
-                                                                      usedCRS ) );
-        }
-
+        ICRS usedCoordinateSystem = new CRSRef( store.getResolver( RESOURCETYPE.CRS ),
+                                                                                '#' + usedCRS, null );
         // get the datum
         Axis heightAxis = null;
         try {
@@ -438,7 +428,7 @@ public class CoordinateSystemParser extends DefinitionParser {
      *             given.
      * @throws XMLStreamException
      */
-    protected GeodeticDatum parseReferencedGeodeticDatum( XMLStreamReader reader, String parentID )
+    protected IGeodeticDatum parseReferencedGeodeticDatum( XMLStreamReader reader, String parentID )
                             throws CRSConfigurationException, XMLStreamException {
         String datumID = null;
         try {
@@ -451,11 +441,7 @@ public class CoordinateSystemParser extends DefinitionParser {
             throw new CRSConfigurationException( Messages.getMessage( "CRS_CONFIG_REFERENCE_ID_IS_EMPTY", "usedDatum",
                                                                       parentID ) );
         }
-        GeodeticDatum usedDatum = getProvider().getGeodeticDatumForId( datumID );
-        if ( usedDatum == null ) {
-            throw new CRSConfigurationException(
-                                                 Messages.getMessage( "CRS_CONFIG_USEDDATUM_IS_NULL", datumID, parentID ) );
-        }
+        IGeodeticDatum usedDatum = new GeodeticDatumRef( store.getResolver( RESOURCETYPE.DATUM ), '#' + datumID, null );
         return usedDatum;
     }
 
@@ -468,7 +454,6 @@ public class CoordinateSystemParser extends DefinitionParser {
      * @return the list of all available crs id's
      */
     public List<CRSCodeType[]> getAvailableCRSs() {
-
         List<CRSCodeType[]> result = new ArrayList<CRSCodeType[]>( 4000 );
         URL url = super.getConfigURL();
         InputStream confStream = null;
@@ -478,9 +463,9 @@ public class CoordinateSystemParser extends DefinitionParser {
                                                                                           confStream );
             StAXParsingHelper.nextElement( reader );
 
-            CoordinateSystem crs = parseCoordinateSystem( reader );
+            CRS crs = parseCoordinateSystem( reader );
             while ( crs != null ) {
-                getProvider().addIdToCache( crs, false );
+                getStore().addIdToCache( crs, false );
                 result.add( crs.getCodes() );
                 crs = parseCoordinateSystem( reader );
             }
@@ -498,4 +483,5 @@ public class CoordinateSystemParser extends DefinitionParser {
         }
         return result;
     }
+
 }

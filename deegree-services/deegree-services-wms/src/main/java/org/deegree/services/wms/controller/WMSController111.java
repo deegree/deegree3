@@ -45,7 +45,8 @@ import javax.servlet.ServletException;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
-import org.deegree.cs.CRS;
+import org.deegree.cs.coordinatesystems.ICRS;
+import org.deegree.cs.persistence.CRSManager;
 import org.deegree.protocol.wms.Utils;
 import org.deegree.services.controller.AbstractOGCServiceController;
 import org.deegree.services.controller.ows.NamespacelessOWSExceptionXMLAdapter;
@@ -94,7 +95,7 @@ public class WMSController111 extends WMSControllerBase {
      * @param crs
      * @return the auto crs as defined in WMS 1.1.1 spec Annex E
      */
-    public static CRS getCRS( String crs ) {
+    public static ICRS getCRS( String crs ) {
         if ( crs.startsWith( "AUTO:" ) ) {
             String[] cs = crs.split( ":" )[1].split( "," );
             int id = Integer.parseInt( cs[0] );
@@ -105,7 +106,7 @@ public class WMSController111 extends WMSControllerBase {
 
             return Utils.getAutoCRS( id, lon0, lat0 );
         }
-        return new CRS( crs, true );
+        return CRSManager.getCRSRef( crs, true );
     }
 
     @Override

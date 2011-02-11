@@ -50,7 +50,7 @@ import org.deegree.coverage.raster.interpolation.InterpolationType;
 import org.deegree.coverage.raster.io.RasterIOOptions;
 import org.deegree.coverage.raster.utils.RasterBuilder;
 import org.deegree.coverage.raster.utils.RasterFactory;
-import org.deegree.cs.CRS;
+import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.exceptions.TransformationException;
 import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.geometry.Envelope;
@@ -70,7 +70,7 @@ public class RasterTreeBuilder {
 
     private boolean overwriteExistingFiles = true;
 
-    private CRS dstSRS;
+    private ICRS dstSRS;
 
     private Envelope dstEnv;
 
@@ -106,7 +106,7 @@ public class RasterTreeBuilder {
      * @param interpolation
      *            the raster interpolation
      */
-    public RasterTreeBuilder( RasterIOOptions options, CRS dstSRS, File dstDir, int maxTileSize,
+    public RasterTreeBuilder( RasterIOOptions options, ICRS dstSRS, File dstDir, int maxTileSize,
                               InterpolationType interpolation ) {
         super();
         this.rasterOptions = options;
@@ -211,9 +211,9 @@ public class RasterTreeBuilder {
                 dstEnv = srcRaster.getEnvelope();
                 dstSRS = srcRaster.getCoordinateSystem();
             } else {
-                GeometryTransformer dstTransformer = new GeometryTransformer( dstSRS.getWrappedCRS() );
+                GeometryTransformer dstTransformer = new GeometryTransformer( dstSRS );
                 dstEnv = (Envelope) dstTransformer.transform( srcRaster.getEnvelope(),
-                                                              srcRaster.getCoordinateSystem().getWrappedCRS() );
+                                                              srcRaster.getCoordinateSystem() );
             }
         }
 
@@ -301,7 +301,7 @@ public class RasterTreeBuilder {
                                            int numThreads )
                             throws IllegalArgumentException, UnknownCRSException, IOException {
         // final MemoryTileContainer tileContainer = new MemoryTileContainer();
-        final RasterTransformer transf = new RasterTransformer( dstSRS.getWrappedCRS() );
+        final RasterTransformer transf = new RasterTransformer( dstSRS );
         transf.setBackgroundValue( backgroundValue );
 
         ExecutorService executor = Executors.newFixedThreadPool( numThreads );

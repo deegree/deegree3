@@ -56,8 +56,7 @@ import javax.xml.stream.XMLStreamWriter;
 
 import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.commons.xml.stax.StAXParsingHelper;
-import org.deegree.cs.CRS;
-import org.deegree.cs.coordinatesystems.CoordinateSystem;
+import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.exceptions.OutsideCRSDomainException;
 import org.deegree.cs.exceptions.TransformationException;
 import org.deegree.cs.exceptions.UnknownCRSException;
@@ -79,8 +78,9 @@ public class XMLTransformer extends GeometryTransformer {
     /**
      * @param targetCRS
      * @throws IllegalArgumentException
+     * @throws UnknownCRSException
      */
-    public XMLTransformer( CoordinateSystem targetCRS ) throws IllegalArgumentException {
+    public XMLTransformer( ICRS targetCRS ) throws IllegalArgumentException {
         super( targetCRS );
     }
 
@@ -127,7 +127,7 @@ public class XMLTransformer extends GeometryTransformer {
      * @throws UnknownCRSException
      * @throws TransformationException
      */
-    public void transform( XMLStreamReader reader, XMLStreamWriter writer, CoordinateSystem sourceCRS,
+    public void transform( XMLStreamReader reader, XMLStreamWriter writer, ICRS sourceCRS,
                            GMLVersion gmlVersion, boolean testValidArea, List<Transformation> requestedTransformation )
                             throws XMLStreamException, XMLParsingException, IllegalArgumentException,
                             OutsideCRSDomainException, UnknownCRSException, TransformationException {
@@ -169,7 +169,7 @@ public class XMLTransformer extends GeometryTransformer {
         transform( reader, writer, null, gmlVersion, false, null );
     }
 
-    private void transformStream( GMLStreamReader gmlReader, GMLStreamWriter gmlWriter, CoordinateSystem sourceCRS,
+    private void transformStream( GMLStreamReader gmlReader, GMLStreamWriter gmlWriter, ICRS sourceCRS,
                                   boolean testValidArea, List<Transformation> toBeUsedTransformations )
                             throws XMLStreamException, XMLParsingException, UnknownCRSException,
                             IllegalArgumentException, TransformationException, OutsideCRSDomainException {
@@ -210,11 +210,11 @@ public class XMLTransformer extends GeometryTransformer {
                 if ( gmlReader.isGeometryOrEnvelopeElement() ) {
                     Geometry geom = gmlReader.readGeometryOrEnvelope();
                     if ( geom != null ) {
-                        CoordinateSystem geomCRS = sourceCRS;
+                        ICRS geomCRS = sourceCRS;
                         if ( geomCRS == null ) {
-                            CRS gCRS = geom.getCoordinateSystem();
+                            ICRS gCRS = geom.getCoordinateSystem();
                             if ( gCRS != null ) {
-                                geomCRS = gCRS.getWrappedCRS();
+                                geomCRS = gCRS;
                             } else {
                                 throw new TransformationException(
                                                                    "Could not determine Coordinate System of geometry: "

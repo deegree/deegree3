@@ -38,6 +38,7 @@ package org.deegree.cs.components;
 
 import org.deegree.cs.CRSCodeType;
 import org.deegree.cs.CRSIdentifiable;
+import org.deegree.cs.CRSResource;
 
 /**
  * A <code>VerticalDatum</code> is a datum which only has one axis. It is used for vertical measurements.
@@ -49,13 +50,13 @@ import org.deegree.cs.CRSIdentifiable;
  * @version $Revision$, $Date$
  * 
  */
-public class VerticalDatum extends Datum {
+public class VerticalDatum extends Datum implements IVerticalDatum {
 
     /**
      * @param id
      *            of this datum.
      */
-    public VerticalDatum( CRSIdentifiable id ) {
+    public VerticalDatum( CRSResource id ) {
         super( id );
     }
 

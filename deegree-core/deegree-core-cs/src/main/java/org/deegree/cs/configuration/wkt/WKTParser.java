@@ -63,16 +63,21 @@ import javax.vecmath.Point2d;
 
 import org.deegree.cs.CRSCodeType;
 import org.deegree.cs.CRSIdentifiable;
+import org.deegree.cs.CRSResource;
 import org.deegree.cs.components.Axis;
 import org.deegree.cs.components.Ellipsoid;
 import org.deegree.cs.components.GeodeticDatum;
+import org.deegree.cs.components.IAxis;
+import org.deegree.cs.components.IUnit;
 import org.deegree.cs.components.PrimeMeridian;
 import org.deegree.cs.components.Unit;
 import org.deegree.cs.components.VerticalDatum;
 import org.deegree.cs.coordinatesystems.CompoundCRS;
-import org.deegree.cs.coordinatesystems.CoordinateSystem;
+import org.deegree.cs.coordinatesystems.CRS;
 import org.deegree.cs.coordinatesystems.GeocentricCRS;
 import org.deegree.cs.coordinatesystems.GeographicCRS;
+import org.deegree.cs.coordinatesystems.IGeographicCRS;
+import org.deegree.cs.coordinatesystems.IVerticalCRS;
 import org.deegree.cs.coordinatesystems.ProjectedCRS;
 import org.deegree.cs.coordinatesystems.VerticalCRS;
 import org.deegree.cs.exceptions.UnknownUnitException;
@@ -549,7 +554,7 @@ public class WKTParser {
         return new VerticalDatum( code, name, null, null, null );
     }
 
-    private CoordinateSystem realParseCoordinateSystem()
+    private CRS realParseCoordinateSystem()
                             throws IOException {
         tokenizer.nextToken();
         String crsType = tokenizer.sval; // expecting StreamTokenizer.TT_WORD
@@ -588,7 +593,7 @@ public class WKTParser {
         passOverOpeningBracket();
         String name = null;
         VerticalDatum verticalDatum = null;
-        Unit unit = null;
+        IUnit unit = null;
         Axis axis = new Axis( "", Axis.AO_OTHER ); // in case there is no axis defined
         CRSCodeType code = CRSCodeType.getUndefined();
         while ( true ) {
@@ -795,14 +800,14 @@ public class WKTParser {
                             throws IOException {
         passOverOpeningBracket();
         String name = null;
-        GeographicCRS geographicCRS = null;
+        IGeographicCRS geographicCRS = null;
         String projectionType = null;
         CRSCodeType projectionCode = CRSCodeType.getUndefined();
         Map<String, Double> params = new HashMap<String, Double>();
-        Unit unit = null;
-        Axis axis1 = new Axis( "X", Axis.AO_EAST ); // the default values for PROJCS axes, based on the OGC
+        IUnit unit = null;
+        IAxis axis1 = new Axis( "X", Axis.AO_EAST ); // the default values for PROJCS axes, based on the OGC
         // specification
-        Axis axis2 = new Axis( "Y", Axis.AO_NORTH );
+        IAxis axis2 = new Axis( "Y", Axis.AO_NORTH );
         CRSCodeType code = CRSCodeType.getUndefined();
         while ( true ) {
             tokenizer.nextToken();
@@ -902,28 +907,26 @@ public class WKTParser {
             code = new CRSCodeType( name );
         }
 
-        CRSIdentifiable baseCRS = new CRSIdentifiable( new CRSCodeType[] { code }, new String[] { name }, null, null,
-                                                       null );
-        CRSIdentifiable baseProjCRS = new CRSIdentifiable( new CRSCodeType[] { projectionCode },
-                                                           new String[] { projectionType }, null, null, null );
+        CRSResource baseCRS = new CRSIdentifiable( new CRSCodeType[] { code }, new String[] { name }, null, null, null );
+        CRSResource baseProjCRS = new CRSIdentifiable( new CRSCodeType[] { projectionCode },
+                                                       new String[] { projectionType }, null, null, null );
 
         Point2d pointOrigin = new Point2d( DTR * determineLongitude( params ), DTR * determineLatitude( params ) );
 
-        Axis[] axes = new Axis[] { axis1, axis2 };
+        IAxis[] axes = new IAxis[] { axis1, axis2 };
         if ( projectionType.equalsIgnoreCase( "transverse_mercator" )
              || ( projectionType.equalsIgnoreCase( "transverse mercator" ) )
              || projectionType.equalsIgnoreCase( "Gauss_Kruger" ) ) {
-            return new ProjectedCRS( new TransverseMercator( true, 
-                                                             params.get( FALSE_NORTHING.toString() ),
+            return new ProjectedCRS( new TransverseMercator( true, params.get( FALSE_NORTHING.toString() ),
                                                              params.get( FALSE_EASTING.toString() ), pointOrigin, unit,
                                                              params.get( SCALE_AT_NATURAL_ORIGIN.toString() ),
                                                              baseProjCRS ), geographicCRS, axes, baseCRS );
 
         } else if ( projectionType.equalsIgnoreCase( "Lambert_Conformal_Conic_1SP" ) ) {
-            return new ProjectedCRS( new LambertConformalConic(  params.get( FALSE_NORTHING.toString() ),
+            return new ProjectedCRS( new LambertConformalConic( params.get( FALSE_NORTHING.toString() ),
                                                                 params.get( FALSE_EASTING.toString() ), pointOrigin,
                                                                 unit, params.get( SCALE_AT_NATURAL_ORIGIN.toString() ),
-                                                                baseProjCRS ),geographicCRS, axes, baseCRS );
+                                                                baseProjCRS ), geographicCRS, axes, baseCRS );
 
         } else if ( projectionType.equalsIgnoreCase( "Lambert_Conformal_Conic_2SP" )
                     || projectionType.equalsIgnoreCase( "Lambert_Conformal_Conic" ) ) {
@@ -931,28 +934,26 @@ public class WKTParser {
                                      new LambertConformalConic(
                                                                 DTR * params.get( FIRST_PARALLEL_LATITUDE.toString() ),
                                                                 DTR * params.get( SECOND_PARALLEL_LATITUDE.toString() ),
-                                                                 params.get( FALSE_NORTHING.toString() ),
+                                                                params.get( FALSE_NORTHING.toString() ),
                                                                 params.get( FALSE_EASTING.toString() ), pointOrigin,
                                                                 unit, params.get( SCALE_AT_NATURAL_ORIGIN.toString() ),
-                                                                baseProjCRS ),geographicCRS, axes, baseCRS );
+                                                                baseProjCRS ), geographicCRS, axes, baseCRS );
         } else if ( projectionType.equalsIgnoreCase( "Stereographic_Alternative" )
                     || projectionType.equalsIgnoreCase( "Double_Stereographic" )
                     || projectionType.equalsIgnoreCase( "Oblique_Stereographic" ) ) {
-            return new ProjectedCRS( new StereographicAlternative( 
-                                                                   params.get( FALSE_NORTHING.toString() ),
+            return new ProjectedCRS( new StereographicAlternative( params.get( FALSE_NORTHING.toString() ),
                                                                    params.get( FALSE_EASTING.toString() ), pointOrigin,
                                                                    unit,
                                                                    params.get( SCALE_AT_NATURAL_ORIGIN.toString() ),
-                                                                   baseProjCRS ),geographicCRS, axes, baseCRS );
+                                                                   baseProjCRS ), geographicCRS, axes, baseCRS );
 
         } else if ( projectionType.equalsIgnoreCase( "Stereographic_Azimuthal" ) ) {
             LOG.warn( "True scale latitude is not read from the StereoGraphic azimuthal projection yet." );
-            return new ProjectedCRS( new StereographicAzimuthal( 
-                                                                 params.get( FALSE_NORTHING.toString() ),
+            return new ProjectedCRS( new StereographicAzimuthal( params.get( FALSE_NORTHING.toString() ),
                                                                  params.get( FALSE_EASTING.toString() ), pointOrigin,
                                                                  unit,
                                                                  params.get( SCALE_AT_NATURAL_ORIGIN.toString() ),
-                                                                 baseProjCRS ),geographicCRS, axes, baseCRS );
+                                                                 baseProjCRS ), geographicCRS, axes, baseCRS );
 
         } else {
             throw new WKTParsingException( "The projection type " + projectionType + " is not supported." );
@@ -1053,7 +1054,7 @@ public class WKTParser {
                             throws IOException {
         passOverOpeningBracket();
         String name = null;
-        List<CoordinateSystem> twoCRSs = new ArrayList<CoordinateSystem>();
+        List<CRS> twoCRSs = new ArrayList<CRS>();
         CRSCodeType code = CRSCodeType.getUndefined();
         while ( true ) {
             tokenizer.nextToken();
@@ -1097,13 +1098,13 @@ public class WKTParser {
                                            + tokenizer.lineno() );
         }
 
-        VerticalCRS verticalCRS = null;
-        CoordinateSystem underlyingCRS = null;
+        IVerticalCRS verticalCRS = null;
+        CRS underlyingCRS = null;
         if ( twoCRSs.get( 0 ) instanceof VerticalCRS ) {
-            verticalCRS = (VerticalCRS) twoCRSs.get( 0 );
+            verticalCRS = (IVerticalCRS) twoCRSs.get( 0 );
             underlyingCRS = twoCRSs.get( 1 );
         } else if ( twoCRSs.get( 1 ) instanceof VerticalCRS ) {
-            verticalCRS = (VerticalCRS) twoCRSs.get( 1 );
+            verticalCRS = (IVerticalCRS) twoCRSs.get( 1 );
             underlyingCRS = twoCRSs.get( 0 );
         } else {
             throw new WKTParsingException( "One of the CRSs from the COMPD_CS element must be a VERT_CS. Before line "
@@ -1123,7 +1124,7 @@ public class WKTParser {
      * @throws IOException
      *             if the provided WKT has a syntax error
      */
-    public CoordinateSystem parseCoordinateSystem()
+    public CRS parseCoordinateSystem()
                             throws IOException {
         try {
             return realParseCoordinateSystem();
@@ -1165,11 +1166,11 @@ public class WKTParser {
     /**
      * @param wkt
      *            the wkt code as a {@link String}
-     * @return the parsed {@link CoordinateSystem}
+     * @return the parsed {@link CRS}
      * @throws IOException
      *             if the provided WKT has a syntax error
      */
-    public static CoordinateSystem parse( String wkt )
+    public static CRS parse( String wkt )
                             throws IOException {
         WKTParser parse = new WKTParser( new BufferedReader( new StringReader( wkt ) ) );
         return parse.parseCoordinateSystem();

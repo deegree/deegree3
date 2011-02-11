@@ -50,9 +50,10 @@ import javax.vecmath.Point2d;
 
 import org.deegree.commons.annotations.LoggingNotes;
 import org.deegree.cs.CRSIdentifiable;
+import org.deegree.cs.CRSResource;
 import org.deegree.cs.EPSGCode;
-import org.deegree.cs.components.Unit;
-import org.deegree.cs.coordinatesystems.GeographicCRS;
+import org.deegree.cs.components.IUnit;
+import org.deegree.cs.coordinatesystems.IGeographicCRS;
 import org.deegree.cs.exceptions.ProjectionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -80,7 +81,7 @@ import org.slf4j.LoggerFactory;
  * 
  */
 @LoggingNotes(debug = "Get information about incoming ordinates of the (inverse) projection.")
-public class TransverseMercator extends CylindricalProjection {
+public class TransverseMercator extends CylindricalProjection implements ITransverseMercator {
 
     private static Logger LOG = LoggerFactory.getLogger( TransverseMercator.class );
 
@@ -112,7 +113,7 @@ public class TransverseMercator extends CylindricalProjection {
      *            an identifiable instance containing information about this projection
      */
     public TransverseMercator( boolean northernHemisphere, double falseNorthing, double falseEasting,
-                               Point2d naturalOrigin, Unit units, double scale, CRSIdentifiable id ) {
+                               Point2d naturalOrigin, IUnit units, double scale, CRSResource id ) {
         super( falseNorthing, falseEasting, naturalOrigin, units, scale, true,// always conformal
                false/* not equalArea */, id );
         this.hemisphere = ( northernHemisphere ) ? 1 : -1;
@@ -131,7 +132,7 @@ public class TransverseMercator extends CylindricalProjection {
      * @param scale
      */
     public TransverseMercator( boolean northernHemisphere, double falseNorthing, double falseEasting,
-                               Point2d naturalOrigin, Unit units, double scale ) {
+                               Point2d naturalOrigin, IUnit units, double scale ) {
         this( northernHemisphere, falseNorthing, falseEasting, naturalOrigin, units, scale,
               new CRSIdentifiable( new EPSGCode( 9807 ) ) );
     }
@@ -150,7 +151,7 @@ public class TransverseMercator extends CylindricalProjection {
      * @param id
      *            an identifiable instance containing information about this projection
      */
-    public TransverseMercator( int zone, boolean northernHemisphere, Unit units, CRSIdentifiable id ) {
+    public TransverseMercator( int zone, boolean northernHemisphere, IUnit units, CRSResource id ) {
         super( ( northernHemisphere ? 0 : 10000000 ), 500000,
                new Point2d( ( --zone + .5 ) * Math.PI / 30. - Math.PI, 0 ), units, 0.9996, true /* always conformal */,
                false /* not equalArea */, id );
@@ -169,7 +170,7 @@ public class TransverseMercator extends CylindricalProjection {
      * @param geographicCRS
      * @param units
      */
-    public TransverseMercator( int zone, boolean northernHemisphere, Unit units ) {
+    public TransverseMercator( int zone, boolean northernHemisphere, IUnit units ) {
         this( zone, northernHemisphere, units, new CRSIdentifiable( new EPSGCode( 9807 ) ) );
     }
 
@@ -182,7 +183,7 @@ public class TransverseMercator extends CylindricalProjection {
      * @param naturalOrigin
      * @param units
      */
-    public TransverseMercator( double falseNorthing, double falseEasting, Point2d naturalOrigin, Unit units ) {
+    public TransverseMercator( double falseNorthing, double falseEasting, Point2d naturalOrigin, IUnit units ) {
         this( true, falseNorthing, falseEasting, naturalOrigin, units, 1. );
     }
 
@@ -197,13 +198,13 @@ public class TransverseMercator extends CylindricalProjection {
      * @param id
      *            an identifiable instance containing information about this projection
      */
-    public TransverseMercator( double falseNorthing, double falseEasting, Point2d naturalOrigin, Unit units,
-                               CRSIdentifiable id ) {
+    public TransverseMercator( double falseNorthing, double falseEasting, Point2d naturalOrigin, IUnit units,
+                               CRSResource id ) {
         this( true, falseNorthing, falseEasting, naturalOrigin, units, 1., id );
     }
 
     @Override
-    public  synchronized Point2d doInverseProjection( GeographicCRS geographicCRS, double x, double y )
+    public synchronized Point2d doInverseProjection( IGeographicCRS geographicCRS, double x, double y )
                             throws ProjectionException {
         Point2d result = new Point2d( 0, 0 );
         LOG.debug( "InverseProjection, incoming points x: " + x + " y: " + y );
@@ -305,7 +306,7 @@ public class TransverseMercator extends CylindricalProjection {
      * @see org.deegree.cs.projections.Projection#doProjection(double, double)
      */
     @Override
-    public synchronized Point2d doProjection( GeographicCRS geographicCRS, double lambda, double phi )
+    public synchronized Point2d doProjection( IGeographicCRS geographicCRS, double lambda, double phi )
                             throws ProjectionException {
         // LOG.debug( "Projection, incoming points lambda: " + lambda + " phi: " + phi );
         LOG.debug( "Projection, incoming points lambda: " + Math.toDegrees( lambda ) + " phi: " + Math.toDegrees( phi ) );
@@ -427,12 +428,12 @@ public class TransverseMercator extends CylindricalProjection {
         return ( hemisphere == 1 );
     }
 
-    private synchronized double[] calculateEn( GeographicCRS geographicCRS ) {
+    private synchronized double[] calculateEn( IGeographicCRS geographicCRS ) {
         return getRectifiyingLatitudeValues( getSquaredEccentricity( geographicCRS ) );
     }
 
     // esp will can hold two values, for the sphere it will hold the scale, for the ellipsoid Snyder (p.61 8-12).
-    private synchronized double calculateEsp( GeographicCRS geographicCRS ) {
+    private synchronized double calculateEsp( IGeographicCRS geographicCRS ) {
         if ( isSpherical( geographicCRS ) ) {
             return getScale();
         } else {
@@ -440,7 +441,7 @@ public class TransverseMercator extends CylindricalProjection {
         }
     }
 
-    private synchronized double calculateMl0( GeographicCRS geographicCRS ) {
+    private synchronized double calculateMl0( IGeographicCRS geographicCRS ) {
         if ( isSpherical( geographicCRS ) ) {
             return .5 * calculateEsp( geographicCRS );
         } else {

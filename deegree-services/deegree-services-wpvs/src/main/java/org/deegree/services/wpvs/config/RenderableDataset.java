@@ -45,7 +45,7 @@ import java.util.List;
 
 import org.deegree.commons.utils.Pair;
 import org.deegree.commons.xml.XMLAdapter;
-import org.deegree.cs.CRS;
+import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.geometry.Envelope;
 import org.deegree.rendering.r3d.opengl.rendering.model.geometry.DirectGeometryBuffer;
 import org.deegree.rendering.r3d.opengl.rendering.model.manager.BuildingRenderer;
@@ -259,7 +259,7 @@ public class RenderableDataset extends Dataset<RenderableManager<?>> {
      * @param coordinateSystem
      * @return a default 3d envelope at 0,0 from the scene.
      */
-    private static Envelope createDefaultEnvelope( double[] translationVector, CRS coordinateSystem ) {
+    private static Envelope createDefaultEnvelope( double[] translationVector, ICRS coordinateSystem ) {
         return geomFac.createEnvelope( new double[] { 0, 0, 0 }, new double[] { DEFAULT_SPAN, DEFAULT_SPAN,
                                                                                DEFAULT_SPAN }, coordinateSystem );
     }

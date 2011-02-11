@@ -53,8 +53,9 @@ import org.deegree.commons.tom.ows.CodeType;
 import org.deegree.commons.utils.Pair;
 import org.deegree.commons.utils.kvp.InvalidParameterValueException;
 import org.deegree.commons.utils.kvp.KVPUtils;
-import org.deegree.cs.CRS;
+import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.exceptions.UnknownCRSException;
+import org.deegree.cs.persistence.CRSManager;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryFactory;
 import org.deegree.process.jaxb.java.BoundingBoxInputDefinition;
@@ -63,10 +64,10 @@ import org.deegree.process.jaxb.java.ComplexInputDefinition;
 import org.deegree.process.jaxb.java.ComplexOutputDefinition;
 import org.deegree.process.jaxb.java.LiteralInputDefinition;
 import org.deegree.process.jaxb.java.ProcessDefinition;
-import org.deegree.process.jaxb.java.ProcessletInputDefinition;
-import org.deegree.process.jaxb.java.ProcessletOutputDefinition;
 import org.deegree.process.jaxb.java.ProcessDefinition.InputParameters;
 import org.deegree.process.jaxb.java.ProcessDefinition.OutputParameters;
+import org.deegree.process.jaxb.java.ProcessletInputDefinition;
+import org.deegree.process.jaxb.java.ProcessletOutputDefinition;
 import org.deegree.protocol.wps.WPSConstants;
 import org.deegree.services.controller.ows.OWSException;
 import org.deegree.services.wps.DefaultExceptionCustomizer;
@@ -471,9 +472,10 @@ public class ExecuteRequestKVPAdapter {
             throw exceptionCustomizer.inputInvalidParameter( inputId, new Pair<String, String>( "crs", crsName ) );
         }
 
-        CRS crs = null;
+
+        ICRS crs = null;
         if ( crsName != null ) {
-            crs = new CRS( crsName );
+            crs = CRSManager.getCRSRef( crsName );
         }
 
         Envelope bbox = geomFac.createEnvelope( lowerX, lowerY, upperX, upperY, crs );

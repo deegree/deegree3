@@ -71,7 +71,8 @@ import javax.xml.stream.XMLStreamWriter;
 import org.deegree.commons.tom.ows.Version;
 import org.deegree.commons.utils.Pair;
 import org.deegree.commons.xml.CommonNamespaces;
-import org.deegree.cs.CRS;
+import org.deegree.cs.coordinatesystems.ICRS;
+import org.deegree.cs.persistence.CRSManager;
 import org.deegree.feature.persistence.FeatureStore;
 import org.deegree.feature.persistence.FeatureStoreException;
 import org.deegree.feature.types.FeatureType;
@@ -143,7 +144,7 @@ class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
 
     private boolean enableTransactions;
 
-    private List<CRS> querySRS;
+    private List<ICRS> querySRS;
 
     private WFService service;
 
@@ -152,7 +153,7 @@ class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
     GetCapabilitiesHandler( WFSController master, WFService service, Version version, XMLStreamWriter xmlWriter,
                             ServiceIdentificationType serviceId, ServiceProviderType serviceProvider,
                             Collection<FeatureType> servedFts, Map<QName, FeatureTypeMetadata> ftNameToFtMetadata,
-                            Set<String> sections, boolean enableTransactions, List<CRS> querySRS ) {
+                            Set<String> sections, boolean enableTransactions, List<ICRS> querySRS ) {
         this.master = master;
         this.service = service;
         this.version = version;
@@ -632,7 +633,8 @@ class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
                         LOG.error( "Cannot transform feature type envelope to WGS84." );
                     }
                 } else {
-                    env = new SimpleGeometryFactory().createEnvelope( -180, -90, 180, 90, new CRS( "EPSG:4326" ) );
+                    env = new SimpleGeometryFactory().createEnvelope( -180, -90, 180, 90,
+                                                                      CRSManager.getCRSRef( "EPSG:4326" ) );
                 }
 
                 writer.writeStartElement( OWS_NS, "WGS84BoundingBox" );
@@ -844,7 +846,8 @@ class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
                         LOG.error( "Cannot transform feature type envelope to WGS84." );
                     }
                 } else {
-                    env = new SimpleGeometryFactory().createEnvelope( -180, -90, 180, 90, new CRS( "EPSG:4326" ) );
+                    env = new SimpleGeometryFactory().createEnvelope( -180, -90, 180, 90,
+                                                                      CRSManager.getCRSRef( "EPSG:4326" ) );
                 }
 
                 writer.writeStartElement( OWS110_NS, "WGS84BoundingBox" );

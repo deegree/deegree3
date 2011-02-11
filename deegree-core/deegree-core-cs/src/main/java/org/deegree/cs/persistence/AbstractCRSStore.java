@@ -29,34 +29,33 @@
  Prof. Dr. Klaus Greve
  Postfach 1147, 53001 Bonn
  Germany
- http://www.geographie.uni-bonn.de/deegree/
+ http://ICompoundCRS.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
 
 package org.deegree.cs.persistence;
 
-import static org.deegree.cs.coordinatesystems.CoordinateSystem.CRSType.COMPOUND;
-import static org.deegree.cs.coordinatesystems.CoordinateSystem.CRSType.PROJECTED;
+import static org.deegree.cs.coordinatesystems.CRS.CRSType.COMPOUND;
+import static org.deegree.cs.coordinatesystems.CRS.CRSType.PROJECTED;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.deegree.commons.annotations.LoggingNotes;
 import org.deegree.cs.CRSCodeType;
 import org.deegree.cs.CRSIdentifiable;
+import org.deegree.cs.CRSResource;
 import org.deegree.cs.components.Axis;
-import org.deegree.cs.configuration.resources.CRSResource;
+import org.deegree.cs.components.IAxis;
+import org.deegree.cs.coordinatesystems.CRS;
 import org.deegree.cs.coordinatesystems.CompoundCRS;
-import org.deegree.cs.coordinatesystems.CoordinateSystem;
 import org.deegree.cs.coordinatesystems.GeographicCRS;
-import org.deegree.cs.coordinatesystems.ProjectedCRS;
+import org.deegree.cs.coordinatesystems.ICRS;
+import org.deegree.cs.coordinatesystems.ICompoundCRS;
+import org.deegree.cs.coordinatesystems.IProjectedCRS;
 import org.deegree.cs.exceptions.CRSConfigurationException;
-import org.deegree.cs.i18n.Messages;
-import org.deegree.cs.transformations.Transformation;
 import org.deegree.cs.transformations.TransformationFactory.DSTransform;
-import org.deegree.cs.transformations.coordinate.NotSupportedTransformation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -72,15 +71,17 @@ import org.slf4j.LoggerFactory;
  * 
  */
 @LoggingNotes(debug = "Get information about the initialization of the provider, as well as on requested objects.")
-public abstract class AbstractCRSStore<T> implements CRSStore {
+public abstract class AbstractCRSStore implements CRSStore {
+
+    public enum RESOURCETYPE {
+        CRS, ELLIPSOID, PM, DATUM, PROJECTION, TRANSFORMATION
+    }
 
     private static Logger LOG = LoggerFactory.getLogger( AbstractCRSStore.class );
 
-    private Map<CRSCodeType, CRSIdentifiable> cachedIdentifiables = new HashMap<CRSCodeType, CRSIdentifiable>();
+    private Map<CRSCodeType, CRSResource> cachedIdentifiables = new HashMap<CRSCodeType, CRSResource>();
 
-    private Map<CRSCodeType, CRSIdentifiable> cachedCRSXY = new HashMap<CRSCodeType, CRSIdentifiable>();
-
-    private CRSResource<T> resolver;
+    private Map<CRSCodeType, CRSResource> cachedCRSXY = new HashMap<CRSCodeType, CRSResource>();
 
     private DSTransform prefTransformType = DSTransform.HELMERT;
 
@@ -93,26 +94,22 @@ public abstract class AbstractCRSStore<T> implements CRSStore {
     }
 
     /**
-     * Retrieves the {@link CoordinateSystem} from the set provider that is identified by the given {@link CRSCodeType}
-     * id.
+     * Retrieves the {@link ICRS} from the set provider that is identified by the given {@link CRSCodeType} id.
      * 
      * @param id
      *            the {@link CRSCodeType} of the wanted crs
-     * @return the {@link CoordinateSystem} that corresponds to the id
+     * @return the {@link ICRS} that corresponds to the id
      * @throws CRSConfigurationException
      */
-    public CoordinateSystem getCRSByCode( CRSCodeType id )
+    public ICRS getCRSByCode( CRSCodeType id )
                             throws CRSConfigurationException {
         return getCRSByCode( id, false );
     }
 
     @Override
-    public CoordinateSystem getCRSByCode( CRSCodeType id, boolean forceXY )
+    public ICRS getCRSByCode( CRSCodeType id, boolean forceXY )
                             throws CRSConfigurationException {
-        if ( resolver == null ) {
-            throw new CRSConfigurationException( Messages.get( "AbstractCRSStore.NO_RESOLVER_INITIALIZED" ) );
-        }
-        CoordinateSystem result = null;
+        ICRS result = null;
         if ( id != null ) {
             if ( forceXY ) {
                 result = getCRSFromCache( cachedCRSXY, id, result );
@@ -121,12 +118,7 @@ public abstract class AbstractCRSStore<T> implements CRSStore {
                 result = getCRSFromCache( cachedIdentifiables, id, result );
                 if ( result == null ) {
                     LOG.debug( "No crs with id: " + id + " found in cache." );
-                    try {
-                        result = parseCoordinateSystem( resolver.getURIAsType( id.getOriginal() ) );
-                    } catch ( IOException e ) {
-                        LOG.debug( e.getLocalizedMessage(), e );
-                        throw new CRSConfigurationException( e );
-                    }
+                    result = getCoordinateSystem( id.getOriginal() );
                 }
                 if ( forceXY && result != null ) {
                     result = createXYCoordinateSystem( result );
@@ -144,32 +136,32 @@ public abstract class AbstractCRSStore<T> implements CRSStore {
             if ( forceXY ) {
                 addIdToCache( cachedCRSXY, result, false );
                 if ( result.getType() == COMPOUND ) {
-                    addIdToCache( cachedCRSXY, ( (CompoundCRS) result ).getUnderlyingCRS(), false );
-                    if ( ( (CompoundCRS) result ).getUnderlyingCRS().getType() == PROJECTED ) {
+                    addIdToCache( cachedCRSXY, ( (ICompoundCRS) result ).getUnderlyingCRS(), false );
+                    if ( ( (ICompoundCRS) result ).getUnderlyingCRS().getType() == PROJECTED ) {
                         addIdToCache( cachedCRSXY,
-                                      ( (ProjectedCRS) ( (CompoundCRS) result ).getUnderlyingCRS() ).getGeographicCRS(),
+                                      ( (IProjectedCRS) ( (ICompoundCRS) result ).getUnderlyingCRS() ).getGeographicCRS(),
                                       false );
                     }
                 } else if ( result.getType() == PROJECTED ) {
-                    addIdToCache( ( (ProjectedCRS) result ).getGeographicCRS(), false );
+                    addIdToCache( ( (IProjectedCRS) result ).getGeographicCRS(), false );
                 }
             } else {
                 addIdToCache( result, false );
                 if ( result.getType() == COMPOUND ) {
-                    addIdToCache( ( (CompoundCRS) result ).getUnderlyingCRS(), false );
-                    if ( ( (CompoundCRS) result ).getUnderlyingCRS().getType() == PROJECTED ) {
-                        addIdToCache( ( (ProjectedCRS) ( (CompoundCRS) result ).getUnderlyingCRS() ).getGeographicCRS(),
+                    addIdToCache( ( (ICompoundCRS) result ).getUnderlyingCRS(), false );
+                    if ( ( (ICompoundCRS) result ).getUnderlyingCRS().getType() == PROJECTED ) {
+                        addIdToCache( ( (IProjectedCRS) ( (ICompoundCRS) result ).getUnderlyingCRS() ).getGeographicCRS(),
                                       false );
                     }
                 } else if ( result.getType() == PROJECTED ) {
-                    addIdToCache( ( (ProjectedCRS) result ).getGeographicCRS(), false );
+                    addIdToCache( ( (IProjectedCRS) result ).getGeographicCRS(), false );
                 }
             }
         }
         return result;
     }
 
-    private CoordinateSystem createXYCoordinateSystem( CoordinateSystem result ) {
+    private ICRS createXYCoordinateSystem( ICRS result ) {
         switch ( result.getType() ) {
         case GEOGRAPHIC:
             return new GeographicCRS( ( (GeographicCRS) result ).getGeodeticDatum(),
@@ -182,10 +174,10 @@ public abstract class AbstractCRSStore<T> implements CRSStore {
         return result;
     }
 
-    private Axis[] forceXYAxisOrder( Axis[] axis ) {
+    private IAxis[] forceXYAxisOrder( IAxis[] axis ) {
         if ( axis != null && axis.length == 2
              && ( axis[0].getOrientation() == Axis.AO_NORTH || axis[0].getOrientation() == Axis.AO_SOUTH ) ) {
-            Axis[] xyAxis = new Axis[2];
+            IAxis[] xyAxis = new IAxis[2];
             xyAxis[0] = axis[1];
             xyAxis[1] = axis[0];
             return xyAxis;
@@ -193,51 +185,34 @@ public abstract class AbstractCRSStore<T> implements CRSStore {
         return axis;
     }
 
-    private CoordinateSystem getCRSFromCache( Map<CRSCodeType, CRSIdentifiable> cache, CRSCodeType id,
-                                              CoordinateSystem result ) {
+    private ICRS getCRSFromCache( Map<CRSCodeType, CRSResource> cache, CRSCodeType id, ICRS result ) {
         LOG.debug( "Trying to load crs with id: " + id + " from cache." );
         if ( LOG.isDebugEnabled() ) {
             LOG.debug( cachedIdentifiables.keySet().toString() );
         }
         if ( cache.containsKey( id ) ) {
-            CRSIdentifiable r = cache.get( id );
+            CRSResource r = cache.get( id );
             LOG.debug( "Found CRSIdentifiable: " + r.getCodeAndName() + " from given id: " + id );
-            if ( !( r instanceof CoordinateSystem ) ) {
+            if ( !( r instanceof ICRS ) ) {
                 LOG.error( "Found CRSIdentifiable: " + r.getCodeAndName()
                            + " but it is not a coordinate system, your db is inconsistent return null." );
                 r = null;
             }
-            result = (CoordinateSystem) r;
+            result = (CRS) r;
         }
         return result;
     }
 
     /**
-     * Set the resolver to the given resolver.
-     * 
-     * @param newResolver
-     */
-    public void setResolver( CRSResource<T> newResolver ) {
-        this.resolver = newResolver;
-    }
-
-    /**
-     * @return the resolver for a type.
-     */
-    protected CRSResource<T> getResolver() {
-        return resolver;
-    }
-
-    /**
      * @param crsDefinition
      *            containing the definition of a crs in the understood type.
-     * @return a {@link CoordinateSystem} instance initialized with values from the given type definition fragment or
+     * @return a {@link ICoordinateSystem} instance initialized with values from the given type definition fragment or
      *         <code>null</code> if the given crsDefinition is <code>null</code> or not known.
      * @throws CRSConfigurationException
      *             if an error was found in the given crsDefintion
      */
-    protected abstract CoordinateSystem parseCoordinateSystem( T crsDefinition )
-                            throws CRSConfigurationException;
+    // protected abstract ICoordinateSystem parseCoordinateSystem( T crsDefinition )
+    // throws CRSConfigurationException;
 
     /**
      * @param transformationDefinition
@@ -248,8 +223,8 @@ public abstract class AbstractCRSStore<T> implements CRSStore {
      * @throws CRSConfigurationException
      *             if an error was found in the given crsDefintion
      */
-    public abstract Transformation parseTransformation( T transformationDefinition )
-                            throws CRSConfigurationException;
+    // public abstract Transformation parseTransformation( T transformationDefinition )
+    // throws CRSConfigurationException;
 
     /**
      * Clears the cache.
@@ -276,7 +251,7 @@ public abstract class AbstractCRSStore<T> implements CRSStore {
      *            to search the cache for
      * @return the {@link CRSIdentifiable} of the first matching id or <code>null</code> if it was not found.
      */
-    public <V extends CRSIdentifiable> V getCachedIdentifiable( Class<V> expectedType, CRSIdentifiable ids ) {
+    public <V extends CRSResource> V getCachedIdentifiable( Class<V> expectedType, CRSResource ids ) {
         if ( ids == null ) {
             return null;
         }
@@ -294,7 +269,7 @@ public abstract class AbstractCRSStore<T> implements CRSStore {
      *            to search the cache for
      * @return the {@link CRSIdentifiable} of the first matching id or <code>null</code> if it was not found.
      */
-    public <V extends CRSIdentifiable> V getCachedIdentifiable( Class<V> expectedType, String[] ids ) {
+    public <V extends CRSResource> V getCachedIdentifiable( Class<V> expectedType, String[] ids ) {
         if ( ids == null || ids.length == 0 ) {
             return null;
         }
@@ -321,7 +296,7 @@ public abstract class AbstractCRSStore<T> implements CRSStore {
      *            an array of {@link CRSCodeType}s
      * @return the identifiable found in the cache corresponding to the (first) id
      */
-    public <V extends CRSIdentifiable> V getCachedIdentifiable( Class<V> expectedType, CRSCodeType[] ids ) {
+    public <V extends CRSResource> V getCachedIdentifiable( Class<V> expectedType, CRSCodeType[] ids ) {
         if ( ids == null || ids.length == 0 ) {
             return null;
         }
@@ -349,7 +324,7 @@ public abstract class AbstractCRSStore<T> implements CRSStore {
      * @return the {@link CRSIdentifiable} or <code>null</code> if it was not found or the wrong type was found.
      */
     @SuppressWarnings("unchecked")
-    public <V extends CRSIdentifiable> V getCachedIdentifiable( Class<V> expectedType, String id ) {
+    public <V extends CRSResource> V getCachedIdentifiable( Class<V> expectedType, String id ) {
         if ( id == null ) {
             return null;
         }
@@ -378,7 +353,7 @@ public abstract class AbstractCRSStore<T> implements CRSStore {
      * @return the identifiable found in the cache corresponding to the id
      */
     @SuppressWarnings("unchecked")
-    public <V extends CRSIdentifiable> V getCachedIdentifiable( Class<V> expectedType, CRSCodeType id ) {
+    private <V extends CRSResource> V getCachedIdentifiable( Class<V> expectedType, CRSCodeType id ) {
         if ( id == null ) {
             return null;
         }
@@ -406,7 +381,7 @@ public abstract class AbstractCRSStore<T> implements CRSStore {
      * @return the {@link CRSIdentifiable} or <code>null</code> if it was not found or the wrong type was found.
      */
     @SuppressWarnings("unchecked")
-    public <V extends CRSIdentifiable> V getCachedIdentifiable( String id ) {
+    public <V extends CRSResource> V getCachedIdentifiable( String id ) {
         if ( id == null ) {
             return null;
         }
@@ -427,7 +402,7 @@ public abstract class AbstractCRSStore<T> implements CRSStore {
      * @return a {@link CRSIdentifiable}-extending object that corresponds to the given id
      */
     @SuppressWarnings("unchecked")
-    public <V extends CRSIdentifiable> V getCachedIdentifiable( CRSCodeType id ) {
+    public <V extends CRSResource> V getCachedIdentifiable( CRSCodeType id ) {
         if ( id == null ) {
             return null;
         }
@@ -443,18 +418,18 @@ public abstract class AbstractCRSStore<T> implements CRSStore {
      * 
      * @param <V>
      *            type of CRSIdentifiable
-     * @param identifiable
+     * @param resource
      *            to insert into cache
      * @param update
      *            if true an existing identifiable in the cache will be overwritten.
      * @return the identifiable
      */
-    public synchronized <V extends CRSIdentifiable> V addIdToCache( V identifiable, boolean update ) {
-        return addIdToCache( cachedIdentifiables, identifiable, update );
+    public synchronized <V extends CRSResource> V addIdToCache( V resource, boolean update ) {
+        return addIdToCache( cachedIdentifiables, resource, update );
     }
 
-    private synchronized <V extends CRSIdentifiable> V addIdToCache( Map<CRSCodeType, CRSIdentifiable> cache,
-                                                                     V identifiable, boolean update ) {
+    private synchronized <V extends CRSResource> V addIdToCache( Map<CRSCodeType, CRSResource> cache, V identifiable,
+                                                                 boolean update ) {
         if ( identifiable == null ) {
             return null;
         }
@@ -481,4 +456,21 @@ public abstract class AbstractCRSStore<T> implements CRSStore {
     public DSTransform getPreferedTransformationType() {
         return prefTransformType;
     }
+
+    // @Override
+    // public ICRS getCRSByName( String id, boolean forceXY )
+    // throws UnknownCRSException {
+    // ICRS cachedIdentifiable = getCachedIdentifiable( ICRS.class, id );
+    // if ( cachedIdentifiable != null )
+    // return cachedIdentifiable;
+    //
+    // return getCoordinateSystem( id );
+    // }
+
+    /**
+     * @param id
+     * @return
+     */
+    public abstract ICRS getCoordinateSystem( String id );
+
 }

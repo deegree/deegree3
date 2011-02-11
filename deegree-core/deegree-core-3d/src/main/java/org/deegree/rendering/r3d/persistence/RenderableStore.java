@@ -32,12 +32,12 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 package org.deegree.rendering.r3d.persistence;
 
 import java.util.List;
 
-import org.deegree.cs.CRS;
+import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.rendering.r3d.opengl.rendering.model.geometry.DirectGeometryBuffer;
 import org.deegree.rendering.r3d.opengl.rendering.model.manager.RenderableManager;
 import org.deegree.rendering.r3d.opengl.rendering.model.prototype.RenderablePrototype;
@@ -52,10 +52,10 @@ import org.deegree.rendering.r3d.opengl.rendering.model.prototype.RenderableProt
  */
 public interface RenderableStore {
 
-    public void loadEntities( RenderableManager<?> renderer, CRS baseCRS );
-    
+    public void loadEntities( RenderableManager<?> renderer, ICRS baseCRS );
+
     public boolean isBillboard();
-    
-    public List<RenderablePrototype> loadProtoTypes( DirectGeometryBuffer geometryBuffer, CRS baseCRS );
+
+    public List<RenderablePrototype> loadProtoTypes( DirectGeometryBuffer geometryBuffer, ICRS baseCRS );
 
 }

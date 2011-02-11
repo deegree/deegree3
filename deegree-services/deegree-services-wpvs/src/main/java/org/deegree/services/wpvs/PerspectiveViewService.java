@@ -51,11 +51,10 @@ import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.utils.nio.DirectByteBufferPool;
 import org.deegree.commons.utils.nio.PooledByteBuffer;
 import org.deegree.commons.xml.XMLAdapter;
-import org.deegree.cs.CRS;
-import org.deegree.cs.components.Axis;
+import org.deegree.cs.components.IAxis;
 import org.deegree.cs.components.Unit;
-import org.deegree.cs.coordinatesystems.CoordinateSystem;
-import org.deegree.cs.exceptions.UnknownCRSException;
+import org.deegree.cs.coordinatesystems.ICRS;
+import org.deegree.cs.persistence.CRSManager;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryFactory;
 import org.deegree.rendering.r3d.ViewParams;
@@ -69,12 +68,12 @@ import org.deegree.services.controller.exception.ControllerException;
 import org.deegree.services.controller.ows.OWSException;
 import org.deegree.services.exception.ServiceInitException;
 import org.deegree.services.jaxb.wpvs.Copyright;
+import org.deegree.services.jaxb.wpvs.Copyright.Image;
 import org.deegree.services.jaxb.wpvs.DatasetDefinitions;
 import org.deegree.services.jaxb.wpvs.ServiceConfiguration;
 import org.deegree.services.jaxb.wpvs.SkyImages;
-import org.deegree.services.jaxb.wpvs.TranslationToLocalCRS;
-import org.deegree.services.jaxb.wpvs.Copyright.Image;
 import org.deegree.services.jaxb.wpvs.SkyImages.SkyImage;
+import org.deegree.services.jaxb.wpvs.TranslationToLocalCRS;
 import org.deegree.services.wpvs.config.ColormapDataset;
 import org.deegree.services.wpvs.config.DEMDataset;
 import org.deegree.services.wpvs.config.DEMTextureDataset;
@@ -117,7 +116,7 @@ public class PerspectiveViewService {
 
     private double[] translationToLocalCRS;
 
-    private CRS defaultCRS;
+    private ICRS defaultCRS;
 
     private GLPbuffer offscreenBuffer;
 
@@ -237,14 +236,15 @@ public class PerspectiveViewService {
      */
     private void initValuesFromDatasetDefinitions( DatasetDefinitions dsd )
                             throws ServiceInitException {
-        defaultCRS = new CRS( dsd.getBaseCRS() );
-        if ( defaultCRS == null ) {
-            throw new ServiceInitException( "A default crs must be given." );
-        }
         try {
-            CoordinateSystem crs = defaultCRS.getWrappedCRS();
+            defaultCRS = CRSManager.lookup( dsd.getBaseCRS() );
+        } catch ( Exception e ) {
+            LOG.debug( "No crs: ", e );
+            throw new ServiceInitException( e.getLocalizedMessage(), e );
+        }
+            ICRS crs = defaultCRS;
             if ( crs != null ) {
-                Axis[] axis = crs.getAxis();
+                IAxis[] axis = crs.getAxis();
                 if ( axis == null || axis.length == 0 ) {
                     throw new ServiceInitException( "The crs with code: " + crs.getCode()
                                                     + " does not have any axis. Hence it is invalid." );
@@ -256,11 +256,6 @@ public class PerspectiveViewService {
                                                                             + " is not based on a Metric system (projected crs), the WPVS only supports base types of metric coordinate systems." );
                 }
             }
-
-        } catch ( UnknownCRSException e ) {
-            LOG.debug( "No crs: ", e );
-            throw new ServiceInitException( e.getLocalizedMessage(), e );
-        }
 
         TranslationToLocalCRS translationToLocalCRS = dsd.getTranslationToLocalCRS();
         if ( translationToLocalCRS != null ) {
@@ -307,8 +302,7 @@ public class PerspectiveViewService {
     private Envelope initDatasets( XMLAdapter configAdapter, ServiceConfiguration sc, DatasetDefinitions dsd )
                             throws ServiceInitException {
         // create a minimal bounding box
-        Envelope sceneEnvelope = geomFactory.createEnvelope(
-                                                             new double[] { -this.translationToLocalCRS[0],
+        Envelope sceneEnvelope = geomFactory.createEnvelope( new double[] { -this.translationToLocalCRS[0],
                                                                            -this.translationToLocalCRS[1], 0 },
                                                              new double[] {
                                                                            -this.translationToLocalCRS[0]
@@ -335,8 +329,7 @@ public class PerspectiveViewService {
 
         LOG.debug( "The scene envelope after loading the dem: {} ", sceneEnvelope );
 
-        List<TerrainRenderingManager> matchingDatasourceObjects = demDatasets.getMatchingDatasourceObjects(
-                                                                                                            demDatasets.datasetTitles(),
+        List<TerrainRenderingManager> matchingDatasourceObjects = demDatasets.getMatchingDatasourceObjects( demDatasets.datasetTitles(),
                                                                                                             null );
         if ( matchingDatasourceObjects.isEmpty() ) {
             throw new ServiceInitException( "No elevationmodels configured, this may not be." );
@@ -528,15 +521,13 @@ public class PerspectiveViewService {
         if ( width > this.maxRequestWidth || height > this.maxRequestHeight ) {
             StringBuilder errorMessage = new StringBuilder( "Requested" );
             if ( width > this.maxRequestWidth ) {
-                errorMessage.append( " width: " ).append( width ).append( " exceeds maximum request width: " ).append(
-                                                                                                                       maxRequestWidth );
+                errorMessage.append( " width: " ).append( width ).append( " exceeds maximum request width: " ).append( maxRequestWidth );
             }
             if ( height > this.maxRequestHeight ) {
                 if ( width > this.maxRequestWidth ) {
                     errorMessage.append( "," );
                 }
-                errorMessage.append( " height: " ).append( height ).append( " exceeds maximum request height: " ).append(
-                                                                                                                          maxRequestHeight );
+                errorMessage.append( " height: " ).append( height ).append( " exceeds maximum request height: " ).append( maxRequestHeight );
             }
             throw new OWSException( errorMessage.toString(), OWSException.INVALID_PARAMETER_VALUE );
             // double scale = ( width > height ) ? ( ( (double) this.maxRequestWidth ) / width )

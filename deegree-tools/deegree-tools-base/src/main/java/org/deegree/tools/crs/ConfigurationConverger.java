@@ -56,13 +56,12 @@ import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.PosixParser;
 import org.deegree.commons.annotations.Tool;
 import org.deegree.commons.tools.CommandUtils;
-import org.deegree.cs.coordinatesystems.CoordinateSystem;
+import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.exceptions.TransformationException;
 import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.cs.io.deegree.CRSExporterBase;
 import org.deegree.cs.persistence.CRSStore;
-import org.deegree.cs.persistence.deegree.DeegreeCRSStore;
-import org.deegree.cs.persistence.deegree.d3.StAXResource;
+import org.deegree.cs.persistence.deegree.d3.DeegreeCRSStore;
 import org.deegree.cs.persistence.gml.GMLCRSStore;
 import org.deegree.cs.persistence.proj4.PROJ4CRSStore;
 import org.deegree.cs.transformations.TransformationFactory.DSTransform;
@@ -185,7 +184,7 @@ public class ConfigurationConverger {
         CRSStore in = null;
         switch ( inFormat ) {
         case DEEGREE:
-            in = new DeegreeCRSStore<StAXResource>( prefTrans );
+            in = new DeegreeCRSStore( prefTrans, null );
             break;
         case GML:
             in = new GMLCRSStore( prefTrans );
@@ -217,7 +216,7 @@ public class ConfigurationConverger {
 
         // List<CoordinateSystem> allSystems = new LinkedList<CoordinateSystem>();
         // allSystems.add( in.getCRSByCode( new CRSCodeType( "3395", "EPSG" ) ) );
-        List<CoordinateSystem> allSystems = in.getAvailableCRSs();
+        List<ICRS> allSystems = in.getAvailableCRSs();
         StringBuilder sb = new StringBuilder( allSystems.size() * 2000 );
         if ( exporter != null ) {
             exporter.export( sb, allSystems );

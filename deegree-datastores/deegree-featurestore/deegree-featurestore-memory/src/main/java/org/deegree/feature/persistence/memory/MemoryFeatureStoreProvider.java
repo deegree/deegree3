@@ -47,7 +47,8 @@ import javax.xml.bind.JAXBException;
 
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.jaxb.JAXBUtils;
-import org.deegree.cs.CRS;
+import org.deegree.cs.coordinatesystems.ICRS;
+import org.deegree.cs.persistence.CRSManager;
 import org.deegree.feature.FeatureCollection;
 import org.deegree.feature.i18n.Messages;
 import org.deegree.feature.persistence.FeatureStore;
@@ -108,7 +109,7 @@ public class MemoryFeatureStoreProvider implements FeatureStoreProvider {
                             throws FeatureStoreException {
 
         MemoryFeatureStore fs = null;
-        CRS storageSRS = null;
+        ICRS storageSRS = null;
         try {
             MemoryFeatureStoreConfig config = (MemoryFeatureStoreConfig) JAXBUtils.unmarshall( CONFIG_JAXB_PACKAGE,
                                                                                                CONFIG_SCHEMA, configURL );
@@ -137,8 +138,7 @@ public class MemoryFeatureStoreProvider implements FeatureStoreProvider {
                 }
                 schema = decoder.extractFeatureTypeSchema();
                 if ( config.getStorageCRS() != null ) {
-                    storageSRS = new CRS( config.getStorageCRS() );
-                    storageSRS.getWrappedCRS();
+                    storageSRS = CRSManager.lookup( config.getStorageCRS() );
                 }
             } catch ( Exception e ) {
                 String msg = Messages.getMessage( "STORE_MANAGER_STORE_SETUP_ERROR", e.getMessage() );

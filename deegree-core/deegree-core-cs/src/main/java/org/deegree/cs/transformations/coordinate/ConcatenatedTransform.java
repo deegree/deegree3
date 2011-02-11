@@ -46,7 +46,8 @@ import javax.vecmath.Point3d;
 import org.deegree.commons.annotations.LoggingNotes;
 import org.deegree.cs.CRSCodeType;
 import org.deegree.cs.CRSIdentifiable;
-import org.deegree.cs.coordinatesystems.CoordinateSystem;
+import org.deegree.cs.CRSResource;
+import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.exceptions.TransformationException;
 import org.deegree.cs.transformations.Transformation;
 import org.slf4j.Logger;
@@ -87,7 +88,7 @@ public class ConcatenatedTransform extends Transformation {
      * @param id
      *            an identifiable instance containing information about this transformation
      */
-    public ConcatenatedTransform( Transformation first, Transformation second, CRSIdentifiable id ) {
+    public ConcatenatedTransform( Transformation first, Transformation second, CRSResource id ) {
         super( first.getSourceCRS(), second.getTargetCRS(), id );
         if ( first.isIdentity() && second.isIdentity() ) {
             isIdentitiy = true;
@@ -159,7 +160,7 @@ public class ConcatenatedTransform extends Transformation {
     }
 
     @Override
-    public boolean contains( CoordinateSystem crs ) {
+    public boolean contains( ICRS crs ) {
         boolean result = getFirstTransform().contains( crs );
         if ( !result ) {
             result = getSecondTransform().contains( crs );
@@ -222,11 +223,11 @@ public class ConcatenatedTransform extends Transformation {
             } else if ( m2 == null ) {
                 return first;
             }
-            if( m2.getNumCol() != m1.getNumCol() || m2.getNumRow() != m1.getNumRow() ){
+            if ( m2.getNumCol() != m1.getNumCol() || m2.getNumRow() != m1.getNumRow() ) {
                 return new ConcatenatedTransform( first, second );
             }
             m2.mul( m1 );
-            
+
             // m1.mul( m2 );
             LOG.debug( "Concatenate: both transforms are matrices, resulting multiply:\n" + m2 );
             MatrixTransform result = new MatrixTransform( first.getSourceCRS(), second.getTargetCRS(), m2 );

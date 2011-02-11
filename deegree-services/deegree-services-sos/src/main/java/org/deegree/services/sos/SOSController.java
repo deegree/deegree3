@@ -84,7 +84,7 @@ import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.commons.xml.XMLProcessingException;
 import org.deegree.commons.xml.XPath;
-import org.deegree.cs.coordinatesystems.CoordinateSystem;
+import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.cs.persistence.CRSManager;
 import org.deegree.geometry.Geometry;
@@ -395,13 +395,9 @@ public class SOSController extends AbstractOGCServiceController<SOSRequestType> 
                         xmlWriter.writeAttribute( GML_PREFIX, GMLNS, "id", foiParts[foiParts.length - 1] );
 
                         xmlWriter.writeStartElement( GML_PREFIX, "pos", GMLNS );
-                        CoordinateSystem foiCRS = null;
-                        try {
-                            foiCRS = procGeometry.getCoordinateSystem().getWrappedCRS();
-                            xmlWriter.writeAttribute( "srsName", foiCRS.getCode().toString() );
-                        } catch ( UnknownCRSException e ) {
-                            // no srsName attribute is written; continue
-                        }
+                        ICRS foiCRS = null;
+                        foiCRS = procGeometry.getCoordinateSystem();
+                        xmlWriter.writeAttribute( "srsName", foiCRS.getCode().toString() );
 
                         Point p = (Point) procGeometry;
                         xmlWriter.writeCharacters( p.get0() + " " + p.get1() );

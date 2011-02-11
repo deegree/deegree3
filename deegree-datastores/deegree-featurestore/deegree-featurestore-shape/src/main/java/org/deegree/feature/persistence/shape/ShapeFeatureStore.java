@@ -64,9 +64,11 @@ import org.deegree.commons.annotations.LoggingNotes;
 import org.deegree.commons.index.RTree;
 import org.deegree.commons.utils.CloseableIterator;
 import org.deegree.commons.utils.Pair;
-import org.deegree.cs.CRS;
+import org.deegree.cs.configuration.wkt.WKTParser;
+import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.cs.exceptions.WKTParsingException;
+import org.deegree.cs.persistence.CRSManager;
 import org.deegree.feature.Feature;
 import org.deegree.feature.Features;
 import org.deegree.feature.GenericFeatureCollection;
@@ -125,7 +127,7 @@ public class ShapeFeatureStore implements FeatureStore {
 
     private String shpName;
 
-    private CRS crs;
+    private ICRS crs;
 
     private Charset encoding;
 
@@ -166,8 +168,9 @@ public class ShapeFeatureStore implements FeatureStore {
      * @param cache
      *            used for caching retrieved feature instances, can be <code>null</code> (will create a default cache)
      */
-    public ShapeFeatureStore( String shpName, CRS crs, Charset encoding, String ftNamespace, String localFtName,
-                              String ftPrefix, boolean generateAlphanumericIndexes, FeatureStoreCache cache ) {
+    public ShapeFeatureStore( String shpName, ICRS crs, Charset encoding, String ftNamespace,
+                              String localFtName, String ftPrefix, boolean generateAlphanumericIndexes,
+                              FeatureStoreCache cache ) {
         this.shpName = shpName;
         this.crs = crs;
         this.encoding = encoding;
@@ -211,7 +214,7 @@ public class ShapeFeatureStore implements FeatureStore {
             if ( prj.exists() ) {
                 try {
                     try {
-                        crs = new CRS( prj );
+                        crs = new WKTParser( prj ).parseCoordinateSystem();
                     } catch ( IOException e ) {
                         LOG.trace( "Stack trace:", e );
                         LOG.warn( "The shape datastore for '{}' could not be initialized, because no CRS was defined.",
@@ -232,16 +235,20 @@ public class ShapeFeatureStore implements FeatureStore {
                 }
             } else {
                 LOG.debug( "No crs configured, and no .prj found, assuming CRS:84 (WGS84 in x/y axis order)." );
-                crs = new CRS( "CRS:84" );
+                try {
+                    crs = CRSManager.lookup( "CRS:84" );
+                } catch ( UnknownCRSException e ) {
+                    LOG.error( "Unknown error", e );
+                }
             }
         }
 
         try {
-            transformer = new GeometryTransformer( crs.getWrappedCRS() );
+            transformer = new GeometryTransformer( crs );
         } catch ( IllegalArgumentException e ) {
             LOG.error( "Unknown error", e );
-        } catch ( UnknownCRSException e ) {
-            LOG.error( "Unknown error", e );
+            // } catch ( UnknownCRSException e ) {
+            // LOG.error( "Unknown error", e );
         }
 
         shpFile = new File( shpName + ".SHP" );
@@ -292,15 +299,14 @@ public class ShapeFeatureStore implements FeatureStore {
             BufferedReader in = new BufferedReader( new FileReader( prj ) );
             String c = in.readLine().trim();
             try {
-                crs = new CRS( c );
-                crs.getWrappedCRS(); // resolve NOW
+                crs = CRSManager.lookup( c );
                 LOG.debug( ".prj contained EPSG code '{}'", crs.getName() );
             } catch ( UnknownCRSException e2 ) {
                 LOG.warn( "Could not parse the .prj projection file for {}, reason: {}.", shpName,
                           e2.getLocalizedMessage() );
                 LOG.warn( "The file also does not contain a valid EPSG code, assuming CRS:84 (WGS84 with x/y axis order)." );
                 LOG.trace( "Stack trace of failed WKT parsing:", e2 );
-                crs = new CRS( "CRS:84" );
+                crs = CRSManager.lookup( "CRS:84" );
             }
         } catch ( IOException e1 ) {
             LOG.debug( "Stack trace:", e1 );
@@ -627,7 +633,7 @@ public class ShapeFeatureStore implements FeatureStore {
      * 
      * @return the CRS used by the shape file, never <code>null</code>
      */
-    public CRS getStorageCRS() {
+    public ICRS getStorageCRS() {
         return crs;
     }
 

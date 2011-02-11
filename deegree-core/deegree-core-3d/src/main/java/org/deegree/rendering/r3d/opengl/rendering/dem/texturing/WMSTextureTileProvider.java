@@ -44,7 +44,7 @@ import java.util.List;
 
 import org.deegree.coverage.raster.SimpleRaster;
 import org.deegree.coverage.raster.data.nio.PixelInterleavedRasterData;
-import org.deegree.cs.CRS;
+import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryFactory;
 import org.deegree.protocol.wms.client.WMSClient111;
@@ -71,7 +71,7 @@ public class WMSTextureTileProvider implements TextureTileProvider {
 
     private final String requestedFormat;
 
-    private final CRS requestedCRS;
+    private final ICRS requestedCRS;
 
     private final double res;
 
@@ -99,7 +99,7 @@ public class WMSTextureTileProvider implements TextureTileProvider {
      * @param requestTimeout
      *            maximum number of seconds to wait for a WMS response or -1 if unconstrained
      */
-    public WMSTextureTileProvider( URL capabilitiesURL, String[] requestedLayers, CRS requestCRS, String requestFormat,
+    public WMSTextureTileProvider( URL capabilitiesURL, String[] requestedLayers, ICRS requestCRS, String requestFormat,
                                    boolean transparent, double res, int maxWidth, int maxHeight, int requestTimeout ) {
         this.client = new WMSClient111( capabilitiesURL );
         this.client.setMaxMapDimensions( maxWidth, maxHeight );
@@ -156,7 +156,7 @@ public class WMSTextureTileProvider implements TextureTileProvider {
     }
 
     @Override
-    public CRS getCRS() {
+    public ICRS getCRS() {
         // TODO Auto-generated method stub
         return null;
     }

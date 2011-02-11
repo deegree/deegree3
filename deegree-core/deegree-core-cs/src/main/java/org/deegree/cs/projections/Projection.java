@@ -43,10 +43,11 @@ import static org.deegree.cs.utilities.ProjectionUtils.normalizeLongitude;
 import javax.vecmath.Point2d;
 
 import org.deegree.cs.CRSIdentifiable;
-import org.deegree.cs.components.Ellipsoid;
-import org.deegree.cs.components.PrimeMeridian;
-import org.deegree.cs.components.Unit;
-import org.deegree.cs.coordinatesystems.GeographicCRS;
+import org.deegree.cs.CRSResource;
+import org.deegree.cs.components.IEllipsoid;
+import org.deegree.cs.components.IPrimeMeridian;
+import org.deegree.cs.components.IUnit;
+import org.deegree.cs.coordinatesystems.IGeographicCRS;
 import org.deegree.cs.exceptions.ProjectionException;
 
 /**
@@ -73,7 +74,7 @@ import org.deegree.cs.exceptions.ProjectionException;
  * 
  */
 
-public abstract class Projection extends CRSIdentifiable {
+public abstract class Projection extends CRSIdentifiable implements IProjection {
 
     private final boolean conformal;
 
@@ -103,7 +104,7 @@ public abstract class Projection extends CRSIdentifiable {
     // the cos of the projection latitude
     private double cosphi0;
 
-    private final Unit units;
+    private final IUnit units;
 
     /**
      * Creates a Projection. <b>Caution</b>, the given natural origin should be given in radians rather then degrees.
@@ -127,8 +128,8 @@ public abstract class Projection extends CRSIdentifiable {
      * @param id
      *            an identifiable instance containing information about this projection.
      */
-    public Projection( double falseNorthing, double falseEasting, Point2d naturalOrigin, Unit units, double scale,
-                       boolean conformal, boolean equalArea, CRSIdentifiable id ) {
+    public Projection( double falseNorthing, double falseEasting, Point2d naturalOrigin, IUnit units, double scale,
+                       boolean conformal, boolean equalArea, CRSResource id ) {
         super( id );
         this.scale = scale;
         this.conformal = conformal;
@@ -171,7 +172,7 @@ public abstract class Projection extends CRSIdentifiable {
      * @throws ProjectionException
      *             if the given lamba and phi coordinates could not be projected to x and y.
      */
-    public abstract Point2d doProjection( GeographicCRS underlyingCRS, double lambda, double phi )
+    public abstract Point2d doProjection( IGeographicCRS underlyingCRS, double lambda, double phi )
                             throws ProjectionException;
 
     /**
@@ -185,7 +186,7 @@ public abstract class Projection extends CRSIdentifiable {
      * @throws ProjectionException
      *             if the given x and y coordinates could not be inverted to lambda and phi.
      */
-    public abstract Point2d doInverseProjection( GeographicCRS underlyingCRS, double x, double y )
+    public abstract Point2d doInverseProjection( IGeographicCRS underlyingCRS, double x, double y )
                             throws ProjectionException;
 
     /**
@@ -265,49 +266,49 @@ public abstract class Projection extends CRSIdentifiable {
     /**
      * @return the units.
      */
-    public final Unit getUnits() {
+    public final IUnit getUnits() {
         return units;
     }
 
     /**
      * @return the primeMeridian of the datum.
      */
-    public final PrimeMeridian getPrimeMeridian( GeographicCRS geographicCRS ) {
+    public IPrimeMeridian getPrimeMeridian( IGeographicCRS geographicCRS ) {
         return geographicCRS.getGeodeticDatum().getPrimeMeridian();
     }
 
     /**
      * @return the ellipsoid of the datum.
      */
-    public final Ellipsoid getEllipsoid( GeographicCRS geographicCRS ) {
+    public IEllipsoid getEllipsoid( IGeographicCRS geographicCRS ) {
         return geographicCRS.getGeodeticDatum().getEllipsoid();
     }
 
     /**
      * @return the eccentricity of the ellipsoid of the datum.
      */
-    public final double getEccentricity( GeographicCRS geographicCRS ) {
+    public final double getEccentricity( IGeographicCRS geographicCRS ) {
         return geographicCRS.getGeodeticDatum().getEllipsoid().getEccentricity();
     }
 
     /**
      * @return the eccentricity of the ellipsoid of the datum.
      */
-    public final double getSquaredEccentricity( GeographicCRS geographicCRS ) {
+    public final double getSquaredEccentricity( IGeographicCRS geographicCRS ) {
         return geographicCRS.getGeodeticDatum().getEllipsoid().getSquaredEccentricity();
     }
 
     /**
      * @return the semiMajorAxis (a) of the ellipsoid of the datum.
      */
-    public final double getSemiMajorAxis( GeographicCRS geographicCRS ) {
+    public final double getSemiMajorAxis( IGeographicCRS geographicCRS ) {
         return geographicCRS.getGeodeticDatum().getEllipsoid().getSemiMajorAxis();
     }
 
     /**
      * @return the semiMinorAxis (a) of the ellipsoid of the datum.
      */
-    public final double getSemiMinorAxis( GeographicCRS geographicCRS ) {
+    public final double getSemiMinorAxis( IGeographicCRS geographicCRS ) {
         return geographicCRS.getGeodeticDatum().getEllipsoid().getSemiMinorAxis();
     }
 
@@ -341,11 +342,11 @@ public abstract class Projection extends CRSIdentifiable {
         return cosphi0;
     }
 
-    public double getScaleFactor( GeographicCRS geographicCRS ) {
+    public double getScaleFactor( IGeographicCRS geographicCRS ) {
         return scale * getSemiMajorAxis( geographicCRS );
     }
 
-    public boolean isSpherical( GeographicCRS geographicCRS ) {
+    public boolean isSpherical( IGeographicCRS geographicCRS ) {
         return geographicCRS.getGeodeticDatum().getEllipsoid().getEccentricity() < 0.0000001;
     }
 

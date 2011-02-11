@@ -29,7 +29,7 @@
  Prof. Dr. Klaus Greve
  Postfach 1147, 53001 Bonn
  Germany
- http://www.geographie.uni-bonn.de/deegree/
+ http://CoordinateSystem.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
@@ -44,19 +44,24 @@ import java.util.Collection;
 
 import org.deegree.cs.CRSCodeType;
 import org.deegree.cs.components.Axis;
-import org.deegree.cs.components.Ellipsoid;
-import org.deegree.cs.components.GeodeticDatum;
+import org.deegree.cs.components.IAxis;
+import org.deegree.cs.components.IDatum;
+import org.deegree.cs.components.IEllipsoid;
+import org.deegree.cs.components.IGeodeticDatum;
 import org.deegree.cs.components.PrimeMeridian;
 import org.deegree.cs.components.Unit;
-import org.deegree.cs.coordinatesystems.CoordinateSystem;
 import org.deegree.cs.coordinatesystems.GeographicCRS;
-import org.deegree.cs.coordinatesystems.ProjectedCRS;
+import org.deegree.cs.coordinatesystems.ICRS;
+import org.deegree.cs.coordinatesystems.IGeographicCRS;
+import org.deegree.cs.coordinatesystems.IProjectedCRS;
 import org.deegree.cs.exceptions.CRSStoreException;
+import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.cs.persistence.CRSManager;
 import org.deegree.cs.persistence.CRSStore;
-import org.deegree.cs.persistence.deegree.DeegreeCRSStore;
-import org.deegree.cs.projections.Projection;
-import org.deegree.cs.projections.cylindric.TransverseMercator;
+import org.deegree.cs.projections.IProjection;
+import org.deegree.cs.projections.cylindric.ITransverseMercator;
+import org.deegree.cs.refs.components.DatumRef;
+import org.deegree.cs.refs.projections.ProjectionRef;
 import org.deegree.cs.transformations.Transformation;
 import org.deegree.cs.transformations.helmert.Helmert;
 import org.junit.Test;
@@ -100,9 +105,9 @@ public class DeegreeCRSStoreProviderTest {
         CRSStore defaultStore = CRSManager.create( CRSManager.class.getResource( "default.xml" ) );
         assertNotNull( defaultStore );
         assertTrue( defaultStore instanceof DeegreeCRSStore );
-        DeegreeCRSStore<?> dStore = (DeegreeCRSStore<?>) defaultStore;
+        DeegreeCRSStore dStore = (DeegreeCRSStore) defaultStore;
         // try loading the gaus krueger zone 2. (transverse mercator)
-        CoordinateSystem testCRS = dStore.getCRSByCode( new CRSCodeType( "epsg:31466" ) );
+        ICRS testCRS = dStore.getCRSByCode( new CRSCodeType( "epsg:31466" ) );
         testCRS_31466( testCRS, dStore );
         testCRS = dStore.getCRSByCode( new CRSCodeType( "SOME_DUMMY_CODE" ) );
         assertTrue( testCRS == null );
@@ -123,15 +128,19 @@ public class DeegreeCRSStoreProviderTest {
         assertTrue( testCRS != null );
     }
 
-    private void testCRS_31466( CoordinateSystem testCRS, DeegreeCRSStore<?> provider ) {
+    private void testCRS_31466( ICRS testCRS, DeegreeCRSStore provider ) {
         assertNotNull( testCRS );
-        assertTrue( testCRS instanceof ProjectedCRS );
-        ProjectedCRS realCRS = (ProjectedCRS) testCRS;
+        assertTrue( testCRS instanceof IProjectedCRS );
+        IProjectedCRS realCRS = (IProjectedCRS) testCRS;
         assertNotNull( realCRS.getProjection() );
-        Projection projection = realCRS.getProjection();
-        assertTrue( projection instanceof TransverseMercator );
+        IProjection projection = realCRS.getProjection();
+
+        assertTrue( projection instanceof ProjectionRef );
+        Object referencedObject = ( (ProjectionRef) projection ).getReferencedObject();
+        assertTrue( referencedObject instanceof ITransverseMercator );
+
         // do stuff with projection
-        TransverseMercator proj = (TransverseMercator) projection;
+        ITransverseMercator proj = (ITransverseMercator) referencedObject;
         assertEquals( 0.0, proj.getProjectionLatitude() );
         assertEquals( Math.toRadians( 6.0 ), proj.getProjectionLongitude() );
         assertEquals( 1.0, proj.getScale() );
@@ -140,13 +149,13 @@ public class DeegreeCRSStoreProviderTest {
         assertTrue( proj.getHemisphere() );
 
         // test the datum.
-        GeodeticDatum datum = realCRS.getGeodeticDatum();
+        IGeodeticDatum datum = realCRS.getGeodeticDatum();
         assertNotNull( datum );
         assertEquals( "6314", datum.getCode().getCode() );
         assertEquals( PrimeMeridian.GREENWICH, datum.getPrimeMeridian() );
 
         // test the ellips
-        Ellipsoid ellips = datum.getEllipsoid();
+        IEllipsoid ellips = datum.getEllipsoid();
         assertNotNull( ellips );
         assertEquals( "7004", ellips.getCode().getCode() );
         assertEquals( Unit.METRE, ellips.getUnits() );
@@ -156,7 +165,7 @@ public class DeegreeCRSStoreProviderTest {
         // test towgs84 params
         Helmert toWGS = datum.getWGS84Conversion();
         if ( toWGS == null ) {
-            Transformation trans = provider.getTransformation( realCRS.getGeographicCRS(), GeographicCRS.WGS84 );
+            Transformation trans = provider.getDirectTransformation( realCRS.getGeographicCRS(), GeographicCRS.WGS84 );
             assertNotNull( trans );
             assertTrue( trans instanceof Helmert );
             toWGS = (Helmert) trans;
@@ -173,10 +182,10 @@ public class DeegreeCRSStoreProviderTest {
         assertEquals( 6.7, toWGS.ppm );
 
         // test the geographic
-        GeographicCRS geographic = realCRS.getGeographicCRS();
+        IGeographicCRS geographic = realCRS.getGeographicCRS();
         assertNotNull( geographic );
         assertEquals( "4314", geographic.getCode().getCode() );
-        Axis[] ax = geographic.getAxis();
+        IAxis[] ax = geographic.getAxis();
         assertEquals( 2, ax.length );
         assertEquals( Axis.AO_EAST, ax[0].getOrientation() );
         assertEquals( Unit.DEGREE, ax[0].getUnits() );
@@ -194,13 +203,26 @@ public class DeegreeCRSStoreProviderTest {
         CRSStore defaultStore = CRSManager.create( CRSManager.class.getResource( "default.xml" ) );
         assertNotNull( defaultStore );
         assertTrue( defaultStore instanceof DeegreeCRSStore );
-        DeegreeCRSStore<?> dStore = (DeegreeCRSStore<?>) defaultStore;
+        DeegreeCRSStore dStore = (DeegreeCRSStore) defaultStore;
 
-        CoordinateSystem testCRS = dStore.getCRSByCode( new CRSCodeType( "epsg:31466" ) );
+        ICRS testCRS = dStore.getCRSByCode( new CRSCodeType( "epsg:31466" ) );
         testCRS_31466( testCRS, dStore );
 
         testCRS = dStore.getCRSByCode( new CRSCodeType( "epsg:31466" ) );
         testCRS_31466( testCRS, dStore );
     }
 
+    @Test
+    public void testReference()
+                            throws UnknownCRSException {
+        ICRS crsRef = CRSManager.lookup( "epsg:4002" );
+        assertNotNull( crsRef );
+        assertTrue( crsRef instanceof GeographicCRS );
+        IDatum datum = ( (GeographicCRS) crsRef ).getDatum();
+        assertTrue( datum instanceof DatumRef );
+        assertTrue( !( (DatumRef) datum ).isResolved() );
+        // resolve the reference
+        datum.getAreaOfUse();
+        assertTrue( ( (DatumRef) datum ).isResolved() );
+    }
 }

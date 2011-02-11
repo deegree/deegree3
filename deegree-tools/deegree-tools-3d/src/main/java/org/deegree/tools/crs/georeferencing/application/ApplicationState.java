@@ -49,7 +49,7 @@ import javax.swing.JFrame;
 import javax.vecmath.Point2d;
 
 import org.deegree.commons.utils.Triple;
-import org.deegree.cs.CRS;
+import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.geometry.GeometryFactory;
 import org.deegree.rendering.r3d.model.geometry.GeometryQualityModel;
@@ -133,7 +133,7 @@ public class ApplicationState {
 
     public String chosenFile;
 
-    public CRS sourceCRS, targetCRS;
+    public ICRS sourceCRS, targetCRS;
 
     public Footprint footPrint;
 

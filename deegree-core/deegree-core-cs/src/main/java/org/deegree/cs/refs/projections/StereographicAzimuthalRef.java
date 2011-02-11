@@ -33,29 +33,53 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.cs.persistence.deegree.d2;
+package org.deegree.cs.refs.projections;
 
-import junit.framework.TestCase;
+import java.io.Serializable;
 
-import org.deegree.cs.persistence.CRSManager;
-import org.deegree.cs.persistence.CRSStore;
-import org.deegree.cs.persistence.deegree.DeegreeCRSStore;
+import org.deegree.commons.tom.ReferenceResolver;
+import org.deegree.commons.tom.ReferenceResolvingException;
+import org.deegree.cs.projections.azimuthal.IStereographicAzimuthal;
+import org.deegree.cs.projections.azimuthal.StereographicAzimuthal;
 
 /**
- * Test for deegree2 configurations
+ * {@link ProjectionRef} to a {@link StereographicAzimuthal}
  * 
  * @author <a href="mailto:buesching@lat-lon.de">Lyn Buesching</a>
  * @author last edited by: $Author: lyn $
  * 
  * @version $Revision: $, $Date: $
  */
-public class Deegree2CRSStoreProviderTest extends TestCase {
+public class StereographicAzimuthalRef extends ProjectionRef implements Serializable, IStereographicAzimuthal {
 
-    public void testCreateDeegree2Store()
-                            throws Exception {
-        CRSStore crsStore = CRSManager.create( Deegree2CRSStoreProviderTest.class.getResource( "deegree2-store.xml" ) );
-        assertNotNull( crsStore );
-        assertTrue( crsStore instanceof DeegreeCRSStore );
+    private static final long serialVersionUID = -1990207411294967232L;
+
+    /**
+     * Creates a {@link StereographicAzimuthalRef} instance
+     * 
+     * @param resolver
+     *            used for resolving the reference, must not be <code>null</code>
+     * @param uri
+     *            the object's uri, must not be <code>null</code>
+     * @param baseURL
+     *            base URL for resolving the uri, may be <code>null</code> (no resolving of relative URLs)
+     */
+    public StereographicAzimuthalRef( ReferenceResolver resolver, String uri, String baseURL ) {
+        super( resolver, uri, baseURL );
     }
 
+    public double getTrueScaleLatitude() {
+        return getReferencedObject().getTrueScaleLatitude();
+    }
+
+    @Override
+    public boolean equals( Object obj ) {
+        return super.equals( obj ) ? true : getReferencedObject().equals( obj );
+    }
+
+    @Override
+    public StereographicAzimuthal getReferencedObject()
+                            throws ReferenceResolvingException {
+        return (StereographicAzimuthal) super.getReferencedObject();
+    }
 }

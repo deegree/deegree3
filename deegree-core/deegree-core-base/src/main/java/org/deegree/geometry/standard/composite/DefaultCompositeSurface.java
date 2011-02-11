@@ -43,7 +43,7 @@ import java.util.ListIterator;
 
 import org.deegree.commons.uom.Measure;
 import org.deegree.commons.uom.Unit;
-import org.deegree.cs.CRS;
+import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.geometry.composite.CompositeSurface;
 import org.deegree.geometry.points.Points;
 import org.deegree.geometry.precision.PrecisionModel;
@@ -77,7 +77,7 @@ public class DefaultCompositeSurface extends AbstractDefaultGeometry implements 
      *            surfaces that constitute the composited surface, the surfaces must join in pairs on common boundary
      *            curves and must, when considered as
      */
-    public DefaultCompositeSurface( String id, CRS crs, PrecisionModel pm, List<Surface> memberSurfaces ) {
+    public DefaultCompositeSurface( String id, ICRS crs, PrecisionModel pm, List<Surface> memberSurfaces ) {
         super( id, crs, pm );
         this.memberSurfaces = memberSurfaces;
     }

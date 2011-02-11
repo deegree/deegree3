@@ -57,9 +57,7 @@ import org.deegree.coverage.raster.geom.RasterGeoReference;
 import org.deegree.coverage.raster.geom.RasterGeoReference.OriginLocation;
 import org.deegree.coverage.raster.io.RasterIOOptions;
 import org.deegree.coverage.raster.io.RasterWriter;
-import org.deegree.cs.CRS;
-import org.deegree.cs.coordinatesystems.CoordinateSystem;
-import org.deegree.cs.exceptions.UnknownCRSException;
+import org.deegree.cs.coordinatesystems.ICRS;
 
 /**
  * Writes esri asc/grd text files. The separator can be defined in the RasterIOOptions, by supplying a value with the
@@ -102,22 +100,16 @@ public class ASCWriter implements RasterWriter {
         if ( canWrite( raster, options ) ) {
             SimpleRaster simpleRaster = raster.getAsSimpleRaster();
             // convert to outer, because we iterate of x,y as whole values and not (0.5,0.5);
-            RasterGeoReference rasterReference = simpleRaster.getRasterReference().createRelocatedReference(
-                                                                                                             OriginLocation.OUTER );
+            RasterGeoReference rasterReference = simpleRaster.getRasterReference().createRelocatedReference( OriginLocation.OUTER );
             String newLine = System.getProperty( "line.separator" );
             writer.write( "ncols " + simpleRaster.getColumns() + newLine );
             writer.write( "nrows " + simpleRaster.getRows() + newLine );
             double[] worldCoordinate = rasterReference.getWorldCoordinate( 0, simpleRaster.getRows() );
-            CRS crs = simpleRaster.getCoordinateSystem();
+            ICRS crs = simpleRaster.getCoordinateSystem();
             int axis = 0;
             int northing = 1;
             if ( crs != null ) {
-                CoordinateSystem wcrs = null;
-                try {
-                    wcrs = crs.getWrappedCRS();
-                } catch ( UnknownCRSException e ) {
-                    // nothing
-                }
+                ICRS wcrs = crs;
                 if ( wcrs != null ) {
                     axis = wcrs.getEasting();
                     northing = wcrs.getNorthing();

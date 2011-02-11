@@ -49,7 +49,7 @@ import org.deegree.commons.uom.Angle;
 import org.deegree.commons.uom.Length;
 import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;
-import org.deegree.cs.CRS;
+import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.geometry.GeometryFactory;
 import org.deegree.geometry.points.Points;
@@ -73,8 +73,6 @@ import org.deegree.geometry.primitive.segments.Knot;
 import org.deegree.geometry.primitive.segments.LineStringSegment;
 import org.deegree.geometry.primitive.segments.OffsetCurve;
 import org.deegree.geometry.standard.curvesegments.AffinePlacement;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Handles the parsing of <code>gml:_CurveSegment</code> elements, i.e concrete element declarations that are in the
@@ -105,8 +103,6 @@ import org.slf4j.LoggerFactory;
  * @version $Revision:$, $Date:$
  */
 class GML3CurveSegmentReader extends GML3GeometryBaseReader {
-
-    private static Logger LOG = LoggerFactory.getLogger( GML3CurveSegmentReader.class );
 
     private GML3GeometryReader geometryParser;
 
@@ -159,7 +155,7 @@ class GML3CurveSegmentReader extends GML3GeometryBaseReader {
      * @throws XMLStreamException
      * @throws UnknownCRSException
      */
-    CurveSegment parseCurveSegment( XMLStreamReaderWrapper xmlStream, CRS defaultCRS )
+    CurveSegment parseCurveSegment( XMLStreamReaderWrapper xmlStream, ICRS defaultCRS )
                             throws XMLParsingException, XMLStreamException, UnknownCRSException {
 
         CurveSegment segment = null;
@@ -219,15 +215,15 @@ class GML3CurveSegmentReader extends GML3GeometryBaseReader {
      * </ul>
      * 
      * @param defaultCRS
-     *            default CRS for the geometry, this is propagated if no deeper <code>srsName</code> attribute is
-     *            specified
+     *            default CoordinateSystem for the geometry, this is propagated if no deeper <code>srsName</code>
+     *            attribute is specified
      * @return corresponding {@link Arc} object
      * @throws XMLParsingException
      *             if a syntactical (or semantic) error is detected in the element
      * @throws XMLStreamException
      * @throws UnknownCRSException
      */
-    private Arc parseArc( XMLStreamReaderWrapper xmlStream, CRS defaultCRS )
+    private Arc parseArc( XMLStreamReaderWrapper xmlStream, ICRS defaultCRS )
                             throws XMLParsingException, XMLStreamException, UnknownCRSException {
 
         validateInterpolationAttribute( xmlStream, "circularArc3Points" );
@@ -259,7 +255,7 @@ class GML3CurveSegmentReader extends GML3GeometryBaseReader {
      * @throws XMLStreamException
      * @throws UnknownCRSException
      */
-    private ArcByBulge parseArcByBulge( XMLStreamReaderWrapper xmlStream, CRS defaultCRS )
+    private ArcByBulge parseArcByBulge( XMLStreamReaderWrapper xmlStream, ICRS defaultCRS )
                             throws XMLParsingException, XMLStreamException, UnknownCRSException {
 
         validateInterpolationAttribute( xmlStream, "circularArc2PointWithBulge" );
@@ -274,7 +270,7 @@ class GML3CurveSegmentReader extends GML3GeometryBaseReader {
         xmlStream.nextTag();
 
         xmlStream.require( XMLStreamConstants.START_ELEMENT, gmlNs, "normal" );
-        CRS normalCRS = determineActiveCRS( xmlStream, defaultCRS );
+        ICRS normalCRS = determineActiveCRS( xmlStream, defaultCRS );
         double[] coords = parseDoubleList( xmlStream );
         Point normal = geomFac.createPoint( null, coords, normalCRS );
         xmlStream.nextTag();
@@ -301,7 +297,7 @@ class GML3CurveSegmentReader extends GML3GeometryBaseReader {
      * @throws XMLStreamException
      * @throws UnknownCRSException
      */
-    private ArcByCenterPoint parseArcByCenterPoint( XMLStreamReaderWrapper xmlStream, CRS defaultCRS )
+    private ArcByCenterPoint parseArcByCenterPoint( XMLStreamReaderWrapper xmlStream, ICRS defaultCRS )
                             throws XMLParsingException, XMLStreamException, UnknownCRSException {
 
         validateInterpolationAttribute( xmlStream, "circularArcCenterPointWithRadius" );
@@ -353,7 +349,7 @@ class GML3CurveSegmentReader extends GML3GeometryBaseReader {
      * @throws XMLStreamException
      * @throws UnknownCRSException
      */
-    private ArcString parseArcString( XMLStreamReaderWrapper xmlStream, CRS defaultCRS )
+    private ArcString parseArcString( XMLStreamReaderWrapper xmlStream, ICRS defaultCRS )
                             throws XMLParsingException, XMLStreamException, UnknownCRSException {
 
         validateInterpolationAttribute( xmlStream, "circularArc3Points" );
@@ -384,7 +380,7 @@ class GML3CurveSegmentReader extends GML3GeometryBaseReader {
      * @throws XMLStreamException
      * @throws UnknownCRSException
      */
-    private ArcStringByBulge parseArcStringByBulge( XMLStreamReaderWrapper xmlStream, CRS defaultCRS )
+    private ArcStringByBulge parseArcStringByBulge( XMLStreamReaderWrapper xmlStream, ICRS defaultCRS )
                             throws XMLParsingException, XMLStreamException, UnknownCRSException {
 
         validateInterpolationAttribute( xmlStream, "circularArc2PointWithBulge" );
@@ -409,7 +405,7 @@ class GML3CurveSegmentReader extends GML3GeometryBaseReader {
         List<Point> normals = new ArrayList<Point>( points.size() - 1 );
         for ( int i = 0; i < bulges.length; i++ ) {
             xmlStream.require( XMLStreamConstants.START_ELEMENT, gmlNs, "normal" );
-            CRS normalCRS = determineActiveCRS( xmlStream, defaultCRS );
+            ICRS normalCRS = determineActiveCRS( xmlStream, defaultCRS );
             double[] coords = parseDoubleList( xmlStream );
             normals.add( geomFac.createPoint( null, coords, normalCRS ) );
             xmlStream.nextTag();
@@ -436,7 +432,7 @@ class GML3CurveSegmentReader extends GML3GeometryBaseReader {
      * @throws XMLStreamException
      * @throws UnknownCRSException
      */
-    private Bezier parseBezier( XMLStreamReaderWrapper xmlStream, CRS defaultCRS )
+    private Bezier parseBezier( XMLStreamReaderWrapper xmlStream, ICRS defaultCRS )
                             throws XMLParsingException, XMLStreamException, UnknownCRSException {
 
         validateInterpolationAttribute( xmlStream, "polynomialSpline" );
@@ -491,7 +487,7 @@ class GML3CurveSegmentReader extends GML3GeometryBaseReader {
      * @throws XMLStreamException
      * @throws UnknownCRSException
      */
-    private BSpline parseBSpline( XMLStreamReaderWrapper xmlStream, CRS defaultCRS )
+    private BSpline parseBSpline( XMLStreamReaderWrapper xmlStream, ICRS defaultCRS )
                             throws XMLParsingException, XMLStreamException, UnknownCRSException {
 
         boolean isPolynomial = false;
@@ -559,7 +555,7 @@ class GML3CurveSegmentReader extends GML3GeometryBaseReader {
      * @throws XMLStreamException
      * @throws UnknownCRSException
      */
-    private Circle parseCircle( XMLStreamReaderWrapper xmlStream, CRS defaultCRS )
+    private Circle parseCircle( XMLStreamReaderWrapper xmlStream, ICRS defaultCRS )
                             throws XMLParsingException, XMLStreamException, UnknownCRSException {
 
         validateInterpolationAttribute( xmlStream, "circularArc3Points" );
@@ -592,7 +588,7 @@ class GML3CurveSegmentReader extends GML3GeometryBaseReader {
      * @throws XMLStreamException
      * @throws UnknownCRSException
      */
-    private CircleByCenterPoint parseCircleByCenterPoint( XMLStreamReaderWrapper xmlStream, CRS defaultCRS )
+    private CircleByCenterPoint parseCircleByCenterPoint( XMLStreamReaderWrapper xmlStream, ICRS defaultCRS )
                             throws XMLParsingException, XMLStreamException, UnknownCRSException {
 
         validateInterpolationAttribute( xmlStream, "circularArcCenterPointWithRadius" );
@@ -654,7 +650,7 @@ class GML3CurveSegmentReader extends GML3GeometryBaseReader {
      * @throws XMLStreamException
      * @throws UnknownCRSException
      */
-    private Clothoid parseClothoid( XMLStreamReaderWrapper xmlStream, CRS defaultCRS )
+    private Clothoid parseClothoid( XMLStreamReaderWrapper xmlStream, ICRS defaultCRS )
                             throws XMLParsingException, XMLStreamException, UnknownCRSException {
 
         xmlStream.nextTag();
@@ -689,7 +685,7 @@ class GML3CurveSegmentReader extends GML3GeometryBaseReader {
      * @throws XMLStreamException
      * @throws UnknownCRSException
      */
-    private AffinePlacement parseAffinePlacement( XMLStreamReaderWrapper xmlStream, CRS defaultCRS )
+    private AffinePlacement parseAffinePlacement( XMLStreamReaderWrapper xmlStream, ICRS defaultCRS )
                             throws XMLParsingException, XMLStreamException, UnknownCRSException {
 
         xmlStream.nextTag();
@@ -755,7 +751,7 @@ class GML3CurveSegmentReader extends GML3GeometryBaseReader {
      * @throws XMLStreamException
      * @throws UnknownCRSException
      */
-    private CubicSpline parseCubicSpline( XMLStreamReaderWrapper xmlStream, CRS defaultCRS )
+    private CubicSpline parseCubicSpline( XMLStreamReaderWrapper xmlStream, ICRS defaultCRS )
                             throws XMLParsingException, XMLStreamException, UnknownCRSException {
 
         validateInterpolationAttribute( xmlStream, "cubicSpline" );
@@ -792,7 +788,7 @@ class GML3CurveSegmentReader extends GML3GeometryBaseReader {
      * @throws XMLStreamException
      * @throws UnknownCRSException
      */
-    private Geodesic parseGeodesic( XMLStreamReaderWrapper xmlStream, CRS defaultCRS )
+    private Geodesic parseGeodesic( XMLStreamReaderWrapper xmlStream, ICRS defaultCRS )
                             throws XMLParsingException, XMLStreamException, UnknownCRSException {
 
         validateInterpolationAttribute( xmlStream, "geodesic" );
@@ -845,7 +841,7 @@ class GML3CurveSegmentReader extends GML3GeometryBaseReader {
      * @throws XMLStreamException
      * @throws UnknownCRSException
      */
-    private GeodesicString parseGeodesicString( XMLStreamReaderWrapper xmlStream, CRS defaultCRS )
+    private GeodesicString parseGeodesicString( XMLStreamReaderWrapper xmlStream, ICRS defaultCRS )
                             throws XMLParsingException, XMLStreamException, UnknownCRSException {
 
         validateInterpolationAttribute( xmlStream, "geodesic" );
@@ -900,7 +896,7 @@ class GML3CurveSegmentReader extends GML3GeometryBaseReader {
      * @throws XMLStreamException
      * @throws UnknownCRSException
      */
-    LineStringSegment parseLineStringSegment( XMLStreamReaderWrapper xmlStream, CRS defaultCRS )
+    LineStringSegment parseLineStringSegment( XMLStreamReaderWrapper xmlStream, ICRS defaultCRS )
                             throws XMLParsingException, XMLStreamException, UnknownCRSException {
 
         validateInterpolationAttribute( xmlStream, "linear" );
@@ -930,7 +926,7 @@ class GML3CurveSegmentReader extends GML3GeometryBaseReader {
      * @throws XMLStreamException
      * @throws UnknownCRSException
      */
-    private OffsetCurve parseOffsetCurve( XMLStreamReaderWrapper xmlStream, CRS defaultCRS )
+    private OffsetCurve parseOffsetCurve( XMLStreamReaderWrapper xmlStream, ICRS defaultCRS )
                             throws XMLParsingException, XMLStreamException, UnknownCRSException {
 
         xmlStream.nextTag();
@@ -988,7 +984,7 @@ class GML3CurveSegmentReader extends GML3GeometryBaseReader {
      * @throws XMLParsingException
      * @throws UnknownCRSException
      */
-    Points parseControlPoints( XMLStreamReaderWrapper xmlStream, CRS crs )
+    Points parseControlPoints( XMLStreamReaderWrapper xmlStream, ICRS crs )
                             throws XMLParsingException, XMLStreamException, UnknownCRSException {
 
         List<Point> controlPoints = null;

@@ -50,8 +50,9 @@ import java.util.Set;
 import org.deegree.commons.annotations.LoggingNotes;
 import org.deegree.cs.CRSCodeType;
 import org.deegree.cs.configuration.resources.CRSResource;
-import org.deegree.cs.coordinatesystems.CoordinateSystem;
 import org.deegree.cs.coordinatesystems.GeographicCRS;
+import org.deegree.cs.coordinatesystems.ICRS;
+import org.deegree.cs.coordinatesystems.IGeographicCRS;
 import org.deegree.cs.exceptions.CRSConfigurationException;
 import org.deegree.cs.i18n.Messages;
 import org.deegree.cs.transformations.Transformation;
@@ -117,7 +118,7 @@ public class ProjFileResource implements CRSResource<Map<String, String>> {
         }
     }
 
-    public Helmert getWGS84Transformation( GeographicCRS sourceCRS ) {
+    public Helmert getWGS84Transformation( IGeographicCRS sourceCRS ) {
         if ( sourceCRS == null ) {
             return null;
         }
@@ -171,7 +172,7 @@ public class ProjFileResource implements CRSResource<Map<String, String>> {
      * @throws CRSConfigurationException
      *             if the number of params are not 3 or 7.
      */
-    private Helmert createWGS84ConversionInfo( CoordinateSystem sourceCRS, Map<String, String> params )
+    private Helmert createWGS84ConversionInfo( ICRS sourceCRS, Map<String, String> params )
                             throws CRSConfigurationException {
         Helmert result = null;
         String tmpValue = params.remove( "towgs84" );
@@ -359,7 +360,7 @@ public class ProjFileResource implements CRSResource<Map<String, String>> {
         return id.substring( count + 1 );
     }
 
-    public Transformation getTransformation( CoordinateSystem sourceCRS, CoordinateSystem targetCRS ) {
+    public Transformation getTransformation( ICRS sourceCRS, ICRS targetCRS ) {
         LOG.error( "Parsing of transformations is currently not supported for the Proj4 file resource." );
         return null;
     }

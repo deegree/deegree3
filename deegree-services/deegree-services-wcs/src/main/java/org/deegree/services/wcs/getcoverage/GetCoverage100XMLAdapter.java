@@ -45,14 +45,15 @@ import org.deegree.commons.tom.ows.Version;
 import org.deegree.commons.xml.XPath;
 import org.deegree.coverage.rangeset.AxisSubset;
 import org.deegree.coverage.rangeset.Interval;
+import org.deegree.coverage.rangeset.Interval.Closure;
 import org.deegree.coverage.rangeset.RangeSet;
 import org.deegree.coverage.rangeset.SingleValue;
 import org.deegree.coverage.rangeset.ValueType;
-import org.deegree.coverage.rangeset.Interval.Closure;
 import org.deegree.coverage.raster.geom.Grid;
 import org.deegree.coverage.raster.interpolation.InterpolationType;
-import org.deegree.cs.CRS;
+import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.exceptions.TransformationException;
+import org.deegree.cs.persistence.CRSManager;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryFactory;
 import org.deegree.geometry.utils.GeometryUtils;
@@ -317,7 +318,7 @@ public class GetCoverage100XMLAdapter extends WCSRequest100XMLAdapter {
                             throws OWSException {
         Envelope targetEnvelope = requestEnvelope;
         try {
-            targetEnvelope = GeometryUtils.createConvertedEnvelope( requestEnvelope, new CRS( outputCRS ) );
+            targetEnvelope = GeometryUtils.createConvertedEnvelope( requestEnvelope, CRSManager.getCRSRef( outputCRS ) );
         } catch ( TransformationException e ) {
             // request = target;
         }
@@ -381,7 +382,7 @@ public class GetCoverage100XMLAdapter extends WCSRequest100XMLAdapter {
         double[] min = parseNums( "gml:pos", posElems.get( 0 ) );
         double[] max = parseNums( "gml:pos", posElems.get( 1 ) );
 
-        CRS crs = new CRS( srsName );
+        ICRS crs = CRSManager.getCRSRef( srsName );
         GeometryFactory geomFactory = new GeometryFactory();
         return geomFactory.createEnvelope( min, max, crs );
     }

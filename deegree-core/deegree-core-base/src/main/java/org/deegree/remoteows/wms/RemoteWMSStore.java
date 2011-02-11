@@ -60,9 +60,10 @@ import org.deegree.coverage.raster.RasterTransformer;
 import org.deegree.coverage.raster.SimpleRaster;
 import org.deegree.coverage.raster.data.RasterData;
 import org.deegree.coverage.raster.geom.RasterGeoReference;
-import org.deegree.cs.CRS;
+import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.exceptions.TransformationException;
 import org.deegree.cs.exceptions.UnknownCRSException;
+import org.deegree.cs.persistence.CRSManager;
 import org.deegree.feature.FeatureCollection;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryTransformer;
@@ -130,7 +131,7 @@ public class RemoteWMSStore implements RemoteOWSStore {
 
     private BufferedImage getMap( final String layer, final Envelope envelope, final int width, final int height,
                                   LayerOptions opts ) {
-        CRS origCrs = envelope.getCoordinateSystem();
+        ICRS origCrs = envelope.getCoordinateSystem();
         String origCrsName = origCrs.getName();
         try {
             if ( ( !opts.alwaysUseDefaultCRS && client.getCoordinateSystems( layer ).contains( origCrsName ) )
@@ -151,13 +152,12 @@ public class RemoteWMSStore implements RemoteOWSStore {
             LOG.trace( "Will request remote layer(s) in {} and transform to {}", opts.defaultCRS, origCrsName );
 
             GeometryTransformer trans = new GeometryTransformer( opts.defaultCRS );
-            Envelope bbox = trans.transform( envelope, origCrs.getWrappedCRS() );
+            Envelope bbox = trans.transform( envelope, origCrs );
 
-            RasterTransformer rtrans = new RasterTransformer( origCrs.getWrappedCRS() );
+            RasterTransformer rtrans = new RasterTransformer( origCrs );
 
-            double scale = Utils.calcScaleWMS111( width, height, envelope,
-                                                  envelope.getCoordinateSystem().getWrappedCRS() );
-            double newScale = Utils.calcScaleWMS111( width, height, bbox, new CRS( opts.defaultCRS ).getWrappedCRS() );
+            double scale = Utils.calcScaleWMS111( width, height, envelope, envelope.getCoordinateSystem() );
+            double newScale = Utils.calcScaleWMS111( width, height, bbox, CRSManager.getCRSRef( opts.defaultCRS ) );
             double ratio = scale / newScale;
 
             int newWidth = abs( round( ratio * width ) );
@@ -165,7 +165,7 @@ public class RemoteWMSStore implements RemoteOWSStore {
 
             LinkedList<String> errors = new LinkedList<String>();
             Pair<BufferedImage, String> pair = client.getMap( singletonList( layer ), newWidth, newHeight, bbox,
-                                                              new CRS( opts.defaultCRS ), opts.imageFormat,
+                                                              CRSManager.getCRSRef( opts.defaultCRS ), opts.imageFormat,
                                                               opts.transparent, false, -1, true, errors );
 
             LOG.debug( "Parameters that have been replaced for this request: {}", errors );
@@ -176,8 +176,7 @@ public class RemoteWMSStore implements RemoteOWSStore {
 
             // hack to ensure correct raster transformations. 4byte_abgr seems to be working best with current api
             if ( pair.first.getType() != TYPE_4BYTE_ABGR ) {
-                BufferedImage img = new BufferedImage( pair.first.getWidth(), pair.first.getHeight(),
-                                                       TYPE_4BYTE_ABGR );
+                BufferedImage img = new BufferedImage( pair.first.getWidth(), pair.first.getHeight(), TYPE_4BYTE_ABGR );
                 Graphics2D g = img.createGraphics();
                 g.drawImage( pair.first, 0, 0, null );
                 g.dispose();
@@ -212,7 +211,7 @@ public class RemoteWMSStore implements RemoteOWSStore {
      */
     public List<BufferedImage> getMap( final Envelope envelope, final int width, final int height ) {
         if ( options != null ) {
-            CRS origCrs = envelope.getCoordinateSystem();
+            ICRS origCrs = envelope.getCoordinateSystem();
             String origCrsName = origCrs.getName();
             try {
 
@@ -234,14 +233,13 @@ public class RemoteWMSStore implements RemoteOWSStore {
                 LOG.trace( "Will request remote layer(s) in {} and transform to {}", options.defaultCRS, origCrsName );
 
                 GeometryTransformer trans = new GeometryTransformer( options.defaultCRS );
-                Envelope bbox = trans.transform( envelope, origCrs.getWrappedCRS() );
+                Envelope bbox = trans.transform( envelope, origCrs );
 
-                RasterTransformer rtrans = new RasterTransformer( origCrs.getWrappedCRS() );
+                RasterTransformer rtrans = new RasterTransformer( origCrs );
 
-                double scale = Utils.calcScaleWMS111( width, height, envelope,
-                                                      envelope.getCoordinateSystem().getWrappedCRS() );
+                double scale = Utils.calcScaleWMS111( width, height, envelope, envelope.getCoordinateSystem() );
                 double newScale = Utils.calcScaleWMS111( width, height, bbox,
-                                                         new CRS( options.defaultCRS ).getWrappedCRS() );
+                                                         CRSManager.getCRSRef( options.defaultCRS ) );
                 double ratio = scale / newScale;
 
                 int newWidth = abs( round( ratio * width ) );
@@ -249,7 +247,7 @@ public class RemoteWMSStore implements RemoteOWSStore {
 
                 LinkedList<String> errors = new LinkedList<String>();
                 Pair<BufferedImage, String> pair = client.getMap( layerOrder, newWidth, newHeight, bbox,
-                                                                  new CRS( options.defaultCRS ), options.imageFormat,
+                                                                  CRSManager.getCRSRef( options.defaultCRS ), options.imageFormat,
                                                                   options.transparent, false, -1, true, errors );
 
                 LOG.debug( "Parameters that have been replaced for this request: {}", errors );

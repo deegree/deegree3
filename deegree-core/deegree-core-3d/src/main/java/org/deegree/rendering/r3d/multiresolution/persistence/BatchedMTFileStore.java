@@ -41,7 +41,7 @@ import java.net.URISyntaxException;
 import java.net.URL;
 
 import org.deegree.commons.utils.nio.DirectByteBufferPool;
-import org.deegree.cs.CRS;
+import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.rendering.r3d.multiresolution.MultiresolutionMesh;
 
 /**
@@ -54,11 +54,11 @@ import org.deegree.rendering.r3d.multiresolution.MultiresolutionMesh;
  */
 public class BatchedMTFileStore implements BatchedMTStore {
 
-    private CRS crs;
+    private ICRS crs;
     
     private MultiresolutionMesh mesh;
 
-    public BatchedMTFileStore( CRS crs, URL dir, int maxDirectMemBytes ) throws IOException, URISyntaxException {
+    public BatchedMTFileStore( ICRS crs, URL dir, int maxDirectMemBytes ) throws IOException, URISyntaxException {
         this.crs = crs;
         DirectByteBufferPool pool = new DirectByteBufferPool( maxDirectMemBytes, "TODO" );
         mesh = new MultiresolutionMesh( new File (dir.toURI()), pool );

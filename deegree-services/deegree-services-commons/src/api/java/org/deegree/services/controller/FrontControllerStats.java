@@ -53,9 +53,9 @@ import org.deegree.commons.utils.ComparablePair;
 import org.deegree.commons.utils.ConfigManager;
 import org.deegree.commons.utils.Pair;
 import org.deegree.commons.utils.kvp.KVPUtils;
-import org.deegree.cs.CRS;
 import org.deegree.cs.exceptions.TransformationException;
 import org.deegree.cs.exceptions.UnknownCRSException;
+import org.deegree.cs.persistence.CRSManager;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryFactory;
 import org.deegree.geometry.GeometryTransformer;
@@ -132,7 +132,8 @@ public class FrontControllerStats {
                         return;
                     }
                     double[] ds = splitAsDoubles( map.get( "BBOX" ), "," );
-                    Envelope newBox = fac.createEnvelope( ds[0], ds[1], ds[2], ds[3], new CRS( map.get( "SRS" ) ) );
+                    Envelope newBox = fac.createEnvelope( ds[0], ds[1], ds[2], ds[3],
+                                                          CRSManager.getCRSRef( map.get( "SRS" ) ) );
                     if ( bbox != null ) {
                         bbox.merge( trans.transform( newBox ) );
                     }
@@ -278,10 +279,11 @@ public class FrontControllerStats {
                         continue;
                     }
                     double[] ds = splitAsDoubles( map.get( "BBOX" ), "," );
-                    Envelope newBox = fac.createEnvelope( ds[0], ds[1], ds[2], ds[3], new CRS( map.get( "SRS" ) ) );
+                    Envelope newBox = fac.createEnvelope( ds[0], ds[1], ds[2], ds[3],
+                                                          CRSManager.getCRSRef( map.get( "SRS" ) ) );
                     if ( bbox == null ) {
                         bbox = newBox;
-                        trans = new GeometryTransformer( bbox.getCoordinateSystem().getWrappedCRS() );
+                        trans = new GeometryTransformer( bbox.getCoordinateSystem() );
                     } else {
                         bbox.merge( trans.transform( newBox ) );
                     }

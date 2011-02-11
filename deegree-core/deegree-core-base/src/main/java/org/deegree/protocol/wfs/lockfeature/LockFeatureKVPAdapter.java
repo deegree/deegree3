@@ -53,7 +53,8 @@ import org.deegree.commons.xml.NamespaceBindings;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;
-import org.deegree.cs.CRS;
+import org.deegree.cs.coordinatesystems.ICRS;
+import org.deegree.cs.persistence.CRSManager;
 import org.deegree.filter.Filter;
 import org.deegree.filter.xml.Filter110XMLDecoder;
 import org.deegree.geometry.Envelope;
@@ -171,9 +172,9 @@ public class LockFeatureKVPAdapter extends AbstractWFSRequestKVPAdapter {
             }
 
             String[] coordList = bboxStr.split( "," );
-            CRS srs = null; // TODO should this be EPSG:4326 or WGS:84 by default ??
+            ICRS srs = null; // TODO should this be EPSG:4326 or WGS:84 by default ??
             if ( coordList.length % 2 == 1 ) {
-                srs = new CRS( coordList[coordList.length - 1] );
+                srs = CRSManager.getCRSRef( coordList[coordList.length - 1] );
             }
 
             Envelope bbox = createEnvelope( bboxStr, srs );
@@ -240,7 +241,7 @@ public class LockFeatureKVPAdapter extends AbstractWFSRequestKVPAdapter {
     }
 
     @SuppressWarnings("boxing")
-    private static Envelope createEnvelope( String bboxStr, CRS srs ) {
+    private static Envelope createEnvelope( String bboxStr, ICRS srs ) {
         String[] coordList = bboxStr.split( "," );
 
         int n = coordList.length / 2;

@@ -40,8 +40,7 @@ import javax.imageio.metadata.IIOMetadata;
 import org.deegree.coverage.raster.geom.RasterGeoReference;
 import org.deegree.coverage.raster.geom.RasterGeoReference.OriginLocation;
 import org.deegree.coverage.raster.io.imageio.geotiff.GeoTiffIIOMetadataAdapter;
-import org.deegree.cs.CRS;
-import org.deegree.cs.coordinatesystems.CoordinateSystem;
+import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.cs.persistence.CRSManager;
 import org.slf4j.Logger;
@@ -64,7 +63,7 @@ public class MetaDataReader {
 
     private RasterGeoReference rasterReference = null;
 
-    private CoordinateSystem crs = null;
+    private ICRS crs = null;
 
     private static Logger LOG = LoggerFactory.getLogger( MetaDataReader.class );
 
@@ -90,7 +89,7 @@ public class MetaDataReader {
     /**
      * @return the coordinate system or <code>null</code>, if the metadata contains no crs
      */
-    public CoordinateSystem getCRS() {
+    public ICRS getCRS() {
         return crs;
     }
 
@@ -131,17 +130,17 @@ public class MetaDataReader {
 
                 if ( definedRasterOrigLoc != null ) {
                     rasterReference = new RasterGeoReference( definedRasterOrigLoc, scale[0], -scale[1], tiePoints[3],
-                                                              tiePoints[4], new CRS( crs ) );
+                                                              tiePoints[4], CRSManager.getCRSRef( crs ) );
                 } else {
                     if ( Math.abs( scale[0] - 0.5 ) < 0.001 ) { // when first pixel tie point is 0.5 -> center type
                         // rb: this might not always be right, see examples at
                         // http://www.remotesensing.org/geotiff/spec/geotiff3.html#3.2.1.
                         // search for PixelIsArea/PixelIsPoint to determine center/outer
                         rasterReference = new RasterGeoReference( RasterGeoReference.OriginLocation.CENTER, scale[0],
-                                                                  -scale[1], tiePoints[3], tiePoints[4], new CRS( crs ) );
+                                                                  -scale[1], tiePoints[3], tiePoints[4], CRSManager.getCRSRef( crs ) );
                     } else {
                         rasterReference = new RasterGeoReference( RasterGeoReference.OriginLocation.OUTER, scale[0],
-                                                                  -scale[1], tiePoints[3], tiePoints[4], new CRS( crs ) );
+                                                                  -scale[1], tiePoints[3], tiePoints[4], CRSManager.getCRSRef( crs ) );
                     }
                 }
             }

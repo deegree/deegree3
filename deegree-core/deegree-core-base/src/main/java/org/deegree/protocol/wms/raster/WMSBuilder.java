@@ -64,10 +64,11 @@ import org.deegree.coverage.raster.AbstractRaster;
 import org.deegree.coverage.raster.MultiResolutionRaster;
 import org.deegree.coverage.raster.io.RasterIOOptions;
 import org.deegree.coverage.raster.utils.RasterFactory;
-import org.deegree.cs.CRS;
+import org.deegree.cs.coordinatesystems.ICRS;
+import org.deegree.cs.persistence.CRSManager;
 import org.deegree.protocol.wms.raster.jaxb.MultiResolutionRasterConfig;
-import org.deegree.protocol.wms.raster.jaxb.WMSDataSourceType;
 import org.deegree.protocol.wms.raster.jaxb.MultiResolutionRasterConfig.Resolution;
+import org.deegree.protocol.wms.raster.jaxb.WMSDataSourceType;
 import org.deegree.protocol.wms.raster.jaxb.WMSDataSourceType.CapabilitiesDocumentLocation;
 import org.deegree.protocol.wms.raster.jaxb.WMSDataSourceType.MaxMapDimensions;
 import org.deegree.protocol.wms.raster.jaxb.WMSDataSourceType.RequestedFormat;
@@ -129,9 +130,9 @@ public class WMSBuilder implements CoverageBuilder {
         if ( mrrConfig != null ) {
             String defCRS = mrrConfig.getDefaultSRS();
             // String defCRS = null;
-            CRS crs = null;
+            ICRS crs = null;
             if ( defCRS != null ) {
-                crs = new CRS( defCRS );
+                crs = CRSManager.getCRSRef( defCRS );
             }
             RasterIOOptions options = getOptions( mrrConfig );
 

@@ -61,8 +61,8 @@ import org.deegree.commons.xml.NamespaceBindings;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.commons.xml.XPath;
-import org.deegree.cs.CRS;
 import org.deegree.cs.exceptions.UnknownCRSException;
+import org.deegree.cs.persistence.CRSManager;
 import org.deegree.geometry.Envelope;
 import org.deegree.process.jaxb.java.BoundingBoxInputDefinition;
 import org.deegree.process.jaxb.java.ComplexFormatType;
@@ -423,7 +423,7 @@ public class ExecuteRequestXMLAdapter extends OWSCommonXMLAdapter {
             }
         }
 
-        Envelope bbox = parseBoundingBoxType( boundingBoxDataElement, new CRS( crs ) );
+        Envelope bbox = parseBoundingBoxType( boundingBoxDataElement, CRSManager.getCRSRef( crs ) );
         return new BoundingBoxInputImpl( definition, title, summary, bbox );
     }
 

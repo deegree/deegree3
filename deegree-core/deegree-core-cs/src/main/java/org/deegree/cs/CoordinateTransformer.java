@@ -42,7 +42,7 @@ import java.util.Map;
 import javax.vecmath.Point3d;
 
 import org.deegree.commons.annotations.LoggingNotes;
-import org.deegree.cs.coordinatesystems.CoordinateSystem;
+import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.exceptions.TransformationException;
 import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.cs.transformations.Transformation;
@@ -74,7 +74,7 @@ public class CoordinateTransformer extends Transformer {
      * @throws IllegalArgumentException
      *             if the given parameter is null.
      */
-    public CoordinateTransformer( CoordinateSystem targetCRS ) throws IllegalArgumentException {
+    public CoordinateTransformer( ICRS targetCRS ) throws IllegalArgumentException {
         super( targetCRS );
     }
 
@@ -117,7 +117,7 @@ public class CoordinateTransformer extends Transformer {
      * @throws IllegalArgumentException
      *             if the sourceCRS is <code>null</code>
      */
-    public List<Point3d> transform( CoordinateSystem sourceCRS, List<Point3d> points )
+    public List<Point3d> transform( ICRS sourceCRS, List<Point3d> points )
                             throws TransformationException, IllegalArgumentException {
 
         List<Point3d> copy = new ArrayList<Point3d>( points.size() );
@@ -215,7 +215,7 @@ public class CoordinateTransformer extends Transformer {
      * @throws TransformationException
      * @throws IllegalArgumentException
      */
-    public double[] transform( CoordinateSystem sourceCRS, double[] input, double[] out )
+    public double[] transform( ICRS sourceCRS, double[] input, double[] out )
                             throws IllegalArgumentException, TransformationException {
         Transformation trans = createCRSTransformation( sourceCRS );
 

@@ -41,7 +41,8 @@ import java.util.List;
 import org.deegree.commons.uom.Measure;
 import org.deegree.commons.uom.Unit;
 import org.deegree.commons.utils.Pair;
-import org.deegree.cs.CRS;
+import org.deegree.cs.coordinatesystems.CRS;
+import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.points.Points;
@@ -66,7 +67,7 @@ public class DefaultOrientableCurve extends AbstractDefaultGeometry implements O
 
     private String id;
 
-    private CRS crs;
+    private ICRS crs;
 
     private Curve baseCurve;
 
@@ -86,8 +87,8 @@ public class DefaultOrientableCurve extends AbstractDefaultGeometry implements O
      * @param isReversed
      *            set to true, if the order of the base curve shall be reversed
      */
-    public DefaultOrientableCurve( String id, CRS crs, Curve baseCurve, boolean isReversed ) {
-        super (id, crs, null);
+    public DefaultOrientableCurve( String id, ICRS crs, Curve baseCurve, boolean isReversed ) {
+        super( id, crs, null );
         this.baseCurve = baseCurve;
         this.isReversed = isReversed;
     }
@@ -98,7 +99,7 @@ public class DefaultOrientableCurve extends AbstractDefaultGeometry implements O
     }
 
     @Override
-    public CRS getCoordinateSystem() {
+    public ICRS getCoordinateSystem() {
         return crs;
     }
 
@@ -155,8 +156,8 @@ public class DefaultOrientableCurve extends AbstractDefaultGeometry implements O
     @Override
     public boolean crosses( Geometry geometry ) {
         return baseCurve.crosses( geometry );
-    }    
-    
+    }
+
     @Override
     public Geometry getDifference( Geometry geometry ) {
         return baseCurve.getDifference( geometry );
@@ -173,7 +174,7 @@ public class DefaultOrientableCurve extends AbstractDefaultGeometry implements O
     }
 
     @Override
-    public Pair<Point,Point> getBoundary() {
+    public Pair<Point, Point> getBoundary() {
         return baseCurve.getBoundary();
     }
 
@@ -188,7 +189,7 @@ public class DefaultOrientableCurve extends AbstractDefaultGeometry implements O
     }
 
     @Override
-    public int getCoordinateDimension () {
+    public int getCoordinateDimension() {
         return baseCurve.getCoordinateDimension();
     }
 
@@ -230,8 +231,8 @@ public class DefaultOrientableCurve extends AbstractDefaultGeometry implements O
     @Override
     public boolean touches( Geometry geometry ) {
         return baseCurve.touches( geometry );
-    }    
-    
+    }
+
     @Override
     public boolean isBeyond( Geometry geometry, Measure distance ) {
         return baseCurve.isBeyond( geometry, distance );

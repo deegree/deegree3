@@ -37,7 +37,7 @@ package org.deegree.geometry.standard.multi;
 
 import java.util.List;
 
-import org.deegree.cs.CRS;
+import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.geometry.multi.MultiLineString;
 import org.deegree.geometry.precision.PrecisionModel;
 import org.deegree.geometry.primitive.Curve;
@@ -64,7 +64,7 @@ public class DefaultMultiLineString extends DefaultMultiGeometry<LineString> imp
      *            precision model, may be null
      * @param members
      */
-    public DefaultMultiLineString( String id, CRS crs, PrecisionModel pm, List<LineString> members ) {
+    public DefaultMultiLineString( String id, ICRS crs, PrecisionModel pm, List<LineString> members ) {
         super( id, crs, pm, members );
     }
 

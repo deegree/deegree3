@@ -52,7 +52,8 @@ import javax.xml.namespace.QName;
 
 import org.deegree.commons.utils.QNameUtils;
 import org.deegree.commons.xml.NamespaceBindings;
-import org.deegree.cs.CRS;
+import org.deegree.cs.CRSUtils;
+import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.exceptions.TransformationException;
 import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.feature.persistence.FeatureStore;
@@ -116,7 +117,7 @@ public class GetFeatureAnalyzer {
 
     private XLinkPropertyName[] xlinkProps = null;
 
-    private CRS requestedCrs;
+    private ICRS requestedCrs;
 
     private boolean allFtsPossible;
 
@@ -249,7 +250,7 @@ public class GetFeatureAnalyzer {
      * 
      * @return the crs, or <code>null</code> (use native crs)
      */
-    public CRS getRequestedCRS() {
+    public ICRS getRequestedCRS() {
         return requestedCrs;
     }
 
@@ -528,7 +529,7 @@ public class GetFeatureAnalyzer {
         return name;
     }
 
-    private void validateGeometryConstraint( Geometry geom, CRS queriedCrs )
+    private void validateGeometryConstraint( Geometry geom, ICRS queriedCrs )
                             throws OWSException {
 
         // check if geometry's bbox is inside the domain of its CRS
@@ -536,8 +537,8 @@ public class GetFeatureAnalyzer {
         if ( bbox.getCoordinateSystem() != null ) {
             // check if geometry's bbox is valid with respect to the CRS domain
             try {
-                double[] b = bbox.getCoordinateSystem().getAreaOfUse();
-                Envelope domainOfValidity = geomFac.createEnvelope( b[0], b[1], b[2], b[3], CRS.EPSG_4326 );
+                double[] b = bbox.getCoordinateSystem().getAreaOfUseBBox();
+                Envelope domainOfValidity = geomFac.createEnvelope( b[0], b[1], b[2], b[3], CRSUtils.EPSG_4326 );
                 domainOfValidity = transform( domainOfValidity, bbox.getCoordinateSystem() );
                 if ( !bbox.isWithin( domainOfValidity ) ) {
                     String msg = "Invalid geometry constraint in filter. The envelope of the geometry is not within the domain of validity ('"
@@ -556,8 +557,8 @@ public class GetFeatureAnalyzer {
         // check if geometry's bbox is inside the validity domain of the queried CRS
         if ( queriedCrs != null ) {
             try {
-                double[] b = queriedCrs.getAreaOfUse();
-                Envelope domainOfValidity = geomFac.createEnvelope( b[0], b[1], b[2], b[3], CRS.EPSG_4326 );
+                double[] b = queriedCrs.getAreaOfUseBBox();
+                Envelope domainOfValidity = geomFac.createEnvelope( b[0], b[1], b[2], b[3], CRSUtils.EPSG_4326 );
                 domainOfValidity = transform( domainOfValidity, queriedCrs );
                 Envelope bboxTransformed = transform( bbox, queriedCrs );
                 if ( !bboxTransformed.isWithin( domainOfValidity ) ) {
@@ -575,12 +576,12 @@ public class GetFeatureAnalyzer {
         }
     }
 
-    private Envelope transform( Envelope bbox, CRS targetCrs )
+    private Envelope transform( Envelope bbox, ICRS targetCrs )
                             throws IllegalArgumentException, TransformationException, UnknownCRSException {
         if ( bbox.getEnvelope().equals( targetCrs ) ) {
             return bbox;
         }
-        GeometryTransformer transformer = new GeometryTransformer( targetCrs.getWrappedCRS() );
+        GeometryTransformer transformer = new GeometryTransformer( targetCrs );
         return (Envelope) transformer.transform( bbox );
     }
 }

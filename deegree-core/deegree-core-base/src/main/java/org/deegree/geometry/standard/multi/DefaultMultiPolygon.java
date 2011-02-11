@@ -37,7 +37,7 @@ package org.deegree.geometry.standard.multi;
 
 import java.util.List;
 
-import org.deegree.cs.CRS;
+import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.geometry.multi.MultiPolygon;
 import org.deegree.geometry.precision.PrecisionModel;
 import org.deegree.geometry.primitive.Polygon;
@@ -64,7 +64,7 @@ public class DefaultMultiPolygon extends DefaultMultiGeometry<Polygon> implement
      *            precision model, may be null
      * @param members
      */
-    public DefaultMultiPolygon( String id, CRS crs, PrecisionModel pm, List<Polygon> members ) {
+    public DefaultMultiPolygon( String id, ICRS crs, PrecisionModel pm, List<Polygon> members ) {
         super( id, crs, pm, members );
     }
 
@@ -77,14 +77,14 @@ public class DefaultMultiPolygon extends DefaultMultiGeometry<Polygon> implement
     public MultiGeometryType getMultiGeometryType() {
         return MultiGeometryType.MULTI_POLYGON;
     }
-    
+
     @Override
     protected com.vividsolutions.jts.geom.MultiPolygon buildJTSGeometry() {
-        com.vividsolutions.jts.geom.Polygon [] jtsMembers = new com.vividsolutions.jts.geom.Polygon[size()];
+        com.vividsolutions.jts.geom.Polygon[] jtsMembers = new com.vividsolutions.jts.geom.Polygon[size()];
         int i = 0;
         for ( Surface geometry : members ) {
             jtsMembers[i++] = (com.vividsolutions.jts.geom.Polygon) getAsDefaultGeometry( geometry ).getJTSGeometry();
         }
         return jtsFactory.createMultiPolygon( jtsMembers );
-    }       
+    }
 }

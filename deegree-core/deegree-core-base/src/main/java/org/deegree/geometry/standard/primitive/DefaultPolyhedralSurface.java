@@ -39,7 +39,7 @@ import java.util.List;
 
 import org.deegree.commons.uom.Measure;
 import org.deegree.commons.uom.Unit;
-import org.deegree.cs.CRS;
+import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.geometry.points.Points;
 import org.deegree.geometry.precision.PrecisionModel;
 import org.deegree.geometry.primitive.Point;
@@ -71,7 +71,7 @@ public class DefaultPolyhedralSurface extends AbstractDefaultGeometry implements
      * @param patches
      *            patches that constitute the surface
      */
-    public DefaultPolyhedralSurface( String id, CRS crs, PrecisionModel pm, List<PolygonPatch> patches ) {
+    public DefaultPolyhedralSurface( String id, ICRS crs, PrecisionModel pm, List<PolygonPatch> patches ) {
         super( id, crs, pm );
         this.patches = patches;
     }

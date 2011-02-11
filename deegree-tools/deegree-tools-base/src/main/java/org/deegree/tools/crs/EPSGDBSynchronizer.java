@@ -50,10 +50,10 @@ import org.apache.commons.cli.PosixParser;
 import org.deegree.commons.annotations.Tool;
 import org.deegree.commons.tools.CommandUtils;
 import org.deegree.cs.CRSCodeType;
-import org.deegree.cs.coordinatesystems.CoordinateSystem;
-import org.deegree.cs.coordinatesystems.ProjectedCRS;
+import org.deegree.cs.coordinatesystems.ICRS;
+import org.deegree.cs.coordinatesystems.IProjectedCRS;
 import org.deegree.cs.persistence.deegree.db.DBCRSStore;
-import org.deegree.cs.projections.Projection;
+import org.deegree.cs.projections.IProjection;
 import org.deegree.cs.projections.azimuthal.LambertAzimuthalEqualArea;
 import org.deegree.cs.projections.azimuthal.StereographicAlternative;
 import org.deegree.cs.projections.azimuthal.StereographicAzimuthal;
@@ -129,16 +129,16 @@ public class EPSGDBSynchronizer {
                 int projectionTypeCode = largeRs.getInt( 2 );
                 int projectionCode = largeRs.getInt( 3 );
 
-                CoordinateSystem crs = dbSTore.getCRSByCode( new CRSCodeType( String.valueOf( projectedCRSCode ),
+                ICRS crs = dbSTore.getCRSByCode( new CRSCodeType( String.valueOf( projectedCRSCode ),
                                                                                  "EPSG" ) );
 
-                if ( crs != null && ( crs instanceof ProjectedCRS ) ) {
+                if ( crs != null && ( crs instanceof IProjectedCRS ) ) {
                     // if the projections are of the known types ( Transverse Mercator, Lambert Azimuthal EA, Lambert
                     // Conic Conformal, Stereographic alternative or Stereografic azimuthal )
                     if ( projectionTypeCode == 9807 || projectionTypeCode == 9820 || projectionTypeCode == 9801
                          || projectionTypeCode == 9809 || projectionTypeCode == 9810 ) {
-                        ProjectedCRS projectedCRS = (ProjectedCRS) crs;
-                        Projection projection = projectedCRS.getProjection();
+                        IProjectedCRS projectedCRS = (IProjectedCRS) crs;
+                        IProjection projection = projectedCRS.getProjection();
 
                         ps = EPSGdbConn.prepareStatement( "SELECT parameter_value, parameter_code FROM epsg_coordoperationparamvalue "
                                                           + "WHERE coord_op_code = " + projectionCode );

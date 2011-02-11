@@ -49,10 +49,12 @@ import javax.vecmath.Point3d;
 
 import org.deegree.cs.CRSCodeType;
 import org.deegree.cs.CRSIdentifiable;
-import org.deegree.cs.components.GeodeticDatum;
-import org.deegree.cs.coordinatesystems.CoordinateSystem;
+import org.deegree.cs.CRSResource;
+import org.deegree.cs.components.IGeodeticDatum;
 import org.deegree.cs.coordinatesystems.GeocentricCRS;
 import org.deegree.cs.coordinatesystems.GeographicCRS;
+import org.deegree.cs.coordinatesystems.ICRS;
+import org.deegree.cs.coordinatesystems.IGeographicCRS;
 import org.deegree.cs.exceptions.TransformationException;
 import org.deegree.cs.transformations.Transformation;
 import org.deegree.cs.transformations.coordinate.GeocentricTransform;
@@ -128,7 +130,7 @@ public class Helmert extends Transformation {
      *            true if the rotation parameters are in radians
      */
     public Helmert( double dx, double dy, double dz, double ex, double ey, double ez, double ppm,
-                    CoordinateSystem sourceCRS, CoordinateSystem targetCRS, CRSIdentifiable identifiable,
+                    ICRS sourceCRS, ICRS targetCRS, CRSResource identifiable,
                     boolean inRadians ) {
         super( sourceCRS, targetCRS, identifiable );
         this.dx = dx;
@@ -164,7 +166,7 @@ public class Helmert extends Transformation {
      *            object containing all relevant id.
      */
     public Helmert( double dx, double dy, double dz, double ex, double ey, double ez, double ppm,
-                    CoordinateSystem sourceCRS, CoordinateSystem targetCRS, CRSIdentifiable identifiable ) {
+                    ICRS sourceCRS, ICRS targetCRS, CRSResource identifiable ) {
         this( dx, dy, dz, ex, ey, ez, ppm, sourceCRS, targetCRS, identifiable, false );
     }
 
@@ -182,7 +184,7 @@ public class Helmert extends Transformation {
      * @param descriptions
      * @param areasOfUse
      */
-    public Helmert( CoordinateSystem sourceCRS, CoordinateSystem targetCRS, CRSCodeType[] codes, String[] names,
+    public Helmert( ICRS sourceCRS, ICRS targetCRS, CRSCodeType[] codes, String[] names,
                     String[] versions, String[] descriptions, String[] areasOfUse ) {
         this( 0, 0, 0, 0, 0, 0, 0, sourceCRS, targetCRS, new CRSIdentifiable( codes, names, versions, descriptions,
                                                                               areasOfUse ) );
@@ -197,7 +199,7 @@ public class Helmert extends Transformation {
      *            of this helmert transformation
      * @param code
      */
-    public Helmert( CoordinateSystem sourceCRS, CoordinateSystem targetCRS, CRSCodeType code ) {
+    public Helmert( ICRS sourceCRS, ICRS targetCRS, CRSCodeType code ) {
         this( sourceCRS, targetCRS, new CRSCodeType[] { code } );
     }
 
@@ -210,7 +212,7 @@ public class Helmert extends Transformation {
      *            of this helmert transformation
      * @param codes
      */
-    public Helmert( CoordinateSystem sourceCRS, CoordinateSystem targetCRS, CRSCodeType[] codes ) {
+    public Helmert( ICRS sourceCRS, ICRS targetCRS, CRSCodeType[] codes ) {
         this( sourceCRS, targetCRS, codes, null, null, null, null );
     }
 
@@ -221,7 +223,7 @@ public class Helmert extends Transformation {
      *            of this helmert transformation
      * @param codes
      */
-    public Helmert( CoordinateSystem sourceCRS, CRSCodeType[] codes ) {
+    public Helmert( ICRS sourceCRS, CRSCodeType[] codes ) {
         this( sourceCRS, GeographicCRS.WGS84, codes, null, null, null, null );
     }
 
@@ -251,7 +253,7 @@ public class Helmert extends Transformation {
      * @param areaOfUses
      */
     public Helmert( double dx, double dy, double dz, double ex, double ey, double ez, double ppm,
-                    CoordinateSystem sourceCRS, CoordinateSystem targetCRS, CRSCodeType[] codes, String[] names,
+                    ICRS sourceCRS, ICRS targetCRS, CRSCodeType[] codes, String[] names,
                     String[] versions, String[] descriptions, String[] areaOfUses ) {
         this( dx, dy, dz, ex, ey, ez, ppm, sourceCRS, targetCRS, new CRSIdentifiable( codes, names, versions,
                                                                                       descriptions, areaOfUses ) );
@@ -283,7 +285,7 @@ public class Helmert extends Transformation {
      * @param areaOfUse
      */
     public Helmert( double dx, double dy, double dz, double ex, double ey, double ez, double ppm,
-                    CoordinateSystem sourceCRS, CoordinateSystem targetCRS, CRSCodeType code, String name,
+                    ICRS sourceCRS, ICRS targetCRS, CRSCodeType code, String name,
                     String version, String description, String areaOfUse ) {
         this( dx, dy, dz, ex, ey, ez, ppm, sourceCRS, targetCRS, new CRSCodeType[] { code }, new String[] { name },
               new String[] { version }, new String[] { description }, new String[] { areaOfUse } );
@@ -311,7 +313,7 @@ public class Helmert extends Transformation {
      * @param codes
      */
     public Helmert( double dx, double dy, double dz, double ex, double ey, double ez, double ppm,
-                    CoordinateSystem sourceCRS, CoordinateSystem targetCRS, CRSCodeType[] codes ) {
+                    ICRS sourceCRS, ICRS targetCRS, CRSCodeType[] codes ) {
         this( dx, dy, dz, ex, ey, ez, ppm, sourceCRS, targetCRS, codes, null, null, null, null );
     }
 
@@ -337,7 +339,7 @@ public class Helmert extends Transformation {
      * @param code
      */
     public Helmert( double dx, double dy, double dz, double ex, double ey, double ez, double ppm,
-                    CoordinateSystem sourceCRS, CoordinateSystem targetCRS, CRSCodeType code ) {
+                    ICRS sourceCRS, ICRS targetCRS, CRSCodeType code ) {
         this( dx, dy, dz, ex, ey, ez, ppm, sourceCRS, targetCRS, new CRSCodeType[] { code } );
     }
 
@@ -535,15 +537,15 @@ public class Helmert extends Transformation {
         final GeographicCRS sourceCRS = (GeographicCRS) result.getSourceCRS();
         final GeographicCRS targetCRS = (GeographicCRS) result.getTargetCRS();
         if ( sourceCRS != null && targetCRS != null ) {
-            final GeodeticDatum sourceDatum = sourceCRS.getGeodeticDatum();
-            final GeodeticDatum targetDatum = targetCRS.getGeodeticDatum();
+            final IGeodeticDatum sourceDatum = sourceCRS.getGeodeticDatum();
+            final IGeodeticDatum targetDatum = targetCRS.getGeodeticDatum();
             String name = sourceCRS.getName() + "_Geocentric";
             final GeocentricCRS sourceGCS = new GeocentricCRS( sourceDatum, sourceCRS.getCode(), name );
             name = targetCRS.getName() + "_Geocentric";
             final GeocentricCRS targetGCS = new GeocentricCRS( targetDatum, targetCRS.getCode(), name );
 
-            final GeographicCRS alignedSource = createWGSAlligned( sourceCRS );
-            final GeographicCRS alignedTarget = createWGSAlligned( targetCRS );
+            final IGeographicCRS alignedSource = createWGSAlligned( sourceCRS );
+            final IGeographicCRS alignedTarget = createWGSAlligned( targetCRS );
 
             try {
                 final Matrix first = swapAndRotateGeoAxis( sourceCRS, alignedSource );
@@ -557,8 +559,8 @@ public class Helmert extends Transformation {
                     // call inverseTransform from geocentric
                     geocentricTransform.inverse();
                 }
-                Transformation step3 = concatenate( geocentricTransform, createMatrixTransform( alignedTarget,
-                                                                                                targetCRS, second ) );
+                Transformation step3 = concatenate( geocentricTransform,
+                                                    createMatrixTransform( alignedTarget, targetCRS, second ) );
                 return concatenate( step1, result, step3 );
             } catch ( TransformationException e ) {
                 LOG.warn( "Could not create an alignment matrix for the supplied Helmert transformation, are the coordinate systems correctly defined?" );

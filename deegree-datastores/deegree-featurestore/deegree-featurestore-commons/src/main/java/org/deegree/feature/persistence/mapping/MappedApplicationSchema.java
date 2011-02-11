@@ -42,7 +42,7 @@ import java.util.TreeMap;
 
 import javax.xml.namespace.QName;
 
-import org.deegree.cs.CRS;
+import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.feature.types.ApplicationSchema;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.gml.schema.GMLSchemaInfoSet;
@@ -73,7 +73,7 @@ public class MappedApplicationSchema extends ApplicationSchema {
 
     private final Map<QName, FeatureTypeMapping> ftNameToFtMapping = new HashMap<QName, FeatureTypeMapping>();
 
-    private final CRS storageCRS;
+    private final ICRS storageCRS;
 
     private final IdAnalyzer idAnalyzer;
 
@@ -105,7 +105,7 @@ public class MappedApplicationSchema extends ApplicationSchema {
      */
     public MappedApplicationSchema( FeatureType[] fts, Map<FeatureType, FeatureType> ftToSuperFt,
                                     Map<String, String> prefixToNs, GMLSchemaInfoSet xsModel,
-                                    FeatureTypeMapping[] ftMappings, CRS storageSRS, BBoxTableMapping bboxMapping,
+                                    FeatureTypeMapping[] ftMappings, ICRS storageSRS, BBoxTableMapping bboxMapping,
                                     BlobMapping blobMapping ) {
 
         super( fts, ftToSuperFt, prefixToNs, xsModel );
@@ -205,7 +205,7 @@ public class MappedApplicationSchema extends ApplicationSchema {
      * 
      * @return the storage CRS, never <code>null</code>
      */
-    public CRS getStorageCRS() {
+    public ICRS getStorageCRS() {
         return storageCRS;
     }
 

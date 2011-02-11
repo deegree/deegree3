@@ -35,7 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.geometry.standard;
 
-import org.deegree.cs.CRS;
+import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.points.Points;
@@ -88,7 +88,7 @@ public class DefaultEnvelope extends AbstractDefaultGeometry implements Envelope
      * @param min
      * @param max
      */
-    public DefaultEnvelope( String id, CRS crs, PrecisionModel pm, Point min, Point max ) {
+    public DefaultEnvelope( String id, ICRS crs, PrecisionModel pm, Point min, Point max ) {
         super( id, crs, pm );
         this.min = min;
         this.max = max;

@@ -51,7 +51,6 @@ import static java.lang.Math.sin;
 import static java.lang.Math.toRadians;
 import static org.deegree.commons.utils.math.MathUtils.isZero;
 import static org.deegree.commons.utils.math.MathUtils.round;
-import static org.deegree.cs.CRS.EPSG_4326;
 import static org.deegree.cs.components.Unit.METRE;
 import static org.deegree.geometry.utils.GeometryUtils.envelopeToPolygon;
 import static org.deegree.rendering.r2d.RenderHelper.getShapeFromMark;
@@ -66,16 +65,17 @@ import java.awt.Shape;
 import java.awt.TexturePaint;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.GeneralPath;
+import java.awt.geom.Path2D.Double;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
-import java.awt.geom.Path2D.Double;
 import java.awt.image.BufferedImage;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedList;
 
 import org.deegree.commons.annotations.LoggingNotes;
-import org.deegree.cs.CRS;
+import org.deegree.cs.CRSUtils;
+import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.exceptions.TransformationException;
 import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.geometry.Envelope;
@@ -157,11 +157,11 @@ public class Java2DRenderer implements Renderer {
             double scaley = height / bbox.getSpan1();
             try {
                 if ( bbox.getCoordinateSystem() == null || bbox.getCoordinateSystem().getName().equals( "CRS:1" )
-                     || bbox.getCoordinateSystem().getWrappedCRS().getUnits()[0].equals( METRE ) ) {
+                     || bbox.getCoordinateSystem().getUnits()[0].equals( METRE ) ) {
                     res = bbox.getSpan0() / width; // use x for resolution
                 } else {
                     // heuristics more or less copied from d2, TODO is use the proper UTM conversion
-                    Envelope box = new GeometryTransformer( EPSG_4326.getWrappedCRS() ).transform( bbox );
+                    Envelope box = new GeometryTransformer( CRSUtils.EPSG_4326 ).transform( bbox );
                     double minx = box.getMin().get0(), miny = box.getMin().get1();
                     double maxx = minx + box.getSpan0();
                     double r = 6378.137;
@@ -190,14 +190,14 @@ public class Java2DRenderer implements Renderer {
 
             try {
                 if ( bbox.getCoordinateSystem() != null && ( !bbox.getCoordinateSystem().getName().equals( "CRS:1" ) ) ) {
-                    transformer = new GeometryTransformer( bbox.getCoordinateSystem().getWrappedCRS() );
+                    transformer = new GeometryTransformer( bbox.getCoordinateSystem() );
                 }
             } catch ( IllegalArgumentException e ) {
                 LOG.debug( "Stack trace:", e );
                 LOG.warn( "Setting up the renderer yielded an exception when setting up internal transformer. This may lead to problems." );
-            } catch ( UnknownCRSException e ) {
-                LOG.debug( "Stack trace:", e );
-                LOG.warn( "Setting up the renderer yielded an exception when setting up internal transformer. This may lead to problems." );
+                // } catch ( UnknownCRSException e ) {
+                // LOG.debug( "Stack trace:", e );
+                // LOG.warn( "Setting up the renderer yielded an exception when setting up internal transformer. This may lead to problems." );
             }
 
             LOG.debug( "For coordinate transformations, scaling by x = {} and y = {}", scalex, -scaley );
@@ -376,11 +376,11 @@ public class Java2DRenderer implements Renderer {
             return g;
         }
         if ( transformer != null ) {
-            CRS crs = null;
+            ICRS crs = null;
             try {
                 // TODO minimize transformations in all other cases as well
                 crs = ( (Geometry) g ).getCoordinateSystem();
-                if ( transformer.getWrappedTargetCRS().equals( crs ) ) {
+                if ( transformer.equals( crs ) ) {
                     return g;
                 }
                 T g2 = transformer.transform( g );
@@ -506,7 +506,7 @@ public class Java2DRenderer implements Renderer {
         Double line = new Double();
 
         // TODO use error criterion
-        CRS crs = curve.getCoordinateSystem();
+        ICRS crs = curve.getCoordinateSystem();
         curve = linearizer.linearize( curve, new NumPointsCriterion( 100 ) );
         curve.setCoordinateSystem( crs );
         Points points = curve.getControlPoints();

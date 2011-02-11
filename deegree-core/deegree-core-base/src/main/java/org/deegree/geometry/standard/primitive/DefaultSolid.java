@@ -39,7 +39,7 @@ import java.util.List;
 
 import org.deegree.commons.uom.Measure;
 import org.deegree.commons.uom.Unit;
-import org.deegree.cs.CRS;
+import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.precision.PrecisionModel;
 import org.deegree.geometry.primitive.Solid;
@@ -74,7 +74,8 @@ public class DefaultSolid extends AbstractDefaultGeometry implements Solid {
      * @param interiorSurfaces
      *            the interior surfaces of the solid, may be null or empty
      */
-    public DefaultSolid( String id, CRS crs, PrecisionModel pm, Surface exteriorSurface, List<Surface> interiorSurfaces ) {
+    public DefaultSolid( String id, ICRS crs, PrecisionModel pm, Surface exteriorSurface,
+                         List<Surface> interiorSurfaces ) {
         super( id, crs, pm );
         this.exteriorSurface = exteriorSurface;
         this.interiorSurfaces = interiorSurfaces;

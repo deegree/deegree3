@@ -69,11 +69,12 @@ import org.deegree.coverage.raster.geom.RasterGeoReference;
 import org.deegree.coverage.raster.geom.RasterGeoReference.OriginLocation;
 import org.deegree.coverage.raster.io.RasterIOOptions;
 import org.deegree.coverage.raster.io.jaxb.AbstractRasterType;
-import org.deegree.coverage.raster.io.jaxb.MultiResolutionRasterConfig;
-import org.deegree.coverage.raster.io.jaxb.RasterConfig;
 import org.deegree.coverage.raster.io.jaxb.AbstractRasterType.RasterDirectory;
+import org.deegree.coverage.raster.io.jaxb.MultiResolutionRasterConfig;
 import org.deegree.coverage.raster.io.jaxb.MultiResolutionRasterConfig.Resolution;
-import org.deegree.cs.CRS;
+import org.deegree.coverage.raster.io.jaxb.RasterConfig;
+import org.deegree.cs.coordinatesystems.ICRS;
+import org.deegree.cs.persistence.CRSManager;
 import org.deegree.geometry.Envelope;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -206,12 +207,13 @@ public class RasterBuilder implements CoverageBuilder {
      * @param adapter
      * @return a corresponding raster
      */
-    private MultiResolutionRaster fromJAXB( MultiResolutionRasterConfig mrrConfig, XMLAdapter adapter, CRS parentCrs ) {
+    private MultiResolutionRaster fromJAXB( MultiResolutionRasterConfig mrrConfig, XMLAdapter adapter,
+                                            ICRS parentCrs ) {
         if ( mrrConfig != null ) {
             String defCRS = mrrConfig.getStorageCRS();
-            CRS crs = null;
+            ICRS crs = null;
             if ( defCRS != null ) {
-                crs = new CRS( defCRS );
+                crs = CRSManager.getCRSRef( defCRS );
             }
             if ( crs == null ) {
                 LOG.debug( "Using parent crs." );
@@ -231,7 +233,7 @@ public class RasterBuilder implements CoverageBuilder {
         throw new NullPointerException( "The configured multi resolution raster may not be null." );
     }
 
-    private RasterIOOptions getOptions( MultiResolutionRasterConfig config, CRS parentCrs ) {
+    private RasterIOOptions getOptions( MultiResolutionRasterConfig config, ICRS parentCrs ) {
         RasterIOOptions opts = new RasterIOOptions();
         if ( config.getStorageCRS() != null ) {
             opts.add( "CRS", config.getStorageCRS() );
@@ -247,12 +249,12 @@ public class RasterBuilder implements CoverageBuilder {
      * @return a corresponding raster, null if files could not be fund
      */
     private AbstractRaster fromJAXB( AbstractRasterType config, XMLAdapter adapter, RasterIOOptions options,
-                                     CRS parentCrs ) {
+                                     ICRS parentCrs ) {
         if ( config != null ) {
             String defCRS = config.getStorageCRS();
-            CRS crs = null;
+            ICRS crs = null;
             if ( defCRS != null ) {
-                crs = new CRS( defCRS );
+                crs = CRSManager.getCRSRef( defCRS );
             }
             if ( crs == null ) {
                 LOG.debug( "Using parent CRS, since no crs was defined." );
@@ -475,11 +477,11 @@ public class RasterBuilder implements CoverageBuilder {
         Envelope resultEnvelope = null;
         RasterGeoReference rasterReference = null;
 
-        CRS crs = options == null ? null : options.getCRS();
+        ICRS crs = options == null ? null : options.getCRS();
         if ( crs == null ) {
             LOG.warn( "Configured crs is null, maybe the rasterfiles define one." );
         }
-        CRS defaultCRS = crs;
+        ICRS defaultCRS = crs;
         Envelope rasterEnvelope = null;
         for ( File filename : coverageFiles ) {
             try {
@@ -487,7 +489,7 @@ public class RasterBuilder implements CoverageBuilder {
                 RasterIOOptions newOpts = RasterIOOptions.forFile( filename );
                 newOpts.copyOf( options );
                 AbstractRaster raster = RasterFactory.loadRasterFromFile( filename, newOpts );
-                CRS rasterCRS = raster.getCoordinateSystem();
+                ICRS rasterCRS = raster.getCoordinateSystem();
                 if ( defaultCRS == null ) {
                     defaultCRS = rasterCRS;
                 } else {

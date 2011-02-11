@@ -35,7 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.protocol.wfs.getfeature;
 
-import org.deegree.cs.CRS;
+import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.filter.expression.PropertyName;
 import org.deegree.filter.sort.SortProperty;
 
@@ -79,7 +79,7 @@ public class FeatureIdQuery extends Query {
      *            requested feature ids, must not be null
      */
     public FeatureIdQuery( String handle, TypeName[] typeNames, String[] featureIds, String featureVersion,
-                           CRS srsName, PropertyName[][] propertyNames, XLinkPropertyName[][] xLinkPropertyNames,
+                           ICRS srsName, PropertyName[][] propertyNames, XLinkPropertyName[][] xLinkPropertyNames,
                            SortProperty[] sortBy ) {
         super( handle, typeNames, featureVersion, srsName, sortBy );
         if ( featureIds == null ) {

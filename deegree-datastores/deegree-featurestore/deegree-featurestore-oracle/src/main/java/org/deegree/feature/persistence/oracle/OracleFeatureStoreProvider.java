@@ -47,7 +47,8 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 
-import org.deegree.cs.CRS;
+import org.deegree.cs.coordinatesystems.ICRS;
+import org.deegree.cs.persistence.CRSManager;
 import org.deegree.feature.persistence.FeatureStore;
 import org.deegree.feature.persistence.FeatureStoreException;
 import org.deegree.feature.persistence.FeatureStoreProvider;
@@ -94,7 +95,7 @@ public class OracleFeatureStoreProvider implements FeatureStoreProvider {
             JAXBContext jc = JAXBContext.newInstance( "org.deegree.feature.persistence.oracle.jaxb" );
             Unmarshaller u = jc.createUnmarshaller();
             OracleFeatureStoreConfig config = (OracleFeatureStoreConfig) u.unmarshal( configURL );
-            CRS storageSRS = new CRS( config.getStorageSRS() );
+            ICRS storageSRS = CRSManager.getCRSRef( config.getStorageSRS() );
             MappedApplicationSchema schema = OracleApplicationSchemaBuilder.build( null, config.getFeatureType(),
                                                                                    config.getJDBCConnId(),
                                                                                    config.getDBSchemaQualifier(),

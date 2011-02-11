@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,7 +32,7 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 package org.deegree.geometry.standard.composite;
 
 import java.util.Collection;
@@ -40,7 +40,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 
-import org.deegree.cs.CRS;
+import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.composite.CompositeGeometry;
 import org.deegree.geometry.precision.PrecisionModel;
@@ -51,10 +51,10 @@ import com.vividsolutions.jts.geom.GeometryCollection;
 
 /**
  * Default implementation of {@link CompositeGeometry}.
- *
+ * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
- *
+ * 
  * @version $Revision:$, $Date:$
  */
 public class DefaultCompositeGeometry extends AbstractDefaultGeometry implements CompositeGeometry<GeometricPrimitive> {
@@ -63,7 +63,7 @@ public class DefaultCompositeGeometry extends AbstractDefaultGeometry implements
 
     /**
      * Creates a new {@link DefaultCompositeGeometry} from the given parameters.
-     *
+     * 
      * @param id
      *            identifier, may be null
      * @param crs
@@ -72,7 +72,8 @@ public class DefaultCompositeGeometry extends AbstractDefaultGeometry implements
      *            precision model, may be null
      * @param memberPrimitives
      */
-    public DefaultCompositeGeometry( String id, CRS crs, PrecisionModel pm, List<GeometricPrimitive> memberPrimitives ) {
+    public DefaultCompositeGeometry( String id, ICRS crs, PrecisionModel pm,
+                                     List<GeometricPrimitive> memberPrimitives ) {
         super( id, crs, pm );
         this.memberPrimitives = memberPrimitives;
     }
@@ -80,7 +81,7 @@ public class DefaultCompositeGeometry extends AbstractDefaultGeometry implements
     @Override
     public int getCoordinateDimension() {
         return memberPrimitives.get( 0 ).getCoordinateDimension();
-    }  
+    }
 
     public boolean add( GeometricPrimitive e ) {
         return memberPrimitives.add( e );
@@ -178,14 +179,14 @@ public class DefaultCompositeGeometry extends AbstractDefaultGeometry implements
     public GeometryType getGeometryType() {
         return GeometryType.COMPOSITE_GEOMETRY;
     }
-    
+
     @Override
     protected GeometryCollection buildJTSGeometry() {
-        com.vividsolutions.jts.geom.Geometry [] jtsMembers = new com.vividsolutions.jts.geom.Geometry[size()];
+        com.vividsolutions.jts.geom.Geometry[] jtsMembers = new com.vividsolutions.jts.geom.Geometry[size()];
         int i = 0;
         for ( Geometry geometry : memberPrimitives ) {
             jtsMembers[i++] = getAsDefaultGeometry( geometry ).getJTSGeometry();
         }
         return jtsFactory.createGeometryCollection( jtsMembers );
-    }    
+    }
 }

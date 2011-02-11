@@ -70,12 +70,12 @@ import org.deegree.commons.xml.stax.IndentingXMLStreamWriter;
 import org.deegree.coverage.rangeset.AxisSubset;
 import org.deegree.coverage.rangeset.RangeSet;
 import org.deegree.coverage.raster.interpolation.InterpolationType;
-import org.deegree.cs.CRS;
+import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.geometry.Envelope;
 import org.deegree.protocol.ows.capabilities.GetCapabilities;
 import org.deegree.protocol.wcs.WCSConstants;
-import org.deegree.protocol.wcs.WCServiceException;
 import org.deegree.protocol.wcs.WCSConstants.WCSRequestType;
+import org.deegree.protocol.wcs.WCServiceException;
 import org.deegree.protocol.wcs.capabilities.GetCapabilities100KVPAdapter;
 import org.deegree.services.controller.AbstractOGCServiceController;
 import org.deegree.services.controller.ImplementationMetadata;
@@ -91,8 +91,8 @@ import org.deegree.services.jaxb.metadata.ServiceProviderType;
 import org.deegree.services.jaxb.wcs.PublishedInformation;
 import org.deegree.services.jaxb.wcs.PublishedInformation.AllowedOperations;
 import org.deegree.services.wcs.capabilities.Capabilities100XMLAdapter;
-import org.deegree.services.wcs.capabilities.GetCapabilities100XMLAdapter;
 import org.deegree.services.wcs.capabilities.Capabilities100XMLAdapter.Sections;
+import org.deegree.services.wcs.capabilities.GetCapabilities100XMLAdapter;
 import org.deegree.services.wcs.coverages.WCSCoverage;
 import org.deegree.services.wcs.describecoverage.CoverageDescription100XMLAdapter;
 import org.deegree.services.wcs.describecoverage.DescribeCoverage;
@@ -326,7 +326,7 @@ public class WCSController extends AbstractOGCServiceController<WCSRequestType> 
                             throws OWSException {
         Envelope rEnv = coverageReq.getRequestEnvelope();
         if ( rEnv != null ) {
-            CRS crs = rEnv.getCoordinateSystem();
+            ICRS crs = rEnv.getCoordinateSystem();
             boolean intersects = true;
             if ( crs == null ) {
                 // test against the default crs.
@@ -337,7 +337,7 @@ public class WCSController extends AbstractOGCServiceController<WCSRequestType> 
                 while ( it.hasNext() && defEnv == null ) {
                     Envelope e = it.next();
                     if ( e != null ) {
-                        CRS eCRS = e.getCoordinateSystem();
+                        ICRS eCRS = e.getCoordinateSystem();
                         if ( crs.equals( eCRS ) ) {
                             defEnv = e;
                         }

@@ -47,12 +47,16 @@ import javax.vecmath.Point3d;
 
 import org.deegree.cs.CRSCodeType;
 import org.deegree.cs.CRSIdentifiable;
+import org.deegree.cs.CRSResource;
 import org.deegree.cs.CoordinateTransformer;
 import org.deegree.cs.components.Axis;
-import org.deegree.cs.components.Datum;
-import org.deegree.cs.components.GeodeticDatum;
+import org.deegree.cs.components.IAxis;
+import org.deegree.cs.components.IDatum;
+import org.deegree.cs.components.IGeodeticDatum;
+import org.deegree.cs.components.IUnit;
 import org.deegree.cs.components.Unit;
 import org.deegree.cs.persistence.CRSManager;
+import org.deegree.cs.refs.coordinatesystem.CRSRef;
 import org.deegree.cs.transformations.Transformation;
 import org.slf4j.Logger;
 
@@ -89,15 +93,15 @@ import org.slf4j.Logger;
  * 
  */
 
-public abstract class CoordinateSystem extends CRSIdentifiable {
+public abstract class CRS extends CRSIdentifiable implements ICRS {
 
-    private static final Logger LOG = getLogger( CoordinateSystem.class );
+    private static final Logger LOG = getLogger( ICRS.class );
 
     private final Object LOCK = new Object();
 
-    private Axis[] axisOrder;
+    private IAxis[] axisOrder;
 
-    private Datum usedDatum;
+    private IDatum usedDatum;
 
     private final List<Transformation> transformations;
 
@@ -144,7 +148,7 @@ public abstract class CoordinateSystem extends CRSIdentifiable {
      *            the axisorder of this coordinate system.
      * @param identity
      */
-    public CoordinateSystem( Datum datum, Axis[] axisOrder, CRSIdentifiable identity ) {
+    public CRS( IDatum datum, IAxis[] axisOrder, CRSResource identity ) {
         this( null, datum, axisOrder, identity );
     }
 
@@ -160,7 +164,7 @@ public abstract class CoordinateSystem extends CRSIdentifiable {
      * @param descriptions
      * @param areasOfUse
      */
-    public CoordinateSystem( Datum datum, Axis[] axisOrder, CRSCodeType[] codes, String[] names, String[] versions,
+    public CRS( IDatum datum, IAxis[] axisOrder, CRSCodeType[] codes, String[] names, String[] versions,
                              String[] descriptions, String[] areasOfUse ) {
         super( codes, names, versions, descriptions, areasOfUse );
         this.axisOrder = axisOrder;
@@ -176,8 +180,7 @@ public abstract class CoordinateSystem extends CRSIdentifiable {
      * @param axisOrder
      * @param identity
      */
-    public CoordinateSystem( List<Transformation> transformations, Datum datum, Axis[] axisOrder,
-                             CRSIdentifiable identity ) {
+    public CRS( List<Transformation> transformations, IDatum datum, IAxis[] axisOrder, CRSResource identity ) {
         super( identity );
         if ( axisOrder != null ) {
             this.axisOrder = new Axis[axisOrder.length];
@@ -199,8 +202,8 @@ public abstract class CoordinateSystem extends CRSIdentifiable {
     /**
      * @return (all) axis' in their defined order.
      */
-    public Axis[] getAxis() {
-        Axis[] result = new Axis[axisOrder.length];
+    public IAxis[] getAxis() {
+        IAxis[] result = new Axis[axisOrder.length];
         for ( int i = 0; i < axisOrder.length; ++i ) {
             result[i] = axisOrder[i];
         }
@@ -210,23 +213,23 @@ public abstract class CoordinateSystem extends CRSIdentifiable {
     /**
      * @return the usedDatum or <code>null</code> if the datum was not a Geodetic one.
      */
-    public final GeodeticDatum getGeodeticDatum() {
-        return ( usedDatum instanceof GeodeticDatum ) ? (GeodeticDatum) usedDatum : null;
+    public final IGeodeticDatum getGeodeticDatum() {
+        return ( usedDatum instanceof IGeodeticDatum ) ? (IGeodeticDatum) usedDatum : null;
     }
 
     /**
      * @return the datum of this coordinate system.
      */
-    public final Datum getDatum() {
+    public final IDatum getDatum() {
         return usedDatum;
     }
 
     /**
-     * @return the units of all axis of the coordinatesystem.
+     * @return the units of all axis of the ICoordinateSystem.
      */
-    public Unit[] getUnits() {
-        Axis[] allAxis = getAxis();
-        Unit[] result = new Unit[allAxis.length];
+    public IUnit[] getUnits() {
+        IAxis[] allAxis = getAxis();
+        IUnit[] result = new Unit[allAxis.length];
         for ( int i = 0; i < allAxis.length; ++i ) {
             result[i] = allAxis[i].getUnits();
         }
@@ -234,21 +237,11 @@ public abstract class CoordinateSystem extends CRSIdentifiable {
     }
 
     /**
-     * @return the dimension of this CRS.
-     */
-    public abstract int getDimension();
-
-    /**
-     * @return one of the *_CRS types defined in this class.
-     */
-    public abstract CRSType getType();
-
-    /**
      * @param targetCRS
      *            to get the alternative Transformation for.
-     * @return true if this crs has an alternative transformation for the given coordinatesystem, false otherwise.
+     * @return true if this crs has an alternative transformation for the given ICoordinateSystem, false otherwise.
      */
-    public boolean hasDirectTransformation( CoordinateSystem targetCRS ) {
+    public boolean hasDirectTransformation( ICRS targetCRS ) {
         if ( targetCRS == null ) {
             return false;
         }
@@ -265,7 +258,7 @@ public abstract class CoordinateSystem extends CRSIdentifiable {
      *            to get the alternative transformation for.
      * @return the transformation associated with the given crs, <code>null</code> otherwise.
      */
-    public Transformation getDirectTransformation( CoordinateSystem targetCRS ) {
+    public Transformation getDirectTransformation( ICRS targetCRS ) {
         if ( targetCRS == null ) {
             return null;
         }
@@ -289,14 +282,14 @@ public abstract class CoordinateSystem extends CRSIdentifiable {
      *            converted to the given units.
      * @return the converted coordinates.
      */
-    public Point3d convertToAxis( Point3d coordinates, Unit[] units, boolean invert ) {
+    public Point3d convertToAxis( Point3d coordinates, IUnit[] units, boolean invert ) {
         if ( units != null && units.length < getDimension() && units.length > 0 ) {
-            Unit[] axisUnits = getUnits();
+            IUnit[] axisUnits = getUnits();
             for ( int i = 0; i < axisUnits.length; i++ ) {
-                Unit axisUnit = axisUnits[i];
+                IUnit axisUnit = axisUnits[i];
                 double value = ( i == 0 ) ? coordinates.x : ( i == 1 ) ? coordinates.y : coordinates.z;
                 if ( i < units.length ) {
-                    Unit coordinateUnit = units[i];
+                    IUnit coordinateUnit = units[i];
                     if ( invert ) {
                         value = axisUnit.convert( value, coordinateUnit );
                     } else {
@@ -331,14 +324,14 @@ public abstract class CoordinateSystem extends CRSIdentifiable {
      *            the axis to check
      * @return true if the given axis match this.axisOrder[] false otherwise.
      */
-    private boolean matchAxis( Axis[] otherAxis ) {
-        Axis[] allAxis = getAxis();
+    private boolean matchAxis( IAxis[] otherAxis ) {
+        IAxis[] allAxis = getAxis();
         if ( otherAxis.length != allAxis.length ) {
             return false;
         }
         for ( int i = 0; i < allAxis.length; ++i ) {
-            Axis a = allAxis[i];
-            Axis b = otherAxis[i];
+            IAxis a = allAxis[i];
+            IAxis b = otherAxis[i];
             if ( !a.equals( b ) ) {
                 return false;
             }
@@ -348,8 +341,11 @@ public abstract class CoordinateSystem extends CRSIdentifiable {
 
     @Override
     public boolean equals( Object other ) {
-        if ( other != null && other instanceof CoordinateSystem ) {
-            final CoordinateSystem that = (CoordinateSystem) other;
+        if(other instanceof CRSRef){
+            other = ( (CRSRef) other ).getReferencedObject();
+        }
+        if ( other != null && other instanceof ICRS ) {
+            final ICRS that = (CRS) other;
             return that.getType() == this.getType() && that.getDimension() == this.getDimension()
                    && matchAxis( that.getAxis() ) && super.equals( that ) && that.getDatum().equals( this.getDatum() );
         }
@@ -381,7 +377,7 @@ public abstract class CoordinateSystem extends CRSIdentifiable {
         // the 2.nd million th. prime, :-)
         long code = 32452843;
         if ( getAxis() != null ) {
-            for ( Axis ax : getAxis() ) {
+            for ( IAxis ax : getAxis() ) {
                 code = code * 37 + ax.hashCode();
             }
         }
@@ -399,7 +395,7 @@ public abstract class CoordinateSystem extends CRSIdentifiable {
         sb.append( "\n - type: " ).append( getTypeName() );
         sb.append( "\n - datum: " ).append( usedDatum );
         sb.append( "\n - dimension: " ).append( getDimension() );
-        for ( Axis a : getAxis() ) {
+        for ( IAxis a : getAxis() ) {
             sb.append( "\n - axis: " ).append( a.toString() );
         }
         return sb.toString();
@@ -424,9 +420,9 @@ public abstract class CoordinateSystem extends CRSIdentifiable {
      * @return the index of the axis which represents the easting/westing component of a coordinate tuple.
      */
     public int getEasting() {
-        Axis[] axis = getAxis();
+        IAxis[] axis = getAxis();
         for ( int i = 0; i < axis.length; ++i ) {
-            Axis a = axis[i];
+            IAxis a = axis[i];
             if ( a != null ) {
                 if ( a.getOrientation() == Axis.AO_EAST || a.getOrientation() == Axis.AO_WEST ) {
                     return i;
@@ -443,9 +439,9 @@ public abstract class CoordinateSystem extends CRSIdentifiable {
      * @return the index of the axis which represents the easting/westing component of a coordinate tuple.
      */
     public int getNorthing() {
-        Axis[] axis = getAxis();
+        IAxis[] axis = getAxis();
         for ( int i = 0; i < axis.length; ++i ) {
-            Axis a = axis[i];
+            IAxis a = axis[i];
             if ( a != null ) {
                 if ( a.getOrientation() == Axis.AO_NORTH || a.getOrientation() == Axis.AO_SOUTH
                      || a.getOrientation() == Axis.AO_DOWN || a.getOrientation() == Axis.AO_UP ) {
@@ -470,7 +466,7 @@ public abstract class CoordinateSystem extends CRSIdentifiable {
                 // transform world to coordinates in sourceCRS;
                 CoordinateTransformer t = new CoordinateTransformer( this );
                 try {
-                    CoordinateSystem defWGS = GeographicCRS.WGS84;
+                    ICRS defWGS = GeographicCRS.WGS84;
                     try {
                         // rb: lookup the default WGS84 in the registry, it may be, that the axis are swapped.
                         defWGS = CRSManager.lookup( GeographicCRS.WGS84.getCode() );
@@ -532,4 +528,10 @@ public abstract class CoordinateSystem extends CRSIdentifiable {
         }
         return Arrays.copyOf( validDomain, 4 );
     }
+
+    /**
+     * @return
+     */
+    // public abstract double[] getAreaOfUseBBox();
+
 }

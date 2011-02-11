@@ -47,9 +47,9 @@ import javax.vecmath.Point3d;
 import org.deegree.cs.CRSCodeType;
 import org.deegree.cs.CRSIdentifiable;
 import org.deegree.cs.CoordinateTransformer;
-import org.deegree.cs.components.Axis;
+import org.deegree.cs.components.IAxis;
 import org.deegree.cs.coordinatesystems.CompoundCRS;
-import org.deegree.cs.coordinatesystems.CoordinateSystem;
+import org.deegree.cs.coordinatesystems.CRS;
 import org.deegree.cs.coordinatesystems.GeocentricCRS;
 import org.deegree.cs.coordinatesystems.GeographicCRS;
 import org.deegree.cs.coordinatesystems.ProjectedCRS;
@@ -87,7 +87,7 @@ public class TransformationAccuracyTest implements CRSDefines {
      *            to which incoming coordinates will be transformed.
      * @return the transformer which is able to transform coordinates to the given crs..
      */
-    private CoordinateTransformer getGeotransformer( CoordinateSystem targetCrs ) {
+    private CoordinateTransformer getGeotransformer( CRS targetCrs ) {
         assertNotNull( targetCrs );
         return new CoordinateTransformer( targetCrs );
     }
@@ -106,7 +106,7 @@ public class TransformationAccuracyTest implements CRSDefines {
      * @return a String representation.
      */
     private String createEpsilonString( boolean failure, double sourceCoordinate, double targetCoordinate,
-                                        double allowedEpsilon, Axis axis ) {
+                                        double allowedEpsilon, IAxis axis ) {
         double epsilon = sourceCoordinate - targetCoordinate;
         StringBuilder sb = new StringBuilder( 400 );
         sb.append( axis.getName() ).append( " (result - orig = error [allowedError]): " );
@@ -139,7 +139,7 @@ public class TransformationAccuracyTest implements CRSDefines {
      *             if one of the axis of the transformed point do not lie within the given epsilon range.
      */
     private String doAccuracyTest( Point3d sourcePoint, Point3d targetPoint, Point3d epsilons,
-                                   CoordinateSystem sourceCRS, CoordinateSystem targetCRS )
+                                   CRS sourceCRS, CRS targetCRS )
                             throws TransformationException {
         assertNotNull( sourceCRS );
         assertNotNull( targetCRS );
@@ -209,7 +209,7 @@ public class TransformationAccuracyTest implements CRSDefines {
      * @param inverseEpsilon
      * @throws TransformationException
      */
-    private void doForwardAndInverse( CoordinateSystem sourceCRS, CoordinateSystem targetCRS, Point3d source,
+    private void doForwardAndInverse( CRS sourceCRS, CRS targetCRS, Point3d source,
                                       Point3d target, Point3d forwardEpsilon, Point3d inverseEpsilon )
                             throws TransformationException {
         StringBuilder output = new StringBuilder();

@@ -51,9 +51,10 @@ import java.util.Map;
 import javax.vecmath.Point2d;
 
 import org.deegree.cs.CRSIdentifiable;
+import org.deegree.cs.CRSResource;
 import org.deegree.cs.EPSGCode;
-import org.deegree.cs.components.Unit;
-import org.deegree.cs.coordinatesystems.GeographicCRS;
+import org.deegree.cs.components.IUnit;
+import org.deegree.cs.coordinatesystems.IGeographicCRS;
 import org.deegree.cs.exceptions.ProjectionException;
 
 /**
@@ -98,7 +99,7 @@ import org.deegree.cs.exceptions.ProjectionException;
  * 
  */
 
-public class LambertAzimuthalEqualArea extends AzimuthalProjection {
+public class LambertAzimuthalEqualArea extends AzimuthalProjection implements ILambertAzimuthalEqualArea {
 
     /**
      * @param geographicCRS
@@ -110,8 +111,8 @@ public class LambertAzimuthalEqualArea extends AzimuthalProjection {
      * @param id
      *            an identifiable instance containing information about this projection
      */
-    public LambertAzimuthalEqualArea( double falseNorthing, double falseEasting, Point2d naturalOrigin, Unit units,
-                                      double scale, CRSIdentifiable id ) {
+    public LambertAzimuthalEqualArea( double falseNorthing, double falseEasting, Point2d naturalOrigin, IUnit units,
+                                      double scale, CRSResource id ) {
         super( falseNorthing, falseEasting, naturalOrigin, units, scale, false/* not conformal */,
                true/* equals-area */, id );
     }
@@ -124,7 +125,7 @@ public class LambertAzimuthalEqualArea extends AzimuthalProjection {
      * @param units
      * @param scale
      */
-    public LambertAzimuthalEqualArea( double falseNorthing, double falseEasting, Point2d naturalOrigin, Unit units,
+    public LambertAzimuthalEqualArea( double falseNorthing, double falseEasting, Point2d naturalOrigin, IUnit units,
                                       double scale ) {
         this( falseNorthing, falseEasting, naturalOrigin, units, scale, new CRSIdentifiable( new EPSGCode( 9820 ) ) );
     }
@@ -138,7 +139,7 @@ public class LambertAzimuthalEqualArea extends AzimuthalProjection {
      * @param id
      *            an identifiable instance containing information about this projection
      */
-    public LambertAzimuthalEqualArea( double falseNorthing, double falseEasting, Point2d naturalOrigin, Unit units,
+    public LambertAzimuthalEqualArea( double falseNorthing, double falseEasting, Point2d naturalOrigin, IUnit units,
                                       CRSIdentifiable id ) {
         this( falseNorthing, falseEasting, naturalOrigin, units, 1, id );
     }
@@ -150,7 +151,7 @@ public class LambertAzimuthalEqualArea extends AzimuthalProjection {
      * @param naturalOrigin
      * @param units
      */
-    public LambertAzimuthalEqualArea( double falseNorthing, double falseEasting, Point2d naturalOrigin, Unit units ) {
+    public LambertAzimuthalEqualArea( double falseNorthing, double falseEasting, Point2d naturalOrigin, IUnit units ) {
         this( falseNorthing, falseEasting, naturalOrigin, units, 1 );
     }
 
@@ -160,7 +161,7 @@ public class LambertAzimuthalEqualArea extends AzimuthalProjection {
      * @see org.deegree.cs.projections.Projection#doInverseProjection(double, double)
      */
     @Override
-    public synchronized Point2d doInverseProjection( GeographicCRS geographicCRS, double x, double y )
+    public synchronized Point2d doInverseProjection( IGeographicCRS geographicCRS, double x, double y )
                             throws ProjectionException {
         calculateParameters( geographicCRS );
         Point2d lp = new Point2d( 0, 0 );
@@ -301,7 +302,7 @@ public class LambertAzimuthalEqualArea extends AzimuthalProjection {
      * @see org.deegree.cs.projections.Projection#doProjection(double, double)
      */
     @Override
-    public synchronized Point2d doProjection( GeographicCRS geographicCRS, double lambda, double phi )
+    public synchronized Point2d doProjection( IGeographicCRS geographicCRS, double lambda, double phi )
                             throws ProjectionException {
 
         Point2d result = new Point2d( 0, 0 );
@@ -445,7 +446,7 @@ public class LambertAzimuthalEqualArea extends AzimuthalProjection {
         sinb1, cosb1, qp, dd, rq, xMultiplyForward, yMultiplyForward
     }
 
-    private synchronized Map<PARAMS, Double> calculateParameters( GeographicCRS geographicCRS ) {
+    private synchronized Map<PARAMS, Double> calculateParameters( IGeographicCRS geographicCRS ) {
         Map<PARAMS, Double> list = new HashMap<LambertAzimuthalEqualArea.PARAMS, Double>();
         double sinb1 = Double.NaN;
         double cosb1 = Double.NaN;

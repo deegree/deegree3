@@ -40,7 +40,7 @@ import javax.xml.stream.XMLStreamReader;
 
 import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;
-import org.deegree.cs.CRS;
+import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
@@ -75,7 +75,7 @@ public interface GMLGeometryReader {
      * @throws XMLStreamException
      * @throws UnknownCRSException
      */
-    public Geometry parse( XMLStreamReaderWrapper xmlStream, CRS defaultCRS )
+    public Geometry parse( XMLStreamReaderWrapper xmlStream, ICRS defaultCRS )
                             throws XMLParsingException, XMLStreamException, UnknownCRSException;
 
     /**
@@ -85,7 +85,7 @@ public interface GMLGeometryReader {
      * @throws XMLParsingException
      * @throws XMLStreamException
      */
-    public Envelope parseEnvelope( XMLStreamReaderWrapper xmlStream, CRS defaultCRS )
+    public Envelope parseEnvelope( XMLStreamReaderWrapper xmlStream, ICRS defaultCRS )
                             throws XMLParsingException, XMLStreamException;
 
     /**
@@ -111,6 +111,6 @@ public interface GMLGeometryReader {
      * @throws XMLStreamException
      * @throws UnknownCRSException
      */
-    public Geometry parseGeometryOrEnvelope( XMLStreamReaderWrapper xmlStream, CRS defaultCRS )
+    public Geometry parseGeometryOrEnvelope( XMLStreamReaderWrapper xmlStream, ICRS defaultCRS )
                             throws XMLParsingException, XMLStreamException, UnknownCRSException;
 }

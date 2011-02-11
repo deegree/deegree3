@@ -39,7 +39,7 @@ import static java.sql.Types.BOOLEAN;
 
 import java.sql.Types;
 
-import org.deegree.cs.CRS;
+import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.OperatorFilter;
 import org.deegree.filter.comparison.PropertyIsLike;
@@ -162,7 +162,7 @@ public class PostGISWhereBuilder extends AbstractWhereBuilder {
             throw new FilterEvaluationException( msg );
         }
 
-        CRS storageCRS = propNameExpr.getCRS();
+        ICRS storageCRS = propNameExpr.getCRS();
         int srid = propNameExpr.getSRID() != null ? Integer.parseInt( propNameExpr.getSRID() ) : -1;
 
         switch ( op.getSubType() ) {
@@ -324,7 +324,7 @@ public class PostGISWhereBuilder extends AbstractWhereBuilder {
             String table = propMapping.getTargetField().getAlias() != null ? propMapping.getTargetField().getAlias()
                                                                           : propMapping.getTargetField().getTable();
             String column = propMapping.getTargetField().getColumn();
-            CRS crs = propMapping.getCRS();
+            ICRS crs = propMapping.getCRS();
             String srid = propMapping.getSRID();
             sql = new SQLColumn( table, column, true, -1, crs, srid );
         } else {
@@ -333,13 +333,13 @@ public class PostGISWhereBuilder extends AbstractWhereBuilder {
         return sql;
     }
 
-    private SQLExpression toProtoSQL( Geometry geom, CRS targetCRS, int srid )
+    private SQLExpression toProtoSQL( Geometry geom, ICRS targetCRS, int srid )
                             throws FilterEvaluationException {
 
         Geometry transformedGeom = geom;
         if ( targetCRS != null && !targetCRS.equals( geom.getCoordinateSystem() ) ) {
             try {
-                GeometryTransformer transformer = new GeometryTransformer( targetCRS.getWrappedCRS() );
+                GeometryTransformer transformer = new GeometryTransformer( targetCRS );
                 transformedGeom = transformer.transform( geom );
             } catch ( Exception e ) {
                 String msg = "Transforming of geometry literal to storage CRS failed: " + e.getMessage();

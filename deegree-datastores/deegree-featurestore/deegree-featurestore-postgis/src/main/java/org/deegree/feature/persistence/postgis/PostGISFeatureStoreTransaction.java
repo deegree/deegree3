@@ -61,7 +61,7 @@ import org.deegree.commons.tom.genericxml.GenericXMLElementContent;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.commons.tom.primitive.SQLValueMangler;
 import org.deegree.commons.utils.JDBCUtils;
-import org.deegree.cs.CRS;
+import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.feature.Feature;
 import org.deegree.feature.FeatureCollection;
 import org.deegree.feature.persistence.BlobCodec;
@@ -412,7 +412,7 @@ public class PostGISFeatureStoreTransaction implements FeatureStoreTransaction {
                     values.append( "?" );
                 } else if ( mapping instanceof GeometryMapping ) {
                     String srid = ( (GeometryMapping) mapping ).getSrid();
-                    CRS storageCRS = ( (GeometryMapping) mapping ).getCRS();
+                    ICRS storageCRS = ( (GeometryMapping) mapping ).getCRS();
                     Geometry value = (Geometry) prop.getValue();
                     try {
                         Geometry compatible = fs.getCompatibleGeometry( value, storageCRS );
@@ -484,7 +484,7 @@ public class PostGISFeatureStoreTransaction implements FeatureStoreTransaction {
             throw new FeatureStoreException( "Cannot insert feature '" + feature.getName()
                                              + "': feature type is not served by this feature store." );
         }
-        CRS crs = blobMapping.getCRS();
+        ICRS crs = blobMapping.getCRS();
         stmt.setString( 1, feature.getId() );
         stmt.setShort( 2, fs.getFtId( feature.getName() ) );
 
@@ -503,7 +503,7 @@ public class PostGISFeatureStoreTransaction implements FeatureStoreTransaction {
         Envelope bbox = feature.getEnvelope();
         if ( bbox != null ) {
             try {
-                GeometryTransformer bboxTransformer = new GeometryTransformer( crs.getWrappedCRS() );
+                GeometryTransformer bboxTransformer = new GeometryTransformer( crs );
                 bbox = (Envelope) bboxTransformer.transform( bbox );
             } catch ( Exception e ) {
                 throw new SQLException( e.getMessage(), e );
@@ -811,7 +811,7 @@ public class PostGISFeatureStoreTransaction implements FeatureStoreTransaction {
                     sql.append( "=?" );
                 } else if ( mapping instanceof GeometryMapping ) {
                     String srid = ( (GeometryMapping) mapping ).getSrid();
-                    CRS storageCRS = ( (GeometryMapping) mapping ).getCRS();
+                    ICRS storageCRS = ( (GeometryMapping) mapping ).getCRS();
                     Geometry value = (Geometry) replacementProp.getValue();
                     try {
                         Geometry compatible = fs.getCompatibleGeometry( value, storageCRS );

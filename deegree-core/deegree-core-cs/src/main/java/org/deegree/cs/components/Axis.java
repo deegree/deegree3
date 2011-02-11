@@ -50,7 +50,7 @@ import org.deegree.cs.CRSIdentifiable;
  * 
  */
 
-public class Axis extends CRSIdentifiable {
+public class Axis extends CRSIdentifiable implements IAxis {
 
     /**
      * Axis is pointing NORTH ( == -SOUTH) e.g Polar axis positive northwards.
@@ -103,7 +103,7 @@ public class Axis extends CRSIdentifiable {
      */
     public static final int AO_OTHER = Integer.MAX_VALUE;
 
-    private Unit units;
+    private IUnit units;
 
     private String axisName;
 
@@ -117,7 +117,7 @@ public class Axis extends CRSIdentifiable {
      * @param orientation
      *            of the positive scale direction, one of Axis.AO*. If an unknown value is supplied AO_OTHER is assumed.
      */
-    public Axis( Unit units, String axisName, final int orientation ) {
+    public Axis( IUnit units, String axisName, final int orientation ) {
         super( new CRSCodeType[] { CRSCodeType.getUndefined() }, new String[] { axisName }, new String[] {},
                new String[] {}, new String[] {} );
         this.units = units;
@@ -141,7 +141,7 @@ public class Axis extends CRSIdentifiable {
      * @param orientation
      *            of the axis as a string for example north
      */
-    public Axis( Unit units, String axisName, String orientation ) {
+    public Axis( IUnit units, String axisName, String orientation ) {
         super( new CRSCodeType[] { CRSCodeType.getUndefined() }, new String[] { axisName }, new String[] {},
                new String[] {}, new String[] {} );
         this.units = units;
@@ -213,16 +213,13 @@ public class Axis extends CRSIdentifiable {
     /**
      * @return the units.
      */
-    public final Unit getUnits() {
+    public final IUnit getUnits() {
         return units;
     }
 
     @Override
     public String toString() {
-        return new StringBuilder( "name: " ).append( axisName ).append( " orientation: " ).append(
-                                                                                                   getOrientationAsString() ).append(
-                                                                                                                                      " units: " ).append(
-                                                                                                                                                           units ).toString();
+        return new StringBuilder( "name: " ).append( axisName ).append( " orientation: " ).append( getOrientationAsString() ).append( " units: " ).append( units ).toString();
     }
 
     @Override
@@ -239,7 +236,7 @@ public class Axis extends CRSIdentifiable {
      * distribution and is relatively fast. It is created from field <b>f</b> as follows:
      * <ul>
      * <li>boolean -- code = (f ? 0 : 1)</li>
-     * <li>byte, char, short, int -- code = (int)f </li>
+     * <li>byte, char, short, int -- code = (int)f</li>
      * <li>long -- code = (int)(f ^ (f &gt;&gt;&gt;32))</li>
      * <li>float -- code = Float.floatToIntBits(f);</li>
      * <li>double -- long l = Double.doubleToLongBits(f); code = (int)(l ^ (l &gt;&gt;&gt; 32))</li>

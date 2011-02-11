@@ -53,7 +53,7 @@ import org.deegree.cs.CRSIdentifiable;
  * 
  */
 
-public final class Unit extends CRSIdentifiable {
+public final class Unit extends CRSIdentifiable implements IUnit {
 
     /**
      * Unit of angle.
@@ -68,7 +68,7 @@ public final class Unit extends CRSIdentifiable {
     /**
      * 1 degree minute second hemisphere = 1 degree
      */
-    public static final Unit DMSH = DEGREE;
+    public static final IUnit DMSH = DEGREE;
 
     /**
      * Unit of angle, which is defined to be 1/3600 of a degree, or PI/(180*3600) Radian.
@@ -133,7 +133,7 @@ public final class Unit extends CRSIdentifiable {
     /**
      * Base unit, or <code>this</code> if none.
      */
-    private final Unit baseType;
+    private final IUnit baseType;
 
     /**
      * Unit constructor.
@@ -174,7 +174,7 @@ public final class Unit extends CRSIdentifiable {
      * @param baseType
      *            the baseType
      */
-    public Unit( final String symbol, String name, final double scale, final Unit baseType ) {
+    public Unit( final String symbol, String name, final double scale, final IUnit baseType ) {
         this( symbol, name, CRSCodeType.valueOf( name ), scale, baseType );
     }
 
@@ -192,7 +192,7 @@ public final class Unit extends CRSIdentifiable {
      * @param baseType
      *            the baseType
      */
-    public Unit( final String symbol, String name, CRSCodeType code, final double scale, final Unit baseType ) {
+    public Unit( final String symbol, String name, CRSCodeType code, final double scale, final IUnit baseType ) {
         super( new CRSIdentifiable( new CRSCodeType[] { code }, new String[] { name }, null, null, null ) );
         this.symbol = symbol;
         this.scale = scale;
@@ -246,8 +246,8 @@ public final class Unit extends CRSIdentifiable {
      * @param other
      * @return true if this unit can be converted into the other unit
      */
-    public boolean canConvert( final Unit other ) {
-        return ( baseType == other.baseType ) || ( baseType != null && baseType.equals( other.baseType ) );
+    public boolean canConvert( final IUnit other ) {
+        return ( baseType == other.getBaseType() ) || ( baseType != null && baseType.equals( other.getBaseType() ) );
     }
 
     /**
@@ -261,12 +261,12 @@ public final class Unit extends CRSIdentifiable {
      * @throws IllegalArgumentException
      *             if no conversion can be applied.
      */
-    public final double convert( final double value, final Unit targetUnit ) {
+    public final double convert( final double value, final IUnit targetUnit ) {
         if ( this.equals( targetUnit ) ) {
             return value;
         }
         if ( canConvert( targetUnit ) ) {
-            return ( value * scale ) / targetUnit.scale;
+            return ( value * scale ) / targetUnit.getScale();
         }
         throw new IllegalArgumentException( "Can't convert from \"" + this + "\" to \"" + targetUnit + "\"." );
     }
@@ -348,6 +348,10 @@ public final class Unit extends CRSIdentifiable {
      */
     public final boolean isBaseType() {
         return this.equals( this.baseType );
+    }
+
+    public IUnit getBaseType() {
+        return baseType;
     }
 
 }

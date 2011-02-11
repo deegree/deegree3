@@ -50,8 +50,7 @@ import java.awt.geom.AffineTransform;
 import java.awt.geom.NoninvertibleTransformException;
 import java.awt.geom.Point2D;
 
-import org.deegree.cs.CRS;
-import org.deegree.cs.coordinatesystems.CoordinateSystem;
+import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.exceptions.TransformationException;
 import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.geometry.Envelope;
@@ -90,7 +89,7 @@ public class RasterGeoReference {
 
     private final GeometryTransformer transformer;
 
-    private final CRS crs;
+    private final ICRS crs;
 
     private final double resX;
 
@@ -146,15 +145,11 @@ public class RasterGeoReference {
      *            in which the origin is defined.
      */
     public RasterGeoReference( OriginLocation location, double resolutionX, double resolutionY, double rotationX,
-                               double rotationY, double origin0, double origin1, CRS crs ) {
+                               double rotationY, double origin0, double origin1, ICRS crs ) {
 
-        CoordinateSystem cs = null;
+        ICRS cs = null;
         if ( crs != null ) {
-            try {
-                cs = crs.getWrappedCRS();
-            } catch ( UnknownCRSException e ) {
-                // ok. just leave it
-            }
+            cs = crs;
         }
         this.crs = crs;
         if ( cs != null ) {
@@ -203,7 +198,7 @@ public class RasterGeoReference {
      *            in which the origin is defined.
      */
     public RasterGeoReference( OriginLocation location, double resolutionX, double resolutionY, double origin0,
-                               double origin1, CRS crs ) {
+                               double origin1, ICRS crs ) {
         this( location, resolutionX, resolutionY, 0, 0, origin0, origin1, crs );
     }
 
@@ -244,15 +239,11 @@ public class RasterGeoReference {
      */
     public static RasterGeoReference create( OriginLocation location, Envelope envelope, int width, int height ) {
         if ( envelope != null ) {
-            CRS crs = envelope.getCoordinateSystem();
+            ICRS crs = envelope.getCoordinateSystem();
             int xAxis = 0;
             if ( crs != null ) {
-                try {
-                    CoordinateSystem cs = crs.getWrappedCRS();
-                    xAxis = cs.getEasting();
-                } catch ( UnknownCRSException e ) {
-                    // assume xaxis is first.
-                }
+                ICRS cs = crs;
+                xAxis = cs.getEasting();
             }
             double span0 = envelope.getSpan( xAxis );
             double span1 = envelope.getSpan( 1 - xAxis );
@@ -282,15 +273,11 @@ public class RasterGeoReference {
     public static RasterGeoReference create( OriginLocation location, Envelope envelope, double resolution0,
                                              double resolution1 ) {
         if ( envelope != null ) {
-            CRS crs = envelope.getCoordinateSystem();
+            ICRS crs = envelope.getCoordinateSystem();
             int xAxis = 0;
             if ( crs != null ) {
-                try {
-                    CoordinateSystem cs = crs.getWrappedCRS();
-                    xAxis = cs.getEasting();
-                } catch ( UnknownCRSException e ) {
-                    // assume xaxis is first.
-                }
+                ICRS cs = crs;
+                xAxis = cs.getEasting();
             }
             double resX = ( xAxis == 0 ) ? resolution0 : resolution1;
             double resY = ( xAxis == 0 ) ? resolution1 : resolution0;
@@ -441,7 +428,7 @@ public class RasterGeoReference {
      * 
      * @return the calculated envelope
      */
-    public Envelope getEnvelope( int width, int height, CRS crs ) {
+    public Envelope getEnvelope( int width, int height, ICRS crs ) {
         return getEnvelope( location, width, height, crs );
     }
 
@@ -457,7 +444,7 @@ public class RasterGeoReference {
      * 
      * @return the calculated envelope
      */
-    public Envelope getEnvelope( RasterRect rasterRect, CRS crs ) {
+    public Envelope getEnvelope( RasterRect rasterRect, ICRS crs ) {
         return getEnvelope( location, rasterRect, crs );
     }
 
@@ -476,7 +463,7 @@ public class RasterGeoReference {
      * 
      * @return the calculated envelope
      */
-    public Envelope getEnvelope( OriginLocation targetLocation, RasterRect rasterRect, CRS crs ) {
+    public Envelope getEnvelope( OriginLocation targetLocation, RasterRect rasterRect, ICRS crs ) {
         // if the targetlocation must be center, we add half a pixel, because we need to get the world coordinate of the
         // center of the pixel.
         double nullX = rasterRect.x + ( targetLocation == CENTER ? 0.5 : 0 );
@@ -537,12 +524,7 @@ public class RasterGeoReference {
         // coordinates are in the crs, so axis order is available.
         Envelope result = geomFactory.createEnvelope( min0, min1, max0, max1, this.crs );
         if ( crs != null && this.crs != null ) {
-            CoordinateSystem cs = null;
-            try {
-                cs = crs.getWrappedCRS();
-            } catch ( UnknownCRSException e ) {
-                // just do not do anything.
-            }
+            ICRS cs = crs;
             if ( cs != null ) {
                 GeometryTransformer trans = new GeometryTransformer( cs );
                 try {
@@ -576,7 +558,7 @@ public class RasterGeoReference {
      * 
      * @return the calculated envelope
      */
-    public Envelope getEnvelope( OriginLocation targetLocation, int width, int height, CRS crs ) {
+    public Envelope getEnvelope( OriginLocation targetLocation, int width, int height, ICRS crs ) {
         return getEnvelope( targetLocation, new RasterRect( 0, 0, width, height ), crs );
     }
 
@@ -808,8 +790,7 @@ public class RasterGeoReference {
             // no convert back to the requested crs
             if ( transformer != null && envelope.getCoordinateSystem() != null ) {
                 try {
-                    GeometryTransformer invTrans = new GeometryTransformer(
-                                                                            envelope.getCoordinateSystem().getWrappedCRS() );
+                    GeometryTransformer invTrans = new GeometryTransformer( envelope.getCoordinateSystem() );
                     transformedEnv = invTrans.transform( transformedEnv ).getEnvelope();
                 } catch ( IllegalArgumentException e ) {
                     // just don't transform and go ahead without.
@@ -1004,7 +985,7 @@ public class RasterGeoReference {
     /**
      * @return the crs
      */
-    public final CRS getCrs() {
+    public final ICRS getCrs() {
         return crs;
     }
 

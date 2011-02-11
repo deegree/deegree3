@@ -42,7 +42,7 @@ import java.util.ListIterator;
 
 import org.deegree.commons.uom.Measure;
 import org.deegree.commons.uom.Unit;
-import org.deegree.cs.CRS;
+import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.geometry.composite.CompositeSolid;
 import org.deegree.geometry.precision.PrecisionModel;
 import org.deegree.geometry.primitive.Solid;
@@ -73,7 +73,7 @@ public class DefaultCompositeSolid extends AbstractDefaultGeometry implements Co
      * @param memberSolids
      * 
      */
-    public DefaultCompositeSolid( String id, CRS crs, PrecisionModel pm, List<Solid> memberSolids ) {
+    public DefaultCompositeSolid( String id, ICRS crs, PrecisionModel pm, List<Solid> memberSolids ) {
         super( id, crs, pm );
         this.memberSolids = memberSolids;
     }

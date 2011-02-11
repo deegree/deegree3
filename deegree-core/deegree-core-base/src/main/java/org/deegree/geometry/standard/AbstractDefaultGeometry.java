@@ -40,7 +40,7 @@ import java.util.List;
 
 import org.deegree.commons.uom.Measure;
 import org.deegree.commons.uom.Unit;
-import org.deegree.cs.CRS;
+import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.io.WKTWriter;
@@ -97,7 +97,7 @@ public abstract class AbstractDefaultGeometry implements Geometry {
     protected String id;
 
     /** Reference to a coordinate system. */
-    protected CRS crs;
+    protected ICRS crs;
 
     protected PrecisionModel pm;
 
@@ -113,7 +113,7 @@ public abstract class AbstractDefaultGeometry implements Geometry {
      * @param crs
      * @param pm
      */
-    public AbstractDefaultGeometry( String id, CRS crs, PrecisionModel pm ) {
+    public AbstractDefaultGeometry( String id, ICRS crs, PrecisionModel pm ) {
         this.id = id;
         this.crs = crs;
         this.pm = pm;
@@ -130,12 +130,12 @@ public abstract class AbstractDefaultGeometry implements Geometry {
     }
 
     @Override
-    public CRS getCoordinateSystem() {
+    public ICRS getCoordinateSystem() {
         return crs;
     }
 
     @Override
-    public void setCoordinateSystem( CRS crs ) {
+    public void setCoordinateSystem( ICRS crs ) {
         this.crs = crs;
     }
 
@@ -244,7 +244,7 @@ public abstract class AbstractDefaultGeometry implements Geometry {
 
     @Override
     public Geometry getBuffer( Measure distance ) {
-        // TODO get double in CRS units
+        // TODO get double in CoordinateSystem units
         double crsDistance = distance.getValueAsDouble();
         com.vividsolutions.jts.geom.Geometry jtsGeom = getJTSGeometry().buffer( crsDistance );
         return createFromJTS( jtsGeom, crs );
@@ -300,11 +300,11 @@ public abstract class AbstractDefaultGeometry implements Geometry {
      * 
      * @param jtsGeom
      * @param crs
-     * @return geometry with precision model and CRS information that are identical to the ones of this geometry, or
-     *         null if the given geometry is an empty collection
+     * @return geometry with precision model and CoordinateSystem information that are identical to the ones of this
+     *         geometry, or null if the given geometry is an empty collection
      */
     @SuppressWarnings("unchecked")
-    public AbstractDefaultGeometry createFromJTS( com.vividsolutions.jts.geom.Geometry jtsGeom, CRS crs ) {
+    public AbstractDefaultGeometry createFromJTS( com.vividsolutions.jts.geom.Geometry jtsGeom, ICRS crs ) {
 
         AbstractDefaultGeometry geom = null;
         if ( jtsGeom instanceof com.vividsolutions.jts.geom.Point ) {
@@ -383,7 +383,7 @@ public abstract class AbstractDefaultGeometry implements Geometry {
         throw new RuntimeException( "Cannot convert Geometry to AbstractDefaultGeometry." );
     }
 
-    private Points getAsPoints( CoordinateSequence seq, CRS crs ) {
+    private Points getAsPoints( CoordinateSequence seq, ICRS crs ) {
         return new JTSPoints( crs, seq );
     }
 

@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,21 +32,21 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 
 package org.deegree.services.wps.output;
 
-import org.deegree.cs.CRS;
+import org.deegree.cs.persistence.CRSManager;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryFactory;
 import org.deegree.process.jaxb.java.BoundingBoxOutputDefinition;
 
 /**
  * Identifies this {@link ProcessletOutput} to be a bounding box and provides a method for setting it.
- *
+ * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author: schneider $
- *
+ * 
  * @version $Revision: $, $Date: $
  */
 public class BoundingBoxOutputImpl extends ProcessletOutputImpl implements BoundingBoxOutput {
@@ -66,7 +66,7 @@ public class BoundingBoxOutputImpl extends ProcessletOutputImpl implements Bound
 
     @Override
     public void setValue( double[] lower, double[] upper, String crsName ) {
-        setValue( geomFac.createEnvelope( lower, upper, new CRS (crsName) ) );
+        setValue( geomFac.createEnvelope( lower, upper, CRSManager.getCRSRef( crsName ) ) );
     }
 
     public void setValue( Envelope value ) {

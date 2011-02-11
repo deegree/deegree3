@@ -59,9 +59,8 @@ import org.deegree.commons.annotations.LoggingNotes;
 import org.deegree.commons.utils.DoublePair;
 import org.deegree.commons.utils.Pair;
 import org.deegree.commons.xml.XMLAdapter;
-import org.deegree.cs.CRS;
 import org.deegree.cs.components.Axis;
-import org.deegree.cs.coordinatesystems.CoordinateSystem;
+import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.exceptions.TransformationException;
 import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.geometry.Envelope;
@@ -193,7 +192,7 @@ public class Capabilities130XMLAdapter extends XMLAdapter {
             writer.writeEndElement();
         }
 
-        for ( CRS crs : layer.getSrs() ) {
+        for ( ICRS crs : layer.getSrs() ) {
             if ( crs.getName().startsWith( "AUTO" ) ) {
                 writeElement( writer, WMSNS, "CRS", crs.getName().replace( "AUTO", "AUTO2" ) );
             } else {
@@ -201,7 +200,7 @@ public class Capabilities130XMLAdapter extends XMLAdapter {
             }
         }
 
-        CoordinateSystem latlon;
+        ICRS latlon;
         try {
             latlon = lookup( "CRS:84" );
             Envelope layerEnv = layer.getBbox();
@@ -223,19 +222,19 @@ public class Capabilities130XMLAdapter extends XMLAdapter {
                 writeElement( writer, WMSNS, "northBoundLatitude", max.get1() + "" );
                 writer.writeEndElement();
 
-                for ( CRS crs : layer.getSrs() ) {
+                for ( ICRS crs : layer.getSrs() ) {
                     if ( crs.getName().startsWith( "AUTO" ) ) {
                         continue;
                     }
-                    try {
-                        crs.getWrappedCRS();
-                    } catch ( UnknownCRSException e ) {
-                        LOG.warn( "Cannot find: {}", e.getLocalizedMessage() );
-                        LOG.trace( "Stack trace:", e );
-                        continue;
-                    }
+//                    try {
+//                        crs.getWrappedCRS();
+//                    } catch ( UnknownCRSException e ) {
+//                        LOG.warn( "Cannot find: {}", e.getLocalizedMessage() );
+//                        LOG.trace( "Stack trace:", e );
+//                        continue;
+//                    }
                     Envelope envelope;
-                    CoordinateSystem srs = crs.getWrappedCRS();
+                    ICRS srs = crs;
                     try {
                         Envelope src = layerEnv;
                         GeometryTransformer transformer = new GeometryTransformer( srs );
@@ -269,13 +268,13 @@ public class Capabilities130XMLAdapter extends XMLAdapter {
                     }
 
                     // check for srs with northing as first axis
-                    try {
-                        srs = WMSController130.getCRS( crs.getName() ).getWrappedCRS();
-                    } catch ( UnknownCRSException e ) {
-                        // may fail if CRS is determined eg. from .prj
-                        LOG.warn( "Cannot find: {}", e.getLocalizedMessage() );
-                        LOG.trace( "Stack trace:", e );
-                    }
+//                    try {
+                        srs = WMSController130.getCRS( crs.getName() );
+//                    } catch ( UnknownCRSException e ) {
+//                        // may fail if CRS is determined eg. from .prj
+//                        LOG.warn( "Cannot find: {}", e.getLocalizedMessage() );
+//                        LOG.trace( "Stack trace:", e );
+//                    }
                     switch ( srs.getAxis()[0].getOrientation() ) {
                     case Axis.AO_NORTH:
                         writer.writeAttribute( "miny", Double.toString( min.get0() ) );

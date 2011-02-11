@@ -50,7 +50,8 @@ import org.deegree.commons.utils.Pair;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.commons.xml.XPath;
-import org.deegree.cs.CRS;
+import org.deegree.cs.coordinatesystems.ICRS;
+import org.deegree.cs.persistence.CRSManager;
 import org.deegree.filter.comparison.ComparisonOperator;
 import org.deegree.filter.xml.Filter110XMLDecoder;
 import org.deegree.geometry.Envelope;
@@ -182,7 +183,8 @@ public class GetObservation100XMLAdapter extends SOSRequest100XMLAdapter {
         // TODO precision
         // double precision = Math.min( getPrecision( lCorner.split( " " ) ), getPrecision( uCorner.split( " " ) ) );
         GeometryFactory geomFactory = new GeometryFactory();
-        CRS crs = new CRS( getSRSName() );
+        // this IS REALLY a reference!
+        ICRS crs = CRSManager.getCRSRef( getSRSName() );
         return geomFactory.createEnvelope( min, max, crs );
     }
 

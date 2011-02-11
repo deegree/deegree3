@@ -56,7 +56,7 @@ import org.deegree.coverage.raster.data.nio.ByteBufferRasterData;
 import org.deegree.coverage.raster.geom.RasterGeoReference.OriginLocation;
 import org.deegree.coverage.raster.io.RasterIOOptions;
 import org.deegree.coverage.raster.utils.RasterFactory;
-import org.deegree.cs.CRS;
+import org.deegree.cs.persistence.CRSManager;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryFactory;
 import org.junit.Test;
@@ -222,7 +222,8 @@ public class TestRasterCache {
          * - add the last tile in memory = 750000 bytes
          * </code>
          */
-        Envelope env = geomFac.createEnvelope( 420000.0, 4511999.0, 428000.0, 4519999.0, new CRS( "epsg:26912" ) );
+        Envelope env = geomFac.createEnvelope( 420000.0, 4511999.0, 428000.0, 4519999.0,
+                                               CRSManager.getCRSRef( "epsg:26912" ) );
         tR.getSubRaster( env ).getAsSimpleRaster();
         checkDiskSize( TILED_RASTER_SIZE + OVERVIEW_RASTER_SIZE );
         checkFiles( new FileInfo[] { TILE_0_0, TILE_0_1, TILE_1_0, TILE_1_1, OVERVIEW } );
@@ -251,7 +252,7 @@ public class TestRasterCache {
          * - add the last tile in memory = 750000 bytes
          * </code>
          */
-        env = geomFac.createEnvelope( 420000.0, 4503999.0, 428000.0, 4511999.0, new CRS( "epsg:26912" ) );
+        env = geomFac.createEnvelope( 420000.0, 4503999.0, 428000.0, 4511999.0, CRSManager.getCRSRef( "epsg:26912" ) );
         tR.getSubRaster( env ).getAsSimpleRaster();
         checkDiskSize( TILED_SINGLE_RASTER_SIZE * 2 + OVERVIEW_RASTER_SIZE );
         checkFiles( new FileInfo[] { TILE_0_0, TILE_1_0, OVERVIEW } );
@@ -270,7 +271,7 @@ public class TestRasterCache {
          * Get upper left tile from the overview raster, this call needs 334668 bytes of memory, currently there is
          * 300000 bytes -> result = 3334668 bytes in MEM
          */
-        env = geomFac.createEnvelope( 1000, 2071, 1032, 2100, new CRS( "epsg:26912" ) );
+        env = geomFac.createEnvelope( 1000, 2071, 1032, 2100, CRSManager.getCRSRef( "epsg:26912" ) );
         ( (ByteBufferRasterData) raster.getSubRaster( env ).getAsSimpleRaster().getRasterData() ).getByteBuffer();
         checkDiskSize( TILED_SINGLE_RASTER_SIZE * 2 + OVERVIEW_RASTER_SIZE );
         checkFiles( new FileInfo[] { TILE_0_0, TILE_1_0, OVERVIEW } );
@@ -288,7 +289,7 @@ public class TestRasterCache {
          * </code> Disk=4512012 (2Tiles, Overview), Mem=2088672 ( TILE_1_1 + 4*Overview_Tiles)
          * 
          */
-        env = geomFac.createEnvelope( 1070, 2001, 1100, 2100, new CRS( "epsg:26912" ) );
+        env = geomFac.createEnvelope( 1070, 2001, 1100, 2100, CRSManager.getCRSRef( "epsg:26912" ) );
         ( (ByteBufferRasterData) raster.getSubRaster( env ).getAsSimpleRaster().getRasterData() ).getByteBuffer();
         checkDiskSize( TILED_SINGLE_RASTER_SIZE * 2 + OVERVIEW_RASTER_SIZE );
         checkFiles( new FileInfo[] { TILE_0_0, TILE_0_1, OVERVIEW } );
@@ -317,15 +318,17 @@ public class TestRasterCache {
                 // once more
                 tR.getSubRaster( tR.getEnvelope() ).getAsSimpleRaster();
                 ( (ByteBufferRasterData) raster.getSubRaster( raster.getEnvelope() ).getAsSimpleRaster().getRasterData() ).getByteBuffer();
-                Envelope env = geomFac.createEnvelope( 420000.0, 4511999.0, 428000.0, 4519999.0, new CRS( "epsg:26912" ) );
+                Envelope env = geomFac.createEnvelope( 420000.0, 4511999.0, 428000.0, 4519999.0,
+                                                       CRSManager.getCRSRef( "epsg:26912" ) );
                 tR.getSubRaster( env ).getAsSimpleRaster();
                 ( (ByteBufferRasterData) raster.getSubRaster( raster.getEnvelope() ).getAsSimpleRaster().getRasterData() ).getByteBuffer();
-                env = geomFac.createEnvelope( 420000.0, 4503999.0, 428000.0, 4511999.0, new CRS( "epsg:26912" ) );
+                env = geomFac.createEnvelope( 420000.0, 4503999.0, 428000.0, 4511999.0,
+                                              CRSManager.getCRSRef( "epsg:26912" ) );
                 tR.getSubRaster( env ).getAsSimpleRaster();
                 tR.getSubRaster( tR.getEnvelope() ).getAsSimpleRaster();
-                env = geomFac.createEnvelope( 1000, 2071, 1032, 2100, new CRS( "epsg:26912" ) );
+                env = geomFac.createEnvelope( 1000, 2071, 1032, 2100, CRSManager.getCRSRef( "epsg:26912" ) );
                 ( (ByteBufferRasterData) raster.getSubRaster( env ).getAsSimpleRaster().getRasterData() ).getByteBuffer();
-                env = geomFac.createEnvelope( 1070, 2001, 1100, 2100, new CRS( "epsg:26912" ) );
+                env = geomFac.createEnvelope( 1070, 2001, 1100, 2100, CRSManager.getCRSRef( "epsg:26912" ) );
                 ( (ByteBufferRasterData) raster.getSubRaster( env ).getAsSimpleRaster().getRasterData() ).getByteBuffer();
             }
         }, "a" );
@@ -334,13 +337,15 @@ public class TestRasterCache {
 
             @Override
             public void run() {
-                Envelope env = geomFac.createEnvelope( 420000.0, 4511999.0, 428000.0, 4519999.0, new CRS( "epsg:26912" ) );
+                Envelope env = geomFac.createEnvelope( 420000.0, 4511999.0, 428000.0, 4519999.0,
+                                                       CRSManager.getCRSRef( "epsg:26912" ) );
                 tR.getSubRaster( env ).getAsSimpleRaster();
 
                 tR.getSubRaster( tR.getEnvelope() ).getAsSimpleRaster();
                 ( (ByteBufferRasterData) raster.getSubRaster( raster.getEnvelope() ).getAsSimpleRaster().getRasterData() ).getByteBuffer();
 
-                env = geomFac.createEnvelope( 420000.0, 4503999.0, 428000.0, 4511999.0, new CRS( "epsg:26912" ) );
+                env = geomFac.createEnvelope( 420000.0, 4503999.0, 428000.0, 4511999.0,
+                                              CRSManager.getCRSRef( "epsg:26912" ) );
                 tR.getSubRaster( env ).getAsSimpleRaster();
 
                 tR.getSubRaster( tR.getEnvelope() ).getAsSimpleRaster();
@@ -350,7 +355,7 @@ public class TestRasterCache {
                 // get a sub raster
                 tR.getSubRaster( tR.getEnvelope() ).getAsSimpleRaster();
 
-                env = geomFac.createEnvelope( 1070, 2001, 1100, 2100, new CRS( "epsg:26912" ) );
+                env = geomFac.createEnvelope( 1070, 2001, 1100, 2100, CRSManager.getCRSRef( "epsg:26912" ) );
                 ( (ByteBufferRasterData) raster.getSubRaster( env ).getAsSimpleRaster().getRasterData() ).getByteBuffer();
 
             }
@@ -364,17 +369,19 @@ public class TestRasterCache {
                 // once more
                 tR.getSubRaster( tR.getEnvelope() ).getAsSimpleRaster();
 
-                Envelope env = geomFac.createEnvelope( 420000.0, 4511999.0, 428000.0, 4519999.0, new CRS( "epsg:26912" ) );
+                Envelope env = geomFac.createEnvelope( 420000.0, 4511999.0, 428000.0, 4519999.0,
+                                                       CRSManager.getCRSRef( "epsg:26912" ) );
                 tR.getSubRaster( env ).getAsSimpleRaster();
 
                 ( (ByteBufferRasterData) raster.getSubRaster( raster.getEnvelope() ).getAsSimpleRaster().getRasterData() ).getByteBuffer();
                 tR.getSubRaster( tR.getEnvelope() ).getAsSimpleRaster();
                 // get a sub raster
                 tR.getSubRaster( tR.getEnvelope() ).getAsSimpleRaster();
-                env = geomFac.createEnvelope( 1070, 2001, 1100, 2100, new CRS( "epsg:26912" ) );
+                env = geomFac.createEnvelope( 1070, 2001, 1100, 2100, CRSManager.getCRSRef( "epsg:26912" ) );
                 ( (ByteBufferRasterData) raster.getSubRaster( env ).getAsSimpleRaster().getRasterData() ).getByteBuffer();
 
-                env = geomFac.createEnvelope( 420000.0, 4503999.0, 428000.0, 4511999.0, new CRS( "epsg:26912" ) );
+                env = geomFac.createEnvelope( 420000.0, 4503999.0, 428000.0, 4511999.0,
+                                              CRSManager.getCRSRef( "epsg:26912" ) );
                 tR.getSubRaster( env ).getAsSimpleRaster();
 
             }
@@ -484,7 +491,7 @@ public class TestRasterCache {
                     for ( String exp : infoFile ) {
                         String line = b.readLine();
                         Assert.assertEquals( "Mismatch in line number: " + ( lnr++ ) + " of file: "
-                                             + f.getAbsolutePath() + ".", exp, line );
+                                                                     + f.getAbsolutePath() + ".", exp, line );
                     }
                     b.close();
                 } catch ( IOException e ) {

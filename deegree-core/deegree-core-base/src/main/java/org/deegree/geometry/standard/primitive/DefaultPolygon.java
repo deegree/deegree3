@@ -39,7 +39,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.deegree.cs.CRS;
+import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.precision.PrecisionModel;
 import org.deegree.geometry.primitive.Polygon;
@@ -77,7 +77,7 @@ public class DefaultPolygon extends DefaultSurface implements Polygon {
      * @param interiorRings
      *            list of rings that define the inner boundaries, may be empty or null
      */
-    public DefaultPolygon( String id, CRS crs, PrecisionModel pm, Ring exteriorRing, List<Ring> interiorRings ) {
+    public DefaultPolygon( String id, ICRS crs, PrecisionModel pm, Ring exteriorRing, List<Ring> interiorRings ) {
         super( id, crs, pm, createPatchList( exteriorRing, interiorRings ) );
         this.exteriorRing = exteriorRing;
         this.interiorRings = interiorRings;

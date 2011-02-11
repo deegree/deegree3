@@ -48,9 +48,8 @@ import org.deegree.coverage.raster.geom.RasterRect;
 import org.deegree.coverage.raster.interpolation.Interpolation;
 import org.deegree.coverage.raster.interpolation.InterpolationFactory;
 import org.deegree.coverage.raster.interpolation.InterpolationType;
-import org.deegree.cs.CRS;
 import org.deegree.cs.Transformer;
-import org.deegree.cs.coordinatesystems.CoordinateSystem;
+import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.exceptions.TransformationException;
 import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.cs.transformations.Transformation;
@@ -82,18 +81,6 @@ public class RasterTransformer extends Transformer {
     // private CoordinateSystem srcCRS;
 
     /**
-     * Creates a new RasterTransformer with the given target CRS.
-     * 
-     * @param targetCRS
-     *            to transform incoming coordinates to.
-     * @throws IllegalArgumentException
-     *             if the given CoordinateSystem is <code>null</code>
-     */
-    public RasterTransformer( CoordinateSystem targetCRS ) throws IllegalArgumentException {
-        super( targetCRS );
-    }
-
-    /**
      * Creates a new RasterTransformer with the given id as the target CRS.
      * 
      * @param targetCRS
@@ -117,7 +104,7 @@ public class RasterTransformer extends Transformer {
      * @throws IllegalArgumentException
      *             if the given parameter is null.
      */
-    public RasterTransformer( CRS targetCRS ) throws IllegalArgumentException, UnknownCRSException {
+    public RasterTransformer( ICRS targetCRS ) throws IllegalArgumentException, UnknownCRSException {
         super( targetCRS );
     }
 
@@ -155,7 +142,7 @@ public class RasterTransformer extends Transformer {
                             throws TransformationException, UnknownCRSException {
 
         synchronized ( sourceRaster ) {
-            CoordinateSystem srcCRS = sourceRaster.getCoordinateSystem().getWrappedCRS();
+            ICRS srcCRS = sourceRaster.getCoordinateSystem();
 
             // get the (transformed) subraster which intersects with the given envelope.
             AbstractRaster source = getSubRaster( srcCRS, sourceRaster, dstEnvelope );
@@ -176,8 +163,7 @@ public class RasterTransformer extends Transformer {
 
             RasterRect rr = new RasterRect( 0, 0, dstWidth, dstHeight );
             RasterData dstData = srcData.createCompatibleWritableRasterData( rr, null );
-            RasterGeoReference dstREnv = RasterGeoReference.create(
-                                                                    sourceRaster.getRasterReference().getOriginLocation(),
+            RasterGeoReference dstREnv = RasterGeoReference.create( sourceRaster.getRasterReference().getOriginLocation(),
                                                                     dstEnvelope, dstWidth, dstHeight );
 
             // use warp to calculate the correct sample positions in the source raster.
@@ -215,9 +201,10 @@ public class RasterTransformer extends Transformer {
      * Create a new raster that contains all data we need for the transformation.
      * 
      * @throws IllegalArgumentException
+     * @throws UnknownCRSException
      */
-    private AbstractRaster getSubRaster( CoordinateSystem srcCRS, AbstractRaster sourceRaster, Envelope dstEnvelope )
-                            throws TransformationException, IllegalArgumentException {
+    private AbstractRaster getSubRaster( ICRS srcCRS, AbstractRaster sourceRaster, Envelope dstEnvelope )
+                            throws TransformationException, IllegalArgumentException, UnknownCRSException {
         Envelope dataEnv = dstEnvelope;
         if ( srcCRS != null && !srcCRS.equals( getTargetCRS() ) ) {
 
@@ -250,7 +237,7 @@ public class RasterTransformer extends Transformer {
         return source;
     }
 
-    private WarpPolynomial createWarp( int dstWidth, int dstHeight, CoordinateSystem srcCRS,
+    private WarpPolynomial createWarp( int dstWidth, int dstHeight, ICRS srcCRS,
                                        RasterGeoReference srcREnv, RasterGeoReference dstREnv )
                             throws TransformationException {
         int k = 0;
@@ -285,7 +272,7 @@ public class RasterTransformer extends Transformer {
         return warp;
     }
 
-    private List<Point3d> transformDstToSrc( CoordinateSystem srcCRS, List<Point3d> points )
+    private List<Point3d> transformDstToSrc( ICRS srcCRS, List<Point3d> points )
                             throws TransformationException {
         // transform all grid points
         Transformation transform = createCRSTransformation( srcCRS );
@@ -317,13 +304,13 @@ public class RasterTransformer extends Transformer {
     public AbstractRaster transform( AbstractRaster sourceRaster, InterpolationType interpolationType )
                             throws IllegalArgumentException, TransformationException, UnknownCRSException {
 
-        CRS srcCRS = sourceRaster.getCoordinateSystem();
-        if ( srcCRS == null || srcCRS.equals( getWrappedTargetCRS() ) ) {
+        ICRS srcCRS = sourceRaster.getCoordinateSystem();
+        if ( srcCRS == null || srcCRS.equals( getTargetCRS() ) ) {
             return sourceRaster;
         }
 
         GeometryTransformer gt = new GeometryTransformer( getTargetCRS() );
-        Envelope dstEnvelope = gt.transform( sourceRaster.getEnvelope(), srcCRS.getWrappedCRS() ).getEnvelope();
+        Envelope dstEnvelope = gt.transform( sourceRaster.getEnvelope(), srcCRS ).getEnvelope();
 
         int srcWidth = sourceRaster.getColumns();
         int srcHeight = sourceRaster.getRows();

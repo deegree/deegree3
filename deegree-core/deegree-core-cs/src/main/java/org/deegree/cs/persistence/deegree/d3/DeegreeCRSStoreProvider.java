@@ -49,7 +49,6 @@ import org.deegree.commons.xml.jaxb.JAXBUtils;
 import org.deegree.cs.exceptions.CRSStoreException;
 import org.deegree.cs.persistence.CRSStore;
 import org.deegree.cs.persistence.CRSStoreProvider;
-import org.deegree.cs.persistence.deegree.DeegreeCRSStore;
 import org.deegree.cs.persistence.deegree.d3.jaxb.DeegreeCRSStoreConfig;
 import org.deegree.cs.transformations.TransformationFactory.DSTransform;
 import org.slf4j.Logger;
@@ -88,12 +87,12 @@ public class DeegreeCRSStoreProvider implements CRSStoreProvider {
 
     public CRSStore getCRSStore( URL configURL )
                             throws CRSStoreException {
-        DeegreeCRSStore<StAXResource> crsStore = null;
+        DeegreeCRSStore crsStore = null;
         try {
             DeegreeCRSStoreConfig config = (DeegreeCRSStoreConfig) JAXBUtils.unmarshall( CONFIG_JAXB_PACKAGE,
                                                                                          CONFIG_SCHEMA, configURL );
-            XMLAdapter resolver = new XMLAdapter();
-            resolver.setSystemId( configURL.toString() );
+            XMLAdapter adapter = new XMLAdapter();
+            adapter.setSystemId( configURL.toString() );
 
             String parserFile = config.getFile();
             if ( parserFile == null || parserFile.trim().length() == 0 ) {
@@ -101,9 +100,8 @@ public class DeegreeCRSStoreProvider implements CRSStoreProvider {
                 LOG.error( msg );
                 throw new CRSStoreException( msg );
             }
-            crsStore = new DeegreeCRSStore<StAXResource>( DSTransform.fromSchema( config ) );
-            Parser parser = new Parser( crsStore, resolver.resolve( parserFile ) );
-            crsStore.setResolver( parser );
+            crsStore = new DeegreeCRSStore( DSTransform.fromSchema( config ),
+                                            adapter.resolve( parserFile ) );
         } catch ( JAXBException e ) {
             String msg = "Error in crs store configuration file '" + configURL + "': " + e.getMessage();
             LOG.error( msg );
@@ -116,4 +114,8 @@ public class DeegreeCRSStoreProvider implements CRSStoreProvider {
         }
         return crsStore;
     }
+    
+
+
+    
 }

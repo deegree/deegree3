@@ -39,7 +39,7 @@ import static java.util.Arrays.asList;
 
 import org.deegree.coverage.raster.AbstractRaster;
 import org.deegree.coverage.raster.geom.RasterGeoReference.OriginLocation;
-import org.deegree.cs.CRS;
+import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryFactory;
 import org.deegree.geometry.primitive.LinearRing;
@@ -65,7 +65,7 @@ public class Raster2Feature {
      * @return bounding polygon
      */
     public static Polygon createPolygonGeometry( AbstractRaster raster ) {
-        CRS crs = raster.getCoordinateSystem();
+        ICRS crs = raster.getCoordinateSystem();
         GeometryFactory fac = new GeometryFactory();
         Envelope env = raster.getEnvelope();
         env = raster.getRasterReference().relocateEnvelope( OriginLocation.OUTER, env );

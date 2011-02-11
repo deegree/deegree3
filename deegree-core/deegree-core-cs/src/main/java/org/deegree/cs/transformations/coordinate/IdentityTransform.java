@@ -41,7 +41,7 @@ import javax.vecmath.Point3d;
 
 import org.deegree.cs.CRSCodeType;
 import org.deegree.cs.CRSIdentifiable;
-import org.deegree.cs.coordinatesystems.CoordinateSystem;
+import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.exceptions.TransformationException;
 import org.deegree.cs.transformations.Transformation;
 
@@ -59,7 +59,7 @@ public class IdentityTransform extends Transformation {
      * @param sourceCRS
      * @param targetCRS
      */
-    public IdentityTransform( CoordinateSystem sourceCRS, CoordinateSystem targetCRS ) {
+    public IdentityTransform( ICRS sourceCRS, ICRS targetCRS ) {
         super( sourceCRS, targetCRS, new CRSIdentifiable( new CRSCodeType( "id" ) ) );
     }
 

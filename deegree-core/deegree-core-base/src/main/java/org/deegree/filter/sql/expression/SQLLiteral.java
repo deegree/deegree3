@@ -40,7 +40,7 @@ import java.util.Collections;
 import java.util.List;
 
 import org.deegree.commons.tom.primitive.PrimitiveValue;
-import org.deegree.cs.CRS;
+import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.filter.expression.Literal;
 import org.deegree.filter.sql.UnmappableException;
 import org.deegree.geometry.Geometry;
@@ -119,7 +119,7 @@ public class SQLLiteral implements SQLExpression {
     }
 
     @Override
-    public CRS getCRS() {
+    public ICRS getCRS() {
         return isSpatial ? ((Geometry) value).getCoordinateSystem() : null;
     }
 

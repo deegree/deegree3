@@ -29,7 +29,7 @@
  Prof. Dr. Klaus Greve
  Postfach 1147, 53001 Bonn
  Germany
- http://www.geographie.uni-bonn.de/deegree/
+ http://CoordinateSystem.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
@@ -44,11 +44,12 @@ import java.util.List;
 
 import javax.vecmath.Point3d;
 
-import org.deegree.cs.CRS;
 import org.deegree.cs.CoordinateTransformer;
 import org.deegree.cs.components.Axis;
+import org.deegree.cs.components.IAxis;
 import org.deegree.cs.exceptions.TransformationException;
 import org.deegree.cs.exceptions.UnknownCRSException;
+import org.deegree.cs.persistence.CRSManager;
 import org.junit.Test;
 
 /**
@@ -64,10 +65,9 @@ public class AxisOrderTest {
     @Test
     public void testAxisOrderDef()
                             throws IllegalArgumentException, UnknownCRSException {
-        CRS crsLikeDefined = new CRS( "4326_AO" );
-        CoordinateSystem wCRSLikeDefined = crsLikeDefined.getWrappedCRS();
+        ICRS wCRSLikeDefined = CRSManager.lookup( "4326_AO" );
         assertNotNull( wCRSLikeDefined );
-        Axis[] axisLikeDefined = wCRSLikeDefined.getAxis();
+        IAxis[] axisLikeDefined = wCRSLikeDefined.getAxis();
         assertNotNull( axisLikeDefined );
         assertTrue( axisLikeDefined.length > 0 );
         assertEquals( Axis.AO_NORTH, axisLikeDefined[0].getOrientation() );
@@ -77,10 +77,9 @@ public class AxisOrderTest {
     @Test
     public void testAxisOrderXY()
                             throws IllegalArgumentException, UnknownCRSException {
-        CRS crsXY = new CRS( "4326_AO", true );
-        CoordinateSystem wCRSXY = crsXY.getWrappedCRS();
+        ICRS wCRSXY = CRSManager.lookup( "4326_AO", true );
         assertNotNull( wCRSXY );
-        Axis[] axisXY = wCRSXY.getAxis();
+        IAxis[] axisXY = wCRSXY.getAxis();
         assertNotNull( axisXY );
         assertTrue( axisXY.length > 0 );
         assertEquals( Axis.AO_EAST, axisXY[0].getOrientation() );
@@ -90,12 +89,12 @@ public class AxisOrderTest {
     @Test
     public void testWGS84DefToDef()
                             throws UnknownCRSException, IllegalArgumentException, TransformationException {
-        CRS sourceCRS = new CRS( "4326_AO" );
-        CRS targetCRS = new CRS( "4326_AO" );
-        CoordinateTransformer tranformer = new CoordinateTransformer( targetCRS.getWrappedCRS() );
+        ICRS sourceCRS = CRSManager.lookup( "4326_AO" );
+        ICRS targetCRS = CRSManager.lookup( "4326_AO" );
+        CoordinateTransformer tranformer = new CoordinateTransformer( targetCRS );
         List<Point3d> points = new ArrayList<Point3d>();
         points.add( new Point3d( 46.074, 9.799, Double.NaN ) );
-        List<Point3d> transformedPoints = tranformer.transform( sourceCRS.getWrappedCRS(), points );
+        List<Point3d> transformedPoints = tranformer.transform( sourceCRS, points );
 
         assertNotNull( transformedPoints );
         assertEquals( 1, transformedPoints.size() );
@@ -107,12 +106,12 @@ public class AxisOrderTest {
     @Test
     public void testWGS84XYToDef()
                             throws UnknownCRSException, IllegalArgumentException, TransformationException {
-        CRS sourceCRS = new CRS( "4326_AO", true );
-        CRS targetCRS = new CRS( "4326_AO" );
-        CoordinateTransformer tranformer = new CoordinateTransformer( targetCRS.getWrappedCRS() );
+        ICRS sourceCRS = CRSManager.lookup( "4326_AO", true );
+        ICRS targetCRS = CRSManager.lookup( "4326_AO" );
+        CoordinateTransformer tranformer = new CoordinateTransformer( targetCRS );
         List<Point3d> points = new ArrayList<Point3d>();
         points.add( new Point3d( 9.799, 46.074, Double.NaN ) );
-        List<Point3d> transformedPoints = tranformer.transform( sourceCRS.getWrappedCRS(), points );
+        List<Point3d> transformedPoints = tranformer.transform( sourceCRS, points );
 
         assertNotNull( transformedPoints );
         assertEquals( 1, transformedPoints.size() );
@@ -124,12 +123,12 @@ public class AxisOrderTest {
     @Test
     public void testWGS84XYToXY()
                             throws UnknownCRSException, IllegalArgumentException, TransformationException {
-        CRS sourceCRS = new CRS( "4326_AO", true );
-        CRS targetCRS = new CRS( "4326_AO", true );
-        CoordinateTransformer tranformer = new CoordinateTransformer( targetCRS.getWrappedCRS() );
+        ICRS sourceCRS = CRSManager.lookup( "4326_AO", true );
+        ICRS targetCRS = CRSManager.lookup( "4326_AO", true );
+        CoordinateTransformer tranformer = new CoordinateTransformer( targetCRS );
         List<Point3d> points = new ArrayList<Point3d>();
         points.add( new Point3d( 9.799, 46.074, Double.NaN ) );
-        List<Point3d> transformedPoints = tranformer.transform( sourceCRS.getWrappedCRS(), points );
+        List<Point3d> transformedPoints = tranformer.transform( sourceCRS, points );
 
         assertNotNull( transformedPoints );
         assertEquals( 1, transformedPoints.size() );
@@ -141,12 +140,12 @@ public class AxisOrderTest {
     @Test
     public void testWGS84DefToXY()
                             throws UnknownCRSException, IllegalArgumentException, TransformationException {
-        CRS sourceCRS = new CRS( "4326_AO" );
-        CRS targetCRS = new CRS( "4326_AO", true );
-        CoordinateTransformer tranformer = new CoordinateTransformer( targetCRS.getWrappedCRS() );
+        ICRS sourceCRS = CRSManager.lookup( "4326_AO" );
+        ICRS targetCRS = CRSManager.lookup( "4326_AO", true );
+        CoordinateTransformer tranformer = new CoordinateTransformer( targetCRS );
         List<Point3d> points = new ArrayList<Point3d>();
         points.add( new Point3d( 46.074, 9.799, Double.NaN ) );
-        List<Point3d> transformedPoints = tranformer.transform( sourceCRS.getWrappedCRS(), points );
+        List<Point3d> transformedPoints = tranformer.transform( sourceCRS, points );
 
         assertNotNull( transformedPoints );
         assertEquals( 1, transformedPoints.size() );
@@ -158,13 +157,13 @@ public class AxisOrderTest {
     @Test
     public void testTransformDefToDef()
                             throws UnknownCRSException, IllegalArgumentException, TransformationException {
-        CRS sourceCRS = new CRS( "4326_AO" );
-        CRS targetCRS = new CRS( "EPSG:31467" );
+        ICRS sourceCRS = CRSManager.lookup( "4326_AO" );
+        ICRS targetCRS = CRSManager.lookup( "EPSG:31467" );
 
-        CoordinateTransformer tranformer = new CoordinateTransformer( targetCRS.getWrappedCRS() );
+        CoordinateTransformer tranformer = new CoordinateTransformer( targetCRS );
         List<Point3d> points = new ArrayList<Point3d>();
         points.add( new Point3d( 47.851111, 9.432778, Double.NaN ) );
-        List<Point3d> transformedPoints = tranformer.transform( sourceCRS.getWrappedCRS(), points );
+        List<Point3d> transformedPoints = tranformer.transform( sourceCRS, points );
 
         assertNotNull( transformedPoints );
         assertEquals( 1, transformedPoints.size() );
@@ -176,12 +175,12 @@ public class AxisOrderTest {
     @Test
     public void testTransformDefToDefInverse()
                             throws UnknownCRSException, IllegalArgumentException, TransformationException {
-        CRS sourceCRS = new CRS( "epsg:31467" );
-        CRS targetCRS = new CRS( "4326_AO" );
-        CoordinateTransformer tranformer = new CoordinateTransformer( targetCRS.getWrappedCRS() );
+        ICRS sourceCRS = CRSManager.lookup( "epsg:31467" );
+        ICRS targetCRS = CRSManager.lookup( "4326_AO" );
+        CoordinateTransformer tranformer = new CoordinateTransformer( targetCRS );
         List<Point3d> points = new ArrayList<Point3d>();
         points.add( new Point3d( 3532465.57, 5301523.49, 817 ) );
-        List<Point3d> transformedPoints = tranformer.transform( sourceCRS.getWrappedCRS(), points );
+        List<Point3d> transformedPoints = tranformer.transform( sourceCRS, points );
 
         assertNotNull( transformedPoints );
         assertEquals( 1, transformedPoints.size() );
@@ -193,12 +192,12 @@ public class AxisOrderTest {
     @Test
     public void testTransformXYToDef()
                             throws UnknownCRSException, IllegalArgumentException, TransformationException {
-        CRS sourceCRS = new CRS( "4326_AO", true );
-        CRS targetCRS = new CRS( "epsg:31467" );
-        CoordinateTransformer tranformer = new CoordinateTransformer( targetCRS.getWrappedCRS() );
+        ICRS sourceCRS = CRSManager.lookup( "4326_AO", true );
+        ICRS targetCRS = CRSManager.lookup( "epsg:31467" );
+        CoordinateTransformer tranformer = new CoordinateTransformer( targetCRS );
         List<Point3d> points = new ArrayList<Point3d>();
         points.add( new Point3d( 9.432778, 47.851111, Double.NaN ) );
-        List<Point3d> transformedPoints = tranformer.transform( sourceCRS.getWrappedCRS(), points );
+        List<Point3d> transformedPoints = tranformer.transform( sourceCRS, points );
 
         assertNotNull( transformedPoints );
         assertEquals( 1, transformedPoints.size() );
@@ -210,12 +209,12 @@ public class AxisOrderTest {
     @Test
     public void testTransformDefToXY()
                             throws UnknownCRSException, IllegalArgumentException, TransformationException {
-        CRS sourceCRS = new CRS( "epsg:31467" );
-        CRS targetCRS = new CRS( "4326_AO", true );
-        CoordinateTransformer tranformer = new CoordinateTransformer( targetCRS.getWrappedCRS() );
+        ICRS sourceCRS = CRSManager.lookup( "epsg:31467" );
+        ICRS targetCRS = CRSManager.lookup( "4326_AO", true );
+        CoordinateTransformer tranformer = new CoordinateTransformer( targetCRS );
         List<Point3d> points = new ArrayList<Point3d>();
         points.add( new Point3d( 3532465.57, 5301523.49, 817 ) );
-        List<Point3d> transformedPoints = tranformer.transform( sourceCRS.getWrappedCRS(), points );
+        List<Point3d> transformedPoints = tranformer.transform( sourceCRS, points );
 
         assertNotNull( transformedPoints );
         assertEquals( 1, transformedPoints.size() );

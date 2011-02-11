@@ -54,7 +54,8 @@ import org.deegree.commons.utils.kvp.MissingParameterException;
 import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.commons.xml.XPath;
 import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;
-import org.deegree.cs.CRS;
+import org.deegree.cs.coordinatesystems.ICRS;
+import org.deegree.cs.persistence.CRSManager;
 import org.deegree.filter.Filter;
 import org.deegree.filter.expression.Function;
 import org.deegree.filter.expression.PropertyName;
@@ -240,10 +241,10 @@ public class GetFeatureWithLockXMLAdapter extends AbstractWFSRequestXMLAdapter {
 
             String featureVersion = getNodeAsString( queryEl, new XPath( "@featureVersion", nsContext ), null );
 
-            CRS crs = null;
+            ICRS crs = null;
             String srsName = getNodeAsString( queryEl, new XPath( "@srsName", nsContext ), null );
             if ( srsName != null ) {
-                crs = new CRS( srsName );
+                crs = CRSManager.getCRSRef( srsName );
             }
 
             // convert some lists to arrays to conform the FilterQuery constructor signature

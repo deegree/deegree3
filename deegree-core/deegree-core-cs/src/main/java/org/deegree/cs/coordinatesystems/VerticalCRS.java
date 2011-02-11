@@ -36,10 +36,11 @@
 
 package org.deegree.cs.coordinatesystems;
 
-import static org.deegree.cs.coordinatesystems.CoordinateSystem.CRSType.VERTICAL;
+import static org.deegree.cs.coordinatesystems.CRS.CRSType.VERTICAL;
 
-import org.deegree.cs.CRSIdentifiable;
-import org.deegree.cs.components.Axis;
+import org.deegree.cs.CRSResource;
+import org.deegree.cs.components.IAxis;
+import org.deegree.cs.components.IVerticalDatum;
 import org.deegree.cs.components.VerticalDatum;
 
 /**
@@ -53,14 +54,14 @@ import org.deegree.cs.components.VerticalDatum;
  * @version $Revision$, $Date$
  * 
  */
-public class VerticalCRS extends CoordinateSystem {
+public class VerticalCRS extends CRS implements IVerticalCRS {
 
     /**
      * @param datum
      * @param axisOrder
      * @param identity
      */
-    public VerticalCRS( VerticalDatum datum, Axis[] axisOrder, CRSIdentifiable identity ) {
+    public VerticalCRS( IVerticalDatum datum, IAxis[] axisOrder, CRSResource identity ) {
         super( datum, axisOrder, identity );
         checkForNullObject( axisOrder, "VerticalCRS", "axisOrder" );
         if ( axisOrder.length != 1 ) {
@@ -88,7 +89,7 @@ public class VerticalCRS extends CoordinateSystem {
     /**
      * @return the axis of this vertical crs.
      */
-    public Axis getVerticalAxis() {
+    public IAxis getVerticalAxis() {
         return getAxis()[0];
     }
 }

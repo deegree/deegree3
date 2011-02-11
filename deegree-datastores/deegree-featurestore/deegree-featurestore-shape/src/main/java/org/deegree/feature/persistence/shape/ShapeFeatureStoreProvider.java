@@ -48,7 +48,8 @@ import javax.xml.bind.JAXBException;
 
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.jaxb.JAXBUtils;
-import org.deegree.cs.CRS;
+import org.deegree.cs.coordinatesystems.ICRS;
+import org.deegree.cs.persistence.CRSManager;
 import org.deegree.feature.i18n.Messages;
 import org.deegree.feature.persistence.FeatureStore;
 import org.deegree.feature.persistence.FeatureStoreException;
@@ -105,13 +106,13 @@ public class ShapeFeatureStoreProvider implements FeatureStoreProvider {
             resolver.setSystemId( configURL.toString() );
 
             String srs = config.getStorageCRS();
-            CRS crs = null;
+            ICRS crs = null;
             if ( srs != null ) {
                 // rb: if it is null, the shape feature store will try to read the prj files.
                 // srs = "EPSG:4326";
                 // } else {
                 srs = srs.trim();
-                crs = new CRS( srs );
+                crs = CRSManager.getCRSRef( srs );
             }
 
             String shapeFileName = null;

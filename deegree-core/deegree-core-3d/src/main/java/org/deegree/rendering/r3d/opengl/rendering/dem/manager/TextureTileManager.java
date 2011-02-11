@@ -41,8 +41,7 @@ import static org.slf4j.LoggerFactory.getLogger;
 import java.util.LinkedHashSet;
 
 import org.deegree.commons.annotations.LoggingNotes;
-import org.deegree.cs.coordinatesystems.CoordinateSystem;
-import org.deegree.cs.exceptions.UnknownCRSException;
+import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryFactory;
 import org.deegree.rendering.r3d.opengl.rendering.RenderContext;
@@ -257,14 +256,14 @@ public class TextureTileManager {
             // }
             int xAxis = 0;
             if ( provider.getCRS() != null ) {
-                CoordinateSystem crs = null;
-                try {
-                    crs = provider.getCRS().getWrappedCRS();
-                    xAxis = crs.getEasting();
+                ICRS crs = null;
+                // try {
+                crs = provider.getCRS();
+                xAxis = crs.getEasting();
 
-                } catch ( UnknownCRSException e ) {
-                    // nothing
-                }
+                // } catch ( UnknownCRSException e ) {
+                // // nothing
+                // }
             }
             return new TextureRequest( fragment, env.getMin().get( xAxis ), env.getMin().get( 1 - xAxis ),
                                        env.getMax().get( xAxis ), env.getMax().get( 1 - xAxis ), (float) unitsPerPixel );

@@ -89,7 +89,7 @@ import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.commons.xml.stax.StAXParsingHelper;
 import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;
-import org.deegree.cs.CRS;
+import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.feature.Feature;
 import org.deegree.feature.StreamFeatureCollection;
@@ -106,11 +106,11 @@ import org.deegree.feature.types.property.CodePropertyType;
 import org.deegree.feature.types.property.CustomPropertyType;
 import org.deegree.feature.types.property.EnvelopePropertyType;
 import org.deegree.feature.types.property.FeaturePropertyType;
-import org.deegree.feature.types.property.ObjectPropertyType;
 import org.deegree.feature.types.property.GenericObjectPropertyType;
 import org.deegree.feature.types.property.GeometryPropertyType;
 import org.deegree.feature.types.property.GeometryPropertyType.GeometryType;
 import org.deegree.feature.types.property.MeasurePropertyType;
+import org.deegree.feature.types.property.ObjectPropertyType;
 import org.deegree.feature.types.property.PropertyType;
 import org.deegree.feature.types.property.SimplePropertyType;
 import org.deegree.feature.types.property.StringOrRefPropertyType;
@@ -266,7 +266,7 @@ public class GMLFeatureReader extends XMLAdapter {
      * @throws UnknownCRSException
      * @throws XMLParsingException
      */
-    public Feature parseFeature( XMLStreamReaderWrapper xmlStream, CRS crs )
+    public Feature parseFeature( XMLStreamReaderWrapper xmlStream, ICRS crs )
                             throws XMLStreamException, XMLParsingException, UnknownCRSException {
 
         if ( schema == null ) {
@@ -288,7 +288,7 @@ public class GMLFeatureReader extends XMLAdapter {
         PropertyType activeDecl = declIter.next();
         int propOccurences = 0;
 
-        CRS activeCRS = crs;
+        ICRS activeCRS = crs;
         List<Property> propertyList = new ArrayList<Property>();
         List<Property> extraPropertyList = null;
 
@@ -392,7 +392,7 @@ public class GMLFeatureReader extends XMLAdapter {
      * @return
      * @throws XMLStreamException
      */
-    public StreamFeatureCollection getFeatureStream( XMLStreamReaderWrapper xmlStream, CRS crs )
+    public StreamFeatureCollection getFeatureStream( XMLStreamReaderWrapper xmlStream, ICRS crs )
                             throws XMLStreamException {
 
         if ( schema == null ) {
@@ -479,7 +479,7 @@ public class GMLFeatureReader extends XMLAdapter {
      * @throws XMLStreamException
      * @throws UnknownCRSException
      */
-    public Property parseProperty( XMLStreamReaderWrapper xmlStream, PropertyType propDecl, CRS crs, int occurence )
+    public Property parseProperty( XMLStreamReaderWrapper xmlStream, PropertyType propDecl, ICRS crs, int occurence )
                             throws XMLParsingException, XMLStreamException, UnknownCRSException {
 
         if ( LOG.isDebugEnabled() ) {
@@ -541,7 +541,7 @@ public class GMLFeatureReader extends XMLAdapter {
     }
 
     private Property parseGenericGMLObjectProperty( XMLStreamReaderWrapper xmlStream,
-                                                    GenericObjectPropertyType propDecl, CRS crs, boolean isNilled )
+                                                    GenericObjectPropertyType propDecl, ICRS crs, boolean isNilled )
                             throws XMLStreamException, XMLParsingException, NoSuchElementException, UnknownCRSException {
 
         Property property = null;
@@ -571,7 +571,7 @@ public class GMLFeatureReader extends XMLAdapter {
         return property;
     }
 
-    private Property parseFeatureProperty( XMLStreamReaderWrapper xmlStream, FeaturePropertyType propDecl, CRS crs,
+    private Property parseFeatureProperty( XMLStreamReaderWrapper xmlStream, FeaturePropertyType propDecl, ICRS crs,
                                            boolean isNilled )
                             throws NoSuchElementException, XMLStreamException, XMLParsingException, UnknownCRSException {
 
@@ -614,7 +614,7 @@ public class GMLFeatureReader extends XMLAdapter {
         return property;
     }
 
-    private Property parseGeometryProperty( XMLStreamReaderWrapper xmlStream, GeometryPropertyType propDecl, CRS crs,
+    private Property parseGeometryProperty( XMLStreamReaderWrapper xmlStream, GeometryPropertyType propDecl, ICRS crs,
                                             boolean isNilled )
                             throws NoSuchElementException, XMLStreamException, XMLParsingException, UnknownCRSException {
 
@@ -659,7 +659,7 @@ public class GMLFeatureReader extends XMLAdapter {
         return property;
     }
 
-    private Property parseEnvelopeProperty( XMLStreamReaderWrapper xmlStream, EnvelopePropertyType propDecl, CRS crs,
+    private Property parseEnvelopeProperty( XMLStreamReaderWrapper xmlStream, EnvelopePropertyType propDecl, ICRS crs,
                                             boolean isNilled )
                             throws NoSuchElementException, XMLStreamException, XMLParsingException {
 
@@ -712,7 +712,7 @@ public class GMLFeatureReader extends XMLAdapter {
         return new GenericProperty( propDecl, propName, new StringOrRef( string, ref ), isNilled );
     }
 
-    private Property parseArrayProperty( XMLStreamReaderWrapper xmlStream, ArrayPropertyType propDecl, CRS crs,
+    private Property parseArrayProperty( XMLStreamReaderWrapper xmlStream, ArrayPropertyType propDecl, ICRS crs,
                                          boolean isNilled )
                             throws NoSuchElementException, XMLStreamException, XMLParsingException, UnknownCRSException {
 
@@ -729,7 +729,7 @@ public class GMLFeatureReader extends XMLAdapter {
         return new GenericProperty( propDecl, propName, value, isNilled );
     }
 
-    private Property parseCustomProperty( XMLStreamReaderWrapper xmlStream, CustomPropertyType propDecl, CRS crs,
+    private Property parseCustomProperty( XMLStreamReaderWrapper xmlStream, CustomPropertyType propDecl, ICRS crs,
                                           boolean isNilled )
                             throws NoSuchElementException, XMLStreamException, XMLParsingException, UnknownCRSException {
 
@@ -750,7 +750,7 @@ public class GMLFeatureReader extends XMLAdapter {
      * </ul>
      */
     private TypedObjectNode parseGenericXMLElement( XMLStreamReaderWrapper xmlStream, XSElementDeclaration elDecl,
-                                                    CRS crs )
+                                                    ICRS crs )
                             throws NoSuchElementException, XMLStreamException, XMLParsingException, UnknownCRSException {
 
         QName startElName = xmlStream.getName();
@@ -804,7 +804,7 @@ public class GMLFeatureReader extends XMLAdapter {
     }
 
     private GenericXMLElement parseGenericXMLElement( XMLStreamReaderWrapper xmlStream,
-                                                      XSComplexTypeDefinition xsdValueType, CRS crs )
+                                                      XSComplexTypeDefinition xsdValueType, ICRS crs )
                             throws NoSuchElementException, XMLStreamException, XMLParsingException, UnknownCRSException {
 
         LOG.debug( "Parsing generic XML element " + xmlStream.getName() );

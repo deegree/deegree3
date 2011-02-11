@@ -41,7 +41,7 @@ import java.util.List;
 
 import org.deegree.commons.uom.Angle;
 import org.deegree.commons.uom.Length;
-import org.deegree.cs.CRS;
+import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.geometry.composite.CompositeCurve;
 import org.deegree.geometry.composite.CompositeGeometry;
 import org.deegree.geometry.composite.CompositeSolid;
@@ -180,7 +180,7 @@ public class GeometryFactory extends SimpleGeometryFactory {
      *            segments a curve shall be created from
      * @return created {@link Curve}
      */
-    public Curve createCurve( String id, CRS crs, CurveSegment... segments ) {
+    public Curve createCurve( String id, ICRS crs, CurveSegment... segments ) {
         return (Curve) inspect( new DefaultCurve( id, crs, pm, Arrays.asList( segments ) ) );
     }
 
@@ -383,7 +383,7 @@ public class GeometryFactory extends SimpleGeometryFactory {
      *            coordinate reference system, may be null
      * @return created {@link Surface}
      */
-    public Surface createSurface( String id, List<SurfacePatch> patches, CRS crs ) {
+    public Surface createSurface( String id, List<SurfacePatch> patches, ICRS crs ) {
         return (Surface) inspect( new DefaultSurface( id, crs, pm, patches ) );
     }
 
@@ -411,7 +411,7 @@ public class GeometryFactory extends SimpleGeometryFactory {
      *            the <code>Curve</code>s that compose the <code>Ring</code>
      * @return created {@link Ring}
      */
-    public Ring createRing( String id, CRS crs, List<Curve> members ) {
+    public Ring createRing( String id, ICRS crs, List<Curve> members ) {
         return (Ring) inspect( new DefaultRing( id, crs, pm, members ) );
     }
 
@@ -426,7 +426,7 @@ public class GeometryFactory extends SimpleGeometryFactory {
      *            control points
      * @return created {@link Ring}
      */
-    public LinearRing createLinearRing( String id, CRS crs, Points points ) {
+    public LinearRing createLinearRing( String id, ICRS crs, Points points ) {
         return (LinearRing) inspect( new DefaultLinearRing( id, crs, pm, points ) );
     }
 
@@ -443,7 +443,7 @@ public class GeometryFactory extends SimpleGeometryFactory {
      *            set to true, if the orientation of the base curve shall be reversed in the created geometry
      * @return created {@link OrientableCurve}
      */
-    public OrientableCurve createOrientableCurve( String id, CRS crs, Curve baseCurve, boolean isReversed ) {
+    public OrientableCurve createOrientableCurve( String id, ICRS crs, Curve baseCurve, boolean isReversed ) {
         return (OrientableCurve) inspect( new DefaultOrientableCurve( id, crs, baseCurve, isReversed ) );
     }
 
@@ -482,7 +482,8 @@ public class GeometryFactory extends SimpleGeometryFactory {
      *            set to true, if the orientation of the base surface shall be reversed
      * @return created {@link OrientableCurve}
      */
-    public OrientableSurface createOrientableSurface( String id, CRS crs, Surface baseSurface, boolean isReversed ) {
+    public OrientableSurface createOrientableSurface( String id, ICRS crs, Surface baseSurface,
+                                                      boolean isReversed ) {
         return (OrientableSurface) inspect( new DefaultOrientableSurface( id, crs, baseSurface, isReversed ) );
     }
 
@@ -497,7 +498,7 @@ public class GeometryFactory extends SimpleGeometryFactory {
      *            patches that constitute the surface
      * @return created {@link PolyhedralSurface}
      */
-    public PolyhedralSurface createPolyhedralSurface( String id, CRS crs, List<PolygonPatch> memberPatches ) {
+    public PolyhedralSurface createPolyhedralSurface( String id, ICRS crs, List<PolygonPatch> memberPatches ) {
         return (PolyhedralSurface) inspect( new DefaultPolyhedralSurface( id, crs, pm, memberPatches ) );
     }
 
@@ -512,7 +513,7 @@ public class GeometryFactory extends SimpleGeometryFactory {
      *            patches that constitute the surface
      * @return created {@link TriangulatedSurface}
      */
-    public TriangulatedSurface createTriangulatedSurface( String id, CRS crs, List<Triangle> memberPatches ) {
+    public TriangulatedSurface createTriangulatedSurface( String id, ICRS crs, List<Triangle> memberPatches ) {
         return (TriangulatedSurface) inspect( new DefaultTriangulatedSurface( id, crs, pm, memberPatches ) );
     }
 
@@ -530,7 +531,7 @@ public class GeometryFactory extends SimpleGeometryFactory {
      * @param patches
      * @return created {@link Tin}
      */
-    public Tin createTin( String id, CRS crs, List<List<LineStringSegment>> stopLines,
+    public Tin createTin( String id, ICRS crs, List<List<LineStringSegment>> stopLines,
                           List<List<LineStringSegment>> breakLines, Length maxLength, Points controlPoints,
                           List<Triangle> patches ) {
         return (Tin) inspect( new DefaultTin( id, crs, pm, stopLines, breakLines, maxLength, controlPoints, patches ) );
@@ -616,7 +617,7 @@ public class GeometryFactory extends SimpleGeometryFactory {
      *            the interior surfaces of the solid, may be null or empty
      * @return created {@link Solid}
      */
-    public Solid createSolid( String id, CRS crs, Surface exteriorSurface, List<Surface> interiorSurfaces ) {
+    public Solid createSolid( String id, ICRS crs, Surface exteriorSurface, List<Surface> interiorSurfaces ) {
         return (Solid) inspect( new DefaultSolid( id, crs, pm, exteriorSurface, interiorSurfaces ) );
     }
 
@@ -631,7 +632,7 @@ public class GeometryFactory extends SimpleGeometryFactory {
      *            curves that constitute the collection
      * @return created {@link MultiCurve}
      */
-    public MultiCurve createMultiCurve( String id, CRS crs, List<Curve> members ) {
+    public MultiCurve createMultiCurve( String id, ICRS crs, List<Curve> members ) {
         return (MultiCurve) inspect( new DefaultMultiCurve( id, crs, pm, members ) );
     }
 
@@ -646,7 +647,7 @@ public class GeometryFactory extends SimpleGeometryFactory {
      *            surfaces that constitute the collection
      * @return created {@link MultiSurface}
      */
-    public MultiSurface createMultiSurface( String id, CRS crs, List<Surface> members ) {
+    public MultiSurface createMultiSurface( String id, ICRS crs, List<Surface> members ) {
         return (MultiSurface) inspect( new DefaultMultiSurface( id, crs, pm, members ) );
     }
 
@@ -661,7 +662,7 @@ public class GeometryFactory extends SimpleGeometryFactory {
      *            solids that constitute the collection
      * @return created {@link MultiSolid}
      */
-    public MultiSolid createMultiSolid( String id, CRS crs, List<Solid> members ) {
+    public MultiSolid createMultiSolid( String id, ICRS crs, List<Solid> members ) {
         return (MultiSolid) inspect( new DefaultMultiSolid( id, crs, pm, members ) );
     }
 
@@ -677,7 +678,7 @@ public class GeometryFactory extends SimpleGeometryFactory {
      *            curve in the list
      * @return created {@link CompositeCurve}
      */
-    public CompositeCurve createCompositeCurve( String id, CRS crs, List<Curve> members ) {
+    public CompositeCurve createCompositeCurve( String id, ICRS crs, List<Curve> members ) {
         return (CompositeCurve) inspect( new DefaultCompositeCurve( id, crs, pm, members ) );
     }
 
@@ -693,7 +694,7 @@ public class GeometryFactory extends SimpleGeometryFactory {
      *            curves and must, when considered as a whole, form a single surface
      * @return created {@link CompositeSurface}
      */
-    public CompositeSurface createCompositeSurface( String id, CRS crs, List<Surface> memberSurfaces ) {
+    public CompositeSurface createCompositeSurface( String id, ICRS crs, List<Surface> memberSurfaces ) {
         return (CompositeSurface) inspect( new DefaultCompositeSurface( id, crs, pm, memberSurfaces ) );
     }
 
@@ -709,7 +710,7 @@ public class GeometryFactory extends SimpleGeometryFactory {
      *            and which, when considered as a whole, form a single solid
      * @return created {@link CompositeSolid}
      */
-    public CompositeSolid createCompositeSolid( String id, CRS crs, List<Solid> memberSolids ) {
+    public CompositeSolid createCompositeSolid( String id, ICRS crs, List<Solid> memberSolids ) {
         return (CompositeSolid) inspect( new DefaultCompositeSolid( id, crs, pm, memberSolids ) );
     }
 
@@ -724,7 +725,7 @@ public class GeometryFactory extends SimpleGeometryFactory {
      * @return created {@link CompositeGeometry}
      */
     @SuppressWarnings("unchecked")
-    public CompositeGeometry<GeometricPrimitive> createCompositeGeometry( String id, CRS crs,
+    public CompositeGeometry<GeometricPrimitive> createCompositeGeometry( String id, ICRS crs,
                                                                           List<GeometricPrimitive> memberPrimitives ) {
         return (CompositeGeometry<GeometricPrimitive>) inspect( new DefaultCompositeGeometry( id, crs, pm,
                                                                                               memberPrimitives ) );

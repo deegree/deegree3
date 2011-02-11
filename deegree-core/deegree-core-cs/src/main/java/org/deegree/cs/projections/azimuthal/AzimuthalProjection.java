@@ -41,8 +41,8 @@ import static org.deegree.cs.utilities.ProjectionUtils.HALFPI;
 
 import javax.vecmath.Point2d;
 
-import org.deegree.cs.CRSIdentifiable;
-import org.deegree.cs.components.Unit;
+import org.deegree.cs.CRSResource;
+import org.deegree.cs.components.IUnit;
 import org.deegree.cs.projections.Projection;
 
 /**
@@ -105,8 +105,8 @@ public abstract class AzimuthalProjection extends Projection {
      *            an identifiable instance containing information about this projection
      */
     public AzimuthalProjection(  double falseNorthing, double falseEasting,
-                                Point2d naturalOrigin, Unit units, double scale, boolean conformal, boolean equalArea,
-                                CRSIdentifiable id ) {
+                                Point2d naturalOrigin, IUnit units, double scale, boolean conformal, boolean equalArea,
+                                CRSResource id ) {
         super( falseNorthing, falseEasting, naturalOrigin, units, scale, conformal, equalArea, id );
         if ( Math.abs( Math.abs( getProjectionLatitude() ) - HALFPI ) < EPS10 ) {
             mode = getProjectionLatitude() < 0. ? SOUTH_POLE : NORTH_POLE;

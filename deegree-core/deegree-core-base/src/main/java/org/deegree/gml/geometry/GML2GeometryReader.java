@@ -52,8 +52,10 @@ import javax.xml.stream.XMLStreamReader;
 import org.deegree.commons.xml.CommonNamespaces;
 import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;
-import org.deegree.cs.CRS;
+import org.deegree.cs.coordinatesystems.CRS;
+import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.exceptions.UnknownCRSException;
+import org.deegree.cs.persistence.CRSManager;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.GeometryFactory;
@@ -225,7 +227,7 @@ public class GML2GeometryReader implements GMLGeometryReader {
      * @return
      * @throws XMLStreamException
      */
-    public Geometry parse( XMLStreamReaderWrapper xmlStream, CRS defaultCRS )
+    public Geometry parse( XMLStreamReaderWrapper xmlStream, ICRS defaultCRS )
                             throws XMLStreamException {
         Geometry geometry = null;
 
@@ -307,7 +309,7 @@ public class GML2GeometryReader implements GMLGeometryReader {
     }
 
     @Override
-    public Geometry parseGeometryOrEnvelope( XMLStreamReaderWrapper xmlStream, CRS defaultCRS )
+    public Geometry parseGeometryOrEnvelope( XMLStreamReaderWrapper xmlStream, ICRS defaultCRS )
                             throws XMLParsingException, XMLStreamException, UnknownCRSException {
         return parse( xmlStream, defaultCRS );
     }
@@ -328,10 +330,10 @@ public class GML2GeometryReader implements GMLGeometryReader {
      * @return
      * @throws XMLStreamException
      */
-    public MultiPolygon parseMultiPolygon( XMLStreamReaderWrapper xmlStream, CRS defaultCRS )
+    public MultiPolygon parseMultiPolygon( XMLStreamReaderWrapper xmlStream, ICRS defaultCRS )
                             throws XMLStreamException {
         String gid = parseGeometryId( xmlStream );
-        CRS crs = determineActiveCRS( xmlStream, defaultCRS );
+        ICRS crs = determineActiveCRS( xmlStream, defaultCRS );
         xmlStream.nextTag();
 
         List<Polygon> members = new LinkedList<Polygon>();
@@ -355,7 +357,7 @@ public class GML2GeometryReader implements GMLGeometryReader {
         return multiPolygon;
     }
 
-    private Polygon parsePolygonProperty( XMLStreamReaderWrapper xmlStream, CRS crs )
+    private Polygon parsePolygonProperty( XMLStreamReaderWrapper xmlStream, ICRS crs )
                             throws XMLStreamException {
         Polygon polygon = null;
         String href = xmlStream.getAttributeValue( CommonNamespaces.XLNNS, "href" );
@@ -399,10 +401,10 @@ public class GML2GeometryReader implements GMLGeometryReader {
      * @return
      * @throws XMLStreamException
      */
-    public MultiLineString parseMultiLineString( XMLStreamReaderWrapper xmlStream, CRS defaultCRS )
+    public MultiLineString parseMultiLineString( XMLStreamReaderWrapper xmlStream, ICRS defaultCRS )
                             throws XMLStreamException {
         String gid = parseGeometryId( xmlStream );
-        CRS crs = determineActiveCRS( xmlStream, defaultCRS );
+        ICRS crs = determineActiveCRS( xmlStream, defaultCRS );
         xmlStream.nextTag();
 
         List<LineString> members = new LinkedList<LineString>();
@@ -427,7 +429,7 @@ public class GML2GeometryReader implements GMLGeometryReader {
         return multiLineString;
     }
 
-    private LineString parseLineStringProperty( XMLStreamReaderWrapper xmlStream, CRS crs )
+    private LineString parseLineStringProperty( XMLStreamReaderWrapper xmlStream, ICRS crs )
                             throws XMLStreamException {
         LineString lineString = null;
         String href = xmlStream.getAttributeValue( CommonNamespaces.XLNNS, "href" );
@@ -471,10 +473,10 @@ public class GML2GeometryReader implements GMLGeometryReader {
      * @return
      * @throws XMLStreamException
      */
-    public MultiPoint parseMultiPoint( XMLStreamReaderWrapper xmlStream, CRS defaultCRS )
+    public MultiPoint parseMultiPoint( XMLStreamReaderWrapper xmlStream, ICRS defaultCRS )
                             throws XMLStreamException {
         String gid = parseGeometryId( xmlStream );
-        CRS crs = determineActiveCRS( xmlStream, defaultCRS );
+        ICRS crs = determineActiveCRS( xmlStream, defaultCRS );
         xmlStream.nextTag();
 
         List<Point> members = new LinkedList<Point>();
@@ -498,7 +500,7 @@ public class GML2GeometryReader implements GMLGeometryReader {
         return multiPoint;
     }
 
-    private Point parsePointProperty( XMLStreamReaderWrapper xmlStream, CRS crs )
+    private Point parsePointProperty( XMLStreamReaderWrapper xmlStream, ICRS crs )
                             throws XMLStreamException {
         Point point = null;
         String href = xmlStream.getAttributeValue( CommonNamespaces.XLNNS, "href" );
@@ -542,10 +544,10 @@ public class GML2GeometryReader implements GMLGeometryReader {
      * @return
      * @throws XMLStreamException
      */
-    public MultiGeometry<Geometry> parseMultiGeometry( XMLStreamReaderWrapper xmlStream, CRS defaultCRS )
+    public MultiGeometry<Geometry> parseMultiGeometry( XMLStreamReaderWrapper xmlStream, ICRS defaultCRS )
                             throws XMLStreamException {
         String gid = parseGeometryId( xmlStream );
-        CRS crs = determineActiveCRS( xmlStream, defaultCRS );
+        ICRS crs = determineActiveCRS( xmlStream, defaultCRS );
         xmlStream.nextTag();
 
         List<Geometry> members = new LinkedList<Geometry>();
@@ -569,7 +571,7 @@ public class GML2GeometryReader implements GMLGeometryReader {
         return multiGeometry;
     }
 
-    private Geometry parseGeometryProperty( XMLStreamReaderWrapper xmlStream, CRS crs )
+    private Geometry parseGeometryProperty( XMLStreamReaderWrapper xmlStream, ICRS crs )
                             throws XMLStreamException {
         Geometry geometry = null;
         String href = xmlStream.getAttributeValue( CommonNamespaces.XLNNS, "href" );
@@ -608,10 +610,10 @@ public class GML2GeometryReader implements GMLGeometryReader {
      * @return
      * @throws XMLStreamException
      */
-    public Envelope parseEnvelope( XMLStreamReaderWrapper xmlStream, CRS defaultCRS )
+    public Envelope parseEnvelope( XMLStreamReaderWrapper xmlStream, ICRS defaultCRS )
                             throws XMLStreamException {
 
-        CRS crs = determineActiveCRS( xmlStream, defaultCRS );
+        ICRS crs = determineActiveCRS( xmlStream, defaultCRS );
         xmlStream.nextTag();
 
         List<Point> points = null;
@@ -661,10 +663,10 @@ public class GML2GeometryReader implements GMLGeometryReader {
      * @return
      * @throws XMLStreamException
      */
-    public LineString parseLineString( XMLStreamReaderWrapper xmlStream, CRS defaultCRS )
+    public LineString parseLineString( XMLStreamReaderWrapper xmlStream, ICRS defaultCRS )
                             throws XMLStreamException {
         String gid = parseGeometryId( xmlStream );
-        CRS crs = determineActiveCRS( xmlStream, defaultCRS );
+        ICRS crs = determineActiveCRS( xmlStream, defaultCRS );
         xmlStream.nextTag();
 
         List<Point> points = null;
@@ -713,10 +715,10 @@ public class GML2GeometryReader implements GMLGeometryReader {
      * @return
      * @throws XMLStreamException
      */
-    public Polygon parsePolygon( XMLStreamReaderWrapper xmlStream, CRS defaultCRS )
+    public Polygon parsePolygon( XMLStreamReaderWrapper xmlStream, ICRS defaultCRS )
                             throws XMLStreamException {
         String gid = parseGeometryId( xmlStream );
-        CRS crs = determineActiveCRS( xmlStream, defaultCRS );
+        ICRS crs = determineActiveCRS( xmlStream, defaultCRS );
         xmlStream.nextTag();
 
         Ring exteriorRing = null;
@@ -775,10 +777,10 @@ public class GML2GeometryReader implements GMLGeometryReader {
      * @return
      * @throws XMLStreamException
      */
-    public Ring parseLinearRing( XMLStreamReaderWrapper xmlStream, CRS defaultCRS )
+    public Ring parseLinearRing( XMLStreamReaderWrapper xmlStream, ICRS defaultCRS )
                             throws XMLStreamException {
         String gid = parseGeometryId( xmlStream );
-        CRS crs = determineActiveCRS( xmlStream, defaultCRS );
+        ICRS crs = determineActiveCRS( xmlStream, defaultCRS );
         xmlStream.nextTag();
 
         Points points = parseControlPoints( xmlStream, crs );
@@ -792,7 +794,7 @@ public class GML2GeometryReader implements GMLGeometryReader {
         return linearRing;
     }
 
-    private Points parseControlPoints( XMLStreamReaderWrapper xmlStream, CRS crs )
+    private Points parseControlPoints( XMLStreamReaderWrapper xmlStream, ICRS crs )
                             throws XMLStreamException {
         List<Point> controlPoints = null;
 
@@ -834,11 +836,11 @@ public class GML2GeometryReader implements GMLGeometryReader {
      * @return
      * @throws XMLStreamException
      */
-    public Point parsePoint( XMLStreamReaderWrapper xmlStream, CRS defaultCRS )
+    public Point parsePoint( XMLStreamReaderWrapper xmlStream, ICRS defaultCRS )
                             throws XMLStreamException {
         Point point = null;
         String gid = parseGeometryId( xmlStream );
-        CRS crs = determineActiveCRS( xmlStream, defaultCRS );
+        ICRS crs = determineActiveCRS( xmlStream, defaultCRS );
         xmlStream.nextTag();
 
         // must contain one of the following child elements: "gml:pos", "gml:coordinates" or "gml:coord"
@@ -917,7 +919,7 @@ public class GML2GeometryReader implements GMLGeometryReader {
         return new double[] { x, y, z };
     }
 
-    private List<Point> parseCoordinates( XMLStreamReaderWrapper xmlStream, CRS crs )
+    private List<Point> parseCoordinates( XMLStreamReaderWrapper xmlStream, ICRS crs )
                             throws XMLStreamException {
 
         String decimalSeparator = xmlStream.getAttributeValueWDefault( "decimal", "." );
@@ -961,12 +963,12 @@ public class GML2GeometryReader implements GMLGeometryReader {
         return points;
     }
 
-    private CRS determineActiveCRS( XMLStreamReaderWrapper xmlStream, CRS defaultCRS ) {
-        CRS activeCRS = defaultCRS;
+    private ICRS determineActiveCRS( XMLStreamReaderWrapper xmlStream, ICRS defaultCRS ) {
+        ICRS activeCRS = defaultCRS;
         String srsName = xmlStream.getAttributeValue( null, "srsName" );
         if ( !( srsName == null || srsName.length() == 0 ) ) {
             if ( defaultCRS == null || !srsName.equals( defaultCRS.getName() ) ) {
-                activeCRS = new CRS( srsName );
+                activeCRS = CRSManager.getCRSRef( srsName );
             }
         }
         return activeCRS;

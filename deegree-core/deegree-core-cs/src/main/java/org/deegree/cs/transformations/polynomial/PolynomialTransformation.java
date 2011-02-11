@@ -40,8 +40,8 @@ import java.util.List;
 
 import javax.vecmath.Point3d;
 
-import org.deegree.cs.CRSIdentifiable;
-import org.deegree.cs.coordinatesystems.CoordinateSystem;
+import org.deegree.cs.CRSResource;
+import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.exceptions.TransformationException;
 import org.deegree.cs.transformations.Transformation;
 import org.slf4j.Logger;
@@ -75,7 +75,7 @@ public abstract class PolynomialTransformation extends Transformation {
      *            an identifiable instance containing information about this transformation
      */
     public PolynomialTransformation( List<Double> firstParameters, List<Double> secondParameters,
-                                     CoordinateSystem sourceCRS, CoordinateSystem targetCRS, CRSIdentifiable id ) {
+                                     ICRS sourceCRS, ICRS targetCRS, CRSResource id ) {
         super( sourceCRS, targetCRS, id );
         if ( firstParameters == null ) {
             throw new IllegalArgumentException( "The first parameter list my not be null" );

@@ -47,7 +47,7 @@ import javax.xml.stream.XMLStreamException;
 
 import org.deegree.commons.tom.ReferenceResolvingException;
 import org.deegree.commons.xml.XMLParsingException;
-import org.deegree.cs.CRS;
+import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.feature.FeatureCollection;
 import org.deegree.feature.i18n.Messages;
@@ -84,7 +84,7 @@ public class MemoryFeatureStore implements FeatureStore {
 
     private final ApplicationSchema schema;
 
-    private final CRS storageCRS;
+    private final ICRS storageCRS;
 
     private MemoryFeatureStoreTransaction activeTransaction;
 
@@ -103,7 +103,7 @@ public class MemoryFeatureStore implements FeatureStore {
      *            crs used for storing geometries, may be <code>null</code>
      * @throws FeatureStoreException
      */
-    MemoryFeatureStore( ApplicationSchema schema, CRS storageCRS ) throws FeatureStoreException {
+    MemoryFeatureStore( ApplicationSchema schema, ICRS storageCRS ) throws FeatureStoreException {
         this.schema = schema;
         this.storageCRS = storageCRS;
         this.storedFeatures = new StoredFeatures( schema, storageCRS, null );
@@ -297,7 +297,7 @@ public class MemoryFeatureStore implements FeatureStore {
      * 
      * @return the CRS used for storing the geometries, can be <code>null</code> (keeps original CRS)
      */
-    public CRS getStorageCRS() {
+    public ICRS getStorageCRS() {
         return storageCRS;
     }
 }

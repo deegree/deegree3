@@ -37,7 +37,7 @@ package org.deegree.protocol.wfs.getfeature;
 
 import javax.xml.namespace.QName;
 
-import org.deegree.cs.CRS;
+import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.filter.Filter;
 import org.deegree.filter.expression.Function;
 import org.deegree.filter.expression.PropertyName;
@@ -90,7 +90,7 @@ public class FilterQuery extends Query {
      * @param filter
      *            filter constraint, may be null
      */
-    public FilterQuery( String handle, TypeName[] typeNames, String featureVersion, CRS srsName,
+    public FilterQuery( String handle, TypeName[] typeNames, String featureVersion, ICRS srsName,
                         PropertyName[] propertyNames, XLinkPropertyName[] xLinkPropertyNames, Function[] functions,
                         SortProperty[] sortBy, Filter filter ) {
         super( handle, typeNames, featureVersion, srsName, sortBy );
@@ -116,7 +116,7 @@ public class FilterQuery extends Query {
      * @param filter
      *            filter constraint, may be null
      */
-    public FilterQuery( QName typeName, CRS srsName, SortProperty[] sortBy, Filter filter ) {
+    public FilterQuery( QName typeName, ICRS srsName, SortProperty[] sortBy, Filter filter ) {
         this( null, new TypeName[] { new TypeName( typeName, null ) }, null, srsName, null, null, null, sortBy, filter );
     }
 

@@ -41,7 +41,7 @@ import java.util.List;
 
 import javax.vecmath.Point3d;
 
-import org.deegree.cs.CRS;
+import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.geometry.Envelope;
 
 /**
@@ -56,7 +56,7 @@ public class ParameterStore {
 
     private final URL mapURL;
 
-    private final CRS CRS;
+    private final ICRS CRS;
 
     private final String format;
 
@@ -66,7 +66,7 @@ public class ParameterStore {
 
     private final int qor;
 
-    public ParameterStore( URL mapURL, CRS CRS, String format, String layers, Envelope bbox, int qor ) {
+    public ParameterStore( URL mapURL, ICRS CRS, String format, String layers, Envelope bbox, int qor ) {
         this.mapURL = mapURL;
         this.CRS = CRS;
         this.format = format;
@@ -79,7 +79,7 @@ public class ParameterStore {
         return mapURL;
     }
 
-    public CRS getCRS() {
+    public ICRS getCRS() {
         return CRS;
     }
 

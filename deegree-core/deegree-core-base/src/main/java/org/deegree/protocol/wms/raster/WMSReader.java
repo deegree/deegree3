@@ -58,15 +58,14 @@ import org.deegree.coverage.raster.data.container.BufferResult;
 import org.deegree.coverage.raster.data.info.RasterDataInfo;
 import org.deegree.coverage.raster.data.nio.ByteBufferRasterData;
 import org.deegree.coverage.raster.geom.RasterGeoReference;
-import org.deegree.coverage.raster.geom.RasterRect;
 import org.deegree.coverage.raster.geom.RasterGeoReference.OriginLocation;
+import org.deegree.coverage.raster.geom.RasterRect;
 import org.deegree.coverage.raster.io.RasterIOOptions;
 import org.deegree.coverage.raster.io.RasterReader;
 import org.deegree.coverage.raster.utils.RasterFactory;
-import org.deegree.cs.CRS;
 import org.deegree.cs.components.Unit;
-import org.deegree.cs.coordinatesystems.CoordinateSystem;
-import org.deegree.cs.exceptions.UnknownCRSException;
+import org.deegree.cs.coordinatesystems.ICRS;
+import org.deegree.cs.persistence.CRSManager;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.GeometryTransformer;
@@ -153,7 +152,7 @@ public class WMSReader implements RasterReader {
 
     private int timeout;
 
-    private CRS crs;
+    private ICRS crs;
 
     @Override
     public boolean canLoad( File filename ) {
@@ -247,15 +246,15 @@ public class WMSReader implements RasterReader {
             for ( int i = 0; i < coordinateSystems.size() && this.crs == null; ++i ) {
                 String srs = coordinateSystems.get( i );
                 if ( srs != null ) {
-                    this.crs = new CRS( srs );
-                    try {
-                        CoordinateSystem cr = crs.getWrappedCRS();
-                        if ( cr.getAxis()[0].getUnits().canConvert( Unit.METRE ) ) {
-                            break;
-                        }
-                    } catch ( UnknownCRSException e ) {
-                        LOG.debug( "(Stack) Unknown crs: " + e.getLocalizedMessage(), e );
+                    this.crs = CRSManager.getCRSRef( srs );
+                    // try {
+                    ICRS cr = crs;
+                    if ( cr.getAxis()[0].getUnits().canConvert( Unit.METRE ) ) {
+                        break;
                     }
+                    // } catch ( UnknownCRSException e ) {
+                    // LOG.debug( "(Stack) Unknown crs: " + e.getLocalizedMessage(), e );
+                    // }
 
                 }
             }
@@ -265,14 +264,14 @@ public class WMSReader implements RasterReader {
                                    + " does your WMS support the given layers? Unable to use this WMS ( "
                                    + dataLocationId + " as a raster data source." );
         }
-        CoordinateSystem wCRS = null;
-        try {
-            wCRS = crs.getWrappedCRS();
-        } catch ( UnknownCRSException e1 ) {
-            throw new IOException( "The Default coordinate system for layers: " + layers
-                                   + " are not supported by your deegree installation. Unable to use this WMS ( "
-                                   + dataLocationId + " as a raster data source." );
-        }
+        ICRS wCRS = null;
+        // try {
+        wCRS = crs;
+        // } catch ( UnknownCRSException e1 ) {
+        // throw new IOException( "The Default coordinate system for layers: " + layers
+        // + " are not supported by your deegree installation. Unable to use this WMS ( "
+        // + dataLocationId + " as a raster data source." );
+        // }
         // no bbox defined in the given crs
         this.envelope = client.getBoundingBox( crs.getName(), layers );
         if ( this.envelope == null ) {
@@ -297,17 +296,17 @@ public class WMSReader implements RasterReader {
                                    + " does your WMS support the given layers, unable to use this WMS ( "
                                    + dataLocationId + " as a raster data source." );
         }
-        CoordinateSystem realCRS = null;
+        ICRS realCRS = null;
         if ( crs != null ) {
-            try {
-                realCRS = crs.getWrappedCRS();
-            } catch ( UnknownCRSException e ) {
-                if ( LOG.isDebugEnabled() ) {
-                    LOG.debug( "(Stack) Could not get underlying crs: " + e.getLocalizedMessage(), e );
-                } else {
-                    LOG.error( "Could not get underlying crs: " + e.getLocalizedMessage() );
-                }
-            }
+            // try {
+            realCRS = crs;
+            // } catch ( UnknownCRSException e ) {
+            // if ( LOG.isDebugEnabled() ) {
+            // LOG.debug( "(Stack) Could not get underlying crs: " + e.getLocalizedMessage(), e );
+            // } else {
+            // LOG.error( "Could not get underlying crs: " + e.getLocalizedMessage() );
+            // }
+            // }
         }
         double scale = getScale( opts );
         int widthAxis = realCRS == null ? 0 : realCRS.getEasting();
@@ -512,7 +511,7 @@ public class WMSReader implements RasterReader {
     /**
      * @return the default crs
      */
-    public CRS getCRS() {
+    public ICRS getCRS() {
         return crs;
     }
 

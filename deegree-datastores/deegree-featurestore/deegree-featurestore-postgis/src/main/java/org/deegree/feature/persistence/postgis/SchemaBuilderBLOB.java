@@ -81,7 +81,8 @@ import org.deegree.commons.utils.JDBCUtils;
 import org.deegree.commons.utils.Pair;
 import org.deegree.commons.xml.NamespaceBindings;
 import org.deegree.commons.xml.XMLAdapter;
-import org.deegree.cs.CRS;
+import org.deegree.cs.coordinatesystems.ICRS;
+import org.deegree.cs.persistence.CRSManager;
 import org.deegree.feature.persistence.BlobCodec;
 import org.deegree.feature.persistence.FeatureStoreException;
 import org.deegree.feature.persistence.mapping.BBoxTableMapping;
@@ -108,20 +109,20 @@ import org.deegree.feature.persistence.postgis.jaxb.FeatureTypeDecl;
 import org.deegree.feature.persistence.postgis.jaxb.GMLVersionType;
 import org.deegree.feature.persistence.postgis.jaxb.GeometryPropertyDecl;
 import org.deegree.feature.persistence.postgis.jaxb.MeasurePropertyDecl;
-import org.deegree.feature.persistence.postgis.jaxb.SimplePropertyDecl;
 import org.deegree.feature.persistence.postgis.jaxb.PostGISFeatureStoreConfig.BLOBMapping;
 import org.deegree.feature.persistence.postgis.jaxb.PostGISFeatureStoreConfig.BLOBMapping.GMLSchema;
 import org.deegree.feature.persistence.postgis.jaxb.PostGISFeatureStoreConfig.BLOBMapping.NamespaceHint;
+import org.deegree.feature.persistence.postgis.jaxb.SimplePropertyDecl;
 import org.deegree.feature.types.ApplicationSchema;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.feature.types.GenericFeatureType;
 import org.deegree.feature.types.property.CustomPropertyType;
 import org.deegree.feature.types.property.FeaturePropertyType;
 import org.deegree.feature.types.property.GeometryPropertyType;
-import org.deegree.feature.types.property.PropertyType;
-import org.deegree.feature.types.property.SimplePropertyType;
 import org.deegree.feature.types.property.GeometryPropertyType.CoordinateDimension;
 import org.deegree.feature.types.property.GeometryPropertyType.GeometryType;
+import org.deegree.feature.types.property.PropertyType;
+import org.deegree.feature.types.property.SimplePropertyType;
 import org.deegree.filter.expression.PropertyName;
 import org.deegree.filter.sql.DBField;
 import org.deegree.filter.sql.MappingExpression;
@@ -189,7 +190,7 @@ class SchemaBuilderBLOB {
                                                        getHintMap( blobMappingConf.getNamespaceHint() ), schemaURLs );
         }
 
-        CRS storageCRS = new CRS( blobMappingConf.getStorageCRS(), true );
+        ICRS storageCRS = CRSManager.getCRSRef( blobMappingConf.getStorageCRS(), true );
         ApplicationSchema appSchema = decoder.extractFeatureTypeSchema();
         String ftTable = blobMappingConf.getFeatureTypeTable() == null ? "feature_types"
                                                                       : blobMappingConf.getFeatureTypeTable();
@@ -286,7 +287,7 @@ class SchemaBuilderBLOB {
                                                        ftName.getNamespaceURI() );
                     if ( typeName.equals( "geometry" ) ) {
                         String srid = "-1";
-                        CRS crs = new CRS( "EPSG:4326", true );
+                        ICRS crs = CRSManager.getCRSRef( "EPSG:4326", true );
                         CoordinateDimension dim = DIM_2;
                         GeometryPropertyType.GeometryType geomType = GeometryType.GEOMETRY;
                         Connection conn = getConnection();
@@ -302,8 +303,7 @@ class SchemaBuilderBLOB {
                             rs2 = stmt.executeQuery( sql );
                             rs2.next();
                             if ( rs2.getInt( 2 ) != -1 ) {
-                                crs = new CRS( "EPSG:" + rs2.getInt( 2 ), true );
-                                crs.getWrappedCRS();
+                                crs = CRSManager.lookup( "EPSG:" + rs2.getInt( 2 ), true );
                             }
                             if ( rs2.getInt( 1 ) == 3 ) {
                                 dim = DIM_3;
@@ -420,7 +420,7 @@ class SchemaBuilderBLOB {
         } else if ( propDecl instanceof GeometryPropertyDecl ) {
             GeometryPropertyDecl gpt = (GeometryPropertyDecl) propDecl;
             pt = new GeometryPropertyType( ptName, minOccurs, maxOccurs, false, false, null, GEOMETRY, DIM_2, BOTH );
-            m = new GeometryMapping( path, mapping, GEOMETRY, DIM_2, new CRS( "EPSG:4326", true ), "-1", joinedTable );
+            m = new GeometryMapping( path, mapping, GEOMETRY, DIM_2, CRSManager.getCRSRef( "EPSG:4326", true ), "-1", joinedTable );
         } else if ( propDecl instanceof FeaturePropertyDecl ) {
             FeaturePropertyDecl fpt = (FeaturePropertyDecl) propDecl;
             pt = new FeaturePropertyType( ptName, minOccurs, maxOccurs, false, false, null, fpt.getType(), BOTH );
@@ -466,7 +466,7 @@ class SchemaBuilderBLOB {
                                                     null ) );
             } else if ( customMapping instanceof org.deegree.feature.persistence.postgis.jaxb.GeometryMapping ) {
                 org.deegree.feature.persistence.postgis.jaxb.GeometryMapping geometryMapping = (org.deegree.feature.persistence.postgis.jaxb.GeometryMapping) customMapping;
-                mappings.add( new GeometryMapping( propName, mapping, GEOMETRY, DIM_2, new CRS( "EPSG:4326", true ),
+                mappings.add( new GeometryMapping( propName, mapping, GEOMETRY, DIM_2,CRSManager.getCRSRef( "EPSG:4326", true ),
                                                    "-1", null ) );
             } else if ( customMapping instanceof org.deegree.feature.persistence.postgis.jaxb.FeatureMapping ) {
                 org.deegree.feature.persistence.postgis.jaxb.FeatureMapping featureMapping = (org.deegree.feature.persistence.postgis.jaxb.FeatureMapping) customMapping;

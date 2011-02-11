@@ -37,7 +37,7 @@ package org.deegree.geometry.io;
 
 import java.io.Reader;
 
-import org.deegree.cs.CRS;
+import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.standard.AbstractDefaultGeometry;
 import org.deegree.geometry.standard.primitive.DefaultPoint;
@@ -61,9 +61,9 @@ public class WKTReader {
     // TODO remove the need for this object
     private final AbstractDefaultGeometry defaultGeom;
 
-    private CRS crs;
+    private ICRS crs;
 
-    public WKTReader( CRS crs ) {
+    public WKTReader( ICRS crs ) {
         this.crs = crs;
         this.defaultGeom = new DefaultPoint( null, crs, null, new double[] { 0.0, 0.0 } );
     }

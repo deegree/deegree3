@@ -55,7 +55,7 @@ import org.apache.commons.cli.PosixParser;
 import org.deegree.commons.annotations.Tool;
 import org.deegree.commons.tools.CommandUtils;
 import org.deegree.cs.CRSCodeType;
-import org.deegree.cs.coordinatesystems.CoordinateSystem;
+import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.cs.io.deegree.CRSExporterBase;
 import org.deegree.cs.persistence.CRSManager;
@@ -91,7 +91,7 @@ public class CRSInfo {
      * @return <code>true</code> if the the passed SRS is available in deegree
      */
     private boolean isAvailable( String srs ) {
-        CoordinateSystem crs = null;
+        ICRS crs = null;
         try {
             crs = CRSManager.lookup( srs );
         } catch ( UnknownCRSException e ) {
@@ -100,8 +100,8 @@ public class CRSInfo {
         return crs != null;
     }
 
-    private List<CoordinateSystem> getAllCoordinateSystems() {
-        List<CoordinateSystem> crss = new ArrayList<CoordinateSystem>();
+    private List<ICRS> getAllCoordinateSystems() {
+        List<ICRS> crss = new ArrayList<ICRS>();
         Collection<CRSStore> all = CRSManager.getAll();
         for ( CRSStore crsStore : all ) {
             crss.addAll( crsStore.getAvailableCRSs() );
@@ -125,9 +125,9 @@ public class CRSInfo {
 
         List<String> allCRSs = new ArrayList<String>();
         if ( verify ) {
-            List<CoordinateSystem> avCRS = getAllCoordinateSystems();
+            List<ICRS> avCRS = getAllCoordinateSystems();
             if ( avCRS != null && avCRS.size() > 0 ) {
-                for ( CoordinateSystem crs : avCRS ) {
+                for ( ICRS crs : avCRS ) {
                     CRSCodeType[] ids = crs.getCodes();
                     if ( ids != null ) {
                         StringBuilder sb = new StringBuilder( 300 );

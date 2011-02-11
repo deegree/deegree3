@@ -45,7 +45,7 @@ import org.deegree.commons.xml.NamespaceBindings;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.XMLProcessingException;
 import org.deegree.commons.xml.XPath;
-import org.deegree.cs.CRS;
+import org.deegree.cs.persistence.CRSManager;
 import org.deegree.geometry.GeometryFactory;
 import org.deegree.geometry.primitive.Point;
 import org.deegree.observation.model.Procedure;
@@ -152,7 +152,7 @@ public class SOSBuilder {
                 GeometryFactory geometryFactory = new GeometryFactory();
                 Point location = geometryFactory.createPoint( null, Double.parseDouble( locationType.getLon() ),
                                                               Double.parseDouble( locationType.getLat() ),
-                                                              new CRS( srsName ) );
+                                                              CRSManager.getCRSRef( srsName ) );
 
                 String foiHref = proc.getFeatureOfInterest().getHref();
                 String sensorId = proc.getSensor().getId();

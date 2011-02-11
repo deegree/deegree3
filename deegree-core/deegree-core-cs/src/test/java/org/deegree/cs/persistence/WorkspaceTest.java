@@ -29,7 +29,7 @@
  Prof. Dr. Klaus Greve
  Postfach 1147, 53001 Bonn
  Germany
- http://www.geographie.uni-bonn.de/deegree/
+ http://ICoordinateSystem.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
@@ -44,7 +44,7 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Collection;
 
-import org.deegree.cs.coordinatesystems.CoordinateSystem;
+import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.cs.transformations.TransformationFactory.DSTransform;
 import org.junit.After;
@@ -107,7 +107,7 @@ public class WorkspaceTest {
     @Test
     public void testLookupKnownCRSFromGML()
                             throws UnknownCRSException {
-        CoordinateSystem crs = CRSManager.lookup( STORE_GML1, CRS_FROM_GML1 );
+        ICRS crs = CRSManager.lookup( STORE_GML1, CRS_FROM_GML1 );
         assertNotNull( crs );
     }
 
@@ -120,7 +120,7 @@ public class WorkspaceTest {
     @Test
     public void testLookupKnownCRSFromDeegree()
                             throws UnknownCRSException {
-        CoordinateSystem crs = CRSManager.lookup( STORE_DEEGREE, CRS_FROM_DEEGREE );
+        ICRS crs = CRSManager.lookup( STORE_DEEGREE, CRS_FROM_DEEGREE );
         assertNotNull( crs );
     }
 
@@ -133,9 +133,9 @@ public class WorkspaceTest {
     @Test
     public void testLookupCRSFromAll()
                             throws UnknownCRSException {
-        CoordinateSystem crsDeegree = CRSManager.lookup( CRS_FROM_DEEGREE );
+        ICRS crsDeegree = CRSManager.lookup( CRS_FROM_DEEGREE );
         assertNotNull( crsDeegree );
-        CoordinateSystem crsGML1 = CRSManager.lookup( CRS_FROM_GML1 );
+        ICRS crsGML1 = CRSManager.lookup( CRS_FROM_GML1 );
         assertNotNull( crsGML1 );
     }
 }

@@ -42,11 +42,11 @@ import org.deegree.coverage.ResolutionInfo;
 import org.deegree.coverage.raster.data.info.BandType;
 import org.deegree.coverage.raster.data.info.RasterDataInfo;
 import org.deegree.coverage.raster.geom.RasterGeoReference;
-import org.deegree.coverage.raster.geom.RasterRect;
 import org.deegree.coverage.raster.geom.RasterGeoReference.OriginLocation;
+import org.deegree.coverage.raster.geom.RasterRect;
 import org.deegree.coverage.raster.interpolation.InterpolationType;
 import org.deegree.coverage.raster.interpolation.RasterInterpolater;
-import org.deegree.cs.CRS;
+import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.exceptions.TransformationException;
 import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.geometry.Envelope;
@@ -316,7 +316,7 @@ public abstract class AbstractRaster extends AbstractCoverage {
             return null;
         }
         // Try the incoming envelope
-        CRS targetCRS = spatialExtent.getCoordinateSystem();
+        ICRS targetCRS = spatialExtent.getCoordinateSystem();
         if ( this.getCoordinateSystem() == null ) {
             // take this crs
             targetCRS = getCoordinateSystem();
@@ -337,7 +337,7 @@ public abstract class AbstractRaster extends AbstractCoverage {
         }
         RasterRect rect = null;
         try {
-            GeometryTransformer gt = new GeometryTransformer( getCoordinateSystem().getWrappedCRS() );
+            GeometryTransformer gt = new GeometryTransformer( getCoordinateSystem() );
             Envelope inLocalCRS = gt.transform( spatialExtent ).getEnvelope();
             RasterGeoReference nGeoRef = resolution.createGeoReference( getRasterReference().getOriginLocation(),
                                                                         inLocalCRS );

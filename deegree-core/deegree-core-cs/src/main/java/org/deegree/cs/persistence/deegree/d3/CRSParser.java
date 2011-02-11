@@ -36,20 +36,20 @@
  E-Mail: greve@giub.uni-bonn.de
  ---------------------------------------------------------------------------*/
 
-package org.deegree.cs.persistence.deegree;
+package org.deegree.cs.persistence.deegree.d3;
 
 import java.util.List;
 
 import org.deegree.cs.CRSCodeType;
 import org.deegree.cs.CRSIdentifiable;
-import org.deegree.cs.components.Ellipsoid;
-import org.deegree.cs.components.GeodeticDatum;
-import org.deegree.cs.components.PrimeMeridian;
-import org.deegree.cs.configuration.resources.CRSResource;
-import org.deegree.cs.coordinatesystems.CoordinateSystem;
+import org.deegree.cs.CRSResource;
+import org.deegree.cs.components.IEllipsoid;
+import org.deegree.cs.components.IGeodeticDatum;
+import org.deegree.cs.components.IPrimeMeridian;
 import org.deegree.cs.coordinatesystems.GeographicCRS;
+import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.exceptions.CRSConfigurationException;
-import org.deegree.cs.projections.Projection;
+import org.deegree.cs.projections.IProjection;
 import org.deegree.cs.transformations.Transformation;
 
 /**
@@ -61,7 +61,7 @@ import org.deegree.cs.transformations.Transformation;
  * @param <T>
  * 
  */
-public interface CRSParser<T> extends CRSResource<T> {
+public interface CRSParser<T> extends org.deegree.cs.configuration.resources.CRSResource<T> {
 
     /**
      * @param crsDefintion
@@ -71,7 +71,7 @@ public interface CRSParser<T> extends CRSResource<T> {
      * @throws CRSConfigurationException
      *             if something went wrong while constructing the crs.
      */
-    public abstract CoordinateSystem parseCoordinateSystem( T crsDefintion )
+    public abstract ICRS parseCoordinateSystem( T crsDefintion )
                             throws CRSConfigurationException;
 
     /**
@@ -96,7 +96,7 @@ public interface CRSParser<T> extends CRSResource<T> {
      * @return the
      * @throws CRSConfigurationException
      */
-    public abstract GeodeticDatum getGeodeticDatumForId( String datumID )
+    public abstract IGeodeticDatum getGeodeticDatumForId( String datumID )
                             throws CRSConfigurationException;
 
     /**
@@ -106,7 +106,7 @@ public interface CRSParser<T> extends CRSResource<T> {
      * @throws CRSConfigurationException
      *             if the longitude was not set or the units could not be parsed.
      */
-    public abstract PrimeMeridian getPrimeMeridianForId( String meridianID )
+    public abstract IPrimeMeridian getPrimeMeridianForId( String meridianID )
                             throws CRSConfigurationException;
 
     /**
@@ -118,7 +118,7 @@ public interface CRSParser<T> extends CRSResource<T> {
      * @throws CRSConfigurationException
      *             if something went wrong.
      */
-    public abstract Ellipsoid getEllipsoidForId( String ellipsoidID )
+    public abstract IEllipsoid getEllipsoidForId( String ellipsoidID )
                             throws CRSConfigurationException;
 
     /**
@@ -140,7 +140,7 @@ public interface CRSParser<T> extends CRSResource<T> {
      *            to look for.
      * @return the instantiated {@link CRSIdentifiable} or <code>null</code> if it could not be parsed.
      */
-    public abstract CRSIdentifiable parseIdentifiableObject( String id );
+    public abstract CRSResource parseIdentifiableObject( String id );
 
     /**
      * 
@@ -153,8 +153,10 @@ public interface CRSParser<T> extends CRSResource<T> {
     /**
      * @param projectionId
      *            of the projection
+     * @param underlyingCRS
+     *            of the projection
      * @return the projection denoted by the given id, or <code>null</code> if no such projection could be loaded.
      */
-    public abstract Projection getProjectionForId( String projectionId );
+    public abstract IProjection getProjectionForId( String projectionId, GeographicCRS underlyingCRS );
 
 }

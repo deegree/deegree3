@@ -45,7 +45,7 @@ import static oracle.spatial.geometry.JGeometry.GTYPE_POLYGON;
 import oracle.spatial.geometry.JGeometry;
 import oracle.spatial.util.WKT;
 
-import org.deegree.cs.CRS;
+import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.GeometryFactory;
 import org.deegree.geometry.io.WKTReader;
@@ -72,7 +72,7 @@ public class JGeometryAdapter {
 
     private static GeometryFactory fac = new GeometryFactory();
 
-    private final CRS deegreeCRS;
+    private final ICRS deegreeCRS;
 
     private final int oracleSRID;
 
@@ -84,7 +84,7 @@ public class JGeometryAdapter {
      * @param deegreeCRS
      * @param oracleSRID
      */
-    public JGeometryAdapter( CRS deegreeCRS, int oracleSRID ) {
+    public JGeometryAdapter( ICRS deegreeCRS, int oracleSRID ) {
         this.deegreeCRS = deegreeCRS;
         this.oracleSRID = oracleSRID;
         this.deegreeWktAdapter = new WKTReader( deegreeCRS );

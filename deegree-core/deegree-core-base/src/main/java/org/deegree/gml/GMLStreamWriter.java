@@ -50,7 +50,7 @@ import java.util.Map;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
-import org.deegree.cs.CRS;
+import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.exceptions.TransformationException;
 import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.feature.Feature;
@@ -91,7 +91,7 @@ public class GMLStreamWriter {
 
     private String remoteXLinkTemplate;
 
-    private CRS crs;
+    private ICRS crs;
 
     private CoordinateFormatter formatter;
 
@@ -138,7 +138,7 @@ public class GMLStreamWriter {
      * @param crs
      *            crs to be used for the geometries, can be <code>null</code> (keeps the original CRS)
      */
-    public void setOutputCRS( CRS crs ) {
+    public void setOutputCRS( ICRS crs ) {
         this.crs = crs;
     }
 

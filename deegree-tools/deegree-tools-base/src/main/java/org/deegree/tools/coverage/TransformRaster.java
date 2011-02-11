@@ -46,6 +46,7 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.PosixParser;
 import org.deegree.commons.annotations.Tool;
+import org.deegree.commons.tools.CommandUtils;
 import org.deegree.coverage.raster.AbstractRaster;
 import org.deegree.coverage.raster.RasterTransformer;
 import org.deegree.coverage.raster.TiledRaster;
@@ -54,8 +55,7 @@ import org.deegree.coverage.raster.geom.RasterGeoReference.OriginLocation;
 import org.deegree.coverage.raster.interpolation.InterpolationType;
 import org.deegree.coverage.raster.io.RasterIOOptions;
 import org.deegree.coverage.raster.utils.RasterFactory;
-import org.deegree.cs.CRS;
-import org.deegree.commons.tools.CommandUtils;
+import org.deegree.cs.persistence.CRSManager;
 
 /**
  * This is a command line tool to transform raster files between coordinate systems. Multiple input files will be
@@ -152,7 +152,7 @@ public class TransformRaster {
             }
             AbstractRaster srcRaster = new TiledRaster( tileContainer );
             RasterTransformer transf = new RasterTransformer( dstCRS );
-            srcRaster.setCoordinateSystem( new CRS( srcCRS ) );
+            srcRaster.setCoordinateSystem( CRSManager.getCRSRef( srcCRS ) );
             AbstractRaster result = transf.transform( srcRaster, type );
 
             RasterFactory.saveRasterToFile( result, new File( args[args.length - 1] ) );

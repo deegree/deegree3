@@ -84,8 +84,7 @@ import org.deegree.commons.annotations.LoggingNotes;
 import org.deegree.commons.tom.ows.Version;
 import org.deegree.commons.utils.DoublePair;
 import org.deegree.commons.utils.Pair;
-import org.deegree.cs.CRS;
-import org.deegree.cs.exceptions.UnknownCRSException;
+import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.filter.Filter;
 import org.deegree.filter.Operator;
 import org.deegree.filter.OperatorFilter;
@@ -124,7 +123,7 @@ public class GetMap {
 
     private static GeometryFactory fac = new GeometryFactory();
 
-    private CRS crs;
+    private ICRS crs;
 
     private Envelope bbox;
 
@@ -171,15 +170,15 @@ public class GetMap {
         if ( version.equals( VERSION_130 ) ) {
             parse130( map, service );
         }
-        try {
-            scale = Utils.calcScaleWMS130( width, height, bbox, crs.getWrappedCRS() );
+//        try {
+            scale = Utils.calcScaleWMS130( width, height, bbox, crs );
             LOG.debug( "GetMap request has a WMS 1.3.0/SLD scale of '{}'.", scale );
             resolution = max( bbox.getSpan0() / width, bbox.getSpan1() / height );
             LOG.debug( "Resolution per pixel is {}.", resolution );
-        } catch ( UnknownCRSException e ) {
-            LOG.trace( "Stack trace:", e );
-            LOG.warn( "The scale of a GetMap request could not be calculated: '{}'.", e.getLocalizedMessage() );
-        }
+        // } catch ( UnknownCRSException e ) {
+        // LOG.trace( "Stack trace:", e );
+        // LOG.warn( "The scale of a GetMap request could not be calculated: '{}'.", e.getLocalizedMessage() );
+        // }
     }
 
     /**
@@ -202,15 +201,15 @@ public class GetMap {
         format = "image/png";
         transparent = false;
         handleVSPs( service, new HashMap<String, String>() );
-        try {
-            scale = Utils.calcScaleWMS130( width, height, bbox, crs.getWrappedCRS() );
+//        try {
+            scale = Utils.calcScaleWMS130( width, height, bbox, crs );
             LOG.debug( "GetMap request has a WMS 1.3.0/SLD scale of '{}'.", scale );
             resolution = max( bbox.getSpan0() / width, bbox.getSpan1() / height );
             LOG.debug( "Resolution per pixel is {}.", resolution );
-        } catch ( UnknownCRSException e ) {
-            LOG.trace( "Stack trace:", e );
-            LOG.warn( "The scale of a GetMap request could not be calculated: '{}'.", e.getLocalizedMessage() );
-        }
+        // } catch ( UnknownCRSException e ) {
+        // LOG.trace( "Stack trace:", e );
+        // LOG.warn( "The scale of a GetMap request could not be calculated: '{}'.", e.getLocalizedMessage() );
+        // }
     }
 
     private void parse111( Map<String, String> map, MapService service )
@@ -631,7 +630,7 @@ public class GetMap {
     /**
      * @return the coordinate system of the bbox
      */
-    public CRS getCoordinateSystem() {
+    public ICRS getCoordinateSystem() {
         return crs;
     }
 
@@ -694,7 +693,7 @@ public class GetMap {
     /**
      * @param crs
      */
-    public void setCoordinateSystem( CRS crs ) {
+    public void setCoordinateSystem( ICRS crs ) {
         this.crs = crs;
         bbox = fac.createEnvelope( bbox.getMin().getAsArray(), bbox.getMax().getAsArray(), crs );
     }

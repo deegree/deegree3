@@ -40,7 +40,7 @@ import java.util.List;
 
 import org.deegree.cs.CRSCodeType;
 import org.deegree.cs.configuration.resources.XMLResource;
-import org.deegree.cs.coordinatesystems.CoordinateSystem;
+import org.deegree.cs.coordinatesystems.ICRS;
 
 /**
  * 
@@ -61,6 +61,6 @@ public interface GMLResource extends XMLResource {
     /**
      * @return the list of coordinate systems.
      */
-    public List<CoordinateSystem> getAvailableCRSs();
+    public List<ICRS> getAvailableCRSs();
 
 }

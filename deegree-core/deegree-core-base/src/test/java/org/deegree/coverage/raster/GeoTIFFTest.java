@@ -49,9 +49,8 @@ import org.deegree.coverage.raster.geom.RasterGeoReference;
 import org.deegree.coverage.raster.geom.RasterGeoReference.OriginLocation;
 import org.deegree.coverage.raster.io.RasterIOOptions;
 import org.deegree.coverage.raster.utils.RasterFactory;
-import org.deegree.cs.CRS;
 import org.deegree.cs.CRSCodeType;
-import org.deegree.cs.coordinatesystems.CoordinateSystem;
+import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.geometry.Envelope;
 import org.junit.BeforeClass;
@@ -97,9 +96,9 @@ public class GeoTIFFTest {
                             throws UnknownCRSException {
         Envelope env = raster.getEnvelope();
         Assert.assertNotNull( env );
-        CRS crs = env.getCoordinateSystem();
+        ICRS crs = env.getCoordinateSystem();
         Assert.assertNotNull( crs );
-        CoordinateSystem coordSys = crs.getWrappedCRS();
+        ICRS coordSys = crs;
         assertNotNull( coordSys );
         CRSCodeType code = coordSys.getCode();
         assertNotNull( code );
@@ -127,7 +126,7 @@ public class GeoTIFFTest {
         Assert.assertEquals( 39.10223806, renvMin[1], delta );
         Assert.assertEquals( -110.35882409, renvMax[0], delta );
         Assert.assertEquals( 41.54129761, renvMax[1], delta );
-        Assert.assertTrue( raster.getEnvelope().getCoordinateSystem().getWrappedCRS().hasId( "epsg:4326", true, true ) );
+        Assert.assertTrue( raster.getEnvelope().getCoordinateSystem().hasId( "epsg:4326", true, true ) );
     }
 
     /**

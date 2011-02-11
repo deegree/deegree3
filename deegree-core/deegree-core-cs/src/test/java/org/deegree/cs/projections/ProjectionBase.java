@@ -45,6 +45,7 @@ import org.deegree.cs.CRSCodeType;
 import org.deegree.cs.components.Axis;
 import org.deegree.cs.components.Ellipsoid;
 import org.deegree.cs.components.GeodeticDatum;
+import org.deegree.cs.components.IUnit;
 import org.deegree.cs.components.Unit;
 import org.deegree.cs.coordinatesystems.GeographicCRS;
 import org.deegree.cs.exceptions.ProjectionException;
@@ -172,7 +173,7 @@ public class ProjectionBase {
         assertNotNull( origPoint );
         assertNotNull( referencePoint );
         assertNotNull( forwardEpsilons );
-        Unit unitToUse = projection.getUnits();
+        IUnit unitToUse = projection.getUnits();
 
         // Point point = GeometryFactory.createPoint( origPoint.x, origPoint.y, origPoint.z, sourceCRS );
         Point2d result = null;

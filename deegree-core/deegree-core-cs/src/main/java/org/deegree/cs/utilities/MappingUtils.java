@@ -46,7 +46,7 @@ import java.util.List;
 import java.util.Queue;
 
 import org.deegree.commons.annotations.LoggingNotes;
-import org.deegree.cs.coordinatesystems.CoordinateSystem;
+import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.exceptions.TransformationException;
 import org.deegree.cs.transformations.Transformation;
 import org.deegree.cs.transformations.TransformationFactory;
@@ -279,7 +279,7 @@ public class MappingUtils {
      * @param chain
      *            (stack) containing the transformations found recursively.
      */
-    private static void obtainChain( Transformation ct, CoordinateSystem sourceCRS, CoordinateSystem targetCRS,
+    private static void obtainChain( Transformation ct, ICRS sourceCRS, ICRS targetCRS,
                                      Deque<Transformation> chain ) {
         // if the source and target are the same
         if ( sourceCRS.equals( targetCRS ) ) {
@@ -287,7 +287,7 @@ public class MappingUtils {
         }
         if ( "Concatenated-Transform".equals( ct.getImplementationName() ) ) {
             obtainChain( ( (ConcatenatedTransform) ct ).getFirstTransform(), sourceCRS, targetCRS, chain );
-            CoordinateSystem nSource = sourceCRS;
+            ICRS nSource = sourceCRS;
             if ( !chain.isEmpty() ) {
                 nSource = chain.peekLast().getTargetCRS();
             }

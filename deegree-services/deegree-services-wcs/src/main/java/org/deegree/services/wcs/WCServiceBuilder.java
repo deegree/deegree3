@@ -52,18 +52,18 @@ import org.deegree.coverage.AbstractCoverage;
 import org.deegree.coverage.persistence.CoverageBuilderManager;
 import org.deegree.coverage.rangeset.AxisSubset;
 import org.deegree.coverage.rangeset.Interval;
+import org.deegree.coverage.rangeset.Interval.Closure;
 import org.deegree.coverage.rangeset.RangeSet;
 import org.deegree.coverage.rangeset.RangeSetBuilder;
 import org.deegree.coverage.rangeset.SingleValue;
-import org.deegree.coverage.rangeset.Interval.Closure;
 import org.deegree.coverage.raster.AbstractRaster;
 import org.deegree.coverage.raster.MultiResolutionRaster;
 import org.deegree.coverage.raster.data.container.RasterDataContainerFactory;
 import org.deegree.coverage.raster.data.container.RasterDataContainerFactory.LoadingPolicy;
 import org.deegree.coverage.raster.interpolation.InterpolationType;
 import org.deegree.coverage.raster.utils.RasterFactory;
-import org.deegree.cs.CRS;
 import org.deegree.cs.exceptions.TransformationException;
+import org.deegree.cs.persistence.CRSManager;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.utils.GeometryUtils;
 import org.deegree.services.exception.ServiceInitException;
@@ -71,11 +71,11 @@ import org.deegree.services.jaxb.wcs.AxisValue;
 import org.deegree.services.jaxb.wcs.Interpolation;
 import org.deegree.services.jaxb.wcs.IntervalType;
 import org.deegree.services.jaxb.wcs.RangeSetType;
+import org.deegree.services.jaxb.wcs.RangeSetType.AxisDescription;
 import org.deegree.services.jaxb.wcs.ServiceConfiguration;
+import org.deegree.services.jaxb.wcs.ServiceConfiguration.Coverage;
 import org.deegree.services.jaxb.wcs.SupportOptions;
 import org.deegree.services.jaxb.wcs.TypedType;
-import org.deegree.services.jaxb.wcs.RangeSetType.AxisDescription;
-import org.deegree.services.jaxb.wcs.ServiceConfiguration.Coverage;
 import org.deegree.services.wcs.coverages.MultiResolutionCoverage;
 import org.deegree.services.wcs.coverages.SimpleCoverage;
 import org.deegree.services.wcs.coverages.WCSCoverage;
@@ -185,8 +185,8 @@ public class WCServiceBuilder {
                 Envelope origEnv = result.getEnvelope();
                 for ( String crs : srs ) {
                     try {
-                        if ( !origEnv.getCoordinateSystem().equals( new CRS( crs ) ) ) {
-                            Envelope env = GeometryUtils.createConvertedEnvelope( origEnv, new CRS( crs ) );
+                        if ( !origEnv.getCoordinateSystem().equals( CRSManager.getCRSRef( crs ) ) ) {
+                            Envelope env = GeometryUtils.createConvertedEnvelope( origEnv, CRSManager.getCRSRef( crs ) );
                             result.responseEnvelopes.add( env );
                         }
                     } catch ( TransformationException e ) {

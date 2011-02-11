@@ -49,7 +49,8 @@ import java.util.List;
 import org.deegree.commons.index.PositionableModel;
 import org.deegree.commons.utils.Pair;
 import org.deegree.commons.utils.memory.AllocatedHeapMemory;
-import org.deegree.cs.CRS;
+import org.deegree.cs.coordinatesystems.ICRS;
+import org.deegree.cs.persistence.CRSManager;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryFactory;
 import org.deegree.rendering.r3d.opengl.rendering.model.geometry.WorldRenderableObject;
@@ -122,7 +123,7 @@ class ModelFile<P extends PositionableModel> {
             double[] min = new double[] { bb.getDouble(), bb.getDouble(), bb.getDouble() };
             double[] max = new double[] { bb.getDouble(), bb.getDouble(), bb.getDouble() };
             String crs = ObjectSerializer.readString( bb );
-            result = new GeometryFactory().createEnvelope( min, max, new CRS( crs ) );
+            result = new GeometryFactory().createEnvelope( min, max, CRSManager.getCRSRef( crs ) );
         }
         return result;
     }
@@ -256,7 +257,7 @@ class ModelFile<P extends PositionableModel> {
         }
     }
 
-    List<DataObjectInfo<P>> readAllFromFile( CRS baseCRS )
+    List<DataObjectInfo<P>> readAllFromFile( ICRS baseCRS )
                             throws IOException {
         List<DataObjectInfo<P>> result = new ArrayList<DataObjectInfo<P>>();
 

@@ -76,8 +76,9 @@ import org.deegree.commons.xml.CommonNamespaces;
 import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.commons.xml.stax.StAXParsingHelper;
 import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;
-import org.deegree.cs.CRS;
+import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.exceptions.UnknownCRSException;
+import org.deegree.cs.persistence.CRSManager;
 import org.deegree.feature.Feature;
 import org.deegree.feature.FeatureCollection;
 import org.deegree.feature.GenericFeatureCollection;
@@ -344,12 +345,12 @@ class TransactionHandler {
             throw new OWSException( msg, NO_APPLICABLE_CODE );
         }
 
-        CRS defaultCRS = new CRS( insert.getSRSName() );
+        ICRS defaultCRS = null;
         if ( insert.getSRSName() != null ) {
             try {
-                defaultCRS.getWrappedCRS();
+                defaultCRS = CRSManager.lookup( insert.getSRSName() );
             } catch ( UnknownCRSException e ) {
-                String msg = "Cannot perform insert. Specified srsName '" + defaultCRS.getName()
+                String msg = "Cannot perform insert. Specified srsName '" + insert.getSRSName()
                              + "' is not supported by this WFS.";
                 throw new OWSException( msg, OWSException.INVALID_PARAMETER_VALUE, "srsName" );
             }
@@ -387,7 +388,7 @@ class TransactionHandler {
     }
 
     private FeatureCollection parseFeaturesOrCollection( XMLStreamReader xmlStream, GMLVersion inputFormat,
-                                                         CRS defaultCRS )
+                                                         ICRS defaultCRS )
                             throws XMLStreamException, XMLParsingException, UnknownCRSException,
                             ReferenceResolvingException {
 
@@ -548,7 +549,7 @@ class TransactionHandler {
                     gmlReader.setGeometryFactory( geomFac );
                     GMLFeatureReader featureReader = gmlReader.getFeatureReader();
 
-                    CRS crs = master.getDefaultQueryCrs();
+                    ICRS crs = master.getDefaultQueryCrs();
                     Property prop = featureReader.parseProperty( new XMLStreamReaderWrapper( xmlStream, null ), pt,
                                                                  crs, 1 );
                     newProperties.add( prop );

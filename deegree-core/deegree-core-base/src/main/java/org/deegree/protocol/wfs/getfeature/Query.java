@@ -35,7 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.protocol.wfs.getfeature;
 
-import org.deegree.cs.CRS;
+import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.filter.sort.SortProperty;
 
 /**
@@ -56,7 +56,7 @@ public abstract class Query {
 
     private final String featureVersion;
 
-    private final CRS srsName;
+    private final ICRS srsName;
 
     private final SortProperty[] sortBy;
 
@@ -75,7 +75,7 @@ public abstract class Query {
      *            properties whose values should be used to order the set of feature instances that satisfy the query,
      *            may be null
      */
-    public Query( String handle, TypeName[] typeNames, String featureVersion, CRS srsName, 
+    public Query( String handle, TypeName[] typeNames, String featureVersion, ICRS srsName, 
                   SortProperty[] sortBy ) {
         this.handle = handle;
         this.typeNames = typeNames;
@@ -116,7 +116,7 @@ public abstract class Query {
      * 
      * @return the SRS that should be used for returned feature geometries, may be null
      */
-    public CRS getSrsName() {
+    public ICRS getSrsName() {
         return srsName;
     }
 

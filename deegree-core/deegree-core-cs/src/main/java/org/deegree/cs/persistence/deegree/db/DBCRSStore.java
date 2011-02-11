@@ -38,8 +38,8 @@ package org.deegree.cs.persistence.deegree.db;
 import java.util.List;
 
 import org.deegree.cs.CRSCodeType;
-import org.deegree.cs.CRSIdentifiable;
-import org.deegree.cs.coordinatesystems.CoordinateSystem;
+import org.deegree.cs.CRSResource;
+import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.exceptions.CRSConfigurationException;
 import org.deegree.cs.persistence.AbstractCRSStore;
 import org.deegree.cs.transformations.Transformation;
@@ -55,7 +55,7 @@ import org.deegree.cs.transformations.TransformationFactory.DSTransform;
  * 
  * @version $Revision: $, $Date: $
  */
-public class DBCRSStore extends AbstractCRSStore<String> {
+public class DBCRSStore extends AbstractCRSStore {
 
     public DBCRSStore( DSTransform prefTransformType ) {
         super( prefTransformType );
@@ -69,21 +69,7 @@ public class DBCRSStore extends AbstractCRSStore<String> {
     }
 
     @Override
-    public Transformation getTransformation( CoordinateSystem sourceCRS, CoordinateSystem targetCRS )
-                            throws CRSConfigurationException {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    public CRSIdentifiable getIdentifiable( CRSCodeType id )
-                            throws CRSConfigurationException {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    public List<CoordinateSystem> getAvailableCRSs()
+    public List<ICRS> getAvailableCRSs()
                             throws CRSConfigurationException {
         // TODO Auto-generated method stub
         return null;
@@ -97,14 +83,27 @@ public class DBCRSStore extends AbstractCRSStore<String> {
     }
 
     @Override
-    protected CoordinateSystem parseCoordinateSystem( String crsDefinition )
+    public ICRS getCoordinateSystem( String id ) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public Transformation getDirectTransformation( ICRS sourceCRS, ICRS targetCRS )
                             throws CRSConfigurationException {
         // TODO Auto-generated method stub
         return null;
     }
 
     @Override
-    public Transformation parseTransformation( String transformationDefinition )
+    public Transformation getDirectTransformation( String id )
+                            throws CRSConfigurationException {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public CRSResource getCRSResource( CRSCodeType id )
                             throws CRSConfigurationException {
         // TODO Auto-generated method stub
         return null;

@@ -63,9 +63,10 @@ import org.deegree.coverage.raster.interpolation.InterpolationType;
 import org.deegree.coverage.raster.io.RasterIOOptions;
 import org.deegree.coverage.tools.RasterCommandUtils;
 import org.deegree.coverage.tools.RasterOptionsParser;
-import org.deegree.cs.CRS;
+import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.exceptions.TransformationException;
 import org.deegree.cs.exceptions.UnknownCRSException;
+import org.deegree.cs.persistence.CRSManager;
 import org.deegree.geometry.Envelope;
 import org.deegree.tools.coverage.rtb.RasterTreeBuilder;
 
@@ -147,11 +148,11 @@ public class RTBClient {
         RasterIOOptions options = RasterOptionsParser.parseRasterIOOptions( line );
 
         String t_srs = line.getOptionValue( OPT_T_SRS );
-        CRS tSRS = null;
+        ICRS tSRS = null;
         if ( t_srs == null ) {
             tSRS = options.getCRS();
         } else {
-            tSRS = new CRS( t_srs );
+            tSRS = CRSManager.getCRSRef( t_srs );
         }
 
         File outDir = new File( line.getOptionValue( OPT_RASTER_OUT_LOC ) );

@@ -50,7 +50,7 @@ import javax.xml.stream.XMLStreamException;
 
 import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;
-import org.deegree.cs.CRS;
+import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.feature.Feature;
 import org.deegree.feature.StreamFeatureCollection;
@@ -87,7 +87,7 @@ class GMLStreamFeatureCollection implements StreamFeatureCollection {
 
     private final Iterator<PropertyType> declIter;
 
-    private CRS activeCRS;
+    private ICRS activeCRS;
 
     private PropertyType activeDecl;
 
@@ -109,7 +109,7 @@ class GMLStreamFeatureCollection implements StreamFeatureCollection {
      * @throws XMLStreamException
      */
     GMLStreamFeatureCollection( String fid, FeatureCollectionType ft, GMLFeatureReader featureReader,
-                                XMLStreamReaderWrapper xmlStream, CRS crs ) throws XMLStreamException {
+                                XMLStreamReaderWrapper xmlStream, ICRS crs ) throws XMLStreamException {
         this.fid = fid;
         this.ft = ft;
         this.featureReader = featureReader;

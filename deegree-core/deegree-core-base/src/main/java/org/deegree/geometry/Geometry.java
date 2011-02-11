@@ -37,7 +37,7 @@ package org.deegree.geometry;
 
 import org.deegree.commons.uom.Measure;
 import org.deegree.commons.uom.Unit;
-import org.deegree.cs.CRS;
+import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.geometry.precision.PrecisionModel;
 import org.deegree.geometry.primitive.Point;
 import org.deegree.gml.GMLObject;
@@ -85,9 +85,9 @@ import org.deegree.gml.props.GMLStdProps;
  * <h4>Notes on the representation of GML geometries</h4>
  * The "StandardObjectProperties" defined by GML (e.g. multiple <code>gml:name</code> elements or
  * <code>gml:description</code>) which are inherited by any GML geometry type definition are treated in a specific way.
- * They are modelled using the {@link GMLStdProps} class. This design decision has been driven by the goal to
- * make the implementation less GML (and GML-version) specific and to allow for example to export a {@link Geometry}
- * instance as either GML 2, GML 3.1 or GML 3.2 (different namespaces and types for the standard properties).
+ * They are modelled using the {@link GMLStdProps} class. This design decision has been driven by the goal to make the
+ * implementation less GML (and GML-version) specific and to allow for example to export a {@link Geometry} instance as
+ * either GML 2, GML 3.1 or GML 3.2 (different namespaces and types for the standard properties).
  * </p>
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
@@ -158,7 +158,7 @@ public interface Geometry extends GMLObject {
      * 
      * @return spatial reference system, may be null
      */
-    public CRS getCoordinateSystem();
+    public ICRS getCoordinateSystem();
 
     /**
      * Sets the associated spatial reference system.
@@ -166,7 +166,7 @@ public interface Geometry extends GMLObject {
      * @param crs
      *            spatial reference system, may be null
      */
-    public void setCoordinateSystem( CRS crs );
+    public void setCoordinateSystem( ICRS crs );
 
     /**
      * Sets the attached properties (e.g. GML standard properties, such as <code>gml:name</code>).

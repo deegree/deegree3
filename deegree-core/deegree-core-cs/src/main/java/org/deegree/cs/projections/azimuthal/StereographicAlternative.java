@@ -46,9 +46,10 @@ import java.util.Map;
 import javax.vecmath.Point2d;
 
 import org.deegree.cs.CRSIdentifiable;
+import org.deegree.cs.CRSResource;
 import org.deegree.cs.EPSGCode;
-import org.deegree.cs.components.Unit;
-import org.deegree.cs.coordinatesystems.GeographicCRS;
+import org.deegree.cs.components.IUnit;
+import org.deegree.cs.coordinatesystems.IGeographicCRS;
 import org.deegree.cs.exceptions.ProjectionException;
 
 /**
@@ -118,8 +119,8 @@ public class StereographicAlternative extends AzimuthalProjection {
      * @param id
      *            an identifiable instance containing information about this projection
      */
-    public StereographicAlternative( double falseNorthing, double falseEasting, Point2d naturalOrigin, Unit units,
-                                     double scale, CRSIdentifiable id ) {
+    public StereographicAlternative( double falseNorthing, double falseEasting, Point2d naturalOrigin, IUnit units,
+                                     double scale, CRSResource id ) {
         super( falseNorthing, falseEasting, naturalOrigin, units, scale, true/* conformal */, false, id );
     }
 
@@ -133,7 +134,7 @@ public class StereographicAlternative extends AzimuthalProjection {
      * @param units
      * @param scale
      */
-    public StereographicAlternative( double falseNorthing, double falseEasting, Point2d naturalOrigin, Unit units,
+    public StereographicAlternative( double falseNorthing, double falseEasting, Point2d naturalOrigin, IUnit units,
                                      double scale ) {
         this( falseNorthing, falseEasting, naturalOrigin, units, scale, new CRSIdentifiable( new EPSGCode( 9809 ) ) );
     }
@@ -144,7 +145,7 @@ public class StereographicAlternative extends AzimuthalProjection {
      * @see org.deegree.cs.projections.Projection#doInverseProjection(double, double)
      */
     @Override
-    public synchronized Point2d doInverseProjection( GeographicCRS geographicCRS, double x, double y )
+    public synchronized Point2d doInverseProjection( IGeographicCRS geographicCRS, double x, double y )
                             throws ProjectionException {
         Map<PARAMS, Double> params = calculateParameters( geographicCRS );
         double sinc0 = params.get( PARAMS.sinc0 );
@@ -183,7 +184,7 @@ public class StereographicAlternative extends AzimuthalProjection {
      * @see org.deegree.cs.projections.Projection#doProjection(double, double)
      */
     @Override
-    public synchronized Point2d doProjection( GeographicCRS geographicCRS, double lambda, double phi )
+    public synchronized Point2d doProjection( IGeographicCRS geographicCRS, double lambda, double phi )
                             throws ProjectionException {
         Map<PARAMS, Double> params = calculateParameters( geographicCRS );
         double sinc0 = params.get( PARAMS.sinc0 );
@@ -230,7 +231,7 @@ public class StereographicAlternative extends AzimuthalProjection {
      * 
      * @param centralGeographicLatitude
      */
-    private synchronized Point2d pj_inv_gauss( GeographicCRS geographicCRS, Point2d slp,
+    private synchronized Point2d pj_inv_gauss( IGeographicCRS geographicCRS, Point2d slp,
                                                double centralGeographicLatitude, double K )
                             throws ProjectionException {
         Point2d elp = new Point2d();
@@ -261,7 +262,7 @@ public class StereographicAlternative extends AzimuthalProjection {
      * is relative to the longitude of projection origin, R_c is radius of the conformal sphere. χ_0 is the latitude on
      * the conformal sphere at the central geographic latitude of the projection.
      */
-    private synchronized Point2d pj_gauss( GeographicCRS geographicCRS, double lambda, double phi,
+    private synchronized Point2d pj_gauss( IGeographicCRS geographicCRS, double lambda, double phi,
                                            double centralGeographicLatitude, double K, double clExponent ) {
         Point2d slp = new Point2d();
         slp.y = 2.
@@ -275,7 +276,7 @@ public class StereographicAlternative extends AzimuthalProjection {
         sinc0, cosc0, R2, latitudeOnCS, clExponent, K, centralGeographicLatitude
     }
 
-    private synchronized Map<PARAMS, Double> calculateParameters( GeographicCRS geographicCRS ) {
+    private synchronized Map<PARAMS, Double> calculateParameters( IGeographicCRS geographicCRS ) {
         Map<PARAMS, Double> params = new HashMap<StereographicAlternative.PARAMS, Double>();
 
         double sinc0 = 0;

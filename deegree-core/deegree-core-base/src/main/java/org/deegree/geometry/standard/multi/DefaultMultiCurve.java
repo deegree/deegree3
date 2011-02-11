@@ -37,7 +37,7 @@ package org.deegree.geometry.standard.multi;
 
 import java.util.List;
 
-import org.deegree.cs.CRS;
+import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.geometry.multi.MultiCurve;
 import org.deegree.geometry.precision.PrecisionModel;
 import org.deegree.geometry.primitive.Curve;
@@ -66,7 +66,7 @@ public class DefaultMultiCurve extends DefaultMultiGeometry<Curve> implements Mu
      *            precision model, may be null
      * @param members
      */
-    public DefaultMultiCurve( String id, CRS crs, PrecisionModel pm, List<Curve> members ) {
+    public DefaultMultiCurve( String id, ICRS crs, PrecisionModel pm, List<Curve> members ) {
         super( id, crs, pm, members );
     }
 

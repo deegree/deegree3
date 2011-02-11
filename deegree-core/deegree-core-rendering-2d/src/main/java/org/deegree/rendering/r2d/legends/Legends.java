@@ -52,7 +52,7 @@ import javax.imageio.ImageIO;
 
 import org.deegree.commons.utils.DoublePair;
 import org.deegree.commons.utils.Pair;
-import org.deegree.cs.CRS;
+import org.deegree.cs.persistence.CRSManager;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryFactory;
 import org.deegree.rendering.r2d.Java2DRasterRenderer;
@@ -112,7 +112,7 @@ public class Legends {
         if ( text != null && text.length() > 0 ) {
             textRenderer.render( textStyling, text, geofac.createPoint( null, opts.baseWidth + opts.spacing * 2,
                                                                         origin - opts.baseHeight / 2 - opts.spacing,
-                                                                        new CRS( "CRS:1" ) ) );
+                                                                        CRSManager.getCRSRef( "CRS:1" ) ) );
         }
     }
 

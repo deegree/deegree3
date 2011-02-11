@@ -57,7 +57,7 @@ import java.util.ListIterator;
 import java.util.Map;
 
 import org.deegree.commons.tom.ows.Version;
-import org.deegree.cs.CRS;
+import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryFactory;
 import org.deegree.rendering.r2d.se.unevaluated.Style;
@@ -82,7 +82,7 @@ public class GetFeatureInfo {
 
     private static final GeometryFactory fac = new GeometryFactory();
 
-    private CRS crs;
+    private ICRS crs;
 
     private Envelope bbox;
 
@@ -388,14 +388,14 @@ public class GetFeatureInfo {
     /**
      * @return the crs
      */
-    public CRS getCoordinateSystem() {
+    public ICRS getCoordinateSystem() {
         return crs;
     }
 
     /**
      * @param crs
      */
-    public void setCoordinateSystem( CRS crs ) {
+    public void setCoordinateSystem( ICRS crs ) {
         this.crs = crs;
     }
 

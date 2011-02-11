@@ -54,9 +54,10 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.deegree.commons.utils.CollectionUtils;
-import org.deegree.commons.utils.Pair;
 import org.deegree.commons.utils.CollectionUtils.Mapper;
-import org.deegree.cs.CRS;
+import org.deegree.commons.utils.Pair;
+import org.deegree.cs.coordinatesystems.ICRS;
+import org.deegree.cs.persistence.CRSManager;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.GeometryFactory;
 import org.deegree.geometry.primitive.LineString;
@@ -81,7 +82,7 @@ public class StandardLegendItem implements LegendItem {
 
     private static final GeometryFactory geofac = new GeometryFactory();
 
-    private static final CRS mapcs = new CRS( "CRS:1" );
+    private static final ICRS mapcs = CRSManager.getCRSRef( "CRS:1" );
 
     private LinkedList<Styling> stylings;
 

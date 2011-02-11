@@ -42,7 +42,7 @@ import java.util.Map;
 
 import javax.vecmath.Point3d;
 
-import org.deegree.cs.coordinatesystems.CoordinateSystem;
+import org.deegree.cs.coordinatesystems.ICRS;
 
 /**
  * The <code>TransformationException</code> class can be thrown if a transformation exception occurs. For example in the
@@ -110,7 +110,7 @@ public class TransformationException extends Exception {
      * @param cause
      *            for the exception.
      */
-    public TransformationException( CoordinateSystem sourceCS, CoordinateSystem targetCS, String cause ) {
+    public TransformationException( ICRS sourceCS, ICRS targetCS, String cause ) {
         super(
                new StringBuilder( "Can't transform from: " ).append( sourceCS.getCode() ).append( " into " ).append(
                                                                                                                      targetCS.getCode() ).append(

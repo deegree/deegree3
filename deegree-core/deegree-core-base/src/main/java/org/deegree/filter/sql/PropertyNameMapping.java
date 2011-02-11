@@ -41,7 +41,7 @@ import java.util.Collections;
 import java.util.List;
 
 import org.deegree.commons.tom.primitive.PrimitiveType;
-import org.deegree.cs.CRS;
+import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.filter.expression.PropertyName;
 
 /**
@@ -60,11 +60,11 @@ public class PropertyNameMapping {
 
     private final PrimitiveType pt;
 
-    private final CRS crs;
+    private final ICRS crs;
 
     private final String srid;
 
-    public PropertyNameMapping( String table, String column, CRS crs, String srid ) {
+    public PropertyNameMapping( String table, String column, ICRS crs, String srid ) {
         this.valueField = new DBField( table, column );
         this.joins = Collections.emptyList();
         this.pt = STRING;
@@ -79,7 +79,7 @@ public class PropertyNameMapping {
      * @param crs
      * @param srid
      */
-    public PropertyNameMapping( TableAliasManager aliasManager, DBField valueField, List<Join> joins, CRS crs,
+    public PropertyNameMapping( TableAliasManager aliasManager, DBField valueField, List<Join> joins, ICRS crs,
                                 String srid ) {
         this.valueField = valueField;
         this.joins = joins;
@@ -98,7 +98,7 @@ public class PropertyNameMapping {
         valueField.setAlias( currentAlias );
     }
 
-    public CRS getCRS() {
+    public ICRS getCRS() {
         return crs;
     }
 

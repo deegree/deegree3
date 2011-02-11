@@ -38,7 +38,7 @@ package org.deegree.geometry.io;
 import java.io.IOException;
 import java.io.InputStream;
 
-import org.deegree.cs.CRS;
+import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.standard.AbstractDefaultGeometry;
 import org.deegree.geometry.standard.primitive.DefaultPoint;
@@ -61,13 +61,13 @@ public class WKBReader {
     // TODO remove the need for this object
     private static AbstractDefaultGeometry defaultGeom = new DefaultPoint( null, null, null, new double[] { 0.0, 0.0 } );
 
-    public static Geometry read( byte[] wkb, CRS crs )
+    public static Geometry read( byte[] wkb, ICRS crs )
                             throws ParseException {
         // com.vividsolutions.jts.io.WKBReader() is not thread safe
         return defaultGeom.createFromJTS( new com.vividsolutions.jts.io.WKBReader().read( wkb ), crs );
     }
 
-    public static Geometry read( InputStream is, CRS crs )
+    public static Geometry read( InputStream is, ICRS crs )
                             throws IOException, ParseException {
         // com.vividsolutions.jts.io.WKBReader() is not thread safe
         return defaultGeom.createFromJTS(

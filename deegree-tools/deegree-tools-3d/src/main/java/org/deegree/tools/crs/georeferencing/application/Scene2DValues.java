@@ -42,15 +42,15 @@ import javax.vecmath.Point2d;
 
 import jj2000.j2k.NotImplementedError;
 
-import org.deegree.cs.CRS;
-import org.deegree.cs.coordinatesystems.CoordinateSystem;
+import org.deegree.cs.coordinatesystems.ICRS;
+import org.deegree.cs.persistence.CRSManager;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryFactory;
 import org.deegree.tools.crs.georeferencing.model.datastructures.GREnvelopeParameterCalculator;
 import org.deegree.tools.crs.georeferencing.model.points.AbstractGRPoint;
+import org.deegree.tools.crs.georeferencing.model.points.AbstractGRPoint.PointType;
 import org.deegree.tools.crs.georeferencing.model.points.FootprintPoint;
 import org.deegree.tools.crs.georeferencing.model.points.GeoReferencedPoint;
-import org.deegree.tools.crs.georeferencing.model.points.AbstractGRPoint.PointType;
 
 /**
  * Helper for the {@link Controller} to handle operations in painting the scenes.
@@ -66,7 +66,7 @@ public class Scene2DValues {
 
     private Rectangle dimensionFootprint;
 
-    private CRS crs;
+    private ICRS crs;
 
     private Envelope envelopeFootprint;
 
@@ -524,8 +524,8 @@ public class Scene2DValues {
             grEnv = GREnvelopeParameterCalculator.newInstance( envelope.getMin().get0(), envelope.getMax().get1(),
                                                                envelope.getSpan0(), newHeight );
         }
-        if ( envelope.getCoordinateSystem().equals( new CRS( "EPSG:4326" ) )
-             || envelope.getCoordinateSystem().equals( new CRS( "CRS:84" ) ) ) {
+        if ( envelope.getCoordinateSystem().equals(  CRSManager.getCRSRef( "EPSG:4326" ) )
+             || envelope.getCoordinateSystem().equals( CRSManager.getCRSRef( "CRS:84" ) ) ) {
             return geom.createEnvelope( grEnv.getMinX(), grEnv.getMinY(), grEnv.getMaxX(), grEnv.getMaxY(),
                                         envelope.getCoordinateSystem() );
 
@@ -611,7 +611,7 @@ public class Scene2DValues {
 
     }
 
-    public CRS getCrs() {
+    public ICRS getCrs() {
         return crs;
     }
 
@@ -624,8 +624,8 @@ public class Scene2DValues {
         this.crs = envelopeGeoref.getCoordinateSystem();
     }
 
-    public void setEnvelopeGeoref( double[] c, CoordinateSystem crs ) {
-        this.envelopeGeoref = geom.createEnvelope( c[0], c[1], c[2], c[3], new CRS( crs ) );
+    public void setEnvelopeGeoref( double[] c, ICRS crs ) {
+        this.envelopeGeoref = geom.createEnvelope( c[0], c[1], c[2], c[3], CRSManager.getCRSRef( crs ) );
         this.crs = envelopeGeoref.getCoordinateSystem();
     }
 

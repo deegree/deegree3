@@ -44,7 +44,7 @@ import java.util.Map;
 
 import javax.xml.namespace.QName;
 
-import org.deegree.cs.CRS;
+import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.feature.persistence.FeatureStore;
 import org.deegree.filter.Filter;
 import org.deegree.filter.IdFilter;
@@ -96,7 +96,7 @@ public class Query {
 
     private final String featureVersion;
 
-    private final CRS srsName;
+    private final ICRS srsName;
 
     private final SortProperty[] sortBy;
 
@@ -149,7 +149,7 @@ public class Query {
      * @param sortBy
      *            sort criteria to be applied, can be <code>null</code>
      */
-    public Query( TypeName[] typeNames, Filter filter, String featureVersion, CRS srsName, SortProperty[] sortBy ) {
+    public Query( TypeName[] typeNames, Filter filter, String featureVersion, ICRS srsName, SortProperty[] sortBy ) {
         this.typeNames = typeNames;
         this.filter = filter;
         this.featureVersion = featureVersion;
@@ -173,7 +173,7 @@ public class Query {
      * @param sortBy
      *            sort criteria to be applied, can be <code>null</code>
      */
-    public Query( IdFilter filter, String featureVersion, CRS srsName, SortProperty[] sortBy ) {
+    public Query( IdFilter filter, String featureVersion, ICRS srsName, SortProperty[] sortBy ) {
         this.typeNames = new TypeName[0];
         this.filter = filter;
         this.featureVersion = featureVersion;

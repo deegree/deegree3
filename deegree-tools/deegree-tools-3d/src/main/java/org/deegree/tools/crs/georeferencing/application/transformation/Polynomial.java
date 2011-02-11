@@ -45,7 +45,7 @@ import javax.media.jai.WarpPolynomial;
 import javax.vecmath.Point3d;
 
 import org.deegree.commons.utils.Triple;
-import org.deegree.cs.CRS;
+import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.exceptions.TransformationException;
 import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.geometry.GeometryFactory;
@@ -94,7 +94,7 @@ public class Polynomial extends AbstractTransformation {
     }
 
     public Polynomial( List<Triple<Point4Values, Point4Values, PointResidual>> mappedPoints, Footprint footPrint,
-                       Scene2DValues sceneValues, CRS sourceCRS, CRS targetCRS, int order ) throws UnknownCRSException {
+                       Scene2DValues sceneValues, ICRS sourceCRS, ICRS targetCRS, int order ) throws UnknownCRSException {
         super( mappedPoints, footPrint, sceneValues, sourceCRS, targetCRS, order );
 
         arraySize = this.getArraySize() * 2;

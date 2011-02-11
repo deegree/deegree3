@@ -38,7 +38,6 @@ package org.deegree.services.wfs;
 
 import static org.deegree.commons.utils.StringUtils.REMOVE_DOUBLE_FIELDS;
 import static org.deegree.commons.utils.StringUtils.REMOVE_EMPTY_FIELDS;
-import static org.deegree.cs.CRS.EPSG_4326;
 import static org.deegree.gml.GMLVersion.GML_2;
 import static org.deegree.gml.GMLVersion.GML_30;
 import static org.deegree.gml.GMLVersion.GML_31;
@@ -60,9 +59,9 @@ import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeSet;
-import java.util.Map.Entry;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -83,8 +82,9 @@ import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.commons.xml.stax.SchemaLocationXMLStreamWriter;
 import org.deegree.commons.xml.stax.StAXParsingHelper;
-import org.deegree.cs.CRS;
-import org.deegree.cs.exceptions.UnknownCRSException;
+import org.deegree.cs.CRSUtils;
+import org.deegree.cs.coordinatesystems.ICRS;
+import org.deegree.cs.persistence.CRSManager;
 import org.deegree.feature.persistence.FeatureStore;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.gml.GMLVersion;
@@ -129,9 +129,9 @@ import org.deegree.services.jaxb.metadata.ServiceProviderType;
 import org.deegree.services.jaxb.wfs.AbstractFormatType;
 import org.deegree.services.jaxb.wfs.CustomFormat;
 import org.deegree.services.jaxb.wfs.DeegreeWFS;
+import org.deegree.services.jaxb.wfs.DeegreeWFS.SupportedVersions;
 import org.deegree.services.jaxb.wfs.FeatureTypeMetadata;
 import org.deegree.services.jaxb.wfs.GMLFormat;
-import org.deegree.services.jaxb.wfs.DeegreeWFS.SupportedVersions;
 import org.deegree.services.wfs.format.Format;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -174,9 +174,9 @@ public class WFSController extends AbstractOGCServiceController<WFSRequestType> 
 
     private boolean disableBuffering;
 
-    private CRS defaultQueryCRS = EPSG_4326;
+    private ICRS defaultQueryCRS = CRSUtils.EPSG_4326;
 
-    private List<CRS> queryCRS = new ArrayList<CRS>();
+    private List<ICRS> queryCRS = new ArrayList<ICRS>();
 
     private final Map<String, Format> mimeTypeToFormat = new LinkedHashMap<String, Format>();
 
@@ -249,23 +249,22 @@ public class WFSController extends AbstractOGCServiceController<WFSRequestType> 
 
     private void initQueryCRS( List<String> queryCRSLists )
                             throws ControllerInitException {
-        try {
-            for ( String queryCRS : queryCRSLists ) {
-                String[] querySrs = StringUtils.split( queryCRS, " ", REMOVE_EMPTY_FIELDS | REMOVE_DOUBLE_FIELDS );
-                for ( String srs : querySrs ) {
-                    LOG.debug( "Query CRS: " + srs );
-                    CRS crs = new CRS( srs );
-                    crs.getWrappedCRS();
-                    this.queryCRS.add( crs );
-                }
+        // try {
+        for ( String queryCRS : queryCRSLists ) {
+            String[] querySrs = StringUtils.split( queryCRS, " ", REMOVE_EMPTY_FIELDS | REMOVE_DOUBLE_FIELDS );
+            for ( String srs : querySrs ) {
+                LOG.debug( "Query CRS: " + srs );
+                ICRS crs = CRSManager.getCRSRef( srs );
+                this.queryCRS.add( crs );
             }
-        } catch ( UnknownCRSException e ) {
-            String msg = "Invalid QuerySRS parameter: " + e.getMessage();
-            throw new ControllerInitException( msg );
         }
+        // } catch ( UnknownCRSException e ) {
+        // String msg = "Invalid QuerySRS parameter: " + e.getMessage();
+        // throw new ControllerInitException( msg );
+        // }
         if ( queryCRS.isEmpty() ) {
             LOG.info( "No query CRS defined, defaulting to EPSG:4326." );
-            queryCRS.add( CRS.EPSG_4326 );
+            queryCRS.add( CRSUtils.EPSG_4326 );
         }
         defaultQueryCRS = this.queryCRS.get( 0 );
     }
@@ -847,7 +846,7 @@ public class WFSController extends AbstractOGCServiceController<WFSRequestType> 
         return checkAreaOfUse;
     }
 
-    public CRS getDefaultQueryCrs() {
+    public ICRS getDefaultQueryCrs() {
         return defaultQueryCRS;
     }
 }

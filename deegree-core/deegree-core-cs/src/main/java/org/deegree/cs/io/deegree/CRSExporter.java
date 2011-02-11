@@ -3,9 +3,9 @@
  This file is part of deegree.
  Copyright (C) 2001-2009 by:
  Department of Geography, University of Bonn
- http://www.giub.uni-bonn.de/deegree/
+ http://ICompoundCRS.giub.uni-bonn.de/deegree/
  lat/lon GmbH
- http://www.lat-lon.de
+ http://ICompoundCRS.lat-lon.de
 
  This library is free software; you can redistribute it and/or
  modify it under the terms of the GNU Lesser General Public
@@ -40,8 +40,8 @@ package org.deegree.cs.io.deegree;
 
 import static java.lang.Math.toDegrees;
 import static org.deegree.commons.xml.CommonNamespaces.CRSNS;
-import static org.deegree.cs.coordinatesystems.CoordinateSystem.CRSType.COMPOUND;
-import static org.deegree.cs.coordinatesystems.CoordinateSystem.CRSType.PROJECTED;
+import static org.deegree.cs.coordinatesystems.CRS.CRSType.COMPOUND;
+import static org.deegree.cs.coordinatesystems.CRS.CRSType.PROJECTED;
 import static org.deegree.cs.utilities.ProjectionUtils.EPS11;
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -67,26 +67,28 @@ import org.deegree.commons.annotations.LoggingNotes;
 import org.deegree.commons.jdbc.ConnectionManager;
 import org.deegree.commons.xml.CommonNamespaces;
 import org.deegree.cs.CRSCodeType;
-import org.deegree.cs.CRSIdentifiable;
+import org.deegree.cs.CRSResource;
 import org.deegree.cs.EPSGCode;
-import org.deegree.cs.components.Axis;
-import org.deegree.cs.components.Ellipsoid;
 import org.deegree.cs.components.GeodeticDatum;
-import org.deegree.cs.components.PrimeMeridian;
+import org.deegree.cs.components.IAxis;
+import org.deegree.cs.components.IEllipsoid;
+import org.deegree.cs.components.IGeodeticDatum;
+import org.deegree.cs.components.IPrimeMeridian;
+import org.deegree.cs.components.IUnit;
 import org.deegree.cs.components.Unit;
-import org.deegree.cs.coordinatesystems.CompoundCRS;
-import org.deegree.cs.coordinatesystems.CoordinateSystem;
-import org.deegree.cs.coordinatesystems.GeocentricCRS;
-import org.deegree.cs.coordinatesystems.GeographicCRS;
-import org.deegree.cs.coordinatesystems.ProjectedCRS;
-import org.deegree.cs.coordinatesystems.CoordinateSystem.CRSType;
-import org.deegree.cs.projections.Projection;
-import org.deegree.cs.projections.azimuthal.LambertAzimuthalEqualArea;
-import org.deegree.cs.projections.azimuthal.StereographicAlternative;
-import org.deegree.cs.projections.azimuthal.StereographicAzimuthal;
-import org.deegree.cs.projections.conic.LambertConformalConic;
-import org.deegree.cs.projections.cylindric.Mercator;
-import org.deegree.cs.projections.cylindric.TransverseMercator;
+import org.deegree.cs.coordinatesystems.CRS.CRSType;
+import org.deegree.cs.coordinatesystems.ICompoundCRS;
+import org.deegree.cs.coordinatesystems.ICRS;
+import org.deegree.cs.coordinatesystems.IGeocentricCRS;
+import org.deegree.cs.coordinatesystems.IGeographicCRS;
+import org.deegree.cs.coordinatesystems.IProjectedCRS;
+import org.deegree.cs.projections.IProjection;
+import org.deegree.cs.projections.azimuthal.ILambertAzimuthalEqualArea;
+import org.deegree.cs.projections.azimuthal.IStereographicAlternative;
+import org.deegree.cs.projections.azimuthal.IStereographicAzimuthal;
+import org.deegree.cs.projections.conic.ILambertConformalConic;
+import org.deegree.cs.projections.cylindric.IMercator;
+import org.deegree.cs.projections.cylindric.ITransverseMercator;
 import org.deegree.cs.transformations.Transformation;
 import org.deegree.cs.transformations.helmert.Helmert;
 import org.deegree.cs.transformations.ntv2.NTv2Transformation;
@@ -135,7 +137,7 @@ public class CRSExporter extends CRSExporterBase {
     }
 
     /**
-     * Export the given list of CoordinateSystems into the crs-definition format.
+     * Export the given list of ICoordinateSystems into the crs-definition format.
      * 
      * 
      * @param crsToExport
@@ -145,24 +147,24 @@ public class CRSExporter extends CRSExporterBase {
      *             if an error occurred while exporting
      */
     @Override
-    public void export( List<CoordinateSystem> crsToExport, XMLStreamWriter xmlWriter )
+    public void export( List<ICRS> crsToExport, XMLStreamWriter xmlWriter )
                             throws XMLStreamException {
         if ( crsToExport != null ) {
             if ( crsToExport.size() != 0 ) {
                 LOG.debug( "Trying to export: " + crsToExport.size() + " coordinate systems." );
 
                 // LinkedList<String> exportedIDs = new LinkedList<String>();
-                Set<Ellipsoid> ellipsoids = new TreeSet<Ellipsoid>( new IdComparer() );
-                Set<GeodeticDatum> datums = new TreeSet<GeodeticDatum>( new IdComparer() );
-                Set<GeocentricCRS> geocentrics = new TreeSet<GeocentricCRS>( new IdComparer() );
-                Set<GeographicCRS> geographics = new TreeSet<GeographicCRS>( new IdComparer() );
-                Set<ProjectedCRS> projecteds = new TreeSet<ProjectedCRS>( new IdComparer() );
-                Set<CompoundCRS> compounds = new TreeSet<CompoundCRS>( new IdComparer() );
-                Set<PrimeMeridian> primeMeridians = new TreeSet<PrimeMeridian>( new IdComparer() );
+                Set<IEllipsoid> ellipsoids = new TreeSet<IEllipsoid>( new IdComparer() );
+                Set<IGeodeticDatum> datums = new TreeSet<IGeodeticDatum>( new IdComparer() );
+                Set<IGeocentricCRS> geocentrics = new TreeSet<IGeocentricCRS>( new IdComparer() );
+                Set<IGeographicCRS> geographics = new TreeSet<IGeographicCRS>( new IdComparer() );
+                Set<IProjectedCRS> projecteds = new TreeSet<IProjectedCRS>( new IdComparer() );
+                Set<ICompoundCRS> compounds = new TreeSet<ICompoundCRS>( new IdComparer() );
+                Set<IPrimeMeridian> primeMeridians = new TreeSet<IPrimeMeridian>( new IdComparer() );
                 Set<Transformation> transformations = new TreeSet<Transformation>( new IdComparer() );
-                Set<Projection> projections = new TreeSet<Projection>( new IdComparer() );
+                Set<IProjection> projections = new TreeSet<IProjection>( new IdComparer() );
 
-                for ( CoordinateSystem crs : crsToExport ) {
+                for ( ICRS crs : crsToExport ) {
                     if ( crs != null ) {
                         updateBoundingBox( crs );
                         GeodeticDatum d = (GeodeticDatum) crs.getDatum();
@@ -173,17 +175,17 @@ public class CRSExporter extends CRSExporterBase {
                         final CRSType type = crs.getType();
                         switch ( type ) {
                         case COMPOUND:
-                            compounds.add( (CompoundCRS) crs );
+                            compounds.add( (ICompoundCRS) crs );
                             break;
                         case GEOCENTRIC:
-                            geocentrics.add( (GeocentricCRS) crs );
+                            geocentrics.add( (IGeocentricCRS) crs );
                             break;
                         case GEOGRAPHIC:
-                            geographics.add( (GeographicCRS) crs );
+                            geographics.add( (IGeographicCRS) crs );
                             break;
                         case PROJECTED: {
-                            final ProjectedCRS proj = (ProjectedCRS) crs;
-                            final Projection projection = proj.getProjection();
+                            final IProjectedCRS proj = (IProjectedCRS) crs;
+                            final IProjection projection = proj.getProjection();
                             String id = projection.getCode().getOriginal();
                             if ( id != null
                                  && ( id.contains( "Snyder-StereoGraphic" ) || id.contains( "9820" ) /* LaAzEq */
@@ -207,19 +209,19 @@ public class CRSExporter extends CRSExporterBase {
                         }
 
                         if ( d.getPrimeMeridian() != null ) {
-                            PrimeMeridian pm = d.getPrimeMeridian();
+                            IPrimeMeridian pm = d.getPrimeMeridian();
                             updatePM( pm );
                             primeMeridians.add( pm );
                         }
                         Helmert h = d.getWGS84Conversion();
                         if ( h != null ) {
                             if ( h.getSourceCRS() == null ) {
-                                CoordinateSystem src = crs;
+                                ICRS src = crs;
                                 if ( src.getType() == COMPOUND ) {
-                                    src = ( (CompoundCRS) crs ).getUnderlyingCRS();
+                                    src = ( (ICompoundCRS) crs ).getUnderlyingCRS();
                                 }
                                 if ( src.getType() == PROJECTED ) {
-                                    src = ( (ProjectedCRS) crs ).getGeographicCRS();
+                                    src = ( (IProjectedCRS) crs ).getGeographicCRS();
                                 }
                                 h.setSourceCRS( src );
                             }
@@ -264,16 +266,16 @@ public class CRSExporter extends CRSExporterBase {
      * @param crs
      * @param d
      */
-    private void updateDatum( CoordinateSystem crs, GeodeticDatum d ) {
+    private void updateDatum( ICRS crs, IGeodeticDatum d ) {
         if ( db_id != null ) {
             int epsgCode = getEPSGCode( d );
             if ( epsgCode == -1 ) {
-                CoordinateSystem bCRS = crs;
+                ICRS bCRS = crs;
                 if ( crs.getType() == COMPOUND ) {
-                    bCRS = ( (CompoundCRS) crs ).getUnderlyingCRS();
+                    bCRS = ( (ICompoundCRS) crs ).getUnderlyingCRS();
                 }
                 if ( bCRS.getType() == PROJECTED ) {
-                    bCRS = ( (ProjectedCRS) bCRS ).getGeographicCRS();
+                    bCRS = ( (IProjectedCRS) bCRS ).getGeographicCRS();
                 }
 
                 int crsCode = getEPSGCode( bCRS );
@@ -312,7 +314,7 @@ public class CRSExporter extends CRSExporterBase {
                                 }
                                 String dVersion = rs.getString( count++ );
                                 int eId = rs.getInt( count++ );
-                                Ellipsoid ellips = d.getEllipsoid();
+                                IEllipsoid ellips = d.getEllipsoid();
                                 String ellpsName = rs.getString( count++ );
 
                                 remark = rs.getBytes( count++ );
@@ -354,7 +356,7 @@ public class CRSExporter extends CRSExporterBase {
                                         int uom = rs.getInt( count++ );
                                         if ( ea != 0 ) {
                                             if ( ef != 0 || eb != 0 ) {
-                                                Unit u = Unit.createUnitFromString( "epsg:" + uom );
+                                                IUnit u = Unit.createUnitFromString( "epsg:" + uom );
                                                 if ( u == null ) {
                                                     LOG.warn( "Could not determine unit of measure of epsg:" + uom );
                                                 } else {
@@ -418,7 +420,7 @@ public class CRSExporter extends CRSExporterBase {
     /**
      * @param pm
      */
-    private void updatePM( PrimeMeridian pm ) {
+    private void updatePM( IPrimeMeridian pm ) {
         if ( db_id != null ) {
             int epsgCode = getEPSGCode( pm );
             if ( epsgCode != -1 ) {
@@ -474,7 +476,7 @@ public class CRSExporter extends CRSExporterBase {
         }
     }
 
-    private int getEPSGCode( CRSIdentifiable crs ) {
+    private int getEPSGCode( CRSResource crs ) {
         CRSCodeType[] pCodes = crs.getCodes();
         int epsgCode = -1;
         for ( int i = 0; i < pCodes.length && epsgCode == -1; ++i ) {
@@ -490,7 +492,7 @@ public class CRSExporter extends CRSExporterBase {
         return epsgCode;
     }
 
-    private void updateBoundingBox( CoordinateSystem crs ) {
+    private void updateBoundingBox( ICRS crs ) {
         if ( db_id != null ) {
             double[] areaOfUseBBox = crs.getAreaOfUseBBox();
             if ( Math.abs( areaOfUseBBox[0] + 180 ) < 1E-8 && Math.abs( areaOfUseBBox[1] + 90 ) < 1E-8
@@ -541,7 +543,7 @@ public class CRSExporter extends CRSExporterBase {
      * @param projection
      * @param override
      */
-    private void updateProjectionId( ProjectedCRS proj, Projection projection ) {
+    private void updateProjectionId( IProjectedCRS proj, IProjection projection ) {
         CRSCodeType oldCode = proj.getCode();
         CRSCodeType newCodeType = new CRSCodeType( "projection_for_" + oldCode.getOriginal() );
         if ( db_id != null ) {
@@ -604,12 +606,12 @@ public class CRSExporter extends CRSExporterBase {
      * @param ellipsoids
      * @throws XMLStreamException
      */
-    protected void exportEllipsoids( XMLStreamWriter xmlWriter, Set<Ellipsoid> ellipsoids )
+    protected void exportEllipsoids( XMLStreamWriter xmlWriter, Set<IEllipsoid> ellipsoids )
                             throws XMLStreamException {
         writeDefinitionStart( xmlWriter, "EllipsoidDefinitions" );
         // Set<Ellipsoid> sorted = new TreeSet<Ellipsoid>( new IdComparer() );
         // sorted.addAll( ellipsoids );
-        for ( Ellipsoid e : ellipsoids ) {
+        for ( IEllipsoid e : ellipsoids ) {
             export( e, xmlWriter );
         }
         xmlWriter.writeEndElement();
@@ -622,10 +624,10 @@ public class CRSExporter extends CRSExporterBase {
      * @param pms
      * @throws XMLStreamException
      */
-    protected void exportPrimeMeridians( XMLStreamWriter xmlWriter, Set<PrimeMeridian> pms )
+    protected void exportPrimeMeridians( XMLStreamWriter xmlWriter, Set<IPrimeMeridian> pms )
                             throws XMLStreamException {
         writeDefinitionStart( xmlWriter, "PMDefinitions" );
-        for ( PrimeMeridian pm : pms ) {
+        for ( IPrimeMeridian pm : pms ) {
             export( pm, xmlWriter );
         }
         xmlWriter.writeEndElement();
@@ -638,10 +640,10 @@ public class CRSExporter extends CRSExporterBase {
      * @param datums
      * @throws XMLStreamException
      */
-    protected void exportDatums( XMLStreamWriter xmlWriter, Set<GeodeticDatum> datums )
+    protected void exportDatums( XMLStreamWriter xmlWriter, Set<IGeodeticDatum> datums )
                             throws XMLStreamException {
         writeDefinitionStart( xmlWriter, "DatumDefinitions" );
-        for ( GeodeticDatum d : datums ) {
+        for ( IGeodeticDatum d : datums ) {
             export( d, xmlWriter );
         }
         xmlWriter.writeEndElement();
@@ -698,61 +700,61 @@ public class CRSExporter extends CRSExporterBase {
      * @param projections
      * @throws XMLStreamException
      */
-    public void exportProjections( XMLStreamWriter xmlWriter, Set<Projection> projections )
+    public void exportProjections( XMLStreamWriter xmlWriter, Set<IProjection> projections )
                             throws XMLStreamException {
         writeDefinitionStart( xmlWriter, "ProjectionDefinitions" );
-        Set<Projection> userDefined = new TreeSet<Projection>( new IdComparer() );
-        Set<LambertAzimuthalEqualArea> laea = new TreeSet<LambertAzimuthalEqualArea>( new IdComparer() );
-        Set<LambertConformalConic> lcc = new TreeSet<LambertConformalConic>( new IdComparer() );
-        Set<StereographicAzimuthal> sa = new TreeSet<StereographicAzimuthal>( new IdComparer() );
-        Set<StereographicAlternative> saa = new TreeSet<StereographicAlternative>( new IdComparer() );
-        Set<TransverseMercator> tmerc = new TreeSet<TransverseMercator>( new IdComparer() );
-        Set<Mercator> merc = new TreeSet<Mercator>( new IdComparer() );
+        Set<IProjection> userDefined = new TreeSet<IProjection>( new IdComparer() );
+        Set<ILambertAzimuthalEqualArea> laea = new TreeSet<ILambertAzimuthalEqualArea>( new IdComparer() );
+        Set<ILambertConformalConic> lcc = new TreeSet<ILambertConformalConic>( new IdComparer() );
+        Set<IStereographicAzimuthal> sa = new TreeSet<IStereographicAzimuthal>( new IdComparer() );
+        Set<IStereographicAlternative> saa = new TreeSet<IStereographicAlternative>( new IdComparer() );
+        Set<ITransverseMercator> tmerc = new TreeSet<ITransverseMercator>( new IdComparer() );
+        Set<IMercator> merc = new TreeSet<IMercator>( new IdComparer() );
 
-        for ( Projection p : projections ) {
+        for ( IProjection p : projections ) {
             String implName = p.getImplementationName();
             if ( "LambertAzimuthalEqualArea".equalsIgnoreCase( implName ) ) {
-                laea.add( (LambertAzimuthalEqualArea) p );
+                laea.add( (ILambertAzimuthalEqualArea) p );
             } else if ( "lambertConformalConic".equalsIgnoreCase( implName ) ) {
-                lcc.add( (LambertConformalConic) p );
+                lcc.add( (ILambertConformalConic) p );
             } else if ( "StereographicAzimuthal".equalsIgnoreCase( implName ) ) {
-                sa.add( (StereographicAzimuthal) p );
+                sa.add( (IStereographicAzimuthal) p );
             } else if ( "StereographicAlternative".equalsIgnoreCase( implName ) ) {
-                saa.add( (StereographicAlternative) p );
+                saa.add( (IStereographicAlternative) p );
             } else if ( "TransverseMercator".equalsIgnoreCase( implName ) ) {
-                tmerc.add( (TransverseMercator) p );
+                tmerc.add( (ITransverseMercator) p );
             } else if ( "Mercator".equalsIgnoreCase( implName ) ) {
-                merc.add( (Mercator) p );
+                merc.add( (IMercator) p );
             } else {
                 userDefined.add( p );
             }
         }
-        for ( Projection p : userDefined ) {
+        for ( IProjection p : userDefined ) {
             export( p, xmlWriter );
         }
-        for ( Projection p : laea ) {
+        for ( IProjection p : laea ) {
             export( p, xmlWriter );
         }
-        for ( Projection p : lcc ) {
+        for ( IProjection p : lcc ) {
             export( p, xmlWriter );
         }
-        for ( Projection p : sa ) {
+        for ( IProjection p : sa ) {
             export( p, xmlWriter );
         }
-        for ( Projection p : saa ) {
+        for ( IProjection p : saa ) {
             export( p, xmlWriter );
         }
-        for ( Projection p : tmerc ) {
+        for ( IProjection p : tmerc ) {
             export( p, xmlWriter );
         }
-        for ( Projection p : merc ) {
+        for ( IProjection p : merc ) {
             export( p, xmlWriter );
         }
         xmlWriter.writeEndElement();
     }
 
     /**
-     * Exports the given sets of CoordinateSystems
+     * Exports the given sets of ICoordinateSystems
      * 
      * @param xmlWriter
      * @param compounds
@@ -761,21 +763,21 @@ public class CRSExporter extends CRSExporterBase {
      * @param geocentrics
      * @throws XMLStreamException
      */
-    protected void exportCoordinateSystems( XMLStreamWriter xmlWriter, Set<CompoundCRS> compounds,
-                                            Set<ProjectedCRS> projecteds, Set<GeographicCRS> geographics,
-                                            Set<GeocentricCRS> geocentrics )
+    protected void exportCoordinateSystems( XMLStreamWriter xmlWriter, Set<ICompoundCRS> compounds,
+                                            Set<IProjectedCRS> projecteds, Set<IGeographicCRS> geographics,
+                                            Set<IGeocentricCRS> geocentrics )
                             throws XMLStreamException {
         writeDefinitionStart( xmlWriter, "CRSDefinitions" );
-        for ( GeographicCRS geographic : geographics ) {
+        for ( IGeographicCRS geographic : geographics ) {
             export( geographic, xmlWriter );
         }
-        for ( ProjectedCRS projected : projecteds ) {
+        for ( IProjectedCRS projected : projecteds ) {
             export( projected, xmlWriter );
         }
-        for ( GeocentricCRS geocentric : geocentrics ) {
+        for ( IGeocentricCRS geocentric : geocentrics ) {
             export( geocentric, xmlWriter );
         }
-        for ( CompoundCRS compound : compounds ) {
+        for ( ICompoundCRS compound : compounds ) {
             export( compound, xmlWriter );
         }
         xmlWriter.writeEndElement();
@@ -788,7 +790,7 @@ public class CRSExporter extends CRSExporterBase {
         xmlWriter.writeNamespace( CommonNamespaces.CRS_PREFIX, CommonNamespaces.CRSNS );
         xmlWriter.writeNamespace( CommonNamespaces.XSI_PREFIX, CommonNamespaces.XSINS );
         // xmlWriter.writeAttribute( CommonNamespaces.XSI_PREFIX, CommonNamespaces.XSINS, "schemaLocation",
-        // "http://www.deegree.org/crs Y:/WORKSPACE/D3_CORE/RESOURCES/SCHEMA/CRS/0.3.0/crsdefinition.xsd" );
+        // "http://ICompoundCRS.deegree.org/crs Y:/WORKSPACE/D3_CORE/RESOURCES/SCHEMA/CRS/0.3.0/crsdefinition.xsd" );
         xmlWriter.writeAttribute( "version", "0.5.0" );
     }
 
@@ -805,7 +807,7 @@ public class CRSExporter extends CRSExporterBase {
             xmlWriter.writeNamespace( CommonNamespaces.CRS_PREFIX, CommonNamespaces.CRSNS );
             xmlWriter.writeNamespace( CommonNamespaces.XSI_PREFIX, CommonNamespaces.XSINS );
             xmlWriter.writeAttribute( CommonNamespaces.XSI_PREFIX, CommonNamespaces.XSINS, "schemaLocation",
-                                      "http://www.deegree.org/crs Y:/WORKSPACE/D3_CORE/RESOURCES/SCHEMA/CRS/0.5.0/crsdefinition.xsd" );
+                                      "http://ICompoundCRS.deegree.org/crs Y:/WORKSPACE/D3_CORE/RESOURCES/SCHEMA/CRS/0.5.0/crsdefinition.xsd" );
             xmlWriter.writeAttribute( "version", "0.5.0" );
 
             xmlWriter.writeStartElement( CRSNS, "ProjectionsFile" );
@@ -1016,7 +1018,7 @@ public class CRSExporter extends CRSExporterBase {
      * @throws XMLStreamException
      */
     @Override
-    protected void export( PrimeMeridian pm, XMLStreamWriter xmlWriter )
+    protected void export( IPrimeMeridian pm, XMLStreamWriter xmlWriter )
                             throws XMLStreamException {
         if ( pm != null ) {
             xmlWriter.writeStartElement( CRSNS, "PrimeMeridian" );
@@ -1042,19 +1044,19 @@ public class CRSExporter extends CRSExporterBase {
      * @throws XMLStreamException
      */
     @Override
-    protected void export( CompoundCRS compoundCRS, XMLStreamWriter xmlWriter )
+    protected void export( ICompoundCRS compoundCRS, XMLStreamWriter xmlWriter )
                             throws XMLStreamException {
         if ( compoundCRS != null ) {
             xmlWriter.writeStartElement( CRSNS, "CompoundCRS" );
 
             exportIdentifiable( compoundCRS, xmlWriter );
-            CoordinateSystem underCRS = compoundCRS.getUnderlyingCRS();
+            ICRS underCRS = compoundCRS.getUnderlyingCRS();
             // usedCRS element
             xmlWriter.writeStartElement( CRSNS, "UsedCRS" );
             xmlWriter.writeCharacters( underCRS.getCode().getOriginal().toLowerCase() );
             xmlWriter.writeEndElement();
             // heightAxis element
-            Axis heightAxis = compoundCRS.getHeightAxis();
+            IAxis heightAxis = compoundCRS.getHeightAxis();
             export( heightAxis, "HeightAxis", xmlWriter );
             // defaultHeight element
             double axisHeight = compoundCRS.getDefaultHeight();
@@ -1076,7 +1078,7 @@ public class CRSExporter extends CRSExporterBase {
      * @throws XMLStreamException
      */
     @Override
-    protected void export( ProjectedCRS projectedCRS, XMLStreamWriter xmlWriter )
+    protected void export( IProjectedCRS projectedCRS, XMLStreamWriter xmlWriter )
                             throws XMLStreamException {
         if ( projectedCRS != null ) {
             xmlWriter.writeStartElement( CRSNS, "ProjectedCRS" );
@@ -1105,7 +1107,7 @@ public class CRSExporter extends CRSExporterBase {
      * @throws XMLStreamException
      */
     @Override
-    protected void export( Projection projection, XMLStreamWriter xmlWriter )
+    protected void export( IProjection projection, XMLStreamWriter xmlWriter )
                             throws XMLStreamException {
         if ( projection != null ) {
 
@@ -1120,7 +1122,7 @@ public class CRSExporter extends CRSExporterBase {
                 xmlWriter.writeStartElement( CRSNS, "StereographicAlternative" );
             } else if ( "TransverseMercator".equalsIgnoreCase( implName ) ) {
                 xmlWriter.writeStartElement( CRSNS, "TransverseMercator" );
-                if ( !( (TransverseMercator) projection ).getHemisphere() ) {
+                if ( !( (ITransverseMercator) projection ).getHemisphere() ) {
                     xmlWriter.writeAttribute( "northernHemisphere", "false" );
                 }
 
@@ -1156,7 +1158,7 @@ public class CRSExporter extends CRSExporterBase {
             xmlWriter.writeCharacters( Double.toString( projection.getFalseNorthing() ) );
             xmlWriter.writeEndElement();
             if ( "lambertConformalConic".equalsIgnoreCase( implName ) ) {
-                double paralellLatitude = ( (LambertConformalConic) projection ).getFirstParallelLatitude();
+                double paralellLatitude = ( (ILambertConformalConic) projection ).getFirstParallelLatitude();
                 if ( !Double.isNaN( paralellLatitude ) && Math.abs( paralellLatitude ) > EPS11 ) {
                     paralellLatitude = toDegrees( paralellLatitude );
                     xmlWriter.writeStartElement( CRSNS, "FirstParallelLatitude" );
@@ -1164,7 +1166,7 @@ public class CRSExporter extends CRSExporterBase {
                     xmlWriter.writeCharacters( Double.toString( paralellLatitude ) );
                     xmlWriter.writeEndElement();
                 }
-                paralellLatitude = ( (LambertConformalConic) projection ).getSecondParallelLatitude();
+                paralellLatitude = ( (ILambertConformalConic) projection ).getSecondParallelLatitude();
                 if ( !Double.isNaN( paralellLatitude ) && Math.abs( paralellLatitude ) > EPS11 ) {
                     paralellLatitude = toDegrees( paralellLatitude );
                     xmlWriter.writeStartElement( CRSNS, "SecondParallelLatitude" );
@@ -1175,7 +1177,7 @@ public class CRSExporter extends CRSExporterBase {
             } else if ( "stereographicAzimuthal".equalsIgnoreCase( implName ) ) {
                 xmlWriter.writeStartElement( CRSNS, "TrueScaleLatitude" );
                 // xmlWriter.writeAttribute( "inDegrees", "true" );
-                xmlWriter.writeCharacters( Double.toString( toDegrees( ( (StereographicAzimuthal) projection ).getTrueScaleLatitude() ) ) );
+                xmlWriter.writeCharacters( Double.toString( toDegrees( ( (IStereographicAzimuthal) projection ).getTrueScaleLatitude() ) ) );
                 xmlWriter.writeEndElement();
             }
             xmlWriter.writeEndElement();
@@ -1192,7 +1194,7 @@ public class CRSExporter extends CRSExporterBase {
      * @throws XMLStreamException
      */
     @Override
-    protected void export( GeographicCRS geoGraphicCRS, XMLStreamWriter xmlWriter )
+    protected void export( IGeographicCRS geoGraphicCRS, XMLStreamWriter xmlWriter )
                             throws XMLStreamException {
         if ( geoGraphicCRS != null ) {
             xmlWriter.writeStartElement( CRSNS, "GeographicCRS" );
@@ -1215,7 +1217,7 @@ public class CRSExporter extends CRSExporterBase {
      * @throws XMLStreamException
      */
     @Override
-    protected void export( GeocentricCRS geocentricCRS, XMLStreamWriter xmlWriter )
+    protected void export( IGeocentricCRS geocentricCRS, XMLStreamWriter xmlWriter )
                             throws XMLStreamException {
         if ( geocentricCRS != null ) {
             xmlWriter.writeStartElement( CRSNS, "GeocentricCRS" );
@@ -1237,13 +1239,13 @@ public class CRSExporter extends CRSExporterBase {
      * @throws XMLStreamException
      */
     @Override
-    protected void exportAbstractCRS( CoordinateSystem crs, XMLStreamWriter xmlWriter )
+    protected void exportAbstractCRS( ICRS crs, XMLStreamWriter xmlWriter )
                             throws XMLStreamException {
         if ( crs != null ) {
             exportIdentifiable( crs, xmlWriter );
 
-            Axis[] axes = crs.getAxis();
-            for ( Axis a : axes ) {
+            IAxis[] axes = crs.getAxis();
+            for ( IAxis a : axes ) {
                 export( a, "Axis", xmlWriter );
             }
 
@@ -1266,7 +1268,7 @@ public class CRSExporter extends CRSExporterBase {
      * @throws XMLStreamException
      */
     @Override
-    protected void export( Axis axis, String elName, XMLStreamWriter xmlWriter )
+    protected void export( IAxis axis, String elName, XMLStreamWriter xmlWriter )
                             throws XMLStreamException {
         if ( axis != null ) {
             xmlWriter.writeStartElement( CRSNS, elName );
@@ -1295,7 +1297,7 @@ public class CRSExporter extends CRSExporterBase {
      * @throws XMLStreamException
      */
     @Override
-    protected void export( Unit units, XMLStreamWriter xmlWriter )
+    protected void export( IUnit units, XMLStreamWriter xmlWriter )
                             throws XMLStreamException {
         if ( units != null ) {
             xmlWriter.writeStartElement( CRSNS, "Units" );
@@ -1315,7 +1317,7 @@ public class CRSExporter extends CRSExporterBase {
      * @throws XMLStreamException
      */
     @Override
-    protected void export( GeodeticDatum datum, XMLStreamWriter xmlWriter )
+    protected void export( IGeodeticDatum datum, XMLStreamWriter xmlWriter )
                             throws XMLStreamException {
         if ( datum != null ) {
             xmlWriter.writeStartElement( CRSNS, "GeodeticDatum" );
@@ -1325,7 +1327,7 @@ public class CRSExporter extends CRSExporterBase {
             xmlWriter.writeCharacters( datum.getEllipsoid().getCode().getOriginal().toLowerCase() );
             xmlWriter.writeEndElement();
             // usedPrimeMeridian element
-            PrimeMeridian pm = datum.getPrimeMeridian();
+            IPrimeMeridian pm = datum.getPrimeMeridian();
             if ( pm != null ) {
                 xmlWriter.writeStartElement( CRSNS, "UsedPrimeMeridian" );
                 xmlWriter.writeCharacters( pm.getCode().getOriginal().toLowerCase() );
@@ -1352,7 +1354,7 @@ public class CRSExporter extends CRSExporterBase {
      * @throws XMLStreamException
      */
     @Override
-    protected void export( Ellipsoid ellipsoid, XMLStreamWriter xmlWriter )
+    protected void export( IEllipsoid ellipsoid, XMLStreamWriter xmlWriter )
                             throws XMLStreamException {
         if ( ellipsoid != null ) {
             xmlWriter.writeStartElement( CRSNS, "Ellipsoid" );
@@ -1386,7 +1388,7 @@ public class CRSExporter extends CRSExporterBase {
      * @throws XMLStreamException
      */
     @Override
-    protected void exportIdentifiable( CRSIdentifiable identifiable, XMLStreamWriter xmlWriter )
+    protected void exportIdentifiable( CRSResource identifiable, XMLStreamWriter xmlWriter )
                             throws XMLStreamException {
         // ids
         CRSCodeType[] identifiers = identifiable.getCodes();
@@ -1444,10 +1446,10 @@ public class CRSExporter extends CRSExporterBase {
 
     }
 
-    static class IdComparer implements Comparator<CRSIdentifiable> {
+    static class IdComparer implements Comparator<CRSResource> {
 
         @Override
-        public int compare( CRSIdentifiable o1, CRSIdentifiable o2 ) {
+        public int compare( CRSResource o1, CRSResource o2 ) {
             String first = o1.getCode().getOriginal();
             String second = o2.getCode().getOriginal();
             int result = first.compareToIgnoreCase( second );

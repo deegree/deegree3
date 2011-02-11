@@ -58,7 +58,8 @@ import org.deegree.commons.xml.NamespaceBindings;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;
-import org.deegree.cs.CRS;
+import org.deegree.cs.coordinatesystems.ICRS;
+import org.deegree.cs.persistence.CRSManager;
 import org.deegree.filter.Filter;
 import org.deegree.filter.expression.PropertyName;
 import org.deegree.filter.sort.SortProperty;
@@ -200,9 +201,9 @@ public class GetFeatureKVPAdapter extends AbstractWFSRequestKVPAdapter {
 
         // optional: SRSNAME (not specified in WFS 1.0.0, deegree extension)
         String srsName = kvpParams.get( "SRSNAME" );
-        CRS srs = null;
+        ICRS srs = null;
         if ( srsName != null ) {
-            srs = new CRS( srsName );
+            srs = CRSManager.getCRSRef( srsName );
         }
 
         Query[] queries = null;
@@ -228,9 +229,9 @@ public class GetFeatureKVPAdapter extends AbstractWFSRequestKVPAdapter {
             }
 
             String[] coordList = bboxStr.split( "," );
-            CRS bboxCrs = null;
+            ICRS bboxCrs = null;
             if ( coordList.length % 2 == 1 ) {
-                bboxCrs = new CRS( coordList[coordList.length - 1] );
+                bboxCrs = CRSManager.getCRSRef( coordList[coordList.length - 1] );
             }
 
             Envelope bbox = createEnvelope( bboxStr, bboxCrs );
@@ -313,9 +314,9 @@ public class GetFeatureKVPAdapter extends AbstractWFSRequestKVPAdapter {
 
         // optional: SRSNAME
         String srsName = kvpParams.get( "SRSNAME" );
-        CRS srs = null;
+        ICRS srs = null;
         if ( srsName != null ) {
-            srs = new CRS( srsName );
+            srs = CRSManager.getCRSRef( srsName );
         }
 
         // optional: MAXFEATURES
@@ -413,9 +414,9 @@ public class GetFeatureKVPAdapter extends AbstractWFSRequestKVPAdapter {
             // - WFS 1.1.0 spec, 14.3.3: coordinates should be in WGS84
             // - CITE tests, wfs:wfs-1.1.0-Basic-GetFeature-tc8.1: If no CRS reference is provided, a service-defined
             // default value must be assumed.
-            CRS bboxCrs = null;
+            ICRS bboxCrs = null;
             if ( coordList.length % 2 == 1 ) {
-                bboxCrs = new CRS( coordList[coordList.length - 1] );
+                bboxCrs = CRSManager.getCRSRef( coordList[coordList.length - 1] );
             }
 
             Envelope bbox = createEnvelope( bboxStr, bboxCrs );
@@ -499,7 +500,7 @@ public class GetFeatureKVPAdapter extends AbstractWFSRequestKVPAdapter {
     }
 
     @SuppressWarnings("boxing")
-    private static Envelope createEnvelope( String bboxStr, CRS srs ) {
+    private static Envelope createEnvelope( String bboxStr, ICRS srs ) {
         String[] coordList = bboxStr.split( "," );
 
         int n = coordList.length / 2;
