@@ -60,7 +60,6 @@ import org.deegree.cs.CRSCodeType;
 import org.deegree.cs.CRSIdentifiable;
 import org.deegree.cs.components.IEllipsoid;
 import org.deegree.cs.components.IGeodeticDatum;
-import org.deegree.cs.coordinatesystems.CRS.CRSType;
 import org.deegree.cs.coordinatesystems.CompoundCRS;
 import org.deegree.cs.coordinatesystems.GeocentricCRS;
 import org.deegree.cs.coordinatesystems.GeographicCRS;
@@ -70,6 +69,7 @@ import org.deegree.cs.coordinatesystems.IGeocentricCRS;
 import org.deegree.cs.coordinatesystems.IGeographicCRS;
 import org.deegree.cs.coordinatesystems.IProjectedCRS;
 import org.deegree.cs.coordinatesystems.ProjectedCRS;
+import org.deegree.cs.coordinatesystems.CRS.CRSType;
 import org.deegree.cs.exceptions.TransformationException;
 import org.deegree.cs.persistence.CRSStore;
 import org.deegree.cs.refs.coordinatesystem.CRSRef;
@@ -166,8 +166,6 @@ public class TransformationFactory {
      * 
      * @param provider
      *            used to do lookups of transformations
-     * @param preferredTransform
-     *            to use for datum shift necessities
      */
     public TransformationFactory( CRSStore provider ) {
         this.provider = provider;
@@ -222,7 +220,7 @@ public class TransformationFactory {
      *             if the sourceCRS or targetCRS are <code>null</code>.
      * 
      */
-    public Transformation createFromCoordinateSystems( final ICRS sourceCRS, final ICRS targetCRS,
+    public Transformation createFromCoordinateSystems( ICRS sourceCRS, ICRS targetCRS,
                                                        List<Transformation> transformationsToBeUsed )
                             throws TransformationException {
         if ( sourceCRS == null ) {
@@ -241,6 +239,13 @@ public class TransformationFactory {
             final Matrix matrix = new Matrix( sourceCRS.getDimension() + 1 );
             matrix.setIdentity();
             return new IdentityTransform( sourceCRS, targetCRS );
+        }
+
+        if ( sourceCRS instanceof CRSRef ) {
+            sourceCRS = ( (CRSRef) sourceCRS ).getReferencedObject();
+        }
+        if ( targetCRS instanceof CRSRef ) {
+            targetCRS = ( (CRSRef) targetCRS ).getReferencedObject();
         }
 
         List<Transformation> toBeUsed = copyTransformations( transformationsToBeUsed );
@@ -388,8 +393,6 @@ public class TransformationFactory {
      *            the original requested transformations.
      * @return a copy of the list without any duplicates or <code>null</code> if the given list was null or the empty
      *         list if the given list was empty.
-     * @throws TransformationException
-     *             if an allignment to an evantual NTv2 could not be done.
      */
     private List<Transformation> copyTransformations( List<Transformation> originalRequested ) {
         if ( originalRequested == null || originalRequested.isEmpty() ) {
@@ -695,8 +698,7 @@ public class TransformationFactory {
                  */
                 // if ( helmertTransformation != null ) {
                 // create a 2d->3d mapping.
-                final Transformation axisAligned = createMatrixTransform( sourceGeographic,
-                                                                          sourceGeocentric,
+                final Transformation axisAligned = createMatrixTransform( sourceGeographic, sourceGeocentric,
                                                                           swapAxis( sourceGeographic,
                                                                                     GeographicCRS.WGS84 ) );
                 if ( LOG.isDebugEnabled() ) {
@@ -739,8 +741,7 @@ public class TransformationFactory {
                  */
                 // if ( helmertTransformation != null ) {
                 // create a 2d->3d mapping.
-                final Transformation axisAligned = createMatrixTransform( targetGeocentric,
-                                                                          targetGeographic,
+                final Transformation axisAligned = createMatrixTransform( targetGeocentric, targetGeographic,
                                                                           swapAxis( GeographicCRS.WGS84,
                                                                                     targetGeographic ) );
                 final Transformation geoCentricTransform = new GeocentricTransform( targetCRS, targetGeocentric );
@@ -795,7 +796,7 @@ public class TransformationFactory {
             }
         }
         // prepare the found transformation if it is a helmert transfomation
-        if ( !isIdentity( result ) && "Helmert".equalsIgnoreCase( result.getImplementationName() )
+        if ( result != null && !isIdentity( result ) && "Helmert".equalsIgnoreCase( result.getImplementationName() )
              && this.preferredDSTransform.isPreferred( result ) ) {
             LOG.debug( "Creating geographic -> geographic transformation: from (source): " + sourceCRS.getCode()
                        + " to(target): " + targetCRS.getCode() + " based on a given Helmert transformation" );
@@ -874,7 +875,7 @@ public class TransformationFactory {
 
                         if ( step3 != null ) {
                             step3.inverse();// call inverseTransform from step
-                                            // 3.
+                            // 3.
                         }
                         return concatenate( step1, step2, step3 );
                     }
@@ -1003,8 +1004,7 @@ public class TransformationFactory {
                     sourceGeocentric = targetCRS;
                 }
             }
-            final Transformation axisAlign = createMatrixTransform( sourceCRS,
-                                                                    createWGSAlligned( sourceCRS ),
+            final Transformation axisAlign = createMatrixTransform( sourceCRS, createWGSAlligned( sourceCRS ),
                                                                     swapAndRotateGeoAxis( sourceCRS,
                                                                                           GeographicCRS.WGS84 ) );
             if ( LOG.isDebugEnabled() ) {
@@ -1133,7 +1133,7 @@ public class TransformationFactory {
     /**
      * Creates a transformation between a projected and a geographic coordinate systems. This method is automatically
      * invoked by {@link #createFromCoordinateSystems createFromCoordinateSystems(...)}. The default implementation
-     * returns <code>{@link #createTransformation(GeographicCRS, ProjectedCRS)} createTransformation}(targetCRS,
+     * returns <code>{@link #createTransformation(IGeographicCRS, IProjectedCRS)} createTransformation}(targetCRS,
      * sourceCRS) inverse)</code>.
      * 
      * @param sourceCRS
@@ -1268,7 +1268,7 @@ public class TransformationFactory {
                 }
                 if ( forwardAxisAlign != null ) {
                     resultMatrix.mul( forwardAxisAlign ); // step4 =
-                                                          // step4*step3*step2*step1
+                    // step4*step3*step2*step1
                 }
             } else if ( inverseToWGS != null ) {
                 resultMatrix = inverseToWGS;
@@ -1278,7 +1278,7 @@ public class TransformationFactory {
                 }
                 if ( forwardAxisAlign != null ) {
                     resultMatrix.mul( forwardAxisAlign ); // step4 =
-                                                          // step3*step2*step1
+                    // step3*step2*step1
                 }
             } else if ( forwardToWGS != null ) {
                 resultMatrix = forwardToWGS;
