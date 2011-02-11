@@ -41,7 +41,6 @@ import static org.apache.commons.io.IOUtils.closeQuietly;
 import static org.apache.commons.io.IOUtils.toByteArray;
 import static org.deegree.commons.utils.net.HttpUtils.STREAM;
 import static org.deegree.commons.utils.net.HttpUtils.post;
-import static org.deegree.cs.CRS.EPSG_4326;
 import static org.deegree.protocol.wms.WMSConstants.WMSRequestType.GetMap;
 
 import java.awt.image.BufferedImage;
@@ -66,9 +65,10 @@ import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.project.MavenProject;
 import org.deegree.commons.utils.Pair;
-import org.deegree.cs.CRS;
+import org.deegree.cs.CRSUtils;
 import org.deegree.cs.exceptions.TransformationException;
 import org.deegree.cs.exceptions.UnknownCRSException;
+import org.deegree.cs.persistence.CRSManager;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryFactory;
 import org.deegree.geometry.GeometryTransformer;
@@ -148,11 +148,11 @@ public class ServiceIntegrationTestHelper {
                 if ( bbox == null ) {
                     bbox = client.getLatLonBoundingBox( layer );
                     if ( bbox == null ) {
-                        bbox = new GeometryFactory().createEnvelope( -180, -90, 180, 90, EPSG_4326 );
+                        bbox = new GeometryFactory().createEnvelope( -180, -90, 180, 90, CRSUtils.EPSG_4326 );
                     }
-                    bbox = new GeometryTransformer( new CRS( srs ) ).transform( bbox );
+                    bbox = new GeometryTransformer( CRSManager.lookup( srs ) ).transform( bbox );
                 }
-                Pair<BufferedImage, String> map = client.getMap( layers, 100, 100, bbox, new CRS( srs ),
+                Pair<BufferedImage, String> map = client.getMap( layers, 100, 100, bbox, CRSManager.lookup( srs ),
                                                                  client.getFormats( GetMap ).getFirst(), true, false,
                                                                  -1, false, null );
                 if ( map.first == null ) {
