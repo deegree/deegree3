@@ -144,7 +144,7 @@ public class PostGISDDLCreator {
         for ( short ftId = 0; ftId < schema.getFts(); ftId++ ) {
             QName ftName = schema.getFtName( ftId );
             FeatureType ft = schema.getFeatureType( ftName );
-            FeatureTypeMapping ftMapping = schema.getMapping( ftName );
+            FeatureTypeMapping ftMapping = schema.getFtMapping( ftName );
             if ( ftMapping != null ) {
                 ddl.addAll( process( ft, ftMapping ) );
             }

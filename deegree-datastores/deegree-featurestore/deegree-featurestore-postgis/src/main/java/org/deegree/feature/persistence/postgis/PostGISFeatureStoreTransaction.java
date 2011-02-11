@@ -234,7 +234,7 @@ public class PostGISFeatureStoreTransaction implements FeatureStoreTransaction {
             try {
                 analysis = schema.analyzeId( id );
                 LOG.debug( "Analysis: " + analysis );
-                FeatureTypeMapping ftMapping = schema.getMapping( analysis.getFeatureType().getName() );
+                FeatureTypeMapping ftMapping = schema.getFtMapping( analysis.getFeatureType().getName() );
                 FIDMapping fidMapping = ftMapping.getFidMapping();
                 PreparedStatement stmt = null;
                 try {
@@ -780,7 +780,7 @@ public class PostGISFeatureStoreTransaction implements FeatureStoreTransaction {
     private int performUpdateRelational( QName ftName, List<Property> replacementProps, IdFilter filter )
                             throws FeatureStoreException {
 
-        FeatureTypeMapping ftMapping = schema.getMapping( ftName );
+        FeatureTypeMapping ftMapping = schema.getFtMapping( ftName );
         FIDMapping fidMapping = ftMapping.getFidMapping();
 
         List<Object> sqlObjects = new ArrayList<Object>( replacementProps.size() );

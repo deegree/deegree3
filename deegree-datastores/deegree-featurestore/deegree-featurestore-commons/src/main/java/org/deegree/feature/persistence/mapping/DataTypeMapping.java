@@ -1,7 +1,7 @@
 //$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
- Copyright (C) 2001-2009 by:
+ Copyright (C) 2001-2011 by:
  - Department of Geography, University of Bonn -
  and
  - lat/lon GmbH -
@@ -35,6 +35,32 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.feature.persistence.mapping;
 
-public class CombinedMapping {
+import javax.xml.namespace.QName;
 
+import org.apache.xerces.xs.XSElementDeclaration;
+import org.deegree.commons.jdbc.QTableName;
+
+/**
+ * Defines the mapping between an {@link XSElementDeclaration} and a table.
+ * 
+ * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
+ * @author last edited by: $Author$
+ * 
+ * @version $Revision$, $Date$
+ */
+public class DataTypeMapping {
+
+    private final XSElementDeclaration elDecl;
+
+    private final QTableName table;
+
+    public DataTypeMapping( XSElementDeclaration elDecl, QTableName table ) {
+        this.elDecl = elDecl;
+        this.table = table;
+    }
+
+    public QName getElementName() {
+        // TODO Auto-generated method stub
+        return null;
+    }
 }

@@ -73,6 +73,8 @@ public class MappedApplicationSchema extends ApplicationSchema {
 
     private final Map<QName, FeatureTypeMapping> ftNameToFtMapping = new HashMap<QName, FeatureTypeMapping>();
 
+    private final Map<QName, DataTypeMapping> dtNameToDtMapping = new HashMap<QName, DataTypeMapping>();
+
     private final ICRS storageCRS;
 
     private final IdAnalyzer idAnalyzer;
@@ -94,6 +96,8 @@ public class MappedApplicationSchema extends ApplicationSchema {
      * @param ftMappings
      *            relational mapping information for the feature types, can be <code>null</code> (for BLOB-only
      *            mappings)
+     * @param dtMappings
+     *            relational mapping information for the non-feature data types, can be <code>null</code>
      * @param storageSRS
      *            CRS used for storing geometries (BLOB mode), must not be <code>null</code>
      * @param bboxMapping
@@ -105,13 +109,18 @@ public class MappedApplicationSchema extends ApplicationSchema {
      */
     public MappedApplicationSchema( FeatureType[] fts, Map<FeatureType, FeatureType> ftToSuperFt,
                                     Map<String, String> prefixToNs, GMLSchemaInfoSet xsModel,
-                                    FeatureTypeMapping[] ftMappings, ICRS storageSRS, BBoxTableMapping bboxMapping,
-                                    BlobMapping blobMapping ) {
+                                    FeatureTypeMapping[] ftMappings, DataTypeMapping[] dtMappings, ICRS storageSRS,
+                                    BBoxTableMapping bboxMapping, BlobMapping blobMapping ) {
 
         super( fts, ftToSuperFt, prefixToNs, xsModel );
         if ( ftMappings != null ) {
             for ( FeatureTypeMapping ftMapping : ftMappings ) {
                 ftNameToFtMapping.put( ftMapping.getFeatureType(), ftMapping );
+            }
+        }
+        if ( dtMappings != null ) {
+            for ( DataTypeMapping dtMapping : dtMappings ) {
+                dtNameToDtMapping.put( dtMapping.getElementName(), dtMapping );
             }
         }
         this.storageCRS = storageSRS;
@@ -141,7 +150,7 @@ public class MappedApplicationSchema extends ApplicationSchema {
      * 
      * @return relational mappings, never <code>null</code>
      */
-    public Map<QName, FeatureTypeMapping> getMappings() {
+    public Map<QName, FeatureTypeMapping> getFtMappings() {
         return ftNameToFtMapping;
     }
 
@@ -153,8 +162,17 @@ public class MappedApplicationSchema extends ApplicationSchema {
      * @return the corresponding mapping, may be <code>null</code> (if the feature type does not have a relational
      *         mapping)
      */
-    public FeatureTypeMapping getMapping( QName ftName ) {
+    public FeatureTypeMapping getFtMapping( QName ftName ) {
         return ftNameToFtMapping.get( ftName );
+    }
+
+    /**
+     * Returns all relational data type mappings.
+     * 
+     * @return relational mappings, never <code>null</code>
+     */
+    public Map<QName, DataTypeMapping> getDtMappings() {
+        return dtNameToDtMapping;
     }
 
     /**

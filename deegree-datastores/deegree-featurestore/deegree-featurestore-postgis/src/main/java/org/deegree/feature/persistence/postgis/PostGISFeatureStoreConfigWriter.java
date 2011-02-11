@@ -160,7 +160,7 @@ public class PostGISFeatureStoreConfigWriter {
                             throws XMLStreamException {
 
         LOG.info( "Feature type '" + ft.getName() + "'" );
-        FeatureTypeMapping ftMapping = schema.getMapping( ft.getName() );
+        FeatureTypeMapping ftMapping = schema.getFtMapping( ft.getName() );
 
         writer.writeStartElement( CONFIG_NS, "FeatureType" );
         writer.writeAttribute( "name", getName( ft.getName() ) );

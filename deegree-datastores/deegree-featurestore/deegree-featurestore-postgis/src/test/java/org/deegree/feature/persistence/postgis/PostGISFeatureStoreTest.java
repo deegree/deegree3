@@ -188,7 +188,7 @@ public class PostGISFeatureStoreTest {
             FeatureType ft = schema.getFeatureType( QName.valueOf( "{urn:x-inspire:specification:gmlas:Addresses:3.0}Address" ) );
             Assert.assertNotNull( ft );
             Assert.assertEquals( 13, ft.getPropertyDeclarations().size() );
-            FeatureTypeMapping mapping = schema.getMapping( ft.getName() );
+            FeatureTypeMapping mapping = schema.getFtMapping( ft.getName() );
             Assert.assertNotNull( mapping );
 
             Mapping propMapping = mapping.getMapping( QName.valueOf( "{urn:x-inspire:specification:gmlas:Addresses:3.0}inspireId" ) );

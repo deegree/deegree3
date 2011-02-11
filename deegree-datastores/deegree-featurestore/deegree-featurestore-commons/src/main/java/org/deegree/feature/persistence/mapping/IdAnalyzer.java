@@ -66,7 +66,7 @@ class IdAnalyzer {
     IdAnalyzer( MappedApplicationSchema schema ) {
         for ( FeatureType ft : schema.getFeatureTypes() ) {
             if ( !ft.isAbstract() ) {
-                FeatureTypeMapping ftMapping = schema.getMapping( ft.getName() );
+                FeatureTypeMapping ftMapping = schema.getFtMapping( ft.getName() );
                 if ( ftMapping != null ) {
                     FIDMapping fidMapping = ftMapping.getFidMapping();
                     if ( fidMapping != null ) {

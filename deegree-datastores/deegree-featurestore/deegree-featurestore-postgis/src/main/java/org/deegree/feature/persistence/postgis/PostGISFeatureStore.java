@@ -187,7 +187,7 @@ public class PostGISFeatureStore implements SQLFeatureStore {
      * @return relational mapping for the feature type, may be <code>null</code> (no relational mapping)
      */
     FeatureTypeMapping getMapping( QName ftName ) {
-        return schema.getMapping( ftName );
+        return schema.getFtMapping( ftName );
     }
 
     @Override
@@ -212,7 +212,7 @@ public class PostGISFeatureStore implements SQLFeatureStore {
                 if ( blobMapping != null ) {
                     env = getEnvelope( ft.getName(), blobMapping );
                 } else {
-                    env = getEnvelope( schema.getMapping( ft.getName() ) );
+                    env = getEnvelope( schema.getFtMapping( ft.getName() ) );
                 }
                 ftToBBox.put( ft, env );
             } else {
@@ -410,7 +410,7 @@ public class PostGISFeatureStore implements SQLFeatureStore {
         }
 
         FeatureType ft = idAnalysis.getFeatureType();
-        FeatureTypeMapping mapping = schema.getMapping( ft.getName() );
+        FeatureTypeMapping mapping = schema.getFtMapping( ft.getName() );
 
         Connection conn = null;
         PreparedStatement stmt = null;
@@ -689,7 +689,7 @@ public class PostGISFeatureStore implements SQLFeatureStore {
 
         QName ftName = ftNameToIdKernels.keySet().iterator().next();
         FeatureType ft = schema.getFeatureType( ftName );
-        FeatureTypeMapping ftMapping = schema.getMapping( ftName );
+        FeatureTypeMapping ftMapping = schema.getFtMapping( ftName );
         FIDMapping fidMapping = ftMapping.getFidMapping();
         List<String> idKernels = ftNameToIdKernels.get( ftName );
 

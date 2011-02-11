@@ -180,6 +180,7 @@ public abstract class AbstractFeature implements Feature {
                 LOG.warn( "Encountered one-dimensional bbox. Ignoring for feature envelope." );
             }
         } else if ( node instanceof GenericXMLElementContent ) {
+            // e.g. INSPIRE Address geometry
             GenericXMLElementContent xml = (GenericXMLElementContent) node;
             for ( TypedObjectNode child : xml.getChildren() ) {
                 env = mergeEnvelope( child, env );

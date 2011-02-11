@@ -193,7 +193,7 @@ public class MappedXPath {
                     throw new UnmappableException( msg );
                 }
 
-                FeatureTypeMapping valueFtMapping = schema.getMapping( fpt.getValueFt().getName() );
+                FeatureTypeMapping valueFtMapping = schema.getFtMapping( fpt.getValueFt().getName() );
                 if ( valueFtMapping == null ) {
                     String msg = "Feature type '" + ft.getName() + "' is not mapped.";
                     throw new UnmappableException( msg );
@@ -225,7 +225,7 @@ public class MappedXPath {
                          + "' does not define a property with name '" + propName + "'.";
             throw new UnmappableException( msg );
         }
-        ftMapping = schema.getMapping( ft.getName() );
+        ftMapping = schema.getFtMapping( ft.getName() );
         if ( ftMapping == null ) {
             String msg = "Feature type '" + ft.getName() + "' is not mapped.";
             throw new UnmappableException( msg );

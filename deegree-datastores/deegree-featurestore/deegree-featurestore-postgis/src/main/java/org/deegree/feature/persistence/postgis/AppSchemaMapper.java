@@ -69,6 +69,7 @@ import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.feature.persistence.BlobCodec;
 import org.deegree.feature.persistence.mapping.BBoxTableMapping;
 import org.deegree.feature.persistence.mapping.BlobMapping;
+import org.deegree.feature.persistence.mapping.DataTypeMapping;
 import org.deegree.feature.persistence.mapping.FeatureTypeMapping;
 import org.deegree.feature.persistence.mapping.JoinChain;
 import org.deegree.feature.persistence.mapping.MappedApplicationSchema;
@@ -122,6 +123,8 @@ public class AppSchemaMapper {
 
     private final String storageSrid;
 
+    private List<DataTypeMapping> dtMappings = new ArrayList<DataTypeMapping>();
+
     // TODO
     private final CoordinateDimension storageDim = DIM_2;
 
@@ -160,8 +163,10 @@ public class AppSchemaMapper {
         BBoxTableMapping bboxMapping = createBlobMapping ? generateBBoxMapping() : null;
         BlobMapping blobMapping = createBlobMapping ? generateBlobMapping() : null;
 
-        this.mappedSchema = new MappedApplicationSchema( fts, ftToSuperFt, prefixToNs, xsModel, ftMappings, storageCrs,
-                                                         bboxMapping, blobMapping );
+        DataTypeMapping[] dtMappings = this.dtMappings.toArray( new DataTypeMapping[this.dtMappings.size()] );
+
+        this.mappedSchema = new MappedApplicationSchema( fts, ftToSuperFt, prefixToNs, xsModel, ftMappings, dtMappings,
+                                                         storageCrs, bboxMapping, blobMapping );
     }
 
     /**
@@ -269,7 +274,7 @@ public class AppSchemaMapper {
         PropertyName path = new PropertyName( pt.getName() );
         JoinChain jc = null;
         MappingContext mc2 = null;
-        MappingExpression mapping = null;        
+        MappingExpression mapping = null;
         if ( pt.getMaxOccurs() == 1 ) {
             mc2 = mcManager.mapOneToOneElement( mc, pt.getName() );
             mapping = new DBField( mc2.getColumn() );
@@ -278,7 +283,7 @@ public class AppSchemaMapper {
             jc = generateJoinChain( mc, mc2 );
             mapping = new DBField( "ref" );
         }
-        
+
         return new FeatureMapping( path, mapping, pt.getFTName(), jc );
     }
 
@@ -313,7 +318,7 @@ public class AppSchemaMapper {
         MappingContext propMc = null;
         MappingContext codeSpaceMc = null;
         JoinChain jc = null;
-        MappingExpression mapping = null;        
+        MappingExpression mapping = null;
         if ( pt.getMaxOccurs() == 1 ) {
             propMc = mcManager.mapOneToOneElement( mc, pt.getName() );
             codeSpaceMc = mcManager.mapOneToOneAttribute( mc, new QName( "codeSpace" ) );
@@ -328,10 +333,10 @@ public class AppSchemaMapper {
         return new CodeMapping( path, mapping, STRING, jc, csMapping );
     }
 
-    private JoinChain generateJoinChain (MappingContext from, MappingContext to ) {
+    private JoinChain generateJoinChain( MappingContext from, MappingContext to ) {
         return new JoinChain( new DBField( from.getTable(), "id" ), new DBField( to.getTable(), "parentfk" ) );
     }
-    
+
     private List<Mapping> generateMapping( XSComplexTypeDefinition typeDef, MappingContext mc,
                                            Map<QName, QName> elements ) {
 

@@ -169,7 +169,7 @@ class SchemaBuilderRelational {
     MappedApplicationSchema getMappedSchema() {
         FeatureType[] fts = ftNameToFt.values().toArray( new FeatureType[ftNameToFt.size()] );
         FeatureTypeMapping[] ftMappings = ftNameToMapping.values().toArray( new FeatureTypeMapping[ftNameToMapping.size()] );
-        return new MappedApplicationSchema( fts, null, null, null, ftMappings, null, null, null );
+        return new MappedApplicationSchema( fts, null, null, null, ftMappings, null, null, null, null );
     }
 
     private void process( FeatureTypeDecl ftDecl )

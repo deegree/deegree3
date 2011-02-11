@@ -210,7 +210,7 @@ class SchemaBuilderBLOB {
 
         mappedSchema = new MappedApplicationSchema( appSchema.getFeatureTypes(), appSchema.getFtToSuperFt(),
                                                     appSchema.getNamespaceBindings(), appSchema.getXSModel(),
-                                                    ftMappings, storageCRS, bboxMapping, blobMapping );
+                                                    ftMappings, null, storageCRS, bboxMapping, blobMapping );
     }
 
     public MappedApplicationSchema getMappedSchema() {
