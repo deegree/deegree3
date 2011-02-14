@@ -85,7 +85,7 @@ public class MetadataStoreConfig implements Serializable {
         MetadataImporter msImporter = new MetadataImporter( ms );
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put( "msConfig", this );
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put( "msImporter", msImporter );
-        return "/console/metadatastore/importer";
+        return "/console/metadatastore/importer?faces-redirect=true";
     }
 
     public String createTables()
@@ -102,7 +102,7 @@ public class MetadataStoreConfig implements Serializable {
             String msg = "IOException: " + e.getMessage();
             throw new MetadataStoreException( msg );
         }
-        SQLExecution execution = new SQLExecution( connId, sql );
+        SQLExecution execution = new SQLExecution( connId, sql, "/console/metadatastore/buttons" );
 
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put( "execution", execution );
         return "/console/generic/sql.jsf?faces-redirect=true";
