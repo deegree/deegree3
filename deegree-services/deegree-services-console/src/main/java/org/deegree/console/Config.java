@@ -58,9 +58,11 @@ import lombok.Getter;
 import lombok.Setter;
 
 import org.apache.commons.io.IOUtils;
+import org.deegree.client.util.FacesUtil;
 import org.deegree.commons.config.ResourceManagerMetadata;
 import org.deegree.commons.config.ResourceProvider;
 import org.deegree.commons.xml.XMLAdapter;
+import org.deegree.services.OWSProvider;
 
 /**
  * 
@@ -91,7 +93,7 @@ public class Config implements Comparable<Config> {
 
     @Getter
     private boolean activated;
-    
+
     @Getter
     @Setter
     private String content;
@@ -99,6 +101,9 @@ public class Config implements Comparable<Config> {
     private final ConfigManager manager;
 
     private final String resourceOutcome;
+
+    @Getter
+    private String capabilitiesURL;
 
     public Config( File location, ResourceManagerMetadata md, ConfigManager manager, String prefix,
                    String resourceOutcome ) throws XMLStreamException, FactoryConfigurationError, IOException {
@@ -122,6 +127,11 @@ public class Config implements Comparable<Config> {
                     schemaURL = p.getConfigSchema();
                     template = p.getConfigTemplates().values().iterator().next();
                     schemaAsText = schemaURL == null ? null : IOUtils.toString( in2 = schemaURL.openStream() );
+                    if ( p instanceof OWSProvider<?> ) {
+                        capabilitiesURL = FacesUtil.getServerURL()
+                                          + "services?request=GetCapabilities&service="
+                                          + ( (OWSProvider<?>) p ).getImplementationMetadata().getImplementedServiceName();
+                    }
                     return;
                 }
             }
