@@ -57,6 +57,8 @@ public class Reference<T extends Object> implements Object {
 
     private T object;
 
+    private ReferenceResolvingException exception;
+
     /**
      * Creates a new {@link Reference} instance.
      * 
@@ -119,11 +121,16 @@ public class Reference<T extends Object> implements Object {
     @SuppressWarnings("unchecked")
     public T getReferencedObject()
                             throws ReferenceResolvingException {
+        if ( exception != null ) {
+            throw exception;
+        }
         if ( object == null ) {
             object = (T) resolver.getObject( uri, baseURL );
             if ( object == null ) {
-                String msg = "Unable to resolve reference to '" + uri + "'.";
-                throw new ReferenceResolvingException( msg );
+                synchronized ( this ) {
+                    String msg = "Unable to resolve reference to '" + uri + "'.";
+                    throw exception = new ReferenceResolvingException( msg );
+                }
             }
         }
         return object;
