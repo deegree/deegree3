@@ -467,7 +467,7 @@ public class WMSClient111 {
         url += "request=GetFeatureInfo&version=1.1.1&service=WMS&layers=" + lays + "&query_layers=" + lays
                + "&styles=&width=" + width + "&height=" + height + "&bbox=" + bbox.getMin().get0() + ","
                + bbox.getMin().get1() + "," + bbox.getMax().get0() + "," + bbox.getMax().get1() + "&srs="
-               + srs.getName() + "&format=" + getFormats( GetMap ).getFirst() + "&info_format=application/vnd.ogc.gml"
+               + srs.getAlias() + "&format=" + getFormats( GetMap ).getFirst() + "&info_format=application/vnd.ogc.gml"
                + "&x=" + x + "&y=" + y + "&feature_count=" + count;
 
         URL theUrl = new URL( url );
@@ -705,7 +705,7 @@ public class WMSClient111 {
                 }
                 url += "request=GetMap&version=1.1.1&service=WMS&layers=" + join( ",", layers ) + "&styles=&width="
                        + width + "&height=" + height + "&bbox=" + bbox.getMin().get0() + "," + bbox.getMin().get1()
-                       + "," + bbox.getMax().get0() + "," + bbox.getMax().get1() + "&srs=" + srs.getName() + "&format="
+                       + "," + bbox.getMax().get0() + "," + bbox.getMax().get1() + "&srs=" + srs.getAlias() + "&format="
                        + format + "&transparent=" + transparent;
 
                 URL theUrl = new URL( url );

@@ -216,7 +216,7 @@ public class VectorLayerAdapter {
     public static VectorLayerImpl createVectorLayer( Geometry g ) {
 
         // create vector layer
-        VectorLayerImpl layer = new VectorLayerImpl( "GeometryLayer", g.getCoordinateSystem().getName() );
+        VectorLayerImpl layer = new VectorLayerImpl( "GeometryLayer", g.getCoordinateSystem().getAlias() );
 
         // add geometry to layer
         layer.addFeature( createJTSGeometryFromGeometry( g ), null );
@@ -548,7 +548,7 @@ public class VectorLayerAdapter {
         Property[] geoms = f.getGeometryProperties();
         if ( geoms.length > 0 ) {
             Geometry g = (Geometry) geoms[0].getValue();
-            crs = g.getCoordinateSystem().getName();
+            crs = g.getCoordinateSystem().getAlias();
         }
 
         return crs;

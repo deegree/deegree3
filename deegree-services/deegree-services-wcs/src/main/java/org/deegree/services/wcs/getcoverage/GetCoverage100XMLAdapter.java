@@ -96,7 +96,7 @@ public class GetCoverage100XMLAdapter extends WCSRequest100XMLAdapter {
 
         Envelope requestEnvelope = parseEnvelope();
 
-        String outputCRS = parseOutputCRS( requestEnvelope.getCoordinateSystem().getName() );
+        String outputCRS = parseOutputCRS( requestEnvelope.getCoordinateSystem().getAlias() );
 
         Grid grid = parseGrid( requestEnvelope, outputCRS );
 

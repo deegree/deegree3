@@ -877,9 +877,9 @@ public class GML3GeometryWriter implements GMLGeometryWriter {
         // Envelope does not have gml:id (actually it is not a gml:Geometry element)
         writer.writeStartElement( "gml", "Envelope", gmlNs );
         if ( outputCRS != null ) {
-            writer.writeAttribute( "srsName", outputCRS.getName() );
+            writer.writeAttribute( "srsName", outputCRS.getAlias() );
         } else if ( envelope.getCoordinateSystem() != null ) {
-            writer.writeAttribute( "srsName", envelope.getCoordinateSystem().getName() );
+            writer.writeAttribute( "srsName", envelope.getCoordinateSystem().getAlias() );
         }
 
         if ( version == GML_30 ) {
@@ -1547,9 +1547,9 @@ public class GML3GeometryWriter implements GMLGeometryWriter {
         }
 
         if ( outputCRS != null ) {
-            writer.writeAttribute( "srsName", outputCRS.getName() );
+            writer.writeAttribute( "srsName", outputCRS.getAlias());
         } else if ( geometry.getCoordinateSystem() != null ) {
-            writer.writeAttribute( "srsName", geometry.getCoordinateSystem().getName() );
+            writer.writeAttribute( "srsName", geometry.getCoordinateSystem().getAlias() );
         }
 
         GMLStdProps props = geometry.getGMLProperties();
@@ -1566,7 +1566,7 @@ public class GML3GeometryWriter implements GMLGeometryWriter {
                             throws TransformationException, UnknownCRSException {
         if ( inputCRS != null && outputCRS != null && !inputCRS.equals( outputCRS ) ) {
             if ( transformer == null ) {
-                throw new UnknownCRSException( outputCRS.getName() );
+                throw new UnknownCRSException( outputCRS.getAlias() );
             }
             double[] out = transformer.transform( inputCRS, inputCoordinate, transformedOrdinates );
             return out;
@@ -1579,9 +1579,9 @@ public class GML3GeometryWriter implements GMLGeometryWriter {
         ICRS inputCRS = env.getCoordinateSystem();
         if ( inputCRS != null && outputCRS != null && !inputCRS.equals( outputCRS ) ) {
             if ( transformer == null ) {
-                throw new UnknownCRSException( outputCRS.getName() );
+                throw new UnknownCRSException( outputCRS.getAlias() );
             }
-            return (Envelope) geoTransformer.transform( env );
+            return geoTransformer.transform( env );
         }
         return env;
     }

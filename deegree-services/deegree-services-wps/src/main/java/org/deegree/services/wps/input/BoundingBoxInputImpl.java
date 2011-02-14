@@ -72,7 +72,7 @@ public class BoundingBoxInputImpl extends ProcessletInputImpl implements Boundin
 
     @Override
     public String getCRSName() {
-        return value.getCoordinateSystem() == null ? null : value.getCoordinateSystem().getName();
+        return value.getCoordinateSystem() == null ? null : value.getCoordinateSystem().getAlias();
     }
 
     @Override

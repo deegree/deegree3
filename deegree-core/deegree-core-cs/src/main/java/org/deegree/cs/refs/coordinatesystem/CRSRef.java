@@ -47,8 +47,9 @@ import org.deegree.cs.components.IAxis;
 import org.deegree.cs.components.IDatum;
 import org.deegree.cs.components.IGeodeticDatum;
 import org.deegree.cs.components.IUnit;
-import org.deegree.cs.coordinatesystems.CRS.CRSType;
 import org.deegree.cs.coordinatesystems.ICRS;
+import org.deegree.cs.coordinatesystems.CRS.CRSType;
+import org.deegree.cs.persistence.CRSStore;
 import org.deegree.cs.refs.CRSResourceRef;
 import org.deegree.cs.transformations.Transformation;
 
@@ -60,9 +61,9 @@ import org.deegree.cs.transformations.Transformation;
  * <li>In most use cases, coordinate reference system are identified using strings (such as 'EPSG:4326'). However, there
  * are multiple equivalent ways to encode coordinate reference system identifications (another one would be
  * 'urn:ogc:def:crs:EPSG::4326'). By using this class to represent a CRS, the original spelling is maintained.</li>
- * <li>A coordinate reference system may be specified which is not known to the {@link CRSRegistry}. However, for some
- * operations this is not a necessarily a problem, e.g. a GML document may be read and transformed into
- * {@link org.deegree.feature.Feature} and {@link org.deegree.geometry.Geometry} objects.</li>
+ * <li>A coordinate reference system may be specified which is not known to the {@link CRSStore}. However, for some
+ * operations this is not a necessarily a problem, e.g. a GML document may be read and transformed into Feature and
+ * Geometry objects.</li>
  * </nl>
  * 
  * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
@@ -104,8 +105,6 @@ public class CRSRef extends CRSResourceRef<ICRS> implements Serializable, ICRS {
      *            the object's uri, must not be <code>null</code>
      * @param baseURL
      *            base URL for resolving the uri, may be <code>null</code> (no resolving of relative URLs)
-     * @param crsName
-     *            name of the crs (identification string) or null
      * @param forceXY
      *            true if the axis order of the coordinate system should be x/y (EAST/NORTH; WEST/SOUTH); false id the
      *            defined axis order should be taken
@@ -120,6 +119,7 @@ public class CRSRef extends CRSResourceRef<ICRS> implements Serializable, ICRS {
      * 
      * @return the string that identifies the coordinate reference system
      */
+    @Override
     public String getName() {
         return getURI();
     }
@@ -129,7 +129,7 @@ public class CRSRef extends CRSResourceRef<ICRS> implements Serializable, ICRS {
      */
     @Override
     public String getAlias() {
-        return getId();
+        return getURI();
     }
 
     @Override
@@ -199,6 +199,7 @@ public class CRSRef extends CRSResourceRef<ICRS> implements Serializable, ICRS {
         return getReferencedObject().getValidDomain();
     }
 
+    @Override
     public double[] getAreaOfUseBBox() {
         return getReferencedObject().getAreaOfUseBBox();
     }

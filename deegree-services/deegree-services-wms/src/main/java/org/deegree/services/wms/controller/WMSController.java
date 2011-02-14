@@ -631,7 +631,7 @@ public class WMSController extends AbstractOGCServiceController<WMSRequestType> 
         } catch ( ReferenceResolvingException e ) {
             // only throw an exception if a truly invalid srs is found
             // this makes it possible to request srs that are not advertised, which may be useful
-            controllers.get( version ).throwSRSException( gm.getCoordinateSystem().getName() );
+            controllers.get( version ).throwSRSException( gm.getCoordinateSystem().getAlias() );
         }
 
     }

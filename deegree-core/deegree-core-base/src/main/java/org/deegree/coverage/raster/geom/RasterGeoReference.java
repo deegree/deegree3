@@ -50,6 +50,7 @@ import java.awt.geom.AffineTransform;
 import java.awt.geom.NoninvertibleTransformException;
 import java.awt.geom.Point2D;
 
+import org.deegree.commons.tom.ReferenceResolvingException;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.exceptions.TransformationException;
 import org.deegree.cs.exceptions.UnknownCRSException;
@@ -87,7 +88,7 @@ public class RasterGeoReference {
 
     private final OriginLocation location;
 
-    private final GeometryTransformer transformer;
+    private GeometryTransformer transformer;
 
     private final ICRS crs;
 
@@ -154,7 +155,12 @@ public class RasterGeoReference {
         this.crs = crs;
         if ( cs != null ) {
             transformer = new GeometryTransformer( cs );
-            eastingAxis = cs.getEasting();
+            try {
+                eastingAxis = cs.getEasting();
+            } catch ( ReferenceResolvingException e ) {
+                transformer = null;
+                LOG.debug( "CRS could not be resolved: {}", e.getLocalizedMessage() );
+            }
         } else {
             transformer = null;
         }
@@ -525,17 +531,15 @@ public class RasterGeoReference {
         Envelope result = geomFactory.createEnvelope( min0, min1, max0, max1, this.crs );
         if ( crs != null && this.crs != null ) {
             ICRS cs = crs;
-            if ( cs != null ) {
-                GeometryTransformer trans = new GeometryTransformer( cs );
-                try {
-                    result = trans.transform( result ).getEnvelope();
-                } catch ( IllegalArgumentException e ) {
-                    // let the envelope be.
-                } catch ( TransformationException e ) {
-                    // let the envelope be.
-                } catch ( UnknownCRSException e ) {
-                    // let the envelope be.
-                }
+            GeometryTransformer trans = new GeometryTransformer( cs );
+            try {
+                result = trans.transform( result ).getEnvelope();
+            } catch ( IllegalArgumentException e ) {
+                // let the envelope be.
+            } catch ( TransformationException e ) {
+                // let the envelope be.
+            } catch ( UnknownCRSException e ) {
+                // let the envelope be.
             }
         }
         return result;

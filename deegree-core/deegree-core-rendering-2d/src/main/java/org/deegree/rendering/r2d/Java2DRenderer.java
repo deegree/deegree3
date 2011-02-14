@@ -74,6 +74,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 
 import org.deegree.commons.annotations.LoggingNotes;
+import org.deegree.commons.tom.ReferenceResolvingException;
 import org.deegree.cs.CRSUtils;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.exceptions.TransformationException;
@@ -156,7 +157,7 @@ public class Java2DRenderer implements Renderer {
             double scalex = width / bbox.getSpan0();
             double scaley = height / bbox.getSpan1();
             try {
-                if ( bbox.getCoordinateSystem() == null || bbox.getCoordinateSystem().getName().equals( "CRS:1" )
+                if ( bbox.getCoordinateSystem() == null || bbox.getCoordinateSystem().getAlias().equals( "CRS:1" )
                      || bbox.getCoordinateSystem().getUnits()[0].equals( METRE ) ) {
                     res = bbox.getSpan0() / width; // use x for resolution
                 } else {
@@ -170,6 +171,10 @@ public class Java2DRenderer implements Renderer {
                     double dist = r * acos( cose ) * cos( rad * miny );
                     res = abs( dist * 1000 / width );
                 }
+            } catch ( ReferenceResolvingException e ) {
+                LOG.warn( "Could not determine CRS of bbox, assuming it's in meter..." );
+                LOG.debug( "Stack trace:", e );
+                res = bbox.getSpan0() / width; // use x for resolution
             } catch ( UnknownCRSException e ) {
                 LOG.warn( "Could not determine CRS of bbox, assuming it's in meter..." );
                 LOG.debug( "Stack trace:", e );
@@ -189,7 +194,7 @@ public class Java2DRenderer implements Renderer {
             worldToScreen.scale( scalex, -scaley );
 
             try {
-                if ( bbox.getCoordinateSystem() != null && ( !bbox.getCoordinateSystem().getName().equals( "CRS:1" ) ) ) {
+                if ( bbox.getCoordinateSystem() != null && ( !bbox.getCoordinateSystem().getAlias().equals( "CRS:1" ) ) ) {
                     transformer = new GeometryTransformer( bbox.getCoordinateSystem() );
                 }
             } catch ( IllegalArgumentException e ) {

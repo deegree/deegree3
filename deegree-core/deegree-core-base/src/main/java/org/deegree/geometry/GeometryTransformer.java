@@ -134,7 +134,6 @@ public class GeometryTransformer extends Transformer {
      * @param targetCRS
      * @throws IllegalArgumentException
      *             if the given parameter is null.
-     * @throws UnknownCRSException
      */
     public GeometryTransformer( ICRS targetCRS ) throws IllegalArgumentException {
         super( targetCRS );
@@ -342,7 +341,7 @@ public class GeometryTransformer extends Transformer {
             }
         } catch ( GeometryException ge ) {
             throw new TransformationException( Messages.getMessage( "CRS_TRANSFORMATION_ERROR",
-                                                                    geo.getCoordinateSystem().getName(),
+                                                                    geo.getCoordinateSystem().getAlias(),
                                                                     getTargetCRS().getCodes(), ge.getMessage() ), ge );
         }
         return null;

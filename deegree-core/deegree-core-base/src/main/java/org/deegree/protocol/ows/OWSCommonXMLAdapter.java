@@ -170,7 +170,7 @@ public class OWSCommonXMLAdapter extends XMLAdapter {
 
         // "crs" attribute (optional)
         if ( bbox.getCoordinateSystem() != null ) {
-            writer.writeAttribute( "crs", bbox.getCoordinateSystem().getName() );
+            writer.writeAttribute( "crs", bbox.getCoordinateSystem().getAlias() );
         }
 
         // "dimensions" attribute (optional)

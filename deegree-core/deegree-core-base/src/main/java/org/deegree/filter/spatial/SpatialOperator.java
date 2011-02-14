@@ -175,14 +175,14 @@ public abstract class SpatialOperator implements Operator {
         ICRS paramCRS = param.getCoordinateSystem();
         ICRS literalCRS = literal.getCoordinateSystem();
         if ( literalCRS != null && !( paramCRS.equals( literalCRS ) ) ) {
-            LOG.debug( "Need transformed literal geometry for evaluation: " + literalCRS.getName() + " -> "
-                       + paramCRS.getName() );
-            transformedLiteral = srsNameToTransformedGeometry.get( paramCRS.getName() );
+            LOG.debug( "Need transformed literal geometry for evaluation: " + literalCRS.getAlias() + " -> "
+                       + paramCRS.getAlias() );
+            transformedLiteral = srsNameToTransformedGeometry.get( paramCRS.getAlias() );
             if ( transformedLiteral == null ) {
                 try {
                     GeometryTransformer transformer = new GeometryTransformer( paramCRS );
                     transformedLiteral = transformer.transform( literal );
-                    srsNameToTransformedGeometry.put( paramCRS.getName(), transformedLiteral );
+                    srsNameToTransformedGeometry.put( paramCRS.getAlias(), transformedLiteral );
                 } catch ( Exception e ) {
                     throw new FilterEvaluationException( e.getMessage() );
                 }

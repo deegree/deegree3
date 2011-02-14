@@ -183,7 +183,7 @@ public class Capabilities111XMLAdapter extends XMLAdapter {
         }
 
         for ( ICRS crs : layer.getSrs() ) {
-            writeElement( writer, "SRS", crs.getName() );
+            writeElement( writer, "SRS", crs.getAlias() );
         }
 
         ICRS latlon;
@@ -200,7 +200,7 @@ public class Capabilities111XMLAdapter extends XMLAdapter {
                 writer.writeEndElement();
 
                 for ( ICRS crs : layer.getSrs() ) {
-                    if ( crs.getName().startsWith( "AUTO" ) ) {
+                    if ( crs.getAlias().startsWith( "AUTO" ) ) {
                         continue;
                     }
                     // try {
@@ -228,7 +228,7 @@ public class Capabilities111XMLAdapter extends XMLAdapter {
                     }
 
                     writer.writeStartElement( "BoundingBox" );
-                    writer.writeAttribute( "SRS", crs.getName() );
+                    writer.writeAttribute( "SRS", crs.getAlias() );
                     writer.writeAttribute( "minx", Double.toString( envelope.getMin().get0() ) );
                     writer.writeAttribute( "miny", Double.toString( envelope.getMin().get1() ) );
                     writer.writeAttribute( "maxx", Double.toString( envelope.getMax().get0() ) );

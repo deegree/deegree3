@@ -280,8 +280,7 @@ public abstract class AbstractRaster extends AbstractCoverage {
     protected String envelopeString() {
         String epsg = "";
         if ( getEnvelope().getCoordinateSystem() != null ) {
-            epsg = getEnvelope().getCoordinateSystem().getName(); // added .toString() since the code retrieved was a
-            // CRSCodeType
+            epsg = getEnvelope().getCoordinateSystem().getAlias();
         }
         return epsg + " " + getEnvelope().getMin().get0() + " " + getEnvelope().getMin().get1() + " "
                + getEnvelope().getMax().get0() + " " + getEnvelope().getMax().get1();

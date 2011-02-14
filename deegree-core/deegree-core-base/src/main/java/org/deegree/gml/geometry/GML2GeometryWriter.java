@@ -630,7 +630,7 @@ public class GML2GeometryWriter implements GMLGeometryWriter {
                             throws TransformationException, UnknownCRSException {
         if ( inputCRS != null && outputCRS != null && !inputCRS.equals( outputCRS ) ) {
             if ( transformer == null ) {
-                throw new UnknownCRSException( outputCRS.getName() );
+                throw new UnknownCRSException( outputCRS.getAlias() );
             }
             double[] out = transformer.transform( inputCRS, inputCoordinate, transformedOrdinates );
             return out;

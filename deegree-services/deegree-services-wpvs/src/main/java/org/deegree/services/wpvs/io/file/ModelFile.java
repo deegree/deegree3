@@ -229,7 +229,7 @@ class ModelFile<P extends PositionableModel> {
                 // min and max in 3d space
                 bytes += AllocatedHeapMemory.DOUBLE_SIZE * 3 * 2;
                 if ( this.datasetEnvelope.getCoordinateSystem() != null ) {
-                    bytes += ObjectSerializer.sizeOfString( this.datasetEnvelope.getCoordinateSystem().getName() );
+                    bytes += ObjectSerializer.sizeOfString( this.datasetEnvelope.getCoordinateSystem().getAlias() );
                 }
             }
             ByteBuffer bb = ByteBuffer.allocate( bytes );
@@ -246,7 +246,7 @@ class ModelFile<P extends PositionableModel> {
                     bb.putDouble( d );
                 }
                 if ( this.datasetEnvelope.getCoordinateSystem() != null ) {
-                    ObjectSerializer.writeString( bb, this.datasetEnvelope.getCoordinateSystem().getName() );
+                    ObjectSerializer.writeString( bb, this.datasetEnvelope.getCoordinateSystem().getAlias() );
                 }
             }
 

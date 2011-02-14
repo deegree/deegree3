@@ -64,7 +64,7 @@ public class CoordinateValidityInspector implements GeometryInspector {
             int coordDim = geom.getCoordinateDimension();
             if ( csDim != coordDim ) {
                 String msg = "Geometry is invalid. Dimensionality of coordinates (=" + coordDim
-                             + ") does not match dimensionality of CRS '" + crs.getName() + "' (=" + csDim + ").";
+                             + ") does not match dimensionality of CRS '" + crs.getAlias() + "' (=" + csDim + ").";
                 throw new GeometryInspectionException( msg );
             }
         }

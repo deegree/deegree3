@@ -238,7 +238,7 @@ public class RasterBuilder implements CoverageBuilder {
         if ( config.getStorageCRS() != null ) {
             opts.add( "CRS", config.getStorageCRS() );
         } else {
-            opts.add( "CRS", parentCrs.getName() );
+            opts.add( "CRS", parentCrs.getAlias() );
         }
         return opts;
     }
@@ -273,7 +273,7 @@ public class RasterBuilder implements CoverageBuilder {
                     File rasterFiles = new File( adapter.resolve( directory.getValue().trim() ).toURI() );
                     boolean recursive = directory.isRecursive() == null ? false : directory.isRecursive();
                     if ( crs != null ) {
-                        rOptions.add( RasterIOOptions.CRS, crs.getName() );
+                        rOptions.add( RasterIOOptions.CRS, crs.getAlias() );
                     }
                     return buildTiledRaster( rasterFiles, recursive, rOptions );
                 }

@@ -542,7 +542,7 @@ public class GetFeatureAnalyzer {
                 domainOfValidity = transform( domainOfValidity, bbox.getCoordinateSystem() );
                 if ( !bbox.isWithin( domainOfValidity ) ) {
                     String msg = "Invalid geometry constraint in filter. The envelope of the geometry is not within the domain of validity ('"
-                                 + domainOfValidity + "') of its CRS ('" + bbox.getCoordinateSystem().getName() + "').";
+                                 + domainOfValidity + "') of its CRS ('" + bbox.getCoordinateSystem().getAlias() + "').";
                     throw new OWSException( msg, OWSException.INVALID_PARAMETER_VALUE, "filter" );
                 }
             } catch ( UnknownCRSException e ) {
@@ -563,7 +563,7 @@ public class GetFeatureAnalyzer {
                 Envelope bboxTransformed = transform( bbox, queriedCrs );
                 if ( !bboxTransformed.isWithin( domainOfValidity ) ) {
                     String msg = "Invalid geometry constraint in filter. The envelope of the geometry is not within the domain of validity ('"
-                                 + domainOfValidity + "') of the queried CRS ('" + queriedCrs.getName() + "').";
+                                 + domainOfValidity + "') of the queried CRS ('" + queriedCrs.getAlias() + "').";
                     throw new OWSException( msg, OWSException.INVALID_PARAMETER_VALUE, "filter" );
                 }
             } catch ( UnknownCRSException e ) {
@@ -582,6 +582,6 @@ public class GetFeatureAnalyzer {
             return bbox;
         }
         GeometryTransformer transformer = new GeometryTransformer( targetCrs );
-        return (Envelope) transformer.transform( bbox );
+        return transformer.transform( bbox );
     }
 }

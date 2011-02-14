@@ -298,7 +298,7 @@ public class PostGISFeatureStoreConfigWriter {
             writer.writeAttribute( "type", "Geometry" );
         }
         }
-        writer.writeAttribute( "crs", mapping.getCRS().getName() );
+        writer.writeAttribute( "crs", mapping.getCRS().getAlias() );
         writer.writeAttribute( "srid", mapping.getSrid() );
         CoordinateDimension dim = pt.getCoordinateDimension();
         switch ( dim ) {
@@ -414,7 +414,7 @@ public class PostGISFeatureStoreConfigWriter {
                 writer.writeAttribute( "type", "Geometry" );
             }
             }
-            writer.writeAttribute( "crs", gm.getCRS().getName() );
+            writer.writeAttribute( "crs", gm.getCRS().getAlias() );
             writer.writeAttribute( "srid", gm.getSrid() );
             CoordinateDimension dim = gm.getDim();
             switch ( dim ) {

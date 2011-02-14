@@ -129,7 +129,7 @@ public class CoverageDescription100XMLAdapter extends XMLAdapter {
         for ( String crs : options.getCRSs() ) {
             writeElement( writer, WCS_100_NS, "requestResponseCRSs", crs );
         }
-        String nativeCRS = coverage.getEnvelope().getCoordinateSystem().getName();
+        String nativeCRS = coverage.getEnvelope().getCoordinateSystem().getAlias();
         writeElement( writer, WCS_100_NS, "nativeCRSs", nativeCRS );
         writer.writeEndElement(); // supportedCRSs
     }
@@ -200,7 +200,7 @@ public class CoverageDescription100XMLAdapter extends XMLAdapter {
                             throws XMLStreamException {
         writer.writeStartElement( WCS_100_NS, "rangeSet" );
         writer.writeStartElement( WCS_100_NS, "RangeSet" );
-        writer.writeAttribute( "refSys", coverage.getEnvelope().getCoordinateSystem().getName() );
+        writer.writeAttribute( "refSys", coverage.getEnvelope().getCoordinateSystem().getAlias() );
         RangeSet rs = coverage.getRangeSet();
         if ( rs == null ) {
             LOG.info( "No range sets defined for requested coverage, creating a default one from the coverage parameters." );
@@ -389,7 +389,7 @@ public class CoverageDescription100XMLAdapter extends XMLAdapter {
     private static void exportGMLEnvelope( XMLStreamWriter writer, Envelope envelope )
                             throws XMLStreamException {
         writer.writeStartElement( GML_NS, "Envelope" );
-        writer.writeAttribute( "srsName", envelope.getCoordinateSystem().getName() );
+        writer.writeAttribute( "srsName", envelope.getCoordinateSystem().getAlias() );
 
         exportGMLPos( writer, envelope.getMin().get0(), envelope.getMin().get1() );
         exportGMLPos( writer, envelope.getMax().get0(), envelope.getMax().get1() );

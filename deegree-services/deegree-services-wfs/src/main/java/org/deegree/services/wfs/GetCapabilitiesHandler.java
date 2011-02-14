@@ -269,7 +269,7 @@ class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
 
             // wfs:SRS (minOccurs=1, maxOccurs=1)
             writer.writeStartElement( WFS_NS, "SRS" );
-            writer.writeCharacters( querySRS.get( 0 ).getName() );
+            writer.writeCharacters( querySRS.get( 0 ).getAlias() );
             writer.writeEndElement();
 
             // wfs:Operations (minOccurs=0, maxOccurs=1)
@@ -609,11 +609,11 @@ class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
 
                 // wfs:DefaultSRS / wfs:NoSRS
                 FeatureStore fs = service.getStore( ftName );
-                writeElement( writer, WFS_NS, "DefaultSRS", querySRS.get( 0 ).getName() );
+                writeElement( writer, WFS_NS, "DefaultSRS", querySRS.get( 0 ).getAlias() );
 
                 // wfs:OtherSRS
                 for ( int i = 1; i < querySRS.size(); i++ ) {
-                    writeElement( writer, WFS_NS, "OtherSRS", querySRS.get( i ).getName() );
+                    writeElement( writer, WFS_NS, "OtherSRS", querySRS.get( i ).getAlias() );
                 }
 
                 writeOutputFormats110( writer );
@@ -822,11 +822,11 @@ class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
 
                 // wfs:DefaultCRS / wfs:NoCRS
                 FeatureStore fs = service.getStore( ftName );
-                writeElement( writer, WFS_200_NS, "DefaultCRS", querySRS.get( 0 ).getName() );
+                writeElement( writer, WFS_200_NS, "DefaultCRS", querySRS.get( 0 ).getAlias() );
 
                 // wfs:OtherCRS
                 for ( int i = 1; i < querySRS.size(); i++ ) {
-                    writeElement( writer, WFS_200_NS, "OtherCRS", querySRS.get( i ).getName() );
+                    writeElement( writer, WFS_200_NS, "OtherCRS", querySRS.get( i ).getAlias() );
                 }
 
                 writeOutputFormats200( writer );

@@ -273,7 +273,7 @@ public class WMSReader implements RasterReader {
         // + dataLocationId + " as a raster data source." );
         // }
         // no bbox defined in the given crs
-        this.envelope = client.getBoundingBox( crs.getName(), layers );
+        this.envelope = client.getBoundingBox( crs.getAlias(), layers );
         if ( this.envelope == null ) {
             this.envelope = client.getLatLonBoundingBox( layers );
             GeometryTransformer transform = new GeometryTransformer( wCRS );

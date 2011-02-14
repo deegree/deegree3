@@ -151,10 +151,10 @@ public class PostgisBackend extends DBBackend<PGgeometry> {
     private int parseSRID( ICRS crs ) {
         int result = 31466;
         if ( crs != null ) {
-            int index = crs.getName().lastIndexOf( ":" );
+            int index = crs.getAlias().lastIndexOf( ":" );
             if ( index != -1 ) {
                 try {
-                    result = Integer.parseInt( crs.getName().substring( index ) );
+                    result = Integer.parseInt( crs.getAlias().substring( index ) );
                 } catch ( NumberFormatException e ) {
                     // nothing
                 }

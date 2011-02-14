@@ -122,18 +122,18 @@ public class CoordinateTransform {
         // point to transform
         double[] out = new double[3];
 
-        outputPoint( "The original point in crs: " + sourceCRS.getName() + ": ", in, sourceCRS );
+        outputPoint( "The original point in crs: " + sourceCRS.getAlias() + ": ", in, sourceCRS );
 
         ct.transform( sourceCRS, in, out );
 
-        outputPoint( "The transformed point in crs: " + targetCRS.getName() + ": ", out, targetCRS );
+        outputPoint( "The transformed point in crs: " + targetCRS.getAlias() + ": ", out, targetCRS );
         if ( withInverse ) {
             // transform back to source CRS
             ct = new CoordinateTransformer( sourceCRS );
             double[] nIn = new double[3];
             ct.transform( targetCRS, out, nIn );
 
-            outputPoint( "The inversed transformed point in crs: " + sourceCRS.getName() + ": ", nIn, sourceCRS );
+            outputPoint( "The inversed transformed point in crs: " + sourceCRS.getAlias() + ": ", nIn, sourceCRS );
         }
 
     }

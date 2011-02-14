@@ -307,7 +307,7 @@ public class RasterTreeBuilder {
         ExecutorService executor = Executors.newFixedThreadPool( numThreads );
         final RasterIOOptions options = new RasterIOOptions();
         options.copyOf( this.rasterOptions );
-        options.add( RasterIOOptions.CRS, dstSRS.getName() );
+        options.add( RasterIOOptions.CRS, dstSRS.getAlias() );
         options.add( RasterIOOptions.OPT_FORMAT, outputFormat );
 
         for ( final TileGrid.Tile tile : tiles ) {

@@ -323,7 +323,7 @@ class GML3GeometryBaseReader {
         ICRS activeCRS = defaultCRS;
         String srsName = xmlStream.getAttributeValue( null, "srsName" );
         if ( !( srsName == null || srsName.length() == 0 ) ) {
-            if ( defaultCRS == null || !srsName.equals( defaultCRS.getName() ) ) {
+            if ( defaultCRS == null || !srsName.equals( defaultCRS.getAlias() ) ) {
                 activeCRS = CRSManager.getCRSRef( srsName );
             }
         }

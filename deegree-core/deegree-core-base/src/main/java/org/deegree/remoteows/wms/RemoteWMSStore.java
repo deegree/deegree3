@@ -132,7 +132,7 @@ public class RemoteWMSStore implements RemoteOWSStore {
     private BufferedImage getMap( final String layer, final Envelope envelope, final int width, final int height,
                                   LayerOptions opts ) {
         ICRS origCrs = envelope.getCoordinateSystem();
-        String origCrsName = origCrs.getName();
+        String origCrsName = origCrs.getAlias();
         try {
             if ( ( !opts.alwaysUseDefaultCRS && client.getCoordinateSystems( layer ).contains( origCrsName ) )
                  || origCrsName.equals( opts.defaultCRS ) ) {
@@ -212,7 +212,7 @@ public class RemoteWMSStore implements RemoteOWSStore {
     public List<BufferedImage> getMap( final Envelope envelope, final int width, final int height ) {
         if ( options != null ) {
             ICRS origCrs = envelope.getCoordinateSystem();
-            String origCrsName = origCrs.getName();
+            String origCrsName = origCrs.getAlias();
             try {
 
                 if ( ( !options.alwaysUseDefaultCRS && commonSRS.contains( origCrsName ) )

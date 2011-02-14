@@ -281,7 +281,7 @@ public class WMSParameterChooser extends AbstractGRDialog {
     }
 
     public Envelope getEnvelope( ICRS srs, List<String> layerList ) {
-        Envelope env = wmsClient.getBoundingBox( srs.getName(), layerList );
+        Envelope env = wmsClient.getBoundingBox( srs.getAlias(), layerList );
         if ( env == null ) {
             env = wmsClient.getLatLonBoundingBox( layerList );
         }

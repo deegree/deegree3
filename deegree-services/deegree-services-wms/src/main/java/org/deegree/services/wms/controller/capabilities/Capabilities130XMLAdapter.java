@@ -193,10 +193,10 @@ public class Capabilities130XMLAdapter extends XMLAdapter {
         }
 
         for ( ICRS crs : layer.getSrs() ) {
-            if ( crs.getName().startsWith( "AUTO" ) ) {
-                writeElement( writer, WMSNS, "CRS", crs.getName().replace( "AUTO", "AUTO2" ) );
+            if ( crs.getAlias().startsWith( "AUTO" ) ) {
+                writeElement( writer, WMSNS, "CRS", crs.getAlias().replace( "AUTO", "AUTO2" ) );
             } else {
-                writeElement( writer, WMSNS, "CRS", crs.getName() );
+                writeElement( writer, WMSNS, "CRS", crs.getAlias() );
             }
         }
 
@@ -223,7 +223,7 @@ public class Capabilities130XMLAdapter extends XMLAdapter {
                 writer.writeEndElement();
 
                 for ( ICRS crs : layer.getSrs() ) {
-                    if ( crs.getName().startsWith( "AUTO" ) ) {
+                    if ( crs.getAlias().startsWith( "AUTO" ) ) {
                         continue;
                     }
 //                    try {
@@ -254,7 +254,7 @@ public class Capabilities130XMLAdapter extends XMLAdapter {
                     }
 
                     writer.writeStartElement( WMSNS, "BoundingBox" );
-                    writer.writeAttribute( "CRS", crs.getName() );
+                    writer.writeAttribute( "CRS", crs.getAlias() );
 
                     min = envelope.getMin();
                     max = envelope.getMax();
@@ -269,7 +269,7 @@ public class Capabilities130XMLAdapter extends XMLAdapter {
 
                     // check for srs with northing as first axis
 //                    try {
-                        srs = WMSController130.getCRS( crs.getName() );
+                        srs = WMSController130.getCRS( crs.getAlias() );
 //                    } catch ( UnknownCRSException e ) {
 //                        // may fail if CRS is determined eg. from .prj
 //                        LOG.warn( "Cannot find: {}", e.getLocalizedMessage() );

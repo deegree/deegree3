@@ -168,9 +168,8 @@ public class ShapeFeatureStore implements FeatureStore {
      * @param cache
      *            used for caching retrieved feature instances, can be <code>null</code> (will create a default cache)
      */
-    public ShapeFeatureStore( String shpName, ICRS crs, Charset encoding, String ftNamespace,
-                              String localFtName, String ftPrefix, boolean generateAlphanumericIndexes,
-                              FeatureStoreCache cache ) {
+    public ShapeFeatureStore( String shpName, ICRS crs, Charset encoding, String ftNamespace, String localFtName,
+                              String ftPrefix, boolean generateAlphanumericIndexes, FeatureStoreCache cache ) {
         this.shpName = shpName;
         this.crs = crs;
         this.encoding = encoding;
@@ -300,7 +299,7 @@ public class ShapeFeatureStore implements FeatureStore {
             String c = in.readLine().trim();
             try {
                 crs = CRSManager.lookup( c );
-                LOG.debug( ".prj contained EPSG code '{}'", crs.getName() );
+                LOG.debug( ".prj contained EPSG code '{}'", crs.getAlias() );
             } catch ( UnknownCRSException e2 ) {
                 LOG.warn( "Could not parse the .prj projection file for {}, reason: {}.", shpName,
                           e2.getLocalizedMessage() );

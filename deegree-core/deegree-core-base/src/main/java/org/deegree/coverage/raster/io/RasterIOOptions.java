@@ -396,7 +396,7 @@ public class RasterIOOptions implements Serializable {
                 add( GEO_ORIGIN_LOCATION, otherOptions.getRasterOriginLocation().name() );
             }
             if ( getCRS() == null && otherOptions.getCRS() != null ) {
-                add( CRS, otherOptions.getCRS().getName() );
+                add( CRS, otherOptions.getCRS().getAlias() );
             }
             for ( String key : otherOptions.options.keySet() ) {
                 if ( !( key.equals( DATA_LOADING_POLICY ) || key.equals( READ_WLD_FILE )

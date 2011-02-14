@@ -410,7 +410,7 @@ public class CommonISOTest extends AbstractISOTest {
             for ( Envelope e : bbox ) {
                 s_b.append( e.getMin().get0() ).append( ' ' ).append( e.getMin().get1() ).append( ' ' );
                 s_b.append( e.getMax().get0() ).append( ' ' ).append( e.getMax().get1() ).append( ' ' );
-                s_b.append( e.getCoordinateSystem().getName() );
+                s_b.append( e.getCoordinateSystem().getAlias() );
                 LOG.debug( "boundingBox: " + s_b.toString() );
             }
 
