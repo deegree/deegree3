@@ -206,6 +206,8 @@ public class TransactionXMLAdapter {
             operation = parseNative110( xmlStream );
         } else if ( "Update".equals( localName ) ) {
             operation = parseUpdate100( xmlStream );
+        } else {
+            throw new XMLParsingException( xmlStream, "Unexpected operation element " + localName + "." );
         }
         return operation;
     }
@@ -232,6 +234,8 @@ public class TransactionXMLAdapter {
             operation = parseNative110( xmlStream );
         } else if ( "Update".equals( localName ) ) {
             operation = parseUpdate110( xmlStream );
+        } else {
+            throw new XMLParsingException( xmlStream, "Unexpected operation element " + localName + "." );
         }
         return operation;
     }
