@@ -39,8 +39,15 @@ import java.util.List;
 
 import javax.xml.namespace.QName;
 
+import org.apache.xerces.impl.xs.XSElementDecl;
 import org.apache.xerces.xs.XSComplexTypeDefinition;
+import org.apache.xerces.xs.XSElementDeclaration;
+import org.apache.xerces.xs.XSModelGroup;
+import org.apache.xerces.xs.XSParticle;
+import org.apache.xerces.xs.XSTerm;
 import org.deegree.commons.tom.genericxml.GenericObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * {@link ObjectPropertyType} that defines a property with a {@link GenericObject} value.
@@ -51,6 +58,8 @@ import org.deegree.commons.tom.genericxml.GenericObject;
  * @version $Revision$, $Date$
  */
 public class GenericObjectPropertyType extends ObjectPropertyType {
+
+    private static Logger LOG = LoggerFactory.getLogger( GenericObjectPropertyType.class );
 
     private XSComplexTypeDefinition xsdType;
 
@@ -63,15 +72,50 @@ public class GenericObjectPropertyType extends ObjectPropertyType {
      * @param substitutions
      * @param representation
      */
-    public GenericObjectPropertyType( QName name, int minOccurs, int maxOccurs, boolean isAbstract,
-                                         boolean isNillable, List<PropertyType> substitutions,
-                                         ValueRepresentation representation, XSComplexTypeDefinition xsdType ) {
+    public GenericObjectPropertyType( QName name, int minOccurs, int maxOccurs, boolean isAbstract, boolean isNillable,
+                                      List<PropertyType> substitutions, ValueRepresentation representation,
+                                      XSComplexTypeDefinition xsdType ) {
         super( name, minOccurs, maxOccurs, isAbstract, isNillable, substitutions, representation );
         this.xsdType = xsdType;
     }
 
     public XSComplexTypeDefinition getXSDValueType() {
         return xsdType;
+    }
+
+    /**
+     * 
+     * @return
+     */
+    public XSElementDeclaration getValueElementDecl() {
+        XSElementDeclaration elementDecl = null;
+        XSParticle particle = xsdType.getParticle();
+        if ( particle != null ) {
+            XSTerm term = particle.getTerm();
+            if ( term instanceof XSModelGroup ) {
+                XSModelGroup mg = (XSModelGroup) term;
+                elementDecl = getElementDecl( mg );
+            } else {
+                LOG.warn( "Unhandled particle term: " + term );
+            }
+        }
+        return elementDecl;
+    }
+
+    private XSElementDeclaration getElementDecl( XSModelGroup mg ) {
+        XSElementDeclaration elDecl = null;
+        for ( int i = 0; i < mg.getParticles().getLength(); i++ ) {
+            XSParticle particle = (XSParticle) mg.getParticles().item( i );
+            XSTerm term = particle.getTerm();
+            if ( term instanceof XSElementDecl ) {
+                elDecl = (XSElementDeclaration) term;
+            } else if ( term instanceof XSModelGroup ) {
+                elDecl = getElementDecl( (XSModelGroup) term );
+            } else {
+                LOG.warn( "Unhandled particle term: " + term );
+            }
+        }
+        return elDecl;
     }
 
     @Override
