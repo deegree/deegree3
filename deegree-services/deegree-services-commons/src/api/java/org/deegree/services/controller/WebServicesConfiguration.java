@@ -63,6 +63,7 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
 import org.apache.commons.io.filefilter.SuffixFileFilter;
+import org.deegree.commons.annotations.ConsoleManaged;
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceManager;
 import org.deegree.commons.config.ResourceManagerMetadata;
@@ -594,20 +595,23 @@ public class WebServicesConfiguration implements ResourceManager {
         return workspace;
     }
 
+    @ConsoleManaged(startPage = "/console/jsf/webservices.jsf")
+    static class WebServiceManagerMetadata implements ResourceManagerMetadata {
+        public String getName() {
+            return "web services";
+        }
+
+        public String getPath() {
+            return "services";
+        }
+
+        public List<ResourceProvider> getResourceProviders() {
+            return providers;
+        }
+    }
+
     public ResourceManagerMetadata getMetadata() {
-        return new ResourceManagerMetadata() {
-            public String getName() {
-                return "web services";
-            }
-
-            public String getPath() {
-                return "services";
-            }
-
-            public List<ResourceProvider> getResourceProviders() {
-                return providers;
-            }
-        };
+        return new WebServiceManagerMetadata();
     }
 
 }
