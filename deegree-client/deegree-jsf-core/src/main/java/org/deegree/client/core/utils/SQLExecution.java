@@ -57,9 +57,12 @@ public class SQLExecution implements Serializable {
 
     private String message = "Click Execute to create tables.";
 
-    public SQLExecution( String connId, String[] sqlStatements ) {
+    private String backOutcome;
+
+    public SQLExecution( String connId, String[] sqlStatements, String backOutcome ) {
         this.connId = connId;
         this.sqlStatements = sqlStatements;
+        this.backOutcome = backOutcome;
     }
 
     public String getMessage() {
@@ -107,4 +110,9 @@ public class SQLExecution implements Serializable {
             message = "Error: " + e.getMessage();
         }
     }
+
+    public String getBackOutcome() {
+        return backOutcome;
+    }
+
 }
