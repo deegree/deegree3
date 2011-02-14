@@ -51,7 +51,6 @@ import org.deegree.cs.exceptions.TransformationException;
 import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
-import org.deegree.geometry.GeometryTransformer;
 import org.deegree.geometry.composite.CompositeCurve;
 import org.deegree.geometry.composite.CompositeGeometry;
 import org.deegree.geometry.composite.CompositeSolid;
@@ -104,7 +103,7 @@ public class GML2GeometryWriter implements GMLGeometryWriter {
 
     private double[] transformedOrdinates;
 
-    private GeometryTransformer geoTransformer;
+    // private GeometryTransformer geoTransformer;
 
     private ICRS outputCRS;
 
@@ -148,7 +147,7 @@ public class GML2GeometryWriter implements GMLGeometryWriter {
                 crsUnits = crs.getAxis()[0].getUnits();
                 transformer = new CoordinateTransformer( crs );
                 transformedOrdinates = new double[crs.getDimension()];
-                geoTransformer = new GeometryTransformer( crs );
+                // geoTransformer = new GeometryTransformer( crs );
             } catch ( Exception e ) {
                 LOG.debug( "Could not create transformer for CRS '" + outputCrs + "': " + e.getMessage()
                            + ". Encoding will fail if a transformation is actually necessary." );
@@ -339,8 +338,8 @@ public class GML2GeometryWriter implements GMLGeometryWriter {
                             throws XMLStreamException, TransformationException, UnknownCRSException {
 
         writer.writeStartElement( "gml", "Box", GML21NS );
-        if ( envelope.getCoordinateSystem().getName() != null ) {
-            writer.writeAttribute( "srsName", envelope.getCoordinateSystem().getName() );
+        if ( envelope.getCoordinateSystem().getId() != null ) {
+            writer.writeAttribute( "srsName", envelope.getCoordinateSystem().getId() );
         }
         exportCoordinates( new PointsArray( envelope.getMin(), envelope.getMax() ) );
         writer.writeEndElement(); // </gml:Box>
@@ -502,7 +501,7 @@ public class GML2GeometryWriter implements GMLGeometryWriter {
     }
 
     /**
-     * @param multiPolygon
+     * @param multiSurface
      * @throws XMLStreamException
      * @throws UnknownCRSException
      * @throws TransformationException
@@ -639,17 +638,17 @@ public class GML2GeometryWriter implements GMLGeometryWriter {
         return inputCoordinate;
     }
 
-    private Envelope getTransformedEnvelope( Envelope env )
-                            throws TransformationException, UnknownCRSException {
-        ICRS inputCRS = env.getCoordinateSystem();
-        if ( inputCRS != null && outputCRS != null && !inputCRS.equals( outputCRS ) ) {
-            if ( transformer == null ) {
-                throw new UnknownCRSException( outputCRS.getName() );
-            }
-            return (Envelope) geoTransformer.transform( env );
-        }
-        return env;
-    }
+    // private Envelope getTransformedEnvelope( Envelope env )
+    // throws TransformationException, UnknownCRSException {
+    // ICRS inputCRS = env.getCoordinateSystem();
+    // if ( inputCRS != null && outputCRS != null && !inputCRS.equals( outputCRS ) ) {
+    // if ( transformer == null ) {
+    // throw new UnknownCRSException( outputCRS.getName() );
+    // }
+    // return geoTransformer.transform( env );
+    // }
+    // return env;
+    // }
 
     private void startGeometry( String localName, Geometry geometry )
                             throws XMLStreamException {
@@ -662,10 +661,10 @@ public class GML2GeometryWriter implements GMLGeometryWriter {
         }
 
         if ( outputCRS != null ) {
-            writer.writeAttribute( "srsName", outputCRS.getName() );
+            writer.writeAttribute( "srsName", outputCRS.getId() );
         } else if ( geometry.getCoordinateSystem() != null ) {
             ICRS coordinateSystem = geometry.getCoordinateSystem();
-            writer.writeAttribute( "srsName", geometry.getCoordinateSystem().getName() );
+            writer.writeAttribute( "srsName", coordinateSystem.getId() );
         }
     }
 }
