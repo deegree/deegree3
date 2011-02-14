@@ -124,6 +124,14 @@ public class CRSRef extends CRSResourceRef<ICRS> implements Serializable, ICRS {
         return getURI();
     }
 
+    /**
+     * @return the alias of a CRS reference is the id
+     */
+    @Override
+    public String getAlias() {
+        return getId();
+    }
+
     @Override
     public boolean equals( Object obj ) {
         return super.equals( obj ) ? true : getReferencedObject().equals( obj );

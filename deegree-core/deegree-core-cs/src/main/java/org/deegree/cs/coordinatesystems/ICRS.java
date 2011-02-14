@@ -146,4 +146,9 @@ public interface ICRS extends CRSResource {
      */
     public Point3d convertToAxis( Point3d coordinates, IUnit[] units, boolean invert );
 
+    /**
+     * @return an alias of the crs
+     */
+    public String getAlias();
+
 }

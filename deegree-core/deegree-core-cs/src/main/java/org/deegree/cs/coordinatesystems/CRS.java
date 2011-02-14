@@ -165,7 +165,7 @@ public abstract class CRS extends CRSIdentifiable implements ICRS {
      * @param areasOfUse
      */
     public CRS( IDatum datum, IAxis[] axisOrder, CRSCodeType[] codes, String[] names, String[] versions,
-                             String[] descriptions, String[] areasOfUse ) {
+                String[] descriptions, String[] areasOfUse ) {
         super( codes, names, versions, descriptions, areasOfUse );
         this.axisOrder = axisOrder;
         this.usedDatum = datum;
@@ -341,7 +341,7 @@ public abstract class CRS extends CRSIdentifiable implements ICRS {
 
     @Override
     public boolean equals( Object other ) {
-        if(other instanceof CRSRef){
+        if ( other instanceof CRSRef ) {
             other = ( (CRSRef) other ).getReferencedObject();
         }
         if ( other != null && other instanceof ICRS ) {
@@ -530,8 +530,10 @@ public abstract class CRS extends CRSIdentifiable implements ICRS {
     }
 
     /**
-     * @return
+     * @return the alias of a concrete CRS is the first Code
      */
-    // public abstract double[] getAreaOfUseBBox();
-
+    @Override
+    public String getAlias() {
+        return getCode().getOriginal();
+    }
 }
