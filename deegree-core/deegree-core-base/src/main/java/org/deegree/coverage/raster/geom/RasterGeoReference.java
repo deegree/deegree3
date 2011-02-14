@@ -148,15 +148,11 @@ public class RasterGeoReference {
     public RasterGeoReference( OriginLocation location, double resolutionX, double resolutionY, double rotationX,
                                double rotationY, double origin0, double origin1, ICRS crs ) {
 
-        ICRS cs = null;
-        if ( crs != null ) {
-            cs = crs;
-        }
         this.crs = crs;
-        if ( cs != null ) {
-            transformer = new GeometryTransformer( cs );
+        if ( crs != null ) {
+            transformer = new GeometryTransformer( crs );
             try {
-                eastingAxis = cs.getEasting();
+                eastingAxis = crs.getEasting();
             } catch ( ReferenceResolvingException e ) {
                 transformer = null;
                 LOG.debug( "CRS could not be resolved: {}", e.getLocalizedMessage() );
@@ -249,7 +245,11 @@ public class RasterGeoReference {
             int xAxis = 0;
             if ( crs != null ) {
                 ICRS cs = crs;
-                xAxis = cs.getEasting();
+                try {
+                    xAxis = cs.getEasting();
+                } catch ( ReferenceResolvingException e ) {
+                    // assume x == easting
+                }
             }
             double span0 = envelope.getSpan( xAxis );
             double span1 = envelope.getSpan( 1 - xAxis );
@@ -283,7 +283,11 @@ public class RasterGeoReference {
             int xAxis = 0;
             if ( crs != null ) {
                 ICRS cs = crs;
-                xAxis = cs.getEasting();
+                try {
+                    xAxis = cs.getEasting();
+                } catch ( ReferenceResolvingException e ) {
+                    // assume x == easting
+                }
             }
             double resX = ( xAxis == 0 ) ? resolution0 : resolution1;
             double resY = ( xAxis == 0 ) ? resolution1 : resolution0;
@@ -530,8 +534,7 @@ public class RasterGeoReference {
         // coordinates are in the crs, so axis order is available.
         Envelope result = geomFactory.createEnvelope( min0, min1, max0, max1, this.crs );
         if ( crs != null && this.crs != null ) {
-            ICRS cs = crs;
-            GeometryTransformer trans = new GeometryTransformer( cs );
+            GeometryTransformer trans = new GeometryTransformer( crs );
             try {
                 result = trans.transform( result ).getEnvelope();
             } catch ( IllegalArgumentException e ) {
@@ -539,6 +542,8 @@ public class RasterGeoReference {
             } catch ( TransformationException e ) {
                 // let the envelope be.
             } catch ( UnknownCRSException e ) {
+                // let the envelope be.
+            } catch ( ReferenceResolvingException e ) {
                 // let the envelope be.
             }
         }
@@ -665,6 +670,8 @@ public class RasterGeoReference {
                     // just don't transform and go ahead without.
                 } catch ( UnknownCRSException e ) {
                     // just don't transform and go ahead without.
+                } catch ( ReferenceResolvingException e ) {
+                    // just don't transform and go ahead without.
                 }
             }
 
@@ -754,6 +761,8 @@ public class RasterGeoReference {
                     // just don't transform and go ahead without.
                 } catch ( UnknownCRSException e ) {
                     // just don't transform and go ahead without.
+                } catch ( ReferenceResolvingException e ) {
+                    // just don't transform and go ahead without.
                 }
             }
             double[] min = transformedEnv.getMin().getAsArray();
@@ -801,6 +810,8 @@ public class RasterGeoReference {
                 } catch ( TransformationException e ) {
                     // just don't transform and go ahead without.
                 } catch ( UnknownCRSException e ) {
+                    // just don't transform and go ahead without.
+                } catch ( ReferenceResolvingException e ) {
                     // just don't transform and go ahead without.
                 }
             }

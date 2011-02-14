@@ -126,23 +126,21 @@ public class MetaDataReader {
         try {
             double[] tiePoints = geoTIFFMetaData.getModelTiePoints();
             double[] scale = geoTIFFMetaData.getModelPixelScales();
-            if ( tiePoints != null && scale != null && crs != null ) {
+            if ( tiePoints != null && scale != null ) {
 
                 if ( definedRasterOrigLoc != null ) {
                     rasterReference = new RasterGeoReference( definedRasterOrigLoc, scale[0], -scale[1], tiePoints[3],
-                                                              tiePoints[4], CRSManager.getCRSRef( crs ) );
+                                                              tiePoints[4], crs );
                 } else {
                     if ( Math.abs( scale[0] - 0.5 ) < 0.001 ) { // when first pixel tie point is 0.5 -> center type
                         // rb: this might not always be right, see examples at
                         // http://www.remotesensing.org/geotiff/spec/geotiff3.html#3.2.1.
                         // search for PixelIsArea/PixelIsPoint to determine center/outer
                         rasterReference = new RasterGeoReference( RasterGeoReference.OriginLocation.CENTER, scale[0],
-                                                                  -scale[1], tiePoints[3], tiePoints[4],
-                                                                  CRSManager.getCRSRef( crs ) );
+                                                                  -scale[1], tiePoints[3], tiePoints[4], crs );
                     } else {
                         rasterReference = new RasterGeoReference( RasterGeoReference.OriginLocation.OUTER, scale[0],
-                                                                  -scale[1], tiePoints[3], tiePoints[4],
-                                                                  CRSManager.getCRSRef( crs ) );
+                                                                  -scale[1], tiePoints[3], tiePoints[4], crs );
                     }
                 }
             }
