@@ -33,43 +33,24 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.feature.persistence.mapping;
-
-import java.util.List;
-
-import javax.xml.namespace.QName;
+package org.deegree.feature.persistence.mapping.property;
 
 import org.apache.xerces.xs.XSElementDeclaration;
-import org.deegree.commons.jdbc.QTableName;
-import org.deegree.feature.persistence.mapping.property.Mapping;
+import org.deegree.feature.persistence.mapping.JoinChain;
+import org.deegree.filter.expression.PropertyName;
+import org.deegree.filter.sql.MappingExpression;
 
-/**
- * Defines the mapping between an {@link XSElementDeclaration} and a table.
- * 
- * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
- */
-public class DataTypeMapping {
+public class GenericObjectMapping extends Mapping {
 
-    private final XSElementDeclaration elDecl;
+    private XSElementDeclaration elDecl;
 
-    private final QTableName table;
-
-    private final List<Mapping> particles;
-
-    public DataTypeMapping( XSElementDeclaration elDecl, QTableName table, List<Mapping> particles ) {
+    public GenericObjectMapping( PropertyName path, MappingExpression mapping, XSElementDeclaration elDecl,
+                                 JoinChain joinedTable ) {
+        super( path, mapping, joinedTable );
         this.elDecl = elDecl;
-        this.table = table;
-        this.particles = particles;
     }
 
-    public QName getElementName() {
-        return new QName( elDecl.getNamespace(), elDecl.getName() );
-    }
-
-    public List<Mapping> getParticles() {
-        return particles;
+    XSElementDeclaration getElementDeclaration() {
+        return elDecl;
     }
 }

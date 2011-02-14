@@ -48,9 +48,11 @@ import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
+import org.apache.xerces.xs.XSElementDeclaration;
 import org.apache.xerces.xs.XSSimpleTypeDefinition;
 import org.apache.xerces.xs.XSTypeDefinition;
 import org.deegree.commons.tom.primitive.XMLValueMangler;
+import org.deegree.feature.persistence.mapping.DataTypeMapping;
 import org.deegree.feature.persistence.mapping.FeatureTypeMapping;
 import org.deegree.feature.persistence.mapping.JoinChain;
 import org.deegree.feature.persistence.mapping.MappedApplicationSchema;
@@ -62,6 +64,7 @@ import org.deegree.feature.persistence.mapping.id.UUIDGenerator;
 import org.deegree.feature.persistence.mapping.property.CodeMapping;
 import org.deegree.feature.persistence.mapping.property.CompoundMapping;
 import org.deegree.feature.persistence.mapping.property.FeatureMapping;
+import org.deegree.feature.persistence.mapping.property.GenericObjectMapping;
 import org.deegree.feature.persistence.mapping.property.GeometryMapping;
 import org.deegree.feature.persistence.mapping.property.Mapping;
 import org.deegree.feature.persistence.mapping.property.PrimitiveMapping;
@@ -69,6 +72,7 @@ import org.deegree.feature.types.FeatureType;
 import org.deegree.feature.types.property.CodePropertyType;
 import org.deegree.feature.types.property.CustomPropertyType;
 import org.deegree.feature.types.property.FeaturePropertyType;
+import org.deegree.feature.types.property.GenericObjectPropertyType;
 import org.deegree.feature.types.property.GeometryPropertyType;
 import org.deegree.feature.types.property.GeometryPropertyType.CoordinateDimension;
 import org.deegree.feature.types.property.GeometryPropertyType.GeometryType;
@@ -153,6 +157,16 @@ public class PostGISFeatureStoreConfigWriter {
             writeFeatureTypeMapping( writer, ft );
         }
 
+        for ( QName dtName : schema.getDtMappings().keySet() ) {
+            DataTypeMapping dtMapping = schema.getDtMappings().get( dtName );
+            writer.writeStartElement( CONFIG_NS, "DataType" );
+            writer.writeAttribute( "name", getName( dtName ) );
+            for ( Mapping particle : dtMapping.getParticles() ) {
+                writeMapping( writer, particle );
+            }
+            writer.writeEndElement();
+        }
+
         writer.writeEndElement();
     }
 
@@ -221,6 +235,8 @@ public class PostGISFeatureStoreConfigWriter {
             writePropertyMapping( writer, (CustomPropertyType) pt, (CompoundMapping) mapping );
         } else if ( pt instanceof CodePropertyType ) {
             writePropertyMapping( writer, (CodePropertyType) pt, (CodeMapping) mapping );
+        } else if ( pt instanceof GenericObjectPropertyType ) {
+            writePropertyMapping( writer, (GenericObjectPropertyType) pt, (GenericObjectMapping) mapping );
         } else {
             LOG.warn( "Unhandled property type '" + pt.getClass() + "'" );
         }
@@ -347,6 +363,22 @@ public class PostGISFeatureStoreConfigWriter {
         for ( Mapping particle : mapping.getParticles() ) {
             writeMapping( writer, particle );
         }
+
+        if ( pt.getMaxOccurs() != 1 ) {
+            LOG.warn( "TODO: write join table" );
+        }
+        writer.writeEndElement();
+    }
+
+    private void writePropertyMapping( XMLStreamWriter writer, GenericObjectPropertyType pt,
+                                       GenericObjectMapping mapping )
+                            throws XMLStreamException {
+
+        writer.writeStartElement( CONFIG_NS, "GenericObjectProperty" );
+        writeCommonAttrs( writer, pt );
+        XSElementDeclaration elDecl = pt.getValueElementDecl();
+        QName elName = new QName( elDecl.getNamespace(), elDecl.getName() );
+        writer.writeAttribute( "valueElement", getName( elName ) );
 
         if ( pt.getMaxOccurs() != 1 ) {
             LOG.warn( "TODO: write join table" );

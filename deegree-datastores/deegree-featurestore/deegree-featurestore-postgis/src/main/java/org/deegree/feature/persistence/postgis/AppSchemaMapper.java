@@ -79,6 +79,7 @@ import org.deegree.feature.persistence.mapping.id.UUIDGenerator;
 import org.deegree.feature.persistence.mapping.property.CodeMapping;
 import org.deegree.feature.persistence.mapping.property.CompoundMapping;
 import org.deegree.feature.persistence.mapping.property.FeatureMapping;
+import org.deegree.feature.persistence.mapping.property.GenericObjectMapping;
 import org.deegree.feature.persistence.mapping.property.GeometryMapping;
 import org.deegree.feature.persistence.mapping.property.Mapping;
 import org.deegree.feature.persistence.mapping.property.PrimitiveMapping;
@@ -87,6 +88,7 @@ import org.deegree.feature.types.FeatureType;
 import org.deegree.feature.types.property.CodePropertyType;
 import org.deegree.feature.types.property.CustomPropertyType;
 import org.deegree.feature.types.property.FeaturePropertyType;
+import org.deegree.feature.types.property.GenericObjectPropertyType;
 import org.deegree.feature.types.property.GeometryPropertyType;
 import org.deegree.feature.types.property.GeometryPropertyType.CoordinateDimension;
 import org.deegree.feature.types.property.GeometryPropertyType.GeometryType;
@@ -233,6 +235,8 @@ public class AppSchemaMapper {
             mapping = generatePropMapping( (CustomPropertyType) pt, mc );
         } else if ( pt instanceof CodePropertyType ) {
             mapping = generatePropMapping( (CodePropertyType) pt, mc );
+        } else if ( pt instanceof GenericObjectPropertyType ) {
+            mapping = generatePropMapping( (GenericObjectPropertyType) pt, mc );
         } else {
             LOG.warn( "Unhandled property type '" + pt.getName() + "': " + pt.getClass().getName() );
         }
@@ -285,6 +289,34 @@ public class AppSchemaMapper {
         }
 
         return new FeatureMapping( path, mapping, pt.getFTName(), jc );
+    }
+
+    private GenericObjectMapping generatePropMapping( GenericObjectPropertyType pt, MappingContext mc ) {
+        LOG.warn( "Mapping generic object property '" + pt.getName() + "'" );
+        PropertyName path = new PropertyName( pt.getName() );
+        JoinChain jc = null;
+        MappingContext mc2 = null;
+        MappingExpression mapping = null;
+        if ( pt.getMaxOccurs() == 1 ) {
+            mc2 = mcManager.mapOneToOneElement( mc, pt.getName() );
+            mapping = new DBField( mc2.getColumn() );
+        } else {
+            mc2 = mcManager.mapOneToManyElements( mc, pt.getName() );
+            jc = generateJoinChain( mc, mc2 );
+            mapping = new DBField( "ref" );
+        }
+        QTableName table = new QTableName( mc2.getColumn() );
+        XSElementDeclaration xsElementDecl = pt.getValueElementDecl();
+        List<XSElementDeclaration> xsDecls = appSchema.getXSModel().getSubstitutions( xsElementDecl, null, true, true );
+        for ( XSElementDeclaration xsElementDeclaration : xsDecls ) {
+            System.out.println( "HUHU: " + xsElementDecl.getName() + " -> " + xsElementDeclaration.getName() );
+        }
+
+        List<Mapping> particles = generateMapping( pt.getXSDValueType(), mc2, new HashMap<QName, QName>() );
+        DataTypeMapping dtMapping = new DataTypeMapping( xsElementDecl, table, particles );
+        dtMappings.add( dtMapping );
+
+        return new GenericObjectMapping( path, mapping, xsElementDecl, jc );
     }
 
     private CompoundMapping generatePropMapping( CustomPropertyType pt, MappingContext mc ) {
@@ -348,7 +380,10 @@ public class AppSchemaMapper {
             NamespaceContext nsContext = null;
             PropertyName path = new PropertyName( "text()", nsContext );
             DBField dbField = new DBField( mc.getTable(), mc.getColumn() );
-            PrimitiveType pt = XMLValueMangler.getPrimitiveType( typeDef.getSimpleType() );
+            PrimitiveType pt = PrimitiveType.STRING;
+            if ( typeDef.getSimpleType() != null ) {
+                pt = XMLValueMangler.getPrimitiveType( typeDef.getSimpleType() );
+            }
             particles.add( new PrimitiveMapping( path, dbField, pt, null ) );
         }
 
