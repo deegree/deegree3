@@ -43,6 +43,7 @@ import java.util.Set;
 
 import javax.xml.namespace.QName;
 
+import org.deegree.commons.tom.ReferenceResolvingException;
 import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.commons.tom.genericxml.GenericXMLElementContent;
 import org.deegree.commons.utils.Pair;
@@ -143,23 +144,27 @@ public abstract class AbstractFeature implements Feature {
         }
         if ( featureBBox == null ) {
             Set<Feature> visited = new HashSet<Feature>();
-            for ( Property prop : this.getProperties() ) {
-                if ( prop.getValue() instanceof Feature ) {
-                    Feature f = (Feature) prop.getValue();
-                    if ( visited.contains( f ) ) {
-                        continue;
-                    }
-                    visited.add( f );
-
-                    try {
-                        for ( Property p2 : f.getProperties() ) {
-                            featureBBox = mergeEnvelope( p2, featureBBox );
+            try {
+                for ( Property prop : this.getProperties() ) {
+                    if ( prop.getValue() instanceof Feature ) {
+                        Feature f = (Feature) prop.getValue();
+                        if ( visited.contains( f ) ) {
+                            continue;
                         }
-                    } catch ( RuntimeException e ) {
-                        LOG.debug( "Could not resolve properties when calculating envelope: {}",
-                                   e.getLocalizedMessage() );
+                        visited.add( f );
+
+                        try {
+                            for ( Property p2 : f.getProperties() ) {
+                                featureBBox = mergeEnvelope( p2, featureBBox );
+                            }
+                        } catch ( ReferenceResolvingException e ) {
+                            LOG.debug( "Could not resolve properties when calculating envelope: {}",
+                                       e.getLocalizedMessage() );
+                        }
                     }
                 }
+            } catch ( ReferenceResolvingException e ) {
+                LOG.debug( "Could not resolve properties when calculating envelope: {}", e.getLocalizedMessage() );
             }
         }
         return featureBBox;
