@@ -48,6 +48,8 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
 import org.deegree.commons.xml.XMLParsingException;
+import org.deegree.cs.exceptions.TransformationException;
+import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.filter.comparison.ComparisonOperator;
 import org.deegree.filter.logical.And;
 import org.deegree.filter.logical.LogicalOperator;
@@ -126,7 +128,7 @@ public class Filter110XMLAdapterTest {
 
     @Test
     public void parseAndExportFilterDocument()
-                            throws XMLStreamException, FactoryConfigurationError, IOException {
+                            throws XMLStreamException, FactoryConfigurationError, IOException, UnknownCRSException, TransformationException {
 
         Filter filter = parse( "testfilter_110_operator.xml" );
 
