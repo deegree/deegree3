@@ -90,18 +90,25 @@ public class Config implements Comparable<Config> {
     private boolean active;
 
     @Getter
+    private boolean activated;
+    
+    @Getter
     @Setter
     private String content;
 
     private final ConfigManager manager;
 
-    public Config( File location, ResourceManagerMetadata md, ConfigManager manager, String prefix )
-                            throws XMLStreamException, FactoryConfigurationError, IOException {
+    private final String resourceOutcome;
+
+    public Config( File location, ResourceManagerMetadata md, ConfigManager manager, String prefix,
+                   String resourceOutcome ) throws XMLStreamException, FactoryConfigurationError, IOException {
         this.location = location;
         this.manager = manager;
+        this.resourceOutcome = resourceOutcome;
         this.id = ( prefix == null ? "" : ( prefix + "/" ) )
                   + location.getName().substring( 0, location.getName().indexOf( "." ) );
         active = location.getName().endsWith( ".xml" );
+        activated = active;
         InputStream in = null, in2 = null;
         try {
             in = new FileInputStream( location );
@@ -125,12 +132,14 @@ public class Config implements Comparable<Config> {
         }
     }
 
-    public Config( File location, ResourceManagerMetadata md, ConfigManager manager, URL schemaURL, String type )
-                            throws IOException {
+    public Config( File location, ResourceManagerMetadata md, ConfigManager manager, URL schemaURL, String type,
+                   String resourceOutcome ) throws IOException {
         this.location = location;
         this.manager = manager;
+        this.resourceOutcome = resourceOutcome;
         this.id = location.getName().substring( 0, location.getName().indexOf( "." ) );
         active = true;
+        activated = false;
         InputStream in = null;
         try {
             for ( ResourceProvider p : md.getResourceProviders() ) {
@@ -150,10 +159,13 @@ public class Config implements Comparable<Config> {
     /**
      * for single file configs
      */
-    public Config( File location, URL schemaURL, URL template, ConfigManager manager ) throws IOException {
+    public Config( File location, URL schemaURL, URL template, ConfigManager manager, String resourceOutcome )
+                            throws IOException {
         this.location = location;
         this.manager = manager;
+        this.resourceOutcome = resourceOutcome;
         active = true;
+        activated = true;
         InputStream in = null;
         try {
             this.schemaURL = schemaURL;
@@ -165,18 +177,20 @@ public class Config implements Comparable<Config> {
     }
 
     public void activate() {
-        if ( !active ) {
+        if ( !activated ) {
             File target = new File( location.getParentFile(), id + ".xml" );
             location.renameTo( target );
-            active = true;
+            activated = true;
+            manager.setModified();
         }
     }
 
     public void deactivate() {
-        if ( active ) {
+        if ( activated ) {
             File target = new File( location.getParentFile(), id + ".ignore" );
             location.renameTo( target );
-            active = false;
+            activated = false;
+            manager.setModified();
         }
     }
 
@@ -206,12 +220,7 @@ public class Config implements Comparable<Config> {
         os.close();
         content = null;
         manager.setModified();
-        return "/console/jsf/resources";
-    }
-
-    public String cancel() {
-        content = null;
-        return "/console/jsf/resources";
+        return resourceOutcome;
     }
 
     public int compareTo( Config o ) {

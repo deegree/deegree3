@@ -160,7 +160,7 @@ public class ConfigManager {
         URL schema = ConfigManager.class.getResource( "/META-INF/schemas/proxy/3.0.0/proxy.xsd" );
         URL template = ConfigManager.class.getResource( "/META-INF/schemas/proxy/3.0.0/example.xml" );
         try {
-            proxyConfig = new Config( proxyFile, schema, template, this );
+            proxyConfig = new Config( proxyFile, schema, template, this, "/console/jsf/proxy" );
         } catch ( IOException e ) {
             // TODO Auto-generated catch block
             e.printStackTrace();
@@ -168,6 +168,9 @@ public class ConfigManager {
     }
 
     public String getViewForResourceManager() {
+        if ( currentResourceManager == null ) {
+            return FacesContext.getCurrentInstance().getViewRoot().getViewId();
+        }
         ConsoleManaged ann = currentResourceManager.getClass().getAnnotation( ConsoleManaged.class );
         if ( ann != null ) {
             return ann.startPage();
@@ -187,7 +190,7 @@ public class ConfigManager {
                 for ( File f : fs ) {
                     if ( !f.isDirectory() ) {
                         try {
-                            Config c = new Config( f, currentResourceManager, this, prefix );
+                            Config c = new Config( f, currentResourceManager, this, prefix, getViewForResourceManager() );
                             availableResources.add( c );
                         } catch ( XMLStreamException e ) {
                             LOG.debug( "Unable to load {}: {}", f.getName(), e.getLocalizedMessage() );
@@ -251,9 +254,10 @@ public class ConfigManager {
         try {
             Config c;
             if ( template ) {
-                c = new Config( conf, currentResourceManager, this, null );
+                c = new Config( conf, currentResourceManager, this, null, getViewForResourceManager() );
             } else {
-                c = new Config( conf, currentResourceManager, this, schemaURL, newConfigType );
+                c = new Config( conf, currentResourceManager, this, schemaURL, newConfigType,
+                                getViewForResourceManager() );
             }
             availableResources.add( c );
             Collections.sort( availableResources );
@@ -325,6 +329,8 @@ public class ConfigManager {
 
         modified = false;
 
+        update();
+        
         lastMessage = "Workspace changes have been applied.";
         FacesContext ctx = FacesContext.getCurrentInstance();
         RequestBean bean = (RequestBean) ctx.getExternalContext().getSessionMap().get( "requestBean" );
