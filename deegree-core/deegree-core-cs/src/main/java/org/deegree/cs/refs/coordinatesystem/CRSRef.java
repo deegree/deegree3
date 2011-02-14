@@ -36,6 +36,8 @@
 
 package org.deegree.cs.refs.coordinatesystem;
 
+import static org.slf4j.LoggerFactory.getLogger;
+
 import java.io.Serializable;
 import java.util.List;
 
@@ -52,6 +54,7 @@ import org.deegree.cs.coordinatesystems.CRS.CRSType;
 import org.deegree.cs.persistence.CRSStore;
 import org.deegree.cs.refs.CRSResourceRef;
 import org.deegree.cs.transformations.Transformation;
+import org.slf4j.Logger;
 
 /**
  * Represents a {@link CRSRef} that is not necessarily resolved or resolvable.
@@ -75,6 +78,8 @@ import org.deegree.cs.transformations.Transformation;
 public class CRSRef extends CRSResourceRef<ICRS> implements Serializable, ICRS {
 
     private static final long serialVersionUID = -2387578425336244509L;
+
+    private static final Logger LOG = getLogger( CRSRef.class );
 
     /**
      * Flag indicating, if the axis order should be swapped to x/y (EAST/NORTH; WEST/SOUTH) or the defined axis order is
@@ -134,13 +139,24 @@ public class CRSRef extends CRSResourceRef<ICRS> implements Serializable, ICRS {
 
     @Override
     public boolean equals( Object obj ) {
-        return super.equals( obj ) ? true : getReferencedObject().equals( obj );
+        try {
+            if ( getReferencedObject() != null ) {
+                return getReferencedObject().equals( obj );
+            }
+        } catch ( ReferenceResolvingException e ) {
+            LOG.debug( "CRS reference could not be resolved: {}", e.getLocalizedMessage() );
+        }
+        return getURI().equals( obj );
     }
 
     @Override
     public int hashCode() {
-        if ( getReferencedObject() != null ) {
-            return getReferencedObject().hashCode();
+        try {
+            if ( getReferencedObject() != null ) {
+                return getReferencedObject().hashCode();
+            }
+        } catch ( ReferenceResolvingException e ) {
+            LOG.debug( "CRS reference could not be resolved: {}", e.getLocalizedMessage() );
         }
         return getURI().hashCode();
     }
