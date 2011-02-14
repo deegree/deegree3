@@ -191,7 +191,7 @@ public class PropertyName implements Expression {
      * 
      * @return the namespace bindings, never <code>null</code>
      */
-    public NamespaceContext getNsContext() {
+    public NamespaceBindings getNsContext() {
         return bindings;
     }
 
