@@ -73,6 +73,7 @@ import org.deegree.cs.coordinatesystems.CRS.CRSType;
 import org.deegree.cs.exceptions.TransformationException;
 import org.deegree.cs.persistence.CRSStore;
 import org.deegree.cs.refs.coordinatesystem.CRSRef;
+import org.deegree.cs.refs.coordinatesystem.CompoundCRSRef;
 import org.deegree.cs.transformations.coordinate.GeocentricTransform;
 import org.deegree.cs.transformations.coordinate.IdentityTransform;
 import org.deegree.cs.transformations.coordinate.MatrixTransform;
@@ -633,6 +634,14 @@ public class TransformationFactory {
         if ( sourceCRS.getUnderlyingCRS().equals( targetCRS.getUnderlyingCRS() ) ) {
             return null;
         }
+
+        if ( sourceCRS instanceof CompoundCRSRef ) {
+            sourceCRS = ( (CompoundCRSRef) sourceCRS ).getReferencedObject();
+        }
+        if ( targetCRS instanceof CompoundCRSRef ) {
+            targetCRS = ( (CompoundCRSRef) targetCRS ).getReferencedObject();
+        }
+
         LOG.debug( "Creating compound( " + sourceCRS.getUnderlyingCRS().getCode() + ") ->compound transformation( "
                    + targetCRS.getUnderlyingCRS().getCode() + "): from (source): " + sourceCRS.getCode()
                    + " to(target): " + targetCRS.getCode() );
@@ -686,10 +695,18 @@ public class TransformationFactory {
             case PROJECTED:
                 sourceTransformationChain = new ProjectionTransform( (ProjectedCRS) sourceCRS.getUnderlyingCRS() );
                 sourceTransformationChain.inverse();
-                sourceGeographic = ( (IProjectedCRS) sourceCRS.getUnderlyingCRS() ).getGeographicCRS();
+                ICRS underlying = sourceCRS.getUnderlyingCRS();
+                if ( underlying instanceof CRSRef ) {
+                    underlying = ( (CRSRef) underlying ).getReferencedObject();
+                }
+                sourceGeographic = ( (IProjectedCRS) underlying ).getGeographicCRS();
             case GEOGRAPHIC:
+                underlying = sourceCRS.getUnderlyingCRS();
+                if ( underlying instanceof CRSRef ) {
+                    underlying = ( (CRSRef) underlying ).getReferencedObject();
+                }
                 if ( sourceGeographic == null ) {
-                    sourceGeographic = (IGeographicCRS) sourceCRS.getUnderlyingCRS();
+                    sourceGeographic = (IGeographicCRS) underlying;
                 }
                 sourceT = getToWGSTransformation( sourceGeographic );
                 /*
