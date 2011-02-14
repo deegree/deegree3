@@ -74,7 +74,6 @@ import org.apache.commons.io.FileUtils;
 import org.deegree.client.generic.RequestBean;
 import org.deegree.commons.annotations.ConsoleManaged;
 import org.deegree.commons.config.DeegreeWorkspace;
-import org.deegree.commons.config.ResourceManager;
 import org.deegree.commons.config.ResourceManagerMetadata;
 import org.deegree.commons.config.ResourceProvider;
 import org.deegree.commons.utils.io.Zip;
@@ -98,12 +97,12 @@ public class ConfigManager {
     private static final Logger LOG = getLogger( ConfigManager.class );
 
     @Getter
-    private List<ResourceManagerMetadata> resourceManagers;
+    private List<ResourceManager> resourceManagers;
 
-    private HashMap<String, ResourceManagerMetadata> resourceManagerMap;
+    private HashMap<String, ResourceManager> resourceManagerMap;
 
     @Getter
-    private ResourceManagerMetadata currentResourceManager;
+    private ResourceManager currentResourceManager;
 
     @Getter
     private List<Config> availableResources;
@@ -144,14 +143,15 @@ public class ConfigManager {
     private boolean modified;
 
     public ConfigManager() {
-        resourceManagers = new LinkedList<ResourceManagerMetadata>();
-        resourceManagerMap = new HashMap<String, ResourceManagerMetadata>();
-        ServiceLoader<ResourceManager> loaded = ServiceLoader.load( ResourceManager.class );
-        for ( ResourceManager mgr : loaded ) {
+        resourceManagers = new LinkedList<ResourceManager>();
+        resourceManagerMap = new HashMap<String, ResourceManager>();
+        ServiceLoader<org.deegree.commons.config.ResourceManager> loaded = ServiceLoader.load( org.deegree.commons.config.ResourceManager.class );
+        for ( org.deegree.commons.config.ResourceManager mgr : loaded ) {
             ResourceManagerMetadata md = mgr.getMetadata();
             if ( md != null ) {
-                resourceManagers.add( md );
-                resourceManagerMap.put( md.getName(), md );
+                ResourceManager mng = new ResourceManager( getViewForMetadata( md ), md );
+                resourceManagers.add( mng );
+                resourceManagerMap.put( mng.metadata.getName(), mng );
             }
         }
 
@@ -165,6 +165,17 @@ public class ConfigManager {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
+    }
+
+    private String getViewForMetadata( ResourceManagerMetadata md ) {
+        if ( md == null ) {
+            return FacesContext.getCurrentInstance().getViewRoot().getViewId();
+        }
+        ConsoleManaged ann = md.getClass().getAnnotation( ConsoleManaged.class );
+        if ( ann != null ) {
+            return ann.startPage();
+        }
+        return "/console/jsf/resources";
     }
 
     public String getViewForResourceManager() {
@@ -190,7 +201,8 @@ public class ConfigManager {
                 for ( File f : fs ) {
                     if ( !f.isDirectory() ) {
                         try {
-                            Config c = new Config( f, currentResourceManager, this, prefix, getViewForResourceManager() );
+                            Config c = new Config( f, currentResourceManager.getMetadata(), this, prefix,
+                                                   getViewForResourceManager() );
                             availableResources.add( c );
                         } catch ( XMLStreamException e ) {
                             LOG.debug( "Unable to load {}: {}", f.getName(), e.getLocalizedMessage() );
@@ -211,18 +223,19 @@ public class ConfigManager {
         availableResources = new LinkedList<Config>();
         if ( currentResourceManager != null ) {
             providers = new LinkedList<String>();
-            for ( ResourceProvider p : currentResourceManager.getResourceProviders() ) {
+            for ( ResourceProvider p : currentResourceManager.metadata.getResourceProviders() ) {
                 providers.add( p.getConfigNamespace().substring( p.getConfigNamespace().lastIndexOf( "/" ) + 1 ) );
             }
             File dir = new File( OGCFrontController.getServiceWorkspace().getLocation(),
-                                 currentResourceManager.getPath() );
+                                 currentResourceManager.metadata.getPath() );
             findFiles( dir, null );
             Collections.sort( availableResources );
         }
     }
 
     public String createConfig() {
-        File dir = new File( OGCFrontController.getServiceWorkspace().getLocation(), currentResourceManager.getPath() );
+        File dir = new File( OGCFrontController.getServiceWorkspace().getLocation(),
+                             currentResourceManager.metadata.getPath() );
         if ( !dir.exists() && !dir.mkdirs() ) {
             // TODO error
             return "resources";
@@ -233,7 +246,7 @@ public class ConfigManager {
         }
         boolean template = false;
         URL schemaURL = null;
-        for ( ResourceProvider p : currentResourceManager.getResourceProviders() ) {
+        for ( ResourceProvider p : currentResourceManager.metadata.getResourceProviders() ) {
             if ( p.getConfigNamespace().endsWith( newConfigType ) ) {
                 if ( p.getConfigTemplates() != null ) {
                     schemaURL = p.getConfigSchema();
@@ -254,9 +267,9 @@ public class ConfigManager {
         try {
             Config c;
             if ( template ) {
-                c = new Config( conf, currentResourceManager, this, null, getViewForResourceManager() );
+                c = new Config( conf, currentResourceManager.metadata, this, null, getViewForResourceManager() );
             } else {
-                c = new Config( conf, currentResourceManager, this, schemaURL, newConfigType,
+                c = new Config( conf, currentResourceManager.metadata, this, schemaURL, newConfigType,
                                 getViewForResourceManager() );
             }
             availableResources.add( c );
@@ -330,7 +343,7 @@ public class ConfigManager {
         modified = false;
 
         update();
-        
+
         lastMessage = "Workspace changes have been applied.";
         FacesContext ctx = FacesContext.getCurrentInstance();
         RequestBean bean = (RequestBean) ctx.getExternalContext().getSessionMap().get( "requestBean" );
@@ -415,6 +428,23 @@ public class ConfigManager {
             return res;
         } finally {
             closeQuietly( in );
+        }
+    }
+
+    public static class ResourceManager {
+        @Getter
+        public String view;
+
+        @Getter
+        public ResourceManagerMetadata metadata;
+
+        public String view() {
+            return view;
+        }
+
+        ResourceManager( String view, ResourceManagerMetadata metadata ) {
+            this.view = view;
+            this.metadata = metadata;
         }
     }
 
