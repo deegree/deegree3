@@ -35,18 +35,25 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.filter.xml;
 
-import static org.deegree.commons.xml.CommonNamespaces.OGC_PREFIX;
+import static org.deegree.gml.GMLVersion.GML_31;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
+import org.deegree.commons.uom.Measure;
+import org.deegree.commons.xml.CommonNamespaces;
+import org.deegree.commons.xml.NamespaceBindings;
+import org.deegree.cs.exceptions.TransformationException;
+import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.filter.Expression;
 import org.deegree.filter.Filter;
+import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.IdFilter;
 import org.deegree.filter.Operator;
 import org.deegree.filter.OperatorFilter;
@@ -71,7 +78,23 @@ import org.deegree.filter.logical.And;
 import org.deegree.filter.logical.LogicalOperator;
 import org.deegree.filter.logical.Not;
 import org.deegree.filter.logical.Or;
+import org.deegree.filter.spatial.BBOX;
+import org.deegree.filter.spatial.Beyond;
+import org.deegree.filter.spatial.Contains;
+import org.deegree.filter.spatial.Crosses;
+import org.deegree.filter.spatial.DWithin;
+import org.deegree.filter.spatial.Disjoint;
+import org.deegree.filter.spatial.Equals;
+import org.deegree.filter.spatial.Intersects;
+import org.deegree.filter.spatial.Overlaps;
 import org.deegree.filter.spatial.SpatialOperator;
+import org.deegree.filter.spatial.Touches;
+import org.deegree.filter.spatial.Within;
+import org.deegree.geometry.Geometry;
+import org.deegree.geometry.io.DecimalCoordinateFormatter;
+import org.deegree.gml.GMLOutputFactory;
+import org.deegree.gml.GMLStreamWriter;
+import org.deegree.gml.GMLVersion;
 
 /**
  * Encodes {@link Filter} objects according to the Filter Encoding Specification 1.1.0.
@@ -83,10 +106,6 @@ import org.deegree.filter.spatial.SpatialOperator;
  */
 public class Filter110XMLEncoder {
 
-    private static final String OGC_NS = "http://www.opengis.net/ogc";
-
-    private static final QName NAME_ATTR = new QName( "name" );
-
     private static final Map<Expression.Type, QName> expressionTypeToElementName = new HashMap<Expression.Type, QName>();
 
     private static final Map<SpatialOperator.SubType, QName> spatialOperatorTypeToElementName = new HashMap<SpatialOperator.SubType, QName>();
@@ -97,51 +116,63 @@ public class Filter110XMLEncoder {
 
     static {
         // element name <-> expression type
-        addElementToExpressionMapping( new QName( OGC_NS, "Add" ), Expression.Type.ADD );
-        addElementToExpressionMapping( new QName( OGC_NS, "Sub" ), Expression.Type.SUB );
-        addElementToExpressionMapping( new QName( OGC_NS, "Mul" ), Expression.Type.MUL );
-        addElementToExpressionMapping( new QName( OGC_NS, "Div" ), Expression.Type.DIV );
-        addElementToExpressionMapping( new QName( OGC_NS, "PropertyName" ), Expression.Type.PROPERTY_NAME );
-        addElementToExpressionMapping( new QName( OGC_NS, "Function" ), Expression.Type.FUNCTION );
-        addElementToExpressionMapping( new QName( OGC_NS, "Literal" ), Expression.Type.LITERAL );
+        addElementToExpressionMapping( new QName( CommonNamespaces.OGCNS, "Add" ), Expression.Type.ADD );
+        addElementToExpressionMapping( new QName( CommonNamespaces.OGCNS, "Sub" ), Expression.Type.SUB );
+        addElementToExpressionMapping( new QName( CommonNamespaces.OGCNS, "Mul" ), Expression.Type.MUL );
+        addElementToExpressionMapping( new QName( CommonNamespaces.OGCNS, "Div" ), Expression.Type.DIV );
+        addElementToExpressionMapping( new QName( CommonNamespaces.OGCNS, "PropertyName" ),
+                                       Expression.Type.PROPERTY_NAME );
+        addElementToExpressionMapping( new QName( CommonNamespaces.OGCNS, "Function" ), Expression.Type.FUNCTION );
+        addElementToExpressionMapping( new QName( CommonNamespaces.OGCNS, "Literal" ), Expression.Type.LITERAL );
 
         // element name <-> spatial operator type
-        addElementToSpatialOperatorMapping( new QName( OGC_NS, "BBOX" ), SpatialOperator.SubType.BBOX );
-        addElementToSpatialOperatorMapping( new QName( OGC_NS, "Beyond" ), SpatialOperator.SubType.BEYOND );
-        addElementToSpatialOperatorMapping( new QName( OGC_NS, "Contains" ), SpatialOperator.SubType.CONTAINS );
-        addElementToSpatialOperatorMapping( new QName( OGC_NS, "Crosses" ), SpatialOperator.SubType.CROSSES );
-        addElementToSpatialOperatorMapping( new QName( OGC_NS, "Equals" ), SpatialOperator.SubType.EQUALS );
-        addElementToSpatialOperatorMapping( new QName( OGC_NS, "Disjoint" ), SpatialOperator.SubType.DISJOINT );
-        addElementToSpatialOperatorMapping( new QName( OGC_NS, "DWithin" ), SpatialOperator.SubType.DWITHIN );
-        addElementToSpatialOperatorMapping( new QName( OGC_NS, "Intersects" ), SpatialOperator.SubType.INTERSECTS );
-        addElementToSpatialOperatorMapping( new QName( OGC_NS, "Overlaps" ), SpatialOperator.SubType.OVERLAPS );
-        addElementToSpatialOperatorMapping( new QName( OGC_NS, "Touches" ), SpatialOperator.SubType.TOUCHES );
-        addElementToSpatialOperatorMapping( new QName( OGC_NS, "Within" ), SpatialOperator.SubType.WITHIN );
+        addElementToSpatialOperatorMapping( new QName( CommonNamespaces.OGCNS, "BBOX" ), SpatialOperator.SubType.BBOX );
+        addElementToSpatialOperatorMapping( new QName( CommonNamespaces.OGCNS, "Beyond" ),
+                                            SpatialOperator.SubType.BEYOND );
+        addElementToSpatialOperatorMapping( new QName( CommonNamespaces.OGCNS, "Contains" ),
+                                            SpatialOperator.SubType.CONTAINS );
+        addElementToSpatialOperatorMapping( new QName( CommonNamespaces.OGCNS, "Crosses" ),
+                                            SpatialOperator.SubType.CROSSES );
+        addElementToSpatialOperatorMapping( new QName( CommonNamespaces.OGCNS, "Equals" ),
+                                            SpatialOperator.SubType.EQUALS );
+        addElementToSpatialOperatorMapping( new QName( CommonNamespaces.OGCNS, "Disjoint" ),
+                                            SpatialOperator.SubType.DISJOINT );
+        addElementToSpatialOperatorMapping( new QName( CommonNamespaces.OGCNS, "DWithin" ),
+                                            SpatialOperator.SubType.DWITHIN );
+        addElementToSpatialOperatorMapping( new QName( CommonNamespaces.OGCNS, "Intersects" ),
+                                            SpatialOperator.SubType.INTERSECTS );
+        addElementToSpatialOperatorMapping( new QName( CommonNamespaces.OGCNS, "Overlaps" ),
+                                            SpatialOperator.SubType.OVERLAPS );
+        addElementToSpatialOperatorMapping( new QName( CommonNamespaces.OGCNS, "Touches" ),
+                                            SpatialOperator.SubType.TOUCHES );
+        addElementToSpatialOperatorMapping( new QName( CommonNamespaces.OGCNS, "Within" ),
+                                            SpatialOperator.SubType.WITHIN );
 
         // element name <-> logical operator type
-        addElementToLogicalOperatorMapping( new QName( OGC_NS, "And" ), LogicalOperator.SubType.AND );
-        addElementToLogicalOperatorMapping( new QName( OGC_NS, "Or" ), LogicalOperator.SubType.OR );
-        addElementToLogicalOperatorMapping( new QName( OGC_NS, "Not" ), LogicalOperator.SubType.NOT );
+        addElementToLogicalOperatorMapping( new QName( CommonNamespaces.OGCNS, "And" ), LogicalOperator.SubType.AND );
+        addElementToLogicalOperatorMapping( new QName( CommonNamespaces.OGCNS, "Or" ), LogicalOperator.SubType.OR );
+        addElementToLogicalOperatorMapping( new QName( CommonNamespaces.OGCNS, "Not" ), LogicalOperator.SubType.NOT );
 
         // element name <-> comparison operator type
-        addElementToComparisonOperatorMapping( new QName( OGC_NS, "PropertyIsBetween" ),
+        addElementToComparisonOperatorMapping( new QName( CommonNamespaces.OGCNS, "PropertyIsBetween" ),
                                                ComparisonOperator.SubType.PROPERTY_IS_BETWEEN );
-        addElementToComparisonOperatorMapping( new QName( OGC_NS, "PropertyIsEqualTo" ),
+        addElementToComparisonOperatorMapping( new QName( CommonNamespaces.OGCNS, "PropertyIsEqualTo" ),
                                                ComparisonOperator.SubType.PROPERTY_IS_EQUAL_TO );
-        addElementToComparisonOperatorMapping( new QName( OGC_NS, "PropertyIsGreaterThan" ),
+        addElementToComparisonOperatorMapping( new QName( CommonNamespaces.OGCNS, "PropertyIsGreaterThan" ),
                                                ComparisonOperator.SubType.PROPERTY_IS_GREATER_THAN );
-        addElementToComparisonOperatorMapping( new QName( OGC_NS, "PropertyIsGreaterThanOrEqualTo" ),
+        addElementToComparisonOperatorMapping( new QName( CommonNamespaces.OGCNS, "PropertyIsGreaterThanOrEqualTo" ),
                                                ComparisonOperator.SubType.PROPERTY_IS_GREATER_THAN_OR_EQUAL_TO );
-        addElementToComparisonOperatorMapping( new QName( OGC_NS, "PropertyIsLessThan" ),
+        addElementToComparisonOperatorMapping( new QName( CommonNamespaces.OGCNS, "PropertyIsLessThan" ),
                                                ComparisonOperator.SubType.PROPERTY_IS_LESS_THAN );
-        addElementToComparisonOperatorMapping( new QName( OGC_NS, "PropertyIsLessThanOrEqualTo" ),
+        addElementToComparisonOperatorMapping( new QName( CommonNamespaces.OGCNS, "PropertyIsLessThanOrEqualTo" ),
                                                ComparisonOperator.SubType.PROPERTY_IS_LESS_THAN_OR_EQUAL_TO );
-        addElementToComparisonOperatorMapping( new QName( OGC_NS, "PropertyIsLike" ),
+        addElementToComparisonOperatorMapping( new QName( CommonNamespaces.OGCNS, "PropertyIsLike" ),
                                                ComparisonOperator.SubType.PROPERTY_IS_LIKE );
-        addElementToComparisonOperatorMapping( new QName( OGC_NS, "PropertyIsNotEqualTo" ),
+        addElementToComparisonOperatorMapping( new QName( CommonNamespaces.OGCNS, "PropertyIsNotEqualTo" ),
                                                ComparisonOperator.SubType.PROPERTY_IS_NOT_EQUAL_TO );
-        addElementToComparisonOperatorMapping( new QName( OGC_NS, "PropertyIsNull" ),
+        addElementToComparisonOperatorMapping( new QName( CommonNamespaces.OGCNS, "PropertyIsNull" ),
                                                ComparisonOperator.SubType.PROPERTY_IS_NULL );
+
     }
 
     private static void addElementToExpressionMapping( QName elementName, Expression.Type type ) {
@@ -168,16 +199,21 @@ public class Filter110XMLEncoder {
      * @param writer
      *            target of the xml stream
      * @throws XMLStreamException
+     * @throws TransformationException
+     * @throws UnknownCRSException
      */
     public static void export( Filter filter, XMLStreamWriter writer )
-                            throws XMLStreamException {
+                            throws XMLStreamException, UnknownCRSException, TransformationException {
 
-        writer.writeStartElement( OGC_PREFIX, "Filter", OGC_NS );
+        writer.setPrefix( "ogc", "http://www.opengis.net/ogc" );
+        writer.writeStartElement( CommonNamespaces.OGCNS, "Filter" );
+        writer.writeNamespace( "ogc", "http://www.opengis.net/ogc" );
+
         switch ( filter.getType() ) {
         case ID_FILTER:
             Collection<String> ids = ( (IdFilter) filter ).getMatchingIds();
             for ( String id : ids ) {
-                writer.writeStartElement( OGC_NS, "GmlObjectId" );
+                writer.writeStartElement( CommonNamespaces.OGCNS, "GmlObjectId" );
                 writer.writeCharacters( id );
                 writer.writeEndElement();
             }
@@ -197,9 +233,11 @@ public class Filter110XMLEncoder {
      * @param writer
      *            target of the xml stream
      * @throws XMLStreamException
+     * @throws TransformationException
+     * @throws UnknownCRSException
      */
     private static void export( Operator operator, XMLStreamWriter writer )
-                            throws XMLStreamException {
+                            throws XMLStreamException, UnknownCRSException, TransformationException {
         switch ( operator.getType() ) {
         case COMPARISON:
             export( (ComparisonOperator) operator, writer );
@@ -221,9 +259,11 @@ public class Filter110XMLEncoder {
      * @param writer
      *            target of the xml stream
      * @throws XMLStreamException
+     * @throws TransformationException
+     * @throws UnknownCRSException
      */
     private static void export( LogicalOperator operator, XMLStreamWriter writer )
-                            throws XMLStreamException {
+                            throws XMLStreamException, UnknownCRSException, TransformationException {
 
         QName elementName = logicalOperatorTypeToElementName.get( operator.getSubType() );
         writer.writeStartElement( elementName.getNamespaceURI(), elementName.getLocalPart() );
@@ -257,6 +297,7 @@ public class Filter110XMLEncoder {
      * @param writer
      *            target of the xml stream
      * @throws XMLStreamException
+     * @throws FilterEvaluationException
      */
     private static void export( ComparisonOperator operator, XMLStreamWriter writer )
                             throws XMLStreamException {
@@ -268,9 +309,9 @@ public class Filter110XMLEncoder {
         case PROPERTY_IS_BETWEEN:
             PropertyIsBetween isBetween = (PropertyIsBetween) operator;
             export( isBetween.getExpression(), writer );
-            writer.writeStartElement( OGC_NS, "LowerBoundary" );
+            writer.writeStartElement( CommonNamespaces.OGCNS, "LowerBoundary" );
             writer.writeEndElement();
-            writer.writeStartElement( OGC_NS, "UpperBoundary" );
+            writer.writeStartElement( CommonNamespaces.OGCNS, "UpperBoundary" );
             writer.writeEndElement();
             break;
         case PROPERTY_IS_EQUAL_TO:
@@ -321,28 +362,93 @@ public class Filter110XMLEncoder {
      * @param writer
      *            target of the xml stream
      * @throws XMLStreamException
+     * @throws TransformationException
+     * @throws UnknownCRSException
+     * @throws FilterEvaluationException
      */
     private static void export( SpatialOperator operator, XMLStreamWriter writer )
-                            throws XMLStreamException {
+                            throws XMLStreamException, UnknownCRSException, TransformationException {
 
         QName elementName = spatialOperatorTypeToElementName.get( operator.getSubType() );
         writer.writeStartElement( elementName.getNamespaceURI(), elementName.getLocalPart() );
 
+        GMLStreamWriter gmlWriter = GMLOutputFactory.createGMLStreamWriter( GMLVersion.GML_31, writer );
+        gmlWriter.setCoordinateFormatter( new DecimalCoordinateFormatter( 3 ) );
+        Map<String, String> bindings = new HashMap<String, String>();
+        bindings.put( "gml", GML_31.getNamespace() );
+        writer.writeNamespace( "gml", GML_31.getNamespace() );
+        gmlWriter.setNamespaceBindings( bindings );
+        // gmlWriter.setLocalXLinkTemplate( "#{}" );
+        // gmlWriter.setXLinkDepth( 0 );
+
+        PropertyName propertyName = null;
+        Geometry geometry = null;
+        Measure distance = null;
+
         switch ( operator.getSubType() ) {
-        // TODO implement me
+
         case BBOX:
+            propertyName = ( (BBOX) operator ).getPropName();
+            geometry = ( (BBOX) operator ).getBoundingBox();
+            break;
         case BEYOND:
+            propertyName = ( (Beyond) operator ).getPropName();
+            geometry = ( (Beyond) operator ).getGeometry();
+            distance = ( (Beyond) operator ).getDistance();
+            break;
         case CONTAINS:
+            propertyName = ( (Contains) operator ).getPropName();
+            geometry = ( (Contains) operator ).getGeometry();
+            break;
         case CROSSES:
+            propertyName = ( (Crosses) operator ).getPropName();
+            geometry = ( (Crosses) operator ).getGeometry();
+            break;
         case DISJOINT:
+            propertyName = ( (Disjoint) operator ).getPropName();
+            geometry = ( (Disjoint) operator ).getGeometry();
+            break;
         case DWITHIN:
+            propertyName = ( (DWithin) operator ).getPropName();
+            geometry = ( (DWithin) operator ).getGeometry();
+            distance = ( (DWithin) operator ).getDistance();
+            break;
         case EQUALS:
+            propertyName = ( (Equals) operator ).getPropName();
+            geometry = ( (Equals) operator ).getGeometry();
+            break;
         case INTERSECTS:
+            propertyName = ( (Intersects) operator ).getPropName();
+            geometry = ( (Intersects) operator ).getGeometry();
+            break;
         case OVERLAPS:
+            propertyName = ( (Overlaps) operator ).getPropName();
+            geometry = ( (Overlaps) operator ).getGeometry();
+            break;
         case TOUCHES:
+            propertyName = ( (Touches) operator ).getPropName();
+            geometry = ( (Touches) operator ).getGeometry();
+            break;
         case WITHIN:
+            propertyName = ( (Within) operator ).getPropName();
+            geometry = ( (Within) operator ).getGeometry();
+            break;
         }
 
+        // exporting the comparable geometry property
+        export( propertyName, writer );
+
+        // serializing the geometry
+        gmlWriter.setOutputCRS( geometry.getCoordinateSystem() );
+        gmlWriter.write( geometry );
+
+        if ( distance != null ) { // in case of Beyond- and DWithin-operators export their distance variable
+            QName distanceElementName = new QName( CommonNamespaces.OGCNS, "Distance" );
+            writer.writeStartElement( distanceElementName.getNamespaceURI(), distanceElementName.getLocalPart() );
+            writer.writeAttribute( "units", ( (Measure) distance ).getUomUri() );
+            writer.writeCharacters( ( (Measure) distance ).getValue().toString() );
+            writer.writeEndElement();
+        }
         writer.writeEndElement();
     }
 
@@ -354,29 +460,32 @@ public class Filter110XMLEncoder {
      * @param writer
      *            target of the xml stream
      * @throws XMLStreamException
+     * @throws FilterEvaluationException
      */
     public static void export( Expression expression, XMLStreamWriter writer )
                             throws XMLStreamException {
 
         QName elementName = expressionTypeToElementName.get( expression.getType() );
-        if ( elementName.getPrefix() == null || elementName.getPrefix().isEmpty() ) {
-            writer.writeStartElement( elementName.getPrefix(), elementName.getLocalPart(),
-                                      elementName.getNamespaceURI() );
-            writer.writeNamespace( elementName.getPrefix(), elementName.getNamespaceURI() );
+        boolean prefixBound = ( writer.getPrefix( elementName.getNamespaceURI() ) != null ) ? true : false;
+        if ( prefixBound ) {
+            writer.writeStartElement( elementName.getNamespaceURI(), elementName.getLocalPart() );
         } else {
             writer.writeStartElement( elementName.getPrefix(), elementName.getLocalPart(),
                                       elementName.getNamespaceURI() );
+            writer.writeNamespace( elementName.getPrefix(), elementName.getNamespaceURI() );
         }
 
         switch ( expression.getType() ) {
         case PROPERTY_NAME:
-            // TODO what about other bindings in non-simple xpaths?
-            PropertyName pn = (PropertyName) expression;
-            QName qn = pn.getAsQName();
-            if ( qn != null ) {
-                writer.writeNamespace( qn.getPrefix(), qn.getNamespaceURI() );
+            PropertyName propertyName = (PropertyName) expression;
+            NamespaceBindings nsBindings = propertyName.getNsContext();
+            Iterator<String> prefixIter = nsBindings.getPrefixes();
+            while ( prefixIter.hasNext() ) {
+                String prefix = prefixIter.next();
+                String ns = nsBindings.getNamespaceURI( prefix );
+                writer.writeNamespace( prefix, ns );
             }
-            writer.writeCharacters( ( (PropertyName) expression ).getAsText() );
+            writer.writeCharacters( propertyName.getAsText() );
             break;
         case LITERAL:
             // TODO handle complex literals
@@ -384,7 +493,7 @@ public class Filter110XMLEncoder {
             break;
         case FUNCTION:
             Function function = (Function) expression;
-            writer.writeAttribute( NAME_ATTR.getLocalPart(), function.getName() );
+            writer.writeAttribute( "name", function.getName() );
             for ( Expression param : function.getParameters() ) {
                 export( param, writer );
             }
