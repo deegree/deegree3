@@ -34,6 +34,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.console.featurestore;
 
+import static javax.faces.application.FacesMessage.SEVERITY_ERROR;
+
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -44,6 +46,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
+import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
 import javax.faces.component.html.HtmlCommandButton;
@@ -81,6 +84,9 @@ public class FeatureStoreConfig implements Serializable {
 
     public String createTables() {
         if ( !getSql() ) {
+            FacesMessage fm = new FacesMessage( SEVERITY_ERROR,
+                                                "Current feature store is not capable of creating tables.", null );
+            FacesContext.getCurrentInstance().addMessage( null, fm );
             return "/console/featurestore/buttons";
         }
         SQLFeatureStore fs = (SQLFeatureStore) FeatureStoreManager.get( getId() );
