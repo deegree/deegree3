@@ -119,18 +119,20 @@ public class Reference<T extends Object> implements Object {
      *             if the reference cannot be resolved
      */
     @SuppressWarnings("unchecked")
-    public T getReferencedObject()
+    public synchronized T getReferencedObject()
                             throws ReferenceResolvingException {
         if ( exception != null ) {
             throw exception;
         }
         if ( object == null ) {
-            object = (T) resolver.getObject( uri, baseURL );
+            try {
+                object = (T) resolver.getObject( uri, baseURL );
+            } catch ( ReferenceResolvingException e ) {
+                throw exception = e;
+            }
             if ( object == null ) {
-                synchronized ( this ) {
-                    String msg = "Unable to resolve reference to '" + uri + "'.";
-                    throw exception = new ReferenceResolvingException( msg );
-                }
+                String msg = "Unable to resolve reference to '" + uri + "'.";
+                throw exception = new ReferenceResolvingException( msg );
             }
         }
         return object;
