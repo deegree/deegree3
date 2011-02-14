@@ -190,14 +190,11 @@ public class ConfigManager {
                             Config c = new Config( f, currentResourceManager, this, prefix );
                             availableResources.add( c );
                         } catch ( XMLStreamException e ) {
-                            // TODO Auto-generated catch block
-                            e.printStackTrace();
+                            LOG.debug( "Unable to load {}: {}", f.getName(), e.getLocalizedMessage() );
                         } catch ( FactoryConfigurationError e ) {
-                            // TODO Auto-generated catch block
-                            e.printStackTrace();
+                            LOG.debug( "Unable to load {}: {}", f.getName(), e.getLocalizedMessage() );
                         } catch ( IOException e ) {
-                            // TODO Auto-generated catch block
-                            e.printStackTrace();
+                            LOG.debug( "Unable to load {}: {}", f.getName(), e.getLocalizedMessage() );
                         }
                     } else {
                         findFiles( f, prefix == null ? f.getName() : ( prefix + "/" + f.getName() ) );

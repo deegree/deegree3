@@ -7,7 +7,7 @@
         <h:panelGroup rendered="#{!logBean.loggedIn}">
             <ui:include src="accessForbidden.xhtml" />
         </h:panelGroup>
-        <h:panelGroup rendered="#{configManager.currentResourceManager == null}">
+        <h:panelGroup rendered="#{configManager.currentResourceManager == null &amp;&amp; logBean.loggedIn}">
             <p class="welcomeText">Please use the links to your left to select an appropriate section.</p>
         </h:panelGroup>
         <h:panelGroup rendered="#{logBean.loggedIn &amp;&amp; configManager.currentResourceManager != null}">
