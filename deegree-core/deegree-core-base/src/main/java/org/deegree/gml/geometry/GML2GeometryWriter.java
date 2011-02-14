@@ -339,7 +339,7 @@ public class GML2GeometryWriter implements GMLGeometryWriter {
 
         writer.writeStartElement( "gml", "Box", GML21NS );
         if ( envelope.getCoordinateSystem().getId() != null ) {
-            writer.writeAttribute( "srsName", envelope.getCoordinateSystem().getId() );
+            writer.writeAttribute( "srsName", envelope.getCoordinateSystem().getAlias() );
         }
         exportCoordinates( new PointsArray( envelope.getMin(), envelope.getMax() ) );
         writer.writeEndElement(); // </gml:Box>
@@ -661,10 +661,10 @@ public class GML2GeometryWriter implements GMLGeometryWriter {
         }
 
         if ( outputCRS != null ) {
-            writer.writeAttribute( "srsName", outputCRS.getId() );
+            writer.writeAttribute( "srsName", outputCRS.getAlias() );
         } else if ( geometry.getCoordinateSystem() != null ) {
             ICRS coordinateSystem = geometry.getCoordinateSystem();
-            writer.writeAttribute( "srsName", coordinateSystem.getId() );
+            writer.writeAttribute( "srsName", coordinateSystem.getAlias() );
         }
     }
 }
