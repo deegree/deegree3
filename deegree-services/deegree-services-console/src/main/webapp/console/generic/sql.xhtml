@@ -10,14 +10,14 @@
     });
   </script>
 								<h:form id="sqlForm">
-												<h:inputTextarea id="sqlArea" cols="70" rows="20" value="${execution.statements}" />
+												<h:inputTextarea id="sqlArea" cols="70" rows="20" value="#{execution.statements}" />
 												<br />
 												<br />
 												<h:outputText value="#{execution.message}" />
 												<br />
 												<br />
-												<h:commandButton styleClass="buttonSave" value="#{labels.sql_execute}" action="${execution.execute}" />
-												<h:commandButton styleClass="buttonCancel" value="#{labels.sql_back}" action="/console/jsf/jdbc?faces-redirect=true" />
+												<h:commandButton styleClass="buttonSave" value="#{labels.sql_execute}" action="#{execution.execute}" />
+												<h:commandButton styleClass="buttonCancel" value="#{labels.sql_back}" action="#{execution.getBackOutcome}" />
 								</h:form>
 				</ui:define>
 </ui:composition>
