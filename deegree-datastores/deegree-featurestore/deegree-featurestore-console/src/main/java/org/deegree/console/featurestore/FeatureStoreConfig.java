@@ -38,6 +38,7 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
@@ -85,7 +86,7 @@ public class FeatureStoreConfig implements Serializable {
         SQLFeatureStore fs = (SQLFeatureStore) FeatureStoreManager.get( getId() );
         String connId = fs.getConnId();
         String[] sql = fs.getDDL();
-        SQLExecution execution = new SQLExecution( connId, sql );
+        SQLExecution execution = new SQLExecution( connId, sql, "/console/featurestore/buttons" );
 
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put( "execution", execution );
         return "/console/generic/sql.jsf?faces-redirect=true";
@@ -119,6 +120,9 @@ public class FeatureStoreConfig implements Serializable {
     public List<NamespaceBinding> getNamespaces() {
         Set<NamespaceBinding> namespaces = new TreeSet<NamespaceBinding>();
         FeatureStore fs = FeatureStoreManager.get( getId() );
+        if ( fs == null ) {
+            return Collections.emptyList();
+        }
         ApplicationSchema schema = fs.getSchema();
         for ( FeatureType ft : schema.getFeatureTypes() ) {
             String prefix = ft.getName().getPrefix();
