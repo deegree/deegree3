@@ -36,8 +36,11 @@
 package org.deegree.geometry.standard;
 
 import org.deegree.cs.coordinatesystems.ICRS;
+import org.deegree.cs.exceptions.TransformationException;
+import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
+import org.deegree.geometry.GeometryTransformer;
 import org.deegree.geometry.points.Points;
 import org.deegree.geometry.precision.PrecisionModel;
 import org.deegree.geometry.primitive.Point;
@@ -65,6 +68,8 @@ public class DefaultEnvelope extends AbstractDefaultGeometry implements Envelope
     private Point min;
 
     private Point centroid;
+
+    private GeometryTransformer transformer;
 
     /**
      * Creates a new <code>DefaultEnvelope</code> instance with no id, crs and precisionmodel.
@@ -134,9 +139,24 @@ public class DefaultEnvelope extends AbstractDefaultGeometry implements Envelope
 
         if ( this.getCoordinateSystem() != null && other.getCoordinateSystem() != null ) {
             if ( !this.getCoordinateSystem().equals( other.getCoordinateSystem() ) ) {
-                String msg = "Merging of envelopes from different coordinate systems is currently not implemented!";
-                LOG.warn( msg );
-                return this;
+                synchronized ( this ) {
+                    // TODO how about some central transformer caching?
+                    if ( transformer == null ) {
+                        transformer = new GeometryTransformer( this.getCoordinateSystem() );
+                    }
+                }
+                try {
+                    other = transformer.transform( other );
+                } catch ( IllegalArgumentException e ) {
+                    String msg = "Could not transform other envelope when merging: {}";
+                    LOG.warn( msg, e.getLocalizedMessage() );
+                } catch ( TransformationException e ) {
+                    String msg = "Could not transform other envelope when merging: {}";
+                    LOG.warn( msg, e.getLocalizedMessage() );
+                } catch ( UnknownCRSException e ) {
+                    String msg = "Could not transform other envelope when merging: {}";
+                    LOG.warn( msg, e.getLocalizedMessage() );
+                }
             }
         }
 
