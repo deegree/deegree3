@@ -292,7 +292,7 @@ public class ObservationStoreManager implements ResourceManager {
             }
 
             public List<ResourceProvider> getResourceProviders() {
-                return new LinkedList<ResourceProvider>( osToProvider.values() );
+                return new LinkedList<ResourceProvider>( getProviders().values() );
             }
         };
     }
