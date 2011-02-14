@@ -51,12 +51,6 @@ import org.deegree.commons.utils.ProxyUtils;
 @ApplicationScoped
 public class ProxyBean {
 
-    private String proxyHost, proxyPort, proxyUser, proxyPassword, nonProxyHosts;
-
-    private String httpProxyHost, httpProxyPort, httpProxyUser, httpProxyPassword, nonhttpProxyHosts;
-
-    private String ftpProxyHost, ftpProxyPort, ftpProxyUser, ftpProxyPassword, nonftpProxyHosts;
-
     public String getNonftpProxyHosts() {
         return ProxyUtils.getFtpNonProxyHosts( true );
     }

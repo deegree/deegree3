@@ -165,6 +165,24 @@ public class ConfigManager {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
+        File metadataFile = new File( ws, "services/metadata.xml" );
+        schema = ConfigManager.class.getResource( "/META-INF/schemas/metadata/3.0.0/metadata.xsd" );
+        template = ConfigManager.class.getResource( "/META-INF/schemas/metadata/3.0.0/example.xml" );
+        try {
+            metadataConfig = new Config( metadataFile, schema, template, this, "/console/jsf/webservices" );
+        } catch ( IOException e ) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        File mainFile = new File( ws, "services/main.xml" );
+        schema = ConfigManager.class.getResource( "/META-INF/schemas/controller/3.0.0/controller.xsd" );
+        template = ConfigManager.class.getResource( "/META-INF/schemas/controller/3.0.0/example.xml" );
+        try {
+            mainConfig = new Config( mainFile, schema, template, this, "/console/jsf/webservices" );
+        } catch ( IOException e ) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
     }
 
     private String getViewForMetadata( ResourceManagerMetadata md ) {

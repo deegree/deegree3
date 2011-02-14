@@ -10,13 +10,12 @@
                 title="#{labels.webservices_cap}" />
         </h:panelGroup></td>
 
-        <ui:remove>
-            <h:commandButton styleClass="buttonEdit2" value="#{labels.webservices_edit_md}"
-                action="#{configManager.serviceMetadataConfig.edit}" />
-            <h:commandButton styleClass="buttonEdit2" value="#{labels.webservices_edit_global}"
-                action="#{configManager.serviceMainConfig.edit}" />
-        </ui:remove>
-
+    </ui:define>
+    <ui:define name="extraConfig">
+        <h:commandButton styleClass="buttonEdit2" value="#{labels.webservices_edit_md}"
+            action="#{configManager.metadataConfig.edit}" />
+        <h:commandButton styleClass="buttonEdit2" value="#{labels.webservices_edit_global}"
+            action="#{configManager.mainConfig.edit}" />
     </ui:define>
 </ui:composition>
 
