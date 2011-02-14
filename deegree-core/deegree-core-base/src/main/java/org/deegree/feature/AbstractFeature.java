@@ -151,8 +151,13 @@ public abstract class AbstractFeature implements Feature {
                     }
                     visited.add( f );
 
-                    for ( Property p2 : f.getProperties() ) {
-                        featureBBox = mergeEnvelope( p2, featureBBox );
+                    try {
+                        for ( Property p2 : f.getProperties() ) {
+                            featureBBox = mergeEnvelope( p2, featureBBox );
+                        }
+                    } catch ( RuntimeException e ) {
+                        LOG.debug( "Could not resolve properties when calculating envelope: {}",
+                                   e.getLocalizedMessage() );
                     }
                 }
             }
