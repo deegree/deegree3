@@ -10,7 +10,7 @@
 
   <parent>
     <groupId>org.deegree</groupId>
-    <artifactId>deegree-services-parent</artifactId>
+    <artifactId>deegree-tomcat-parent</artifactId>
     <version>3.1-SNAPSHOT</version>
   </parent>
 
