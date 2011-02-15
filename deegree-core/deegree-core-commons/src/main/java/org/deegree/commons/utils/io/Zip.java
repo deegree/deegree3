@@ -37,9 +37,11 @@ package org.deegree.commons.utils.io;
 
 import static org.apache.commons.io.IOUtils.closeQuietly;
 import static org.apache.commons.io.IOUtils.copy;
+import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -47,6 +49,8 @@ import java.net.URI;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
+
+import org.slf4j.Logger;
 
 /**
  * 
@@ -57,13 +61,10 @@ import java.util.zip.ZipOutputStream;
  */
 public class Zip {
 
-    /**
-     * @param in
-     * @param dir
-     * @throws IOException
-     */
-    public static void unzip( final InputStream in, File dir )
-                            throws IOException {
+    private static final Logger LOG = getLogger( Zip.class );
+
+    public static void unzip( final InputStream in, File dir, boolean overwrite )
+                            throws FileNotFoundException, IOException {
         ZipInputStream zin = new ZipInputStream( in );
         ZipEntry entry;
 
@@ -87,8 +88,14 @@ public class Zip {
                 continue;
             }
 
-            byte[] bs = new byte[16384];
             File f = new File( dir, entry.getName() );
+
+            if ( f.exists() && !overwrite ) {
+                LOG.debug( "Not overwriting {}.", f );
+                continue;
+            }
+
+            byte[] bs = new byte[16384];
             File parent = f.getAbsoluteFile().getParentFile();
             parent.mkdirs();
             FileOutputStream out = new FileOutputStream( f );
@@ -100,6 +107,16 @@ public class Zip {
         }
 
         in.close();
+    }
+
+    /**
+     * @param in
+     * @param dir
+     * @throws IOException
+     */
+    public static void unzip( final InputStream in, File dir )
+                            throws IOException {
+        unzip( in, dir, true );
     }
 
     /**
