@@ -271,7 +271,7 @@ public class RasterBuilder implements CoverageBuilder {
                 }
                 if ( directory != null ) {
                     File rasterFiles = new File( adapter.resolve( directory.getValue().trim() ).toURI() );
-                    boolean recursive = directory.isRecursive() == null ? false : directory.isRecursive();
+                    boolean recursive = directory.isRecursive();
                     if ( crs != null ) {
                         rOptions.add( RasterIOOptions.CRS, crs.getAlias() );
                     }
