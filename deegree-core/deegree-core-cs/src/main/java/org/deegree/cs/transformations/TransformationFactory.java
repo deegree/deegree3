@@ -60,6 +60,7 @@ import org.deegree.cs.CRSCodeType;
 import org.deegree.cs.CRSIdentifiable;
 import org.deegree.cs.components.IEllipsoid;
 import org.deegree.cs.components.IGeodeticDatum;
+import org.deegree.cs.coordinatesystems.CRS.CRSType;
 import org.deegree.cs.coordinatesystems.CompoundCRS;
 import org.deegree.cs.coordinatesystems.GeocentricCRS;
 import org.deegree.cs.coordinatesystems.GeographicCRS;
@@ -69,7 +70,6 @@ import org.deegree.cs.coordinatesystems.IGeocentricCRS;
 import org.deegree.cs.coordinatesystems.IGeographicCRS;
 import org.deegree.cs.coordinatesystems.IProjectedCRS;
 import org.deegree.cs.coordinatesystems.ProjectedCRS;
-import org.deegree.cs.coordinatesystems.CRS.CRSType;
 import org.deegree.cs.exceptions.TransformationException;
 import org.deegree.cs.persistence.CRSStore;
 import org.deegree.cs.refs.coordinatesystem.CRSRef;
@@ -242,12 +242,8 @@ public class TransformationFactory {
             return new IdentityTransform( sourceCRS, targetCRS );
         }
 
-        if ( sourceCRS instanceof CRSRef ) {
-            sourceCRS = ( (CRSRef) sourceCRS ).getReferencedObject();
-        }
-        if ( targetCRS instanceof CRSRef ) {
-            targetCRS = ( (CRSRef) targetCRS ).getReferencedObject();
-        }
+        sourceCRS = resolve( sourceCRS );
+        targetCRS = resolve( targetCRS );
 
         List<Transformation> toBeUsed = copyTransformations( transformationsToBeUsed );
 
@@ -490,9 +486,8 @@ public class TransformationFactory {
 
     private Transformation createFromGeocentric( IGeocentricCRS sourceCRS, ICRS targetCRS )
                             throws TransformationException {
-        if ( targetCRS instanceof CRSRef ) {
-            targetCRS = ( (CRSRef) targetCRS ).getReferencedObject();
-        }
+
+        targetCRS = resolve( targetCRS );
         Transformation result = null;
         CRSType type = targetCRS.getType();
         switch ( type ) {
@@ -524,9 +519,8 @@ public class TransformationFactory {
 
     private Transformation createFromProjected( IProjectedCRS sourceCRS, ICRS targetCRS )
                             throws TransformationException {
-        if ( targetCRS instanceof CRSRef ) {
-            targetCRS = ( (CRSRef) targetCRS ).getReferencedObject();
-        }
+
+        targetCRS = resolve( targetCRS );
         Transformation result = null;
         CRSType type = targetCRS.getType();
         switch ( type ) {
@@ -558,9 +552,8 @@ public class TransformationFactory {
 
     private Transformation createFromGeographic( IGeographicCRS sourceCRS, ICRS targetCRS )
                             throws TransformationException {
-        if ( targetCRS instanceof CRSRef ) {
-            targetCRS = ( (CRSRef) targetCRS ).getReferencedObject();
-        }
+
+        targetCRS = resolve( targetCRS );
         Transformation result = null;
         CRSType type = targetCRS.getType();
         switch ( type ) {
@@ -634,13 +627,8 @@ public class TransformationFactory {
         if ( sourceCRS.getUnderlyingCRS().equals( targetCRS.getUnderlyingCRS() ) ) {
             return null;
         }
-
-        if ( sourceCRS instanceof CompoundCRSRef ) {
-            sourceCRS = ( (CompoundCRSRef) sourceCRS ).getReferencedObject();
-        }
-        if ( targetCRS instanceof CompoundCRSRef ) {
-            targetCRS = ( (CompoundCRSRef) targetCRS ).getReferencedObject();
-        }
+        sourceCRS = ( (CompoundCRS) resolve( sourceCRS ) );
+        targetCRS = ( (CompoundCRS) resolve( targetCRS ) );
 
         LOG.debug( "Creating compound( " + sourceCRS.getUnderlyingCRS().getCode() + ") ->compound transformation( "
                    + targetCRS.getUnderlyingCRS().getCode() + "): from (source): " + sourceCRS.getCode()
@@ -650,20 +638,20 @@ public class TransformationFactory {
         Transformation result = null;
         // basic check for simple (invert) projections
         if ( sourceType == PROJECTED && targetType == GEOGRAPHIC ) {
-            if ( ( ( (IProjectedCRS) sourceCRS.getUnderlyingCRS() ).getGeographicCRS() ).equals( targetCRS.getUnderlyingCRS() ) ) {
+            if ( ( ( (IProjectedCRS) resolve( sourceCRS.getUnderlyingCRS() ) ).getGeographicCRS() ).equals( targetCRS.getUnderlyingCRS() ) ) {
                 result = new ProjectionTransform( (IProjectedCRS) sourceCRS.getUnderlyingCRS() );
                 result.inverse();
             }
         }
         if ( sourceType == GEOGRAPHIC && targetType == PROJECTED ) {
-            if ( ( ( (IProjectedCRS) targetCRS.getUnderlyingCRS() ).getGeographicCRS() ).equals( sourceCRS.getUnderlyingCRS() ) ) {
+            if ( ( ( (IProjectedCRS) resolve( targetCRS.getUnderlyingCRS() ) ).getGeographicCRS() ).equals( sourceCRS.getUnderlyingCRS() ) ) {
                 result = new ProjectionTransform( (IProjectedCRS) targetCRS.getUnderlyingCRS() );
             }
         }
         if ( result == null ) {
             IGeocentricCRS sourceGeocentric = null;
             if ( sourceType == GEOCENTRIC ) {
-                sourceGeocentric = (IGeocentricCRS) sourceCRS.getUnderlyingCRS();
+                sourceGeocentric = (IGeocentricCRS) resolve( sourceCRS.getUnderlyingCRS() );
             } else {
                 sourceGeocentric = new GeocentricCRS(
                                                       sourceCRS.getGeodeticDatum(),
@@ -672,7 +660,7 @@ public class TransformationFactory {
             }
             IGeocentricCRS targetGeocentric = null;
             if ( targetType == GEOCENTRIC ) {
-                targetGeocentric = (IGeocentricCRS) targetCRS.getUnderlyingCRS();
+                targetGeocentric = (IGeocentricCRS) resolve( targetCRS.getUnderlyingCRS() );
             } else {
                 targetGeocentric = new GeocentricCRS(
                                                       targetCRS.getGeodeticDatum(),
@@ -696,17 +684,11 @@ public class TransformationFactory {
                 sourceTransformationChain = new ProjectionTransform( (ProjectedCRS) sourceCRS.getUnderlyingCRS() );
                 sourceTransformationChain.inverse();
                 ICRS underlying = sourceCRS.getUnderlyingCRS();
-                if ( underlying instanceof CRSRef ) {
-                    underlying = ( (CRSRef) underlying ).getReferencedObject();
-                }
-                sourceGeographic = ( (IProjectedCRS) underlying ).getGeographicCRS();
+                sourceGeographic = ( (IProjectedCRS) resolve( underlying ) ).getGeographicCRS();
             case GEOGRAPHIC:
                 underlying = sourceCRS.getUnderlyingCRS();
-                if ( underlying instanceof CRSRef ) {
-                    underlying = ( (CRSRef) underlying ).getReferencedObject();
-                }
                 if ( sourceGeographic == null ) {
-                    sourceGeographic = (IGeographicCRS) underlying;
+                    sourceGeographic = (IGeographicCRS) resolve( underlying );
                 }
                 sourceT = getToWGSTransformation( sourceGeographic );
                 /*
@@ -715,7 +697,8 @@ public class TransformationFactory {
                  */
                 // if ( helmertTransformation != null ) {
                 // create a 2d->3d mapping.
-                final Transformation axisAligned = createMatrixTransform( sourceGeographic, sourceGeocentric,
+                final Transformation axisAligned = createMatrixTransform( sourceGeographic,
+                                                                          sourceGeocentric,
                                                                           swapAxis( sourceGeographic,
                                                                                     GeographicCRS.WGS84 ) );
                 if ( LOG.isDebugEnabled() ) {
@@ -745,11 +728,12 @@ public class TransformationFactory {
             case GEOCENTRIC:
                 break;
             case PROJECTED:
-                targetTransformationChain = new ProjectionTransform( (IProjectedCRS) targetCRS.getUnderlyingCRS() );
-                targetGeographic = ( (IProjectedCRS) targetCRS.getUnderlyingCRS() ).getGeographicCRS();
+                targetTransformationChain = new ProjectionTransform(
+                                                                     (IProjectedCRS) resolve( targetCRS.getUnderlyingCRS() ) );
+                targetGeographic = ( (IProjectedCRS) resolve( targetCRS.getUnderlyingCRS() ) ).getGeographicCRS();
             case GEOGRAPHIC:
                 if ( targetGeographic == null ) {
-                    targetGeographic = (IGeographicCRS) targetCRS.getUnderlyingCRS();
+                    targetGeographic = (IGeographicCRS) resolve( targetCRS.getUnderlyingCRS() );
                 }
                 targetT = getToWGSTransformation( targetGeographic );
                 /*
@@ -758,7 +742,8 @@ public class TransformationFactory {
                  */
                 // if ( helmertTransformation != null ) {
                 // create a 2d->3d mapping.
-                final Transformation axisAligned = createMatrixTransform( targetGeocentric, targetGeographic,
+                final Transformation axisAligned = createMatrixTransform( targetGeocentric,
+                                                                          targetGeographic,
                                                                           swapAxis( GeographicCRS.WGS84,
                                                                                     targetGeographic ) );
                 final Transformation geoCentricTransform = new GeocentricTransform( targetCRS, targetGeocentric );
@@ -1021,7 +1006,8 @@ public class TransformationFactory {
                     sourceGeocentric = targetCRS;
                 }
             }
-            final Transformation axisAlign = createMatrixTransform( sourceCRS, createWGSAlligned( sourceCRS ),
+            final Transformation axisAlign = createMatrixTransform( sourceCRS,
+                                                                    createWGSAlligned( sourceCRS ),
                                                                     swapAndRotateGeoAxis( sourceCRS,
                                                                                           GeographicCRS.WGS84 ) );
             if ( LOG.isDebugEnabled() ) {
@@ -1334,4 +1320,10 @@ public class TransformationFactory {
         return null;
     }
 
+    private ICRS resolve( ICRS crs ) {
+        if ( crs instanceof CRSRef ) {
+            return ( (CRSRef) crs ).getReferencedObject();
+        }
+        return crs;
+    }
 }
