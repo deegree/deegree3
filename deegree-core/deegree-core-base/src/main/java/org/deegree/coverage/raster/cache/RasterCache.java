@@ -147,7 +147,7 @@ public class RasterCache {
                               "Ignoring supplied property: {} because it could not be parsed. Using 20G of disk space for raster caching.",
                               DEF_RASTER_CACHE_MEM_SIZE );
                 }
-                mm = 20 * ( 1024 * 1024 * 1024 );
+                mm = 20 * ( 1024l * 1024 * 1024 );
             } else {
                 LOG.info( "Using {} of disk space for raster caching (because it was set with the {} property).",
                           ( mm / ( 1024 * 1024 ) ) + "Mb", DEF_RASTER_CACHE_DISK_SIZE );
@@ -406,6 +406,8 @@ public class RasterCache {
                                     currentlyUsedMemory -= next.dispose( false );
                                     // add the new cache file size
                                     currentlyUsedDisk += ( next.cacheFileSize() - onDisk );
+                                } else if ( mem > 0 ) {
+                                    currentlyUsedMemory -= next.dispose( true );
                                 }
                             }
                         }
@@ -440,11 +442,11 @@ public class RasterCache {
                     onDisk += next.cacheFileSize();
                 }
             }
-            LOG.debug( "Resetting currently used memory from:{} to:{}", ( currentlyUsedMemory / ( 1024 * 1024d ) ),
+            LOG.debug( "Resetting currently used memory from: {} to: {}", ( currentlyUsedMemory / ( 1024 * 1024d ) ),
                        ( cum / ( 1024 * 1024d ) ) );
 
-            LOG.debug( "Resetting currently used space on diskfrom:{} to:{}", ( currentlyUsedDisk / ( 1024 * 1024d ) ),
-                       ( onDisk / ( 1024 * 1024d ) ) );
+            LOG.debug( "Resetting currently used space on disk from: {} to: {}",
+                       ( currentlyUsedDisk / ( 1024 * 1024d ) ), ( onDisk / ( 1024 * 1024d ) ) );
             currentlyUsedMemory = cum;
             currentlyUsedDisk = onDisk;
         }

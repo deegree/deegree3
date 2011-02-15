@@ -613,6 +613,7 @@ public class CacheRasterReader extends GridFileReader {
                         // if the result is the same instance, create a copy
                         LOG.debug( "The rectangle did not fit, creating copy." );
                         src = ByteBuffer.allocate( tileBuffer.capacity() );
+                        this.inMemorySize += src.capacity();
                         tileBuffer.clear();
                         src.put( tileBuffer );
                     }
