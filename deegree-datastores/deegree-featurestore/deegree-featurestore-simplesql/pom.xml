@@ -46,7 +46,7 @@
           </execution>
         </executions>
         <configuration>
-          <schemaFiles>datasource/feature/simplesql/3.0.0/simplesql.xsd</schemaFiles>
+          <schemaFiles>datasource/feature/simplesql/3.0.1/simplesql.xsd</schemaFiles>
           <schemaDirectory>src/main/resources/META-INF/schemas/</schemaDirectory>
         </configuration>
       </plugin>

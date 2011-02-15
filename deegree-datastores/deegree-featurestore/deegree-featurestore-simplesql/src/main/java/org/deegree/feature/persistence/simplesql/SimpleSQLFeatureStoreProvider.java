@@ -71,9 +71,9 @@ public class SimpleSQLFeatureStoreProvider implements FeatureStoreProvider {
 
     private static final String CONFIG_JAXB_PACKAGE = "org.deegree.feature.persistence.simplesql.jaxb";
 
-    private static final String CONFIG_SCHEMA = "/META-INF/schemas/datasource/feature/simplesql/3.0.0/simplesql.xsd";
+    private static final String CONFIG_SCHEMA = "/META-INF/schemas/datasource/feature/simplesql/3.0.1/simplesql.xsd";
 
-    private static final String CONFIG_TEMPLATE = "/META-INF/schemas/datasource/feature/simplesql/3.0.0/example.xml";
+    private static final String CONFIG_TEMPLATE = "/META-INF/schemas/datasource/feature/simplesql/3.0.1/example.xml";
 
     private static Mapper<Pair<Integer, String>, LODStatement> lodMapper = new Mapper<Pair<Integer, String>, LODStatement>() {
         public Pair<Integer, String> apply( LODStatement u ) {
@@ -107,6 +107,9 @@ public class SimpleSQLFeatureStoreProvider implements FeatureStoreProvider {
                                                                                                      CONFIG_SCHEMA,
                                                                                                      configURL );
             String connId = config.getConnectionPoolId();
+            if ( connId == null ) {
+                connId = config.getJDBCConnId();
+            }
             String srs = config.getStorageCRS();
             String stmt = config.getSQLStatement();
             String name = config.getFeatureTypeName();
