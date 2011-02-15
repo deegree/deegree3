@@ -35,23 +35,41 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.maven;
 
+import static java.util.Collections.reverse;
 import static org.apache.commons.io.IOUtils.closeQuietly;
-import static org.deegree.commons.utils.io.Zip.zip;
+import static org.apache.commons.io.IOUtils.copy;
+import static org.deegree.commons.utils.io.Zip.unzip;
+import static org.deegree.maven.utils.ClasspathHelper.getDependencyArtifacts;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.URI;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
 import org.apache.maven.artifact.Artifact;
+import org.apache.maven.artifact.factory.ArtifactFactory;
 import org.apache.maven.artifact.handler.DefaultArtifactHandler;
+import org.apache.maven.artifact.metadata.ArtifactMetadataSource;
+import org.apache.maven.artifact.repository.ArtifactRepository;
+import org.apache.maven.artifact.resolver.ArtifactNotFoundException;
+import org.apache.maven.artifact.resolver.ArtifactResolutionException;
+import org.apache.maven.artifact.resolver.ArtifactResolver;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.project.MavenProject;
 import org.apache.maven.project.artifact.AttachedArtifact;
+import org.apache.maven.project.artifact.InvalidDependencyVersionException;
 
 /**
  * @goal attach-workspace
@@ -71,6 +89,69 @@ public class WorkspaceMojo extends AbstractMojo {
      */
     private MavenProject project;
 
+    /**
+     * @component
+     */
+    private ArtifactResolver artifactResolver;
+
+    /**
+     * 
+     * @component
+     */
+    private ArtifactFactory artifactFactory;
+
+    /**
+     * 
+     * @component
+     */
+    private ArtifactMetadataSource metadataSource;
+
+    /**
+     * 
+     * @parameter expression="${localRepository}"
+     */
+    private ArtifactRepository localRepository;
+
+    private static void zip( File f, ZipOutputStream out, URI parent, Set<String> visitedFiles )
+                            throws IOException {
+        if ( f.getName().equalsIgnoreCase( ".svn" ) ) {
+            return;
+        }
+
+        if ( parent == null ) {
+            parent = f.toURI();
+        }
+
+        String name = parent.relativize( f.getAbsoluteFile().toURI() ).toString();
+
+        if ( f.isDirectory() ) {
+            if ( !name.isEmpty() && !visitedFiles.contains( name ) ) {
+                visitedFiles.add( name );
+                ZipEntry e = new ZipEntry( name );
+                out.putNextEntry( e );
+            }
+            File[] fs = f.listFiles();
+            if ( fs != null ) {
+                for ( File f2 : fs ) {
+                    zip( f2, out, parent, visitedFiles );
+                }
+            }
+        } else {
+            if ( !visitedFiles.contains( name ) ) {
+                visitedFiles.add( name );
+                ZipEntry e = new ZipEntry( name );
+                out.putNextEntry( e );
+                InputStream is = null;
+                try {
+                    is = new FileInputStream( f );
+                    copy( is, out );
+                } finally {
+                    closeQuietly( is );
+                }
+            }
+        }
+    }
+
     public void execute()
                             throws MojoExecutionException, MojoFailureException {
         Log log = getLog();
@@ -83,6 +164,14 @@ public class WorkspaceMojo extends AbstractMojo {
         }
         ZipOutputStream out = null;
         try {
+            Set<?> artifacts = getDependencyArtifacts( project, artifactResolver, artifactFactory, metadataSource,
+                                                       localRepository, "deegree-workspace" );
+            List<Artifact> workspaces = new ArrayList<Artifact>();
+            for ( Object o : artifacts ) {
+                workspaces.add( (Artifact) o );
+            }
+            reverse( workspaces );
+
             File target = new File( project.getBasedir(), "target" );
             if ( !target.exists() && !target.mkdirs() ) {
                 throw new MojoFailureException( "Could not create target directory!" );
@@ -92,7 +181,21 @@ public class WorkspaceMojo extends AbstractMojo {
             OutputStream os = new FileOutputStream( workspaceFile );
             out = new ZipOutputStream( os );
 
-            zip( dir, out, dir.getAbsoluteFile().toURI() );
+            HashSet<String> visitedFiles = new HashSet<String>();
+            zip( dir, out, dir.getAbsoluteFile().toURI(), visitedFiles );
+
+            for ( Artifact a : workspaces ) {
+                log.info( "Processing files in dependency " + a.getArtifactId() );
+                File tmp = new File( target, a.getArtifactId() );
+                FileInputStream in = new FileInputStream( a.getFile() );
+                try {
+                    unzip( in, tmp );
+                    zip( tmp, out, tmp.getAbsoluteFile().toURI(), visitedFiles );
+                } finally {
+                    closeQuietly( in );
+                }
+            }
+
             log.info( "Attaching " + workspaceFile );
             Artifact artifact = project.getArtifact();
             if ( artifact.getType() == null || !artifact.getType().equals( "deegree-workspace" ) ) {
@@ -109,6 +212,15 @@ public class WorkspaceMojo extends AbstractMojo {
         } catch ( IOException e ) {
             log.debug( e );
             throw new MojoFailureException( "Could not create workspace zip artifact: " + e.getLocalizedMessage() );
+        } catch ( ArtifactResolutionException e ) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch ( ArtifactNotFoundException e ) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch ( InvalidDependencyVersionException e ) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
         } finally {
             closeQuietly( out );
         }
