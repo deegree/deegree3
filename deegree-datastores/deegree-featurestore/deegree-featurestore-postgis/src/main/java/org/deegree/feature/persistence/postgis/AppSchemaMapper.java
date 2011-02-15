@@ -152,7 +152,8 @@ public class AppSchemaMapper {
         this.storageCrs = storageCrs;
         this.storageSrid = srid;
 
-        FeatureType[] fts = appSchema.getFeatureTypes();
+        List<FeatureType> ftList = appSchema.getFeatureTypes( null, false, false );
+        FeatureType[] fts = appSchema.getFeatureTypes( null, false, false ).toArray( new FeatureType[ftList.size()] );
         Map<FeatureType, FeatureType> ftToSuperFt = appSchema.getFtToSuperFt();
         Map<String, String> prefixToNs = appSchema.getNamespaceBindings();
         GMLSchemaInfoSet xsModel = appSchema.getXSModel();
@@ -223,7 +224,7 @@ public class AppSchemaMapper {
     }
 
     private Mapping generatePropMapping( PropertyType pt, MappingContext mc ) {
-        LOG.debug( "Mapping property '" + pt.getName() + "'" );
+        LOG.info( "Mapping property '" + pt.getName() + "'" );
         Mapping mapping = null;
         if ( pt instanceof SimplePropertyType ) {
             mapping = generatePropMapping( (SimplePropertyType) pt, mc );
@@ -307,12 +308,10 @@ public class AppSchemaMapper {
         }
         QTableName table = new QTableName( mc2.getColumn() );
         XSElementDeclaration xsElementDecl = pt.getValueElementDecl();
-        List<XSElementDeclaration> xsDecls = appSchema.getXSModel().getSubstitutions( xsElementDecl, null, true, true );
-        for ( XSElementDeclaration xsElementDeclaration : xsDecls ) {
-            System.out.println( "HUHU: " + xsElementDecl.getName() + " -> " + xsElementDeclaration.getName() );
-        }
-
-        List<Mapping> particles = generateMapping( pt.getXSDValueType(), mc2, new HashMap<QName, QName>() );
+        XSComplexTypeDefinition xsTypeDef = (XSComplexTypeDefinition) xsElementDecl.getTypeDefinition();
+        QName name = new QName( xsElementDecl.getNamespace(), xsElementDecl.getName() );
+        MappingContext newMc = new MappingContext( getName( name ) );
+        List<Mapping> particles = generateMapping( xsTypeDef, newMc, new HashMap<QName, QName>() );
         DataTypeMapping dtMapping = new DataTypeMapping( xsElementDecl, table, particles );
         dtMappings.add( dtMapping );
 
@@ -337,7 +336,7 @@ public class AppSchemaMapper {
             propMc = mcManager.mapOneToOneElement( mc, pt.getName() );
         } else {
             propMc = mcManager.mapOneToManyElements( mc, pt.getName() );
-            LOG.warn( "TODO: Build JoinChain" );
+            jc = generateJoinChain( mc, propMc );
         }
         MappingExpression mapping = new DBField( propMc.getColumn() );
         List<Mapping> particles = generateMapping( pt.getXSDValueType(), propMc, new HashMap<QName, QName>() );
@@ -353,7 +352,7 @@ public class AppSchemaMapper {
         MappingExpression mapping = null;
         if ( pt.getMaxOccurs() == 1 ) {
             propMc = mcManager.mapOneToOneElement( mc, pt.getName() );
-            codeSpaceMc = mcManager.mapOneToOneAttribute( mc, new QName( "codeSpace" ) );
+            codeSpaceMc = mcManager.mapOneToOneAttribute( propMc, new QName( "codeSpace" ) );
             mapping = new DBField( propMc.getColumn() );
         } else {
             propMc = mcManager.mapOneToManyElements( mc, pt.getName() );
@@ -472,6 +471,11 @@ public class AppSchemaMapper {
 
         for ( XSElementDeclaration substitution : substitutions ) {
             ObjectPropertyType opt = appSchema.getCustomElDecl( substitution );
+            if ( opt instanceof GenericObjectPropertyType ) {
+                LOG.warn( "Found generic object property type: " + opt
+                          + ". Not implemented, treating as CustomPropertyType." );
+                opt = null;
+            }
             if ( opt != null ) {
                 mappings.add( generatePropMapping( opt, mc ) );
             } else {
@@ -539,10 +543,8 @@ public class AppSchemaMapper {
                     MappingExpression mapping = new DBField( elMC.getColumn() );
 
                     JoinChain jc = null;
-
                     if ( occurence == -1 ) {
-                        // TODO
-                        // writeJoinedTable( writer, elMC.getTable() );
+                        jc = generateJoinChain( mc, elMC );
                     }
 
                     if ( typeDef instanceof XSComplexTypeDefinition ) {

@@ -533,9 +533,10 @@ public class GMLSchemaInfoSet extends XMLSchemaInfoSet {
         }
         if ( pt == null ) {
             if ( allowsXLink( (XSComplexTypeDefinition) elDecl.getTypeDefinition() ) ) {
-                // TODO actually determine allowed value representations
-                pt = new GenericObjectPropertyType( ptName, minOccurs, maxOccurs, elDecl.getAbstract(),
-                                                       elDecl.getNillable(), ptSubstitutions, BOTH, typeDef );
+                LOG.warn( "Identified generic object property, but handling is not implemented yet.");
+//                // TODO actually determine allowed value representations
+//                pt = new GenericObjectPropertyType( ptName, minOccurs, maxOccurs, elDecl.getAbstract(),
+//                                                       elDecl.getNillable(), ptSubstitutions, BOTH, typeDef );
             }
         }
         return pt;

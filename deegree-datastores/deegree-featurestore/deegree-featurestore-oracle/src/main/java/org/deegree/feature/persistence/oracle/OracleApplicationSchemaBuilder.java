@@ -103,11 +103,10 @@ class OracleApplicationSchemaBuilder {
         OracleApplicationSchemaBuilder builder = new OracleApplicationSchemaBuilder( ftDecls, jdbcConnId, dbSchema,
                                                                                      appSchema );
         FeatureType[] fts = builder.ftNameToFt.values().toArray( new FeatureType[builder.ftNameToFt.size()] );
-        FeatureTypeMapping[] ftMappings = builder.ftNameToMapping.values().toArray(
-                                                                                    new FeatureTypeMapping[builder.ftNameToMapping.size()] );
+        FeatureTypeMapping[] ftMappings = builder.ftNameToMapping.values().toArray( new FeatureTypeMapping[builder.ftNameToMapping.size()] );
         BlobMapping blobMapping = null;
-        return new MappedApplicationSchema( fts, null, null, appSchema.getXSModel(), ftMappings, storageSRS, null,
-                                            blobMapping );
+        return new MappedApplicationSchema( fts, null, null, appSchema.getXSModel(), ftMappings, null, storageSRS,
+                                            null, blobMapping );
     }
 
     private OracleApplicationSchemaBuilder( List<FeatureTypeDecl> ftDecls, String connId, String dbSchema,
@@ -160,7 +159,7 @@ class OracleApplicationSchemaBuilder {
         ftNameToFt.put( ftName, ft );
 
         FeatureTypeMapping ftMapping = null;
-//        new FeatureTypeMapping( ftName, mapping, fidMapping, propToColumn, backendSrs );
+        // new FeatureTypeMapping( ftName, mapping, fidMapping, propToColumn, backendSrs );
         ftNameToMapping.put( ftName, ftMapping );
     }
 

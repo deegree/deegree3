@@ -202,7 +202,7 @@ public class OracleFeatureStore implements FeatureStore {
     public Envelope getEnvelope( QName ftName ) {
         Envelope bbox = null;
         FeatureType ft = schema.getFeatureType( ftName );
-        FeatureTypeMapping ftMapping = schema.getMapping( ftName );
+        FeatureTypeMapping ftMapping = schema.getFtMapping( ftName );
         if ( ftMapping != null ) {
             Connection conn = null;
             ResultSet rs = null;
@@ -320,7 +320,7 @@ public class OracleFeatureStore implements FeatureStore {
     private FeatureResultSet queryByOperatorFilter( FeatureType ft, OperatorFilter filter, SortProperty[] sortCrits )
                             throws FeatureStoreException {
 
-        FeatureTypeMapping ftMapping = schema.getMapping( ft.getName() );
+        FeatureTypeMapping ftMapping = schema.getFtMapping( ft.getName() );
         FeatureResultSet result = null;
 
         Connection conn = null;
@@ -496,7 +496,7 @@ public class OracleFeatureStore implements FeatureStore {
     }
 
     FeatureTypeMapping getMapping( QName ftName ) {
-        return schema.getMapping( ftName );
+        return schema.getFtMapping( ftName );
     }
 
     int getSrid( QName ftName, QName propName ) {
@@ -568,9 +568,9 @@ public class OracleFeatureStore implements FeatureStore {
             throw new FeatureStoreException( msg );
         }
         String prefix = fid.substring( 0, delimPos );
-        for ( QName ftName : schema.getMappings().keySet() ) {
+        for ( QName ftName : schema.getFtMappings().keySet() ) {
             if ( ftName.getLocalPart().toUpperCase().equals( prefix ) ) {
-                return schema.getMapping( ftName );
+                return schema.getFtMapping( ftName );
             }
         }
         String msg = "No feature type for feature id '" + fid + "' found.";

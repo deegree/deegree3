@@ -249,8 +249,8 @@ public class PostGISFeatureStoreConfigWriter {
         writeCommonAttrs( writer, pt );
         writer.writeAttribute( "type", pt.getPrimitiveType().getXSTypeName() );
         writer.writeAttribute( "mapping", mapping.getMapping().toString() );
-        if ( pt.getMaxOccurs() != 1 ) {
-            LOG.warn( "TODO: write join table" );
+        if ( mapping.getJoinedTable() != null ) {
+            writeJoinedTable( writer, mapping.getJoinedTable() );
         }
         writer.writeEndElement();
     }
@@ -262,8 +262,8 @@ public class PostGISFeatureStoreConfigWriter {
         writeCommonAttrs( writer, pt );
         writer.writeAttribute( "mapping", mapping.getMapping().toString() );
         writer.writeAttribute( "codeSpaceMapping", mapping.getCodeSpaceMapping().toString() );
-        if ( pt.getMaxOccurs() != 1 ) {
-            LOG.warn( "TODO: write join table" );
+        if ( mapping.getJoinedTable() != null ) {
+            writeJoinedTable( writer, mapping.getJoinedTable() );
         }
         writer.writeEndElement();
     }
@@ -359,13 +359,11 @@ public class PostGISFeatureStoreConfigWriter {
 
         writer.writeStartElement( CONFIG_NS, "CustomProperty" );
         writeCommonAttrs( writer, pt );
-
+        if ( mapping.getJoinedTable() != null ) {
+            writeJoinedTable( writer, mapping.getJoinedTable() );
+        }
         for ( Mapping particle : mapping.getParticles() ) {
             writeMapping( writer, particle );
-        }
-
-        if ( pt.getMaxOccurs() != 1 ) {
-            LOG.warn( "TODO: write join table" );
         }
         writer.writeEndElement();
     }
@@ -380,8 +378,8 @@ public class PostGISFeatureStoreConfigWriter {
         QName elName = new QName( elDecl.getNamespace(), elDecl.getName() );
         writer.writeAttribute( "valueElement", getName( elName ) );
 
-        if ( pt.getMaxOccurs() != 1 ) {
-            LOG.warn( "TODO: write join table" );
+        if ( mapping.getJoinedTable() != null ) {
+            writeJoinedTable( writer, mapping.getJoinedTable() );
         }
         writer.writeEndElement();
     }
@@ -400,7 +398,9 @@ public class PostGISFeatureStoreConfigWriter {
             } else {
                 writer.writeAttribute( "mapping", mapping.toString() );
             }
-            // TODO
+            if ( particle.getJoinedTable() != null ) {
+                writeJoinedTable( writer, particle.getJoinedTable() );
+            }
             writer.writeEndElement();
         } else if ( particle instanceof GeometryMapping ) {
             GeometryMapping gm = (GeometryMapping) particle;
@@ -464,15 +464,23 @@ public class PostGISFeatureStoreConfigWriter {
                 break;
             }
             }
+            if ( particle.getJoinedTable() != null ) {
+                writeJoinedTable( writer, particle.getJoinedTable() );
+            }
             writer.writeEndElement();
         } else if ( particle instanceof FeatureMapping ) {
             writer.writeStartElement( CONFIG_NS, "FeatureMapping" );
             writer.writeAttribute( "path", particle.getPath().getAsText() );
-            // TODO
+            if ( particle.getJoinedTable() != null ) {
+                writeJoinedTable( writer, particle.getJoinedTable() );
+            }
             writer.writeEndElement();
         } else if ( particle instanceof CompoundMapping ) {
             writer.writeStartElement( CONFIG_NS, "ComplexMapping" );
             writer.writeAttribute( "path", particle.getPath().getAsText() );
+            if ( particle.getJoinedTable() != null ) {
+                writeJoinedTable( writer, particle.getJoinedTable() );
+            }
             CompoundMapping compound = (CompoundMapping) particle;
             for ( Mapping childMapping : compound.getParticles() ) {
                 writeMapping( writer, childMapping );

@@ -70,7 +70,7 @@ import org.slf4j.LoggerFactory;
 public class PostGISDDLCreator {
 
     private static Logger LOG = LoggerFactory.getLogger( PostGISDDLCreator.class );
-    
+
     private final MappedApplicationSchema schema;
 
     private final boolean hasBlobTable;
@@ -249,8 +249,8 @@ public class PostGISDDLCreator {
                 sql.append( dbField.getColumn() );
                 sql.append( " " );
                 sql.append( getPostgreSQLType( PrimitiveType.STRING ) );
-            }            
-        }  else {
+            }
+        } else {
             throw new RuntimeException( "Internal error. Unhandled mapping type '" + propMapping.getClass() + "'" );
         }
 
@@ -275,9 +275,9 @@ public class PostGISDDLCreator {
                     sb.append( getPostgreSQLType( primitiveMapping.getType() ) );
                 }
             } else if ( mapping instanceof GeometryMapping ) {
-
+                LOG.warn( "TODO: geometry mapping" );
             } else if ( mapping instanceof FeatureMapping ) {
-
+                LOG.warn( "TODO: feature mapping" );
             } else if ( mapping instanceof CompoundMapping ) {
                 CompoundMapping compoundMapping = (CompoundMapping) mapping;
                 JoinChain jc = compoundMapping.getJoinedTable();
@@ -290,7 +290,7 @@ public class PostGISDDLCreator {
                 } else {
                     for ( Mapping particle : compoundMapping.getParticles() ) {
                         // TODO get rid of null check
-                        if (particle != null) {
+                        if ( particle != null ) {
                             ddls.addAll( process( sb, table, particle ) );
                         }
                     }
@@ -303,15 +303,13 @@ public class PostGISDDLCreator {
     }
 
     private StringBuffer createJoinedTable( QTableName fromTable, JoinChain jc ) {
-
         DBField to = jc.getFields().get( 1 );
-
         StringBuffer sb = new StringBuffer( "CREATE TABLE " );
         sb.append( to.getTable() );
         sb.append( " (\n    " );
         sb.append( "id serial PRIMARY KEY,\n    " );
         sb.append( to.getColumn() );
-        sb.append( " integer NOT NULL REFERENCES" );
+        sb.append( " text NOT NULL REFERENCES" );
         sb.append( " " );
         sb.append( fromTable );
         return sb;
