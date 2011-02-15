@@ -212,8 +212,7 @@ public class RasterTreeBuilder {
                 dstSRS = srcRaster.getCoordinateSystem();
             } else {
                 GeometryTransformer dstTransformer = new GeometryTransformer( dstSRS );
-                dstEnv = (Envelope) dstTransformer.transform( srcRaster.getEnvelope(),
-                                                              srcRaster.getCoordinateSystem() );
+                dstEnv = dstTransformer.transform( srcRaster.getEnvelope(), srcRaster.getCoordinateSystem() );
             }
         }
 
