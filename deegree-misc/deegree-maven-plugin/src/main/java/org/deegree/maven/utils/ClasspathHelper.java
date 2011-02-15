@@ -57,6 +57,7 @@ import org.apache.maven.artifact.resolver.ArtifactNotFoundException;
 import org.apache.maven.artifact.resolver.ArtifactResolutionException;
 import org.apache.maven.artifact.resolver.ArtifactResolutionResult;
 import org.apache.maven.artifact.resolver.ArtifactResolver;
+import org.apache.maven.artifact.resolver.filter.ArtifactFilter;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.project.MavenProject;
 import org.apache.maven.project.artifact.InvalidDependencyVersionException;
@@ -69,6 +70,46 @@ import org.apache.maven.project.artifact.InvalidDependencyVersionException;
  * @version $Revision$, $Date$
  */
 public class ClasspathHelper {
+
+    /**
+     * @param project
+     * @param artifactResolver
+     * @param artifactFactory
+     * @param metadataSource
+     * @param localRepository
+     * @param type
+     * @return a list of all (possibly transitive) artifacts of the given type
+     * @throws InvalidDependencyVersionException
+     * @throws ArtifactResolutionException
+     * @throws ArtifactNotFoundException
+     */
+    public static Set<?> getDependencyArtifacts( MavenProject project, ArtifactResolver artifactResolver,
+                                                 ArtifactFactory artifactFactory,
+                                                 ArtifactMetadataSource metadataSource,
+                                                 ArtifactRepository localRepository, final String type )
+                            throws InvalidDependencyVersionException, ArtifactResolutionException,
+                            ArtifactNotFoundException {
+
+        List<?> dependencies = project.getDependencies();
+
+        @SuppressWarnings("unchecked")
+        Set<Artifact> dependencyArtifacts = createArtifacts( artifactFactory, dependencies, null, new ArtifactFilter() {
+            @Override
+            public boolean include( Artifact artifact ) {
+                return artifact != null && artifact.getType() != null && artifact.getType().equals( type );
+            }
+        }, null );
+
+        ArtifactResolutionResult result = artifactResolver.resolveTransitively(
+                                                                                dependencyArtifacts,
+                                                                                project.getArtifact(),
+                                                                                EMPTY_MAP,
+                                                                                localRepository,
+                                                                                project.getRemoteArtifactRepositories(),
+                                                                                metadataSource, null, EMPTY_LIST );
+
+        return result.getArtifacts();
+    }
 
     private static Set<?> resolveDeps( MavenProject project, ArtifactResolver artifactResolver,
                                        ArtifactFactory artifactFactory, ArtifactMetadataSource metadataSource,
