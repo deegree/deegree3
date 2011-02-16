@@ -82,6 +82,15 @@ public class GenericXMLElementContent implements TypedObjectNode {
         return type;
     }
 
+    public PrimitiveValue getValue() {
+        for ( TypedObjectNode child : children ) {
+            if (child instanceof PrimitiveValue ) {
+                return (PrimitiveValue) child;
+            }
+        }
+        return null;
+    }
+
     public void setAttribute( QName name, PrimitiveValue value ) {
         if ( attrs == null ) {
             attrs = new LinkedHashMap<QName, PrimitiveValue>();
