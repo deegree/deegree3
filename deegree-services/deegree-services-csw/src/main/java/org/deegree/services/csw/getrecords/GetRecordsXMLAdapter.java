@@ -261,7 +261,7 @@ public class GetRecordsXMLAdapter extends AbstractCSWRequestXMLAdapter {
                                 } else if ( versionConstraint.equals( new Version( 1, 0, 0 ) ) ) {
                                     constraint = Filter100XMLDecoder.parse( xmlStream );
                                 } else {
-                                    String msg = Messages.get( "FILTER_VERSION NOT SPECIFIED", versionConstraint,
+                                    String msg = Messages.get( "CSW_FILTER_VERSION_NOT_SPECIFIED", versionConstraint,
                                                                Version.getVersionsString( new Version( 1, 1, 0 ) ),
                                                                Version.getVersionsString( new Version( 1, 0, 0 ) ) );
                                     LOG.info( msg );
