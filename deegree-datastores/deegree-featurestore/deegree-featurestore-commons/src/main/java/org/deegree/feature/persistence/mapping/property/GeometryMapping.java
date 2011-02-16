@@ -41,9 +41,10 @@ import org.deegree.feature.types.property.GeometryPropertyType.CoordinateDimensi
 import org.deegree.feature.types.property.GeometryPropertyType.GeometryType;
 import org.deegree.filter.expression.PropertyName;
 import org.deegree.filter.sql.MappingExpression;
+import org.deegree.geometry.Geometry;
 
 /**
- * The <code></code> class TODO add class documentation here.
+ * {@link Mapping} of {@link Geometry} particles.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$

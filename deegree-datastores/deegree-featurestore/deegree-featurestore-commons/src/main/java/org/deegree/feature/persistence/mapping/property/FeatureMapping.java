@@ -37,12 +37,13 @@ package org.deegree.feature.persistence.mapping.property;
 
 import javax.xml.namespace.QName;
 
+import org.deegree.feature.Feature;
 import org.deegree.feature.persistence.mapping.JoinChain;
 import org.deegree.filter.expression.PropertyName;
 import org.deegree.filter.sql.MappingExpression;
 
 /**
- * The <code></code> class TODO add class documentation here.
+ * {@link Mapping} of {@link Feature} particles.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$

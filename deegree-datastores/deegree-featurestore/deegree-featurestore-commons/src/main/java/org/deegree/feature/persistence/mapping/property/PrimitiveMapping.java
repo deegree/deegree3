@@ -36,12 +36,13 @@
 package org.deegree.feature.persistence.mapping.property;
 
 import org.deegree.commons.tom.primitive.PrimitiveType;
+import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.feature.persistence.mapping.JoinChain;
 import org.deegree.filter.expression.PropertyName;
 import org.deegree.filter.sql.MappingExpression;
 
 /**
- * {@link Mapping} of a {@link PrimitiveType}.
+ * {@link Mapping} of {@link PrimitiveValue} particles.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$

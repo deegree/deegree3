@@ -35,13 +35,12 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.feature.persistence.mapping.property;
 
-import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.feature.persistence.mapping.JoinChain;
 import org.deegree.filter.expression.PropertyName;
 import org.deegree.filter.sql.MappingExpression;
 
 /**
- * Abstract base class for mappings of (particles of) {@link TypedObjectNode}s to a relational model (tables, columns).
+ * A {@link Mapping} identifies a relative XPath-expression with a mapping / navigation rule in the relational model.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
@@ -62,20 +61,31 @@ public abstract class Mapping {
         this.joinedTable = joinedTable;
     }
 
+    /**
+     * Returns a relative XPath-expression that describes the path from the parent particle to the particle(s) that are
+     * affected by this rule.
+     * 
+     * @return a relative xpath expression, never <code>null</code>
+     */
     public PropertyName getPath() {
         return path;
+    }
+
+    /**
+     * Returns the table joins in the relational model.
+     * 
+     * @return the table joins, can be <code>null</code> (no table change)
+     */
+    public JoinChain getJoinedTable() {
+        return joinedTable;
     }
 
     public MappingExpression getMapping() {
         return mapping;
     }
 
-    public JoinChain getJoinedTable() {
-        return joinedTable;
-    }
-
     @Override
     public String toString() {
-        return "{path=" + path + ",mapping=" + mapping + "}";
+        return "{path=" + path + ",joinChain=" + joinedTable + "}";
     }
 }

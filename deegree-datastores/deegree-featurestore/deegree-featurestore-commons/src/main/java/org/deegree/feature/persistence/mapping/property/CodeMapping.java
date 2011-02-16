@@ -42,7 +42,7 @@ import org.deegree.filter.expression.PropertyName;
 import org.deegree.filter.sql.MappingExpression;
 
 /**
- * {@link Mapping} of a {@link CodeType}.
+ * {@link Mapping} of {@link CodeType} particles.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
