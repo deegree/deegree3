@@ -46,7 +46,6 @@ import javax.xml.stream.XMLStreamReader;
 
 import org.deegree.commons.utils.JDBCUtils;
 import org.deegree.metadata.ISORecord;
-import org.deegree.metadata.MetadataRecord;
 import org.deegree.metadata.persistence.MetadataResultSet;
 import org.deegree.metadata.persistence.iso19115.jaxb.ISOMetadataStoreConfig.AnyText;
 import org.deegree.protocol.csw.MetadataStoreException;
@@ -87,10 +86,9 @@ public class ISOMetadataResultSet implements MetadataResultSet {
     }
 
     @Override
-    public MetadataRecord getRecord()
+    public ISORecord getRecord()
                             throws MetadataStoreException {
-
-        MetadataRecord record = null;
+        ISORecord record = null;
         try {
             BufferedInputStream bais = new BufferedInputStream( rs.getBinaryStream( 1 ) );
             XMLStreamReader xmlReader = XMLInputFactory.newInstance().createXMLStreamReader( bais );

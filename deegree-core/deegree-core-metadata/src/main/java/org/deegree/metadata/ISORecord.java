@@ -35,8 +35,10 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.metadata;
 
+import java.security.InvalidParameterException;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
@@ -49,6 +51,8 @@ import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
 
 import org.apache.axiom.om.OMElement;
+import org.apache.axiom.om.OMNode;
+import org.apache.axiom.om.xpath.AXIOMXPath;
 import org.deegree.commons.tom.datetime.Date;
 import org.deegree.commons.xml.CommonNamespaces;
 import org.deegree.commons.xml.NamespaceBindings;
@@ -59,6 +63,7 @@ import org.deegree.cs.CRSCodeType;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.persistence.CRSManager;
 import org.deegree.filter.Filter;
+import org.deegree.filter.expression.PropertyName;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryFactory;
 import org.deegree.metadata.persistence.iso.parsing.ISOQPParsing;
@@ -69,6 +74,7 @@ import org.deegree.metadata.persistence.types.Format;
 import org.deegree.metadata.persistence.types.Keyword;
 import org.deegree.protocol.csw.CSWConstants.ReturnableElement;
 import org.deegree.protocol.csw.MetadataStoreException;
+import org.jaxen.JaxenException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -531,6 +537,14 @@ public class ISORecord implements MetadataRecord {
         return pElem;
     }
 
+    public String getStringFromXPath( XPath xpath ) {
+        return new XMLAdapter().getNodeAsString( root, xpath, null );
+    }
+
+    public OMElement getNodeFromXPath( XPath xpath ) {
+        return new XMLAdapter().getElement( root, xpath );
+    }
+
     private void toISOSummary( XMLStreamWriter writer, XMLStreamReader xmlStream )
                             throws XMLStreamException {
 
@@ -601,4 +615,106 @@ public class ISORecord implements MetadataRecord {
 
         return sb;
     }
+
+    public void update( PropertyName propName, String s ) {
+        AXIOMXPath path;
+        Object node;
+        try {
+            path = getAsXPath( propName );
+            node = path.selectSingleNode( root );
+        } catch ( JaxenException e ) {
+            String msg = "Could not propName as xPath and locate in in the record: " + propName;
+            LOG.debug( msg, e );
+            throw new InvalidParameterException( msg );
+        }
+        if ( node == null ) {
+            String msg = "Could not find node with xPath: " + path;
+            LOG.debug( msg );
+            throw new InvalidParameterException( msg );
+        } else if ( ( !( node instanceof OMElement ) ) ) {
+            String msg = "Xpath + " + path + " does not adress a Node!";
+            LOG.debug( msg );
+            throw new InvalidParameterException( msg );
+        }
+        OMElement el = (OMElement) node;
+        el.setText( s );
+    }
+
+    public void update( PropertyName propName, OMElement newEl ) {
+        AXIOMXPath path;
+        Object rootNode;
+        try {
+            path = getAsXPath( propName );
+            rootNode = path.selectSingleNode( root );
+        } catch ( JaxenException e ) {
+            String msg = "Could not propName as xPath and locate in in the record: " + propName;
+            LOG.debug( msg, e );
+            throw new InvalidParameterException( msg );
+        }
+        if ( rootNode == null ) {
+            String msg = "Could not find node with xPath: " + path;
+            LOG.debug( msg );
+            throw new InvalidParameterException( msg );
+        } else if ( ( !( rootNode instanceof OMElement ) ) ) {
+            String msg = "Xpath + " + path + " does not adress a Node!";
+            LOG.debug( msg );
+            throw new InvalidParameterException( msg );
+        }
+
+        OMElement rootEl = (OMElement) rootNode;
+        OMNode prevSib = null;
+
+        // replace them
+        Iterator<?> childs = rootEl.getChildrenWithName( newEl.getQName() );
+        while ( childs.hasNext() ) {
+            Object next = childs.next();
+            if ( next instanceof OMElement ) {
+                prevSib = ( (OMElement) next ).getPreviousOMSibling();
+                ( (OMElement) next ).detach();
+            }
+        }
+        prevSib.insertSiblingAfter( newEl );
+    }
+
+    public void removeNode( PropertyName propName ) {
+        AXIOMXPath path;
+        Object rootNode;
+        try {
+            path = getAsXPath( propName );
+            rootNode = path.selectSingleNode( root );
+        } catch ( JaxenException e ) {
+            String msg = "Could not propName as xPath and locate in in the record: " + propName;
+            LOG.debug( msg, e );
+            throw new InvalidParameterException( msg );
+        }
+        if ( rootNode == null ) {
+            String msg = "Could not find node with xPath: " + path;
+            LOG.debug( msg );
+            throw new InvalidParameterException( msg );
+        } else if ( ( !( rootNode instanceof OMElement ) ) ) {
+            String msg = "Xpath + " + path + " does not adress a Node!";
+            LOG.debug( msg );
+            throw new InvalidParameterException( msg );
+        }
+        OMElement rootEl = (OMElement) rootNode;
+        rootEl.detach();
+    }
+
+    private AXIOMXPath getAsXPath( PropertyName propName )
+                            throws JaxenException {
+        AXIOMXPath path;
+        XPath xPathFromCQP = ISOCQPMapping.getXPathFromCQP( propName.getAsQName(), getType() );
+        if ( xPathFromCQP != null )
+            path = new AXIOMXPath( xPathFromCQP.getXPath() );
+        else
+            path = new AXIOMXPath( propName.getAsText() );
+        path.setNamespaceContext( ns );
+        return path;
+    }
+
+    @Override
+    public String toString() {
+        return getIdentifier()[0];
+    }
+
 }

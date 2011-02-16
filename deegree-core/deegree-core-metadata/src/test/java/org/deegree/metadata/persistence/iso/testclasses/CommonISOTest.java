@@ -35,9 +35,16 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.metadata.persistence.iso.testclasses;
 
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.xml.stream.FactoryConfigurationError;
@@ -46,9 +53,22 @@ import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
+import org.apache.axiom.om.OMElement;
+import org.apache.axiom.om.xpath.AXIOMXPath;
+import org.deegree.commons.tom.primitive.PrimitiveValue;
+import org.deegree.commons.xml.CommonNamespaces;
+import org.deegree.commons.xml.NamespaceBindings;
+import org.deegree.commons.xml.XMLAdapter;
+import org.deegree.commons.xml.XPath;
 import org.deegree.filter.Filter;
+import org.deegree.filter.Operator;
+import org.deegree.filter.OperatorFilter;
+import org.deegree.filter.comparison.PropertyIsEqualTo;
+import org.deegree.filter.expression.Literal;
+import org.deegree.filter.expression.PropertyName;
 import org.deegree.filter.xml.Filter110XMLDecoder;
 import org.deegree.geometry.Envelope;
+import org.deegree.metadata.ISORecord;
 import org.deegree.metadata.MetadataRecord;
 import org.deegree.metadata.persistence.MetadataInspectorException;
 import org.deegree.metadata.persistence.MetadataQuery;
@@ -59,8 +79,11 @@ import org.deegree.metadata.persistence.iso.helper.AbstractISOTest;
 import org.deegree.metadata.persistence.iso.helper.TstConstants;
 import org.deegree.metadata.persistence.iso.helper.TstUtils;
 import org.deegree.metadata.publication.DeleteTransaction;
-import org.deegree.protocol.csw.MetadataStoreException;
+import org.deegree.metadata.publication.MetadataProperty;
+import org.deegree.metadata.publication.UpdateTransaction;
 import org.deegree.protocol.csw.CSWConstants.ReturnableElement;
+import org.deegree.protocol.csw.MetadataStoreException;
+import org.jaxen.JaxenException;
 import org.junit.Assert;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -75,7 +98,10 @@ import org.slf4j.LoggerFactory;
  * @version $Revision$, $Date$
  */
 public class CommonISOTest extends AbstractISOTest {
+
     private static Logger LOG = LoggerFactory.getLogger( CommonISOTest.class );
+
+    protected static final NamespaceBindings nsContext = CommonNamespaces.getNamespaceContext();
 
     @Test
     public void testInsert()
@@ -178,7 +204,7 @@ public class CommonISOTest extends AbstractISOTest {
             return;
         }
         StringBuilder streamExpected = new StringBuilder();
-        streamExpected.append( "null=http://www.isotc211.org/2005/gmd" ).append( ' ' );
+        streamExpected.append( "=http://www.isotc211.org/2005/gmd" ).append( ' ' );
         streamExpected.append( "gmd=http://www.isotc211.org/2005/gmd" ).append( ' ' );
         streamExpected.append( "gco=http://www.isotc211.org/2005/gco" ).append( ' ' );
         streamExpected.append( "srv=http://www.isotc211.org/2005/srv" ).append( ' ' );
@@ -188,6 +214,7 @@ public class CommonISOTest extends AbstractISOTest {
 
         LOG.info( "streamThis: " + streamExpected.toString() );
         LOG.info( "streamThat: " + streamActual.toString() );
+        System.out.println(streamActual);
         Assert.assertEquals( streamExpected.toString(), streamActual.toString() );
 
     }
@@ -274,8 +301,7 @@ public class CommonISOTest extends AbstractISOTest {
         List<String> ids = TstUtils.insertMetadata( store, TstConstants.fullRecord );
         resultSet = store.getRecordById( ids );
 
-        XMLStreamReader xmlStreamActual = XMLInputFactory.newInstance().createXMLStreamReader(
-                                                                                               TstConstants.briefRecord.openStream() );
+        XMLStreamReader xmlStreamActual = XMLInputFactory.newInstance().createXMLStreamReader( TstConstants.briefRecord.openStream() );
 
         // create the should be output
         StringBuilder streamActual = TstUtils.stringBuilderFromXMLStream( xmlStreamActual );
@@ -322,8 +348,7 @@ public class CommonISOTest extends AbstractISOTest {
         List<String> ids = TstUtils.insertMetadata( store, TstConstants.fullRecord );
         resultSet = store.getRecordById( ids );
 
-        XMLStreamReader xmlStreamActual = XMLInputFactory.newInstance().createXMLStreamReader(
-                                                                                               TstConstants.summaryRecord.openStream() );
+        XMLStreamReader xmlStreamActual = XMLInputFactory.newInstance().createXMLStreamReader( TstConstants.summaryRecord.openStream() );
 
         // create the should be output
         StringBuilder streamActual = TstUtils.stringBuilderFromXMLStream( xmlStreamActual );
@@ -428,6 +453,320 @@ public class CommonISOTest extends AbstractISOTest {
         } else {
             throw new MetadataStoreException( "something went wrong in creation of the metadataRecord" );
         }
+    }
+
+    @Test
+    public void testUpdateString()
+                            throws MetadataStoreException, MetadataInspectorException, XMLStreamException,
+                            FileNotFoundException, FactoryConfigurationError {
+        String idToUpdate = prepareUpdate();
+
+        // constraint
+        Operator op = new PropertyIsEqualTo( new PropertyName( "apiso:identifier", nsContext ),
+                                             new Literal<PrimitiveValue>( idToUpdate ), true );
+        Filter constraint = new OperatorFilter( op );
+
+        // create recordProperty
+        List<MetadataProperty> recordProperties = new ArrayList<MetadataProperty>();
+        String xPath = "/gmd:MD_Metadata/gmd:contact/gmd:CI_ResponsibleParty/gmd:organisationName/gco:CharacterString";
+        PropertyName name = new PropertyName( xPath, nsContext );
+        String value = "UPDATED ORGANISATIONNAME";
+        recordProperties.add( new MetadataProperty( name, value ) );
+
+        // update!
+        MetadataStoreTransaction mst = store.acquireTransaction();
+        UpdateTransaction update = new UpdateTransaction( null, null, null, constraint, recordProperties );
+        mst.performUpdate( update );
+        mst.commit();
+
+        // get record which should be updated
+        MetadataQuery query = new MetadataQuery( constraint, null, 1 );
+        resultSet = store.getRecords( query );
+        assertNotNull( resultSet );
+        assertTrue( resultSet.next() );
+
+        MetadataRecord m = resultSet.getRecord();
+        assertNotNull( m );
+        assertTrue( m instanceof ISORecord );
+        String[] identifier = m.getIdentifier();
+
+        // test if the updated was successfull
+        for ( int i = 0; i < identifier.length; i++ ) {
+            if ( identifier[i].equals( idToUpdate ) ) {
+                String updatedString = ( (ISORecord) m ).getStringFromXPath( new XPath( xPath, nsContext ) );
+                Assert.assertEquals( value, updatedString );
+                break;
+            }
+        }
+    }
+
+    @Test
+    public void testUpdateStringWithCQP()
+                            throws MetadataStoreException, MetadataInspectorException, XMLStreamException,
+                            FileNotFoundException, FactoryConfigurationError {
+        String idToUpdate = prepareUpdate();
+
+        // constraint
+        Operator op = new PropertyIsEqualTo( new PropertyName( "apiso:identifier", nsContext ),
+                                             new Literal<PrimitiveValue>( idToUpdate ), true );
+        Filter constraint = new OperatorFilter( op );
+
+        // create recordProperty
+        List<MetadataProperty> recordProperties = new ArrayList<MetadataProperty>();
+        String xPath = "/apiso:Modified";
+        PropertyName name = new PropertyName( xPath, nsContext );
+        String value = "3333-11-22";
+        recordProperties.add( new MetadataProperty( name, value ) );
+
+        // update!
+        MetadataStoreTransaction mst = store.acquireTransaction();
+        UpdateTransaction update = new UpdateTransaction( null, null, null, constraint, recordProperties );
+        mst.performUpdate( update );
+        mst.commit();
+
+        // get record which should be updated
+        MetadataQuery query = new MetadataQuery( constraint, null, 1 );
+        resultSet = store.getRecords( query );
+        assertNotNull( resultSet );
+        assertTrue( resultSet.next() );
+
+        MetadataRecord m = resultSet.getRecord();
+        assertNotNull( m );
+        assertTrue( m instanceof ISORecord );
+        String[] identifier = m.getIdentifier();
+
+        // test if the updated was successfull
+        for ( int i = 0; i < identifier.length; i++ ) {
+            if ( identifier[i].equals( idToUpdate ) ) {
+                String updatedString = ( (ISORecord) m ).getStringFromXPath( new XPath(
+                                                                                        "/gmd:MD_Metadata/gmd:dateStamp/gco:Date",
+                                                                                        nsContext ) );
+                Assert.assertEquals( value, updatedString );
+                break;
+            }
+        }
+    }
+
+    @Test
+    public void testUpdateOMElementReplace()
+                            throws XMLStreamException, FactoryConfigurationError, MetadataStoreException,
+                            MetadataInspectorException, JaxenException {
+        String idToUpdate = prepareUpdate();
+
+        // constraint
+        Operator op = new PropertyIsEqualTo( new PropertyName( "apiso:identifier", nsContext ),
+                                             new Literal<PrimitiveValue>( idToUpdate ), true );
+        Filter constraint = new OperatorFilter( op );
+
+        // create recordProperty
+        List<MetadataProperty> recordProperties = new ArrayList<MetadataProperty>();
+        String xPath = "/gmd:MD_Metadata/gmd:contact";
+        PropertyName name = new PropertyName( xPath, nsContext );
+        InputStream is = CommonISOTest.class.getResourceAsStream( "../update/replace.xml" );
+        XMLAdapter a = new XMLAdapter( is );
+        OMElement value = a.getRootElement();
+        recordProperties.add( new MetadataProperty( name, value ) );
+
+        // update!
+        MetadataStoreTransaction mst = store.acquireTransaction();
+        UpdateTransaction update = new UpdateTransaction( null, null, null, constraint, recordProperties );
+        mst.performUpdate( update );
+        mst.commit();
+
+        // get record which should be updated
+        MetadataQuery query = new MetadataQuery( constraint, null, 1 );
+        resultSet = store.getRecords( query );
+        assertNotNull( resultSet );
+        assertTrue( resultSet.next() );
+
+        MetadataRecord m = resultSet.getRecord();
+        assertNotNull( m );
+        assertTrue( m instanceof ISORecord );
+        String[] identifier = m.getIdentifier();
+
+        // test if the updated was successfull
+        for ( int i = 0; i < identifier.length; i++ ) {
+            if ( identifier[i].equals( idToUpdate ) ) {
+                String testXpath = xPath + "/gmd:CI_ResponsibleParty/gmd:individualName/gco:CharacterString";
+                OMElement updatedNode = ( (ISORecord) m ).getNodeFromXPath( new XPath( testXpath, nsContext ) );
+
+                AXIOMXPath p = new AXIOMXPath( testXpath );
+                p.setNamespaceContext( nsContext );
+                Object valueNode = p.selectSingleNode( value );
+                Assert.assertEquals( ( (OMElement) valueNode ).getText(), ( (OMElement) updatedNode ).getText() );
+                break;
+            }
+        }
+
+    }
+
+    @Test
+    public void testUpdateOMElementRemove()
+                            throws XMLStreamException, FactoryConfigurationError, MetadataStoreException,
+                            MetadataInspectorException, JaxenException {
+        String idToUpdate = prepareUpdate();
+
+        // constraint
+        Operator op = new PropertyIsEqualTo( new PropertyName( "apiso:identifier", nsContext ),
+                                             new Literal<PrimitiveValue>( idToUpdate ), true );
+        Filter constraint = new OperatorFilter( op );
+
+        // create recordProperty
+        List<MetadataProperty> recordProperties = new ArrayList<MetadataProperty>();
+        String xPath = "/gmd:MD_Metadata/gmd:dataQualityInfo";
+        PropertyName name = new PropertyName( xPath, nsContext );
+        recordProperties.add( new MetadataProperty( name, null ) );
+
+        // get record which should be updated
+        MetadataQuery query = new MetadataQuery( constraint, null, 1 );
+        resultSet = store.getRecords( query );
+        assertNotNull( resultSet );
+        assertTrue( resultSet.next() );
+
+        MetadataRecord m = resultSet.getRecord();
+        assertNotNull( m );
+
+        OMElement updatedNode = ( (ISORecord) m ).getNodeFromXPath( new XPath( xPath, nsContext ) );
+        assertNotNull( updatedNode );
+
+        // update!
+        MetadataStoreTransaction mst = store.acquireTransaction();
+        UpdateTransaction update = new UpdateTransaction( null, null, null, constraint, recordProperties );
+        mst.performUpdate( update );
+        mst.commit();
+
+        // get record which should be updated
+        resultSet = store.getRecords( query );
+        assertNotNull( resultSet );
+        assertTrue( resultSet.next() );
+
+        m = resultSet.getRecord();
+        assertNotNull( m );
+        assertTrue( m instanceof ISORecord );
+        String[] identifier = m.getIdentifier();
+
+        // test if the updated was successfull
+        for ( int i = 0; i < identifier.length; i++ ) {
+            if ( identifier[i].equals( idToUpdate ) ) {
+                updatedNode = ( (ISORecord) m ).getNodeFromXPath( new XPath( xPath, nsContext ) );
+                assertNull( updatedNode );
+                break;
+            }
+        }
+    }
+
+    @Test
+    public void updateCompleteWithoutConstraint()
+                            throws MetadataStoreException, MetadataInspectorException, JaxenException {
+        String idToUpdate = prepareUpdate();
+
+        // constraint
+
+        // md to update
+        InputStream is = CommonISOTest.class.getResourceAsStream( "../update/9update.xml" );
+        XMLAdapter a = new XMLAdapter( is );
+        OMElement value = a.getRootElement();
+
+        // update!
+        MetadataStoreTransaction mst = store.acquireTransaction();
+        UpdateTransaction update = new UpdateTransaction( null, value, null, null, null );
+        mst.performUpdate( update );
+        mst.commit();
+
+        // get record which should be updated
+        Operator op = new PropertyIsEqualTo( new PropertyName( "apiso:identifier", nsContext ),
+                                             new Literal<PrimitiveValue>( idToUpdate ), true );
+        MetadataQuery query = new MetadataQuery( new OperatorFilter( op ), null, 1 );
+        resultSet = store.getRecords( query );
+        assertNotNull( resultSet );
+        assertTrue( resultSet.next() );
+
+        MetadataRecord m = resultSet.getRecord();
+        assertNotNull( m );
+        assertTrue( m instanceof ISORecord );
+        String[] identifier = m.getIdentifier();
+
+        // test if the updated was successfull
+        for ( int i = 0; i < identifier.length; i++ ) {
+            if ( identifier[i].equals( idToUpdate ) ) {
+                String testXpath = "/gmd:MD_Metadata/gmd:contact/gmd:CI_ResponsibleParty/gmd:organisationName/gco:CharacterString";
+                OMElement updatedNode = ( (ISORecord) m ).getNodeFromXPath( new XPath( testXpath, nsContext ) );
+
+                AXIOMXPath p = new AXIOMXPath( testXpath );
+                p.setNamespaceContext( nsContext );
+                Object valueNode = p.selectSingleNode( value );
+                Assert.assertEquals( ( (OMElement) valueNode ).getText(), ( (OMElement) updatedNode ).getText() );
+                break;
+            }
+        }
+    }
+
+    @Test
+    public void updateCompleteWithConstraint()
+                            throws MetadataStoreException, MetadataInspectorException, JaxenException {
+        String idToUpdate = prepareUpdate();
+
+        // constraint
+        Operator op = new PropertyIsEqualTo( new PropertyName( "apiso:identifier", nsContext ),
+                                             new Literal<PrimitiveValue>( idToUpdate ), true );
+        Filter constraint = new OperatorFilter( op );
+
+        // md to update
+        InputStream is = CommonISOTest.class.getResourceAsStream( "../update/9update.xml" );
+        XMLAdapter a = new XMLAdapter( is );
+        OMElement value = a.getRootElement();
+
+        // update!
+        MetadataStoreTransaction mst = store.acquireTransaction();
+        UpdateTransaction update = new UpdateTransaction( null, value, null, constraint, null );
+        mst.performUpdate( update );
+        mst.commit();
+
+        // get record which should be updated
+        MetadataQuery query = new MetadataQuery( constraint, null, 1 );
+        resultSet = store.getRecords( query );
+        assertNotNull( resultSet );
+        assertTrue( resultSet.next() );
+
+        MetadataRecord m = resultSet.getRecord();
+        assertNotNull( m );
+        assertTrue( m instanceof ISORecord );
+        String[] identifier = m.getIdentifier();
+
+        // test if the updated was successfull
+        for ( int i = 0; i < identifier.length; i++ ) {
+            if ( identifier[i].equals( idToUpdate ) ) {
+                String testXpath = "/gmd:MD_Metadata/gmd:contact/gmd:CI_ResponsibleParty/gmd:organisationName/gco:CharacterString";
+                OMElement updatedNode = ( (ISORecord) m ).getNodeFromXPath( new XPath( testXpath, nsContext ) );
+
+                AXIOMXPath p = new AXIOMXPath( testXpath );
+                p.setNamespaceContext( nsContext );
+                Object valueNode = p.selectSingleNode( value );
+                Assert.assertEquals( ( (OMElement) valueNode ).getText(), ( (OMElement) updatedNode ).getText() );
+                break;
+            }
+        }
+    }
+
+    public String prepareUpdate()
+                            throws MetadataStoreException, MetadataInspectorException {
+        LOG.info( "START Test: testUpdate" );
+
+        if ( jdbcURL != null && jdbcUser != null && jdbcPass != null ) {
+            store = (ISOMetadataStore) new ISOMetadataStoreProvider().getMetadataStore( TstConstants.configURL );
+        }
+        if ( store == null ) {
+            LOG.warn( "Skipping test (needs configuration)." );
+            return null;
+        }
+
+        List<String> ids = TstUtils.insertMetadata( store, TstConstants.tst_9 );
+        LOG.info( "Inserted records with ids: " + ids + ". Now: update " + ids );
+
+        assertNotNull( ids );
+        assertTrue( ids.size() > 0 );
+
+        return ids.get( 0 );
     }
 
 }

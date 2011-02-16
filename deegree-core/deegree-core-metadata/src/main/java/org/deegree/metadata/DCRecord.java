@@ -50,8 +50,10 @@ import javax.xml.stream.XMLStreamWriter;
 
 import jj2000.j2k.NotImplementedError;
 
+import org.apache.axiom.om.OMElement;
 import org.deegree.commons.tom.datetime.Date;
 import org.deegree.filter.Filter;
+import org.deegree.filter.expression.PropertyName;
 import org.deegree.geometry.Envelope;
 import org.deegree.protocol.csw.CSWConstants.ReturnableElement;
 
@@ -403,6 +405,21 @@ public class DCRecord implements MetadataRecord {
     public String getCreator() {
 
         return creator;
+    }
+
+    @Override
+    public void update( PropertyName propName, String replaceValue ) {
+        throw new UnsupportedOperationException( "Update is not allowed for DCRecords" );
+    }
+
+    @Override
+    public void update( PropertyName propName, OMElement replaceValue ) {
+        throw new UnsupportedOperationException( "Update is not allowed for DCRecords" );
+    }
+
+    @Override
+    public void removeNode( PropertyName propName ) {
+        throw new UnsupportedOperationException( "Remove is not allowed for DCRecords" );
     }
 
 }

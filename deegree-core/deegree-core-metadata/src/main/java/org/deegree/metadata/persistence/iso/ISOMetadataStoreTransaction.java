@@ -1,6 +1,8 @@
 package org.deegree.metadata.persistence.iso;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -12,6 +14,7 @@ import org.apache.axiom.om.OMElement;
 import org.deegree.commons.utils.JDBCUtils;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.OperatorFilter;
+import org.deegree.filter.expression.PropertyName;
 import org.deegree.filter.sql.postgis.PostGISWhereBuilder;
 import org.deegree.metadata.ISORecord;
 import org.deegree.metadata.i18n.Messages;
@@ -23,7 +26,9 @@ import org.deegree.metadata.persistence.iso.parsing.inspectation.RecordInspector
 import org.deegree.metadata.persistence.iso19115.jaxb.ISOMetadataStoreConfig.AnyText;
 import org.deegree.metadata.publication.DeleteTransaction;
 import org.deegree.metadata.publication.InsertTransaction;
+import org.deegree.metadata.publication.MetadataProperty;
 import org.deegree.metadata.publication.UpdateTransaction;
+import org.deegree.protocol.csw.CSWConstants.ResultType;
 import org.deegree.protocol.csw.MetadataStoreException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -127,55 +132,84 @@ public class ISOMetadataStoreTransaction implements MetadataStoreTransaction {
     @Override
     public int performUpdate( UpdateTransaction update )
                             throws MetadataStoreException, MetadataInspectorException {
+        GenerateQueryableProperties generateQP = new GenerateQueryableProperties();
         int result = 0;
         if ( update.getElement() != null ) {
-
-            ISORecord rec = new ISORecord( update.getElement(), anyText );
-            GenerateQueryableProperties generateQP = new GenerateQueryableProperties();
-            int operatesOnId = generateQP.updateMainDatabaseTable( conn, rec );
+            OMElement element = update.getElement();
+            for ( RecordInspector r : inspectors ) {
+                element = r.inspect( element, conn );
+            }
+            ISORecord rec = new ISORecord( element, anyText );
+            int operatesOnId = generateQP.updateMainDatabaseTable( conn, rec, null );
             generateQP.executeQueryableProperties( true, conn, operatesOnId, rec );
             result++;
+        } else if ( update.getConstraint() != null
+                    && ( update.getRecordProperty() != null && update.getRecordProperty().size() > 0 ) ) {
+            PostGISWhereBuilder builder = null;
 
+            ResultSet rs = null;
+            PreparedStatement preparedStatement = null;
+            ExecuteStatements exe = new ExecuteStatements();
+            try {
+                System.out.println(update.getConstraint());
+                builder = new PostGISWhereBuilder( new PostGISMappingsISODC(), (OperatorFilter) update.getConstraint(),
+                                                   null, useLegacyPredicates );
+                ExecuteStatements execStm = new ExecuteStatements();
+                execStm.executeGetRecords( null, builder, conn );
+                preparedStatement = exe.executeGetRecords( null, builder, conn );
+                rs = preparedStatement.executeQuery();
+
+                // get all metadatasets to update
+                ISOMetadataResultSet isoRs = new ISOMetadataResultSet( rs, conn, preparedStatement, anyText );
+                System.out.println("aha");
+                while ( isoRs.next() ) {
+                    ISORecord rec = isoRs.getRecord();
+                    LOG.debug( "Update record " + rec );
+                    List<MetadataProperty> recordProperty = update.getRecordProperty();
+                    boolean updated = false;
+                    for ( MetadataProperty metadataProperty : recordProperty ) {
+                        PropertyName name = metadataProperty.getPropertyName();
+                        Object value = metadataProperty.getReplacementValue();
+
+                        if ( value == null ) {
+                            LOG.debug( "    Remove: " + name );
+                            rec.removeNode( name );
+                            updated = true;
+                        } else if ( value instanceof String ) {
+                            LOG.debug( "    Update: " + name + " with: " + value );
+                            try {
+                                rec.update( name, (String) value );
+                                updated = true;
+                            } catch ( Exception e ) {
+                                LOG.info( "Update or record " + rec + " failed: " + e.getMessage() );
+                            }
+                        } else if ( value instanceof OMElement ) {
+                            LOG.debug( "    Update: " + name + " with xml: " + value );
+                            rec.update( name, (OMElement) value );
+                            updated = true;
+                        } else {
+                            LOG.warn( "Could not update propertyName: " + name
+                                      + ": must be a string, an OMELement or null!" );
+                        }
+                    }
+                    // inspect element if it is still valid
+                    OMElement element = rec.getAsOMElement();
+                    for ( RecordInspector r : inspectors ) {
+                        element = r.inspect( element, conn );
+                    }
+                    int operatesOnId = generateQP.updateMainDatabaseTable( conn, rec, rec.getIdentifier() );
+                    generateQP.executeQueryableProperties( true, conn, operatesOnId, rec );
+                    if ( updated )
+                        result++;
+                }
+            } catch ( Throwable t ) {
+                String msg = Messages.getMessage( "ERROR_REQUEST_TYPE", ResultType.results.name(), t.getMessage() );
+                LOG.info( msg );
+                throw new MetadataStoreException( msg );
+            } finally {
+                JDBCUtils.close( rs, preparedStatement, null, LOG );
+            }
         }
-
-        // PostGISMappingsISODC mapping = new PostGISMappingsISODC();
-        // PostGISWhereBuilder builder = null;
-        // int result = 0;
-        // /*
-        // * if there should a complete record be updated or some properties
-        // */
-        // if ( update.getElement() != null ) {
-        //
-        // ExecuteStatements executeStatements = new ExecuteStatements();
-        //
-        // result = executeStatements.executeUpdateStatement( conn,
-        // new ISOQPParsing().parseAPISO( update.getElement() ) );
-        //
-        // } else {
-        //
-        // // try {
-        // // RecordStoreOptions gdds = new RecordStoreOptions( update.getConstraint(),
-        // // new URI( update.getTypeName().getNamespaceURI() ), null,
-        // // ResultType.results, ReturnableElement.full, result,
-        // // result );
-        // // } catch ( URISyntaxException e1 ) {
-        // // // TODO Auto-generated catch block
-        // // e1.printStackTrace();
-        // // }
-        //
-        // int formatNumber = 0;
-        // Set<QName> qNameSet = new HashSet<QName>();
-        //
-        // // TODO sortProperty
-        //
-        // try {
-        // builder = new PostGISWhereBuilder( mapping, (OperatorFilter) update.getConstraint(), null,
-        // useLegacyPredicates );
-        // } catch ( FilterEvaluationException e ) {
-        // throw new MetadataStoreException( e.getMessage() );
-        // }
-        //
-        // }
         return result;
     }
 
@@ -193,4 +227,5 @@ public class ISOMetadataStoreTransaction implements MetadataStoreTransaction {
             JDBCUtils.close( conn );
         }
     }
+
 }

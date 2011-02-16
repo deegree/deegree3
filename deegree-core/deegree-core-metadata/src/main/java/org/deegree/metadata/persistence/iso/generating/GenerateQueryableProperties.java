@@ -131,8 +131,7 @@ public class GenerateQueryableProperties {
             if ( rec.getModified() != null && rec.getModified().length != 0 ) {
                 // TODO think of more than one date
                 time = rec.getModified()[0].toString();
-                stm.setTimestamp(
-                                  5,
+                stm.setTimestamp( 5,
                                   Timestamp.valueOf( DateUtils.formatJDBCTimeStamp( DateUtils.parseISO8601Date( time ) ) ) );
             } else {
                 stm.setTimestamp( 5, null );
@@ -162,7 +161,20 @@ public class GenerateQueryableProperties {
 
     }
 
-    public int updateMainDatabaseTable( Connection conn, ISORecord rec )
+    /**
+     * 
+     * @param conn
+     *            the databas connection
+     * @param rec
+     *            the record to update
+     * @param ids
+     *            the fileIdentifer of the record to update, can be <code>null</code> when the identifer of the record
+     *            is the one to use for updating
+     * @return the database id of the updated record
+     * @throws MetadataStoreException
+     *             if updating fails
+     */
+    public int updateMainDatabaseTable( Connection conn, ISORecord rec, String[] ids )
                             throws MetadataStoreException {
 
         PreparedStatement stm = null;
@@ -171,17 +183,18 @@ public class GenerateQueryableProperties {
         StringBuilder sqlStatementUpdate = new StringBuilder( 500 );
         String time = null;
         int requestedId = 0;
+        
+        String[] idsToUpdate = ( ids == null ? rec.getIdentifier() : ids );
 
         try {
-            for ( String identifierString : rec.getIdentifier() ) {
+            for ( String identifierString : idsToUpdate ) {
 
                 sqlStatementUpdate.append( "SELECT " ).append( databaseTable ).append( '.' );
                 sqlStatementUpdate.append( id ).append( " FROM " );
                 sqlStatementUpdate.append( databaseTable ).append( ',' ).append( qp_identifier ).append( " WHERE " );
                 sqlStatementUpdate.append( databaseTable ).append( '.' ).append( id );
                 sqlStatementUpdate.append( '=' ).append( qp_identifier ).append( '.' ).append( fk_datasets );
-                sqlStatementUpdate.append( " AND " ).append( qp_identifier ).append( '.' ).append( identifier ).append(
-                                                                                                                        " = ?" );
+                sqlStatementUpdate.append( " AND " ).append( qp_identifier ).append( '.' ).append( identifier ).append( " = ?" );
                 LOG.debug( sqlStatementUpdate.toString() );
 
                 stm = conn.prepareStatement( sqlStatementUpdate.toString() );
@@ -217,8 +230,7 @@ public class GenerateQueryableProperties {
                     if ( rec.getModified() != null ) {
                         // TODO think of more than one date
                         time = rec.getModified()[0].toString();
-                        stm.setTimestamp(
-                                          4,
+                        stm.setTimestamp( 4,
                                           Timestamp.valueOf( DateUtils.formatJDBCTimeStamp( DateUtils.parseISO8601Date( time ) ) ) );
                     } else {
                         stm.setTimestamp( 4, null );
@@ -1244,8 +1256,7 @@ public class GenerateQueryableProperties {
                     sqlStatement.append( ",SetSRID('BOX3D(" + west ).append( " " + south ).append( "," + east );
                     sqlStatement.append( " " + north ).append( ")'::box3d,-1));" );
                 } else {
-                    sqlStatement.append( "UPDATE " ).append( databaseTable ).append(
-                                                                                     " SET bbox = SetSRID('BOX3D("
+                    sqlStatement.append( "UPDATE " ).append( databaseTable ).append( " SET bbox = SetSRID('BOX3D("
                                                                                                              + west );
                     sqlStatement.append( " " + south ).append( "," + east ).append( " " + north );
                     sqlStatement.append( ")'::box3d,-1) WHERE " );

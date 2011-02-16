@@ -39,8 +39,10 @@ import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
+import org.apache.axiom.om.OMElement;
 import org.deegree.commons.tom.datetime.Date;
 import org.deegree.filter.Filter;
+import org.deegree.filter.expression.PropertyName;
 import org.deegree.geometry.Envelope;
 import org.deegree.protocol.csw.CSWConstants.ReturnableElement;
 
@@ -131,4 +133,29 @@ public interface MetadataRecord {
      */
     public void serialize( XMLStreamWriter writer, String[] elementNames )
                             throws XMLStreamException;
+
+    /**
+     * Updates the property.
+     * 
+     * @param propName
+     *            property name indicating the property to update, must not be <Code>null</Code>
+     * @param replaceValue
+     *            the new string, must not be <Code>null</Code>
+     */
+    public void update( PropertyName propName, String replaceValue );
+
+    /**
+     * 
+     * @param propName
+     *            property name indicating the property to update, must not be <Code>null</Code>
+     * @param replaceValue
+     *            the new {@link OMElement} to update the, must not be <Code>null</Code>
+     */
+    public void update( PropertyName propName, OMElement replaceValue );
+
+    /**
+     * @param propName
+     *            property name indicating the property to remove, must not be <Code>null</Code>
+     */
+    public void removeNode( PropertyName propName );
 }
