@@ -53,7 +53,6 @@ import org.slf4j.LoggerFactory;
 import com.vividsolutions.jts.io.ParseException;
 
 /**
- * 
  * TODO add class documentation here
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>

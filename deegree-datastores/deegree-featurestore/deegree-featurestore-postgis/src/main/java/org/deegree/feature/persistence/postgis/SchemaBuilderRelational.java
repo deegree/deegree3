@@ -37,6 +37,7 @@ package org.deegree.feature.persistence.postgis;
 
 import static javax.xml.XMLConstants.DEFAULT_NS_PREFIX;
 import static javax.xml.XMLConstants.NULL_NS_URI;
+import static org.deegree.commons.tom.primitive.PrimitiveType.STRING;
 import static org.deegree.commons.tom.primitive.PrimitiveType.determinePrimitiveType;
 import static org.deegree.feature.types.property.GeometryPropertyType.CoordinateDimension.DIM_2;
 import static org.deegree.feature.types.property.GeometryPropertyType.CoordinateDimension.DIM_3;
@@ -50,6 +51,11 @@ import static org.deegree.feature.types.property.GeometryPropertyType.GeometryTy
 import static org.deegree.feature.types.property.GeometryPropertyType.GeometryType.POLYGON;
 import static org.deegree.feature.types.property.ValueRepresentation.INLINE;
 
+import java.io.File;
+import java.io.UnsupportedEncodingException;
+import java.net.MalformedURLException;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
@@ -73,6 +79,7 @@ import org.deegree.commons.tom.primitive.PrimitiveType;
 import org.deegree.commons.utils.JDBCUtils;
 import org.deegree.commons.utils.Pair;
 import org.deegree.commons.xml.NamespaceBindings;
+import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.persistence.CRSManager;
 import org.deegree.feature.persistence.FeatureStoreException;
@@ -86,6 +93,7 @@ import org.deegree.feature.persistence.mapping.id.FIDMapping;
 import org.deegree.feature.persistence.mapping.id.IDGenerator;
 import org.deegree.feature.persistence.mapping.id.SequenceIDGenerator;
 import org.deegree.feature.persistence.mapping.id.UUIDGenerator;
+import org.deegree.feature.persistence.mapping.property.CodeMapping;
 import org.deegree.feature.persistence.mapping.property.CompoundMapping;
 import org.deegree.feature.persistence.mapping.property.FeatureMapping;
 import org.deegree.feature.persistence.mapping.property.GeometryMapping;
@@ -93,11 +101,17 @@ import org.deegree.feature.persistence.mapping.property.Mapping;
 import org.deegree.feature.persistence.mapping.property.PrimitiveMapping;
 import org.deegree.feature.persistence.postgis.jaxb.AbstractIDGeneratorType;
 import org.deegree.feature.persistence.postgis.jaxb.AbstractPropertyDecl;
+import org.deegree.feature.persistence.postgis.jaxb.CodePropertyDecl;
 import org.deegree.feature.persistence.postgis.jaxb.CustomMapping;
+import org.deegree.feature.persistence.postgis.jaxb.CustomPropertyDecl;
 import org.deegree.feature.persistence.postgis.jaxb.FIDMapping.Column;
 import org.deegree.feature.persistence.postgis.jaxb.FeatureTypeDecl;
+import org.deegree.feature.persistence.postgis.jaxb.GMLVersionType;
 import org.deegree.feature.persistence.postgis.jaxb.GeometryPropertyDecl;
+import org.deegree.feature.persistence.postgis.jaxb.JoinedTable;
+import org.deegree.feature.persistence.postgis.jaxb.PostGISFeatureStoreConfig;
 import org.deegree.feature.persistence.postgis.jaxb.SimplePropertyDecl;
+import org.deegree.feature.types.ApplicationSchema;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.feature.types.GenericFeatureType;
 import org.deegree.feature.types.property.GeometryPropertyType;
@@ -108,6 +122,9 @@ import org.deegree.feature.types.property.SimplePropertyType;
 import org.deegree.filter.expression.PropertyName;
 import org.deegree.filter.sql.DBField;
 import org.deegree.filter.sql.MappingExpression;
+import org.deegree.gml.GMLVersion;
+import org.deegree.gml.feature.schema.ApplicationSchemaXSDDecoder;
+import org.deegree.gml.schema.GMLSchemaInfoSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -122,6 +139,8 @@ import org.slf4j.LoggerFactory;
 class SchemaBuilderRelational {
 
     private static final Logger LOG = LoggerFactory.getLogger( SchemaBuilderRelational.class );
+
+    private final ApplicationSchema gmlSchema;
 
     private final String connId;
 
@@ -147,18 +166,68 @@ class SchemaBuilderRelational {
      *            JAXB feature type declarations, must not be <code>null</code>
      * @throws SQLException
      * @throws FeatureStoreException
+     * @throws MalformedURLException
+     * @throws URISyntaxException
+     * @throws IllegalAccessException
+     * @throws InstantiationException
+     * @throws ClassNotFoundException
+     * @throws UnsupportedEncodingException
+     * @throws ClassCastException
      */
-    SchemaBuilderRelational( String jdbcConnId, List<FeatureTypeDecl> ftDecls ) throws SQLException,
-                            FeatureStoreException {
+    SchemaBuilderRelational( PostGISFeatureStoreConfig config, String configURL ) throws SQLException,
+                            FeatureStoreException, MalformedURLException, URISyntaxException, ClassCastException,
+                            UnsupportedEncodingException, ClassNotFoundException, InstantiationException,
+                            IllegalAccessException {
 
-        this.connId = jdbcConnId;
+        connId = config.getJDBCConnId();
+        gmlSchema = buildGMLSchema( config, configURL );
+        nsContext = new NamespaceBindings();
+        if ( gmlSchema != null ) {
+            Map<String, String> prefixToNs = gmlSchema.getNamespaceBindings();
+            for ( String prefix : prefixToNs.keySet() ) {
+                nsContext.addNamespace( prefix, prefixToNs.get( prefix ) );
+            }
+        }
+
         try {
-            for ( FeatureTypeDecl ftDecl : ftDecls ) {
+            for ( FeatureTypeDecl ftDecl : config.getFeatureType() ) {
                 process( ftDecl );
             }
         } finally {
             JDBCUtils.close( conn );
         }
+    }
+
+    private ApplicationSchema buildGMLSchema( PostGISFeatureStoreConfig config, String configURL )
+                            throws MalformedURLException, ClassCastException, UnsupportedEncodingException,
+                            ClassNotFoundException, InstantiationException, IllegalAccessException, URISyntaxException {
+
+        if ( config.getGMLSchema() == null || config.getGMLSchema().isEmpty() ) {
+            return null;
+        }
+
+        XMLAdapter resolver = new XMLAdapter();
+        resolver.setSystemId( configURL );
+
+        String[] schemaURLs = new String[config.getGMLSchema().size()];
+
+        GMLVersionType gmlVersionType = null;
+        int i = 0;
+        for ( org.deegree.feature.persistence.postgis.jaxb.PostGISFeatureStoreConfig.GMLSchema jaxbSchemaURL : config.getGMLSchema() ) {
+            schemaURLs[i++] = resolver.resolve( jaxbSchemaURL.getValue().trim() ).toString();
+            // TODO what about different versions at the same time?
+            gmlVersionType = jaxbSchemaURL.getVersion();
+        }
+
+        ApplicationSchemaXSDDecoder decoder = null;
+        if ( schemaURLs.length == 1 && schemaURLs[0].startsWith( "file:" ) ) {
+            File file = new File( new URL( schemaURLs[0] ).toURI() );
+            decoder = new ApplicationSchemaXSDDecoder( GMLVersion.valueOf( gmlVersionType.name() ), null, file );
+        } else {
+            decoder = new ApplicationSchemaXSDDecoder( GMLVersion.valueOf( gmlVersionType.name() ), null, schemaURLs );
+        }
+
+        return decoder.extractFeatureTypeSchema();
     }
 
     /**
@@ -169,7 +238,14 @@ class SchemaBuilderRelational {
     MappedApplicationSchema getMappedSchema() {
         FeatureType[] fts = ftNameToFt.values().toArray( new FeatureType[ftNameToFt.size()] );
         FeatureTypeMapping[] ftMappings = ftNameToMapping.values().toArray( new FeatureTypeMapping[ftNameToMapping.size()] );
-        return new MappedApplicationSchema( fts, null, null, null, ftMappings, null, null, null, null );
+        Map<FeatureType, FeatureType> ftToSuperFt = null;
+        GMLSchemaInfoSet xsModel = null;
+        if ( gmlSchema != null ) {
+            fts = gmlSchema.getFeatureTypes();
+            ftToSuperFt = gmlSchema.getFtToSuperFt();
+            xsModel = gmlSchema.getXSModel();
+        }
+        return new MappedApplicationSchema( fts, ftToSuperFt, null, xsModel, ftMappings, null, null, null, null );
     }
 
     private void process( FeatureTypeDecl ftDecl )
@@ -190,12 +266,21 @@ class SchemaBuilderRelational {
         }
         ftName = makeFullyQualified( ftName, "app", "http://www.deegree.org/app" );
         LOG.debug( "Feature type name: '" + ftName + "'." );
+        FeatureType gmlFt = null;
+        if ( gmlSchema != null ) {
+            gmlFt = gmlSchema.getFeatureType( ftName );
+            if ( gmlFt == null ) {
+                LOG.debug( "Feature type '" + ftName + "' not found in GML schema." );
+            } else {
+                LOG.debug( "Matching feature type '" + ftName + "' found in GML schema." );
+            }
+        }
 
         FIDMapping fidMapping = buildFIDMapping( table, ftName, ftDecl.getFIDMapping() );
 
         List<JAXBElement<? extends AbstractPropertyDecl>> propDecls = ftDecl.getAbstractProperty();
         if ( propDecls != null && !propDecls.isEmpty() ) {
-            process( table, ftName, fidMapping, propDecls );
+            process( table, ftName, fidMapping, propDecls, gmlFt );
         } else {
             process( table, ftName, fidMapping );
         }
@@ -248,7 +333,7 @@ class SchemaBuilderRelational {
     }
 
     private void process( QTableName table, QName ftName, FIDMapping fidMapping,
-                          List<JAXBElement<? extends AbstractPropertyDecl>> propDecls )
+                          List<JAXBElement<? extends AbstractPropertyDecl>> propDecls, FeatureType gmlFt )
                             throws FeatureStoreException, SQLException {
 
         List<PropertyType> pts = new ArrayList<PropertyType>();
@@ -256,51 +341,86 @@ class SchemaBuilderRelational {
 
         for ( JAXBElement<? extends AbstractPropertyDecl> propDeclEl : propDecls ) {
             AbstractPropertyDecl propDecl = propDeclEl.getValue();
-            Pair<PropertyType, Mapping> pt = process( table, propDecl );
+            Pair<PropertyType, Mapping> pt = process( table, propDecl, gmlFt );
             pts.add( pt.first );
             propToColumn.put( pt.first.getName(), pt.second );
         }
 
-        FeatureType ft = new GenericFeatureType( ftName, pts, false );
+        FeatureType ft = gmlFt;
+        if ( ft == null ) {
+            ft = new GenericFeatureType( ftName, pts, false );
+        }
         ftNameToFt.put( ftName, ft );
 
         FeatureTypeMapping ftMapping = new FeatureTypeMapping( ftName, table, fidMapping, propToColumn );
         ftNameToMapping.put( ftName, ftMapping );
     }
 
-    private Pair<PropertyType, Mapping> process( QTableName table, AbstractPropertyDecl propDecl )
+    private Pair<PropertyType, Mapping> process( QTableName table, AbstractPropertyDecl propDecl, FeatureType gmlFt )
                             throws FeatureStoreException, SQLException {
 
-        MappingExpression mapping = parseMappingExpression( propDecl.getMapping() );
-        if ( !( mapping instanceof DBField ) ) {
-            throw new FeatureStoreException( "Unhandled mapping type '" + mapping.getClass()
-                                             + "'. Currently, only DBFields are supported." );
-        }
-
-        String columnName = ( (DBField) mapping ).getColumn();
-        QName propName = propDecl.getName();
-        if ( propName == null ) {
-            LOG.debug( "Using column name for feature type." );
-            propName = new QName( columnName );
-        }
-        propName = makeFullyQualified( propName, "app", "http://www.deegree.org/app" );
-        PropertyName path = new PropertyName( propName );
-        ColumnMetadata md = getColumn( table, columnName.toLowerCase() );
-        int minOccurs = md.isNullable ? 0 : 1;
-
         PropertyType pt = null;
+        QName propName = propDecl.getName();
+        if ( propName != null ) {
+            propName = makeFullyQualified( propName, "app", "http://www.deegree.org/app" );
+            if ( gmlFt != null ) {
+                pt = gmlFt.getPropertyDeclaration( propName );
+                if ( pt == null ) {
+                    throw new FeatureStoreException( "Config defines property mapping for property '" + propName
+                                                     + "', but the GML schema does not define such a property." );
+                }
+            }
+        }
+
         Mapping m = null;
         if ( propDecl instanceof SimplePropertyDecl ) {
-            SimplePropertyDecl simpleDecl = (SimplePropertyDecl) propDecl;
-            PrimitiveType primType = null;
-            if ( simpleDecl.getType() != null ) {
-                primType = getPrimitiveType( simpleDecl.getType() );
-            } else {
-                primType = determinePrimitiveType( md.sqlType );
+            MappingExpression mapping = parseMappingExpression( propDecl.getMapping() );
+            if ( !( mapping instanceof DBField ) ) {
+                throw new FeatureStoreException( "Unhandled mapping type '" + mapping.getClass()
+                                                 + "'. Currently, only DBFields are supported." );
             }
-            pt = new SimplePropertyType( propName, minOccurs, 1, primType, false, false, null );
-            m = new PrimitiveMapping( path, mapping, primType, null );
+
+            String columnName = ( (DBField) mapping ).getColumn();
+            if ( propName == null ) {
+                LOG.debug( "Using column name for feature type." );
+                propName = new QName( columnName );
+                propName = makeFullyQualified( propName, "app", "http://www.deegree.org/app" );
+            }
+
+            PropertyName path = new PropertyName( propName );
+            if ( pt == null ) {
+                ColumnMetadata md = getColumn( table, columnName.toLowerCase() );
+                int minOccurs = md.isNullable ? 0 : 1;
+
+                SimplePropertyDecl simpleDecl = (SimplePropertyDecl) propDecl;
+                PrimitiveType primType = null;
+                if ( simpleDecl.getType() != null ) {
+                    primType = getPrimitiveType( simpleDecl.getType() );
+                } else {
+                    primType = determinePrimitiveType( md.sqlType );
+                }
+                pt = new SimplePropertyType( propName, minOccurs, 1, primType, false, false, null );
+            }
+            JoinChain joinedTable = buildJoinTable( table, propDecl.getJoinedTable() );
+            m = new PrimitiveMapping( path, mapping, ( (SimplePropertyType) pt ).getPrimitiveType(), joinedTable );
         } else if ( propDecl instanceof GeometryPropertyDecl ) {
+            MappingExpression mapping = parseMappingExpression( propDecl.getMapping() );
+            if ( !( mapping instanceof DBField ) ) {
+                throw new FeatureStoreException( "Unhandled mapping type '" + mapping.getClass()
+                                                 + "'. Currently, only DBFields are supported." );
+            }
+
+            String columnName = ( (DBField) mapping ).getColumn();
+            if ( propName == null ) {
+                LOG.debug( "Using column name for feature type." );
+                propName = new QName( columnName );
+                propName = makeFullyQualified( propName, "app", "http://www.deegree.org/app" );
+            }
+
+            PropertyName path = new PropertyName( propName );
+            ColumnMetadata md = getColumn( table, columnName.toLowerCase() );
+            int minOccurs = md.isNullable ? 0 : 1;
+
             GeometryPropertyDecl geomDecl = (GeometryPropertyDecl) propDecl;
             GeometryType type = null;
             if ( geomDecl.getType() != null ) {
@@ -328,12 +448,82 @@ class SchemaBuilderRelational {
                 dim = md.dim;
             }
             pt = new GeometryPropertyType( propName, minOccurs, 1, false, false, null, type, dim, INLINE );
-            m = new GeometryMapping( path, mapping, type, dim, crs, srid, null );
+            JoinChain joinedTable = buildJoinTable( table, propDecl.getJoinedTable() );
+            m = new GeometryMapping( path, mapping, type, dim, crs, srid, joinedTable );
+        } else if ( propDecl instanceof CustomPropertyDecl ) {
+            CustomPropertyDecl cpd = (CustomPropertyDecl) propDecl;
+            List<JAXBElement<? extends CustomMapping>> children = cpd.getAbstractCustomMapping();
+            List<Mapping> particles = new ArrayList<Mapping>( children.size() );
+            PropertyName path = new PropertyName( propName );
+            for ( JAXBElement<? extends CustomMapping> child : children ) {
+                Mapping particle = process( child.getValue() );
+                if ( particle != null ) {
+                    particles.add( particle );
+                }
+            }
+            JoinChain joinedTable = buildJoinTable( table, propDecl.getJoinedTable() );
+            m = new CompoundMapping( path, null, particles, joinedTable );
+        } else if ( propDecl instanceof CodePropertyDecl ) {
+            PropertyName path = new PropertyName( propName );
+            JoinChain joinedTable = buildJoinTable( table, propDecl.getJoinedTable() );
+
+            MappingExpression mapping = parseMappingExpression( propDecl.getMapping() );
+            if ( !( mapping instanceof DBField ) ) {
+                throw new FeatureStoreException( "Unhandled mapping type '" + mapping.getClass()
+                                                 + "'. Currently, only DBFields are supported." );
+            }
+            MappingExpression codeSpaceMapping = parseMappingExpression( ( (CodePropertyDecl) propDecl ).getCodeSpaceMapping() );
+            if ( !( codeSpaceMapping instanceof DBField ) ) {
+                throw new FeatureStoreException( "Unhandled mapping type '" + codeSpaceMapping.getClass()
+                                                 + "'. Currently, only DBFields are supported." );
+            }
+            m = new CodeMapping( path, mapping, STRING, joinedTable, codeSpaceMapping );
         } else {
-            throw new FeatureStoreException( "Unhandled property declaration '" + propDecl.getClass()
-                                             + "'. Currently, only simple / geometry properties are supported." );
+            LOG.warn( "Unhandled property declaration '" + propDecl.getClass() + "'. Skipping it." );
         }
         return new Pair<PropertyType, Mapping>( pt, m );
+    }
+
+    private JoinChain buildJoinTable( QTableName from, JoinedTable joinedTable ) {
+        if ( joinedTable != null ) {
+            MappingExpression me = parseMappingExpression( joinedTable.getValue() );
+            if ( me instanceof JoinChain ) {
+                JoinChain jc = (JoinChain) me;
+                DBField dbf1 = new DBField( from.getTable(), jc.getFields().get( 0 ).getColumn() );
+                DBField dbf2 = new DBField( jc.getFields().get( 1 ).getTable(), jc.getFields().get( 1 ).getColumn() );
+                return new JoinChain( dbf1, dbf2 );
+            }
+        }
+        return null;
+    }
+
+    private Mapping process( CustomMapping mapping ) {
+        PropertyName path = new PropertyName( mapping.getPath(), nsContext );
+        JoinChain joinedTable = null;
+        if ( mapping instanceof org.deegree.feature.persistence.postgis.jaxb.PrimitiveMapping ) {
+            org.deegree.feature.persistence.postgis.jaxb.PrimitiveMapping pm = (org.deegree.feature.persistence.postgis.jaxb.PrimitiveMapping) mapping;
+            PrimitiveType pt = getPrimitiveType( pm.getType() );
+            MappingExpression me = parseMappingExpression( pm.getMapping() );
+            return new PrimitiveMapping( path, me, pt, joinedTable );
+        } else if ( mapping instanceof org.deegree.feature.persistence.postgis.jaxb.GeometryMapping ) {
+            org.deegree.feature.persistence.postgis.jaxb.GeometryMapping gm = (org.deegree.feature.persistence.postgis.jaxb.GeometryMapping) mapping;
+        } else if ( mapping instanceof org.deegree.feature.persistence.postgis.jaxb.FeatureMapping ) {
+            org.deegree.feature.persistence.postgis.jaxb.FeatureMapping fm = (org.deegree.feature.persistence.postgis.jaxb.FeatureMapping) mapping;
+        } else if ( mapping instanceof org.deegree.feature.persistence.postgis.jaxb.ComplexMapping ) {
+            org.deegree.feature.persistence.postgis.jaxb.ComplexMapping cm = (org.deegree.feature.persistence.postgis.jaxb.ComplexMapping) mapping;
+            List<JAXBElement<? extends CustomMapping>> children = cm.getAbstractCustomMapping();
+            List<Mapping> particles = new ArrayList<Mapping>( children.size() );
+            for ( JAXBElement<? extends CustomMapping> child : children ) {
+                Mapping particle = process( child.getValue() );
+                if ( particle != null ) {
+                    particles.add( particle );
+                }
+            }
+            return new CompoundMapping( path, null, particles, joinedTable );
+        } else {
+            LOG.warn( "Unhandled custom mapping: " + mapping.getClass() );
+        }
+        return null;
     }
 
     private FIDMapping buildFIDMapping( QTableName table, QName ftName,

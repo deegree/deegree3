@@ -48,7 +48,7 @@ public class MappingContextManager {
 
     private static Logger LOG = LoggerFactory.getLogger( MappingContextManager.class );
 
-    private int maxLength = 256;
+    private int maxLength = 64;
 
     private int id = 0;
 

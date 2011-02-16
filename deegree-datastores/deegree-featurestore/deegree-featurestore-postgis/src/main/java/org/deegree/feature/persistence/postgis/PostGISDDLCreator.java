@@ -42,6 +42,7 @@ import javax.xml.namespace.QName;
 
 import org.deegree.commons.jdbc.QTableName;
 import org.deegree.commons.tom.primitive.PrimitiveType;
+import org.deegree.commons.utils.StringUtils;
 import org.deegree.feature.persistence.mapping.FeatureTypeMapping;
 import org.deegree.feature.persistence.mapping.JoinChain;
 import org.deegree.feature.persistence.mapping.MappedApplicationSchema;
@@ -309,7 +310,12 @@ public class PostGISDDLCreator {
         sb.append( " (\n    " );
         sb.append( "id serial PRIMARY KEY,\n    " );
         sb.append( to.getColumn() );
-        sb.append( " text NOT NULL REFERENCES" );
+        // TODO implement this correctly
+        if ( StringUtils.count( to.getTable(), "_" ) > 4 ) {
+            sb.append( " integer NOT NULL REFERENCES" );
+        } else {
+            sb.append( " text NOT NULL REFERENCES" );
+        }
         sb.append( " " );
         sb.append( fromTable );
         return sb;

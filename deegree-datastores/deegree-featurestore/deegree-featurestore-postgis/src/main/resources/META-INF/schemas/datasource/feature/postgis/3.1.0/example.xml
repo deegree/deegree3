@@ -1,7 +1,7 @@
-<PostGISFeatureStore configVersion="3.0.0" xmlns="http://www.deegree.org/datasource/feature/postgis"
+<PostGISFeatureStore configVersion="3.1.0" xmlns="http://www.deegree.org/datasource/feature/postgis"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://www.deegree.org/datasource/feature/postgis
-http://schemas.deegree.org/datasource/feature/postgis/3.0.0/postgis.xsd">
+http://schemas.deegree.org/datasource/feature/postgis/3.1.0/postgis.xsd">
 
   <!-- [1] Identifier of JDBC connection -->
   <JDBCConnId>postgis</JDBCConnId>

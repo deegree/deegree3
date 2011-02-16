@@ -38,7 +38,6 @@ package org.deegree.feature.persistence.postgis;
 import static java.util.Collections.singletonMap;
 
 import java.net.URL;
-import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 
@@ -71,9 +70,9 @@ public class PostGISFeatureStoreProvider implements FeatureStoreProvider {
 
     private static final String CONFIG_JAXB_PACKAGE = "org.deegree.feature.persistence.postgis.jaxb";
 
-    private static final String CONFIG_SCHEMA = "/META-INF/schemas/datasource/feature/postgis/3.0.1/postgis.xsd";
+    private static final String CONFIG_SCHEMA = "/META-INF/schemas/datasource/feature/postgis/3.1.0/postgis.xsd";
 
-    private static final String CONFIG_TEMPLATE = "/META-INF/schemas/datasource/feature/postgis/3.0.1/example.xml";
+    private static final String CONFIG_TEMPLATE = "/META-INF/schemas/datasource/feature/postgis/3.1.0/example.xml";
 
     @Override
     public String getConfigNamespace() {
@@ -121,12 +120,12 @@ public class PostGISFeatureStoreProvider implements FeatureStoreProvider {
             LOG.debug( "Building mapped application schema (relational mode)" );
             try {
                 List<FeatureTypeDecl> ftDecls = config.getFeatureType();
-                SchemaBuilderRelational schemaBuilder = new SchemaBuilderRelational( config.getJDBCConnId(), ftDecls );
+                SchemaBuilderRelational schemaBuilder = new SchemaBuilderRelational( config, configURL );
                 schema = schemaBuilder.getMappedSchema();
-            } catch ( SQLException e ) {
-                String msg = Messages.getMessage( "STORE_MANAGER_STORE_SETUP_ERROR", e.getMessage() );
-                LOG.error( msg, e );
-                throw new FeatureStoreException( msg, e );
+            } catch ( Throwable t ) {
+                String msg = Messages.getMessage( "STORE_MANAGER_STORE_SETUP_ERROR", t.getMessage() );
+                LOG.error( msg, t );
+                throw new FeatureStoreException( msg, t );
             }
         } else {
             LOG.debug( "Building mapped application schema (BLOB mode)" );

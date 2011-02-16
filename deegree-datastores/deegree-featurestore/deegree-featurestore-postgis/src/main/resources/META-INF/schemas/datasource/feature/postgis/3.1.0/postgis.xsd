@@ -19,6 +19,15 @@
     <complexType>
       <sequence>
         <element name="JDBCConnId" type="string" />
+        <element name="GMLSchema" minOccurs="0" maxOccurs="unbounded">
+          <complexType>
+            <simpleContent>
+              <extension base="string">
+                <attribute name="version" type="postgisfs:GMLVersionType" use="required" />
+              </extension>
+            </simpleContent>
+          </complexType>
+        </element>        
         <choice>
           <element ref="postgisfs:FeatureType" minOccurs="0" maxOccurs="unbounded" />
           <element name="BLOBMapping">
@@ -52,7 +61,7 @@
         <simpleType>
           <restriction base="string">
             <enumeration value="3.0.0" />
-            <enumeration value="3.0.1" />
+            <enumeration value="3.1.0" />
           </restriction>
         </simpleType>
       </attribute>
@@ -454,9 +463,34 @@
         <extension base="postgisfs:AbstractCustomMappingType">
           <attribute name="type" type="postgisfs:GeometryType">
             <annotation>
-              <documentation>Geometry type.</documentation>
+              <documentation>Geometry type (if omitted, it is automatically determined from table geometry_columns)
+              </documentation>
             </annotation>
           </attribute>
+          <attribute name="crs" type="string">
+            <annotation>
+              <documentation>deegree CRS identifier used for the geometry property, e.g. 'EPSG:4326' (if omitted, it is
+                automatically derived from the PostGIS srid)</documentation>
+            </annotation>
+          </attribute>
+          <attribute name="srid" type="integer">
+            <annotation>
+              <documentation>PostGIS SRID of the column (if omitted, it is automatically determined from table
+                geometry_columns)</documentation>
+            </annotation>
+          </attribute>
+          <attribute name="dim">
+            <annotation>
+              <documentation>Dimensionality of the geometry coordinates (if omitted, it is automatically determined from
+                table geometry_columns)</documentation>
+            </annotation>
+            <simpleType>
+              <restriction base="NMTOKENS">
+                <enumeration value="2D" />
+                <enumeration value="3D" />
+              </restriction>
+            </simpleType>
+          </attribute>          
         </extension>
       </complexContent>
     </complexType>

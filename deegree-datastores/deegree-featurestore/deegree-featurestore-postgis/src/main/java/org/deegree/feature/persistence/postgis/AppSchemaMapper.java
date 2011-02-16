@@ -148,6 +148,7 @@ public class AppSchemaMapper {
      */
     public AppSchemaMapper( ApplicationSchema appSchema, boolean createBlobMapping, boolean createRelationalMapping,
                             ICRS storageCrs, String srid ) {
+
         this.appSchema = appSchema;
         this.storageCrs = storageCrs;
         this.storageSrid = srid;
@@ -378,7 +379,11 @@ public class AppSchemaMapper {
             // TODO
             NamespaceContext nsContext = null;
             PropertyName path = new PropertyName( "text()", nsContext );
-            DBField dbField = new DBField( mc.getTable(), mc.getColumn() );
+            String column = mc.getColumn();
+            if (column == null || column.isEmpty()) {
+                column = "value";
+            }
+            DBField dbField = new DBField( mc.getTable(), column );
             PrimitiveType pt = PrimitiveType.STRING;
             if ( typeDef.getSimpleType() != null ) {
                 pt = XMLValueMangler.getPrimitiveType( typeDef.getSimpleType() );

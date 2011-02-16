@@ -58,6 +58,7 @@ import org.deegree.commons.jdbc.QTableName;
 import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.commons.tom.genericxml.GenericXMLElement;
 import org.deegree.commons.tom.genericxml.GenericXMLElementContent;
+import org.deegree.commons.tom.ows.CodeType;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.commons.tom.primitive.SQLValueMangler;
 import org.deegree.commons.utils.JDBCUtils;
@@ -74,7 +75,11 @@ import org.deegree.feature.persistence.mapping.FeatureTypeMapping;
 import org.deegree.feature.persistence.mapping.IdAnalysis;
 import org.deegree.feature.persistence.mapping.JoinChain;
 import org.deegree.feature.persistence.mapping.MappedApplicationSchema;
+import org.deegree.feature.persistence.mapping.id.AutoIDGenerator;
 import org.deegree.feature.persistence.mapping.id.FIDMapping;
+import org.deegree.feature.persistence.mapping.id.IDGenerator;
+import org.deegree.feature.persistence.mapping.id.UUIDGenerator;
+import org.deegree.feature.persistence.mapping.property.CodeMapping;
 import org.deegree.feature.persistence.mapping.property.CompoundMapping;
 import org.deegree.feature.persistence.mapping.property.FeatureMapping;
 import org.deegree.feature.persistence.mapping.property.GeometryMapping;
@@ -379,27 +384,38 @@ public class PostGISFeatureStoreTransaction implements FeatureStoreTransaction {
     private String insertFeatureRelational( Feature feature, FeatureTypeMapping ftMapping, IDGenMode mode )
                             throws FeatureStoreException {
 
-        FIDMapping fidMapping = ftMapping.getFidMapping();
         FeatureType ft = feature.getType();
-        List<Object> sqlObjects = new ArrayList<Object>( ft.getPropertyDeclarations().size() );
+        List<Object> sqlObjects = new ArrayList<Object>( ft.getPropertyDeclarations().size() + 1 );
 
         StringBuilder values = new StringBuilder( "VALUES(" );
         StringBuilder sql = new StringBuilder( "INSERT INTO " );
         sql.append( ftMapping.getFtTable() );
         sql.append( " (" );
         boolean first = true;
+
+        FIDMapping fidMapping = ftMapping.getFidMapping();
+        IDGenerator generator = fidMapping.getIdGenerator();
+        if ( generator instanceof UUIDGenerator ) {
+            sql.append( fidMapping.getColumn() );
+            values.append( "?" );
+            sqlObjects.add( feature.getId() );
+            first = false;
+        }
+
         for ( Property prop : feature.getProperties() ) {
             QName propName = prop.getName();
             Mapping mapping = ftMapping.getMapping( propName );
+
             if ( mapping != null ) {
-                String column = null;
-                MappingExpression me = mapping.getMapping();
-                if ( !( me instanceof DBField ) ) {
-                    LOG.debug( "Property '" + propName + "' is not mapped to column. Skipping it." );
-                    continue;
-                }
-                column = ( (DBField) me ).getColumn();
                 if ( mapping instanceof PrimitiveMapping ) {
+                    String column = null;
+                    MappingExpression me = mapping.getMapping();
+                    if ( !( me instanceof DBField ) ) {
+                        LOG.debug( "Property '" + propName + "' is not mapped to a column. Skipping it." );
+                        continue;
+                    }
+                    column = ( (DBField) me ).getColumn();
+
                     PrimitiveValue value = (PrimitiveValue) prop.getValue();
                     sqlObjects.add( SQLValueMangler.internalToSQL( value ) );
                     if ( !first ) {
@@ -411,6 +427,14 @@ public class PostGISFeatureStoreTransaction implements FeatureStoreTransaction {
                     sql.append( column );
                     values.append( "?" );
                 } else if ( mapping instanceof GeometryMapping ) {
+                    String column = null;
+                    MappingExpression me = mapping.getMapping();
+                    if ( !( me instanceof DBField ) ) {
+                        LOG.debug( "Property '" + propName + "' is not mapped to a column. Skipping it." );
+                        continue;
+                    }
+                    column = ( (DBField) me ).getColumn();
+
                     String srid = ( (GeometryMapping) mapping ).getSrid();
                     ICRS storageCRS = ( (GeometryMapping) mapping ).getCRS();
                     Geometry value = (Geometry) prop.getValue();
@@ -428,12 +452,65 @@ public class PostGISFeatureStoreTransaction implements FeatureStoreTransaction {
                     }
                     sql.append( column );
                     values.append( fs.getWKBParamTemplate( srid ) );
+                } else if ( mapping instanceof CodeMapping ) {
+                    String column = null;
+                    MappingExpression me = mapping.getMapping();
+                    if ( !( me instanceof DBField ) ) {
+                        LOG.debug( "Property '" + propName + "' is not mapped to a column. Skipping it." );
+                        continue;
+                    }
+                    column = ( (DBField) me ).getColumn();
+
+                    sqlObjects.add( ( (CodeType) prop.getValue() ).getCode() );
+                    if ( !first ) {
+                        sql.append( "," );
+                        values.append( "," );
+                    } else {
+                        first = false;
+                    }
+                    sql.append( column );
+                    values.append( "?" );
+
+                    column = null;
+                    me = ( (CodeMapping) mapping ).getCodeSpaceMapping();
+                    if ( !( me instanceof DBField ) ) {
+                        LOG.debug( "Property '" + propName + "' is not mapped to a column. Skipping it." );
+                        continue;
+                    }
+                    column = ( (DBField) me ).getColumn();
+
+                    sqlObjects.add( ( (CodeType) prop.getValue() ).getCodeSpace() );
+                    if ( !first ) {
+                        sql.append( "," );
+                        values.append( "," );
+                    } else {
+                        first = false;
+                    }
+                    sql.append( column );
+                    values.append( "?" );
+                } else if ( mapping instanceof CompoundMapping ) {
+                    CompoundMapping cm = (CompoundMapping) mapping;
+                    if ( cm.getJoinedTable() != null ) {
+                        LOG.warn( "Join tables not implemented yet. Skipping." );
+                        continue;
+                    }
+                    GenericXMLElement propNode = new GenericXMLElement( propName,
+                                                                        (GenericXMLElementContent) prop.getValue() );
+
+                    for ( Mapping particleMapping : cm.getParticles() ) {
+                        try {
+                            insertParticle( particleMapping, propNode, sqlObjects, values, sql );
+                        } catch ( FilterEvaluationException e ) {
+                            // TODO Auto-generated catch block
+                            e.printStackTrace();
+                        }
+                    }
                 } else {
                     LOG.warn( "Updating of " + mapping.getClass() + " is currently not implemented. Omitting." );
                     continue;
                 }
             } else {
-                LOG.warn( "No column mapping for property '" + propName + "'. Omitting." );
+                LOG.warn( "No mapping for property '" + propName + "'. Omitting." );
             }
         }
         sql.append( ") " );
@@ -452,7 +529,9 @@ public class PostGISFeatureStoreTransaction implements FeatureStoreTransaction {
             }
             stmt.execute();
             // TODO what about other id generation policies?
-            fid = getAutoIncrementFID( fidMapping, stmt );
+            if ( generator instanceof AutoIDGenerator ) {
+                fid = getAutoIncrementFID( fidMapping, stmt );
+            }
         } catch ( SQLException e ) {
             LOG.debug( e.getMessage(), e );
             throw new FeatureStoreException( e.getMessage(), e );
@@ -460,6 +539,66 @@ public class PostGISFeatureStoreTransaction implements FeatureStoreTransaction {
             JDBCUtils.close( stmt );
         }
         return fid;
+    }
+
+    private void insertParticle( Mapping mapping, GenericXMLElement particle, List<Object> sqlObjects,
+                                 StringBuilder values, StringBuilder sql )
+                            throws FilterEvaluationException {
+
+        if ( mapping.getJoinedTable() != null ) {
+            LOG.warn( "Join tables not implemented yet. Skipping." );
+        }
+
+        if ( mapping instanceof PrimitiveMapping ) {
+            MappingExpression me = mapping.getMapping();
+            if ( !( me instanceof DBField ) ) {
+                LOG.debug( "Particle  is not mapped to a column. Skipping it." );
+                return;
+            }
+            PropertyName path = mapping.getPath();
+            // TODO: version
+            FeatureXPathEvaluator evaluator = new FeatureXPathEvaluator( GML_32 );
+            TypedObjectNode[] primitiveValues = evaluator.eval( particle, path );
+            for ( TypedObjectNode pv : primitiveValues ) {
+                if ( pv instanceof PrimitiveValue ) {
+                    sqlObjects.add( SQLValueMangler.internalToSQL( (PrimitiveValue) pv ) );
+                    // TODO first check
+                    sql.append( "," );
+                    values.append( "," );
+                    sql.append( me.toString() );
+                    values.append( "?" );
+                } else if ( pv instanceof GenericXMLElementContent ) {
+                    PrimitiveValue textNode = ( (GenericXMLElementContent) pv ).getValue();
+                    sqlObjects.add( SQLValueMangler.internalToSQL( textNode ) );
+                    // TODO first check
+                    sql.append( "," );
+                    values.append( "," );
+                    sql.append( me.toString() );
+                    values.append( "?" );
+                }
+            }
+        } else if ( mapping instanceof CompoundMapping ) {
+            PropertyName path = mapping.getPath();
+            // TODO: version
+            FeatureXPathEvaluator evaluator = new FeatureXPathEvaluator( GML_32 );
+            TypedObjectNode[] particleValues = evaluator.eval( particle, path );
+
+            for ( Mapping particleMapping : ( (CompoundMapping) mapping ).getParticles() ) {
+                try {
+                    for ( TypedObjectNode particleValue : particleValues ) {
+                        if ( particleValue instanceof GenericXMLElement ) {
+                            insertParticle( particleMapping, (GenericXMLElement) particleValue, sqlObjects, values, sql );
+                        } else {
+                            LOG.warn( "Unexpected particle value type (=" + particleValue.getClass() + ")" );
+                        }
+                    }
+                } catch ( FilterEvaluationException e ) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
+            }
+        }
+
     }
 
     private String generateNewId() {

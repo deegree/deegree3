@@ -69,6 +69,7 @@ import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.feature.Feature;
 import org.deegree.feature.FeatureCollection;
 import org.deegree.feature.StreamFeatureCollection;
+import org.deegree.feature.persistence.FeatureStore;
 import org.deegree.feature.persistence.FeatureStoreException;
 import org.deegree.feature.persistence.FeatureStoreManager;
 import org.deegree.feature.persistence.FeatureStoreTransaction;
@@ -94,6 +95,7 @@ import org.deegree.gml.GMLStreamWriter;
 import org.deegree.gml.GMLVersion;
 import org.deegree.gml.feature.schema.ApplicationSchemaXSDDecoder;
 import org.deegree.protocol.wfs.getfeature.TypeName;
+import org.deegree.protocol.wfs.transaction.IDGenMode;
 import org.junit.Assert;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -127,11 +129,13 @@ public class PostGISFeatureStoreTest {
         AppSchemaMapper mapper = new AppSchemaMapper( appSchema, false, true, CRSUtils.EPSG_4326, "-1" );
         MappedApplicationSchema mappedSchema = mapper.getMappedSchema();
         PostGISFeatureStoreConfigWriter configWriter = new PostGISFeatureStoreConfigWriter( mappedSchema );
-        File file = new File( "/tmp/inspire-au.xml" );
+        File file = new File( "/home/schneider/.deegree/inspire-test/datasources/feature/inspire-au.xml" );
         FileOutputStream fos = new FileOutputStream( file );
         XMLStreamWriter xmlWriter = XMLOutputFactory.newInstance().createXMLStreamWriter( fos );
         xmlWriter = new IndentingXMLStreamWriter( xmlWriter );
-        configWriter.writeConfig( xmlWriter, "testconn", Collections.singletonList( "bla.xsd" ) );
+        configWriter.writeConfig( xmlWriter,
+                                  "testconn",
+                                  Collections.singletonList( "file:/home/schneider/.deegree/inspire-test/schemas/inspire/annex1/AdministrativeUnits.xsd" ) );
         xmlWriter.close();
         IOUtils.closeQuietly( fos );
         System.out.println( "Wrote to file " + file );
@@ -144,6 +148,51 @@ public class PostGISFeatureStoreTest {
         }
         IOUtils.closeQuietly( writer );
         System.out.println( "Wrote to file " + file );
+    }
+
+    @Test
+    public void testInsertInspireAU()
+                            throws Throwable {
+
+        ConnectionManager.addConnection( new URL( "file:/home/schneider/.deegree/inspire-test/jdbc/testconn.xml" ),
+                                         "testconn" );
+        PostGISFeatureStoreProvider provider = new PostGISFeatureStoreProvider();
+        FeatureStore fs = provider.getFeatureStore( new URL(
+                                                             "file:/home/schneider/.deegree/inspire-test/datasources/feature/inspire-au.xml" ) );
+        Assert.assertNotNull( fs );
+
+        MappedApplicationSchema mappedSchema = (MappedApplicationSchema) fs.getSchema();
+        Assert.assertNotNull( mappedSchema );
+
+        PostGISFeatureStoreConfigWriter configWriter = new PostGISFeatureStoreConfigWriter( mappedSchema );
+        File file = new File( "/tmp/inspire-au.xml" );
+        FileOutputStream fos = new FileOutputStream( file );
+        XMLStreamWriter xmlWriter = XMLOutputFactory.newInstance().createXMLStreamWriter( fos );
+        xmlWriter = new IndentingXMLStreamWriter( xmlWriter );
+        configWriter.writeConfig( xmlWriter,
+                                  "testconn",
+                                  Collections.singletonList( "file:/home/schneider/.deegree/inspire-test/schemas/inspire/annex1/AdministrativeUnits.xsd" ) );
+        xmlWriter.close();
+        IOUtils.closeQuietly( fos );
+        System.out.println( "Wrote to file " + file );
+
+        URL datasetURL = new URL( "file:/home/schneider/geodata/inspire/au-spatial-ds/au-provincies.gml" );
+        GMLStreamReader gmlReader = GMLInputFactory.createGMLStreamReader( GML_32, datasetURL );
+        gmlReader.setApplicationSchema( fs.getSchema() );
+        FeatureStoreTransaction ta = null;
+        try {
+            ta = fs.acquireTransaction();
+            FeatureCollection fc = gmlReader.readFeatureCollection();
+            ta.performInsert( fc, IDGenMode.USE_EXISTING );
+            ta.commit();
+        } catch ( Throwable t ) {
+            if ( ta != null ) {
+                ta.rollback();
+            }
+            throw t;
+        } finally {
+            gmlReader.close();
+        }
     }
 
     @Test

@@ -97,7 +97,7 @@ public class PostGISFeatureStoreConfigWriter {
 
     private static final String CONFIG_NS = new PostGISFeatureStoreProvider().getConfigNamespace();
 
-    private static final String SCHEMA_LOCATION = "http://www.deegree.org/datasource/feature/postgis http://schemas.deegree.org/datasource/feature/postgis/3.0.1/postgis.xsd";
+    private static final String SCHEMA_LOCATION = "http://www.deegree.org/datasource/feature/postgis http://schemas.deegree.org/datasource/feature/postgis/3.1.0/postgis.xsd";
 
     private final MappedApplicationSchema schema;
 
@@ -123,7 +123,7 @@ public class PostGISFeatureStoreConfigWriter {
                             throws XMLStreamException {
 
         writer.writeStartElement( "PostGISFeatureStore" );
-        writer.writeAttribute( "configVersion", "3.0.1" );
+        writer.writeAttribute( "configVersion", "3.1.0" );
         writer.writeNamespace( DEFAULT_NS_PREFIX, CONFIG_NS );
         writer.writeNamespace( "xsi", XSINS );
         writer.writeAttribute( XSINS, "schemaLocation", SCHEMA_LOCATION );
@@ -144,6 +144,13 @@ public class PostGISFeatureStoreConfigWriter {
         writer.writeStartElement( CONFIG_NS, "JDBCConnId" );
         writer.writeCharacters( connId );
         writer.writeEndElement();
+        
+        for (String schemaUrl : schemaURLs) {           
+            writer.writeStartElement( CONFIG_NS, "GMLSchema" );
+            writer.writeAttribute( "version", "GML_32" );
+            writer.writeCharacters( schemaUrl );
+            writer.writeEndElement();            
+        }
 
         List<FeatureType> fts = schema.getFeatureTypes( null, false, false );
         SortedSet<String> ftNames = new TreeSet<String>();
