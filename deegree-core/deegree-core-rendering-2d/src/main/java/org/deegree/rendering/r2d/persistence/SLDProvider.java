@@ -55,7 +55,7 @@ public class SLDProvider implements ResourceProvider {
     }
 
     public URL getConfigSchema() {
-        return SLDProvider.class.getResource( "/META-INF/schemas/se/1.1.0/Symbolizer-deegree.xsd" );
+        return SLDProvider.class.getResource( "/META-INF/SCHEMAS_OPENGIS_NET/sld/1.1.0/StyledLayerDescriptor.xsd" );
     }
 
     public Map<String, URL> getConfigTemplates() {
