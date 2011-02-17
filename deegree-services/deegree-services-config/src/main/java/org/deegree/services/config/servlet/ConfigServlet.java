@@ -113,9 +113,9 @@ public class ConfigServlet extends HttpServlet {
                 delete( path.substring( 7 ), resp );
             }
         } catch ( SecurityException e ) {
-            IOUtils.write( "There were security concerns: " + e.getLocalizedMessage(), resp.getOutputStream() );
+            IOUtils.write( "There were security concerns: " + e.getLocalizedMessage() + "\n", resp.getOutputStream() );
         } catch ( ServletException e ) {
-            IOUtils.write( "Error while reloading workspace: " + e.getLocalizedMessage(), resp.getOutputStream() );
+            IOUtils.write( "Error while reloading workspace: " + e.getLocalizedMessage() + "\n", resp.getOutputStream() );
         }
     }
 
