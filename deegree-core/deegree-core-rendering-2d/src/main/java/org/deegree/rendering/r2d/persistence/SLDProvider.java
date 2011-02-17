@@ -35,58 +35,33 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.rendering.r2d.persistence;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
 
-import org.deegree.commons.config.DeegreeWorkspace;
-import org.deegree.commons.config.ResourceManager;
-import org.deegree.commons.config.ResourceManagerMetadata;
 import org.deegree.commons.config.ResourceProvider;
-import org.deegree.commons.config.WorkspaceInitializationException;
-import org.deegree.commons.utils.ProxyUtils;
 
 /**
- * 
- * Currently a dummy resource manager.
  * 
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
  */
-public class StyleManager implements ResourceManager {
+public class SLDProvider implements ResourceProvider {
 
-    @SuppressWarnings("unchecked")
-    public Class<? extends ResourceManager>[] getDependencies() {
-        return new Class[] { ProxyUtils.class };
+    public String getConfigNamespace() {
+        return "http://www.opengis.net/sld";
     }
 
-    public ResourceManagerMetadata getMetadata() {
-        return new ResourceManagerMetadata() {
-            public String getName() {
-                return "render styles";
-            }
-
-            public String getPath() {
-                return "styles";
-            }
-
-            public List<ResourceProvider> getResourceProviders() {
-                List<ResourceProvider> list = new ArrayList<ResourceProvider>();
-                list.add( new SEProvider() );
-                list.add( new SLDProvider() );
-                return list;
-            }
-        };
+    public URL getConfigSchema() {
+        return SLDProvider.class.getResource( "/META-INF/schemas/se/1.1.0/Symbolizer-deegree.xsd" );
     }
 
-    public void shutdown() {
-        // nothing to do currently
-    }
-
-    public void startup( DeegreeWorkspace workspace )
-                            throws WorkspaceInitializationException {
-        // nothing to do currently
+    public Map<String, URL> getConfigTemplates() {
+        HashMap<String, URL> map = new HashMap<String, URL>();
+        map.put( "example", SLDProvider.class.getResource( "/META-INF/schemas/se/1.1.0/sldexample.xml" ) );
+        return map;
     }
 
 }
