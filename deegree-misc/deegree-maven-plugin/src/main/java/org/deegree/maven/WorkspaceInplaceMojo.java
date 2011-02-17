@@ -134,19 +134,15 @@ public class WorkspaceInplaceMojo extends AbstractMojo {
                     closeQuietly( in );
                 }
             }
-        } catch ( ArtifactResolutionException e1 ) {
-            // TODO Auto-generated catch block
-            e1.printStackTrace();
-        } catch ( ArtifactNotFoundException e1 ) {
-            // TODO Auto-generated catch block
-            e1.printStackTrace();
-        } catch ( InvalidDependencyVersionException e1 ) {
-            // TODO Auto-generated catch block
-            e1.printStackTrace();
+        } catch ( ArtifactResolutionException e ) {
+            throw new MojoFailureException( "Could not resolve artifact: " + e.getLocalizedMessage(), e );
+        } catch ( ArtifactNotFoundException e ) {
+            throw new MojoFailureException( "Could not find artifact: " + e.getLocalizedMessage(), e );
+        } catch ( InvalidDependencyVersionException e ) {
+            throw new MojoFailureException( "Invalid dependency version: " + e.getLocalizedMessage(), e );
         } catch ( IOException e ) {
-            log.debug( e );
             throw new MojoFailureException( "Could not extract workspace dependencies in place: "
-                                            + e.getLocalizedMessage() );
+                                            + e.getLocalizedMessage(), e );
         }
 
     }
