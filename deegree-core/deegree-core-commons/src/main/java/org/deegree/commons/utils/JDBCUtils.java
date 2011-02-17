@@ -151,4 +151,34 @@ public final class JDBCUtils {
             }
         }
     }
+
+    public static String determinePostGISVersion( Connection conn, Logger log ) {
+        String version = "1.0";
+        Statement stmt = null;
+        ResultSet rs = null;
+        try {
+            stmt = conn.createStatement();
+            rs = stmt.executeQuery( "SELECT postgis_version()" );
+            rs.next();
+            String postGISVersion = rs.getString( 1 );
+            version = postGISVersion.split( " " )[0];
+            log.debug( "PostGIS version: {}", version );
+        } catch ( Throwable t ) {
+            log.warn( "Could not determine PostGIS version: {} -- defaulting to 1.0.0", t.getMessage() );
+        }
+        return version;
+    }
+
+    public static boolean useLegayPostGISPredicates( Connection conn, Logger log ) {
+        boolean useLegacyPredicates = false;
+        String version = determinePostGISVersion( conn, log );
+        if ( version.startsWith( "0." ) || version.startsWith( "1.0" ) || version.startsWith( "1.1" )
+             || version.startsWith( "1.2" ) ) {
+            log.debug( "PostGIS version is " + version + " -- using legacy (pre-SQL-MM) predicates." );
+            useLegacyPredicates = true;
+        } else {
+            log.debug( "PostGIS version is " + version + " -- using modern (SQL-MM) predicates." );
+        }
+        return useLegacyPredicates;
+    }
 }
