@@ -112,6 +112,8 @@ public class ConfigServlet extends HttpServlet {
             if ( path.toLowerCase().startsWith( "/delete" ) ) {
                 delete( path.substring( 7 ), resp );
             }
+        } catch ( SecurityException e ) {
+            IOUtils.write( "There were security concerns: " + e.getLocalizedMessage(), resp.getOutputStream() );
         } catch ( ServletException e ) {
             IOUtils.write( "Error while reloading workspace: " + e.getLocalizedMessage(), resp.getOutputStream() );
         }
