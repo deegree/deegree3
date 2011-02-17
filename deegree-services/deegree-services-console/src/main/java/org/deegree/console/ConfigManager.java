@@ -42,6 +42,7 @@ import static org.deegree.commons.config.DeegreeWorkspace.getWorkspaceRoot;
 import static org.deegree.commons.utils.net.HttpUtils.STREAM;
 import static org.deegree.commons.utils.net.HttpUtils.get;
 import static org.deegree.services.controller.OGCFrontController.getServiceWorkspace;
+import static org.h2.util.IOUtils.copyAndClose;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.File;
@@ -79,7 +80,6 @@ import org.deegree.commons.config.ResourceProvider;
 import org.deegree.commons.utils.io.Zip;
 import org.deegree.commons.version.DeegreeModuleInfo;
 import org.deegree.services.controller.OGCFrontController;
-import org.h2.util.IOUtils;
 import org.slf4j.Logger;
 
 /**
@@ -111,8 +111,14 @@ public class ConfigManager {
     private List<String> providers;
 
     @Getter
-    @Setter
     private String newConfigType;
+
+    @Getter
+    private List<String> newConfigTypeTemplates;
+
+    @Getter
+    @Setter
+    private String newConfigTypeTemplate;
 
     @Getter
     @Setter
@@ -185,6 +191,16 @@ public class ConfigManager {
         }
     }
 
+    public void setNewConfigType( String newConfigType ) {
+        this.newConfigType = newConfigType;
+        for ( ResourceProvider p : currentResourceManager.getMetadata().getResourceProviders() ) {
+            if ( p.getConfigNamespace().endsWith( newConfigType ) ) {
+                newConfigTypeTemplates = new LinkedList<String>( p.getConfigTemplates().keySet() );
+            }
+        }
+
+    }
+
     private String getViewForMetadata( ResourceManagerMetadata md ) {
         if ( md == null ) {
             return FacesContext.getCurrentInstance().getViewRoot().getViewId();
@@ -208,6 +224,9 @@ public class ConfigManager {
     }
 
     public void resourceManagerChanged( ActionEvent evt ) {
+        if ( resourceManagerMap == null ) {
+            return;
+        }
         currentResourceManager = resourceManagerMap.get( ( (HtmlCommandLink) evt.getSource() ).getValue().toString() );
         update();
     }
@@ -248,6 +267,7 @@ public class ConfigManager {
                                  currentResourceManager.metadata.getPath() );
             findFiles( dir, null );
             Collections.sort( availableResources );
+            setNewConfigType( providers.get( 0 ) );
         }
     }
 
@@ -266,12 +286,12 @@ public class ConfigManager {
         URL schemaURL = null;
         for ( ResourceProvider p : currentResourceManager.metadata.getResourceProviders() ) {
             if ( p.getConfigNamespace().endsWith( newConfigType ) ) {
-                if ( p.getConfigTemplates() != null ) {
+                if ( newConfigTypeTemplate != null ) {
                     schemaURL = p.getConfigSchema();
                     template = true;
                     try {
-                        IOUtils.copyAndClose( p.getConfigTemplates().values().iterator().next().openStream(),
-                                              new FileOutputStream( conf ) );
+                        copyAndClose( p.getConfigTemplates().get( newConfigTypeTemplate ).openStream(),
+                                      new FileOutputStream( conf ) );
                     } catch ( FileNotFoundException e ) {
                         // TODO Auto-generated catch block
                         e.printStackTrace();
