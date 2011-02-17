@@ -99,7 +99,9 @@ public class WorkspaceITMojo extends AbstractMojo {
                 response = get( UTF8STRING, helper.createBaseURL() + "config/restart/iut", null, "deegree", "deegree" ).trim();
                 getLog().info( "Response after starting workspace was: " + response );
             } catch ( IOException e ) {
-                e.printStackTrace();
+                getLog().debug( e );
+                throw new MojoFailureException( "Could not test workspace " + a.getArtifactId() + ": "
+                                                + e.getLocalizedMessage(), e );
             }
 
             try {
@@ -121,8 +123,9 @@ public class WorkspaceITMojo extends AbstractMojo {
                                        "deegree" ).trim();
                 getLog().info( "Response after finally deleting iut was: " + response );
             } catch ( IOException e ) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+                getLog().debug( e );
+                throw new MojoFailureException( "Could not test workspace " + a.getArtifactId() + ": "
+                                                + e.getLocalizedMessage(), e );
             }
         }
     }

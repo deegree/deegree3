@@ -213,14 +213,14 @@ public class WorkspaceMojo extends AbstractMojo {
             log.debug( e );
             throw new MojoFailureException( "Could not create workspace zip artifact: " + e.getLocalizedMessage() );
         } catch ( ArtifactResolutionException e ) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            log.debug( e );
+            throw new MojoFailureException( "Could not resolve workspace dependency: " + e.getLocalizedMessage() );
         } catch ( ArtifactNotFoundException e ) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            log.debug( e );
+            throw new MojoFailureException( "Could not find workspace dependency: " + e.getLocalizedMessage() );
         } catch ( InvalidDependencyVersionException e ) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            log.debug( e );
+            throw new MojoFailureException( "Invalid workspace dependency version: " + e.getLocalizedMessage() );
         } finally {
             closeQuietly( out );
         }
