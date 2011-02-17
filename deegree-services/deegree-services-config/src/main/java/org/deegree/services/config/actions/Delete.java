@@ -71,6 +71,9 @@ public class Delete {
             return;
         }
         File fileOrDir = new File( p.first.getLocation(), p.second );
+        if ( !fileOrDir.exists() ) {
+            resp.setStatus( 404 );
+        }
         if ( !deleteQuietly( fileOrDir ) ) {
             IOUtils.write( "Deletion unsuccessful.\n", resp.getOutputStream() );
         } else {

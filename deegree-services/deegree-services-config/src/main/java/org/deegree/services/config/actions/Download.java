@@ -73,6 +73,7 @@ public class Download {
             try {
                 download( p.first, resp );
             } catch ( IOException e ) {
+                resp.setStatus( 500 );
                 IOUtils.write( "Error while downloading: " + e.getLocalizedMessage() + "\n", resp.getOutputStream() );
             }
             return;
@@ -81,6 +82,7 @@ public class Download {
         try {
             download( p.first, p.second, resp );
         } catch ( IOException e ) {
+            resp.setStatus( 500 );
             IOUtils.write( "Error while downloading: " + e.getLocalizedMessage() + "\n", resp.getOutputStream() );
         }
 
@@ -89,6 +91,11 @@ public class Download {
     private static void download( DeegreeWorkspace ws, String file, HttpServletResponse resp )
                             throws IOException {
         File f = new File( ws.getLocation(), file );
+        if ( !f.exists() ) {
+            resp.setStatus( 404 );
+            IOUtils.write( "No such file in workspace: " + ws.getName() + " -> " + file + "\n", resp.getOutputStream() );
+            return;
+        }
         FileInputStream in = null;
         try {
             in = new FileInputStream( f );
@@ -107,6 +114,7 @@ public class Download {
                             throws IOException {
         File dir = ws.getLocation();
         if ( !dir.exists() ) {
+            resp.setStatus( 404 );
             IOUtils.write( "No such workspace.\n", resp.getOutputStream() );
             return;
         }

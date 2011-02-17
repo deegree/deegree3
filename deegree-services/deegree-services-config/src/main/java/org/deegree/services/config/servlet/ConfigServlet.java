@@ -90,6 +90,11 @@ public class ConfigServlet extends HttpServlet {
             data.append( "PUT /config/upload/wsname/path/file   - upload file into workspace with name <wsname>\n" );
             data.append( "DELETE /config/delete[/path]          - delete currently running workspace or file in workspace\n" );
             data.append( "DELETE /config/delete/wsname[/path]   - delete workspace with name <wsname> or file in workspace\n" );
+            data.append( "\nHTTP response codes used:\n" );
+            data.append( "200 - ok\n" );
+            data.append( "403 - if you tried something you shouldn't have\n" );
+            data.append( "404 - if a file or directory needed to fullfil a request was not found\n" );
+            data.append( "500 - if something serious went wrong on the server side\n" );
             IOUtils.write( data.toString(), resp.getOutputStream() );
             return;
         }
@@ -113,8 +118,13 @@ public class ConfigServlet extends HttpServlet {
                 delete( path.substring( 7 ), resp );
             }
         } catch ( SecurityException e ) {
+            resp.setStatus( 403 );
             IOUtils.write( "There were security concerns: " + e.getLocalizedMessage() + "\n", resp.getOutputStream() );
+        } catch ( IOException e ) {
+            resp.setStatus( 500 );
+            IOUtils.write( "Error while processing request: " + e.getLocalizedMessage() + "\n", resp.getOutputStream() );
         } catch ( ServletException e ) {
+            resp.setStatus( 500 );
             IOUtils.write( "Error while reloading workspace: " + e.getLocalizedMessage() + "\n", resp.getOutputStream() );
         }
     }
