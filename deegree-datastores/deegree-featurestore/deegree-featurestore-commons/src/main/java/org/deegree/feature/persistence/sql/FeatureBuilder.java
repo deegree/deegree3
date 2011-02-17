@@ -35,27 +35,29 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.feature.persistence.sql;
 
-import org.deegree.filter.sql.MappingExpression;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
+import org.deegree.feature.Feature;
 
 /**
- * The <code></code> class TODO add class documentation here.
+ * Builds {@link Feature} instances from SQL result sets.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
  */
-public class StringConst implements MappingExpression {
+public interface FeatureBuilder {
 
-    private String s;
-
-    public StringConst( String s ) {
-        this.s = s;
-    }
-
-    @Override
-    public String toString() {
-        return "'" + s + "'";
-    }
+    /**
+     * Builds a {@link Feature} instance from the current row of the given {@link ResultSet}.
+     * 
+     * @param rs
+     *            SQL result set, must not be <code>null</code>
+     * @return created {@link Feature} instance, never <code>null</code>
+     * @throws SQLException
+     */
+    public Feature buildFeature( ResultSet rs )
+                            throws SQLException;
 }

@@ -33,12 +33,13 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.feature.persistence.sql;
+package org.deegree.feature.persistence.sql.id;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import org.deegree.feature.persistence.sql.id.FIDMapping;
+import org.deegree.feature.persistence.sql.FeatureTypeMapping;
+import org.deegree.feature.persistence.sql.MappedApplicationSchema;
 import org.deegree.feature.types.FeatureType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -51,7 +52,7 @@ import org.slf4j.LoggerFactory;
  * 
  * @version $Revision$, $Date$
  */
-class IdAnalyzer {
+public class IdAnalyzer {
 
     private static Logger LOG = LoggerFactory.getLogger( IdAnalyzer.class );
 
@@ -63,7 +64,7 @@ class IdAnalyzer {
      * @param schema
      *            application schema with mapping information, must not be <code>null</code>
      */
-    IdAnalyzer( MappedApplicationSchema schema ) {
+    public IdAnalyzer( MappedApplicationSchema schema ) {
         for ( FeatureType ft : schema.getFeatureTypes() ) {
             if ( !ft.isAbstract() ) {
                 FeatureTypeMapping ftMapping = schema.getFtMapping( ft.getName() );

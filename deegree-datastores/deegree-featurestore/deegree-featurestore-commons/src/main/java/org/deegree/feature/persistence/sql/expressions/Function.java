@@ -33,31 +33,49 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.feature.persistence.postgis;
+package org.deegree.feature.persistence.sql.expressions;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
-import org.deegree.feature.Feature;
+import org.deegree.filter.sql.MappingExpression;
 
 /**
- * Builds {@link Feature} instances from SQL result sets for the {@link PostGISFeatureStore}.
+ * The <code></code> class TODO add class documentation here.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
  */
-interface FeatureBuilder {
+public class Function implements MappingExpression {
 
-    /**
-     * Builds a {@link Feature} instance from the current row of the given {@link ResultSet}.
-     * 
-     * @param rs
-     *            PostGIS result set, must not be <code>null</code>
-     * @return created {@link Feature} instance, never <code>null</code>
-     * @throws SQLException 
-     * @throws SQLException
-     */
-    Feature buildFeature( ResultSet rs ) throws SQLException;
+    private String functionName;
+
+    private List<MappingExpression> args = new ArrayList<MappingExpression>();
+
+    public Function( String functionName ) {
+        this.functionName = functionName;
+    }
+
+    public void addArg( MappingExpression arg ) {
+        args.add( arg );
+    }
+
+    public List<MappingExpression> getArgs() {
+        return args;
+    }
+
+    @Override
+    public String toString() {
+        String s = functionName + "(";
+        for ( int i = 0; i < args.size(); i++ ) {
+            s += args.get( i );
+            if ( i != args.size() -1 ) {
+                s += ',';
+            }
+        }
+        s += ")";
+        return s;
+    }
 }

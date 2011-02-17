@@ -38,7 +38,6 @@ package org.deegree.feature.persistence.postgis;
 import static java.util.Collections.singletonMap;
 
 import java.net.URL;
-import java.util.List;
 import java.util.Map;
 
 import javax.xml.bind.JAXBException;
@@ -48,7 +47,8 @@ import org.deegree.feature.i18n.Messages;
 import org.deegree.feature.persistence.FeatureStore;
 import org.deegree.feature.persistence.FeatureStoreException;
 import org.deegree.feature.persistence.FeatureStoreProvider;
-import org.deegree.feature.persistence.postgis.jaxb.FeatureTypeDecl;
+import org.deegree.feature.persistence.postgis.config.PostGISDDLCreator;
+import org.deegree.feature.persistence.postgis.config.PostGISFeatureStoreConfigParser;
 import org.deegree.feature.persistence.postgis.jaxb.PostGISFeatureStoreConfig;
 import org.deegree.feature.persistence.sql.MappedApplicationSchema;
 import org.slf4j.Logger;
@@ -116,28 +116,14 @@ public class PostGISFeatureStoreProvider implements FeatureStoreProvider {
                             throws FeatureStoreException {
 
         MappedApplicationSchema schema = null;
-        if ( config.getBLOBMapping() == null ) {
-            LOG.debug( "Building mapped application schema (relational mode)" );
-            try {
-                List<FeatureTypeDecl> ftDecls = config.getFeatureType();
-                SchemaBuilderRelational schemaBuilder = new SchemaBuilderRelational( config, configURL );
-                schema = schemaBuilder.getMappedSchema();
-            } catch ( Throwable t ) {
-                String msg = Messages.getMessage( "STORE_MANAGER_STORE_SETUP_ERROR", t.getMessage() );
-                LOG.error( msg, t );
-                throw new FeatureStoreException( msg, t );
-            }
-        } else {
-            LOG.debug( "Building mapped application schema (BLOB mode)" );
-            try {
-                SchemaBuilderBLOB schemaBuilder = new SchemaBuilderBLOB( config.getJDBCConnId(),
-                                                                         config.getBLOBMapping(), configURL );
-                schema = schemaBuilder.getMappedSchema();
-            } catch ( Exception e ) {
-                String msg = Messages.getMessage( "STORE_MANAGER_STORE_SETUP_ERROR", e.getMessage() );
-                LOG.error( msg, e );
-                throw new FeatureStoreException( msg, e );
-            }
+        LOG.debug( "Building mapped application schema from config" );
+        try {
+            PostGISFeatureStoreConfigParser schemaBuilder = new PostGISFeatureStoreConfigParser( config, configURL );
+            schema = schemaBuilder.getMappedSchema();
+        } catch ( Throwable t ) {
+            String msg = Messages.getMessage( "STORE_MANAGER_STORE_SETUP_ERROR", t.getMessage() );
+            LOG.error( msg, t );
+            throw new FeatureStoreException( msg, t );
         }
         return schema;
     }

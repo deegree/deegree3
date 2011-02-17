@@ -41,8 +41,9 @@ import java.sql.SQLException;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.feature.Feature;
 import org.deegree.feature.persistence.FeatureStoreGMLIdResolver;
-import org.deegree.feature.persistence.sql.BlobMapping;
+import org.deegree.feature.persistence.sql.FeatureBuilder;
 import org.deegree.feature.persistence.sql.blob.BlobCodec;
+import org.deegree.feature.persistence.sql.blob.BlobMapping;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -73,10 +73,13 @@ import org.deegree.feature.persistence.FeatureStore;
 import org.deegree.feature.persistence.FeatureStoreException;
 import org.deegree.feature.persistence.FeatureStoreManager;
 import org.deegree.feature.persistence.FeatureStoreTransaction;
+import org.deegree.feature.persistence.postgis.config.PostGISDDLCreator;
+import org.deegree.feature.persistence.postgis.config.PostGISFeatureStoreConfigWriter;
 import org.deegree.feature.persistence.query.FeatureResultSet;
 import org.deegree.feature.persistence.query.Query;
 import org.deegree.feature.persistence.sql.FeatureTypeMapping;
 import org.deegree.feature.persistence.sql.MappedApplicationSchema;
+import org.deegree.feature.persistence.sql.mapper.AppSchemaMapper;
 import org.deegree.feature.persistence.sql.rules.Mapping;
 import org.deegree.feature.types.ApplicationSchema;
 import org.deegree.feature.types.FeatureType;
@@ -154,6 +157,11 @@ public class PostGISFeatureStoreTest {
     public void testInsertInspireAU()
                             throws Throwable {
 
+        ApplicationSchema appSchema = getInspireSchemaAU();
+        if ( appSchema == null ) {
+            return;
+        }
+
         ConnectionManager.addConnection( new URL( "file:/home/schneider/.deegree/inspire-test/jdbc/testconn.xml" ),
                                          "testconn" );
         PostGISFeatureStoreProvider provider = new PostGISFeatureStoreProvider();
@@ -193,6 +201,25 @@ public class PostGISFeatureStoreTest {
         } finally {
             gmlReader.close();
         }
+    }
+
+    @Test
+    public void testInspireAUEnvelope()
+                            throws Throwable {
+
+        ApplicationSchema appSchema = getInspireSchemaAU();
+        if ( appSchema == null ) {
+            return;
+        }
+
+        ConnectionManager.addConnection( new URL( "file:/home/schneider/.deegree/inspire-test/jdbc/testconn.xml" ),
+                                         "testconn" );
+        PostGISFeatureStoreProvider provider = new PostGISFeatureStoreProvider();
+        FeatureStore fs = provider.getFeatureStore( new URL(
+                                                             "file:/home/schneider/.deegree/inspire-test/datasources/feature/inspire-au.xml" ) );
+        QName countryName = QName.valueOf( "{urn:x-inspire:specification:gmlas:AdministrativeUnits:3.0}AdministrativeUnit" );
+        Envelope env = fs.getEnvelope( countryName );
+        System.out.println( env );
     }
 
     @Test

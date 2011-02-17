@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.feature.persistence.postgis;
+package org.deegree.feature.persistence.postgis.config;
 
 import static javax.xml.XMLConstants.DEFAULT_NS_PREFIX;
 import static javax.xml.XMLConstants.NULL_NS_URI;
@@ -75,6 +75,9 @@ import org.apache.xerces.xs.XSWildcard;
 import org.deegree.commons.tom.primitive.XMLValueMangler;
 import org.deegree.commons.xml.CommonNamespaces;
 import org.deegree.commons.xml.stax.IndentingXMLStreamWriter;
+import org.deegree.feature.persistence.postgis.PostGISFeatureStoreProvider;
+import org.deegree.feature.persistence.sql.mapper.MappingContext;
+import org.deegree.feature.persistence.sql.mapper.MappingContextManager;
 import org.deegree.feature.types.ApplicationSchema;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.feature.types.property.CodePropertyType;

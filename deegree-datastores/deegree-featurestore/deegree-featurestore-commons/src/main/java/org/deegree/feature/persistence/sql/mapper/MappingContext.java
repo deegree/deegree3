@@ -1,7 +1,7 @@
 //$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
- Copyright (C) 2001-2009 by:
+ Copyright (C) 2001-2010 by:
  - Department of Geography, University of Bonn -
  and
  - lat/lon GmbH -
@@ -33,52 +33,39 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.feature.persistence.sql;
+package org.deegree.feature.persistence.sql.mapper;
 
 import org.deegree.feature.types.FeatureType;
 
 /**
- * The <code></code> class TODO add class documentation here.
+ * Represents a specific position during the mapping of a {@link FeatureType} to a relational model (tables, columns).
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
  */
-public class IdAnalysis {
+public class MappingContext {
 
-    private final FeatureType ft;
+    private final String table;
 
-    private final boolean isFid;
+    private final String column;
 
-    private String idKernel;
-
-    IdAnalysis( FeatureType ft, String idKernel, boolean isFid ) {
-        this.ft = ft;
-        this.idKernel = idKernel;
-        this.isFid = isFid;
+    MappingContext( String table ) {
+        this.table = table;
+        this.column = "";
     }
 
-    /**
-     * @return
-     */
-    public FeatureType getFeatureType() {
-        return ft;
+    MappingContext( String table, String column ) {
+        this.table = table;
+        this.column = column;
     }
 
-    public String getIdKernel() {
-        return idKernel;
+    public String getTable() {
+        return table;
     }
 
-    /**
-     * @return
-     */
-    public boolean isFid() {
-        return isFid;
-    }
-
-    @Override
-    public String toString() {
-        return "ft=" + ft.getName() + ",idKernel=" + idKernel;
+    public String getColumn() {
+        return column;
     }
 }

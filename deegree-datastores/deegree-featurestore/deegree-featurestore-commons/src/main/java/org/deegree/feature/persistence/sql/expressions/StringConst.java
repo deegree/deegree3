@@ -1,7 +1,7 @@
-//$HeadURL: svn+ssh://mschneider@svn.wald.intevation.org/deegree/deegree3/trunk/deegree-core/src/main/java/org/deegree/feature/persistence/postgis/PostGISFeatureStoreConfigHelper.java $
+//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
- Copyright (C) 2001-2010 by:
+ Copyright (C) 2001-2009 by:
  - Department of Geography, University of Bonn -
  and
  - lat/lon GmbH -
@@ -33,39 +33,29 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.feature.persistence.postgis;
+package org.deegree.feature.persistence.sql.expressions;
 
-import org.deegree.feature.types.FeatureType;
+import org.deegree.filter.sql.MappingExpression;
+
 
 /**
- * Represents a specific position during the mapping of a {@link FeatureType} to a relational model (tables, columns).
+ * The <code></code> class TODO add class documentation here.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author: markus $
+ * @author last edited by: $Author$
  * 
- * @version $Revision: $, $Date: $
+ * @version $Revision$, $Date$
  */
-public class MappingContext {
+public class StringConst implements MappingExpression {
 
-    private final String table;
+    private String s;
 
-    private final String column;
-
-    MappingContext( String table ) {
-        this.table = table;
-        this.column = "";
+    public StringConst( String s ) {
+        this.s = s;
     }
 
-    MappingContext( String table, String column ) {
-        this.table = table;
-        this.column = column;
-    }
-
-    public String getTable() {
-        return table;
-    }
-
-    public String getColumn() {
-        return column;
+    @Override
+    public String toString() {
+        return "'" + s + "'";
     }
 }

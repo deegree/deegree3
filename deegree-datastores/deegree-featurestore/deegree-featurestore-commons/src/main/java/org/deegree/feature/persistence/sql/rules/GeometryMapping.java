@@ -36,7 +36,7 @@
 package org.deegree.feature.persistence.sql.rules;
 
 import org.deegree.cs.coordinatesystems.ICRS;
-import org.deegree.feature.persistence.sql.JoinChain;
+import org.deegree.feature.persistence.sql.expressions.JoinChain;
 import org.deegree.feature.types.property.GeometryPropertyType.CoordinateDimension;
 import org.deegree.feature.types.property.GeometryPropertyType.GeometryType;
 import org.deegree.filter.expression.PropertyName;

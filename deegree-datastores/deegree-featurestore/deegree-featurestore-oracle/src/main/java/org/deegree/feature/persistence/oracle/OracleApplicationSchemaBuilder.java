@@ -63,9 +63,9 @@ import org.deegree.feature.persistence.oracle.jaxb.AbstractPropertyDecl;
 import org.deegree.feature.persistence.oracle.jaxb.FeatureTypeDecl;
 import org.deegree.feature.persistence.oracle.jaxb.GeometryPropertyDecl;
 import org.deegree.feature.persistence.oracle.jaxb.SimplePropertyDecl;
-import org.deegree.feature.persistence.sql.BlobMapping;
 import org.deegree.feature.persistence.sql.FeatureTypeMapping;
 import org.deegree.feature.persistence.sql.MappedApplicationSchema;
+import org.deegree.feature.persistence.sql.blob.BlobMapping;
 import org.deegree.feature.types.ApplicationSchema;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.feature.types.GenericFeatureType;
@@ -105,8 +105,8 @@ class OracleApplicationSchemaBuilder {
         FeatureType[] fts = builder.ftNameToFt.values().toArray( new FeatureType[builder.ftNameToFt.size()] );
         FeatureTypeMapping[] ftMappings = builder.ftNameToMapping.values().toArray( new FeatureTypeMapping[builder.ftNameToMapping.size()] );
         BlobMapping blobMapping = null;
-        return new MappedApplicationSchema( fts, null, null, appSchema.getXSModel(), ftMappings, null, storageSRS,
-                                            null, blobMapping );
+        return new MappedApplicationSchema( fts, null, null, appSchema.getXSModel(), ftMappings, null, null,
+                                            blobMapping );
     }
 
     private OracleApplicationSchemaBuilder( List<FeatureTypeDecl> ftDecls, String connId, String dbSchema,

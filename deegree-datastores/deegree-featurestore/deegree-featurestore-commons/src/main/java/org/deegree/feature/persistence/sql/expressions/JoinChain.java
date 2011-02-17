@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.feature.persistence.sql;
+package org.deegree.feature.persistence.sql.expressions;
 
 import java.util.ArrayList;
 import java.util.List;

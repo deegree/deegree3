@@ -33,12 +33,9 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.feature.persistence.sql;
+package org.deegree.feature.persistence.sql.id;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.deegree.filter.sql.MappingExpression;
+import org.deegree.feature.types.FeatureType;
 
 /**
  * The <code></code> class TODO add class documentation here.
@@ -48,34 +45,40 @@ import org.deegree.filter.sql.MappingExpression;
  * 
  * @version $Revision$, $Date$
  */
-public class Function implements MappingExpression {
+public class IdAnalysis {
 
-    private String functionName;
+    private final FeatureType ft;
 
-    private List<MappingExpression> args = new ArrayList<MappingExpression>();
+    private final boolean isFid;
 
-    public Function( String functionName ) {
-        this.functionName = functionName;
+    private String idKernel;
+
+    IdAnalysis( FeatureType ft, String idKernel, boolean isFid ) {
+        this.ft = ft;
+        this.idKernel = idKernel;
+        this.isFid = isFid;
     }
 
-    public void addArg( MappingExpression arg ) {
-        args.add( arg );
+    /**
+     * @return
+     */
+    public FeatureType getFeatureType() {
+        return ft;
     }
 
-    public List<MappingExpression> getArgs() {
-        return args;
+    public String getIdKernel() {
+        return idKernel;
+    }
+
+    /**
+     * @return
+     */
+    public boolean isFid() {
+        return isFid;
     }
 
     @Override
     public String toString() {
-        String s = functionName + "(";
-        for ( int i = 0; i < args.size(); i++ ) {
-            s += args.get( i );
-            if ( i != args.size() -1 ) {
-                s += ',';
-            }
-        }
-        s += ")";
-        return s;
+        return "ft=" + ft.getName() + ",idKernel=" + idKernel;
     }
 }

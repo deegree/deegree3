@@ -38,7 +38,8 @@ package org.deegree.feature.persistence.sql;
 import org.deegree.feature.persistence.FeatureStore;
 
 /**
- * {@link FeatureStore} that is backed by an SQL database and provides a methods for setting up the required tables.
+ * {@link FeatureStore} that is backed by a spatial SQL database and provides methods for setting up the required
+ * tables.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
@@ -53,7 +54,7 @@ public interface SQLFeatureStore extends FeatureStore {
      * @return the JDBC connection id, never <code>null</code>
      */
     public String getConnId();
-    
+
     /**
      * Returns the SQL statements for creating the database tables.
      * 

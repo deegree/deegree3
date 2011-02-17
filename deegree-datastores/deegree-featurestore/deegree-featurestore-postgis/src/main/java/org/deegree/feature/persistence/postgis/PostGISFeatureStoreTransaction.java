@@ -71,15 +71,15 @@ import org.deegree.feature.persistence.FeatureStoreTransaction;
 import org.deegree.feature.persistence.lock.Lock;
 import org.deegree.feature.persistence.query.FeatureResultSet;
 import org.deegree.feature.persistence.query.Query;
-import org.deegree.feature.persistence.sql.BlobMapping;
 import org.deegree.feature.persistence.sql.FeatureTypeMapping;
-import org.deegree.feature.persistence.sql.IdAnalysis;
-import org.deegree.feature.persistence.sql.JoinChain;
 import org.deegree.feature.persistence.sql.MappedApplicationSchema;
 import org.deegree.feature.persistence.sql.blob.BlobCodec;
+import org.deegree.feature.persistence.sql.blob.BlobMapping;
+import org.deegree.feature.persistence.sql.expressions.JoinChain;
 import org.deegree.feature.persistence.sql.id.AutoIDGenerator;
 import org.deegree.feature.persistence.sql.id.FIDMapping;
 import org.deegree.feature.persistence.sql.id.IDGenerator;
+import org.deegree.feature.persistence.sql.id.IdAnalysis;
 import org.deegree.feature.persistence.sql.id.UUIDGenerator;
 import org.deegree.feature.persistence.sql.rules.CodeMapping;
 import org.deegree.feature.persistence.sql.rules.CompoundMapping;
@@ -157,7 +157,7 @@ public class PostGISFeatureStoreTransaction implements FeatureStoreTransaction {
         LOG.debug( "Committing transaction." );
         try {
             conn.commit();
-            fs.ftToBBox.clear();
+            fs.clearEnvelopeCache();
         } catch ( SQLException e ) {
             LOG.debug( e.getMessage(), e );
             LOG.debug( e.getMessage(), e.getNextException() );

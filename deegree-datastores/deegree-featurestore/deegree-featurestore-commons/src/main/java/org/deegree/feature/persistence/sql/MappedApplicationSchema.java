@@ -43,6 +43,9 @@ import java.util.TreeMap;
 import javax.xml.namespace.QName;
 
 import org.deegree.cs.coordinatesystems.ICRS;
+import org.deegree.feature.persistence.sql.blob.BlobMapping;
+import org.deegree.feature.persistence.sql.id.IdAnalysis;
+import org.deegree.feature.persistence.sql.id.IdAnalyzer;
 import org.deegree.feature.types.ApplicationSchema;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.gml.schema.GMLSchemaInfoSet;
@@ -98,8 +101,6 @@ public class MappedApplicationSchema extends ApplicationSchema {
      *            mappings)
      * @param dtMappings
      *            relational mapping information for the non-feature data types, can be <code>null</code>
-     * @param storageSRS
-     *            CRS used for storing geometries (BLOB mode), must not be <code>null</code>
      * @param bboxMapping
      *            BBOX mapping parameters, may be <code>null</code> (for relational-only mappings)
      * @param blobMapping
@@ -109,7 +110,7 @@ public class MappedApplicationSchema extends ApplicationSchema {
      */
     public MappedApplicationSchema( FeatureType[] fts, Map<FeatureType, FeatureType> ftToSuperFt,
                                     Map<String, String> prefixToNs, GMLSchemaInfoSet xsModel,
-                                    FeatureTypeMapping[] ftMappings, DataTypeMapping[] dtMappings, ICRS storageSRS,
+                                    FeatureTypeMapping[] ftMappings, DataTypeMapping[] dtMappings,
                                     BBoxTableMapping bboxMapping, BlobMapping blobMapping ) {
 
         super( fts, ftToSuperFt, prefixToNs, xsModel );
@@ -123,7 +124,7 @@ public class MappedApplicationSchema extends ApplicationSchema {
                 dtNameToDtMapping.put( dtMapping.getElementName(), dtMapping );
             }
         }
-        this.storageCRS = storageSRS;
+        this.storageCRS = blobMapping == null ? null : blobMapping.getCRS();
         this.idAnalyzer = new IdAnalyzer( this );
 
         // sort by QName first

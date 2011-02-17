@@ -38,7 +38,7 @@ package org.deegree.feature.persistence.sql.rules;
 import java.util.List;
 
 import org.deegree.commons.tom.genericxml.GenericXMLElementContent;
-import org.deegree.feature.persistence.sql.JoinChain;
+import org.deegree.feature.persistence.sql.expressions.JoinChain;
 import org.deegree.filter.expression.PropertyName;
 
 /**

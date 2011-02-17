@@ -46,7 +46,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -60,6 +59,7 @@ import org.deegree.commons.jdbc.ConnectionManager;
 import org.deegree.commons.jdbc.ResultSetIterator;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.commons.tom.primitive.SQLValueMangler;
+import org.deegree.commons.utils.JDBCUtils;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.feature.Feature;
 import org.deegree.feature.Features;
@@ -67,24 +67,23 @@ import org.deegree.feature.persistence.FeatureStore;
 import org.deegree.feature.persistence.FeatureStoreException;
 import org.deegree.feature.persistence.FeatureStoreGMLIdResolver;
 import org.deegree.feature.persistence.FeatureStoreTransaction;
-import org.deegree.feature.persistence.cache.FeatureStoreCache;
-import org.deegree.feature.persistence.cache.SimpleFeatureStoreCache;
-import org.deegree.feature.persistence.lock.LockManager;
+import org.deegree.feature.persistence.postgis.config.PostGISDDLCreator;
 import org.deegree.feature.persistence.query.CombinedResultSet;
 import org.deegree.feature.persistence.query.FeatureResultSet;
 import org.deegree.feature.persistence.query.FilteredFeatureResultSet;
 import org.deegree.feature.persistence.query.IteratorResultSet;
 import org.deegree.feature.persistence.query.MemoryFeatureResultSet;
 import org.deegree.feature.persistence.query.Query;
+import org.deegree.feature.persistence.sql.AbstractSQLFeatureStore;
 import org.deegree.feature.persistence.sql.BBoxTableMapping;
-import org.deegree.feature.persistence.sql.BlobMapping;
+import org.deegree.feature.persistence.sql.FeatureBuilder;
 import org.deegree.feature.persistence.sql.FeatureTypeMapping;
-import org.deegree.feature.persistence.sql.IdAnalysis;
-import org.deegree.feature.persistence.sql.JoinChain;
 import org.deegree.feature.persistence.sql.MappedApplicationSchema;
-import org.deegree.feature.persistence.sql.SQLFeatureStore;
 import org.deegree.feature.persistence.sql.blob.BlobCodec;
+import org.deegree.feature.persistence.sql.blob.BlobMapping;
+import org.deegree.feature.persistence.sql.expressions.JoinChain;
 import org.deegree.feature.persistence.sql.id.FIDMapping;
+import org.deegree.feature.persistence.sql.id.IdAnalysis;
 import org.deegree.feature.persistence.sql.rules.GeometryMapping;
 import org.deegree.feature.persistence.sql.rules.Mapping;
 import org.deegree.feature.persistence.sql.rules.Mappings;
@@ -111,7 +110,6 @@ import org.deegree.geometry.GeometryTransformer;
 import org.deegree.geometry.standard.DefaultEnvelope;
 import org.deegree.geometry.standard.primitive.DefaultPoint;
 import org.deegree.gml.GMLObject;
-import org.deegree.gml.GMLReferenceResolver;
 import org.postgis.LineString;
 import org.postgis.LinearRing;
 import org.postgis.PGboxbase;
@@ -133,31 +131,16 @@ import org.slf4j.LoggerFactory;
  * 
  * @version $Revision$, $Date$
  */
-public class PostGISFeatureStore implements SQLFeatureStore {
+public class PostGISFeatureStore extends AbstractSQLFeatureStore {
 
     static final Logger LOG = LoggerFactory.getLogger( PostGISFeatureStore.class );
 
-    private final MappedApplicationSchema schema;
-
-    private final BlobMapping blobMapping;
-
-    private final LockManager lockManager;
-
     private final TransactionManager taManager;
 
-    private final FeatureStoreGMLIdResolver resolver = new FeatureStoreGMLIdResolver( this );
-
-    private final String jdbcConnId;
-
-    // TODO make this configurable
-    private FeatureStoreCache cache = new SimpleFeatureStoreCache( 10000 );
-
-    // if true, use old-style for spatial predicates (intersects instead of ST_Intersecs)
+    // if true, use old-style for spatial predicates (e.g "intersects" instead of "ST_Intersects")
     private boolean useLegacyPredicates;
 
     private Map<String, String> nsContext;
-
-    final Map<FeatureType, Envelope> ftToBBox = Collections.synchronizedMap( new HashMap<FeatureType, Envelope>() );
 
     /**
      * Creates a new {@link PostGISFeatureStore} for the given {@link ApplicationSchema}.
@@ -168,27 +151,8 @@ public class PostGISFeatureStore implements SQLFeatureStore {
      *            id of the deegree DB connection pool, must not be <code>null</code>
      */
     PostGISFeatureStore( MappedApplicationSchema schema, String jdbcConnId ) {
-        this.schema = schema;
-        this.blobMapping = schema.getBlobMapping();
-        this.jdbcConnId = jdbcConnId;
-        lockManager = null;
+        super( schema, jdbcConnId );
         taManager = new TransactionManager( this, jdbcConnId );
-    }
-
-    @Override
-    public String getConnId() {
-        return jdbcConnId;
-    }
-
-    /**
-     * Returns the relational mapping for the given feature type name.
-     * 
-     * @param ftName
-     *            name of the feature type
-     * @return relational mapping for the feature type, may be <code>null</code> (no relational mapping)
-     */
-    FeatureTypeMapping getMapping( QName ftName ) {
-        return schema.getFtMapping( ftName );
     }
 
     @Override
@@ -197,39 +161,13 @@ public class PostGISFeatureStore implements SQLFeatureStore {
         return taManager.acquireTransaction();
     }
 
-    @Override
-    public void destroy() {
-        LOG.debug( "destroy" );
-    }
-
-    @Override
-    public Envelope getEnvelope( QName ftName )
-                            throws FeatureStoreException {
-        Envelope env = null;
-        FeatureType ft = schema.getFeatureType( ftName );
-        if ( ft != null ) {
-            if ( !ftToBBox.containsKey( ft ) ) {
-                BlobMapping blobMapping = schema.getBlobMapping();
-                if ( blobMapping != null ) {
-                    env = getEnvelope( ft.getName(), blobMapping );
-                } else {
-                    env = getEnvelope( schema.getFtMapping( ft.getName() ) );
-                }
-                ftToBBox.put( ft, env );
-            } else {
-                env = ftToBBox.get( ft );
-            }
-        }
-        return env;
-    }
-
-    private Envelope getEnvelope( FeatureTypeMapping ftMapping )
+    protected Envelope getEnvelope( FeatureTypeMapping ftMapping )
                             throws FeatureStoreException {
 
         LOG.trace( "Determining BBOX for feature type '{}' (relational mode)", ftMapping.getFeatureType() );
 
         String column = null;
-        FeatureType ft = schema.getFeatureType( ftMapping.getFeatureType() );
+        FeatureType ft = getSchema().getFeatureType( ftMapping.getFeatureType() );
         GeometryPropertyType pt = ft.getDefaultGeometryPropertyDeclaration();
         if ( pt == null ) {
             return null;
@@ -259,15 +197,15 @@ public class PostGISFeatureStore implements SQLFeatureStore {
         Statement stmt = null;
         ResultSet rs = null;
         try {
-            conn = ConnectionManager.getConnection( jdbcConnId );
+            conn = ConnectionManager.getConnection( getConnId() );
             stmt = conn.createStatement();
             rs = stmt.executeQuery( sql.toString() );
             rs.next();
             PGboxbase pgBox = (PGboxbase) rs.getObject( 1 );
             if ( pgBox != null ) {
                 ICRS crs = propMapping.getCRS();
-                org.deegree.geometry.primitive.Point min = getPoint( pgBox.getLLB(), crs );
-                org.deegree.geometry.primitive.Point max = getPoint( pgBox.getURT(), crs );
+                org.deegree.geometry.primitive.Point min = buildPoint( pgBox.getLLB(), crs );
+                org.deegree.geometry.primitive.Point max = buildPoint( pgBox.getURT(), crs );
                 env = new DefaultEnvelope( null, crs, null, min, max );
             }
         } catch ( SQLException e ) {
@@ -289,7 +227,7 @@ public class PostGISFeatureStore implements SQLFeatureStore {
         Statement stmt = null;
         ResultSet rs = null;
         try {
-            conn = ConnectionManager.getConnection( jdbcConnId );
+            conn = ConnectionManager.getConnection( getConnId() );
             stmt = conn.createStatement();
             StringBuilder sql = new StringBuilder( "SELECT Box2D(" );
             sql.append( bboxMapping.getBBoxColumn() );
@@ -305,8 +243,8 @@ public class PostGISFeatureStore implements SQLFeatureStore {
                 PGboxbase pgBox = (PGboxbase) rs.getObject( 1 );
                 if ( pgBox != null ) {
                     ICRS crs = bboxMapping.getCRS();
-                    org.deegree.geometry.primitive.Point min = getPoint( pgBox.getLLB(), crs );
-                    org.deegree.geometry.primitive.Point max = getPoint( pgBox.getURT(), crs );
+                    org.deegree.geometry.primitive.Point min = buildPoint( pgBox.getLLB(), crs );
+                    org.deegree.geometry.primitive.Point max = buildPoint( pgBox.getURT(), crs );
                     env = new DefaultEnvelope( null, bboxMapping.getCRS(), null, min, max );
                 }
             }
@@ -319,7 +257,7 @@ public class PostGISFeatureStore implements SQLFeatureStore {
         return env;
     }
 
-    private Envelope getEnvelope( QName ftName, BlobMapping blobMapping )
+    protected Envelope getEnvelope( QName ftName, BlobMapping blobMapping )
                             throws FeatureStoreException {
 
         LOG.debug( "Determining BBOX for feature type '{}' (BLOB mode)", ftName );
@@ -347,15 +285,15 @@ public class PostGISFeatureStore implements SQLFeatureStore {
         Statement stmt = null;
         ResultSet rs = null;
         try {
-            conn = ConnectionManager.getConnection( jdbcConnId );
+            conn = ConnectionManager.getConnection( getConnId() );
             stmt = conn.createStatement();
             rs = stmt.executeQuery( sql.toString() );
             rs.next();
             PGboxbase pgBox = (PGboxbase) rs.getObject( 1 );
             if ( pgBox != null ) {
                 ICRS crs = blobMapping.getCRS();
-                org.deegree.geometry.primitive.Point min = getPoint( pgBox.getLLB(), crs );
-                org.deegree.geometry.primitive.Point max = getPoint( pgBox.getURT(), crs );
+                org.deegree.geometry.primitive.Point min = buildPoint( pgBox.getLLB(), crs );
+                org.deegree.geometry.primitive.Point max = buildPoint( pgBox.getURT(), crs );
                 env = new DefaultEnvelope( null, blobMapping.getCRS(), null, min, max );
             }
         } catch ( SQLException e ) {
@@ -367,7 +305,7 @@ public class PostGISFeatureStore implements SQLFeatureStore {
         return env;
     }
 
-    private org.deegree.geometry.primitive.Point getPoint( org.postgis.Point p, ICRS crs ) {
+    private org.deegree.geometry.primitive.Point buildPoint( org.postgis.Point p, ICRS crs ) {
         double[] coords = new double[p.getDimension()];
         coords[0] = p.getX();
         coords[1] = p.getY();
@@ -378,40 +316,19 @@ public class PostGISFeatureStore implements SQLFeatureStore {
     }
 
     @Override
-    public LockManager getLockManager()
-                            throws FeatureStoreException {
-        return lockManager;
-    }
-
-    @Override
-    public GMLObject getObjectById( String id )
-                            throws FeatureStoreException {
-
-        GMLObject geomOrFeature = cache.get( id );
-
-        if ( geomOrFeature == null ) {
-            if ( schema.getBlobMapping() != null ) {
-                geomOrFeature = getObjectByIdBlob( id, schema.getBlobMapping() );
-            } else {
-                geomOrFeature = getObjectByIdRelational( id );
-            }
-        }
-        return geomOrFeature;
-    }
-
-    private GMLObject getObjectByIdRelational( String id )
+    protected GMLObject getObjectByIdRelational( String id )
                             throws FeatureStoreException {
 
         GMLObject result = null;
 
-        IdAnalysis idAnalysis = schema.analyzeId( id );
+        IdAnalysis idAnalysis = getSchema().analyzeId( id );
         if ( !idAnalysis.isFid() ) {
             String msg = "Fetching of geometries by id (relational mode) is not implemented yet.";
             throw new UnsupportedOperationException( msg );
         }
 
         FeatureType ft = idAnalysis.getFeatureType();
-        FeatureTypeMapping mapping = schema.getFtMapping( ft.getName() );
+        FeatureTypeMapping mapping = getSchema().getFtMapping( ft.getName() );
 
         Connection conn = null;
         PreparedStatement stmt = null;
@@ -457,7 +374,7 @@ public class PostGISFeatureStore implements SQLFeatureStore {
 
             LOG.debug( "Preparing SELECT: " + sql );
 
-            conn = ConnectionManager.getConnection( jdbcConnId );
+            conn = ConnectionManager.getConnection( getConnId() );
             stmt = conn.prepareStatement( sql.toString() );
 
             // TODO proper SQL type handling
@@ -477,7 +394,8 @@ public class PostGISFeatureStore implements SQLFeatureStore {
         return result;
     }
 
-    private GMLObject getObjectByIdBlob( String id, BlobMapping blobMapping )
+    @Override
+    protected GMLObject getObjectByIdBlob( String id, BlobMapping blobMapping )
                             throws FeatureStoreException {
 
         GMLObject geomOrFeature = null;
@@ -493,16 +411,16 @@ public class PostGISFeatureStore implements SQLFeatureStore {
             sql.append( blobMapping.getGMLIdColumn() );
             sql.append( "=?" );
 
-            conn = ConnectionManager.getConnection( jdbcConnId );
+            conn = ConnectionManager.getConnection( getConnId() );
             stmt = conn.prepareStatement( sql.toString() );
             stmt.setString( 1, id );
             rs = stmt.executeQuery();
             if ( rs.next() ) {
                 LOG.debug( "Recreating object '" + id + "' from bytea." );
                 BlobCodec codec = blobMapping.getCodec();
-                geomOrFeature = codec.decode( rs.getBinaryStream( 1 ), getNamespaceContext(), schema,
+                geomOrFeature = codec.decode( rs.getBinaryStream( 1 ), getNamespaceContext(), getSchema(),
                                               blobMapping.getCRS(), new FeatureStoreGMLIdResolver( this ) );
-                cache.add( geomOrFeature );
+                getCache().add( geomOrFeature );
             }
         } catch ( Exception e ) {
             String msg = "Error retrieving object by id (BLOB mode): " + e.getMessage();
@@ -512,11 +430,6 @@ public class PostGISFeatureStore implements SQLFeatureStore {
             close( rs, stmt, conn, LOG );
         }
         return geomOrFeature;
-    }
-
-    @Override
-    public MappedApplicationSchema getSchema() {
-        return schema;
     }
 
     @Override
@@ -530,43 +443,14 @@ public class PostGISFeatureStore implements SQLFeatureStore {
         Statement stmt = null;
         ResultSet rs = null;
         try {
-            conn = ConnectionManager.getConnection( jdbcConnId );
-            String version = determinePostGISVersion( conn );
-            if ( version.startsWith( "0." ) || version.startsWith( "1.0" ) || version.startsWith( "1.1" )
-                 || version.startsWith( "1.2" ) ) {
-                LOG.debug( "PostGIS version is " + version + " -- using legacy (pre-SQL-MM) predicates." );
-                useLegacyPredicates = true;
-            } else {
-                LOG.debug( "PostGIS version is " + version + " -- using modern (SQL-MM) predicates." );
-            }
+            conn = ConnectionManager.getConnection( getConnId() );
+            useLegacyPredicates = JDBCUtils.useLegayPostGISPredicates( conn, LOG );
         } catch ( SQLException e ) {
             LOG.debug( e.getMessage(), e );
             throw new FeatureStoreException( e.getMessage(), e );
         } finally {
             close( rs, stmt, conn, LOG );
         }
-    }
-
-    private String determinePostGISVersion( Connection conn ) {
-        String version = "1.0";
-        Statement stmt = null;
-        ResultSet rs = null;
-        try {
-            stmt = conn.createStatement();
-            rs = stmt.executeQuery( "SELECT postgis_version()" );
-            rs.next();
-            String postGISVersion = rs.getString( 1 );
-            version = postGISVersion.split( " " )[0];
-            LOG.debug( "PostGIS version: {}", version );
-        } catch ( Exception e ) {
-            LOG.warn( "Could not determine PostGIS version: {} -- defaulting to 1.0.0", e.getMessage() );
-        }
-        return version;
-    }
-
-    @Override
-    public boolean isAvailable() {
-        return true;
     }
 
     @Override
@@ -583,7 +467,7 @@ public class PostGISFeatureStore implements SQLFeatureStore {
 
         if ( query.getTypeNames().length == 1 && ( filter == null || filter instanceof OperatorFilter ) ) {
             QName ftName = query.getTypeNames()[0].getFeatureTypeName();
-            FeatureType ft = schema.getFeatureType( ftName );
+            FeatureType ft = getSchema().getFeatureType( ftName );
             if ( ft == null ) {
                 String msg = "Feature type '" + ftName + "' is not served by this feature store.";
                 throw new FeatureStoreException( msg );
@@ -616,7 +500,7 @@ public class PostGISFeatureStore implements SQLFeatureStore {
         Statement stmt = null;
         ResultSet rs = null;
         try {
-            conn = ConnectionManager.getConnection( jdbcConnId );
+            conn = ConnectionManager.getConnection( getConnId() );
 
             // create temp table with ids
             stmt = conn.createStatement();
@@ -669,7 +553,7 @@ public class PostGISFeatureStore implements SQLFeatureStore {
         LinkedHashMap<QName, List<String>> ftNameToIdKernels = new LinkedHashMap<QName, List<String>>();
         try {
             for ( String fid : filter.getMatchingIds() ) {
-                IdAnalysis analysis = schema.analyzeId( fid );
+                IdAnalysis analysis = getSchema().analyzeId( fid );
                 FeatureType ft = analysis.getFeatureType();
                 String idKernel = analysis.getIdKernel();
                 List<String> idKernels = ftNameToIdKernels.get( ft.getName() );
@@ -689,8 +573,8 @@ public class PostGISFeatureStore implements SQLFeatureStore {
         }
 
         QName ftName = ftNameToIdKernels.keySet().iterator().next();
-        FeatureType ft = schema.getFeatureType( ftName );
-        FeatureTypeMapping ftMapping = schema.getFtMapping( ftName );
+        FeatureType ft = getSchema().getFeatureType( ftName );
+        FeatureTypeMapping ftMapping = getSchema().getFtMapping( ftName );
         FIDMapping fidMapping = ftMapping.getFidMapping();
         List<String> idKernels = ftNameToIdKernels.get( ftName );
 
@@ -745,7 +629,7 @@ public class PostGISFeatureStore implements SQLFeatureStore {
         Connection conn = null;
         try {
             long begin = System.currentTimeMillis();
-            conn = ConnectionManager.getConnection( jdbcConnId );
+            conn = ConnectionManager.getConnection( getConnId() );
             stmt = conn.prepareStatement( sql.toString() );
             LOG.debug( "Preparing SELECT took {} [ms] ", System.currentTimeMillis() - begin );
 
@@ -790,19 +674,19 @@ public class PostGISFeatureStore implements SQLFeatureStore {
         ResultSet rs = null;
 
         try {
-            FeatureType ft = schema.getFeatureType( ftName );
+            FeatureType ft = getSchema().getFeatureType( ftName );
             FeatureTypeMapping ftMapping = getMapping( ftName );
 
-            conn = ConnectionManager.getConnection( jdbcConnId );
+            conn = ConnectionManager.getConnection( getConnId() );
             // TODO where to put this?
             conn.setAutoCommit( false );
 
-            PostGISFeatureMapping pgMapping = new PostGISFeatureMapping( schema, ft, ftMapping, this );
+            PostGISFeatureMapping pgMapping = new PostGISFeatureMapping( getSchema(), ft, ftMapping, this );
             wb = new PostGISWhereBuilder( pgMapping, filter, query.getSortProperties(), useLegacyPredicates );
             LOG.debug( "WHERE clause: " + wb.getWhere() );
             LOG.debug( "ORDER BY clause: " + wb.getOrderBy() );
 
-            BlobMapping blobMapping = schema.getBlobMapping();
+            BlobMapping blobMapping = getSchema().getBlobMapping();
             String ftTableAlias = wb.getAliasManager().getRootTableAlias();
             String blobTableAlias = wb.getAliasManager().generateNew();
 
@@ -810,11 +694,11 @@ public class PostGISFeatureStore implements SQLFeatureStore {
             if ( blobMapping != null ) {
                 sql.append( blobTableAlias );
                 sql.append( '.' );
-                sql.append( schema.getBlobMapping().getGMLIdColumn() );
+                sql.append( getSchema().getBlobMapping().getGMLIdColumn() );
                 sql.append( ',' );
                 sql.append( blobTableAlias );
                 sql.append( '.' );
-                sql.append( schema.getBlobMapping().getDataColumn() );
+                sql.append( getSchema().getBlobMapping().getDataColumn() );
             } else {
                 sql.append( ftTableAlias );
                 sql.append( '.' );
@@ -945,7 +829,7 @@ public class PostGISFeatureStore implements SQLFeatureStore {
 
             int i = 1;
             if ( blobMapping != null ) {
-                stmt.setShort( i++, schema.getFtId( ftName ) );
+                stmt.setShort( i++, getSchema().getFtId( ftName ) );
                 if ( query.getPrefilterBBox() != null ) {
                     Envelope env = (Envelope) getCompatibleGeometry( query.getPrefilterBBox(), blobMapping.getCRS() );
                     stmt.setObject( i++, toPGPolygon( env, -1 ) );
@@ -1013,7 +897,7 @@ public class PostGISFeatureStore implements SQLFeatureStore {
         PreparedStatement stmt = null;
         ResultSet rs = null;
         try {
-            conn = ConnectionManager.getConnection( jdbcConnId );
+            conn = ConnectionManager.getConnection( getConnId() );
             StringBuffer sql = new StringBuffer( "SELECT gml_id,binary_object FROM " + blobMapping.getTable()
                                                  + " WHERE " );
             if ( looseBBox != null ) {
@@ -1126,7 +1010,7 @@ public class PostGISFeatureStore implements SQLFeatureStore {
         // check for most common case: multiple featuretypes, same bbox (WMS), no filter
         boolean wmsStyleQuery = false;
         Envelope env = (Envelope) queries[0].getPrefilterBBox();
-        if ( schema.getBlobMapping() != null && queries[0].getFilter() == null
+        if ( getSchema().getBlobMapping() != null && queries[0].getFilter() == null
              && queries[0].getSortProperties().length == 0 ) {
             wmsStyleQuery = true;
             for ( int i = 1; i < queries.length; i++ ) {
@@ -1174,22 +1058,8 @@ public class PostGISFeatureStore implements SQLFeatureStore {
     }
 
     @Override
-    public int queryHits( Query query )
-                            throws FeatureStoreException, FilterEvaluationException {
-        // TODO
-        return query( query ).toCollection().size();
-    }
-
-    @Override
-    public int queryHits( final Query[] queries )
-                            throws FeatureStoreException, FilterEvaluationException {
-        // TODO
-        return query( queries ).toCollection().size();
-    }
-
-    @Override
     public String[] getDDL() {
-        return new PostGISDDLCreator( schema ).getDDL();
+        return new PostGISDDLCreator( getSchema() ).getDDL();
     }
 
     /**
@@ -1221,7 +1091,7 @@ public class PostGISFeatureStore implements SQLFeatureStore {
     }
 
     short getFtId( QName ftName ) {
-        return schema.getFtId( ftName );
+        return getSchema().getFtId( ftName );
     }
 
     PGgeometry toPGPolygon( Envelope envelope, int srid ) {
@@ -1254,14 +1124,6 @@ public class PostGISFeatureStore implements SQLFeatureStore {
         return pgGeometry;
     }
 
-    FeatureStoreCache getCache() {
-        return cache;
-    }
-
-    GMLReferenceResolver getResolver() {
-        return resolver;
-    }
-
     String getWKBParamTemplate( String srid ) {
         StringBuilder sb = new StringBuilder();
         if ( useLegacyPredicates ) {
@@ -1276,7 +1138,7 @@ public class PostGISFeatureStore implements SQLFeatureStore {
 
     Map<String, String> getNamespaceContext() {
         if ( nsContext == null ) {
-            nsContext = new HashMap<String, String>( schema.getNamespaceBindings() );
+            nsContext = new HashMap<String, String>( getSchema().getNamespaceBindings() );
             nsContext.put( "xlink", XLNNS );
             nsContext.put( "xsi", XSINS );
             nsContext.put( "ogc", OGCNS );

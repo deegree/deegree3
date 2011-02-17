@@ -38,7 +38,7 @@ package org.deegree.feature.persistence.sql.rules;
 import javax.xml.namespace.QName;
 
 import org.deegree.feature.Feature;
-import org.deegree.feature.persistence.sql.JoinChain;
+import org.deegree.feature.persistence.sql.expressions.JoinChain;
 import org.deegree.filter.expression.PropertyName;
 import org.deegree.filter.sql.MappingExpression;
 

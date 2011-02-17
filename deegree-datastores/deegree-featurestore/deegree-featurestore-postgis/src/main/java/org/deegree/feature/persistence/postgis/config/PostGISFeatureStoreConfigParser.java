@@ -33,12 +33,13 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.feature.persistence.postgis;
+package org.deegree.feature.persistence.postgis.config;
 
 import static javax.xml.XMLConstants.DEFAULT_NS_PREFIX;
 import static javax.xml.XMLConstants.NULL_NS_URI;
 import static org.deegree.commons.tom.primitive.PrimitiveType.STRING;
 import static org.deegree.commons.tom.primitive.PrimitiveType.determinePrimitiveType;
+import static org.deegree.feature.persistence.sql.blob.BlobCodec.Compression.NONE;
 import static org.deegree.feature.types.property.GeometryPropertyType.CoordinateDimension.DIM_2;
 import static org.deegree.feature.types.property.GeometryPropertyType.CoordinateDimension.DIM_3;
 import static org.deegree.feature.types.property.GeometryPropertyType.GeometryType.GEOMETRY;
@@ -50,6 +51,7 @@ import static org.deegree.feature.types.property.GeometryPropertyType.GeometryTy
 import static org.deegree.feature.types.property.GeometryPropertyType.GeometryType.POINT;
 import static org.deegree.feature.types.property.GeometryPropertyType.GeometryType.POLYGON;
 import static org.deegree.feature.types.property.ValueRepresentation.INLINE;
+import static org.deegree.gml.GMLVersion.GML_32;
 
 import java.io.File;
 import java.io.UnsupportedEncodingException;
@@ -96,10 +98,16 @@ import org.deegree.feature.persistence.postgis.jaxb.GMLVersionType;
 import org.deegree.feature.persistence.postgis.jaxb.GeometryPropertyDecl;
 import org.deegree.feature.persistence.postgis.jaxb.JoinedTable;
 import org.deegree.feature.persistence.postgis.jaxb.PostGISFeatureStoreConfig;
+import org.deegree.feature.persistence.postgis.jaxb.PostGISFeatureStoreConfig.BLOBMapping;
+import org.deegree.feature.persistence.postgis.jaxb.PostGISFeatureStoreConfig.BLOBMapping.GMLSchema;
+import org.deegree.feature.persistence.postgis.jaxb.PostGISFeatureStoreConfig.BLOBMapping.NamespaceHint;
 import org.deegree.feature.persistence.postgis.jaxb.SimplePropertyDecl;
+import org.deegree.feature.persistence.sql.BBoxTableMapping;
 import org.deegree.feature.persistence.sql.FeatureTypeMapping;
-import org.deegree.feature.persistence.sql.JoinChain;
 import org.deegree.feature.persistence.sql.MappedApplicationSchema;
+import org.deegree.feature.persistence.sql.blob.BlobCodec;
+import org.deegree.feature.persistence.sql.blob.BlobMapping;
+import org.deegree.feature.persistence.sql.expressions.JoinChain;
 import org.deegree.feature.persistence.sql.id.AutoIDGenerator;
 import org.deegree.feature.persistence.sql.id.FIDMapping;
 import org.deegree.feature.persistence.sql.id.IDGenerator;
@@ -129,20 +137,24 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Creates {@link MappedApplicationSchema} instances from feature type declarations / relational mapping information.
+ * Creates {@link MappedApplicationSchema} instances from {@link PostGISFeatureStoreConfig} instances.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
  */
-class SchemaBuilderRelational {
+public class PostGISFeatureStoreConfigParser {
 
-    private static final Logger LOG = LoggerFactory.getLogger( SchemaBuilderRelational.class );
+    private static final Logger LOG = LoggerFactory.getLogger( PostGISFeatureStoreConfigParser.class );
 
     private final ApplicationSchema gmlSchema;
 
     private final String connId;
+
+    private BBoxTableMapping bboxMapping;
+
+    private BlobMapping blobMapping;
 
     private Map<QName, FeatureType> ftNameToFt = new HashMap<QName, FeatureType>();
 
@@ -158,7 +170,7 @@ class SchemaBuilderRelational {
     private Map<String, LinkedHashMap<String, ColumnMetadata>> tableNameToColumns = new HashMap<String, LinkedHashMap<String, ColumnMetadata>>();
 
     /**
-     * Creates a new {@link SchemaBuilderRelational} instance.
+     * Creates a new {@link PostGISFeatureStoreConfigParser} instance.
      * 
      * @param jdbcConnId
      *            identifier of JDBC connection, must not be <code>null</code>
@@ -174,13 +186,26 @@ class SchemaBuilderRelational {
      * @throws UnsupportedEncodingException
      * @throws ClassCastException
      */
-    SchemaBuilderRelational( PostGISFeatureStoreConfig config, String configURL ) throws SQLException,
+    public PostGISFeatureStoreConfigParser( PostGISFeatureStoreConfig config, String configURL ) throws SQLException,
                             FeatureStoreException, MalformedURLException, URISyntaxException, ClassCastException,
                             UnsupportedEncodingException, ClassNotFoundException, InstantiationException,
                             IllegalAccessException {
 
         connId = config.getJDBCConnId();
-        gmlSchema = buildGMLSchema( config, configURL );
+
+        BLOBMapping blobMappingConf = config.getBLOBMapping();
+        if ( blobMappingConf != null ) {
+            ICRS storageCRS = CRSManager.getCRSRef( blobMappingConf.getStorageCRS(), true );
+            String ftTable = blobMappingConf.getFeatureTypeTable() == null ? "feature_types"
+                                                                          : blobMappingConf.getFeatureTypeTable();
+            bboxMapping = new BBoxTableMapping( ftTable, storageCRS );
+            String blobTable = blobMappingConf.getBlobTable() == null ? "gml_objects" : blobMappingConf.getBlobTable();
+            blobMapping = new BlobMapping( blobTable, storageCRS, new BlobCodec( GML_32, NONE ) );
+            gmlSchema = buildGMLSchema( blobMappingConf, configURL );
+        } else {
+            gmlSchema = buildGMLSchema( config, configURL );
+        }
+
         nsContext = new NamespaceBindings();
         if ( gmlSchema != null ) {
             Map<String, String> prefixToNs = gmlSchema.getNamespaceBindings();
@@ -230,12 +255,43 @@ class SchemaBuilderRelational {
         return decoder.extractFeatureTypeSchema();
     }
 
+    private ApplicationSchema buildGMLSchema( BLOBMapping config, String configURL )
+                            throws MalformedURLException, ClassCastException, UnsupportedEncodingException,
+                            ClassNotFoundException, InstantiationException, IllegalAccessException, URISyntaxException {
+
+        XMLAdapter resolver = new XMLAdapter();
+        resolver.setSystemId( configURL );
+        String[] schemaURLs = new String[config.getGMLSchema().size()];
+
+        GMLVersionType gmlVersionType = null;
+        int i = 0;
+        for ( GMLSchema jaxbSchemaURL : config.getGMLSchema() ) {
+            schemaURLs[i++] = resolver.resolve( jaxbSchemaURL.getValue().trim() ).toString();
+            // TODO what about different versions at the same time?
+            gmlVersionType = jaxbSchemaURL.getVersion();
+        }
+
+        ApplicationSchemaXSDDecoder decoder = null;
+        if ( schemaURLs.length == 1 && schemaURLs[0].startsWith( "file:" ) ) {
+            File file = new File( new URL( schemaURLs[0] ).toURI() );
+            decoder = new ApplicationSchemaXSDDecoder( GMLVersion.valueOf( gmlVersionType.name() ),
+                                                       getHintMap( config.getNamespaceHint() ), file );
+        } else {
+            decoder = new ApplicationSchemaXSDDecoder( GMLVersion.valueOf( gmlVersionType.name() ),
+                                                       getHintMap( config.getNamespaceHint() ), schemaURLs );
+        }
+
+        ICRS storageCRS = CRSManager.getCRSRef( config.getStorageCRS(), true );
+        ApplicationSchema appSchema = decoder.extractFeatureTypeSchema();
+        return decoder.extractFeatureTypeSchema();
+    }
+
     /**
      * Returns the {@link MappedApplicationSchema} derived from configuration / tables.
      * 
      * @return mapped application schema, never <code>null</code>
      */
-    MappedApplicationSchema getMappedSchema() {
+    public MappedApplicationSchema getMappedSchema() {
         FeatureType[] fts = ftNameToFt.values().toArray( new FeatureType[ftNameToFt.size()] );
         FeatureTypeMapping[] ftMappings = ftNameToMapping.values().toArray( new FeatureTypeMapping[ftNameToMapping.size()] );
         Map<FeatureType, FeatureType> ftToSuperFt = null;
@@ -245,7 +301,7 @@ class SchemaBuilderRelational {
             ftToSuperFt = gmlSchema.getFtToSuperFt();
             xsModel = gmlSchema.getXSModel();
         }
-        return new MappedApplicationSchema( fts, ftToSuperFt, null, xsModel, ftMappings, null, null, null, null );
+        return new MappedApplicationSchema( fts, ftToSuperFt, null, xsModel, ftMappings, null, bboxMapping, blobMapping );
     }
 
     private void process( FeatureTypeDecl ftDecl )
@@ -808,6 +864,14 @@ class SchemaBuilderRelational {
             }
         }
         return columnNameToMD;
+    }
+
+    private Map<String, String> getHintMap( List<NamespaceHint> hints ) {
+        Map<String, String> prefixToNs = new HashMap<String, String>();
+        for ( NamespaceHint namespaceHint : hints ) {
+            prefixToNs.put( namespaceHint.getPrefix(), namespaceHint.getNamespaceURI() );
+        }
+        return prefixToNs;
     }
 }
 
