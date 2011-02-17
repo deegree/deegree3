@@ -38,6 +38,7 @@ package org.deegree.services.config.servlet;
 import static org.deegree.services.config.actions.Delete.delete;
 import static org.deegree.services.config.actions.Download.download;
 import static org.deegree.services.config.actions.List.list;
+import static org.deegree.services.config.actions.ListWorkspaces.listWorkspaces;
 import static org.deegree.services.config.actions.Restart.restart;
 import static org.deegree.services.config.actions.Upload.upload;
 import static org.slf4j.LoggerFactory.getLogger;
@@ -81,6 +82,7 @@ public class ConfigServlet extends HttpServlet {
             data.append( "GET /config/download/wsname[/path]    - download workspace with name <wsname> or file in workspace\n" );
             data.append( "GET /config/restart                   - restart currently running workspace\n" );
             data.append( "GET /config/restart/wsname            - restart with workspace <wsname>\n" );
+            data.append( "GET /config/listworkspaces            - list available workspace names\n" );
             data.append( "GET /config/list[/path]               - list currently running workspace or directory in workspace\n" );
             data.append( "GET /config/list/wsname[/path]        - list workspace with name <wsname> or directory in workspace\n" );
             data.append( "PUT /config/upload/wsname.zip         - upload workspace <wsname>\n" );
@@ -101,7 +103,9 @@ public class ConfigServlet extends HttpServlet {
                 restart( path.substring( 8 ), resp );
             }
 
-            if ( path.toLowerCase().startsWith( "/list" ) ) {
+            if ( path.toLowerCase().startsWith( "/listworkspaces" ) ) {
+                listWorkspaces( resp );
+            } else if ( path.toLowerCase().startsWith( "/list" ) ) {
                 list( path.substring( 5 ), resp );
             }
 
