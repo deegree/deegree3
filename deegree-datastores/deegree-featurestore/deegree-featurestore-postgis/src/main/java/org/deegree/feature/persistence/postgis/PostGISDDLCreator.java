@@ -43,16 +43,16 @@ import javax.xml.namespace.QName;
 import org.deegree.commons.jdbc.QTableName;
 import org.deegree.commons.tom.primitive.PrimitiveType;
 import org.deegree.commons.utils.StringUtils;
-import org.deegree.feature.persistence.mapping.FeatureTypeMapping;
-import org.deegree.feature.persistence.mapping.JoinChain;
-import org.deegree.feature.persistence.mapping.MappedApplicationSchema;
-import org.deegree.feature.persistence.mapping.id.FIDMapping;
-import org.deegree.feature.persistence.mapping.property.CodeMapping;
-import org.deegree.feature.persistence.mapping.property.CompoundMapping;
-import org.deegree.feature.persistence.mapping.property.FeatureMapping;
-import org.deegree.feature.persistence.mapping.property.GeometryMapping;
-import org.deegree.feature.persistence.mapping.property.Mapping;
-import org.deegree.feature.persistence.mapping.property.PrimitiveMapping;
+import org.deegree.feature.persistence.sql.FeatureTypeMapping;
+import org.deegree.feature.persistence.sql.JoinChain;
+import org.deegree.feature.persistence.sql.MappedApplicationSchema;
+import org.deegree.feature.persistence.sql.id.FIDMapping;
+import org.deegree.feature.persistence.sql.rules.CodeMapping;
+import org.deegree.feature.persistence.sql.rules.CompoundMapping;
+import org.deegree.feature.persistence.sql.rules.FeatureMapping;
+import org.deegree.feature.persistence.sql.rules.GeometryMapping;
+import org.deegree.feature.persistence.sql.rules.Mapping;
+import org.deegree.feature.persistence.sql.rules.PrimitiveMapping;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.feature.types.property.PropertyType;
 import org.deegree.filter.sql.DBField;
@@ -200,8 +200,6 @@ public class PostGISDDLCreator {
 
         List<StringBuffer> ddls = new ArrayList<StringBuffer>();
 
-        MappingExpression me = propMapping.getMapping();
-
         JoinChain jc = propMapping.getJoinedTable();
         if ( jc != null ) {
             sql = createJoinedTable( table, jc );
@@ -211,6 +209,7 @@ public class PostGISDDLCreator {
 
         if ( propMapping instanceof PrimitiveMapping ) {
             PrimitiveMapping primitiveMapping = (PrimitiveMapping) propMapping;
+            MappingExpression me = primitiveMapping.getMapping();
             if ( me instanceof DBField ) {
                 DBField dbField = (DBField) me;
                 sql.append( ",\n    " );
@@ -220,12 +219,15 @@ public class PostGISDDLCreator {
             }
         } else if ( propMapping instanceof GeometryMapping ) {
             GeometryMapping geometryMapping = (GeometryMapping) propMapping;
+            MappingExpression me = geometryMapping.getMapping();
             if ( me instanceof DBField ) {
                 ddls.addAll( getGeometryCreate( geometryMapping, (DBField) me, table ) );
             } else {
                 LOG.info( "Skipping geometry mapping -- not mapped to a db field. " );
             }
         } else if ( propMapping instanceof FeatureMapping ) {
+            FeatureMapping featureMapping = (FeatureMapping) propMapping;
+            MappingExpression me = featureMapping.getMapping();
             if ( me instanceof DBField ) {
                 sql.append( ",\n    " );
                 sql.append( ( (DBField) me ).getColumn() );
@@ -236,6 +238,7 @@ public class PostGISDDLCreator {
             ddls.addAll( process( sql, table, compoundMapping ) );
         } else if ( propMapping instanceof CodeMapping ) {
             CodeMapping codeMapping = (CodeMapping) propMapping;
+            MappingExpression me = codeMapping.getMapping();
             if ( me instanceof DBField ) {
                 DBField dbField = (DBField) me;
                 sql.append( ",\n    " );

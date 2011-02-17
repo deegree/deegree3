@@ -1,7 +1,7 @@
-//$HeadURL$
+//$HeadURL: svn+ssh://mschneider@svn.wald.intevation.org/deegree/base/trunk/resources/eclipse/files_template.xml $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
- Copyright (C) 2001-2009 by:
+ Copyright (C) 2001-2010 by:
  - Department of Geography, University of Bonn -
  and
  - lat/lon GmbH -
@@ -33,49 +33,16 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.feature.persistence.mapping;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import org.deegree.filter.sql.DBField;
-import org.deegree.filter.sql.MappingExpression;
+package org.deegree.feature.persistence.sql.id;
 
 /**
- * The <code></code> class TODO add class documentation here.
+ * {@link IDGenerator} that generates new identifiers using the UUID algorithm.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
+ * @author last edited by: $Author: markus $
  * 
- * @version $Revision$, $Date$
+ * @version $Revision: $, $Date: $
  */
-public class JoinChain implements MappingExpression {
+public class UUIDGenerator implements IDGenerator {
 
-    private List<DBField> dbFields;
-
-    public JoinChain( DBField dbf1, DBField dbf2 ) {
-        dbFields = new ArrayList<DBField>( 2 );
-        dbFields.add( dbf1 );
-        dbFields.add( dbf2 );
-    }
-
-    public JoinChain( DBField dbf, JoinChain jc ) {
-        dbFields = new ArrayList<DBField>( jc.dbFields.size() + 1 );
-        dbFields.add( dbf );
-        dbFields.addAll( jc.dbFields );        
-    }
-
-    public List<DBField> getFields() {
-        return dbFields;
-    }
-    
-    @Override
-    public String toString() {
-        String s = dbFields.get( 0 ).toString();
-        for ( int i = 1; i < dbFields.size(); i++ ) {
-            s += "->";
-            s += dbFields.get( i );
-        }
-        return s;
-    }
 }

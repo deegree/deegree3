@@ -33,39 +33,43 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.feature.persistence.mapping.property;
+package org.deegree.feature.persistence.sql.rules;
 
-import org.deegree.commons.tom.primitive.PrimitiveType;
-import org.deegree.commons.tom.primitive.PrimitiveValue;
-import org.deegree.feature.persistence.mapping.JoinChain;
+import java.util.List;
+
+import org.deegree.commons.tom.genericxml.GenericXMLElementContent;
+import org.deegree.feature.persistence.sql.JoinChain;
 import org.deegree.filter.expression.PropertyName;
-import org.deegree.filter.sql.MappingExpression;
 
 /**
- * {@link Mapping} of {@link PrimitiveValue} particles.
+ * {@link Mapping} of {@link GenericXMLElementContent} particles.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
  */
-public class PrimitiveMapping extends Mapping {
+public class CompoundMapping extends Mapping {
 
-    private final PrimitiveType pt;
+    private List<Mapping> particles;
 
-    /**
-     * 
-     * @param path
-     * @param mapping
-     * @param pt
-     * @param joinedTable
-     */
-    public PrimitiveMapping( PropertyName path, MappingExpression mapping, PrimitiveType pt, JoinChain joinedTable ) {
-        super( path, mapping, joinedTable );
-        this.pt = pt;
+    public CompoundMapping( PropertyName path, List<Mapping> particles, JoinChain joinedTable ) {
+        super( path, joinedTable );
+        this.particles = particles;
     }
 
-    public PrimitiveType getType() {
-        return pt;
+    public List<Mapping> getParticles() {
+        return particles;
+    }
+
+    @Override
+    public String toString() {
+        String s = super.toString();
+        s += "{";
+        for ( Mapping particle : particles ) {
+            s += particle + ",";
+        }
+        s += "}";
+        return s;
     }
 }

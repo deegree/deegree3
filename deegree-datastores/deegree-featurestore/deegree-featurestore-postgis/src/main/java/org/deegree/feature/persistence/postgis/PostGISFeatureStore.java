@@ -63,7 +63,6 @@ import org.deegree.commons.tom.primitive.SQLValueMangler;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.feature.Feature;
 import org.deegree.feature.Features;
-import org.deegree.feature.persistence.BlobCodec;
 import org.deegree.feature.persistence.FeatureStore;
 import org.deegree.feature.persistence.FeatureStoreException;
 import org.deegree.feature.persistence.FeatureStoreGMLIdResolver;
@@ -71,22 +70,24 @@ import org.deegree.feature.persistence.FeatureStoreTransaction;
 import org.deegree.feature.persistence.cache.FeatureStoreCache;
 import org.deegree.feature.persistence.cache.SimpleFeatureStoreCache;
 import org.deegree.feature.persistence.lock.LockManager;
-import org.deegree.feature.persistence.mapping.BBoxTableMapping;
-import org.deegree.feature.persistence.mapping.BlobMapping;
-import org.deegree.feature.persistence.mapping.FeatureTypeMapping;
-import org.deegree.feature.persistence.mapping.IdAnalysis;
-import org.deegree.feature.persistence.mapping.JoinChain;
-import org.deegree.feature.persistence.mapping.MappedApplicationSchema;
-import org.deegree.feature.persistence.mapping.id.FIDMapping;
-import org.deegree.feature.persistence.mapping.property.GeometryMapping;
-import org.deegree.feature.persistence.mapping.property.Mapping;
 import org.deegree.feature.persistence.query.CombinedResultSet;
 import org.deegree.feature.persistence.query.FeatureResultSet;
 import org.deegree.feature.persistence.query.FilteredFeatureResultSet;
 import org.deegree.feature.persistence.query.IteratorResultSet;
 import org.deegree.feature.persistence.query.MemoryFeatureResultSet;
 import org.deegree.feature.persistence.query.Query;
+import org.deegree.feature.persistence.sql.BBoxTableMapping;
+import org.deegree.feature.persistence.sql.BlobMapping;
+import org.deegree.feature.persistence.sql.FeatureTypeMapping;
+import org.deegree.feature.persistence.sql.IdAnalysis;
+import org.deegree.feature.persistence.sql.JoinChain;
+import org.deegree.feature.persistence.sql.MappedApplicationSchema;
 import org.deegree.feature.persistence.sql.SQLFeatureStore;
+import org.deegree.feature.persistence.sql.blob.BlobCodec;
+import org.deegree.feature.persistence.sql.id.FIDMapping;
+import org.deegree.feature.persistence.sql.rules.GeometryMapping;
+import org.deegree.feature.persistence.sql.rules.Mapping;
+import org.deegree.feature.persistence.sql.rules.Mappings;
 import org.deegree.feature.types.ApplicationSchema;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.feature.types.property.FeaturePropertyType;
@@ -422,7 +423,7 @@ public class PostGISFeatureStore implements SQLFeatureStore {
                 // append every (mapped) property to SELECT list
                 // TODO columns in related tables with 1:1 relation
                 Mapping mapping2 = mapping.getMapping( pt.getName() );
-                MappingExpression column = mapping2 == null ? null : mapping2.getMapping();
+                MappingExpression column = mapping2 == null ? null : Mappings.getMappingExpression( mapping2 );
                 if ( column != null ) {
                     sql.append( ',' );
                     if ( column instanceof JoinChain ) {
@@ -699,7 +700,7 @@ public class PostGISFeatureStore implements SQLFeatureStore {
             // append every (mapped) property to SELECT list
             // TODO columns in related tables
             Mapping mapping = ftMapping.getMapping( pt.getName() );
-            MappingExpression column = mapping == null ? null : mapping.getMapping();
+            MappingExpression column = mapping == null ? null : Mappings.getMappingExpression( mapping );
             if ( column != null ) {
                 sql.append( ',' );
                 if ( column instanceof JoinChain ) {
@@ -822,7 +823,7 @@ public class PostGISFeatureStore implements SQLFeatureStore {
                     // append every (mapped) property to SELECT list
                     // TODO columns in related tables
                     Mapping mapping = ftMapping.getMapping( pt.getName() );
-                    MappingExpression column = mapping == null ? null : mapping.getMapping();
+                    MappingExpression column = mapping == null ? null : Mappings.getMappingExpression( mapping );
                     if ( column != null ) {
                         sql.append( ',' );
                         if ( column instanceof JoinChain ) {

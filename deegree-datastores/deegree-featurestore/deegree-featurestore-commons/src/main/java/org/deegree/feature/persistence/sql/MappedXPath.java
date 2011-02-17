@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.feature.persistence.mapping;
+package org.deegree.feature.persistence.sql;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -42,8 +42,9 @@ import javax.xml.namespace.QName;
 
 import org.deegree.commons.jdbc.QTableName;
 import org.deegree.cs.coordinatesystems.ICRS;
-import org.deegree.feature.persistence.mapping.property.GeometryMapping;
-import org.deegree.feature.persistence.mapping.property.Mapping;
+import org.deegree.feature.persistence.sql.rules.GeometryMapping;
+import org.deegree.feature.persistence.sql.rules.Mapping;
+import org.deegree.feature.persistence.sql.rules.PrimitiveMapping;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.feature.types.property.FeaturePropertyType;
 import org.deegree.feature.types.property.GeometryPropertyType;
@@ -204,9 +205,18 @@ public class MappedXPath {
                     String msg = "Property '" + pt.getName() + "' is not mapped.";
                     throw new UnmappableException( msg );
                 }
+                MappingExpression mapping = null;
+                if ( propMapping instanceof PrimitiveMapping ) {
+                    mapping = ( (PrimitiveMapping) propMapping ).getMapping();
+                } else if ( propMapping instanceof GeometryMapping ) {
+                    mapping = ( (GeometryMapping) propMapping ).getMapping();
+                } else {
+                    String msg = "Unhandled mapping type '" + propMapping.getClass() + "'.";
+                    throw new UnmappableException( msg );
+                }
 
                 // TODO
-                addJoins( ftMapping, propMapping.getMapping(), valueFtMapping );
+                addJoins( ftMapping, mapping, valueFtMapping );
 
                 ftMapping = valueFtMapping;
                 propStep = true;
@@ -241,7 +251,15 @@ public class MappedXPath {
             srid = ( (GeometryMapping) mapping ).getSrid();
         }
 
-        MappingExpression propMapping = mapping.getMapping();
+        MappingExpression propMapping = null;
+        if ( mapping instanceof PrimitiveMapping ) {
+            propMapping = ( (PrimitiveMapping) mapping ).getMapping();
+        } else if ( mapping instanceof GeometryMapping ) {
+            propMapping = ( (GeometryMapping) mapping ).getMapping();
+        } else {
+            String msg = "Unhandled mapping type '" + propMapping.getClass() + "'.";
+            throw new UnmappableException( msg );
+        }
         if ( propMapping instanceof DBField ) {
             QTableName table = rootFt.getFtTable();
             if ( !joins.isEmpty() ) {

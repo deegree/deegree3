@@ -1,7 +1,7 @@
-//$HeadURL: svn+ssh://mschneider@svn.wald.intevation.org/deegree/base/trunk/resources/eclipse/files_template.xml $
+//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
- Copyright (C) 2001-2010 by:
+ Copyright (C) 2001-2009 by:
  - Department of Geography, University of Bonn -
  and
  - lat/lon GmbH -
@@ -33,16 +33,46 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.feature.persistence.mapping.id;
+package org.deegree.feature.persistence.sql.rules;
+
+import org.deegree.commons.tom.primitive.PrimitiveType;
+import org.deegree.commons.tom.primitive.PrimitiveValue;
+import org.deegree.feature.persistence.sql.JoinChain;
+import org.deegree.filter.expression.PropertyName;
+import org.deegree.filter.sql.MappingExpression;
 
 /**
- * {@link IDGenerator} that uses autoincrement columns / insert triggers to generate new ids.
+ * {@link Mapping} of {@link PrimitiveValue} particles.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author: markus $
+ * @author last edited by: $Author$
  * 
- * @version $Revision: $, $Date: $
+ * @version $Revision$, $Date$
  */
-public class AutoIDGenerator implements IDGenerator {
+public class PrimitiveMapping extends Mapping {
 
+    private final PrimitiveType pt;
+
+    private final MappingExpression mapping;
+
+    /**
+     * 
+     * @param path
+     * @param mapping
+     * @param pt
+     * @param joinedTable
+     */
+    public PrimitiveMapping( PropertyName path, MappingExpression mapping, PrimitiveType pt, JoinChain joinedTable ) {
+        super( path, joinedTable );
+        this.pt = pt;
+        this.mapping = mapping;
+    }
+
+    public PrimitiveType getType() {
+        return pt;
+    }
+
+    public MappingExpression getMapping() {
+        return mapping;
+    }
 }

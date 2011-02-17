@@ -33,11 +33,11 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.feature.persistence.mapping;
+package org.deegree.feature.persistence.sql;
 
 import org.deegree.commons.jdbc.QTableName;
 import org.deegree.cs.coordinatesystems.ICRS;
-import org.deegree.feature.persistence.BlobCodec;
+import org.deegree.feature.persistence.sql.blob.BlobCodec;
 
 /**
  * Encapsulates the BLOB mapping parameters for a {@link MappedApplicationSchema}.

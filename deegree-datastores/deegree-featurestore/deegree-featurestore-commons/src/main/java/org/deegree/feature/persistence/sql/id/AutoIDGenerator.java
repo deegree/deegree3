@@ -1,7 +1,7 @@
-//$HeadURL$
+//$HeadURL: svn+ssh://mschneider@svn.wald.intevation.org/deegree/base/trunk/resources/eclipse/files_template.xml $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
- Copyright (C) 2001-2009 by:
+ Copyright (C) 2001-2010 by:
  - Department of Geography, University of Bonn -
  and
  - lat/lon GmbH -
@@ -33,38 +33,16 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.feature.persistence.mapping.property;
-
-import javax.xml.namespace.QName;
-
-import org.deegree.feature.Feature;
-import org.deegree.feature.persistence.mapping.JoinChain;
-import org.deegree.filter.expression.PropertyName;
-import org.deegree.filter.sql.MappingExpression;
+package org.deegree.feature.persistence.sql.id;
 
 /**
- * {@link Mapping} of {@link Feature} particles.
+ * {@link IDGenerator} that uses autoincrement columns / insert triggers to generate new ids.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
+ * @author last edited by: $Author: markus $
  * 
- * @version $Revision$, $Date$
+ * @version $Revision: $, $Date: $
  */
-public class FeatureMapping extends Mapping {
+public class AutoIDGenerator implements IDGenerator {
 
-    private QName valueFtName;
-
-    public FeatureMapping( PropertyName path, MappingExpression mapping, QName valueFtName, JoinChain joinedTable ) {
-        super( path, mapping, joinedTable );
-        this.valueFtName = valueFtName;
-    }
-
-    public QName getValueFtName() {
-        return valueFtName;
-    }
-
-    @Override
-    public String toString() {
-        return super.toString() + ",{ftName=" + valueFtName + "}";
-    }
 }

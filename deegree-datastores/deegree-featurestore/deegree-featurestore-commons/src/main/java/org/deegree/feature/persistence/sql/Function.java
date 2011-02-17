@@ -33,10 +33,12 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.feature.persistence.mapping;
+package org.deegree.feature.persistence.sql;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import org.deegree.filter.sql.MappingExpression;
-
 
 /**
  * The <code></code> class TODO add class documentation here.
@@ -46,16 +48,34 @@ import org.deegree.filter.sql.MappingExpression;
  * 
  * @version $Revision$, $Date$
  */
-public class StringConst implements MappingExpression {
+public class Function implements MappingExpression {
 
-    private String s;
+    private String functionName;
 
-    public StringConst( String s ) {
-        this.s = s;
+    private List<MappingExpression> args = new ArrayList<MappingExpression>();
+
+    public Function( String functionName ) {
+        this.functionName = functionName;
+    }
+
+    public void addArg( MappingExpression arg ) {
+        args.add( arg );
+    }
+
+    public List<MappingExpression> getArgs() {
+        return args;
     }
 
     @Override
     public String toString() {
-        return "'" + s + "'";
+        String s = functionName + "(";
+        for ( int i = 0; i < args.size(); i++ ) {
+            s += args.get( i );
+            if ( i != args.size() -1 ) {
+                s += ',';
+            }
+        }
+        s += ")";
+        return s;
     }
 }

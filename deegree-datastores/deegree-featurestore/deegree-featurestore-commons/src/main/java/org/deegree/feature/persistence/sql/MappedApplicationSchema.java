@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.feature.persistence.mapping;
+package org.deegree.feature.persistence.sql;
 
 import java.util.HashMap;
 import java.util.Map;

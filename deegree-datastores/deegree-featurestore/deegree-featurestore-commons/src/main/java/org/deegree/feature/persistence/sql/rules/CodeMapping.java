@@ -1,7 +1,7 @@
-//$HeadURL: svn+ssh://mschneider@svn.wald.intevation.org/deegree/base/trunk/resources/eclipse/files_template.xml $
+//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
- Copyright (C) 2001-2010 by:
+ Copyright (C) 2001-2009 by:
  - Department of Geography, University of Bonn -
  and
  - lat/lon GmbH -
@@ -33,18 +33,54 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.feature.persistence.mapping.id;
+package org.deegree.feature.persistence.sql.rules;
+
+import org.deegree.commons.tom.ows.CodeType;
+import org.deegree.commons.tom.primitive.PrimitiveType;
+import org.deegree.feature.persistence.sql.JoinChain;
+import org.deegree.filter.expression.PropertyName;
+import org.deegree.filter.sql.MappingExpression;
 
 /**
- * Interface for feature id generators.
- * 
- * @see FIDMapping
+ * {@link Mapping} of {@link CodeType} particles.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author: markus $
+ * @author last edited by: $Author$
  * 
- * @version $Revision: $, $Date: $
+ * @version $Revision$, $Date$
  */
-public interface IDGenerator {
-    // currently, this is just a marker interface
+public class CodeMapping extends Mapping {
+
+    private final PrimitiveType pt;
+
+    private final MappingExpression mapping;
+
+    private final MappingExpression codeSpaceMapping;
+
+    /**
+     * 
+     * @param path
+     * @param mapping
+     * @param pt
+     * @param joinedTable
+     */
+    public CodeMapping( PropertyName path, MappingExpression mapping, PrimitiveType pt, JoinChain joinedTable,
+                        MappingExpression codeSpaceMapping ) {
+        super( path, joinedTable );
+        this.mapping = mapping;
+        this.pt = pt;
+        this.codeSpaceMapping = codeSpaceMapping;
+    }
+
+    public MappingExpression getMapping() {
+        return mapping;
+    }
+
+    public PrimitiveType getType() {
+        return pt;
+    }
+
+    public MappingExpression getCodeSpaceMapping() {
+        return codeSpaceMapping;
+    }
 }

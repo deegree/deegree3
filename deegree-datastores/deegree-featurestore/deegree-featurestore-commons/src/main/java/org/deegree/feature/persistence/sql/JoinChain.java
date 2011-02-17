@@ -1,7 +1,7 @@
 //$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
- Copyright (C) 2001-2011 by:
+ Copyright (C) 2001-2009 by:
  - Department of Geography, University of Bonn -
  and
  - lat/lon GmbH -
@@ -33,24 +33,49 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.feature.persistence.mapping.property;
+package org.deegree.feature.persistence.sql;
 
-import org.apache.xerces.xs.XSElementDeclaration;
-import org.deegree.feature.persistence.mapping.JoinChain;
-import org.deegree.filter.expression.PropertyName;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.deegree.filter.sql.DBField;
 import org.deegree.filter.sql.MappingExpression;
 
-public class GenericObjectMapping extends Mapping {
+/**
+ * The <code></code> class TODO add class documentation here.
+ * 
+ * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
+ * @author last edited by: $Author$
+ * 
+ * @version $Revision$, $Date$
+ */
+public class JoinChain implements MappingExpression {
 
-    private XSElementDeclaration elDecl;
+    private List<DBField> dbFields;
 
-    public GenericObjectMapping( PropertyName path, MappingExpression mapping, XSElementDeclaration elDecl,
-                                 JoinChain joinedTable ) {
-        super( path, mapping, joinedTable );
-        this.elDecl = elDecl;
+    public JoinChain( DBField dbf1, DBField dbf2 ) {
+        dbFields = new ArrayList<DBField>( 2 );
+        dbFields.add( dbf1 );
+        dbFields.add( dbf2 );
     }
 
-    XSElementDeclaration getElementDeclaration() {
-        return elDecl;
+    public JoinChain( DBField dbf, JoinChain jc ) {
+        dbFields = new ArrayList<DBField>( jc.dbFields.size() + 1 );
+        dbFields.add( dbf );
+        dbFields.addAll( jc.dbFields );        
+    }
+
+    public List<DBField> getFields() {
+        return dbFields;
+    }
+    
+    @Override
+    public String toString() {
+        String s = dbFields.get( 0 ).toString();
+        for ( int i = 1; i < dbFields.size(); i++ ) {
+            s += "->";
+            s += dbFields.get( i );
+        }
+        return s;
     }
 }

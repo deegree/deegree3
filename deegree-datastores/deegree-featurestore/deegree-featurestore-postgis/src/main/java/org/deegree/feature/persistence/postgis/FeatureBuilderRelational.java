@@ -50,10 +50,11 @@ import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.commons.tom.primitive.SQLValueMangler;
 import org.deegree.commons.utils.JDBCUtils;
 import org.deegree.feature.Feature;
-import org.deegree.feature.persistence.mapping.FeatureTypeMapping;
-import org.deegree.feature.persistence.mapping.JoinChain;
-import org.deegree.feature.persistence.mapping.property.GeometryMapping;
-import org.deegree.feature.persistence.mapping.property.Mapping;
+import org.deegree.feature.persistence.sql.FeatureTypeMapping;
+import org.deegree.feature.persistence.sql.JoinChain;
+import org.deegree.feature.persistence.sql.rules.GeometryMapping;
+import org.deegree.feature.persistence.sql.rules.Mapping;
+import org.deegree.feature.persistence.sql.rules.Mappings;
 import org.deegree.feature.property.GenericProperty;
 import org.deegree.feature.property.Property;
 import org.deegree.feature.types.FeatureType;
@@ -124,7 +125,7 @@ class FeatureBuilderRelational implements FeatureBuilder {
                 // if it is mappable, it has been SELECTed by contract
                 Mapping propMapping = ftMapping.getMapping( pt.getName() );
                 if ( propMapping != null ) {
-                    MappingExpression me = propMapping.getMapping();
+                    MappingExpression me = Mappings.getMappingExpression( propMapping );
                     if ( me instanceof JoinChain ) {
                         addProperties( conn, props, pt, (JoinChain) me, rs, i );
                     } else {

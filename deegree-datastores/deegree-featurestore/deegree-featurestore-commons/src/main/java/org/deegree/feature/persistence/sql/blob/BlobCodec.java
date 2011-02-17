@@ -34,7 +34,7 @@
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
 
-package org.deegree.feature.persistence;
+package org.deegree.feature.persistence.sql.blob;
 
 import static javax.xml.stream.XMLOutputFactory.IS_REPAIRING_NAMESPACES;
 
@@ -62,6 +62,7 @@ import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.exceptions.TransformationException;
 import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.feature.Feature;
+import org.deegree.feature.persistence.FeatureStoreException;
 import org.deegree.feature.types.ApplicationSchema;
 import org.deegree.gml.GMLInputFactory;
 import org.deegree.gml.GMLObject;

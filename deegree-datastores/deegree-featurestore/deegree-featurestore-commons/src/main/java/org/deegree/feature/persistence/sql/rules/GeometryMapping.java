@@ -33,49 +33,68 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.feature.persistence.mapping;
+package org.deegree.feature.persistence.sql.rules;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import org.deegree.cs.coordinatesystems.ICRS;
+import org.deegree.feature.persistence.sql.JoinChain;
+import org.deegree.feature.types.property.GeometryPropertyType.CoordinateDimension;
+import org.deegree.feature.types.property.GeometryPropertyType.GeometryType;
+import org.deegree.filter.expression.PropertyName;
 import org.deegree.filter.sql.MappingExpression;
+import org.deegree.geometry.Geometry;
 
 /**
- * The <code></code> class TODO add class documentation here.
+ * {@link Mapping} of {@link Geometry} particles.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
  */
-public class Function implements MappingExpression {
+public class GeometryMapping extends Mapping {
 
-    private String functionName;
+    private final MappingExpression mapping;
 
-    private List<MappingExpression> args = new ArrayList<MappingExpression>();
+    private GeometryType type;
 
-    public Function( String functionName ) {
-        this.functionName = functionName;
+    private CoordinateDimension dim;
+
+    private ICRS crs;
+
+    private String srid;
+
+    public GeometryMapping( PropertyName path, MappingExpression mapping, GeometryType type, CoordinateDimension dim,
+                            ICRS crs, String srid, JoinChain joinedTable ) {
+        super( path, joinedTable );
+        this.mapping = mapping;
+        this.type = type;
+        this.dim = dim;
+        this.crs = crs;
+        this.srid = srid;
     }
 
-    public void addArg( MappingExpression arg ) {
-        args.add( arg );
+    public MappingExpression getMapping() {
+        return mapping;
     }
 
-    public List<MappingExpression> getArgs() {
-        return args;
+    public GeometryType getType() {
+        return type;
+    }
+
+    public CoordinateDimension getDim() {
+        return dim;
+    }
+
+    public ICRS getCRS() {
+        return crs;
+    }
+
+    public String getSrid() {
+        return srid;
     }
 
     @Override
     public String toString() {
-        String s = functionName + "(";
-        for ( int i = 0; i < args.size(); i++ ) {
-            s += args.get( i );
-            if ( i != args.size() -1 ) {
-                s += ',';
-            }
-        }
-        s += ")";
-        return s;
+        return super.toString() + ",{type=" + type + "}";
     }
 }

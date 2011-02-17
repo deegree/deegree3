@@ -1,7 +1,7 @@
 /**
  * 
  */
-package org.deegree.feature.persistence.mapping;
+package org.deegree.feature.persistence.sql;
 
 import org.deegree.commons.jdbc.QTableName;
 import org.deegree.cs.coordinatesystems.ICRS;

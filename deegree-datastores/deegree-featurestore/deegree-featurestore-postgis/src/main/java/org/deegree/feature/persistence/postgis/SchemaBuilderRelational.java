@@ -83,22 +83,8 @@ import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.persistence.CRSManager;
 import org.deegree.feature.persistence.FeatureStoreException;
-import org.deegree.feature.persistence.mapping.FeatureTypeMapping;
-import org.deegree.feature.persistence.mapping.JoinChain;
-import org.deegree.feature.persistence.mapping.MappedApplicationSchema;
 import org.deegree.feature.persistence.mapping.antlr.FMLLexer;
 import org.deegree.feature.persistence.mapping.antlr.FMLParser;
-import org.deegree.feature.persistence.mapping.id.AutoIDGenerator;
-import org.deegree.feature.persistence.mapping.id.FIDMapping;
-import org.deegree.feature.persistence.mapping.id.IDGenerator;
-import org.deegree.feature.persistence.mapping.id.SequenceIDGenerator;
-import org.deegree.feature.persistence.mapping.id.UUIDGenerator;
-import org.deegree.feature.persistence.mapping.property.CodeMapping;
-import org.deegree.feature.persistence.mapping.property.CompoundMapping;
-import org.deegree.feature.persistence.mapping.property.FeatureMapping;
-import org.deegree.feature.persistence.mapping.property.GeometryMapping;
-import org.deegree.feature.persistence.mapping.property.Mapping;
-import org.deegree.feature.persistence.mapping.property.PrimitiveMapping;
 import org.deegree.feature.persistence.postgis.jaxb.AbstractIDGeneratorType;
 import org.deegree.feature.persistence.postgis.jaxb.AbstractPropertyDecl;
 import org.deegree.feature.persistence.postgis.jaxb.CodePropertyDecl;
@@ -111,6 +97,20 @@ import org.deegree.feature.persistence.postgis.jaxb.GeometryPropertyDecl;
 import org.deegree.feature.persistence.postgis.jaxb.JoinedTable;
 import org.deegree.feature.persistence.postgis.jaxb.PostGISFeatureStoreConfig;
 import org.deegree.feature.persistence.postgis.jaxb.SimplePropertyDecl;
+import org.deegree.feature.persistence.sql.FeatureTypeMapping;
+import org.deegree.feature.persistence.sql.JoinChain;
+import org.deegree.feature.persistence.sql.MappedApplicationSchema;
+import org.deegree.feature.persistence.sql.id.AutoIDGenerator;
+import org.deegree.feature.persistence.sql.id.FIDMapping;
+import org.deegree.feature.persistence.sql.id.IDGenerator;
+import org.deegree.feature.persistence.sql.id.SequenceIDGenerator;
+import org.deegree.feature.persistence.sql.id.UUIDGenerator;
+import org.deegree.feature.persistence.sql.rules.CodeMapping;
+import org.deegree.feature.persistence.sql.rules.CompoundMapping;
+import org.deegree.feature.persistence.sql.rules.FeatureMapping;
+import org.deegree.feature.persistence.sql.rules.GeometryMapping;
+import org.deegree.feature.persistence.sql.rules.Mapping;
+import org.deegree.feature.persistence.sql.rules.PrimitiveMapping;
 import org.deegree.feature.types.ApplicationSchema;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.feature.types.GenericFeatureType;
@@ -462,7 +462,7 @@ class SchemaBuilderRelational {
                 }
             }
             JoinChain joinedTable = buildJoinTable( table, propDecl.getJoinedTable() );
-            m = new CompoundMapping( path, null, particles, joinedTable );
+            m = new CompoundMapping( path, particles, joinedTable );
         } else if ( propDecl instanceof CodePropertyDecl ) {
             PropertyName path = new PropertyName( propName );
             JoinChain joinedTable = buildJoinTable( table, propDecl.getJoinedTable() );
@@ -519,7 +519,7 @@ class SchemaBuilderRelational {
                     particles.add( particle );
                 }
             }
-            return new CompoundMapping( path, null, particles, joinedTable );
+            return new CompoundMapping( path, particles, joinedTable );
         } else {
             LOG.warn( "Unhandled custom mapping: " + mapping.getClass() );
         }
@@ -626,10 +626,9 @@ class SchemaBuilderRelational {
                 List<Mapping> particles = process( compoundMapping.getAbstractCustomMapping() );
                 JoinChain joinedTable = null;
                 if ( compoundMapping.getJoinedTable() != null ) {
-
                     joinedTable = (JoinChain) parseMappingExpression( compoundMapping.getJoinedTable().getValue() );
                 }
-                mappings.add( new CompoundMapping( propName, mapping, particles, joinedTable ) );
+                mappings.add( new CompoundMapping( propName, particles, joinedTable ) );
             } else {
                 throw new RuntimeException( "Internal error. Unexpected JAXB type '" + customMapping.getClass() + "'." );
             }

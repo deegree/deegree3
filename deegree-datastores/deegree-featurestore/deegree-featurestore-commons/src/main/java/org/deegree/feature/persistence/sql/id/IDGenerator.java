@@ -1,7 +1,7 @@
-//$HeadURL$
+//$HeadURL: svn+ssh://mschneider@svn.wald.intevation.org/deegree/base/trunk/resources/eclipse/files_template.xml $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
- Copyright (C) 2001-2009 by:
+ Copyright (C) 2001-2010 by:
  - Department of Geography, University of Bonn -
  and
  - lat/lon GmbH -
@@ -33,44 +33,18 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.feature.persistence.mapping.property;
-
-import java.util.List;
-
-import org.deegree.commons.tom.genericxml.GenericXMLElementContent;
-import org.deegree.feature.persistence.mapping.JoinChain;
-import org.deegree.filter.expression.PropertyName;
-import org.deegree.filter.sql.MappingExpression;
+package org.deegree.feature.persistence.sql.id;
 
 /**
- * {@link Mapping} of {@link GenericXMLElementContent} particles.
+ * Interface for feature id generators.
+ * 
+ * @see FIDMapping
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
+ * @author last edited by: $Author: markus $
  * 
- * @version $Revision$, $Date$
+ * @version $Revision: $, $Date: $
  */
-public class CompoundMapping extends Mapping {
-
-    private List<Mapping> particles;
-
-    public CompoundMapping( PropertyName path, MappingExpression mapping, List<Mapping> particles, JoinChain joinedTable ) {
-        super( path, mapping, joinedTable );
-        this.particles = particles;
-    }
-
-    public List<Mapping> getParticles() {
-        return particles;
-    }
-
-    @Override
-    public String toString() {
-        String s = super.toString();
-        s += "{";
-        for ( Mapping particle : particles ) {
-            s += particle + ",";
-        }
-        s += "}";
-        return s;
-    }
+public interface IDGenerator {
+    // currently, this is just a marker interface
 }

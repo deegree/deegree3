@@ -38,9 +38,9 @@ package org.deegree.feature.persistence.postgis;
 import java.util.List;
 
 import org.deegree.cs.coordinatesystems.ICRS;
-import org.deegree.feature.persistence.mapping.FeatureTypeMapping;
-import org.deegree.feature.persistence.mapping.MappedApplicationSchema;
-import org.deegree.feature.persistence.mapping.MappedXPath;
+import org.deegree.feature.persistence.sql.FeatureTypeMapping;
+import org.deegree.feature.persistence.sql.MappedApplicationSchema;
+import org.deegree.feature.persistence.sql.MappedXPath;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.expression.Literal;

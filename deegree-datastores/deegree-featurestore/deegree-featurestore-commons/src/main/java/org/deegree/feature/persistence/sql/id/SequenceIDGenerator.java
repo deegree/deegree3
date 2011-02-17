@@ -33,63 +33,21 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.feature.persistence.mapping.id;
-
-import org.deegree.commons.tom.primitive.PrimitiveType;
-import org.deegree.feature.persistence.mapping.FeatureTypeMapping;
+package org.deegree.feature.persistence.sql.id;
 
 /**
- * Defines the mapping between feature ids and a relational model.
- * 
- * @see FeatureTypeMapping
+ * {@link IDGenerator} that uses database sequences to generate new ids.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author: markus $
  * 
  * @version $Revision: $, $Date: $
  */
-public class FIDMapping {
+public class SequenceIDGenerator implements IDGenerator {
 
-    private final String prefix;
+    private final String sequence;
 
-    private final String column;
-
-    private final PrimitiveType pt;
-
-    private final IDGenerator generator;
-
-    /**
-     * Creates a new {@link FIDMapping} instance.
-     * 
-     * @param prefix
-     *            static prefix for all feature ids, must not be <code>null</code> (but can be empty)
-     * @param column
-     *            database column that the feature ids are mapped to, must not be <code>null</code>
-     * @param pt
-     *            type of the database column, must not be <code>null</code>
-     * @param generator
-     *            generator for determining new ids, must not be <code>null</code>
-     */
-    public FIDMapping( String prefix, String column, PrimitiveType pt, IDGenerator generator ) {
-        this.prefix = prefix;
-        this.column = column;
-        this.pt = pt;
-        this.generator = generator;
-    }
-
-    public String getPrefix() {
-        return prefix;
-    }
-
-    public String getColumn() {
-        return column;
-    }
-
-    public PrimitiveType getColumnType() {
-        return pt;
-    }
-
-    public IDGenerator getIdGenerator() {
-        return generator;
+    public SequenceIDGenerator( String sequence ) {
+        this.sequence = sequence;
     }
 }

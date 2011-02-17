@@ -33,24 +33,45 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.feature.persistence.types;
+package org.deegree.feature.persistence.sql.rules;
 
-import org.deegree.feature.persistence.FeatureStore;
-import org.deegree.feature.types.FeatureType;
-import org.deegree.feature.types.property.PropertyType;
+import javax.xml.namespace.QName;
+
+import org.deegree.feature.Feature;
+import org.deegree.feature.persistence.sql.JoinChain;
+import org.deegree.filter.expression.PropertyName;
+import org.deegree.filter.sql.MappingExpression;
 
 /**
- * {@link FeatureType} that is associated with a {@link FeatureStore} and which provides a mapping to the data model of
- * the respective backend.
+ * {@link Mapping} of {@link Feature} particles.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
  */
-public interface MappedFeatureType extends FeatureType {
+public class FeatureMapping extends Mapping {
 
-    public Object getFtMapping();
+    private MappingExpression mapping;
 
-    public Object getPtMapping( PropertyType pt );
+    private QName valueFtName;
+
+    public FeatureMapping( PropertyName path, MappingExpression mapping, QName valueFtName, JoinChain joinedTable ) {
+        super( path, joinedTable );
+        this.mapping = mapping;
+        this.valueFtName = valueFtName;
+    }
+
+    public MappingExpression getMapping() {
+        return mapping;
+    }
+
+    public QName getValueFtName() {
+        return valueFtName;
+    }
+
+    @Override
+    public String toString() {
+        return super.toString() + ",{ftName=" + valueFtName + "}";
+    }
 }

@@ -48,9 +48,9 @@ import org.deegree.feature.i18n.Messages;
 import org.deegree.feature.persistence.FeatureStore;
 import org.deegree.feature.persistence.FeatureStoreException;
 import org.deegree.feature.persistence.FeatureStoreProvider;
-import org.deegree.feature.persistence.mapping.MappedApplicationSchema;
 import org.deegree.feature.persistence.postgis.jaxb.FeatureTypeDecl;
 import org.deegree.feature.persistence.postgis.jaxb.PostGISFeatureStoreConfig;
+import org.deegree.feature.persistence.sql.MappedApplicationSchema;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

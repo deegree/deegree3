@@ -52,9 +52,9 @@ import org.deegree.cs.persistence.CRSManager;
 import org.deegree.feature.persistence.FeatureStore;
 import org.deegree.feature.persistence.FeatureStoreException;
 import org.deegree.feature.persistence.FeatureStoreProvider;
-import org.deegree.feature.persistence.mapping.MappedApplicationSchema;
 import org.deegree.feature.persistence.oracle.jaxb.OracleFeatureStoreConfig;
 import org.deegree.feature.persistence.oracle.jaxb.OracleFeatureStoreConfig.NamespaceHint;
+import org.deegree.feature.persistence.sql.MappedApplicationSchema;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

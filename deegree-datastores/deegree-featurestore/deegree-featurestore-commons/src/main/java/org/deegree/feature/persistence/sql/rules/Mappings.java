@@ -1,7 +1,7 @@
 //$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
- Copyright (C) 2001-2009 by:
+ Copyright (C) 2001-2011 by:
  - Department of Geography, University of Bonn -
  and
  - lat/lon GmbH -
@@ -33,47 +33,43 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.feature.persistence.mapping.property;
+package org.deegree.feature.persistence.sql.rules;
 
-import org.deegree.commons.tom.ows.CodeType;
-import org.deegree.commons.tom.primitive.PrimitiveType;
-import org.deegree.feature.persistence.mapping.JoinChain;
-import org.deegree.filter.expression.PropertyName;
+import org.deegree.filter.sql.DBField;
 import org.deegree.filter.sql.MappingExpression;
 
 /**
- * {@link Mapping} of {@link CodeType} particles.
+ * Various static methods for performing standard tasks on {@link Mapping} objects.
+ * 
+ * @see Mapping
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
  */
-public class CodeMapping extends Mapping {
+public class Mappings {
 
-    private final PrimitiveType pt;
-
-    private final MappingExpression codeSpaceMapping;
-
-    /**
-     * 
-     * @param path
-     * @param mapping
-     * @param pt
-     * @param joinedTable
-     */
-    public CodeMapping( PropertyName path, MappingExpression mapping, PrimitiveType pt, JoinChain joinedTable,
-                        MappingExpression codeSpaceMapping ) {
-        super( path, mapping, joinedTable );
-        this.pt = pt;
-        this.codeSpaceMapping = codeSpaceMapping;
+    public static DBField getDBField( Mapping mapping )
+                            throws UnsupportedOperationException, IllegalArgumentException {
+        MappingExpression me = getMappingExpression( mapping );
+        if ( !( me instanceof DBField ) ) {
+            throw new IllegalArgumentException( "Mapping '" + mapping + "' does not " );
+        }
+        return (DBField) me;
     }
 
-    public PrimitiveType getType() {
-        return pt;
-    }
-
-    public MappingExpression getCodeSpaceMapping() {
-        return codeSpaceMapping;
+    public static MappingExpression getMappingExpression( Mapping mapping )
+                            throws UnsupportedOperationException {
+        MappingExpression me = null;
+        if ( mapping instanceof PrimitiveMapping ) {
+            me = ( (PrimitiveMapping) mapping ).getMapping();
+        } else if ( mapping instanceof GeometryMapping ) {
+            me = ( (GeometryMapping) mapping ).getMapping();
+        } else {
+            throw new UnsupportedOperationException( "Mappings of type '" + mapping.getClass()
+                                                     + "' are not handled yet." );
+        }
+        return me;
     }
 }

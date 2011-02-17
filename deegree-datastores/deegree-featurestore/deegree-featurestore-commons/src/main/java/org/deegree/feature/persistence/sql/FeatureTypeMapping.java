@@ -33,15 +33,15 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.feature.persistence.mapping;
+package org.deegree.feature.persistence.sql;
 
 import java.util.Map;
 
 import javax.xml.namespace.QName;
 
 import org.deegree.commons.jdbc.QTableName;
-import org.deegree.feature.persistence.mapping.id.FIDMapping;
-import org.deegree.feature.persistence.mapping.property.Mapping;
+import org.deegree.feature.persistence.sql.id.FIDMapping;
+import org.deegree.feature.persistence.sql.rules.Mapping;
 import org.deegree.feature.types.FeatureType;
 
 /**

@@ -65,28 +65,28 @@ import org.deegree.commons.utils.JDBCUtils;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.feature.Feature;
 import org.deegree.feature.FeatureCollection;
-import org.deegree.feature.persistence.BlobCodec;
 import org.deegree.feature.persistence.FeatureStore;
 import org.deegree.feature.persistence.FeatureStoreException;
 import org.deegree.feature.persistence.FeatureStoreTransaction;
 import org.deegree.feature.persistence.lock.Lock;
-import org.deegree.feature.persistence.mapping.BlobMapping;
-import org.deegree.feature.persistence.mapping.FeatureTypeMapping;
-import org.deegree.feature.persistence.mapping.IdAnalysis;
-import org.deegree.feature.persistence.mapping.JoinChain;
-import org.deegree.feature.persistence.mapping.MappedApplicationSchema;
-import org.deegree.feature.persistence.mapping.id.AutoIDGenerator;
-import org.deegree.feature.persistence.mapping.id.FIDMapping;
-import org.deegree.feature.persistence.mapping.id.IDGenerator;
-import org.deegree.feature.persistence.mapping.id.UUIDGenerator;
-import org.deegree.feature.persistence.mapping.property.CodeMapping;
-import org.deegree.feature.persistence.mapping.property.CompoundMapping;
-import org.deegree.feature.persistence.mapping.property.FeatureMapping;
-import org.deegree.feature.persistence.mapping.property.GeometryMapping;
-import org.deegree.feature.persistence.mapping.property.Mapping;
-import org.deegree.feature.persistence.mapping.property.PrimitiveMapping;
 import org.deegree.feature.persistence.query.FeatureResultSet;
 import org.deegree.feature.persistence.query.Query;
+import org.deegree.feature.persistence.sql.BlobMapping;
+import org.deegree.feature.persistence.sql.FeatureTypeMapping;
+import org.deegree.feature.persistence.sql.IdAnalysis;
+import org.deegree.feature.persistence.sql.JoinChain;
+import org.deegree.feature.persistence.sql.MappedApplicationSchema;
+import org.deegree.feature.persistence.sql.blob.BlobCodec;
+import org.deegree.feature.persistence.sql.id.AutoIDGenerator;
+import org.deegree.feature.persistence.sql.id.FIDMapping;
+import org.deegree.feature.persistence.sql.id.IDGenerator;
+import org.deegree.feature.persistence.sql.id.UUIDGenerator;
+import org.deegree.feature.persistence.sql.rules.CodeMapping;
+import org.deegree.feature.persistence.sql.rules.CompoundMapping;
+import org.deegree.feature.persistence.sql.rules.FeatureMapping;
+import org.deegree.feature.persistence.sql.rules.GeometryMapping;
+import org.deegree.feature.persistence.sql.rules.Mapping;
+import org.deegree.feature.persistence.sql.rules.PrimitiveMapping;
 import org.deegree.feature.property.Property;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.feature.xpath.FeatureXPathEvaluator;
@@ -409,7 +409,7 @@ public class PostGISFeatureStoreTransaction implements FeatureStoreTransaction {
             if ( mapping != null ) {
                 if ( mapping instanceof PrimitiveMapping ) {
                     String column = null;
-                    MappingExpression me = mapping.getMapping();
+                    MappingExpression me = ( (PrimitiveMapping) mapping ).getMapping();
                     if ( !( me instanceof DBField ) ) {
                         LOG.debug( "Property '" + propName + "' is not mapped to a column. Skipping it." );
                         continue;
@@ -428,7 +428,7 @@ public class PostGISFeatureStoreTransaction implements FeatureStoreTransaction {
                     values.append( "?" );
                 } else if ( mapping instanceof GeometryMapping ) {
                     String column = null;
-                    MappingExpression me = mapping.getMapping();
+                    MappingExpression me = ( (GeometryMapping) mapping ).getMapping();
                     if ( !( me instanceof DBField ) ) {
                         LOG.debug( "Property '" + propName + "' is not mapped to a column. Skipping it." );
                         continue;
@@ -454,7 +454,7 @@ public class PostGISFeatureStoreTransaction implements FeatureStoreTransaction {
                     values.append( fs.getWKBParamTemplate( srid ) );
                 } else if ( mapping instanceof CodeMapping ) {
                     String column = null;
-                    MappingExpression me = mapping.getMapping();
+                    MappingExpression me = ( (CodeMapping) mapping ).getMapping();
                     if ( !( me instanceof DBField ) ) {
                         LOG.debug( "Property '" + propName + "' is not mapped to a column. Skipping it." );
                         continue;
@@ -550,7 +550,7 @@ public class PostGISFeatureStoreTransaction implements FeatureStoreTransaction {
         }
 
         if ( mapping instanceof PrimitiveMapping ) {
-            MappingExpression me = mapping.getMapping();
+            MappingExpression me = ( (PrimitiveMapping) mapping ).getMapping();
             if ( !( me instanceof DBField ) ) {
                 LOG.debug( "Particle  is not mapped to a column. Skipping it." );
                 return;
@@ -721,8 +721,8 @@ public class PostGISFeatureStoreTransaction implements FeatureStoreTransaction {
             InsertRowNode child = new InsertRowNode( tableName, jc );
             node.getRelatedRows().add( child );
 
-            MappingExpression me = propMapping.getMapping();
             if ( propMapping instanceof PrimitiveMapping ) {
+                MappingExpression me = ( (PrimitiveMapping) propMapping ).getMapping();
                 PrimitiveValue primitiveValue = (PrimitiveValue) prop.getValue();
                 if ( primitiveValue != null ) {
                     if ( !( me instanceof DBField ) ) {
@@ -750,8 +750,8 @@ public class PostGISFeatureStoreTransaction implements FeatureStoreTransaction {
             }
 
         } else {
-            MappingExpression me = propMapping.getMapping();
             if ( propMapping instanceof PrimitiveMapping ) {
+                MappingExpression me = ( (PrimitiveMapping) propMapping ).getMapping();
                 PrimitiveValue primitiveValue = (PrimitiveValue) prop.getValue();
                 if ( primitiveValue != null ) {
                     if ( !( me instanceof DBField ) ) {
@@ -800,7 +800,7 @@ public class PostGISFeatureStoreTransaction implements FeatureStoreTransaction {
                 TypedObjectNode node = values[0];
                 if ( node instanceof PrimitiveValue ) {
                     PrimitiveValue primitiveValue = (PrimitiveValue) node;
-                    MappingExpression me = mapping.getMapping();
+                    MappingExpression me = ( (PrimitiveMapping) mapping ).getMapping();
                     if ( !( me instanceof DBField ) ) {
                         LOG.debug( "Skipping primitive mapping. Not mapped to DBField." );
                     } else {
@@ -933,12 +933,12 @@ public class PostGISFeatureStoreTransaction implements FeatureStoreTransaction {
             Mapping mapping = ftMapping.getMapping( propName );
             if ( mapping != null ) {
                 String column = null;
-                MappingExpression me = mapping.getMapping();
-                if ( !( me instanceof DBField ) ) {
-                    continue;
-                }
-                column = ( (DBField) me ).getColumn();
                 if ( mapping instanceof PrimitiveMapping ) {
+                    MappingExpression me = ( (PrimitiveMapping) mapping ).getMapping();
+                    if ( !( me instanceof DBField ) ) {
+                        continue;
+                    }
+                    column = ( (DBField) me ).getColumn();
                     PrimitiveValue value = (PrimitiveValue) replacementProp.getValue();
                     sqlObjects.add( SQLValueMangler.internalToSQL( value ) );
                     if ( !first ) {
@@ -949,6 +949,11 @@ public class PostGISFeatureStoreTransaction implements FeatureStoreTransaction {
                     sql.append( column );
                     sql.append( "=?" );
                 } else if ( mapping instanceof GeometryMapping ) {
+                    MappingExpression me = ( (GeometryMapping) mapping ).getMapping();
+                    if ( !( me instanceof DBField ) ) {
+                        continue;
+                    }
+                    column = ( (DBField) me ).getColumn();
                     String srid = ( (GeometryMapping) mapping ).getSrid();
                     ICRS storageCRS = ( (GeometryMapping) mapping ).getCRS();
                     Geometry value = (Geometry) replacementProp.getValue();

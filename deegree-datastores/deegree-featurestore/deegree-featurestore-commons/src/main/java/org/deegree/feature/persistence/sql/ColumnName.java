@@ -1,4 +1,4 @@
-package org.deegree.feature.persistence.mapping;
+package org.deegree.feature.persistence.sql;
 
 public class ColumnName {
 

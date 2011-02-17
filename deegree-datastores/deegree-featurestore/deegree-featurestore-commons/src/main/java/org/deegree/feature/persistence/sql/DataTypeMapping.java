@@ -1,7 +1,7 @@
 //$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
- Copyright (C) 2001-2009 by:
+ Copyright (C) 2001-2011 by:
  - Department of Geography, University of Bonn -
  and
  - lat/lon GmbH -
@@ -33,59 +33,43 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.feature.persistence.mapping.property;
+package org.deegree.feature.persistence.sql;
 
-import org.deegree.feature.persistence.mapping.JoinChain;
-import org.deegree.filter.expression.PropertyName;
-import org.deegree.filter.sql.MappingExpression;
+import java.util.List;
+
+import javax.xml.namespace.QName;
+
+import org.apache.xerces.xs.XSElementDeclaration;
+import org.deegree.commons.jdbc.QTableName;
+import org.deegree.feature.persistence.sql.rules.Mapping;
 
 /**
- * A {@link Mapping} identifies a relative XPath-expression with a mapping / navigation rule in the relational model.
+ * Defines the mapping between an {@link XSElementDeclaration} and a table.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
  */
-public abstract class Mapping {
+public class DataTypeMapping {
 
-    private final PropertyName path;
+    private final XSElementDeclaration elDecl;
 
-    private final MappingExpression mapping;
+    private final QTableName table;
 
-    private final JoinChain joinedTable;
+    private final List<Mapping> particles;
 
-    protected Mapping( PropertyName path, MappingExpression mapping, JoinChain joinedTable ) {
-        this.path = path;
-        this.mapping = mapping;
-        this.joinedTable = joinedTable;
+    public DataTypeMapping( XSElementDeclaration elDecl, QTableName table, List<Mapping> particles ) {
+        this.elDecl = elDecl;
+        this.table = table;
+        this.particles = particles;
     }
 
-    /**
-     * Returns a relative XPath-expression that describes the path from the parent particle to the particle(s) that are
-     * affected by this rule.
-     * 
-     * @return a relative xpath expression, never <code>null</code>
-     */
-    public PropertyName getPath() {
-        return path;
+    public QName getElementName() {
+        return new QName( elDecl.getNamespace(), elDecl.getName() );
     }
 
-    /**
-     * Returns the table joins in the relational model.
-     * 
-     * @return the table joins, can be <code>null</code> (no table change)
-     */
-    public JoinChain getJoinedTable() {
-        return joinedTable;
-    }
-
-    public MappingExpression getMapping() {
-        return mapping;
-    }
-
-    @Override
-    public String toString() {
-        return "{path=" + path + ",joinChain=" + joinedTable + "}";
+    public List<Mapping> getParticles() {
+        return particles;
     }
 }

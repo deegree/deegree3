@@ -1,7 +1,7 @@
-//$HeadURL: svn+ssh://mschneider@svn.wald.intevation.org/deegree/base/trunk/resources/eclipse/files_template.xml $
+//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
- Copyright (C) 2001-2010 by:
+ Copyright (C) 2001-2009 by:
  - Department of Geography, University of Bonn -
  and
  - lat/lon GmbH -
@@ -33,21 +33,52 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.feature.persistence.mapping.id;
+package org.deegree.feature.persistence.sql;
+
+import org.deegree.feature.types.FeatureType;
 
 /**
- * {@link IDGenerator} that uses database sequences to generate new ids.
+ * The <code></code> class TODO add class documentation here.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author: markus $
+ * @author last edited by: $Author$
  * 
- * @version $Revision: $, $Date: $
+ * @version $Revision$, $Date$
  */
-public class SequenceIDGenerator implements IDGenerator {
+public class IdAnalysis {
 
-    private final String sequence;
+    private final FeatureType ft;
 
-    public SequenceIDGenerator( String sequence ) {
-        this.sequence = sequence;
+    private final boolean isFid;
+
+    private String idKernel;
+
+    IdAnalysis( FeatureType ft, String idKernel, boolean isFid ) {
+        this.ft = ft;
+        this.idKernel = idKernel;
+        this.isFid = isFid;
+    }
+
+    /**
+     * @return
+     */
+    public FeatureType getFeatureType() {
+        return ft;
+    }
+
+    public String getIdKernel() {
+        return idKernel;
+    }
+
+    /**
+     * @return
+     */
+    public boolean isFid() {
+        return isFid;
+    }
+
+    @Override
+    public String toString() {
+        return "ft=" + ft.getName() + ",idKernel=" + idKernel;
     }
 }

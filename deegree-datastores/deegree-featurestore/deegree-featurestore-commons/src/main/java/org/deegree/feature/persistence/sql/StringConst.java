@@ -33,61 +33,29 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.feature.persistence.mapping.property;
+package org.deegree.feature.persistence.sql;
 
-import org.deegree.cs.coordinatesystems.ICRS;
-import org.deegree.feature.persistence.mapping.JoinChain;
-import org.deegree.feature.types.property.GeometryPropertyType.CoordinateDimension;
-import org.deegree.feature.types.property.GeometryPropertyType.GeometryType;
-import org.deegree.filter.expression.PropertyName;
 import org.deegree.filter.sql.MappingExpression;
-import org.deegree.geometry.Geometry;
+
 
 /**
- * {@link Mapping} of {@link Geometry} particles.
+ * The <code></code> class TODO add class documentation here.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
  */
-public class GeometryMapping extends Mapping {
+public class StringConst implements MappingExpression {
 
-    private GeometryType type;
+    private String s;
 
-    private CoordinateDimension dim;
-
-    private ICRS crs;
-
-    private String srid;
-
-    public GeometryMapping( PropertyName path, MappingExpression mapping, GeometryType type, CoordinateDimension dim,
-                            ICRS crs, String srid, JoinChain joinedTable ) {
-        super( path, mapping, joinedTable );
-        this.type = type;
-        this.dim = dim;
-        this.crs = crs;
-        this.srid = srid;
-    }
-
-    public GeometryType getType() {
-        return type;
-    }
-
-    public CoordinateDimension getDim() {
-        return dim;
-    }
-
-    public ICRS getCRS() {
-        return crs;
-    }
-
-    public String getSrid() {
-        return srid;
+    public StringConst( String s ) {
+        this.s = s;
     }
 
     @Override
     public String toString() {
-        return super.toString() + ",{type=" + type + "}";
+        return "'" + s + "'";
     }
 }

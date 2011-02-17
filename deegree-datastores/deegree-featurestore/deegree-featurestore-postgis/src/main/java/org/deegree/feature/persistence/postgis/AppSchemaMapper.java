@@ -39,7 +39,7 @@ import static javax.xml.XMLConstants.NULL_NS_URI;
 import static org.apache.xerces.xs.XSComplexTypeDefinition.CONTENTTYPE_ELEMENT;
 import static org.apache.xerces.xs.XSComplexTypeDefinition.CONTENTTYPE_EMPTY;
 import static org.deegree.commons.tom.primitive.PrimitiveType.STRING;
-import static org.deegree.feature.persistence.BlobCodec.Compression.NONE;
+import static org.deegree.feature.persistence.sql.blob.BlobCodec.Compression.NONE;
 import static org.deegree.feature.types.property.GeometryPropertyType.CoordinateDimension.DIM_2;
 import static org.deegree.gml.GMLVersion.GML_32;
 
@@ -66,23 +66,23 @@ import org.deegree.commons.jdbc.QTableName;
 import org.deegree.commons.tom.primitive.PrimitiveType;
 import org.deegree.commons.tom.primitive.XMLValueMangler;
 import org.deegree.cs.coordinatesystems.ICRS;
-import org.deegree.feature.persistence.BlobCodec;
-import org.deegree.feature.persistence.mapping.BBoxTableMapping;
-import org.deegree.feature.persistence.mapping.BlobMapping;
-import org.deegree.feature.persistence.mapping.DataTypeMapping;
-import org.deegree.feature.persistence.mapping.FeatureTypeMapping;
-import org.deegree.feature.persistence.mapping.JoinChain;
-import org.deegree.feature.persistence.mapping.MappedApplicationSchema;
-import org.deegree.feature.persistence.mapping.id.FIDMapping;
-import org.deegree.feature.persistence.mapping.id.IDGenerator;
-import org.deegree.feature.persistence.mapping.id.UUIDGenerator;
-import org.deegree.feature.persistence.mapping.property.CodeMapping;
-import org.deegree.feature.persistence.mapping.property.CompoundMapping;
-import org.deegree.feature.persistence.mapping.property.FeatureMapping;
-import org.deegree.feature.persistence.mapping.property.GenericObjectMapping;
-import org.deegree.feature.persistence.mapping.property.GeometryMapping;
-import org.deegree.feature.persistence.mapping.property.Mapping;
-import org.deegree.feature.persistence.mapping.property.PrimitiveMapping;
+import org.deegree.feature.persistence.sql.BBoxTableMapping;
+import org.deegree.feature.persistence.sql.BlobMapping;
+import org.deegree.feature.persistence.sql.DataTypeMapping;
+import org.deegree.feature.persistence.sql.FeatureTypeMapping;
+import org.deegree.feature.persistence.sql.JoinChain;
+import org.deegree.feature.persistence.sql.MappedApplicationSchema;
+import org.deegree.feature.persistence.sql.blob.BlobCodec;
+import org.deegree.feature.persistence.sql.id.FIDMapping;
+import org.deegree.feature.persistence.sql.id.IDGenerator;
+import org.deegree.feature.persistence.sql.id.UUIDGenerator;
+import org.deegree.feature.persistence.sql.rules.CodeMapping;
+import org.deegree.feature.persistence.sql.rules.CompoundMapping;
+import org.deegree.feature.persistence.sql.rules.FeatureMapping;
+import org.deegree.feature.persistence.sql.rules.GenericObjectMapping;
+import org.deegree.feature.persistence.sql.rules.GeometryMapping;
+import org.deegree.feature.persistence.sql.rules.Mapping;
+import org.deegree.feature.persistence.sql.rules.PrimitiveMapping;
 import org.deegree.feature.types.ApplicationSchema;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.feature.types.property.CodePropertyType;
@@ -339,9 +339,8 @@ public class AppSchemaMapper {
             propMc = mcManager.mapOneToManyElements( mc, pt.getName() );
             jc = generateJoinChain( mc, propMc );
         }
-        MappingExpression mapping = new DBField( propMc.getColumn() );
         List<Mapping> particles = generateMapping( pt.getXSDValueType(), propMc, new HashMap<QName, QName>() );
-        return new CompoundMapping( path, mapping, particles, jc );
+        return new CompoundMapping( path, particles, jc );
     }
 
     private CodeMapping generatePropMapping( CodePropertyType pt, MappingContext mc ) {
@@ -380,7 +379,7 @@ public class AppSchemaMapper {
             NamespaceContext nsContext = null;
             PropertyName path = new PropertyName( "text()", nsContext );
             String column = mc.getColumn();
-            if (column == null || column.isEmpty()) {
+            if ( column == null || column.isEmpty() ) {
                 column = "value";
             }
             DBField dbField = new DBField( mc.getTable(), column );
@@ -545,8 +544,6 @@ public class AppSchemaMapper {
                     }
                     elements2.put( elName, getQName( typeDef ) );
 
-                    MappingExpression mapping = new DBField( elMC.getColumn() );
-
                     JoinChain jc = null;
                     if ( occurence == -1 ) {
                         jc = generateJoinChain( mc, elMC );
@@ -554,8 +551,9 @@ public class AppSchemaMapper {
 
                     if ( typeDef instanceof XSComplexTypeDefinition ) {
                         List<Mapping> particles = generateMapping( (XSComplexTypeDefinition) typeDef, elMC, elements2 );
-                        mappings.add( new CompoundMapping( path, mapping, particles, jc ) );
+                        mappings.add( new CompoundMapping( path, particles, jc ) );
                     } else {
+                        MappingExpression mapping = new DBField( elMC.getColumn() );
                         PrimitiveType pt = XMLValueMangler.getPrimitiveType( (XSSimpleTypeDefinition) typeDef );
                         mappings.add( new PrimitiveMapping( path, mapping, pt, jc ) );
                     }

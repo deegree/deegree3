@@ -1,7 +1,7 @@
 //$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
- Copyright (C) 2001-2009 by:
+ Copyright (C) 2001-2011 by:
  - Department of Geography, University of Bonn -
  and
  - lat/lon GmbH -
@@ -33,52 +33,60 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.feature.persistence.mapping;
+package org.deegree.feature.persistence.sql.rules;
 
-import org.deegree.feature.types.FeatureType;
+import org.deegree.feature.persistence.sql.JoinChain;
+import org.deegree.filter.expression.PropertyName;
 
 /**
- * The <code></code> class TODO add class documentation here.
+ * A {@link Mapping} identifies a relative XPath-expression in the feature type model with a mapping / join rule in the
+ * relational model.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
  */
-public class IdAnalysis {
+public abstract class Mapping {
 
-    private final FeatureType ft;
+    private final PropertyName path;
 
-    private final boolean isFid;
+    private final JoinChain joinedTable;
 
-    private String idKernel;
-
-    IdAnalysis( FeatureType ft, String idKernel, boolean isFid ) {
-        this.ft = ft;
-        this.idKernel = idKernel;
-        this.isFid = isFid;
+    /**
+     * Creates a new {@link Mapping} instance.
+     * 
+     * @param path
+     *            relative xpath expression, must not be <code>null</code>
+     * @param joinRule
+     *            the table joins, can be <code>null</code> (no joins involved)
+     */
+    protected Mapping( PropertyName path, JoinChain joinRule ) {
+        this.path = path;
+        this.joinedTable = joinRule;
     }
 
     /**
-     * @return
+     * Returns a relative XPath-expression that describes the path from the parent particle to the particle(s) that are
+     * affected by this rule.
+     * 
+     * @return a relative xpath expression, never <code>null</code>
      */
-    public FeatureType getFeatureType() {
-        return ft;
-    }
-
-    public String getIdKernel() {
-        return idKernel;
+    public PropertyName getPath() {
+        return path;
     }
 
     /**
-     * @return
+     * Returns the table joins in the relational model.
+     * 
+     * @return the table joins, can be <code>null</code> (no joins involved)
      */
-    public boolean isFid() {
-        return isFid;
+    public JoinChain getJoinedTable() {
+        return joinedTable;
     }
 
     @Override
     public String toString() {
-        return "ft=" + ft.getName() + ",idKernel=" + idKernel;
+        return "{path=" + path + ",joinChain=" + joinedTable + "}";
     }
 }

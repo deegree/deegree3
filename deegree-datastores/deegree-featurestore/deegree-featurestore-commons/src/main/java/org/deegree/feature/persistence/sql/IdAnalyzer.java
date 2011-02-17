@@ -33,12 +33,12 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.feature.persistence.mapping;
+package org.deegree.feature.persistence.sql;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import org.deegree.feature.persistence.mapping.id.FIDMapping;
+import org.deegree.feature.persistence.sql.id.FIDMapping;
 import org.deegree.feature.types.FeatureType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

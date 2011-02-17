@@ -41,7 +41,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.deegree.commons.jdbc.QTableName;
-import org.deegree.feature.persistence.mapping.JoinChain;
+import org.deegree.feature.persistence.sql.JoinChain;
 import org.deegree.filter.sql.DBField;
 
 public class InsertRowNode {
