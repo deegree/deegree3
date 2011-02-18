@@ -40,6 +40,7 @@ import static java.util.Collections.singletonMap;
 import java.net.URL;
 import java.util.Map;
 
+import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.jaxb.JAXBUtils;
 import org.deegree.cs.coordinatesystems.ICRS;
@@ -71,12 +72,13 @@ public class BatchedMTFileStoreProvider implements BatchedMTStoreProvider {
     }
 
     @Override
-    public BatchedMTStore build( URL configURL ) {
+    public BatchedMTStore build( URL configURL, DeegreeWorkspace workspace ) {
 
         BatchedMTStore bs = null;
         try {
             BatchedMTFileStoreConfig config = (BatchedMTFileStoreConfig) JAXBUtils.unmarshall( CONFIG_JAXB_PACKAGE,
-                                                                                               CONFIG_SCHEMA, configURL );
+                                                                                               CONFIG_SCHEMA,
+                                                                                               configURL, workspace );
 
             XMLAdapter resolver = new XMLAdapter();
             resolver.setSystemId( configURL.toString() );

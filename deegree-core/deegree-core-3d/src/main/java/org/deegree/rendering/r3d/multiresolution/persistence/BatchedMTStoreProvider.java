@@ -37,6 +37,7 @@ package org.deegree.rendering.r3d.multiresolution.persistence;
 
 import java.net.URL;
 
+import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceProvider;
 
 /**
@@ -58,5 +59,5 @@ public interface BatchedMTStoreProvider extends ResourceProvider {
      * @throws IllegalArgumentException
      *             if the configuration contains an error or creation fails
      */
-    public BatchedMTStore build( URL configURL );
+    public BatchedMTStore build( URL configURL, DeegreeWorkspace workspace );
 }

@@ -42,6 +42,9 @@ import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -93,8 +96,31 @@ public class DeegreeWorkspace {
 
     private Map<Class<? extends ResourceManager>, ResourceManager> managerMap;
 
+    private ClassLoader moduleClassLoader;
+
     private void load() {
-        Iterator<ResourceManager> iter = ServiceLoader.load( ResourceManager.class ).iterator();
+        // setup classloader
+        File modules = new File( dir, "modules" );
+        moduleClassLoader = Thread.currentThread().getContextClassLoader();
+        if ( modules.exists() ) {
+            File[] fs = modules.listFiles();
+            if ( fs != null ) {
+                List<URL> urls = new ArrayList<URL>( fs.length );
+                for ( int i = 0; i < fs.length; ++i ) {
+                    if ( fs[i].isFile() ) {
+                        try {
+                            urls.add( fs[i].toURI().toURL() );
+                        } catch ( MalformedURLException e ) {
+                            LOG.warn( "Module {} could not be loaded: {}", fs[i].getName(), e.getLocalizedMessage() );
+                        }
+                    }
+                }
+                moduleClassLoader = new URLClassLoader( urls.toArray( new URL[urls.size()] ), moduleClassLoader );
+            }
+        }
+
+        // setup managers
+        Iterator<ResourceManager> iter = ServiceLoader.load( ResourceManager.class, getModuleClassLoader() ).iterator();
 
         Map<ResourceManager, List<Class<? extends ResourceManager>>> map = new HashMap<ResourceManager, List<Class<? extends ResourceManager>>>();
         managerMap = new HashMap<Class<? extends ResourceManager>, ResourceManager>();
@@ -279,6 +305,10 @@ public class DeegreeWorkspace {
         for ( ResourceManager m : managers ) {
             m.shutdown();
         }
+    }
+
+    public ClassLoader getModuleClassLoader() {
+        return moduleClassLoader;
     }
 
     /**

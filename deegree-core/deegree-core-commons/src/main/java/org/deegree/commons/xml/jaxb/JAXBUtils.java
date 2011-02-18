@@ -48,6 +48,7 @@ import javax.xml.stream.XMLStreamReader;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 
+import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.xml.XMLAdapter;
 import org.slf4j.Logger;
 import org.xml.sax.SAXException;
@@ -94,10 +95,16 @@ public class JAXBUtils {
         }
     }
 
+    @Deprecated
     public static Object unmarshall( String jaxbPackage, String schemaLocation, URL url )
                             throws JAXBException {
+        return unmarshall( jaxbPackage, schemaLocation, url, null );
+    }
+
+    public static Object unmarshall( String jaxbPackage, String schemaLocation, URL url, DeegreeWorkspace workspace )
+                            throws JAXBException {
         Object o = null;
-        Unmarshaller u = getUnmarshaller( jaxbPackage, schemaLocation );
+        Unmarshaller u = getUnmarshaller( jaxbPackage, schemaLocation, workspace );
         try {
             o = u.unmarshal( url );
         } catch ( JAXBException e ) {
@@ -111,11 +118,18 @@ public class JAXBUtils {
         return o;
     }
 
+    @Deprecated
     public static Object unmarshall( String jaxbPackage, String schemaLocation, XMLAdapter xmlAdapter )
+                            throws JAXBException {
+        return unmarshall( jaxbPackage, schemaLocation, xmlAdapter, null );
+    }
+
+    public static Object unmarshall( String jaxbPackage, String schemaLocation, XMLAdapter xmlAdapter,
+                                     DeegreeWorkspace workspace )
                             throws JAXBException {
         XMLStreamReader xmlStream = xmlAdapter.getRootElement().getXMLStreamReaderWithoutCaching();
         Object o = null;
-        Unmarshaller u = getUnmarshaller( jaxbPackage, schemaLocation );
+        Unmarshaller u = getUnmarshaller( jaxbPackage, schemaLocation, workspace );
         try {
             o = u.unmarshal( xmlStream );
         } catch ( JAXBException e ) {
@@ -144,12 +158,16 @@ public class JAXBUtils {
      * @throws JAXBException
      *             if the {@link Unmarshaller} could not be created.
      */
-    public static Unmarshaller getUnmarshaller( String jaxbPackage, String schemaLocation )
+    public static Unmarshaller getUnmarshaller( String jaxbPackage, String schemaLocation, DeegreeWorkspace workspace )
                             throws JAXBException {
 
         JAXBContext jc = null;
         try {
-            jc = JAXBContext.newInstance( jaxbPackage );
+            if ( workspace == null ) {
+                jc = JAXBContext.newInstance( jaxbPackage );
+            } else {
+                jc = JAXBContext.newInstance( jaxbPackage, workspace.getModuleClassLoader() );
+            }
         } catch ( JAXBException e ) {
             LOG.error( "Unable to instantiate JAXBContext for package '{}'", jaxbPackage );
             throw e;
@@ -184,7 +202,7 @@ public class JAXBUtils {
                 result = sf.newSchema( url );
             } catch ( SAXException e ) {
                 LOG.error( "No schema could be loaded from file: " + schemaFile + " because: "
-                                                   + e.getLocalizedMessage(), e );
+                           + e.getLocalizedMessage(), e );
             }
         }
         return result;

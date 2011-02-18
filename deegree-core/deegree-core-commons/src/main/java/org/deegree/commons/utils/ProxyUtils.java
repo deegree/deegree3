@@ -122,9 +122,11 @@ public final class ProxyUtils implements ResourceManager {
         LOG.info( "Proxy configuration." );
         LOG.info( "--------------------------------------------------------------------------------" );
         try {
-            ProxyConfiguration proxyConfig = (ProxyConfiguration) JAXBUtils.unmarshall( CONFIG_JAXB_PACKAGE,
+            ProxyConfiguration proxyConfig = (ProxyConfiguration) JAXBUtils.unmarshall(
+                                                                                        CONFIG_JAXB_PACKAGE,
                                                                                         CONFIG_SCHEMA,
-                                                                                        proxyConfigFile.toURI().toURL() );
+                                                                                        proxyConfigFile.toURI().toURL(),
+                                                                                        workspace );
             if ( proxyConfig != null ) {
                 setupProxyParameters( proxyConfig );
             }

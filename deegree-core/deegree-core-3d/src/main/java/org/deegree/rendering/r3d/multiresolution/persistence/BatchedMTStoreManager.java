@@ -76,31 +76,11 @@ public class BatchedMTStoreManager implements ResourceManager {
 
     private static final Logger LOG = LoggerFactory.getLogger( BatchedMTStoreManager.class );
 
-    private static ServiceLoader<BatchedMTStoreProvider> providerLoader = ServiceLoader.load( BatchedMTStoreProvider.class );
+    Map<String, BatchedMTStoreProvider> nsToProvider = new ConcurrentHashMap<String, BatchedMTStoreProvider>();
 
-    static Map<String, BatchedMTStoreProvider> nsToProvider = new ConcurrentHashMap<String, BatchedMTStoreProvider>();
+    private DeegreeWorkspace workspace;
 
     private static Map<String, BatchedMTStore> idToStore = Collections.synchronizedMap( new HashMap<String, BatchedMTStore>() );
-
-    static {
-        try {
-            for ( BatchedMTStoreProvider builder : providerLoader ) {
-                if ( builder != null ) {
-                    LOG.debug( "Service loader found BatchedMTStoreProvider: " + builder + ", namespace: "
-                               + builder.getConfigNamespace() );
-                    if ( nsToProvider.containsKey( builder.getConfigNamespace() ) ) {
-                        LOG.error( "Multiple BatchedMTStoreProviders for config namespace: '"
-                                   + builder.getConfigNamespace() + "' on classpath -- omitting provider '"
-                                   + builder.getClass().getName() + "'." );
-                        continue;
-                    }
-                    nsToProvider.put( builder.getConfigNamespace(), builder );
-                }
-            }
-        } catch ( Exception e ) {
-            LOG.error( e.getMessage(), e );
-        }
-    }
 
     /**
      * Initializes the {@link BatchedMTStoreManager} by loading all {@link BatchedMTStore} configurations from the given
@@ -109,7 +89,7 @@ public class BatchedMTStoreManager implements ResourceManager {
      * @param configLocation
      *            containing BatchedMT manager configurations
      */
-    public static void init( File configLocation ) {
+    public void init( File configLocation ) {
         if ( !configLocation.exists() ) {
             LOG.info( "No 'datasources/batchedmt' directory -- skipping initialization of batchedmt stores." );
             return;
@@ -188,7 +168,7 @@ public class BatchedMTStoreManager implements ResourceManager {
      * @throws IllegalArgumentException
      *             if the creation fails, e.g. due to a configuration error
      */
-    private static synchronized BatchedMTStore create( URL configURL )
+    private synchronized BatchedMTStore create( URL configURL )
                             throws IllegalArgumentException {
 
         String namespace = null;
@@ -199,7 +179,7 @@ public class BatchedMTStoreManager implements ResourceManager {
         } catch ( Exception e ) {
             String msg = "Error determining configuration namespace for file '" + configURL + "'";
             LOG.error( msg );
-            throw new IllegalArgumentException( msg );
+            throw new IllegalArgumentException( msg, e );
         }
         LOG.debug( "Config namespace: '" + namespace + "'" );
         BatchedMTStoreProvider builder = nsToProvider.get( namespace );
@@ -209,7 +189,7 @@ public class BatchedMTStoreManager implements ResourceManager {
             LOG.error( msg );
             throw new IllegalArgumentException( msg );
         }
-        return builder.build( configURL );
+        return builder.build( configURL, workspace );
     }
 
     public Class<? extends ResourceManager>[] getDependencies() {
@@ -222,6 +202,27 @@ public class BatchedMTStoreManager implements ResourceManager {
     }
 
     public void startup( DeegreeWorkspace workspace ) {
+        this.workspace = workspace;
+        ServiceLoader<BatchedMTStoreProvider> providerLoader = ServiceLoader.load( BatchedMTStoreProvider.class,
+                                                                                   workspace.getModuleClassLoader() );
+        try {
+            for ( BatchedMTStoreProvider builder : providerLoader ) {
+                if ( builder != null ) {
+                    LOG.debug( "Service loader found BatchedMTStoreProvider: " + builder + ", namespace: "
+                               + builder.getConfigNamespace() );
+                    if ( nsToProvider.containsKey( builder.getConfigNamespace() ) ) {
+                        LOG.error( "Multiple BatchedMTStoreProviders for config namespace: '"
+                                   + builder.getConfigNamespace() + "' on classpath -- omitting provider '"
+                                   + builder.getClass().getName() + "'." );
+                        continue;
+                    }
+                    nsToProvider.put( builder.getConfigNamespace(), builder );
+                }
+            }
+        } catch ( Exception e ) {
+            LOG.error( e.getMessage(), e );
+        }
+
         init( new File( workspace.getLocation(), "datasources" + separator + "batchedmt" ) );
     }
 

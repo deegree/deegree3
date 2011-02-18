@@ -58,8 +58,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.ServiceLoader;
 
-import javax.faces.bean.ApplicationScoped;
 import javax.faces.bean.ManagedBean;
+import javax.faces.bean.SessionScoped;
 import javax.faces.component.html.HtmlCommandButton;
 import javax.faces.component.html.HtmlCommandLink;
 import javax.faces.context.ExternalContext;
@@ -91,7 +91,7 @@ import org.slf4j.Logger;
  * @version $Revision: $, $Date: $
  */
 @ManagedBean
-@ApplicationScoped
+@SessionScoped
 public class ConfigManager {
 
     private static final Logger LOG = getLogger( ConfigManager.class );
@@ -149,46 +149,7 @@ public class ConfigManager {
     private boolean modified;
 
     public ConfigManager() {
-        resourceManagers = new LinkedList<ResourceManager>();
-        resourceManagerMap = new HashMap<String, ResourceManager>();
-        ServiceLoader<org.deegree.commons.config.ResourceManager> loaded = ServiceLoader.load( org.deegree.commons.config.ResourceManager.class );
-        for ( org.deegree.commons.config.ResourceManager mgr : loaded ) {
-            ResourceManagerMetadata md = mgr.getMetadata();
-            if ( md != null ) {
-                ResourceManager mng = new ResourceManager( getViewForMetadata( md ), md );
-                resourceManagers.add( mng );
-                resourceManagerMap.put( mng.metadata.getName(), mng );
-            }
-        }
-
-        File ws = getServiceWorkspace().getLocation();
-        File proxyFile = new File( ws, "proxy.xml" );
-        URL schema = ConfigManager.class.getResource( "/META-INF/schemas/proxy/3.0.0/proxy.xsd" );
-        URL template = ConfigManager.class.getResource( "/META-INF/schemas/proxy/3.0.0/example.xml" );
-        try {
-            proxyConfig = new Config( proxyFile, schema, template, this, "/console/jsf/proxy" );
-        } catch ( IOException e ) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-        File metadataFile = new File( ws, "services/metadata.xml" );
-        schema = ConfigManager.class.getResource( "/META-INF/schemas/metadata/3.0.0/metadata.xsd" );
-        template = ConfigManager.class.getResource( "/META-INF/schemas/metadata/3.0.0/example.xml" );
-        try {
-            metadataConfig = new Config( metadataFile, schema, template, this, "/console/jsf/webservices" );
-        } catch ( IOException e ) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-        File mainFile = new File( ws, "services/main.xml" );
-        schema = ConfigManager.class.getResource( "/META-INF/schemas/controller/3.0.0/controller.xsd" );
-        template = ConfigManager.class.getResource( "/META-INF/schemas/controller/3.0.0/example.xml" );
-        try {
-            mainConfig = new Config( mainFile, schema, template, this, "/console/jsf/webservices" );
-        } catch ( IOException e ) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
+        reloadResourceManagers();
     }
 
     public void setNewConfigType( String newConfigType ) {
@@ -253,6 +214,53 @@ public class ConfigManager {
                     }
                 }
             }
+        }
+    }
+
+    private void reloadResourceManagers() {
+        File ws = getServiceWorkspace().getLocation();
+
+        resourceManagers = new LinkedList<ResourceManager>();
+        resourceManagerMap = new HashMap<String, ResourceManager>();
+
+        ServiceLoader<org.deegree.commons.config.ResourceManager> loaded;
+        loaded = ServiceLoader.load( org.deegree.commons.config.ResourceManager.class,
+                                     getServiceWorkspace().getModuleClassLoader() );
+        for ( org.deegree.commons.config.ResourceManager mgr : loaded ) {
+            ResourceManagerMetadata md = mgr.getMetadata();
+            if ( md != null ) {
+                ResourceManager mng = new ResourceManager( getViewForMetadata( md ), md );
+                resourceManagers.add( mng );
+                resourceManagerMap.put( mng.metadata.getName(), mng );
+            }
+        }
+
+        File proxyFile = new File( ws, "proxy.xml" );
+        URL schema = ConfigManager.class.getResource( "/META-INF/schemas/proxy/3.0.0/proxy.xsd" );
+        URL template = ConfigManager.class.getResource( "/META-INF/schemas/proxy/3.0.0/example.xml" );
+        try {
+            proxyConfig = new Config( proxyFile, schema, template, this, "/console/jsf/proxy" );
+        } catch ( IOException e ) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        File metadataFile = new File( ws, "services/metadata.xml" );
+        schema = ConfigManager.class.getResource( "/META-INF/schemas/metadata/3.0.0/metadata.xsd" );
+        template = ConfigManager.class.getResource( "/META-INF/schemas/metadata/3.0.0/example.xml" );
+        try {
+            metadataConfig = new Config( metadataFile, schema, template, this, "/console/jsf/webservices" );
+        } catch ( IOException e ) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        File mainFile = new File( ws, "services/main.xml" );
+        schema = ConfigManager.class.getResource( "/META-INF/schemas/controller/3.0.0/controller.xsd" );
+        template = ConfigManager.class.getResource( "/META-INF/schemas/controller/3.0.0/example.xml" );
+        try {
+            mainConfig = new Config( mainFile, schema, template, this, "/console/jsf/webservices" );
+        } catch ( IOException e ) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
         }
     }
 
@@ -380,6 +388,7 @@ public class ConfigManager {
 
         modified = false;
 
+        reloadResourceManagers();
         update();
 
         lastMessage = "Workspace changes have been applied.";

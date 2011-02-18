@@ -108,7 +108,7 @@ public class ConnectionManager implements ResourceManager, ResourceProvider {
      * 
      * @param jdbcDir
      */
-    public static void init( File jdbcDir ) {
+    public void init( File jdbcDir, DeegreeWorkspace workspace ) {
 
         idToPools.put( "LOCK_DB", h2conn );
 
@@ -131,7 +131,7 @@ public class ConnectionManager implements ResourceManager, ResourceProvider {
             String fsId = fileName.substring( 0, fileName.length() - 4 );
             LOG.info( "Setting up JDBC connection '" + fsId + "' from file '" + fileName + "'..." + "" );
             try {
-                addConnection( fsConfigFile.toURI().toURL(), fsId );
+                addConnection( fsConfigFile.toURI().toURL(), fsId, workspace );
             } catch ( Exception e ) {
                 LOG.error( "Error initializing JDBC connection pool: " + e.getMessage(), e );
             }
@@ -199,11 +199,11 @@ public class ConnectionManager implements ResourceManager, ResourceProvider {
      * @param connId
      * @throws JAXBException
      */
-    public static void addConnection( URL jdbcConfigUrl, String connId )
+    public void addConnection( URL jdbcConfigUrl, String connId, DeegreeWorkspace workspace )
                             throws JAXBException {
         synchronized ( ConnectionManager.class ) {
             JDBCConnection pc = (JDBCConnection) JAXBUtils.unmarshall( CONFIG_JAXB_PACKAGE, CONFIG_SCHEMA,
-                                                                       jdbcConfigUrl );
+                                                                       jdbcConfigUrl, workspace );
             addConnection( pc, connId );
         }
     }
@@ -318,7 +318,7 @@ public class ConnectionManager implements ResourceManager, ResourceProvider {
     }
 
     public void startup( DeegreeWorkspace workspace ) {
-        init( new File( workspace.getLocation(), "jdbc" ) );
+        init( new File( workspace.getLocation(), "jdbc" ), workspace );
     }
 
     @SuppressWarnings("unchecked")
