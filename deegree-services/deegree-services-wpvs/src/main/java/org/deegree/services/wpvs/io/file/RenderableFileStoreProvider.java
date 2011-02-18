@@ -48,6 +48,7 @@ import java.util.Map;
 
 import javax.xml.bind.JAXBException;
 
+import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.jaxb.JAXBUtils;
 import org.deegree.rendering.r3d.jaxb.renderable.RenderableFileStoreConfig;
@@ -81,12 +82,12 @@ public class RenderableFileStoreProvider implements RenderableStoreProvider {
     }
 
     @Override
-    public RenderableStore build( URL configURL ) {
+    public RenderableStore build( URL configURL, DeegreeWorkspace workspace ) {
         RenderableStore rs = null;
         try {
             RenderableFileStoreConfig config = (RenderableFileStoreConfig) JAXBUtils.unmarshall( CONFIG_JAXB_PACKAGE,
                                                                                                  CONFIG_SCHEMA,
-                                                                                                 configURL );
+                                                                                                 configURL, workspace );
 
             XMLAdapter resolver = new XMLAdapter();
             resolver.setSystemId( configURL.toString() );

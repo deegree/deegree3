@@ -76,31 +76,9 @@ public class RenderableStoreManager implements ResourceManager {
 
     private static final Logger LOG = LoggerFactory.getLogger( RenderableStoreManager.class );
 
-    private static ServiceLoader<RenderableStoreProvider> providerLoader = ServiceLoader.load( RenderableStoreProvider.class );
-
-    static Map<String, RenderableStoreProvider> nsToProvider = new ConcurrentHashMap<String, RenderableStoreProvider>();
+    Map<String, RenderableStoreProvider> nsToProvider = new ConcurrentHashMap<String, RenderableStoreProvider>();
 
     private static Map<String, RenderableStore> idToStore = Collections.synchronizedMap( new HashMap<String, RenderableStore>() );
-
-    static {
-        try {
-            for ( RenderableStoreProvider builder : providerLoader ) {
-                if ( builder != null ) {
-                    LOG.debug( "Service loader found RenderableStoreProvider: " + builder + ", namespace: "
-                               + builder.getConfigNamespace() );
-                    if ( nsToProvider.containsKey( builder.getConfigNamespace() ) ) {
-                        LOG.error( "Multiple RenderableStoreProviders for config namespace: '"
-                                   + builder.getConfigNamespace() + "' on classpath -- omitting provider '"
-                                   + builder.getClass().getName() + "'." );
-                        continue;
-                    }
-                    nsToProvider.put( builder.getConfigNamespace(), builder );
-                }
-            }
-        } catch ( Exception e ) {
-            LOG.error( e.getMessage(), e );
-        }
-    }
 
     /**
      * Initializes the {@link RenderableStoreManager} by loading all {@link RenderableStore} configurations from the
@@ -109,7 +87,7 @@ public class RenderableStoreManager implements ResourceManager {
      * @param configLocation
      *            containing renderable manager configurations
      */
-    public static void init( File configLocation ) {
+    public void init( File configLocation, DeegreeWorkspace workspace ) {
         if ( !configLocation.exists() ) {
             LOG.info( "No 'datasources/renderable' directory -- skipping initialization of renderable stores." );
             return;
@@ -146,7 +124,7 @@ public class RenderableStoreManager implements ResourceManager {
                     LOG.warn( msg );
                 } else {
                     try {
-                        RenderableStore rs = create( rsConfigFile.toURI().toURL() );
+                        RenderableStore rs = create( rsConfigFile.toURI().toURL(), workspace );
                         if ( rs != null ) {
                             LOG.info( "Registering global RenderableStore with id '" + storeId + "', type: '"
                                       + rs.getClass().getCanonicalName() + "'" );
@@ -192,7 +170,7 @@ public class RenderableStoreManager implements ResourceManager {
      * @throws IllegalArgumentException
      *             if the creation fails, e.g. due to a configuration error
      */
-    private static synchronized RenderableStore create( URL configURL )
+    private synchronized RenderableStore create( URL configURL, DeegreeWorkspace workspace )
                             throws IllegalArgumentException {
 
         String namespace = null;
@@ -213,7 +191,7 @@ public class RenderableStoreManager implements ResourceManager {
             LOG.error( msg );
             throw new IllegalArgumentException( msg );
         }
-        return builder.build( configURL );
+        return builder.build( configURL, workspace );
     }
 
     public Class<? extends ResourceManager>[] getDependencies() {
@@ -226,7 +204,27 @@ public class RenderableStoreManager implements ResourceManager {
     }
 
     public void startup( DeegreeWorkspace workspace ) {
-        init( new File( workspace.getLocation(), "datasources" + separator + "renderable" ) );
+        ServiceLoader<RenderableStoreProvider> providerLoader = ServiceLoader.load( RenderableStoreProvider.class,
+                                                                                    workspace.getModuleClassLoader() );
+        try {
+            for ( RenderableStoreProvider builder : providerLoader ) {
+                if ( builder != null ) {
+                    LOG.debug( "Service loader found RenderableStoreProvider: " + builder + ", namespace: "
+                               + builder.getConfigNamespace() );
+                    if ( nsToProvider.containsKey( builder.getConfigNamespace() ) ) {
+                        LOG.error( "Multiple RenderableStoreProviders for config namespace: '"
+                                   + builder.getConfigNamespace() + "' on classpath -- omitting provider '"
+                                   + builder.getClass().getName() + "'." );
+                        continue;
+                    }
+                    nsToProvider.put( builder.getConfigNamespace(), builder );
+                }
+            }
+        } catch ( Exception e ) {
+            LOG.error( e.getMessage(), e );
+        }
+
+        init( new File( workspace.getLocation(), "datasources" + separator + "renderable" ), workspace );
     }
 
     public ResourceManagerMetadata getMetadata() {

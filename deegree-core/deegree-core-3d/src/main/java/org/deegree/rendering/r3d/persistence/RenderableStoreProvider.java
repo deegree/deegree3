@@ -37,6 +37,7 @@ package org.deegree.rendering.r3d.persistence;
 
 import java.net.URL;
 
+import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceProvider;
 
 /**
@@ -58,6 +59,6 @@ public interface RenderableStoreProvider extends ResourceProvider {
      * @throws IllegalArgumentException
      *             if the configuration contains an error or creation fails
      */
-    public RenderableStore build( URL configURL );
+    public RenderableStore build( URL configURL, DeegreeWorkspace workspace );
 
 }
