@@ -127,13 +127,23 @@ public class WebServicesConfiguration implements ResourceManager {
     private static Class<? extends ResourceManager>[] dependencies;
 
     static {
+        updateDependencies( null );
+    }
+
+    private static void updateDependencies( DeegreeWorkspace workspace ) {
+        providers.clear();
         List<Class<? extends ResourceManager>> deps = new LinkedList<Class<? extends ResourceManager>>();
 
         deps.add( ProxyUtils.class );
         deps.add( ConnectionManager.class );
 
         @SuppressWarnings("unchecked")
-        Iterator<OWSProvider> iter = ServiceLoader.load( OWSProvider.class ).iterator();
+        Iterator<OWSProvider> iter;
+        if ( workspace != null ) {
+            iter = ServiceLoader.load( OWSProvider.class, workspace.getModuleClassLoader() ).iterator();
+        } else {
+            iter = ServiceLoader.load( OWSProvider.class ).iterator();
+        }
         while ( iter.hasNext() ) {
             OWSProvider<?> prov = iter.next();
             providers.add( prov );
@@ -146,6 +156,7 @@ public class WebServicesConfiguration implements ResourceManager {
     public void startup( DeegreeWorkspace workspace )
                             throws WorkspaceInitializationException {
         this.workspace = workspace;
+        updateDependencies( workspace );
 
         // clear controller maps
         serviceNameToController.clear();
@@ -169,7 +180,8 @@ public class WebServicesConfiguration implements ResourceManager {
             metadataConfig = (DeegreeServicesMetadataType) ( (JAXBElement<?>) JAXBUtils.unmarshall(
                                                                                                     METADATA_JAXB_PACKAGE,
                                                                                                     METADATA_CONFIG_SCHEMA,
-                                                                                                    metadata.toURI().toURL() ) ).getValue();
+                                                                                                    metadata.toURI().toURL(),
+                                                                                                    workspace ) ).getValue();
         } catch ( Exception e ) {
             String msg = "Could not unmarshall frontcontroller configuration: " + e.getMessage();
             LOG.error( msg );
@@ -183,7 +195,8 @@ public class WebServicesConfiguration implements ResourceManager {
                 mainConfig = (DeegreeServiceControllerType) ( (JAXBElement<?>) JAXBUtils.unmarshall(
                                                                                                      CONTROLLER_JAXB_PACKAGE,
                                                                                                      CONTROLLER_CONFIG_SCHEMA,
-                                                                                                     main.toURI().toURL() ) ).getValue();
+                                                                                                     main.toURI().toURL(),
+                                                                                                     workspace ) ).getValue();
             } catch ( Exception e ) {
                 mainConfig = new DeegreeServiceControllerType();
                 LOG.info( "main.xml could not be loaded. Proceeding with defaults." );
@@ -195,7 +208,7 @@ public class WebServicesConfiguration implements ResourceManager {
         initRequestLogger();
 
         @SuppressWarnings("unchecked")
-        Iterator<OWSProvider> iter = ServiceLoader.load( OWSProvider.class ).iterator();
+        Iterator<OWSProvider> iter = ServiceLoader.load( OWSProvider.class, workspace.getModuleClassLoader() ).iterator();
         Map<String, OWSProvider<? extends Enum<?>>> providers = new HashMap<String, OWSProvider<? extends Enum<?>>>();
         while ( iter.hasNext() ) {
             OWSProvider<?> p = iter.next();
