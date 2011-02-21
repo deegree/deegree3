@@ -161,7 +161,7 @@ public class PostGISFeatureStoreTest {
         if ( appSchema == null ) {
             return;
         }
-        
+
         ConnectionManager.addConnection( new URL( "file:/home/schneider/.deegree/inspire-test/jdbc/testconn.xml" ),
                                          "testconn", null );
         PostGISFeatureStoreProvider provider = new PostGISFeatureStoreProvider();
@@ -204,6 +204,27 @@ public class PostGISFeatureStoreTest {
     }
 
     @Test
+    public void testQueryInspireAU()
+                            throws Throwable {
+        ApplicationSchema appSchema = getInspireSchemaAU();
+        if ( appSchema == null ) {
+            return;
+        }
+
+        ConnectionManager.addConnection( new URL( "file:/home/schneider/.deegree/inspire-test/jdbc/testconn.xml" ),
+                                         "testconn", null );
+        PostGISFeatureStoreProvider provider = new PostGISFeatureStoreProvider();
+        FeatureStore fs = provider.getFeatureStore( new URL(
+                                                             "file:/home/schneider/.deegree/inspire-test/datasources/feature/inspire-au.xml" ) );
+        QName countryName = QName.valueOf( "{urn:x-inspire:specification:gmlas:AdministrativeUnits:3.0}AdministrativeUnit" );
+        Query query = new Query( countryName, null, -1, -1, -1.0 );
+        FeatureResultSet rs = fs.query( query );
+        for ( Feature f : rs ) {
+            System.out.println( f.getId() );
+        }
+    }
+
+    @Test
     public void testInspireAUEnvelope()
                             throws Throwable {
 
@@ -219,7 +240,6 @@ public class PostGISFeatureStoreTest {
                                                              "file:/home/schneider/.deegree/inspire-test/datasources/feature/inspire-au.xml" ) );
         QName countryName = QName.valueOf( "{urn:x-inspire:specification:gmlas:AdministrativeUnits:3.0}AdministrativeUnit" );
         Envelope env = fs.getEnvelope( countryName );
-        System.out.println( env );
     }
 
     @Test
