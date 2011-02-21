@@ -189,7 +189,7 @@ public class WorkspaceMojo extends AbstractMojo {
             zip( dir, out, dir.getAbsoluteFile().toURI(), visitedFiles );
 
             if ( !jarDeps.isEmpty() && !visitedFiles.contains( "modules" ) && !visitedFiles.contains( "modules/" ) ) {
-                ZipEntry e = new ZipEntry( "modules" );
+                ZipEntry e = new ZipEntry( "modules/" );
                 out.putNextEntry( e );
                 out.closeEntry();
             }
