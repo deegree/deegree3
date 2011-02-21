@@ -70,6 +70,7 @@ import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.project.MavenProject;
 import org.apache.maven.project.artifact.AttachedArtifact;
 import org.apache.maven.project.artifact.InvalidDependencyVersionException;
+import org.h2.util.IOUtils;
 
 /**
  * @goal attach-workspace
@@ -165,12 +166,15 @@ public class WorkspaceMojo extends AbstractMojo {
         ZipOutputStream out = null;
         try {
             Set<?> artifacts = getDependencyArtifacts( project, artifactResolver, artifactFactory, metadataSource,
-                                                       localRepository, "deegree-workspace" );
+                                                       localRepository, "deegree-workspace", true );
             List<Artifact> workspaces = new ArrayList<Artifact>();
             for ( Object o : artifacts ) {
                 workspaces.add( (Artifact) o );
             }
             reverse( workspaces );
+
+            Set<?> jarDeps = getDependencyArtifacts( project, artifactResolver, artifactFactory, metadataSource,
+                                                     localRepository, "jar", false );
 
             File target = new File( project.getBasedir(), "target" );
             if ( !target.exists() && !target.mkdirs() ) {
@@ -183,6 +187,22 @@ public class WorkspaceMojo extends AbstractMojo {
 
             HashSet<String> visitedFiles = new HashSet<String>();
             zip( dir, out, dir.getAbsoluteFile().toURI(), visitedFiles );
+
+            if ( !jarDeps.isEmpty() && !visitedFiles.contains( "modules" ) && !visitedFiles.contains( "modules/" ) ) {
+                ZipEntry e = new ZipEntry( "modules" );
+                out.putNextEntry( e );
+                out.closeEntry();
+            }
+            for ( Object o : jarDeps ) {
+                Artifact a = (Artifact) o;
+                log.info( "Adding " + a + " to workspace modules directory." );
+                ZipEntry entry = new ZipEntry( "modules/" + a.getFile().getName() );
+                out.putNextEntry( entry );
+                FileInputStream in = new FileInputStream( a.getFile() );
+                IOUtils.copy( in, out );
+                out.closeEntry();
+                in.close();
+            }
 
             for ( Artifact a : workspaces ) {
                 log.info( "Processing files in dependency " + a.getArtifactId() );
