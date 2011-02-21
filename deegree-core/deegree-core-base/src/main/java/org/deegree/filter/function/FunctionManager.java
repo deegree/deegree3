@@ -39,6 +39,12 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.ServiceLoader;
 
+import org.deegree.commons.config.DeegreeWorkspace;
+import org.deegree.commons.config.ResourceManager;
+import org.deegree.commons.config.ResourceManagerMetadata;
+import org.deegree.commons.config.WorkspaceInitializationException;
+import org.deegree.commons.utils.ProxyUtils;
+import org.deegree.cs.persistence.CRSManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -50,13 +56,13 @@ import org.slf4j.LoggerFactory;
  * 
  * @version $Revision$, $Date$
  */
-public class FunctionManager {
+public class FunctionManager implements ResourceManager {
 
     private static final Logger LOG = LoggerFactory.getLogger( FunctionManager.class );
 
-    private static ServiceLoader<FunctionProvider> functionLoader = ServiceLoader.load( FunctionProvider.class );
-
     private static Map<String, FunctionProvider> nameToFunction;
+
+    private static ServiceLoader<FunctionProvider> functionLoader;
 
     /**
      * Returns all available {@link FunctionProvider}s. Multiple functions with the same case ignored name are not
@@ -94,5 +100,25 @@ public class FunctionManager {
      */
     public static FunctionProvider getFunctionProvider( String name ) {
         return getFunctionProviders().get( name.toLowerCase() );
+    }
+
+    @SuppressWarnings("unchecked")
+    public Class<? extends ResourceManager>[] getDependencies() {
+        return new Class[] { ProxyUtils.class, CRSManager.class };
+    }
+
+    public ResourceManagerMetadata getMetadata() {
+        return null;
+    }
+
+    public void shutdown() {
+        functionLoader = null;
+        nameToFunction.clear();
+        nameToFunction = null;
+    }
+
+    public void startup( DeegreeWorkspace workspace )
+                            throws WorkspaceInitializationException {
+        functionLoader = ServiceLoader.load( FunctionProvider.class, workspace.getModuleClassLoader() );
     }
 }

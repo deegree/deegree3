@@ -48,10 +48,12 @@ import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
+import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.feature.Feature;
 import org.deegree.feature.FeatureCollection;
 import org.deegree.feature.types.ApplicationSchema;
 import org.deegree.feature.xpath.FeatureXPathEvaluator;
+import org.deegree.filter.function.FunctionManager;
 import org.deegree.filter.xml.Filter110XMLDecoder;
 import org.deegree.gml.GMLInputFactory;
 import org.deegree.gml.GMLStreamReader;
@@ -96,6 +98,7 @@ public class FilterEvaluationTest {
         nsContext = new SimpleNamespaceContext();
         nsContext.addNamespace( "gml", "http://www.opengis.net/gml" );
         nsContext.addNamespace( "app", "http://www.deegree.org/app" );
+        new FunctionManager().startup( DeegreeWorkspace.getInstance() );
     }
 
     @Test

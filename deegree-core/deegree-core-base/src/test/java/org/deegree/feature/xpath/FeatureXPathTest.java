@@ -50,6 +50,7 @@ import java.util.Set;
 
 import junit.framework.Assert;
 
+import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.feature.Feature;
@@ -59,6 +60,7 @@ import org.deegree.feature.property.SimpleProperty;
 import org.deegree.feature.types.ApplicationSchema;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.expression.PropertyName;
+import org.deegree.filter.function.FunctionManager;
 import org.deegree.gml.GMLInputFactory;
 import org.deegree.gml.GMLStreamReader;
 import org.deegree.gml.GMLVersion;
@@ -104,6 +106,7 @@ public class FeatureXPathTest {
         nsContext = new SimpleNamespaceContext();
         nsContext.addNamespace( "gml", "http://www.opengis.net/gml" );
         nsContext.addNamespace( "app", "http://www.deegree.org/app" );
+        new FunctionManager().startup( DeegreeWorkspace.getInstance() );
     }
 
     @Test

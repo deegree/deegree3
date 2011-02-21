@@ -47,10 +47,12 @@ import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
+import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.cs.exceptions.TransformationException;
 import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.filter.comparison.ComparisonOperator;
+import org.deegree.filter.function.FunctionManager;
 import org.deegree.filter.logical.And;
 import org.deegree.filter.logical.LogicalOperator;
 import org.deegree.filter.xml.Filter110XMLDecoder;
@@ -58,6 +60,7 @@ import org.deegree.filter.xml.Filter110XMLEncoder;
 import org.deegree.junit.XMLAssert;
 import org.deegree.junit.XMLMemoryStreamWriter;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.Logger;
 
@@ -72,6 +75,12 @@ import org.slf4j.Logger;
 public class Filter110XMLAdapterTest {
 
     private static final Logger LOG = getLogger( Filter110XMLAdapterTest.class );
+
+    @Before
+    public void setUp()
+                            throws Exception {
+        new FunctionManager().startup( DeegreeWorkspace.getInstance() );
+    }
 
     @Test
     public void parseIdFilter()
@@ -128,7 +137,8 @@ public class Filter110XMLAdapterTest {
 
     @Test
     public void parseAndExportFilterDocument()
-                            throws XMLStreamException, FactoryConfigurationError, IOException, UnknownCRSException, TransformationException {
+                            throws XMLStreamException, FactoryConfigurationError, IOException, UnknownCRSException,
+                            TransformationException {
 
         Filter filter = parse( "testfilter_110_operator.xml" );
 

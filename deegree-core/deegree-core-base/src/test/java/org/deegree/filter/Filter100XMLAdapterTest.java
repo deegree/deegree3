@@ -46,6 +46,7 @@ import javax.xml.stream.XMLStreamReader;
 
 import junit.framework.TestCase;
 
+import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.filter.comparison.PropertyIsBetween;
 import org.deegree.filter.comparison.PropertyIsEqualTo;
@@ -56,6 +57,7 @@ import org.deegree.filter.expression.Add;
 import org.deegree.filter.expression.Function;
 import org.deegree.filter.expression.Literal;
 import org.deegree.filter.expression.PropertyName;
+import org.deegree.filter.function.FunctionManager;
 import org.deegree.filter.logical.And;
 import org.deegree.filter.logical.Not;
 import org.deegree.filter.logical.Or;
@@ -69,6 +71,7 @@ import org.deegree.geometry.points.Points;
 import org.deegree.geometry.primitive.LinearRing;
 import org.deegree.geometry.primitive.Point;
 import org.deegree.geometry.primitive.Polygon;
+import org.junit.Before;
 import org.junit.Test;
 
 /**
@@ -82,6 +85,13 @@ import org.junit.Test;
  * 
  */
 public class Filter100XMLAdapterTest extends TestCase {
+
+    @Override
+    @Before
+    public void setUp()
+                            throws Exception {
+        new FunctionManager().startup( DeegreeWorkspace.getInstance() );
+    }
 
     /**
      * @throws XMLStreamException
