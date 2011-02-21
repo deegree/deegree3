@@ -35,25 +35,21 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.feature.persistence.postgis;
 
-import static java.sql.Statement.RETURN_GENERATED_KEYS;
-
 import java.sql.Connection;
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map.Entry;
 
 import org.deegree.commons.jdbc.QTableName;
-import org.deegree.geometry.Geometry;
-import org.deegree.geometry.io.WKBWriter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.vividsolutions.jts.io.ParseException;
-
 /**
- * TODO add class documentation here
+ * Encapsulates columns and values for inserting one row into a database table.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author: markus $
@@ -66,19 +62,70 @@ public class InsertRow {
 
     private final QTableName table;
 
-    private final LinkedHashMap<String, Object> columnsToValues;
+    private final LinkedHashMap<String, String> columnToLiteral = new LinkedHashMap<String, String>();
+
+    private final LinkedHashMap<String, Object> columnToObject = new LinkedHashMap<String, Object>();
+
+    private final List<InsertRow> children = new ArrayList<InsertRow>();
 
     public InsertRow( QTableName table ) {
         this.table = table;
-        this.columnsToValues = new LinkedHashMap<String, Object>();
     }
 
-    public void add( String column, Object value ) {
-        columnsToValues.put( column.toLowerCase(), value );
+    public InsertRow addChildRow( QTableName table ) {
+        InsertRow child = new InsertRow( table );
+        children.add( child );
+        return child;
+    }
+
+    public List<InsertRow> getChildren() {
+        return children;
+    }
+
+    public void addLiteralValue( String column, String literal ) {
+        columnToLiteral.put( column.toLowerCase(), literal );
+    }
+
+    public void addPreparedArgument( String column, Object value ) {
+        addPreparedArgument( column, value, "?" );
+    }
+
+    public void addPreparedArgument( String column, Object value, String literal ) {
+        columnToLiteral.put( column.toLowerCase(), literal );
+        columnToObject.put( column.toLowerCase(), value );
+    }
+
+    public Collection<String> getColumns() {
+        return columnToLiteral.keySet();
     }
 
     public Object get( String column ) {
-        return columnsToValues.get( column.toLowerCase() );
+        return columnToObject.get( column.toLowerCase() );
+    }
+
+    public String getInsert() {
+        StringBuilder sql = new StringBuilder( "INSERT INTO " + table + "(" );
+        boolean first = true;
+        for ( String column : columnToLiteral.keySet() ) {
+            if ( !first ) {
+                sql.append( ',' );
+            } else {
+                first = false;
+            }
+            sql.append( column );
+        }
+        sql.append( ") VALUES(" );
+        first = true;
+        for ( Entry<String, String> entry : columnToLiteral.entrySet() ) {
+            if ( !first ) {
+                sql.append( ',' );
+            } else {
+                first = false;
+            }
+            sql.append( entry.getValue() );
+        }
+        sql.append( ")" );
+        return sql.toString();
     }
 
     public int performInsert( Connection conn )
@@ -88,64 +135,28 @@ public class InsertRow {
             LOG.debug( "Inserting: " + this );
         }
 
-        StringBuilder sql = new StringBuilder( "INSERT INTO " + table + "(" );
-        boolean first = true;
-        for ( String column : columnsToValues.keySet() ) {
-            if ( !first ) {
-                sql.append( ',' );
-            } else {
-                first = false;
-            }
-            sql.append( column );
-        }
-        sql.append( ") VALUES(" );
-        first = true;
-        for ( Entry<String, Object> entry : columnsToValues.entrySet() ) {
-            if ( !first ) {
-                sql.append( ',' );
-            } else {
-                first = false;
-            }
-            if ( entry.getValue() instanceof Geometry ) {
-                sql.append( "GeomFromWKB(?," );
-                // TODO
-                sql.append( "-1)" );
-            } else {
-                sql.append( "?" );
-            }
-        }
-        sql.append( ")" );
-
-        PreparedStatement stmt = conn.prepareStatement( sql.toString(), RETURN_GENERATED_KEYS );
+        String sql = getInsert();
+        PreparedStatement stmt = conn.prepareStatement( sql );
         int columnId = 1;
-        for ( Entry<String, Object> entry : columnsToValues.entrySet() ) {
-            Object pgValue = entry.getValue();
-            if ( entry.getValue() instanceof Geometry ) {
-                try {
-                    pgValue = WKBWriter.write( (Geometry) entry.getValue() );
-                } catch ( ParseException e ) {
-                    throw new SQLException( e.getMessage(), e );
-                }
-            } else {
-
-            }
-            stmt.setObject( columnId++, pgValue );
+        for ( Entry<String, Object> entry : columnToObject.entrySet() ) {
+            LOG.debug( "- Argument " + columnId + " = " + entry.getValue() + " (" + entry.getValue().getClass() + ")" );
+            stmt.setObject( columnId++, entry.getValue() );
         }
         stmt.execute();
 
         int internalId = -1;
 
-        ResultSet rs = null;
-        try {
-            rs = stmt.getGeneratedKeys();
-            if ( rs.next() ) {
-                internalId = rs.getInt( 1 );
-            }
-        } finally {
-            if ( rs != null ) {
-                rs.close();
-            }
-        }
+        // ResultSet rs = null;
+        // try {
+        // rs = stmt.getGeneratedKeys();
+        // if ( rs.next() ) {
+        // internalId = rs.getInt( 1 );
+        // }
+        // } finally {
+        // if ( rs != null ) {
+        // rs.close();
+        // }
+        // }
         stmt.close();
 
         return internalId;
@@ -155,7 +166,7 @@ public class InsertRow {
     public String toString() {
         StringBuilder sql = new StringBuilder( "INSERT INTO " + table + "(" );
         boolean first = true;
-        for ( String column : columnsToValues.keySet() ) {
+        for ( String column : columnToLiteral.keySet() ) {
             if ( !first ) {
                 sql.append( ',' );
             } else {
@@ -165,21 +176,13 @@ public class InsertRow {
         }
         sql.append( ") VALUES(" );
         first = true;
-        for ( Entry<String, Object> entry : columnsToValues.entrySet() ) {
+        for ( Entry<String, String> entry : columnToLiteral.entrySet() ) {
             if ( !first ) {
                 sql.append( ',' );
             } else {
                 first = false;
             }
-            if ( entry.getValue() instanceof Geometry ) {
-                sql.append( "GeomFromWKB(?," );
-                // TODO
-                sql.append( "-1)" );
-            } else {
-                sql.append( "'" );
-                sql.append( entry.getValue() );
-                sql.append( "'" );
-            }
+            sql.append( entry.getValue() );
         }
         sql.append( ")" );
         return sql.toString();

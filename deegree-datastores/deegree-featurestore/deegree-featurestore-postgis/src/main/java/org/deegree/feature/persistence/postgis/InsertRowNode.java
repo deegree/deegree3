@@ -86,7 +86,7 @@ public class InsertRowNode {
 
         for ( InsertRowNode relatedRow : relatedRows ) {
             DBField to = relatedRow.parentRelation.getFields().get( 1 );
-            relatedRow.getRow().add( to.getColumn(), id );
+            relatedRow.getRow().addPreparedArgument( to.getColumn(), id );
             relatedRow.performInsert( conn );
         }
     }

@@ -68,6 +68,7 @@ import org.deegree.cs.exceptions.TransformationException;
 import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.feature.Feature;
 import org.deegree.feature.FeatureCollection;
+import org.deegree.feature.GenericFeatureCollection;
 import org.deegree.feature.StreamFeatureCollection;
 import org.deegree.feature.persistence.FeatureStore;
 import org.deegree.feature.persistence.FeatureStoreException;
@@ -157,11 +158,6 @@ public class PostGISFeatureStoreTest {
     public void testInsertInspireAU()
                             throws Throwable {
 
-        ApplicationSchema appSchema = getInspireSchemaAU();
-        if ( appSchema == null ) {
-            return;
-        }
-
         ConnectionManager.addConnection( new URL( "file:/home/schneider/.deegree/inspire-test/jdbc/testconn.xml" ),
                                          "testconn" );
         PostGISFeatureStoreProvider provider = new PostGISFeatureStoreProvider();
@@ -191,7 +187,9 @@ public class PostGISFeatureStoreTest {
         try {
             ta = fs.acquireTransaction();
             FeatureCollection fc = gmlReader.readFeatureCollection();
-            ta.performInsert( fc, IDGenMode.USE_EXISTING );
+            FeatureCollection fc2 = new GenericFeatureCollection();
+            fc2.add( fc.iterator().next() );
+            ta.performInsert( fc2, IDGenMode.USE_EXISTING );
             ta.commit();
         } catch ( Throwable t ) {
             if ( ta != null ) {

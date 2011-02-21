@@ -555,7 +555,8 @@ public class PostGISFeatureStoreConfigParser {
 
     private Mapping process( CustomMapping mapping ) {
         PropertyName path = new PropertyName( mapping.getPath(), nsContext );
-        JoinChain joinedTable = null;
+        // TODO
+        JoinChain joinedTable = null;        
         if ( mapping instanceof org.deegree.feature.persistence.postgis.jaxb.PrimitiveMapping ) {
             org.deegree.feature.persistence.postgis.jaxb.PrimitiveMapping pm = (org.deegree.feature.persistence.postgis.jaxb.PrimitiveMapping) mapping;
             PrimitiveType pt = getPrimitiveType( pm.getType() );
