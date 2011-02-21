@@ -98,16 +98,6 @@
       <artifactId>deegree-featurestore-console</artifactId>
       <version>3.1-SNAPSHOT</version>
     </dependency>
-    <dependency>
-      <groupId>org.deegree</groupId>
-      <artifactId>deegree-workspace-wps</artifactId>
-      <version>3.1-SNAPSHOT</version>
-    </dependency>
-    <dependency>
-      <groupId>org.deegree</groupId>
-      <artifactId>deegree-processprovider-sextante</artifactId>
-      <version>3.1-SNAPSHOT</version>
-    </dependency>
   </dependencies>
 
 </project>
