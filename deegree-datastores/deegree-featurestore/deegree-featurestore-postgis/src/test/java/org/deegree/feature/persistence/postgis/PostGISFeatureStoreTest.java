@@ -68,7 +68,6 @@ import org.deegree.cs.exceptions.TransformationException;
 import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.feature.Feature;
 import org.deegree.feature.FeatureCollection;
-import org.deegree.feature.GenericFeatureCollection;
 import org.deegree.feature.StreamFeatureCollection;
 import org.deegree.feature.persistence.FeatureStore;
 import org.deegree.feature.persistence.FeatureStoreException;
@@ -158,8 +157,13 @@ public class PostGISFeatureStoreTest {
     public void testInsertInspireAU()
                             throws Throwable {
 
+        ApplicationSchema appSchema = getInspireSchemaAU();
+        if ( appSchema == null ) {
+            return;
+        }
+        
         ConnectionManager.addConnection( new URL( "file:/home/schneider/.deegree/inspire-test/jdbc/testconn.xml" ),
-                                         "testconn" );
+                                         "testconn", null );
         PostGISFeatureStoreProvider provider = new PostGISFeatureStoreProvider();
         FeatureStore fs = provider.getFeatureStore( new URL(
                                                              "file:/home/schneider/.deegree/inspire-test/datasources/feature/inspire-au.xml" ) );
@@ -209,7 +213,7 @@ public class PostGISFeatureStoreTest {
         }
 
         ConnectionManager.addConnection( new URL( "file:/home/schneider/.deegree/inspire-test/jdbc/testconn.xml" ),
-                                         "testconn" );
+                                         "testconn", null );
         PostGISFeatureStoreProvider provider = new PostGISFeatureStoreProvider();
         FeatureStore fs = provider.getFeatureStore( new URL(
                                                              "file:/home/schneider/.deegree/inspire-test/datasources/feature/inspire-au.xml" ) );
