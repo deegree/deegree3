@@ -197,9 +197,11 @@ public class ConnectionManager implements ResourceManager, ResourceProvider {
      * 
      * @param jdbcConfigUrl
      * @param connId
+     * @param workspace
+     *            can be <code>null</code>
      * @throws JAXBException
      */
-    public void addConnection( URL jdbcConfigUrl, String connId, DeegreeWorkspace workspace )
+    public static void addConnection( URL jdbcConfigUrl, String connId, DeegreeWorkspace workspace )
                             throws JAXBException {
         synchronized ( ConnectionManager.class ) {
             JDBCConnection pc = (JDBCConnection) JAXBUtils.unmarshall( CONFIG_JAXB_PACKAGE, CONFIG_SCHEMA,
