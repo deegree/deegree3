@@ -37,6 +37,8 @@ package org.deegree.services.wps.provider;
 
 import java.net.URL;
 
+import org.deegree.commons.config.DeegreeWorkspace;
+
 /**
  * Implementations are responsible for providing {@link ProcessProvider} instances.
  * 
@@ -61,5 +63,5 @@ public interface ProcessProviderProvider {
      *            location of the configuration document, must not be <code>null</code>
      * @return new process manager instance, configured, but not initialized yet
      */
-    public ProcessProvider createProvider( URL configURL );
+    public ProcessProvider createProvider( URL configURL, DeegreeWorkspace workspace );
 }

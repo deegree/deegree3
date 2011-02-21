@@ -49,7 +49,12 @@ import javax.xml.bind.JAXBElement;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamReader;
 
+import org.deegree.commons.config.DeegreeWorkspace;
+import org.deegree.commons.config.ResourceManager;
+import org.deegree.commons.config.ResourceManagerMetadata;
+import org.deegree.commons.config.WorkspaceInitializationException;
 import org.deegree.commons.tom.ows.CodeType;
+import org.deegree.commons.utils.ProxyUtils;
 import org.deegree.commons.xml.stax.StAXParsingHelper;
 import org.deegree.process.jaxb.java.ProcessDefinition;
 import org.deegree.process.jaxb.java.ProcessletInputDefinition;
@@ -73,7 +78,7 @@ import org.slf4j.LoggerFactory;
  * 
  * @version $Revision: $, $Date: $
  */
-public class ProcessManager {
+public class ProcessManager implements ResourceManager {
 
     private static final Logger LOG = LoggerFactory.getLogger( ProcessManager.class );
 
@@ -83,6 +88,10 @@ public class ProcessManager {
 
     private List<ProcessProvider> providers = new ArrayList<ProcessProvider>();
 
+    public ProcessManager() {
+        // for SPI
+    }
+
     /**
      * Creates a new {@link ProcessManager} instance with the given configuration.
      * 
@@ -90,7 +99,7 @@ public class ProcessManager {
      *            directory to be scanned for process provider configuration documents, never <code>null</code>
      * @throws ServiceInitException
      */
-    public ProcessManager( File processesDir ) throws ServiceInitException {
+    public ProcessManager( File processesDir, DeegreeWorkspace workspace ) throws ServiceInitException {
         File[] fsConfigFiles = processesDir.listFiles( new FilenameFilter() {
             @Override
             public boolean accept( File dir, String name ) {
@@ -101,9 +110,9 @@ public class ProcessManager {
             String fileName = fsConfigFile.getName();
             LOG.info( "Setting up process provider from file '" + fileName + "'..." + "" );
             try {
-                ProcessProvider provider = create( fsConfigFile.toURI().toURL() );
-                provider.init();
-                for (WPSProcess process : provider.getProcesses().values()) {
+                ProcessProvider provider = create( fsConfigFile.toURI().toURL(), workspace );
+                provider.init( workspace );
+                for ( WPSProcess process : provider.getProcesses().values() ) {
                     ProcessDefinition processDefinition = process.getDescription();
                     InputParameters inputParams = processDefinition.getInputParameters();
                     if ( inputParams != null ) {
@@ -132,7 +141,7 @@ public class ProcessManager {
      * 
      * @return all available providers, keys: config namespace, value: provider instance
      */
-    static synchronized Map<String, ProcessProviderProvider> getProviders() {
+    private static synchronized Map<String, ProcessProviderProvider> getProviders() {
         if ( nsToProvider == null ) {
             nsToProvider = new HashMap<String, ProcessProviderProvider>();
             try {
@@ -163,7 +172,7 @@ public class ProcessManager {
      * @return corresponding {@link ProcessProvider} instance, not yet initialized, never <code>null</code>
      * @throws ServiceInitException
      */
-    public static synchronized ProcessProvider create( URL configURL )
+    public static synchronized ProcessProvider create( URL configURL, DeegreeWorkspace workspace )
                             throws ServiceInitException {
 
         String namespace = null;
@@ -184,7 +193,7 @@ public class ProcessManager {
             LOG.error( msg );
             throw new ServiceInitException( msg );
         }
-        return providerProvider.createProvider( configURL );
+        return providerProvider.createProvider( configURL, workspace );
     }
 
     /**
@@ -229,5 +238,28 @@ public class ProcessManager {
             }
         }
         return process;
+    }
+
+    @SuppressWarnings("unchecked")
+    public Class<? extends ResourceManager>[] getDependencies() {
+        return new Class[] { ProxyUtils.class };
+    }
+
+    public ResourceManagerMetadata getMetadata() {
+        return null;
+    }
+
+    public void shutdown() {
+        if ( nsToProvider != null ) {
+            nsToProvider.clear();
+        }
+        nsToProvider = null;
+        providerLoader = null;
+        destroy();
+    }
+
+    public void startup( DeegreeWorkspace workspace )
+                            throws WorkspaceInitializationException {
+        providerLoader = ServiceLoader.load( ProcessProviderProvider.class, workspace.getModuleClassLoader() );
     }
 }

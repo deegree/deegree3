@@ -41,6 +41,7 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 
+import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.services.wps.provider.ProcessProvider;
 import org.deegree.services.wps.provider.ProcessProviderProvider;
 import org.deegree.services.wps.provider.sextante.jaxb.SextanteProcesses;
@@ -67,13 +68,14 @@ public class SextanteProcessProviderProvider implements ProcessProviderProvider 
     }
 
     @Override
-    public ProcessProvider createProvider( URL configURL ) {
+    public ProcessProvider createProvider( URL configURL, DeegreeWorkspace workspace ) {
 
         LOG.info( "Configuring Sextante process provider using file '" + configURL + "'." );
 
         SextanteProcesses config = null;
         try {
-            JAXBContext jc = JAXBContext.newInstance( "org.deegree.services.wps.provider.sextante.jaxb" );
+            JAXBContext jc = JAXBContext.newInstance( "org.deegree.services.wps.provider.sextante.jaxb",
+                                                      workspace.getModuleClassLoader() );
             Unmarshaller unmarshaller = jc.createUnmarshaller();
             config = (SextanteProcesses) unmarshaller.unmarshal( configURL );
         } catch ( JAXBException e ) {

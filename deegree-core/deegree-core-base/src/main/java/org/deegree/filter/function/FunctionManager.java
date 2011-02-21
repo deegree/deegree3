@@ -113,7 +113,9 @@ public class FunctionManager implements ResourceManager {
 
     public void shutdown() {
         functionLoader = null;
-        nameToFunction.clear();
+        if ( nameToFunction != null ) {
+            nameToFunction.clear();
+        }
         nameToFunction = null;
     }
 

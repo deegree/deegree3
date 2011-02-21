@@ -43,6 +43,7 @@ import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamReader;
 
+import org.deegree.commons.config.DeegreeWorkspace;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -66,7 +67,7 @@ public class ExampleProcessProviderProvider implements ProcessProviderProvider {
     }
 
     @Override
-    public ProcessProvider createProvider( URL configURL ) {
+    public ProcessProvider createProvider( URL configURL, DeegreeWorkspace workspace ) {
 
         LOG.info( "Configuring example process provider using file '" + configURL + "'." );
 

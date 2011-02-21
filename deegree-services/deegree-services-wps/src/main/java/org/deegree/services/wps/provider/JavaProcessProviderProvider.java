@@ -37,10 +37,9 @@ package org.deegree.services.wps.provider;
 
 import java.net.URL;
 
-import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
-import javax.xml.bind.Unmarshaller;
 
+import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.xml.jaxb.JAXBUtils;
 import org.deegree.process.jaxb.java.ProcessDefinition;
 import org.slf4j.Logger;
@@ -70,17 +69,16 @@ public class JavaProcessProviderProvider implements ProcessProviderProvider {
     }
 
     @Override
-    public ProcessProvider createProvider( URL configURL ) {
+    public ProcessProvider createProvider( URL configURL, DeegreeWorkspace workspace ) {
 
         ProcessProvider manager = null;
 
         LOG.info( "Loading process definition from file '" + configURL + "'." );
         //
         try {
-            JAXBContext jc = JAXBContext.newInstance( "org.deegree.services.jaxb.wps" );
-            Unmarshaller unmarshaller = jc.createUnmarshaller();
             ProcessDefinition processDef = (ProcessDefinition) JAXBUtils.unmarshall( JAXB_CONFIG_PACKAGE,
-                                                                                     JAXB_CONFIG_SCHEMA, configURL );
+                                                                                     JAXB_CONFIG_SCHEMA, configURL,
+                                                                                     workspace );
             // checkConfigVersion( definitionFile, processDef.getConfigVersion() );
 
             // processDefinitions.add( processDef );

@@ -44,6 +44,7 @@ import java.util.Map;
 
 import org.deegree.commons.config.ResourceManager;
 import org.deegree.commons.tom.ows.Version;
+import org.deegree.commons.utils.ProxyUtils;
 import org.deegree.protocol.wps.WPSConstants.WPSRequestType;
 import org.deegree.services.OWS;
 import org.deegree.services.OWSProvider;
@@ -90,7 +91,7 @@ public class WPSProvider implements OWSProvider<WPSRequestType> {
 
     @SuppressWarnings("unchecked")
     public Class<? extends ResourceManager>[] getDependencies() {
-        return new Class[] {};
+        return new Class[] { ProxyUtils.class, ProcessManager.class };
     }
 
 }

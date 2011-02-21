@@ -51,7 +51,6 @@ import java.util.Map;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.core.UriBuilder;
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
@@ -103,7 +102,6 @@ import org.deegree.services.wps.storage.OutputStorage;
 import org.deegree.services.wps.storage.ResponseDocumentStorage;
 import org.deegree.services.wps.storage.StorageManager;
 import org.deegree.services.wps.wsdl.WSDL;
-import org.deegree.services.wps.wsdl.WSDLResource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -161,7 +159,7 @@ public class WPService extends AbstractOGCServiceController<WPSRequestType> {
         try {
             controllerConfURL = new URL( controllerConf.getSystemId() );
             File resolvedProcessesDir = FileUtils.getAsFile( new URL( controllerConfURL, "../processes/" ) );
-            this.service = new ProcessManager( resolvedProcessesDir );
+            this.service = new ProcessManager( resolvedProcessesDir, workspace );
 
             validateAndSetOfferedVersions( sc.getSupportedVersions().getVersion() );
 
@@ -437,11 +435,11 @@ public class WPService extends AbstractOGCServiceController<WPSRequestType> {
                 CodeType processId = new CodeType( processDef.getIdentifier().getValue(),
                                                    processDef.getIdentifier().getCodeSpace() );
                 // TODO WSDL
-//                if ( processIdToWSDL.containsKey( processId ) ) {
-//                    String wsdlURL = OGCFrontController.getHttpGetURL()
-//                                     + "service=WPS&version=1.0.0&request=GetWPSWSDL&identifier=" + processId.getCode();
-//                    processDefToWSDLUrl.put( processDef, wsdlURL );
-//                }
+                // if ( processIdToWSDL.containsKey( processId ) ) {
+                // String wsdlURL = OGCFrontController.getHttpGetURL()
+                // + "service=WPS&version=1.0.0&request=GetWPSWSDL&identifier=" + processId.getCode();
+                // processDefToWSDLUrl.put( processDef, wsdlURL );
+                // }
             }
 
             DescribeProcessResponseXMLAdapter.export100( xmlWriter, processes, processDefToWSDLUrl );

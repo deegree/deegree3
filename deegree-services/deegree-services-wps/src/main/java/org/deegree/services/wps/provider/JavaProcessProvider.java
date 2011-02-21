@@ -40,6 +40,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.tom.ows.CodeType;
 import org.deegree.process.jaxb.java.ProcessDefinition;
 import org.deegree.services.exception.ServiceInitException;
@@ -75,7 +76,7 @@ public class JavaProcessProvider implements ProcessProvider {
     }
 
     @Override
-    public void init()
+    public void init( DeegreeWorkspace workspace )
                             throws ServiceInitException {
         for ( ProcessDefinition processDefinition : processDefs ) {
             CodeType processId = new CodeType( processDefinition.getIdentifier().getValue(),
@@ -84,7 +85,7 @@ public class JavaProcessProvider implements ProcessProvider {
             try {
                 LOG.info( "Initializing process with id '" + processId + "'" );
                 LOG.info( "- process class: " + className );
-                Processlet processlet = (Processlet) Class.forName( className ).newInstance();
+                Processlet processlet = (Processlet) Class.forName( className, true, workspace.getModuleClassLoader() ).newInstance();
                 processlet.init();
 
                 ExceptionCustomizer customizer = null;

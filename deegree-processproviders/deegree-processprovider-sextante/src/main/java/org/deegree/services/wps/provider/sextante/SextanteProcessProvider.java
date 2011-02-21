@@ -41,6 +41,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.tom.ows.CodeType;
 import org.deegree.services.exception.ServiceInitException;
 import org.deegree.services.wps.WPSProcess;
@@ -48,6 +50,7 @@ import org.deegree.services.wps.provider.ProcessProvider;
 import org.deegree.services.wps.provider.sextante.jaxb.SextanteProcesses;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import es.unex.sextante.core.GeoAlgorithm;
 import es.unex.sextante.core.IGeoAlgorithmFilter;
 import es.unex.sextante.core.OutputObjectsSet;
@@ -188,7 +191,7 @@ public class SextanteProcessProvider implements ProcessProvider {
     }
 
     @Override
-    public void init()
+    public void init( DeegreeWorkspace workspace )
                             throws ServiceInitException {
 
         // initialize SEXTANTE
