@@ -9,10 +9,10 @@ options {
   package org.deegree.feature.persistence.mapping.antlr;
   import java.util.Collections;
   import org.deegree.filter.sql.MappingExpression;
-  import org.deegree.feature.persistence.mapping.JoinChain;
+  import org.deegree.feature.persistence.sql.expressions.JoinChain;
   import org.deegree.filter.sql.DBField;
-  import org.deegree.feature.persistence.mapping.Function;
-  import org.deegree.feature.persistence.mapping.StringConst;
+  import org.deegree.feature.persistence.sql.expressions.Function;
+  import org.deegree.feature.persistence.sql.expressions.StringConst;
 }
 
 @lexer::header {
