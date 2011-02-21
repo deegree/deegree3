@@ -46,6 +46,7 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.security.PrivilegedAction;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -86,7 +87,8 @@ public class ClasspathHelper {
     public static Set<?> getDependencyArtifacts( MavenProject project, ArtifactResolver artifactResolver,
                                                  ArtifactFactory artifactFactory,
                                                  ArtifactMetadataSource metadataSource,
-                                                 ArtifactRepository localRepository, final String type )
+                                                 ArtifactRepository localRepository, final String type,
+                                                 boolean transitively )
                             throws InvalidDependencyVersionException, ArtifactResolutionException,
                             ArtifactNotFoundException {
 
@@ -100,15 +102,24 @@ public class ClasspathHelper {
             }
         }, null );
 
-        ArtifactResolutionResult result = artifactResolver.resolveTransitively(
-                                                                                dependencyArtifacts,
-                                                                                project.getArtifact(),
-                                                                                EMPTY_MAP,
-                                                                                localRepository,
-                                                                                project.getRemoteArtifactRepositories(),
-                                                                                metadataSource, null, EMPTY_LIST );
+        ArtifactResolutionResult result;
+        Artifact mainArtifact = project.getArtifact();
 
-        return result.getArtifacts();
+        result = artifactResolver.resolveTransitively( dependencyArtifacts, mainArtifact, EMPTY_MAP, localRepository,
+                                                       project.getRemoteArtifactRepositories(), metadataSource, null,
+                                                       EMPTY_LIST );
+
+        if ( transitively ) {
+            return result.getArtifacts();
+        }
+
+        LinkedHashSet<Artifact> set = new LinkedHashSet<Artifact>();
+        if ( mainArtifact.getType() != null && mainArtifact.getType().equals( type ) ) {
+            set.add( mainArtifact );
+        }
+        set.addAll( dependencyArtifacts );
+
+        return set;
     }
 
     private static Set<?> resolveDeps( MavenProject project, ArtifactResolver artifactResolver,

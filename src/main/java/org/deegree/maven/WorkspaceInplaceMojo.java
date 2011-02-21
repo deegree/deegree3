@@ -35,6 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.maven;
 
+import static org.apache.commons.io.FileUtils.copyFileToDirectory;
 import static org.apache.commons.io.IOUtils.closeQuietly;
 import static org.deegree.commons.utils.io.Zip.unzip;
 import static org.deegree.maven.utils.ClasspathHelper.getDependencyArtifacts;
@@ -122,7 +123,20 @@ public class WorkspaceInplaceMojo extends AbstractMojo {
 
         try {
             Set<?> workspaces = getDependencyArtifacts( project, artifactResolver, artifactFactory, metadataSource,
-                                                        localRepository, "deegree-workspace" );
+                                                        localRepository, "deegree-workspace", true );
+
+            Set<?> jarDeps = getDependencyArtifacts( project, artifactResolver, artifactFactory, metadataSource,
+                                                     localRepository, "jar", false );
+
+            File modules = new File( dir, "modules" );
+            if ( !jarDeps.isEmpty() && !modules.isDirectory() && !modules.mkdirs() ) {
+                throw new MojoFailureException( "Could not create modules directory in workspace." );
+            }
+            for ( Object o : jarDeps ) {
+                Artifact a = (Artifact) o;
+                log.info( "Copying " + a + " to workspace modules directory." );
+                copyFileToDirectory( a.getFile(), modules );
+            }
 
             for ( Object o : workspaces ) {
                 Artifact a = (Artifact) o;
