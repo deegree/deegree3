@@ -512,7 +512,7 @@ public class PostGISFeatureStoreConfigParser {
             List<Mapping> particles = new ArrayList<Mapping>( children.size() );
             PropertyName path = new PropertyName( propName );
             for ( JAXBElement<? extends CustomMapping> child : children ) {
-                Mapping particle = process( child.getValue() );
+                Mapping particle = process( table, child.getValue() );
                 if ( particle != null ) {
                     particles.add( particle );
                 }
@@ -553,10 +553,14 @@ public class PostGISFeatureStoreConfigParser {
         return null;
     }
 
-    private Mapping process( CustomMapping mapping ) {
+    private Mapping process( QTableName table, CustomMapping mapping ) {
         PropertyName path = new PropertyName( mapping.getPath(), nsContext );
         // TODO
-        JoinChain joinedTable = null;        
+        JoinChain joinedTable = null;
+        if ( mapping.getJoinedTable() != null ) {
+            joinedTable = buildJoinTable( table, mapping.getJoinedTable() );
+            table = new QTableName( joinedTable.getFields().get( 1 ).getTable() );
+        }
         if ( mapping instanceof org.deegree.feature.persistence.postgis.jaxb.PrimitiveMapping ) {
             org.deegree.feature.persistence.postgis.jaxb.PrimitiveMapping pm = (org.deegree.feature.persistence.postgis.jaxb.PrimitiveMapping) mapping;
             PrimitiveType pt = getPrimitiveType( pm.getType() );
@@ -571,7 +575,7 @@ public class PostGISFeatureStoreConfigParser {
             List<JAXBElement<? extends CustomMapping>> children = cm.getAbstractCustomMapping();
             List<Mapping> particles = new ArrayList<Mapping>( children.size() );
             for ( JAXBElement<? extends CustomMapping> child : children ) {
-                Mapping particle = process( child.getValue() );
+                Mapping particle = process( table, child.getValue() );
                 if ( particle != null ) {
                     particles.add( particle );
                 }

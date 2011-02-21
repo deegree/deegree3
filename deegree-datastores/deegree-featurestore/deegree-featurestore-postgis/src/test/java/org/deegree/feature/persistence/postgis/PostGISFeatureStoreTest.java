@@ -187,9 +187,7 @@ public class PostGISFeatureStoreTest {
         try {
             ta = fs.acquireTransaction();
             FeatureCollection fc = gmlReader.readFeatureCollection();
-            FeatureCollection fc2 = new GenericFeatureCollection();
-            fc2.add( fc.iterator().next() );
-            ta.performInsert( fc2, IDGenMode.USE_EXISTING );
+            ta.performInsert( fc, IDGenMode.USE_EXISTING );
             ta.commit();
         } catch ( Throwable t ) {
             if ( ta != null ) {

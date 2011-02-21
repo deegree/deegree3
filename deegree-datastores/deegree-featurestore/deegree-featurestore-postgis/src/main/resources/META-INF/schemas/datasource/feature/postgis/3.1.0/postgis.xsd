@@ -11,7 +11,8 @@
   </annotation>
   <element name="PostGISFeatureStore">
     <annotation>
-      <documentation>FeatureStore that is backed by a PostgreSQL / PostGIS database</documentation>
+      <documentation>FeatureStore that is backed by a PostgreSQL / PostGIS
+        database</documentation>
       <appinfo>
         <jaxb:class name="PostGISFeatureStoreConfig" />
       </appinfo>
@@ -27,7 +28,7 @@
               </extension>
             </simpleContent>
           </complexType>
-        </element>        
+        </element>
         <choice>
           <element ref="postgisfs:FeatureType" minOccurs="0" maxOccurs="unbounded" />
           <element name="BLOBMapping">
@@ -79,7 +80,8 @@
   <element name="FeatureType">
     <complexType>
       <annotation>
-        <documentation>Declaration of a feature type of the schema</documentation>
+        <documentation>Declaration of a feature type of the schema
+				</documentation>
         <appinfo>
           <jaxb:class name="FeatureTypeDecl" />
         </appinfo>
@@ -90,13 +92,15 @@
       </sequence>
       <attribute name="name" type="QName">
         <annotation>
-          <documentation>Qualified name of the feature type (if omitted, it is derived from the table name)
+          <documentation>Qualified name of the feature type (if omitted, it
+            is derived from the table name)
           </documentation>
         </annotation>
       </attribute>
       <attribute name="table" type="string" use="required">
         <annotation>
-          <documentation>Table that the feature type is mapped to</documentation>
+          <documentation>Table that the feature type is mapped to
+					</documentation>
         </annotation>
       </attribute>
     </complexType>
@@ -146,7 +150,8 @@
   <element name="AbstractProperty" type="postgisfs:AbstractPropertyType" abstract="true" />
   <complexType name="AbstractPropertyType" abstract="true">
     <annotation>
-      <documentation>Declaration of a property of a feature type.</documentation>
+      <documentation>Declaration of a property of a feature type.
+			</documentation>
       <appinfo>
         <jaxb:class name="AbstractPropertyDecl" />
       </appinfo>
@@ -156,18 +161,21 @@
     </sequence>
     <attribute name="name" type="QName">
       <annotation>
-        <documentation>Qualified name of the property (if omitted, it is derived from the mapping column)
+        <documentation>Qualified name of the property (if omitted, it is
+          derived from the mapping column)
         </documentation>
       </annotation>
     </attribute>
     <attribute name="minOccurs" type="nonNegativeInteger">
       <annotation>
-        <documentation>The minimum number of times that this property is required in feature instances</documentation>
+        <documentation>The minimum number of times that this property is
+          required in feature instances</documentation>
       </annotation>
     </attribute>
     <attribute name="maxOccurs">
       <annotation>
-        <documentation>The maximum number of times that this property is permitted in feature instances</documentation>
+        <documentation>The maximum number of times that this property is
+          permitted in feature instances</documentation>
       </annotation>
       <simpleType>
         <union memberTypes="positiveInteger">
@@ -181,12 +189,14 @@
     </attribute>
     <attribute name="mapping" type="string" use="optional">
       <annotation>
-        <documentation>Mapping of the property (currently, this can only be the name of a column)</documentation>
+        <documentation>Mapping of the property (currently, this can only be
+          the name of a column)</documentation>
       </annotation>
     </attribute>
     <attribute name="nilMapping" type="string" use="optional">
       <annotation>
-        <documentation>Boolean column that stores whether the property is nilled</documentation>
+        <documentation>Boolean column that stores whether the property is
+          nilled</documentation>
       </annotation>
     </attribute>
   </complexType>
@@ -194,7 +204,8 @@
   <element name="SimpleProperty" substitutionGroup="postgisfs:AbstractProperty">
     <complexType>
       <annotation>
-        <documentation>Declaration of a simple property of a feature type.</documentation>
+        <documentation>Declaration of a simple property of a feature type.
+				</documentation>
         <appinfo>
           <jaxb:class name="SimplePropertyDecl" />
         </appinfo>
@@ -203,7 +214,8 @@
         <extension base="postgisfs:AbstractPropertyType">
           <attribute name="type" type="postgisfs:PrimitiveType">
             <annotation>
-              <documentation>Primitive type of the property (if omitted, it is automatically determined from column)
+              <documentation>Primitive type of the property (if omitted, it is
+                automatically determined from column)
               </documentation>
             </annotation>
           </attribute>
@@ -220,12 +232,14 @@
       </enumeration>
       <enumeration value="boolean">
         <annotation>
-          <documentation>Boolean-valued property (=xs:boolean)</documentation>
+          <documentation>Boolean-valued property (=xs:boolean)
+					</documentation>
         </annotation>
       </enumeration>
       <enumeration value="decimal">
         <annotation>
-          <documentation>Decimal-valued property (=xs:decimal)</documentation>
+          <documentation>Decimal-valued property (=xs:decimal)
+					</documentation>
         </annotation>
       </enumeration>
       <enumeration value="double">
@@ -235,7 +249,8 @@
       </enumeration>
       <enumeration value="integer">
         <annotation>
-          <documentation>Integer-valued property (=xs:integer)</documentation>
+          <documentation>Integer-valued property (=xs:integer)
+					</documentation>
         </annotation>
       </enumeration>
       <enumeration value="date">
@@ -259,7 +274,8 @@
   <element name="GeometryProperty" substitutionGroup="postgisfs:AbstractProperty">
     <complexType>
       <annotation>
-        <documentation>Definition of a geometry-valued property of a feature type</documentation>
+        <documentation>Definition of a geometry-valued property of a feature
+          type</documentation>
         <appinfo>
           <jaxb:class name="GeometryPropertyDecl" />
         </appinfo>
@@ -268,25 +284,29 @@
         <extension base="postgisfs:AbstractPropertyType">
           <attribute name="type" type="postgisfs:GeometryType">
             <annotation>
-              <documentation>Geometry type (if omitted, it is automatically determined from table geometry_columns)
+              <documentation>Geometry type (if omitted, it is automatically
+                determined from table geometry_columns)
               </documentation>
             </annotation>
           </attribute>
           <attribute name="crs" type="string">
             <annotation>
-              <documentation>deegree CRS identifier used for the geometry property, e.g. 'EPSG:4326' (if omitted, it is
+              <documentation>deegree CRS identifier used for the geometry
+                property, e.g. 'EPSG:4326' (if omitted, it is
                 automatically derived from the PostGIS srid)</documentation>
             </annotation>
           </attribute>
           <attribute name="srid" type="integer">
             <annotation>
-              <documentation>PostGIS SRID of the column (if omitted, it is automatically determined from table
+              <documentation>PostGIS SRID of the column (if omitted, it is
+                automatically determined from table
                 geometry_columns)</documentation>
             </annotation>
           </attribute>
           <attribute name="dim">
             <annotation>
-              <documentation>Dimensionality of the geometry coordinates (if omitted, it is automatically determined from
+              <documentation>Dimensionality of the geometry coordinates (if
+                omitted, it is automatically determined from
                 table geometry_columns)</documentation>
             </annotation>
             <simpleType>
@@ -339,7 +359,8 @@
   <element name="FeatureProperty" substitutionGroup="postgisfs:AbstractProperty">
     <complexType>
       <annotation>
-        <documentation>Definition of a feature-valued property of a feature type.</documentation>
+        <documentation>Definition of a feature-valued property of a feature
+          type.</documentation>
         <appinfo>
           <jaxb:class name="FeaturePropertyDecl" />
         </appinfo>
@@ -359,7 +380,8 @@
   <element name="CodeProperty" substitutionGroup="postgisfs:AbstractProperty">
     <complexType>
       <annotation>
-        <documentation>Definition of a code-valued property of a feature type.</documentation>
+        <documentation>Definition of a code-valued property of a feature
+          type.</documentation>
         <appinfo>
           <jaxb:class name="CodePropertyDecl" />
         </appinfo>
@@ -368,7 +390,8 @@
         <extension base="postgisfs:AbstractPropertyType">
           <attribute name="codeSpaceMapping" type="string" use="optional">
             <annotation>
-              <documentation>Mapping expression for the codeSpace attribute.</documentation>
+              <documentation>Mapping expression for the codeSpace attribute.
+							</documentation>
             </annotation>
           </attribute>
         </extension>
@@ -379,7 +402,8 @@
   <element name="MeasureProperty" substitutionGroup="postgisfs:AbstractProperty">
     <complexType>
       <annotation>
-        <documentation>Definition of a measure-valued property of a feature type.</documentation>
+        <documentation>Definition of a measure-valued property of a feature
+          type.</documentation>
         <appinfo>
           <jaxb:class name="MeasurePropertyDecl" />
         </appinfo>
@@ -388,7 +412,8 @@
         <extension base="postgisfs:AbstractPropertyType">
           <attribute name="uomMapping" type="string" use="optional">
             <annotation>
-              <documentation>Mapping expression for the uom attribute.</documentation>
+              <documentation>Mapping expression for the uom attribute.
+							</documentation>
             </annotation>
           </attribute>
         </extension>
@@ -399,7 +424,8 @@
   <element name="CustomProperty" substitutionGroup="postgisfs:AbstractProperty">
     <complexType>
       <annotation>
-        <documentation>Definition of a custom-valued property of a feature type.</documentation>
+        <documentation>Definition of a custom-valued property of a feature
+          type.</documentation>
         <appinfo>
           <jaxb:class name="CustomPropertyDecl" />
         </appinfo>
@@ -416,14 +442,19 @@
   <element name="AbstractCustomMapping" abstract="true" type="postgisfs:AbstractCustomMappingType" />
   <complexType name="AbstractCustomMappingType">
     <annotation>
-      <documentation>Defines the mapping for (a part of) a custom property.</documentation>
+      <documentation>Defines the mapping for (a part of) a custom property.
+			</documentation>
       <appinfo>
         <jaxb:class name="CustomMapping" />
       </appinfo>
     </annotation>
+    <sequence>
+      <element ref="postgisfs:JoinedTable" minOccurs="0" />
+    </sequence>
     <attribute name="path" type="string" use="required">
       <annotation>
-        <documentation>(Relative) XPath targeted by this mapping.</documentation>
+        <documentation>(Relative) XPath targeted by this mapping.
+				</documentation>
       </annotation>
     </attribute>
     <attribute name="mapping" type="string">
@@ -435,7 +466,8 @@
   <element name="PrimitiveMapping" substitutionGroup="postgisfs:AbstractCustomMapping">
     <complexType>
       <annotation>
-        <documentation>Defines the mapping for a primitive node of a custom property.</documentation>
+        <documentation>Defines the mapping for a primitive node of a custom
+          property.</documentation>
         <appinfo>
           <jaxb:class name="PrimitiveMapping" />
         </appinfo>
@@ -454,7 +486,8 @@
   <element name="GeometryMapping" substitutionGroup="postgisfs:AbstractCustomMapping">
     <complexType>
       <annotation>
-        <documentation>Defines the mapping for a Geometry inside a custom property.</documentation>
+        <documentation>Defines the mapping for a Geometry inside a custom
+          property.</documentation>
         <appinfo>
           <jaxb:class name="GeometryMapping" />
         </appinfo>
@@ -463,25 +496,29 @@
         <extension base="postgisfs:AbstractCustomMappingType">
           <attribute name="type" type="postgisfs:GeometryType">
             <annotation>
-              <documentation>Geometry type (if omitted, it is automatically determined from table geometry_columns)
+              <documentation>Geometry type (if omitted, it is automatically
+                determined from table geometry_columns)
               </documentation>
             </annotation>
           </attribute>
           <attribute name="crs" type="string">
             <annotation>
-              <documentation>deegree CRS identifier used for the geometry property, e.g. 'EPSG:4326' (if omitted, it is
+              <documentation>deegree CRS identifier used for the geometry
+                property, e.g. 'EPSG:4326' (if omitted, it is
                 automatically derived from the PostGIS srid)</documentation>
             </annotation>
           </attribute>
           <attribute name="srid" type="integer">
             <annotation>
-              <documentation>PostGIS SRID of the column (if omitted, it is automatically determined from table
+              <documentation>PostGIS SRID of the column (if omitted, it is
+                automatically determined from table
                 geometry_columns)</documentation>
             </annotation>
           </attribute>
           <attribute name="dim">
             <annotation>
-              <documentation>Dimensionality of the geometry coordinates (if omitted, it is automatically determined from
+              <documentation>Dimensionality of the geometry coordinates (if
+                omitted, it is automatically determined from
                 table geometry_columns)</documentation>
             </annotation>
             <simpleType>
@@ -490,7 +527,7 @@
                 <enumeration value="3D" />
               </restriction>
             </simpleType>
-          </attribute>          
+          </attribute>
         </extension>
       </complexContent>
     </complexType>
@@ -498,7 +535,8 @@
   <element name="FeatureMapping" substitutionGroup="postgisfs:AbstractCustomMapping">
     <complexType>
       <annotation>
-        <documentation>Defines the mapping for a Feature inside a custom property.</documentation>
+        <documentation>Defines the mapping for a Feature inside a custom
+          property.</documentation>
         <appinfo>
           <jaxb:class name="FeatureMapping" />
         </appinfo>
@@ -517,7 +555,8 @@
   <element name="ComplexMapping" substitutionGroup="postgisfs:AbstractCustomMapping">
     <complexType>
       <annotation>
-        <documentation>Defines the mapping for a part of a custom property.</documentation>
+        <documentation>Defines the mapping for a part of a custom property.
+				</documentation>
         <appinfo>
           <jaxb:class name="ComplexMapping" />
         </appinfo>
@@ -525,7 +564,6 @@
       <complexContent>
         <extension base="postgisfs:AbstractCustomMappingType">
           <sequence>
-            <element ref="postgisfs:JoinedTable" minOccurs="0" />
             <element ref="postgisfs:AbstractCustomMapping" minOccurs="0" maxOccurs="unbounded" />
           </sequence>
         </extension>
@@ -535,13 +573,15 @@
   <element name="JoinedTable">
     <complexType>
       <annotation>
-        <documentation>Defines a 1:n mapping in the relational schema.</documentation>
+        <documentation>Defines a 1:n mapping in the relational schema.
+				</documentation>
       </annotation>
       <simpleContent>
         <extension base="string">
           <attribute name="indexColumn" type="string" use="optional">
             <annotation>
-              <documentation>Name of the column that stores the index of the related object.</documentation>
+              <documentation>Name of the column that stores the index of the
+                related object.</documentation>
             </annotation>
           </attribute>
         </extension>

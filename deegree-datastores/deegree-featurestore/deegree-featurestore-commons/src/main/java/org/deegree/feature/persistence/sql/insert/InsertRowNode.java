@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.feature.persistence.postgis;
+package org.deegree.feature.persistence.sql.insert;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -53,7 +53,8 @@ public class InsertRowNode {
     private final List<InsertRowNode> relatedRows = new ArrayList<InsertRowNode>();
 
     public InsertRowNode( QTableName table, JoinChain parentRelation ) {
-        this.row = new InsertRow( table );
+        // TODO
+        this.row = new InsertRow( table, "id" );
         this.parentRelation = parentRelation;
     }
 
@@ -82,7 +83,7 @@ public class InsertRowNode {
                             throws SQLException {
 
         // TODO
-        int id = row.performInsert( conn );
+        int id = (Integer) row.performInsert( conn ).get( "id" );
 
         for ( InsertRowNode relatedRow : relatedRows ) {
             DBField to = relatedRow.parentRelation.getFields().get( 1 );

@@ -80,6 +80,9 @@ import org.deegree.feature.persistence.sql.id.FIDMapping;
 import org.deegree.feature.persistence.sql.id.IDGenerator;
 import org.deegree.feature.persistence.sql.id.IdAnalysis;
 import org.deegree.feature.persistence.sql.id.UUIDGenerator;
+import org.deegree.feature.persistence.sql.insert.InsertRow;
+import org.deegree.feature.persistence.sql.insert.InsertRowManager;
+import org.deegree.feature.persistence.sql.insert.InsertRowNode;
 import org.deegree.feature.persistence.sql.rules.CodeMapping;
 import org.deegree.feature.persistence.sql.rules.CompoundMapping;
 import org.deegree.feature.persistence.sql.rules.FeatureMapping;
@@ -382,12 +385,13 @@ public class PostGISFeatureStoreTransaction implements FeatureStoreTransaction {
     private String insertFeatureRelational( Feature feature, FeatureTypeMapping ftMapping, IDGenMode mode )
                             throws FeatureStoreException {
 
-        InsertRow row = new InsertRow( ftMapping.getFtTable() );
+        InsertRowManager rowManager = new InsertRowManager();
+        InsertRow featureRow = rowManager.newRow( ftMapping.getFtTable(), null );
 
         FIDMapping fidMapping = ftMapping.getFidMapping();
         IDGenerator generator = fidMapping.getIdGenerator();
         if ( generator instanceof UUIDGenerator ) {
-            row.addPreparedArgument( fidMapping.getColumn(), feature.getId() );
+            featureRow.addPreparedArgument( fidMapping.getColumn(), feature.getId() );
         }
 
         for ( Property prop : feature.getProperties() ) {
@@ -401,41 +405,32 @@ public class PostGISFeatureStoreTransaction implements FeatureStoreTransaction {
                 JoinChain jc = mapping.getJoinedTable();
                 if ( jc == null ) {
                     LOG.debug( "Inserting property '" + propName + "' (feature root table)" );
-                    buildInsertRows( mapping, particle, row );
+                    buildInsertRows( mapping, particle, featureRow, rowManager );
                 } else {
                     LOG.debug( "Inserting property '" + propName + "' (property table)" );
                     // TODO qualified table name
                     QTableName table = new QTableName( jc.getFields().get( 1 ).getTable() );
-                    InsertRow propertyRow = row.addChildRow( table );
-                    buildInsertRows( mapping, particle, propertyRow );
+                    InsertRow propertyRow = rowManager.newRow( table, "id" );
+                    // TODO foreign key parameters
+                    rowManager.addForeignKeyRelation( featureRow, fidMapping.getColumn(), propertyRow, "parentfk" );
+                    buildInsertRows( mapping, particle, propertyRow, rowManager );
                 }
             } else {
                 LOG.warn( "No mapping for property '" + propName + "'. Omitting." );
             }
         }
 
-        insert( row );
+        try {
+            rowManager.performInserts( conn );
+        } catch ( SQLException e ) {
+            throw new FeatureStoreException( e.getMessage() );
+        }
 
-        // for ( InsertRow child : row.getChildren() ) {
-        // System.out.println( "child: " + child );
-        // }
-        //
-        // try {
-        // row.performInsert( conn );
-        // } catch ( SQLException e ) {
-        // throw new FeatureStoreException( e.getMessage() );
-        // }
         return feature.getId();
     }
 
-    private void insert( InsertRow row ) {
-        System.out.println( "row: " + row );
-        for ( InsertRow child : row.getChildren() ) {
-            insert( child );
-        }
-    }
-
-    private void buildInsertRows( Mapping mapping, TypedObjectNode particle, InsertRow currentRow )
+    private void buildInsertRows( Mapping mapping, TypedObjectNode particle, InsertRow currentRow,
+                                  InsertRowManager rowManager )
                             throws FeatureStoreException {
 
         if ( mapping instanceof PrimitiveMapping ) {
@@ -491,10 +486,9 @@ public class PostGISFeatureStoreTransaction implements FeatureStoreTransaction {
             GenericXMLElement propNode = (GenericXMLElement) particle;
             for ( Mapping particleMapping : cm.getParticles() ) {
                 try {
-                    insertParticle( particleMapping, propNode, currentRow );
+                    insertParticle( particleMapping, propNode, currentRow, rowManager );
                 } catch ( FilterEvaluationException e ) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
+                    throw new FeatureStoreException( e.getMessage(), e );
                 }
             }
         } else {
@@ -502,8 +496,18 @@ public class PostGISFeatureStoreTransaction implements FeatureStoreTransaction {
         }
     }
 
-    private void insertParticle( Mapping mapping, GenericXMLElement particle, InsertRow insertRow )
+    private void insertParticle( Mapping mapping, GenericXMLElement particle, InsertRow insertRow,
+                                 InsertRowManager rowManager )
                             throws FilterEvaluationException {
+
+        if ( mapping.getJoinedTable() != null ) {
+            // TODO
+            QTableName tableName = new QTableName( mapping.getJoinedTable().getFields().get( 1 ).getTable() );
+            InsertRow relatedRow = rowManager.newRow( tableName, "id" );
+            // TODO foreign key parameters
+            rowManager.addForeignKeyRelation( insertRow, "id", relatedRow, "parentfk" );
+            insertRow = relatedRow;
+        }
 
         if ( mapping instanceof PrimitiveMapping ) {
             MappingExpression me = ( (PrimitiveMapping) mapping ).getMapping();
@@ -512,7 +516,7 @@ public class PostGISFeatureStoreTransaction implements FeatureStoreTransaction {
                 return;
             }
             PropertyName path = mapping.getPath();
-            // TODO: version
+            // TODO: GML version
             FeatureXPathEvaluator evaluator = new FeatureXPathEvaluator( GML_32 );
             TypedObjectNode[] primitiveValues = evaluator.eval( particle, path );
             for ( TypedObjectNode pv : primitiveValues ) {
@@ -525,22 +529,17 @@ public class PostGISFeatureStoreTransaction implements FeatureStoreTransaction {
             }
         } else if ( mapping instanceof CompoundMapping ) {
             PropertyName path = mapping.getPath();
-            // TODO: version
+            // TODO: GML version
             FeatureXPathEvaluator evaluator = new FeatureXPathEvaluator( GML_32 );
             TypedObjectNode[] particleValues = evaluator.eval( particle, path );
 
             for ( Mapping particleMapping : ( (CompoundMapping) mapping ).getParticles() ) {
-                try {
-                    for ( TypedObjectNode particleValue : particleValues ) {
-                        if ( particleValue instanceof GenericXMLElement ) {
-                            insertParticle( particleMapping, (GenericXMLElement) particleValue, insertRow );
-                        } else {
-                            LOG.warn( "Unexpected particle value type (=" + particleValue.getClass() + ")" );
-                        }
+                for ( TypedObjectNode particleValue : particleValues ) {
+                    if ( particleValue instanceof GenericXMLElement ) {
+                        insertParticle( particleMapping, (GenericXMLElement) particleValue, insertRow, rowManager );
+                    } else {
+                        LOG.warn( "Unexpected particle value type (=" + particleValue.getClass() + ")" );
                     }
-                } catch ( FilterEvaluationException e ) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
                 }
             }
         }
