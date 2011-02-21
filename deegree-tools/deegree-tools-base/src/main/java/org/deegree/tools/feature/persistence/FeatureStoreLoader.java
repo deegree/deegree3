@@ -100,7 +100,7 @@ public class FeatureStoreLoader {
         int delimPos = connId.indexOf( '.' );
         connId = connId.substring( 0, delimPos );
         URL configURL = f.toURI().toURL();
-        ConnectionManager.addConnection( configURL, connId );
+        ConnectionManager.addConnection( configURL, connId, null );
     }
 
     private static FeatureStore initFeatureStore( String fsConfigFile )
