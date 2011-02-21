@@ -87,6 +87,7 @@ import org.deegree.feature.persistence.sql.id.IdAnalysis;
 import org.deegree.feature.persistence.sql.rules.GeometryMapping;
 import org.deegree.feature.persistence.sql.rules.Mapping;
 import org.deegree.feature.persistence.sql.rules.Mappings;
+import org.deegree.feature.persistence.sql.rules.PrimitiveMapping;
 import org.deegree.feature.types.ApplicationSchema;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.feature.types.property.FeaturePropertyType;
@@ -707,20 +708,36 @@ public class PostGISFeatureStore extends AbstractSQLFeatureStore {
                     // append every (mapped) property to SELECT list
                     // TODO columns in related tables
                     Mapping mapping = ftMapping.getMapping( pt.getName() );
-                    MappingExpression column = mapping == null ? null : Mappings.getMappingExpression( mapping );
-                    if ( column != null ) {
-                        sql.append( ',' );
-                        if ( column instanceof JoinChain ) {
-                            JoinChain jc = (JoinChain) column;
-                            sql.append( ftTableAlias );
-                            sql.append( '.' );
-                            sql.append( jc.getFields().get( 0 ) );
-                        } else {
-                            if ( pt instanceof SimplePropertyType ) {
+                    if ( mapping == null ) {
+                        LOG.warn( "No mapping for property '" + pt.getName() + "' -- omitting." );
+                        continue;
+                    } else if ( pt instanceof SimplePropertyType ) {
+                        PrimitiveMapping pm = (PrimitiveMapping) mapping;
+                        MappingExpression column = pm.getMapping();
+                        if ( column != null ) {
+                            sql.append( ',' );
+                            if ( column instanceof JoinChain ) {
+                                JoinChain jc = (JoinChain) column;
+                                sql.append( ftTableAlias );
+                                sql.append( '.' );
+                                sql.append( jc.getFields().get( 0 ) );
+                            } else {
                                 sql.append( ftTableAlias );
                                 sql.append( '.' );
                                 sql.append( column );
-                            } else if ( pt instanceof GeometryPropertyType ) {
+                            }
+                        }
+                    } else if ( pt instanceof GeometryPropertyType ) {
+                        GeometryMapping gm = (GeometryMapping) mapping;
+                        MappingExpression column = gm.getMapping();
+                        if ( column != null ) {
+                            sql.append( ',' );
+                            if ( column instanceof JoinChain ) {
+                                JoinChain jc = (JoinChain) column;
+                                sql.append( ftTableAlias );
+                                sql.append( '.' );
+                                sql.append( jc.getFields().get( 0 ) );
+                            } else {
                                 if ( useLegacyPredicates ) {
                                     sql.append( "AsBinary(" );
                                 } else {
@@ -730,15 +747,11 @@ public class PostGISFeatureStore extends AbstractSQLFeatureStore {
                                 sql.append( '.' );
                                 sql.append( column );
                                 sql.append( ')' );
-                            } else if ( pt instanceof FeaturePropertyType ) {
-                                sql.append( ftTableAlias );
-                                sql.append( '.' );
-                                sql.append( column );
-                            } else {
-                                LOG.warn( "Skipping property '" + pt.getName() + "' -- type '" + pt.getClass()
-                                          + "' not handled in PostGISFeatureStore." );
                             }
                         }
+                    } else {
+                        LOG.warn( "Skipping property '" + pt.getName() + "' -- type '" + pt.getClass()
+                                  + "' not handled in PostGISFeatureStore." );
                     }
                 }
             }
