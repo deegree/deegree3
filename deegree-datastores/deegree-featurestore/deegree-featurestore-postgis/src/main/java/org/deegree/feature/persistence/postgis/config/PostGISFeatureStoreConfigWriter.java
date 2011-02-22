@@ -146,12 +146,12 @@ public class PostGISFeatureStoreConfigWriter {
         writer.writeStartElement( CONFIG_NS, "JDBCConnId" );
         writer.writeCharacters( connId );
         writer.writeEndElement();
-        
-        for (String schemaUrl : schemaURLs) {           
+
+        for ( String schemaUrl : schemaURLs ) {
             writer.writeStartElement( CONFIG_NS, "GMLSchema" );
             writer.writeAttribute( "version", "GML_32" );
             writer.writeCharacters( schemaUrl );
-            writer.writeEndElement();            
+            writer.writeEndElement();
         }
 
         List<FeatureType> fts = schema.getFeatureTypes( null, false, false );
@@ -557,7 +557,8 @@ public class PostGISFeatureStoreConfigWriter {
                             throws XMLStreamException {
         writer.writeStartElement( CONFIG_NS, "JoinedTable" );
         writer.writeAttribute( "indexColumn", "idx" );
-        writer.writeCharacters( "id=" + jc.getFields().get( 1 ).getTable() + ".parentfk" );
+        writer.writeCharacters( jc.getFields().get( 0 ).getColumn() + "=" + jc.getFields().get( 1 ).getTable()
+                                + ".parentfk" );
         writer.writeEndElement();
     }
 

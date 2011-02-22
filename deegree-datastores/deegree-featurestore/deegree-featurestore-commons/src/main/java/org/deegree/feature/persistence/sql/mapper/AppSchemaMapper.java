@@ -286,7 +286,7 @@ public class AppSchemaMapper {
             mapping = new DBField( mc2.getColumn() );
         } else {
             mc2 = mcManager.mapOneToManyElements( mc, pt.getName() );
-            jc = generateJoinChain( mc, mc2 );
+            jc = generateJoinChain( "attr_gml_id", mc, mc2 );
             mapping = new DBField( "ref" );
         }
 
@@ -304,7 +304,7 @@ public class AppSchemaMapper {
             mapping = new DBField( mc2.getColumn() );
         } else {
             mc2 = mcManager.mapOneToManyElements( mc, pt.getName() );
-            jc = generateJoinChain( mc, mc2 );
+            jc = generateJoinChain( "attr_gml_id", mc, mc2 );
             mapping = new DBField( "ref" );
         }
         QTableName table = new QTableName( mc2.getColumn() );
@@ -337,7 +337,7 @@ public class AppSchemaMapper {
             propMc = mcManager.mapOneToOneElement( mc, pt.getName() );
         } else {
             propMc = mcManager.mapOneToManyElements( mc, pt.getName() );
-            jc = generateJoinChain( mc, propMc );
+            jc = generateJoinChain( "attr_gml_id", mc, propMc );
         }
         List<Mapping> particles = generateMapping( pt.getXSDValueType(), propMc, new HashMap<QName, QName>() );
         return new CompoundMapping( path, particles, jc );
@@ -357,15 +357,15 @@ public class AppSchemaMapper {
         } else {
             propMc = mcManager.mapOneToManyElements( mc, pt.getName() );
             codeSpaceMc = mcManager.mapOneToOneAttribute( propMc, new QName( "codeSpace" ) );
-            jc = generateJoinChain( mc, propMc );
+            jc = generateJoinChain( "attr_gml_id", mc, propMc );
             mapping = new DBField( "value" );
         }
         MappingExpression csMapping = new DBField( codeSpaceMc.getColumn() );
         return new CodeMapping( path, mapping, STRING, jc, csMapping );
     }
 
-    private JoinChain generateJoinChain( MappingContext from, MappingContext to ) {
-        return new JoinChain( new DBField( from.getTable(), "id" ), new DBField( to.getTable(), "parentfk" ) );
+    private JoinChain generateJoinChain( String idColumn, MappingContext from, MappingContext to ) {
+        return new JoinChain( new DBField( from.getTable(), idColumn ), new DBField( to.getTable(), "parentfk" ) );
     }
 
     private List<Mapping> generateMapping( XSComplexTypeDefinition typeDef, MappingContext mc,
@@ -546,7 +546,7 @@ public class AppSchemaMapper {
 
                     JoinChain jc = null;
                     if ( occurence == -1 ) {
-                        jc = generateJoinChain( mc, elMC );
+                        jc = generateJoinChain( "id", mc, elMC );
                     }
 
                     if ( typeDef instanceof XSComplexTypeDefinition ) {

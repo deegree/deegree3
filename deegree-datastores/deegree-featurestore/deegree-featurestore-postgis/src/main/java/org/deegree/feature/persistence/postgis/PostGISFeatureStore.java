@@ -87,7 +87,6 @@ import org.deegree.feature.persistence.sql.id.IdAnalysis;
 import org.deegree.feature.persistence.sql.rules.GeometryMapping;
 import org.deegree.feature.persistence.sql.rules.Mapping;
 import org.deegree.feature.persistence.sql.rules.Mappings;
-import org.deegree.feature.persistence.sql.rules.PrimitiveMapping;
 import org.deegree.feature.types.ApplicationSchema;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.feature.types.property.FeaturePropertyType;
@@ -675,12 +674,20 @@ public class PostGISFeatureStore extends AbstractSQLFeatureStore {
         ResultSet rs = null;
 
         try {
-            FeatureType ft = getSchema().getFeatureType( ftName );
-            FeatureTypeMapping ftMapping = getMapping( ftName );
-
             conn = ConnectionManager.getConnection( getConnId() );
             // TODO where to put this?
             conn.setAutoCommit( false );
+
+            FeatureType ft = getSchema().getFeatureType( ftName );
+            FeatureTypeMapping ftMapping = getMapping( ftName );
+
+            FeatureBuilder builder = null;
+            if ( getSchema().getBlobMapping() != null ) {
+                builder = new FeatureBuilderBlob( this, getSchema().getBlobMapping() );
+            } else {
+                builder = new FeatureBuilderRelational( this, ft, ftMapping, conn );
+            }
+            List<String> columns = builder.getSelectColumns();
 
             PostGISFeatureMapping pgMapping = new PostGISFeatureMapping( getSchema(), ft, ftMapping, this );
             wb = new PostGISWhereBuilder( pgMapping, filter, query.getSortProperties(), useLegacyPredicates );
@@ -690,72 +697,24 @@ public class PostGISFeatureStore extends AbstractSQLFeatureStore {
             BlobMapping blobMapping = getSchema().getBlobMapping();
             String ftTableAlias = wb.getAliasManager().getRootTableAlias();
             String blobTableAlias = wb.getAliasManager().generateNew();
-
-            StringBuilder sql = new StringBuilder( "SELECT " );
+            String tableAlias = ftTableAlias;
             if ( blobMapping != null ) {
-                sql.append( blobTableAlias );
-                sql.append( '.' );
-                sql.append( getSchema().getBlobMapping().getGMLIdColumn() );
-                sql.append( ',' );
-                sql.append( blobTableAlias );
-                sql.append( '.' );
-                sql.append( getSchema().getBlobMapping().getDataColumn() );
-            } else {
-                sql.append( ftTableAlias );
-                sql.append( '.' );
-                sql.append( ftMapping.getFidMapping().getColumn() );
-                for ( PropertyType pt : ft.getPropertyDeclarations() ) {
-                    // append every (mapped) property to SELECT list
-                    // TODO columns in related tables
-                    Mapping mapping = ftMapping.getMapping( pt.getName() );
-                    if ( mapping == null ) {
-                        LOG.warn( "No mapping for property '" + pt.getName() + "' -- omitting." );
-                        continue;
-                    } else if ( pt instanceof SimplePropertyType ) {
-                        PrimitiveMapping pm = (PrimitiveMapping) mapping;
-                        MappingExpression column = pm.getMapping();
-                        if ( column != null ) {
-                            sql.append( ',' );
-                            if ( column instanceof JoinChain ) {
-                                JoinChain jc = (JoinChain) column;
-                                sql.append( ftTableAlias );
-                                sql.append( '.' );
-                                sql.append( jc.getFields().get( 0 ) );
-                            } else {
-                                sql.append( ftTableAlias );
-                                sql.append( '.' );
-                                sql.append( column );
-                            }
-                        }
-                    } else if ( pt instanceof GeometryPropertyType ) {
-                        GeometryMapping gm = (GeometryMapping) mapping;
-                        MappingExpression column = gm.getMapping();
-                        if ( column != null ) {
-                            sql.append( ',' );
-                            if ( column instanceof JoinChain ) {
-                                JoinChain jc = (JoinChain) column;
-                                sql.append( ftTableAlias );
-                                sql.append( '.' );
-                                sql.append( jc.getFields().get( 0 ) );
-                            } else {
-                                if ( useLegacyPredicates ) {
-                                    sql.append( "AsBinary(" );
-                                } else {
-                                    sql.append( "ST_AsBinary(" );
-                                }
-                                sql.append( ftTableAlias );
-                                sql.append( '.' );
-                                sql.append( column );
-                                sql.append( ')' );
-                            }
-                        }
-                    } else {
-                        LOG.warn( "Skipping property '" + pt.getName() + "' -- type '" + pt.getClass()
-                                  + "' not handled in PostGISFeatureStore." );
-                    }
-                }
+                tableAlias = blobTableAlias;
             }
 
+            StringBuilder sql = new StringBuilder( "SELECT " );
+            sql.append( tableAlias );
+            sql.append( '.' );
+            sql.append( columns.get( 0 ) );
+            for ( int i = 1; i < columns.size(); i++ ) {
+                sql.append( ',' );
+                // TODO
+                if ( !columns.get( i ).contains( "(" ) ) {
+                    sql.append( tableAlias );
+                    sql.append( '.' );
+                }
+                sql.append( columns.get( i ) );
+            }
             sql.append( " FROM " );
             if ( blobMapping == null ) {
                 // pure relational query
@@ -866,12 +825,6 @@ public class PostGISFeatureStore extends AbstractSQLFeatureStore {
             rs = stmt.executeQuery();
             LOG.debug( "Executing SELECT took {} [ms] ", System.currentTimeMillis() - begin );
 
-            FeatureBuilder builder = null;
-            if ( blobMapping != null ) {
-                builder = new FeatureBuilderBlob( this, blobMapping );
-            } else {
-                builder = new FeatureBuilderRelational( this, ft, ftMapping, conn );
-            }
             result = new IteratorResultSet( new PostGISResultSetIterator( builder, rs, conn, stmt ) );
         } catch ( Exception e ) {
             close( rs, stmt, conn, LOG );

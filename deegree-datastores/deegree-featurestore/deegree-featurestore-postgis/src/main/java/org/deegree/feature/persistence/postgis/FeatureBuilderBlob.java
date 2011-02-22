@@ -37,6 +37,8 @@ package org.deegree.feature.persistence.postgis;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.feature.Feature;
@@ -61,27 +63,27 @@ class FeatureBuilderBlob implements FeatureBuilder {
 
     private final PostGISFeatureStore fs;
 
+    private final BlobMapping blobMapping;
+    
     private final BlobCodec codec;
 
     private final ICRS crs;
 
     FeatureBuilderBlob( PostGISFeatureStore fs, BlobMapping blobMapping ) {
         this.fs = fs;
+        this.blobMapping = blobMapping;
         this.codec = blobMapping.getCodec();
         this.crs = blobMapping.getCRS();
     }
 
-    /**
-     * Builds a {@link Feature} instance from the current row of the given {@link ResultSet}.
-     * <p>
-     * The first column must be the gml id, the second column must be the data BLOB.
-     * </p>
-     * 
-     * @param rs
-     *            PostGIS result set, must not be <code>null</code>
-     * @return created {@link Feature} instance, never <code>null</code>
-     * @throws SQLException
-     */
+    @Override
+    public List<String> getSelectColumns() {
+        List<String> columns = new ArrayList<String>();
+        columns.add( blobMapping.getGMLIdColumn() );
+        columns.add( blobMapping.getDataColumn() );
+        return columns;
+    }
+
     @Override
     public Feature buildFeature( ResultSet rs )
                             throws SQLException {

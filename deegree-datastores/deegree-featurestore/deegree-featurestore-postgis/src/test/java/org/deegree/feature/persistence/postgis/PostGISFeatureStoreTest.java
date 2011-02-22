@@ -216,12 +216,17 @@ public class PostGISFeatureStoreTest {
         PostGISFeatureStoreProvider provider = new PostGISFeatureStoreProvider();
         FeatureStore fs = provider.getFeatureStore( new URL(
                                                              "file:/home/schneider/.deegree/inspire-test/datasources/feature/inspire-au.xml" ) );
+
+        XMLStreamWriter xmlWriter = XMLOutputFactory.newInstance().createXMLStreamWriter( new FileOutputStream( "/tmp/out.xml" ) );
+        xmlWriter = new IndentingXMLStreamWriter( xmlWriter );
+        GMLStreamWriter gmlWriter = GMLOutputFactory.createGMLStreamWriter( GML_32, xmlWriter );
+        gmlWriter.setNamespaceBindings( appSchema.getNamespaceBindings() );
+        
         QName countryName = QName.valueOf( "{urn:x-inspire:specification:gmlas:AdministrativeUnits:3.0}AdministrativeUnit" );
         Query query = new Query( countryName, null, -1, -1, -1.0 );
         FeatureResultSet rs = fs.query( query );
-        for ( Feature f : rs ) {
-            System.out.println( f.getId() );
-        }
+        gmlWriter.write( rs.iterator().next() );
+        gmlWriter.close();
     }
 
     @Test

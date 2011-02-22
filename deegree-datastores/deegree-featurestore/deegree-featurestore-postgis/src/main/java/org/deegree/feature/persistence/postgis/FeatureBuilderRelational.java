@@ -53,9 +53,10 @@ import org.deegree.feature.Feature;
 import org.deegree.feature.persistence.sql.FeatureBuilder;
 import org.deegree.feature.persistence.sql.FeatureTypeMapping;
 import org.deegree.feature.persistence.sql.expressions.JoinChain;
+import org.deegree.feature.persistence.sql.rules.CompoundMapping;
 import org.deegree.feature.persistence.sql.rules.GeometryMapping;
 import org.deegree.feature.persistence.sql.rules.Mapping;
-import org.deegree.feature.persistence.sql.rules.Mappings;
+import org.deegree.feature.persistence.sql.rules.PrimitiveMapping;
 import org.deegree.feature.property.GenericProperty;
 import org.deegree.feature.property.Property;
 import org.deegree.feature.types.FeatureType;
@@ -100,6 +101,55 @@ class FeatureBuilderRelational implements FeatureBuilder {
         this.conn = conn;
     }
 
+    @Override
+    public List<String> getSelectColumns() {
+        List<String> columns = new ArrayList<String>();
+        columns.add( ftMapping.getFidMapping().getColumn() );
+        for ( PropertyType pt : ft.getPropertyDeclarations() ) {
+            Mapping mapping = ftMapping.getMapping( pt.getName() );
+            if ( mapping == null ) {
+                LOG.warn( "No mapping for property '" + pt.getName() + "' -- omitting from SELECT list." );
+            } else {
+                appendSelectColumns( mapping, columns );
+            }
+        }
+        return columns;
+    }
+
+    private void appendSelectColumns( Mapping mapping, List<String> columns ) {
+
+        JoinChain jc = mapping.getJoinedTable();
+        if ( jc != null ) {
+            columns.add( jc.getFields().get( 0 ).getColumn() );
+        } else {
+            if ( mapping instanceof PrimitiveMapping ) {
+                PrimitiveMapping pm = (PrimitiveMapping) mapping;
+                MappingExpression column = pm.getMapping();
+                if ( column instanceof DBField ) {
+                    columns.add( ( (DBField) column ).getColumn() );
+                } else {
+                    LOG.warn( "Skipping mapping '" + column + "'. Not mapped to a column." );
+                }
+            } else if ( mapping instanceof GeometryMapping ) {
+                GeometryMapping gm = (GeometryMapping) mapping;
+                MappingExpression column = gm.getMapping();
+                if ( column instanceof DBField ) {
+                    // TODO
+                    columns.add( "AsBinary(" + ( (DBField) column ).getColumn() + ")" );
+                } else {
+                    LOG.warn( "Skipping mapping '" + column + "'. Not mapped to a column." );
+                }
+            } else if ( mapping instanceof CompoundMapping ) {
+                CompoundMapping cm = (CompoundMapping) mapping;
+                for ( Mapping particle : cm.getParticles() ) {
+                    appendSelectColumns( particle, columns );
+                }
+            } else {
+                LOG.warn( "Mappings of type '" + mapping.getClass() + "' are not handled yet." );
+            }
+        }
+    }
+
     /**
      * Builds a {@link Feature} instance from the current row of the given {@link ResultSet}.
      * <p>
@@ -123,16 +173,30 @@ class FeatureBuilderRelational implements FeatureBuilder {
             List<Property> props = new ArrayList<Property>();
             int i = 2;
             for ( PropertyType pt : ft.getPropertyDeclarations() ) {
-                // if it is mappable, it has been SELECTed by contract
+                // if it is mappable, it has been SELECTed (by contract)
                 Mapping propMapping = ftMapping.getMapping( pt.getName() );
                 if ( propMapping != null ) {
-                    MappingExpression me = Mappings.getMappingExpression( propMapping );
-                    if ( me instanceof JoinChain ) {
-                        addProperties( conn, props, pt, (JoinChain) me, rs, i );
+                    if ( pt instanceof SimplePropertyType ) {
+                        SimplePropertyType spt = (SimplePropertyType) pt;
+                        PrimitiveMapping pm = (PrimitiveMapping) propMapping;
+                        MappingExpression me = pm.getMapping();
+                        if ( me instanceof DBField ) {
+                            addProperties( props, pt, rs, i++ );
+                        } else {
+                            LOG.warn( "Skipping" );
+                        }
+                    } else if ( pt instanceof GeometryPropertyType ) {
+                        GeometryPropertyType gpt = (GeometryPropertyType) pt;
+                        GeometryMapping pm = (GeometryMapping) propMapping;
+                        MappingExpression me = pm.getMapping();
+                        if ( me instanceof DBField ) {
+                            addProperties( props, pt, rs, i++ );
+                        } else {
+                            LOG.warn( "Skipping" );
+                        }
                     } else {
-                        addProperties( props, pt, rs, i );
+                        LOG.warn( "Properties of type '" + pt.getClass() + "' are not handled." );
                     }
-                    i++;
                 }
             }
             feature = ft.newFeature( gmlId, props, null, null );

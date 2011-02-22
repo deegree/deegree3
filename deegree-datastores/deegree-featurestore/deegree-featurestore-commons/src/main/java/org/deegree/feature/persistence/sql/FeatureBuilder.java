@@ -37,6 +37,7 @@ package org.deegree.feature.persistence.sql;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.List;
 
 import org.deegree.feature.Feature;
 
@@ -49,6 +50,13 @@ import org.deegree.feature.Feature;
  * @version $Revision$, $Date$
  */
 public interface FeatureBuilder {
+
+    /**
+     * Returns the columns for the SELECT statement that is used to retrieve the {@link ResultSet}.
+     * 
+     * @return list of columns, never <code>null</code>
+     */
+    public List<String> getSelectColumns();
 
     /**
      * Builds a {@link Feature} instance from the current row of the given {@link ResultSet}.
