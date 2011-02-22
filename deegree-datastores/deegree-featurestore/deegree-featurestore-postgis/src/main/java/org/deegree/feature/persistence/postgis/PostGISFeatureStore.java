@@ -36,9 +36,6 @@
 package org.deegree.feature.persistence.postgis;
 
 import static org.deegree.commons.utils.JDBCUtils.close;
-import static org.deegree.commons.xml.CommonNamespaces.OGCNS;
-import static org.deegree.commons.xml.CommonNamespaces.XLNNS;
-import static org.deegree.commons.xml.CommonNamespaces.XSINS;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -46,7 +43,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -81,9 +77,11 @@ import org.deegree.feature.persistence.sql.FeatureTypeMapping;
 import org.deegree.feature.persistence.sql.MappedApplicationSchema;
 import org.deegree.feature.persistence.sql.blob.BlobCodec;
 import org.deegree.feature.persistence.sql.blob.BlobMapping;
+import org.deegree.feature.persistence.sql.blob.FeatureBuilderBlob;
 import org.deegree.feature.persistence.sql.expressions.JoinChain;
 import org.deegree.feature.persistence.sql.id.FIDMapping;
 import org.deegree.feature.persistence.sql.id.IdAnalysis;
+import org.deegree.feature.persistence.sql.rules.FeatureBuilderRelational;
 import org.deegree.feature.persistence.sql.rules.GeometryMapping;
 import org.deegree.feature.persistence.sql.rules.Mapping;
 import org.deegree.feature.persistence.sql.rules.Mappings;
@@ -1100,16 +1098,6 @@ public class PostGISFeatureStore extends AbstractSQLFeatureStore {
         sb.append( srid );
         sb.append( ")" );
         return sb.toString();
-    }
-
-    Map<String, String> getNamespaceContext() {
-        if ( nsContext == null ) {
-            nsContext = new HashMap<String, String>( getSchema().getNamespaceBindings() );
-            nsContext.put( "xlink", XLNNS );
-            nsContext.put( "xsi", XSINS );
-            nsContext.put( "ogc", OGCNS );
-        }
-        return nsContext;
     }
 
     private class PostGISResultSetIterator extends ResultSetIterator<Feature> {

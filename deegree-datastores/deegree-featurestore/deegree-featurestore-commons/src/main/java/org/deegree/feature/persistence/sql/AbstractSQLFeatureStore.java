@@ -35,6 +35,10 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.feature.persistence.sql;
 
+import static org.deegree.commons.xml.CommonNamespaces.OGCNS;
+import static org.deegree.commons.xml.CommonNamespaces.XLNNS;
+import static org.deegree.commons.xml.CommonNamespaces.XSINS;
+
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -80,6 +84,8 @@ public abstract class AbstractSQLFeatureStore implements SQLFeatureStore {
 
     // cache for feature type bounding boxes
     private final Map<FeatureType, Envelope> ftToBBox = Collections.synchronizedMap( new HashMap<FeatureType, Envelope>() );
+
+    private Map<String, String> nsContext;
 
     /**
      * Creates a new {@link PostGISFeatureStore} for the given {@link ApplicationSchema}.
@@ -221,5 +227,15 @@ public abstract class AbstractSQLFeatureStore implements SQLFeatureStore {
                             throws FeatureStoreException, FilterEvaluationException {
         // TODO
         return query( queries ).toCollection().size();
+    }
+
+    public Map<String, String> getNamespaceContext() {
+        if ( nsContext == null ) {
+            nsContext = new HashMap<String, String>( getSchema().getNamespaceBindings() );
+            nsContext.put( "xlink", XLNNS );
+            nsContext.put( "xsi", XSINS );
+            nsContext.put( "ogc", OGCNS );
+        }
+        return nsContext;
     }
 }

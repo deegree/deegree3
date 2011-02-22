@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.feature.persistence.postgis;
+package org.deegree.feature.persistence.sql.rules;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -50,13 +50,10 @@ import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.commons.tom.primitive.SQLValueMangler;
 import org.deegree.commons.utils.JDBCUtils;
 import org.deegree.feature.Feature;
+import org.deegree.feature.persistence.sql.AbstractSQLFeatureStore;
 import org.deegree.feature.persistence.sql.FeatureBuilder;
 import org.deegree.feature.persistence.sql.FeatureTypeMapping;
 import org.deegree.feature.persistence.sql.expressions.JoinChain;
-import org.deegree.feature.persistence.sql.rules.CompoundMapping;
-import org.deegree.feature.persistence.sql.rules.GeometryMapping;
-import org.deegree.feature.persistence.sql.rules.Mapping;
-import org.deegree.feature.persistence.sql.rules.PrimitiveMapping;
 import org.deegree.feature.property.GenericProperty;
 import org.deegree.feature.property.Property;
 import org.deegree.feature.types.FeatureType;
@@ -75,26 +72,39 @@ import org.slf4j.LoggerFactory;
 import com.vividsolutions.jts.io.ParseException;
 
 /**
- * Builds {@link Feature} instances from SQL result set rows for the {@link PostGISFeatureStore}.
+ * Builds {@link Feature} instances from SQL result set rows (relational mode).
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
  */
-class FeatureBuilderRelational implements FeatureBuilder {
+public class FeatureBuilderRelational implements FeatureBuilder {
 
-    static final Logger LOG = LoggerFactory.getLogger( PostGISFeatureStore.class );
+    private static final Logger LOG = LoggerFactory.getLogger( FeatureBuilderRelational.class );
 
-    private PostGISFeatureStore fs;
+    private final AbstractSQLFeatureStore fs;
 
-    private FeatureType ft;
+    private final FeatureType ft;
 
-    private FeatureTypeMapping ftMapping;
+    private final FeatureTypeMapping ftMapping;
 
-    private Connection conn;
+    private final Connection conn;
 
-    FeatureBuilderRelational( PostGISFeatureStore fs, FeatureType ft, FeatureTypeMapping ftMapping, Connection conn ) {
+    /**
+     * Creates a new {@link FeatureBuilderRelational} instance.
+     * 
+     * @param fs
+     *            feature store, must not be <code>null</code>
+     * @param ft
+     *            feature type, must not be <code>null</code>
+     * @param ftMapping
+     *            feature type mapping, must not be <code>null</code>
+     * @param conn
+     *            JDBC connection (used for performing subsequent SELECTs), must not be <code>null</code>
+     */
+    public FeatureBuilderRelational( AbstractSQLFeatureStore fs, FeatureType ft, FeatureTypeMapping ftMapping,
+                                     Connection conn ) {
         this.fs = fs;
         this.ft = ft;
         this.ftMapping = ftMapping;

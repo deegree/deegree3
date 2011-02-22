@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.feature.persistence.postgis;
+package org.deegree.feature.persistence.sql.blob;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -42,34 +42,40 @@ import java.util.List;
 
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.feature.Feature;
-import org.deegree.feature.persistence.FeatureStoreGMLIdResolver;
+import org.deegree.feature.persistence.sql.AbstractSQLFeatureStore;
 import org.deegree.feature.persistence.sql.FeatureBuilder;
-import org.deegree.feature.persistence.sql.blob.BlobCodec;
-import org.deegree.feature.persistence.sql.blob.BlobMapping;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Builds {@link Feature} instances from SQL result set rows for the {@link PostGISFeatureStore}.
+ * Builds {@link Feature} instances from SQL result set rows (BLOB/hybrid mode).
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author: mschneider $
  * 
  * @version $Revision: 25480 $, $Date: 2010-07-22 19:36:56 +0200 (Do, 22. Jul 2010) $
  */
-class FeatureBuilderBlob implements FeatureBuilder {
+public class FeatureBuilderBlob implements FeatureBuilder {
 
-    private static final Logger LOG = LoggerFactory.getLogger( PostGISFeatureStore.class );
+    private static final Logger LOG = LoggerFactory.getLogger( FeatureBuilderBlob.class );
 
-    private final PostGISFeatureStore fs;
+    private final AbstractSQLFeatureStore fs;
 
     private final BlobMapping blobMapping;
-    
+
     private final BlobCodec codec;
 
     private final ICRS crs;
 
-    FeatureBuilderBlob( PostGISFeatureStore fs, BlobMapping blobMapping ) {
+    /**
+     * Creates a new {@link FeatureBuilderBlob} instance.
+     * 
+     * @param fs
+     *            feature store, must not be <code>null</code>
+     * @param blobMapping
+     *            blob mapping parameters, must not be <code>null</code>
+     */
+    public FeatureBuilderBlob( AbstractSQLFeatureStore fs, BlobMapping blobMapping ) {
         this.fs = fs;
         this.blobMapping = blobMapping;
         this.codec = blobMapping.getCodec();
@@ -95,7 +101,7 @@ class FeatureBuilderBlob implements FeatureBuilder {
             if ( feature == null ) {
                 LOG.debug( "Cache miss. Recreating object '" + gmlId + "' from db (BLOB/hybrid mode)." );
                 feature = (Feature) codec.decode( rs.getBinaryStream( 2 ), fs.getNamespaceContext(), fs.getSchema(),
-                                                  crs, new FeatureStoreGMLIdResolver( fs ) );
+                                                  crs, fs.getResolver() );
                 fs.getCache().add( feature );
             } else {
                 LOG.debug( "Cache hit." );
