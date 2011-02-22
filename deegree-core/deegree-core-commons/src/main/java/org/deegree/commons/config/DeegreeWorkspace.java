@@ -140,7 +140,18 @@ public class DeegreeWorkspace {
             removeDuplicates( list );
         }
 
-        // third, order dependencies using fixed point method
+        // third, check for transitive dependencies from resource providers, if applicable
+        for ( ResourceManager m : map.keySet() ) {
+            List<Class<? extends ResourceManager>> list = map.get( m );
+            for ( Object o : m.getMetadata().getResourceProviders() ) {
+                if ( o instanceof ExtendedResourceProvider<?> ) {
+                    searchDeps( list, (ExtendedResourceProvider<?>) o );
+                    removeDuplicates( list );
+                }
+            }
+        }
+
+        // fourth, order dependencies using fixed point method
         LinkedList<ResourceManager> order = new LinkedList<ResourceManager>( map.keySet() );
         boolean changed = true;
         outer: while ( changed ) {
@@ -280,6 +291,18 @@ public class DeegreeWorkspace {
             ResourceManager mgr = managerMap.get( c );
             if ( mgr == null ) {
                 LOG.info( "No resource manager found for {}, skipping. This may lead to problems.", c.getSimpleName() );
+            } else {
+                searchDeps( list, mgr );
+            }
+        }
+    }
+
+    private void searchDeps( List<Class<? extends ResourceManager>> list, ExtendedResourceProvider<?> p ) {
+        list.addAll( asList( p.getDependencies() ) );
+        for ( Class<? extends ResourceManager> c : p.getDependencies() ) {
+            ResourceManager mgr = managerMap.get( c );
+            if ( mgr == null ) {
+                LOG.warn( "No resource manager found for {}, skipping. This may lead to problems.", c.getSimpleName() );
             } else {
                 searchDeps( list, mgr );
             }
