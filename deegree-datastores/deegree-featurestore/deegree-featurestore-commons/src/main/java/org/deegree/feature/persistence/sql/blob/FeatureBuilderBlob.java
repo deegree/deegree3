@@ -93,7 +93,6 @@ public class FeatureBuilderBlob implements FeatureBuilder {
     @Override
     public Feature buildFeature( ResultSet rs )
                             throws SQLException {
-
         Feature feature = null;
         try {
             String gmlId = rs.getString( 1 );

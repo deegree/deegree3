@@ -46,9 +46,11 @@ import java.util.Map;
 
 import javax.xml.namespace.QName;
 
+import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.commons.tom.primitive.SQLValueMangler;
 import org.deegree.commons.utils.JDBCUtils;
+import org.deegree.commons.utils.Pair;
 import org.deegree.feature.Feature;
 import org.deegree.feature.persistence.sql.AbstractSQLFeatureStore;
 import org.deegree.feature.persistence.sql.FeatureBuilder;
@@ -120,13 +122,13 @@ public class FeatureBuilderRelational implements FeatureBuilder {
             if ( mapping == null ) {
                 LOG.warn( "No mapping for property '" + pt.getName() + "' -- omitting from SELECT list." );
             } else {
-                appendSelectColumns( mapping, columns );
+                addSelectColumns( mapping, columns );
             }
         }
         return columns;
     }
 
-    private void appendSelectColumns( Mapping mapping, List<String> columns ) {
+    private void addSelectColumns( Mapping mapping, List<String> columns ) {
 
         JoinChain jc = mapping.getJoinedTable();
         if ( jc != null ) {
@@ -152,7 +154,7 @@ public class FeatureBuilderRelational implements FeatureBuilder {
             } else if ( mapping instanceof CompoundMapping ) {
                 CompoundMapping cm = (CompoundMapping) mapping;
                 for ( Mapping particle : cm.getParticles() ) {
-                    appendSelectColumns( particle, columns );
+                    addSelectColumns( particle, columns );
                 }
             } else {
                 LOG.warn( "Mappings of type '" + mapping.getClass() + "' are not handled yet." );
@@ -160,18 +162,6 @@ public class FeatureBuilderRelational implements FeatureBuilder {
         }
     }
 
-    /**
-     * Builds a {@link Feature} instance from the current row of the given {@link ResultSet}.
-     * <p>
-     * The columns in the {@link ResultSet} <b>must</b> correspond to the property mappings of the associated feature
-     * type.
-     * </p>
-     * 
-     * @param rs
-     *            PostGIS result set, must not be <code>null</code>
-     * @return created {@link Feature} instance, never <code>null</code>
-     * @throws SQLException
-     */
     @Override
     public Feature buildFeature( ResultSet rs )
                             throws SQLException {
@@ -183,30 +173,9 @@ public class FeatureBuilderRelational implements FeatureBuilder {
             List<Property> props = new ArrayList<Property>();
             int i = 2;
             for ( PropertyType pt : ft.getPropertyDeclarations() ) {
-                // if it is mappable, it has been SELECTed (by contract)
                 Mapping propMapping = ftMapping.getMapping( pt.getName() );
                 if ( propMapping != null ) {
-                    if ( pt instanceof SimplePropertyType ) {
-                        SimplePropertyType spt = (SimplePropertyType) pt;
-                        PrimitiveMapping pm = (PrimitiveMapping) propMapping;
-                        MappingExpression me = pm.getMapping();
-                        if ( me instanceof DBField ) {
-                            addProperties( props, pt, rs, i++ );
-                        } else {
-                            LOG.warn( "Skipping" );
-                        }
-                    } else if ( pt instanceof GeometryPropertyType ) {
-                        GeometryPropertyType gpt = (GeometryPropertyType) pt;
-                        GeometryMapping pm = (GeometryMapping) propMapping;
-                        MappingExpression me = pm.getMapping();
-                        if ( me instanceof DBField ) {
-                            addProperties( props, pt, rs, i++ );
-                        } else {
-                            LOG.warn( "Skipping" );
-                        }
-                    } else {
-                        LOG.warn( "Properties of type '" + pt.getClass() + "' are not handled." );
-                    }
+                    i = addProperties( props, pt, propMapping, rs, i );
                 }
             }
             feature = ft.newFeature( gmlId, props, null, null );
@@ -215,6 +184,57 @@ public class FeatureBuilderRelational implements FeatureBuilder {
             LOG.debug( "Cache hit." );
         }
         return feature;
+    }
+
+    private int addProperties( List<Property> props, PropertyType pt, Mapping propMapping, ResultSet rs, int i )
+                            throws SQLException {
+
+        Pair<List<TypedObjectNode>, Integer> pair = buildParticles( propMapping, rs, i );
+        for ( TypedObjectNode value : pair.first ) {
+            props.add( new GenericProperty( pt, value ) );
+        }
+        return pair.second;
+    }
+
+    private Pair<List<TypedObjectNode>, Integer> buildParticles( Mapping mapping, ResultSet rs, int i )
+                            throws SQLException {
+
+        LOG.warn( "JoinChain handling not implemented yet." );
+
+        List<TypedObjectNode> values = new ArrayList<TypedObjectNode>();
+        if ( mapping instanceof PrimitiveMapping ) {
+            PrimitiveMapping pm = (PrimitiveMapping) mapping;
+            MappingExpression me = pm.getMapping();
+            if ( me instanceof DBField ) {
+                Object value = rs.getObject( i++ );
+                if ( value != null ) {
+                    values.add( new PrimitiveValue( value, pm.getType() ) );
+                }
+            } else {
+                LOG.warn( "Skipping." );
+            }
+        } else if ( mapping instanceof GeometryMapping ) {
+            GeometryMapping pm = (GeometryMapping) mapping;
+            MappingExpression me = pm.getMapping();
+            if ( me instanceof DBField ) {
+                byte[] wkb = rs.getBytes( i++ );
+                if ( wkb != null ) {
+                    try {
+                        Geometry geom = WKBReader.read( wkb, pm.getCRS() );
+                        values.add( geom );
+                    } catch ( ParseException e ) {
+                        throw new SQLException( "Error parsing WKB from database: " + e.getMessage(), e );
+                    }
+                }
+            } else {
+                LOG.warn( "Skipping." );
+            }
+        } else if ( mapping instanceof CompoundMapping ) {
+            // TODO
+        } else {
+            LOG.warn( "Handling of '" + mapping.getClass() + "' mappings is not implemented yet." );
+        }
+        return new Pair<List<TypedObjectNode>, Integer>( values, i );
     }
 
     private void addProperties( Connection conn, List<Property> props, PropertyType pt, JoinChain propMapping,
