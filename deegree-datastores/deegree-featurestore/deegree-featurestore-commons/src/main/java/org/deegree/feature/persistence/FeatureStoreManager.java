@@ -44,6 +44,7 @@ import org.deegree.commons.config.ResourceManagerMetadata;
 import org.deegree.commons.config.WorkspaceInitializationException;
 import org.deegree.commons.jdbc.ConnectionManager;
 import org.deegree.commons.utils.ProxyUtils;
+import org.deegree.filter.function.FunctionManager;
 
 /**
  * Entry point for creating and retrieving {@link FeatureStore} providers and instances.
@@ -61,19 +62,19 @@ public class FeatureStoreManager extends AbstractResourceManager<FeatureStore> {
     public void startup( DeegreeWorkspace workspace )
                             throws WorkspaceInitializationException {
         metadata = new FeatureStoreManagerMetadata( workspace );
-        System.out.println(metadata.getResourceProviders());
         super.startup( workspace );
     }
 
     @SuppressWarnings("unchecked")
     public Class<? extends ResourceManager>[] getDependencies() {
-        return new Class[] { ProxyUtils.class, ConnectionManager.class };
+        return new Class[] { ProxyUtils.class, ConnectionManager.class, FunctionManager.class };
     }
 
     @ConsoleManaged(startPage = "/console/featurestore/buttons")
     static class FeatureStoreManagerMetadata extends DefaultResourceManagerMetadata<FeatureStore> {
+        @SuppressWarnings("unchecked")
         FeatureStoreManagerMetadata( DeegreeWorkspace workspace ) {
-            super( "feature stores", "datasources/feature/", (Class)FeatureStoreProvider.class, workspace );
+            super( "feature stores", "datasources/feature/", (Class) FeatureStoreProvider.class, workspace );
         }
     }
 
