@@ -36,6 +36,7 @@
 package org.deegree.services.config.actions;
 
 import static org.apache.commons.io.FileUtils.deleteQuietly;
+import static org.deegree.commons.config.DeegreeWorkspace.unregisterWorkspace;
 import static org.deegree.services.config.actions.Utils.getWorkspaceAndPath;
 
 import java.io.File;
@@ -68,6 +69,7 @@ public class Delete {
             } else {
                 IOUtils.write( "Workspace deleted.\n", resp.getOutputStream() );
             }
+            unregisterWorkspace( p.first.getName() );
             return;
         }
         File fileOrDir = new File( p.first.getLocation(), p.second );

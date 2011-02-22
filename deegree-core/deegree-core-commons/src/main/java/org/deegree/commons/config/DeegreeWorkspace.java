@@ -341,4 +341,17 @@ public class DeegreeWorkspace {
         return workspaces;
     }
 
+    public static void unregisterWorkspace( String name ) {
+        DeegreeWorkspace ws = nameToWs.get( name );
+        if ( ws != null ) {
+            nameToWs.remove( name );
+            try {
+                wsRootDirToWs.remove( ws.getLocation().getCanonicalFile() );
+            } catch ( IOException e ) {
+                LOG.warn( "Could not properly unregister workspace {}.", name );
+                LOG.trace( "Stack trace: ", e );
+            }
+        }
+    }
+
 }
