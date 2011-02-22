@@ -192,11 +192,13 @@ public class WorkspaceMojo extends AbstractMojo {
                 ZipEntry e = new ZipEntry( "modules/" );
                 out.putNextEntry( e );
                 out.closeEntry();
+                visitedFiles.add( "modules/" );
             }
             for ( Object o : jarDeps ) {
                 Artifact a = (Artifact) o;
                 log.info( "Adding " + a + " to workspace modules directory." );
                 ZipEntry entry = new ZipEntry( "modules/" + a.getFile().getName() );
+                visitedFiles.add( "modules/" + a.getFile().getName() );
                 out.putNextEntry( entry );
                 FileInputStream in = new FileInputStream( a.getFile() );
                 IOUtils.copy( in, out );
