@@ -60,4 +60,9 @@ public interface ExtendedResourceProvider<T extends Resource> extends ResourcePr
     T create( URL configUrl )
                             throws WorkspaceInitializationException;
 
+    /**
+     * @return dependencies as resource manager classes, never null
+     */
+    Class<? extends ResourceManager>[] getDependencies();
+
 }

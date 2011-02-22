@@ -43,7 +43,9 @@ import java.util.Map;
 import javax.xml.stream.XMLStreamException;
 
 import org.deegree.commons.config.DeegreeWorkspace;
+import org.deegree.commons.config.ResourceManager;
 import org.deegree.commons.config.WorkspaceInitializationException;
+import org.deegree.commons.utils.ProxyUtils;
 import org.deegree.feature.persistence.FeatureStoreProvider;
 
 /**
@@ -90,5 +92,10 @@ public class OSMFeatureStoreProvider implements FeatureStoreProvider<OSMFeatureS
 
     public void init( DeegreeWorkspace workspace ) {
         // this.workspace = workspace;
+    }
+
+    @SuppressWarnings("unchecked")
+    public Class<? extends ResourceManager>[] getDependencies() {
+        return new Class[] { ProxyUtils.class };
     }
 }

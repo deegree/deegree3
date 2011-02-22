@@ -47,6 +47,7 @@ import java.util.Map;
 import javax.xml.bind.JAXBException;
 
 import org.deegree.commons.config.DeegreeWorkspace;
+import org.deegree.commons.config.ResourceManager;
 import org.deegree.commons.config.WorkspaceInitializationException;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.jaxb.JAXBUtils;
@@ -159,5 +160,10 @@ public class ShapeFeatureStoreProvider implements FeatureStoreProvider<ShapeFeat
 
     public void init( DeegreeWorkspace workspace ) {
         this.workspace = workspace;
+    }
+
+    @SuppressWarnings("unchecked")
+    public Class<? extends ResourceManager>[] getDependencies() {
+        return new Class[] {};
     }
 }

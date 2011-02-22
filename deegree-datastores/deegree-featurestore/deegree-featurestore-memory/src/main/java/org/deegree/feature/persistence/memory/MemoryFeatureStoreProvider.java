@@ -46,7 +46,9 @@ import java.util.Map;
 import javax.xml.bind.JAXBException;
 
 import org.deegree.commons.config.DeegreeWorkspace;
+import org.deegree.commons.config.ResourceManager;
 import org.deegree.commons.config.WorkspaceInitializationException;
+import org.deegree.commons.utils.ProxyUtils;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.jaxb.JAXBUtils;
 import org.deegree.cs.coordinatesystems.ICRS;
@@ -195,5 +197,10 @@ public class MemoryFeatureStoreProvider implements FeatureStoreProvider<MemoryFe
 
     public void init( DeegreeWorkspace workspace ) {
         this.workspace = workspace;
+    }
+
+    @SuppressWarnings("unchecked")
+    public Class<? extends ResourceManager>[] getDependencies() {
+        return new Class[] { ProxyUtils.class };
     }
 }
