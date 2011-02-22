@@ -214,7 +214,7 @@ public class CommonISOTest extends AbstractISOTest {
 
         LOG.info( "streamThis: " + streamExpected.toString() );
         LOG.info( "streamThat: " + streamActual.toString() );
-        System.out.println(streamActual);
+        System.out.println( streamActual );
         Assert.assertEquals( streamExpected.toString(), streamActual.toString() );
 
     }
@@ -460,6 +460,9 @@ public class CommonISOTest extends AbstractISOTest {
                             throws MetadataStoreException, MetadataInspectorException, XMLStreamException,
                             FileNotFoundException, FactoryConfigurationError {
         String idToUpdate = prepareUpdate();
+        if ( idToUpdate == null ) {
+            return;
+        }
 
         // constraint
         Operator op = new PropertyIsEqualTo( new PropertyName( "apiso:identifier", nsContext ),
@@ -505,6 +508,9 @@ public class CommonISOTest extends AbstractISOTest {
                             throws MetadataStoreException, MetadataInspectorException, XMLStreamException,
                             FileNotFoundException, FactoryConfigurationError {
         String idToUpdate = prepareUpdate();
+        if ( idToUpdate == null ) {
+            return;
+        }
 
         // constraint
         Operator op = new PropertyIsEqualTo( new PropertyName( "apiso:identifier", nsContext ),
@@ -552,6 +558,9 @@ public class CommonISOTest extends AbstractISOTest {
                             throws XMLStreamException, FactoryConfigurationError, MetadataStoreException,
                             MetadataInspectorException, JaxenException {
         String idToUpdate = prepareUpdate();
+        if ( idToUpdate == null ) {
+            return;
+        }
 
         // constraint
         Operator op = new PropertyIsEqualTo( new PropertyName( "apiso:identifier", nsContext ),
@@ -605,6 +614,9 @@ public class CommonISOTest extends AbstractISOTest {
                             throws XMLStreamException, FactoryConfigurationError, MetadataStoreException,
                             MetadataInspectorException, JaxenException {
         String idToUpdate = prepareUpdate();
+        if ( idToUpdate == null ) {
+            return;
+        }
 
         // constraint
         Operator op = new PropertyIsEqualTo( new PropertyName( "apiso:identifier", nsContext ),
@@ -659,6 +671,9 @@ public class CommonISOTest extends AbstractISOTest {
     public void updateCompleteWithoutConstraint()
                             throws MetadataStoreException, MetadataInspectorException, JaxenException {
         String idToUpdate = prepareUpdate();
+        if ( idToUpdate == null ) {
+            return;
+        }
 
         // constraint
 
@@ -705,6 +720,9 @@ public class CommonISOTest extends AbstractISOTest {
     public void updateCompleteWithConstraint()
                             throws MetadataStoreException, MetadataInspectorException, JaxenException {
         String idToUpdate = prepareUpdate();
+        if ( idToUpdate == null ) {
+            return;
+        }
 
         // constraint
         Operator op = new PropertyIsEqualTo( new PropertyName( "apiso:identifier", nsContext ),
