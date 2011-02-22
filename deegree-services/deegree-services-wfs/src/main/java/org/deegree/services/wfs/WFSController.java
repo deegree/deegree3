@@ -219,7 +219,7 @@ public class WFSController extends AbstractOGCServiceController<WFSRequestType> 
 
         service = new WFService();
         try {
-            service.init( jaxbConfig, controllerConf.getSystemId() );
+            service.init( jaxbConfig, controllerConf.getSystemId(), workspace );
         } catch ( Exception e ) {
             throw new ControllerInitException( "Error initializing WFS / FeatureStores: " + e.getMessage(), e );
         }

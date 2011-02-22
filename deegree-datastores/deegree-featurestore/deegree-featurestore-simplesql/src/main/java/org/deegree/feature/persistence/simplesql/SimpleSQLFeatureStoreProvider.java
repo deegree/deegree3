@@ -44,11 +44,11 @@ import java.util.Map;
 
 import javax.xml.bind.JAXBException;
 
+import org.deegree.commons.config.DeegreeWorkspace;
+import org.deegree.commons.config.WorkspaceInitializationException;
 import org.deegree.commons.utils.Pair;
 import org.deegree.commons.utils.CollectionUtils.Mapper;
 import org.deegree.commons.xml.jaxb.JAXBUtils;
-import org.deegree.feature.persistence.FeatureStore;
-import org.deegree.feature.persistence.FeatureStoreException;
 import org.deegree.feature.persistence.FeatureStoreProvider;
 import org.deegree.feature.persistence.simplesql.jaxb.SimpleSQLFeatureStoreConfig;
 import org.deegree.feature.persistence.simplesql.jaxb.SimpleSQLFeatureStoreConfig.LODStatement;
@@ -63,7 +63,7 @@ import org.slf4j.LoggerFactory;
  * 
  * @version $Revision$, $Date$
  */
-public class SimpleSQLFeatureStoreProvider implements FeatureStoreProvider {
+public class SimpleSQLFeatureStoreProvider implements FeatureStoreProvider<SimpleSQLFeatureStore> {
 
     private static final Logger LOG = LoggerFactory.getLogger( SimpleSQLFeatureStoreProvider.class );
 
@@ -81,6 +81,8 @@ public class SimpleSQLFeatureStoreProvider implements FeatureStoreProvider {
         }
     };
 
+    private DeegreeWorkspace workspace;
+
     @Override
     public String getConfigNamespace() {
         return CONFIG_NS;
@@ -97,15 +99,16 @@ public class SimpleSQLFeatureStoreProvider implements FeatureStoreProvider {
     }
 
     @Override
-    public FeatureStore getFeatureStore( URL configURL )
-                            throws FeatureStoreException {
+    public SimpleSQLFeatureStore create( URL configURL )
+                            throws WorkspaceInitializationException {
 
         SimpleSQLFeatureStore fs = null;
         try {
             SimpleSQLFeatureStoreConfig config = (SimpleSQLFeatureStoreConfig) JAXBUtils.unmarshall(
                                                                                                      CONFIG_JAXB_PACKAGE,
                                                                                                      CONFIG_SCHEMA,
-                                                                                                     configURL );
+                                                                                                     configURL,
+                                                                                                     workspace );
             String connId = config.getConnectionPoolId();
             if ( connId == null ) {
                 connId = config.getJDBCConnId();
@@ -122,8 +125,12 @@ public class SimpleSQLFeatureStoreProvider implements FeatureStoreProvider {
         } catch ( JAXBException e ) {
             String msg = "Error in feature store configuration file '" + configURL + "': " + e.getMessage();
             LOG.error( msg );
-            throw new FeatureStoreException( msg, e );
+            throw new WorkspaceInitializationException( msg, e );
         }
         return fs;
+    }
+
+    public void init( DeegreeWorkspace workspace ) {
+        this.workspace = workspace;
     }
 }

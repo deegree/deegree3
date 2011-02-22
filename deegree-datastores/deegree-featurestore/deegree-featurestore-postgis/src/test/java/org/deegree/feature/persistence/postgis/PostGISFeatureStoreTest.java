@@ -59,6 +59,8 @@ import javax.xml.stream.XMLStreamWriter;
 
 import org.apache.commons.io.IOUtils;
 import org.deegree.CoreTstProperties;
+import org.deegree.commons.config.DeegreeWorkspace;
+import org.deegree.commons.config.WorkspaceInitializationException;
 import org.deegree.commons.jdbc.ConnectionManager;
 import org.deegree.commons.utils.JDBCUtils;
 import org.deegree.commons.xml.XMLParsingException;
@@ -121,8 +123,7 @@ public class PostGISFeatureStoreTest {
     @Test
     public void testMappingInspireAU()
                             throws ClassCastException, ClassNotFoundException, InstantiationException,
-                            IllegalAccessException, IOException, XMLStreamException, FactoryConfigurationError,
-                            FeatureStoreException {
+                            IllegalAccessException, IOException, XMLStreamException, FactoryConfigurationError {
 
         ApplicationSchema appSchema = getInspireSchemaAU();
         if ( appSchema == null ) {
@@ -136,7 +137,8 @@ public class PostGISFeatureStoreTest {
         FileOutputStream fos = new FileOutputStream( file );
         XMLStreamWriter xmlWriter = XMLOutputFactory.newInstance().createXMLStreamWriter( fos );
         xmlWriter = new IndentingXMLStreamWriter( xmlWriter );
-        configWriter.writeConfig( xmlWriter,
+        configWriter.writeConfig(
+                                  xmlWriter,
                                   "testconn",
                                   Collections.singletonList( "file:/home/schneider/.deegree/inspire-test/schemas/inspire/annex1/AdministrativeUnits.xsd" ) );
         xmlWriter.close();
@@ -165,8 +167,8 @@ public class PostGISFeatureStoreTest {
         ConnectionManager.addConnection( new URL( "file:/home/schneider/.deegree/inspire-test/jdbc/testconn.xml" ),
                                          "testconn", null );
         PostGISFeatureStoreProvider provider = new PostGISFeatureStoreProvider();
-        FeatureStore fs = provider.getFeatureStore( new URL(
-                                                             "file:/home/schneider/.deegree/inspire-test/datasources/feature/inspire-au.xml" ) );
+        FeatureStore fs = provider.create( new URL(
+                                                    "file:/home/schneider/.deegree/inspire-test/datasources/feature/inspire-au.xml" ) );
         Assert.assertNotNull( fs );
 
         MappedApplicationSchema mappedSchema = (MappedApplicationSchema) fs.getSchema();
@@ -177,7 +179,8 @@ public class PostGISFeatureStoreTest {
         FileOutputStream fos = new FileOutputStream( file );
         XMLStreamWriter xmlWriter = XMLOutputFactory.newInstance().createXMLStreamWriter( fos );
         xmlWriter = new IndentingXMLStreamWriter( xmlWriter );
-        configWriter.writeConfig( xmlWriter,
+        configWriter.writeConfig(
+                                  xmlWriter,
                                   "testconn",
                                   Collections.singletonList( "file:/home/schneider/.deegree/inspire-test/schemas/inspire/annex1/AdministrativeUnits.xsd" ) );
         xmlWriter.close();
@@ -214,8 +217,8 @@ public class PostGISFeatureStoreTest {
         ConnectionManager.addConnection( new URL( "file:/home/schneider/.deegree/inspire-test/jdbc/testconn.xml" ),
                                          "testconn", null );
         PostGISFeatureStoreProvider provider = new PostGISFeatureStoreProvider();
-        FeatureStore fs = provider.getFeatureStore( new URL(
-                                                             "file:/home/schneider/.deegree/inspire-test/datasources/feature/inspire-au.xml" ) );
+        FeatureStore fs = provider.create( new URL(
+                                                    "file:/home/schneider/.deegree/inspire-test/datasources/feature/inspire-au.xml" ) );
 
         XMLStreamWriter xmlWriter = XMLOutputFactory.newInstance().createXMLStreamWriter( new FileOutputStream( "/tmp/out.xml" ) );
         xmlWriter = new IndentingXMLStreamWriter( xmlWriter );
@@ -241,22 +244,25 @@ public class PostGISFeatureStoreTest {
         ConnectionManager.addConnection( new URL( "file:/home/schneider/.deegree/inspire-test/jdbc/testconn.xml" ),
                                          "testconn", null );
         PostGISFeatureStoreProvider provider = new PostGISFeatureStoreProvider();
-        FeatureStore fs = provider.getFeatureStore( new URL(
-                                                             "file:/home/schneider/.deegree/inspire-test/datasources/feature/inspire-au.xml" ) );
+        FeatureStore fs = provider.create( new URL(
+                                                    "file:/home/schneider/.deegree/inspire-test/datasources/feature/inspire-au.xml" ) );
         QName countryName = QName.valueOf( "{urn:x-inspire:specification:gmlas:AdministrativeUnits:3.0}AdministrativeUnit" );
         Envelope env = fs.getEnvelope( countryName );
     }
 
     @Test
     public void testInstantiation()
-                            throws FeatureStoreException {
+                            throws FeatureStoreException, WorkspaceInitializationException {
 
         if ( enable ) {
             ConnectionManager.addConnection( "philosopher-db", "jdbc:postgresql://hurricane:5432/deegreetest",
                                              "deegreetest", "deegreetest", 1, 10 );
 
             URL configURL = this.getClass().getResource( "philosopher.xml" );
-            PostGISFeatureStore fs = (PostGISFeatureStore) FeatureStoreManager.create( configURL );
+            DeegreeWorkspace workspace = DeegreeWorkspace.getInstance();
+            PostGISFeatureStore fs = (PostGISFeatureStore) workspace.getSubsystemManager( FeatureStoreManager.class ).create(
+                                                                                                                              "philosopher",
+                                                                                                                              configURL );
             fs.init();
 
             ApplicationSchema schema = fs.getSchema();
@@ -273,14 +279,17 @@ public class PostGISFeatureStoreTest {
 
     @Test
     public void testInstantiationInspire()
-                            throws FeatureStoreException {
+                            throws WorkspaceInitializationException {
 
         if ( enable ) {
             ConnectionManager.addConnection( "inspire", "jdbc:postgresql://macchiato:5432/inspire", "postgres",
                                              "postgres", 1, 10 );
 
             URL configURL = this.getClass().getResource( "inspire-hybrid.xml" );
-            PostGISFeatureStore fs = (PostGISFeatureStore) FeatureStoreManager.create( configURL );
+            DeegreeWorkspace workspace = DeegreeWorkspace.getInstance();
+            PostGISFeatureStore fs = (PostGISFeatureStore) workspace.getSubsystemManager( FeatureStoreManager.class ).create(
+                                                                                                                              "inspire-hybrid",
+                                                                                                                              configURL );
             fs.init();
 
             MappedApplicationSchema schema = fs.getSchema();
@@ -299,7 +308,7 @@ public class PostGISFeatureStoreTest {
 
     @Test
     public void testInspireDDL()
-                            throws FeatureStoreException, MalformedURLException {
+                            throws WorkspaceInitializationException, MalformedURLException {
 
         if ( enable ) {
             ConnectionManager.addConnection( "inspire", "jdbc:postgresql://macchiato:5432/inspire", "postgres",
@@ -328,12 +337,15 @@ public class PostGISFeatureStoreTest {
     @Test
     public void testInsertInspireAddresses()
                             throws FeatureStoreException, XMLStreamException, FactoryConfigurationError, IOException,
-                            XMLParsingException, UnknownCRSException {
+                            XMLParsingException, UnknownCRSException, WorkspaceInitializationException {
         if ( enable ) {
             ConnectionManager.addConnection( "inspire", "jdbc:postgresql://macchiato:5432/inspire", "postgres",
                                              "postgres", 1, 10 );
             URL configURL = PostGISFeatureStoreTest.class.getResource( "inspire-hybrid.xml" );
-            PostGISFeatureStore fs = (PostGISFeatureStore) FeatureStoreManager.create( configURL );
+            DeegreeWorkspace workspace = DeegreeWorkspace.getInstance();
+            PostGISFeatureStore fs = (PostGISFeatureStore) workspace.getSubsystemManager( FeatureStoreManager.class ).create(
+                                                                                                                              "inspire-hybrid",
+                                                                                                                              configURL );
 
             URL datasetURL = PostGISFeatureStoreTest.class.getResource( "../../../gml/feature/testdata/features/inspire_addresses1.gml" );
             GMLStreamReader gmlReader = GMLInputFactory.createGMLStreamReader( GMLVersion.GML_32, datasetURL );
@@ -383,7 +395,8 @@ public class PostGISFeatureStoreTest {
     @Test
     public void testQueryCountry()
                             throws FeatureStoreException, FilterEvaluationException, XMLStreamException,
-                            FactoryConfigurationError, UnknownCRSException, TransformationException {
+                            FactoryConfigurationError, UnknownCRSException, TransformationException,
+                            WorkspaceInitializationException {
 
         String jdbcURL = CoreTstProperties.getProperty( "postgis_philosopher_db" );
         String jdbcUser = CoreTstProperties.getProperty( "postgis_philosopher_user" );
@@ -395,7 +408,10 @@ public class PostGISFeatureStoreTest {
         try {
             ConnectionManager.addConnection( "philosopher-db", jdbcURL, jdbcUser, jdbcPass, 1, 10 );
             URL configURL = this.getClass().getResource( "philosopher.xml" );
-            PostGISFeatureStore fs = (PostGISFeatureStore) FeatureStoreManager.create( configURL );
+            DeegreeWorkspace workspace = DeegreeWorkspace.getInstance();
+            PostGISFeatureStore fs = (PostGISFeatureStore) workspace.getSubsystemManager( FeatureStoreManager.class ).create(
+                                                                                                                              "philosopher",
+                                                                                                                              configURL );
             fs.init();
 
             QName ftName = QName.valueOf( "{http://www.deegree.org/app}Country" );
@@ -412,14 +428,18 @@ public class PostGISFeatureStoreTest {
     @Test
     public void testQueryCountryWithFilter()
                             throws FeatureStoreException, FilterEvaluationException, XMLStreamException,
-                            FactoryConfigurationError, UnknownCRSException, TransformationException {
+                            FactoryConfigurationError, UnknownCRSException, TransformationException,
+                            WorkspaceInitializationException {
 
         if ( enable ) {
             ConnectionManager.addConnection( "philosopher-db", "jdbc:postgresql://192.168.1.2:5432/deegreetest",
                                              "postgres", "postgres", 1, 10 );
 
             URL configURL = this.getClass().getResource( "philosopher.xml" );
-            PostGISFeatureStore fs = (PostGISFeatureStore) FeatureStoreManager.create( configURL );
+            DeegreeWorkspace workspace = DeegreeWorkspace.getInstance();
+            PostGISFeatureStore fs = (PostGISFeatureStore) workspace.getSubsystemManager( FeatureStoreManager.class ).create(
+                                                                                                                              "philosopher",
+                                                                                                                              configURL );
             fs.init();
 
             TypeName[] typeNames = new TypeName[] { new TypeName(
@@ -435,7 +455,8 @@ public class PostGISFeatureStoreTest {
             try {
                 FeatureCollection fc = rs.toCollection();
                 XMLStreamWriter xmlStream = new IndentingXMLStreamWriter(
-                                                                          XMLOutputFactory.newInstance().createXMLStreamWriter( System.out ) );
+                                                                          XMLOutputFactory.newInstance().createXMLStreamWriter(
+                                                                                                                                System.out ) );
                 GMLStreamWriter gmlStream = GMLOutputFactory.createGMLStreamWriter( GMLVersion.GML_31, xmlStream );
                 gmlStream.write( fc );
                 gmlStream.close();
@@ -448,14 +469,18 @@ public class PostGISFeatureStoreTest {
     @Test
     public void testQueryPlace()
                             throws FeatureStoreException, FilterEvaluationException, XMLStreamException,
-                            FactoryConfigurationError, UnknownCRSException, TransformationException {
+                            FactoryConfigurationError, UnknownCRSException, TransformationException,
+                            WorkspaceInitializationException {
 
         if ( enable ) {
             ConnectionManager.addConnection( "philosopher-db", "jdbc:postgresql://hurricane:5432/deegreetest",
                                              "deegreetest", "deegreetest", 1, 10 );
 
             URL configURL = this.getClass().getResource( "philosopher.xml" );
-            PostGISFeatureStore fs = (PostGISFeatureStore) FeatureStoreManager.create( configURL );
+            DeegreeWorkspace workspace = DeegreeWorkspace.getInstance();
+            PostGISFeatureStore fs = (PostGISFeatureStore) workspace.getSubsystemManager( FeatureStoreManager.class ).create(
+                                                                                                                              "philosopher",
+                                                                                                                              configURL );
             fs.init();
 
             TypeName[] typeNames = new TypeName[] { new TypeName( QName.valueOf( "{http://www.deegree.org/app}Place" ),
@@ -465,7 +490,8 @@ public class PostGISFeatureStoreTest {
             try {
                 FeatureCollection fc = rs.toCollection();
                 XMLStreamWriter xmlStream = new IndentingXMLStreamWriter(
-                                                                          XMLOutputFactory.newInstance().createXMLStreamWriter( System.out ) );
+                                                                          XMLOutputFactory.newInstance().createXMLStreamWriter(
+                                                                                                                                System.out ) );
                 GMLStreamWriter gmlStream = GMLOutputFactory.createGMLStreamWriter( GMLVersion.GML_31, xmlStream );
                 gmlStream.setRemoteXLinkTemplate( "http://bla?fid={}" );
                 gmlStream.setXLinkDepth( -1 );
@@ -480,14 +506,18 @@ public class PostGISFeatureStoreTest {
     @Test
     public void testQueryPhilosopher()
                             throws FeatureStoreException, FilterEvaluationException, XMLStreamException,
-                            FactoryConfigurationError, UnknownCRSException, TransformationException, IOException {
+                            FactoryConfigurationError, UnknownCRSException, TransformationException, IOException,
+                            WorkspaceInitializationException {
 
         if ( enable ) {
             ConnectionManager.addConnection( "philosopher-db", "jdbc:postgresql://hurricane:5432/d3_philosopher",
                                              "postgres", "postgres", 1, 10 );
 
             URL configURL = this.getClass().getResource( "philosopher.xml" );
-            PostGISFeatureStore fs = (PostGISFeatureStore) FeatureStoreManager.create( configURL );
+            DeegreeWorkspace workspace = DeegreeWorkspace.getInstance();
+            PostGISFeatureStore fs = (PostGISFeatureStore) workspace.getSubsystemManager( FeatureStoreManager.class ).create(
+                                                                                                                              "philosopher",
+                                                                                                                              configURL );
             fs.init();
 
             Filter filter = parse( "filter1.xml" );

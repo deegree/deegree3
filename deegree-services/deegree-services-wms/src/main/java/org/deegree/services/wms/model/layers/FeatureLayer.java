@@ -61,9 +61,11 @@ import java.util.List;
 import javax.xml.namespace.QName;
 
 import org.deegree.commons.annotations.LoggingNotes;
+import org.deegree.commons.config.DeegreeWorkspace;
+import org.deegree.commons.config.WorkspaceInitializationException;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
-import org.deegree.commons.utils.CollectionUtils.Mapper;
 import org.deegree.commons.utils.Pair;
+import org.deegree.commons.utils.CollectionUtils.Mapper;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.feature.Feature;
@@ -131,10 +133,11 @@ public class FeatureLayer extends Layer {
      * @throws MalformedURLException
      * @throws FileNotFoundException
      */
-    public FeatureLayer( MapService service, AbstractLayerType layer, Layer parent, XMLAdapter adapter )
-                            throws FileNotFoundException, MalformedURLException, IOException {
+    public FeatureLayer( MapService service, AbstractLayerType layer, Layer parent, XMLAdapter adapter,
+                         DeegreeWorkspace workspace ) throws FileNotFoundException, MalformedURLException, IOException {
         super( service, layer, parent );
-        datastore = FeatureStoreManager.get( layer.getFeatureStoreId() );
+        FeatureStoreManager mgr = workspace.getSubsystemManager( FeatureStoreManager.class );
+        datastore = mgr.get( layer.getFeatureStoreId() );
     }
 
     /**
@@ -163,7 +166,7 @@ public class FeatureLayer extends Layer {
         datastore = new ShapeFeatureStore( file, null, null, null, null, null, true, null );
         try {
             datastore.init();
-        } catch ( FeatureStoreException e ) {
+        } catch ( WorkspaceInitializationException e ) {
             LOG.error( "Layer could not be loaded, because the error '{}' occurred while loading the shape file.",
                        e.getLocalizedMessage() );
             LOG.trace( "Stack trace:", e );

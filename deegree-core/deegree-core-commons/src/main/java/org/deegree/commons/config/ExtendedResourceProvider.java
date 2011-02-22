@@ -35,7 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.commons.config;
 
-import java.util.List;
+import java.net.URL;
 
 /**
  * 
@@ -44,21 +44,20 @@ import java.util.List;
  * 
  * @version $Revision$, $Date$
  */
-public interface ResourceManagerMetadata<T extends Resource> {
+public interface ExtendedResourceProvider<T extends Resource> extends ResourceProvider {
 
     /**
-     * @return the directory path for configuration files within the workspace
+     * Will be called before any call to #create.
+     * 
+     * @param workspace
      */
-    String getPath();
+    void init( DeegreeWorkspace workspace );
 
     /**
-     * @return display name for the use in the web interface
+     * @param configUrl
+     * @return a new resource created from the configuration url
      */
-    String getName();
-
-    /**
-     * @return a list of resource providers that the manager manages
-     */
-    List<? extends ResourceProvider> getResourceProviders();
+    T create( URL configUrl )
+                            throws WorkspaceInitializationException;
 
 }

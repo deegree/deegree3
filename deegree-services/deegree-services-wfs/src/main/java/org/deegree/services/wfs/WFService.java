@@ -43,11 +43,12 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
+import java.util.Map.Entry;
 
 import javax.xml.namespace.QName;
 
+import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.utils.QNameUtils;
 import org.deegree.feature.persistence.FeatureStore;
 import org.deegree.feature.persistence.FeatureStoreException;
@@ -87,12 +88,13 @@ public class WFService {
      * @param baseURL
      * @throws FeatureStoreException
      */
-    public void init( DeegreeWFS sc, String baseURL )
+    public void init( DeegreeWFS sc, String baseURL, DeegreeWorkspace workspace )
                             throws FeatureStoreException {
 
         LOG.debug( "Adding configured feature stores." );
 
-        for ( FeatureStore fs : FeatureStoreManager.getAll() ) {
+        FeatureStoreManager mgr = workspace.getSubsystemManager( FeatureStoreManager.class );
+        for ( FeatureStore fs : mgr.getAll() ) {
             addStore( fs );
             addNotYetHintedNamespaces( fs.getSchema().getNamespaceBindings().values() );
         }

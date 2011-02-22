@@ -50,6 +50,8 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.PosixParser;
 import org.deegree.commons.annotations.Tool;
+import org.deegree.commons.config.DeegreeWorkspace;
+import org.deegree.commons.config.WorkspaceInitializationException;
 import org.deegree.commons.jdbc.ConnectionManager;
 import org.deegree.commons.tools.CommandUtils;
 import org.deegree.commons.xml.XMLParsingException;
@@ -104,10 +106,12 @@ public class FeatureStoreLoader {
     }
 
     private static FeatureStore initFeatureStore( String fsConfigFile )
-                            throws MalformedURLException, FeatureStoreException {
+                            throws MalformedURLException, WorkspaceInitializationException {
         File f = new File( fsConfigFile );
         URL configURL = f.toURI().toURL();
-        FeatureStore fs = FeatureStoreManager.create( configURL );
+        FeatureStoreManager mgr = new FeatureStoreManager();
+        mgr.startup( DeegreeWorkspace.getInstance() );
+        FeatureStore fs = mgr.create( f.getName(), configURL );
         fs.init();
         return fs;
     }
@@ -153,10 +157,12 @@ public class FeatureStoreLoader {
      * @throws FactoryConfigurationError
      * @throws XMLStreamException
      * @throws XMLParsingException
+     * @throws WorkspaceInitializationException
      */
     public static void main( String[] args )
                             throws FeatureStoreException, JAXBException, XMLParsingException, XMLStreamException,
-                            FactoryConfigurationError, IOException, UnknownCRSException {
+                            FactoryConfigurationError, IOException, UnknownCRSException,
+                            WorkspaceInitializationException {
 
         Options options = initOptions();
 

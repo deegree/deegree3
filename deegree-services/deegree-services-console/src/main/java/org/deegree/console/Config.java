@@ -59,6 +59,7 @@ import lombok.Setter;
 
 import org.apache.commons.io.IOUtils;
 import org.deegree.client.util.FacesUtil;
+import org.deegree.commons.config.Resource;
 import org.deegree.commons.config.ResourceManagerMetadata;
 import org.deegree.commons.config.ResourceProvider;
 import org.deegree.commons.xml.XMLAdapter;
@@ -105,7 +106,7 @@ public class Config implements Comparable<Config> {
     @Getter
     private String capabilitiesURL;
 
-    public Config( File location, ResourceManagerMetadata md, ConfigManager manager, String prefix,
+    public Config( File location, ResourceManagerMetadata<? extends Resource> md, ConfigManager manager, String prefix,
                    String resourceOutcome ) throws XMLStreamException, FactoryConfigurationError, IOException {
         this.location = location;
         this.manager = manager;
@@ -142,7 +143,7 @@ public class Config implements Comparable<Config> {
         }
     }
 
-    public Config( File location, ResourceManagerMetadata md, ConfigManager manager, URL schemaURL, String type,
+    public Config( File location, ResourceManagerMetadata<? extends Resource> md, ConfigManager manager, URL schemaURL, String type,
                    String resourceOutcome ) throws IOException {
         this.location = location;
         this.manager = manager;

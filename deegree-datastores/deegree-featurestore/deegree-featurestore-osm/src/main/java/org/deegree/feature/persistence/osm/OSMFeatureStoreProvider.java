@@ -42,8 +42,8 @@ import java.util.Map;
 
 import javax.xml.stream.XMLStreamException;
 
-import org.deegree.feature.persistence.FeatureStore;
-import org.deegree.feature.persistence.FeatureStoreException;
+import org.deegree.commons.config.DeegreeWorkspace;
+import org.deegree.commons.config.WorkspaceInitializationException;
 import org.deegree.feature.persistence.FeatureStoreProvider;
 
 /**
@@ -54,7 +54,7 @@ import org.deegree.feature.persistence.FeatureStoreProvider;
  * 
  * @version $Revision$, $Date$
  */
-public class OSMFeatureStoreProvider implements FeatureStoreProvider {
+public class OSMFeatureStoreProvider implements FeatureStoreProvider<OSMFeatureStore> {
 
     private static final String CONFIG_NS = "http://www.deegree.org/datasource/feature/osm";
 
@@ -74,8 +74,8 @@ public class OSMFeatureStoreProvider implements FeatureStoreProvider {
     }
 
     @Override
-    public FeatureStore getFeatureStore( URL configURL )
-                            throws FeatureStoreException {
+    public OSMFeatureStore create( URL configURL )
+                            throws WorkspaceInitializationException {
         try {
             return new OSMFeatureStore();
         } catch ( FileNotFoundException e ) {
@@ -86,5 +86,9 @@ public class OSMFeatureStoreProvider implements FeatureStoreProvider {
             e.printStackTrace();
         }
         return null;
+    }
+
+    public void init( DeegreeWorkspace workspace ) {
+        // this.workspace = workspace;
     }
 }

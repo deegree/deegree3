@@ -35,8 +35,6 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.commons.config;
 
-import java.util.List;
-
 /**
  * 
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
@@ -44,21 +42,19 @@ import java.util.List;
  * 
  * @version $Revision$, $Date$
  */
-public interface ResourceManagerMetadata<T extends Resource> {
+public interface Resource {
 
     /**
-     * @return the directory path for configuration files within the workspace
+     * Usually called by the resource manager upon workspace startup.
+     * 
+     * @throws WorkspaceInitializationException
      */
-    String getPath();
+    void init()
+                            throws WorkspaceInitializationException;
 
     /**
-     * @return display name for the use in the web interface
+     * Usually called by the resource manager upon workspace shutdown.
      */
-    String getName();
-
-    /**
-     * @return a list of resource providers that the manager manages
-     */
-    List<? extends ResourceProvider> getResourceProviders();
+    void destroy();
 
 }

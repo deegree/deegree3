@@ -42,10 +42,10 @@ import java.util.Map;
 
 import javax.xml.bind.JAXBException;
 
+import org.deegree.commons.config.DeegreeWorkspace;
+import org.deegree.commons.config.WorkspaceInitializationException;
 import org.deegree.commons.xml.jaxb.JAXBUtils;
 import org.deegree.feature.i18n.Messages;
-import org.deegree.feature.persistence.FeatureStore;
-import org.deegree.feature.persistence.FeatureStoreException;
 import org.deegree.feature.persistence.FeatureStoreProvider;
 import org.deegree.feature.persistence.postgis.config.PostGISDDLCreator;
 import org.deegree.feature.persistence.postgis.config.PostGISFeatureStoreConfigParser;
@@ -62,7 +62,7 @@ import org.slf4j.LoggerFactory;
  * 
  * @version $Revision$, $Date$
  */
-public class PostGISFeatureStoreProvider implements FeatureStoreProvider {
+public class PostGISFeatureStoreProvider implements FeatureStoreProvider<PostGISFeatureStore> {
 
     private static final Logger LOG = LoggerFactory.getLogger( PostGISFeatureStoreProvider.class );
 
@@ -73,6 +73,8 @@ public class PostGISFeatureStoreProvider implements FeatureStoreProvider {
     private static final String CONFIG_SCHEMA = "/META-INF/schemas/datasource/feature/postgis/3.1.0/postgis.xsd";
 
     private static final String CONFIG_TEMPLATE = "/META-INF/schemas/datasource/feature/postgis/3.1.0/example.xml";
+
+    private DeegreeWorkspace workspace;
 
     @Override
     public String getConfigNamespace() {
@@ -90,8 +92,8 @@ public class PostGISFeatureStoreProvider implements FeatureStoreProvider {
     }
 
     @Override
-    public FeatureStore getFeatureStore( URL configURL )
-                            throws FeatureStoreException {
+    public PostGISFeatureStore create( URL configURL )
+                            throws WorkspaceInitializationException {
         PostGISFeatureStoreConfig config = parseConfig( configURL );
         MappedApplicationSchema schema = getSchema( configURL.toString(), config );
         return new PostGISFeatureStore( schema, config.getJDBCConnId() );
@@ -103,17 +105,17 @@ public class PostGISFeatureStoreProvider implements FeatureStoreProvider {
      * @param configURL
      *            URL of the configuration document, must not be <code>null</code>
      * @return CREATE statements, one statement per entry, never <code>null</code>
-     * @throws FeatureStoreException
+     * @throws WorkspaceInitializationException
      */
     public String[] getDDL( URL configURL )
-                            throws FeatureStoreException {
+                            throws WorkspaceInitializationException {
         PostGISFeatureStoreConfig config = parseConfig( configURL );
         MappedApplicationSchema schema = getSchema( configURL.toString(), config );
         return new PostGISDDLCreator( schema ).getDDL();
     }
 
     private MappedApplicationSchema getSchema( String configURL, PostGISFeatureStoreConfig config )
-                            throws FeatureStoreException {
+                            throws WorkspaceInitializationException {
 
         MappedApplicationSchema schema = null;
         LOG.debug( "Building mapped application schema from config" );
@@ -123,18 +125,23 @@ public class PostGISFeatureStoreProvider implements FeatureStoreProvider {
         } catch ( Throwable t ) {
             String msg = Messages.getMessage( "STORE_MANAGER_STORE_SETUP_ERROR", t.getMessage() );
             LOG.error( msg, t );
-            throw new FeatureStoreException( msg, t );
+            throw new WorkspaceInitializationException( msg, t );
         }
         return schema;
     }
 
     private PostGISFeatureStoreConfig parseConfig( URL configURL )
-                            throws FeatureStoreException {
+                            throws WorkspaceInitializationException {
         try {
-            return (PostGISFeatureStoreConfig) JAXBUtils.unmarshall( CONFIG_JAXB_PACKAGE, CONFIG_SCHEMA, configURL );
+            return (PostGISFeatureStoreConfig) JAXBUtils.unmarshall( CONFIG_JAXB_PACKAGE, CONFIG_SCHEMA, configURL,
+                                                                     workspace );
         } catch ( JAXBException e ) {
             String msg = Messages.getMessage( "STORE_MANAGER_STORE_SETUP_ERROR", e.getMessage() );
-            throw new FeatureStoreException( msg, e );
+            throw new WorkspaceInitializationException( msg, e );
         }
+    }
+
+    public void init( DeegreeWorkspace workspace ) {
+        this.workspace = workspace;
     }
 }

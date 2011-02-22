@@ -35,9 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.feature.persistence;
 
-import java.net.URL;
-
-import org.deegree.commons.config.ResourceProvider;
+import org.deegree.commons.config.ExtendedResourceProvider;
 
 /**
  * The <code></code> class TODO add class documentation here.
@@ -50,18 +48,8 @@ import org.deegree.commons.config.ResourceProvider;
  * 
  * @version $Revision$, $Date$
  */
-public interface FeatureStoreProvider extends ResourceProvider {
+public interface FeatureStoreProvider<T extends FeatureStore> extends ExtendedResourceProvider<T> {
 
-    /**
-     * Creates a new {@link FeatureStore} instance from the given configuration document.
-     * 
-     * @param configURL
-     *            location of the configuration document, must not be <code>null</code>
-     * @return new feature store instance, configured, not initialized yet
-     * @throws FeatureStoreException
-     *             if the configuration contains an error or creation fails
-     */
-    public FeatureStore getFeatureStore( URL configURL )
-                            throws FeatureStoreException;
+    // specializes type parameter
 
 }

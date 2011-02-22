@@ -50,10 +50,12 @@ import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
 import javax.faces.component.html.HtmlCommandButton;
+import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import javax.faces.event.ActionEvent;
 
 import org.deegree.client.core.utils.SQLExecution;
+import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.feature.persistence.FeatureStore;
 import org.deegree.feature.persistence.FeatureStoreManager;
 import org.deegree.feature.persistence.query.Query;
@@ -78,8 +80,16 @@ public class FeatureStoreConfig implements Serializable {
 
     private String id;
 
+    private FeatureStoreManager getFeatureStoreManager() {
+        ExternalContext ctx = FacesContext.getCurrentInstance().getExternalContext();
+        DeegreeWorkspace ws = (DeegreeWorkspace) ctx.getApplicationMap().get( "workspace" );
+        return ws.getSubsystemManager( FeatureStoreManager.class );
+    }
+
     public boolean getSql() {
-        return FeatureStoreManager.get( getId() ) instanceof SQLFeatureStore;
+        FacesContext.getCurrentInstance().getExternalContext().getApplicationMap().get( "workspace" );
+
+        return getFeatureStoreManager().get( getId() ) instanceof SQLFeatureStore;
     }
 
     public String createTables() {
@@ -89,7 +99,7 @@ public class FeatureStoreConfig implements Serializable {
             FacesContext.getCurrentInstance().addMessage( null, fm );
             return "/console/featurestore/buttons";
         }
-        SQLFeatureStore fs = (SQLFeatureStore) FeatureStoreManager.get( getId() );
+        SQLFeatureStore fs = (SQLFeatureStore) getFeatureStoreManager().get( getId() );
         String connId = fs.getConnId();
         String[] sql = fs.getDDL();
         SQLExecution execution = new SQLExecution( connId, sql, "/console/featurestore/buttons" );
@@ -113,7 +123,7 @@ public class FeatureStoreConfig implements Serializable {
 
     public String openLoader()
                             throws Exception {
-        FeatureStore fs = FeatureStoreManager.get( getId() );
+        FeatureStore fs = getFeatureStoreManager().get( getId() );
         if ( fs == null ) {
             throw new Exception( "No feature store with id '" + getId() + "' known / active." );
         }
@@ -125,7 +135,7 @@ public class FeatureStoreConfig implements Serializable {
 
     public List<NamespaceBinding> getNamespaces() {
         Set<NamespaceBinding> namespaces = new TreeSet<NamespaceBinding>();
-        FeatureStore fs = FeatureStoreManager.get( getId() );
+        FeatureStore fs = getFeatureStoreManager().get( getId() );
         if ( fs == null ) {
             return Collections.emptyList();
         }
@@ -139,14 +149,14 @@ public class FeatureStoreConfig implements Serializable {
     }
 
     public String getNumFtsTotal() {
-        FeatureStore fs = FeatureStoreManager.get( getId() );
+        FeatureStore fs = getFeatureStoreManager().get( getId() );
         ApplicationSchema schema = fs.getSchema();
         int numFtsTotal = schema.getFeatureTypes( null, false, true ).size();
         return "" + numFtsTotal;
     }
 
     public String getNumFtsAbstract() {
-        FeatureStore fs = FeatureStoreManager.get( getId() );
+        FeatureStore fs = getFeatureStoreManager().get( getId() );
         ApplicationSchema schema = fs.getSchema();
         int numFtsTotal = schema.getFeatureTypes( null, false, true ).size();
         int numFtsConcrete = schema.getFeatureTypes( null, false, false ).size();
@@ -154,7 +164,7 @@ public class FeatureStoreConfig implements Serializable {
     }
 
     public String getNumFtsConcrete() {
-        FeatureStore fs = FeatureStoreManager.get( getId() );
+        FeatureStore fs = getFeatureStoreManager().get( getId() );
         ApplicationSchema schema = fs.getSchema();
         int numFtsConcrete = schema.getFeatureTypes( null, false, false ).size();
         return "" + numFtsConcrete;
@@ -163,7 +173,7 @@ public class FeatureStoreConfig implements Serializable {
     public String getFtInfo()
                             throws IOException {
         StringBuffer sb = new StringBuffer();
-        FeatureStore fs = FeatureStoreManager.get( getId() );
+        FeatureStore fs = getFeatureStoreManager().get( getId() );
         ApplicationSchema schema = fs.getSchema();
         FeatureType[] fts = schema.getRootFeatureTypes();
 
@@ -190,7 +200,7 @@ public class FeatureStoreConfig implements Serializable {
     public String getFcInfo()
                             throws IOException {
         StringBuffer sb = new StringBuffer();
-        FeatureStore fs = FeatureStoreManager.get( getId() );
+        FeatureStore fs = getFeatureStoreManager().get( getId() );
         ApplicationSchema schema = fs.getSchema();
         FeatureType[] fts = schema.getRootFeatureTypes();
 

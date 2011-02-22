@@ -47,9 +47,10 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 
+import org.deegree.commons.config.DeegreeWorkspace;
+import org.deegree.commons.config.WorkspaceInitializationException;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.persistence.CRSManager;
-import org.deegree.feature.persistence.FeatureStore;
 import org.deegree.feature.persistence.FeatureStoreException;
 import org.deegree.feature.persistence.FeatureStoreProvider;
 import org.deegree.feature.persistence.oracle.jaxb.OracleFeatureStoreConfig;
@@ -66,9 +67,11 @@ import org.slf4j.LoggerFactory;
  * 
  * @version $Revision$, $Date$
  */
-public class OracleFeatureStoreProvider implements FeatureStoreProvider {
+public class OracleFeatureStoreProvider implements FeatureStoreProvider<OracleFeatureStore> {
 
     private static final Logger LOG = LoggerFactory.getLogger( OracleFeatureStoreProvider.class );
+
+    private DeegreeWorkspace workspace;
 
     @Override
     public String getConfigNamespace() {
@@ -87,12 +90,13 @@ public class OracleFeatureStoreProvider implements FeatureStoreProvider {
     }
 
     @Override
-    public FeatureStore getFeatureStore( URL configURL )
-                            throws FeatureStoreException {
+    public OracleFeatureStore create( URL configURL )
+                            throws WorkspaceInitializationException {
 
-        FeatureStore fs = null;
+        OracleFeatureStore fs = null;
         try {
-            JAXBContext jc = JAXBContext.newInstance( "org.deegree.feature.persistence.oracle.jaxb" );
+            JAXBContext jc = JAXBContext.newInstance( "org.deegree.feature.persistence.oracle.jaxb",
+                                                      workspace.getModuleClassLoader() );
             Unmarshaller u = jc.createUnmarshaller();
             OracleFeatureStoreConfig config = (OracleFeatureStoreConfig) u.unmarshal( configURL );
             ICRS storageSRS = CRSManager.getCRSRef( config.getStorageSRS() );
@@ -104,11 +108,15 @@ public class OracleFeatureStoreProvider implements FeatureStoreProvider {
         } catch ( JAXBException e ) {
             String msg = "Error in feature store configuration file '" + configURL + "': " + e.getMessage();
             LOG.error( msg );
-            throw new FeatureStoreException( msg, e );
+            throw new WorkspaceInitializationException( msg, e );
         } catch ( SQLException e ) {
             String msg = "Error creating mapped application schema: " + e.getMessage();
             LOG.error( msg );
-            throw new FeatureStoreException( msg, e );
+            throw new WorkspaceInitializationException( msg, e );
+        } catch ( FeatureStoreException e ) {
+            String msg = "Error in feature store configuration file '" + configURL + "': " + e.getMessage();
+            LOG.error( msg );
+            throw new WorkspaceInitializationException( msg, e );
         }
         return fs;
     }
@@ -119,5 +127,9 @@ public class OracleFeatureStoreProvider implements FeatureStoreProvider {
             prefixToNs.put( namespaceHint.getPrefix(), namespaceHint.getNamespaceURI() );
         }
         return prefixToNs;
+    }
+
+    public void init( DeegreeWorkspace workspace ) {
+        this.workspace = workspace;
     }
 }

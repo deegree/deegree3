@@ -86,10 +86,11 @@ import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
 
 import org.deegree.commons.annotations.LoggingNotes;
+import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.utils.CollectionUtils;
-import org.deegree.commons.utils.CollectionUtils.Mapper;
 import org.deegree.commons.utils.DoublePair;
 import org.deegree.commons.utils.Pair;
+import org.deegree.commons.utils.CollectionUtils.Mapper;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.feature.Feature;
@@ -187,12 +188,16 @@ public class MapService {
 
     private Timer styleUpdateTimer;
 
+    private DeegreeWorkspace workspace;
+
     /**
      * @param conf
      * @param adapter
      * @throws MalformedURLException
      */
-    public MapService( ServiceConfigurationType conf, XMLAdapter adapter ) throws MalformedURLException {
+    public MapService( ServiceConfigurationType conf, XMLAdapter adapter, DeegreeWorkspace workspace )
+                            throws MalformedURLException {
+        this.workspace = workspace;
         layers = new HashMap<String, Layer>();
         if ( conf != null && conf.getAbstractLayer() != null ) {
             LayerOptionsType sf = conf.getDefaultLayerOptions();
@@ -356,7 +361,7 @@ public class MapService {
 
             if ( aLayer.getFeatureStoreId() != null ) {
                 try {
-                    res = new FeatureLayer( this, aLayer, parent, adapter );
+                    res = new FeatureLayer( this, aLayer, parent, adapter, workspace );
                 } catch ( FileNotFoundException e ) {
                     LOG.warn( "Layer '{}' could not be loaded: '{}'", aLayer.getName() == null ? aLayer.getTitle()
                                                                                               : aLayer.getName(),

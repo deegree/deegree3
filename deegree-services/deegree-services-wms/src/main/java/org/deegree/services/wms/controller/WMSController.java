@@ -280,7 +280,7 @@ public class WMSController extends AbstractOGCServiceController<WMSRequestType> 
             }
 
             ServiceConfigurationType sc = conf.getServiceConfiguration();
-            service = new MapService( sc, controllerConf );
+            service = new MapService( sc, controllerConf, workspace );
 
             // if ( sc.getSecurityManager() == null ) {
             // // then do nothing and step over

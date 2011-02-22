@@ -298,7 +298,8 @@ public class DEMTextureDataset extends Dataset<TextureManager> {
         // FeatureStore store = null;
         String featureStoreId = styledGeometryProvider.getFeatureStoreId();
 
-        FeatureStore store = FeatureStoreManager.get( featureStoreId );
+        FeatureStoreManager mgr = workspace.getSubsystemManager( FeatureStoreManager.class );
+        FeatureStore store = mgr.get( featureStoreId );
 
         // String styleId = styledGeometryProvider.getStyleId();
         // Styl

@@ -35,7 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.commons.config;
 
-import java.util.List;
+import java.net.URL;
 
 /**
  * 
@@ -44,21 +44,34 @@ import java.util.List;
  * 
  * @version $Revision$, $Date$
  */
-public interface ResourceManagerMetadata<T extends Resource> {
+public interface ExtendedResourceManager<T extends Resource> extends ResourceManager {
 
     /**
-     * @return the directory path for configuration files within the workspace
+     * @return a metadata object for use in GUIs, may be null
      */
-    String getPath();
+    ResourceManagerMetadata<T> getMetadata();
 
     /**
-     * @return display name for the use in the web interface
+     * Is used to obtain a resource instance from a configuration url and register it. The creation is usually delegated
+     * to an appropriate {@link ResourceProvider}.
+     * 
+     * @param id
+     *            the desired id of the new resource
+     * @param configUrl
+     *            the configuration url of the new resource
+     * @return the new resource instance
+     * @throws WorkspaceInitializationException
+     *             if an error occurred while creating the resource
      */
-    String getName();
+    T create( String id, URL configUrl )
+                            throws WorkspaceInitializationException;
 
     /**
-     * @return a list of resource providers that the manager manages
+     * Is used to obtain a resource instance from an id.
+     * 
+     * @param id
+     * @return null, if no such resource has been registered
      */
-    List<? extends ResourceProvider> getResourceProviders();
+    T get( String id );
 
 }

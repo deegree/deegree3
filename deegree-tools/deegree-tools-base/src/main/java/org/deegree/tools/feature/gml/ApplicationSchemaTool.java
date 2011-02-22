@@ -65,9 +65,10 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.PosixParser;
 import org.deegree.commons.annotations.Tool;
+import org.deegree.commons.config.DeegreeWorkspace;
+import org.deegree.commons.config.WorkspaceInitializationException;
 import org.deegree.commons.tom.primitive.PrimitiveType;
 import org.deegree.commons.tools.CommandUtils;
-import org.deegree.feature.persistence.FeatureStoreException;
 import org.deegree.feature.persistence.FeatureStoreManager;
 import org.deegree.feature.persistence.postgis.PostGISFeatureStore;
 import org.deegree.feature.persistence.sql.FeatureTypeMapping;
@@ -364,16 +365,18 @@ public class ApplicationSchemaTool {
             break;
         case deegree_postgis:
             try {
-                URL configURL = new File (inputFileName).toURI().toURL();
-                PostGISFeatureStore fs = (PostGISFeatureStore) FeatureStoreManager.create( configURL );
-                String [] sql = fs.getDDL();
+                URL configURL = new File( inputFileName ).toURI().toURL();
+                FeatureStoreManager mgr = new FeatureStoreManager();
+                mgr.startup( DeegreeWorkspace.getInstance() );
+                PostGISFeatureStore fs = (PostGISFeatureStore) mgr.create( "deegree_postgis", configURL );
+                String[] sql = fs.getDDL();
                 for ( String string : sql ) {
-                    System.out.println (string + ";");
+                    System.out.println( string + ";" );
                 }
             } catch ( MalformedURLException e1 ) {
                 // TODO Auto-generated catch block
                 e1.printStackTrace();
-            } catch ( FeatureStoreException e ) {
+            } catch ( WorkspaceInitializationException e ) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
             }

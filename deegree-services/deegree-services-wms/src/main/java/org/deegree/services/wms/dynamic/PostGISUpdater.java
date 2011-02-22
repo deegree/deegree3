@@ -52,9 +52,9 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.deegree.commons.annotations.LoggingNotes;
+import org.deegree.commons.config.WorkspaceInitializationException;
 import org.deegree.commons.utils.Pair;
 import org.deegree.commons.utils.StringPair;
-import org.deegree.feature.persistence.FeatureStoreException;
 import org.deegree.feature.persistence.simplesql.SimpleSQLFeatureStore;
 import org.deegree.rendering.r2d.se.parser.PostgreSQLReader;
 import org.deegree.services.wms.MapService;
@@ -227,7 +227,7 @@ public class PostGISUpdater extends LayerUpdater {
                                                     Collections.<Pair<Integer, String>> emptyList() );
                     try {
                         ds.init();
-                    } catch ( FeatureStoreException e ) {
+                    } catch ( WorkspaceInitializationException e ) {
                         LOG.info( "Data source of layer '{}' could not be initialized: '{}'.", title,
                                   e.getLocalizedMessage() );
                         LOG.trace( "Stack trace:", e );

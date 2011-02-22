@@ -45,13 +45,14 @@ import java.util.Map;
 
 import javax.xml.bind.JAXBException;
 
+import org.deegree.commons.config.DeegreeWorkspace;
+import org.deegree.commons.config.WorkspaceInitializationException;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.jaxb.JAXBUtils;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.persistence.CRSManager;
 import org.deegree.feature.FeatureCollection;
 import org.deegree.feature.i18n.Messages;
-import org.deegree.feature.persistence.FeatureStore;
 import org.deegree.feature.persistence.FeatureStoreException;
 import org.deegree.feature.persistence.FeatureStoreProvider;
 import org.deegree.feature.persistence.FeatureStoreTransaction;
@@ -77,7 +78,7 @@ import org.slf4j.LoggerFactory;
  * 
  * @version $Revision$, $Date$
  */
-public class MemoryFeatureStoreProvider implements FeatureStoreProvider {
+public class MemoryFeatureStoreProvider implements FeatureStoreProvider<MemoryFeatureStore> {
 
     private static final Logger LOG = LoggerFactory.getLogger( MemoryFeatureStoreProvider.class );
 
@@ -88,6 +89,8 @@ public class MemoryFeatureStoreProvider implements FeatureStoreProvider {
     private static final String CONFIG_SCHEMA = "/META-INF/schemas/datasource/feature/memory/3.0.0/memory.xsd";
 
     private static final String CONFIG_TEMPLATE = "/META-INF/schemas/datasource/feature/memory/3.0.0/example.xml";
+
+    private DeegreeWorkspace workspace;
 
     @Override
     public String getConfigNamespace() {
@@ -105,14 +108,15 @@ public class MemoryFeatureStoreProvider implements FeatureStoreProvider {
     }
 
     @Override
-    public FeatureStore getFeatureStore( URL configURL )
-                            throws FeatureStoreException {
+    public MemoryFeatureStore create( URL configURL )
+                            throws WorkspaceInitializationException {
 
         MemoryFeatureStore fs = null;
         ICRS storageSRS = null;
         try {
             MemoryFeatureStoreConfig config = (MemoryFeatureStoreConfig) JAXBUtils.unmarshall( CONFIG_JAXB_PACKAGE,
-                                                                                               CONFIG_SCHEMA, configURL );
+                                                                                               CONFIG_SCHEMA,
+                                                                                               configURL, workspace );
 
             ApplicationSchema schema = null;
             XMLAdapter resolver = new XMLAdapter();
@@ -143,7 +147,7 @@ public class MemoryFeatureStoreProvider implements FeatureStoreProvider {
             } catch ( Exception e ) {
                 String msg = Messages.getMessage( "STORE_MANAGER_STORE_SETUP_ERROR", e.getMessage() );
                 LOG.error( msg, e );
-                throw new FeatureStoreException( msg, e );
+                throw new WorkspaceInitializationException( msg, e );
             }
 
             fs = new MemoryFeatureStore( schema, storageSRS );
@@ -172,7 +176,11 @@ public class MemoryFeatureStoreProvider implements FeatureStoreProvider {
         } catch ( JAXBException e ) {
             String msg = "Error in feature store configuration file '" + configURL + "': " + e.getMessage();
             LOG.error( msg );
-            throw new FeatureStoreException( msg, e );
+            throw new WorkspaceInitializationException( msg, e );
+        } catch ( FeatureStoreException e ) {
+            String msg = "Error in feature store configuration file '" + configURL + "': " + e.getMessage();
+            LOG.error( msg );
+            throw new WorkspaceInitializationException( msg, e );
         }
         return fs;
     }
@@ -183,5 +191,9 @@ public class MemoryFeatureStoreProvider implements FeatureStoreProvider {
             prefixToNs.put( namespaceHint.getPrefix(), namespaceHint.getNamespaceURI() );
         }
         return prefixToNs;
+    }
+
+    public void init( DeegreeWorkspace workspace ) {
+        this.workspace = workspace;
     }
 }

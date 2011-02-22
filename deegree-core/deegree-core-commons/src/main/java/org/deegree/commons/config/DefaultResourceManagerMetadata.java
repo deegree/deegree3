@@ -35,7 +35,9 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.commons.config;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.ServiceLoader;
 
 /**
  * 
@@ -44,21 +46,42 @@ import java.util.List;
  * 
  * @version $Revision$, $Date$
  */
-public interface ResourceManagerMetadata<T extends Resource> {
+public class DefaultResourceManagerMetadata<T extends Resource> implements ResourceManagerMetadata<T> {
 
-    /**
-     * @return the directory path for configuration files within the workspace
-     */
-    String getPath();
+    private final String name;
 
-    /**
-     * @return display name for the use in the web interface
-     */
-    String getName();
+    private final String path;
 
-    /**
-     * @return a list of resource providers that the manager manages
-     */
-    List<? extends ResourceProvider> getResourceProviders();
+    private final ArrayList<ExtendedResourceProvider<T>> providers = new ArrayList<ExtendedResourceProvider<T>>();
+
+    // public DefaultResourceManagerMetadata( String name, String path,
+    // ServiceLoader<? extends ExtendedResourceProvider<T>> loader ) {
+    // this.name = name;
+    // this.path = path;
+    // for ( ExtendedResourceProvider<T> p : loader ) {
+    // providers.add( p );
+    // }
+    // }
+
+    public DefaultResourceManagerMetadata( String name, String path, Class<? extends ExtendedResourceProvider<T>> clz,
+                                           DeegreeWorkspace workspace ) {
+        this.name = name;
+        this.path = path;
+        for ( ExtendedResourceProvider<T> p : ServiceLoader.load( clz, workspace.getModuleClassLoader() ) ) {
+            providers.add( p );
+        }
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getPath() {
+        return path;
+    }
+
+    public List<? extends ExtendedResourceProvider<T>> getResourceProviders() {
+        return providers;
+    }
 
 }

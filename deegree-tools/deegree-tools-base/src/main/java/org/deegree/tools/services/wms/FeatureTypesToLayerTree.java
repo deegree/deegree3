@@ -54,11 +54,12 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.PosixParser;
 import org.deegree.commons.annotations.Tool;
+import org.deegree.commons.config.DeegreeWorkspace;
+import org.deegree.commons.config.WorkspaceInitializationException;
 import org.deegree.commons.tools.CommandUtils;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.stax.IndentingXMLStreamWriter;
 import org.deegree.feature.persistence.FeatureStore;
-import org.deegree.feature.persistence.FeatureStoreException;
 import org.deegree.feature.persistence.FeatureStoreManager;
 import org.deegree.feature.types.ApplicationSchema;
 import org.deegree.feature.types.FeatureType;
@@ -144,7 +145,9 @@ public class FeatureTypesToLayerTree {
             out = new IndentingXMLStreamWriter( fac.createXMLStreamWriter( os ) );
             out.setDefaultNamespace( ns );
 
-            FeatureStore store = FeatureStoreManager.create( new File( storeFile ).toURI().toURL() );
+            FeatureStoreManager mgr = new FeatureStoreManager();
+            mgr.startup( DeegreeWorkspace.getInstance() );
+            FeatureStore store = mgr.create( "unknown", new File( storeFile ).toURI().toURL() );
             ApplicationSchema schema = store.getSchema();
 
             // prepare document
@@ -181,7 +184,7 @@ public class FeatureTypesToLayerTree {
         } catch ( MalformedURLException e ) {
             LOG.info( "A filename could not be parsed: '{}'", e.getLocalizedMessage() );
             LOG.trace( "Stack trace:", e );
-        } catch ( FeatureStoreException e ) {
+        } catch ( WorkspaceInitializationException e ) {
             LOG.info( "The feature store could not be loaded: '{}'", e.getLocalizedMessage() );
             LOG.trace( "Stack trace:", e );
         } catch ( FileNotFoundException e ) {

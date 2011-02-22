@@ -75,6 +75,7 @@ import org.apache.commons.io.FileUtils;
 import org.deegree.client.generic.RequestBean;
 import org.deegree.commons.annotations.ConsoleManaged;
 import org.deegree.commons.config.DeegreeWorkspace;
+import org.deegree.commons.config.Resource;
 import org.deegree.commons.config.ResourceManagerMetadata;
 import org.deegree.commons.config.ResourceProvider;
 import org.deegree.commons.utils.io.Zip;
@@ -162,7 +163,7 @@ public class ConfigManager {
 
     }
 
-    private String getViewForMetadata( ResourceManagerMetadata md ) {
+    private String getViewForMetadata( ResourceManagerMetadata<? extends Resource> md ) {
         if ( md == null ) {
             return FacesContext.getCurrentInstance().getViewRoot().getViewId();
         }
@@ -220,6 +221,9 @@ public class ConfigManager {
     private void reloadResourceManagers() {
         File ws = getServiceWorkspace().getLocation();
 
+        FacesContext.getCurrentInstance().getExternalContext().getApplicationMap().put( "workspace",
+                                                                                        getServiceWorkspace() );
+
         resourceManagers = new LinkedList<ResourceManager>();
         resourceManagerMap = new HashMap<String, ResourceManager>();
 
@@ -227,7 +231,7 @@ public class ConfigManager {
         loaded = ServiceLoader.load( org.deegree.commons.config.ResourceManager.class,
                                      getServiceWorkspace().getModuleClassLoader() );
         for ( org.deegree.commons.config.ResourceManager mgr : loaded ) {
-            ResourceManagerMetadata md = mgr.getMetadata();
+            ResourceManagerMetadata<? extends Resource> md = mgr.getMetadata();
             if ( md != null ) {
                 ResourceManager mng = new ResourceManager( getViewForMetadata( md ), md );
                 resourceManagers.add( mng );
@@ -483,13 +487,13 @@ public class ConfigManager {
         public String view;
 
         @Getter
-        public ResourceManagerMetadata metadata;
+        public ResourceManagerMetadata<? extends Resource> metadata;
 
         public String view() {
             return view;
         }
 
-        ResourceManager( String view, ResourceManagerMetadata metadata ) {
+        ResourceManager( String view, ResourceManagerMetadata<? extends Resource> metadata ) {
             this.view = view;
             this.metadata = metadata;
         }

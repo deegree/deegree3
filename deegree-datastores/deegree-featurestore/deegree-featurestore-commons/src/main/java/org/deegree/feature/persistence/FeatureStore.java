@@ -38,6 +38,7 @@ package org.deegree.feature.persistence;
 
 import javax.xml.namespace.QName;
 
+import org.deegree.commons.config.Resource;
 import org.deegree.feature.Feature;
 import org.deegree.feature.persistence.lock.LockManager;
 import org.deegree.feature.persistence.query.FeatureResultSet;
@@ -54,8 +55,8 @@ import org.deegree.gml.GMLObject;
  * Note that a {@link FeatureStore} instance is always associated with exactly one {@link ApplicationSchema} instance.
  * </p>
  * <p>
- * NOTE: Implementations must be thread-safe, as {@link FeatureStore} instances are usually used in multiple
- * threads concurrently.
+ * NOTE: Implementations must be thread-safe, as {@link FeatureStore} instances are usually used in multiple threads
+ * concurrently.
  * </p>
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
@@ -63,21 +64,7 @@ import org.deegree.gml.GMLObject;
  * 
  * @version $Revision: $, $Date: $
  */
-public interface FeatureStore {
-
-    /**
-     * Called by the container to indicate that this {@link FeatureStore} instance is being placed into service.
-     * 
-     * @throws FeatureStoreException
-     *             if the initialization fails
-     */
-    public void init()
-                            throws FeatureStoreException;
-
-    /**
-     * Called by the container to indicate that this {@link FeatureStore} instance is being taken out of service.
-     */
-    public void destroy();
+public interface FeatureStore extends Resource {
 
     /**
      * Returns whether the store is currently able to perform operations.

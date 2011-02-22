@@ -46,13 +46,13 @@ import java.util.Map;
 
 import javax.xml.bind.JAXBException;
 
+import org.deegree.commons.config.DeegreeWorkspace;
+import org.deegree.commons.config.WorkspaceInitializationException;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.jaxb.JAXBUtils;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.persistence.CRSManager;
 import org.deegree.feature.i18n.Messages;
-import org.deegree.feature.persistence.FeatureStore;
-import org.deegree.feature.persistence.FeatureStoreException;
 import org.deegree.feature.persistence.FeatureStoreProvider;
 import org.deegree.feature.persistence.shape.jaxb.ShapeFeatureStoreConfig;
 import org.slf4j.Logger;
@@ -66,7 +66,7 @@ import org.slf4j.LoggerFactory;
  * 
  * @version $Revision$, $Date$
  */
-public class ShapeFeatureStoreProvider implements FeatureStoreProvider {
+public class ShapeFeatureStoreProvider implements FeatureStoreProvider<ShapeFeatureStore> {
 
     private static final Logger LOG = LoggerFactory.getLogger( ShapeFeatureStoreProvider.class );
 
@@ -77,6 +77,8 @@ public class ShapeFeatureStoreProvider implements FeatureStoreProvider {
     private static final String CONFIG_SCHEMA = "/META-INF/schemas/datasource/feature/shape/3.0.0/shape.xsd";
 
     private static final String CONFIG_TEMPLATE = "/META-INF/schemas/datasource/feature/shape/3.0.0/example.xml";
+
+    private DeegreeWorkspace workspace;
 
     @Override
     public String getConfigNamespace() {
@@ -94,13 +96,14 @@ public class ShapeFeatureStoreProvider implements FeatureStoreProvider {
     }
 
     @Override
-    public FeatureStore getFeatureStore( URL configURL )
-                            throws FeatureStoreException {
+    public ShapeFeatureStore create( URL configURL )
+                            throws WorkspaceInitializationException {
 
         ShapeFeatureStore fs = null;
         try {
             ShapeFeatureStoreConfig config = (ShapeFeatureStoreConfig) JAXBUtils.unmarshall( CONFIG_JAXB_PACKAGE,
-                                                                                             CONFIG_SCHEMA, configURL );
+                                                                                             CONFIG_SCHEMA, configURL,
+                                                                                             workspace );
 
             XMLAdapter resolver = new XMLAdapter();
             resolver.setSystemId( configURL.toString() );
@@ -121,12 +124,12 @@ public class ShapeFeatureStoreProvider implements FeatureStoreProvider {
             } catch ( MalformedURLException e ) {
                 String msg = Messages.getMessage( "STORE_MANAGER_STORE_SETUP_ERROR", e.getMessage() );
                 LOG.error( msg, e );
-                throw new FeatureStoreException( msg, e );
+                throw new WorkspaceInitializationException( msg, e );
             } catch ( URISyntaxException e ) {
                 String msg = Messages.getMessage( "STORE_MANAGER_STORE_SETUP_ERROR", e.getMessage() );
                 LOG.error( msg );
                 LOG.trace( "Stack trace:", e );
-                throw new FeatureStoreException( msg, e );
+                throw new WorkspaceInitializationException( msg, e );
             }
 
             Charset cs = null;
@@ -149,8 +152,12 @@ public class ShapeFeatureStoreProvider implements FeatureStoreProvider {
         } catch ( JAXBException e ) {
             String msg = "Error in feature store configuration file '" + configURL + "': " + e.getMessage();
             LOG.error( msg );
-            throw new FeatureStoreException( msg, e );
+            throw new WorkspaceInitializationException( msg, e );
         }
         return fs;
+    }
+
+    public void init( DeegreeWorkspace workspace ) {
+        this.workspace = workspace;
     }
 }

@@ -51,6 +51,7 @@ import java.util.NoSuchElementException;
 
 import javax.xml.namespace.QName;
 
+import org.deegree.commons.config.WorkspaceInitializationException;
 import org.deegree.commons.jdbc.ConnectionManager;
 import org.deegree.commons.jdbc.ResultSetIterator;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
@@ -432,7 +433,7 @@ public class PostGISFeatureStore extends AbstractSQLFeatureStore {
 
     @Override
     public void init()
-                            throws FeatureStoreException {
+                            throws WorkspaceInitializationException {
 
         LOG.debug( "init" );
         // lockManager = new DefaultLockManager( this, "LOCK_DB" );
@@ -445,7 +446,7 @@ public class PostGISFeatureStore extends AbstractSQLFeatureStore {
             useLegacyPredicates = JDBCUtils.useLegayPostGISPredicates( conn, LOG );
         } catch ( SQLException e ) {
             LOG.debug( e.getMessage(), e );
-            throw new FeatureStoreException( e.getMessage(), e );
+            throw new WorkspaceInitializationException( e.getMessage(), e );
         } finally {
             close( rs, stmt, conn, LOG );
         }
