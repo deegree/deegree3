@@ -171,17 +171,19 @@ public class WebServicesConfiguration implements ResourceManager {
         File metadata = new File( workspace.getLocation(), "services" + File.separator + "metadata.xml" );
         File main = new File( workspace.getLocation(), "services" + File.separator + "main.xml" );
 
-        if ( !metadata.exists() ) {
-            String msg = "No 'services/metadata.xml' file, aborting startup!";
-            LOG.error( msg );
-            throw new WorkspaceInitializationException( msg );
-        }
         try {
+            URL mdurl;
+            if ( !metadata.exists() ) {
+                mdurl = WebServicesConfiguration.class.getResource( "/META-INF/schemas/metadata/3.0.0/example.xml" );
+                String msg = "No 'services/metadata.xml' file, assuming defaults.";
+                LOG.debug( msg );
+            } else {
+                mdurl = metadata.toURI().toURL();
+            }
             metadataConfig = (DeegreeServicesMetadataType) ( (JAXBElement<?>) JAXBUtils.unmarshall(
                                                                                                     METADATA_JAXB_PACKAGE,
                                                                                                     METADATA_CONFIG_SCHEMA,
-                                                                                                    metadata.toURI().toURL(),
-                                                                                                    workspace ) ).getValue();
+                                                                                                    mdurl, workspace ) ).getValue();
         } catch ( Exception e ) {
             String msg = "Could not unmarshall frontcontroller configuration: " + e.getMessage();
             LOG.error( msg );
