@@ -331,7 +331,7 @@
       <crs:Version>2009-12-09T13:39</crs:Version>
       <crs:Units>metre</crs:Units>
       <crs:SemiMajorAxis>6378137.0</crs:SemiMajorAxis>
-      <crs:InverseFlattening>0.0</crs:InverseFlattening>
+      <crs:InverseFlattening>298.257223563</crs:InverseFlattening>
     </crs:Ellipsoid>
     <crs:Ellipsoid>
       <crs:Id>epsg:7004</crs:Id>
