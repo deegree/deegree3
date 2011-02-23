@@ -135,20 +135,20 @@ public class XMLValueMangler {
     public static String internalToXML( Object o ) {
         String xml = null;
         if ( o != null ) {
-            PrimitiveType pt = PrimitiveType.determinePrimitiveType( o );
-            switch ( pt ) {
-            case BOOLEAN:
-            case DATE:
-            case DATE_TIME:
-            case DECIMAL:
-            case DOUBLE:
-            case INTEGER:
-            case STRING:
-            case TIME:
+//            PrimitiveType pt = PrimitiveType.determinePrimitiveType( o );
+//            switch ( pt ) {
+//            case BOOLEAN:
+//            case DATE:
+//            case DATE_TIME:
+//            case DECIMAL:
+//            case DOUBLE:
+//            case INTEGER:
+//            case STRING:
+//            case TIME:
                 // TODO is this always sufficient?
                 xml = o.toString();
-                break;
-            }
+//                break;
+//            }
         }
         return xml;
     }
