@@ -53,6 +53,7 @@ import org.apache.xerces.xs.XSTypeDefinition;
 import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.commons.tom.genericxml.GenericXMLElement;
 import org.deegree.commons.tom.genericxml.GenericXMLElementContent;
+import org.deegree.commons.tom.ows.CodeType;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.commons.utils.Pair;
 import org.deegree.feature.Feature;
@@ -152,8 +153,6 @@ public class FeatureBuilderRelational implements FeatureBuilder {
                 MappingExpression column = pm.getMapping();
                 if ( column instanceof DBField ) {
                     columns.add( ( (DBField) column ).getColumn() );
-                } else {
-                    LOG.warn( "Skipping mapping '" + column + "'. Not mapped to a column." );
                 }
             } else if ( mapping instanceof GeometryMapping ) {
                 GeometryMapping gm = (GeometryMapping) mapping;
@@ -161,8 +160,14 @@ public class FeatureBuilderRelational implements FeatureBuilder {
                 if ( column instanceof DBField ) {
                     // TODO
                     columns.add( "AsBinary(" + ( (DBField) column ).getColumn() + ")" );
-                } else {
-                    LOG.warn( "Skipping mapping '" + column + "'. Not mapped to a column." );
+                }
+            } else if ( mapping instanceof CodeMapping ) {
+                CodeMapping cm = (CodeMapping) mapping;
+                if ( cm.getMapping() instanceof DBField ) {
+                    columns.add( cm.getMapping().toString() );
+                }
+                if ( cm.getCodeSpaceMapping() instanceof DBField ) {
+                    columns.add( cm.getCodeSpaceMapping().toString() );
                 }
             } else if ( mapping instanceof CompoundMapping ) {
                 CompoundMapping cm = (CompoundMapping) mapping;
@@ -170,6 +175,7 @@ public class FeatureBuilderRelational implements FeatureBuilder {
                     addSelectColumns( particle, columns, true );
                 }
             } else {
+
                 LOG.warn( "Mappings of type '" + mapping.getClass() + "' are not handled yet." );
             }
         }
@@ -244,8 +250,6 @@ public class FeatureBuilderRelational implements FeatureBuilder {
                 if ( value != null ) {
                     values.add( new PrimitiveValue( value, pm.getType() ) );
                 }
-            } else {
-                LOG.warn( "Skipping." );
             }
         } else if ( mapping instanceof GeometryMapping ) {
             GeometryMapping pm = (GeometryMapping) mapping;
@@ -260,8 +264,19 @@ public class FeatureBuilderRelational implements FeatureBuilder {
                         throw new SQLException( "Error parsing WKB from database: " + e.getMessage(), e );
                     }
                 }
-            } else {
-                LOG.warn( "Skipping." );
+            }
+        } else if ( mapping instanceof CodeMapping ) {
+            CodeMapping cm = (CodeMapping) mapping;
+            String code = null;
+            if ( cm.getMapping() instanceof DBField ) {
+                code = rs.getString( i++ );
+            }
+            String codeSpace = null;
+            if ( cm.getCodeSpaceMapping() instanceof DBField ) {
+                codeSpace = rs.getString( i++ );
+            }
+            if ( code != null ) {
+                values.add( new CodeType( code, codeSpace ) );
             }
         } else if ( mapping instanceof CompoundMapping ) {
             CompoundMapping cm = (CompoundMapping) mapping;

@@ -228,7 +228,7 @@ public class PostGISFeatureStoreTest {
         QName countryName = QName.valueOf( "{urn:x-inspire:specification:gmlas:AdministrativeUnits:3.0}AdministrativeUnit" );
         Query query = new Query( countryName, null, -1, -1, -1.0 );
         FeatureResultSet rs = fs.query( query );
-        gmlWriter.write( rs.iterator().next() );
+        gmlWriter.write( rs.toCollection() );
         gmlWriter.close();
     }
 

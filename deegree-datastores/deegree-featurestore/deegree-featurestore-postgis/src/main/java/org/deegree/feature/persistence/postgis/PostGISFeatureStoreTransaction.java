@@ -480,7 +480,7 @@ public class PostGISFeatureStoreTransaction implements FeatureStoreTransaction {
                 return;
             }
             column = ( (DBField) me ).getColumn();
-            currentRow.addPreparedArgument( column, value.getCode() );
+            currentRow.addPreparedArgument( column, value.getCodeSpace() );
         } else if ( mapping instanceof CompoundMapping ) {
             CompoundMapping cm = (CompoundMapping) mapping;
             GenericXMLElement propNode = (GenericXMLElement) particle;
