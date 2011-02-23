@@ -40,10 +40,10 @@ import static org.deegree.services.i18n.Messages.get;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.metadata.persistence.MetadataStore;
 import org.deegree.metadata.persistence.MetadataStoreManager;
 import org.deegree.protocol.csw.MetadataStoreException;
-import org.deegree.services.jaxb.csw.DeegreeCSW;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -68,15 +68,15 @@ public class CSWService {
     /**
      * Creates a {@link CSWService} instance to get a binding to the configuration.
      * 
-     * @param sc
-     *            the deegree configuration that is specified in the csw_configuration.xml document
      * @throws MetadataStoreException
      */
-    public CSWService( DeegreeCSW sc, String baseURL ) throws MetadataStoreException {
+    public CSWService( DeegreeWorkspace workspace ) throws MetadataStoreException {
 
         LOG.info( "Initializing/looking up configured record stores." );
 
-        for ( MetadataStore rs : MetadataStoreManager.getAll().values() ) {
+        MetadataStoreManager mgr = workspace.getSubsystemManager( MetadataStoreManager.class );
+
+        for ( MetadataStore rs : mgr.getAll() ) {
             addToStore( rs );
         }
     }

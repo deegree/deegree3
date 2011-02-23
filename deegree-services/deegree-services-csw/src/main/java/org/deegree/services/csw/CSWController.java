@@ -164,7 +164,7 @@ public class CSWController extends AbstractOGCServiceController<CSWRequestType> 
         DeegreeCSW jaxbConfig = (DeegreeCSW) unmarshallConfig( CONFIG_JAXB_PACKAGE, CONFIG_SCHEMA, controllerConf );
 
         try {
-            service = new CSWService( jaxbConfig, controllerConf.getSystemId() );
+            service = new CSWService( workspace );
         } catch ( MetadataStoreException e ) {
             LOG.error( "Could not instantiate CSWService: '{}' " + e.getMessage() );
             throw new ControllerInitException( "Could not instantiate CSWService: " + e.getMessage(), e );

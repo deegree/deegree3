@@ -38,6 +38,7 @@ package org.deegree.metadata.persistence.iso.testclasses;
 import java.sql.SQLException;
 import java.util.List;
 
+import org.deegree.commons.config.WorkspaceInitializationException;
 import org.deegree.metadata.persistence.MetadataInspectorException;
 import org.deegree.metadata.persistence.MetadataStoreTransaction;
 import org.deegree.metadata.persistence.iso.ISOMetadataStore;
@@ -75,16 +76,17 @@ public class InspectorIdentifierTest extends AbstractISOTest {
      * @throws MetadataStoreException
      * @throws MetadataInspectorException
      * @throws MetadataInspectorException
+     * @throws WorkspaceInitializationException
      * @throws SQLException
      */
     @Test(expected = MetadataInspectorException.class)
     public void testIdentifierRejectTrue2()
-                            throws MetadataStoreException, MetadataInspectorException {
+                            throws MetadataStoreException, MetadataInspectorException, WorkspaceInitializationException {
         LOG.info( "START Test: test if the configuration rejects the insert of the missing identifier. (Reject TRUE)" );
         MetadataStoreTransaction ta = null;
         if ( jdbcURL != null && jdbcUser != null && jdbcPass != null ) {
 
-            store = (ISOMetadataStore) new ISOMetadataStoreProvider().getMetadataStore( TstConstants.configURL_REJECT_FI_TRUE );
+            store = (ISOMetadataStore) new ISOMetadataStoreProvider().create( TstConstants.configURL_REJECT_FI_TRUE );
 
         }
         if ( store == null ) {
@@ -104,14 +106,15 @@ public class InspectorIdentifierTest extends AbstractISOTest {
      * 
      * @throws MetadataStoreException
      * @throws MetadataInspectorException
+     * @throws WorkspaceInitializationException
      */
 
     @Test
     public void testIdentifierRejectFalse()
-                            throws MetadataStoreException, MetadataInspectorException {
+                            throws MetadataStoreException, MetadataInspectorException, WorkspaceInitializationException {
         LOG.info( "START Test: test if the configuration generates the identifier automaticaly. (Reject FALSE)" );
         if ( jdbcURL != null && jdbcUser != null && jdbcPass != null ) {
-            store = (ISOMetadataStore) new ISOMetadataStoreProvider().getMetadataStore( TstConstants.configURL_REJECT_FI_FALSE );
+            store = (ISOMetadataStore) new ISOMetadataStoreProvider().create( TstConstants.configURL_REJECT_FI_FALSE );
         }
         if ( store == null ) {
             LOG.warn( "Skipping test (needs configuration)." );
@@ -137,15 +140,16 @@ public class InspectorIdentifierTest extends AbstractISOTest {
      * 
      * @throws MetadataStoreException
      * @throws MetadataInspectorException
+     * @throws WorkspaceInitializationException
      */
 
     @Test
     public void testIdentifierRejectTrue()
-                            throws MetadataStoreException, MetadataInspectorException {
+                            throws MetadataStoreException, MetadataInspectorException, WorkspaceInitializationException {
         LOG.info( "START Test: test if the configuration rejects the insert of the missing identifier. (Reject TRUE)" );
 
         if ( jdbcURL != null && jdbcUser != null && jdbcPass != null ) {
-            store = (ISOMetadataStore) new ISOMetadataStoreProvider().getMetadataStore( TstConstants.configURL_REJECT_FI_TRUE );
+            store = (ISOMetadataStore) new ISOMetadataStoreProvider().create( TstConstants.configURL_REJECT_FI_TRUE );
         }
         if ( store == null ) {
             LOG.warn( "Skipping test (needs configuration)." );

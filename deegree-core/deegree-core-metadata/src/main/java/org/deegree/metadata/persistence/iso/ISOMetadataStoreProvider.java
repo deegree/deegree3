@@ -51,11 +51,16 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 
+import org.deegree.commons.config.DeegreeWorkspace;
+import org.deegree.commons.config.ResourceManager;
+import org.deegree.commons.config.WorkspaceInitializationException;
+import org.deegree.commons.jdbc.ConnectionManager;
+import org.deegree.commons.utils.ProxyUtils;
+import org.deegree.filter.function.FunctionManager;
 import org.deegree.metadata.i18n.Messages;
 import org.deegree.metadata.persistence.MetadataStore;
 import org.deegree.metadata.persistence.MetadataStoreProvider;
 import org.deegree.metadata.persistence.iso19115.jaxb.ISOMetadataStoreConfig;
-import org.deegree.protocol.csw.MetadataStoreException;
 import org.slf4j.Logger;
 
 /**
@@ -68,6 +73,8 @@ import org.slf4j.Logger;
  */
 public class ISOMetadataStoreProvider implements MetadataStoreProvider {
     private static Logger LOG = getLogger( ISOMetadataStoreProvider.class );
+
+    private DeegreeWorkspace workspace;
 
     @Override
     public String getConfigNamespace() {
@@ -132,30 +139,44 @@ public class ISOMetadataStoreProvider implements MetadataStoreProvider {
         return stmts;
     }
 
-    @Override
-    public MetadataStore getMetadataStore( URL configURL )
-                            throws MetadataStoreException {
-        return new ISOMetadataStore( getConfig( configURL ) );
-    }
-
     private ISOMetadataStoreConfig getConfig( URL configURL )
-                            throws MetadataStoreException {
+                            throws WorkspaceInitializationException {
 
         ISOMetadataStoreConfig config = null;
         if ( configURL == null ) {
             LOG.warn( Messages.getMessage( "WARN_NO_CONFIG" ) );
         } else {
             try {
-                JAXBContext jc = JAXBContext.newInstance( "org.deegree.metadata.persistence.iso19115.jaxb" );
+                JAXBContext jc;
+                if ( workspace == null ) {
+                    jc = JAXBContext.newInstance( "org.deegree.metadata.persistence.iso19115.jaxb" );
+                } else {
+                    jc = JAXBContext.newInstance( "org.deegree.metadata.persistence.iso19115.jaxb",
+                                                  workspace.getModuleClassLoader() );
+                }
                 Unmarshaller u = jc.createUnmarshaller();
                 config = (ISOMetadataStoreConfig) u.unmarshal( configURL );
             } catch ( JAXBException e ) {
                 String msg = Messages.getMessage( "ERROR_IN_CONFIG_FILE", configURL, e.getMessage() );
                 LOG.error( msg );
-                throw new MetadataStoreException( msg, e );
+                throw new WorkspaceInitializationException( msg, e );
             }
         }
         return config;
 
+    }
+
+    public MetadataStore create( URL configUrl )
+                            throws WorkspaceInitializationException {
+        return new ISOMetadataStore( getConfig( configUrl ) );
+    }
+
+    @SuppressWarnings("unchecked")
+    public Class<? extends ResourceManager>[] getDependencies() {
+        return new Class[] { ProxyUtils.class, ConnectionManager.class, FunctionManager.class };
+    }
+
+    public void init( DeegreeWorkspace workspace ) {
+        this.workspace = workspace;
     }
 }

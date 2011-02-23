@@ -39,8 +39,7 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URL;
 
-import org.deegree.commons.config.ResourceProvider;
-import org.deegree.protocol.csw.MetadataStoreException;
+import org.deegree.commons.config.ExtendedResourceProvider;
 
 /**
  * Implementations plug-in {@link MetadataStore}s.
@@ -50,19 +49,7 @@ import org.deegree.protocol.csw.MetadataStoreException;
  * 
  * @version $Revision$, $Date$
  */
-public interface MetadataStoreProvider extends ResourceProvider {
-
-    /**
-     * Creates a new {@link MetadataStore} instance from the given configuration document.
-     * 
-     * @param configURL
-     *            location of the configuration document, must not be <code>null</code>
-     * @return new feature store instance, configured, not initialized yet
-     * @throws MetadataStore
-     *             if the configuration contains an error or creation fails
-     */
-    public MetadataStore getMetadataStore( URL configURL )
-                            throws MetadataStoreException;
+public interface MetadataStoreProvider extends ExtendedResourceProvider<MetadataStore> {
 
     public String[] getCreateStatements( URL configURL )
                             throws UnsupportedEncodingException, IOException;

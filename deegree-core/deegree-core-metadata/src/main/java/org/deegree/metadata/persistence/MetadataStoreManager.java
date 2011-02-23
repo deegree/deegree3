@@ -35,31 +35,15 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.metadata.persistence;
 
-import java.io.File;
-import java.io.FilenameFilter;
-import java.net.URL;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.ServiceLoader;
-
-import javax.xml.stream.XMLInputFactory;
-import javax.xml.stream.XMLStreamReader;
-
 import org.deegree.commons.annotations.ConsoleManaged;
+import org.deegree.commons.config.AbstractResourceManager;
 import org.deegree.commons.config.DeegreeWorkspace;
+import org.deegree.commons.config.DefaultResourceManagerMetadata;
 import org.deegree.commons.config.ResourceManager;
 import org.deegree.commons.config.ResourceManagerMetadata;
-import org.deegree.commons.config.ResourceProvider;
+import org.deegree.commons.config.WorkspaceInitializationException;
 import org.deegree.commons.jdbc.ConnectionManager;
 import org.deegree.commons.utils.ProxyUtils;
-import org.deegree.commons.xml.stax.StAXParsingHelper;
-import org.deegree.metadata.i18n.Messages;
-import org.deegree.protocol.csw.MetadataStoreException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Entry point for creating {@link MetadataStore} providers and instances.
@@ -69,183 +53,31 @@ import org.slf4j.LoggerFactory;
  * 
  * @version $Revision$, $Date$
  */
-public class MetadataStoreManager implements ResourceManager {
+public class MetadataStoreManager extends AbstractResourceManager<MetadataStore> {
 
-    private static final Logger LOG = LoggerFactory.getLogger( MetadataStoreManager.class );
-
-    private static ServiceLoader<MetadataStoreProvider> providerLoader = ServiceLoader.load( MetadataStoreProvider.class );
-
-    static Map<String, MetadataStoreProvider> nsToProvider = null;
-
-    private static Map<String, MetadataStore> idToRs = Collections.synchronizedMap( new HashMap<String, MetadataStore>() );
-
-    /**
-     * Returns all available {@link MetadataStoreManager} providers.
-     * 
-     * @return all available providers, keys: config namespace, value: provider instance
-     */
-    public static synchronized Map<String, MetadataStoreProvider> getProviders() {
-        if ( nsToProvider == null ) {
-            nsToProvider = new HashMap<String, MetadataStoreProvider>();
-            try {
-                for ( MetadataStoreProvider provider : providerLoader ) {
-                    LOG.debug( "Metadata store provider: " + provider + ", namespace: " + provider.getConfigNamespace() );
-                    if ( nsToProvider.containsKey( provider.getConfigNamespace() ) ) {
-                        LOG.error( "Multiple metadata store providers for config namespace: '"
-                                   + provider.getConfigNamespace() + "' on classpath -- omitting provider '"
-                                   + provider.getClass().getName() + "'." );
-                        continue;
-                    }
-                    nsToProvider.put( provider.getConfigNamespace(), provider );
-                }
-            } catch ( Exception e ) {
-                LOG.error( e.getMessage(), e );
-            }
-        }
-        return nsToProvider;
-    }
-
-    /**
-     * Returns the global {@link MetadataStore} instance with the specified identifier.
-     * 
-     * @param id
-     *            identifier of the store
-     * @return the corresponding {@link MetadataStore} instance or null if no such instance has been created
-     */
-    public static MetadataStore get( String id ) {
-        return idToRs.get( id );
-    }
-
-    /**
-     * Returns all {@link MetadataStore} instances.
-     * 
-     * @return the corresponding {@link MetadataStore} instances, may be empty, but never <code>null</code>
-     */
-    public static Map<String, MetadataStore> getAll() {
-        return idToRs;
-    }
-
-    /**
-     * Returns an initialized {@link MetadataStore} instance from the RecordStore configuration document.
-     * 
-     * @param configURL
-     *            URL of the configuration document, must not be <code>null</code>
-     * @return corresponding {@link MetadataStore} instance, initialized and ready to be used
-     * @throws MetadataStoreException
-     *             if the creation fails, e.g. due to a configuration error
-     * 
-     */
-    public static synchronized MetadataStore create( URL configURL )
-                            throws MetadataStoreException {
-        String namespace = null;
-        try {
-            XMLStreamReader xmlReader = XMLInputFactory.newInstance().createXMLStreamReader( configURL.openStream() );
-            StAXParsingHelper.nextElement( xmlReader );
-            namespace = xmlReader.getNamespaceURI();
-        } catch ( Exception e ) {
-            String msg = Messages.getMessage( "WRONG_CONFIG", configURL );
-            LOG.error( msg );
-            throw new MetadataStoreException( msg );
-        }
-        LOG.debug( "Config namespace: '" + namespace + "'" );
-        MetadataStoreProvider provider = getProviders().get( namespace );
-        if ( provider == null ) {
-            String msg = "No metadata store provider for namespace '" + namespace + "' (file: '" + configURL
-                         + "') registered. Skipping it.";
-            LOG.error( msg );
-            throw new MetadataStoreException( msg );
-        }
-        return provider.getMetadataStore( configURL );
-    }
-
-    private static void registerAndInit( MetadataStore rs, String id )
-                            throws MetadataStoreException {
-
-        rs.init();
-        if ( id != null ) {
-            if ( idToRs.containsKey( id ) ) {
-                String msg = Messages.getMessage( "STORE_MANAGER_DUPLICATE_ID", id );
-                throw new MetadataStoreException( msg );
-            }
-            LOG.info( "Registering global metadata store (" + rs + ") with id '" + id + "'." );
-            idToRs.put( id, rs );
-
-        }
-    }
-
-    /**
-     * @param rsDir
-     */
-    public static void init( File rsDir ) {
-        if ( !rsDir.exists() ) {
-            LOG.info( "No 'datasources/metadata' directory -- skipping initialization of metadata stores." );
-            return;
-        }
-        LOG.info( "--------------------------------------------------------------------------------" );
-        LOG.info( "Setting up metadata stores." );
-        LOG.info( "--------------------------------------------------------------------------------" );
-        File[] rsConfigFiles = rsDir.listFiles( new FilenameFilter() {
-            @Override
-            public boolean accept( File dir, String name ) {
-                return name.toLowerCase().endsWith( ".xml" );
-            }
-        } );
-        for ( File rsConfigFile : rsConfigFiles ) {
-            String fileName = rsConfigFile.getName();
-            // 4 is the length of ".xml"
-            String rsId = fileName.substring( 0, fileName.length() - 4 );
-            LOG.info( "Setting up metadata store '" + rsId + "' from file '" + fileName + "'..." + "" );
-            try {
-                URL configURL = rsConfigFile.toURI().toURL();
-                MetadataStore rs = create( configURL );
-                registerAndInit( rs, rsId );
-
-            } catch ( Exception e ) {
-                LOG.error( "Error initializing metadata store: " + e.getMessage(), e );
-            }
-        }
-        LOG.info( "" );
-    }
-
-    /**
-     * 
-     */
-    public static void destroy() {
-        for ( MetadataStore ms : idToRs.values() ) {
-            ms.destroy();
-        }
-        idToRs.clear();
-    }
+    private MetadataStoreManagerMetadata metadata;
 
     @SuppressWarnings("unchecked")
     public Class<? extends ResourceManager>[] getDependencies() {
         return new Class[] { ProxyUtils.class, ConnectionManager.class };
     }
 
-    public void shutdown() {
-        destroy();
-    }
-
-    public void startup( DeegreeWorkspace workspace ) {
-        init( new File( workspace.getLocation(), "datasources" + File.separator + "metadata" ) );
+    @Override
+    public void startup( DeegreeWorkspace workspace )
+                            throws WorkspaceInitializationException {
+        metadata = new MetadataStoreManagerMetadata( workspace );
+        super.startup( workspace );
     }
 
     @ConsoleManaged(startPage = "/console/metadatastore/buttons")
-    static class MetadataStoreManagerMetadata implements ResourceManagerMetadata {
-        public String getName() {
-            return "metadata stores";
-        }
-
-        public String getPath() {
-            return "datasources/metadata/";
-        }
-
-        public List<ResourceProvider> getResourceProviders() {
-            return new LinkedList<ResourceProvider>( nsToProvider.values() );
+    static class MetadataStoreManagerMetadata extends DefaultResourceManagerMetadata<MetadataStore> {
+        @SuppressWarnings("unchecked")
+        public MetadataStoreManagerMetadata( DeegreeWorkspace workspace ) {
+            super( "metadata stores", "datasources/metadata/", (Class) MetadataStoreProvider.class, workspace );
         }
     }
 
-    public ResourceManagerMetadata getMetadata() {
-        return new MetadataStoreManagerMetadata();
+    public ResourceManagerMetadata<MetadataStore> getMetadata() {
+        return metadata;
     }
 }

@@ -42,10 +42,12 @@ import java.io.UnsupportedEncodingException;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
 import javax.faces.component.html.HtmlCommandButton;
+import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import javax.faces.event.ActionEvent;
 
 import org.deegree.client.core.utils.SQLExecution;
+import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.metadata.persistence.MetadataStore;
 import org.deegree.metadata.persistence.MetadataStoreManager;
 import org.deegree.metadata.persistence.iso.ISOMetadataStore;
@@ -68,6 +70,12 @@ public class MetadataStoreConfig implements Serializable {
 
     private String id;
 
+    private MetadataStoreManager getMetadataStoreManager() {
+        ExternalContext ctx = FacesContext.getCurrentInstance().getExternalContext();
+        DeegreeWorkspace ws = (DeegreeWorkspace) ctx.getApplicationMap().get( "workspace" );
+        return ws.getSubsystemManager( MetadataStoreManager.class );
+    }
+
     public String getId() {
         return id;
     }
@@ -78,7 +86,7 @@ public class MetadataStoreConfig implements Serializable {
 
     public String openImporter()
                             throws Exception {
-        MetadataStore ms = MetadataStoreManager.get( getId() );
+        MetadataStore ms = getMetadataStoreManager().get( getId() );
         if ( ms == null ) {
             throw new Exception( "No metadata store with id '" + getId() + "' known / active." );
         }
@@ -90,7 +98,7 @@ public class MetadataStoreConfig implements Serializable {
 
     public String createTables()
                             throws MetadataStoreException {
-        ISOMetadataStore ms = (ISOMetadataStore) MetadataStoreManager.get( getId() );
+        ISOMetadataStore ms = (ISOMetadataStore) getMetadataStoreManager().get( getId() );
         String connId = ms.getConnId();
         String[] sql = null;
         try {

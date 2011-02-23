@@ -37,6 +37,7 @@ package org.deegree.metadata.persistence;
 
 import java.util.List;
 
+import org.deegree.commons.config.Resource;
 import org.deegree.metadata.MetadataRecord;
 import org.deegree.protocol.csw.MetadataStoreException;
 
@@ -50,21 +51,7 @@ import org.deegree.protocol.csw.MetadataStoreException;
  * 
  * @version $Revision$, $Date$
  */
-public interface MetadataStore {
-
-    /**
-     * Called by the container to indicate that this {@link MetadataStore} instance is being placed into service.
-     * 
-     * @throws MetadataStoreException
-     *             if the initialization fails
-     */
-    public void init()
-                            throws MetadataStoreException;
-
-    /**
-     * Called by the container to indicate that this {@link MetadataStore} instance is being taken out of service.
-     */
-    public void destroy();
+public interface MetadataStore extends Resource {
 
     /**
      * Performs the given {@link MetadataQuery} and provides access to the {@link MetadataRecord}s that match it.

@@ -37,6 +37,7 @@ package org.deegree.metadata.persistence.iso.testclasses;
 
 import java.util.List;
 
+import org.deegree.commons.config.WorkspaceInitializationException;
 import org.deegree.metadata.persistence.MetadataInspectorException;
 import org.deegree.metadata.persistence.MetadataStoreTransaction;
 import org.deegree.metadata.persistence.iso.ISOMetadataStore;
@@ -70,15 +71,16 @@ public class InspectorRITest extends AbstractISOTest {
      * 
      * @throws MetadataStoreException
      * @throws MetadataInspectorException
+     * @throws WorkspaceInitializationException
      */
 
     @Test
     public void testResourceIdentifierGenerateFALSE_With_ID_Attrib_RSID_Equals()
-                            throws MetadataStoreException, MetadataInspectorException {
+                            throws MetadataStoreException, MetadataInspectorException, WorkspaceInitializationException {
         LOG.info( "START Test: test if the configuration inserts the right ResourceIdentifier-combination while there is no automatic generating." );
 
         if ( jdbcURL != null && jdbcUser != null && jdbcPass != null ) {
-            store = (ISOMetadataStore) new ISOMetadataStoreProvider().getMetadataStore( TstConstants.configURL_RS_GEN_FALSE );
+            store = (ISOMetadataStore) new ISOMetadataStoreProvider().create( TstConstants.configURL_RS_GEN_FALSE );
         }
         if ( store == null ) {
             LOG.warn( "Skipping test (needs configuration)." );
@@ -106,14 +108,15 @@ public class InspectorRITest extends AbstractISOTest {
      * 
      * @throws MetadataStoreException
      * @throws MetadataInspectorException
+     * @throws WorkspaceInitializationException
      */
     @Test
     public void testResourceIdentifierGenerateTRUE()
-                            throws MetadataStoreException, MetadataInspectorException {
+                            throws MetadataStoreException, MetadataInspectorException, WorkspaceInitializationException {
         LOG.info( "START Test: test for automaticaly generated ResourceIdentifier-combination." );
 
         if ( jdbcURL != null && jdbcUser != null && jdbcPass != null ) {
-            store = (ISOMetadataStore) new ISOMetadataStoreProvider().getMetadataStore( TstConstants.configURL_RS_GEN_TRUE );
+            store = (ISOMetadataStore) new ISOMetadataStoreProvider().create( TstConstants.configURL_RS_GEN_TRUE );
         }
         if ( store == null ) {
             LOG.warn( "Skipping test (needs configuration)." );
@@ -139,14 +142,15 @@ public class InspectorRITest extends AbstractISOTest {
      * 
      * @throws MetadataStoreException
      * @throws MetadataInspectorException
+     * @throws WorkspaceInitializationException
      */
     @Test
     public void testResourceIdentifierGenerateFALSE_NO_RS_ID()
-                            throws MetadataStoreException, MetadataInspectorException {
+                            throws MetadataStoreException, MetadataInspectorException, WorkspaceInitializationException {
         LOG.info( "START Test: test if the configuration throws an exception because of the wrong ResourceIdentifier-combination while there is no automatic generating." );
 
         if ( jdbcURL != null && jdbcUser != null && jdbcPass != null ) {
-            store = (ISOMetadataStore) new ISOMetadataStoreProvider().getMetadataStore( TstConstants.configURL_RS_GEN_FALSE );
+            store = (ISOMetadataStore) new ISOMetadataStoreProvider().create( TstConstants.configURL_RS_GEN_FALSE );
         }
         if ( store == null ) {
             LOG.warn( "Skipping test (needs configuration)." );
@@ -171,14 +175,15 @@ public class InspectorRITest extends AbstractISOTest {
      * 
      * @throws MetadataStoreException
      * @throws MetadataInspectorException
+     * @throws WorkspaceInitializationException
      */
     @Test(expected = MetadataInspectorException.class)
     public void testResourceIdentifierGenerateFALSE_With_ID_Attrib()
-                            throws MetadataStoreException, MetadataInspectorException {
+                            throws MetadataStoreException, MetadataInspectorException, WorkspaceInitializationException {
         LOG.info( "START Test: test if the configuration throws an exception because of the wrong ResourceIdentifier-combination while there is no automatic generating." );
         MetadataStoreTransaction ta = null;
         if ( jdbcURL != null && jdbcUser != null && jdbcPass != null ) {
-            store = (ISOMetadataStore) new ISOMetadataStoreProvider().getMetadataStore( TstConstants.configURL_RS_GEN_FALSE );
+            store = (ISOMetadataStore) new ISOMetadataStoreProvider().create( TstConstants.configURL_RS_GEN_FALSE );
         }
         if ( store == null ) {
             LOG.warn( "Skipping test (needs configuration)." );
@@ -196,14 +201,15 @@ public class InspectorRITest extends AbstractISOTest {
      * 
      * @throws MetadataStoreException
      * @throws MetadataInspectorException
+     * @throws WorkspaceInitializationException
      */
     @Test(expected = MetadataInspectorException.class)
     public void testResourceIdentifierGenerateFALSE_With_ID_UUID_Attrib()
-                            throws MetadataStoreException, MetadataInspectorException {
+                            throws MetadataStoreException, MetadataInspectorException, WorkspaceInitializationException {
         LOG.info( "START Test: test if the configuration throws an exception because of the wrong ResourceIdentifier-combination while there is no automatic generating." );
         MetadataStoreTransaction ta = null;
         if ( jdbcURL != null && jdbcUser != null && jdbcPass != null ) {
-            store = (ISOMetadataStore) new ISOMetadataStoreProvider().getMetadataStore( TstConstants.configURL_RS_GEN_FALSE );
+            store = (ISOMetadataStore) new ISOMetadataStoreProvider().create( TstConstants.configURL_RS_GEN_FALSE );
         }
         if ( store == null ) {
             LOG.warn( "Skipping test (needs configuration)." );
@@ -221,13 +227,14 @@ public class InspectorRITest extends AbstractISOTest {
      * 
      * @throws MetadataStoreException
      * @throws MetadataInspectorException
+     * @throws WorkspaceInitializationException
      */
     @Test(expected = MetadataInspectorException.class)
     public void testResourceIdentifierGenerateFALSE_With_ID_Attrib_RSID_NOT_Equals_NO_UUID()
-                            throws MetadataStoreException, MetadataInspectorException {
+                            throws MetadataStoreException, MetadataInspectorException, WorkspaceInitializationException {
         MetadataStoreTransaction ta = null;
         if ( jdbcURL != null && jdbcUser != null && jdbcPass != null ) {
-            store = (ISOMetadataStore) new ISOMetadataStoreProvider().getMetadataStore( TstConstants.configURL_RS_GEN_FALSE );
+            store = (ISOMetadataStore) new ISOMetadataStoreProvider().create( TstConstants.configURL_RS_GEN_FALSE );
         }
         if ( store == null ) {
             LOG.warn( "Skipping test (needs configuration)." );
@@ -245,14 +252,15 @@ public class InspectorRITest extends AbstractISOTest {
      * 
      * @throws MetadataStoreException
      * @throws MetadataInspectorException
+     * @throws WorkspaceInitializationException
      */
     @Test(expected = MetadataInspectorException.class)
     public void testResourceIdentifierGenerateFALSE_With_ID_Attrib_RSID_NOT_Equals()
-                            throws MetadataStoreException, MetadataInspectorException {
+                            throws MetadataStoreException, MetadataInspectorException, WorkspaceInitializationException {
         LOG.info( "START Test: test if the configuration throws an exception because of the wrong ResourceIdentifier-combination while there is no automatic generating." );
         MetadataStoreTransaction ta = null;
         if ( jdbcURL != null && jdbcUser != null && jdbcPass != null ) {
-            store = (ISOMetadataStore) new ISOMetadataStoreProvider().getMetadataStore( TstConstants.configURL_RS_GEN_FALSE );
+            store = (ISOMetadataStore) new ISOMetadataStoreProvider().create( TstConstants.configURL_RS_GEN_FALSE );
         }
         if ( store == null ) {
             LOG.warn( "Skipping test (needs configuration)." );

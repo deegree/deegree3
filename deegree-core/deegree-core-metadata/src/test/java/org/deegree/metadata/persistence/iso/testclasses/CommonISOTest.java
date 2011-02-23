@@ -40,7 +40,6 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
@@ -55,6 +54,7 @@ import javax.xml.stream.XMLStreamReader;
 
 import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.xpath.AXIOMXPath;
+import org.deegree.commons.config.WorkspaceInitializationException;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.commons.xml.CommonNamespaces;
 import org.deegree.commons.xml.NamespaceBindings;
@@ -81,8 +81,8 @@ import org.deegree.metadata.persistence.iso.helper.TstUtils;
 import org.deegree.metadata.publication.DeleteTransaction;
 import org.deegree.metadata.publication.MetadataProperty;
 import org.deegree.metadata.publication.UpdateTransaction;
-import org.deegree.protocol.csw.CSWConstants.ReturnableElement;
 import org.deegree.protocol.csw.MetadataStoreException;
+import org.deegree.protocol.csw.CSWConstants.ReturnableElement;
 import org.jaxen.JaxenException;
 import org.junit.Assert;
 import org.junit.Test;
@@ -105,12 +105,12 @@ public class CommonISOTest extends AbstractISOTest {
 
     @Test
     public void testInsert()
-                            throws MetadataStoreException, XMLStreamException, FactoryConfigurationError, IOException,
-                            MetadataInspectorException {
+                            throws MetadataStoreException, FactoryConfigurationError, IOException,
+                            MetadataInspectorException, WorkspaceInitializationException {
         LOG.info( "START Test: testInsert" );
 
         if ( jdbcURL != null && jdbcUser != null && jdbcPass != null ) {
-            store = (ISOMetadataStore) new ISOMetadataStoreProvider().getMetadataStore( TstConstants.configURL );
+            store = (ISOMetadataStore) new ISOMetadataStoreProvider().create( TstConstants.configURL );
         }
         if ( store == null ) {
             LOG.warn( "Skipping test (needs configuration)." );
@@ -120,14 +120,14 @@ public class CommonISOTest extends AbstractISOTest {
         // String test_folder = "/home/thomas/Dokumente/metadata/test/";// CoreTstProperties.getProperty(
         // "iso_metadata_insert_test_folder"
         // );
-        if ( test_folder == null ) {
-            LOG.warn( "Skipping test (no testCase folder found)" );
-            return;
-        }
+        // if ( test_folder == null ) {
+        // LOG.warn( "Skipping test (no testCase folder found)" );
+        // return;
+        // }
 
         File folder = new File( test_folder );
         File[] fileArray = folder.listFiles();
-        LOG.info( "" + fileArray.length );
+        // LOG.info( "" + fileArray.length );
         URL[] urlArray = null;
         if ( fileArray != null ) {
             urlArray = new URL[fileArray.length];
@@ -156,12 +156,11 @@ public class CommonISOTest extends AbstractISOTest {
 
     @Test
     public void testInsertMetametadata()
-                            throws MetadataStoreException, XMLStreamException, FactoryConfigurationError, IOException,
-                            MetadataInspectorException {
+                            throws MetadataStoreException, FactoryConfigurationError, WorkspaceInitializationException {
         LOG.info( "START Test: testInsertMetametadata" );
 
         if ( jdbcURL != null && jdbcUser != null && jdbcPass != null ) {
-            store = (ISOMetadataStore) new ISOMetadataStoreProvider().getMetadataStore( TstConstants.configURL );
+            store = (ISOMetadataStore) new ISOMetadataStoreProvider().create( TstConstants.configURL );
         }
         if ( store == null ) {
             LOG.warn( "Skipping test (needs configuration)." );
@@ -181,11 +180,11 @@ public class CommonISOTest extends AbstractISOTest {
     @Test
     public void testNamespaces()
                             throws MetadataStoreException, XMLStreamException, FactoryConfigurationError, IOException,
-                            MetadataInspectorException {
+                            MetadataInspectorException, WorkspaceInitializationException {
         LOG.info( "START Test: testNamespaces" );
 
         if ( jdbcURL != null && jdbcUser != null && jdbcPass != null ) {
-            store = (ISOMetadataStore) new ISOMetadataStoreProvider().getMetadataStore( TstConstants.configURL );
+            store = (ISOMetadataStore) new ISOMetadataStoreProvider().create( TstConstants.configURL );
         }
         if ( store == null ) {
             LOG.warn( "Skipping test (needs configuration)." );
@@ -229,15 +228,16 @@ public class CommonISOTest extends AbstractISOTest {
      * @throws FactoryConfigurationError
      * @throws IOException
      * @throws MetadataInspectorException
+     * @throws WorkspaceInitializationException
      */
     @Test
     public void testDelete()
                             throws MetadataStoreException, XMLStreamException, FactoryConfigurationError, IOException,
-                            MetadataInspectorException {
+                            MetadataInspectorException, WorkspaceInitializationException {
         LOG.info( "START Test: testDelete" );
 
         if ( jdbcURL != null && jdbcUser != null && jdbcPass != null ) {
-            store = (ISOMetadataStore) new ISOMetadataStoreProvider().getMetadataStore( TstConstants.configURL );
+            store = (ISOMetadataStore) new ISOMetadataStoreProvider().create( TstConstants.configURL );
         }
         if ( store == null ) {
             LOG.warn( "Skipping test (needs configuration)." );
@@ -284,15 +284,16 @@ public class CommonISOTest extends AbstractISOTest {
      * @throws XMLStreamException
      * @throws IOException
      * @throws MetadataInspectorException
+     * @throws WorkspaceInitializationException
      */
     @Test
     public void testOutputBrief()
                             throws MetadataStoreException, XMLStreamException, FactoryConfigurationError, IOException,
-                            MetadataInspectorException {
+                            MetadataInspectorException, WorkspaceInitializationException {
         LOG.info( "START Test: is output ISO brief? " );
 
         if ( jdbcURL != null && jdbcUser != null && jdbcPass != null ) {
-            store = (ISOMetadataStore) new ISOMetadataStoreProvider().getMetadataStore( TstConstants.configURL );
+            store = (ISOMetadataStore) new ISOMetadataStoreProvider().create( TstConstants.configURL );
         }
         if ( store == null ) {
             LOG.warn( "Skipping test (needs configuration)." );
@@ -301,7 +302,8 @@ public class CommonISOTest extends AbstractISOTest {
         List<String> ids = TstUtils.insertMetadata( store, TstConstants.fullRecord );
         resultSet = store.getRecordById( ids );
 
-        XMLStreamReader xmlStreamActual = XMLInputFactory.newInstance().createXMLStreamReader( TstConstants.briefRecord.openStream() );
+        XMLStreamReader xmlStreamActual = XMLInputFactory.newInstance().createXMLStreamReader(
+                                                                                               TstConstants.briefRecord.openStream() );
 
         // create the should be output
         StringBuilder streamActual = TstUtils.stringBuilderFromXMLStream( xmlStreamActual );
@@ -330,16 +332,17 @@ public class CommonISOTest extends AbstractISOTest {
      * @throws XMLStreamException
      * @throws IOException
      * @throws MetadataInspectorException
+     * @throws WorkspaceInitializationException
      */
 
     @Test
     public void testOutputSummary()
                             throws MetadataStoreException, XMLStreamException, FactoryConfigurationError, IOException,
-                            MetadataInspectorException {
+                            MetadataInspectorException, WorkspaceInitializationException {
         LOG.info( "START Test: is output ISO summary? " );
 
         if ( jdbcURL != null && jdbcUser != null && jdbcPass != null ) {
-            store = (ISOMetadataStore) new ISOMetadataStoreProvider().getMetadataStore( TstConstants.configURL );
+            store = (ISOMetadataStore) new ISOMetadataStoreProvider().create( TstConstants.configURL );
         }
         if ( store == null ) {
             LOG.warn( "Skipping test (needs configuration)." );
@@ -348,7 +351,8 @@ public class CommonISOTest extends AbstractISOTest {
         List<String> ids = TstUtils.insertMetadata( store, TstConstants.fullRecord );
         resultSet = store.getRecordById( ids );
 
-        XMLStreamReader xmlStreamActual = XMLInputFactory.newInstance().createXMLStreamReader( TstConstants.summaryRecord.openStream() );
+        XMLStreamReader xmlStreamActual = XMLInputFactory.newInstance().createXMLStreamReader(
+                                                                                               TstConstants.summaryRecord.openStream() );
 
         // create the should be output
         StringBuilder streamActual = TstUtils.stringBuilderFromXMLStream( xmlStreamActual );
@@ -369,12 +373,12 @@ public class CommonISOTest extends AbstractISOTest {
 
     @Test
     public void testVariousElements()
-                            throws MetadataStoreException, XMLStreamException, FactoryConfigurationError, IOException,
-                            MetadataInspectorException {
+                            throws MetadataStoreException, FactoryConfigurationError, MetadataInspectorException,
+                            WorkspaceInitializationException {
         LOG.info( "START Test: test various elements for one metadataRecord " );
 
         if ( jdbcURL != null && jdbcUser != null && jdbcPass != null ) {
-            store = (ISOMetadataStore) new ISOMetadataStoreProvider().getMetadataStore( TstConstants.configURL );
+            store = (ISOMetadataStore) new ISOMetadataStoreProvider().create( TstConstants.configURL );
         }
         if ( store == null ) {
             LOG.warn( "Skipping test (needs configuration)." );
@@ -457,8 +461,8 @@ public class CommonISOTest extends AbstractISOTest {
 
     @Test
     public void testUpdateString()
-                            throws MetadataStoreException, MetadataInspectorException, XMLStreamException,
-                            FileNotFoundException, FactoryConfigurationError {
+                            throws MetadataStoreException, MetadataInspectorException, FactoryConfigurationError,
+                            WorkspaceInitializationException {
         String idToUpdate = prepareUpdate();
         if ( idToUpdate == null ) {
             return;
@@ -505,8 +509,8 @@ public class CommonISOTest extends AbstractISOTest {
 
     @Test
     public void testUpdateStringWithCQP()
-                            throws MetadataStoreException, MetadataInspectorException, XMLStreamException,
-                            FileNotFoundException, FactoryConfigurationError {
+                            throws MetadataStoreException, MetadataInspectorException, FactoryConfigurationError,
+                            WorkspaceInitializationException {
         String idToUpdate = prepareUpdate();
         if ( idToUpdate == null ) {
             return;
@@ -555,8 +559,8 @@ public class CommonISOTest extends AbstractISOTest {
 
     @Test
     public void testUpdateOMElementReplace()
-                            throws XMLStreamException, FactoryConfigurationError, MetadataStoreException,
-                            MetadataInspectorException, JaxenException {
+                            throws FactoryConfigurationError, MetadataStoreException, MetadataInspectorException,
+                            JaxenException, WorkspaceInitializationException {
         String idToUpdate = prepareUpdate();
         if ( idToUpdate == null ) {
             return;
@@ -602,7 +606,7 @@ public class CommonISOTest extends AbstractISOTest {
                 AXIOMXPath p = new AXIOMXPath( testXpath );
                 p.setNamespaceContext( nsContext );
                 Object valueNode = p.selectSingleNode( value );
-                Assert.assertEquals( ( (OMElement) valueNode ).getText(), ( (OMElement) updatedNode ).getText() );
+                Assert.assertEquals( ( (OMElement) valueNode ).getText(), updatedNode.getText() );
                 break;
             }
         }
@@ -611,8 +615,8 @@ public class CommonISOTest extends AbstractISOTest {
 
     @Test
     public void testUpdateOMElementRemove()
-                            throws XMLStreamException, FactoryConfigurationError, MetadataStoreException,
-                            MetadataInspectorException, JaxenException {
+                            throws FactoryConfigurationError, MetadataStoreException, MetadataInspectorException,
+                            WorkspaceInitializationException {
         String idToUpdate = prepareUpdate();
         if ( idToUpdate == null ) {
             return;
@@ -669,7 +673,8 @@ public class CommonISOTest extends AbstractISOTest {
 
     @Test
     public void updateCompleteWithoutConstraint()
-                            throws MetadataStoreException, MetadataInspectorException, JaxenException {
+                            throws MetadataStoreException, MetadataInspectorException, JaxenException,
+                            WorkspaceInitializationException {
         String idToUpdate = prepareUpdate();
         if ( idToUpdate == null ) {
             return;
@@ -710,7 +715,7 @@ public class CommonISOTest extends AbstractISOTest {
                 AXIOMXPath p = new AXIOMXPath( testXpath );
                 p.setNamespaceContext( nsContext );
                 Object valueNode = p.selectSingleNode( value );
-                Assert.assertEquals( ( (OMElement) valueNode ).getText(), ( (OMElement) updatedNode ).getText() );
+                Assert.assertEquals( ( (OMElement) valueNode ).getText(), updatedNode.getText() );
                 break;
             }
         }
@@ -718,7 +723,8 @@ public class CommonISOTest extends AbstractISOTest {
 
     @Test
     public void updateCompleteWithConstraint()
-                            throws MetadataStoreException, MetadataInspectorException, JaxenException {
+                            throws MetadataStoreException, MetadataInspectorException, JaxenException,
+                            WorkspaceInitializationException {
         String idToUpdate = prepareUpdate();
         if ( idToUpdate == null ) {
             return;
@@ -767,11 +773,11 @@ public class CommonISOTest extends AbstractISOTest {
     }
 
     public String prepareUpdate()
-                            throws MetadataStoreException, MetadataInspectorException {
+                            throws MetadataStoreException, MetadataInspectorException, WorkspaceInitializationException {
         LOG.info( "START Test: testUpdate" );
 
         if ( jdbcURL != null && jdbcUser != null && jdbcPass != null ) {
-            store = (ISOMetadataStore) new ISOMetadataStoreProvider().getMetadataStore( TstConstants.configURL );
+            store = (ISOMetadataStore) new ISOMetadataStoreProvider().create( TstConstants.configURL );
         }
         if ( store == null ) {
             LOG.warn( "Skipping test (needs configuration)." );

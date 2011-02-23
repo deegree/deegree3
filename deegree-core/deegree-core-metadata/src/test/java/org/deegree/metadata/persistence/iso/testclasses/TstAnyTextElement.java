@@ -41,6 +41,7 @@ import java.util.List;
 import javax.xml.stream.FactoryConfigurationError;
 import javax.xml.stream.XMLStreamException;
 
+import org.deegree.commons.config.WorkspaceInitializationException;
 import org.deegree.metadata.persistence.MetadataInspectorException;
 import org.deegree.metadata.persistence.MetadataQuery;
 import org.deegree.metadata.persistence.iso.ISOMetadataStore;
@@ -68,11 +69,11 @@ public class TstAnyTextElement extends AbstractISOTest {
     @Test
     public void testAnyTextElement_ALL()
                             throws MetadataStoreException, XMLStreamException, FactoryConfigurationError, IOException,
-                            MetadataInspectorException {
+                            MetadataInspectorException, WorkspaceInitializationException {
         LOG.info( "START Test: test anyText element 'ALL' for one metadataRecord " );
 
         if ( jdbcURL != null && jdbcUser != null && jdbcPass != null ) {
-            store = (ISOMetadataStore) new ISOMetadataStoreProvider().getMetadataStore( TstConstants.configURL_ANYTEXT_ALL );
+            store = (ISOMetadataStore) new ISOMetadataStoreProvider().create( TstConstants.configURL_ANYTEXT_ALL );
         }
         if ( store == null ) {
             LOG.warn( "Skipping test (needs configuration)." );
@@ -100,11 +101,11 @@ public class TstAnyTextElement extends AbstractISOTest {
     @Test
     public void testAnyTextElement_CORE()
                             throws MetadataStoreException, XMLStreamException, FactoryConfigurationError, IOException,
-                            MetadataInspectorException {
+                            MetadataInspectorException, WorkspaceInitializationException {
         LOG.info( "START Test: test anyText element 'CORE' for one metadataRecord " );
 
         if ( jdbcURL != null && jdbcUser != null && jdbcPass != null ) {
-            store = (ISOMetadataStore) new ISOMetadataStoreProvider().getMetadataStore( TstConstants.configURL_ANYTEXT_CORE );
+            store = (ISOMetadataStore) new ISOMetadataStoreProvider().create( TstConstants.configURL_ANYTEXT_CORE );
         }
         if ( store == null ) {
             LOG.warn( "Skipping test (needs configuration)." );
@@ -132,11 +133,11 @@ public class TstAnyTextElement extends AbstractISOTest {
     @Test
     public void testAnyTextElement_CUSTOM()
                             throws MetadataStoreException, XMLStreamException, FactoryConfigurationError, IOException,
-                            MetadataInspectorException {
+                            MetadataInspectorException, WorkspaceInitializationException {
         LOG.info( "START Test: test anyText element 'CUSTOM' for one metadataRecord " );
 
         if ( jdbcURL != null && jdbcUser != null && jdbcPass != null ) {
-            store = (ISOMetadataStore) new ISOMetadataStoreProvider().getMetadataStore( TstConstants.configURL_ANYTEXT_CUSTOM );
+            store = (ISOMetadataStore) new ISOMetadataStoreProvider().create( TstConstants.configURL_ANYTEXT_CUSTOM );
         }
         if ( store == null ) {
             LOG.warn( "Skipping test (needs configuration)." );
