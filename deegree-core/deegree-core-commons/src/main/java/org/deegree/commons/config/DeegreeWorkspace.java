@@ -143,6 +143,9 @@ public class DeegreeWorkspace {
         // third, check for transitive dependencies from resource providers, if applicable
         for ( ResourceManager m : map.keySet() ) {
             List<Class<? extends ResourceManager>> list = map.get( m );
+            if ( m.getMetadata() == null ) {
+                continue;
+            }
             for ( Object o : m.getMetadata().getResourceProviders() ) {
                 if ( o instanceof ExtendedResourceProvider<?> ) {
                     searchDeps( list, (ExtendedResourceProvider<?>) o );
