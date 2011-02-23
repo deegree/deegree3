@@ -54,7 +54,6 @@ import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.commons.tom.genericxml.GenericXMLElement;
 import org.deegree.commons.tom.genericxml.GenericXMLElementContent;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
-import org.deegree.commons.tom.primitive.SQLValueMangler;
 import org.deegree.commons.utils.Pair;
 import org.deegree.feature.Feature;
 import org.deegree.feature.persistence.sql.AbstractSQLFeatureStore;
@@ -228,7 +227,7 @@ public class FeatureBuilderRelational implements FeatureBuilder {
                     rs2.close();
                 }
             }
-            return new Pair<List<TypedObjectNode>, Integer>( values, i++ );
+            return new Pair<List<TypedObjectNode>, Integer>( values, ++i );
         }
         return buildParticle( mapping, rs, i, pk );
     }
@@ -296,7 +295,6 @@ public class FeatureBuilderRelational implements FeatureBuilder {
                             continue;
                         }
                         if ( step instanceof TextNodeStep ) {
-                            LOG.info( "Text node mapping" );
                             for ( TypedObjectNode particleValue : particleValues.first ) {
                                 children.add( particleValue );
                             }
@@ -315,7 +313,6 @@ public class FeatureBuilderRelational implements FeatureBuilder {
                                 name = new QName( nsUri, ns.getLocalName(), prefix );
                             }
                             if ( step.getAxis() == Axis.ATTRIBUTE ) {
-                                LOG.info( "Attribute mapping: " + name );
                                 for ( TypedObjectNode particleValue : particleValues.first ) {
                                     if ( particleValue instanceof PrimitiveValue ) {
                                         attrs.put( name, (PrimitiveValue) particleValue );
@@ -324,7 +321,6 @@ public class FeatureBuilderRelational implements FeatureBuilder {
                                     }
                                 }
                             } else if ( step.getAxis() == Axis.CHILD ) {
-                                LOG.info( "Child element mapping: " + name );
                                 for ( TypedObjectNode particleValue : particleValues.first ) {
                                     if ( particleValue != null ) {
                                         XSTypeDefinition childType = null;
