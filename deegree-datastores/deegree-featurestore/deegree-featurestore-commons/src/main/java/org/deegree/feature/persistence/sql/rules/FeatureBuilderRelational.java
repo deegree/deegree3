@@ -35,21 +35,26 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.feature.persistence.sql.rules;
 
+import static org.deegree.commons.utils.JDBCUtils.close;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import javax.xml.namespace.QName;
 
+import org.apache.xerces.xs.XSTypeDefinition;
 import org.deegree.commons.tom.TypedObjectNode;
+import org.deegree.commons.tom.genericxml.GenericXMLElement;
+import org.deegree.commons.tom.genericxml.GenericXMLElementContent;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.commons.tom.primitive.SQLValueMangler;
-import org.deegree.commons.utils.JDBCUtils;
 import org.deegree.commons.utils.Pair;
 import org.deegree.feature.Feature;
 import org.deegree.feature.persistence.sql.AbstractSQLFeatureStore;
@@ -59,15 +64,18 @@ import org.deegree.feature.persistence.sql.expressions.JoinChain;
 import org.deegree.feature.property.GenericProperty;
 import org.deegree.feature.property.Property;
 import org.deegree.feature.types.FeatureType;
-import org.deegree.feature.types.property.FeaturePropertyType;
-import org.deegree.feature.types.property.GeometryPropertyType;
 import org.deegree.feature.types.property.PropertyType;
-import org.deegree.feature.types.property.SimplePropertyType;
+import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.sql.DBField;
 import org.deegree.filter.sql.MappingExpression;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.io.WKBReader;
-import org.deegree.gml.feature.FeatureReference;
+import org.jaxen.expr.Expr;
+import org.jaxen.expr.LocationPath;
+import org.jaxen.expr.NameStep;
+import org.jaxen.expr.Step;
+import org.jaxen.expr.TextNodeStep;
+import org.jaxen.saxpath.Axis;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -122,16 +130,22 @@ public class FeatureBuilderRelational implements FeatureBuilder {
             if ( mapping == null ) {
                 LOG.warn( "No mapping for property '" + pt.getName() + "' -- omitting from SELECT list." );
             } else {
-                addSelectColumns( mapping, columns );
+                addSelectColumns( mapping, columns, true );
             }
         }
         return columns;
     }
 
-    private void addSelectColumns( Mapping mapping, List<String> columns ) {
+    private List<String> getSelectColumns( Mapping mapping ) {
+        List<String> columns = new ArrayList<String>();
+        addSelectColumns( mapping, columns, false );
+        return columns;
+    }
+
+    private void addSelectColumns( Mapping mapping, List<String> columns, boolean handleJoin ) {
 
         JoinChain jc = mapping.getJoinedTable();
-        if ( jc != null ) {
+        if ( handleJoin && jc != null ) {
             columns.add( jc.getFields().get( 0 ).getColumn() );
         } else {
             if ( mapping instanceof PrimitiveMapping ) {
@@ -154,7 +168,7 @@ public class FeatureBuilderRelational implements FeatureBuilder {
             } else if ( mapping instanceof CompoundMapping ) {
                 CompoundMapping cm = (CompoundMapping) mapping;
                 for ( Mapping particle : cm.getParticles() ) {
-                    addSelectColumns( particle, columns );
+                    addSelectColumns( particle, columns, true );
                 }
             } else {
                 LOG.warn( "Mappings of type '" + mapping.getClass() + "' are not handled yet." );
@@ -166,7 +180,7 @@ public class FeatureBuilderRelational implements FeatureBuilder {
     public Feature buildFeature( ResultSet rs )
                             throws SQLException {
 
-        String gmlId = ftMapping.getFidMapping().getPrefix() + rs.getObject( 1 );
+        String gmlId = "" + rs.getObject( 1 );
         Feature feature = (Feature) fs.getCache().get( gmlId );
         if ( feature == null ) {
             LOG.debug( "Cache miss. Recreating feature '" + gmlId + "' from db (relational mode)." );
@@ -175,7 +189,7 @@ public class FeatureBuilderRelational implements FeatureBuilder {
             for ( PropertyType pt : ft.getPropertyDeclarations() ) {
                 Mapping propMapping = ftMapping.getMapping( pt.getName() );
                 if ( propMapping != null ) {
-                    i = addProperties( props, pt, propMapping, rs, i );
+                    i = addProperties( props, pt, propMapping, rs, i, gmlId );
                 }
             }
             feature = ft.newFeature( gmlId, props, null, null );
@@ -186,20 +200,41 @@ public class FeatureBuilderRelational implements FeatureBuilder {
         return feature;
     }
 
-    private int addProperties( List<Property> props, PropertyType pt, Mapping propMapping, ResultSet rs, int i )
+    private int addProperties( List<Property> props, PropertyType pt, Mapping propMapping, ResultSet rs, int i,
+                               Object pk )
                             throws SQLException {
 
-        Pair<List<TypedObjectNode>, Integer> pair = buildParticles( propMapping, rs, i );
+        Pair<List<TypedObjectNode>, Integer> pair = buildParticles( propMapping, rs, i, pk );
         for ( TypedObjectNode value : pair.first ) {
             props.add( new GenericProperty( pt, value ) );
         }
         return pair.second;
     }
 
-    private Pair<List<TypedObjectNode>, Integer> buildParticles( Mapping mapping, ResultSet rs, int i )
+    private Pair<List<TypedObjectNode>, Integer> buildParticles( Mapping mapping, ResultSet rs, int i, Object pk )
                             throws SQLException {
 
-        LOG.warn( "JoinChain handling not implemented yet." );
+        if ( mapping.getJoinedTable() != null ) {
+            List<TypedObjectNode> values = new ArrayList<TypedObjectNode>();
+            ResultSet rs2 = null;
+            try {
+                rs2 = getJoinedResultSet( mapping.getJoinedTable(), mapping, pk );
+                while ( rs2.next() ) {
+                    Object newPk = rs2.getObject( 1 );
+                    values.addAll( buildParticle( mapping, rs2, 2, newPk ).first );
+                }
+            } finally {
+                if ( rs2 != null ) {
+                    rs2.close();
+                }
+            }
+            return new Pair<List<TypedObjectNode>, Integer>( values, i++ );
+        }
+        return buildParticle( mapping, rs, i, pk );
+    }
+
+    private Pair<List<TypedObjectNode>, Integer> buildParticle( Mapping mapping, ResultSet rs, int i, Object pk )
+                            throws SQLException {
 
         List<TypedObjectNode> values = new ArrayList<TypedObjectNode>();
         if ( mapping instanceof PrimitiveMapping ) {
@@ -230,151 +265,137 @@ public class FeatureBuilderRelational implements FeatureBuilder {
                 LOG.warn( "Skipping." );
             }
         } else if ( mapping instanceof CompoundMapping ) {
+            CompoundMapping cm = (CompoundMapping) mapping;
+
+            Map<QName, PrimitiveValue> attrs = new HashMap<QName, PrimitiveValue>();
+            List<TypedObjectNode> children = new ArrayList<TypedObjectNode>();
+
+            for ( Mapping particleMapping : cm.getParticles() ) {
+
+                Pair<List<TypedObjectNode>, Integer> particleValues = buildParticles( particleMapping, rs, i, pk );
+                i = particleValues.second;
+
+                try {
+                    Expr xpath = particleMapping.getPath().getAsXPath();
+                    if ( xpath instanceof LocationPath ) {
+                        LocationPath lp = (LocationPath) xpath;
+                        if ( lp.getSteps().size() != 1 ) {
+                            LOG.warn( "Unhandled location path: '" + particleMapping.getPath()
+                                      + "'. Only single step paths are handled." );
+                            continue;
+                        }
+                        if ( lp.isAbsolute() ) {
+                            LOG.warn( "Unhandled location path: '" + particleMapping.getPath()
+                                      + "'. Only relative paths are handled." );
+                            continue;
+                        }
+                        Step step = (Step) lp.getSteps().get( 0 );
+                        if ( !step.getPredicates().isEmpty() ) {
+                            LOG.warn( "Unhandled location path: '" + particleMapping.getPath()
+                                      + "'. Only unpredicated steps are handled." );
+                            continue;
+                        }
+                        if ( step instanceof TextNodeStep ) {
+                            LOG.info( "Text node mapping" );
+                            for ( TypedObjectNode particleValue : particleValues.first ) {
+                                children.add( particleValue );
+                            }
+                        } else if ( step instanceof NameStep ) {
+                            NameStep ns = (NameStep) step;
+                            String prefix = ns.getPrefix();
+                            QName name = null;
+                            if ( prefix == null || prefix.isEmpty() ) {
+                                name = new QName( ns.getLocalName() );
+                            } else {
+                                String nsUri = fs.getSchema().getNamespaceBindings().get( prefix );
+                                if ( nsUri == null ) {
+                                    nsUri = "";
+                                    // throw new IllegalArgumentException();
+                                }
+                                name = new QName( nsUri, ns.getLocalName(), prefix );
+                            }
+                            if ( step.getAxis() == Axis.ATTRIBUTE ) {
+                                LOG.info( "Attribute mapping: " + name );
+                                for ( TypedObjectNode particleValue : particleValues.first ) {
+                                    if ( particleValue instanceof PrimitiveValue ) {
+                                        attrs.put( name, (PrimitiveValue) particleValue );
+                                    } else {
+                                        LOG.warn( "Value not suitable for attribute." );
+                                    }
+                                }
+                            } else if ( step.getAxis() == Axis.CHILD ) {
+                                LOG.info( "Child element mapping: " + name );
+                                for ( TypedObjectNode particleValue : particleValues.first ) {
+                                    if ( particleValue != null ) {
+                                        XSTypeDefinition childType = null;
+                                        GenericXMLElement child = new GenericXMLElement(
+                                                                                         name,
+                                                                                         childType,
+                                                                                         Collections.EMPTY_MAP,
+                                                                                         Collections.singletonList( particleValue ) );
+                                        children.add( child );
+                                    }
+                                }
+                            } else {
+                                LOG.warn( "Unhandled path: '" + particleMapping.getPath() + "'" );
+                            }
+                        } else {
+                            LOG.warn( "Unhandled path: '" + particleMapping.getPath() + "'" );
+                        }
+                    } else {
+                        LOG.warn( "Unhandled path: '" + particleMapping.getPath() + "'" );
+                    }
+                } catch ( FilterEvaluationException e ) {
+                    throw new SQLException( e.getMessage(), e );
+                }
+            }
+
             // TODO
+            XSTypeDefinition xsType = null;
+            if ( ( !attrs.isEmpty() ) || !children.isEmpty() ) {
+                values.add( new GenericXMLElementContent( xsType, attrs, children ) );
+            }
         } else {
             LOG.warn( "Handling of '" + mapping.getClass() + "' mappings is not implemented yet." );
         }
         return new Pair<List<TypedObjectNode>, Integer>( values, i );
     }
 
-    private void addProperties( Connection conn, List<Property> props, PropertyType pt, JoinChain propMapping,
-                                ResultSet rs, int rsIdx )
+    private ResultSet getJoinedResultSet( JoinChain jc, Mapping mapping, Object pk )
                             throws SQLException {
 
-        List<DBField> fields = propMapping.getFields();
-
-        // generate table aliases for all involved tables
-        List<String> tableAliases = new ArrayList<String>();
-        Map<DBField, String> dbFieldToAlias = new HashMap<DBField, String>();
-        for ( int i = 0; i < propMapping.getFields().size(); i++ ) {
-            String tableAlias = "X" + ( ( ( i + 1 ) / 2 ) + 1 );
-            dbFieldToAlias.put( propMapping.getFields().get( i ), tableAlias );
-            if ( i % 2 == 0 ) {
-                tableAliases.add( tableAlias );
-            }
-        }
+        List<String> columns = getSelectColumns( mapping );
 
         StringBuilder sql = new StringBuilder( "SELECT " );
-        sql.append( dbFieldToAlias.get( fields.get( fields.size() - 1 ) ) );
-        sql.append( "." );
-        sql.append( fields.get( fields.size() - 1 ).getColumn() );
-        sql.append( " FROM " );
-        sql.append( ftMapping.getFtTable() );
-        sql.append( " AS " );
-        sql.append( dbFieldToAlias.get( fields.get( 0 ) ) );
-        for ( int i = 1; i < fields.size(); i += 2 ) {
-            DBField field = fields.get( i );
-            sql.append( " LEFT OUTER JOIN " );
-            sql.append( field.getTable() );
-            sql.append( " AS " );
-            sql.append( dbFieldToAlias.get( field ) );
-
-            DBField pre = fields.get( i - 1 );
-            sql.append( " ON " );
-            sql.append( dbFieldToAlias.get( pre ) );
-            sql.append( "." );
-            sql.append( pre.getColumn() );
-            sql.append( "=" );
-            sql.append( dbFieldToAlias.get( field ) );
-            sql.append( "." );
-            sql.append( field.getColumn() );
+        // TODO
+        sql.append( "id" );
+        for ( String column : columns ) {
+            sql.append( ',' );
+            sql.append( column );
         }
-
+        sql.append( " FROM " );
+        sql.append( jc.getFields().get( 1 ).getTable() );
         sql.append( " WHERE " );
-        sql.append( tableAliases.get( 0 ) );
-        sql.append( "." );
-        sql.append( fields.get( 0 ).getColumn() );
-        sql.append( "=?" );
+        sql.append( jc.getFields().get( 1 ).getColumn() );
+        sql.append( " = ?" );
+        LOG.warn( "SQL: {}", sql );
 
         PreparedStatement stmt = null;
-        ResultSet rs2 = null;
-
+        ResultSet rs = null;
         try {
-            LOG.debug( "Preparing SELECT: " + sql );
+            long begin = System.currentTimeMillis();
             stmt = conn.prepareStatement( sql.toString() );
-
-            // TODO explicit SQL type handling!?
-            stmt.setObject( 1, rs.getObject( 1 ) );
-
-            rs2 = stmt.executeQuery();
-
-            if ( pt instanceof SimplePropertyType ) {
-                while ( rs2.next() ) {
-                    String value = rs2.getString( 1 );
-                    if ( value != null ) {
-                        PrimitiveValue pv = new PrimitiveValue( value, ( (SimplePropertyType) pt ).getPrimitiveType() );
-                        props.add( new GenericProperty( pt, pv ) );
-                    }
-                }
-            } else if ( pt instanceof GeometryPropertyType ) {
-                GeometryMapping mapping = (GeometryMapping) ftMapping.getMapping( pt.getName() );
-                while ( rs2.next() ) {
-                    byte[] wkb = rs2.getBytes( 1 );
-                    if ( wkb != null ) {
-                        try {
-                            Geometry geom = WKBReader.read( wkb, mapping.getCRS() );
-                            props.add( new GenericProperty( pt, geom ) );
-                        } catch ( ParseException e ) {
-                            throw new SQLException( "Error parsing WKB from PostGIS: " + e.getMessage(), e );
-                        }
-                    }
-                }
-            } else if ( pt instanceof FeaturePropertyType ) {
-                while ( rs2.next() ) {
-                    String subFid = rs2.getString( 1 );
-                    if ( subFid != null ) {
-                        QName valueFtName = ( (FeaturePropertyType) pt ).getFTName();
-                        if ( valueFtName != null ) {
-                            subFid = valueFtName.getLocalPart().toUpperCase() + "_" + subFid;
-                        }
-                        String uri = "#" + subFid;
-                        FeatureReference ref = new FeatureReference( fs.getResolver(), uri, null );
-                        props.add( new GenericProperty( pt, ref ) );
-                    }
-                }
-            } else {
-                LOG.warn( "Skipping property '" + pt.getName() + "' -- type '" + pt.getClass()
-                          + "' not handled in PostGISFeatureStore." );
-            }
-        } finally {
-            JDBCUtils.close( rs2, stmt, null, LOG );
+            LOG.debug( "Preparing subsequent SELECT took {} [ms] ", System.currentTimeMillis() - begin );
+            stmt.setObject( 1, pk );
+            begin = System.currentTimeMillis();
+            rs = stmt.executeQuery();
+            LOG.debug( "Executing SELECT took {} [ms] ", System.currentTimeMillis() - begin );
+        } catch ( Throwable t ) {
+            close( rs, stmt, null, LOG );
+            String msg = "Error performing subsequent SELECT: " + t.getMessage();
+            LOG.error( msg, t );
+            throw new SQLException( msg, t );
         }
-    }
-
-    private void addProperties( List<Property> props, PropertyType pt, ResultSet rs, int rsIdx )
-                            throws SQLException {
-
-        if ( pt instanceof SimplePropertyType ) {
-            PrimitiveValue value = null;
-            value = SQLValueMangler.sqlToInternal( rs, rsIdx, ( (SimplePropertyType) pt ).getPrimitiveType() );
-            if ( value != null ) {
-                props.add( new GenericProperty( pt, value ) );
-            }
-        } else if ( pt instanceof GeometryPropertyType ) {
-            GeometryMapping mapping = (GeometryMapping) ftMapping.getMapping( pt.getName() );
-            byte[] wkb = rs.getBytes( rsIdx );
-            if ( wkb != null ) {
-                try {
-                    Geometry geom = WKBReader.read( wkb, mapping.getCRS() );
-                    props.add( new GenericProperty( pt, geom ) );
-                } catch ( ParseException e ) {
-                    throw new SQLException( "Error parsing WKB from PostGIS: " + e.getMessage(), e );
-                }
-            }
-        } else if ( pt instanceof FeaturePropertyType ) {
-            String subFid = rs.getString( rsIdx );
-            if ( subFid != null ) {
-                QName valueFtName = ( (FeaturePropertyType) pt ).getFTName();
-                if ( valueFtName != null ) {
-                    subFid = valueFtName.getLocalPart().toUpperCase() + "_" + subFid;
-                }
-                String uri = "#" + subFid;
-                FeatureReference ref = new FeatureReference( fs.getResolver(), uri, null );
-                props.add( new GenericProperty( pt, ref ) );
-            }
-        } else {
-            LOG.warn( "Skipping property '" + pt.getName() + "' -- type '" + pt.getClass()
-                      + "' not handled in PostGISFeatureStore." );
-        }
+        return rs;
     }
 }
