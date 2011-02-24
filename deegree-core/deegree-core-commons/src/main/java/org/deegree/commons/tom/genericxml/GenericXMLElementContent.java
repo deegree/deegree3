@@ -35,6 +35,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.commons.tom.genericxml;
 
+import static org.deegree.commons.tom.primitive.PrimitiveType.BOOLEAN;
+
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -45,6 +47,7 @@ import javax.xml.namespace.QName;
 import org.apache.xerces.xs.XSTypeDefinition;
 import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
+import org.deegree.commons.xml.CommonNamespaces;
 
 /**
  * {@link TypedObjectNode} that represents the content of a generic XML element with associated XML schema type
@@ -70,6 +73,16 @@ public class GenericXMLElementContent implements TypedObjectNode {
         this.children = children;
     }
 
+    public boolean isNilled() {
+        if ( attrs != null ) {
+            PrimitiveValue pv = attrs.get( new QName( CommonNamespaces.XSINS, "nil" ) );
+            if ( pv != null && pv.getType() == BOOLEAN && pv.getValue() != null ) {
+                return (Boolean) pv.getValue();
+            }
+        }
+        return false;
+    }
+
     public Map<QName, PrimitiveValue> getAttributes() {
         return attrs;
     }
@@ -84,7 +97,7 @@ public class GenericXMLElementContent implements TypedObjectNode {
 
     public PrimitiveValue getValue() {
         for ( TypedObjectNode child : children ) {
-            if (child instanceof PrimitiveValue ) {
+            if ( child instanceof PrimitiveValue ) {
                 return (PrimitiveValue) child;
             }
         }
