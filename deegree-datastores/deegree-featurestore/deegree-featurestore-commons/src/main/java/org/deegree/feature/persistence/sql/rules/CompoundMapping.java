@@ -40,6 +40,7 @@ import java.util.List;
 import org.deegree.commons.tom.genericxml.GenericXMLElementContent;
 import org.deegree.feature.persistence.sql.expressions.JoinChain;
 import org.deegree.filter.expression.PropertyName;
+import org.deegree.filter.sql.DBField;
 
 /**
  * {@link Mapping} of {@link GenericXMLElementContent} particles.
@@ -53,8 +54,8 @@ public class CompoundMapping extends Mapping {
 
     private List<Mapping> particles;
 
-    public CompoundMapping( PropertyName path, List<Mapping> particles, JoinChain joinedTable ) {
-        super( path, joinedTable );
+    public CompoundMapping( PropertyName path, List<Mapping> particles, JoinChain joinedTable, DBField nilMapping ) {
+        super( path, joinedTable, nilMapping );
         this.particles = particles;
     }
 

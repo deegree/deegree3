@@ -405,7 +405,7 @@ public class PostGISFeatureStoreTransaction implements FeatureStoreTransaction {
                 JoinChain jc = mapping.getJoinedTable();
                 if ( jc == null ) {
                     LOG.debug( "Inserting property '" + propName + "' (feature root table)" );
-                    buildInsertRows( mapping, particle, featureRow, rowManager );
+                    buildInsertRows( mapping, particle, prop.isNilled(), featureRow, rowManager );
                 } else {
                     LOG.debug( "Inserting property '" + propName + "' (property table)" );
                     // TODO qualified table name
@@ -413,7 +413,7 @@ public class PostGISFeatureStoreTransaction implements FeatureStoreTransaction {
                     InsertRow propertyRow = rowManager.newRow( table, "id" );
                     // TODO foreign key parameters
                     rowManager.addForeignKeyRelation( featureRow, fidMapping.getColumn(), propertyRow, "parentfk" );
-                    buildInsertRows( mapping, particle, propertyRow, rowManager );
+                    buildInsertRows( mapping, particle, prop.isNilled(), propertyRow, rowManager );
                 }
             } else {
                 LOG.warn( "No mapping for property '" + propName + "'. Omitting." );
@@ -429,74 +429,84 @@ public class PostGISFeatureStoreTransaction implements FeatureStoreTransaction {
         return feature.getId();
     }
 
-    private void buildInsertRows( Mapping mapping, TypedObjectNode particle, InsertRow currentRow,
+    private void buildInsertRows( Mapping mapping, TypedObjectNode particle, boolean isNilled, InsertRow currentRow,
                                   InsertRowManager rowManager )
                             throws FeatureStoreException {
 
-        if ( mapping instanceof PrimitiveMapping ) {
-            String column = null;
-            MappingExpression me = ( (PrimitiveMapping) mapping ).getMapping();
-            if ( !( me instanceof DBField ) ) {
-                LOG.debug( "Primitive particle is not mapped to a column. Skipping it." );
-                return;
-            }
-            column = ( (DBField) me ).getColumn();
-            Object sqlValue = SQLValueMangler.internalToSQL( (PrimitiveValue) particle );
-            currentRow.addPreparedArgument( column, sqlValue );
-        } else if ( mapping instanceof GeometryMapping ) {
-            String column = null;
-            MappingExpression me = ( (GeometryMapping) mapping ).getMapping();
-            if ( !( me instanceof DBField ) ) {
-                LOG.debug( "Geometry particle is not mapped to a column. Skipping it." );
-                return;
-            }
-            column = ( (DBField) me ).getColumn();
-            Object sqlValue = null;
+        DBField nilMapping = mapping.getNilMapping();
+        if ( nilMapping != null ) {
+            currentRow.addPreparedArgument( nilMapping.getColumn(), isNilled );
+        } else if ( isNilled ) {
+            LOG.warn( "No nilMapping, but value is nilled." );
+        }
 
-            String srid = ( (GeometryMapping) mapping ).getSrid();
-            ICRS storageCRS = ( (GeometryMapping) mapping ).getCRS();
-            try {
-                Geometry value = (Geometry) particle;
-                Geometry compatible = fs.getCompatibleGeometry( value, storageCRS );
-                sqlValue = WKBWriter.write( compatible );
-            } catch ( Exception e ) {
-                throw new FeatureStoreException( e.getMessage(), e );
-            }
-            currentRow.addPreparedArgument( column, sqlValue, fs.getWKBParamTemplate( srid ) );
-        } else if ( mapping instanceof CodeMapping ) {
-            String column = null;
-            MappingExpression me = ( (CodeMapping) mapping ).getMapping();
-            if ( !( me instanceof DBField ) ) {
-                LOG.debug( "Code particle is not mapped to a column. Skipping it." );
-                return;
-            }
-            column = ( (DBField) me ).getColumn();
-            CodeType value = (CodeType) particle;
-            currentRow.addPreparedArgument( column, value.getCode() );
+        if ( !isNilled ) {
+            if ( mapping instanceof PrimitiveMapping ) {
+                String column = null;
+                MappingExpression me = ( (PrimitiveMapping) mapping ).getMapping();
+                if ( !( me instanceof DBField ) ) {
+                    LOG.debug( "Primitive particle is not mapped to a column. Skipping it." );
+                    return;
+                }
+                column = ( (DBField) me ).getColumn();
+                Object sqlValue = SQLValueMangler.internalToSQL( (PrimitiveValue) particle );
+                currentRow.addPreparedArgument( column, sqlValue );
+            } else if ( mapping instanceof GeometryMapping ) {
+                String column = null;
+                MappingExpression me = ( (GeometryMapping) mapping ).getMapping();
+                if ( !( me instanceof DBField ) ) {
+                    LOG.debug( "Geometry particle is not mapped to a column. Skipping it." );
+                    return;
+                }
+                column = ( (DBField) me ).getColumn();
+                Object sqlValue = null;
 
-            me = ( (CodeMapping) mapping ).getCodeSpaceMapping();
-            if ( !( me instanceof DBField ) ) {
-                LOG.debug( "Code particle is not mapped to a column. Skipping it." );
-                return;
-            }
-            column = ( (DBField) me ).getColumn();
-            currentRow.addPreparedArgument( column, value.getCodeSpace() );
-        } else if ( mapping instanceof CompoundMapping ) {
-            CompoundMapping cm = (CompoundMapping) mapping;
-            GenericXMLElement propNode = (GenericXMLElement) particle;
-            for ( Mapping particleMapping : cm.getParticles() ) {
+                String srid = ( (GeometryMapping) mapping ).getSrid();
+                ICRS storageCRS = ( (GeometryMapping) mapping ).getCRS();
                 try {
-                    insertParticle( particleMapping, propNode, currentRow, rowManager );
-                } catch ( FilterEvaluationException e ) {
+                    Geometry value = (Geometry) particle;
+                    Geometry compatible = fs.getCompatibleGeometry( value, storageCRS );
+                    sqlValue = WKBWriter.write( compatible );
+                } catch ( Exception e ) {
                     throw new FeatureStoreException( e.getMessage(), e );
                 }
+                currentRow.addPreparedArgument( column, sqlValue, fs.getWKBParamTemplate( srid ) );
+            } else if ( mapping instanceof CodeMapping ) {
+                String column = null;
+                MappingExpression me = ( (CodeMapping) mapping ).getMapping();
+                if ( !( me instanceof DBField ) ) {
+                    LOG.debug( "Code particle is not mapped to a column. Skipping it." );
+                    return;
+                }
+                column = ( (DBField) me ).getColumn();
+                CodeType value = (CodeType) particle;
+                currentRow.addPreparedArgument( column, value.getCode() );
+
+                me = ( (CodeMapping) mapping ).getCodeSpaceMapping();
+                if ( !( me instanceof DBField ) ) {
+                    LOG.debug( "Code particle is not mapped to a column. Skipping it." );
+                    return;
+                }
+                column = ( (DBField) me ).getColumn();
+                currentRow.addPreparedArgument( column, value.getCodeSpace() );
+            } else if ( mapping instanceof CompoundMapping ) {
+                CompoundMapping cm = (CompoundMapping) mapping;
+                GenericXMLElement propNode = (GenericXMLElement) particle;
+                for ( Mapping particleMapping : cm.getParticles() ) {
+                    try {
+                        insertParticle( particleMapping, particleMapping.getNilMapping(), propNode, currentRow,
+                                        rowManager );
+                    } catch ( FilterEvaluationException e ) {
+                        throw new FeatureStoreException( e.getMessage(), e );
+                    }
+                }
+            } else {
+                LOG.warn( "Updating of " + mapping.getClass() + " is currently not implemented. Omitting." );
             }
-        } else {
-            LOG.warn( "Updating of " + mapping.getClass() + " is currently not implemented. Omitting." );
         }
     }
 
-    private void insertParticle( Mapping mapping, GenericXMLElement particle, InsertRow insertRow,
+    private void insertParticle( Mapping mapping, DBField nilMapping, GenericXMLElement particle, InsertRow insertRow,
                                  InsertRowManager rowManager )
                             throws FilterEvaluationException {
 
@@ -509,36 +519,47 @@ public class PostGISFeatureStoreTransaction implements FeatureStoreTransaction {
             insertRow = relatedRow;
         }
 
-        if ( mapping instanceof PrimitiveMapping ) {
-            MappingExpression me = ( (PrimitiveMapping) mapping ).getMapping();
-            if ( !( me instanceof DBField ) ) {
-                LOG.debug( "Particle is not mapped to a column. Skipping it." );
-                return;
-            }
-            PropertyName path = mapping.getPath();
-            // TODO: GML version
-            FeatureXPathEvaluator evaluator = new FeatureXPathEvaluator( GML_32 );
-            TypedObjectNode[] primitiveValues = evaluator.eval( particle, path );
-            for ( TypedObjectNode pv : primitiveValues ) {
-                if ( pv instanceof PrimitiveValue ) {
-                    insertRow.addPreparedArgument( me.toString(), SQLValueMangler.internalToSQL( (PrimitiveValue) pv ) );
-                } else if ( pv instanceof GenericXMLElementContent ) {
-                    PrimitiveValue textNode = ( (GenericXMLElementContent) pv ).getValue();
-                    insertRow.addPreparedArgument( me.toString(), SQLValueMangler.internalToSQL( textNode ) );
-                }
-            }
-        } else if ( mapping instanceof CompoundMapping ) {
-            PropertyName path = mapping.getPath();
-            // TODO: GML version
-            FeatureXPathEvaluator evaluator = new FeatureXPathEvaluator( GML_32 );
-            TypedObjectNode[] particleValues = evaluator.eval( particle, path );
+        boolean isNilled = particle.isNilled();
+        if ( nilMapping != null ) {
+            insertRow.addPreparedArgument( nilMapping.getColumn(), isNilled );
+        } else if ( isNilled ) {
+            LOG.warn( "No nilMapping, but value is nilled." );
+        }
 
-            for ( Mapping particleMapping : ( (CompoundMapping) mapping ).getParticles() ) {
-                for ( TypedObjectNode particleValue : particleValues ) {
-                    if ( particleValue instanceof GenericXMLElement ) {
-                        insertParticle( particleMapping, (GenericXMLElement) particleValue, insertRow, rowManager );
-                    } else {
-                        LOG.warn( "Unexpected particle value type (=" + particleValue.getClass() + ")" );
+        if ( !isNilled ) {
+            if ( mapping instanceof PrimitiveMapping ) {
+                MappingExpression me = ( (PrimitiveMapping) mapping ).getMapping();
+                if ( !( me instanceof DBField ) ) {
+                    LOG.debug( "Particle is not mapped to a column. Skipping it." );
+                    return;
+                }
+                PropertyName path = mapping.getPath();
+                // TODO: GML version
+                FeatureXPathEvaluator evaluator = new FeatureXPathEvaluator( GML_32 );
+                TypedObjectNode[] primitiveValues = evaluator.eval( particle, path );
+                for ( TypedObjectNode pv : primitiveValues ) {
+                    if ( pv instanceof PrimitiveValue ) {
+                        insertRow.addPreparedArgument( me.toString(),
+                                                       SQLValueMangler.internalToSQL( (PrimitiveValue) pv ) );
+                    } else if ( pv instanceof GenericXMLElementContent ) {
+                        PrimitiveValue textNode = ( (GenericXMLElementContent) pv ).getValue();
+                        insertRow.addPreparedArgument( me.toString(), SQLValueMangler.internalToSQL( textNode ) );
+                    }
+                }
+            } else if ( mapping instanceof CompoundMapping ) {
+                PropertyName path = mapping.getPath();
+                // TODO: GML version
+                FeatureXPathEvaluator evaluator = new FeatureXPathEvaluator( GML_32 );
+                TypedObjectNode[] particleValues = evaluator.eval( particle, path );
+
+                for ( Mapping particleMapping : ( (CompoundMapping) mapping ).getParticles() ) {
+                    for ( TypedObjectNode particleValue : particleValues ) {
+                        if ( particleValue instanceof GenericXMLElement ) {
+                            insertParticle( particleMapping, mapping.getNilMapping(),
+                                            (GenericXMLElement) particleValue, insertRow, rowManager );
+                        } else {
+                            LOG.warn( "Unexpected particle value type (=" + particleValue.getClass() + ")" );
+                        }
                     }
                 }
             }

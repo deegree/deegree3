@@ -39,6 +39,7 @@ import org.deegree.commons.tom.ows.CodeType;
 import org.deegree.commons.tom.primitive.PrimitiveType;
 import org.deegree.feature.persistence.sql.expressions.JoinChain;
 import org.deegree.filter.expression.PropertyName;
+import org.deegree.filter.sql.DBField;
 import org.deegree.filter.sql.MappingExpression;
 
 /**
@@ -63,10 +64,13 @@ public class CodeMapping extends Mapping {
      * @param mapping
      * @param pt
      * @param joinedTable
+     * @parma codeSpaceMapping
+     * @param nilMapping
+     *            name of (boolean) column that stores whether the element is nilled, can be <code>null</code>
      */
     public CodeMapping( PropertyName path, MappingExpression mapping, PrimitiveType pt, JoinChain joinedTable,
-                        MappingExpression codeSpaceMapping ) {
-        super( path, joinedTable );
+                        MappingExpression codeSpaceMapping, DBField nilMapping ) {
+        super( path, joinedTable, nilMapping );
         this.mapping = mapping;
         this.pt = pt;
         this.codeSpaceMapping = codeSpaceMapping;

@@ -462,6 +462,11 @@
         <documentation>Mapping expression.</documentation>
       </annotation>
     </attribute>
+    <attribute name="nilMapping" type="string" use="optional">
+      <annotation>
+        <documentation>Boolean column that stores whether the element is nilled</documentation>
+      </annotation>
+    </attribute>
   </complexType>
   <element name="PrimitiveMapping" substitutionGroup="postgisfs:AbstractCustomMapping">
     <complexType>

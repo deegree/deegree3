@@ -40,6 +40,7 @@ import org.deegree.feature.persistence.sql.expressions.JoinChain;
 import org.deegree.feature.types.property.GeometryPropertyType.CoordinateDimension;
 import org.deegree.feature.types.property.GeometryPropertyType.GeometryType;
 import org.deegree.filter.expression.PropertyName;
+import org.deegree.filter.sql.DBField;
 import org.deegree.filter.sql.MappingExpression;
 import org.deegree.geometry.Geometry;
 
@@ -64,8 +65,8 @@ public class GeometryMapping extends Mapping {
     private String srid;
 
     public GeometryMapping( PropertyName path, MappingExpression mapping, GeometryType type, CoordinateDimension dim,
-                            ICRS crs, String srid, JoinChain joinedTable ) {
-        super( path, joinedTable );
+                            ICRS crs, String srid, JoinChain joinedTable, DBField nilMapping ) {
+        super( path, joinedTable, nilMapping );
         this.mapping = mapping;
         this.type = type;
         this.dim = dim;

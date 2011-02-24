@@ -137,8 +137,7 @@ public class PostGISFeatureStoreTest {
         FileOutputStream fos = new FileOutputStream( file );
         XMLStreamWriter xmlWriter = XMLOutputFactory.newInstance().createXMLStreamWriter( fos );
         xmlWriter = new IndentingXMLStreamWriter( xmlWriter );
-        configWriter.writeConfig(
-                                  xmlWriter,
+        configWriter.writeConfig( xmlWriter,
                                   "testconn",
                                   Collections.singletonList( "file:/home/schneider/.deegree/inspire-test/schemas/inspire/annex1/AdministrativeUnits.xsd" ) );
         xmlWriter.close();
@@ -179,8 +178,7 @@ public class PostGISFeatureStoreTest {
         FileOutputStream fos = new FileOutputStream( file );
         XMLStreamWriter xmlWriter = XMLOutputFactory.newInstance().createXMLStreamWriter( fos );
         xmlWriter = new IndentingXMLStreamWriter( xmlWriter );
-        configWriter.writeConfig(
-                                  xmlWriter,
+        configWriter.writeConfig( xmlWriter,
                                   "testconn",
                                   Collections.singletonList( "file:/home/schneider/.deegree/inspire-test/schemas/inspire/annex1/AdministrativeUnits.xsd" ) );
         xmlWriter.close();
@@ -220,15 +218,16 @@ public class PostGISFeatureStoreTest {
         FeatureStore fs = provider.create( new URL(
                                                     "file:/home/schneider/.deegree/inspire-test/datasources/feature/inspire-au.xml" ) );
 
-        XMLStreamWriter xmlWriter = XMLOutputFactory.newInstance().createXMLStreamWriter( new FileOutputStream( "/tmp/out.xml" ) );
+        XMLStreamWriter xmlWriter = XMLOutputFactory.newInstance().createXMLStreamWriter( new FileOutputStream(
+                                                                                                                "/tmp/out.xml" ) );
         xmlWriter = new IndentingXMLStreamWriter( xmlWriter );
         GMLStreamWriter gmlWriter = GMLOutputFactory.createGMLStreamWriter( GML_32, xmlWriter );
         gmlWriter.setNamespaceBindings( appSchema.getNamespaceBindings() );
-        
+
         QName countryName = QName.valueOf( "{urn:x-inspire:specification:gmlas:AdministrativeUnits:3.0}AdministrativeUnit" );
         Query query = new Query( countryName, null, -1, -1, -1.0 );
         FeatureResultSet rs = fs.query( query );
-        gmlWriter.write( rs.toCollection() );
+        gmlWriter.write( rs.iterator().next() );
         gmlWriter.close();
     }
 
@@ -260,8 +259,7 @@ public class PostGISFeatureStoreTest {
 
             URL configURL = this.getClass().getResource( "philosopher.xml" );
             DeegreeWorkspace workspace = DeegreeWorkspace.getInstance();
-            PostGISFeatureStore fs = (PostGISFeatureStore) workspace.getSubsystemManager( FeatureStoreManager.class ).create(
-                                                                                                                              "philosopher",
+            PostGISFeatureStore fs = (PostGISFeatureStore) workspace.getSubsystemManager( FeatureStoreManager.class ).create( "philosopher",
                                                                                                                               configURL );
             fs.init();
 
@@ -287,8 +285,7 @@ public class PostGISFeatureStoreTest {
 
             URL configURL = this.getClass().getResource( "inspire-hybrid.xml" );
             DeegreeWorkspace workspace = DeegreeWorkspace.getInstance();
-            PostGISFeatureStore fs = (PostGISFeatureStore) workspace.getSubsystemManager( FeatureStoreManager.class ).create(
-                                                                                                                              "inspire-hybrid",
+            PostGISFeatureStore fs = (PostGISFeatureStore) workspace.getSubsystemManager( FeatureStoreManager.class ).create( "inspire-hybrid",
                                                                                                                               configURL );
             fs.init();
 
@@ -343,8 +340,7 @@ public class PostGISFeatureStoreTest {
                                              "postgres", 1, 10 );
             URL configURL = PostGISFeatureStoreTest.class.getResource( "inspire-hybrid.xml" );
             DeegreeWorkspace workspace = DeegreeWorkspace.getInstance();
-            PostGISFeatureStore fs = (PostGISFeatureStore) workspace.getSubsystemManager( FeatureStoreManager.class ).create(
-                                                                                                                              "inspire-hybrid",
+            PostGISFeatureStore fs = (PostGISFeatureStore) workspace.getSubsystemManager( FeatureStoreManager.class ).create( "inspire-hybrid",
                                                                                                                               configURL );
 
             URL datasetURL = PostGISFeatureStoreTest.class.getResource( "../../../gml/feature/testdata/features/inspire_addresses1.gml" );
@@ -409,8 +405,7 @@ public class PostGISFeatureStoreTest {
             ConnectionManager.addConnection( "philosopher-db", jdbcURL, jdbcUser, jdbcPass, 1, 10 );
             URL configURL = this.getClass().getResource( "philosopher.xml" );
             DeegreeWorkspace workspace = DeegreeWorkspace.getInstance();
-            PostGISFeatureStore fs = (PostGISFeatureStore) workspace.getSubsystemManager( FeatureStoreManager.class ).create(
-                                                                                                                              "philosopher",
+            PostGISFeatureStore fs = (PostGISFeatureStore) workspace.getSubsystemManager( FeatureStoreManager.class ).create( "philosopher",
                                                                                                                               configURL );
             fs.init();
 
@@ -437,8 +432,7 @@ public class PostGISFeatureStoreTest {
 
             URL configURL = this.getClass().getResource( "philosopher.xml" );
             DeegreeWorkspace workspace = DeegreeWorkspace.getInstance();
-            PostGISFeatureStore fs = (PostGISFeatureStore) workspace.getSubsystemManager( FeatureStoreManager.class ).create(
-                                                                                                                              "philosopher",
+            PostGISFeatureStore fs = (PostGISFeatureStore) workspace.getSubsystemManager( FeatureStoreManager.class ).create( "philosopher",
                                                                                                                               configURL );
             fs.init();
 
@@ -455,8 +449,7 @@ public class PostGISFeatureStoreTest {
             try {
                 FeatureCollection fc = rs.toCollection();
                 XMLStreamWriter xmlStream = new IndentingXMLStreamWriter(
-                                                                          XMLOutputFactory.newInstance().createXMLStreamWriter(
-                                                                                                                                System.out ) );
+                                                                          XMLOutputFactory.newInstance().createXMLStreamWriter( System.out ) );
                 GMLStreamWriter gmlStream = GMLOutputFactory.createGMLStreamWriter( GMLVersion.GML_31, xmlStream );
                 gmlStream.write( fc );
                 gmlStream.close();
@@ -478,8 +471,7 @@ public class PostGISFeatureStoreTest {
 
             URL configURL = this.getClass().getResource( "philosopher.xml" );
             DeegreeWorkspace workspace = DeegreeWorkspace.getInstance();
-            PostGISFeatureStore fs = (PostGISFeatureStore) workspace.getSubsystemManager( FeatureStoreManager.class ).create(
-                                                                                                                              "philosopher",
+            PostGISFeatureStore fs = (PostGISFeatureStore) workspace.getSubsystemManager( FeatureStoreManager.class ).create( "philosopher",
                                                                                                                               configURL );
             fs.init();
 
@@ -490,8 +482,7 @@ public class PostGISFeatureStoreTest {
             try {
                 FeatureCollection fc = rs.toCollection();
                 XMLStreamWriter xmlStream = new IndentingXMLStreamWriter(
-                                                                          XMLOutputFactory.newInstance().createXMLStreamWriter(
-                                                                                                                                System.out ) );
+                                                                          XMLOutputFactory.newInstance().createXMLStreamWriter( System.out ) );
                 GMLStreamWriter gmlStream = GMLOutputFactory.createGMLStreamWriter( GMLVersion.GML_31, xmlStream );
                 gmlStream.setRemoteXLinkTemplate( "http://bla?fid={}" );
                 gmlStream.setXLinkDepth( -1 );
@@ -515,8 +506,7 @@ public class PostGISFeatureStoreTest {
 
             URL configURL = this.getClass().getResource( "philosopher.xml" );
             DeegreeWorkspace workspace = DeegreeWorkspace.getInstance();
-            PostGISFeatureStore fs = (PostGISFeatureStore) workspace.getSubsystemManager( FeatureStoreManager.class ).create(
-                                                                                                                              "philosopher",
+            PostGISFeatureStore fs = (PostGISFeatureStore) workspace.getSubsystemManager( FeatureStoreManager.class ).create( "philosopher",
                                                                                                                               configURL );
             fs.init();
 

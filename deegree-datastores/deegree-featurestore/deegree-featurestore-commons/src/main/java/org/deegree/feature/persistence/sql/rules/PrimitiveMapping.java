@@ -39,6 +39,7 @@ import org.deegree.commons.tom.primitive.PrimitiveType;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.feature.persistence.sql.expressions.JoinChain;
 import org.deegree.filter.expression.PropertyName;
+import org.deegree.filter.sql.DBField;
 import org.deegree.filter.sql.MappingExpression;
 
 /**
@@ -62,8 +63,9 @@ public class PrimitiveMapping extends Mapping {
      * @param pt
      * @param joinedTable
      */
-    public PrimitiveMapping( PropertyName path, MappingExpression mapping, PrimitiveType pt, JoinChain joinedTable ) {
-        super( path, joinedTable );
+    public PrimitiveMapping( PropertyName path, MappingExpression mapping, PrimitiveType pt, JoinChain joinedTable,
+                             DBField nilMapping ) {
+        super( path, joinedTable, nilMapping );
         this.pt = pt;
         this.mapping = mapping;
     }

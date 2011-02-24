@@ -65,6 +65,7 @@ import org.apache.xerces.xs.XSWildcard;
 import org.deegree.commons.jdbc.QTableName;
 import org.deegree.commons.tom.primitive.PrimitiveType;
 import org.deegree.commons.tom.primitive.XMLValueMangler;
+import org.deegree.commons.xml.CommonNamespaces;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.feature.persistence.sql.BBoxTableMapping;
 import org.deegree.feature.persistence.sql.DataTypeMapping;
@@ -257,7 +258,17 @@ public class AppSchemaMapper {
             LOG.warn( "TODO: Build JoinChain" );
         }
         MappingExpression mapping = new DBField( propMc.getColumn() );
-        return new PrimitiveMapping( path, mapping, pt.getPrimitiveType(), jc );
+
+        DBField nilMapping = null;
+        if ( pt.isNillable() ) {
+            nilMapping = getNilMapping( propMc );
+        }
+        return new PrimitiveMapping( path, mapping, pt.getPrimitiveType(), jc, nilMapping );
+    }
+
+    private DBField getNilMapping( MappingContext ctx ) {
+        QName nilAttrName = new QName( CommonNamespaces.XSINS, "nil", "xsi" );
+        return new DBField( mcManager.mapOneToOneAttribute( ctx, nilAttrName ).getColumn() );
     }
 
     private GeometryMapping generatePropMapping( GeometryPropertyType pt, MappingContext mc ) {
@@ -272,7 +283,12 @@ public class AppSchemaMapper {
             LOG.warn( "TODO: Build JoinChain" );
         }
         MappingExpression mapping = new DBField( propMc.getColumn() );
-        return new GeometryMapping( path, mapping, pt.getGeometryType(), storageDim, storageCrs, storageSrid, jc );
+        DBField nilMapping = null;
+        if ( pt.isNillable() ) {
+            nilMapping = getNilMapping( propMc );
+        }
+        return new GeometryMapping( path, mapping, pt.getGeometryType(), storageDim, storageCrs, storageSrid, jc,
+                                    nilMapping );
     }
 
     private FeatureMapping generatePropMapping( FeaturePropertyType pt, MappingContext mc ) {
@@ -289,8 +305,11 @@ public class AppSchemaMapper {
             jc = generateJoinChain( "attr_gml_id", mc, mc2 );
             mapping = new DBField( "ref" );
         }
-
-        return new FeatureMapping( path, mapping, pt.getFTName(), jc );
+        DBField nilMapping = null;
+        if ( pt.isNillable() ) {
+            nilMapping = getNilMapping( mc2 );
+        }
+        return new FeatureMapping( path, mapping, pt.getFTName(), jc, nilMapping );
     }
 
     private GenericObjectMapping generatePropMapping( GenericObjectPropertyType pt, MappingContext mc ) {
@@ -316,7 +335,11 @@ public class AppSchemaMapper {
         DataTypeMapping dtMapping = new DataTypeMapping( xsElementDecl, table, particles );
         dtMappings.add( dtMapping );
 
-        return new GenericObjectMapping( path, mapping, xsElementDecl, jc );
+        DBField nilMapping = null;
+        if ( pt.isNillable() ) {
+            nilMapping = getNilMapping( mc2 );
+        }
+        return new GenericObjectMapping( path, mapping, xsElementDecl, jc, nilMapping );
     }
 
     private CompoundMapping generatePropMapping( CustomPropertyType pt, MappingContext mc ) {
@@ -340,7 +363,11 @@ public class AppSchemaMapper {
             jc = generateJoinChain( "attr_gml_id", mc, propMc );
         }
         List<Mapping> particles = generateMapping( pt.getXSDValueType(), propMc, new HashMap<QName, QName>() );
-        return new CompoundMapping( path, particles, jc );
+        DBField nilMapping = null;
+        if ( pt.isNillable() ) {
+            nilMapping = getNilMapping( propMc );
+        }
+        return new CompoundMapping( path, particles, jc, nilMapping );
     }
 
     private CodeMapping generatePropMapping( CodePropertyType pt, MappingContext mc ) {
@@ -361,7 +388,11 @@ public class AppSchemaMapper {
             mapping = new DBField( "value" );
         }
         MappingExpression csMapping = new DBField( codeSpaceMc.getColumn() );
-        return new CodeMapping( path, mapping, STRING, jc, csMapping );
+        DBField nilMapping = null;
+        if ( pt.isNillable() ) {
+            nilMapping = getNilMapping( propMc );
+        }
+        return new CodeMapping( path, mapping, STRING, jc, csMapping, nilMapping );
     }
 
     private JoinChain generateJoinChain( String idColumn, MappingContext from, MappingContext to ) {
@@ -387,7 +418,7 @@ public class AppSchemaMapper {
             if ( typeDef.getSimpleType() != null ) {
                 pt = XMLValueMangler.getPrimitiveType( typeDef.getSimpleType() );
             }
-            particles.add( new PrimitiveMapping( path, dbField, pt, null ) );
+            particles.add( new PrimitiveMapping( path, dbField, pt, null, null ) );
         }
 
         // attributes
@@ -404,7 +435,7 @@ public class AppSchemaMapper {
             PropertyName path = new PropertyName( "@" + getName( attrName ), nsContext );
             DBField dbField = new DBField( attrMc.getTable(), attrMc.getColumn() );
             PrimitiveType pt = XMLValueMangler.getPrimitiveType( attrDecl.getTypeDefinition() );
-            particles.add( new PrimitiveMapping( path, dbField, pt, null ) );
+            particles.add( new PrimitiveMapping( path, dbField, pt, null, null ) );
         }
 
         // child elements
@@ -509,7 +540,11 @@ public class AppSchemaMapper {
                     } else {
                         mapping = new DBField( elMC.getColumn() );
                     }
-                    mappings.add( new FeatureMapping( path, mapping, valueFtName, jc ) );
+                    DBField nilMapping = null;
+                    if ( substitution.getNillable() ) {
+                        nilMapping = getNilMapping( elMC );
+                    }
+                    mappings.add( new FeatureMapping( path, mapping, valueFtName, jc, nilMapping ) );
                 } else if ( appSchema.getXSModel().getGeometryElement( elName ) != null ) {
                     JoinChain jc = null;
                     DBField mapping = null;
@@ -525,7 +560,11 @@ public class AppSchemaMapper {
                     } else {
                         mapping = new DBField( elMC.getColumn() );
                     }
-                    mappings.add( new GeometryMapping( path, mapping, gt, dim, storageCrs, srid, jc ) );
+                    DBField nilMapping = null;
+                    if ( substitution.getNillable() ) {
+                        nilMapping = getNilMapping( elMC );
+                    }
+                    mappings.add( new GeometryMapping( path, mapping, gt, dim, storageCrs, srid, jc, nilMapping ) );
                 } else {
                     XSTypeDefinition typeDef = substitution.getTypeDefinition();
                     QName complexTypeName = getQName( typeDef );
@@ -549,13 +588,18 @@ public class AppSchemaMapper {
                         jc = generateJoinChain( "id", mc, elMC );
                     }
 
+                    DBField nilMapping = null;
+                    if ( substitution.getNillable() ) {
+                        nilMapping = getNilMapping( elMC );
+                    }
+
                     if ( typeDef instanceof XSComplexTypeDefinition ) {
                         List<Mapping> particles = generateMapping( (XSComplexTypeDefinition) typeDef, elMC, elements2 );
-                        mappings.add( new CompoundMapping( path, particles, jc ) );
+                        mappings.add( new CompoundMapping( path, particles, jc, nilMapping ) );
                     } else {
                         MappingExpression mapping = new DBField( elMC.getColumn() );
                         PrimitiveType pt = XMLValueMangler.getPrimitiveType( (XSSimpleTypeDefinition) typeDef );
-                        mappings.add( new PrimitiveMapping( path, mapping, pt, jc ) );
+                        mappings.add( new PrimitiveMapping( path, mapping, pt, jc, nilMapping ) );
                     }
                 }
             }

@@ -93,6 +93,7 @@ import org.deegree.feature.persistence.postgis.jaxb.CodePropertyDecl;
 import org.deegree.feature.persistence.postgis.jaxb.CustomMapping;
 import org.deegree.feature.persistence.postgis.jaxb.CustomPropertyDecl;
 import org.deegree.feature.persistence.postgis.jaxb.FIDMapping.Column;
+import org.deegree.feature.persistence.postgis.jaxb.FeaturePropertyDecl;
 import org.deegree.feature.persistence.postgis.jaxb.FeatureTypeDecl;
 import org.deegree.feature.persistence.postgis.jaxb.GMLVersionType;
 import org.deegree.feature.persistence.postgis.jaxb.GeometryPropertyDecl;
@@ -364,7 +365,7 @@ public class PostGISFeatureStoreConfigParser {
                     PropertyType pt = new SimplePropertyType( ptName, 0, 1, type, false, false, null );
                     pts.add( pt );
                     PropertyName path = new PropertyName( ptName );
-                    PrimitiveMapping mapping = new PrimitiveMapping( path, dbField, type, null );
+                    PrimitiveMapping mapping = new PrimitiveMapping( path, dbField, type, null, null );
                     propToColumn.put( ptName, mapping );
                 } catch ( IllegalArgumentException e ) {
                     LOG.warn( "Skipping column with type code '" + md.sqlType + "' from list of properties:"
@@ -376,7 +377,7 @@ public class PostGISFeatureStoreConfigParser {
                 pts.add( pt );
                 PropertyName path = new PropertyName( ptName );
                 GeometryMapping mapping = new GeometryMapping( path, dbField, md.geomType, md.dim, md.crs, md.srid,
-                                                               null );
+                                                               null, null );
                 propToColumn.put( ptName, mapping );
             }
         }
@@ -458,7 +459,9 @@ public class PostGISFeatureStoreConfigParser {
                 pt = new SimplePropertyType( propName, minOccurs, 1, primType, false, false, null );
             }
             JoinChain joinedTable = buildJoinTable( table, propDecl.getJoinedTable() );
-            m = new PrimitiveMapping( path, mapping, ( (SimplePropertyType) pt ).getPrimitiveType(), joinedTable );
+            DBField nilMapping = buildNilMapping( propDecl.getNilMapping() );
+            m = new PrimitiveMapping( path, mapping, ( (SimplePropertyType) pt ).getPrimitiveType(), joinedTable,
+                                      nilMapping );
         } else if ( propDecl instanceof GeometryPropertyDecl ) {
             MappingExpression mapping = parseMappingExpression( propDecl.getMapping() );
             if ( !( mapping instanceof DBField ) ) {
@@ -505,7 +508,8 @@ public class PostGISFeatureStoreConfigParser {
             }
             pt = new GeometryPropertyType( propName, minOccurs, 1, false, false, null, type, dim, INLINE );
             JoinChain joinedTable = buildJoinTable( table, propDecl.getJoinedTable() );
-            m = new GeometryMapping( path, mapping, type, dim, crs, srid, joinedTable );
+            DBField nilMapping = buildNilMapping( propDecl.getNilMapping() );
+            m = new GeometryMapping( path, mapping, type, dim, crs, srid, joinedTable, nilMapping );
         } else if ( propDecl instanceof CustomPropertyDecl ) {
             CustomPropertyDecl cpd = (CustomPropertyDecl) propDecl;
             List<JAXBElement<? extends CustomMapping>> children = cpd.getAbstractCustomMapping();
@@ -518,7 +522,8 @@ public class PostGISFeatureStoreConfigParser {
                 }
             }
             JoinChain joinedTable = buildJoinTable( table, propDecl.getJoinedTable() );
-            m = new CompoundMapping( path, particles, joinedTable );
+            DBField nilMapping = buildNilMapping( propDecl.getNilMapping() );
+            m = new CompoundMapping( path, particles, joinedTable, nilMapping );
         } else if ( propDecl instanceof CodePropertyDecl ) {
             PropertyName path = new PropertyName( propName );
             JoinChain joinedTable = buildJoinTable( table, propDecl.getJoinedTable() );
@@ -533,11 +538,30 @@ public class PostGISFeatureStoreConfigParser {
                 throw new FeatureStoreException( "Unhandled mapping type '" + codeSpaceMapping.getClass()
                                                  + "'. Currently, only DBFields are supported." );
             }
-            m = new CodeMapping( path, mapping, STRING, joinedTable, codeSpaceMapping );
+            DBField nilMapping = buildNilMapping( propDecl.getNilMapping() );
+            m = new CodeMapping( path, mapping, STRING, joinedTable, codeSpaceMapping, nilMapping );
+        } else if ( propDecl instanceof FeaturePropertyDecl ) {
+            PropertyName path = new PropertyName( propName );
+            JoinChain joinedTable = buildJoinTable( table, propDecl.getJoinedTable() );
+            MappingExpression mapping = parseMappingExpression( propDecl.getMapping() );
+            if ( !( mapping instanceof DBField ) ) {
+                throw new FeatureStoreException( "Unhandled mapping type '" + mapping.getClass()
+                                                 + "'. Currently, only DBFields are supported." );
+            }
+            DBField nilMapping = buildNilMapping( propDecl.getNilMapping() );
+            QName valueFtName = ( (FeaturePropertyDecl) propDecl ).getType();
+            m = new FeatureMapping( path, mapping, valueFtName, joinedTable, nilMapping );
         } else {
             LOG.warn( "Unhandled property declaration '" + propDecl.getClass() + "'. Skipping it." );
         }
         return new Pair<PropertyType, Mapping>( pt, m );
+    }
+
+    private DBField buildNilMapping( String nilMapping ) {
+        if ( nilMapping != null ) {
+            return new DBField( nilMapping );
+        }
+        return null;
     }
 
     private JoinChain buildJoinTable( QTableName from, JoinedTable joinedTable ) {
@@ -565,7 +589,8 @@ public class PostGISFeatureStoreConfigParser {
             org.deegree.feature.persistence.postgis.jaxb.PrimitiveMapping pm = (org.deegree.feature.persistence.postgis.jaxb.PrimitiveMapping) mapping;
             PrimitiveType pt = getPrimitiveType( pm.getType() );
             MappingExpression me = parseMappingExpression( pm.getMapping() );
-            return new PrimitiveMapping( path, me, pt, joinedTable );
+            DBField nilMapping = buildNilMapping( pm.getNilMapping() );
+            return new PrimitiveMapping( path, me, pt, joinedTable, nilMapping );
         } else if ( mapping instanceof org.deegree.feature.persistence.postgis.jaxb.GeometryMapping ) {
             org.deegree.feature.persistence.postgis.jaxb.GeometryMapping gm = (org.deegree.feature.persistence.postgis.jaxb.GeometryMapping) mapping;
         } else if ( mapping instanceof org.deegree.feature.persistence.postgis.jaxb.FeatureMapping ) {
@@ -580,7 +605,8 @@ public class PostGISFeatureStoreConfigParser {
                     particles.add( particle );
                 }
             }
-            return new CompoundMapping( path, particles, joinedTable );
+            DBField nilMapping = buildNilMapping( cm.getNilMapping() );
+            return new CompoundMapping( path, particles, joinedTable, nilMapping );
         } else {
             LOG.warn( "Unhandled custom mapping: " + mapping.getClass() );
         }
@@ -671,17 +697,19 @@ public class PostGISFeatureStoreConfigParser {
             }
 
             PropertyName propName = new PropertyName( path, nsContext );
+            DBField nilMapping = buildNilMapping( customMapping.getNilMapping() );
             if ( customMapping instanceof org.deegree.feature.persistence.postgis.jaxb.PrimitiveMapping ) {
                 org.deegree.feature.persistence.postgis.jaxb.PrimitiveMapping primitiveMapping = (org.deegree.feature.persistence.postgis.jaxb.PrimitiveMapping) customMapping;
+
                 mappings.add( new PrimitiveMapping( propName, mapping, getPrimitiveType( primitiveMapping.getType() ),
-                                                    null ) );
+                                                    null, nilMapping ) );
             } else if ( customMapping instanceof org.deegree.feature.persistence.postgis.jaxb.GeometryMapping ) {
                 org.deegree.feature.persistence.postgis.jaxb.GeometryMapping geometryMapping = (org.deegree.feature.persistence.postgis.jaxb.GeometryMapping) customMapping;
                 mappings.add( new GeometryMapping( propName, mapping, GEOMETRY, DIM_2,
-                                                   CRSManager.getCRSRef( "EPSG:4326", true ), "-1", null ) );
+                                                   CRSManager.getCRSRef( "EPSG:4326", true ), "-1", null, nilMapping ) );
             } else if ( customMapping instanceof org.deegree.feature.persistence.postgis.jaxb.FeatureMapping ) {
                 org.deegree.feature.persistence.postgis.jaxb.FeatureMapping featureMapping = (org.deegree.feature.persistence.postgis.jaxb.FeatureMapping) customMapping;
-                mappings.add( new FeatureMapping( propName, mapping, featureMapping.getType(), null ) );
+                mappings.add( new FeatureMapping( propName, mapping, featureMapping.getType(), null, nilMapping ) );
             } else if ( customMapping instanceof org.deegree.feature.persistence.postgis.jaxb.CustomMapping ) {
                 org.deegree.feature.persistence.postgis.jaxb.ComplexMapping compoundMapping = (org.deegree.feature.persistence.postgis.jaxb.ComplexMapping) customMapping;
                 List<Mapping> particles = process( compoundMapping.getAbstractCustomMapping() );
@@ -689,7 +717,7 @@ public class PostGISFeatureStoreConfigParser {
                 if ( compoundMapping.getJoinedTable() != null ) {
                     joinedTable = (JoinChain) parseMappingExpression( compoundMapping.getJoinedTable().getValue() );
                 }
-                mappings.add( new CompoundMapping( propName, particles, joinedTable ) );
+                mappings.add( new CompoundMapping( propName, particles, joinedTable, nilMapping ) );
             } else {
                 throw new RuntimeException( "Internal error. Unexpected JAXB type '" + customMapping.getClass() + "'." );
             }

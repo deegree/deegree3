@@ -207,16 +207,22 @@ public class PostGISDDLCreator {
             ddls.add( sql );
         }
 
+        if ( propMapping.getNilMapping() != null ) {
+            sql.append( ",\n    " );
+            sql.append( propMapping.getNilMapping().getColumn() );
+            sql.append( " boolean" );
+        }
+        
         if ( propMapping instanceof PrimitiveMapping ) {
             PrimitiveMapping primitiveMapping = (PrimitiveMapping) propMapping;
-            MappingExpression me = primitiveMapping.getMapping();
+            MappingExpression me = primitiveMapping.getMapping();             
             if ( me instanceof DBField ) {
                 DBField dbField = (DBField) me;
                 sql.append( ",\n    " );
                 sql.append( dbField.getColumn() );
                 sql.append( " " );
                 sql.append( getPostgreSQLType( primitiveMapping.getType() ) );
-            }
+            }           
         } else if ( propMapping instanceof GeometryMapping ) {
             GeometryMapping geometryMapping = (GeometryMapping) propMapping;
             MappingExpression me = geometryMapping.getMapping();
@@ -227,7 +233,7 @@ public class PostGISDDLCreator {
             }
         } else if ( propMapping instanceof FeatureMapping ) {
             FeatureMapping featureMapping = (FeatureMapping) propMapping;
-            MappingExpression me = featureMapping.getMapping();
+            MappingExpression me = featureMapping.getMapping();          
             if ( me instanceof DBField ) {
                 sql.append( ",\n    " );
                 sql.append( ( (DBField) me ).getColumn() );
@@ -238,7 +244,7 @@ public class PostGISDDLCreator {
             ddls.addAll( process( sql, table, compoundMapping ) );
         } else if ( propMapping instanceof CodeMapping ) {
             CodeMapping codeMapping = (CodeMapping) propMapping;
-            MappingExpression me = codeMapping.getMapping();
+            MappingExpression me = codeMapping.getMapping();        
             if ( me instanceof DBField ) {
                 DBField dbField = (DBField) me;
                 sql.append( ",\n    " );
@@ -268,6 +274,13 @@ public class PostGISDDLCreator {
 
         List<StringBuffer> ddls = new ArrayList<StringBuffer>();
         for ( Mapping mapping : cm.getParticles() ) {
+
+            if ( mapping.getNilMapping() != null ) {
+                sb.append( ",\n    " );
+                sb.append( mapping.getNilMapping().getColumn() );
+                sb.append( " boolean" );
+            }            
+            
             if ( mapping instanceof PrimitiveMapping ) {
                 PrimitiveMapping primitiveMapping = (PrimitiveMapping) mapping;
                 MappingExpression me = primitiveMapping.getMapping();
