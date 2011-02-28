@@ -363,8 +363,9 @@ public class GetFeatureAnalyzer {
                     }
                 }
             }
-            validateGeometryConstraint( ( (BBoxQuery) wfsQuery ).getBBox(), wfsQuery.getSrsName() );
-
+            if ( checkAreaOfUse ) {
+                validateGeometryConstraint( ( (BBoxQuery) wfsQuery ).getBBox(), wfsQuery.getSrsName() );
+            }
             Envelope bbox = bboxQuery.getBBox();
             BBOX bboxOperator = new BBOX( bbox );
             filter = new OperatorFilter( bboxOperator );
