@@ -319,7 +319,7 @@ public class GetMap {
         }
 
         String ss = map.get( "STYLES" );
-        if ( ss == null ) {
+        if ( ss == null && sld == null && sldBody == null ) {
             throw new OWSException( get( "WMS.PARAM_MISSING", "STYLES" ), MISSING_PARAMETER_VALUE );
         }
 
