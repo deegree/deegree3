@@ -53,6 +53,7 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
 import org.apache.axiom.om.OMElement;
+import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.WorkspaceInitializationException;
 import org.deegree.commons.jdbc.ConnectionManager;
 import org.deegree.commons.utils.JDBCUtils;
@@ -75,12 +76,12 @@ import org.deegree.metadata.persistence.iso.parsing.inspectation.RecordInspector
 import org.deegree.metadata.persistence.iso19115.jaxb.CoupledResourceInspector;
 import org.deegree.metadata.persistence.iso19115.jaxb.FileIdentifierInspector;
 import org.deegree.metadata.persistence.iso19115.jaxb.ISOMetadataStoreConfig;
-import org.deegree.metadata.persistence.iso19115.jaxb.ISOMetadataStoreConfig.Inspectors;
 import org.deegree.metadata.persistence.iso19115.jaxb.InspireInspector;
 import org.deegree.metadata.persistence.iso19115.jaxb.SchemaValidator;
+import org.deegree.metadata.persistence.iso19115.jaxb.ISOMetadataStoreConfig.Inspectors;
 import org.deegree.metadata.publication.InsertTransaction;
-import org.deegree.protocol.csw.CSWConstants.ResultType;
 import org.deegree.protocol.csw.MetadataStoreException;
+import org.deegree.protocol.csw.CSWConstants.ResultType;
 import org.slf4j.Logger;
 
 /**
@@ -187,7 +188,7 @@ public class ISOMetadataStore implements MetadataStore {
      * @see org.deegree.record.persistence.RecordStore#init()
      */
     @Override
-    public void init()
+    public void init( DeegreeWorkspace workspace )
                             throws WorkspaceInitializationException {
 
         LOG.debug( "init" );

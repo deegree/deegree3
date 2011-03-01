@@ -112,7 +112,7 @@ public class FeatureStoreLoader {
         FeatureStoreManager mgr = new FeatureStoreManager();
         mgr.startup( DeegreeWorkspace.getInstance() );
         FeatureStore fs = mgr.create( f.getName(), configURL );
-        fs.init();
+        fs.init( DeegreeWorkspace.getInstance() );
         return fs;
     }
 

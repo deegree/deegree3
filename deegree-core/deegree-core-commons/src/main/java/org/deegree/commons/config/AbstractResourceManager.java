@@ -124,7 +124,7 @@ public abstract class AbstractResourceManager<T extends Resource> implements Ext
             for ( ResourceProvider p : md.getResourceProviders() ) {
                 nsToProvider.put( p.getConfigNamespace(), (ExtendedResourceProvider<T>) p );
             }
-            System.out.println(nsToProvider);
+            System.out.println( nsToProvider );
 
             File dir = new File( workspace.getLocation(), md.getPath() );
             String name = md.getName();
@@ -144,7 +144,7 @@ public abstract class AbstractResourceManager<T extends Resource> implements Ext
                 LOG.info( "Setting up {} '{}' from file '{}'...", new Object[] { name, id, fileName } );
                 try {
                     T resource = create( id, configFile.toURI().toURL() );
-                    resource.init();
+                    resource.init( workspace );
                     // TODO explicitly check for workspace init exception here? remove checked exception altogether?
                 } catch ( Exception e ) {
                     LOG.error( "Error creating {}: {}", new Object[] { name, e.getMessage(), e } );

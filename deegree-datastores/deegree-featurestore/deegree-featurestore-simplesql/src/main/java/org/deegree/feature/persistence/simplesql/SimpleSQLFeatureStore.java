@@ -51,6 +51,7 @@ import java.util.TreeMap;
 import javax.xml.namespace.QName;
 
 import org.deegree.commons.annotations.LoggingNotes;
+import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.WorkspaceInitializationException;
 import org.deegree.commons.jdbc.ResultSetIterator;
 import org.deegree.commons.utils.Pair;
@@ -271,7 +272,7 @@ public class SimpleSQLFeatureStore implements FeatureStore {
         return featureType;
     }
 
-    public void init()
+    public void init( DeegreeWorkspace workspace )
                             throws WorkspaceInitializationException {
         featureType = DBUtils.determineFeatureType( ftName, connId, lods.values().iterator().next() );
         if ( featureType == null ) {

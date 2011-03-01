@@ -51,6 +51,7 @@ import java.util.NoSuchElementException;
 
 import javax.xml.namespace.QName;
 
+import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.WorkspaceInitializationException;
 import org.deegree.commons.jdbc.ConnectionManager;
 import org.deegree.commons.jdbc.ResultSetIterator;
@@ -432,7 +433,7 @@ public class PostGISFeatureStore extends AbstractSQLFeatureStore {
     }
 
     @Override
-    public void init()
+    public void init( DeegreeWorkspace workspace )
                             throws WorkspaceInitializationException {
 
         LOG.debug( "init" );

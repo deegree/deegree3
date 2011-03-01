@@ -45,6 +45,7 @@ import javax.xml.namespace.QName;
 import javax.xml.stream.FactoryConfigurationError;
 import javax.xml.stream.XMLStreamException;
 
+import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.tom.ReferenceResolvingException;
 import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.cs.coordinatesystems.ICRS;
@@ -148,7 +149,7 @@ public class MemoryFeatureStore implements FeatureStore {
     }
 
     @Override
-    public void init() {
+    public void init( DeegreeWorkspace workspace ) {
         // nothing to do
     }
 

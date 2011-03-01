@@ -47,9 +47,11 @@ public interface Resource {
     /**
      * Usually called by the resource manager upon workspace startup.
      * 
+     * @param workspace
+     *            the workspace the resource belongs to, may be null
      * @throws WorkspaceInitializationException
      */
-    void init()
+    void init( DeegreeWorkspace workspace )
                             throws WorkspaceInitializationException;
 
     /**

@@ -48,6 +48,7 @@ import java.util.List;
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 
+import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.WorkspaceInitializationException;
 import org.deegree.feature.persistence.FeatureStore;
 import org.deegree.feature.persistence.FeatureStoreException;
@@ -262,7 +263,7 @@ public class OSMFeatureStore implements FeatureStore {
     }
 
     @Override
-    public void init()
+    public void init( DeegreeWorkspace workspace )
                             throws WorkspaceInitializationException {
         LOG.info( "Initializing OSMFeatureStore" );
     }

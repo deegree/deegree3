@@ -165,7 +165,7 @@ public class FeatureLayer extends Layer {
         // TODO what about the charset here?
         datastore = new ShapeFeatureStore( file, null, null, null, null, null, true, null );
         try {
-            datastore.init();
+            datastore.init( null );
         } catch ( WorkspaceInitializationException e ) {
             LOG.error( "Layer could not be loaded, because the error '{}' occurred while loading the shape file.",
                        e.getLocalizedMessage() );

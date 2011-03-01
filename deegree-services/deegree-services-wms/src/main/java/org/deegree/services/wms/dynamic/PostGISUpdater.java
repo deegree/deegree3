@@ -226,7 +226,7 @@ public class PostGISUpdater extends LayerUpdater {
                                                     namespace, "app", bbox,
                                                     Collections.<Pair<Integer, String>> emptyList() );
                     try {
-                        ds.init();
+                        ds.init( null );
                     } catch ( WorkspaceInitializationException e ) {
                         LOG.info( "Data source of layer '{}' could not be initialized: '{}'.", title,
                                   e.getLocalizedMessage() );

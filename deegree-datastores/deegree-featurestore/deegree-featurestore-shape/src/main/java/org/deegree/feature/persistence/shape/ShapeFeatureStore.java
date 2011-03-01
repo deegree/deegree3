@@ -61,6 +61,7 @@ import java.util.NoSuchElementException;
 import javax.xml.namespace.QName;
 
 import org.deegree.commons.annotations.LoggingNotes;
+import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.index.RTree;
 import org.deegree.commons.utils.CloseableIterator;
 import org.deegree.commons.utils.Pair;
@@ -197,7 +198,7 @@ public class ShapeFeatureStore implements FeatureStore {
     }
 
     @Override
-    public void init() {
+    public void init( DeegreeWorkspace workspace ) {
 
         if ( shpName.toLowerCase().endsWith( ".shp" ) ) {
             shpName = shpName.substring( 0, shpName.length() - 4 );
