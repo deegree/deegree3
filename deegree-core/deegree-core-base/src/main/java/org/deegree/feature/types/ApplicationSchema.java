@@ -57,7 +57,6 @@ import org.apache.xerces.xs.XSNamespaceItemList;
 import org.apache.xerces.xs.XSObjectList;
 import org.apache.xerces.xs.XSParticle;
 import org.apache.xerces.xs.XSTerm;
-import org.deegree.commons.xml.CommonNamespaces;
 import org.deegree.feature.i18n.Messages;
 import org.deegree.feature.types.property.FeaturePropertyType;
 import org.deegree.feature.types.property.ObjectPropertyType;
@@ -200,10 +199,10 @@ public class ApplicationSchema {
         if ( xsModel != null ) {
             XSNamespaceItemList nsItems = xsModel.getNamespaces();
             for ( int i = 0; i < nsItems.getLength(); i++ ) {
-                String ns = nsItems.item( i ).getSchemaNamespace();
-                if ( !( NULL_NS_URI.equals( ns ) ) && !( CommonNamespaces.isCoreNamespace( ns ) ) ) {
+                String ns = nsItems.item( i ).getSchemaNamespace();                
+                if ( !( NULL_NS_URI.equals( ns ) ) ) {
                     if ( !this.prefixToNs.values().contains( ns ) && this.prefixToNs != null ) {
-                        String prefix = nsToPrefix.get( ns );
+                        String prefix = nsToPrefix.get( ns );      
                         if ( prefix == null ) {
                             prefix = "app" + ( generatedPrefixId++ );
                         }
