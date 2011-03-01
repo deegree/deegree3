@@ -103,6 +103,8 @@ public class FeatureBuilderRelational implements FeatureBuilder {
 
     private final Connection conn;
 
+    private static final QName XSI_NIL = new QName( CommonNamespaces.XSINS, "nil", "xsi" );
+
     /**
      * Creates a new {@link FeatureBuilderRelational} instance.
      * 
@@ -221,6 +223,10 @@ public class FeatureBuilderRelational implements FeatureBuilder {
 
         Pair<List<Pair<TypedObjectNode, Boolean>>, Integer> pair = buildParticles( propMapping, rs, i, pk );
         for ( Pair<TypedObjectNode, Boolean> value : pair.first ) {
+            if ( value.first instanceof GenericXMLElementContent ) {
+                GenericXMLElementContent ec = (GenericXMLElementContent) value.first;
+                ec.getAttributes().remove( XSI_NIL );
+            }
             props.add( new GenericProperty( pt, pt.getName(), value.first, value.second ) );
         }
         return pair.second;
@@ -312,7 +318,7 @@ public class FeatureBuilderRelational implements FeatureBuilder {
 
             Map<QName, PrimitiveValue> attrs = new HashMap<QName, PrimitiveValue>();
             if ( isNil ) {
-                attrs.put( new QName( CommonNamespaces.XSINS, "nil", "xsi" ), new PrimitiveValue( isNil ) );
+                attrs.put( XSI_NIL, new PrimitiveValue( isNil ) );
             }
 
             List<TypedObjectNode> children = new ArrayList<TypedObjectNode>();
@@ -357,7 +363,7 @@ public class FeatureBuilderRelational implements FeatureBuilder {
                                 String nsUri = fs.getSchema().getNamespaceBindings().get( prefix );
                                 if ( nsUri == null ) {
                                     nsUri = "";
-                                    // throw new IllegalArgumentException();
+                                    throw new IllegalArgumentException( "No namespace for prefix " + prefix );
                                 }
                                 name = new QName( nsUri, ns.getLocalName(), prefix );
                             }
