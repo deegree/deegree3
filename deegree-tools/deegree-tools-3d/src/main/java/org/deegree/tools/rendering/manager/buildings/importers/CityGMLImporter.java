@@ -276,7 +276,7 @@ public class CityGMLImporter implements ModelImporter {
      * @param max
      *            will contain the maximum of all geometries in the given geometry
      */
-    private void extractGeometries( MultiCurve geom, GeometryQualityModel qm, double[] min, double[] max ) {
+    private void extractGeometries( MultiCurve<Curve> geom, GeometryQualityModel qm, double[] min, double[] max ) {
         for ( Curve c : geom ) {
             extractGeometries( c, qm, min, max );
         }
@@ -309,7 +309,7 @@ public class CityGMLImporter implements ModelImporter {
      * @param max
      *            will contain the maximum of all geometries in the given geometry
      */
-    private void extractGeometries( MultiSurface geom, GeometryQualityModel qm, double[] min, double[] max ) {
+    private void extractGeometries( MultiSurface<Surface> geom, GeometryQualityModel qm, double[] min, double[] max ) {
         List<SurfacePatch> patches = new LinkedList<org.deegree.geometry.primitive.patches.SurfacePatch>();
         for ( Surface s : geom ) {
             patches.addAll( s.getPatches() );
@@ -321,7 +321,7 @@ public class CityGMLImporter implements ModelImporter {
      * Map the given geometry to a {@link GeometryQualityModel} by extracting it's 'surfacepatches'.
      * 
      * @param geom
-     *            to extract the geomtries from.
+     *            to extract the geometries from.
      * @param qm
      *            to add the extracted geometries to.
      * @param min

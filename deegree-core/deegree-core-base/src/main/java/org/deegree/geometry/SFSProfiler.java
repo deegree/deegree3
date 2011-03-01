@@ -280,7 +280,7 @@ public class SFSProfiler {
             break;
         }
         case MULTI_CURVE: {
-            MultiCurve mc = (MultiCurve) geometry;
+            MultiCurve<Curve> mc = (MultiCurve<Curve>) geometry;
             List simplifiedMembers = new ArrayList( mc.size() );
             for ( Curve member : mc ) {
                 simplifiedMembers.add( simplify( member ) );
@@ -307,7 +307,7 @@ public class SFSProfiler {
             break;
         }
         case MULTI_SURFACE: {
-            MultiSurface ms = (MultiSurface) geometry;
+            MultiSurface<Surface> ms = (MultiSurface<Surface>) geometry;
             List<Polygon> simplifiedMembers = new ArrayList<Polygon>( ms.size() );
             for ( Surface member : ms ) {
                 Geometry simplifiedMember = simplify( member );

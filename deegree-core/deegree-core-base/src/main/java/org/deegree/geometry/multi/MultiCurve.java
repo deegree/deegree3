@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,25 +32,25 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 package org.deegree.geometry.multi;
 
 import org.deegree.geometry.primitive.Curve;
 
 /**
  * Specialised aggregation type for {@link Curve} objects.
- *
+ * 
  * @author <a href="mailto:poth@lat-lon.de">Andreas Poth</a>
  * @author last edited by: $Author$
- *
+ * 
  * @version. $Revision$, $Date$
  */
-public interface MultiCurve extends MultiGeometry<Curve> {
+public interface MultiCurve<T extends Curve> extends MultiGeometry<T> {
 
     /**
      * The length of a <code>MultiLineString</code> is calculated as the sum of the length of all contained
      * {@link Curve}s.
-     *
+     * 
      * @return accumulated length
      */
     public double getLength();

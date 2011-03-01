@@ -239,7 +239,7 @@ public class GML3GeometryWriter implements GMLGeometryWriter {
 
         // TODO properly
         if ( geometry instanceof GeometryReference<?> ) {
-            exportReference( (GeometryReference) geometry );
+            exportReference( (GeometryReference<Geometry>) geometry );
             return;
         }
 
@@ -293,8 +293,8 @@ public class GML3GeometryWriter implements GMLGeometryWriter {
                             throws XMLStreamException, UnknownCRSException, TransformationException {
 
         switch ( geometry.getMultiGeometryType() ) {
-        case MULTI_CURVE:
-            MultiCurve multiCurve = (MultiCurve) geometry;
+        case MULTI_CURVE: {
+            MultiCurve<Curve> multiCurve = (MultiCurve<Curve>) geometry;
             startGeometry( "MultiCurve", geometry );
             for ( Curve curve : multiCurve ) {
                 writer.writeStartElement( "gml", "curveMember", gmlNs );
@@ -309,20 +309,40 @@ public class GML3GeometryWriter implements GMLGeometryWriter {
             }
             writer.writeEndElement(); // MultiCurve
             break;
-        case MULTI_LINE_STRING:
-            MultiLineString multiLineString = (MultiLineString) geometry;
-            startGeometry( "MultiLineString", geometry );
-            for ( LineString ls : multiLineString ) {
-                writer.writeStartElement( gmlNs, "lineStringMember" );
-                if ( !exportSf && ls.getId() != null && exportedIds.contains( ls.getId() ) ) {
-                    writer.writeAttribute( XLNNS, "href", "#" + ls.getId() );
-                } else {
-                    exportCurve( ls ); // LineString is a type of Curve
+        }
+        case MULTI_LINE_STRING: {
+            if ( version == GML_32 ) {
+                // GML 3.2 does not define MultiLineString anymore -> export as MultiCurve
+                MultiCurve<Curve> multiCurve = (MultiCurve<Curve>) geometry;
+                startGeometry( "MultiCurve", geometry );
+                for ( Curve curve : multiCurve ) {
+                    writer.writeStartElement( "gml", "curveMember", gmlNs );
+                    if ( !exportSf && curve.getId() != null && exportedIds.contains( curve.getId() ) ) {
+                        writer.writeAttribute( XLNNS, "href", "#" + curve.getId() );
+                    } else if ( curve instanceof CompositeCurve ) {
+                        exportCompositeCurve( (CompositeCurve) curve );
+                    } else {
+                        exportCurve( curve );
+                    }
+                    writer.writeEndElement();
                 }
-                writer.writeEndElement();
+                writer.writeEndElement(); // MultiCurve
+            } else {
+                MultiLineString multiLineString = (MultiLineString) geometry;
+                startGeometry( "MultiLineString", geometry );
+                for ( LineString ls : multiLineString ) {
+                    writer.writeStartElement( gmlNs, "lineStringMember" );
+                    if ( !exportSf && ls.getId() != null && exportedIds.contains( ls.getId() ) ) {
+                        writer.writeAttribute( XLNNS, "href", "#" + ls.getId() );
+                    } else {
+                        exportCurve( ls ); // LineString is a type of Curve
+                    }
+                    writer.writeEndElement();
+                }
+                writer.writeEndElement(); // MultiLineString
             }
-            writer.writeEndElement(); // MultiLineString
             break;
+        }
         case MULTI_POINT:
             MultiPoint multiPoint = (MultiPoint) geometry;
             startGeometry( "MultiPoint", geometry );
@@ -338,20 +358,38 @@ public class GML3GeometryWriter implements GMLGeometryWriter {
             writer.writeEndElement(); // MultiPoint
             break;
         case MULTI_POLYGON:
-            LOG.debug( "Exporting Geometry with ID " + geometry.getId() );
-            MultiPolygon multiPolygon = (MultiPolygon) geometry;
-            startGeometry( "MultiPolygon", geometry );
-            for ( Polygon pol : multiPolygon ) {
-                writer.writeStartElement( gmlNs, "polygonMember" );
-                if ( !exportSf && pol.getId() != null && exportedIds.contains( pol.getId() ) ) {
-                    writer.writeAttribute( XLNNS, "href", "#" + pol.getId() );
-                } else {
-                    exportSurface( pol );
-                }
+            if ( version == GML_32 ) {
+                // GML 3.2 does not define MultiPolygon anymore -> export as MultiSurface
+                MultiSurface<Surface> multiSurface = (MultiSurface<Surface>) geometry;
+                startGeometry( "MultiSurface", geometry );
+                for ( Surface surface : multiSurface ) {
+                    writer.writeStartElement( gmlNs, "surfaceMember" );
+                    if ( !exportSf && surface.getId() != null && exportedIds.contains( surface.getId() ) ) {
+                        writer.writeAttribute( XLNNS, "href", "#" + surface.getId() );
+                    } else if ( surface instanceof CompositeSurface ) {
+                        exportCompositeSurface( (CompositeSurface) surface );
+                    } else {
+                        exportSurface( surface );
+                    }
 
-                writer.writeEndElement(); // polygonMember
+                    writer.writeEndElement(); // surfaceMember
+                }
+                writer.writeEndElement();
+            } else {
+                MultiPolygon multiPolygon = (MultiPolygon) geometry;
+                startGeometry( "MultiPolygon", geometry );
+                for ( Polygon pol : multiPolygon ) {
+                    writer.writeStartElement( gmlNs, "polygonMember" );
+                    if ( !exportSf && pol.getId() != null && exportedIds.contains( pol.getId() ) ) {
+                        writer.writeAttribute( XLNNS, "href", "#" + pol.getId() );
+                    } else {
+                        exportSurface( pol );
+                    }
+
+                    writer.writeEndElement(); // polygonMember
+                }
+                writer.writeEndElement();
             }
-            writer.writeEndElement();
             break;
         case MULTI_SOLID:
             MultiSolid multiSolid = (MultiSolid) geometry;
@@ -370,7 +408,7 @@ public class GML3GeometryWriter implements GMLGeometryWriter {
             writer.writeEndElement();
             break;
         case MULTI_SURFACE:
-            MultiSurface multiSurface = (MultiSurface) geometry;
+            MultiSurface<Surface> multiSurface = (MultiSurface<Surface>) geometry;
             startGeometry( "MultiSurface", geometry );
             for ( Surface surface : multiSurface ) {
                 writer.writeStartElement( gmlNs, "surfaceMember" );
@@ -1547,7 +1585,7 @@ public class GML3GeometryWriter implements GMLGeometryWriter {
         }
 
         if ( outputCRS != null ) {
-            writer.writeAttribute( "srsName", outputCRS.getAlias());
+            writer.writeAttribute( "srsName", outputCRS.getAlias() );
         } else if ( geometry.getCoordinateSystem() != null ) {
             writer.writeAttribute( "srsName", geometry.getCoordinateSystem().getAlias() );
         }

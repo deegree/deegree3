@@ -53,7 +53,7 @@ import com.vividsolutions.jts.geom.MultiLineString;
  * 
  * @version $Revision:$, $Date:$
  */
-public class DefaultMultiCurve extends DefaultMultiGeometry<Curve> implements MultiCurve {
+public class DefaultMultiCurve extends DefaultMultiGeometry<Curve> implements MultiCurve<Curve> {
 
     /**
      * Creates a new {@link DefaultMultiCurve} from the given parameters.
@@ -82,7 +82,7 @@ public class DefaultMultiCurve extends DefaultMultiGeometry<Curve> implements Mu
 
     @Override
     protected MultiLineString buildJTSGeometry() {
-        LineString [] jtsMembers = new LineString[size()];
+        LineString[] jtsMembers = new LineString[size()];
         int i = 0;
         for ( Curve geometry : members ) {
             jtsMembers[i++] = (LineString) getAsDefaultGeometry( geometry ).getJTSGeometry();

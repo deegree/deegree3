@@ -613,8 +613,8 @@ public class GML3GeometryReaderTest {
         XMLStreamReaderWrapper xmlReader = getParser( "MultiCurve.gml" );
         Assert.assertEquals( XMLStreamConstants.START_ELEMENT, xmlReader.getEventType() );
         Assert.assertEquals( new QName( "http://www.opengis.net/gml", "MultiCurve" ), xmlReader.getName() );
-        MultiCurve aggregate = (MultiCurve) new GML3GeometryReader( GMLVersion.GML_31, null, null, 2 ).parse( xmlReader,
-                                                                                                              null );
+        MultiCurve<Curve> aggregate = (MultiCurve<Curve>) new GML3GeometryReader( GMLVersion.GML_31, null, null, 2 ).parse( xmlReader,
+                                                                                                                            null );
         Assert.assertEquals( XMLStreamConstants.END_ELEMENT, xmlReader.getEventType() );
         Assert.assertEquals( new QName( "http://www.opengis.net/gml", "MultiCurve" ), xmlReader.getName() );
         Assert.assertEquals( 2, aggregate.size() );
@@ -629,8 +629,9 @@ public class GML3GeometryReaderTest {
         XMLStreamReaderWrapper xmlReader = getParser( "MultiSurface.gml" );
         Assert.assertEquals( XMLStreamConstants.START_ELEMENT, xmlReader.getEventType() );
         Assert.assertEquals( new QName( "http://www.opengis.net/gml", "MultiSurface" ), xmlReader.getName() );
-        MultiSurface aggregate = (MultiSurface) new GML3GeometryReader( GMLVersion.GML_31, null, null, 2 ).parse( xmlReader,
-                                                                                                                  null );
+        MultiSurface<Surface> aggregate = (MultiSurface<Surface>) new GML3GeometryReader( GMLVersion.GML_31, null,
+                                                                                          null, 2 ).parse( xmlReader,
+                                                                                                           null );
         Assert.assertEquals( XMLStreamConstants.END_ELEMENT, xmlReader.getEventType() );
         Assert.assertEquals( new QName( "http://www.opengis.net/gml", "MultiSurface" ), xmlReader.getName() );
         Assert.assertEquals( 2, aggregate.size() );

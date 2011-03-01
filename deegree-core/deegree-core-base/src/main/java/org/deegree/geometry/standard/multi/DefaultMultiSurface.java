@@ -50,7 +50,7 @@ import org.deegree.geometry.primitive.Surface;
  * 
  * @version $Revision:$, $Date:$
  */
-public class DefaultMultiSurface extends DefaultMultiGeometry<Surface> implements MultiSurface {
+public class DefaultMultiSurface extends DefaultMultiGeometry<Surface> implements MultiSurface<Surface> {
 
     /**
      * Creates a new {@link DefaultMultiSurface} from the given parameters.

@@ -1095,7 +1095,7 @@ public class WKTWriter {
      * @param writer
      * @throws IOException
      */
-    public void writeMultiSurface( MultiSurface geometry, Writer writer )
+    public void writeMultiSurface( MultiSurface<Surface> geometry, Writer writer )
                             throws IOException {
         writer.append( "MULTIPOLYGON " );
         if ( flags.contains( WKTFlag.USE_DKT ) ) {
@@ -1119,7 +1119,7 @@ public class WKTWriter {
      * @param writer
      * @throws IOException
      */
-    public void writeMultiCurve( MultiCurve geometry, Writer writer )
+    public void writeMultiCurve( MultiCurve<Curve> geometry, Writer writer )
                             throws IOException {
 
         writer.append( "MULTICURVE " );

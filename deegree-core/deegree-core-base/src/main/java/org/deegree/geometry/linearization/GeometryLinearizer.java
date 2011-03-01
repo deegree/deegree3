@@ -118,7 +118,7 @@ public class GeometryLinearizer {
         } else if ( geom instanceof MultiSolid ) {
             LOG.warn( "Linearization of Solids is not implemented yet." );
         } else if ( geom instanceof MultiCurve ) {
-            MultiCurve mc = (MultiCurve) geom;
+            MultiCurve<Curve> mc = (MultiCurve<Curve>) geom;
             List<Curve> linearizedMembers = new ArrayList<Curve>( mc.size() );
             for ( Curve curve : mc ) {
                 linearizedMembers.add( curveLinearizer.linearize( curve, crit ) );
@@ -132,7 +132,7 @@ public class GeometryLinearizer {
             }
             linearized = (T) geomFac.createMultiPolygon( geom.getId(), geom.getCoordinateSystem(), linearizedMembers );
         } else if ( geom instanceof MultiSurface ) {
-            MultiSurface ms = (MultiSurface) geom;
+            MultiSurface<Surface> ms = (MultiSurface<Surface>) geom;
             List<Surface> linearizedMembers = new ArrayList<Surface>( ms.size() );
             for ( Surface polygon : ms ) {
                 linearizedMembers.add( sfLinearizer.linearize( polygon, crit ) );

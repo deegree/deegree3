@@ -50,8 +50,8 @@ import java.awt.BasicStroke;
 import java.awt.Font;
 import java.awt.font.TextLayout;
 import java.awt.geom.AffineTransform;
-import java.awt.geom.Point2D;
 import java.awt.geom.Path2D.Double;
+import java.awt.geom.Point2D;
 import java.util.Collection;
 
 import org.deegree.commons.annotations.LoggingNotes;
@@ -214,7 +214,7 @@ public class Java2DTextRenderer implements TextRenderer {
                 render( styling, font, text, p );
             }
         } else if ( geom instanceof MultiCurve && styling.linePlacement != null ) {
-            for ( Curve c : (MultiCurve) geom ) {
+            for ( Curve c : (MultiCurve<Curve>) geom ) {
                 render( styling, font, text, c );
             }
         } else if ( geom instanceof MultiLineString && styling.linePlacement != null ) {

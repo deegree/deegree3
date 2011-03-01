@@ -454,7 +454,7 @@ public class GML2GeometryWriter implements GMLGeometryWriter {
      * @throws UnknownCRSException
      * @throws TransformationException
      */
-    public void exportMultiLineString( MultiCurve multiCurve )
+    public void exportMultiLineString( MultiCurve<Curve> multiCurve )
                             throws XMLStreamException, TransformationException, UnknownCRSException {
 
         startGeometry( "MultiLineString", multiCurve );
@@ -506,7 +506,7 @@ public class GML2GeometryWriter implements GMLGeometryWriter {
      * @throws UnknownCRSException
      * @throws TransformationException
      */
-    public void exportMultiPolygon( MultiSurface multiSurface )
+    public void exportMultiPolygon( MultiSurface<Surface> multiSurface )
                             throws XMLStreamException, TransformationException, UnknownCRSException {
 
         startGeometry( "MultiPolygon", multiSurface );

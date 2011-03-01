@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,26 +32,19 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 package org.deegree.geometry.multi;
 
 import org.deegree.geometry.primitive.LineString;
 
 /**
  * Specialised aggregation type for {@link LineString} objects.
- *
+ * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author: otonnhofer $
- *
+ * 
  * @version. $Revision: 11566 $, $Date: 2008-05-05 12:33:57 +0000 (Mo, 05 Mai 2008) $
  */
-public interface MultiLineString extends MultiGeometry<LineString> {
-
-    /**
-     * The length of a <code>MultiLineString</code> is calculated as the sum of the length of all contained
-     * {@link LineString}s.
-     *
-     * @return accumulated length
-     */
-    public double getLength();
+public interface MultiLineString extends MultiCurve<LineString> {
+    // just a marker interface
 }

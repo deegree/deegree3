@@ -385,7 +385,7 @@ public class GeometryTransformer extends Transformer {
         final MultiGeometryType geometryType = geom.getMultiGeometryType();
         switch ( geometryType ) {
         case MULTI_CURVE:
-            result = transform( (MultiCurve) geom, trans );
+            result = transform( (MultiCurve<Curve>) geom, trans );
             break;
         case MULTI_GEOMETRY:
             List<Geometry> mg = new LinkedList<Geometry>();
@@ -408,7 +408,7 @@ public class GeometryTransformer extends Transformer {
             result = transform( (MultiSolid) geom, trans );
             break;
         case MULTI_SURFACE:
-            result = transform( (MultiSurface) geom, trans );
+            result = transform( (MultiSurface<Surface>) geom, trans );
             break;
         }
         return result;
@@ -758,7 +758,7 @@ public class GeometryTransformer extends Transformer {
      * 
      * @throws TransformationException
      */
-    private MultiCurve transform( MultiCurve geo, Transformation trans )
+    private MultiCurve<Curve> transform( MultiCurve<Curve> geo, Transformation trans )
                             throws TransformationException {
         List<Curve> curves = new ArrayList<Curve>( geo.size() );
         for ( Curve curve : geo ) {
@@ -786,7 +786,7 @@ public class GeometryTransformer extends Transformer {
      * 
      * @throws TransformationException
      */
-    private MultiSurface transform( MultiSurface multiSurface, Transformation trans )
+    private MultiSurface<Surface> transform( MultiSurface<Surface> multiSurface, Transformation trans )
                             throws TransformationException {
         List<Surface> surfaces = new ArrayList<Surface>( multiSurface.size() );
         for ( Surface surface : multiSurface ) {
