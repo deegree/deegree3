@@ -296,13 +296,15 @@ public class PostGISFeatureStoreConfigParser {
         FeatureType[] fts = ftNameToFt.values().toArray( new FeatureType[ftNameToFt.size()] );
         FeatureTypeMapping[] ftMappings = ftNameToMapping.values().toArray( new FeatureTypeMapping[ftNameToMapping.size()] );
         Map<FeatureType, FeatureType> ftToSuperFt = null;
+        Map<String,String> prefixToNs = null;
         GMLSchemaInfoSet xsModel = null;
         if ( gmlSchema != null ) {
             fts = gmlSchema.getFeatureTypes();
             ftToSuperFt = gmlSchema.getFtToSuperFt();
             xsModel = gmlSchema.getXSModel();
+            prefixToNs = gmlSchema.getNamespaceBindings();
         }
-        return new MappedApplicationSchema( fts, ftToSuperFt, null, xsModel, ftMappings, null, bboxMapping, blobMapping );
+        return new MappedApplicationSchema( fts, ftToSuperFt, prefixToNs, xsModel, ftMappings, null, bboxMapping, blobMapping );
     }
 
     private void process( FeatureTypeDecl ftDecl )

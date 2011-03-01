@@ -214,18 +214,18 @@ public class PostGISFeatureStoreTest {
             return;
         }
 
-        ConnectionManager.addConnection( new URL( "file:/home/schneider/.deegree/inspire-test/jdbc/testconn.xml" ),
+        ConnectionManager.addConnection( new URL( "file:/home/schneider/.deegree/deegree-inspire-node-1.1/jdbc/testconn.xml" ),
                                          "testconn", null );
         PostGISFeatureStoreProvider provider = new PostGISFeatureStoreProvider();
         FeatureStore fs = provider.create( new URL(
-                                                    "file:/home/schneider/.deegree/inspire-test/datasources/feature/inspire-au.xml" ) );
+                                                    "file:/home/schneider/.deegree/deegree-inspire-node-1.1/datasources/feature/inspire-au.xml" ) );
 
         XMLStreamWriter xmlWriter = XMLOutputFactory.newInstance().createXMLStreamWriter(
                                                                                           new FileOutputStream(
                                                                                                                 "/tmp/out.xml" ) );
         xmlWriter = new IndentingXMLStreamWriter( xmlWriter );
         GMLStreamWriter gmlWriter = GMLOutputFactory.createGMLStreamWriter( GML_32, xmlWriter );
-        gmlWriter.setNamespaceBindings( appSchema.getNamespaceBindings() );
+        gmlWriter.setNamespaceBindings( fs.getSchema().getNamespaceBindings() );
 
         QName countryName = QName.valueOf( "{urn:x-inspire:specification:gmlas:AdministrativeUnits:3.0}AdministrativeUnit" );
         Query query = new Query( countryName, null, -1, -1, -1.0 );
