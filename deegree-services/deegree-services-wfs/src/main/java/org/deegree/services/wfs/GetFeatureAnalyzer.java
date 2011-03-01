@@ -365,7 +365,9 @@ public class GetFeatureAnalyzer {
                     }
                 }
             }
-            validateGeometryConstraint( ( (BBoxQuery) wfsQuery ).getBBox(), wfsQuery.getSrsName() );
+            if ( checkAreaOfUse ) {
+                validateGeometryConstraint( ( (BBoxQuery) wfsQuery ).getBBox(), wfsQuery.getSrsName() );
+            }
 
             Envelope bbox = bboxQuery.getBBox();
             BBOX bboxOperator = new BBOX( bbox );
@@ -542,7 +544,10 @@ public class GetFeatureAnalyzer {
                 domainOfValidity = transform( domainOfValidity, bbox.getCoordinateSystem() );
                 if ( !bbox.isWithin( domainOfValidity ) ) {
                     String msg = "Invalid geometry constraint in filter. The envelope of the geometry is not within the domain of validity ('"
-                                 + domainOfValidity + "') of its CRS ('" + bbox.getCoordinateSystem().getAlias() + "').";
+                                 + domainOfValidity
+                                 + "') of its CRS ('"
+                                 + bbox.getCoordinateSystem().getAlias()
+                                 + "').";
                     throw new OWSException( msg, OWSException.INVALID_PARAMETER_VALUE, "filter" );
                 }
             } catch ( UnknownCRSException e ) {
