@@ -9,8 +9,8 @@
   <name>deegree-core-annotations</name>
   <url>http://www.deegree.org</url>
   <scm>
-    <developerConnection>scm:svn:http://svn.wald.intevation.org/svn/deegree/deegree3/trunk/deegree-core/deegree-core-commons</developerConnection>
-    <url>http://svn.wald.intevation.org/svn/deegree/deegree3/trunk/deegree-core/deegree-core-commons</url>
+    <developerConnection>scm:svn:http://svn.wald.intevation.org/svn/deegree/deegree3/trunk/deegree-core/deegree-core-annotations</developerConnection>
+    <url>http://svn.wald.intevation.org/svn/deegree/deegree3/trunk/deegree-core/deegree-core-annotations</url>
   </scm>
 
   <parent>
