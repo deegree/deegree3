@@ -36,12 +36,16 @@
 package org.deegree.services.wps.provider.sextante;
 
 import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 
 import org.deegree.commons.config.DeegreeWorkspace;
+import org.deegree.commons.config.ResourceManager;
+import org.deegree.commons.utils.ProxyUtils;
 import org.deegree.services.wps.provider.ProcessProvider;
 import org.deegree.services.wps.provider.ProcessProviderProvider;
 import org.deegree.services.wps.provider.sextante.jaxb.SextanteProcesses;
@@ -62,13 +66,15 @@ public class SextanteProcessProviderProvider implements ProcessProviderProvider 
 
     private static final String CONFIG_NAMESPACE = "http://www.deegree.org/processes/sextante";
 
+    private DeegreeWorkspace workspace;
+
     @Override
     public String getConfigNamespace() {
         return CONFIG_NAMESPACE;
     }
 
     @Override
-    public ProcessProvider createProvider( URL configURL, DeegreeWorkspace workspace ) {
+    public ProcessProvider create( URL configURL ) {
 
         LOG.info( "Configuring Sextante process provider using file '" + configURL + "'." );
 
@@ -84,5 +90,25 @@ public class SextanteProcessProviderProvider implements ProcessProviderProvider 
 
         // return a SEXTANTE process provider instance with the extracted configuration
         return new SextanteProcessProvider( config );
+    }
+
+    @SuppressWarnings("unchecked")
+    public Class<? extends ResourceManager>[] getDependencies() {
+        return new Class[] { ProxyUtils.class };
+    }
+
+    public void init( DeegreeWorkspace workspace ) {
+        this.workspace = workspace;
+    }
+
+    public URL getConfigSchema() {
+        return SextanteProcessProviderProvider.class.getResource( "/META-INF/schemas/processes/sextante/0.1.0/sextante.xsd" );
+    }
+
+    public Map<String, URL> getConfigTemplates() {
+        URL u = SextanteProcessProviderProvider.class.getResource( "/META-INF/schemas/processes/sextante/0.1.0/sextante_example.xml" );
+        Map<String, URL> map = new HashMap<String, URL>();
+        map.put( "example", u );
+        return map;
     }
 }

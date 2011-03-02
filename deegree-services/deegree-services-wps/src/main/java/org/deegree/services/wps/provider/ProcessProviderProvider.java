@@ -35,9 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.services.wps.provider;
 
-import java.net.URL;
-
-import org.deegree.commons.config.DeegreeWorkspace;
+import org.deegree.commons.config.ExtendedResourceProvider;
 
 /**
  * Implementations are responsible for providing {@link ProcessProvider} instances.
@@ -47,21 +45,8 @@ import org.deegree.commons.config.DeegreeWorkspace;
  * 
  * @version $Revision$, $Date$
  */
-public interface ProcessProviderProvider {
+public interface ProcessProviderProvider extends ExtendedResourceProvider<ProcessProvider> {
 
-    /**
-     * Returns the namespace for configuration documents that this provider handles.
-     * 
-     * @return the namespace for configuration documents, never <code>null</code>
-     */
-    public String getConfigNamespace();
+    // specified type parameter
 
-    /**
-     * Creates a new {@link ProcessProvider} instance from the given configuration document.
-     * 
-     * @param configURL
-     *            location of the configuration document, must not be <code>null</code>
-     * @return new process manager instance, configured, but not initialized yet
-     */
-    public ProcessProvider createProvider( URL configURL, DeegreeWorkspace workspace );
 }

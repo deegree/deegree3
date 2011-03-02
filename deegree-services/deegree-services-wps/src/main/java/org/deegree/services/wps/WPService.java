@@ -42,8 +42,6 @@ import static org.deegree.services.wps.WPSProvider.IMPLEMENTATION_METADATA;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -62,7 +60,6 @@ import org.apache.axiom.soap.SOAPFactory;
 import org.apache.commons.fileupload.FileItem;
 import org.deegree.commons.tom.ows.CodeType;
 import org.deegree.commons.tom.ows.Version;
-import org.deegree.commons.utils.FileUtils;
 import org.deegree.commons.utils.Pair;
 import org.deegree.commons.utils.TempFileManager;
 import org.deegree.commons.utils.kvp.KVPUtils;
@@ -86,7 +83,6 @@ import org.deegree.services.controller.exception.serializer.XMLExceptionSerializ
 import org.deegree.services.controller.ows.OWSException;
 import org.deegree.services.controller.ows.OWSException110XMLAdapter;
 import org.deegree.services.controller.utils.HttpResponseBuffer;
-import org.deegree.services.exception.ServiceInitException;
 import org.deegree.services.jaxb.controller.DeegreeServiceControllerType;
 import org.deegree.services.jaxb.metadata.DeegreeServicesMetadataType;
 import org.deegree.services.jaxb.wps.DeegreeWPS;
@@ -155,25 +151,16 @@ public class WPService extends AbstractOGCServiceController<WPSRequestType> {
         DeegreeWPS sc = (DeegreeWPS) unmarshallConfig( CONFIG_JAXB_PACKAGE, CONFIG_SCHEMA,
                                                        controllerConf.getRootElement() );
 
-        URL controllerConfURL;
-        try {
-            controllerConfURL = new URL( controllerConf.getSystemId() );
-            File resolvedProcessesDir = FileUtils.getAsFile( new URL( controllerConfURL, "../processes/" ) );
-            this.service = new ProcessManager( resolvedProcessesDir, workspace );
+        this.service = workspace.getSubsystemManager( ProcessManager.class );
 
-            validateAndSetOfferedVersions( sc.getSupportedVersions().getVersion() );
+        validateAndSetOfferedVersions( sc.getSupportedVersions().getVersion() );
 
-            executeHandler = new ExecutionManager( this, storageManager );
-        } catch ( MalformedURLException e ) {
-            throw new ControllerInitException( "Problem resolving file resource: " + e.getMessage() );
-        } catch ( ServiceInitException e ) {
-            throw new ControllerInitException( "Problem initializing service: " + e.getMessage() );
-        }
+        executeHandler = new ExecutionManager( this, storageManager );
     }
 
     @Override
     public void destroy() {
-        service.destroy();
+        // rest should be done by workspace
     }
 
     @Override

@@ -36,10 +36,14 @@
 package org.deegree.services.wps.provider;
 
 import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.xml.bind.JAXBException;
 
 import org.deegree.commons.config.DeegreeWorkspace;
+import org.deegree.commons.config.ResourceManager;
+import org.deegree.commons.utils.ProxyUtils;
 import org.deegree.commons.xml.jaxb.JAXBUtils;
 import org.deegree.process.jaxb.java.ProcessDefinition;
 import org.slf4j.Logger;
@@ -63,13 +67,15 @@ public class JavaProcessProviderProvider implements ProcessProviderProvider {
 
     private static final String CONFIG_NS = "http://www.deegree.org/processes/java";
 
+    private DeegreeWorkspace workspace;
+
     @Override
     public String getConfigNamespace() {
         return CONFIG_NS;
     }
 
     @Override
-    public ProcessProvider createProvider( URL configURL, DeegreeWorkspace workspace ) {
+    public ProcessProvider create( URL configURL ) {
 
         ProcessProvider manager = null;
 
@@ -97,5 +103,25 @@ public class JavaProcessProviderProvider implements ProcessProviderProvider {
             e.printStackTrace();
         }
         return manager;
+    }
+
+    @SuppressWarnings("unchecked")
+    public Class<? extends ResourceManager>[] getDependencies() {
+        return new Class[] { ProxyUtils.class };
+    }
+
+    public void init( DeegreeWorkspace workspace ) {
+        this.workspace = workspace;
+    }
+
+    public URL getConfigSchema() {
+        return JavaProcessProviderProvider.class.getResource( JAXB_CONFIG_SCHEMA );
+    }
+
+    public Map<String, URL> getConfigTemplates() {
+        HashMap<String, URL> map = new HashMap<String, URL>();
+        map.put( "example",
+                 JavaProcessProviderProvider.class.getResource( "/META-INF/schemas/processes/java/3.0.0/example.xml" ) );
+        return map;
     }
 }

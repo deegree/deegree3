@@ -44,6 +44,7 @@ import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamReader;
 
 import org.deegree.commons.config.DeegreeWorkspace;
+import org.deegree.commons.config.ResourceManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -67,7 +68,7 @@ public class ExampleProcessProviderProvider implements ProcessProviderProvider {
     }
 
     @Override
-    public ProcessProvider createProvider( URL configURL, DeegreeWorkspace workspace ) {
+    public ProcessProvider create( URL configURL ) {
 
         LOG.info( "Configuring example process provider using file '" + configURL + "'." );
 
@@ -91,5 +92,22 @@ public class ExampleProcessProviderProvider implements ProcessProviderProvider {
         }
 
         return new ExampleProcessProvider( processIdToReturnValue );
+    }
+
+    @SuppressWarnings("unchecked")
+    public Class<? extends ResourceManager>[] getDependencies() {
+        return new Class[] {};
+    }
+
+    public void init( DeegreeWorkspace workspace ) {
+        // this.workspace = workspace;
+    }
+
+    public URL getConfigSchema() {
+        return null;
+    }
+
+    public Map<String, URL> getConfigTemplates() {
+        return new HashMap<String, URL>();
     }
 }

@@ -37,9 +37,8 @@ package org.deegree.services.wps.provider;
 
 import java.util.Map;
 
-import org.deegree.commons.config.DeegreeWorkspace;
+import org.deegree.commons.config.Resource;
 import org.deegree.commons.tom.ows.CodeType;
-import org.deegree.services.exception.ServiceInitException;
 import org.deegree.services.wps.ProcessManager;
 import org.deegree.services.wps.WPSProcess;
 
@@ -51,22 +50,7 @@ import org.deegree.services.wps.WPSProcess;
  * 
  * @version $Revision$, $Date$
  */
-public interface ProcessProvider {
-
-    /**
-     * Called by the container to indicate that this {@link ProcessProvider} instance is being placed into service.
-     * 
-     * @param workspace
-     *            the workspace this provider should use
-     * @throws ServiceInitException
-     */
-    public void init( DeegreeWorkspace workspace )
-                            throws ServiceInitException;
-
-    /**
-     * Called by the container to indicate that this {@link ProcessProvider} instance is being taken out of service.
-     */
-    public void destroy();
+public interface ProcessProvider extends Resource {
 
     /**
      * Returns all currently available processes.
