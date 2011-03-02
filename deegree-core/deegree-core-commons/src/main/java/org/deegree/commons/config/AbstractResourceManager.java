@@ -124,7 +124,6 @@ public abstract class AbstractResourceManager<T extends Resource> implements Ext
             for ( ResourceProvider p : md.getResourceProviders() ) {
                 nsToProvider.put( p.getConfigNamespace(), (ExtendedResourceProvider<T>) p );
             }
-            System.out.println( nsToProvider );
 
             File dir = new File( workspace.getLocation(), md.getPath() );
             String name = md.getName();
