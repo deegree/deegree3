@@ -78,6 +78,7 @@ public class FeatureStoreManager extends AbstractResourceManager<FeatureStore> {
         }
     }
 
+    @Override
     public ResourceManagerMetadata<FeatureStore> getMetadata() {
         return metadata;
     }
