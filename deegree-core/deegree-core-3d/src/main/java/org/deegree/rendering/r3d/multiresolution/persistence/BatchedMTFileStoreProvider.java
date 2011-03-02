@@ -106,4 +106,8 @@ public class BatchedMTFileStoreProvider implements BatchedMTStoreProvider {
         return singletonMap( "example", BatchedMTFileStoreProvider.class.getResource( path ) );
     }
 
+    @Override
+    public String getConfigWizardView() {
+        return null;
+    }    
 }

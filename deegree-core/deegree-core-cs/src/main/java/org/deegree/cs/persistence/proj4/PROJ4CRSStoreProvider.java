@@ -113,4 +113,9 @@ public class PROJ4CRSStoreProvider implements CRSStoreProvider {
             throw new CRSStoreException( msg, e );
         }
     }
+
+    @Override
+    public String getConfigWizardView() {
+        return null;
+    }
 }

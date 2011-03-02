@@ -84,6 +84,11 @@ public class WFSProvider implements OWSProvider<WFSRequestType> {
         return singletonMap( "example", WFSProvider.class.getResource( "/META-INF/schemas/wfs/3.1.0/example.xml" ) );
     }
 
+    @Override
+    public String getConfigWizardView() {
+        return null;
+    }
+
     public ImplementationMetadata<WFSRequestType> getImplementationMetadata() {
         return IMPLEMENTATION_METADATA;
     }

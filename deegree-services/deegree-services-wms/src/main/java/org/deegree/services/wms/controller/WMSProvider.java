@@ -83,6 +83,11 @@ public class WMSProvider implements OWSProvider<WMSRequestType> {
         return singletonMap( "example", WMSProvider.class.getResource( "/META-INF/schemas/wms/3.1.0/example.xml" ) );
     }
 
+    @Override
+    public String getConfigWizardView() {
+        return null;
+    }
+
     public ImplementationMetadata<WMSRequestType> getImplementationMetadata() {
         return IMPLEMENTATION_METADATA;
     }

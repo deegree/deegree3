@@ -93,6 +93,11 @@ public class OracleFeatureStoreProvider implements FeatureStoreProvider {
     }
 
     @Override
+    public String getConfigWizardView() {
+        return null;
+    }
+
+    @Override
     public OracleFeatureStore create( URL configURL )
                             throws WorkspaceInitializationException {
 

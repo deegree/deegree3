@@ -124,4 +124,9 @@ public class JavaProcessProviderProvider implements ProcessProviderProvider {
                  JavaProcessProviderProvider.class.getResource( "/META-INF/schemas/processes/java/3.0.0/example.xml" ) );
         return map;
     }
+
+    @Override
+    public String getConfigWizardView() {
+        return null;
+    }
 }

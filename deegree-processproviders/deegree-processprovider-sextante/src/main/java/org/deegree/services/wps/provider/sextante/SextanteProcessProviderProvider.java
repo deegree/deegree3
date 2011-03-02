@@ -111,4 +111,9 @@ public class SextanteProcessProviderProvider implements ProcessProviderProvider 
         map.put( "example", u );
         return map;
     }
+
+    @Override
+    public String getConfigWizardView() {
+        return null;
+    }
 }

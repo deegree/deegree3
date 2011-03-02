@@ -67,4 +67,8 @@ public class SEProvider implements ResourceProvider {
         return map;
     }
 
+    @Override
+    public String getConfigWizardView() {
+        return null;
+    }
 }

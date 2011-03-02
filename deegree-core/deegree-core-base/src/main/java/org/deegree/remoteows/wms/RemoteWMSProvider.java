@@ -161,4 +161,8 @@ public class RemoteWMSProvider implements RemoteOWSProvider {
         return singletonMap( "example", RemoteWMSProvider.class.getResource( path ) );
     }
 
+    @Override
+    public String getConfigWizardView() {
+        return null;
+    }
 }

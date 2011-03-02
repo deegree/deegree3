@@ -76,11 +76,15 @@ public class BinaryObservationProvider implements ObservationStoreProvider {
     }
 
     @Override
+    public String getConfigWizardView() {
+        return null;
+    }
+
+    @Override
     public ObservationDatastore getObservationStore( URL configURL )
                             throws ObservationDatastoreException {
         // TODO
         throw new ObservationDatastoreException(
                                                  "The support for Binary Observation Stores is not yet finished. Please check back soon!" );
     }
-
 }

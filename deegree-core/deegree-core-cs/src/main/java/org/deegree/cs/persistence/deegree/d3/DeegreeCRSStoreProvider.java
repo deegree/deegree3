@@ -115,7 +115,8 @@ public class DeegreeCRSStoreProvider implements CRSStoreProvider {
         return crsStore;
     }
     
-
-
-    
+    @Override
+    public String getConfigWizardView() {
+        return null;
+    }    
 }

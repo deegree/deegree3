@@ -89,6 +89,11 @@ public class SimpleObservationProvider implements ObservationStoreProvider {
     }
 
     @Override
+    public String getConfigWizardView() {
+        return null;
+    }
+
+    @Override
     public ObservationDatastore getObservationStore( URL configURL )
                             throws ObservationDatastoreException {
         SimpleObservationDatastore store = null;

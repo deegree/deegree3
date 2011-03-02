@@ -44,11 +44,8 @@
                     requiredMessage="#{labels.featureStores_name_req}" /> <h:selectOneMenu styleClass="liste"
                     value="#{configManager.newConfigType}">
                     <f:selectItems value="#{configManager.providers}" />
-                    <f:ajax render="templates" />
-                </h:selectOneMenu> <h:selectOneMenu id="templates" styleClass="liste" value="#{configManager.newConfigTypeTemplate}">
-                    <f:selectItems value="#{configManager.newConfigTypeTemplates}" />
-                </h:selectOneMenu> <h:commandButton styleClass="buttonCreateNew" value="#{labels.featureStores_new}"
-                    action="#{configManager.createConfig}" /></div>
+                </h:selectOneMenu><h:commandButton styleClass="buttonCreateNew" value="#{labels.featureStores_new}"
+                    action="#{configManager.startWizard}" /></div>
 
             </h:form> <h:form>
                 <ui:insert name="extraConfig" />

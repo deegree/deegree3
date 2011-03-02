@@ -69,4 +69,10 @@ public interface ResourceProvider {
      */
     Map<String, URL> getConfigTemplates();
 
+    /**
+     * Returns the path to the JSF view for creating new configurations.
+     * 
+     * @return the path to the JSF view, can be <code>null</code> (default "wizard")
+     */
+    String getConfigWizardView();
 }

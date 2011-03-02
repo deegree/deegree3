@@ -303,4 +303,8 @@ public class ConnectionManager implements ResourceManager, ResourceProvider {
                              ConnectionManager.class.getResource( "/META-INF/schemas/jdbc/3.0.0/example.xml" ) );
     }
 
+    @Override
+    public String getConfigWizardView() {
+        return null;
+    }
 }

@@ -148,7 +148,7 @@ public class WMSBuilder implements CoverageBuilder {
                     } catch ( IOException e ) {
                         if ( LOG.isDebugEnabled() ) {
                             LOG.debug( "(Stack) Exception occurred while creating a resolution wms datasource: "
-                                       + e.getLocalizedMessage(), e );
+                                                               + e.getLocalizedMessage(), e );
                         } else {
                             LOG.error( "Exception occurred while creating a resolution wms datasource: "
                                        + e.getLocalizedMessage() );
@@ -254,5 +254,10 @@ public class WMSBuilder implements CoverageBuilder {
     public Map<String, URL> getConfigTemplates() {
         String path = "/META-INF/schemas/datasource/coverage/wms/3.0.0/example.xml";
         return singletonMap( "example", WMSBuilder.class.getResource( path ) );
+    }
+
+    @Override
+    public String getConfigWizardView() {
+        return null;
     }
 }

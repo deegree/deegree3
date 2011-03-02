@@ -81,6 +81,11 @@ public class SOSProvider implements OWSProvider<SOSRequestType> {
         return singletonMap( "example", SOSProvider.class.getResource( "/META-INF/schemas/sos/3.0.0/example.xml" ) );
     }
 
+    @Override
+    public String getConfigWizardView() {
+        return null;
+    }
+
     public ImplementationMetadata<SOSRequestType> getImplementationMetadata() {
         return IMPLEMENTATION_METADATA;
     }

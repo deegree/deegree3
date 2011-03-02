@@ -81,6 +81,11 @@ public class WPSProvider implements OWSProvider<WPSRequestType> {
         return singletonMap( "example", WPSProvider.class.getResource( "/META-INF/schemas/wps/3.0.0/example.xml" ) );
     }
 
+    @Override
+    public String getConfigWizardView() {
+        return null;
+    }
+
     public ImplementationMetadata<WPSRequestType> getImplementationMetadata() {
         return IMPLEMENTATION_METADATA;
     }

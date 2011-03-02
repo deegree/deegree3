@@ -97,6 +97,11 @@ public class ShapeFeatureStoreProvider implements FeatureStoreProvider {
     }
 
     @Override
+    public String getConfigWizardView() {
+        return null;
+    }
+
+    @Override
     public ShapeFeatureStore create( URL configURL )
                             throws WorkspaceInitializationException {
 

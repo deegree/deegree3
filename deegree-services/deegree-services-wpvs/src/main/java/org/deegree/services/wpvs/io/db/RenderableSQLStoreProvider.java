@@ -152,4 +152,9 @@ public class RenderableSQLStoreProvider implements RenderableStoreProvider {
         String path = "/META-INF/schemas/datasource/3d/renderable/3.0.0/sql_example.xml";
         return singletonMap( "example", RenderableFileStoreProvider.class.getResource( path ) );
     }
+
+    @Override
+    public String getConfigWizardView() {
+        return null;
+    }
 }

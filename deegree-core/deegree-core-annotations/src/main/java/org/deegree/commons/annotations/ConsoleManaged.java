@@ -65,4 +65,5 @@ public @interface ConsoleManaged {
 
     String startPage();
 
+    String wizardPage() default "";
 }

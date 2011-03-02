@@ -77,6 +77,8 @@ public class PostGISFeatureStoreProvider implements FeatureStoreProvider {
 
     private static final String CONFIG_TEMPLATE = "/META-INF/schemas/datasource/feature/postgis/3.1.0/example.xml";
 
+    private static final String JSF_WIZARD = "/console/featurestore/sql/wizard";
+
     private DeegreeWorkspace workspace;
 
     @Override
@@ -92,6 +94,11 @@ public class PostGISFeatureStoreProvider implements FeatureStoreProvider {
     @Override
     public Map<String, URL> getConfigTemplates() {
         return singletonMap( "example", PostGISFeatureStoreProvider.class.getResource( CONFIG_TEMPLATE ) );
+    }
+
+    @Override
+    public String getConfigWizardView() {
+        return JSF_WIZARD;
     }
 
     @Override

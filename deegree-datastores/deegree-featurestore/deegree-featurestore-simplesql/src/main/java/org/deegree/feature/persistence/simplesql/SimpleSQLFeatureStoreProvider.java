@@ -48,9 +48,9 @@ import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceManager;
 import org.deegree.commons.config.WorkspaceInitializationException;
 import org.deegree.commons.jdbc.ConnectionManager;
+import org.deegree.commons.utils.CollectionUtils.Mapper;
 import org.deegree.commons.utils.Pair;
 import org.deegree.commons.utils.ProxyUtils;
-import org.deegree.commons.utils.CollectionUtils.Mapper;
 import org.deegree.commons.xml.jaxb.JAXBUtils;
 import org.deegree.feature.persistence.FeatureStoreProvider;
 import org.deegree.feature.persistence.simplesql.jaxb.SimpleSQLFeatureStoreConfig;
@@ -102,13 +102,17 @@ public class SimpleSQLFeatureStoreProvider implements FeatureStoreProvider {
     }
 
     @Override
+    public String getConfigWizardView() {
+        return null;
+    }
+
+    @Override
     public SimpleSQLFeatureStore create( URL configURL )
                             throws WorkspaceInitializationException {
 
         SimpleSQLFeatureStore fs = null;
         try {
-            SimpleSQLFeatureStoreConfig config = (SimpleSQLFeatureStoreConfig) JAXBUtils.unmarshall(
-                                                                                                     CONFIG_JAXB_PACKAGE,
+            SimpleSQLFeatureStoreConfig config = (SimpleSQLFeatureStoreConfig) JAXBUtils.unmarshall( CONFIG_JAXB_PACKAGE,
                                                                                                      CONFIG_SCHEMA,
                                                                                                      configURL,
                                                                                                      workspace );

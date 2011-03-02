@@ -82,6 +82,11 @@ public class WPVSProvider implements OWSProvider<WPVSRequestType> {
         return singletonMap( "example", WPVSProvider.class.getResource( "/META-INF/schemas/wpvs/3.0.0/example.xml" ) );
     }
 
+    @Override
+    public String getConfigWizardView() {
+        return null;
+    }
+
     public ImplementationMetadata<WPVSRequestType> getImplementationMetadata() {
         return IMPLEMENTATION_METADATA;
     }

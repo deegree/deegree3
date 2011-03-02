@@ -81,6 +81,11 @@ public class CSWProvider implements OWSProvider<CSWRequestType> {
         return singletonMap( "example", CSWProvider.class.getResource( "/META-INF/schemas/csw/3.0.0/example.xml" ) );
     }
 
+    @Override
+    public String getConfigWizardView() {
+        return null;
+    }
+
     public ImplementationMetadata<CSWRequestType> getImplementationMetadata() {
         return IMPLEMENTATION_METADATA;
     }

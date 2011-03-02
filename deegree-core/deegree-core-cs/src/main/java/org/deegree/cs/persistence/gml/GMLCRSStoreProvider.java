@@ -166,4 +166,8 @@ public class GMLCRSStoreProvider implements CRSStoreProvider {
         }
     }
 
+    @Override
+    public String getConfigWizardView() {
+        return null;
+    }
 }

@@ -110,6 +110,11 @@ public class MemoryFeatureStoreProvider implements FeatureStoreProvider {
     }
 
     @Override
+    public String getConfigWizardView() {
+        return null;
+    }
+
+    @Override
     public MemoryFeatureStore create( URL configURL )
                             throws WorkspaceInitializationException {
 

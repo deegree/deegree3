@@ -86,6 +86,11 @@ public class ContinuousObservationProvider implements ObservationStoreProvider {
     }
 
     @Override
+    public String getConfigWizardView() {
+        return null;
+    }
+
+    @Override
     public ObservationDatastore getObservationStore( URL configURL )
                             throws ObservationDatastoreException {
         ContinuousObservationDatastore store = null;

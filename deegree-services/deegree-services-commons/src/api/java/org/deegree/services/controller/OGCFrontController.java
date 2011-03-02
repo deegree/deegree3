@@ -1011,7 +1011,7 @@ public class OGCFrontController extends HttpServlet {
     public void destroy() {
         super.destroy();
         destroyWorkspace();
-        ConnectionManager.destroyLockdb();
+//        ConnectionManager.destroyLockdb();
         plugClassLoaderLeaks();
     }
 

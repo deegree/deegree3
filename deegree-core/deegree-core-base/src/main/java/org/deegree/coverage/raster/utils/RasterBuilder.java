@@ -590,5 +590,9 @@ public class RasterBuilder implements CoverageBuilder {
                  RasterBuilder.class.getResource( "/META-INF/schemas/datasource/coverage/raster/3.0.0/directory.xml" ) );
         return map;
     }
-
+    
+    @Override
+    public String getConfigWizardView() {
+        return null;
+    }    
 }

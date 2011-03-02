@@ -110,4 +110,9 @@ public class ExampleProcessProviderProvider implements ProcessProviderProvider {
     public Map<String, URL> getConfigTemplates() {
         return new HashMap<String, URL>();
     }
+
+    @Override
+    public String getConfigWizardView() {
+        return null;
+    }
 }

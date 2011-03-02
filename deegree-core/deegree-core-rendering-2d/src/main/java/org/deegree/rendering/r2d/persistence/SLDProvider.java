@@ -64,4 +64,8 @@ public class SLDProvider implements ResourceProvider {
         return map;
     }
 
+    @Override
+    public String getConfigWizardView() {
+        return null;
+    }
 }

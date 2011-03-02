@@ -82,6 +82,11 @@ public class WCSProvider implements OWSProvider<WCSRequestType> {
         return singletonMap( "example", WCSProvider.class.getResource( "/META-INF/schemas/wcs/3.0.0/example.xml" ) );
     }
 
+    @Override
+    public String getConfigWizardView() {
+        return null;
+    }
+
     public ImplementationMetadata<WCSRequestType> getImplementationMetadata() {
         return IMPLEMENTATION_METADATA;
     }

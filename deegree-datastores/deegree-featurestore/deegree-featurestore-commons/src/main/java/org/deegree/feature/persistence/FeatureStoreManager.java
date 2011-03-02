@@ -95,7 +95,7 @@ public class FeatureStoreManager extends AbstractResourceManager<FeatureStore> {
         return new Class[] { ProxyUtils.class, ConnectionManager.class, FunctionManager.class };
     }
 
-    @ConsoleManaged(startPage = "/console/featurestore/buttons")
+    @ConsoleManaged(startPage = "/console/featurestore/buttons", wizardPage ="/")
     static class FeatureStoreManagerMetadata extends DefaultResourceManagerMetadata<FeatureStore> {
         FeatureStoreManagerMetadata( DeegreeWorkspace workspace ) {
             super( "feature stores", "datasources/feature/", FeatureStoreProvider.class, workspace );

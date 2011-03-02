@@ -279,6 +279,22 @@ public class ConfigManager {
         }
     }
 
+    public String startWizard() {
+
+        String nextView = "/console/jsf/wizard";
+
+        ResourceProvider rp = null;
+        for ( ResourceProvider p : currentResourceManager.metadata.getResourceProviders() ) {
+            if ( p.getConfigNamespace().endsWith( newConfigType ) ) {
+                rp = p;
+            }
+        }
+        if ( rp != null && rp.getConfigWizardView() != null ) {
+            nextView = rp.getConfigWizardView();
+        }
+        return nextView;
+    }
+
     public String createConfig() {
         File dir = new File( OGCFrontController.getServiceWorkspace().getLocation(),
                              currentResourceManager.metadata.getPath() );
@@ -346,8 +362,7 @@ public class ConfigManager {
     }
 
     public static ConfigManager getApplicationInstance() {
-        return (ConfigManager) FacesContext.getCurrentInstance().getExternalContext().getApplicationMap().get(
-                                                                                                               "configManager" );
+        return (ConfigManager) FacesContext.getCurrentInstance().getExternalContext().getApplicationMap().get( "configManager" );
     }
 
     public List<String> getWorkspaceList() {

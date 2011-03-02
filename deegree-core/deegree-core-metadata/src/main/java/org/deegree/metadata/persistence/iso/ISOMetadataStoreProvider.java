@@ -93,6 +93,11 @@ public class ISOMetadataStoreProvider implements MetadataStoreProvider {
     }
 
     @Override
+    public String getConfigWizardView() {
+        return null;
+    }
+
+    @Override
     public String[] getCreateStatements( URL configURL )
                             throws UnsupportedEncodingException, IOException {
         return getDefaultCreateStatements();
