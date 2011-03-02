@@ -54,15 +54,6 @@ public class DefaultResourceManagerMetadata<T extends Resource> implements Resou
 
     private final ArrayList<ExtendedResourceProvider<T>> providers = new ArrayList<ExtendedResourceProvider<T>>();
 
-    // public DefaultResourceManagerMetadata( String name, String path,
-    // ServiceLoader<? extends ExtendedResourceProvider<T>> loader ) {
-    // this.name = name;
-    // this.path = path;
-    // for ( ExtendedResourceProvider<T> p : loader ) {
-    // providers.add( p );
-    // }
-    // }
-
     public DefaultResourceManagerMetadata( String name, String path, Class<? extends ExtendedResourceProvider<T>> clz,
                                            DeegreeWorkspace workspace ) {
         this.name = name;

@@ -98,6 +98,13 @@ public class DeegreeWorkspace {
 
     private ClassLoader moduleClassLoader;
 
+    /**
+     * @return a list of the currently loaded resource managers, never null
+     */
+    public List<ResourceManager> getResourceManagers() {
+        return new ArrayList<ResourceManager>( managers );
+    }
+
     private void load() {
         // setup classloader
         File modules = new File( dir, "modules" );
