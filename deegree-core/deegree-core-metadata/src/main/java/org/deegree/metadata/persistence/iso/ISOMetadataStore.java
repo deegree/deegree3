@@ -253,14 +253,14 @@ public class ISOMetadataStore implements MetadataStore {
                             throws MetadataStoreException {
 
         String operationName = "getRecords";
-        LOG.info( Messages.getMessage( "INFO_EXEC", operationName ) );
-        PostGISMappingsISODC mapping = new PostGISMappingsISODC();
-        PostGISWhereBuilder builder = null;
+        LOG.debug( Messages.getMessage( "INFO_EXEC", operationName ) );
         Connection conn = null;
         MetadataResultSet result = null;
 
         try {
             conn = ConnectionManager.getConnection( connectionId );
+            PostGISMappingsISODC mapping = new PostGISMappingsISODC();
+            PostGISWhereBuilder builder = null;
             builder = new PostGISWhereBuilder( mapping, (OperatorFilter) query.getFilter(), query.getSorting(),
                                                useLegacyPredicates );
 
@@ -291,7 +291,7 @@ public class ISOMetadataStore implements MetadataStore {
     public int getRecordCount( MetadataQuery query )
                             throws MetadataStoreException {
         String resultTypeName = "hits";
-        LOG.info( Messages.getMessage( "INFO_EXEC", "do " + resultTypeName + " on getRecords" ) );
+        LOG.debug( Messages.getMessage( "INFO_EXEC", "do " + resultTypeName + " on getRecords" ) );
         ResultSet rs = null;
         PreparedStatement ps = null;
         int countRows = 0;
@@ -331,7 +331,7 @@ public class ISOMetadataStore implements MetadataStore {
     private MetadataResultSet doResultsOnGetRecord( MetadataQuery recordStoreOptions, PostGISWhereBuilder builder,
                                                     Connection conn )
                             throws MetadataStoreException {
-        LOG.info( Messages.getMessage( "INFO_EXEC", "do results on getRecords" ) );
+        LOG.debug( Messages.getMessage( "INFO_EXEC", "do results on getRecords" ) );
         ResultSet rs = null;
         PreparedStatement preparedStatement = null;
         ExecuteStatements exe = new ExecuteStatements();
@@ -356,7 +356,7 @@ public class ISOMetadataStore implements MetadataStore {
 
         String operationName = "getRecordsById";
 
-        LOG.info( Messages.getMessage( "INFO_EXEC", operationName ) );
+        LOG.debug( Messages.getMessage( "INFO_EXEC", operationName ) );
 
         ResultSet rs = null;
         Connection conn = null;
