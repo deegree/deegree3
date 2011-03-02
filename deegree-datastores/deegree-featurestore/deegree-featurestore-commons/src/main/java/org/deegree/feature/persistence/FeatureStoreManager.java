@@ -35,6 +35,11 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.feature.persistence;
 
+import static org.deegree.commons.jdbc.ConnectionManager.addConnection;
+import static org.slf4j.LoggerFactory.getLogger;
+
+import java.io.File;
+
 import org.deegree.commons.annotations.ConsoleManaged;
 import org.deegree.commons.config.AbstractResourceManager;
 import org.deegree.commons.config.DeegreeWorkspace;
@@ -44,7 +49,9 @@ import org.deegree.commons.config.ResourceManagerMetadata;
 import org.deegree.commons.config.WorkspaceInitializationException;
 import org.deegree.commons.jdbc.ConnectionManager;
 import org.deegree.commons.utils.ProxyUtils;
+import org.deegree.commons.utils.TempFileManager;
 import org.deegree.filter.function.FunctionManager;
+import org.slf4j.Logger;
 
 /**
  * Entry point for creating and retrieving {@link FeatureStore} providers and instances.
@@ -56,12 +63,30 @@ import org.deegree.filter.function.FunctionManager;
  */
 public class FeatureStoreManager extends AbstractResourceManager<FeatureStore> {
 
+    private static final Logger LOG = getLogger( FeatureStoreManager.class );
+
     private FeatureStoreManagerMetadata metadata;
 
     @Override
     public void startup( DeegreeWorkspace workspace )
                             throws WorkspaceInitializationException {
         metadata = new FeatureStoreManagerMetadata( workspace );
+
+        // ConnectionManager mgr = workspace.getSubsystemManager(ConnectionManager.class );
+        // lockdb stuff
+        String lockDb = new File( TempFileManager.getBaseDir(), "lockdb" ).getAbsolutePath();
+        LOG.info( "Using '" + lockDb + "' for h2 lock database." );
+
+        try {
+            Class.forName( "org.h2.Driver" );
+        } catch ( ClassNotFoundException e ) {
+            LOG.error( "Unable to load h2 driver class." );
+        }
+
+        // TODO: mgr.
+        addConnection( "LOCK_DB", "jdbc:h2:" + lockDb, "SA", "", 0, 10 );
+
+        // stores startup
         super.startup( workspace );
     }
 

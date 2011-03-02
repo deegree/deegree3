@@ -49,6 +49,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.ServiceLoader;
 import java.util.Set;
 
 import javax.xml.bind.JAXBException;
@@ -61,7 +62,6 @@ import org.deegree.commons.config.ResourceProvider;
 import org.deegree.commons.i18n.Messages;
 import org.deegree.commons.jdbc.jaxb.JDBCConnection;
 import org.deegree.commons.utils.ProxyUtils;
-import org.deegree.commons.utils.TempFileManager;
 import org.deegree.commons.xml.jaxb.JAXBUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -88,32 +88,12 @@ public class ConnectionManager implements ResourceManager, ResourceProvider {
 
     private static Map<String, ConnectionPool> idToPools = new HashMap<String, ConnectionPool>();
 
-    // TODO find a better solution then this static connection
-    private static ConnectionPool h2conn;
-
-    static {
-        String lockDb = new File( TempFileManager.getBaseDir(), "lockdb" ).getAbsolutePath();
-        LOG.info( "Using '" + lockDb + "' for h2 lock database." );
-
-        try {
-            Class.forName( "org.h2.Driver" );
-        } catch ( ClassNotFoundException e ) {
-            LOG.error( "Unable to load h2 driver class." );
-        }
-
-        h2conn = getConnection( "LOCK_DB", "jdbc:h2:" + lockDb, "SA", "", 0, 10 );
-        idToPools.put( "LOCK_DB", h2conn );
-    }
-
     /**
      * Initializes the {@link ConnectionManager} by loading all JDBC pool configurations from the given directory.
      * 
      * @param jdbcDir
      */
     public void init( File jdbcDir, DeegreeWorkspace workspace ) {
-
-        idToPools.put( "LOCK_DB", h2conn );
-
         if ( !jdbcDir.exists() ) {
             LOG.info( "No 'jdbc' directory -- skipping initialization of JDBC connection pools." );
             return;
@@ -146,17 +126,6 @@ public class ConnectionManager implements ResourceManager, ResourceProvider {
             idToPools.remove( connid ).destroy();
         } catch ( Exception e ) {
             LOG.debug( "Exception caught shutting down connection pool: " + e.getMessage(), e );
-        }
-    }
-
-    /**
-     * 
-     */
-    public static void destroyLockdb() {
-        try {
-            h2conn.destroy();
-        } catch ( Exception e ) {
-            LOG.debug( "Exception caught shutting down h2 lockdb connection pool: " + e.getMessage(), e );
         }
     }
 
@@ -274,41 +243,12 @@ public class ConnectionManager implements ResourceManager, ResourceProvider {
         return idToPools.keySet();
     }
 
-    /**
-     * Adds a connection pool as specified in the parameters.
-     * 
-     * @param connId
-     * @param url
-     * @param user
-     * @param password
-     * @param poolMinSize
-     * @param poolMaxSize
-     */
-    private static ConnectionPool getConnection( String connId, String url, String user, String password,
-                                                 int poolMinSize, int poolMaxSize ) {
-
-        ConnectionPool pool = null;
-        synchronized ( ConnectionManager.class ) {
-            LOG.debug( Messages.getMessage( "JDBC_SETTING_UP_CONNECTION_POOL", connId, url, user, poolMinSize,
-                                            poolMaxSize ) );
-            if ( idToPools.containsKey( connId ) ) {
-                throw new IllegalArgumentException( Messages.getMessage( "JDBC_DUPLICATE_ID", connId ) );
-            }
-            // TODO check callers for read only flag
-            pool = new ConnectionPool( connId, url, user, password, false, poolMinSize, poolMaxSize );
-
-        }
-        return pool;
-    }
-
     public void shutdown() {
         for ( String id : idToPools.keySet() ) {
-            if ( !id.equals( "LOCK_DB" ) ) {
-                try {
-                    idToPools.get( id ).destroy();
-                } catch ( Exception e ) {
-                    LOG.debug( "Exception caught shutting down connection pool: " + e.getMessage(), e );
-                }
+            try {
+                idToPools.get( id ).destroy();
+            } catch ( Exception e ) {
+                LOG.debug( "Exception caught shutting down connection pool: " + e.getMessage(), e );
             }
         }
         idToPools.clear();
@@ -316,15 +256,10 @@ public class ConnectionManager implements ResourceManager, ResourceProvider {
 
     public void startup( DeegreeWorkspace workspace ) {
         try {
-            Driver d = (Driver) Class.forName( "com.microsoft.sqlserver.jdbc.SQLServerDriver", true,
-                                               workspace.getModuleClassLoader() ).newInstance();
-            registerDriver( new DriverWrapper( d ) );
-        } catch ( ClassNotFoundException e ) {
-            LOG.debug( "MSSQL driver not found on classpath/in modules." );
-        } catch ( InstantiationException e ) {
-            LOG.debug( "Unable to load MSSQL driver: {}", e.getLocalizedMessage() );
-        } catch ( IllegalAccessException e ) {
-            LOG.debug( "Unable to load MSSQL driver: {}", e.getLocalizedMessage() );
+            for ( Driver d : ServiceLoader.load( Driver.class, workspace.getModuleClassLoader() ) ) {
+                registerDriver( new DriverWrapper( d ) );
+                LOG.info( "Found and loaded {}", d.getClass().getName() );
+            }
         } catch ( SQLException e ) {
             LOG.debug( "Unable to load MSSQL driver: {}", e.getLocalizedMessage() );
         }
