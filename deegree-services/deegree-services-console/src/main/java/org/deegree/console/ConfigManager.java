@@ -56,7 +56,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.ServiceLoader;
 
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
@@ -227,10 +226,7 @@ public class ConfigManager {
         resourceManagers = new LinkedList<ResourceManager>();
         resourceManagerMap = new HashMap<String, ResourceManager>();
 
-        ServiceLoader<org.deegree.commons.config.ResourceManager> loaded;
-        loaded = ServiceLoader.load( org.deegree.commons.config.ResourceManager.class,
-                                     getServiceWorkspace().getModuleClassLoader() );
-        for ( org.deegree.commons.config.ResourceManager mgr : loaded ) {
+        for ( org.deegree.commons.config.ResourceManager mgr : getServiceWorkspace().getResourceManagers() ) {
             ResourceManagerMetadata<? extends Resource> md = mgr.getMetadata();
             if ( md != null ) {
                 ResourceManager mng = new ResourceManager( getViewForMetadata( md ), md );
