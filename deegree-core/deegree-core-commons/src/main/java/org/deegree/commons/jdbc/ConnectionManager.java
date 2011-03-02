@@ -36,12 +36,14 @@
 
 package org.deegree.commons.jdbc;
 
+import static java.sql.DriverManager.registerDriver;
 import static java.util.Collections.singletonMap;
 
 import java.io.File;
 import java.io.FilenameFilter;
 import java.net.URL;
 import java.sql.Connection;
+import java.sql.Driver;
 import java.sql.SQLException;
 import java.util.Collections;
 import java.util.HashMap;
@@ -137,22 +139,6 @@ public class ConnectionManager implements ResourceManager, ResourceProvider {
             }
         }
         LOG.info( "" );
-    }
-
-    /**
-     * 
-     */
-    public static void destroy() {
-        for ( String id : idToPools.keySet() ) {
-            if ( !id.equals( "LOCK_DB" ) ) {
-                try {
-                    idToPools.get( id ).destroy();
-                } catch ( Exception e ) {
-                    LOG.debug( "Exception caught shutting down connection pool: " + e.getMessage(), e );
-                }
-            }
-        }
-        idToPools.clear();
     }
 
     public static void destroy( String connid ) {
@@ -316,10 +302,32 @@ public class ConnectionManager implements ResourceManager, ResourceProvider {
     }
 
     public void shutdown() {
-        destroy();
+        for ( String id : idToPools.keySet() ) {
+            if ( !id.equals( "LOCK_DB" ) ) {
+                try {
+                    idToPools.get( id ).destroy();
+                } catch ( Exception e ) {
+                    LOG.debug( "Exception caught shutting down connection pool: " + e.getMessage(), e );
+                }
+            }
+        }
+        idToPools.clear();
     }
 
     public void startup( DeegreeWorkspace workspace ) {
+        try {
+            Driver d = (Driver) Class.forName( "com.microsoft.sqlserver.jdbc.SQLServerDriver", true,
+                                               workspace.getModuleClassLoader() ).newInstance();
+            registerDriver( new DriverWrapper( d ) );
+        } catch ( ClassNotFoundException e ) {
+            LOG.debug( "MSSQL driver not found on classpath/in modules." );
+        } catch ( InstantiationException e ) {
+            LOG.debug( "Unable to load MSSQL driver: {}", e.getLocalizedMessage() );
+        } catch ( IllegalAccessException e ) {
+            LOG.debug( "Unable to load MSSQL driver: {}", e.getLocalizedMessage() );
+        } catch ( SQLException e ) {
+            LOG.debug( "Unable to load MSSQL driver: {}", e.getLocalizedMessage() );
+        }
         init( new File( workspace.getLocation(), "jdbc" ), workspace );
     }
 

@@ -214,7 +214,9 @@ public class PostGISFeatureStoreTest {
             return;
         }
 
-        ConnectionManager.addConnection( new URL( "file:/home/schneider/.deegree/deegree-inspire-node-1.1/jdbc/testconn.xml" ),
+        ConnectionManager.addConnection(
+                                         new URL(
+                                                  "file:/home/schneider/.deegree/deegree-inspire-node-1.1/jdbc/testconn.xml" ),
                                          "testconn", null );
         PostGISFeatureStoreProvider provider = new PostGISFeatureStoreProvider();
         FeatureStore fs = provider.create( new URL(
@@ -423,7 +425,7 @@ public class PostGISFeatureStoreTest {
             FeatureCollection fc = rs.toCollection();
             print( fc );
         } finally {
-            ConnectionManager.destroy();
+            ConnectionManager.destroy( "philosopher-db" );
         }
     }
 
