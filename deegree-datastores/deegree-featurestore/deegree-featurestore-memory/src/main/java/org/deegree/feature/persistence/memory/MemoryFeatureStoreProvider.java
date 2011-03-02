@@ -80,7 +80,7 @@ import org.slf4j.LoggerFactory;
  * 
  * @version $Revision$, $Date$
  */
-public class MemoryFeatureStoreProvider implements FeatureStoreProvider<MemoryFeatureStore> {
+public class MemoryFeatureStoreProvider implements FeatureStoreProvider {
 
     private static final Logger LOG = LoggerFactory.getLogger( MemoryFeatureStoreProvider.class );
 

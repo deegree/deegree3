@@ -70,7 +70,7 @@ import org.slf4j.LoggerFactory;
  * 
  * @version $Revision$, $Date$
  */
-public class OracleFeatureStoreProvider implements FeatureStoreProvider<OracleFeatureStore> {
+public class OracleFeatureStoreProvider implements FeatureStoreProvider {
 
     private static final Logger LOG = LoggerFactory.getLogger( OracleFeatureStoreProvider.class );
 

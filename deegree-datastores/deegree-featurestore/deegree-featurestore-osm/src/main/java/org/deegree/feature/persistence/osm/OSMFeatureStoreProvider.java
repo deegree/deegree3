@@ -56,7 +56,7 @@ import org.deegree.feature.persistence.FeatureStoreProvider;
  * 
  * @version $Revision$, $Date$
  */
-public class OSMFeatureStoreProvider implements FeatureStoreProvider<OSMFeatureStore> {
+public class OSMFeatureStoreProvider implements FeatureStoreProvider {
 
     private static final String CONFIG_NS = "http://www.deegree.org/datasource/feature/osm";
 

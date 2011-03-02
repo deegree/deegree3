@@ -72,9 +72,8 @@ public class FeatureStoreManager extends AbstractResourceManager<FeatureStore> {
 
     @ConsoleManaged(startPage = "/console/featurestore/buttons")
     static class FeatureStoreManagerMetadata extends DefaultResourceManagerMetadata<FeatureStore> {
-        @SuppressWarnings("unchecked")
         FeatureStoreManagerMetadata( DeegreeWorkspace workspace ) {
-            super( "feature stores", "datasources/feature/", (Class) FeatureStoreProvider.class, workspace );
+            super( "feature stores", "datasources/feature/", FeatureStoreProvider.class, workspace );
         }
     }
 

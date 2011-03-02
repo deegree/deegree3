@@ -71,9 +71,8 @@ public class MetadataStoreManager extends AbstractResourceManager<MetadataStore>
 
     @ConsoleManaged(startPage = "/console/metadatastore/buttons")
     static class MetadataStoreManagerMetadata extends DefaultResourceManagerMetadata<MetadataStore> {
-        @SuppressWarnings("unchecked")
         public MetadataStoreManagerMetadata( DeegreeWorkspace workspace ) {
-            super( "metadata stores", "datasources/metadata/", (Class) MetadataStoreProvider.class, workspace );
+            super( "metadata stores", "datasources/metadata/", MetadataStoreProvider.class, workspace );
         }
     }
 

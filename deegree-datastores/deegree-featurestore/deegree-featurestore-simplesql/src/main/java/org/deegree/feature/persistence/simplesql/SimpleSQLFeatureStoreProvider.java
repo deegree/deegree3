@@ -66,7 +66,7 @@ import org.slf4j.LoggerFactory;
  * 
  * @version $Revision$, $Date$
  */
-public class SimpleSQLFeatureStoreProvider implements FeatureStoreProvider<SimpleSQLFeatureStore> {
+public class SimpleSQLFeatureStoreProvider implements FeatureStoreProvider {
 
     private static final Logger LOG = LoggerFactory.getLogger( SimpleSQLFeatureStoreProvider.class );
 

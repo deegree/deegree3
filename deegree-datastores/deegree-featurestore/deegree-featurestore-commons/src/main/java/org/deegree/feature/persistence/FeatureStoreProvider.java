@@ -48,7 +48,7 @@ import org.deegree.commons.config.ExtendedResourceProvider;
  * 
  * @version $Revision$, $Date$
  */
-public interface FeatureStoreProvider<T extends FeatureStore> extends ExtendedResourceProvider<T> {
+public interface FeatureStoreProvider extends ExtendedResourceProvider<FeatureStore> {
 
     // specializes type parameter
 

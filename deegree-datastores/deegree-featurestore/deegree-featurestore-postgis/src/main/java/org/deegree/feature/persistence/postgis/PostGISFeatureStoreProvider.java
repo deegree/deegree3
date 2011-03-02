@@ -65,7 +65,7 @@ import org.slf4j.LoggerFactory;
  * 
  * @version $Revision$, $Date$
  */
-public class PostGISFeatureStoreProvider implements FeatureStoreProvider<PostGISFeatureStore> {
+public class PostGISFeatureStoreProvider implements FeatureStoreProvider {
 
     private static final Logger LOG = LoggerFactory.getLogger( PostGISFeatureStoreProvider.class );
 
