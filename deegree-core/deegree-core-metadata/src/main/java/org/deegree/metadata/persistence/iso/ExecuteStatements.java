@@ -35,6 +35,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.metadata.persistence.iso;
 
+import static org.deegree.commons.jdbc.ConnectionManager.Type.MSSQL;
+import static org.deegree.commons.jdbc.ConnectionManager.Type.PostgreSQL;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.sql.Connection;
@@ -47,13 +49,14 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.deegree.commons.jdbc.ConnectionManager.Type;
 import org.deegree.commons.utils.JDBCUtils;
 import org.deegree.commons.utils.time.DateUtils;
+import org.deegree.filter.sql.AbstractWhereBuilder;
 import org.deegree.filter.sql.DBField;
 import org.deegree.filter.sql.Join;
 import org.deegree.filter.sql.PropertyNameMapping;
 import org.deegree.filter.sql.expression.SQLLiteral;
-import org.deegree.filter.sql.postgis.PostGISWhereBuilder;
 import org.deegree.metadata.i18n.Messages;
 import org.deegree.metadata.persistence.GenericDatabaseExecution;
 import org.deegree.metadata.persistence.MetadataQuery;
@@ -72,14 +75,27 @@ public class ExecuteStatements implements GenericDatabaseExecution {
 
     private static final Logger LOG = getLogger( ExecuteStatements.class );
 
-    private static final String databaseTable = PostGISMappingsISODC.DatabaseTables.datasets.name();
+    private String databaseTable = PostGISMappingsISODC.DatabaseTables.datasets.name();
 
-    private static final String id = PostGISMappingsISODC.CommonColumnNames.id.name();
+    private String id = PostGISMappingsISODC.CommonColumnNames.id.name();
 
-    private static final String rf = PostGISMappingsISODC.CommonColumnNames.recordfull.name();
+    private String rf = PostGISMappingsISODC.CommonColumnNames.recordfull.name();
+
+    public ExecuteStatements( Type dbType ) {
+        if ( dbType == PostgreSQL ) {
+            databaseTable = PostGISMappingsISODC.DatabaseTables.datasets.name();
+            id = PostGISMappingsISODC.CommonColumnNames.id.name();
+            rf = PostGISMappingsISODC.CommonColumnNames.recordfull.name();
+        }
+        if ( dbType == MSSQL ) {
+            databaseTable = MSSQLMappingsISODC.DatabaseTables.datasets.name();
+            id = MSSQLMappingsISODC.CommonColumnNames.id.name();
+            rf = MSSQLMappingsISODC.CommonColumnNames.recordfull.name();
+        }
+    }
 
     @Override
-    public int executeDeleteStatement( Connection connection, PostGISWhereBuilder builder )
+    public int executeDeleteStatement( Connection connection, AbstractWhereBuilder builder )
                             throws MetadataStoreException {
 
         LOG.info( Messages.getMessage( "INFO_EXEC", "delete-statement" ) );
@@ -146,7 +162,7 @@ public class ExecuteStatements implements GenericDatabaseExecution {
     }
 
     private StringBuilder getPreparedStatementDatasetIDs( MetadataQuery query, boolean setDelete,
-                                                          PostGISWhereBuilder builder )
+                                                          AbstractWhereBuilder builder )
                             throws MetadataStoreException {
 
         StringBuilder getDatasetIDs = new StringBuilder( 300 );
@@ -182,7 +198,7 @@ public class ExecuteStatements implements GenericDatabaseExecution {
 
     }
 
-    private void getPSBody( MetadataQuery query, Connection connection, PostGISWhereBuilder builder,
+    private void getPSBody( MetadataQuery query, Connection connection, AbstractWhereBuilder builder,
                             StringBuilder getDatasetIDs )
                             throws MetadataStoreException {
 
@@ -221,7 +237,7 @@ public class ExecuteStatements implements GenericDatabaseExecution {
     }
 
     @Override
-    public PreparedStatement executeGetRecords( MetadataQuery query, PostGISWhereBuilder builder, Connection conn )
+    public PreparedStatement executeGetRecords( MetadataQuery query, AbstractWhereBuilder builder, Connection conn )
                             throws MetadataStoreException {
         PreparedStatement preparedStatement = null;
         java.util.Date date = null;
@@ -281,7 +297,7 @@ public class ExecuteStatements implements GenericDatabaseExecution {
 
     }
 
-    public PreparedStatement executeCounting( MetadataQuery query, PostGISWhereBuilder builder, Connection conn )
+    public PreparedStatement executeCounting( MetadataQuery query, AbstractWhereBuilder builder, Connection conn )
                             throws MetadataStoreException {
         PreparedStatement preparedStatement = null;
         java.util.Date date = null;

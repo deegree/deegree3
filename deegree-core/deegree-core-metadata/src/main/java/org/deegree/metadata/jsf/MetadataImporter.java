@@ -138,15 +138,18 @@ public class MetadataImporter implements Serializable {
                     ta.commit();
                     countInserted++;
                 } catch ( MetadataInspectorException e ) {
+                    e.printStackTrace();
                     // skip
                     fail( file );
                 } catch ( MetadataStoreException e2 ) {
+                    e2.printStackTrace();
                     // skip
                     fail( file );
                 }
             }
 
         } catch ( Throwable t ) {
+            t.printStackTrace();
             fail( file );
             FacesMessage fm = new FacesMessage( SEVERITY_ERROR, "Metadata import failed: " + t.getMessage()
                                                                 + " check file: " + file.getName(), null );

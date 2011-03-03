@@ -1,5 +1,7 @@
 package org.deegree.metadata.persistence.iso;
 
+import static org.deegree.commons.jdbc.ConnectionManager.Type.PostgreSQL;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -11,10 +13,13 @@ import java.util.List;
 import javax.xml.stream.XMLStreamException;
 
 import org.apache.axiom.om.OMElement;
+import org.deegree.commons.jdbc.ConnectionManager.Type;
 import org.deegree.commons.utils.JDBCUtils;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.OperatorFilter;
 import org.deegree.filter.expression.PropertyName;
+import org.deegree.filter.sql.AbstractWhereBuilder;
+import org.deegree.filter.sql.mssql.MSSQLServerWhereBuilder;
 import org.deegree.filter.sql.postgis.PostGISWhereBuilder;
 import org.deegree.metadata.ISORecord;
 import org.deegree.metadata.i18n.Messages;
@@ -28,8 +33,8 @@ import org.deegree.metadata.publication.DeleteTransaction;
 import org.deegree.metadata.publication.InsertTransaction;
 import org.deegree.metadata.publication.MetadataProperty;
 import org.deegree.metadata.publication.UpdateTransaction;
-import org.deegree.protocol.csw.CSWConstants.ResultType;
 import org.deegree.protocol.csw.MetadataStoreException;
+import org.deegree.protocol.csw.CSWConstants.ResultType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -53,12 +58,15 @@ public class ISOMetadataStoreTransaction implements MetadataStoreTransaction {
 
     private final boolean useLegacyPredicates;
 
+    private final Type connectionType;
+
     ISOMetadataStoreTransaction( Connection conn, List<RecordInspector> inspectors, AnyText anyText,
-                                 boolean useLegacyPredicates ) throws SQLException {
+                                 boolean useLegacyPredicates, Type connectionType ) throws SQLException {
         this.conn = conn;
         this.anyText = anyText;
         this.inspectors = inspectors;
         this.useLegacyPredicates = useLegacyPredicates;
+        this.connectionType = connectionType;
         conn.setAutoCommit( false );
     }
 
@@ -77,16 +85,27 @@ public class ISOMetadataStoreTransaction implements MetadataStoreTransaction {
         }
     }
 
+    private AbstractWhereBuilder getWhereBuilder( OperatorFilter filter )
+                            throws FilterEvaluationException {
+        if ( connectionType == PostgreSQL ) {
+            PostGISMappingsISODC mapping = new PostGISMappingsISODC();
+            return new PostGISWhereBuilder( mapping, filter, null, useLegacyPredicates );
+        }
+        if ( connectionType == Type.MSSQL ) {
+            MSSQLMappingsISODC mapping = new MSSQLMappingsISODC();
+            return new MSSQLServerWhereBuilder( mapping, filter, null );
+        }
+        return null;
+    }
+
     @Override
     public int performDelete( DeleteTransaction delete )
                             throws MetadataStoreException {
-        PostGISWhereBuilder builder = null;
 
         try {
-            builder = new PostGISWhereBuilder( new PostGISMappingsISODC(), (OperatorFilter) delete.getConstraint(),
-                                               null, useLegacyPredicates );
+            AbstractWhereBuilder builder = getWhereBuilder( (OperatorFilter) delete.getConstraint() );
 
-            ExecuteStatements execStm = new ExecuteStatements();
+            ExecuteStatements execStm = new ExecuteStatements( connectionType );
             return execStm.executeDeleteStatement( conn, builder );
 
         } catch ( FilterEvaluationException e ) {
@@ -145,23 +164,20 @@ public class ISOMetadataStoreTransaction implements MetadataStoreTransaction {
             result++;
         } else if ( update.getConstraint() != null
                     && ( update.getRecordProperty() != null && update.getRecordProperty().size() > 0 ) ) {
-            PostGISWhereBuilder builder = null;
 
             ResultSet rs = null;
             PreparedStatement preparedStatement = null;
-            ExecuteStatements exe = new ExecuteStatements();
+            ExecuteStatements exe = new ExecuteStatements( connectionType );
             try {
-                System.out.println(update.getConstraint());
-                builder = new PostGISWhereBuilder( new PostGISMappingsISODC(), (OperatorFilter) update.getConstraint(),
-                                                   null, useLegacyPredicates );
-                ExecuteStatements execStm = new ExecuteStatements();
+
+                AbstractWhereBuilder builder = getWhereBuilder( (OperatorFilter) update.getConstraint() );
+                ExecuteStatements execStm = new ExecuteStatements( connectionType );
                 execStm.executeGetRecords( null, builder, conn );
                 preparedStatement = exe.executeGetRecords( null, builder, conn );
                 rs = preparedStatement.executeQuery();
 
                 // get all metadatasets to update
                 ISOMetadataResultSet isoRs = new ISOMetadataResultSet( rs, conn, preparedStatement, anyText );
-                System.out.println("aha");
                 while ( isoRs.next() ) {
                     ISORecord rec = isoRs.getRecord();
                     LOG.debug( "Update record " + rec );

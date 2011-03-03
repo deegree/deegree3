@@ -38,7 +38,7 @@ package org.deegree.metadata.persistence;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 
-import org.deegree.filter.sql.postgis.PostGISWhereBuilder;
+import org.deegree.filter.sql.AbstractWhereBuilder;
 import org.deegree.protocol.csw.MetadataStoreException;
 
 /**
@@ -51,10 +51,10 @@ import org.deegree.protocol.csw.MetadataStoreException;
  */
 public interface GenericDatabaseExecution {
 
-    public int executeDeleteStatement( Connection connection, PostGISWhereBuilder builder )
+    public int executeDeleteStatement( Connection connection, AbstractWhereBuilder builder )
                             throws MetadataStoreException;
 
-    public PreparedStatement executeGetRecords( MetadataQuery recordStoreOptions, PostGISWhereBuilder builder,
+    public PreparedStatement executeGetRecords( MetadataQuery recordStoreOptions, AbstractWhereBuilder builder,
                                                 Connection conn )
                             throws MetadataStoreException;
 

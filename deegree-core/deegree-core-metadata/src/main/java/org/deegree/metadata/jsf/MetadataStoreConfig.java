@@ -35,9 +35,14 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.metadata.jsf;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
@@ -48,6 +53,7 @@ import javax.faces.event.ActionEvent;
 
 import org.deegree.client.core.utils.SQLExecution;
 import org.deegree.commons.config.DeegreeWorkspace;
+import org.deegree.commons.jdbc.ConnectionManager.Type;
 import org.deegree.metadata.persistence.MetadataStore;
 import org.deegree.metadata.persistence.MetadataStoreManager;
 import org.deegree.metadata.persistence.iso.ISOMetadataStore;
@@ -96,13 +102,51 @@ public class MetadataStoreConfig implements Serializable {
         return "/console/metadatastore/importer?faces-redirect=true";
     }
 
+    private List<String> readStatements( URL url )
+                            throws IOException {
+        BufferedReader reader = new BufferedReader( new InputStreamReader( url.openStream(), "UTF-8" ) );
+
+        List<String> stmts = new ArrayList<String>();
+        String currentStmt = "";
+        String line = null;
+        while ( ( line = reader.readLine() ) != null ) {
+            if ( line.startsWith( "--" ) || line.trim().isEmpty() ) {
+                // skip
+            } else if ( line.contains( ";" ) ) {
+                currentStmt += line.substring( 0, line.indexOf( ';' ) );
+                stmts.add( currentStmt );
+                currentStmt = "";
+            } else {
+                currentStmt += line + "\n";
+            }
+        }
+        reader.close();
+        return stmts;
+    }
+
     public String createTables()
                             throws MetadataStoreException {
         ISOMetadataStore ms = (ISOMetadataStore) getMetadataStoreManager().get( getId() );
         String connId = ms.getConnId();
         String[] sql = null;
+        URL url = null;
+        if ( ms.getDBType() == Type.MSSQL ) {
+            url = MetadataStoreConfig.class.getResource( "/org/deegree/metadata/persistence/iso/mssql/create.sql" );
+        }
+        if ( ms.getDBType() == Type.PostgreSQL ) {
+            url = MetadataStoreConfig.class.getResource( "/org/deegree/metadata/persistence/iso/postgis/create.sql" );
+        }
         try {
-            sql = new ISOMetadataStoreProvider().getDefaultCreateStatements();
+            List<String> sqls = readStatements( url );
+            if ( ms.getDBType() == Type.MSSQL ) {
+                url = MetadataStoreConfig.class.getResource( "/org/deegree/metadata/persistence/iso/mssql/create_inspire.sql" );
+            }
+            if ( ms.getDBType() == Type.PostgreSQL ) {
+                url = MetadataStoreConfig.class.getResource( "/org/deegree/metadata/persistence/iso/postgis/create_inspire.sql" );
+            }
+            sqls.addAll( readStatements( url ) );
+
+            sql = sqls.toArray( new String[sqls.size()] );
         } catch ( UnsupportedEncodingException e ) {
             String msg = "Unsupported: " + e.getMessage();
             throw new MetadataStoreException( msg );

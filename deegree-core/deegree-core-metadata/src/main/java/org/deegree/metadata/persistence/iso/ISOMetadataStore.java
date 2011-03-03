@@ -35,6 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.metadata.persistence.iso;
 
+import static org.deegree.commons.jdbc.ConnectionManager.Type.PostgreSQL;
 import static org.deegree.commons.utils.JDBCUtils.close;
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -56,9 +57,12 @@ import org.apache.axiom.om.OMElement;
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.WorkspaceInitializationException;
 import org.deegree.commons.jdbc.ConnectionManager;
+import org.deegree.commons.jdbc.ConnectionManager.Type;
 import org.deegree.commons.utils.JDBCUtils;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.OperatorFilter;
+import org.deegree.filter.sql.AbstractWhereBuilder;
+import org.deegree.filter.sql.mssql.MSSQLServerWhereBuilder;
 import org.deegree.filter.sql.postgis.PostGISWhereBuilder;
 import org.deegree.metadata.ISORecord;
 import org.deegree.metadata.i18n.Messages;
@@ -104,6 +108,8 @@ public class ISOMetadataStore implements MetadataStore {
 
     private ISOMetadataStoreConfig config;
 
+    private Type connectionType;
+
     // TODO remove...just inside for getById
     private static final String datasets = PostGISMappingsISODC.DatabaseTables.datasets.name();
 
@@ -131,6 +137,13 @@ public class ISOMetadataStore implements MetadataStore {
         // String systemStartDate = "2010-11-16";
         // varToValue.put( "${SYSTEM_START_DATE}", systemStartDate );
 
+    }
+
+    /**
+     * @return the db type, null, if unknown
+     */
+    public Type getDBType() {
+        return connectionType;
     }
 
     /*
@@ -194,28 +207,28 @@ public class ISOMetadataStore implements MetadataStore {
         LOG.debug( "init" );
         // lockManager = new DefaultLockManager( this, "LOCK_DB" );
 
-        Connection conn = null;
-        try {
-            Class.forName( "org.postgresql.Driver" );
-            conn = ConnectionManager.getConnection( connectionId );
+        ConnectionManager mgr = workspace.getSubsystemManager( ConnectionManager.class );
+        connectionType = mgr.getType( connectionId );
+        if ( connectionType == PostgreSQL ) {
+            Connection conn = null;
+            try {
+                conn = ConnectionManager.getConnection( connectionId );
 
-            String version = determinePostGISVersion( conn );
-            if ( version.startsWith( "0." ) || version.startsWith( "1.0" ) || version.startsWith( "1.1" )
-                 || version.startsWith( "1.2" ) ) {
-                LOG.debug( Messages.getMessage( "DET_POSTGIS_PREDICATES_LEGACY", version ) );
-                useLegacyPredicates = true;
-            } else {
-                LOG.debug( Messages.getMessage( "DET_POSTGIS_PREDICATES_MODERN", version ) );
+                String version = determinePostGISVersion( conn );
+                if ( version.startsWith( "0." ) || version.startsWith( "1.0" ) || version.startsWith( "1.1" )
+                     || version.startsWith( "1.2" ) ) {
+                    LOG.debug( Messages.getMessage( "DET_POSTGIS_PREDICATES_LEGACY", version ) );
+                    useLegacyPredicates = true;
+                } else {
+                    LOG.debug( Messages.getMessage( "DET_POSTGIS_PREDICATES_MODERN", version ) );
+                }
+
+            } catch ( SQLException e ) {
+                LOG.debug( e.getMessage(), e );
+                throw new WorkspaceInitializationException( e.getMessage(), e );
+            } finally {
+                close( conn );
             }
-
-        } catch ( SQLException e ) {
-            LOG.debug( e.getMessage(), e );
-            throw new WorkspaceInitializationException( e.getMessage(), e );
-        } catch ( ClassNotFoundException e ) {
-            LOG.debug( e.getMessage(), e );
-            throw new WorkspaceInitializationException( e.getMessage(), e );
-        } finally {
-            close( conn );
         }
 
     }
@@ -242,6 +255,20 @@ public class ISOMetadataStore implements MetadataStore {
         return version;
     }
 
+    private AbstractWhereBuilder getWhereBuilder( MetadataQuery query )
+                            throws FilterEvaluationException {
+        if ( connectionType == PostgreSQL ) {
+            PostGISMappingsISODC mapping = new PostGISMappingsISODC();
+            return new PostGISWhereBuilder( mapping, (OperatorFilter) query.getFilter(), query.getSorting(),
+                                            useLegacyPredicates );
+        }
+        if ( connectionType == Type.MSSQL ) {
+            MSSQLMappingsISODC mapping = new MSSQLMappingsISODC();
+            return new MSSQLServerWhereBuilder( mapping, (OperatorFilter) query.getFilter(), query.getSorting() );
+        }
+        return null;
+    }
+
     /*
      * (non-Javadoc)
      * 
@@ -259,10 +286,8 @@ public class ISOMetadataStore implements MetadataStore {
 
         try {
             conn = ConnectionManager.getConnection( connectionId );
-            PostGISMappingsISODC mapping = new PostGISMappingsISODC();
-            PostGISWhereBuilder builder = null;
-            builder = new PostGISWhereBuilder( mapping, (OperatorFilter) query.getFilter(), query.getSorting(),
-                                               useLegacyPredicates );
+
+            AbstractWhereBuilder builder = getWhereBuilder( query );
 
             result = doResultsOnGetRecord( query, builder, conn );
             // break;
@@ -296,15 +321,12 @@ public class ISOMetadataStore implements MetadataStore {
         PreparedStatement ps = null;
         int countRows = 0;
         Connection conn = null;
-        PostGISWhereBuilder builder = null;
-        PostGISMappingsISODC mapping = new PostGISMappingsISODC();
         try {
+            AbstractWhereBuilder builder = getWhereBuilder( query );
 
             conn = ConnectionManager.getConnection( connectionId );
-            builder = new PostGISWhereBuilder( mapping, (OperatorFilter) query.getFilter(), query.getSorting(),
-                                               useLegacyPredicates );
 
-            ps = new ExecuteStatements().executeCounting( query, builder, conn );
+            ps = new ExecuteStatements( connectionType ).executeCounting( query, builder, conn );
             LOG.info( ps.toString() );
             rs = ps.executeQuery();
             rs.next();
@@ -328,13 +350,13 @@ public class ISOMetadataStore implements MetadataStore {
      * The mandatory "resultType" attribute in the GetRecords operation is set to "results".
      * 
      */
-    private MetadataResultSet doResultsOnGetRecord( MetadataQuery recordStoreOptions, PostGISWhereBuilder builder,
+    private MetadataResultSet doResultsOnGetRecord( MetadataQuery recordStoreOptions, AbstractWhereBuilder builder,
                                                     Connection conn )
                             throws MetadataStoreException {
         LOG.debug( Messages.getMessage( "INFO_EXEC", "do results on getRecords" ) );
         ResultSet rs = null;
         PreparedStatement preparedStatement = null;
-        ExecuteStatements exe = new ExecuteStatements();
+        ExecuteStatements exe = new ExecuteStatements( connectionType );
         try {
             preparedStatement = exe.executeGetRecords( recordStoreOptions, builder, conn );
             rs = preparedStatement.executeQuery();
@@ -434,7 +456,7 @@ public class ISOMetadataStore implements MetadataStore {
             }
             // hard coded because there is no configuration planned
             ri.add( new HierarchyLevelInspector() );
-            ta = new ISOMetadataStoreTransaction( conn, ri, config.getAnyText(), useLegacyPredicates );
+            ta = new ISOMetadataStoreTransaction( conn, ri, config.getAnyText(), useLegacyPredicates, connectionType );
         } catch ( SQLException e ) {
             throw new MetadataStoreException( e.getMessage() );
         }
