@@ -52,7 +52,6 @@ import org.deegree.metadata.persistence.MetadataInspectorException;
 import org.deegree.metadata.persistence.iso.generating.generatingelements.GenerateOMElement;
 import org.deegree.metadata.persistence.iso.parsing.IdUtils;
 import org.deegree.metadata.persistence.iso19115.jaxb.FileIdentifierInspector;
-import org.deegree.protocol.csw.MetadataStoreException;
 import org.slf4j.Logger;
 
 /**
@@ -89,53 +88,46 @@ public class FIInspector implements RecordInspector {
      *            the id-attribute, can be <Code>null<Code>.
      * @param uuid
      *            the uuid-attribure, can be <Code>null</Code>.
-     * @param isFileIdentifierExistenceDesired
-     *            true, if the existence of the fileIdentifier is desired in backend.
      * @return the new fileIdentifier.
-     * @throws MetadataStoreException
      */
     private List<String> determineFileIdentifier( String[] fi, List<String> rsList, String id, String uuid )
                             throws MetadataInspectorException {
         List<String> idList = new ArrayList<String>();
         if ( fi.length != 0 ) {
             for ( String f : fi ) {
-                LOG.info( Messages.getMessage( "INFO_FI_AVAILABLE", f ) );
-                idList.add( f );
+                LOG.info( Messages.getMessage( "INFO_FI_AVAILABLE", f.trim() ) );
+                idList.add( f.trim() );
             }
             return idList;
-        } else {
-            if ( config != null && !config.isRejectEmpty() ) {
-                if ( rsList.size() == 0 && id == null && uuid == null ) {
+        }
+        if ( config != null && !config.isRejectEmpty() ) {
+            if ( rsList.size() == 0 && id == null && uuid == null ) {
 
-                    LOG.debug( Messages.getMessage( "INFO_FI_GENERATE_NEW" ) );
-                    idList.add( IdUtils.newInstance( conn ).generateUUID() );
-                    LOG.debug( Messages.getMessage( "INFO_FI_NEW", idList ) );
-                } else {
-                    if ( rsList.size() == 0 && id != null ) {
-                        LOG.debug( Messages.getMessage( "INFO_FI_DEFAULT_ID", id ) );
-                        idList.add( id );
-                    } else if ( rsList.size() == 0 && uuid != null ) {
-                        LOG.debug( Messages.getMessage( "INFO_FI_DEFAULT_UUID", uuid ) );
-                        idList.add( uuid );
-                    } else {
-                        LOG.debug( Messages.getMessage( "INFO_FI_DEFAULT_RSID", rsList.get( 0 ) ) );
-                        idList.add( rsList.get( 0 ) );
-                    }
-                }
-                return idList;
+                LOG.debug( Messages.getMessage( "INFO_FI_GENERATE_NEW" ) );
+                idList.add( IdUtils.newInstance( conn ).generateUUID() );
+                LOG.debug( Messages.getMessage( "INFO_FI_NEW", idList ) );
             } else {
-                if ( rsList.size() == 0 ) {
-                    String msg = Messages.getMessage( "ERROR_REJECT_FI" );
-                    LOG.debug( msg );
-                    throw new MetadataInspectorException( msg );
+                if ( rsList.size() == 0 && id != null ) {
+                    LOG.debug( Messages.getMessage( "INFO_FI_DEFAULT_ID", id ) );
+                    idList.add( id );
+                } else if ( rsList.size() == 0 && uuid != null ) {
+                    LOG.debug( Messages.getMessage( "INFO_FI_DEFAULT_UUID", uuid ) );
+                    idList.add( uuid );
                 } else {
                     LOG.debug( Messages.getMessage( "INFO_FI_DEFAULT_RSID", rsList.get( 0 ) ) );
                     idList.add( rsList.get( 0 ) );
-                    return idList;
                 }
             }
-
+            return idList;
         }
+        if ( rsList.size() == 0 ) {
+            String msg = Messages.getMessage( "ERROR_REJECT_FI" );
+            LOG.debug( msg );
+            throw new MetadataInspectorException( msg );
+        }
+        LOG.debug( Messages.getMessage( "INFO_FI_DEFAULT_RSID", rsList.get( 0 ) ) );
+        idList.add( rsList.get( 0 ) );
+        return idList;
 
     }
 
@@ -156,7 +148,8 @@ public class FIInspector implements RecordInspector {
                                                              new XPath( "./gmd:fileIdentifier/gco:CharacterString",
                                                                         nsContext ) );
 
-        OMElement sv_service_OR_md_dataIdentification = a.getElement( record,
+        OMElement sv_service_OR_md_dataIdentification = a.getElement(
+                                                                      record,
                                                                       new XPath(
                                                                                  "./gmd:identificationInfo/srv:SV_ServiceIdentification | ./gmd:identificationInfo/gmd:MD_DataIdentification",
                                                                                  nsContext ) );
@@ -167,7 +160,8 @@ public class FIInspector implements RecordInspector {
                                                                nsContext ) );
         List<String> resourceIdentifierList = new ArrayList<String>();
         for ( OMElement resourceElement : identifier ) {
-            String resourceIdentifier = a.getNodeAsString( resourceElement,
+            String resourceIdentifier = a.getNodeAsString(
+                                                           resourceElement,
                                                            new XPath(
                                                                       "./gmd:MD_Identifier/gmd:code/gco:CharacterString | ./gmd:RS_Identifier/gmd:code/gco:CharacterString",
                                                                       nsContext ), null );
