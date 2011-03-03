@@ -35,6 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.commons.processors;
 
+import static org.apache.commons.io.IOCase.INSENSITIVE;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.File;
@@ -52,6 +53,9 @@ import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.filefilter.IOFileFilter;
+import org.apache.commons.io.filefilter.NameFileFilter;
+import org.apache.commons.io.filefilter.NotFileFilter;
 import org.deegree.commons.annotations.ConsoleManaged;
 import org.slf4j.Logger;
 
@@ -92,8 +96,10 @@ public class ConsoleManagedProcessor extends AbstractProcessor {
         ConsoleManaged managed = e.getAnnotation( ConsoleManaged.class );
 
         if ( managed != null ) {
+            IOFileFilter filter = new NameFileFilter( new String[] { "CVS", ".svn" }, INSENSITIVE );
+            filter = new NotFileFilter( filter );
             FileUtils.copyDirectory( new File( basedir, managed.directory() ),
-                                     new File( "target/classes/META-INF/deegree/console" ) );
+                                     new File( "target/classes/META-INF/deegree/console" ), filter );
         }
 
         for ( Element e2 : e.getEnclosedElements() ) {
@@ -111,8 +117,7 @@ public class ConsoleManagedProcessor extends AbstractProcessor {
             try {
                 find( e );
             } catch ( IOException e1 ) {
-                // TODO Auto-generated catch block
-                e1.printStackTrace();
+                LOG.warn( "IO error when copying console files: {}", e1.getLocalizedMessage() );
             }
         }
 
