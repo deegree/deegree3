@@ -39,10 +39,11 @@ package org.deegree.feature.persistence;
 import java.io.IOException;
 import java.net.URL;
 
-import javax.xml.bind.JAXBException;
 import javax.xml.stream.FactoryConfigurationError;
 import javax.xml.stream.XMLStreamException;
 
+import org.deegree.commons.config.DeegreeWorkspace;
+import org.deegree.commons.config.WorkspaceInitializationException;
 import org.deegree.commons.tom.ReferenceResolvingException;
 import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.cs.exceptions.UnknownCRSException;
@@ -72,9 +73,11 @@ public class DefaultLockManagerTest {
     @Before
     public void setUp()
                             throws XMLParsingException, XMLStreamException, UnknownCRSException,
-                            FactoryConfigurationError, IOException, JAXBException, FeatureStoreException,
-                            ReferenceResolvingException, ClassCastException, ClassNotFoundException,
-                            InstantiationException, IllegalAccessException {
+                            FactoryConfigurationError, IOException, FeatureStoreException, ReferenceResolvingException,
+                            ClassCastException, ClassNotFoundException, InstantiationException, IllegalAccessException,
+                            WorkspaceInitializationException {
+
+        DeegreeWorkspace.getInstance().initAll();
 
         String schemaURL = this.getClass().getResource( "/org/deegree/gml/feature/testdata/schema/Philosopher.xsd" ).toString();
         ApplicationSchemaXSDDecoder adapter = new ApplicationSchemaXSDDecoder( GMLVersion.GML_31, null, schemaURL );
@@ -86,8 +89,7 @@ public class DefaultLockManagerTest {
     }
 
     @Test
-    public void testLockAllAndRelease()
-                            throws FeatureStoreException {
+    public void testLockAllAndRelease() {
 
         // // acquire lock on all Philosopher features
         // QName ftName = new QName( "http://www.deegree.org/app", "Philosopher" );

@@ -51,6 +51,8 @@ import javax.xml.stream.XMLStreamWriter;
 
 import junit.framework.Assert;
 
+import org.deegree.commons.config.DeegreeWorkspace;
+import org.deegree.commons.config.WorkspaceInitializationException;
 import org.deegree.commons.tom.ReferenceResolvingException;
 import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.cs.exceptions.TransformationException;
@@ -70,6 +72,7 @@ import org.deegree.gml.GMLStreamWriter;
 import org.deegree.gml.GMLVersion;
 import org.deegree.gml.feature.schema.ApplicationSchemaXSDDecoder;
 import org.deegree.protocol.wfs.getfeature.TypeName;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -91,14 +94,21 @@ public class MemoryFeatureStoreTest {
     public void setUp()
                             throws XMLParsingException, XMLStreamException, UnknownCRSException,
                             FactoryConfigurationError, IOException, FeatureStoreException, ReferenceResolvingException,
-                            ClassCastException, ClassNotFoundException, InstantiationException, IllegalAccessException {
+                            ClassCastException, ClassNotFoundException, InstantiationException, IllegalAccessException,
+                            WorkspaceInitializationException {
 
+        DeegreeWorkspace.getInstance().initAll();
         String schemaURL = this.getClass().getResource( "/org/deegree/gml/feature/testdata/schema/Philosopher.xsd" ).toString();
         ApplicationSchemaXSDDecoder adapter = new ApplicationSchemaXSDDecoder( GMLVersion.GML_31, null, schemaURL );
         ApplicationSchema schema = adapter.extractFeatureTypeSchema();
 
         URL docURL = getClass().getResource( BASE_DIR + "Philosopher_FeatureCollection.xml" );
         store = new MemoryFeatureStore( docURL, schema );
+    }
+
+    @After
+    public void shutDown() {
+        DeegreeWorkspace.getInstance().destroyAll();
     }
 
     @Test
