@@ -98,4 +98,8 @@ public class OSMFeatureStoreProvider implements FeatureStoreProvider {
     public Class<? extends ResourceManager>[] getDependencies() {
         return new Class[] { ProxyUtils.class };
     }
+
+    public String getConfigWizardView() {
+        return null;
+    }
 }
