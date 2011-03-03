@@ -35,16 +35,40 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.filter.sql.mssql;
 
+import static java.sql.Types.BOOLEAN;
+
+import java.sql.Types;
+
+import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.OperatorFilter;
 import org.deegree.filter.comparison.PropertyIsLike;
 import org.deegree.filter.expression.PropertyName;
 import org.deegree.filter.sort.SortProperty;
+import org.deegree.filter.spatial.BBOX;
+import org.deegree.filter.spatial.Beyond;
+import org.deegree.filter.spatial.Contains;
+import org.deegree.filter.spatial.Crosses;
+import org.deegree.filter.spatial.DWithin;
+import org.deegree.filter.spatial.Disjoint;
+import org.deegree.filter.spatial.Equals;
+import org.deegree.filter.spatial.Intersects;
+import org.deegree.filter.spatial.Overlaps;
 import org.deegree.filter.spatial.SpatialOperator;
+import org.deegree.filter.spatial.Touches;
+import org.deegree.filter.spatial.Within;
 import org.deegree.filter.sql.AbstractWhereBuilder;
+import org.deegree.filter.sql.PropertyNameMapping;
 import org.deegree.filter.sql.UnmappableException;
+import org.deegree.filter.sql.expression.SQLColumn;
 import org.deegree.filter.sql.expression.SQLExpression;
+import org.deegree.filter.sql.expression.SQLLiteral;
 import org.deegree.filter.sql.expression.SQLOperation;
+import org.deegree.filter.sql.expression.SQLOperationBuilder;
+import org.deegree.filter.sql.islike.IsLikeString;
+import org.deegree.geometry.Geometry;
+import org.deegree.geometry.GeometryTransformer;
+import org.deegree.geometry.io.WKTWriter;
 
 /**
  * {@link AbstractWhereBuilder} implementation for Microsoft SQL Server databases.
@@ -77,24 +101,217 @@ public class MSSQLServerWhereBuilder extends AbstractWhereBuilder {
         build();
     }
 
+    /**
+     * copied from postgis
+     * 
+     * @param op
+     *            comparison operator to be translated, must not be <code>null</code>
+     * @return corresponding SQL expression, never <code>null</code>
+     * @throws UnmappableException
+     *             if translation is not possible (usually due to unmappable property names)
+     * @throws FilterEvaluationException
+     *             if the expression contains invalid {@link PropertyName}s
+     */
     @Override
     protected SQLOperation toProtoSQL( PropertyIsLike op )
                             throws UnmappableException, FilterEvaluationException {
-        // TODO
-        throw new UnsupportedOperationException();
+
+        String literal = op.getLiteral().getValue().toString();
+        String escape = "" + op.getEscapeChar();
+        String wildCard = "" + op.getWildCard();
+        String singleChar = "" + op.getSingleChar();
+
+        IsLikeString specialString = new IsLikeString( literal, wildCard, singleChar, escape );
+        String sqlEncoded = specialString.toSQL( !op.getMatchCase() );
+
+        SQLOperationBuilder builder = new SQLOperationBuilder( op.getMatchCase() );
+        if ( !op.getMatchCase() ) {
+            builder.add( "LOWER(" );
+        }
+        builder.add( toProtoSQL( op.getPropertyName() ) );
+        if ( op.getMatchCase() ) {
+            builder.add( " LIKE '" );
+        } else {
+            builder.add( ") LIKE '" );
+        }
+        builder.add( sqlEncoded );
+        builder.add( "'" );
+        return builder.toOperation();
     }
 
     @Override
     protected SQLOperation toProtoSQL( SpatialOperator op )
                             throws UnmappableException, FilterEvaluationException {
-        // TODO
-        throw new UnsupportedOperationException();
+
+        SQLOperationBuilder builder = new SQLOperationBuilder( BOOLEAN );
+
+        SQLExpression propNameExpr = toProtoSQL( op.getPropName() );
+        if ( !propNameExpr.isSpatial() ) {
+            String msg = "Cannot evaluate spatial operator on database. Targeted property name '" + op.getPropName()
+                         + "' does not denote a spatial column.";
+            throw new FilterEvaluationException( msg );
+        }
+
+        ICRS storageCRS = propNameExpr.getCRS();
+        int srid = propNameExpr.getSRID() != null ? Integer.parseInt( propNameExpr.getSRID() ) : -1;
+
+        switch ( op.getSubType() ) {
+        case BBOX: {
+            BBOX bbox = (BBOX) op;
+            builder.add( propNameExpr );
+            builder.add( " && " );
+            builder.add( toProtoSQL( bbox.getBoundingBox(), storageCRS, srid ) );
+            break;
+        }
+        case BEYOND: {
+            Beyond beyond = (Beyond) op;
+            builder.add( "NOT stDWithin(" );
+            builder.add( propNameExpr );
+            builder.add( "," );
+            builder.add( toProtoSQL( beyond.getGeometry(), storageCRS, srid ) );
+            builder.add( "," );
+            // TODO uom handling
+            builder.add( new SQLLiteral( beyond.getDistance().getValue(), Types.NUMERIC ) );
+            builder.add( ")" );
+            break;
+        }
+        case CONTAINS: {
+            Contains contains = (Contains) op;
+            builder.add( "stContains(" );
+            builder.add( propNameExpr );
+            builder.add( "," );
+            builder.add( toProtoSQL( contains.getGeometry(), storageCRS, srid ) );
+            builder.add( ")" );
+            break;
+        }
+        case CROSSES: {
+            Crosses crosses = (Crosses) op;
+            builder.add( "stCrosses(" );
+            builder.add( propNameExpr );
+            builder.add( "," );
+            builder.add( toProtoSQL( crosses.getGeometry(), storageCRS, srid ) );
+            builder.add( ")" );
+            break;
+        }
+        case DISJOINT: {
+            Disjoint disjoint = (Disjoint) op;
+            builder.add( "stDisjoint(" );
+            builder.add( propNameExpr );
+            builder.add( "," );
+            builder.add( toProtoSQL( disjoint.getGeometry(), storageCRS, srid ) );
+            builder.add( ")" );
+            break;
+        }
+        case DWITHIN: {
+            DWithin dWithin = (DWithin) op;
+            builder.add( "stDWithin(" );
+            builder.add( propNameExpr );
+            builder.add( "," );
+            builder.add( toProtoSQL( dWithin.getGeometry(), storageCRS, srid ) );
+            builder.add( "," );
+            // TODO uom handling
+            builder.add( new SQLLiteral( dWithin.getDistance().getValue(), Types.NUMERIC ) );
+            builder.add( ")" );
+            break;
+        }
+        case EQUALS: {
+            Equals equals = (Equals) op;
+            builder.add( "stEquals(" );
+            builder.add( propNameExpr );
+            builder.add( "," );
+            builder.add( toProtoSQL( equals.getGeometry(), storageCRS, srid ) );
+            builder.add( ")" );
+            break;
+        }
+        case INTERSECTS: {
+            Intersects intersects = (Intersects) op;
+            builder.add( "stIntersects(" );
+            builder.add( propNameExpr );
+            builder.add( "," );
+            builder.add( toProtoSQL( intersects.getGeometry(), storageCRS, srid ) );
+            builder.add( ")" );
+            break;
+        }
+        case OVERLAPS: {
+            Overlaps overlaps = (Overlaps) op;
+            builder.add( "stOverlaps(" );
+            builder.add( propNameExpr );
+            builder.add( "," );
+            builder.add( toProtoSQL( overlaps.getGeometry(), storageCRS, srid ) );
+            builder.add( ")" );
+            break;
+        }
+        case TOUCHES: {
+            Touches touches = (Touches) op;
+            builder.add( "stTouches(" );
+            builder.add( propNameExpr );
+            builder.add( "," );
+            builder.add( toProtoSQL( touches.getGeometry(), storageCRS, srid ) );
+            builder.add( ")" );
+            break;
+        }
+        case WITHIN: {
+            Within within = (Within) op;
+            builder.add( "stWithin(" );
+            builder.add( propNameExpr );
+            builder.add( "," );
+            builder.add( toProtoSQL( within.getGeometry(), storageCRS, srid ) );
+            builder.add( ")" );
+            break;
+        }
+        }
+        return builder.toOperation();
     }
 
     @Override
     protected SQLExpression toProtoSQL( PropertyName propName )
                             throws UnmappableException, FilterEvaluationException {
-        // TODO
-        throw new UnsupportedOperationException();
+        SQLExpression sql = null;
+        PropertyNameMapping propMapping = mapping.getMapping( propName, aliasManager );
+        if ( propMapping != null ) {
+            propNameMappingList.add( propMapping );
+            // TODO
+            String table = propMapping.getTargetField().getAlias() != null ? propMapping.getTargetField().getAlias()
+                                                                          : propMapping.getTargetField().getTable();
+            String column = propMapping.getTargetField().getColumn();
+            ICRS crs = propMapping.getCRS();
+            String srid = propMapping.getSRID();
+            sql = new SQLColumn( table, column, true, -1, crs, srid );
+        } else {
+            throw new UnmappableException( "Unable to map property '" + propName + "' to database column." );
+        }
+        return sql;
     }
+
+    private SQLExpression toProtoSQL( Geometry geom, ICRS targetCRS, int srid )
+                            throws FilterEvaluationException {
+
+        Geometry transformedGeom = geom;
+        if ( targetCRS != null && !targetCRS.equals( geom.getCoordinateSystem() ) ) {
+            try {
+                GeometryTransformer transformer = new GeometryTransformer( targetCRS );
+                transformedGeom = transformer.transform( geom );
+            } catch ( Exception e ) {
+                String msg = "Transforming of geometry literal to storage CRS failed: " + e.getMessage();
+                throw new FilterEvaluationException( msg );
+            }
+        }
+
+        SQLOperationBuilder builder = new SQLOperationBuilder();
+        builder.add( "geometry::stGeomFromText(" );
+        String wkt = WKTWriter.write( transformedGeom );
+        builder.add( new SQLLiteral( wkt, Types.VARCHAR ) );
+        builder.add( "," + srid + ")" );
+
+        // byte[] wkb = null;
+        // try {
+        // wkb = WKBWriter.write( transformedGeom );
+        // } catch ( ParseException e ) {
+        // String msg = "Transforming of geometry literal to WKB: " + e.getMessage();
+        // throw new FilterEvaluationException( msg );
+        // }
+        // return new SQLLiteral( wkb, Types.BINARY );
+        return builder.toOperation();
+    }
+
 }
