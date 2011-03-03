@@ -91,7 +91,7 @@ public class CoupledDataInspector implements RecordInspector {
         boolean isCoupled = false;
 
         for ( String a : operatesOnStringUuIdAttribute ) {
-            isCoupled = getCoupledDataMetadatasets( a );
+            isCoupled = getCoupledDataMetadatasets( a.trim() );
         }
 
         return isCoupled;
@@ -139,8 +139,7 @@ public class CoupledDataInspector implements RecordInspector {
      */
     private boolean getCoupledDataMetadatasets( String resourceIdentifier )
                             throws MetadataInspectorException {
-
-        boolean gotOneDataset = false;
+        System.out.println( "@" + resourceIdentifier + "@" );
         ResultSet rs = null;
         PreparedStatement stm = null;
         String s = "SELECT resourceidentifier FROM isoqp_resourceidentifier WHERE resourceidentifier = ?;";
@@ -149,10 +148,7 @@ public class CoupledDataInspector implements RecordInspector {
             stm = conn.prepareStatement( s );
             stm.setString( 1, resourceIdentifier );
             rs = stm.executeQuery();
-            while ( rs.next() ) {
-                gotOneDataset = true;
-                break;
-            }
+            return rs.next();
         } catch ( SQLException e ) {
             String msg = Messages.getMessage( "ERROR_SQL", s, e.getMessage() );
             LOG.debug( msg );
@@ -161,8 +157,6 @@ public class CoupledDataInspector implements RecordInspector {
             close( rs );
             close( stm );
         }
-
-        return gotOneDataset;
     }
 
     @Override
@@ -186,7 +180,7 @@ public class CoupledDataInspector implements RecordInspector {
         List<String> operatesOnUuidList = new ArrayList<String>();
         List<String> resourceIDs = new ArrayList<String>();
         for ( OMElement operatesOnElem : operatesOnElemList ) {
-            operatesOnUuidList.add( operatesOnElem.getAttributeValue( new QName( "uuidref" ) ) );
+            operatesOnUuidList.add( operatesOnElem.getAttributeValue( new QName( "uuidref" ) ).trim() );
             // String operatesOnXLink =
             operatesOnElem.getAttributeValue( new QName( "xlink:href" ) );
         }
@@ -211,7 +205,7 @@ public class CoupledDataInspector implements RecordInspector {
             String scopedName = a.getNodeAsString( operatesOnCoupledResource,
                                                    new XPath( "./gco:ScopedName", nsContext ), null );
             operatesOnDataList.add( new OperatesOnData( scopedName, operatesOnIdentifier, operationName ) );
-            resourceIDs.add( operatesOnIdentifier );
+            resourceIDs.add( operatesOnIdentifier.trim() );
 
         }
 
@@ -235,16 +229,8 @@ public class CoupledDataInspector implements RecordInspector {
 
             } else {
                 LOG.debug( "coupling: tight/mixed..." );
-                boolean throwException = false;
-                if ( determineCoupling( operatesOnUuidList ) ) {
-                    if ( checkConsistency( operatesOnUuidList, resourceIDs ) ) {
-                        throwException = false;
-                    } else {
-                        throwException = true;
-                    }
-                } else {
-                    throwException = true;
-                }
+                boolean throwException = determineCoupling( operatesOnUuidList )
+                                         && !checkConsistency( operatesOnUuidList, resourceIDs );
                 if ( ci != null ) {
                     if ( throwException && ci.isThrowConsistencyError() ) {
                         String msg = Messages.getMessage( "ERROR_COUPLING" );
