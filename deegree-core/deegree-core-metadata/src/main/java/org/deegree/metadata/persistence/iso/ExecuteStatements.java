@@ -251,7 +251,7 @@ public class ExecuteStatements implements GenericDatabaseExecution {
                 header.append( " ORDER BY " );
                 header.append( builder.getOrderBy().getSQL() );
             }
-            if ( query != null ) {
+            if ( query != null && query.getStartPosition() != 1 ) {
                 header.append( " OFFSET " ).append( Integer.toString( query.getStartPosition() - 1 ) );
             }
 
