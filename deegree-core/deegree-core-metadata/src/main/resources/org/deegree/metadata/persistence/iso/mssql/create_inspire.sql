@@ -12,7 +12,7 @@ CREATE TABLE ADDQP_Specification (
 	fk_datasets integer NOT NULL,
 	SpecificationTitle varchar(900) NOT NULL,    -- MD_Metadata.dataQualityInfo.DQ_DataQuality.report.DQ_DomainConsistency.result.DQ_ConformanceResult.specification.CI_Citation.title
 	SpecificationDateType varchar(50) NOT NULL, -- MD_Metadata.dataQualityInfo.DQ_DataQuality.report.DQ_DomainConsistency.result.DQ_ConformanceResult.specification.CI_Citation.date.CI_Date.dateType.CI_DateTypeCode
-	SpecificationDate datetime NOT NULL -- MD_Metadata.dataQualityInfo.DQ_DataQuality.report.DQ_DomainConsistency.result.DQ_ConformanceResult.specification.CI_Citation.date.CI_Date.date
+	SpecificationDate date NOT NULL -- MD_Metadata.dataQualityInfo.DQ_DataQuality.report.DQ_DomainConsistency.result.DQ_ConformanceResult.specification.CI_Citation.date.CI_Date.date
 );
     
 CREATE INDEX specificationtitle_idx ON ADDQP_Specification (specificationtitle);
