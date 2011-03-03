@@ -38,6 +38,10 @@ package org.deegree.commons.jdbc;
 
 import static java.sql.DriverManager.registerDriver;
 import static java.util.Collections.singletonMap;
+import static org.deegree.commons.jdbc.ConnectionManager.Type.H2;
+import static org.deegree.commons.jdbc.ConnectionManager.Type.MSSQL;
+import static org.deegree.commons.jdbc.ConnectionManager.Type.Oracle;
+import static org.deegree.commons.jdbc.ConnectionManager.Type.PostgreSQL;
 
 import java.io.File;
 import java.io.FilenameFilter;
@@ -88,6 +92,12 @@ public class ConnectionManager implements ResourceManager, ResourceProvider {
 
     private static Map<String, ConnectionPool> idToPools = new HashMap<String, ConnectionPool>();
 
+    private static Map<String, Type> idToType = new HashMap<String, Type>();
+
+    public static enum Type {
+        PostgreSQL, MSSQL, Oracle, H2
+    }
+
     /**
      * Initializes the {@link ConnectionManager} by loading all JDBC pool configurations from the given directory.
      * 
@@ -130,6 +140,15 @@ public class ConnectionManager implements ResourceManager, ResourceProvider {
     }
 
     /**
+     * @param id
+     * @return the type of the connection, null if the connection is unknown or the connection type could not be
+     *         determined
+     */
+    public static Type getType( String id ) {
+        return idToType.get( id );
+    }
+
+    /**
      * Returns a connection from the connection pool with the given id.
      * 
      * @param id
@@ -165,6 +184,21 @@ public class ConnectionManager implements ResourceManager, ResourceProvider {
         }
     }
 
+    private static void checkType( String url, String connId ) {
+        if ( url.startsWith( "jdbc:postgresql:" ) ) {
+            idToType.put( connId, PostgreSQL );
+        }
+        if ( url.startsWith( "jdbc:h2:" ) ) {
+            idToType.put( connId, H2 );
+        }
+        if ( url.startsWith( "jdbc:oracle:" ) ) {
+            idToType.put( connId, Oracle );
+        }
+        if ( url.startsWith( "jdbc:sqlserver:" ) ) {
+            idToType.put( connId, MSSQL );
+        }
+    }
+
     /**
      * Adds a connection pool from the given pool definition.
      * 
@@ -175,23 +209,7 @@ public class ConnectionManager implements ResourceManager, ResourceProvider {
         synchronized ( ConnectionManager.class ) {
             String url = jaxbConn.getUrl();
 
-            // this should not be necessary for JDBC 4 drivers, but restarting Tomcat requires it (needs investigation)
-            // added note: this may be related to the fact that we remove all loaded drivers from the manager upon
-            // servlet destruction to prevent class loader leaks
-            if ( url.startsWith( "jdbc:postgresql:" ) ) {
-                try {
-                    Class.forName( "org.postgresql.Driver" );
-                } catch ( ClassNotFoundException e ) {
-                    LOG.error( "Unable to load postgresql driver class." );
-                }
-            }
-            if ( url.startsWith( "jdbc:h2:" ) ) {
-                try {
-                    Class.forName( "org.h2.Driver" );
-                } catch ( ClassNotFoundException e ) {
-                    LOG.error( "Unable to load h2 driver class." );
-                }
-            }
+            checkType( url, connId );
 
             String user = jaxbConn.getUser();
             String password = jaxbConn.getPassword();
@@ -232,6 +250,7 @@ public class ConnectionManager implements ResourceManager, ResourceProvider {
             }
             // TODO check callers for read only flag
             ConnectionPool pool = new ConnectionPool( connId, url, user, password, false, poolMinSize, poolMaxSize );
+            checkType( url, connId );
             idToPools.put( connId, pool );
         }
     }
