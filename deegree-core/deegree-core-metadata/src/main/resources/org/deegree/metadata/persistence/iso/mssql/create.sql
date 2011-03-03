@@ -6,7 +6,7 @@ CREATE TABLE Datasets (
     Modified date,    -- common queryable property (ISO AP 1.0): MD_Metadata.dateStamp .Date 
     HasSecurityConstraints bit,    -- additional queryable property (ISO AP 1.0): MD_Metadata.AbstractMD_Identification.resourceConstraints.MD_securityConstraints (If an instance of the class MD_SecurityConstraint exists for a resource, the "HasSecurityConstraints" is "true", otherwise "false") 
     Language char(3),    -- additional queryable property (ISO AP 1.0): MD_Metadata.language 
-    ParentIdentifier varchar(50),    -- additional queryable property (ISO AP 1.0): MD_Metadata.parentIdentifier
+    ParentIdentifier varchar(150),    -- additional queryable property (ISO AP 1.0): MD_Metadata.parentIdentifier
     source varchar(250),
     association varchar(50),
     recordfull varbinary(MAX) NOT NULL
