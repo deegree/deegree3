@@ -52,11 +52,13 @@ import java.util.List;
 import javax.xml.stream.FactoryConfigurationError;
 import javax.xml.stream.XMLStreamException;
 
+import org.deegree.commons.jdbc.ConnectionManager.Type;
 import org.deegree.commons.utils.JDBCUtils;
 import org.deegree.commons.utils.time.DateUtils;
 import org.deegree.cs.CRSCodeType;
 import org.deegree.metadata.ISORecord;
 import org.deegree.metadata.i18n.Messages;
+import org.deegree.metadata.persistence.iso.MSSQLMappingsISODC;
 import org.deegree.metadata.persistence.iso.PostGISMappingsISODC;
 import org.deegree.metadata.persistence.iso.parsing.QueryableProperties;
 import org.deegree.metadata.persistence.types.BoundingBox;
@@ -79,15 +81,35 @@ public class GenerateQueryableProperties {
 
     private static final Logger LOG = getLogger( GenerateQueryableProperties.class );
 
-    private static final String databaseTable = PostGISMappingsISODC.DatabaseTables.datasets.name();
+    private String databaseTable;
 
-    private static final String qp_identifier = PostGISMappingsISODC.DatabaseTables.qp_identifier.name();
+    private String qp_identifier;
 
-    private static final String id = PostGISMappingsISODC.CommonColumnNames.id.name();
+    private String id;
 
-    private static final String fk_datasets = PostGISMappingsISODC.CommonColumnNames.fk_datasets.name();
+    private String fk_datasets;
 
-    private static final String identifier = PostGISMappingsISODC.CommonColumnNames.identifier.name();
+    private String identifier;
+
+    private Type connectionType;
+
+    public GenerateQueryableProperties( Type dbtype ) {
+        this.connectionType = dbtype;
+        if ( connectionType == Type.PostgreSQL ) {
+            databaseTable = PostGISMappingsISODC.DatabaseTables.datasets.name();
+            qp_identifier = PostGISMappingsISODC.DatabaseTables.qp_identifier.name();
+            id = PostGISMappingsISODC.CommonColumnNames.id.name();
+            fk_datasets = PostGISMappingsISODC.CommonColumnNames.fk_datasets.name();
+            identifier = PostGISMappingsISODC.CommonColumnNames.identifier.name();
+        }
+        if ( connectionType == Type.MSSQL ) {
+            databaseTable = MSSQLMappingsISODC.DatabaseTables.datasets.name();
+            qp_identifier = MSSQLMappingsISODC.DatabaseTables.qp_identifier.name();
+            id = MSSQLMappingsISODC.CommonColumnNames.id.name();
+            fk_datasets = MSSQLMappingsISODC.CommonColumnNames.fk_datasets.name();
+            identifier = MSSQLMappingsISODC.CommonColumnNames.identifier.name();
+        }
+    }
 
     /**
      * Generates and inserts the maindatabasetable that is needed for the queryable properties databasetables to derive
@@ -98,8 +120,6 @@ public class GenerateQueryableProperties {
      * 
      * @param connection
      *            the SQL connection
-     * @param stm
-     * @param parsedElement
      * @return the primarykey of the inserted dataset which is the foreignkey for the queryable properties
      *         databasetables
      * @throws MetadataStoreException
@@ -131,7 +151,8 @@ public class GenerateQueryableProperties {
             if ( rec.getModified() != null && rec.getModified().length != 0 ) {
                 // TODO think of more than one date
                 time = rec.getModified()[0].toString();
-                stm.setTimestamp( 5,
+                stm.setTimestamp(
+                                  5,
                                   Timestamp.valueOf( DateUtils.formatJDBCTimeStamp( DateUtils.parseISO8601Date( time ) ) ) );
             } else {
                 stm.setTimestamp( 5, null );
@@ -183,7 +204,7 @@ public class GenerateQueryableProperties {
         StringBuilder sqlStatementUpdate = new StringBuilder( 500 );
         String time = null;
         int requestedId = 0;
-        
+
         String[] idsToUpdate = ( ids == null ? rec.getIdentifier() : ids );
 
         try {
@@ -194,7 +215,8 @@ public class GenerateQueryableProperties {
                 sqlStatementUpdate.append( databaseTable ).append( ',' ).append( qp_identifier ).append( " WHERE " );
                 sqlStatementUpdate.append( databaseTable ).append( '.' ).append( id );
                 sqlStatementUpdate.append( '=' ).append( qp_identifier ).append( '.' ).append( fk_datasets );
-                sqlStatementUpdate.append( " AND " ).append( qp_identifier ).append( '.' ).append( identifier ).append( " = ?" );
+                sqlStatementUpdate.append( " AND " ).append( qp_identifier ).append( '.' ).append( identifier ).append(
+                                                                                                                        " = ?" );
                 LOG.debug( sqlStatementUpdate.toString() );
 
                 stm = conn.prepareStatement( sqlStatementUpdate.toString() );
@@ -230,7 +252,8 @@ public class GenerateQueryableProperties {
                     if ( rec.getModified() != null ) {
                         // TODO think of more than one date
                         time = rec.getModified()[0].toString();
-                        stm.setTimestamp( 4,
+                        stm.setTimestamp(
+                                          4,
                                           Timestamp.valueOf( DateUtils.formatJDBCTimeStamp( DateUtils.parseISO8601Date( time ) ) ) );
                     } else {
                         stm.setTimestamp( 4, null );
@@ -274,9 +297,7 @@ public class GenerateQueryableProperties {
      * 
      * @param isUpdate
      * @param connection
-     * @param stm
      * @param operatesOnId
-     * @param parsedElement
      * @throws MetadataStoreException
      */
     public void executeQueryableProperties( boolean isUpdate, Connection connection, int operatesOnId, ISORecord rec )
@@ -1023,7 +1044,6 @@ public class GenerateQueryableProperties {
      * 
      * @param isUpdate
      * @param connection
-     * @param stm
      * @param operatesOnId
      * @param qp
      * @throws MetadataStoreException
@@ -1049,7 +1069,6 @@ public class GenerateQueryableProperties {
      * 
      * @param isUpdate
      * @param connection
-     * @param stm
      * @param operatesOnId
      * @param qp
      * @throws MetadataStoreException
@@ -1243,25 +1262,59 @@ public class GenerateQueryableProperties {
                 if ( isUpdate == false ) {
                     localId = getLastDatasetId( connection, databaseTable );
                     localId++;
-                    sqlStatement.append( "INSERT INTO " ).append( databaseTable ).append( '(' );
-                    sqlStatement.append( id ).append( ',' );
-                    sqlStatement.append( fk_datasets ).append( ',' );
-                    sqlStatement.append( "authority" ).append( ',' );
-                    sqlStatement.append( "id_crs" ).append( ',' );
-                    sqlStatement.append( "version" );
-                    sqlStatement.append( ", bbox) VALUES (" + localId ).append( "," + operatesOnId );
-                    sqlStatement.append( ",'" + c.getCodeSpace() ).append( '\'' );
-                    sqlStatement.append( ",'" + c.getCode() ).append( '\'' );
-                    sqlStatement.append( ",'" + c.getCodeVersion() ).append( '\'' );
-                    sqlStatement.append( ",SetSRID('BOX3D(" + west ).append( " " + south ).append( "," + east );
-                    sqlStatement.append( " " + north ).append( ")'::box3d,-1));" );
+                    if ( connectionType == Type.PostgreSQL ) {
+                        sqlStatement.append( "INSERT INTO " ).append( databaseTable ).append( '(' );
+                        sqlStatement.append( id ).append( ',' );
+                        sqlStatement.append( fk_datasets ).append( ',' );
+                        sqlStatement.append( "authority" ).append( ',' );
+                        sqlStatement.append( "id_crs" ).append( ',' );
+                        sqlStatement.append( "version" );
+                        sqlStatement.append( ", bbox) VALUES (" + localId ).append( "," + operatesOnId );
+                        sqlStatement.append( ",'" + c.getCodeSpace() ).append( '\'' );
+                        sqlStatement.append( ",'" + c.getCode() ).append( '\'' );
+                        sqlStatement.append( ",'" + c.getCodeVersion() ).append( '\'' );
+                        sqlStatement.append( ",SetSRID('BOX3D(" + west ).append( " " + south ).append( "," + east );
+                        sqlStatement.append( " " + north ).append( ")'::box3d,-1));" );
+                    }
+                    if ( connectionType == Type.MSSQL ) {
+                        sqlStatement.append( "INSERT INTO " ).append( databaseTable ).append( '(' );
+                        sqlStatement.append( id ).append( ',' );
+                        sqlStatement.append( fk_datasets ).append( ',' );
+                        sqlStatement.append( "authority" ).append( ',' );
+                        sqlStatement.append( "id_crs" ).append( ',' );
+                        sqlStatement.append( "version" );
+                        sqlStatement.append( ", bbox) VALUES (" + localId ).append( "," + operatesOnId );
+                        sqlStatement.append( ",'" + c.getCodeSpace() ).append( '\'' );
+                        sqlStatement.append( ",'" + c.getCode() ).append( '\'' );
+                        sqlStatement.append( ",'" + c.getCodeVersion() ).append( '\'' );
+                        sqlStatement.append( ",geometry::STGeomFromText('POLYGON((" + west ).append( " " + south );
+                        sqlStatement.append( "," + west ).append( " " + north );
+                        sqlStatement.append( "," + east ).append( " " + north );
+                        sqlStatement.append( "," + east ).append( " " + south );
+                        sqlStatement.append( "," + west ).append( " " + south ).append( "))', 0));" );
+                    }
                 } else {
-                    sqlStatement.append( "UPDATE " ).append( databaseTable ).append( " SET bbox = SetSRID('BOX3D("
-                                                                                                             + west );
-                    sqlStatement.append( " " + south ).append( "," + east ).append( " " + north );
-                    sqlStatement.append( ")'::box3d,-1) WHERE " );
-                    sqlStatement.append( fk_datasets );
-                    sqlStatement.append( " = " + operatesOnId + ";" );
+                    if ( connectionType == Type.PostgreSQL ) {
+                        sqlStatement.append( "UPDATE " ).append( databaseTable ).append(
+                                                                                         " SET bbox = SetSRID('BOX3D("
+                                                                                                                 + west );
+                        sqlStatement.append( " " + south ).append( "," + east ).append( " " + north );
+                        sqlStatement.append( ")'::box3d,-1) WHERE " );
+                        sqlStatement.append( fk_datasets );
+                        sqlStatement.append( " = " + operatesOnId + ";" );
+                    }
+                    if ( connectionType == Type.MSSQL ) {
+                        sqlStatement.append( "UPDATE " ).append( databaseTable );
+                        sqlStatement.append( " SET bbox = geometry::STGeomFromText('POLYGON((" + west );
+                        sqlStatement.append( " " + south );
+                        sqlStatement.append( "," + west ).append( " " + north );
+                        sqlStatement.append( "," + east ).append( " " + north );
+                        sqlStatement.append( "," + east ).append( " " + south );
+                        sqlStatement.append( "," + west ).append( " " + south );
+                        sqlStatement.append( "))', 0) WHERE " );
+                        sqlStatement.append( fk_datasets );
+                        sqlStatement.append( " = " + operatesOnId + ";" );
+                    }
                 }
                 stm = connection.prepareStatement( sqlStatement.toString() );
                 LOG.debug( "boundinbox: " + stm );
@@ -1320,7 +1373,13 @@ public class GenerateQueryableProperties {
     private int getLastDatasetId( Connection conn, String databaseTable )
                             throws SQLException {
         int result = 0;
-        String selectIDRows = "SELECT " + id + " from " + databaseTable + " ORDER BY " + id + " DESC LIMIT 1";
+        String selectIDRows = null;
+        if ( connectionType == Type.PostgreSQL ) {
+            selectIDRows = "SELECT " + id + " from " + databaseTable + " ORDER BY " + id + " DESC LIMIT 1";
+        }
+        if ( connectionType == Type.MSSQL ) {
+            selectIDRows = "SELECT TOP 1 " + id + " from " + databaseTable + " ORDER BY " + id + " DESC";
+        }
         ResultSet rsBrief = conn.createStatement().executeQuery( selectIDRows );
 
         while ( rsBrief.next() ) {
@@ -1350,8 +1409,6 @@ public class GenerateQueryableProperties {
                     output.add( s );
                 }
             }
-        } else {
-
         }
         if ( output.isEmpty() ) {
             return null;

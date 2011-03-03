@@ -129,7 +129,7 @@ public class ISOMetadataStoreTransaction implements MetadataStoreTransaction {
                     String id = IdUtils.newInstance( conn ).proveIdExistence( rec.getIdentifier() );
 
                     if ( id == null ) {
-                        GenerateQueryableProperties generateQP = new GenerateQueryableProperties();
+                        GenerateQueryableProperties generateQP = new GenerateQueryableProperties( connectionType );
                         int operatesOnId = generateQP.generateMainDatabaseDataset( conn, rec );
                         generateQP.executeQueryableProperties( false, conn, operatesOnId, rec );
                         identifierList.addAll( Arrays.asList( rec.getIdentifier() ) );
@@ -151,7 +151,7 @@ public class ISOMetadataStoreTransaction implements MetadataStoreTransaction {
     @Override
     public int performUpdate( UpdateTransaction update )
                             throws MetadataStoreException, MetadataInspectorException {
-        GenerateQueryableProperties generateQP = new GenerateQueryableProperties();
+        GenerateQueryableProperties generateQP = new GenerateQueryableProperties( connectionType );
         int result = 0;
         if ( update.getElement() != null ) {
             OMElement element = update.getElement();

@@ -3,7 +3,7 @@ CREATE TABLE Datasets (
     version integer,    -- version of the record 
     status numeric(1),
     AnyText nvarchar(max),    -- common queryable property (ISO AP 1.0): Whole resource text. 
-    Modified datetime,    -- common queryable property (ISO AP 1.0): MD_Metadata.dateStamp .Date 
+    Modified date,    -- common queryable property (ISO AP 1.0): MD_Metadata.dateStamp .Date 
     HasSecurityConstraints bit,    -- additional queryable property (ISO AP 1.0): MD_Metadata.AbstractMD_Identification.resourceConstraints.MD_securityConstraints (If an instance of the class MD_SecurityConstraint exists for a resource, the "HasSecurityConstraints" is "true", otherwise "false") 
     Language char(3),    -- additional queryable property (ISO AP 1.0): MD_Metadata.language 
     ParentIdentifier varchar(50),    -- additional queryable property (ISO AP 1.0): MD_Metadata.parentIdentifier
@@ -59,7 +59,7 @@ CREATE INDEX couplingtype_idx ON ISOQP_CouplingType (couplingtype);
 
 CREATE TABLE ISOQP_CreationDate ( 
 	fk_datasets integer NOT NULL,
-	CreationDate datetime NOT NULL,    -- MD_Identification.citation.CI_Citation.date.CI_Date[dateType.CI_DateTypeCode.@codeListValue='creation'].date.Date 
+	CreationDate date NOT NULL,    -- MD_Identification.citation.CI_Citation.date.CI_Date[dateType.CI_DateTypeCode.@codeListValue='creation'].date.Date 
 	ID integer NOT NULL
 );
     
@@ -125,7 +125,7 @@ CREATE INDEX organisationname_idx ON ISOQP_OrganisationName (organisationname);
 CREATE TABLE ISOQP_PublicationDate ( 
 	ID integer NOT NULL,
 	fk_datasets integer NOT NULL,
-	PublicationDate datetime NOT NULL    -- MD_Metadata.identificationInfo.AbstractMD_Identification.citation.CI_Citation.date.CI_Date[dateType.CI_DateTypeCode.@codeListValue='publication'].date.Date 
+	PublicationDate date NOT NULL    -- MD_Metadata.identificationInfo.AbstractMD_Identification.citation.CI_Citation.date.CI_Date[dateType.CI_DateTypeCode.@codeListValue='publication'].date.Date 
 );
     
 CREATE INDEX publicationdate_idx ON ISOQP_PublicationDate (publicationdate);    
@@ -149,7 +149,7 @@ CREATE INDEX resourcelanguage_idx ON ISOQP_ResourceLanguage (resourcelanguage);
 CREATE TABLE ISOQP_RevisionDate ( 
 	ID integer NOT NULL,
 	fk_datasets integer NOT NULL,
-	RevisionDate datetime NOT NULL    -- MD_Metadata.identificationInfo.AbstractMD_Identification.citation.CI_Citation.date.CI_Date[dateType.CI_DateTypeCode.@codeListValue='revision'].date.Date 
+	RevisionDate date NOT NULL    -- MD_Metadata.identificationInfo.AbstractMD_Identification.citation.CI_Citation.date.CI_Date[dateType.CI_DateTypeCode.@codeListValue='revision'].date.Date 
 );
     
 CREATE INDEX revisiondate_idx ON ISOQP_RevisionDate (revisiondate);    
