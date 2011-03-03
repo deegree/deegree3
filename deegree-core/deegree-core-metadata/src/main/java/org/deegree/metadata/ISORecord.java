@@ -180,7 +180,6 @@ public class ISORecord implements MetadataRecord {
     }
 
     public ISORecord( OMElement root, AnyText anyText ) throws MetadataStoreException {
-
         this( root.getXMLStreamReader(), anyText );
     }
 
