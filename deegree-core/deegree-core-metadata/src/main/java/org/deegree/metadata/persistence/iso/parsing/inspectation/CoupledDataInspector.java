@@ -55,7 +55,6 @@ import org.deegree.metadata.i18n.Messages;
 import org.deegree.metadata.persistence.MetadataInspectorException;
 import org.deegree.metadata.persistence.iso19115.jaxb.CoupledResourceInspector;
 import org.deegree.metadata.persistence.types.OperatesOnData;
-import org.deegree.protocol.csw.MetadataStoreException;
 import org.slf4j.Logger;
 
 /**
@@ -85,7 +84,6 @@ public class CoupledDataInspector implements RecordInspector {
      * 
      * @param operatesOnStringUuIdAttribute
      * @return true if there is a coupling with a data-metadata, otherwise false.
-     * @throws MetadataStoreException
      */
     private boolean determineCoupling( List<String> operatesOnStringUuIdAttribute )
                             throws MetadataInspectorException {
@@ -99,8 +97,7 @@ public class CoupledDataInspector implements RecordInspector {
         return isCoupled;
     }
 
-    private boolean checkConsistency( List<String> o, List<String> i )
-                            throws MetadataInspectorException {
+    private boolean checkConsistency( List<String> o, List<String> i ) {
         boolean isConsistent = true;
 
         while ( !i.isEmpty() ) {
@@ -115,33 +112,30 @@ public class CoupledDataInspector implements RecordInspector {
             }
             i.remove( 0 );
         }
-        if ( !isConsistent ) {
-
-        }
+        // if ( !isConsistent ) {
+        //
+        // }
 
         return isConsistent;
     }
 
-    private void consistencyCheck( List<String> operatesOnList )
-                            throws MetadataInspectorException {
-        if ( ci.isThrowConsistencyError() ) {
-            for ( String operatesOnString : operatesOnList ) {
-                if ( !getCoupledDataMetadatasets( operatesOnString ) ) {
-                    String msg = Messages.getMessage( "ERROR_INSPECT_NO_RSID", operatesOnString );
-                    LOG.info( msg );
-                    throw new MetadataInspectorException( msg );
-                }
-            }
-        }
-
-    }
+    // private void consistencyCheck( List<String> operatesOnList )
+    // throws MetadataInspectorException {
+    // if ( ci.isThrowConsistencyError() ) {
+    // for ( String operatesOnString : operatesOnList ) {
+    // if ( !getCoupledDataMetadatasets( operatesOnString ) ) {
+    // String msg = Messages.getMessage( "ERROR_INSPECT_NO_RSID", operatesOnString );
+    // LOG.info( msg );
+    // throw new MetadataInspectorException( msg );
+    // }
+    // }
+    // }
+    //
+    // }
 
     /**
      * If there is a data metadata record available for the service metadata record.
      * 
-     * @param resourceIdentifierList
-     * @return
-     * @throws MetadataStoreException
      */
     private boolean getCoupledDataMetadatasets( String resourceIdentifier )
                             throws MetadataInspectorException {
@@ -193,7 +187,8 @@ public class CoupledDataInspector implements RecordInspector {
         List<String> resourceIDs = new ArrayList<String>();
         for ( OMElement operatesOnElem : operatesOnElemList ) {
             operatesOnUuidList.add( operatesOnElem.getAttributeValue( new QName( "uuidref" ) ) );
-            String operatesOnXLink = operatesOnElem.getAttributeValue( new QName( "xlink:href" ) );
+            // String operatesOnXLink =
+            operatesOnElem.getAttributeValue( new QName( "xlink:href" ) );
         }
 
         List<OMElement> operatesOnCoupledResources = a.getElements(
