@@ -115,7 +115,7 @@ public class WorkspaceMojo extends AbstractMojo {
 
     private static void zip( File f, ZipOutputStream out, URI parent, Set<String> visitedFiles )
                             throws IOException {
-        if ( f.getName().equalsIgnoreCase( ".svn" ) ) {
+        if ( f.getName().equalsIgnoreCase( ".svn" ) || f.getName().equalsIgnoreCase( "CVS" ) ) {
             return;
         }
 
