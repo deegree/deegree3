@@ -98,7 +98,7 @@ public class ExecuteStatements implements GenericDatabaseExecution {
     public int executeDeleteStatement( Connection connection, AbstractWhereBuilder builder )
                             throws MetadataStoreException {
 
-        LOG.info( Messages.getMessage( "INFO_EXEC", "delete-statement" ) );
+        LOG.debug( Messages.getMessage( "INFO_EXEC", "delete-statement" ) );
         PreparedStatement preparedStatement = null;
         ResultSet rs = null;
         List<Integer> deletableDatasets;
