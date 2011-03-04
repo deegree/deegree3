@@ -84,37 +84,41 @@ public class ServiceIntegrationTestMojo extends AbstractMojo {
     @Override
     public void execute()
                             throws MojoExecutionException, MojoFailureException {
-        if ( !workspace.exists() ) {
-            workspace = new File( project.getBasedir(), "src/main/webapp/WEB-INF/conf" );
+        try {
             if ( !workspace.exists() ) {
-                getLog().error( "Could not find a workspace to operate on." );
-                throw new MojoFailureException( "Could not find a workspace to operate on." );
+                workspace = new File( project.getBasedir(), "src/main/webapp/WEB-INF/conf" );
+                if ( !workspace.exists() ) {
+                    getLog().error( "Could not find a workspace to operate on." );
+                    throw new MojoFailureException( "Could not find a workspace to operate on." );
+                }
+                getLog().warn( "Default/configured workspace did not exist, using existing " + workspace + " instead." );
             }
-            getLog().warn( "Default/configured workspace did not exist, using existing " + workspace + " instead." );
-        }
 
-        ServiceIntegrationTestHelper helper = new ServiceIntegrationTestHelper( project, getLog() );
+            ServiceIntegrationTestHelper helper = new ServiceIntegrationTestHelper( project, getLog() );
 
-        File[] listed = new File( workspace, "services" ).listFiles();
-        if ( listed != null ) {
-            for ( File f : listed ) {
-                String nm = f.getName().toLowerCase();
-                if ( nm.length() != 7 ) {
-                    continue;
-                }
-                String service = nm.substring( 0, 3 ).toUpperCase();
-                if ( testCapabilities ) {
-                    helper.testCapabilities( service );
-                }
-                if ( testLayers ) {
-                    helper.testLayers( service );
-                    getLog().info( "All maps can be requested." );
+            File[] listed = new File( workspace, "services" ).listFiles();
+            if ( listed != null ) {
+                for ( File f : listed ) {
+                    String nm = f.getName().toLowerCase();
+                    if ( nm.length() != 7 ) {
+                        continue;
+                    }
+                    String service = nm.substring( 0, 3 ).toUpperCase();
+                    if ( testCapabilities ) {
+                        helper.testCapabilities( service );
+                    }
+                    if ( testLayers ) {
+                        helper.testLayers( service );
+                        getLog().info( "All maps can be requested." );
+                    }
                 }
             }
-        }
 
-        if ( testRequests ) {
-            helper.testRequests();
+            if ( testRequests ) {
+                helper.testRequests();
+            }
+        } catch ( NoClassDefFoundError e ) {
+            getLog().warn( "Class not found, not performing any tests." );
         }
     }
 
