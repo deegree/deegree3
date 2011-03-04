@@ -41,8 +41,7 @@
     <module>deegree-core-rendering-2d</module>
     <module>deegree-core-observation</module>
     <module>deegree-core-metadata</module>
-    <!-- TODO remove the datastores from 3d -->
-    <!-- <module>deegree-core-3d</module> -->
+    <module>deegree-core-3d</module>
   </modules>
 
 </project>
