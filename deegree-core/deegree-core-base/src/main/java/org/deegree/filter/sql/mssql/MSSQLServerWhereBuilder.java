@@ -159,8 +159,9 @@ public class MSSQLServerWhereBuilder extends AbstractWhereBuilder {
         case BBOX: {
             BBOX bbox = (BBOX) op;
             builder.add( propNameExpr );
-            builder.add( " && " );
+            builder.add( ".STIntersects(" );
             builder.add( toProtoSQL( bbox.getBoundingBox(), storageCRS, srid ) );
+            builder.add( ") = 1" );
             break;
         }
         case BEYOND: {
@@ -177,7 +178,7 @@ public class MSSQLServerWhereBuilder extends AbstractWhereBuilder {
         }
         case CONTAINS: {
             Contains contains = (Contains) op;
-            builder.add( "stContains(" );
+            builder.add( "STContains(" );
             builder.add( propNameExpr );
             builder.add( "," );
             builder.add( toProtoSQL( contains.getGeometry(), storageCRS, srid ) );
@@ -186,7 +187,7 @@ public class MSSQLServerWhereBuilder extends AbstractWhereBuilder {
         }
         case CROSSES: {
             Crosses crosses = (Crosses) op;
-            builder.add( "stCrosses(" );
+            builder.add( "STCrosses(" );
             builder.add( propNameExpr );
             builder.add( "," );
             builder.add( toProtoSQL( crosses.getGeometry(), storageCRS, srid ) );
@@ -195,7 +196,7 @@ public class MSSQLServerWhereBuilder extends AbstractWhereBuilder {
         }
         case DISJOINT: {
             Disjoint disjoint = (Disjoint) op;
-            builder.add( "stDisjoint(" );
+            builder.add( "STDisjoint(" );
             builder.add( propNameExpr );
             builder.add( "," );
             builder.add( toProtoSQL( disjoint.getGeometry(), storageCRS, srid ) );
@@ -204,7 +205,7 @@ public class MSSQLServerWhereBuilder extends AbstractWhereBuilder {
         }
         case DWITHIN: {
             DWithin dWithin = (DWithin) op;
-            builder.add( "stDWithin(" );
+            builder.add( "STDWithin(" );
             builder.add( propNameExpr );
             builder.add( "," );
             builder.add( toProtoSQL( dWithin.getGeometry(), storageCRS, srid ) );
@@ -216,7 +217,7 @@ public class MSSQLServerWhereBuilder extends AbstractWhereBuilder {
         }
         case EQUALS: {
             Equals equals = (Equals) op;
-            builder.add( "stEquals(" );
+            builder.add( "STEquals(" );
             builder.add( propNameExpr );
             builder.add( "," );
             builder.add( toProtoSQL( equals.getGeometry(), storageCRS, srid ) );
@@ -225,7 +226,7 @@ public class MSSQLServerWhereBuilder extends AbstractWhereBuilder {
         }
         case INTERSECTS: {
             Intersects intersects = (Intersects) op;
-            builder.add( "stIntersects(" );
+            builder.add( "STIntersects(" );
             builder.add( propNameExpr );
             builder.add( "," );
             builder.add( toProtoSQL( intersects.getGeometry(), storageCRS, srid ) );
@@ -234,7 +235,7 @@ public class MSSQLServerWhereBuilder extends AbstractWhereBuilder {
         }
         case OVERLAPS: {
             Overlaps overlaps = (Overlaps) op;
-            builder.add( "stOverlaps(" );
+            builder.add( "STOverlaps(" );
             builder.add( propNameExpr );
             builder.add( "," );
             builder.add( toProtoSQL( overlaps.getGeometry(), storageCRS, srid ) );
@@ -243,7 +244,7 @@ public class MSSQLServerWhereBuilder extends AbstractWhereBuilder {
         }
         case TOUCHES: {
             Touches touches = (Touches) op;
-            builder.add( "stTouches(" );
+            builder.add( "STTouches(" );
             builder.add( propNameExpr );
             builder.add( "," );
             builder.add( toProtoSQL( touches.getGeometry(), storageCRS, srid ) );
@@ -252,7 +253,7 @@ public class MSSQLServerWhereBuilder extends AbstractWhereBuilder {
         }
         case WITHIN: {
             Within within = (Within) op;
-            builder.add( "stWithin(" );
+            builder.add( "STWithin(" );
             builder.add( propNameExpr );
             builder.add( "," );
             builder.add( toProtoSQL( within.getGeometry(), storageCRS, srid ) );
@@ -298,10 +299,10 @@ public class MSSQLServerWhereBuilder extends AbstractWhereBuilder {
         }
 
         SQLOperationBuilder builder = new SQLOperationBuilder();
-        builder.add( "geometry::stGeomFromText(" );
+        builder.add( "geometry::STGeomFromText(" );
         String wkt = WKTWriter.write( transformedGeom );
         builder.add( new SQLLiteral( wkt, Types.VARCHAR ) );
-        builder.add( "," + srid + ")" );
+        builder.add( "," + ( srid < 0 ? 0 : srid ) + ")" );
 
         // byte[] wkb = null;
         // try {
