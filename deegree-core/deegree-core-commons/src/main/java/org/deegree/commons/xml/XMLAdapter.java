@@ -48,6 +48,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.PushbackInputStream;
 import java.io.StringReader;
+import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -76,6 +77,7 @@ import org.apache.axiom.om.OMException;
 import org.apache.axiom.om.OMNamespace;
 import org.apache.axiom.om.OMText;
 import org.apache.axiom.om.impl.builder.StAXOMBuilder;
+import org.apache.axiom.om.util.Base64;
 import org.apache.axiom.om.xpath.AXIOMXPath;
 import org.deegree.commons.i18n.Messages;
 import org.deegree.commons.tom.ows.Version;
@@ -365,6 +367,32 @@ public class XMLAdapter {
         }
         try {
             load( url.openStream(), url.toExternalForm() );
+        } catch ( IOException e ) {
+            throw new XMLProcessingException( e.getMessage(), e );
+        }
+    }
+
+    /**
+     * Same as #load(URL), but with http basic authentication
+     * 
+     * @param url
+     * @param httpBasicUser
+     * @param httpBasicPass
+     * @throws XMLProcessingException
+     */
+    public void load( URL url, String httpBasicUser, String httpBasicPass )
+                            throws XMLProcessingException {
+        if ( url == null ) {
+            throw new IllegalArgumentException( "The given url may not be null" );
+        }
+        try {
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            String userpass = httpBasicUser + ":" + httpBasicPass;
+
+            // don't care about encoding here
+            conn.setRequestProperty( "Authorization", "Basic " + Base64.encode( userpass.getBytes() ) );
+            conn.connect();
+            load( conn.getInputStream(), url.toExternalForm() );
         } catch ( IOException e ) {
             throw new XMLProcessingException( e.getMessage(), e );
         }

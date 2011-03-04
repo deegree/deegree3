@@ -284,6 +284,33 @@ public final class ProxyUtils implements ResourceManager {
 
     /**
      * This method should be used everywhere instead of <code>URL.openConnection()</code>, as it copes with proxies that
+     * require user authentication and http basic authentication.
+     * 
+     * @param url
+     * @return connection
+     * @throws IOException
+     */
+    public static URLConnection openURLConnection( URL url, String proxyUser, String proxyPass, String httpUser,
+                                                   String httpPass )
+                            throws IOException {
+        URLConnection conn = url.openConnection();
+        if ( proxyUser != null ) {
+            // TODO evaluate java.net.Authenticator
+            String userAndPass = Base64.encode( ( proxyUser + ":" + proxyPass ).getBytes() );
+            conn.setRequestProperty( "Proxy-Authorization", "Basic " + userAndPass );
+        }
+        if ( httpUser != null ) {
+            // TODO evaluate java.net.Authenticator
+            String userAndPass = Base64.encode( ( httpUser + ":" + httpPass ).getBytes() );
+            conn.setRequestProperty( "Authorization", "Basic " + userAndPass );
+        }
+        // TODO should this be a method parameter?
+        conn.setConnectTimeout( 5000 );
+        return conn;
+    }
+
+    /**
+     * This method should be used everywhere instead of <code>URL.openConnection()</code>, as it copes with proxies that
      * require user authentication.
      * 
      * @param url
