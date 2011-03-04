@@ -1,5 +1,7 @@
 package org.deegree.metadata.persistence.iso;
 
+import static org.deegree.commons.utils.JDBCUtils.close;
+
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -67,6 +69,8 @@ public class ISOMetadataStoreTransaction implements MetadataStoreTransaction {
             String msg = Messages.getMessage( "ERROR_TA_COMMIT", e.getMessage() );
             LOG.debug( msg );
             throw new MetadataStoreException( msg );
+        } finally {
+            close( conn );
         }
     }
 
@@ -187,6 +191,8 @@ public class ISOMetadataStoreTransaction implements MetadataStoreTransaction {
             String msg = Messages.getMessage( "ERROR_TA_ROLLBACK", e.getMessage() );
             LOG.debug( msg );
             throw new MetadataStoreException( msg );
+        } finally {
+            close( conn );
         }
     }
 }
