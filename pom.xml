@@ -30,6 +30,11 @@
     </repository>
   </repositories>
   <modules>
+    <module>deegree-misc/deegree-parent</module>
+    <module>deegree-services/deegree-services-parent</module>
+    <module>deegree-services/deegree-stable-service-parent</module>
+    <module>deegree-services/deegree-tomcat-parent</module>
+    <module>deegree-misc/deegree-maven-plugin</module>
     <module>deegree-client</module>
     <module>deegree-core</module>
     <module>deegree-datastores</module>
