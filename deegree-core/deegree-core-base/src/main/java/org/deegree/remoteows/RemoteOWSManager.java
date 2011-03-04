@@ -158,7 +158,7 @@ public class RemoteOWSManager implements ResourceManager {
     }
 
     public void shutdown() {
-        // no cleanup needed?
+        stores.clear();
     }
 
     public ResourceManagerMetadata getMetadata() {

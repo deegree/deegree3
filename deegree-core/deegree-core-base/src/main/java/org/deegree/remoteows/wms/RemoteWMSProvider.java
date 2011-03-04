@@ -53,6 +53,8 @@ import org.deegree.protocol.wms.client.WMSClient111;
 import org.deegree.remoteows.RemoteOWSProvider;
 import org.deegree.remoteows.RemoteOWSStore;
 import org.deegree.remoteows.wms.RemoteWMSStore.LayerOptions;
+import org.deegree.remoteows.wms.jaxb.AuthenticationType;
+import org.deegree.remoteows.wms.jaxb.HTTPBasicAuthenticationType;
 import org.deegree.remoteows.wms.jaxb.RemoteWMSStore;
 import org.deegree.remoteows.wms.jaxb.RequestOptionsType;
 import org.deegree.remoteows.wms.jaxb.RequestedLayerType;
@@ -116,7 +118,18 @@ public class RemoteWMSProvider implements RemoteOWSProvider {
             int connTimeout = cfg.getConnectionTimeout() == null ? 5 : cfg.getConnectionTimeout();
             int reqTimeout = cfg.getRequestTimeout() == null ? 60 : cfg.getRequestTimeout();
 
-            WMSClient111 client = new WMSClient111( capas, connTimeout, reqTimeout );
+            WMSClient111 client;
+
+            AuthenticationType type = cfg.getAuthentication() == null ? null : cfg.getAuthentication().getValue();
+            if ( type instanceof HTTPBasicAuthenticationType ) {
+                HTTPBasicAuthenticationType basic = (HTTPBasicAuthenticationType) type;
+                String user = basic.getUsername();
+                String pass = basic.getPassword();
+                client = new WMSClient111( capas, connTimeout, reqTimeout, user, pass );
+            } else {
+                client = new WMSClient111( capas, connTimeout, reqTimeout );
+            }
+
             Map<String, LayerOptions> layers = new HashMap<String, LayerOptions>();
             List<String> layerOrder = new LinkedList<String>();
             RequestOptionsType def = cfg.getDefaultRequestOptions();

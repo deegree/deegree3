@@ -133,6 +133,29 @@ public class WMSClient111 {
 
     int requestTimeout = 60;
 
+    String httpBasicUser;
+
+    String httpBasicPass;
+
+    /**
+     * @param url
+     * @param connectionTimeout
+     *            default is 5 seconds
+     * @param requestTimeout
+     *            default is 60 seconds
+     * @param user
+     *            http basic username
+     * @param pass
+     *            http basic password
+     */
+    public WMSClient111( URL url, int connectionTimeout, int requestTimeout, String user, String pass ) {
+        this( url );
+        this.connectionTimeout = connectionTimeout;
+        this.requestTimeout = requestTimeout;
+        this.httpBasicUser = user;
+        this.httpBasicPass = pass;
+    }
+
     /**
      * @param url
      * @param connectionTimeout
@@ -151,7 +174,12 @@ public class WMSClient111 {
      */
     public WMSClient111( URL url ) {
         try {
-            this.capabilities = new XMLAdapter( url );
+            if ( httpBasicUser != null ) {
+                capabilities = new XMLAdapter();
+                capabilities.load( url, httpBasicUser, httpBasicPass );
+            } else {
+                capabilities = new XMLAdapter( url );
+            }
         } catch ( Exception e ) {
             LOG.error( e.getLocalizedMessage(), e );
             throw new NullPointerException( "Could not read from URL: " + url + " error was: "
@@ -211,7 +239,13 @@ public class WMSClient111 {
         }
         url += "request=GetCapabilities&version=1.1.1&service=WMS";
         try {
-            XMLAdapter adapter = new XMLAdapter( new URL( url ) );
+            XMLAdapter adapter;
+            if ( httpBasicUser != null ) {
+                adapter = new XMLAdapter();
+                adapter.load( new URL( url ), httpBasicUser, httpBasicPass );
+            } else {
+                adapter = new XMLAdapter( new URL( url ) );
+            }
             checkCapabilities( adapter );
             capabilities = adapter;
         } catch ( MalformedURLException e ) {
@@ -428,10 +462,9 @@ public class WMSClient111 {
      * @return an image from the server, or an error message from the service exception
      * @throws IOException
      */
-    public Pair<BufferedImage, String> getMap( List<String> layers, int width, int height, Envelope bbox,
-                                               ICRS srs, String format, boolean transparent,
-                                               boolean errorsInImage, int timeout, boolean validate,
-                                               List<String> validationErrors )
+    public Pair<BufferedImage, String> getMap( List<String> layers, int width, int height, Envelope bbox, ICRS srs,
+                                               String format, boolean transparent, boolean errorsInImage, int timeout,
+                                               boolean validate, List<String> validationErrors )
                             throws IOException {
 
         Worker worker = new Worker( layers, width, height, bbox, srs, format, transparent, errorsInImage, validate,
@@ -705,13 +738,14 @@ public class WMSClient111 {
                 }
                 url += "request=GetMap&version=1.1.1&service=WMS&layers=" + join( ",", layers ) + "&styles=&width="
                        + width + "&height=" + height + "&bbox=" + bbox.getMin().get0() + "," + bbox.getMin().get1()
-                       + "," + bbox.getMax().get0() + "," + bbox.getMax().get1() + "&srs=" + srs.getAlias() + "&format="
-                       + format + "&transparent=" + transparent;
+                       + "," + bbox.getMax().get0() + "," + bbox.getMax().get1() + "&srs=" + srs.getAlias()
+                       + "&format=" + format + "&transparent=" + transparent;
 
                 URL theUrl = new URL( url );
                 LOG.debug( "Connecting to URL " + theUrl );
                 URLConnection conn = ProxyUtils.openURLConnection( theUrl, ProxyUtils.getHttpProxyUser( true ),
-                                                                   ProxyUtils.getHttpProxyPassword( true ) );
+                                                                   ProxyUtils.getHttpProxyPassword( true ),
+                                                                   httpBasicUser, httpBasicPass );
                 conn.setConnectTimeout( connectionTimeout * 1000 );
                 conn.setReadTimeout( requestTimeout * 1000 );
                 conn.connect();
