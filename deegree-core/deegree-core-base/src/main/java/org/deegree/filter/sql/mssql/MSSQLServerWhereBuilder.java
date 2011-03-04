@@ -161,103 +161,95 @@ public class MSSQLServerWhereBuilder extends AbstractWhereBuilder {
             builder.add( propNameExpr );
             builder.add( ".STIntersects(" );
             builder.add( toProtoSQL( bbox.getBoundingBox(), storageCRS, srid ) );
-            builder.add( ") = 1" );
+            builder.add( ")=1" );
             break;
         }
         case BEYOND: {
             Beyond beyond = (Beyond) op;
-            builder.add( "NOT stDWithin(" );
-            builder.add( propNameExpr );
-            builder.add( "," );
+            builder.add( "NOT ");
+            builder.add(propNameExpr);
+            builder.add(".STDWithin(" );
             builder.add( toProtoSQL( beyond.getGeometry(), storageCRS, srid ) );
             builder.add( "," );
             // TODO uom handling
             builder.add( new SQLLiteral( beyond.getDistance().getValue(), Types.NUMERIC ) );
-            builder.add( ")" );
+            builder.add( ")=1" );
             break;
         }
         case CONTAINS: {
             Contains contains = (Contains) op;
-            builder.add( "STContains(" );
             builder.add( propNameExpr );
-            builder.add( "," );
+            builder.add( ".STContains(" );
             builder.add( toProtoSQL( contains.getGeometry(), storageCRS, srid ) );
-            builder.add( ")" );
+            builder.add( ")=1" );
             break;
         }
         case CROSSES: {
             Crosses crosses = (Crosses) op;
-            builder.add( "STCrosses(" );
             builder.add( propNameExpr );
-            builder.add( "," );
+            builder.add( ".STCrosses(" );
             builder.add( toProtoSQL( crosses.getGeometry(), storageCRS, srid ) );
-            builder.add( ")" );
+            builder.add( ")=1" );
             break;
         }
         case DISJOINT: {
             Disjoint disjoint = (Disjoint) op;
-            builder.add( "STDisjoint(" );
             builder.add( propNameExpr );
-            builder.add( "," );
+            builder.add( ".STDisjoint(" );
             builder.add( toProtoSQL( disjoint.getGeometry(), storageCRS, srid ) );
-            builder.add( ")" );
+            builder.add( ")=1" );
             break;
         }
         case DWITHIN: {
             DWithin dWithin = (DWithin) op;
-            builder.add( "STDWithin(" );
             builder.add( propNameExpr );
-            builder.add( "," );
+            builder.add( ".STDWithin(" );
             builder.add( toProtoSQL( dWithin.getGeometry(), storageCRS, srid ) );
             builder.add( "," );
             // TODO uom handling
             builder.add( new SQLLiteral( dWithin.getDistance().getValue(), Types.NUMERIC ) );
-            builder.add( ")" );
+            builder.add( ")=1" );
             break;
         }
         case EQUALS: {
             Equals equals = (Equals) op;
-            builder.add( "STEquals(" );
             builder.add( propNameExpr );
-            builder.add( "," );
+            builder.add( ".STEquals(" );
             builder.add( toProtoSQL( equals.getGeometry(), storageCRS, srid ) );
-            builder.add( ")" );
+            builder.add( ")=1" );
             break;
         }
         case INTERSECTS: {
             Intersects intersects = (Intersects) op;
-            builder.add( "STIntersects(" );
             builder.add( propNameExpr );
-            builder.add( "," );
+            builder.add( ".STIntersects(" );
             builder.add( toProtoSQL( intersects.getGeometry(), storageCRS, srid ) );
-            builder.add( ")" );
+            builder.add( ")=1" );
             break;
         }
         case OVERLAPS: {
             Overlaps overlaps = (Overlaps) op;
-            builder.add( "STOverlaps(" );
             builder.add( propNameExpr );
-            builder.add( "," );
+            builder.add( ".STOverlaps(" );
             builder.add( toProtoSQL( overlaps.getGeometry(), storageCRS, srid ) );
-            builder.add( ")" );
+            builder.add( ")=1" );
             break;
         }
         case TOUCHES: {
             Touches touches = (Touches) op;
-            builder.add( "STTouches(" );
             builder.add( propNameExpr );
-            builder.add( "," );
+            builder.add( ".STTouches(" );
             builder.add( toProtoSQL( touches.getGeometry(), storageCRS, srid ) );
-            builder.add( ")" );
+            builder.add( ")=1" );
             break;
         }
         case WITHIN: {
             Within within = (Within) op;
-            builder.add( "STWithin(" );
             builder.add( propNameExpr );
+            builder.add( ".STWithin(" );
             builder.add( "," );
             builder.add( toProtoSQL( within.getGeometry(), storageCRS, srid ) );
-            builder.add( ")" );
+            builder.add( ")=1" );
             break;
         }
         }
