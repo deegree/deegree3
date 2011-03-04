@@ -38,6 +38,7 @@ package org.deegree.commons.jdbc;
 
 import static java.sql.DriverManager.registerDriver;
 import static java.util.Collections.singletonMap;
+import static org.deegree.commons.config.ResourceState.StateType.init_ok;
 import static org.deegree.commons.jdbc.ConnectionManager.Type.H2;
 import static org.deegree.commons.jdbc.ConnectionManager.Type.MSSQL;
 import static org.deegree.commons.jdbc.ConnectionManager.Type.Oracle;
@@ -63,6 +64,7 @@ import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceManager;
 import org.deegree.commons.config.ResourceManagerMetadata;
 import org.deegree.commons.config.ResourceProvider;
+import org.deegree.commons.config.ResourceState;
 import org.deegree.commons.i18n.Messages;
 import org.deegree.commons.jdbc.jaxb.JDBCConnection;
 import org.deegree.commons.utils.ProxyUtils;
@@ -326,4 +328,13 @@ public class ConnectionManager implements ResourceManager, ResourceProvider {
     public String getConfigWizardView() {
         return null;
     }
+    
+    @Override
+    public ResourceState getState( String id ) {
+        if ( idToPools.get( id ) != null ) {
+            return new ResourceState( init_ok, null );
+        }
+        // TODO
+        return null;
+    }    
 }

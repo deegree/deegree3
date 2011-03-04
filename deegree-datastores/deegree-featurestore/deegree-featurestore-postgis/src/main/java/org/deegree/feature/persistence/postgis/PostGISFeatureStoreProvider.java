@@ -50,7 +50,6 @@ import org.deegree.commons.utils.ProxyUtils;
 import org.deegree.commons.xml.jaxb.JAXBUtils;
 import org.deegree.feature.i18n.Messages;
 import org.deegree.feature.persistence.FeatureStoreProvider;
-import org.deegree.feature.persistence.postgis.config.PostGISDDLCreator;
 import org.deegree.feature.persistence.postgis.config.PostGISFeatureStoreConfigParser;
 import org.deegree.feature.persistence.postgis.jaxb.PostGISFeatureStoreConfig;
 import org.deegree.feature.persistence.sql.MappedApplicationSchema;
@@ -71,9 +70,9 @@ public class PostGISFeatureStoreProvider implements FeatureStoreProvider {
 
     private static final String CONFIG_NS = "http://www.deegree.org/datasource/feature/postgis";
 
-    private static final String CONFIG_JAXB_PACKAGE = "org.deegree.feature.persistence.postgis.jaxb";
+    static final String CONFIG_JAXB_PACKAGE = "org.deegree.feature.persistence.postgis.jaxb";
 
-    private static final String CONFIG_SCHEMA = "/META-INF/schemas/datasource/feature/postgis/3.1.0/postgis.xsd";
+    static final String CONFIG_SCHEMA = "/META-INF/schemas/datasource/feature/postgis/3.1.0/postgis.xsd";
 
     private static final String CONFIG_TEMPLATE = "/META-INF/schemas/datasource/feature/postgis/3.1.0/example.xml";
 
@@ -104,24 +103,7 @@ public class PostGISFeatureStoreProvider implements FeatureStoreProvider {
     @Override
     public PostGISFeatureStore create( URL configURL )
                             throws WorkspaceInitializationException {
-        PostGISFeatureStoreConfig config = parseConfig( configURL );
-        MappedApplicationSchema schema = getSchema( configURL.toString(), config );
-        return new PostGISFeatureStore( schema, config.getJDBCConnId() );
-    }
-
-    /**
-     * Returns the CREATE-statements for setting up the tables needed for the referenced configuration.
-     * 
-     * @param configURL
-     *            URL of the configuration document, must not be <code>null</code>
-     * @return CREATE statements, one statement per entry, never <code>null</code>
-     * @throws WorkspaceInitializationException
-     */
-    public String[] getDDL( URL configURL )
-                            throws WorkspaceInitializationException {
-        PostGISFeatureStoreConfig config = parseConfig( configURL );
-        MappedApplicationSchema schema = getSchema( configURL.toString(), config );
-        return new PostGISDDLCreator( schema ).getDDL();
+        return new PostGISFeatureStore( configURL, workspace );
     }
 
     private MappedApplicationSchema getSchema( String configURL, PostGISFeatureStoreConfig config )

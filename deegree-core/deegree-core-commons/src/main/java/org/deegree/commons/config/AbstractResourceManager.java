@@ -48,6 +48,7 @@ import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamReader;
 
 import org.apache.commons.io.filefilter.SuffixFileFilter;
+import org.deegree.commons.config.ResourceState.StateType;
 import org.deegree.commons.xml.stax.StAXParsingHelper;
 import org.slf4j.Logger;
 
@@ -65,6 +66,10 @@ public abstract class AbstractResourceManager<T extends Resource> implements Ext
     private HashMap<String, ExtendedResourceProvider<T>> nsToProvider = new HashMap<String, ExtendedResourceProvider<T>>();
 
     private HashMap<String, T> resources = new HashMap<String, T>();
+
+    private HashMap<String, ResourceState> idToState = new HashMap<String, ResourceState>();
+
+    private File dir;
 
     /**
      * @return all managed resources
@@ -125,7 +130,7 @@ public abstract class AbstractResourceManager<T extends Resource> implements Ext
                 nsToProvider.put( p.getConfigNamespace(), (ExtendedResourceProvider<T>) p );
             }
 
-            File dir = new File( workspace.getLocation(), md.getPath() );
+            dir = new File( workspace.getLocation(), md.getPath() );
             String name = md.getName();
             if ( !dir.exists() ) {
                 LOG.info( "No '{}' directory -- skipping initialization of {}.", md.getPath(), name );
@@ -143,14 +148,34 @@ public abstract class AbstractResourceManager<T extends Resource> implements Ext
                 LOG.info( "Setting up {} '{}' from file '{}'...", new Object[] { name, id, fileName } );
                 try {
                     T resource = create( id, configFile.toURI().toURL() );
+                    idToState.put( id, new ResourceState( StateType.created, null ) );
                     resource.init( workspace );
-                    // TODO explicitly check for workspace init exception here? remove checked exception altogether?
-                } catch ( Exception e ) {
+                    idToState.put( id, new ResourceState( StateType.init_ok, null ) );
+                } catch ( WorkspaceInitializationException e ) {
+                    idToState.put( id, new ResourceState( StateType.init_error, e ) );
                     LOG.error( "Error creating {}: {}", new Object[] { name, e.getMessage(), e } );
+                } catch ( Throwable t ) {
+                    idToState.put( id,
+                                   new ResourceState( StateType.init_error,
+                                                      new WorkspaceInitializationException( t.getMessage(), t ) ) );
+                    LOG.error( "Error creating {}: {}", new Object[] { name, t.getMessage(), t } );
                 }
             }
+
+            configFiles = dir.listFiles( (FilenameFilter) new SuffixFileFilter( ".ignore", INSENSITIVE ) );
+            for ( File configFile : configFiles ) {
+                String fileName = configFile.getName();
+                // 7 is the length of ".ignore"
+                String id = fileName.substring( 0, fileName.length() - 7 );
+                idToState.put( id, new ResourceState( StateType.deactivated, null ) );
+            }
+
             LOG.info( "" );
         }
     }
 
+    @Override
+    public ResourceState getState( String id ) {
+        return idToState.get( id );
+    }
 }

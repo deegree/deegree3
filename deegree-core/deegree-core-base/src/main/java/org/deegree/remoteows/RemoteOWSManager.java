@@ -55,6 +55,7 @@ import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceManager;
 import org.deegree.commons.config.ResourceManagerMetadata;
 import org.deegree.commons.config.ResourceProvider;
+import org.deegree.commons.config.ResourceState;
 import org.deegree.commons.utils.ProxyUtils;
 import org.deegree.commons.xml.stax.StAXParsingHelper;
 import org.slf4j.Logger;
@@ -177,4 +178,9 @@ public class RemoteOWSManager implements ResourceManager {
         };
     }
 
+    @Override
+    public ResourceState getState( String id ) {
+        // TODO
+        return null;
+    }
 }

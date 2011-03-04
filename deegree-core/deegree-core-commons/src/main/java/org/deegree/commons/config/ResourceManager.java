@@ -65,4 +65,12 @@ public interface ResourceManager {
      */
     ResourceManagerMetadata getMetadata();
 
+    /**
+     * Returns the state of the resource.
+     * 
+     * @param id
+     *            resource id, must not be <code>null</code>
+     * @return the state or <code>null</code> (if the resource does not exist)
+     */
+    ResourceState getState( String id );
 }

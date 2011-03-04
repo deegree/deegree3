@@ -53,7 +53,6 @@ import org.deegree.feature.persistence.cache.SimpleFeatureStoreCache;
 import org.deegree.feature.persistence.lock.LockManager;
 import org.deegree.feature.persistence.query.Query;
 import org.deegree.feature.persistence.sql.blob.BlobMapping;
-import org.deegree.feature.types.ApplicationSchema;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.geometry.Envelope;
@@ -71,11 +70,11 @@ import org.deegree.gml.GMLReferenceResolver;
  */
 public abstract class AbstractSQLFeatureStore implements SQLFeatureStore {
 
-    private final MappedApplicationSchema schema;
+    private MappedApplicationSchema schema;
 
-    protected final BlobMapping blobMapping;
+    protected BlobMapping blobMapping;
 
-    private final String jdbcConnId;
+    private String jdbcConnId;
 
     // TODO make this configurable
     private final FeatureStoreCache cache = new SimpleFeatureStoreCache( 10000 );
@@ -87,15 +86,7 @@ public abstract class AbstractSQLFeatureStore implements SQLFeatureStore {
 
     private Map<String, String> nsContext;
 
-    /**
-     * Creates a new {@link PostGISFeatureStore} for the given {@link ApplicationSchema}.
-     * 
-     * @param schema
-     *            schema / mapping information, must not be <code>null</code>
-     * @param jdbcConnId
-     *            id of the JDBC connection pool, must not be <code>null</code>
-     */
-    protected AbstractSQLFeatureStore( MappedApplicationSchema schema, String jdbcConnId ) {
+    protected void init( MappedApplicationSchema schema, String jdbcConnId ) {
         this.schema = schema;
         this.blobMapping = schema.getBlobMapping();
         this.jdbcConnId = jdbcConnId;

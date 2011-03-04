@@ -36,6 +36,7 @@
 package org.deegree.cs.persistence;
 
 import static java.lang.System.currentTimeMillis;
+import static org.deegree.commons.config.ResourceState.StateType.init_ok;
 
 import java.io.File;
 import java.io.FilenameFilter;
@@ -56,6 +57,7 @@ import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceManager;
 import org.deegree.commons.config.ResourceManagerMetadata;
 import org.deegree.commons.config.ResourceProvider;
+import org.deegree.commons.config.ResourceState;
 import org.deegree.commons.config.WorkspaceInitializationException;
 import org.deegree.commons.tom.Object;
 import org.deegree.commons.tom.ReferenceResolver;
@@ -740,4 +742,12 @@ public class CRSManager implements ResourceManager {
         return null;
     }
 
+    @Override
+    public ResourceState getState( String id ) {
+        if ( get( id ) != null ) {
+            return new ResourceState( init_ok, null );
+        }
+        // TODO
+        return null;
+    }
 }

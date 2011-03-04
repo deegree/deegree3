@@ -73,5 +73,4 @@ public interface ExtendedResourceManager<T extends Resource> extends ResourceMan
      * @return null, if no such resource has been registered
      */
     T get( String id );
-
 }

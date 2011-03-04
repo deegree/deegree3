@@ -35,6 +35,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.filter.function;
 
+import static org.deegree.commons.config.ResourceState.StateType.init_ok;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.ServiceLoader;
@@ -42,6 +44,7 @@ import java.util.ServiceLoader;
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceManager;
 import org.deegree.commons.config.ResourceManagerMetadata;
+import org.deegree.commons.config.ResourceState;
 import org.deegree.commons.config.WorkspaceInitializationException;
 import org.deegree.commons.utils.ProxyUtils;
 import org.deegree.cs.persistence.CRSManager;
@@ -122,5 +125,11 @@ public class FunctionManager implements ResourceManager {
     public void startup( DeegreeWorkspace workspace )
                             throws WorkspaceInitializationException {
         functionLoader = ServiceLoader.load( FunctionProvider.class, workspace.getModuleClassLoader() );
+    }
+    
+    @Override
+    public ResourceState getState( String id ) {
+        // TODO
+        return null;
     }
 }

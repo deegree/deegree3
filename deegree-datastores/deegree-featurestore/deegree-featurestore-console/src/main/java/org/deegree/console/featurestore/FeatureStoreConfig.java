@@ -93,6 +93,7 @@ public class FeatureStoreConfig implements Serializable {
     }
 
     public String createTables() {
+
         if ( !getSql() ) {
             FacesMessage fm = new FacesMessage( SEVERITY_ERROR,
                                                 "Current feature store is not capable of creating tables.", null );

@@ -168,6 +168,17 @@ span.navi {
 	cursor: pointer;	
 }
 
+.buttonError {
+	color:#ff0000 ;
+	font:80% Verdana,Arial,Helvetica,sans-serif;
+	background-color: #fcfcfc;
+	border-color: #62AA2A ;
+	border: 1px;
+	font-weight: bold;
+	cursor: pointer;
+	
+}
+
 .buttonInfo {
 	color: #7279D8;
 	font:80% Verdana,Arial,Helvetica,sans-serif;

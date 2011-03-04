@@ -48,6 +48,7 @@ import org.apache.axiom.om.util.Base64;
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceManager;
 import org.deegree.commons.config.ResourceManagerMetadata;
+import org.deegree.commons.config.ResourceState;
 import org.deegree.commons.proxy.jaxb.ProxyConfiguration;
 import org.deegree.commons.xml.jaxb.JAXBUtils;
 import org.slf4j.Logger;
@@ -458,4 +459,9 @@ public final class ProxyUtils implements ResourceManager {
         return null;
     }
 
+    @Override
+    public ResourceState getState( String id ) {
+        // TODO
+        return null;
+    }
 }

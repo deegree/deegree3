@@ -68,6 +68,7 @@ import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceManager;
 import org.deegree.commons.config.ResourceManagerMetadata;
 import org.deegree.commons.config.ResourceProvider;
+import org.deegree.commons.config.ResourceState;
 import org.deegree.commons.config.WorkspaceInitializationException;
 import org.deegree.commons.jdbc.ConnectionManager;
 import org.deegree.commons.utils.ProxyUtils;
@@ -629,4 +630,9 @@ public class WebServicesConfiguration implements ResourceManager {
         return new WebServiceManagerMetadata();
     }
 
+    @Override
+    public ResourceState getState( String id ) {
+        // TODO
+        return null;
+    }
 }

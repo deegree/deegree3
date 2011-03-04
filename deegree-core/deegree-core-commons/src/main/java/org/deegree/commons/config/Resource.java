@@ -58,5 +58,4 @@ public interface Resource {
      * Usually called by the resource manager upon workspace shutdown.
      */
     void destroy();
-
 }

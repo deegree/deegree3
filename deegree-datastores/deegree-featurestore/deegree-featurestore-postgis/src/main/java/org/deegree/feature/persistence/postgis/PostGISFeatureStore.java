@@ -36,7 +36,10 @@
 package org.deegree.feature.persistence.postgis;
 
 import static org.deegree.commons.utils.JDBCUtils.close;
+import static org.deegree.feature.persistence.postgis.PostGISFeatureStoreProvider.CONFIG_JAXB_PACKAGE;
+import static org.deegree.feature.persistence.postgis.PostGISFeatureStoreProvider.CONFIG_SCHEMA;
 
+import java.net.URL;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -49,6 +52,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 
+import javax.xml.bind.JAXBException;
 import javax.xml.namespace.QName;
 
 import org.deegree.commons.config.DeegreeWorkspace;
@@ -58,14 +62,18 @@ import org.deegree.commons.jdbc.ResultSetIterator;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.commons.tom.primitive.SQLValueMangler;
 import org.deegree.commons.utils.JDBCUtils;
+import org.deegree.commons.xml.jaxb.JAXBUtils;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.feature.Feature;
 import org.deegree.feature.Features;
+import org.deegree.feature.i18n.Messages;
 import org.deegree.feature.persistence.FeatureStore;
 import org.deegree.feature.persistence.FeatureStoreException;
 import org.deegree.feature.persistence.FeatureStoreGMLIdResolver;
 import org.deegree.feature.persistence.FeatureStoreTransaction;
 import org.deegree.feature.persistence.postgis.config.PostGISDDLCreator;
+import org.deegree.feature.persistence.postgis.config.PostGISFeatureStoreConfigParser;
+import org.deegree.feature.persistence.postgis.jaxb.PostGISFeatureStoreConfig;
 import org.deegree.feature.persistence.query.CombinedResultSet;
 import org.deegree.feature.persistence.query.FeatureResultSet;
 import org.deegree.feature.persistence.query.FilteredFeatureResultSet;
@@ -135,24 +143,28 @@ public class PostGISFeatureStore extends AbstractSQLFeatureStore {
 
     static final Logger LOG = LoggerFactory.getLogger( PostGISFeatureStore.class );
 
-    private final TransactionManager taManager;
+    private TransactionManager taManager;
 
     // if true, use old-style for spatial predicates (e.g "intersects" instead of "ST_Intersects")
     private boolean useLegacyPredicates;
 
     private Map<String, String> nsContext;
 
+    private final URL configURL;
+
+    private final DeegreeWorkspace workspace;
+
     /**
      * Creates a new {@link PostGISFeatureStore} for the given {@link ApplicationSchema}.
      * 
-     * @param schema
+     * @param configURL
      *            schema information, must not be <code>null</code>
-     * @param jdbcConnId
-     *            id of the deegree DB connection pool, must not be <code>null</code>
+     * @param workspace
+     *            deegree workspace, must not be <code>null</code>
      */
-    PostGISFeatureStore( MappedApplicationSchema schema, String jdbcConnId ) {
-        super( schema, jdbcConnId );
-        taManager = new TransactionManager( this, jdbcConnId );
+    PostGISFeatureStore( URL configURL, DeegreeWorkspace workspace ) {
+        this.configURL = configURL;
+        this.workspace = workspace;
     }
 
     @Override
@@ -437,6 +449,11 @@ public class PostGISFeatureStore extends AbstractSQLFeatureStore {
                             throws WorkspaceInitializationException {
 
         LOG.debug( "init" );
+        PostGISFeatureStoreConfig config = parseConfig( configURL );
+        MappedApplicationSchema schema = getSchema( configURL.toString(), config );
+        String jdbcConnId = config.getJDBCConnId();
+        init( schema, jdbcConnId );
+
         // lockManager = new DefaultLockManager( this, "LOCK_DB" );
 
         Connection conn = null;
@@ -450,6 +467,35 @@ public class PostGISFeatureStore extends AbstractSQLFeatureStore {
             throw new WorkspaceInitializationException( e.getMessage(), e );
         } finally {
             close( rs, stmt, conn, LOG );
+        }
+
+        taManager = new TransactionManager( this, getConnId() );
+    }
+
+    private MappedApplicationSchema getSchema( String configURL, PostGISFeatureStoreConfig config )
+                            throws WorkspaceInitializationException {
+
+        MappedApplicationSchema schema = null;
+        LOG.debug( "Building mapped application schema from config" );
+        try {
+            PostGISFeatureStoreConfigParser schemaBuilder = new PostGISFeatureStoreConfigParser( config, configURL );
+            schema = schemaBuilder.getMappedSchema();
+        } catch ( Throwable t ) {
+            String msg = Messages.getMessage( "STORE_MANAGER_STORE_SETUP_ERROR", t.getMessage() );
+            LOG.error( msg, t );
+            throw new WorkspaceInitializationException( msg, t );
+        }
+        return schema;
+    }
+
+    private PostGISFeatureStoreConfig parseConfig( URL configURL )
+                            throws WorkspaceInitializationException {
+        try {
+            return (PostGISFeatureStoreConfig) JAXBUtils.unmarshall( CONFIG_JAXB_PACKAGE, CONFIG_SCHEMA, configURL,
+                                                                     workspace );
+        } catch ( JAXBException e ) {
+            String msg = Messages.getMessage( "STORE_MANAGER_STORE_SETUP_ERROR", e.getMessage() );
+            throw new WorkspaceInitializationException( msg, e );
         }
     }
 

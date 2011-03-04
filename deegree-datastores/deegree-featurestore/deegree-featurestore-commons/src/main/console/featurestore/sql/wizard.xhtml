@@ -10,7 +10,7 @@
 	<ui:define name="center">
 
 		<h:panelGroup rendered="#{!logBean.loggedIn}">
-			<ui:include src="accessForbidden.xhtml" />
+			<ui:include src="/console/jsf/accessForbidden.xhtml" />
 		</h:panelGroup>
 		<h:panelGroup
 			rendered="#{configManager.currentResourceManager == null &amp;&amp; logBean.loggedIn}">
@@ -20,17 +20,15 @@
 		<h:panelGroup
 			rendered="#{logBean.loggedIn &amp;&amp; configManager.currentResourceManager != null}">
 			<fieldset class="fieldset"><legend><h:outputText
-				styleClass="titel" value="Create new SQL feature store" /></legend> <h:outputText
-				value="Id: #{configManager.newConfigId}" /><br />
+				styleClass="titel" value="Create new SQL feature store" /></legend>
 			<h:form>
-				<div>Please choose an option:
-				<h:selectOneRadio value="#{mappingWizardSQL.mode}">
+				<div>
+				<h:selectOneRadio value="#{mappingWizardSQL.mode}" layout="pageDirection">
 					<f:selectItem itemValue="template" itemLabel="Start with config template" />
 					<f:selectItem itemValue="schema" itemLabel="Start with GML application schema" />
 				</h:selectOneRadio></div>
 				<br />
-				<div><h:commandButton styleClass="buttonCreateNew" value="Next"
-					action="#{configManager.createConfig}" /></div>
+				<div><h:commandButton styleClass="buttonCreateNew" value="Next" action="#{mappingWizardSQL.selectMode}" /></div>
 			</h:form></fieldset>
 		</h:panelGroup>
 	</ui:define>

@@ -35,6 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.console;
 
+import static javax.faces.application.FacesMessage.SEVERITY_ERROR;
 import static org.apache.commons.io.FileUtils.copyURLToFile;
 import static org.apache.commons.io.FileUtils.readFileToString;
 import static org.apache.commons.io.IOUtils.closeQuietly;
@@ -48,6 +49,7 @@ import java.io.OutputStream;
 import java.io.StringReader;
 import java.net.URL;
 
+import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.xml.stream.FactoryConfigurationError;
 import javax.xml.stream.XMLInputFactory;
@@ -62,6 +64,7 @@ import org.deegree.client.util.FacesUtil;
 import org.deegree.commons.config.Resource;
 import org.deegree.commons.config.ResourceManagerMetadata;
 import org.deegree.commons.config.ResourceProvider;
+import org.deegree.commons.config.ResourceState;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.services.OWSProvider;
 
@@ -143,8 +146,8 @@ public class Config implements Comparable<Config> {
         }
     }
 
-    public Config( File location, ResourceManagerMetadata<? extends Resource> md, ConfigManager manager, URL schemaURL, String type,
-                   String resourceOutcome ) throws IOException {
+    public Config( File location, ResourceManagerMetadata<? extends Resource> md, ConfigManager manager, URL schemaURL,
+                   String type, String resourceOutcome ) throws IOException {
         this.location = location;
         this.manager = manager;
         this.resourceOutcome = resourceOutcome;
@@ -187,6 +190,18 @@ public class Config implements Comparable<Config> {
         }
     }
 
+    public String getState() {
+        ResourceState state = manager.getCurrentResourceManager().originalResourceManager.getState( id );
+        if (state != null) {
+            return state.getType().name();
+        }
+        // TODO remove this after implementing getState for all resource managers
+        if (isActivated()) {
+            return "init_error";
+        }
+        return "deactivated";
+    }
+
     public void activate() {
         if ( !activated ) {
             File target = new File( location.getParentFile(), id + ".xml" );
@@ -220,6 +235,16 @@ public class Config implements Comparable<Config> {
             location.delete();
             manager.update();
         }
+    }
+
+    public void showErrors() {
+        String msg = "Initialization failed (see application server logs for more details).";
+        ResourceState state = manager.getCurrentResourceManager().originalResourceManager.getState( id );
+        if ( state.getLastException() != null ) {
+            msg += "" + state.getLastException().getMessage();
+        }
+        FacesMessage fm = new FacesMessage( SEVERITY_ERROR, msg, null );
+        FacesContext.getCurrentInstance().addMessage( null, fm );
     }
 
     public String save()

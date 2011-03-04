@@ -229,7 +229,7 @@ public class ConfigManager {
         for ( org.deegree.commons.config.ResourceManager mgr : getServiceWorkspace().getResourceManagers() ) {
             ResourceManagerMetadata<? extends Resource> md = mgr.getMetadata();
             if ( md != null ) {
-                ResourceManager mng = new ResourceManager( getViewForMetadata( md ), md );
+                ResourceManager mng = new ResourceManager( getViewForMetadata( md ), md, mgr );
                 resourceManagers.add( mng );
                 resourceManagerMap.put( mng.metadata.getName(), mng );
             }
@@ -500,13 +500,17 @@ public class ConfigManager {
         @Getter
         public ResourceManagerMetadata<? extends Resource> metadata;
 
+        @Getter
+        public org.deegree.commons.config.ResourceManager originalResourceManager;
+        
         public String view() {
             return view;
         }
 
-        ResourceManager( String view, ResourceManagerMetadata<? extends Resource> metadata ) {
+        ResourceManager( String view, ResourceManagerMetadata<? extends Resource> metadata, org.deegree.commons.config.ResourceManager originalResourceManager ) {
             this.view = view;
             this.metadata = metadata;
+            this.originalResourceManager = originalResourceManager;
         }
     }
 

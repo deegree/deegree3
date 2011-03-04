@@ -22,9 +22,11 @@
                     </tr>
                     <ui:repeat value="#{configManager.availableResources}" var="config">
                         <tr align="left">
-                            <td><h:commandButton styleClass="buttonActivate" rendered="#{config.activated}"
-                                value="#{labels.featureStores_deactivate}" action="#{config.deactivate}" /> <h:commandButton
-                                styleClass="buttonDeactivate" rendered="#{!config.activated}"
+                            <td><h:commandButton styleClass="buttonActivate" rendered="#{config.state=='init_ok'}"
+                                value="#{labels.featureStores_deactivate}" action="#{config.deactivate}" />
+                                <h:commandButton styleClass="buttonError" rendered="#{config.state=='init_error'}"
+                                value="ERROR" action="#{config.deactivate}" />
+                                <h:commandButton styleClass="buttonDeactivate" rendered="#{config.state=='deactivated'}"
                                 value="#{labels.featureStores_activate}" action="#{config.activate}" /></td>
                             <td><h:outputFormat styleClass="StatusDeactivated" value="#{labels.featureStores_id}">
                                 <f:param value="#{config.id}" />
@@ -33,6 +35,8 @@
                                 action="#{config.edit}" /></td>
                             <td><h:commandButton styleClass="buttonDelete" value="#{labels.featureStores_delete}"
                                 action="#{config.delete}" onclick="return confirmDelete();" /></td>
+                            <td><h:commandButton styleClass="buttonError" rendered="#{config.state=='init_error'}" value="Show errors"
+                                action="#{config.showErrors}" /></td>
                             <ui:insert name="extraButtons" />
                         </tr>
                     </ui:repeat>
