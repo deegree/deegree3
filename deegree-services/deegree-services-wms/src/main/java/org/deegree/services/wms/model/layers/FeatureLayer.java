@@ -336,6 +336,7 @@ public class FeatureLayer extends Layer {
                     render( f, evaluator, style, renderer, textRenderer, gm.getScale(), resolution );
                 } catch ( IllegalArgumentException e ) {
                     LOG.warn( "Unable to render feature, probably a curve had multiple/non-linear segments." );
+                    LOG.warn( "Error message was: {}", e.getLocalizedMessage() );
                     LOG.trace( "Stack trace:", e );
                 }
                 if ( max > 0 && ++cnt == max ) {
