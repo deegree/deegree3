@@ -49,6 +49,10 @@ import static java.lang.Math.acos;
 import static java.lang.Math.cos;
 import static java.lang.Math.sin;
 import static java.lang.Math.toRadians;
+import static javax.media.jai.JAI.create;
+import static org.apache.batik.transcoder.SVGAbstractTranscoder.KEY_HEIGHT;
+import static org.apache.batik.transcoder.SVGAbstractTranscoder.KEY_WIDTH;
+import static org.apache.commons.io.IOUtils.closeQuietly;
 import static org.deegree.commons.utils.math.MathUtils.isZero;
 import static org.deegree.commons.utils.math.MathUtils.round;
 import static org.deegree.cs.components.Unit.METRE;
@@ -65,16 +69,29 @@ import java.awt.Shape;
 import java.awt.TexturePaint;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.GeneralPath;
-import java.awt.geom.Path2D.Double;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
+import java.awt.geom.Path2D.Double;
 import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
+import java.util.Map;
 
+import javax.media.jai.RenderedOp;
+
+import org.apache.batik.transcoder.TranscoderException;
+import org.apache.batik.transcoder.TranscoderInput;
+import org.apache.batik.transcoder.TranscoderOutput;
+import org.apache.batik.transcoder.image.PNGTranscoder;
 import org.deegree.commons.annotations.LoggingNotes;
 import org.deegree.commons.tom.ReferenceResolvingException;
+import org.deegree.commons.utils.ComparablePair;
 import org.deegree.cs.CRSUtils;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.exceptions.TransformationException;
@@ -105,6 +122,8 @@ import org.deegree.rendering.r2d.styling.components.PerpendicularOffsetType;
 import org.deegree.rendering.r2d.styling.components.Stroke;
 import org.deegree.rendering.r2d.styling.components.UOM;
 import org.slf4j.Logger;
+
+import com.sun.media.jai.codec.MemoryCacheSeekableStream;
 
 /**
  * <code>Java2DRenderer</code>
@@ -202,7 +221,9 @@ public class Java2DRenderer implements Renderer {
                 LOG.warn( "Setting up the renderer yielded an exception when setting up internal transformer. This may lead to problems." );
                 // } catch ( UnknownCRSException e ) {
                 // LOG.debug( "Stack trace:", e );
-                // LOG.warn( "Setting up the renderer yielded an exception when setting up internal transformer. This may lead to problems." );
+                // LOG.warn(
+                // "Setting up the renderer yielded an exception when setting up internal transformer. This may lead to problems."
+                // );
             }
 
             LOG.debug( "For coordinate transformations, scaling by x = {} and y = {}", scalex, -scaley );
@@ -424,6 +445,16 @@ public class Java2DRenderer implements Renderer {
         return g;
     }
 
+    final LinkedHashMap<ComparablePair<String, Integer>, BufferedImage> svgCache = new LinkedHashMap<ComparablePair<String, Integer>, BufferedImage>(
+                                                                                                                                                      256 ) {
+        private static final long serialVersionUID = -6847956873232942891L;
+
+        @Override
+        protected boolean removeEldestEntry( Map.Entry<ComparablePair<String, Integer>, BufferedImage> eldest ) {
+            return size() > 256; // yeah, hardcoded max size... TODO
+        }
+    };
+
     private void render( PointStyling styling, double x, double y ) {
         Point2D.Double p = (Point2D.Double) worldToScreen.transform( new Point2D.Double( x, y ), null );
         x = p.x;
@@ -432,19 +463,61 @@ public class Java2DRenderer implements Renderer {
         Graphic g = styling.graphic;
         Rectangle2D.Double rect = getGraphicBounds( g, x, y, styling.uom );
 
-        if ( g.image == null ) {
+        if ( g.image == null && g.imageURL == null ) {
             renderMark( g.mark, g.size < 0 ? 6 : round( considerUOM( g.size, styling.uom ) ), styling.uom, this,
                         rect.getMinX(), rect.getMinY(), g.rotation );
             return;
         }
 
-        if ( g.image != null ) {
+        BufferedImage img = g.image;
+
+        // try if it's an svg
+        if ( img == null && g.imageURL != null ) {
+            ComparablePair<String, Integer> cp = new ComparablePair<String, Integer>( g.imageURL, round( g.size ) );
+            if ( svgCache.containsKey( cp ) ) {
+                img = svgCache.get( cp );
+            } else {
+                PNGTranscoder t = new PNGTranscoder();
+
+                t.addTranscodingHint( KEY_WIDTH, new Float( rect.width ) );
+                t.addTranscodingHint( KEY_HEIGHT, new Float( rect.height ) );
+
+                TranscoderInput input = new TranscoderInput( g.imageURL );
+
+                // TODO improve performance by writing a custom transcoder output directly rendering on an image, or
+                // even on
+                // the target graphics
+                ByteArrayOutputStream out = new ByteArrayOutputStream();
+                TranscoderOutput output = new TranscoderOutput( out );
+                InputStream in = null;
+
+                // TODO cache images
+                try {
+                    t.transcode( input, output );
+                    out.flush();
+                    in = new ByteArrayInputStream( out.toByteArray() );
+                    MemoryCacheSeekableStream mcss = new MemoryCacheSeekableStream( in );
+                    RenderedOp rop = create( "stream", mcss );
+                    img = rop.getAsBufferedImage();
+                    svgCache.put( cp, img );
+                } catch ( TranscoderException e ) {
+                    LOG.warn( "Could not rasterize svg '{}': {}", g.imageURL, e.getLocalizedMessage() );
+                } catch ( IOException e ) {
+                    LOG.warn( "Could not rasterize svg '{}': {}", g.imageURL, e.getLocalizedMessage() );
+                } finally {
+                    closeQuietly( out );
+                    closeQuietly( in );
+                }
+            }
+
+        }
+
+        if ( img != null ) {
             AffineTransform t = graphics.getTransform();
             if ( !isZero( g.rotation ) ) {
                 graphics.rotate( toRadians( g.rotation ), x, y );
             }
-            graphics.drawImage( g.image, round( rect.x ), round( rect.y ), round( rect.width ), round( rect.height ),
-                                null );
+            graphics.drawImage( img, round( rect.x ), round( rect.y ), round( rect.width ), round( rect.height ), null );
             graphics.setTransform( t );
         }
     }

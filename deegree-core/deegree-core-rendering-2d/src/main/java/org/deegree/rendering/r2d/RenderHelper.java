@@ -40,7 +40,6 @@ import static java.awt.geom.AffineTransform.getScaleInstance;
 import static java.lang.Math.PI;
 import static java.lang.Math.max;
 import static java.lang.Math.toRadians;
-import static org.apache.batik.bridge.BridgeContext.DYNAMIC;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.awt.Shape;
@@ -303,7 +302,7 @@ public class RenderHelper {
             UserAgent userAgent = new UserAgentAdapter();
             DocumentLoader loader = new DocumentLoader( userAgent );
             BridgeContext ctx = new BridgeContext( userAgent, loader );
-            ctx.setDynamicState( DYNAMIC );
+            // ctx.setDynamicState( BridgeContext.DYNAMIC );
             RootGraphicsNode root = builder.build( ctx, doc ).getRoot();
 
             AffineTransform t = new AffineTransform();
