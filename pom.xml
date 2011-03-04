@@ -8,15 +8,12 @@
   <version>3.1-SNAPSHOT</version>
   <name>deegree</name>
   <url>http://www.deegree.org</url>
+
   <scm>
     <developerConnection>scm:svn:http://svn.wald.intevation.org/svn/deegree/deegree3/trunk</developerConnection>
     <url>http://svn.wald.intevation.org/svn/deegree/deegree3/trunk</url>
   </scm>
-  <parent>
-    <groupId>org.deegree</groupId>
-    <artifactId>deegree-parent</artifactId>
-    <version>3.1-SNAPSHOT</version>
-  </parent>
+
   <repositories>
     <repository>
       <id>deegree-repo</id>
@@ -29,6 +26,32 @@
       </snapshots>
     </repository>
   </repositories>
+
+  <distributionManagement>
+    <repository>
+      <id>deegree-releases</id>
+      <url>http://artefacts.deegree.org/libs-releases-local</url>
+    </repository>
+    <snapshotRepository>
+      <id>deegree-snapshots</id>
+      <url>http://artefacts.deegree.org/libs-snapshots-local</url>
+    </snapshotRepository>
+  </distributionManagement>
+
+  <pluginRepositories>
+    <pluginRepository>
+      <id>deegree-plugin-repo</id>
+      <url>http://artefacts.deegree.org/repo</url>
+      <releases>
+        <enabled>true</enabled>
+        <updatePolicy>never</updatePolicy>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+    </pluginRepository>
+  </pluginRepositories>
+
   <modules>
     <module>deegree-misc/deegree-parent</module>
     <module>deegree-services/deegree-services-parent</module>
