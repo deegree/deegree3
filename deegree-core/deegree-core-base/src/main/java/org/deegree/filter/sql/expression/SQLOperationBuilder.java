@@ -48,8 +48,8 @@ import java.util.List;
  */
 public class SQLOperationBuilder {
 
-    private int sqlType;    
-    
+    private int sqlType;
+
     private boolean matchCase = true;
 
     private List<Object> particles = new ArrayList<Object>();
@@ -66,12 +66,14 @@ public class SQLOperationBuilder {
         this.matchCase = matchCase;
     }
 
-    public void add( String s ) {
+    public SQLOperationBuilder add( String s ) {
         particles.add( s );
+        return this;
     }
 
-    public void add( SQLExpression expr ) {
+    public SQLOperationBuilder add( SQLExpression expr ) {
         particles.add( expr );
+        return this;
     }
 
     public SQLOperation toOperation() {
