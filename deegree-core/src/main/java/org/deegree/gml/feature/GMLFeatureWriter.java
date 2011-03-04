@@ -783,12 +783,15 @@ public class GMLFeatureWriter {
                 String prefix = nsToPrefix.get( namespaceURI );
                 if ( prefix != null ) {
                     writer.setPrefix( prefix, namespaceURI );
+                    writer.writeStartElement( prefix, localname, namespaceURI );
                 } else {
                     LOG.warn( "No prefix for namespace '{}' configured. Depending on XMLStream auto-repairing.",
                               namespaceURI );
+                    writer.writeStartElement( namespaceURI, localname );
                 }
+            } else {
+                writer.writeStartElement( namespaceURI, localname );
             }
-            writer.writeStartElement( namespaceURI, localname );
         }
     }
 
@@ -801,12 +804,15 @@ public class GMLFeatureWriter {
                 String prefix = nsToPrefix.get( namespaceURI );
                 if ( prefix != null ) {
                     writer.setPrefix( prefix, namespaceURI );
+                    writer.writeAttribute( prefix, namespaceURI, localname, value );
                 } else {
                     LOG.warn( "No prefix for namespace '{}' configured. Depending on XMLStream auto-repairing.",
                               namespaceURI );
+                    writer.writeAttribute( namespaceURI, localname, value );
                 }
+            } else {
+                writer.writeAttribute( namespaceURI, localname, value );
             }
-            writer.writeAttribute( namespaceURI, localname, value );
         }
     }
 
@@ -819,12 +825,15 @@ public class GMLFeatureWriter {
                 String prefix = nsToPrefix.get( namespaceURI );
                 if ( prefix != null ) {
                     writer.setPrefix( prefix, namespaceURI );
+                    writer.writeEmptyElement( prefix, localname, namespaceURI );
                 } else {
                     LOG.warn( "No prefix for namespace '{}' configured. Depending on XMLStream auto-repairing.",
                               namespaceURI );
+                    writer.writeEmptyElement( namespaceURI, localname );
                 }
+            } else {
+                writer.writeEmptyElement( namespaceURI, localname );
             }
-            writer.writeEmptyElement( namespaceURI, localname );
         }
     }
 
