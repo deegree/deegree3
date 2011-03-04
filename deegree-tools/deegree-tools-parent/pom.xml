@@ -110,6 +110,7 @@
             </goals>
             <configuration>
               <appendAssemblyId>false</appendAssemblyId>
+              <ignoreMissingDescriptor>true</ignoreMissingDescriptor>
             </configuration>
           </execution>
         </executions>
