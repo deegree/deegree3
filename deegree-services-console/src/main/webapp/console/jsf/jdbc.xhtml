@@ -1,0 +1,45 @@
+<ui:composition template="/layout.xhtml" xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:f="http://java.sun.com/jsf/core" xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:c="http://java.sun.com/jsp/jstl/core" xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+  xmlns:dg="http://deegree.org/jsf" xmlns:dgc="http://java.sun.com/jsf/composite/deegree">
+  <ui:define name="center">
+    <h:panelGroup rendered="#{!logBean.loggedIn}">
+      <ui:include src="accessForbidden.xhtml" />
+    </h:panelGroup>
+    <h:panelGroup rendered="#{logBean.loggedIn}">
+      <fieldset class="fieldset"><legend><h:outputText styleClass="titel" value="#{labels.jdbc_title}" /></legend> <h:form>
+        <table style="font-size: small">
+          <tr>
+            <td />
+          </tr>
+          <tr>
+            <td />
+          </tr>
+          <ui:repeat value="#{configManager.connManager.configs}" var="config">
+            <tr>
+              <td><h:commandButton styleClass="buttonActivate" rendered="#{!config.deactivated}"
+                value="#{labels.jdbc_deactivate}" action="#{config.deactivate}" /> <h:commandButton
+                styleClass="buttonDeactivate" rendered="#{config.deactivated}" value="#{labels.jdbc_activate}"
+                action="#{config.activate}" /></td>
+              <td><h:outputFormat value="#{labels.jdbc_id}">
+                <f:param value="#{config.id}" />
+              </h:outputFormat></td>
+              <td><h:commandButton styleClass="buttonEdit" value="#{labels.jdbc_edit}" action="#{config.edit}" /></td>
+              <td><h:commandButton styleClass="buttonDelete" value="#{labels.jdbc_delete}"
+                action="#{config.delete}" onclick="return confirmDelete();" /></td>
+              <td><h:commandButton styleClass="buttonInfo" rendered="#{config.active}" value="#{labels.jdbc_test}"
+                action="#{config.test}" /></td>
+            </tr>
+          </ui:repeat>
+        </table>
+        <br />
+      </h:form> <h:form>
+        <div><h:outputLabel styleClass="label" for="newJDBCBt" value="#{labels.jdbc_name}" /> <h:inputText
+          styleClass="liste" id="newJDBCBt" value="#{newConnectionConfig.id}" size="16" required="true"
+          requiredMessage="#{labels.jdbc_name_req}" /> <h:commandButton styleClass="buttonCreateNew"
+          value="#{labels.jdbc_new}" action="#{newConnectionConfig.create}" /></div>
+
+      </h:form></fieldset>
+    </h:panelGroup>
+  </ui:define>
+</ui:composition>
