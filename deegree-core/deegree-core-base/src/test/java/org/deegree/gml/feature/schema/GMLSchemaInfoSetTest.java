@@ -70,17 +70,14 @@ public class GMLSchemaInfoSetTest {
                             IllegalAccessException {
 
         GMLSchemaInfoSet analyzer = new GMLSchemaInfoSet(
-                                                            GMLVersion.GML_31,
-                                                            this.getClass().getResource(
-                                                                                         "../testdata/schema/Philosopher.xsd" ).toString() );
-        List<XSElementDeclaration> featureElementDecls = analyzer.getFeatureElementDeclarations(
-                                                                                                 "http://www.deegree.org/app",
+                                                          null,
+                                                          this.getClass().getResource( "../testdata/schema/Philosopher.xsd" ).toString() );
+        List<XSElementDeclaration> featureElementDecls = analyzer.getFeatureElementDeclarations( "http://www.deegree.org/app",
                                                                                                  false );
         for ( XSElementDeclaration featureElementDecl : featureElementDecls ) {
             LOG.debug( "- Feature type: " + featureElementDecl.getName() );
         }
-        List<XSElementDeclaration> featureCollectionElementDecls = analyzer.getFeatureCollectionElementDeclarations(
-                                                                                                                     null,
+        List<XSElementDeclaration> featureCollectionElementDecls = analyzer.getFeatureCollectionElementDeclarations( null,
                                                                                                                      false );
         for ( XSElementDeclaration featureCollectionElementDecl : featureCollectionElementDecls ) {
             LOG.debug( "- Feature collection type: " + featureCollectionElementDecl.getName() );
@@ -102,7 +99,7 @@ public class GMLSchemaInfoSetTest {
 
         String schemaURL = this.getClass().getResource( "../testdata/schema/Philosopher.xsd" ).toString();
         String schemaURL2 = "http://schemas.opengis.net/wfs/1.1.0/wfs.xsd";
-        GMLSchemaInfoSet analyzer = new GMLSchemaInfoSet( GMLVersion.GML_31, schemaURL2, schemaURL );
+        GMLSchemaInfoSet analyzer = new GMLSchemaInfoSet( null, schemaURL2, schemaURL );
         Assert.assertEquals( 4, analyzer.getFeatureElementDeclarations( "http://www.deegree.org/app", true ).size() );
         Assert.assertEquals( 1, analyzer.getFeatureElementDeclarations( "http://www.opengis.net/wfs", true ).size() );
     }
@@ -113,7 +110,7 @@ public class GMLSchemaInfoSetTest {
                             IllegalAccessException {
 
         String schemaURL = "http://schemas.opengis.net/gml/3.1.1/base/gml.xsd";
-        GMLSchemaInfoSet analyzer = new GMLSchemaInfoSet( GMLVersion.GML_31, schemaURL );
+        GMLSchemaInfoSet analyzer = new GMLSchemaInfoSet( null, schemaURL );
         Set<String> substitutionts = getConcreteSubstitutions( "_GeometricAggregate", analyzer );
         for ( String string : substitutionts ) {
             LOG.debug( string );
@@ -127,7 +124,7 @@ public class GMLSchemaInfoSetTest {
                             IllegalAccessException {
 
         String schemaURL = "http://schemas.opengis.net/gml/3.1.1/base/gml.xsd";
-        GMLSchemaInfoSet analyzer = new GMLSchemaInfoSet( GMLVersion.GML_31, schemaURL );
+        GMLSchemaInfoSet analyzer = new GMLSchemaInfoSet( null, schemaURL );
         Set<String> substitutionts = getConcreteSubstitutions( "_GeometricPrimitive", analyzer );
         for ( String string : substitutionts ) {
             LOG.debug( string );
@@ -141,7 +138,7 @@ public class GMLSchemaInfoSetTest {
                             IllegalAccessException {
 
         String schemaURL = "http://schemas.opengis.net/gml/3.1.1/base/gml.xsd";
-        GMLSchemaInfoSet analyzer = new GMLSchemaInfoSet( GMLVersion.GML_31, schemaURL );
+        GMLSchemaInfoSet analyzer = new GMLSchemaInfoSet( null, schemaURL );
         Set<String> substitutionts = getConcreteSubstitutions( "_ImplicitGeometry", analyzer );
         for ( String string : substitutionts ) {
             LOG.debug( string );
@@ -155,7 +152,7 @@ public class GMLSchemaInfoSetTest {
                             IllegalAccessException {
 
         String schemaURL = "http://schemas.opengis.net/gml/3.1.1/base/gml.xsd";
-        GMLSchemaInfoSet analyzer = new GMLSchemaInfoSet( GMLVersion.GML_31, schemaURL );
+        GMLSchemaInfoSet analyzer = new GMLSchemaInfoSet( null, schemaURL );
         Set<String> substitutionts = getConcreteSubstitutions( "_Curve", analyzer );
         for ( String string : substitutionts ) {
             LOG.debug( string );
@@ -169,7 +166,7 @@ public class GMLSchemaInfoSetTest {
                             IllegalAccessException {
 
         String schemaURL = "http://schemas.opengis.net/gml/3.1.1/base/gml.xsd";
-        GMLSchemaInfoSet analyzer = new GMLSchemaInfoSet( GMLVersion.GML_31, schemaURL );
+        GMLSchemaInfoSet analyzer = new GMLSchemaInfoSet( null, schemaURL );
         Set<String> substitutionts = getConcreteSubstitutions( "_Curve", analyzer );
         Assert.assertEquals( 4, substitutionts.size() );
         Assert.assertTrue( substitutionts.contains( "CompositeCurve" ) );
@@ -184,7 +181,7 @@ public class GMLSchemaInfoSetTest {
                             IllegalAccessException {
 
         String schemaURL = "http://schemas.opengis.net/gml/3.1.1/base/gml.xsd";
-        GMLSchemaInfoSet analyzer = new GMLSchemaInfoSet( GMLVersion.GML_31, schemaURL );
+        GMLSchemaInfoSet analyzer = new GMLSchemaInfoSet( null, schemaURL );
         Set<String> substitutionts = getConcreteSubstitutions( "_Ring", analyzer );
         Assert.assertEquals( 2, substitutionts.size() );
         Assert.assertTrue( substitutionts.contains( "LinearRing" ) );
@@ -197,7 +194,7 @@ public class GMLSchemaInfoSetTest {
                             IllegalAccessException {
 
         String schemaURL = "http://schemas.opengis.net/gml/3.1.1/base/gml.xsd";
-        GMLSchemaInfoSet analyzer = new GMLSchemaInfoSet( GMLVersion.GML_31, schemaURL );
+        GMLSchemaInfoSet analyzer = new GMLSchemaInfoSet( null, schemaURL );
         Set<String> substitutions = getConcreteSubstitutions( "_Surface", analyzer );
         Assert.assertEquals( 7, substitutions.size() );
         Assert.assertTrue( substitutions.contains( "CompositeSurface" ) );
@@ -215,7 +212,7 @@ public class GMLSchemaInfoSetTest {
                             IllegalAccessException {
 
         String schemaURL = "http://schemas.opengis.net/gml/3.1.1/base/gml.xsd";
-        GMLSchemaInfoSet analyzer = new GMLSchemaInfoSet( GMLVersion.GML_31, schemaURL );
+        GMLSchemaInfoSet analyzer = new GMLSchemaInfoSet( null, schemaURL );
         Set<String> substitutions = getConcreteSubstitutions( "_Solid", analyzer );
         Assert.assertEquals( 2, substitutions.size() );
         Assert.assertTrue( substitutions.contains( "CompositeSolid" ) );
@@ -228,7 +225,7 @@ public class GMLSchemaInfoSetTest {
                             IllegalAccessException {
 
         String schemaURL = "http://schemas.opengis.net/gml/3.1.1/base/gml.xsd";
-        GMLSchemaInfoSet analyzer = new GMLSchemaInfoSet( GMLVersion.GML_31, schemaURL );
+        GMLSchemaInfoSet analyzer = new GMLSchemaInfoSet( null, schemaURL );
         List<XSElementDeclaration> elementDecls = analyzer.getSubstitutions( new QName( "http://www.opengis.net/gml",
                                                                                         "_CurveSegment" ),
                                                                              "http://www.opengis.net/gml", true, true );
@@ -243,7 +240,7 @@ public class GMLSchemaInfoSetTest {
                             IllegalAccessException {
 
         String schemaURL = "http://schemas.opengis.net/gml/3.1.1/base/gml.xsd";
-        GMLSchemaInfoSet analyzer = new GMLSchemaInfoSet( GMLVersion.GML_31, schemaURL );
+        GMLSchemaInfoSet analyzer = new GMLSchemaInfoSet( null, schemaURL );
         List<XSElementDeclaration> elementDecls = analyzer.getSubstitutions( new QName( "http://www.opengis.net/gml",
                                                                                         "_SurfacePatch" ),
                                                                              "http://www.opengis.net/gml", true, true );
@@ -258,9 +255,8 @@ public class GMLSchemaInfoSetTest {
                             IllegalAccessException {
 
         String schemaURL = "http://schemas.opengis.net/gml/3.2.1/gml.xsd";
-        GMLSchemaInfoSet analyzer = new GMLSchemaInfoSet( GMLVersion.GML_32, schemaURL );
-        List<XSElementDeclaration> elementDecls = analyzer.getSubstitutions(
-                                                                             new QName(
+        GMLSchemaInfoSet analyzer = new GMLSchemaInfoSet( null, schemaURL );
+        List<XSElementDeclaration> elementDecls = analyzer.getSubstitutions( new QName(
                                                                                         "http://www.opengis.net/gml/3.2",
                                                                                         "AbstractCurveSegment" ),
                                                                              "http://www.opengis.net/gml/3.2", true,
@@ -276,9 +272,8 @@ public class GMLSchemaInfoSetTest {
                             IllegalAccessException {
 
         String schemaURL = "http://schemas.opengis.net/gml/3.2.1/gml.xsd";
-        GMLSchemaInfoSet analyzer = new GMLSchemaInfoSet( GMLVersion.GML_32, schemaURL );
-        List<XSElementDeclaration> elementDecls = analyzer.getSubstitutions(
-                                                                             new QName(
+        GMLSchemaInfoSet analyzer = new GMLSchemaInfoSet( null, schemaURL );
+        List<XSElementDeclaration> elementDecls = analyzer.getSubstitutions( new QName(
                                                                                         "http://www.opengis.net/gml/3.2",
                                                                                         "AbstractSurfacePatch" ),
                                                                              "http://www.opengis.net/gml/3.2", true,
@@ -294,9 +289,8 @@ public class GMLSchemaInfoSetTest {
                             IllegalAccessException {
 
         String schemaURL = "http://schemas.opengis.net/gml/3.2.1/gml.xsd";
-        GMLSchemaInfoSet analyzer = new GMLSchemaInfoSet( GMLVersion.GML_32, schemaURL );
-        List<XSElementDeclaration> elementDecls = analyzer.getSubstitutions(
-                                                                             new QName(
+        GMLSchemaInfoSet analyzer = new GMLSchemaInfoSet( null, schemaURL );
+        List<XSElementDeclaration> elementDecls = analyzer.getSubstitutions( new QName(
                                                                                         "http://www.opengis.net/gml/3.2",
                                                                                         "AbstractGeometry" ),
                                                                              "http://www.opengis.net/gml/3.2", true,

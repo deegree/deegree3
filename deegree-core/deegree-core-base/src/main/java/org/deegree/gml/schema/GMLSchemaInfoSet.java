@@ -45,6 +45,8 @@ import static org.deegree.commons.xml.CommonNamespaces.ISO_2005_GTS_NS;
 import static org.deegree.commons.xml.CommonNamespaces.XLNNS;
 import static org.deegree.commons.xml.CommonNamespaces.XSNS;
 import static org.deegree.feature.types.property.ValueRepresentation.BOTH;
+import static org.deegree.gml.GMLVersion.GML_31;
+import static org.deegree.gml.GMLVersion.GML_32;
 
 import java.io.StringReader;
 import java.util.ArrayList;
@@ -74,11 +76,10 @@ import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.XPath;
 import org.deegree.commons.xml.schema.XMLSchemaInfoSet;
 import org.deegree.feature.types.property.FeaturePropertyType;
-import org.deegree.feature.types.property.ObjectPropertyType;
-import org.deegree.feature.types.property.GenericObjectPropertyType;
 import org.deegree.feature.types.property.GeometryPropertyType;
 import org.deegree.feature.types.property.GeometryPropertyType.CoordinateDimension;
 import org.deegree.feature.types.property.GeometryPropertyType.GeometryType;
+import org.deegree.feature.types.property.ObjectPropertyType;
 import org.deegree.feature.types.property.PropertyType;
 import org.deegree.feature.types.property.ValueRepresentation;
 import org.deegree.gml.GMLVersion;
@@ -160,7 +161,9 @@ public class GMLSchemaInfoSet extends XMLSchemaInfoSet {
      * Creates a new {@link GMLSchemaInfoSet} instance for the given GML version and using the specified schemas.
      * 
      * @param version
+     *            gml version of the schema files, can be null (auto-detect GML version)
      * @param schemaUrls
+     *            URLs of the schema files to load, must not be <code>null</code>
      * @throws ClassCastException
      * @throws ClassNotFoundException
      * @throws InstantiationException
@@ -169,8 +172,12 @@ public class GMLSchemaInfoSet extends XMLSchemaInfoSet {
     public GMLSchemaInfoSet( GMLVersion version, String... schemaUrls ) throws ClassCastException,
                             ClassNotFoundException, InstantiationException, IllegalAccessException {
         super( schemaUrls );
-        this.version = version;
-        switch ( version ) {
+        if ( version == null ) {
+            this.version = determineGMLVersion( this );
+        } else {
+            this.version = version;
+        }
+        switch ( this.version ) {
         case GML_2: {
             abstractFeatureElementDecl = getElementDecl( "_Feature", GML_PRE_32_NS );
             abstractGeometryElementDecl = getElementDecl( "_Geometry", GML_PRE_32_NS );
@@ -214,7 +221,7 @@ public class GMLSchemaInfoSet extends XMLSchemaInfoSet {
 
         this.ftDecls = getSubstitutions( abstractFeatureElementDecl, null, true, false );
 
-        switch ( version ) {
+        switch ( this.version ) {
         case GML_2:
         case GML_30:
         case GML_31: {
@@ -251,6 +258,33 @@ public class GMLSchemaInfoSet extends XMLSchemaInfoSet {
             QName name = new QName( elemDecl.getNamespace(), elemDecl.getName() );
             geomElementNames.add( name );
         }
+    }
+
+    /**
+     * Determines the GML version of the given {@link XMLSchemaInfoSet} heuristically.
+     * 
+     * @param xmlSchemaInfoSet
+     *            XML schema, must not be <code>null</code>
+     * @return gml version, never <code>null</code>
+     * @throws IllegalArgumentException
+     *             if the GML version cannot be determined
+     */
+    public static GMLVersion determineGMLVersion( XMLSchemaInfoSet xmlSchemaInfoSet )
+                            throws IllegalArgumentException {
+        GMLVersion gmlVersion = GML_32;
+        Set<String> namespaces = xmlSchemaInfoSet.getSchemaNamespaces();
+        if ( namespaces.contains( GML_32_NS ) ) {
+            LOG.warn( "Schema must be GML 3.2 (found GML 3.2 namespace)" );
+        } else if ( !namespaces.contains( GMLNS ) ) {
+            String msg = "Cannot interpret XML schema as GML schema. "
+                         + "Neither GML core schema components in GML 3.2 namespace (" + GML3_2_NS + "), nor in "
+                         + "pre-GML 3.2 namespace (" + GMLNS + ") are present.";
+            throw new IllegalArgumentException( msg );
+        } else {
+            gmlVersion = GML_31;
+            LOG.warn( "Automatic differentiation between GML 3.1, 3.0 and 2 is not implemented." );
+        }
+        return gmlVersion;
     }
 
     /**
@@ -510,8 +544,8 @@ public class GMLSchemaInfoSet extends XMLSchemaInfoSet {
     }
 
     /**
-     * Checks the given element declaration and returns a {@link ObjectPropertyType} if it defines a GML object
-     * property or GML reference property.
+     * Checks the given element declaration and returns a {@link ObjectPropertyType} if it defines a GML object property
+     * or GML reference property.
      * 
      * @param elDecl
      * @param ptName
@@ -521,22 +555,22 @@ public class GMLSchemaInfoSet extends XMLSchemaInfoSet {
      * @return corresponding {@link ObjectPropertyType} or <code>null</code> if it's not a GML object property
      */
     public ObjectPropertyType getGMLPropertyDecl( XSElementDeclaration elDecl, QName ptName, int minOccurs,
-                                                     int maxOccurs, List<PropertyType> ptSubstitutions ) {
+                                                  int maxOccurs, List<PropertyType> ptSubstitutions ) {
         if ( !( elDecl.getTypeDefinition() instanceof XSComplexTypeDefinition ) ) {
             return null;
         }
         XSComplexTypeDefinition typeDef = (XSComplexTypeDefinition) elDecl.getTypeDefinition();
         ObjectPropertyType pt = buildGeometryPropertyType( ptName, elDecl, typeDef, minOccurs, maxOccurs,
-                                                              ptSubstitutions );
+                                                           ptSubstitutions );
         if ( pt == null ) {
             pt = buildFeaturePropertyType( ptName, elDecl, typeDef, minOccurs, maxOccurs, ptSubstitutions );
         }
         if ( pt == null ) {
             if ( allowsXLink( (XSComplexTypeDefinition) elDecl.getTypeDefinition() ) ) {
-                LOG.warn( "Identified generic object property, but handling is not implemented yet.");
-//                // TODO actually determine allowed value representations
-//                pt = new GenericObjectPropertyType( ptName, minOccurs, maxOccurs, elDecl.getAbstract(),
-//                                                       elDecl.getNillable(), ptSubstitutions, BOTH, typeDef );
+                LOG.warn( "Identified generic object property, but handling is not implemented yet." );
+                // // TODO actually determine allowed value representations
+                // pt = new GenericObjectPropertyType( ptName, minOccurs, maxOccurs, elDecl.getAbstract(),
+                // elDecl.getNillable(), ptSubstitutions, BOTH, typeDef );
             }
         }
         return pt;

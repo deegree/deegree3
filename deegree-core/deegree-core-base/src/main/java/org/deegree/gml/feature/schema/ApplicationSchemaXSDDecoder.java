@@ -143,6 +143,7 @@ public class ApplicationSchemaXSDDecoder {
      * Creates a new {@link ApplicationSchemaXSDDecoder} from the given schema URL(s).
      * 
      * @param gmlVersion
+     *            gml version of the schema files, can be null (auto-detect GML version)
      * @param namespaceHints
      *            optional hints (key: prefix, value: namespaces) for generating 'nice' qualified feature type and
      *            property type names, may be null
@@ -156,9 +157,9 @@ public class ApplicationSchemaXSDDecoder {
                             throws ClassCastException, ClassNotFoundException, InstantiationException,
                             IllegalAccessException {
 
-        this.gmlVersion = gmlVersion;
-        gmlNs = gmlVersion.getNamespace();
         analyzer = new GMLSchemaInfoSet( gmlVersion, schemaUrls );
+        this.gmlVersion = analyzer.getVersion();
+        gmlNs = this.gmlVersion.getNamespace();
 
         for ( Entry<String, String> nsToPrefix : analyzer.getNamespacePrefixes().entrySet() ) {
             this.nsToPrefix.put( nsToPrefix.getKey(), nsToPrefix.getValue() );
