@@ -14,24 +14,22 @@
         <legend><h:outputText styleClass="titel" value="Create new SQL feature store" /></legend>
         <h:form>
         <div>
-        <p class="welcomeText">
-        GML application schema files must be located below subdirectory <code>appschemas</code> of the root
-        directory of the active deegree workspace. 
-        </p>
-        <p>Place your schema files here:
-          <br/>
+        <p>
+          Place your schema files here:
           <br/>
           <h:outputText styleClass="titel" value="#{mappingWizardSQL.appSchemaDirectory}" />
+          <br/>
         </p>
         <h:panelGroup id="schemaFiles">
           <h:panelGroup rendered="#{empty mappingWizardSQL.availableAppSchemaFiles}">
             <p>
-              No schema files found (<h:commandLink value="rescan" ><f:ajax render="schemaFiles"/></h:commandLink>).
+              No schema files found. <h:commandLink styleClass="buttonCreateNew" value="Rescan" ><f:ajax render="schemaFiles"/></h:commandLink>
             </p>
           </h:panelGroup>
           <h:panelGroup rendered="#{! empty mappingWizardSQL.availableAppSchemaFiles}">
-            <p>Choose one or more schema file(s) (<h:commandLink value="rescan" ><f:ajax render="schemaFiles"/></h:commandLink>)
-            <h:selectManyCheckbox value="#{mappingWizardSQL.selectedAppSchemaFiles}" layout="pageDirection">
+            <p>Choose one or more schema file(s). <h:commandLink styleClass="buttonCreateNew" value="Rescan" ><f:ajax render="schemaFiles"/></h:commandLink>
+            <br/>
+            <h:selectManyCheckbox styleClass="label" value="#{mappingWizardSQL.selectedAppSchemaFiles}" layout="pageDirection">
               <f:selectItems value="#{mappingWizardSQL.availableAppSchemaFiles}" />
             </h:selectManyCheckbox>
             </p>
