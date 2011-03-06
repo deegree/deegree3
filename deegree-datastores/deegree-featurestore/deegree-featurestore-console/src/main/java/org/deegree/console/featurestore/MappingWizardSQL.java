@@ -62,12 +62,12 @@ import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.jdbc.ConnectionManager;
 import org.deegree.commons.utils.FileUtils;
 import org.deegree.commons.xml.stax.IndentingXMLStreamWriter;
-import org.deegree.cs.CRSUtils;
+import org.deegree.cs.coordinatesystems.ICRS;
+import org.deegree.cs.persistence.CRSManager;
 import org.deegree.feature.persistence.postgis.config.PostGISDDLCreator;
 import org.deegree.feature.persistence.postgis.config.PostGISFeatureStoreConfigWriter;
 import org.deegree.feature.persistence.postgis.jaxb.PostGISFeatureStoreConfig;
 import org.deegree.feature.persistence.sql.MappedApplicationSchema;
-import org.deegree.feature.persistence.sql.SQLFeatureStore;
 import org.deegree.feature.persistence.sql.mapper.AppSchemaMapper;
 import org.deegree.feature.types.ApplicationSchema;
 import org.deegree.gml.feature.schema.ApplicationSchemaXSDDecoder;
@@ -86,15 +86,26 @@ public class MappingWizardSQL {
 
     private String jdbcId;
 
-    private String mode = "template";
+    private String wizardMode = "template";
+
+    private String storageMode = "blob";
 
     private String[] selectedAppSchemaFiles = new String[0];
 
     private ApplicationSchema appSchema;
-    
+
     private AppSchemaInfo appSchemaInfo;
-    
+
     private MappedApplicationSchema mappedSchema;
+
+    private String storageCrs = "urn:ogc:def:crs:EPSG::4326";
+
+    // TODO
+    private String storageSrid = "-1";
+
+    private Integer columnNameLength = 16;
+
+    private Integer tableNameLength = 16;
 
     public String getFeatureStoreId()
                             throws ClassNotFoundException, SecurityException, NoSuchMethodException,
@@ -124,11 +135,11 @@ public class MappingWizardSQL {
     }
 
     public String getMode() {
-        return mode;
+        return wizardMode;
     }
 
     public void setMode( String mode ) {
-        this.mode = mode;
+        this.wizardMode = mode;
     }
 
     public File getAppSchemaDirectory()
@@ -170,10 +181,34 @@ public class MappingWizardSQL {
         return appSchemaInfo;
     }
 
+    public String getStorageMode() {
+        return storageMode;
+    }
+
+    public void setStorageMode( String storageMode ) {
+        this.storageMode = storageMode;
+    }
+
+    public String getStorageCrs() {
+        return storageCrs;
+    }
+
+    public void setStorageCrs( String storageCrs ) {
+        this.storageCrs = storageCrs;
+    }
+
+    public String getStorageSrid() {
+        return storageSrid;
+    }
+
+    public void setStorageSrid( String storageSrid ) {
+        this.storageSrid = storageSrid;
+    }
+
     public String selectMode() {
-        if ( "template".equals( mode ) ) {
+        if ( "template".equals( wizardMode ) ) {
             return "/console/jsf/wizard";
-        } else if ( "schema".equals( mode ) ) {
+        } else if ( "schema".equals( wizardMode ) ) {
             return "/console/featurestore/sql/wizard2";
         }
         return "/console/jsf/wizard";
@@ -215,7 +250,11 @@ public class MappingWizardSQL {
             ExternalContext ctx = FacesContext.getCurrentInstance().getExternalContext();
             DeegreeWorkspace ws = (DeegreeWorkspace) ctx.getApplicationMap().get( "workspace" );
 
-            AppSchemaMapper mapper = new AppSchemaMapper( appSchema, false, true, CRSUtils.EPSG_4326, "-1" );
+            ICRS storageCrs = CRSManager.lookup( this.storageCrs );
+            boolean createBlobMapping = storageMode.equals( "hybrid" ) || storageMode.equals( "blob" );
+            boolean createRelationalMapping = storageMode.equals( "hybrid" ) || storageMode.equals( "relational" );
+            AppSchemaMapper mapper = new AppSchemaMapper( appSchema, createBlobMapping, createRelationalMapping,
+                                                          storageCrs, storageSrid );
             mappedSchema = mapper.getMappedSchema();
             PostGISFeatureStoreConfigWriter configWriter = new PostGISFeatureStoreConfigWriter( mappedSchema );
             File file = new File( ws.getLocation(), "datasources/feature/" + getFeatureStoreId() + ".xml" );
@@ -235,14 +274,31 @@ public class MappingWizardSQL {
             String msg = "Error generating feature store configuration.";
             FacesMessage fm = new FacesMessage( SEVERITY_ERROR, msg, t.getMessage() );
             FacesContext.getCurrentInstance().addMessage( null, fm );
+            return "/console/featurestore/sql/wizard3";
         }
         return "/console/featurestore/sql/wizard4";
     }
-    
+
     public String createTables() {
         String[] createStmts = new PostGISDDLCreator( mappedSchema ).getDDL();
         SQLExecution execution = new SQLExecution( jdbcId, createStmts, "/console/featurestore/buttons" );
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put( "execution", execution );
         return "/console/generic/sql.jsf?faces-redirect=true";
+    }
+
+    public void setColumnNameLength( Integer columnNameLength ) {
+        this.columnNameLength = columnNameLength;
+    }
+
+    public Integer getColumnNameLength() {
+        return columnNameLength;
+    }
+
+    public void setTableNameLength( Integer tableNameLength ) {
+        this.tableNameLength = tableNameLength;
+    }
+
+    public Integer getTableNameLength() {
+        return tableNameLength;
     }
 }
