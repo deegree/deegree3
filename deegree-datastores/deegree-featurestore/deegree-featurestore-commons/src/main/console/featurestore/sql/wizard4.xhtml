@@ -9,40 +9,13 @@
     <h:panelGroup rendered="#{configManager.currentResourceManager == null &amp;&amp; logBean.loggedIn}">
       <p class="welcomeText">Please use the links to your left to select an appropriate section.</p>
     </h:panelGroup>
-    <h:panelGroup rendered="#{logBean.loggedIn &amp;&amp; configManager.currentResourceManager != null}">
-    
+    <h:panelGroup rendered="#{logBean.loggedIn &amp;&amp; configManager.currentResourceManager != null}">    
       <h:form>
-        <div>Schema loaded successfully.<br /><br />
-        </div>
+        <div>Configuration created successfully.<br /><br /></div>
         <div>
-          <h:commandButton styleClass="buttonCreateNew" value="Next" action="#{mappingWizardSQL.generateConfig}"
-          onclick="show();" /></div>
+          <h:commandButton styleClass="buttonCreateNew" value="Finish (create tables)" action="#{mappingWizardSQL.createTables}" onclick="show();" />
+        </div>
       </h:form>
-    
-    
-    ------------------------------------------------------------------------<br />
-    Namespaces<br />
-    ------------------------------------------------------------------------<br />
-      <br />
-      <ui:repeat value="#{mappingWizardSQL.appSchemaInfo.namespaces}" var="namespace">
-    - <h:outputText value="#{namespace}" />
-        <br />
-      </ui:repeat>
-      <br />
-      <br />
-    ------------------------------------------------------------------------<br />
-    Feature types (<h:outputText value="#{mappingWizardSQL.appSchemaInfo.numFtsTotal}" /> total/<h:outputText
-        value="#{mappingWizardSQL.appSchemaInfo.numFtsAbstract}" /> abstract)<br />
-    ------------------------------------------------------------------------<br />
-      <br />
-      <h:outputText value="#{mappingWizardSQL.appSchemaInfo.ftInfo}" escape="false" />
-      <br />
-      <br />
-    ------------------------------------------------------------------------<br />
-    Feature collection type hierarchy<br />
-    ------------------------------------------------------------------------<br />
-      <br />
-      <h:outputText value="#{mappingWizardSQL.appSchemaInfo.fcInfo}" escape="false" />
     </h:panelGroup>
   </ui:define>
 </ui:composition>

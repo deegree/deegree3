@@ -36,11 +36,17 @@
 package org.deegree.console.featurestore;
 
 import static javax.faces.application.FacesMessage.SEVERITY_ERROR;
-import static org.deegree.gml.GMLVersion.GML_32;
 
 import java.io.File;
 import java.io.FileOutputStream;
-import java.util.Collections;
+import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
@@ -51,18 +57,23 @@ import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamWriter;
 
 import org.apache.commons.io.IOUtils;
+import org.deegree.client.core.utils.SQLExecution;
 import org.deegree.commons.config.DeegreeWorkspace;
+import org.deegree.commons.jdbc.ConnectionManager;
+import org.deegree.commons.utils.FileUtils;
 import org.deegree.commons.xml.stax.IndentingXMLStreamWriter;
 import org.deegree.cs.CRSUtils;
+import org.deegree.feature.persistence.postgis.config.PostGISDDLCreator;
 import org.deegree.feature.persistence.postgis.config.PostGISFeatureStoreConfigWriter;
+import org.deegree.feature.persistence.postgis.jaxb.PostGISFeatureStoreConfig;
 import org.deegree.feature.persistence.sql.MappedApplicationSchema;
+import org.deegree.feature.persistence.sql.SQLFeatureStore;
 import org.deegree.feature.persistence.sql.mapper.AppSchemaMapper;
 import org.deegree.feature.types.ApplicationSchema;
-import org.deegree.gml.GMLVersion;
 import org.deegree.gml.feature.schema.ApplicationSchemaXSDDecoder;
 
 /**
- * TODO add class documentation here
+ * JSF bean that helps with creating {@link PostGISFeatureStoreConfig} instances.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
@@ -73,19 +84,44 @@ import org.deegree.gml.feature.schema.ApplicationSchemaXSDDecoder;
 @SessionScoped
 public class MappingWizardSQL {
 
+    private String jdbcId;
+
     private String mode = "template";
 
-    private GMLVersion gmlVersion = GML_32;
-
-    private String schemaLocation = "";
+    private String[] selectedAppSchemaFiles = new String[0];
 
     private ApplicationSchema appSchema;
-
+    
     private AppSchemaInfo appSchemaInfo;
+    
+    private MappedApplicationSchema mappedSchema;
 
-    private final String fsId = "inspire-au";
+    public String getFeatureStoreId()
+                            throws ClassNotFoundException, SecurityException, NoSuchMethodException,
+                            IllegalArgumentException, IllegalAccessException, InvocationTargetException {
+        ExternalContext ctx = FacesContext.getCurrentInstance().getExternalContext();
+        Object o = ctx.getSessionMap().get( "configManager" );
 
-    private final String jdbcId = "testconn";
+        // TODO clean up modularization
+        Class<?> c = Class.forName( "org.deegree.console.ConfigManager" );
+        Method m = c.getDeclaredMethod( "getNewConfigId" );
+        return (String) m.invoke( o );
+    }
+
+    public SortedSet<String> getAvailableJdbcConns() {
+        SortedSet<String> conns = new TreeSet<String>( ConnectionManager.getConnectionIds() );
+        // TODO remove this hack
+        conns.remove( "LOCK_DB" );
+        return conns;
+    }
+
+    public String getSelectedJdbcConn() {
+        return jdbcId;
+    }
+
+    public void setSelectedJdbcConn( String jdbcId ) {
+        this.jdbcId = jdbcId;
+    }
 
     public String getMode() {
         return mode;
@@ -95,29 +131,39 @@ public class MappingWizardSQL {
         this.mode = mode;
     }
 
-    public void setGmlVersion( String gmlVersion ) {
-        this.gmlVersion = GMLVersion.valueOf( gmlVersion );
+    public File getAppSchemaDirectory()
+                            throws IOException {
+        ExternalContext ctx = FacesContext.getCurrentInstance().getExternalContext();
+        DeegreeWorkspace ws = (DeegreeWorkspace) ctx.getApplicationMap().get( "workspace" );
+        File appSchemaDirectory = new File( ws.getLocation(), "appschemas" );
+        return appSchemaDirectory;
+    }
+
+    public TreeSet<String> getAvailableAppSchemaFiles()
+                            throws IOException {
+        List<File> files = FileUtils.findFilesForExtensions( getAppSchemaDirectory(), true, "xsd" );
+        TreeSet<String> fileNames = new TreeSet<String>();
+        String appDirFileName = getAppSchemaDirectory().getCanonicalPath();
+        for ( File file : files ) {
+            String canonicalFileName = file.getCanonicalPath();
+            if ( canonicalFileName.startsWith( appDirFileName ) ) {
+                fileNames.add( canonicalFileName.substring( appDirFileName.length() ) );
+            }
+        }
+        return fileNames;
+    }
+
+    public String[] getSelectedAppSchemaFiles() {
+        return selectedAppSchemaFiles;
+    }
+
+    public void setSelectedAppSchemaFiles( String[] files ) {
+        System.out.println( "App schema files: " + files );
+        this.selectedAppSchemaFiles = files;
     }
 
     public String getGmlVersion() {
-        return gmlVersion.name();
-    }
-
-    public String getSchemaLocation() {
-        return schemaLocation;
-    }
-
-    public void setSchemaLocation( String schemaLocation ) {
-        this.schemaLocation = schemaLocation;
-    }
-
-    public String[] getAvailableGmlVersions() {
-        String[] gmlVersions = new String[GMLVersion.values().length];
-        int i = 0;
-        for ( GMLVersion version : GMLVersion.values() ) {
-            gmlVersions[i++] = version.name();
-        }
-        return gmlVersions;
+        return appSchema.getXSModel().getVersion().name();
     }
 
     public AppSchemaInfo getAppSchemaInfo() {
@@ -133,18 +179,26 @@ public class MappingWizardSQL {
         return "/console/jsf/wizard";
     }
 
-    public String analyzeSchema() {
-        ExternalContext ctx = FacesContext.getCurrentInstance().getExternalContext();
-        DeegreeWorkspace ws = (DeegreeWorkspace) ctx.getApplicationMap().get( "workspace" );
-        File schemaFile = new File( ws.getLocation(), schemaLocation );
-        if ( !schemaFile.exists() ) {
-            FacesMessage fm = new FacesMessage( SEVERITY_ERROR, "No file at location: " + schemaFile.getPath()
-                                                                + " found.", null );
+    public String analyzeSchema()
+                            throws IOException, ClassNotFoundException, SecurityException, NoSuchMethodException,
+                            IllegalArgumentException, IllegalAccessException, InvocationTargetException {
+
+        if ( selectedAppSchemaFiles.length == 0 ) {
+            FacesMessage fm = new FacesMessage( SEVERITY_ERROR, "At least one schema file must be selected.", null );
             FacesContext.getCurrentInstance().addMessage( null, fm );
             return null;
         }
+
+        String[] schemaUrls = new String[selectedAppSchemaFiles.length];
+        int i = 0;
+        for ( String schemaFile : selectedAppSchemaFiles ) {
+            File fullFile = new File( getAppSchemaDirectory(), schemaFile );
+            URL schemaUrl = fullFile.toURI().toURL();
+            schemaUrls[i++] = schemaUrl.toString();
+        }
+
         try {
-            ApplicationSchemaXSDDecoder xsdDecoder = new ApplicationSchemaXSDDecoder( gmlVersion, null, schemaFile );
+            ApplicationSchemaXSDDecoder xsdDecoder = new ApplicationSchemaXSDDecoder( null, null, schemaUrls );
             appSchema = xsdDecoder.extractFeatureTypeSchema();
             appSchemaInfo = new AppSchemaInfo( appSchema );
         } catch ( Throwable t ) {
@@ -162,14 +216,18 @@ public class MappingWizardSQL {
             DeegreeWorkspace ws = (DeegreeWorkspace) ctx.getApplicationMap().get( "workspace" );
 
             AppSchemaMapper mapper = new AppSchemaMapper( appSchema, false, true, CRSUtils.EPSG_4326, "-1" );
-            MappedApplicationSchema mappedSchema = mapper.getMappedSchema();
+            mappedSchema = mapper.getMappedSchema();
             PostGISFeatureStoreConfigWriter configWriter = new PostGISFeatureStoreConfigWriter( mappedSchema );
-            File file = new File( ws.getLocation(), "datasources/feature/" + fsId + ".xml" );
+            File file = new File( ws.getLocation(), "datasources/feature/" + getFeatureStoreId() + ".xml" );
             FileOutputStream fos = new FileOutputStream( file );
             XMLStreamWriter xmlWriter = XMLOutputFactory.newInstance().createXMLStreamWriter( fos );
             xmlWriter = new IndentingXMLStreamWriter( xmlWriter );
-            String schemaPath = "../../" + schemaLocation;
-            configWriter.writeConfig( xmlWriter, jdbcId, Collections.singletonList( schemaPath ) );
+
+            List<String> schemaUrls = new ArrayList<String>( selectedAppSchemaFiles.length );
+            for ( String schemaFile : selectedAppSchemaFiles ) {
+                schemaUrls.add( ".." + File.separator + ".." + File.separator + "appschemas" + schemaFile );
+            }
+            configWriter.writeConfig( xmlWriter, jdbcId, schemaUrls );
             xmlWriter.close();
             IOUtils.closeQuietly( fos );
             System.out.println( "Wrote to file " + file );
@@ -179,5 +237,12 @@ public class MappingWizardSQL {
             FacesContext.getCurrentInstance().addMessage( null, fm );
         }
         return "/console/featurestore/sql/wizard4";
+    }
+    
+    public String createTables() {
+        String[] createStmts = new PostGISDDLCreator( mappedSchema ).getDDL();
+        SQLExecution execution = new SQLExecution( jdbcId, createStmts, "/console/featurestore/buttons" );
+        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put( "execution", execution );
+        return "/console/generic/sql.jsf?faces-redirect=true";
     }
 }

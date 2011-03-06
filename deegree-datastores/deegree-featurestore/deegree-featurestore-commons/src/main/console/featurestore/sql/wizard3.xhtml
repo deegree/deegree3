@@ -9,27 +9,15 @@
     <h:panelGroup rendered="#{configManager.currentResourceManager == null &amp;&amp; logBean.loggedIn}">
       <p class="welcomeText">Please use the links to your left to select an appropriate section.</p>
     </h:panelGroup>
-    <h:panelGroup rendered="#{logBean.loggedIn &amp;&amp; configManager.currentResourceManager != null}">
-    
+    <h:panelGroup rendered="#{logBean.loggedIn &amp;&amp; configManager.currentResourceManager != null}">    
       <h:form>
-        <div>Schema loaded successfully.<br /><br />
+        <div>Schema analysis complete (see below for details). GML version: <h:outputText value="#{mappingWizardSQL.gmlVersion}" /><br /><br />
         </div>
         <div>
-          <h:commandButton styleClass="buttonCreateNew" value="Next" action="#{mappingWizardSQL.generateConfig}"
-          onclick="show();" /></div>
-      </h:form>
-    
-    
-    ------------------------------------------------------------------------<br />
-    Namespaces<br />
-    ------------------------------------------------------------------------<br />
-      <br />
-      <ui:repeat value="#{mappingWizardSQL.appSchemaInfo.namespaces}" var="namespace">
-    - <h:outputText value="#{namespace}" />
-        <br />
-      </ui:repeat>
-      <br />
-      <br />
+          <h:commandButton styleClass="buttonCreateNew" value="Back" action="#{mappingWizardSQL.selectMode}" onclick="show();" />
+          <h:commandButton styleClass="buttonCreateNew" value="Next" action="#{mappingWizardSQL.generateConfig}" onclick="show();" />
+        </div>
+      </h:form>    
     ------------------------------------------------------------------------<br />
     Feature types (<h:outputText value="#{mappingWizardSQL.appSchemaInfo.numFtsTotal}" /> total/<h:outputText
         value="#{mappingWizardSQL.appSchemaInfo.numFtsAbstract}" /> abstract)<br />
@@ -43,6 +31,26 @@
     ------------------------------------------------------------------------<br />
       <br />
       <h:outputText value="#{mappingWizardSQL.appSchemaInfo.fcInfo}" escape="false" />
+      <br />
+      <br />      
+    ------------------------------------------------------------------------<br />
+    Namespaces<br />
+    ------------------------------------------------------------------------<br />
+      <br />
+      <ui:repeat value="#{mappingWizardSQL.appSchemaInfo.namespaces}" var="namespace">
+    - <h:outputText value="#{namespace}" />
+        <br />
+      </ui:repeat>
+      <br />
+      <br />      
+    ------------------------------------------------------------------------<br />
+    Schema components<br />
+    ------------------------------------------------------------------------<br />
+      <br />
+      <ui:repeat value="#{mappingWizardSQL.appSchemaInfo.schemaComponents}" var="schemaComponent">
+    - <h:outputText value="#{schemaComponent}" />
+        <br />
+      </ui:repeat>
     </h:panelGroup>
   </ui:define>
 </ui:composition>

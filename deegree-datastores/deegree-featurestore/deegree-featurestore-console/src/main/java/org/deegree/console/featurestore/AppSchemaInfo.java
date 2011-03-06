@@ -6,6 +6,7 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
+import java.util.SortedSet;
 import java.util.TreeSet;
 
 import org.deegree.feature.types.ApplicationSchema;
@@ -18,6 +19,14 @@ public class AppSchemaInfo {
 
     public AppSchemaInfo( ApplicationSchema schema ) {
         this.schema = schema;
+    }
+
+    public SortedSet<String> getSchemaComponents() {
+        TreeSet<String> components = new TreeSet<String>();
+        for ( String ns : schema.getXSModel().getSchemaNamespaces() ) {
+            components.addAll( schema.getXSModel().getComponentLocations( ns ) );
+        }
+        return components;
     }
 
     public List<NamespaceBinding> getNamespaces() {

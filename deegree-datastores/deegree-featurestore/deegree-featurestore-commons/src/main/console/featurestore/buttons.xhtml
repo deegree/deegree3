@@ -4,16 +4,14 @@
     xmlns:fn="http://java.sun.com/jsp/jstl/functions" xmlns:dg="http://deegree.org/jsf"
     xmlns:dgc="http://java.sun.com/jsf/composite/deegree">
     <ui:define name="extraButtons">
-
-        <td><h:commandButton styleClass="buttonInfo" rendered="#{config.active}"
+        <td><h:commandButton styleClass="buttonInfo" rendered="#{config.state=='init_ok'}"
             value="#{labels.featureStores_info}" action="#{featureStoreConfig.showInfo}" alt="#{config.id}"
             actionListener="#{featureStoreConfig.updateId}" /></td>
-        <td><h:commandButton styleClass="buttonInfo" rendered="#{config.active}"
+        <td><h:commandButton styleClass="buttonInfo" rendered="#{config.state=='init_ok'}"
             value="#{labels.featureStores_loader}" action="#{featureStoreConfig.openLoader}" alt="#{config.id}"
             actionListener="#{featureStoreConfig.updateId}" /></td>
-        <td><h:commandButton styleClass="buttonInfo" rendered="#{config.active}"
+        <td><h:commandButton styleClass="buttonInfo" rendered="#{featureStoreConfig.sql}"
             value="#{labels.featureStores_setup}" action="#{featureStoreConfig.createTables}" alt="#{config.id}"
             actionListener="#{featureStoreConfig.updateId}" /></td>
-
     </ui:define>
 </ui:composition>

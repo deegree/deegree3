@@ -10,20 +10,40 @@
       <p class="welcomeText">Please use the links to your left to select an appropriate section.</p>
     </h:panelGroup>
     <h:panelGroup rendered="#{logBean.loggedIn &amp;&amp; configManager.currentResourceManager != null}">
-      <fieldset class="fieldset"><legend><h:outputText styleClass="titel"
-        value="Create new SQL feature store" /></legend> <h:form>
-        <div><br />
-        <br />
-        <h:outputLabel styleClass="label" value="Location of GML application schema file (relative to workspace root)" /> <h:inputText
-          styleClass="liste" value="#{mappingWizardSQL.schemaLocation}" size="40" required="true"
-          requiredMessage="Location of schema file is required." /> <h:selectOneMenu styleClass="liste"
-          value="#{mappingWizardSQL.gmlVersion}">
-          <f:selectItems value="#{mappingWizardSQL.availableGmlVersions}" />
-        </h:selectOneMenu></div>
+      <fieldset class="fieldset">
+        <legend><h:outputText styleClass="titel" value="Create new SQL feature store" /></legend>
+        <h:form>
         <div>
-          <h:commandButton styleClass="buttonCreateNew" value="Next" action="#{mappingWizardSQL.analyzeSchema}"
-          onclick="show();" /></div>
-      </h:form></fieldset>
+        <p class="welcomeText">
+        GML application schema files must be located below subdirectory <code>appschemas</code> of the root
+        directory of the active deegree workspace. 
+        </p>
+        <p>Place your schema files here:
+          <br/>
+          <br/>
+          <h:outputText styleClass="titel" value="#{mappingWizardSQL.appSchemaDirectory}" />
+        </p>
+        <h:panelGroup id="schemaFiles">
+          <h:panelGroup rendered="#{empty mappingWizardSQL.availableAppSchemaFiles}">
+            <p>
+              No schema files found (<h:commandLink value="rescan" ><f:ajax render="schemaFiles"/></h:commandLink>).
+            </p>
+          </h:panelGroup>
+          <h:panelGroup rendered="#{! empty mappingWizardSQL.availableAppSchemaFiles}">
+            <p>Choose one or more schema file(s) (<h:commandLink value="rescan" ><f:ajax render="schemaFiles"/></h:commandLink>)
+            <h:selectManyCheckbox value="#{mappingWizardSQL.selectedAppSchemaFiles}" layout="pageDirection">
+              <f:selectItems value="#{mappingWizardSQL.availableAppSchemaFiles}" />
+            </h:selectManyCheckbox>
+            </p>
+          </h:panelGroup>
+        </h:panelGroup>        
+        </div>
+        <div>
+          <h:commandButton styleClass="buttonCreateNew" value="Back" action="/console/featurestore/sql/wizard" />
+          <h:commandButton styleClass="buttonCreateNew" value="Next" action="#{mappingWizardSQL.analyzeSchema}" onclick="show();" />
+        </div>
+      </h:form>
+      </fieldset>
     </h:panelGroup>
   </ui:define>
 </ui:composition>
