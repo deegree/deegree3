@@ -42,6 +42,9 @@ import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.FilenameFilter;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Arrays;
@@ -63,6 +66,8 @@ import org.slf4j.LoggerFactory;
 public class FileUtils {
 
     private static Logger LOG = LoggerFactory.getLogger( FileUtils.class );
+
+    private static final String DEFAULT_CHARSET = "UTF-8";
 
     /**
      * Returns the filename, without any extension and path (Eg. /tmp/foo.txt -> foo)
@@ -347,4 +352,72 @@ public class FileUtils {
         };
         return filter;
     }
+
+    /**
+     * reads a Text file from its resource. For accessing the resource an <code>InputStreamReader</code> with encoding
+     * read from <code>CharsetUtils.getSystemCharset()</code>
+     * 
+     * @param url
+     * @return contents of the url as a {@link StringBuffer}
+     * @throws IOException
+     */
+    public static StringBuffer readTextFile( URL url )
+                            throws IOException {
+        return readTextFile( url.openStream() );
+    }
+
+    /**
+     * reads a Text file from its resource. For accessing the resource an <code>InputStreamReader</code> with encoding
+     * read from <code>CharsetUtils.getSystemCharset()</code>
+     * 
+     * @param is
+     * @return contents of the input stream as a {@link StringBuffer}
+     * @throws IOException
+     */
+    public static StringBuffer readTextFile( InputStream is )
+                            throws IOException {
+        InputStreamReader isr = new InputStreamReader( is, getSystemCharset() );
+        return readTextFile( isr );
+    }
+
+    /**
+     * reads a Text file from its resource.
+     * 
+     * @param reader
+     * @return contents of the reader as a {@link StringBuffer}
+     * @throws IOException
+     */
+    public static StringBuffer readTextFile( Reader reader )
+                            throws IOException {
+        StringBuffer sb = new StringBuffer( 10000 );
+        int c = 0;
+        while ( ( c = reader.read() ) > -1 ) {
+            sb.append( (char) c );
+        }
+        reader.close();
+
+        return sb;
+    }
+
+    /**
+     * returns the name of the charset that is passed to the JVM as system property -DCHARSET=... If no charset has been
+     * defined UTF-8 will be returned as default.
+     * 
+     * @return the name of the charset that is passed to the JVM as system property -DCHARSET=... If no charset has been
+     *         defined UTF-8 will be returned as default.
+     */
+    public static String getSystemCharset() {
+        String charset = null;
+        try {
+            charset = System.getProperty( "CHARSET" );
+        } catch ( Exception exc ) {
+            LOG.error( "Error retrieving system property CHARSET", exc );
+        }
+        if ( charset == null ) {
+            charset = DEFAULT_CHARSET;
+        }
+        LOG.debug( "Using system charset: " + charset );
+        return charset;
+    }
+
 }
