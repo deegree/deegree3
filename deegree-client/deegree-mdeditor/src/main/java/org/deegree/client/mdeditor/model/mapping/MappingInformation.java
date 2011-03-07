@@ -38,7 +38,7 @@ package org.deegree.client.mdeditor.model.mapping;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.deegree.commons.xml.NamespaceContext;
+import org.deegree.commons.xml.NamespaceBindings;
 
 /**
  * TODO add class documentation here
@@ -62,7 +62,7 @@ public class MappingInformation {
 
     private String schema;
 
-    private NamespaceContext nsContext = new NamespaceContext();;
+    private NamespaceBindings nsContext = new NamespaceBindings();
 
     public MappingInformation( String id, String name, String version, String describtion, String schema ) {
         this.id = id;
@@ -134,11 +134,11 @@ public class MappingInformation {
         return name + v;
     }
 
-    public void setNsContext( NamespaceContext nsContext ) {
+    public void setNsContext( NamespaceBindings nsContext ) {
         this.nsContext = nsContext;
     }
 
-    public NamespaceContext getNsContext() {
+    public NamespaceBindings getNsContext() {
         return nsContext;
     }
 

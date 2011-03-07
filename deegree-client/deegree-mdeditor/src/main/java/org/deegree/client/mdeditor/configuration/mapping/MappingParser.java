@@ -60,7 +60,8 @@ import org.deegree.client.mdeditor.configuration.Parser;
 import org.deegree.client.mdeditor.model.mapping.MappingElement;
 import org.deegree.client.mdeditor.model.mapping.MappingGroup;
 import org.deegree.client.mdeditor.model.mapping.MappingInformation;
-import org.deegree.commons.xml.NamespaceContext;
+import org.deegree.commons.xml.CommonNamespaces;
+import org.deegree.commons.xml.NamespaceBindings;
 import org.slf4j.Logger;
 
 /**
@@ -241,9 +242,9 @@ public class MappingParser extends Parser {
         return mappingSingle;
     }
 
-    private static NamespaceContext parseNamespaceDefinitions( XMLStreamReader xmlStream )
+    private static NamespaceBindings parseNamespaceDefinitions( XMLStreamReader xmlStream )
                             throws XMLStreamException {
-        NamespaceContext nsContext = new NamespaceContext();
+        NamespaceBindings nsContext = CommonNamespaces.getNamespaceContext();
         nextElement( xmlStream );
 
         while ( !( xmlStream.isEndElement() && namespaceDef.equals( xmlStream.getName() ) ) ) {

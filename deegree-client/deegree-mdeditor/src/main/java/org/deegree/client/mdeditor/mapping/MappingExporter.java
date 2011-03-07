@@ -140,7 +140,7 @@ public class MappingExporter {
                 for ( ; currentIndex < groupSteps.size(); currentIndex++ ) {
                     NameStep qName = groupSteps.get( currentIndex );
                     String prefix = qName.getPrefix();
-                    String namespaceURI = mapping.getNsContext().getURI( prefix );
+                    String namespaceURI = mapping.getNsContext().getNamespaceURI( prefix );
                     writer.writeStartElement( prefix, qName.getLocalName(), namespaceURI );
                     writer.writeNamespace( prefix, namespaceURI );
                 }
@@ -214,7 +214,7 @@ public class MappingExporter {
                     break;
                 } else {
                     String prefix = nameStep.getPrefix();
-                    String namespaceURI = mapping.getNsContext().getURI( prefix );
+                    String namespaceURI = mapping.getNsContext().getNamespaceURI( prefix );
                     writer.writeStartElement( prefix, nameStep.getLocalName(), namespaceURI );
                     writer.writeNamespace( prefix, namespaceURI );
                     if ( currentIndex == currentSteps.size() - 1 ) {
@@ -232,7 +232,7 @@ public class MappingExporter {
                             throws XMLStreamException {
         LOG.debug( "write attribute " + nameStep + ", value is " + value );
         String prefix = nameStep.getPrefix();
-        String ns = mapping.getNsContext().getURI( prefix );
+        String ns = mapping.getNsContext().getNamespaceURI( prefix );
         if ( ns != null ) {
             writer.writeAttribute( prefix, ns, nameStep.getLocalName(), value );
         } else {
@@ -247,7 +247,7 @@ public class MappingExporter {
         for ( String value : values ) {
             for ( NameStep step : currentSteps ) {
                 String prefix = step.getPrefix();
-                String namespaceURI = mapping.getNsContext().getURI( prefix );
+                String namespaceURI = mapping.getNsContext().getNamespaceURI( prefix );
                 writer.writeStartElement( prefix, step.getLocalName(), namespaceURI );
                 writer.writeNamespace( prefix, namespaceURI );
             }
@@ -281,8 +281,7 @@ public class MappingExporter {
         if ( one != null && two != null ) {
             if ( one.getAxis() == two.getAxis()
                  && one.getLocalName().equals( two.getLocalName() )
-                 && ( ( one.getPrefix() == null && two.getPrefix() == null ) || ( one.getPrefix() != null && one.getPrefix().equals(
-                                                                                                                                     two.getPrefix() ) ) ) ) {
+                 && ( ( one.getPrefix() == null && two.getPrefix() == null ) || ( one.getPrefix() != null && one.getPrefix().equals( two.getPrefix() ) ) ) ) {
                 return true;
             }
         }
