@@ -35,8 +35,6 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.feature.persistence.oracle;
 
-import static java.util.Collections.singletonMap;
-
 import java.net.URL;
 import java.sql.SQLException;
 import java.util.HashMap;
@@ -51,7 +49,6 @@ import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceManager;
 import org.deegree.commons.config.WorkspaceInitializationException;
 import org.deegree.commons.jdbc.ConnectionManager;
-import org.deegree.commons.utils.ProxyUtils;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.persistence.CRSManager;
 import org.deegree.feature.persistence.FeatureStoreException;
@@ -84,17 +81,6 @@ public class OracleFeatureStoreProvider implements FeatureStoreProvider {
     @Override
     public URL getConfigSchema() {
         return OracleFeatureStoreProvider.class.getResource( "/META-INF/schemas/datasource/0.5.0/feature/oracle.xsd" );
-    }
-
-    @Override
-    public Map<String, URL> getConfigTemplates() {
-        String loc = "/META-INF/schemas/datasource/0.5.0/feature/example.xml";
-        return singletonMap( "example", OracleFeatureStoreProvider.class.getResource( loc ) );
-    }
-
-    @Override
-    public String getConfigWizardView() {
-        return null;
     }
 
     @Override
@@ -143,6 +129,6 @@ public class OracleFeatureStoreProvider implements FeatureStoreProvider {
 
     @SuppressWarnings("unchecked")
     public Class<? extends ResourceManager>[] getDependencies() {
-        return new Class[] { ProxyUtils.class, ConnectionManager.class };
+        return new Class[] { ConnectionManager.class };
     }
 }

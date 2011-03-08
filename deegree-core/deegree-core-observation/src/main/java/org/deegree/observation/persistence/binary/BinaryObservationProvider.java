@@ -69,18 +69,6 @@ public class BinaryObservationProvider implements ObservationStoreProvider {
     }
 
     @Override
-    public Map<String, URL> getConfigTemplates() {
-        // TODO
-        throw new RuntimeException(
-                                    "The support for Binary Observation Stores is not yet finished. Please check back soon!" );
-    }
-
-    @Override
-    public String getConfigWizardView() {
-        return null;
-    }
-
-    @Override
     public ObservationDatastore getObservationStore( URL configURL )
                             throws ObservationDatastoreException {
         // TODO

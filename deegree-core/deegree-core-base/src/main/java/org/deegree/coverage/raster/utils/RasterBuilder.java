@@ -46,10 +46,8 @@ import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 import javax.xml.bind.JAXBException;
 
@@ -207,8 +205,7 @@ public class RasterBuilder implements CoverageBuilder {
      * @param adapter
      * @return a corresponding raster
      */
-    private MultiResolutionRaster fromJAXB( MultiResolutionRasterConfig mrrConfig, XMLAdapter adapter,
-                                            ICRS parentCrs ) {
+    private MultiResolutionRaster fromJAXB( MultiResolutionRasterConfig mrrConfig, XMLAdapter adapter, ICRS parentCrs ) {
         if ( mrrConfig != null ) {
             String defCRS = mrrConfig.getStorageCRS();
             ICRS crs = null;
@@ -578,21 +575,8 @@ public class RasterBuilder implements CoverageBuilder {
 
     }
 
+    @Override
     public URL getConfigSchema() {
         return RasterBuilder.class.getResource( CONFIG_SCHEMA );
     }
-
-    public Map<String, URL> getConfigTemplates() {
-        HashMap<String, URL> map = new HashMap<String, URL>();
-        map.put( "singlefile",
-                 RasterBuilder.class.getResource( "/META-INF/schemas/datasource/coverage/raster/3.0.0/single.xml" ) );
-        map.put( "directory",
-                 RasterBuilder.class.getResource( "/META-INF/schemas/datasource/coverage/raster/3.0.0/directory.xml" ) );
-        return map;
-    }
-    
-    @Override
-    public String getConfigWizardView() {
-        return null;
-    }    
 }

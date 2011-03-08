@@ -35,7 +35,6 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.cs.persistence.gml;
 
-import static java.util.Collections.singletonMap;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.lang.reflect.Constructor;
@@ -77,20 +76,17 @@ public class GMLCRSStoreProvider implements CRSStoreProvider {
 
     private static final String CONFIG_SCHEMA = "/META-INF/schemas/crs/stores/gml/3.1.0/gml.xsd";
 
-    private static final String CONFIG_TEMPLATE = "/META-INF/schemas/crs/stores/gml/3.1.0/example.xml";
-
+    @Override
     public String getConfigNamespace() {
         return CONFIG_NS;
     }
 
+    @Override
     public URL getConfigSchema() {
         return GMLCRSStoreProvider.class.getResource( CONFIG_SCHEMA );
     }
 
-    public Map<String, URL> getConfigTemplates() {
-        return singletonMap( "example", GMLCRSStoreProvider.class.getResource( CONFIG_TEMPLATE ) );
-    }
-
+    @Override
     public CRSStore getCRSStore( URL configURL )
                             throws CRSStoreException {
         try {
@@ -164,10 +160,5 @@ public class GMLCRSStoreProvider implements CRSStoreProvider {
             LOG.error( msg );
             throw new CRSStoreException( msg, e );
         }
-    }
-
-    @Override
-    public String getConfigWizardView() {
-        return null;
     }
 }

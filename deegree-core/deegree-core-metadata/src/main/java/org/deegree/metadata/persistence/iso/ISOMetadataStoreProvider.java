@@ -35,7 +35,6 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.metadata.persistence.iso;
 
-import static java.util.Collections.singletonMap;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.BufferedReader;
@@ -45,7 +44,6 @@ import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -72,7 +70,8 @@ import org.slf4j.Logger;
  * @version $Revision$, $Date$
  */
 public class ISOMetadataStoreProvider implements MetadataStoreProvider {
-    private static Logger LOG = getLogger( ISOMetadataStoreProvider.class );
+
+    private static final Logger LOG = getLogger( ISOMetadataStoreProvider.class );
 
     private DeegreeWorkspace workspace;
 
@@ -84,17 +83,6 @@ public class ISOMetadataStoreProvider implements MetadataStoreProvider {
     @Override
     public URL getConfigSchema() {
         return ISOMetadataStoreProvider.class.getResource( "/META-INF/schemas/datasource/metadata/iso19115/3.0.0/iso19115.xsd" );
-    }
-
-    @Override
-    public Map<String, URL> getConfigTemplates() {
-        String path = "/META-INF/schemas/datasource/metadata/iso19115/3.0.0/example_iso19115.xml";
-        return singletonMap( "example", ISOMetadataStoreProvider.class.getResource( path ) );
-    }
-
-    @Override
-    public String getConfigWizardView() {
-        return null;
     }
 
     @Override

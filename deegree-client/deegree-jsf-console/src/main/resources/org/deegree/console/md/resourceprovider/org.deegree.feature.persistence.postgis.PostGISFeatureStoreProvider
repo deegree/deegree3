@@ -1,0 +1,2 @@
+wizard=/console/featurestore/sql/wizard
+example1_location=/META-INF/schemas/datasource/feature/postgis/3.1.0/example.xml

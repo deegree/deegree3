@@ -36,8 +36,6 @@
 package org.deegree.rendering.r3d.multiresolution.persistence;
 
 import static java.io.File.separator;
-import static org.deegree.commons.config.ResourceState.StateType.deactivated;
-import static org.deegree.commons.config.ResourceState.StateType.init_error;
 import static org.deegree.commons.config.ResourceState.StateType.init_ok;
 
 import java.io.File;
@@ -245,7 +243,7 @@ public class BatchedMTStoreManager implements ResourceManager {
             }
         };
     }
-    
+
     @Override
     public ResourceState getState( String id ) {
         if ( get( id ) != null ) {

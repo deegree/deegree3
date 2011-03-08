@@ -35,13 +35,11 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.services.wcs;
 
-import static java.util.Collections.singletonMap;
 import static org.deegree.protocol.wcs.WCSConstants.VERSION_110;
 import static org.deegree.protocol.wcs.WCSConstants.WCS_100_NS;
 import static org.deegree.protocol.wps.WPSConstants.VERSION_100;
 
 import java.net.URL;
-import java.util.Map;
 
 import org.deegree.commons.config.ResourceManager;
 import org.deegree.commons.tom.ows.Version;
@@ -70,34 +68,29 @@ public class WCSProvider implements OWSProvider<WCSRequestType> {
         }
     };
 
+    @Override
     public String getConfigNamespace() {
         return "http://www.deegree.org/services/wcs";
     }
 
+    @Override
     public URL getConfigSchema() {
         return WCSProvider.class.getResource( "/META-INF/schemas/wcs/3.0.0/wcs_configuration.xsd" );
     }
 
-    public Map<String, URL> getConfigTemplates() {
-        return singletonMap( "example", WCSProvider.class.getResource( "/META-INF/schemas/wcs/3.0.0/example.xml" ) );
-    }
-
     @Override
-    public String getConfigWizardView() {
-        return null;
-    }
-
     public ImplementationMetadata<WCSRequestType> getImplementationMetadata() {
         return IMPLEMENTATION_METADATA;
     }
 
+    @Override
     public OWS<WCSRequestType> getService() {
         return new WCSController();
     }
 
+    @Override
     @SuppressWarnings("unchecked")
     public Class<? extends ResourceManager>[] getDependencies() {
         return new Class[] { CoverageBuilderManager.class };
     }
-
 }

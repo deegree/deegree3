@@ -37,7 +37,6 @@
 package org.deegree.commons.jdbc;
 
 import static java.sql.DriverManager.registerDriver;
-import static java.util.Collections.singletonMap;
 import static org.deegree.commons.config.ResourceState.StateType.init_ok;
 import static org.deegree.commons.jdbc.ConnectionManager.Type.H2;
 import static org.deegree.commons.jdbc.ConnectionManager.Type.MSSQL;
@@ -319,16 +318,6 @@ public class ConnectionManager implements ResourceManager, ResourceProvider {
         return ConnectionManager.class.getResource( CONFIG_SCHEMA );
     }
 
-    public Map<String, URL> getConfigTemplates() {
-        return singletonMap( "example",
-                             ConnectionManager.class.getResource( "/META-INF/schemas/jdbc/3.0.0/example.xml" ) );
-    }
-
-    @Override
-    public String getConfigWizardView() {
-        return null;
-    }
-    
     @Override
     public ResourceState getState( String id ) {
         if ( idToPools.get( id ) != null ) {
@@ -336,5 +325,5 @@ public class ConnectionManager implements ResourceManager, ResourceProvider {
         }
         // TODO
         return null;
-    }    
+    }
 }

@@ -35,12 +35,10 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.feature.persistence.simplesql;
 
-import static java.util.Collections.singletonMap;
 import static org.deegree.commons.utils.CollectionUtils.map;
 
 import java.net.URL;
 import java.util.LinkedList;
-import java.util.Map;
 
 import javax.xml.bind.JAXBException;
 
@@ -76,8 +74,6 @@ public class SimpleSQLFeatureStoreProvider implements FeatureStoreProvider {
 
     private static final String CONFIG_SCHEMA = "/META-INF/schemas/datasource/feature/simplesql/3.0.1/simplesql.xsd";
 
-    private static final String CONFIG_TEMPLATE = "/META-INF/schemas/datasource/feature/simplesql/3.0.1/example.xml";
-
     private static Mapper<Pair<Integer, String>, LODStatement> lodMapper = new Mapper<Pair<Integer, String>, LODStatement>() {
         public Pair<Integer, String> apply( LODStatement u ) {
             return new Pair<Integer, String>( u.getAboveScale(), u.getValue() );
@@ -94,16 +90,6 @@ public class SimpleSQLFeatureStoreProvider implements FeatureStoreProvider {
     @Override
     public URL getConfigSchema() {
         return SimpleSQLFeatureStoreProvider.class.getResource( CONFIG_SCHEMA );
-    }
-
-    @Override
-    public Map<String, URL> getConfigTemplates() {
-        return singletonMap( "example", SimpleSQLFeatureStoreProvider.class.getResource( CONFIG_TEMPLATE ) );
-    }
-
-    @Override
-    public String getConfigWizardView() {
-        return null;
     }
 
     @Override

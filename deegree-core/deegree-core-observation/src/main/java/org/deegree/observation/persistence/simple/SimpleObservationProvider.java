@@ -35,8 +35,6 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.observation.persistence.simple;
 
-import static java.util.Collections.singletonMap;
-
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -80,17 +78,6 @@ public class SimpleObservationProvider implements ObservationStoreProvider {
     @Override
     public URL getConfigSchema() {
         return SimpleObservationProvider.class.getResource( "/META-INF/schemas/datasource/observation/simplesql/3.0.0/simplesql.xsd" );
-    }
-
-    @Override
-    public Map<String, URL> getConfigTemplates() {
-        String path = "/META-INF/schemas/datasource/observation/simplesql/3.0.0/example.xml";
-        return singletonMap( "example", SimpleObservationProvider.class.getResource( path ) );
-    }
-
-    @Override
-    public String getConfigWizardView() {
-        return null;
     }
 
     @Override

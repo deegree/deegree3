@@ -156,10 +156,10 @@ public class ConfigManager {
         this.newConfigType = newConfigType;
         for ( ResourceProvider p : currentResourceManager.getMetadata().getResourceProviders() ) {
             if ( p.getConfigNamespace().endsWith( newConfigType ) ) {
-                newConfigTypeTemplates = new LinkedList<String>( p.getConfigTemplates().keySet() );
+                ResourceProviderMetadata md = ResourceProviderMetadata.getMetadata( p );
+                newConfigTypeTemplates = new LinkedList<String>( md.getExamples().keySet() );
             }
         }
-
     }
 
     private String getViewForMetadata( ResourceManagerMetadata<? extends Resource> md ) {
@@ -289,8 +289,9 @@ public class ConfigManager {
                 rp = p;
             }
         }
-        if ( rp != null && rp.getConfigWizardView() != null ) {
-            nextView = rp.getConfigWizardView();
+        if ( rp != null ) {
+            ResourceProviderMetadata md = ResourceProviderMetadata.getMetadata( rp );
+            nextView = md.getConfigWizardView();
         }
         return nextView;
     }
@@ -314,7 +315,8 @@ public class ConfigManager {
                     schemaURL = p.getConfigSchema();
                     template = true;
                     try {
-                        copyAndClose( p.getConfigTemplates().get( newConfigTypeTemplate ).openStream(),
+                        ResourceProviderMetadata md = ResourceProviderMetadata.getMetadata( p );
+                        copyAndClose( md.getExamples().get( newConfigTypeTemplate ).getContentLocation().openStream(),
                                       new FileOutputStream( conf ) );
                     } catch ( FileNotFoundException e ) {
                         // TODO Auto-generated catch block
@@ -502,16 +504,16 @@ public class ConfigManager {
 
         @Getter
         public org.deegree.commons.config.ResourceManager originalResourceManager;
-        
+
         public String view() {
             return view;
         }
 
-        ResourceManager( String view, ResourceManagerMetadata<? extends Resource> metadata, org.deegree.commons.config.ResourceManager originalResourceManager ) {
+        ResourceManager( String view, ResourceManagerMetadata<? extends Resource> metadata,
+                         org.deegree.commons.config.ResourceManager originalResourceManager ) {
             this.view = view;
             this.metadata = metadata;
             this.originalResourceManager = originalResourceManager;
         }
     }
-
 }

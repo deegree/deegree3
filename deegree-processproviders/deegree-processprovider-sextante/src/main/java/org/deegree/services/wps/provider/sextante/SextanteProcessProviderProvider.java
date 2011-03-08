@@ -36,8 +36,6 @@
 package org.deegree.services.wps.provider.sextante;
 
 import java.net.URL;
-import java.util.HashMap;
-import java.util.Map;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -97,23 +95,13 @@ public class SextanteProcessProviderProvider implements ProcessProviderProvider 
         return new Class[] { ProxyUtils.class };
     }
 
+    @Override
     public void init( DeegreeWorkspace workspace ) {
         this.workspace = workspace;
     }
 
+    @Override
     public URL getConfigSchema() {
         return SextanteProcessProviderProvider.class.getResource( "/META-INF/schemas/processes/sextante/0.1.0/sextante.xsd" );
-    }
-
-    public Map<String, URL> getConfigTemplates() {
-        URL u = SextanteProcessProviderProvider.class.getResource( "/META-INF/schemas/processes/sextante/0.1.0/sextante_example.xml" );
-        Map<String, URL> map = new HashMap<String, URL>();
-        map.put( "example", u );
-        return map;
-    }
-
-    @Override
-    public String getConfigWizardView() {
-        return null;
     }
 }

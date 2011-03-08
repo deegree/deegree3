@@ -52,7 +52,7 @@ public interface ResourceManagerMetadata<T extends Resource> {
     String getPath();
 
     /**
-     * @return display name for the use in the web interface
+     * @return display name
      */
     String getName();
 

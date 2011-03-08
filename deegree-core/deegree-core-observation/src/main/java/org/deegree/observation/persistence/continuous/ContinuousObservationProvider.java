@@ -80,17 +80,6 @@ public class ContinuousObservationProvider implements ObservationStoreProvider {
     }
 
     @Override
-    public Map<String, URL> getConfigTemplates() {
-        String path = "/META-INF/schemas/datasource/observation/contsql/3.0.0/example.xml";
-        return singletonMap( "example", ContinuousObservationProvider.class.getResource( path ) );
-    }
-
-    @Override
-    public String getConfigWizardView() {
-        return null;
-    }
-
-    @Override
     public ObservationDatastore getObservationStore( URL configURL )
                             throws ObservationDatastoreException {
         ContinuousObservationDatastore store = null;
@@ -136,5 +125,4 @@ public class ContinuousObservationProvider implements ObservationStoreProvider {
         }
         return store;
     }
-
 }

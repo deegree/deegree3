@@ -100,8 +100,7 @@ public class DeegreeCRSStoreProvider implements CRSStoreProvider {
                 LOG.error( msg );
                 throw new CRSStoreException( msg );
             }
-            crsStore = new DeegreeCRSStore( DSTransform.fromSchema( config ),
-                                            adapter.resolve( parserFile ) );
+            crsStore = new DeegreeCRSStore( DSTransform.fromSchema( config ), adapter.resolve( parserFile ) );
         } catch ( JAXBException e ) {
             String msg = "Error in crs store configuration file '" + configURL + "': " + e.getMessage();
             LOG.error( msg );
@@ -114,9 +113,4 @@ public class DeegreeCRSStoreProvider implements CRSStoreProvider {
         }
         return crsStore;
     }
-    
-    @Override
-    public String getConfigWizardView() {
-        return null;
-    }    
 }

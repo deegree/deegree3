@@ -36,8 +36,6 @@
 package org.deegree.rendering.r2d.persistence;
 
 import java.net.URL;
-import java.util.HashMap;
-import java.util.Map;
 
 import org.deegree.commons.config.ResourceProvider;
 
@@ -56,16 +54,5 @@ public class SLDProvider implements ResourceProvider {
 
     public URL getConfigSchema() {
         return SLDProvider.class.getResource( "/META-INF/SCHEMAS_OPENGIS_NET/sld/1.1.0/StyledLayerDescriptor.xsd" );
-    }
-
-    public Map<String, URL> getConfigTemplates() {
-        HashMap<String, URL> map = new HashMap<String, URL>();
-        map.put( "example", SLDProvider.class.getResource( "/META-INF/schemas/se/1.1.0/sldexample.xml" ) );
-        return map;
-    }
-
-    @Override
-    public String getConfigWizardView() {
-        return null;
     }
 }

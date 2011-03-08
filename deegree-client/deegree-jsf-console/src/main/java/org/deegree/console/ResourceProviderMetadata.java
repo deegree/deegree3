@@ -1,0 +1,124 @@
+//$HeadURL$
+/*----------------------------------------------------------------------------
+ This file is part of deegree, http://deegree.org/
+ Copyright (C) 2001-2011 by:
+ - Department of Geography, University of Bonn -
+ and
+ - lat/lon GmbH -
+
+ This library is free software; you can redistribute it and/or modify it under
+ the terms of the GNU Lesser General Public License as published by the Free
+ Software Foundation; either version 2.1 of the License, or (at your option)
+ any later version.
+ This library is distributed in the hope that it will be useful, but WITHOUT
+ ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ details.
+ You should have received a copy of the GNU Lesser General Public License
+ along with this library; if not, write to the Free Software Foundation, Inc.,
+ 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+
+ Contact information:
+
+ lat/lon GmbH
+ Aennchenstr. 19, 53177 Bonn
+ Germany
+ http://lat-lon.de/
+
+ Department of Geography, University of Bonn
+ Prof. Dr. Klaus Greve
+ Postfach 1147, 53001 Bonn
+ Germany
+ http://www.geographie.uni-bonn.de/deegree/
+
+ e-mail: info@deegree.org
+ ----------------------------------------------------------------------------*/
+package org.deegree.console;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Properties;
+
+import org.apache.commons.io.IOUtils;
+import org.deegree.commons.config.ResourceProvider;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+/**
+ * 
+ * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
+ * @author last edited by: $Author$
+ * 
+ * @version $Revision$, $Date$
+ */
+public class ResourceProviderMetadata {
+
+    private static Logger LOG = LoggerFactory.getLogger( ResourceProviderMetadata.class );
+
+    private String wizardView = "/console/jsf/wizard";
+
+    private final Map<String, ConfigExample> exampleNameToExample = new HashMap<String, ConfigExample>();
+
+    private static final Map<Class<? extends ResourceProvider>, ResourceProviderMetadata> rpClassToMd = new HashMap<Class<? extends ResourceProvider>, ResourceProviderMetadata>();
+
+    private ResourceProviderMetadata( ResourceProvider rp ) {
+        String className = rp.getClass().getName();
+        URL url = this.getClass().getResource( "md/resourceprovider/" + className );
+        if ( url != null ) {
+            LOG.info( "Loading resource provider metadata from '" + url + "'" );
+            Properties props = new Properties();
+            InputStream is = null;
+            try {
+                is = url.openStream();
+                props.load( is );
+                if ( props.containsKey( "wizard" ) ) {
+                    wizardView = props.getProperty( "wizard" ).trim();
+                }
+                int i = 1;
+                while ( true ) {
+                    String examplePrefix = "example" + i + "_";
+                    String exampleLocation = props.getProperty( examplePrefix + "location" );
+                    if ( exampleLocation == null ) {
+                        break;
+                    }
+                    exampleLocation.trim();
+                    String exampleName = "example";
+                    if ( props.containsKey( examplePrefix + "name" ) ) {
+                        exampleName = props.getProperty( examplePrefix + "name" ).trim();
+                    }
+                    String exampleDescription = null;
+                    if ( props.containsKey( examplePrefix + "description" ) ) {
+                        exampleDescription = props.getProperty( examplePrefix + "description" ).trim();
+                    }
+                    URL exampleUrl = this.getClass().getResource( exampleLocation );
+                    ConfigExample example = new ConfigExample( exampleUrl, exampleName, exampleDescription );
+                    exampleNameToExample.put( exampleName, example );
+                    i++;
+                }
+            } catch ( IOException e ) {
+                LOG.error( e.getMessage(), e );
+            } finally {
+                IOUtils.closeQuietly( is );
+            }
+        }
+    }
+
+    public static synchronized ResourceProviderMetadata getMetadata( ResourceProvider rp ) {
+        Class<? extends ResourceProvider> cl = rp.getClass();
+        if ( !rpClassToMd.containsKey( cl ) ) {
+            rpClassToMd.put( cl, new ResourceProviderMetadata( rp ) );
+        }
+        return rpClassToMd.get( cl );
+    }
+
+    public Map<String, ConfigExample> getExamples() {
+        return exampleNameToExample;
+    }
+
+    public String getConfigWizardView() {
+        return wizardView;
+    }
+}

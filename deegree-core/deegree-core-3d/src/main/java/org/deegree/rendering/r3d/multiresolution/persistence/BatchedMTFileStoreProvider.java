@@ -35,10 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.rendering.r3d.multiresolution.persistence;
 
-import static java.util.Collections.singletonMap;
-
 import java.net.URL;
-import java.util.Map;
 
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.xml.XMLAdapter;
@@ -97,17 +94,8 @@ public class BatchedMTFileStoreProvider implements BatchedMTStoreProvider {
         return bs;
     }
 
+    @Override
     public URL getConfigSchema() {
         return BatchedMTFileStoreProvider.class.getResource( CONFIG_SCHEMA );
-    }
-
-    public Map<String, URL> getConfigTemplates() {
-        String path = "/META-INF/schemas/datasource/3d/batchedmt/3.0.0/example.xml";
-        return singletonMap( "example", BatchedMTFileStoreProvider.class.getResource( path ) );
-    }
-
-    @Override
-    public String getConfigWizardView() {
-        return null;
-    }    
+    }  
 }

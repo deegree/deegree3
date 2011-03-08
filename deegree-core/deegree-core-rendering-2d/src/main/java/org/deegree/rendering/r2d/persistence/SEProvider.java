@@ -36,8 +36,6 @@
 package org.deegree.rendering.r2d.persistence;
 
 import java.net.URL;
-import java.util.HashMap;
-import java.util.Map;
 
 import org.deegree.commons.config.ResourceProvider;
 
@@ -56,19 +54,5 @@ public class SEProvider implements ResourceProvider {
 
     public URL getConfigSchema() {
         return SEProvider.class.getResource( "/META-INF/schemas/se/1.1.0/Symbolizer-deegree.xsd" );
-    }
-
-    public Map<String, URL> getConfigTemplates() {
-        HashMap<String, URL> map = new HashMap<String, URL>();
-        map.put( "point", SEProvider.class.getResource( "/META-INF/schemas/se/1.1.0/point.xml" ) );
-        map.put( "line", SEProvider.class.getResource( "/META-INF/schemas/se/1.1.0/lines.xml" ) );
-        map.put( "polygon", SEProvider.class.getResource( "/META-INF/schemas/se/1.1.0/polygons.xml" ) );
-        map.put( "text", SEProvider.class.getResource( "/META-INF/schemas/se/1.1.0/text.xml" ) );
-        return map;
-    }
-
-    @Override
-    public String getConfigWizardView() {
-        return null;
     }
 }

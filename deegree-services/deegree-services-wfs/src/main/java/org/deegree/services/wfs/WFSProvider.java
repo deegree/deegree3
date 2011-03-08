@@ -35,7 +35,6 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.services.wfs;
 
-import static java.util.Collections.singletonMap;
 import static org.deegree.protocol.wfs.WFSConstants.VERSION_100;
 import static org.deegree.protocol.wfs.WFSConstants.VERSION_110;
 import static org.deegree.protocol.wfs.WFSConstants.VERSION_200;
@@ -43,7 +42,6 @@ import static org.deegree.protocol.wfs.WFSConstants.WFS_200_NS;
 import static org.deegree.protocol.wfs.WFSConstants.WFS_NS;
 
 import java.net.URL;
-import java.util.Map;
 
 import org.deegree.commons.config.ResourceManager;
 import org.deegree.commons.tom.ows.Version;
@@ -72,34 +70,29 @@ public class WFSProvider implements OWSProvider<WFSRequestType> {
         }
     };
 
+    @Override
     public String getConfigNamespace() {
         return "http://www.deegree.org/services/wfs";
     }
 
+    @Override
     public URL getConfigSchema() {
         return WFSProvider.class.getResource( "/META-INF/schemas/wfs/3.1.0/wfs_configuration.xsd" );
     }
 
-    public Map<String, URL> getConfigTemplates() {
-        return singletonMap( "example", WFSProvider.class.getResource( "/META-INF/schemas/wfs/3.1.0/example.xml" ) );
-    }
-
     @Override
-    public String getConfigWizardView() {
-        return null;
-    }
-
     public ImplementationMetadata<WFSRequestType> getImplementationMetadata() {
         return IMPLEMENTATION_METADATA;
     }
 
+    @Override
     public OWS<WFSRequestType> getService() {
         return new WFSController();
     }
 
+    @Override
     @SuppressWarnings("unchecked")
     public Class<? extends ResourceManager>[] getDependencies() {
         return new Class[] { FeatureStoreManager.class };
     }
-
 }

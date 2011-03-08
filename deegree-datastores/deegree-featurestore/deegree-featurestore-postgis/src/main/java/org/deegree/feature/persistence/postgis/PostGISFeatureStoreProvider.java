@@ -35,24 +35,13 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.feature.persistence.postgis;
 
-import static java.util.Collections.singletonMap;
-
 import java.net.URL;
-import java.util.Map;
-
-import javax.xml.bind.JAXBException;
 
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceManager;
 import org.deegree.commons.config.WorkspaceInitializationException;
 import org.deegree.commons.jdbc.ConnectionManager;
-import org.deegree.commons.utils.ProxyUtils;
-import org.deegree.commons.xml.jaxb.JAXBUtils;
-import org.deegree.feature.i18n.Messages;
 import org.deegree.feature.persistence.FeatureStoreProvider;
-import org.deegree.feature.persistence.postgis.config.PostGISFeatureStoreConfigParser;
-import org.deegree.feature.persistence.postgis.jaxb.PostGISFeatureStoreConfig;
-import org.deegree.feature.persistence.sql.MappedApplicationSchema;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -74,10 +63,6 @@ public class PostGISFeatureStoreProvider implements FeatureStoreProvider {
 
     static final String CONFIG_SCHEMA = "/META-INF/schemas/datasource/feature/postgis/3.1.0/postgis.xsd";
 
-    private static final String CONFIG_TEMPLATE = "/META-INF/schemas/datasource/feature/postgis/3.1.0/example.xml";
-
-    private static final String JSF_WIZARD = "/console/featurestore/sql/wizard";
-
     private DeegreeWorkspace workspace;
 
     @Override
@@ -91,46 +76,9 @@ public class PostGISFeatureStoreProvider implements FeatureStoreProvider {
     }
 
     @Override
-    public Map<String, URL> getConfigTemplates() {
-        return singletonMap( "example", PostGISFeatureStoreProvider.class.getResource( CONFIG_TEMPLATE ) );
-    }
-
-    @Override
-    public String getConfigWizardView() {
-        return JSF_WIZARD;
-    }
-
-    @Override
     public PostGISFeatureStore create( URL configURL )
                             throws WorkspaceInitializationException {
         return new PostGISFeatureStore( configURL, workspace );
-    }
-
-    private MappedApplicationSchema getSchema( String configURL, PostGISFeatureStoreConfig config )
-                            throws WorkspaceInitializationException {
-
-        MappedApplicationSchema schema = null;
-        LOG.debug( "Building mapped application schema from config" );
-        try {
-            PostGISFeatureStoreConfigParser schemaBuilder = new PostGISFeatureStoreConfigParser( config, configURL );
-            schema = schemaBuilder.getMappedSchema();
-        } catch ( Throwable t ) {
-            String msg = Messages.getMessage( "STORE_MANAGER_STORE_SETUP_ERROR", t.getMessage() );
-            LOG.error( msg, t );
-            throw new WorkspaceInitializationException( msg, t );
-        }
-        return schema;
-    }
-
-    private PostGISFeatureStoreConfig parseConfig( URL configURL )
-                            throws WorkspaceInitializationException {
-        try {
-            return (PostGISFeatureStoreConfig) JAXBUtils.unmarshall( CONFIG_JAXB_PACKAGE, CONFIG_SCHEMA, configURL,
-                                                                     workspace );
-        } catch ( JAXBException e ) {
-            String msg = Messages.getMessage( "STORE_MANAGER_STORE_SETUP_ERROR", e.getMessage() );
-            throw new WorkspaceInitializationException( msg, e );
-        }
     }
 
     public void init( DeegreeWorkspace workspace ) {
@@ -139,6 +87,6 @@ public class PostGISFeatureStoreProvider implements FeatureStoreProvider {
 
     @SuppressWarnings("unchecked")
     public Class<? extends ResourceManager>[] getDependencies() {
-        return new Class[] { ProxyUtils.class, ConnectionManager.class };
+        return new Class[] { ConnectionManager.class };
     }
 }

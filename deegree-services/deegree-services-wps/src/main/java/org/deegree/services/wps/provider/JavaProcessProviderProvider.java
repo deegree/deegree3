@@ -36,8 +36,6 @@
 package org.deegree.services.wps.provider;
 
 import java.net.URL;
-import java.util.HashMap;
-import java.util.Map;
 
 import javax.xml.bind.JAXBException;
 
@@ -110,23 +108,13 @@ public class JavaProcessProviderProvider implements ProcessProviderProvider {
         return new Class[] { ProxyUtils.class };
     }
 
+    @Override
     public void init( DeegreeWorkspace workspace ) {
         this.workspace = workspace;
     }
 
+    @Override
     public URL getConfigSchema() {
         return JavaProcessProviderProvider.class.getResource( JAXB_CONFIG_SCHEMA );
-    }
-
-    public Map<String, URL> getConfigTemplates() {
-        HashMap<String, URL> map = new HashMap<String, URL>();
-        map.put( "example",
-                 JavaProcessProviderProvider.class.getResource( "/META-INF/schemas/processes/java/3.0.0/example.xml" ) );
-        return map;
-    }
-
-    @Override
-    public String getConfigWizardView() {
-        return null;
     }
 }

@@ -35,8 +35,6 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.feature.persistence.memory;
 
-import static java.util.Collections.singletonMap;
-
 import java.io.File;
 import java.net.URL;
 import java.util.HashMap;
@@ -90,8 +88,6 @@ public class MemoryFeatureStoreProvider implements FeatureStoreProvider {
 
     private static final String CONFIG_SCHEMA = "/META-INF/schemas/datasource/feature/memory/3.0.0/memory.xsd";
 
-    private static final String CONFIG_TEMPLATE = "/META-INF/schemas/datasource/feature/memory/3.0.0/example.xml";
-
     private DeegreeWorkspace workspace;
 
     @Override
@@ -102,16 +98,6 @@ public class MemoryFeatureStoreProvider implements FeatureStoreProvider {
     @Override
     public URL getConfigSchema() {
         return MemoryFeatureStoreProvider.class.getResource( CONFIG_SCHEMA );
-    }
-
-    @Override
-    public Map<String, URL> getConfigTemplates() {
-        return singletonMap( "example", MemoryFeatureStoreProvider.class.getResource( CONFIG_TEMPLATE ) );
-    }
-
-    @Override
-    public String getConfigWizardView() {
-        return null;
     }
 
     @Override

@@ -35,14 +35,11 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.feature.persistence.shape;
 
-import static java.util.Collections.singletonMap;
-
 import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.charset.Charset;
-import java.util.Map;
 
 import javax.xml.bind.JAXBException;
 
@@ -89,16 +86,6 @@ public class ShapeFeatureStoreProvider implements FeatureStoreProvider {
     @Override
     public URL getConfigSchema() {
         return ShapeFeatureStoreProvider.class.getResource( CONFIG_SCHEMA );
-    }
-
-    @Override
-    public Map<String, URL> getConfigTemplates() {
-        return singletonMap( "example", ShapeFeatureStoreProvider.class.getResource( CONFIG_TEMPLATE ) );
-    }
-
-    @Override
-    public String getConfigWizardView() {
-        return null;
     }
 
     @Override

@@ -35,12 +35,10 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.services.csw;
 
-import static java.util.Collections.singletonMap;
 import static org.deegree.protocol.csw.CSWConstants.CSW_202_NS;
 import static org.deegree.protocol.csw.CSWConstants.VERSION_202;
 
 import java.net.URL;
-import java.util.Map;
 
 import org.deegree.commons.config.ResourceManager;
 import org.deegree.commons.tom.ows.Version;
@@ -69,31 +67,27 @@ public class CSWProvider implements OWSProvider<CSWRequestType> {
         }
     };
 
+    @Override
     public String getConfigNamespace() {
         return "http://www.deegree.org/services/csw";
     }
 
+    @Override
     public URL getConfigSchema() {
         return CSWProvider.class.getResource( "/META-INF/schemas/csw/3.0.0/csw_configuration.xsd" );
     }
 
-    public Map<String, URL> getConfigTemplates() {
-        return singletonMap( "example", CSWProvider.class.getResource( "/META-INF/schemas/csw/3.0.0/example.xml" ) );
-    }
-
     @Override
-    public String getConfigWizardView() {
-        return null;
-    }
-
     public ImplementationMetadata<CSWRequestType> getImplementationMetadata() {
         return IMPLEMENTATION_METADATA;
     }
 
+    @Override
     public OWS<CSWRequestType> getService() {
         return new CSWController();
     }
 
+    @Override
     @SuppressWarnings("unchecked")
     public Class<? extends ResourceManager>[] getDependencies() {
         return new Class[] { MetadataStoreManager.class };

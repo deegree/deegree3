@@ -36,7 +36,6 @@
 package org.deegree.commons.config;
 
 import java.net.URL;
-import java.util.Map;
 
 /**
  * 
@@ -60,19 +59,4 @@ public interface ResourceProvider {
      * @return the URL for retrieving the configuration document schema, may be <code>null</code>
      */
     URL getConfigSchema();
-
-    /**
-     * Returns the URL for retrieving the configuration document template.
-     * 
-     * @return maps a name to the URLs for retrieving the configuration document templates, must include at least one
-     *         template
-     */
-    Map<String, URL> getConfigTemplates();
-
-    /**
-     * Returns the path to the JSF view for creating new configurations.
-     * 
-     * @return the path to the JSF view, can be <code>null</code> (default "wizard")
-     */
-    String getConfigWizardView();
 }

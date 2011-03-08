@@ -127,9 +127,10 @@ public class Config implements Comparable<Config> {
             }
             String namespace = reader.getNamespaceURI();
             for ( ResourceProvider p : md.getResourceProviders() ) {
+                ResourceProviderMetadata ctm = ResourceProviderMetadata.getMetadata( p );
                 if ( p.getConfigNamespace().equals( namespace ) ) {
                     schemaURL = p.getConfigSchema();
-                    template = p.getConfigTemplates().values().iterator().next();
+                    template = ctm.getExamples().values().iterator().next().getContentLocation();
                     schemaAsText = schemaURL == null ? null : IOUtils.toString( in2 = schemaURL.openStream() );
                     if ( p instanceof OWSProvider<?> ) {
                         capabilitiesURL = FacesUtil.getServerURL()
@@ -159,7 +160,8 @@ public class Config implements Comparable<Config> {
             for ( ResourceProvider p : md.getResourceProviders() ) {
                 if ( p.getConfigNamespace().endsWith( type ) ) {
                     schemaURL = p.getConfigSchema();
-                    template = p.getConfigTemplates().values().iterator().next();
+                    ResourceProviderMetadata ctm = ResourceProviderMetadata.getMetadata( p );
+                    template = ctm.getExamples().values().iterator().next().getContentLocation();
                     schemaAsText = schemaURL == null ? null : IOUtils.toString( in = schemaURL.openStream() );
                     return;
                 }
@@ -192,11 +194,11 @@ public class Config implements Comparable<Config> {
 
     public String getState() {
         ResourceState state = manager.getCurrentResourceManager().originalResourceManager.getState( id );
-        if (state != null) {
+        if ( state != null ) {
             return state.getType().name();
         }
         // TODO remove this after implementing getState for all resource managers
-        if (isActivated()) {
+        if ( isActivated() ) {
             return "init_error";
         }
         return "deactivated";
@@ -262,5 +264,4 @@ public class Config implements Comparable<Config> {
     public int compareTo( Config o ) {
         return id.compareTo( o.id );
     }
-
 }

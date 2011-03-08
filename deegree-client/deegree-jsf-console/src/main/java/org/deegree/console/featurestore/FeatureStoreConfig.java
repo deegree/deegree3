@@ -255,5 +255,4 @@ public class FeatureStoreConfig implements Serializable {
             appendFtInfo( childType, store, sb, indent + "&nbsp;&nbsp;" );
         }
     }
-
 }

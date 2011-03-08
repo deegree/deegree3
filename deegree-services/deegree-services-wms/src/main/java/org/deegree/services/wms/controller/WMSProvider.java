@@ -35,12 +35,10 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.services.wms.controller;
 
-import static java.util.Collections.singletonMap;
 import static org.deegree.protocol.wms.WMSConstants.VERSION_111;
 import static org.deegree.protocol.wms.WMSConstants.VERSION_130;
 
 import java.net.URL;
-import java.util.Map;
 
 import org.deegree.commons.config.ResourceManager;
 import org.deegree.commons.tom.ows.Version;
@@ -71,33 +69,28 @@ public class WMSProvider implements OWSProvider<WMSRequestType> {
         }
     };
 
+    @Override
     public String getConfigNamespace() {
         return "http://www.deegree.org/services/wms";
     }
 
+    @Override
     public URL getConfigSchema() {
         return WMSProvider.class.getResource( "/META-INF/schemas/wms/3.1.0/wms_configuration.xsd" );
     }
 
-    public Map<String, URL> getConfigTemplates() {
-        return singletonMap( "example", WMSProvider.class.getResource( "/META-INF/schemas/wms/3.1.0/example.xml" ) );
-    }
-
     @Override
-    public String getConfigWizardView() {
-        return null;
-    }
-
     public ImplementationMetadata<WMSRequestType> getImplementationMetadata() {
         return IMPLEMENTATION_METADATA;
     }
 
+    @Override
     public OWS<WMSRequestType> getService() {
         return new WMSController();
     }
 
+    @Override
     public Class<? extends ResourceManager>[] getDependencies() {
         return new Class[] { RemoteOWSManager.class, FeatureStoreManager.class, CoverageBuilderManager.class };
     }
-
 }

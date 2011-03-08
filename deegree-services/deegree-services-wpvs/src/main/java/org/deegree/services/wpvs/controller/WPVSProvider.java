@@ -35,12 +35,10 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.services.wpvs.controller;
 
-import static java.util.Collections.singletonMap;
 import static org.deegree.protocol.wpvs.WPVSConstants.VERSION_040;
 import static org.deegree.protocol.wpvs.WPVSConstants.WPVS_NS;
 
 import java.net.URL;
-import java.util.Map;
 
 import org.deegree.commons.config.ResourceManager;
 import org.deegree.commons.tom.ows.Version;
@@ -70,34 +68,29 @@ public class WPVSProvider implements OWSProvider<WPVSRequestType> {
         }
     };
 
+    @Override
     public String getConfigNamespace() {
         return "http://www.deegree.org/services/wpvs";
     }
 
+    @Override
     public URL getConfigSchema() {
         return WPVSProvider.class.getResource( "/META-INF/schemas/wpvs/3.0.0/wpvs_configuration.xsd" );
     }
 
-    public Map<String, URL> getConfigTemplates() {
-        return singletonMap( "example", WPVSProvider.class.getResource( "/META-INF/schemas/wpvs/3.0.0/example.xml" ) );
-    }
-
     @Override
-    public String getConfigWizardView() {
-        return null;
-    }
-
     public ImplementationMetadata<WPVSRequestType> getImplementationMetadata() {
         return IMPLEMENTATION_METADATA;
     }
 
+    @Override
     public OWS<WPVSRequestType> getService() {
         return new WPVSController();
     }
 
+    @Override
     @SuppressWarnings("unchecked")
     public Class<? extends ResourceManager>[] getDependencies() {
         return new Class[] { RenderableStoreManager.class, BatchedMTStoreManager.class };
     }
-
 }
