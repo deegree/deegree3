@@ -152,4 +152,11 @@ public class Pair<T, U> {
         return second;
     }
 
+    public void setFirst( T first ) {
+        this.first = first;
+    }
+
+    public void setSecond( U second ) {
+        this.second = second;
+    }
 }
