@@ -68,7 +68,7 @@
         <version>2.0</version>
         <executions>
           <execution>
-            <id>services-console</id>
+            <id>jsf-console</id>
             <phase>generate-resources</phase>
             <goals>
               <goal>unpack-dependencies</goal>
@@ -77,7 +77,7 @@
               <classifier>webapp-template</classifier>
               <type>zip</type>
               <includeGroupIds>org.deegree</includeGroupIds>
-              <includeArtifactIds>deegree-services-console</includeArtifactIds>
+              <includeArtifactIds>deegree-jsf-console</includeArtifactIds>
               <outputDirectory>src/main/webapp</outputDirectory>
             </configuration>
           </execution>
@@ -89,12 +89,12 @@
   <dependencies>
     <dependency>
       <groupId>org.deegree</groupId>
-      <artifactId>deegree-services-console</artifactId>
+      <artifactId>deegree-jsf-console</artifactId>
       <version>3.1-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>org.deegree</groupId>
-      <artifactId>deegree-services-console</artifactId>
+      <artifactId>deegree-jsf-console</artifactId>
       <version>3.1-SNAPSHOT</version>
       <type>zip</type>
       <classifier>webapp-template</classifier>
