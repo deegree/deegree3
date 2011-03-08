@@ -81,7 +81,10 @@ public class ExecuteStatements implements GenericDatabaseExecution {
 
     private String rf = PostGISMappingsISODC.CommonColumnNames.recordfull.name();
 
+    private final Type dbType;
+
     public ExecuteStatements( Type dbType ) {
+        this.dbType = dbType;
         if ( dbType == PostgreSQL ) {
             databaseTable = PostGISMappingsISODC.DatabaseTables.datasets.name();
             id = PostGISMappingsISODC.CommonColumnNames.id.name();
@@ -162,8 +165,7 @@ public class ExecuteStatements implements GenericDatabaseExecution {
     }
 
     private StringBuilder getPreparedStatementDatasetIDs( MetadataQuery query, boolean setDelete,
-                                                          AbstractWhereBuilder builder )
-                            throws MetadataStoreException {
+                                                          AbstractWhereBuilder builder ) {
 
         StringBuilder getDatasetIDs = new StringBuilder( 300 );
         String orderByclause = null;
@@ -199,8 +201,7 @@ public class ExecuteStatements implements GenericDatabaseExecution {
     }
 
     private void getPSBody( MetadataQuery query, Connection connection, AbstractWhereBuilder builder,
-                            StringBuilder getDatasetIDs )
-                            throws MetadataStoreException {
+                            StringBuilder getDatasetIDs ) {
 
         String rootTableAlias = builder.getAliasManager().getRootTableAlias();
         getDatasetIDs.append( " FROM " );
@@ -246,15 +247,26 @@ public class ExecuteStatements implements GenericDatabaseExecution {
             LOG.debug( Messages.getMessage( "INFO_EXEC", "getRecords-statement" ) );
 
             StringBuilder header = getPreparedStatementDatasetIDs( query, false, builder );
+
+            if ( query != null && query.getStartPosition() != 1 && dbType == MSSQL ) {
+                String oldHeader = header.toString();
+                header = header.append( " from (" ).append( oldHeader );
+                header.append( ", ROW_NUMBER() OVER (ORDER BY ID) as rownum" );
+            }
+
             getPSBody( query, conn, builder, header );
             if ( builder.getOrderBy() != null ) {
                 header.append( " ORDER BY " );
                 header.append( builder.getOrderBy().getSQL() );
             }
-            if ( query != null && query.getStartPosition() != 1 ) {
+            if ( query != null && query.getStartPosition() != 1 && dbType == PostgreSQL ) {
                 header.append( " OFFSET " ).append( Integer.toString( query.getStartPosition() - 1 ) );
             }
-
+            if ( query != null && query.getStartPosition() != 1 && dbType == MSSQL ) {
+                header.append( ") as X1 where X1.rownum > " );
+                header.append( query.getStartPosition() - 1 );
+            }
+            System.out.println( header );
             preparedStatement = conn.prepareStatement( header.toString() );
 
             int i = 1;
