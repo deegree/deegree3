@@ -37,8 +37,6 @@ package org.deegree.feature.persistence.osm;
 
 import java.io.FileNotFoundException;
 import java.net.URL;
-import java.util.HashMap;
-import java.util.Map;
 
 import javax.xml.stream.XMLStreamException;
 
@@ -68,11 +66,6 @@ public class OSMFeatureStoreProvider implements FeatureStoreProvider {
     @Override
     public URL getConfigSchema() {
         return null;
-    }
-
-    @Override
-    public Map<String, URL> getConfigTemplates() {
-        return new HashMap<String, URL>();
     }
 
     @Override
