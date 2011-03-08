@@ -11,7 +11,7 @@
     </h:panelGroup>
     <h:panelGroup rendered="#{logBean.loggedIn &amp;&amp; configManager.currentResourceManager != null}">
       <h:form>
-        <p>Schema analysis complete.
+        <p>Mapping <h:outputText value="#{mappingWizardSQL.appSchemaInfo.numFtsTotal}"/> feature type(s).
           <h:commandButton styleClass="buttonCreateNew" value="Details" action="/console/featurestore/sql/schema_details" onclick="show();" />
         </p>
         <p>
@@ -19,7 +19,7 @@
         <h:selectOneRadio styleClass="label" value="#{mappingWizardSQL.storageMode}" layout="pageDirection">
           <f:selectItem itemValue="blob" itemLabel="BLOB: GML_OBJECTS table stores binary representations of features" />
           <f:selectItem itemValue="relational" itemLabel="Relational: One table per feature type (and additional tables for multi properties)" />
-          <f:selectItem itemValue="hybrid" itemLabel="Hybrid: Relational + BLOB" />
+          <f:selectItem itemDisabled="true" itemValue="hybrid" itemLabel="Hybrid: Relational + BLOB (TODO)" />
         </h:selectOneRadio>
         </p>
         <p>

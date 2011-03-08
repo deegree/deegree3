@@ -16,8 +16,8 @@
         <p>
         <h:selectOneRadio styleClass="label" value="#{mappingWizardSQL.mode}" layout="pageDirection">
           <f:selectItem itemValue="template" itemLabel="Create config manually" />
-          <f:selectItem itemValue="tables" itemLabel="Map tables to simple feature types" />
           <f:selectItem itemValue="schema" itemLabel="Create tables from GML application schema" />
+          <f:selectItem itemDisabled="true" itemValue="tables" itemLabel="Map tables to simple feature types (TODO)" />          
         </h:selectOneRadio>
         </p>
         <p>
