@@ -38,7 +38,7 @@ package org.deegree.remoteows;
 import java.net.URL;
 import java.util.List;
 
-import org.deegree.commons.config.ResourceProvider;
+import org.deegree.commons.config.ExtendedResourceProvider;
 
 /**
  * 
@@ -47,7 +47,7 @@ import org.deegree.commons.config.ResourceProvider;
  * 
  * @version $Revision$, $Date$
  */
-public interface RemoteOWSProvider extends ResourceProvider {
+public interface RemoteOWSProvider extends ExtendedResourceProvider<RemoteOWSStore> {
 
     /**
      * @return the namespaces of capabilities XML documents the provider can handle. May be null or empty.

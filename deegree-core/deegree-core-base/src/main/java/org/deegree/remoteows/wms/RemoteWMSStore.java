@@ -55,6 +55,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeSet;
 
+import org.deegree.commons.config.DeegreeWorkspace;
+import org.deegree.commons.config.WorkspaceInitializationException;
 import org.deegree.commons.utils.Pair;
 import org.deegree.coverage.raster.RasterTransformer;
 import org.deegree.coverage.raster.SimpleRaster;
@@ -165,8 +167,9 @@ public class RemoteWMSStore implements RemoteOWSStore {
 
             LinkedList<String> errors = new LinkedList<String>();
             Pair<BufferedImage, String> pair = client.getMap( singletonList( layer ), newWidth, newHeight, bbox,
-                                                              CRSManager.getCRSRef( opts.defaultCRS ), opts.imageFormat,
-                                                              opts.transparent, false, -1, true, errors );
+                                                              CRSManager.getCRSRef( opts.defaultCRS ),
+                                                              opts.imageFormat, opts.transparent, false, -1, true,
+                                                              errors );
 
             LOG.debug( "Parameters that have been replaced for this request: {}", errors );
             if ( pair.first == null ) {
@@ -238,8 +241,7 @@ public class RemoteWMSStore implements RemoteOWSStore {
                 RasterTransformer rtrans = new RasterTransformer( origCrs );
 
                 double scale = Utils.calcScaleWMS111( width, height, envelope, envelope.getCoordinateSystem() );
-                double newScale = Utils.calcScaleWMS111( width, height, bbox,
-                                                         CRSManager.getCRSRef( options.defaultCRS ) );
+                double newScale = Utils.calcScaleWMS111( width, height, bbox, CRSManager.getCRSRef( options.defaultCRS ) );
                 double ratio = scale / newScale;
 
                 int newWidth = abs( round( ratio * width ) );
@@ -247,8 +249,9 @@ public class RemoteWMSStore implements RemoteOWSStore {
 
                 LinkedList<String> errors = new LinkedList<String>();
                 Pair<BufferedImage, String> pair = client.getMap( layerOrder, newWidth, newHeight, bbox,
-                                                                  CRSManager.getCRSRef( options.defaultCRS ), options.imageFormat,
-                                                                  options.transparent, false, -1, true, errors );
+                                                                  CRSManager.getCRSRef( options.defaultCRS ),
+                                                                  options.imageFormat, options.transparent, false, -1,
+                                                                  true, errors );
 
                 LOG.debug( "Parameters that have been replaced for this request: {}", errors );
                 if ( pair.first == null ) {
@@ -331,6 +334,15 @@ public class RemoteWMSStore implements RemoteOWSStore {
         public boolean transparent = true, alwaysUseDefaultCRS = false;
 
         public String imageFormat = "image/png", defaultCRS = "EPSG:4326";
+    }
+
+    public void destroy() {
+        client = null; // necessary?
+    }
+
+    public void init( DeegreeWorkspace workspace )
+                            throws WorkspaceInitializationException {
+        // TODO move construction here
     }
 
 }

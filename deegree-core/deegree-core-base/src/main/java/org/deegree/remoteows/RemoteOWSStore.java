@@ -32,8 +32,10 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 package org.deegree.remoteows;
+
+import org.deegree.commons.config.Resource;
 
 /**
  * 
@@ -42,9 +44,8 @@ package org.deegree.remoteows;
  * 
  * @version $Revision$, $Date$
  */
-public interface RemoteOWSStore {
+public interface RemoteOWSStore extends Resource {
 
     // probably does not make much sense to define something here, as the services are very different
-    
-}
 
+}

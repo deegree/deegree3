@@ -48,6 +48,9 @@ import java.util.Map;
 
 import javax.xml.bind.JAXBException;
 
+import org.deegree.commons.config.DeegreeWorkspace;
+import org.deegree.commons.config.ResourceManager;
+import org.deegree.commons.utils.ProxyUtils;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.protocol.wms.client.WMSClient111;
 import org.deegree.remoteows.RemoteOWSProvider;
@@ -74,6 +77,8 @@ public class RemoteWMSProvider implements RemoteOWSProvider {
     private static final String CONFIG_JAXB_PACKAGE = "org.deegree.remoteows.wms.jaxb";
 
     private static final String CONFIG_SCHEMA = "/META-INF/schemas/datasource/remoteows/wms/3.1.0/remotewms.xsd";
+
+    private DeegreeWorkspace workspace;
 
     /**
      * 
@@ -110,7 +115,7 @@ public class RemoteWMSProvider implements RemoteOWSProvider {
 
     public RemoteOWSStore create( URL config ) {
         try {
-            RemoteWMSStore cfg = (RemoteWMSStore) unmarshall( CONFIG_JAXB_PACKAGE, CONFIG_SCHEMA, config );
+            RemoteWMSStore cfg = (RemoteWMSStore) unmarshall( CONFIG_JAXB_PACKAGE, CONFIG_SCHEMA, config, workspace );
             XMLAdapter resolver = new XMLAdapter();
             resolver.setSystemId( config.toString() );
             URL capas = resolver.resolve( cfg.getCapabilitiesDocumentLocation().getLocation() );
@@ -121,14 +126,14 @@ public class RemoteWMSProvider implements RemoteOWSProvider {
             WMSClient111 client;
 
             AuthenticationType type = cfg.getAuthentication() == null ? null : cfg.getAuthentication().getValue();
+            String user = null;
+            String pass = null;
             if ( type instanceof HTTPBasicAuthenticationType ) {
                 HTTPBasicAuthenticationType basic = (HTTPBasicAuthenticationType) type;
-                String user = basic.getUsername();
-                String pass = basic.getPassword();
-                client = new WMSClient111( capas, connTimeout, reqTimeout, user, pass );
-            } else {
-                client = new WMSClient111( capas, connTimeout, reqTimeout );
+                user = basic.getUsername();
+                pass = basic.getPassword();
             }
+            client = new WMSClient111( capas, connTimeout, reqTimeout, user, pass );
 
             Map<String, LayerOptions> layers = new HashMap<String, LayerOptions>();
             List<String> layerOrder = new LinkedList<String>();
@@ -174,8 +179,16 @@ public class RemoteWMSProvider implements RemoteOWSProvider {
         return singletonMap( "example", RemoteWMSProvider.class.getResource( path ) );
     }
 
-    @Override
     public String getConfigWizardView() {
         return null;
+    }
+
+    @SuppressWarnings("unchecked")
+    public Class<? extends ResourceManager>[] getDependencies() {
+        return new Class[] { ProxyUtils.class };
+    }
+
+    public void init( DeegreeWorkspace workspace ) {
+        this.workspace = workspace;
     }
 }
