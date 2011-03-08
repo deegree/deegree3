@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.deegree</groupId>
   <artifactId>deegree-jsf-console</artifactId>
-  <packaging>jar</packaging>
+  <packaging>war</packaging>
   <version>3.1-SNAPSHOT</version>
   <name>deegree 3 JSF console</name>
   <url>http://maven.apache.org</url>
@@ -54,14 +54,34 @@
   <dependencies>
     <dependency>
       <groupId>org.deegree</groupId>
-      <artifactId>deegree-featurestore-postgis</artifactId>
+      <artifactId>deegree-services-wms</artifactId>
       <version>3.1-SNAPSHOT</version>
     </dependency>  
     <dependency>
       <groupId>org.deegree</groupId>
-      <artifactId>deegree-services-wms</artifactId>
+      <artifactId>deegree-services-wps</artifactId>
       <version>3.1-SNAPSHOT</version>
     </dependency>
+    <dependency>
+      <groupId>org.deegree</groupId>
+      <artifactId>deegree-services-wfs</artifactId>
+      <version>3.1-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>org.deegree</groupId>
+      <artifactId>deegree-services-csw</artifactId>
+      <version>3.1-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>org.deegree</groupId>
+      <artifactId>deegree-services-config</artifactId>
+      <version>3.1-SNAPSHOT</version>
+    </dependency>    
+    <dependency>
+      <groupId>org.deegree</groupId>
+      <artifactId>deegree-featurestore-postgis</artifactId>
+      <version>3.1-SNAPSHOT</version>
+    </dependency>  
     <dependency>
       <groupId>org.deegree</groupId>
       <artifactId>deegree-core-metadata</artifactId>
@@ -79,11 +99,6 @@
     </dependency>
     <dependency>
       <groupId>org.deegree</groupId>
-      <artifactId>deegree-services-wps</artifactId>
-      <version>3.1-SNAPSHOT</version>
-    </dependency>
-    <dependency>
-      <groupId>org.deegree</groupId>
       <artifactId>deegree-jsf-core</artifactId>
       <version>3.1-SNAPSHOT</version>
     </dependency>
@@ -93,6 +108,12 @@
       <version>2.5</version>
       <scope>provided</scope>
     </dependency>
+    <dependency>
+      <groupId>javax.servlet.jsp</groupId>
+      <artifactId>jsp-api</artifactId>
+      <version>2.1</version>
+      <scope>provided</scope>
+    </dependency>    
     <dependency>
       <groupId>javax.servlet</groupId>
       <artifactId>jstl</artifactId>
@@ -128,5 +149,4 @@
       <version>2.0-SNAPSHOT</version>
     </dependency>
   </dependencies>
-
 </project>

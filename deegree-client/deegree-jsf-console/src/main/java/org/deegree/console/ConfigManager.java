@@ -53,9 +53,9 @@ import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.TreeMap;
 
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
@@ -96,10 +96,7 @@ public class ConfigManager {
 
     private static final Logger LOG = getLogger( ConfigManager.class );
 
-    @Getter
-    private List<ResourceManager> resourceManagers;
-
-    private HashMap<String, ResourceManager> resourceManagerMap;
+    private TreeMap<String, ResourceManager> resourceManagerMap;
 
     @Getter
     private ResourceManager currentResourceManager;
@@ -135,8 +132,8 @@ public class ConfigManager {
     @Setter
     private String workspaceImportName;
 
-    @Getter
-    private Config proxyConfig;
+    // @Getter
+    // private Config proxyConfig;
 
     @Getter
     private Config metadataConfig;
@@ -150,6 +147,10 @@ public class ConfigManager {
 
     public ConfigManager() {
         reloadResourceManagers();
+    }
+
+    public List<ResourceManager> getResourceManagers() {
+        return new ArrayList<ResourceManager>( resourceManagerMap.values() );
     }
 
     public void setNewConfigType( String newConfigType ) {
@@ -223,30 +224,28 @@ public class ConfigManager {
         FacesContext.getCurrentInstance().getExternalContext().getApplicationMap().put( "workspace",
                                                                                         getServiceWorkspace() );
 
-        resourceManagers = new LinkedList<ResourceManager>();
-        resourceManagerMap = new HashMap<String, ResourceManager>();
+        resourceManagerMap = new TreeMap<String, ResourceManager>();
 
         for ( org.deegree.commons.config.ResourceManager mgr : getServiceWorkspace().getResourceManagers() ) {
             ResourceManagerMetadata<? extends Resource> md = mgr.getMetadata();
             if ( md != null ) {
                 ResourceManager mng = new ResourceManager( getViewForMetadata( md ), md, mgr );
-                resourceManagers.add( mng );
                 resourceManagerMap.put( mng.metadata.getName(), mng );
             }
         }
 
-        File proxyFile = new File( ws, "proxy.xml" );
-        URL schema = ConfigManager.class.getResource( "/META-INF/schemas/proxy/3.0.0/proxy.xsd" );
-        URL template = ConfigManager.class.getResource( "/META-INF/schemas/proxy/3.0.0/example.xml" );
-        try {
-            proxyConfig = new Config( proxyFile, schema, template, this, "/console/jsf/proxy" );
-        } catch ( IOException e ) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
+        // File proxyFile = new File( ws, "proxy.xml" );
+        // URL schema = ConfigManager.class.getResource( "/META-INF/schemas/proxy/3.0.0/proxy.xsd" );
+        // URL template = ConfigManager.class.getResource( "/META-INF/schemas/proxy/3.0.0/example.xml" );
+        // try {
+        // proxyConfig = new Config( proxyFile, schema, template, this, "/console/jsf/proxy" );
+        // } catch ( IOException e ) {
+        // // TODO Auto-generated catch block
+        // e.printStackTrace();
+        // }
         File metadataFile = new File( ws, "services/metadata.xml" );
-        schema = ConfigManager.class.getResource( "/META-INF/schemas/metadata/3.0.0/metadata.xsd" );
-        template = ConfigManager.class.getResource( "/META-INF/schemas/metadata/3.0.0/example.xml" );
+        URL schema = ConfigManager.class.getResource( "/META-INF/schemas/metadata/3.0.0/metadata.xsd" );
+        URL template = ConfigManager.class.getResource( "/META-INF/schemas/metadata/3.0.0/example.xml" );
         try {
             metadataConfig = new Config( metadataFile, schema, template, this, "/console/jsf/webservices" );
         } catch ( IOException e ) {
@@ -481,6 +480,10 @@ public class ConfigManager {
         InputStream in = null;
         try {
             String version = DeegreeModuleInfo.getRegisteredModules().get( 0 ).getVersion().getVersionNumber();
+            if ( version.equals( "${project.version}" ) ) {
+                // workaround for Eclipse
+                version = "3.1-SNAPSHOT";
+            }
             in = get( STREAM, "http://download.deegree.org/deegree3/workspaces/workspaces-" + version, null );
             List<String> list = readLines( in );
             List<String> res = new ArrayList<String>( list.size() );
