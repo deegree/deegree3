@@ -326,7 +326,7 @@ public class ISOMetadataStore implements MetadataStore {
 
             conn = ConnectionManager.getConnection( connectionId );
 
-            ps = new ExecuteStatements( connectionType ).executeCounting( query, builder, conn );
+            ps = new ExecuteStatements( connectionType ).executeCounting( builder, conn );
             LOG.info( ps.toString() );
             rs = ps.executeQuery();
             rs.next();

@@ -107,8 +107,8 @@ public class ExecuteStatements implements GenericDatabaseExecution {
         List<Integer> deletableDatasets;
         try {
 
-            StringBuilder header = getPreparedStatementDatasetIDs( null, true, builder );
-            getPSBody( null, connection, builder, header );
+            StringBuilder header = getPreparedStatementDatasetIDs( true, builder );
+            getPSBody( builder, header );
             preparedStatement = connection.prepareStatement( header.toString() );
             int i = 1;
             if ( builder.getWhere() != null ) {
@@ -164,8 +164,7 @@ public class ExecuteStatements implements GenericDatabaseExecution {
 
     }
 
-    private StringBuilder getPreparedStatementDatasetIDs( MetadataQuery query, boolean setDelete,
-                                                          AbstractWhereBuilder builder ) {
+    private StringBuilder getPreparedStatementDatasetIDs( boolean setDelete, AbstractWhereBuilder builder ) {
 
         StringBuilder getDatasetIDs = new StringBuilder( 300 );
         String orderByclause = null;
@@ -200,8 +199,7 @@ public class ExecuteStatements implements GenericDatabaseExecution {
 
     }
 
-    private void getPSBody( MetadataQuery query, Connection connection, AbstractWhereBuilder builder,
-                            StringBuilder getDatasetIDs ) {
+    private void getPSBody( AbstractWhereBuilder builder, StringBuilder getDatasetIDs ) {
 
         String rootTableAlias = builder.getAliasManager().getRootTableAlias();
         getDatasetIDs.append( " FROM " );
@@ -246,7 +244,7 @@ public class ExecuteStatements implements GenericDatabaseExecution {
 
             LOG.debug( Messages.getMessage( "INFO_EXEC", "getRecords-statement" ) );
 
-            StringBuilder header = getPreparedStatementDatasetIDs( query, false, builder );
+            StringBuilder header = getPreparedStatementDatasetIDs( false, builder );
 
             if ( query != null && query.getStartPosition() != 1 && dbType == MSSQL ) {
                 String oldHeader = header.toString();
@@ -254,7 +252,7 @@ public class ExecuteStatements implements GenericDatabaseExecution {
                 header.append( ", ROW_NUMBER() OVER (ORDER BY ID) as rownum" );
             }
 
-            getPSBody( query, conn, builder, header );
+            getPSBody( builder, header );
             if ( builder.getOrderBy() != null ) {
                 header.append( " ORDER BY " );
                 header.append( builder.getOrderBy().getSQL() );
@@ -309,7 +307,7 @@ public class ExecuteStatements implements GenericDatabaseExecution {
 
     }
 
-    public PreparedStatement executeCounting( MetadataQuery query, AbstractWhereBuilder builder, Connection conn )
+    public PreparedStatement executeCounting( AbstractWhereBuilder builder, Connection conn )
                             throws MetadataStoreException {
         PreparedStatement preparedStatement = null;
         java.util.Date date = null;
@@ -321,7 +319,7 @@ public class ExecuteStatements implements GenericDatabaseExecution {
             getDatasetIDs.append( "COUNT( DISTINCT(" );
             getDatasetIDs.append( rf );
             getDatasetIDs.append( "))" );
-            getPSBody( query, conn, builder, getDatasetIDs );
+            getPSBody( builder, getDatasetIDs );
             preparedStatement = conn.prepareStatement( getDatasetIDs.toString() );
             int i = 1;
             if ( builder.getWhere() != null ) {
