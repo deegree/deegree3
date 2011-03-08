@@ -35,30 +35,13 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.remoteows;
 
-import static java.io.File.separator;
-import static org.slf4j.LoggerFactory.getLogger;
-
-import java.io.File;
-import java.io.FilenameFilter;
-import java.net.URL;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.ServiceLoader;
-
-import javax.xml.stream.XMLInputFactory;
-import javax.xml.stream.XMLStreamReader;
-
-import org.apache.commons.io.filefilter.SuffixFileFilter;
+import org.deegree.commons.config.AbstractResourceManager;
 import org.deegree.commons.config.DeegreeWorkspace;
+import org.deegree.commons.config.DefaultResourceManagerMetadata;
 import org.deegree.commons.config.ResourceManager;
 import org.deegree.commons.config.ResourceManagerMetadata;
-import org.deegree.commons.config.ResourceProvider;
-import org.deegree.commons.config.ResourceState;
+import org.deegree.commons.config.WorkspaceInitializationException;
 import org.deegree.commons.utils.ProxyUtils;
-import org.deegree.commons.xml.stax.StAXParsingHelper;
-import org.slf4j.Logger;
 
 /**
  * 
@@ -67,90 +50,15 @@ import org.slf4j.Logger;
  * 
  * @version $Revision$, $Date$
  */
-public class RemoteOWSManager implements ResourceManager {
+public class RemoteOWSManager extends AbstractResourceManager<RemoteOWSStore> {
 
-    private static final Logger LOG = getLogger( RemoteOWSManager.class );
+    private RemoteOWSManagerMetadata metadata;
 
-    private ServiceLoader<RemoteOWSProvider> serviceLoader = ServiceLoader.load( RemoteOWSProvider.class );
-
-    Map<String, RemoteOWSProvider> providers = new HashMap<String, RemoteOWSProvider>();
-
-    private Map<String, RemoteOWSStore> stores = new HashMap<String, RemoteOWSStore>();
-
-    /**
-     * 
-     */
-    public RemoteOWSManager() {
-        for ( RemoteOWSProvider p : serviceLoader ) {
-            providers.put( p.getConfigNamespace(), p );
-            if ( p.getCapabilitiesNamespaces() != null ) {
-                for ( String ns : p.getCapabilitiesNamespaces() ) {
-                    providers.put( ns, p );
-                }
-            }
-        }
-    }
-
-    public void startup( DeegreeWorkspace workspace ) {
-        File dir = new File( workspace.getLocation(), "datasources" + separator + "remoteows" );
-        if ( !dir.exists() ) {
-            LOG.info( "No 'datasources/remoteows' directory -- skipping initialization of remote OWS stores." );
-            return;
-        }
-        LOG.info( "--------------------------------------------------------------------------------" );
-        LOG.info( "Setting up remote OWS stores." );
-        LOG.info( "--------------------------------------------------------------------------------" );
-
-        File[] configFiles = dir.listFiles( (FilenameFilter) new SuffixFileFilter( ".xml" ) );
-        for ( File conf : configFiles ) {
-            String fileName = conf.getName();
-            // 4 is the length of ".xml"
-            String storeId = fileName.substring( 0, fileName.length() - 4 );
-            LOG.info( "Setting up remote OWS store '" + storeId + "' from file '" + fileName + "'..." + "" );
-            if ( stores.containsKey( storeId ) ) {
-                LOG.warn( "Skipping loading of store with id {}, it was already loaded.", storeId );
-                continue;
-            }
-            try {
-                RemoteOWSStore store = create( conf.toURI().toURL() );
-                stores.put( storeId, store );
-            } catch ( Exception e ) {
-                LOG.warn( "Error creating remote OWS store: {}", e.getMessage() );
-                LOG.trace( "Stack trace:", e );
-            }
-        }
-        LOG.info( "" );
-    }
-
-    /**
-     * @param configURL
-     * @return null, if namespace could not be determined, or no fitting provider was found
-     */
-    public RemoteOWSStore create( URL configURL ) {
-        String namespace = null;
-        try {
-            XMLStreamReader xmlReader = XMLInputFactory.newInstance().createXMLStreamReader( configURL.openStream() );
-            StAXParsingHelper.nextElement( xmlReader );
-            namespace = xmlReader.getNamespaceURI();
-            xmlReader.close();
-        } catch ( Exception e ) {
-            LOG.warn( "Error '{}' while determining configuration namespace for file '{}', skipping it.",
-                      e.getLocalizedMessage(), configURL );
-            LOG.trace( "Stack trace:", e );
-            return null;
-        }
-        LOG.debug( "Config namespace: '{}'", namespace );
-        RemoteOWSProvider provider = providers.get( namespace );
-        if ( provider == null ) {
-            LOG.warn( "No remote OWS store provider for namespace '{}' (file: '{}') registered. Skipping it.",
-                      namespace, configURL );
-            return null;
-        }
-        return provider.create( configURL );
-    }
-
-    public RemoteOWSStore get( String id ) {
-        return stores.get( id );
+    @Override
+    public void startup( DeegreeWorkspace workspace )
+                            throws WorkspaceInitializationException {
+        this.metadata = new RemoteOWSManagerMetadata( workspace );
+        super.startup( workspace );
     }
 
     @SuppressWarnings("unchecked")
@@ -158,29 +66,14 @@ public class RemoteOWSManager implements ResourceManager {
         return new Class[] { ProxyUtils.class };
     }
 
-    public void shutdown() {
-        stores.clear();
+    public ResourceManagerMetadata<RemoteOWSStore> getMetadata() {
+        return metadata;
     }
 
-    public ResourceManagerMetadata getMetadata() {
-        return new ResourceManagerMetadata() {
-            public String getName() {
-                return "remote OWS stores";
-            }
-
-            public String getPath() {
-                return "datasources/remoteows/";
-            }
-
-            public List<ResourceProvider> getResourceProviders() {
-                return new LinkedList<ResourceProvider>( providers.values() );
-            }
-        };
+    static class RemoteOWSManagerMetadata extends DefaultResourceManagerMetadata<RemoteOWSStore> {
+        RemoteOWSManagerMetadata( DeegreeWorkspace workspace ) {
+            super( "remote OWS stores", "datastores/remoteows", RemoteOWSProvider.class, workspace );
+        }
     }
 
-    @Override
-    public ResourceState getState( String id ) {
-        // TODO
-        return null;
-    }
 }
