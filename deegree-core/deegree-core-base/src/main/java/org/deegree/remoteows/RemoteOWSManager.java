@@ -72,7 +72,7 @@ public class RemoteOWSManager extends AbstractResourceManager<RemoteOWSStore> {
 
     static class RemoteOWSManagerMetadata extends DefaultResourceManagerMetadata<RemoteOWSStore> {
         RemoteOWSManagerMetadata( DeegreeWorkspace workspace ) {
-            super( "remote OWS stores", "datastores/remoteows", RemoteOWSProvider.class, workspace );
+            super( "remote OWS stores", "datasources/remoteows", RemoteOWSProvider.class, workspace );
         }
     }
 
