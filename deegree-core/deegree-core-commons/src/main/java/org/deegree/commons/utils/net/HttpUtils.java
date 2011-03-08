@@ -343,7 +343,7 @@ public class HttpUtils {
             return null;
         }
         if ( !u.getURL().getProtocol().equalsIgnoreCase( "http" ) ) {
-            return worker.work( u.openStream() );
+            return worker.work( u.getURL().openStream() );
         }
         DefaultHttpClient client = enableProxyUsage( new DefaultHttpClient(), u );
         if ( user != null && pass != null ) {
