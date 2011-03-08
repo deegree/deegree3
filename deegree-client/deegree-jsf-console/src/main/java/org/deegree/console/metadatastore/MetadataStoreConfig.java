@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.console.metadata;
+package org.deegree.console.metadatastore;
 
 import java.io.BufferedReader;
 import java.io.IOException;
