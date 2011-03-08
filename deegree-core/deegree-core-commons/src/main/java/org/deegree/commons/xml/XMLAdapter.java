@@ -42,13 +42,13 @@ import static javax.xml.stream.XMLStreamConstants.CDATA;
 import static javax.xml.stream.XMLStreamConstants.CHARACTERS;
 import static javax.xml.stream.XMLStreamConstants.END_ELEMENT;
 import static javax.xml.stream.XMLStreamConstants.START_ELEMENT;
+import static org.deegree.commons.utils.net.HttpUtils.STREAM;
+import static org.deegree.commons.utils.net.HttpUtils.get;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.PushbackInputStream;
 import java.io.StringReader;
-import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -61,6 +61,7 @@ import java.util.NoSuchElementException;
 import java.util.StringTokenizer;
 
 import javax.xml.XMLConstants;
+import javax.xml.namespace.NamespaceContext;
 import javax.xml.namespace.QName;
 import javax.xml.stream.FactoryConfigurationError;
 import javax.xml.stream.XMLInputFactory;
@@ -77,7 +78,6 @@ import org.apache.axiom.om.OMException;
 import org.apache.axiom.om.OMNamespace;
 import org.apache.axiom.om.OMText;
 import org.apache.axiom.om.impl.builder.StAXOMBuilder;
-import org.apache.axiom.om.util.Base64;
 import org.apache.axiom.om.xpath.AXIOMXPath;
 import org.deegree.commons.i18n.Messages;
 import org.deegree.commons.tom.ows.Version;
@@ -366,7 +366,7 @@ public class XMLAdapter {
             throw new IllegalArgumentException( "The given url may not be null" );
         }
         try {
-            load( url.openStream(), url.toExternalForm() );
+            load( get( STREAM, url.toExternalForm(), null ), url.toExternalForm() );
         } catch ( IOException e ) {
             throw new XMLProcessingException( e.getMessage(), e );
         }
@@ -386,13 +386,7 @@ public class XMLAdapter {
             throw new IllegalArgumentException( "The given url may not be null" );
         }
         try {
-            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-            String userpass = httpBasicUser + ":" + httpBasicPass;
-
-            // don't care about encoding here
-            conn.setRequestProperty( "Authorization", "Basic " + Base64.encode( userpass.getBytes() ) );
-            conn.connect();
-            load( conn.getInputStream(), url.toExternalForm() );
+            load( get( STREAM, url.toExternalForm(), null, httpBasicUser, httpBasicPass ), url.toExternalForm() );
         } catch ( IOException e ) {
             throw new XMLProcessingException( e.getMessage(), e );
         }
@@ -448,7 +442,7 @@ public class XMLAdapter {
      * Initializes this <code>XMLAdapter</code> with the content from the given <code>InputStream</code> and sets the
      * system id to the {@link #DEFAULT_URL}
      * 
-     * @param resourceStream
+     * @param xmlStream
      *            to load the xml from.
      * @throws XMLProcessingException
      */
@@ -485,35 +479,35 @@ public class XMLAdapter {
      * @return encoding of a XML document
      * @throws XMLProcessingException
      */
-    private String determineEncoding( PushbackInputStream pbis )
-                            throws XMLProcessingException {
-        try {
-            byte[] b = new byte[80];
-            int rd = pbis.read( b );
-
-            // TODO think about this
-            String encoding = "UTF-8";
-            if ( rd > 0 ) {
-                String s = new String( b ).toLowerCase();
-
-                if ( s.indexOf( "?>" ) > -1 ) {
-                    int p = s.indexOf( "encoding=" );
-                    if ( p > -1 ) {
-                        StringBuffer sb = new StringBuffer();
-                        int k = p + 1 + "encoding=".length();
-                        while ( s.charAt( k ) != '"' && s.charAt( k ) != '\'' ) {
-                            sb.append( s.charAt( k++ ) );
-                        }
-                        encoding = sb.toString();
-                    }
-                }
-                pbis.unread( b, 0, rd );
-            }
-            return encoding;
-        } catch ( IOException e ) {
-            throw new XMLProcessingException( e.getMessage(), e );
-        }
-    }
+    // private String determineEncoding( PushbackInputStream pbis )
+    // throws XMLProcessingException {
+    // try {
+    // byte[] b = new byte[80];
+    // int rd = pbis.read( b );
+    //
+    // // TODO think about this
+    // String encoding = "UTF-8";
+    // if ( rd > 0 ) {
+    // String s = new String( b ).toLowerCase();
+    //
+    // if ( s.indexOf( "?>" ) > -1 ) {
+    // int p = s.indexOf( "encoding=" );
+    // if ( p > -1 ) {
+    // StringBuffer sb = new StringBuffer();
+    // int k = p + 1 + "encoding=".length();
+    // while ( s.charAt( k ) != '"' && s.charAt( k ) != '\'' ) {
+    // sb.append( s.charAt( k++ ) );
+    // }
+    // encoding = sb.toString();
+    // }
+    // }
+    // pbis.unread( b, 0, rd );
+    // }
+    // return encoding;
+    // } catch ( IOException e ) {
+    // throw new XMLProcessingException( e.getMessage(), e );
+    // }
+    // }
 
     /**
      * Initializes this <code>XMLAdapter</code> with the content from the given <code>StringReader</code>. Sets the
@@ -923,12 +917,13 @@ public class XMLAdapter {
         Version value = defaultValue;
         String s = getNodeAsString( context, xpath, null );
         if ( s != null ) {
-            value = value.parseVersion( s );
+            value = Version.parseVersion( s );
         }
         return value;
 
     }
 
+    @SuppressWarnings("unchecked")
     public List getNodes( OMElement context, XPath xpath )
                             throws XMLParsingException {
         List<?> nodes;
@@ -1101,6 +1096,7 @@ public class XMLAdapter {
         return value;
     }
 
+    @SuppressWarnings("unchecked")
     public List getRequiredNodes( OMElement context, XPath xpath )
                             throws XMLParsingException {
         List nodes = getNodes( context, xpath );
