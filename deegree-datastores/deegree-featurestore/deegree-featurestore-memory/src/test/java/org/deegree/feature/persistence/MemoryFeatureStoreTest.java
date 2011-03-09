@@ -52,7 +52,7 @@ import javax.xml.stream.XMLStreamWriter;
 import junit.framework.Assert;
 
 import org.deegree.commons.config.DeegreeWorkspace;
-import org.deegree.commons.config.WorkspaceInitializationException;
+import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.tom.ReferenceResolvingException;
 import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.cs.exceptions.TransformationException;
@@ -95,7 +95,7 @@ public class MemoryFeatureStoreTest {
                             throws XMLParsingException, XMLStreamException, UnknownCRSException,
                             FactoryConfigurationError, IOException, FeatureStoreException, ReferenceResolvingException,
                             ClassCastException, ClassNotFoundException, InstantiationException, IllegalAccessException,
-                            WorkspaceInitializationException {
+                            ResourceInitException {
 
         DeegreeWorkspace.getInstance().initAll();
         String schemaURL = this.getClass().getResource( "/org/deegree/gml/feature/testdata/schema/Philosopher.xsd" ).toString();

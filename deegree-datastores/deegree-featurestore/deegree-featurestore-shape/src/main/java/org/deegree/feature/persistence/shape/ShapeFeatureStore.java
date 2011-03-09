@@ -62,6 +62,7 @@ import javax.xml.namespace.QName;
 
 import org.deegree.commons.annotations.LoggingNotes;
 import org.deegree.commons.config.DeegreeWorkspace;
+import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.index.RTree;
 import org.deegree.commons.utils.CloseableIterator;
 import org.deegree.commons.utils.Pair;
@@ -198,7 +199,8 @@ public class ShapeFeatureStore implements FeatureStore {
     }
 
     @Override
-    public void init( DeegreeWorkspace workspace ) {
+    public void init( DeegreeWorkspace workspace )
+                            throws ResourceInitException {
 
         if ( shpName.toLowerCase().endsWith( ".shp" ) ) {
             shpName = shpName.substring( 0, shpName.length() - 4 );
@@ -216,11 +218,8 @@ public class ShapeFeatureStore implements FeatureStore {
                     try {
                         crs = new WKTParser( prj ).parseCoordinateSystem();
                     } catch ( IOException e ) {
-                        LOG.trace( "Stack trace:", e );
-                        LOG.warn( "The shape datastore for '{}' could not be initialized, because no CRS was defined.",
-                                  shpName );
-                        available = false;
-                        return;
+                        String msg = "The shape datastore for '" + shpName + "' could not be initialized, because no CRS was defined.";
+                        throw new ResourceInitException( msg );
                     } catch ( Exception e1 ) {
                         getCRSFromFile( prj );
                         if ( crs == null ) {
@@ -265,11 +264,8 @@ public class ShapeFeatureStore implements FeatureStore {
         try {
             shp = getSHP( false );
         } catch ( IOException e ) {
-            LOG.debug( "Stack trace:", e );
-            LOG.warn( "The shape datastore for '{}' could not be initialized, because the .shp could not be loaded.",
-                      shpName );
-            available = false;
-            return;
+            String msg = "The shape datastore for '" + shpName + "' could not be initialized, because the .shp could not be loaded.";
+            throw new ResourceInitException( msg );            
         }
 
         String namespace = ftName.getNamespaceURI();

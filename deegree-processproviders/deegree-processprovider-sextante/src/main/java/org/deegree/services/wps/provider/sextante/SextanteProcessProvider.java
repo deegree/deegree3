@@ -43,7 +43,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.deegree.commons.config.DeegreeWorkspace;
-import org.deegree.commons.config.WorkspaceInitializationException;
+import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.tom.ows.CodeType;
 import org.deegree.services.wps.WPSProcess;
 import org.deegree.services.wps.provider.ProcessProvider;
@@ -192,7 +192,7 @@ public class SextanteProcessProvider implements ProcessProvider {
 
     @Override
     public void init( DeegreeWorkspace workspace )
-                            throws WorkspaceInitializationException {
+                            throws ResourceInitException {
 
         // initialize SEXTANTE
         Sextante.initialize();

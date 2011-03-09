@@ -41,7 +41,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.deegree.commons.config.DeegreeWorkspace;
-import org.deegree.commons.config.WorkspaceInitializationException;
+import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.tom.ows.CodeType;
 import org.deegree.process.jaxb.java.ProcessDefinition;
 import org.deegree.services.wps.ExceptionAwareProcesslet;
@@ -77,7 +77,7 @@ public class JavaProcessProvider implements ProcessProvider {
 
     @Override
     public void init( DeegreeWorkspace workspace )
-                            throws WorkspaceInitializationException {
+                            throws ResourceInitException {
         for ( ProcessDefinition processDefinition : processDefs ) {
             CodeType processId = new CodeType( processDefinition.getIdentifier().getValue(),
                                                processDefinition.getIdentifier().getCodeSpace() );
@@ -98,7 +98,7 @@ public class JavaProcessProvider implements ProcessProvider {
                 String msg = "Could not create process instance. Class name ('" + className
                              + "') was not found on the classpath. "
                              + "Hint: spelling in configuration file might be incorrect.";
-                throw new WorkspaceInitializationException( msg, e );
+                throw new ResourceInitException( msg, e );
             }
         }
     }

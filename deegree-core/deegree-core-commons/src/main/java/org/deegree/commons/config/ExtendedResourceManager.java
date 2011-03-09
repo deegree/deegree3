@@ -60,11 +60,11 @@ public interface ExtendedResourceManager<T extends Resource> extends ResourceMan
      * @param configUrl
      *            the configuration url of the new resource
      * @return the new resource instance
-     * @throws WorkspaceInitializationException
+     * @throws ResourceInitException
      *             if an error occurred while creating the resource
      */
     T create( String id, URL configUrl )
-                            throws WorkspaceInitializationException;
+                            throws ResourceInitException;
 
     /**
      * Is used to obtain a resource instance from an id.

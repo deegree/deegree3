@@ -62,6 +62,7 @@ import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.jdbc.ConnectionManager;
 import org.deegree.commons.utils.FileUtils;
 import org.deegree.commons.xml.stax.IndentingXMLStreamWriter;
+import org.deegree.console.WorkspaceBean;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.persistence.CRSManager;
 import org.deegree.feature.persistence.postgis.config.PostGISDDLCreator;
@@ -145,7 +146,7 @@ public class MappingWizardSQL {
     public File getAppSchemaDirectory()
                             throws IOException {
         ExternalContext ctx = FacesContext.getCurrentInstance().getExternalContext();
-        DeegreeWorkspace ws = (DeegreeWorkspace) ctx.getApplicationMap().get( "workspace" );
+        DeegreeWorkspace ws = ((WorkspaceBean) ctx.getApplicationMap().get( "workspace" )).getActiveWorkspace();
         File appSchemaDirectory = new File( ws.getLocation(), "appschemas" );
         return appSchemaDirectory;
     }
@@ -248,7 +249,7 @@ public class MappingWizardSQL {
 
         try {
             ExternalContext ctx = FacesContext.getCurrentInstance().getExternalContext();
-            DeegreeWorkspace ws = (DeegreeWorkspace) ctx.getApplicationMap().get( "workspace" );
+            DeegreeWorkspace ws = ((WorkspaceBean) ctx.getApplicationMap().get( "workspace" )).getActiveWorkspace();
 
             ICRS storageCrs = CRSManager.lookup( this.storageCrs );
             boolean createBlobMapping = storageMode.equals( "hybrid" ) || storageMode.equals( "blob" );

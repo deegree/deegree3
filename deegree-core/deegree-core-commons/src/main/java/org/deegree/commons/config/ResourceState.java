@@ -56,6 +56,8 @@ public class ResourceState {
      * @version $Revision$, $Date$
      */
     public static enum StateType {
+        /** Resource is deactivated */
+        deactivated,        
         /** Resource has been created, but not initialized yet */
         created,
         /** Resource has been successfully initialized */
@@ -63,14 +65,12 @@ public class ResourceState {
         /** Error occured during initialization */
         init_error,
         /** Resource has been destroyed */
-        destroyed,
-        /** Resource is deactivated */
-        deactivated
+        destroyed
     }
 
     private final StateType type;
 
-    private final WorkspaceInitializationException lastException;
+    private final ResourceInitException lastException;
 
     private final String id;
 
@@ -89,7 +89,7 @@ public class ResourceState {
      *            last exception that occurred for the resource, can be <code>null</code>
      */
     public ResourceState( String id, File configLocation, ResourceProvider provider, StateType type,
-                          WorkspaceInitializationException lastException ) {
+                          ResourceInitException lastException ) {
         this.id = id;
         this.configLocation = configLocation;
         this.provider = provider;
@@ -129,7 +129,7 @@ public class ResourceState {
      * 
      * @return the last exception, can be <code>null</code>
      */
-    public WorkspaceInitializationException getLastException() {
+    public ResourceInitException getLastException() {
         return lastException;
     }
 }

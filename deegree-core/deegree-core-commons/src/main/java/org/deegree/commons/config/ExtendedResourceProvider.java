@@ -58,7 +58,7 @@ public interface ExtendedResourceProvider<T extends Resource> extends ResourcePr
      * @return a new resource created from the configuration url, never <code>null</code>
      */
     T create( URL configUrl )
-                            throws WorkspaceInitializationException;
+                            throws ResourceInitException;
 
     /**
      * @return dependencies as resource manager classes, never null

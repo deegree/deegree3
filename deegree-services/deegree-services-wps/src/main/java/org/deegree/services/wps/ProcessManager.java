@@ -44,7 +44,7 @@ import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.DefaultResourceManagerMetadata;
 import org.deegree.commons.config.ResourceManager;
 import org.deegree.commons.config.ResourceManagerMetadata;
-import org.deegree.commons.config.WorkspaceInitializationException;
+import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.tom.ows.CodeType;
 import org.deegree.commons.utils.ProxyUtils;
 import org.deegree.services.wps.provider.ProcessProvider;
@@ -110,7 +110,7 @@ public class ProcessManager extends AbstractResourceManager<ProcessProvider> {
 
     @Override
     public void startup( DeegreeWorkspace workspace )
-                            throws WorkspaceInitializationException {
+                            throws ResourceInitException {
         this.metadata = new ProcessManagerMetadata( workspace );
         super.startup( workspace );
     }

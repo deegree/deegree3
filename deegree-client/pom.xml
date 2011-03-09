@@ -35,6 +35,7 @@
   <modules>
     <!-- <module>deegree-sos-webclient</module> -->
     <module>deegree-jsf-core</module>
+    <module>deegree-jsf-console</module>
   </modules>
 
 </project>

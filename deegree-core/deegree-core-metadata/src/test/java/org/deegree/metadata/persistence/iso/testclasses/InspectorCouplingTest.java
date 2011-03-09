@@ -37,7 +37,7 @@ package org.deegree.metadata.persistence.iso.testclasses;
 
 import java.util.List;
 
-import org.deegree.commons.config.WorkspaceInitializationException;
+import org.deegree.commons.config.ResourceInitException;
 import org.deegree.metadata.persistence.MetadataInspectorException;
 import org.deegree.metadata.persistence.MetadataStoreTransaction;
 import org.deegree.metadata.persistence.iso.ISOMetadataStore;
@@ -65,7 +65,7 @@ public class InspectorCouplingTest extends AbstractISOTest {
 
     @Test
     public void testCouplingConsistencyErrorFALSE()
-                            throws MetadataStoreException, MetadataInspectorException, WorkspaceInitializationException {
+                            throws MetadataStoreException, MetadataInspectorException, ResourceInitException {
         LOG.info( "START Test: test if the the coupling of data and service metadata is correct and no exception will be thrown. " );
         if ( jdbcURL != null && jdbcUser != null && jdbcPass != null ) {
             store = (ISOMetadataStore) new ISOMetadataStoreProvider().create( TstConstants.configURL_COUPLING_ACCEPT );
@@ -89,7 +89,7 @@ public class InspectorCouplingTest extends AbstractISOTest {
 
     @Test
     public void testCouplingConsistencyErrorFALSE_NO_CONSISTENCY()
-                            throws MetadataStoreException, MetadataInspectorException, WorkspaceInitializationException {
+                            throws MetadataStoreException, MetadataInspectorException, ResourceInitException {
         LOG.info( "START Test: test if the the coupled service metadata will be inserted without any coupling but no exception will be thrown. " );
         if ( jdbcURL != null && jdbcUser != null && jdbcPass != null ) {
             store = (ISOMetadataStore) new ISOMetadataStoreProvider().create( TstConstants.configURL_COUPLING_ACCEPT );
@@ -112,7 +112,7 @@ public class InspectorCouplingTest extends AbstractISOTest {
 
     @Test
     public void testCouplingConsistencyErrorTRUE_NO_Exception()
-                            throws MetadataStoreException, MetadataInspectorException, WorkspaceInitializationException {
+                            throws MetadataStoreException, MetadataInspectorException, ResourceInitException {
         LOG.info( "START Test: test if the the coupling of data and service metadata is correct and no exception will be thrown. " );
         if ( jdbcURL != null && jdbcUser != null && jdbcPass != null ) {
             store = (ISOMetadataStore) new ISOMetadataStoreProvider().create( TstConstants.configURL_COUPLING_Ex_AWARE );
@@ -136,7 +136,7 @@ public class InspectorCouplingTest extends AbstractISOTest {
 
     @Test(expected = MetadataInspectorException.class)
     public void testCouplingConsistencyErrorTRUE_WITH_Exception()
-                            throws MetadataStoreException, MetadataInspectorException, WorkspaceInitializationException {
+                            throws MetadataStoreException, MetadataInspectorException, ResourceInitException {
         LOG.info( "START Test: test if an exception will be thrown if there is an insert of the service metadata. " );
         MetadataStoreTransaction ta = null;
         if ( jdbcURL != null && jdbcUser != null && jdbcPass != null ) {

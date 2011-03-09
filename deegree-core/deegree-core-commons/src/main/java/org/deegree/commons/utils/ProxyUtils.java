@@ -50,7 +50,7 @@ import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceManager;
 import org.deegree.commons.config.ResourceManagerMetadata;
 import org.deegree.commons.config.ResourceProvider;
-import org.deegree.commons.config.WorkspaceInitializationException;
+import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.proxy.jaxb.ProxyConfiguration;
 import org.deegree.commons.xml.jaxb.JAXBUtils;
 import org.slf4j.Logger;
@@ -463,14 +463,14 @@ public final class ProxyUtils extends AbstractBasicResourceManager implements Re
 
     @Override
     public void activate( String id )
-                            throws WorkspaceInitializationException {
+                            throws ResourceInitException {
         // TODO Auto-generated method stub
         
     }
 
     @Override
     public void deactivate( String id )
-                            throws WorkspaceInitializationException {
+                            throws ResourceInitException {
         // TODO Auto-generated method stub
         
     }

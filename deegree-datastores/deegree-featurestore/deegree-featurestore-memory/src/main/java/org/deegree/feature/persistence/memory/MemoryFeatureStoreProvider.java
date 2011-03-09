@@ -45,7 +45,7 @@ import javax.xml.bind.JAXBException;
 
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceManager;
-import org.deegree.commons.config.WorkspaceInitializationException;
+import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.utils.ProxyUtils;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.jaxb.JAXBUtils;
@@ -102,7 +102,7 @@ public class MemoryFeatureStoreProvider implements FeatureStoreProvider {
 
     @Override
     public MemoryFeatureStore create( URL configURL )
-                            throws WorkspaceInitializationException {
+                            throws ResourceInitException {
 
         MemoryFeatureStore fs = null;
         ICRS storageSRS = null;
@@ -140,7 +140,7 @@ public class MemoryFeatureStoreProvider implements FeatureStoreProvider {
             } catch ( Exception e ) {
                 String msg = Messages.getMessage( "STORE_MANAGER_STORE_SETUP_ERROR", e.getMessage() );
                 LOG.error( msg, e );
-                throw new WorkspaceInitializationException( msg, e );
+                throw new ResourceInitException( msg, e );
             }
 
             fs = new MemoryFeatureStore( schema, storageSRS );
@@ -169,11 +169,11 @@ public class MemoryFeatureStoreProvider implements FeatureStoreProvider {
         } catch ( JAXBException e ) {
             String msg = "Error in feature store configuration file '" + configURL + "': " + e.getMessage();
             LOG.error( msg );
-            throw new WorkspaceInitializationException( msg, e );
+            throw new ResourceInitException( msg, e );
         } catch ( FeatureStoreException e ) {
             String msg = "Error in feature store configuration file '" + configURL + "': " + e.getMessage();
             LOG.error( msg );
-            throw new WorkspaceInitializationException( msg, e );
+            throw new ResourceInitException( msg, e );
         }
         return fs;
     }

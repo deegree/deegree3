@@ -55,7 +55,7 @@ import oracle.sql.STRUCT;
 
 import org.apache.commons.dbcp.DelegatingConnection;
 import org.deegree.commons.config.DeegreeWorkspace;
-import org.deegree.commons.config.WorkspaceInitializationException;
+import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.jdbc.ConnectionManager;
 import org.deegree.commons.jdbc.ResultSetIterator;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
@@ -273,7 +273,7 @@ public class OracleFeatureStore implements FeatureStore {
 
     @Override
     public void init( DeegreeWorkspace workspace )
-                            throws WorkspaceInitializationException {
+                            throws ResourceInitException {
         LOG.debug( "Initializing Oracle feature store." );
     }
 

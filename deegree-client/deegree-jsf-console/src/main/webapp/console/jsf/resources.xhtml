@@ -45,12 +45,11 @@
       </h:form> <h:form>
         <div><h:outputLabel styleClass="label" for="newFSBt" value="#{labels.featureStores_name}" /> <h:inputText
           styleClass="liste" id="newFSBt" value="#{configManager.newConfigId}" size="16" required="true"
-          requiredMessage="#{labels.featureStores_name_req}" /> <h:selectOneMenu styleClass="liste"
-          value="#{configManager.newConfigType}">
+          requiredMessage="#{labels.featureStores_name_req}" />
+        <h:selectOneMenu styleClass="liste" value="#{configManager.newConfigType}" rendered="#{configManager.currentResourceManager.multipleProviders}">
           <f:selectItems value="#{configManager.currentResourceManager.providerNames}" />
-        </h:selectOneMenu><h:commandButton styleClass="buttonCreateNew" value="#{labels.featureStores_new}"
-          action="#{configManager.startWizard}" /></div>
-
+        </h:selectOneMenu>
+        <h:commandButton styleClass="buttonCreateNew" value="#{labels.featureStores_new}" action="#{configManager.startWizard}" /></div>
       </h:form> <h:form>
         <ui:insert name="extraConfig" />
       </h:form></fieldset>

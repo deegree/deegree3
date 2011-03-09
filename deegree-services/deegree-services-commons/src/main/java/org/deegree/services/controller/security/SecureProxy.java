@@ -76,7 +76,7 @@ import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
 
 import org.deegree.commons.config.DeegreeWorkspace;
-import org.deegree.commons.config.WorkspaceInitializationException;
+import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.utils.io.LoggingInputStream;
 import org.deegree.commons.utils.kvp.KVPUtils;
 import org.deegree.services.controller.Credentials;
@@ -157,7 +157,7 @@ public class SecureProxy extends HttpServlet {
 
         try {
             workspace.initAll();
-        } catch ( WorkspaceInitializationException e1 ) {
+        } catch ( ResourceInitException e1 ) {
             LOG.error( "Initialization of secure proxy failed: {}", e1.getLocalizedMessage() );
             LOG.trace( "Stack trace: ", e );
             return;

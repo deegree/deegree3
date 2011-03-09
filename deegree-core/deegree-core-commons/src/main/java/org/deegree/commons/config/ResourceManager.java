@@ -40,6 +40,7 @@ import java.io.InputStream;
 import org.deegree.commons.config.ResourceState.StateType;
 
 /**
+ * Responsible for managing and creating a specific type of {@link Resource}s from configuration documents.
  * 
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
  * @author last edited by: $Author$
@@ -52,7 +53,7 @@ public interface ResourceManager {
      * Is called upon workspace startup.
      */
     public void startup( DeegreeWorkspace workspace )
-                            throws WorkspaceInitializationException;
+                            throws ResourceInitException;
 
     /**
      * Is called upon workspace shutdown.
@@ -86,24 +87,24 @@ public interface ResourceManager {
     public ResourceState getState( String id );
 
     public void activate( String id )
-                            throws WorkspaceInitializationException;
+                            throws ResourceInitException;
 
     public void deactivate( String id )
-                            throws WorkspaceInitializationException;
+                            throws ResourceInitException;
 
     /**
-     * Creates a new {@link Resource} (which is initially in state {@link StateType#deactivated}.
+     * Creates a new {@link Resource} (which is initially in state {@link StateType#deactivated}).
      * 
      * @param id
      *            resource id, must not be <code>null</code>
      * @param config
      *            provides the configuration, must not be <code>null</code>
-     * @throws WorkspaceInitializationException
+     * @throws ResourceInitException
      *             if initialization of the resource fails
      * @return state information, never <code>null</code>
      */
     public ResourceState createResource( String id, InputStream config )
-                            throws WorkspaceInitializationException;
+                            throws ResourceInitException;
 
     /**
      * Removes the specified resource and deletes the corresponding configuration file.

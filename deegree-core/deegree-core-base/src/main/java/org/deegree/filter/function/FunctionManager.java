@@ -49,7 +49,7 @@ import org.deegree.commons.config.ResourceManager;
 import org.deegree.commons.config.ResourceManagerMetadata;
 import org.deegree.commons.config.ResourceProvider;
 import org.deegree.commons.config.ResourceState;
-import org.deegree.commons.config.WorkspaceInitializationException;
+import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.utils.ProxyUtils;
 import org.deegree.cs.persistence.CRSManager;
 import org.slf4j.Logger;
@@ -127,20 +127,20 @@ public class FunctionManager extends AbstractBasicResourceManager implements Res
     }
 
     public void startup( DeegreeWorkspace workspace )
-                            throws WorkspaceInitializationException {
+                            throws ResourceInitException {
         functionLoader = ServiceLoader.load( FunctionProvider.class, workspace.getModuleClassLoader() );
     }
 
     @Override
     public void activate( String id )
-                            throws WorkspaceInitializationException {
+                            throws ResourceInitException {
         // TODO Auto-generated method stub
         
     }
 
     @Override
     public void deactivate( String id )
-                            throws WorkspaceInitializationException {
+                            throws ResourceInitException {
         // TODO Auto-generated method stub
         
     }

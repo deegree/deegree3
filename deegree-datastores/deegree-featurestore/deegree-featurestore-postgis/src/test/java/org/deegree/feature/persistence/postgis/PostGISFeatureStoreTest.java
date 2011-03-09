@@ -60,7 +60,7 @@ import javax.xml.stream.XMLStreamWriter;
 import org.apache.commons.io.IOUtils;
 import org.deegree.CoreTstProperties;
 import org.deegree.commons.config.DeegreeWorkspace;
-import org.deegree.commons.config.WorkspaceInitializationException;
+import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.jdbc.ConnectionManager;
 import org.deegree.commons.utils.JDBCUtils;
 import org.deegree.commons.xml.XMLParsingException;
@@ -252,7 +252,7 @@ public class PostGISFeatureStoreTest {
 
     @Test
     public void testInstantiation()
-                            throws FeatureStoreException, WorkspaceInitializationException {
+                            throws FeatureStoreException, ResourceInitException {
 
         if ( enable ) {
             ConnectionManager.addConnection( "philosopher-db", "jdbc:postgresql://hurricane:5432/deegreetest",
@@ -278,7 +278,7 @@ public class PostGISFeatureStoreTest {
 
     @Test
     public void testInstantiationInspire()
-                            throws WorkspaceInitializationException {
+                            throws ResourceInitException {
 
         if ( enable ) {
             ConnectionManager.addConnection( "inspire", "jdbc:postgresql://macchiato:5432/inspire", "postgres",
@@ -306,7 +306,7 @@ public class PostGISFeatureStoreTest {
 
     @Test
     public void testInspireDDL()
-                            throws WorkspaceInitializationException, MalformedURLException {
+                            throws ResourceInitException, MalformedURLException {
 
         if ( enable ) {
             ConnectionManager.addConnection( "inspire", "jdbc:postgresql://macchiato:5432/inspire", "postgres",
@@ -345,7 +345,7 @@ public class PostGISFeatureStoreTest {
     @Test
     public void testInsertInspireAddresses()
                             throws FeatureStoreException, XMLStreamException, FactoryConfigurationError, IOException,
-                            XMLParsingException, UnknownCRSException, WorkspaceInitializationException {
+                            XMLParsingException, UnknownCRSException, ResourceInitException {
         if ( enable ) {
             ConnectionManager.addConnection( "inspire", "jdbc:postgresql://macchiato:5432/inspire", "postgres",
                                              "postgres", 1, 10 );
@@ -403,7 +403,7 @@ public class PostGISFeatureStoreTest {
     public void testQueryCountry()
                             throws FeatureStoreException, FilterEvaluationException, XMLStreamException,
                             FactoryConfigurationError, UnknownCRSException, TransformationException,
-                            WorkspaceInitializationException {
+                            ResourceInitException {
 
         String jdbcURL = CoreTstProperties.getProperty( "postgis_philosopher_db" );
         String jdbcUser = CoreTstProperties.getProperty( "postgis_philosopher_user" );
@@ -435,7 +435,7 @@ public class PostGISFeatureStoreTest {
     public void testQueryCountryWithFilter()
                             throws FeatureStoreException, FilterEvaluationException, XMLStreamException,
                             FactoryConfigurationError, UnknownCRSException, TransformationException,
-                            WorkspaceInitializationException {
+                            ResourceInitException {
 
         if ( enable ) {
             ConnectionManager.addConnection( "philosopher-db", "jdbc:postgresql://192.168.1.2:5432/deegreetest",
@@ -474,7 +474,7 @@ public class PostGISFeatureStoreTest {
     public void testQueryPlace()
                             throws FeatureStoreException, FilterEvaluationException, XMLStreamException,
                             FactoryConfigurationError, UnknownCRSException, TransformationException,
-                            WorkspaceInitializationException {
+                            ResourceInitException {
 
         if ( enable ) {
             ConnectionManager.addConnection( "philosopher-db", "jdbc:postgresql://hurricane:5432/deegreetest",
@@ -509,7 +509,7 @@ public class PostGISFeatureStoreTest {
     public void testQueryPhilosopher()
                             throws FeatureStoreException, FilterEvaluationException, XMLStreamException,
                             FactoryConfigurationError, UnknownCRSException, TransformationException, IOException,
-                            WorkspaceInitializationException {
+                            ResourceInitException {
 
         if ( enable ) {
             ConnectionManager.addConnection( "philosopher-db", "jdbc:postgresql://hurricane:5432/d3_philosopher",

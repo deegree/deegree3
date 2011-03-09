@@ -81,11 +81,11 @@ public abstract class AbstractResourceManager<T extends Resource> extends Abstra
     }
 
     public T create( String id, URL configUrl )
-                            throws WorkspaceInitializationException {
+                            throws ResourceInitException {
         ResourceManagerMetadata<T> md = getMetadata();
 
         if ( md == null ) {
-            throw new WorkspaceInitializationException( "Creating from config file is not supported." );
+            throw new ResourceInitException( "Creating from config file is not supported." );
         }
 
         String namespace = null;
@@ -96,14 +96,14 @@ public abstract class AbstractResourceManager<T extends Resource> extends Abstra
         } catch ( Exception e ) {
             String msg = "Error determining configuration namespace for file '" + configUrl + "'";
             LOG.error( msg );
-            throw new WorkspaceInitializationException( msg );
+            throw new ResourceInitException( msg );
         }
         LOG.debug( "Config namespace: '" + namespace + "'" );
         ExtendedResourceProvider<T> provider = nsToProvider.get( namespace );
         if ( provider == null ) {
             String msg = "No {} provider for namespace '{}' (file: '{}') registered. Skipping it.";
             LOG.error( msg, new Object[] { md.getName(), namespace, configUrl } );
-            throw new WorkspaceInitializationException( "Creation of " + md.getName()
+            throw new ResourceInitException( "Creation of " + md.getName()
                                                         + " via configuration file failed." );
         }
         T resource = provider.create( configUrl );
@@ -125,7 +125,7 @@ public abstract class AbstractResourceManager<T extends Resource> extends Abstra
     }
 
     public void startup( DeegreeWorkspace workspace )
-                            throws WorkspaceInitializationException {
+                            throws ResourceInitException {
         this.workspace = workspace;
         ResourceManagerMetadata<T> md = getMetadata();
         if ( md != null ) {
@@ -155,12 +155,12 @@ public abstract class AbstractResourceManager<T extends Resource> extends Abstra
                     idToState.put( id, new ResourceState( id, configFile, provider, StateType.created, null ) );
                     resource.init( workspace );
                     idToState.put( id, new ResourceState( id, configFile, provider, StateType.init_ok, null ) );
-                } catch ( WorkspaceInitializationException e ) {
+                } catch ( ResourceInitException e ) {
                     idToState.put( id, new ResourceState( id, configFile, provider, StateType.init_error, e ) );
                     LOG.error( "Error creating {}: {}", new Object[] { name, e.getMessage(), e } );
                 } catch ( Throwable t ) {
                     idToState.put( id, new ResourceState( id, configFile, provider, StateType.init_error,
-                                                          new WorkspaceInitializationException( t.getMessage(), t ) ) );
+                                                          new ResourceInitException( t.getMessage(), t ) ) );
                     LOG.error( "Error creating {}: {}", new Object[] { name, t.getMessage(), t } );
                 }
             }
@@ -199,7 +199,7 @@ public abstract class AbstractResourceManager<T extends Resource> extends Abstra
 
     @Override
     public void activate( String id )
-                            throws WorkspaceInitializationException {
+                            throws ResourceInitException {
         ResourceState state = getState( id );
         if ( state != null && state.getType() == deactivated ) {
             File oldFile = state.getConfigLocation();
@@ -215,12 +215,12 @@ public abstract class AbstractResourceManager<T extends Resource> extends Abstra
                 idToState.put( id, new ResourceState( id, newFile, provider, StateType.created, null ) );
                 resource.init( workspace );
                 idToState.put( id, new ResourceState( id, newFile, provider, StateType.init_ok, null ) );
-            } catch ( WorkspaceInitializationException e ) {
+            } catch ( ResourceInitException e ) {
                 idToState.put( id, new ResourceState( id, newFile, provider, StateType.init_error, e ) );
                 LOG.error( "Error creating {}: {}", new Object[] { name, e.getMessage(), e } );
             } catch ( Throwable t ) {
                 idToState.put( id, new ResourceState( id, newFile, provider, StateType.init_error,
-                                                      new WorkspaceInitializationException( t.getMessage(), t ) ) );
+                                                      new ResourceInitException( t.getMessage(), t ) ) );
                 LOG.error( "Error creating {}: {}", new Object[] { name, t.getMessage(), t } );
             }
         }
@@ -228,7 +228,7 @@ public abstract class AbstractResourceManager<T extends Resource> extends Abstra
 
     @Override
     public void deactivate( String id )
-                            throws WorkspaceInitializationException {
+                            throws ResourceInitException {
         ResourceState state = getState( id );
         if ( state != null && state.getType() != deactivated ) {
             File oldFile = state.getConfigLocation();

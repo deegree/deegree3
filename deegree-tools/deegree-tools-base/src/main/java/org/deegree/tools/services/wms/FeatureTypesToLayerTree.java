@@ -55,7 +55,7 @@ import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.PosixParser;
 import org.deegree.commons.annotations.Tool;
 import org.deegree.commons.config.DeegreeWorkspace;
-import org.deegree.commons.config.WorkspaceInitializationException;
+import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.tools.CommandUtils;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.stax.IndentingXMLStreamWriter;
@@ -184,7 +184,7 @@ public class FeatureTypesToLayerTree {
         } catch ( MalformedURLException e ) {
             LOG.info( "A filename could not be parsed: '{}'", e.getLocalizedMessage() );
             LOG.trace( "Stack trace:", e );
-        } catch ( WorkspaceInitializationException e ) {
+        } catch ( ResourceInitException e ) {
             LOG.info( "The feature store could not be loaded: '{}'", e.getLocalizedMessage() );
             LOG.trace( "Stack trace:", e );
         } catch ( FileNotFoundException e ) {

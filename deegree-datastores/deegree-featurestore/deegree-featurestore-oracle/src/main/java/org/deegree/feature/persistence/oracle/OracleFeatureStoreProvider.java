@@ -47,7 +47,7 @@ import javax.xml.bind.Unmarshaller;
 
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceManager;
-import org.deegree.commons.config.WorkspaceInitializationException;
+import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.jdbc.ConnectionManager;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.persistence.CRSManager;
@@ -85,7 +85,7 @@ public class OracleFeatureStoreProvider implements FeatureStoreProvider {
 
     @Override
     public OracleFeatureStore create( URL configURL )
-                            throws WorkspaceInitializationException {
+                            throws ResourceInitException {
 
         OracleFeatureStore fs = null;
         try {
@@ -102,15 +102,15 @@ public class OracleFeatureStoreProvider implements FeatureStoreProvider {
         } catch ( JAXBException e ) {
             String msg = "Error in feature store configuration file '" + configURL + "': " + e.getMessage();
             LOG.error( msg );
-            throw new WorkspaceInitializationException( msg, e );
+            throw new ResourceInitException( msg, e );
         } catch ( SQLException e ) {
             String msg = "Error creating mapped application schema: " + e.getMessage();
             LOG.error( msg );
-            throw new WorkspaceInitializationException( msg, e );
+            throw new ResourceInitException( msg, e );
         } catch ( FeatureStoreException e ) {
             String msg = "Error in feature store configuration file '" + configURL + "': " + e.getMessage();
             LOG.error( msg );
-            throw new WorkspaceInitializationException( msg, e );
+            throw new ResourceInitException( msg, e );
         }
         return fs;
     }

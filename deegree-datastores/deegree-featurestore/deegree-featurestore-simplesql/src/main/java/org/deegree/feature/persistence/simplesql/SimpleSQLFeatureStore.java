@@ -52,7 +52,7 @@ import javax.xml.namespace.QName;
 
 import org.deegree.commons.annotations.LoggingNotes;
 import org.deegree.commons.config.DeegreeWorkspace;
-import org.deegree.commons.config.WorkspaceInitializationException;
+import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.jdbc.ResultSetIterator;
 import org.deegree.commons.utils.Pair;
 import org.deegree.cs.CRSUtils;
@@ -273,7 +273,7 @@ public class SimpleSQLFeatureStore implements FeatureStore {
     }
 
     public void init( DeegreeWorkspace workspace )
-                            throws WorkspaceInitializationException {
+                            throws ResourceInitException {
         featureType = DBUtils.determineFeatureType( ftName, connId, lods.values().iterator().next() );
         if ( featureType == null ) {
             available = false;

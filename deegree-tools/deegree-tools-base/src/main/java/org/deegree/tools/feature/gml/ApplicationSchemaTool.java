@@ -66,7 +66,7 @@ import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.PosixParser;
 import org.deegree.commons.annotations.Tool;
 import org.deegree.commons.config.DeegreeWorkspace;
-import org.deegree.commons.config.WorkspaceInitializationException;
+import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.tom.primitive.PrimitiveType;
 import org.deegree.commons.tools.CommandUtils;
 import org.deegree.feature.persistence.FeatureStoreManager;
@@ -376,7 +376,7 @@ public class ApplicationSchemaTool {
             } catch ( MalformedURLException e1 ) {
                 // TODO Auto-generated catch block
                 e1.printStackTrace();
-            } catch ( WorkspaceInitializationException e ) {
+            } catch ( ResourceInitException e ) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
             }

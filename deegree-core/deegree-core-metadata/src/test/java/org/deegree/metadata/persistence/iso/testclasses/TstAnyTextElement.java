@@ -41,7 +41,7 @@ import java.util.List;
 import javax.xml.stream.FactoryConfigurationError;
 import javax.xml.stream.XMLStreamException;
 
-import org.deegree.commons.config.WorkspaceInitializationException;
+import org.deegree.commons.config.ResourceInitException;
 import org.deegree.metadata.persistence.MetadataInspectorException;
 import org.deegree.metadata.persistence.MetadataQuery;
 import org.deegree.metadata.persistence.iso.ISOMetadataStore;
@@ -69,7 +69,7 @@ public class TstAnyTextElement extends AbstractISOTest {
     @Test
     public void testAnyTextElement_ALL()
                             throws MetadataStoreException, XMLStreamException, FactoryConfigurationError, IOException,
-                            MetadataInspectorException, WorkspaceInitializationException {
+                            MetadataInspectorException, ResourceInitException {
         LOG.info( "START Test: test anyText element 'ALL' for one metadataRecord " );
 
         if ( jdbcURL != null && jdbcUser != null && jdbcPass != null ) {
@@ -101,7 +101,7 @@ public class TstAnyTextElement extends AbstractISOTest {
     @Test
     public void testAnyTextElement_CORE()
                             throws MetadataStoreException, XMLStreamException, FactoryConfigurationError, IOException,
-                            MetadataInspectorException, WorkspaceInitializationException {
+                            MetadataInspectorException, ResourceInitException {
         LOG.info( "START Test: test anyText element 'CORE' for one metadataRecord " );
 
         if ( jdbcURL != null && jdbcUser != null && jdbcPass != null ) {
@@ -133,7 +133,7 @@ public class TstAnyTextElement extends AbstractISOTest {
     @Test
     public void testAnyTextElement_CUSTOM()
                             throws MetadataStoreException, XMLStreamException, FactoryConfigurationError, IOException,
-                            MetadataInspectorException, WorkspaceInitializationException {
+                            MetadataInspectorException, ResourceInitException {
         LOG.info( "START Test: test anyText element 'CUSTOM' for one metadataRecord " );
 
         if ( jdbcURL != null && jdbcUser != null && jdbcPass != null ) {

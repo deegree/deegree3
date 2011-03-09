@@ -56,7 +56,7 @@ import java.util.Map;
 import java.util.TreeSet;
 
 import org.deegree.commons.config.DeegreeWorkspace;
-import org.deegree.commons.config.WorkspaceInitializationException;
+import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.utils.Pair;
 import org.deegree.coverage.raster.RasterTransformer;
 import org.deegree.coverage.raster.SimpleRaster;
@@ -341,7 +341,7 @@ public class RemoteWMSStore implements RemoteOWSStore {
     }
 
     public void init( DeegreeWorkspace workspace )
-                            throws WorkspaceInitializationException {
+                            throws ResourceInitException {
         // TODO move construction here
     }
 

@@ -56,7 +56,7 @@ import javax.xml.bind.JAXBException;
 import javax.xml.namespace.QName;
 
 import org.deegree.commons.config.DeegreeWorkspace;
-import org.deegree.commons.config.WorkspaceInitializationException;
+import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.jdbc.ConnectionManager;
 import org.deegree.commons.jdbc.ResultSetIterator;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
@@ -446,7 +446,7 @@ public class PostGISFeatureStore extends AbstractSQLFeatureStore {
 
     @Override
     public void init( DeegreeWorkspace workspace )
-                            throws WorkspaceInitializationException {
+                            throws ResourceInitException {
 
         LOG.debug( "init" );
         PostGISFeatureStoreConfig config = parseConfig( configURL );
@@ -464,7 +464,7 @@ public class PostGISFeatureStore extends AbstractSQLFeatureStore {
             useLegacyPredicates = JDBCUtils.useLegayPostGISPredicates( conn, LOG );
         } catch ( SQLException e ) {
             LOG.debug( e.getMessage(), e );
-            throw new WorkspaceInitializationException( e.getMessage(), e );
+            throw new ResourceInitException( e.getMessage(), e );
         } finally {
             close( rs, stmt, conn, LOG );
         }
@@ -473,7 +473,7 @@ public class PostGISFeatureStore extends AbstractSQLFeatureStore {
     }
 
     private MappedApplicationSchema getSchema( String configURL, PostGISFeatureStoreConfig config )
-                            throws WorkspaceInitializationException {
+                            throws ResourceInitException {
 
         MappedApplicationSchema schema = null;
         LOG.debug( "Building mapped application schema from config" );
@@ -483,19 +483,19 @@ public class PostGISFeatureStore extends AbstractSQLFeatureStore {
         } catch ( Throwable t ) {
             String msg = Messages.getMessage( "STORE_MANAGER_STORE_SETUP_ERROR", t.getMessage() );
             LOG.error( msg, t );
-            throw new WorkspaceInitializationException( msg, t );
+            throw new ResourceInitException( msg, t );
         }
         return schema;
     }
 
     private PostGISFeatureStoreConfig parseConfig( URL configURL )
-                            throws WorkspaceInitializationException {
+                            throws ResourceInitException {
         try {
             return (PostGISFeatureStoreConfig) JAXBUtils.unmarshall( CONFIG_JAXB_PACKAGE, CONFIG_SCHEMA, configURL,
                                                                      workspace );
         } catch ( JAXBException e ) {
             String msg = Messages.getMessage( "STORE_MANAGER_STORE_SETUP_ERROR", e.getMessage() );
-            throw new WorkspaceInitializationException( msg, e );
+            throw new ResourceInitException( msg, e );
         }
     }
 

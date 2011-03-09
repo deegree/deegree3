@@ -89,23 +89,23 @@ public abstract class AbstractBasicResourceManager implements ResourceManager {
 
     @Override
     public ResourceState createResource( String id, InputStream is )
-                            throws WorkspaceInitializationException {
+                            throws ResourceInitException {
 
         LOG.info( "Creating new resource with id " + id );
         if ( idToState.containsKey( id ) ) {
             String msg = "Cannot create resource '" + id + "' (" + this.getClass().getSimpleName()
                          + "). Resource already exists.";
-            throw new WorkspaceInitializationException( msg );
+            throw new ResourceInitException( msg );
         }
         if ( !dir.exists() ) {
             try {
                 if ( !dir.mkdirs() ) {
                     String msg = "Unable to create resource directory '" + dir + "'";
-                    throw new WorkspaceInitializationException( msg );
+                    throw new ResourceInitException( msg );
                 }
             } catch ( Throwable t ) {
                 String msg = "Unable to create resource directory '" + dir + "': " + t.getMessage();
-                throw new WorkspaceInitializationException( msg );
+                throw new ResourceInitException( msg );
             }
         }
         File file = new File( dir, id + ".ignore" );
@@ -116,7 +116,7 @@ public abstract class AbstractBasicResourceManager implements ResourceManager {
         } catch ( IOException e ) {
             String msg = "Cannot create config file for resource '" + id + "' (" + this.getClass().getSimpleName()
                          + "): " + e.getMessage();
-            throw new WorkspaceInitializationException( msg );
+            throw new ResourceInitException( msg );
         } finally {
             IOUtils.closeQuietly( is );
             IOUtils.closeQuietly( os );
@@ -134,7 +134,7 @@ public abstract class AbstractBasicResourceManager implements ResourceManager {
             remove( id );
             try {
                 deactivate( id );
-            } catch ( WorkspaceInitializationException e ) {
+            } catch ( ResourceInitException e ) {
                 // TODO
                 e.printStackTrace();
             }

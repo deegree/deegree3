@@ -60,7 +60,7 @@ import org.deegree.commons.config.ResourceManager;
 import org.deegree.commons.config.ResourceManagerMetadata;
 import org.deegree.commons.config.ResourceProvider;
 import org.deegree.commons.config.ResourceState;
-import org.deegree.commons.config.WorkspaceInitializationException;
+import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.jdbc.ConnectionManager;
 import org.deegree.commons.utils.FileUtils;
 import org.deegree.commons.utils.ProxyUtils;
@@ -249,14 +249,14 @@ public class BatchedMTStoreManager extends AbstractBasicResourceManager implemen
 
     @Override
     public void activate( String id )
-                            throws WorkspaceInitializationException {
+                            throws ResourceInitException {
         // TODO Auto-generated method stub
         
     }
 
     @Override
     public void deactivate( String id )
-                            throws WorkspaceInitializationException {
+                            throws ResourceInitException {
         // TODO Auto-generated method stub
         
     }

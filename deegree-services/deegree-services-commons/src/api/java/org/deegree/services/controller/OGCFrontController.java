@@ -89,7 +89,7 @@ import org.apache.log4j.LogManager;
 import org.deegree.commons.annotations.LoggingNotes;
 import org.deegree.commons.concurrent.Executor;
 import org.deegree.commons.config.DeegreeWorkspace;
-import org.deegree.commons.config.WorkspaceInitializationException;
+import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.jdbc.ConnectionManager;
 import org.deegree.commons.tom.ows.Version;
 import org.deegree.commons.utils.DeegreeAALogoUtils;
@@ -916,7 +916,7 @@ public class OGCFrontController extends HttpServlet {
     }
 
     private void initWorkspace( String name )
-                            throws IOException, URISyntaxException, WorkspaceInitializationException {
+                            throws IOException, URISyntaxException, ResourceInitException {
         LOG.info( "--------------------------------------------------------------------------------" );
         LOG.info( "Initializing workspace" );
         LOG.info( "--------------------------------------------------------------------------------" );
@@ -961,7 +961,7 @@ public class OGCFrontController extends HttpServlet {
         destroyWorkspace();
         try {
             initWorkspace( workspaceName );
-        } catch ( WorkspaceInitializationException e ) {
+        } catch ( ResourceInitException e ) {
             throw new ServletException( e.getLocalizedMessage(), e.getCause() );
         }
     }

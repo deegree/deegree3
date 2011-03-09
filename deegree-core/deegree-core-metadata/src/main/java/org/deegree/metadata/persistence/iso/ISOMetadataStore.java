@@ -55,7 +55,7 @@ import javax.xml.stream.XMLStreamReader;
 
 import org.apache.axiom.om.OMElement;
 import org.deegree.commons.config.DeegreeWorkspace;
-import org.deegree.commons.config.WorkspaceInitializationException;
+import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.jdbc.ConnectionManager;
 import org.deegree.commons.jdbc.ConnectionManager.Type;
 import org.deegree.commons.utils.JDBCUtils;
@@ -202,7 +202,7 @@ public class ISOMetadataStore implements MetadataStore {
      */
     @Override
     public void init( DeegreeWorkspace workspace )
-                            throws WorkspaceInitializationException {
+                            throws ResourceInitException {
 
         LOG.debug( "init" );
         // lockManager = new DefaultLockManager( this, "LOCK_DB" );
@@ -225,7 +225,7 @@ public class ISOMetadataStore implements MetadataStore {
 
             } catch ( SQLException e ) {
                 LOG.debug( e.getMessage(), e );
-                throw new WorkspaceInitializationException( e.getMessage(), e );
+                throw new ResourceInitException( e.getMessage(), e );
             } finally {
                 close( conn );
             }

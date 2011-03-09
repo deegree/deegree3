@@ -62,7 +62,7 @@ import javax.xml.namespace.QName;
 
 import org.deegree.commons.annotations.LoggingNotes;
 import org.deegree.commons.config.DeegreeWorkspace;
-import org.deegree.commons.config.WorkspaceInitializationException;
+import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.commons.utils.Pair;
 import org.deegree.commons.utils.CollectionUtils.Mapper;
@@ -166,7 +166,7 @@ public class FeatureLayer extends Layer {
         datastore = new ShapeFeatureStore( file, null, null, null, null, null, true, null );
         try {
             datastore.init( null );
-        } catch ( WorkspaceInitializationException e ) {
+        } catch ( ResourceInitException e ) {
             LOG.error( "Layer could not be loaded, because the error '{}' occurred while loading the shape file.",
                        e.getLocalizedMessage() );
             LOG.trace( "Stack trace:", e );

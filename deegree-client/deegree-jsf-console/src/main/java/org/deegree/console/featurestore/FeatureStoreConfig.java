@@ -56,6 +56,7 @@ import javax.faces.event.ActionEvent;
 
 import org.deegree.client.core.utils.SQLExecution;
 import org.deegree.commons.config.DeegreeWorkspace;
+import org.deegree.console.WorkspaceBean;
 import org.deegree.feature.persistence.FeatureStore;
 import org.deegree.feature.persistence.FeatureStoreManager;
 import org.deegree.feature.persistence.query.Query;
@@ -82,12 +83,11 @@ public class FeatureStoreConfig implements Serializable {
 
     private FeatureStoreManager getFeatureStoreManager() {
         ExternalContext ctx = FacesContext.getCurrentInstance().getExternalContext();
-        DeegreeWorkspace ws = (DeegreeWorkspace) ctx.getApplicationMap().get( "workspace" );
+        DeegreeWorkspace ws = ((WorkspaceBean) ctx.getApplicationMap().get( "workspace" )).getActiveWorkspace();
         return ws.getSubsystemManager( FeatureStoreManager.class );
     }
 
     public boolean getSql() {
-        FacesContext.getCurrentInstance().getExternalContext().getApplicationMap().get( "workspace" );
         FeatureStore fs = getFeatureStoreManager().get( getId() );        
         return fs != null && fs instanceof SQLFeatureStore;
     }

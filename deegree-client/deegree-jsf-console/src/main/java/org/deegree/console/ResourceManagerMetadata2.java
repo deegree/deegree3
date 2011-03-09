@@ -70,6 +70,8 @@ public class ResourceManagerMetadata2 implements Comparable<ResourceManagerMetad
 
     private ResourceManager mgr;
 
+    private Map<String, ResourceProvider> nameToProvider = new HashMap<String, ResourceProvider>();
+
     private List<ResourceProvider> providers = new ArrayList<ResourceProvider>();
 
     private List<String> providerNames = new ArrayList<String>();
@@ -81,6 +83,7 @@ public class ResourceManagerMetadata2 implements Comparable<ResourceManagerMetad
                 ResourceProviderMetadata providerMd = ResourceProviderMetadata.getMetadata( provider );
                 providers.add( provider );
                 providerNames.add( providerMd.getName() );
+                nameToProvider.put( providerMd.getName(), provider );
             }
         } else {
             providers = Collections.emptyList();
@@ -135,12 +138,20 @@ public class ResourceManagerMetadata2 implements Comparable<ResourceManagerMetad
         return mgr;
     }
 
+    public ResourceProvider getProvider( String name ) {
+        return nameToProvider.get( name );
+    }
+
     public List<ResourceProvider> getProviders() {
         return providers;
     }
 
     public List<String> getProviderNames() {
         return providerNames;
+    }
+
+    public boolean getMultipleProviders() {
+        return providers.size() > 1;
     }
 
     @Override

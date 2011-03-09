@@ -40,7 +40,7 @@ import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.DefaultResourceManagerMetadata;
 import org.deegree.commons.config.ResourceManager;
 import org.deegree.commons.config.ResourceManagerMetadata;
-import org.deegree.commons.config.WorkspaceInitializationException;
+import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.jdbc.ConnectionManager;
 import org.deegree.commons.utils.ProxyUtils;
 
@@ -63,7 +63,7 @@ public class MetadataStoreManager extends AbstractResourceManager<MetadataStore>
 
     @Override
     public void startup( DeegreeWorkspace workspace )
-                            throws WorkspaceInitializationException {
+                            throws ResourceInitException {
         metadata = new MetadataStoreManagerMetadata( workspace );
         super.startup( workspace );
     }

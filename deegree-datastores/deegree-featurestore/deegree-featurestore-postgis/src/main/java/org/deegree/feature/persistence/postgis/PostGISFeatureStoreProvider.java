@@ -39,7 +39,7 @@ import java.net.URL;
 
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceManager;
-import org.deegree.commons.config.WorkspaceInitializationException;
+import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.jdbc.ConnectionManager;
 import org.deegree.feature.persistence.FeatureStoreProvider;
 import org.slf4j.Logger;
@@ -77,7 +77,7 @@ public class PostGISFeatureStoreProvider implements FeatureStoreProvider {
 
     @Override
     public PostGISFeatureStore create( URL configURL )
-                            throws WorkspaceInitializationException {
+                            throws ResourceInitException {
         return new PostGISFeatureStore( configURL, workspace );
     }
 

@@ -37,7 +37,7 @@ package org.deegree.metadata.persistence.iso.testclasses;
 
 import java.util.List;
 
-import org.deegree.commons.config.WorkspaceInitializationException;
+import org.deegree.commons.config.ResourceInitException;
 import org.deegree.metadata.persistence.MetadataInspectorException;
 import org.deegree.metadata.persistence.MetadataStoreTransaction;
 import org.deegree.metadata.persistence.iso.ISOMetadataStore;
@@ -71,12 +71,12 @@ public class InspectorRITest extends AbstractISOTest {
      * 
      * @throws MetadataStoreException
      * @throws MetadataInspectorException
-     * @throws WorkspaceInitializationException
+     * @throws ResourceInitException
      */
 
     @Test
     public void testResourceIdentifierGenerateFALSE_With_ID_Attrib_RSID_Equals()
-                            throws MetadataStoreException, MetadataInspectorException, WorkspaceInitializationException {
+                            throws MetadataStoreException, MetadataInspectorException, ResourceInitException {
         LOG.info( "START Test: test if the configuration inserts the right ResourceIdentifier-combination while there is no automatic generating." );
 
         if ( jdbcURL != null && jdbcUser != null && jdbcPass != null ) {
@@ -108,11 +108,11 @@ public class InspectorRITest extends AbstractISOTest {
      * 
      * @throws MetadataStoreException
      * @throws MetadataInspectorException
-     * @throws WorkspaceInitializationException
+     * @throws ResourceInitException
      */
     @Test
     public void testResourceIdentifierGenerateTRUE()
-                            throws MetadataStoreException, MetadataInspectorException, WorkspaceInitializationException {
+                            throws MetadataStoreException, MetadataInspectorException, ResourceInitException {
         LOG.info( "START Test: test for automaticaly generated ResourceIdentifier-combination." );
 
         if ( jdbcURL != null && jdbcUser != null && jdbcPass != null ) {
@@ -142,11 +142,11 @@ public class InspectorRITest extends AbstractISOTest {
      * 
      * @throws MetadataStoreException
      * @throws MetadataInspectorException
-     * @throws WorkspaceInitializationException
+     * @throws ResourceInitException
      */
     @Test
     public void testResourceIdentifierGenerateFALSE_NO_RS_ID()
-                            throws MetadataStoreException, MetadataInspectorException, WorkspaceInitializationException {
+                            throws MetadataStoreException, MetadataInspectorException, ResourceInitException {
         LOG.info( "START Test: test if the configuration throws an exception because of the wrong ResourceIdentifier-combination while there is no automatic generating." );
 
         if ( jdbcURL != null && jdbcUser != null && jdbcPass != null ) {
@@ -175,11 +175,11 @@ public class InspectorRITest extends AbstractISOTest {
      * 
      * @throws MetadataStoreException
      * @throws MetadataInspectorException
-     * @throws WorkspaceInitializationException
+     * @throws ResourceInitException
      */
     @Test(expected = MetadataInspectorException.class)
     public void testResourceIdentifierGenerateFALSE_With_ID_Attrib()
-                            throws MetadataStoreException, MetadataInspectorException, WorkspaceInitializationException {
+                            throws MetadataStoreException, MetadataInspectorException, ResourceInitException {
         LOG.info( "START Test: test if the configuration throws an exception because of the wrong ResourceIdentifier-combination while there is no automatic generating." );
         MetadataStoreTransaction ta = null;
         if ( jdbcURL != null && jdbcUser != null && jdbcPass != null ) {
@@ -201,11 +201,11 @@ public class InspectorRITest extends AbstractISOTest {
      * 
      * @throws MetadataStoreException
      * @throws MetadataInspectorException
-     * @throws WorkspaceInitializationException
+     * @throws ResourceInitException
      */
     @Test(expected = MetadataInspectorException.class)
     public void testResourceIdentifierGenerateFALSE_With_ID_UUID_Attrib()
-                            throws MetadataStoreException, MetadataInspectorException, WorkspaceInitializationException {
+                            throws MetadataStoreException, MetadataInspectorException, ResourceInitException {
         LOG.info( "START Test: test if the configuration throws an exception because of the wrong ResourceIdentifier-combination while there is no automatic generating." );
         MetadataStoreTransaction ta = null;
         if ( jdbcURL != null && jdbcUser != null && jdbcPass != null ) {
@@ -227,11 +227,11 @@ public class InspectorRITest extends AbstractISOTest {
      * 
      * @throws MetadataStoreException
      * @throws MetadataInspectorException
-     * @throws WorkspaceInitializationException
+     * @throws ResourceInitException
      */
     @Test(expected = MetadataInspectorException.class)
     public void testResourceIdentifierGenerateFALSE_With_ID_Attrib_RSID_NOT_Equals_NO_UUID()
-                            throws MetadataStoreException, MetadataInspectorException, WorkspaceInitializationException {
+                            throws MetadataStoreException, MetadataInspectorException, ResourceInitException {
         MetadataStoreTransaction ta = null;
         if ( jdbcURL != null && jdbcUser != null && jdbcPass != null ) {
             store = (ISOMetadataStore) new ISOMetadataStoreProvider().create( TstConstants.configURL_RS_GEN_FALSE );
@@ -252,11 +252,11 @@ public class InspectorRITest extends AbstractISOTest {
      * 
      * @throws MetadataStoreException
      * @throws MetadataInspectorException
-     * @throws WorkspaceInitializationException
+     * @throws ResourceInitException
      */
     @Test(expected = MetadataInspectorException.class)
     public void testResourceIdentifierGenerateFALSE_With_ID_Attrib_RSID_NOT_Equals()
-                            throws MetadataStoreException, MetadataInspectorException, WorkspaceInitializationException {
+                            throws MetadataStoreException, MetadataInspectorException, ResourceInitException {
         LOG.info( "START Test: test if the configuration throws an exception because of the wrong ResourceIdentifier-combination while there is no automatic generating." );
         MetadataStoreTransaction ta = null;
         if ( jdbcURL != null && jdbcUser != null && jdbcPass != null ) {

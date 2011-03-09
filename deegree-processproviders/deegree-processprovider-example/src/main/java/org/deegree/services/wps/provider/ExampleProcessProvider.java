@@ -43,7 +43,7 @@ import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
 
 import org.deegree.commons.config.DeegreeWorkspace;
-import org.deegree.commons.config.WorkspaceInitializationException;
+import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.tom.ows.CodeType;
 import org.deegree.process.jaxb.java.LanguageStringType;
 import org.deegree.process.jaxb.java.LiteralOutputDefinition;
@@ -123,7 +123,7 @@ public class ExampleProcessProvider implements ProcessProvider {
 
     @Override
     public void init( DeegreeWorkspace workspace )
-                            throws WorkspaceInitializationException {
+                            throws ResourceInitException {
         for ( WPSProcess process : idToProcess.values() ) {
             process.getProcesslet().init();
         }

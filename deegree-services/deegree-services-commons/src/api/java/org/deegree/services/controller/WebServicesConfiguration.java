@@ -68,7 +68,7 @@ import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceManager;
 import org.deegree.commons.config.ResourceManagerMetadata;
 import org.deegree.commons.config.ResourceProvider;
-import org.deegree.commons.config.WorkspaceInitializationException;
+import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.jdbc.ConnectionManager;
 import org.deegree.commons.utils.ProxyUtils;
 import org.deegree.commons.xml.jaxb.JAXBUtils;
@@ -154,7 +154,7 @@ public class WebServicesConfiguration extends AbstractBasicResourceManager imple
     }
 
     public void startup( DeegreeWorkspace workspace )
-                            throws WorkspaceInitializationException {
+                            throws ResourceInitException {
         this.workspace = workspace;
         updateDependencies( workspace );
 
@@ -186,7 +186,7 @@ public class WebServicesConfiguration extends AbstractBasicResourceManager imple
         } catch ( Exception e ) {
             String msg = "Could not unmarshall frontcontroller configuration: " + e.getMessage();
             LOG.error( msg );
-            throw new WorkspaceInitializationException( msg, e );
+            throw new ResourceInitException( msg, e );
         }
         if ( !main.exists() ) {
             LOG.debug( "No 'services/main.xml' file, assuming defaults." );
@@ -628,14 +628,14 @@ public class WebServicesConfiguration extends AbstractBasicResourceManager imple
 
     @Override
     public void activate( String id )
-                            throws WorkspaceInitializationException {
+                            throws ResourceInitException {
         // TODO Auto-generated method stub
 
     }
 
     @Override
     public void deactivate( String id )
-                            throws WorkspaceInitializationException {
+                            throws ResourceInitException {
         // TODO Auto-generated method stub
 
     }

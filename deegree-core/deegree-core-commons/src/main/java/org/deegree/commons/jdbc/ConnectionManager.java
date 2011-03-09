@@ -67,7 +67,7 @@ import org.deegree.commons.config.ResourceManagerMetadata;
 import org.deegree.commons.config.ResourceProvider;
 import org.deegree.commons.config.ResourceState;
 import org.deegree.commons.config.ResourceState.StateType;
-import org.deegree.commons.config.WorkspaceInitializationException;
+import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.i18n.Messages;
 import org.deegree.commons.jdbc.jaxb.JDBCConnection;
 import org.deegree.commons.utils.ProxyUtils;
@@ -137,7 +137,7 @@ public class ConnectionManager extends AbstractBasicResourceManager implements R
                     addConnection( fsConfigFile.toURI().toURL(), connId, workspace );
                     idToState.put( connId, new ResourceState( connId, fsConfigFile, this, init_ok, null ) );
                 } catch ( Throwable t ) {
-                    WorkspaceInitializationException e = new WorkspaceInitializationException( t.getMessage(), t );
+                    ResourceInitException e = new ResourceInitException( t.getMessage(), t );
                     idToState.put( connId, new ResourceState( connId, fsConfigFile, this, init_error, e ) );
                     LOG.error( "Error initializing JDBC connection pool: " + t.getMessage(), t );
                 }
@@ -342,7 +342,7 @@ public class ConnectionManager extends AbstractBasicResourceManager implements R
             idToState.remove( id );
             try {
                 deactivate( id );
-            } catch ( WorkspaceInitializationException e ) {
+            } catch ( ResourceInitException e ) {
                 // TODO
             }
             if ( state.getConfigLocation().delete() ) {
@@ -360,7 +360,7 @@ public class ConnectionManager extends AbstractBasicResourceManager implements R
 
     @Override
     public void activate( String id )
-                            throws WorkspaceInitializationException {
+                            throws ResourceInitException {
         ResourceState state = getState( id );
         if ( state != null && state.getType() == deactivated ) {
             File oldFile = state.getConfigLocation();
@@ -372,7 +372,7 @@ public class ConnectionManager extends AbstractBasicResourceManager implements R
                 addConnection( newFile.toURI().toURL(), id, workspace );
                 idToState.put( id, new ResourceState( id, newFile, this, init_ok, null ) );
             } catch ( Throwable t ) {
-                WorkspaceInitializationException e = new WorkspaceInitializationException( t.getMessage(), t );
+                ResourceInitException e = new ResourceInitException( t.getMessage(), t );
                 idToState.put( id, new ResourceState( id, newFile, this, init_error, e ) );
                 LOG.error( "Error initializing JDBC connection pool: " + t.getMessage(), t );
             }
@@ -381,7 +381,7 @@ public class ConnectionManager extends AbstractBasicResourceManager implements R
 
     @Override
     public void deactivate( String id )
-                            throws WorkspaceInitializationException {
+                            throws ResourceInitException {
         ResourceState state = getState( id );
         if ( state != null && state.getType() != deactivated ) {
             File oldFile = state.getConfigLocation();

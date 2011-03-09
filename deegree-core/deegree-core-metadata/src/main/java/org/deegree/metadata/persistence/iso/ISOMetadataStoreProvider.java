@@ -51,7 +51,7 @@ import javax.xml.bind.Unmarshaller;
 
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceManager;
-import org.deegree.commons.config.WorkspaceInitializationException;
+import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.jdbc.ConnectionManager;
 import org.deegree.commons.utils.ProxyUtils;
 import org.deegree.filter.function.FunctionManager;
@@ -133,7 +133,7 @@ public class ISOMetadataStoreProvider implements MetadataStoreProvider {
     }
 
     private ISOMetadataStoreConfig getConfig( URL configURL )
-                            throws WorkspaceInitializationException {
+                            throws ResourceInitException {
 
         ISOMetadataStoreConfig config = null;
         if ( configURL == null ) {
@@ -152,7 +152,7 @@ public class ISOMetadataStoreProvider implements MetadataStoreProvider {
             } catch ( JAXBException e ) {
                 String msg = Messages.getMessage( "ERROR_IN_CONFIG_FILE", configURL, e.getMessage() );
                 LOG.error( msg );
-                throw new WorkspaceInitializationException( msg, e );
+                throw new ResourceInitException( msg, e );
             }
         }
         return config;
@@ -160,7 +160,7 @@ public class ISOMetadataStoreProvider implements MetadataStoreProvider {
     }
 
     public MetadataStore create( URL configUrl )
-                            throws WorkspaceInitializationException {
+                            throws ResourceInitException {
         return new ISOMetadataStore( getConfig( configUrl ) );
     }
 

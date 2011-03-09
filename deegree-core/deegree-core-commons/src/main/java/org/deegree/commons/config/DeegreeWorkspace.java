@@ -60,7 +60,7 @@ import org.slf4j.Logger;
  * deegree resources.
  * 
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
- * @author <a href="mailto:scneider@lat-lon.de">Markus Schneider</a>
+ * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
@@ -322,10 +322,10 @@ public class DeegreeWorkspace {
     /**
      * Initializes all managed configurations.
      * 
-     * @throws WorkspaceInitializationException
+     * @throws ResourceInitException
      */
     public synchronized void initAll()
-                            throws WorkspaceInitializationException {
+                            throws ResourceInitException {
         for ( ResourceManager m : managers ) {
             m.startup( this );
         }
@@ -386,5 +386,4 @@ public class DeegreeWorkspace {
             }
         }
     }
-
 }

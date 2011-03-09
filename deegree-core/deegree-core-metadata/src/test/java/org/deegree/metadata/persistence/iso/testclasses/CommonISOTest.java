@@ -54,7 +54,7 @@ import javax.xml.stream.XMLStreamReader;
 
 import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.xpath.AXIOMXPath;
-import org.deegree.commons.config.WorkspaceInitializationException;
+import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.commons.xml.CommonNamespaces;
 import org.deegree.commons.xml.NamespaceBindings;
@@ -106,7 +106,7 @@ public class CommonISOTest extends AbstractISOTest {
     @Test
     public void testInsert()
                             throws MetadataStoreException, FactoryConfigurationError, IOException,
-                            MetadataInspectorException, WorkspaceInitializationException {
+                            MetadataInspectorException, ResourceInitException {
         LOG.info( "START Test: testInsert" );
 
         if ( jdbcURL != null && jdbcUser != null && jdbcPass != null ) {
@@ -156,7 +156,7 @@ public class CommonISOTest extends AbstractISOTest {
 
     @Test
     public void testInsertMetametadata()
-                            throws MetadataStoreException, FactoryConfigurationError, WorkspaceInitializationException {
+                            throws MetadataStoreException, FactoryConfigurationError, ResourceInitException {
         LOG.info( "START Test: testInsertMetametadata" );
 
         if ( jdbcURL != null && jdbcUser != null && jdbcPass != null ) {
@@ -180,7 +180,7 @@ public class CommonISOTest extends AbstractISOTest {
     @Test
     public void testNamespaces()
                             throws MetadataStoreException, XMLStreamException, FactoryConfigurationError, IOException,
-                            MetadataInspectorException, WorkspaceInitializationException {
+                            MetadataInspectorException, ResourceInitException {
         LOG.info( "START Test: testNamespaces" );
 
         if ( jdbcURL != null && jdbcUser != null && jdbcPass != null ) {
@@ -228,12 +228,12 @@ public class CommonISOTest extends AbstractISOTest {
      * @throws FactoryConfigurationError
      * @throws IOException
      * @throws MetadataInspectorException
-     * @throws WorkspaceInitializationException
+     * @throws ResourceInitException
      */
     @Test
     public void testDelete()
                             throws MetadataStoreException, XMLStreamException, FactoryConfigurationError, IOException,
-                            MetadataInspectorException, WorkspaceInitializationException {
+                            MetadataInspectorException, ResourceInitException {
         LOG.info( "START Test: testDelete" );
 
         if ( jdbcURL != null && jdbcUser != null && jdbcPass != null ) {
@@ -284,12 +284,12 @@ public class CommonISOTest extends AbstractISOTest {
      * @throws XMLStreamException
      * @throws IOException
      * @throws MetadataInspectorException
-     * @throws WorkspaceInitializationException
+     * @throws ResourceInitException
      */
     @Test
     public void testOutputBrief()
                             throws MetadataStoreException, XMLStreamException, FactoryConfigurationError, IOException,
-                            MetadataInspectorException, WorkspaceInitializationException {
+                            MetadataInspectorException, ResourceInitException {
         LOG.info( "START Test: is output ISO brief? " );
 
         if ( jdbcURL != null && jdbcUser != null && jdbcPass != null ) {
@@ -332,13 +332,13 @@ public class CommonISOTest extends AbstractISOTest {
      * @throws XMLStreamException
      * @throws IOException
      * @throws MetadataInspectorException
-     * @throws WorkspaceInitializationException
+     * @throws ResourceInitException
      */
 
     @Test
     public void testOutputSummary()
                             throws MetadataStoreException, XMLStreamException, FactoryConfigurationError, IOException,
-                            MetadataInspectorException, WorkspaceInitializationException {
+                            MetadataInspectorException, ResourceInitException {
         LOG.info( "START Test: is output ISO summary? " );
 
         if ( jdbcURL != null && jdbcUser != null && jdbcPass != null ) {
@@ -374,7 +374,7 @@ public class CommonISOTest extends AbstractISOTest {
     @Test
     public void testVariousElements()
                             throws MetadataStoreException, FactoryConfigurationError, MetadataInspectorException,
-                            WorkspaceInitializationException {
+                            ResourceInitException {
         LOG.info( "START Test: test various elements for one metadataRecord " );
 
         if ( jdbcURL != null && jdbcUser != null && jdbcPass != null ) {
@@ -462,7 +462,7 @@ public class CommonISOTest extends AbstractISOTest {
     @Test
     public void testUpdateString()
                             throws MetadataStoreException, MetadataInspectorException, FactoryConfigurationError,
-                            WorkspaceInitializationException {
+                            ResourceInitException {
         String idToUpdate = prepareUpdate();
         if ( idToUpdate == null ) {
             return;
@@ -510,7 +510,7 @@ public class CommonISOTest extends AbstractISOTest {
     @Test
     public void testUpdateStringWithCQP()
                             throws MetadataStoreException, MetadataInspectorException, FactoryConfigurationError,
-                            WorkspaceInitializationException {
+                            ResourceInitException {
         String idToUpdate = prepareUpdate();
         if ( idToUpdate == null ) {
             return;
@@ -560,7 +560,7 @@ public class CommonISOTest extends AbstractISOTest {
     @Test
     public void testUpdateOMElementReplace()
                             throws FactoryConfigurationError, MetadataStoreException, MetadataInspectorException,
-                            JaxenException, WorkspaceInitializationException {
+                            JaxenException, ResourceInitException {
         String idToUpdate = prepareUpdate();
         if ( idToUpdate == null ) {
             return;
@@ -616,7 +616,7 @@ public class CommonISOTest extends AbstractISOTest {
     @Test
     public void testUpdateOMElementRemove()
                             throws FactoryConfigurationError, MetadataStoreException, MetadataInspectorException,
-                            WorkspaceInitializationException {
+                            ResourceInitException {
         String idToUpdate = prepareUpdate();
         if ( idToUpdate == null ) {
             return;
@@ -674,7 +674,7 @@ public class CommonISOTest extends AbstractISOTest {
     @Test
     public void updateCompleteWithoutConstraint()
                             throws MetadataStoreException, MetadataInspectorException, JaxenException,
-                            WorkspaceInitializationException {
+                            ResourceInitException {
         String idToUpdate = prepareUpdate();
         if ( idToUpdate == null ) {
             return;
@@ -724,7 +724,7 @@ public class CommonISOTest extends AbstractISOTest {
     @Test
     public void updateCompleteWithConstraint()
                             throws MetadataStoreException, MetadataInspectorException, JaxenException,
-                            WorkspaceInitializationException {
+                            ResourceInitException {
         String idToUpdate = prepareUpdate();
         if ( idToUpdate == null ) {
             return;
@@ -773,7 +773,7 @@ public class CommonISOTest extends AbstractISOTest {
     }
 
     public String prepareUpdate()
-                            throws MetadataStoreException, MetadataInspectorException, WorkspaceInitializationException {
+                            throws MetadataStoreException, MetadataInspectorException, ResourceInitException {
         LOG.info( "START Test: testUpdate" );
 
         if ( jdbcURL != null && jdbcUser != null && jdbcPass != null ) {

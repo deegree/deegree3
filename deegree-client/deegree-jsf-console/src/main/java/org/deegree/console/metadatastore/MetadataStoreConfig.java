@@ -54,10 +54,10 @@ import javax.faces.event.ActionEvent;
 import org.deegree.client.core.utils.SQLExecution;
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.jdbc.ConnectionManager.Type;
+import org.deegree.console.WorkspaceBean;
 import org.deegree.metadata.persistence.MetadataStore;
 import org.deegree.metadata.persistence.MetadataStoreManager;
 import org.deegree.metadata.persistence.iso.ISOMetadataStore;
-import org.deegree.metadata.persistence.iso.ISOMetadataStoreProvider;
 import org.deegree.protocol.csw.MetadataStoreException;
 
 /**
@@ -78,7 +78,7 @@ public class MetadataStoreConfig implements Serializable {
 
     private MetadataStoreManager getMetadataStoreManager() {
         ExternalContext ctx = FacesContext.getCurrentInstance().getExternalContext();
-        DeegreeWorkspace ws = (DeegreeWorkspace) ctx.getApplicationMap().get( "workspace" );
+        DeegreeWorkspace ws = ( (WorkspaceBean) ctx.getApplicationMap().get( "workspace" ) ).getActiveWorkspace();
         return ws.getSubsystemManager( MetadataStoreManager.class );
     }
 

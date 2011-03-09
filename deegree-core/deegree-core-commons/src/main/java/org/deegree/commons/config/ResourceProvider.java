@@ -47,9 +47,9 @@ import java.net.URL;
 public interface ResourceProvider {
 
     /**
-     * Returns the namespace for configurations documents that this provider handles.
+     * Returns the namespace for configuration documents that this provider handles.
      * 
-     * @return the namespace for configurations documents, never <code>null</code>
+     * @return the namespace for configuration documents, never <code>null</code>
      */
     String getConfigNamespace();
 

@@ -71,7 +71,7 @@ import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.PosixParser;
 import org.deegree.commons.annotations.Tool;
 import org.deegree.commons.config.DeegreeWorkspace;
-import org.deegree.commons.config.WorkspaceInitializationException;
+import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.jdbc.ConnectionManager;
 import org.deegree.commons.tools.CommandUtils;
 import org.deegree.commons.utils.Pair;
@@ -937,7 +937,7 @@ public class InteractiveWPVS extends GLCanvas implements GLEventListener, KeyLis
         }
         try {
             workspace.initAll();
-        } catch ( WorkspaceInitializationException e ) {
+        } catch ( ResourceInitException e ) {
             LOG.error( "Initialization failed: {}", e.getLocalizedMessage() );
             LOG.trace( "Stack trace: ", e );
             return null;

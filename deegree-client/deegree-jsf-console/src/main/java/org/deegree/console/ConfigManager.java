@@ -91,17 +91,6 @@ public class ConfigManager {
     @Setter
     private String newConfigId;
 
-    // @Getter
-    // private Config proxyConfig;
-
-    @Getter
-    private Config metadataConfig;
-
-    @Getter
-    private Config mainConfig;
-
-    private boolean modified;
-
     public List<ResourceManagerMetadata2> getResourceManagers() {
         List<ResourceManagerMetadata2> rmMetadata = new ArrayList<ResourceManagerMetadata2>();
         for ( ResourceManager mgr : getServiceWorkspace().getResourceManagers() ) {
@@ -134,45 +123,40 @@ public class ConfigManager {
 
     public void setNewConfigType( String newConfigType ) {
         this.newConfigType = newConfigType;
-        for ( ResourceProvider p : currentResourceManager.getProviders() ) {
-            if ( p.getConfigNamespace().endsWith( newConfigType ) ) {
-                ResourceProviderMetadata md = ResourceProviderMetadata.getMetadata( p );
-                newConfigTypeTemplates = new LinkedList<String>( md.getExamples().keySet() );
-            }
+        ResourceProvider provider = currentResourceManager.getProvider( newConfigType );
+        if ( provider == null ) {
+            provider = currentResourceManager.getProviders().get( 0 );
         }
+        ResourceProviderMetadata md = ResourceProviderMetadata.getMetadata( provider );
+        newConfigTypeTemplates = new LinkedList<String>( md.getExamples().keySet() );
     }
 
     public String startWizard() {
 
         String nextView = "/console/jsf/wizard";
-
-        ResourceProvider rp = null;
-        for ( ResourceProvider p : currentResourceManager.getProviders() ) {
-            if ( p.getConfigNamespace().endsWith( newConfigType ) ) {
-                rp = p;
-            }
+        ResourceProvider provider = currentResourceManager.getProvider( newConfigType );
+        if ( provider == null ) {
+            provider = currentResourceManager.getProviders().get( 0 );
         }
-        if ( rp != null ) {
-            ResourceProviderMetadata md = ResourceProviderMetadata.getMetadata( rp );
-            nextView = md.getConfigWizardView();
-        }
+        ResourceProviderMetadata md = ResourceProviderMetadata.getMetadata( provider );
+        nextView = md.getConfigWizardView();
         return nextView;
     }
 
     public String createConfig() {
 
         ResourceManager manager = currentResourceManager.getManager();
+        ResourceProvider provider = currentResourceManager.getProvider( newConfigType );
+        if ( provider == null ) {
+            provider = currentResourceManager.getProviders().get( 0 );
+        }
+        ResourceProviderMetadata md = ResourceProviderMetadata.getMetadata( provider );
 
         // lookup template
         URL templateURL = null;
-        for ( ResourceProvider p : currentResourceManager.getProviders() ) {
-            if ( p.getConfigNamespace().endsWith( newConfigType ) ) {
-                if ( newConfigTypeTemplate != null ) {
-                    ResourceProviderMetadata md = ResourceProviderMetadata.getMetadata( p );
-                    templateURL = md.getExamples().get( newConfigTypeTemplate ).getContentLocation();
-                    LOG.info( "Found template URL: " + templateURL );
-                }
-            }
+        if ( newConfigTypeTemplate != null ) {
+            templateURL = md.getExamples().get( newConfigTypeTemplate ).getContentLocation();
+            LOG.info( "Found template URL: " + templateURL );
         }
 
         // let the resource manager do the dirty work
