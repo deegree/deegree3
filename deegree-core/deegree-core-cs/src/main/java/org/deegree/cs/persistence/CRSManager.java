@@ -36,7 +36,6 @@
 package org.deegree.cs.persistence;
 
 import static java.lang.System.currentTimeMillis;
-import static org.deegree.commons.config.ResourceState.StateType.init_ok;
 
 import java.io.File;
 import java.io.FilenameFilter;
@@ -53,11 +52,11 @@ import java.util.ServiceLoader;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamReader;
 
+import org.deegree.commons.config.AbstractBasicResourceManager;
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceManager;
 import org.deegree.commons.config.ResourceManagerMetadata;
 import org.deegree.commons.config.ResourceProvider;
-import org.deegree.commons.config.ResourceState;
 import org.deegree.commons.config.WorkspaceInitializationException;
 import org.deegree.commons.tom.Object;
 import org.deegree.commons.tom.ReferenceResolver;
@@ -85,7 +84,7 @@ import org.slf4j.LoggerFactory;
  * 
  * @version $Revision: $, $Date: $
  */
-public class CRSManager implements ResourceManager {
+public class CRSManager extends AbstractBasicResourceManager implements ResourceManager {
 
     private static boolean loadDefault = true;
 
@@ -743,11 +742,28 @@ public class CRSManager implements ResourceManager {
     }
 
     @Override
-    public ResourceState getState( String id ) {
-        if ( get( id ) != null ) {
-            return new ResourceState( init_ok, null );
-        }
-        // TODO
+    public void activate( String id )
+                            throws WorkspaceInitializationException {
+        // TODO Auto-generated method stub
+        
+    }
+
+    @Override
+    public void deactivate( String id )
+                            throws WorkspaceInitializationException {
+        // TODO Auto-generated method stub
+        
+    }
+
+    @Override
+    protected ResourceProvider getProvider( File file ) {
+        // TODO Auto-generated method stub
         return null;
+    }
+
+    @Override
+    protected void remove( String id ) {
+        // TODO Auto-generated method stub
+        
     }
 }

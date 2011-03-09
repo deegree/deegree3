@@ -64,5 +64,4 @@ public interface ExtendedResourceProvider<T extends Resource> extends ResourcePr
      * @return dependencies as resource manager classes, never null
      */
     Class<? extends ResourceManager>[] getDependencies();
-
 }

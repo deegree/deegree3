@@ -37,13 +37,17 @@ package org.deegree.filter.function;
 
 import static org.deegree.commons.config.ResourceState.StateType.init_ok;
 
+import java.io.File;
+import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.ServiceLoader;
 
+import org.deegree.commons.config.AbstractBasicResourceManager;
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceManager;
 import org.deegree.commons.config.ResourceManagerMetadata;
+import org.deegree.commons.config.ResourceProvider;
 import org.deegree.commons.config.ResourceState;
 import org.deegree.commons.config.WorkspaceInitializationException;
 import org.deegree.commons.utils.ProxyUtils;
@@ -59,7 +63,7 @@ import org.slf4j.LoggerFactory;
  * 
  * @version $Revision$, $Date$
  */
-public class FunctionManager implements ResourceManager {
+public class FunctionManager extends AbstractBasicResourceManager implements ResourceManager {
 
     private static final Logger LOG = LoggerFactory.getLogger( FunctionManager.class );
 
@@ -126,10 +130,30 @@ public class FunctionManager implements ResourceManager {
                             throws WorkspaceInitializationException {
         functionLoader = ServiceLoader.load( FunctionProvider.class, workspace.getModuleClassLoader() );
     }
-    
+
     @Override
-    public ResourceState getState( String id ) {
-        // TODO
+    public void activate( String id )
+                            throws WorkspaceInitializationException {
+        // TODO Auto-generated method stub
+        
+    }
+
+    @Override
+    public void deactivate( String id )
+                            throws WorkspaceInitializationException {
+        // TODO Auto-generated method stub
+        
+    }
+
+    @Override
+    protected ResourceProvider getProvider( File file ) {
+        // TODO Auto-generated method stub
         return null;
+    }
+
+    @Override
+    protected void remove( String id ) {
+        // TODO Auto-generated method stub
+        
     }
 }

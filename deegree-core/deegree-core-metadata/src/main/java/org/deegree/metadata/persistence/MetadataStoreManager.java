@@ -35,7 +35,6 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.metadata.persistence;
 
-import org.deegree.commons.annotations.ConsoleManaged;
 import org.deegree.commons.config.AbstractResourceManager;
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.DefaultResourceManagerMetadata;
@@ -69,7 +68,6 @@ public class MetadataStoreManager extends AbstractResourceManager<MetadataStore>
         super.startup( workspace );
     }
 
-    @ConsoleManaged(startPage = "/console/metadatastore/buttons")
     static class MetadataStoreManagerMetadata extends DefaultResourceManagerMetadata<MetadataStore> {
         public MetadataStoreManagerMetadata( DeegreeWorkspace workspace ) {
             super( "metadata stores", "datasources/metadata/", MetadataStoreProvider.class, workspace );

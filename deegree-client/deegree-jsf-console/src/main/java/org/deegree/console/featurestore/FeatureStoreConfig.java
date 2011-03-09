@@ -88,8 +88,8 @@ public class FeatureStoreConfig implements Serializable {
 
     public boolean getSql() {
         FacesContext.getCurrentInstance().getExternalContext().getApplicationMap().get( "workspace" );
-
-        return getFeatureStoreManager().get( getId() ) instanceof SQLFeatureStore;
+        FeatureStore fs = getFeatureStoreManager().get( getId() );        
+        return fs != null && fs instanceof SQLFeatureStore;
     }
 
     public String createTables() {

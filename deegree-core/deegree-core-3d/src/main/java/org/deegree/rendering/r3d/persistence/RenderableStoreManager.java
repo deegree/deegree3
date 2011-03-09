@@ -39,6 +39,7 @@ import static java.io.File.separator;
 
 import java.io.File;
 import java.io.FilenameFilter;
+import java.io.InputStream;
 import java.net.URL;
 import java.util.Collection;
 import java.util.Collections;
@@ -52,11 +53,13 @@ import java.util.concurrent.ConcurrentHashMap;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamReader;
 
+import org.deegree.commons.config.AbstractBasicResourceManager;
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceManager;
 import org.deegree.commons.config.ResourceManagerMetadata;
 import org.deegree.commons.config.ResourceProvider;
 import org.deegree.commons.config.ResourceState;
+import org.deegree.commons.config.WorkspaceInitializationException;
 import org.deegree.commons.jdbc.ConnectionManager;
 import org.deegree.commons.utils.FileUtils;
 import org.deegree.commons.utils.ProxyUtils;
@@ -73,7 +76,7 @@ import org.slf4j.LoggerFactory;
  * 
  * @version $Revision$, $Date$
  */
-public class RenderableStoreManager implements ResourceManager {
+public class RenderableStoreManager extends AbstractBasicResourceManager implements ResourceManager {
 
     private static final Logger LOG = LoggerFactory.getLogger( RenderableStoreManager.class );
 
@@ -245,8 +248,28 @@ public class RenderableStoreManager implements ResourceManager {
     }
 
     @Override
-    public ResourceState getState( String id ) {
-        // TODO
+    public void activate( String id )
+                            throws WorkspaceInitializationException {
+        // TODO Auto-generated method stub
+        
+    }
+
+    @Override
+    public void deactivate( String id )
+                            throws WorkspaceInitializationException {
+        // TODO Auto-generated method stub
+        
+    }
+
+    @Override
+    protected ResourceProvider getProvider( File file ) {
+        // TODO Auto-generated method stub
         return null;
+    }
+
+    @Override
+    protected void remove( String id ) {
+        // TODO Auto-generated method stub
+        
     }
 }

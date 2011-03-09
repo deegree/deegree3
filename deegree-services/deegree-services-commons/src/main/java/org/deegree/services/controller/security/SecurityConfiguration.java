@@ -42,6 +42,7 @@ import java.io.File;
 import java.io.FileFilter;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -54,10 +55,13 @@ import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
+import org.deegree.commons.config.AbstractBasicResourceManager;
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceManager;
 import org.deegree.commons.config.ResourceManagerMetadata;
+import org.deegree.commons.config.ResourceProvider;
 import org.deegree.commons.config.ResourceState;
+import org.deegree.commons.config.WorkspaceInitializationException;
 import org.deegree.commons.jdbc.ConnectionManager;
 import org.deegree.commons.utils.ProxyUtils;
 import org.deegree.services.controller.Credentials;
@@ -74,7 +78,7 @@ import org.slf4j.Logger;
  * 
  * @version $Revision$, $Date$
  */
-public class SecurityConfiguration implements ResourceManager {
+public class SecurityConfiguration extends AbstractBasicResourceManager implements ResourceManager {
 
     private static final Logger LOG = getLogger( SecurityConfiguration.class );
 
@@ -199,8 +203,28 @@ public class SecurityConfiguration implements ResourceManager {
     }
 
     @Override
-    public ResourceState getState( String id ) {
-        // TODO
+    public void activate( String id )
+                            throws WorkspaceInitializationException {
+        // TODO Auto-generated method stub
+        
+    }
+
+    @Override
+    public void deactivate( String id )
+                            throws WorkspaceInitializationException {
+        // TODO Auto-generated method stub
+        
+    }
+
+    @Override
+    protected ResourceProvider getProvider( File file ) {
+        // TODO Auto-generated method stub
         return null;
+    }
+
+    @Override
+    protected void remove( String id ) {
+        // TODO Auto-generated method stub
+        
     }
 }

@@ -5,7 +5,7 @@
     xmlns:dgc="http://java.sun.com/jsf/composite/deegree">
     <ui:define name="extraButtons">
 
-        <td><h:commandButton styleClass="buttonInfo" rendered="#{config.active}" value="#{labels.jdbc_test}"
+        <td><h:commandButton styleClass="buttonInfo" rendered="#{config.state=='init_ok'}" value="#{labels.jdbc_test}"
             action="#{jDBCBean.test}" actionListener="#{jDBCBean.updateId}" alt="#{config.id}" /></td>
 
     </ui:define>

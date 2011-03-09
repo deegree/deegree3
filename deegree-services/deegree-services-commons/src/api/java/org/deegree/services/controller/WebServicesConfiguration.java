@@ -63,12 +63,11 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
 import org.apache.commons.io.filefilter.SuffixFileFilter;
-import org.deegree.commons.annotations.ConsoleManaged;
+import org.deegree.commons.config.AbstractBasicResourceManager;
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceManager;
 import org.deegree.commons.config.ResourceManagerMetadata;
 import org.deegree.commons.config.ResourceProvider;
-import org.deegree.commons.config.ResourceState;
 import org.deegree.commons.config.WorkspaceInitializationException;
 import org.deegree.commons.jdbc.ConnectionManager;
 import org.deegree.commons.utils.ProxyUtils;
@@ -79,8 +78,8 @@ import org.deegree.services.controller.exception.ControllerInitException;
 import org.deegree.services.controller.utils.StandardRequestLogger;
 import org.deegree.services.jaxb.controller.ConfiguredServicesType;
 import org.deegree.services.jaxb.controller.DeegreeServiceControllerType;
-import org.deegree.services.jaxb.controller.ServiceType;
 import org.deegree.services.jaxb.controller.DeegreeServiceControllerType.RequestLogging;
+import org.deegree.services.jaxb.controller.ServiceType;
 import org.deegree.services.jaxb.metadata.DeegreeServicesMetadataType;
 import org.slf4j.Logger;
 
@@ -91,7 +90,7 @@ import org.slf4j.Logger;
  * 
  * @version $Revision$, $Date$
  */
-public class WebServicesConfiguration implements ResourceManager {
+public class WebServicesConfiguration extends AbstractBasicResourceManager implements ResourceManager {
 
     private static final Logger LOG = getLogger( WebServicesConfiguration.class );
 
@@ -181,8 +180,7 @@ public class WebServicesConfiguration implements ResourceManager {
             } else {
                 mdurl = metadata.toURI().toURL();
             }
-            metadataConfig = (DeegreeServicesMetadataType) ( (JAXBElement<?>) JAXBUtils.unmarshall(
-                                                                                                    METADATA_JAXB_PACKAGE,
+            metadataConfig = (DeegreeServicesMetadataType) ( (JAXBElement<?>) JAXBUtils.unmarshall( METADATA_JAXB_PACKAGE,
                                                                                                     METADATA_CONFIG_SCHEMA,
                                                                                                     mdurl, workspace ) ).getValue();
         } catch ( Exception e ) {
@@ -195,8 +193,7 @@ public class WebServicesConfiguration implements ResourceManager {
             mainConfig = new DeegreeServiceControllerType();
         } else {
             try {
-                mainConfig = (DeegreeServiceControllerType) ( (JAXBElement<?>) JAXBUtils.unmarshall(
-                                                                                                     CONTROLLER_JAXB_PACKAGE,
+                mainConfig = (DeegreeServiceControllerType) ( (JAXBElement<?>) JAXBUtils.unmarshall( CONTROLLER_JAXB_PACKAGE,
                                                                                                      CONTROLLER_CONFIG_SCHEMA,
                                                                                                      main.toURI().toURL(),
                                                                                                      workspace ) ).getValue();
@@ -611,7 +608,6 @@ public class WebServicesConfiguration implements ResourceManager {
         return workspace;
     }
 
-    @ConsoleManaged(startPage = "/console/jsf/webservices.jsf")
     static class WebServiceManagerMetadata implements ResourceManagerMetadata {
         public String getName() {
             return "web services";
@@ -631,8 +627,28 @@ public class WebServicesConfiguration implements ResourceManager {
     }
 
     @Override
-    public ResourceState getState( String id ) {
-        // TODO
+    public void activate( String id )
+                            throws WorkspaceInitializationException {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public void deactivate( String id )
+                            throws WorkspaceInitializationException {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    protected ResourceProvider getProvider( File file ) {
+        // TODO Auto-generated method stub
         return null;
+    }
+
+    @Override
+    protected void remove( String id ) {
+        // TODO Auto-generated method stub
+
     }
 }

@@ -36,9 +36,11 @@
 package org.deegree.commons.config;
 
 import static org.apache.commons.io.IOCase.INSENSITIVE;
+import static org.deegree.commons.config.ResourceState.StateType.deactivated;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FilenameFilter;
 import java.net.URL;
 import java.util.Collection;
@@ -59,23 +61,23 @@ import org.slf4j.Logger;
  * 
  * @version $Revision$, $Date$
  */
-public abstract class AbstractResourceManager<T extends Resource> implements ExtendedResourceManager<T> {
+public abstract class AbstractResourceManager<T extends Resource> extends AbstractBasicResourceManager
+                                                                                                      implements
+                                                                                                      ExtendedResourceManager<T> {
 
     private static final Logger LOG = getLogger( AbstractResourceManager.class );
 
-    private HashMap<String, ExtendedResourceProvider<T>> nsToProvider = new HashMap<String, ExtendedResourceProvider<T>>();
+    private final HashMap<String, ExtendedResourceProvider<T>> nsToProvider = new HashMap<String, ExtendedResourceProvider<T>>();
 
-    private HashMap<String, T> resources = new HashMap<String, T>();
+    private final HashMap<String, T> idToResource = new HashMap<String, T>();
 
-    private HashMap<String, ResourceState> idToState = new HashMap<String, ResourceState>();
-
-    private File dir;
+    private String name = this.getClass().getSimpleName();
 
     /**
      * @return all managed resources
      */
     public Collection<T> getAll() {
-        return resources.values();
+        return idToResource.values();
     }
 
     public T create( String id, URL configUrl )
@@ -106,24 +108,25 @@ public abstract class AbstractResourceManager<T extends Resource> implements Ext
         }
         T resource = provider.create( configUrl );
 
-        resources.put( id, resource );
+        idToResource.put( id, resource );
         return resource;
     }
 
     public T get( String id ) {
-        return resources.get( id );
+        return idToResource.get( id );
     }
 
     public void shutdown() {
-        for ( T t : resources.values() ) {
+        for ( T t : idToResource.values() ) {
             t.destroy();
         }
-        resources.clear();
+        idToResource.clear();
         nsToProvider.clear();
     }
 
     public void startup( DeegreeWorkspace workspace )
                             throws WorkspaceInitializationException {
+        this.workspace = workspace;
         ResourceManagerMetadata<T> md = getMetadata();
         if ( md != null ) {
             for ( ResourceProvider p : md.getResourceProviders() ) {
@@ -131,7 +134,7 @@ public abstract class AbstractResourceManager<T extends Resource> implements Ext
             }
 
             dir = new File( workspace.getLocation(), md.getPath() );
-            String name = md.getName();
+            name = md.getName();
             if ( !dir.exists() ) {
                 LOG.info( "No '{}' directory -- skipping initialization of {}.", md.getPath(), name );
                 return;
@@ -145,37 +148,103 @@ public abstract class AbstractResourceManager<T extends Resource> implements Ext
                 String fileName = configFile.getName();
                 // 4 is the length of ".xml"
                 String id = fileName.substring( 0, fileName.length() - 4 );
+                ResourceProvider provider = getProvider( configFile );
                 LOG.info( "Setting up {} '{}' from file '{}'...", new Object[] { name, id, fileName } );
                 try {
                     T resource = create( id, configFile.toURI().toURL() );
-                    idToState.put( id, new ResourceState( StateType.created, null ) );
+                    idToState.put( id, new ResourceState( id, configFile, provider, StateType.created, null ) );
                     resource.init( workspace );
-                    idToState.put( id, new ResourceState( StateType.init_ok, null ) );
+                    idToState.put( id, new ResourceState( id, configFile, provider, StateType.init_ok, null ) );
                 } catch ( WorkspaceInitializationException e ) {
-                    idToState.put( id, new ResourceState( StateType.init_error, e ) );
+                    idToState.put( id, new ResourceState( id, configFile, provider, StateType.init_error, e ) );
                     LOG.error( "Error creating {}: {}", new Object[] { name, e.getMessage(), e } );
                 } catch ( Throwable t ) {
-                    idToState.put( id,
-                                   new ResourceState( StateType.init_error,
-                                                      new WorkspaceInitializationException( t.getMessage(), t ) ) );
+                    idToState.put( id, new ResourceState( id, configFile, provider, StateType.init_error,
+                                                          new WorkspaceInitializationException( t.getMessage(), t ) ) );
                     LOG.error( "Error creating {}: {}", new Object[] { name, t.getMessage(), t } );
                 }
             }
 
             configFiles = dir.listFiles( (FilenameFilter) new SuffixFileFilter( ".ignore", INSENSITIVE ) );
             for ( File configFile : configFiles ) {
+                ResourceProvider provider = getProvider( configFile );
                 String fileName = configFile.getName();
                 // 7 is the length of ".ignore"
                 String id = fileName.substring( 0, fileName.length() - 7 );
-                idToState.put( id, new ResourceState( StateType.deactivated, null ) );
+                idToState.put( id, new ResourceState( id, configFile, provider, StateType.deactivated, null ) );
             }
 
             LOG.info( "" );
         }
     }
 
+    protected ResourceProvider getProvider( File file ) {
+        String namespace = null;
+        try {
+            XMLStreamReader xmlReader = XMLInputFactory.newInstance().createXMLStreamReader( new FileInputStream( file ) );
+            StAXParsingHelper.nextElement( xmlReader );
+            namespace = xmlReader.getNamespaceURI();
+            LOG.debug( "Config namespace: '" + namespace + "'" );
+            return nsToProvider.get( namespace );
+        } catch ( Throwable e ) {
+            String msg = "Error determining configuration namespace for file '" + file + "'";
+            LOG.error( msg );
+        }
+        return null;
+    }
+
+    protected void remove( String id ) {
+        idToResource.remove( id );
+    }
+
     @Override
-    public ResourceState getState( String id ) {
-        return idToState.get( id );
+    public void activate( String id )
+                            throws WorkspaceInitializationException {
+        ResourceState state = getState( id );
+        if ( state != null && state.getType() == deactivated ) {
+            File oldFile = state.getConfigLocation();
+            File newFile = new File( dir, id + ".xml" );
+            oldFile.renameTo( newFile );
+
+            String fileName = newFile.getName();
+            // 4 is the length of ".xml"
+            ResourceProvider provider = getProvider( newFile );
+            LOG.info( "Setting up {} '{}' from file '{}'...", new Object[] { name, id, fileName } );
+            try {
+                T resource = create( id, newFile.toURI().toURL() );
+                idToState.put( id, new ResourceState( id, newFile, provider, StateType.created, null ) );
+                resource.init( workspace );
+                idToState.put( id, new ResourceState( id, newFile, provider, StateType.init_ok, null ) );
+            } catch ( WorkspaceInitializationException e ) {
+                idToState.put( id, new ResourceState( id, newFile, provider, StateType.init_error, e ) );
+                LOG.error( "Error creating {}: {}", new Object[] { name, e.getMessage(), e } );
+            } catch ( Throwable t ) {
+                idToState.put( id, new ResourceState( id, newFile, provider, StateType.init_error,
+                                                      new WorkspaceInitializationException( t.getMessage(), t ) ) );
+                LOG.error( "Error creating {}: {}", new Object[] { name, t.getMessage(), t } );
+            }
+        }
+    }
+
+    @Override
+    public void deactivate( String id )
+                            throws WorkspaceInitializationException {
+        ResourceState state = getState( id );
+        if ( state != null && state.getType() != deactivated ) {
+            File oldFile = state.getConfigLocation();
+            File newFile = new File( dir, id + ".ignore" );
+            oldFile.renameTo( newFile );
+
+            T resource = idToResource.get( id );
+            if ( resource != null ) {
+                try {
+                    resource.destroy();
+                } catch ( Throwable t ) {
+                    t.printStackTrace();
+                }
+            }
+            ResourceProvider provider = getProvider( newFile );
+            idToState.put( id, new ResourceState( id, newFile, provider, StateType.deactivated, null ) );
+        }
     }
 }

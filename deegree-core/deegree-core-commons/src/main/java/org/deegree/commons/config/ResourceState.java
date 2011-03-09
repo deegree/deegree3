@@ -35,6 +35,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.commons.config;
 
+import java.io.File;
+
 /**
  * Encapsulates information on the state of a {@link Resource}.
  * 
@@ -44,10 +46,6 @@ package org.deegree.commons.config;
  * @version $Revision$, $Date$
  */
 public class ResourceState {
-
-    private StateType type;
-
-    private WorkspaceInitializationException lastException;
 
     /**
      * Represents the lifecycle phases of a {@link Resource}.
@@ -70,17 +68,51 @@ public class ResourceState {
         deactivated
     }
 
+    private final StateType type;
+
+    private final WorkspaceInitializationException lastException;
+
+    private final String id;
+
+    private final File configLocation;
+
+    private final ResourceProvider provider;
+
     /**
      * Creates a new {@link ResourceState} instance.
      * 
+     * @param id
+     * @param configLocation
      * @param type
      *            state type, must not be <code>null</code>
      * @param lastException
      *            last exception that occurred for the resource, can be <code>null</code>
      */
-    public ResourceState( StateType type, WorkspaceInitializationException lastException ) {
+    public ResourceState( String id, File configLocation, ResourceProvider provider, StateType type,
+                          WorkspaceInitializationException lastException ) {
+        this.id = id;
+        this.configLocation = configLocation;
+        this.provider = provider;
         this.type = type;
         this.lastException = lastException;
+    }
+
+    /**
+     * Returns an identifier that uniquely identifies the resource among all resources that are managed by the
+     * corresponding {@link ResourceManager}.
+     * 
+     * @return identifier of the resource, never <code>null</code>
+     */
+    public String getId() {
+        return id;
+    }
+
+    public File getConfigLocation() {
+        return configLocation;
+    }
+
+    public ResourceProvider getProvider() {
+        return provider;
     }
 
     /**

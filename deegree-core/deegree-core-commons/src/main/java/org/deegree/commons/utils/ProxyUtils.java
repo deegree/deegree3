@@ -45,10 +45,12 @@ import java.net.URLConnection;
 import java.util.Properties;
 
 import org.apache.axiom.om.util.Base64;
+import org.deegree.commons.config.AbstractBasicResourceManager;
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceManager;
 import org.deegree.commons.config.ResourceManagerMetadata;
-import org.deegree.commons.config.ResourceState;
+import org.deegree.commons.config.ResourceProvider;
+import org.deegree.commons.config.WorkspaceInitializationException;
 import org.deegree.commons.proxy.jaxb.ProxyConfiguration;
 import org.deegree.commons.xml.jaxb.JAXBUtils;
 import org.slf4j.Logger;
@@ -67,7 +69,7 @@ import org.slf4j.Logger;
  * 
  * @version $Revision: $, $Date: $
  */
-public final class ProxyUtils implements ResourceManager {
+public final class ProxyUtils extends AbstractBasicResourceManager implements ResourceManager {
 
     private static final Logger LOG = getLogger( ProxyUtils.class );
 
@@ -460,8 +462,28 @@ public final class ProxyUtils implements ResourceManager {
     }
 
     @Override
-    public ResourceState getState( String id ) {
-        // TODO
+    public void activate( String id )
+                            throws WorkspaceInitializationException {
+        // TODO Auto-generated method stub
+        
+    }
+
+    @Override
+    public void deactivate( String id )
+                            throws WorkspaceInitializationException {
+        // TODO Auto-generated method stub
+        
+    }
+
+    @Override
+    protected ResourceProvider getProvider( File file ) {
+        // TODO Auto-generated method stub
         return null;
+    }
+
+    @Override
+    protected void remove( String id ) {
+        // TODO Auto-generated method stub
+        
     }
 }

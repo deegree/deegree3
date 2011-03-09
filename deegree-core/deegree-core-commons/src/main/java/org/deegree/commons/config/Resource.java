@@ -45,17 +45,17 @@ package org.deegree.commons.config;
 public interface Resource {
 
     /**
-     * Usually called by the resource manager upon workspace startup.
+     * Usually called by the {@link ResourceManager} upon workspace startup.
      * 
      * @param workspace
      *            the workspace the resource belongs to, may be null
      * @throws WorkspaceInitializationException
      */
-    void init( DeegreeWorkspace workspace )
+    public void init( DeegreeWorkspace workspace )
                             throws WorkspaceInitializationException;
 
     /**
-     * Usually called by the resource manager upon workspace shutdown.
+     * Usually called by the {@link ResourceManager} upon workspace shutdown.
      */
-    void destroy();
+    public void destroy();
 }

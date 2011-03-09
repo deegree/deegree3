@@ -35,14 +35,15 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.rendering.r2d.persistence;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.deegree.commons.config.AbstractBasicResourceManager;
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceManager;
 import org.deegree.commons.config.ResourceManagerMetadata;
 import org.deegree.commons.config.ResourceProvider;
-import org.deegree.commons.config.ResourceState;
 import org.deegree.commons.config.WorkspaceInitializationException;
 import org.deegree.commons.utils.ProxyUtils;
 
@@ -55,7 +56,7 @@ import org.deegree.commons.utils.ProxyUtils;
  * 
  * @version $Revision$, $Date$
  */
-public class StyleManager implements ResourceManager {
+public class StyleManager extends AbstractBasicResourceManager implements ResourceManager {
 
     @SuppressWarnings("unchecked")
     public Class<? extends ResourceManager>[] getDependencies() {
@@ -91,8 +92,28 @@ public class StyleManager implements ResourceManager {
     }
 
     @Override
-    public ResourceState getState( String id ) {
-        // TODO
+    public void activate( String id )
+                            throws WorkspaceInitializationException {
+        // TODO Auto-generated method stub
+        
+    }
+
+    @Override
+    public void deactivate( String id )
+                            throws WorkspaceInitializationException {
+        // TODO Auto-generated method stub
+        
+    }
+
+    @Override
+    protected ResourceProvider getProvider( File file ) {
+        // TODO Auto-generated method stub
         return null;
+    }
+
+    @Override
+    protected void remove( String id ) {
+        // TODO Auto-generated method stub
+        
     }
 }

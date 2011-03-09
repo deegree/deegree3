@@ -55,11 +55,13 @@ import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamReader;
 
 import org.apache.commons.io.filefilter.SuffixFileFilter;
+import org.deegree.commons.config.AbstractBasicResourceManager;
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceManager;
 import org.deegree.commons.config.ResourceManagerMetadata;
 import org.deegree.commons.config.ResourceProvider;
 import org.deegree.commons.config.ResourceState;
+import org.deegree.commons.config.WorkspaceInitializationException;
 import org.deegree.commons.utils.FileUtils;
 import org.deegree.commons.utils.ProxyUtils;
 import org.deegree.commons.xml.stax.StAXParsingHelper;
@@ -75,7 +77,7 @@ import org.slf4j.LoggerFactory;
  * 
  * @version $Revision$, $Date$
  */
-public class CoverageBuilderManager implements ResourceManager {
+public class CoverageBuilderManager extends AbstractBasicResourceManager implements ResourceManager {
 
     private static final Logger LOG = LoggerFactory.getLogger( CoverageBuilderManager.class );
 
@@ -250,11 +252,28 @@ public class CoverageBuilderManager implements ResourceManager {
     }
 
     @Override
-    public ResourceState getState( String id ) {
-        if ( get( id ) != null ) {
-            return new ResourceState( init_ok, null );
-        }
-        // TODO
+    public void activate( String id )
+                            throws WorkspaceInitializationException {
+        // TODO Auto-generated method stub
+        
+    }
+
+    @Override
+    public void deactivate( String id )
+                            throws WorkspaceInitializationException {
+        // TODO Auto-generated method stub
+        
+    }
+
+    @Override
+    protected ResourceProvider getProvider( File file ) {
+        // TODO Auto-generated method stub
         return null;
+    }
+
+    @Override
+    protected void remove( String id ) {
+        // TODO Auto-generated method stub
+        
     }
 }

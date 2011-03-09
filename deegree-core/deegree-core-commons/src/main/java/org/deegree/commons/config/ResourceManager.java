@@ -35,6 +35,10 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.commons.config;
 
+import java.io.InputStream;
+
+import org.deegree.commons.config.ResourceState.StateType;
+
 /**
  * 
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
@@ -47,23 +51,30 @@ public interface ResourceManager {
     /**
      * Is called upon workspace startup.
      */
-    void startup( DeegreeWorkspace workspace )
+    public void startup( DeegreeWorkspace workspace )
                             throws WorkspaceInitializationException;
 
     /**
      * Is called upon workspace shutdown.
      */
-    void shutdown();
+    public void shutdown();
 
     /**
      * @return an empty array if there are no dependencies
      */
-    Class<? extends ResourceManager>[] getDependencies();
+    public Class<? extends ResourceManager>[] getDependencies();
 
     /**
-     * @return a metadata object for use in GUIs, may be null
+     * @return a metadata object, may be null
      */
-    ResourceManagerMetadata getMetadata();
+    public ResourceManagerMetadata getMetadata();
+
+    /**
+     * Returns the state of all resources.
+     * 
+     * @return the states, never <code>null</code>
+     */
+    public ResourceState[] getStates();
 
     /**
      * Returns the state of the resource.
@@ -72,5 +83,33 @@ public interface ResourceManager {
      *            resource id, must not be <code>null</code>
      * @return the state or <code>null</code> (if the resource does not exist)
      */
-    ResourceState getState( String id );
+    public ResourceState getState( String id );
+
+    public void activate( String id )
+                            throws WorkspaceInitializationException;
+
+    public void deactivate( String id )
+                            throws WorkspaceInitializationException;
+
+    /**
+     * Creates a new {@link Resource} (which is initially in state {@link StateType#deactivated}.
+     * 
+     * @param id
+     *            resource id, must not be <code>null</code>
+     * @param config
+     *            provides the configuration, must not be <code>null</code>
+     * @throws WorkspaceInitializationException
+     *             if initialization of the resource fails
+     * @return state information, never <code>null</code>
+     */
+    public ResourceState createResource( String id, InputStream config )
+                            throws WorkspaceInitializationException;
+
+    /**
+     * Removes the specified resource and deletes the corresponding configuration file.
+     * 
+     * @param id
+     *            resource id, must not be <code>null</code>
+     */
+    public void deleteResource( String id );
 }

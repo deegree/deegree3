@@ -40,7 +40,6 @@ import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.File;
 
-import org.deegree.commons.annotations.ConsoleManaged;
 import org.deegree.commons.config.AbstractResourceManager;
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.DefaultResourceManagerMetadata;
@@ -95,7 +94,6 @@ public class FeatureStoreManager extends AbstractResourceManager<FeatureStore> {
         return new Class[] { ProxyUtils.class, ConnectionManager.class, FunctionManager.class };
     }
 
-    @ConsoleManaged(startPage = "/console/featurestore/buttons", wizardPage ="/")
     static class FeatureStoreManagerMetadata extends DefaultResourceManagerMetadata<FeatureStore> {
         FeatureStoreManagerMetadata( DeegreeWorkspace workspace ) {
             super( "feature stores", "datasources/feature/", FeatureStoreProvider.class, workspace );
@@ -106,5 +104,4 @@ public class FeatureStoreManager extends AbstractResourceManager<FeatureStore> {
     public ResourceManagerMetadata<FeatureStore> getMetadata() {
         return metadata;
     }
-
 }

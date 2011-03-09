@@ -35,6 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.console;
 
+import static javax.faces.application.FacesMessage.SEVERITY_ERROR;
 import static org.apache.commons.io.FileUtils.writeStringToFile;
 import static org.apache.commons.io.IOUtils.closeQuietly;
 import static org.apache.commons.io.IOUtils.readLines;
@@ -42,21 +43,17 @@ import static org.deegree.commons.config.DeegreeWorkspace.getWorkspaceRoot;
 import static org.deegree.commons.utils.net.HttpUtils.STREAM;
 import static org.deegree.commons.utils.net.HttpUtils.get;
 import static org.deegree.services.controller.OGCFrontController.getServiceWorkspace;
-import static org.h2.util.IOUtils.copyAndClose;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.TreeMap;
 
+import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
 import javax.faces.component.html.HtmlCommandButton;
@@ -64,19 +61,16 @@ import javax.faces.component.html.HtmlCommandLink;
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import javax.faces.event.ActionEvent;
-import javax.xml.stream.FactoryConfigurationError;
-import javax.xml.stream.XMLStreamException;
 
 import lombok.Getter;
 import lombok.Setter;
 
 import org.apache.commons.io.FileUtils;
 import org.deegree.client.generic.RequestBean;
-import org.deegree.commons.annotations.ConsoleManaged;
 import org.deegree.commons.config.DeegreeWorkspace;
-import org.deegree.commons.config.Resource;
-import org.deegree.commons.config.ResourceManagerMetadata;
+import org.deegree.commons.config.ResourceManager;
 import org.deegree.commons.config.ResourceProvider;
+import org.deegree.commons.config.ResourceState;
 import org.deegree.commons.utils.io.Zip;
 import org.deegree.commons.version.DeegreeModuleInfo;
 import org.deegree.services.controller.OGCFrontController;
@@ -96,13 +90,8 @@ public class ConfigManager {
 
     private static final Logger LOG = getLogger( ConfigManager.class );
 
-    private TreeMap<String, ResourceManager> resourceManagerMap;
-
     @Getter
-    private ResourceManager currentResourceManager;
-
-    @Getter
-    private List<Config> availableResources;
+    private ResourceManagerMetadata2 currentResourceManager;
 
     @Getter
     private List<String> providers;
@@ -145,145 +134,56 @@ public class ConfigManager {
 
     private boolean modified;
 
-    public ConfigManager() {
-        reloadResourceManagers();
+    public ConfigManager () {
+        FacesContext.getCurrentInstance().getExternalContext().getApplicationMap().put( "workspace",
+                                                                                        getServiceWorkspace() );
+    }
+    
+    public List<ResourceManagerMetadata2> getResourceManagers() {
+        List<ResourceManagerMetadata2> rmMetadata = new ArrayList<ResourceManagerMetadata2>();
+        for ( ResourceManager mgr : getServiceWorkspace().getResourceManagers() ) {
+            ResourceManagerMetadata2 md = ResourceManagerMetadata2.getMetadata( mgr );
+            if ( md != null ) {
+                rmMetadata.add( md );
+            }
+        }
+        return rmMetadata;
     }
 
-    public List<ResourceManager> getResourceManagers() {
-        return new ArrayList<ResourceManager>( resourceManagerMap.values() );
+    public void resourceManagerChanged( ActionEvent evt ) {
+        String linkText = ((HtmlCommandLink) evt.getSource()).getValue().toString();
+        for ( ResourceManagerMetadata2 mgr : getResourceManagers() ) {
+            if ( mgr.getName().equals( linkText ) ) {
+                currentResourceManager = mgr;
+            }
+        }
+    }
+
+    public List<Config> getAvailableResources() {
+        List<Config> configs = new ArrayList<Config>();
+        for ( ResourceState state : currentResourceManager.getManager().getStates() ) {
+            configs.add( new Config( state, this, currentResourceManager.getManager(),
+                                     currentResourceManager.getStartView() ) );
+        }
+        return configs;
     }
 
     public void setNewConfigType( String newConfigType ) {
         this.newConfigType = newConfigType;
-        for ( ResourceProvider p : currentResourceManager.getMetadata().getResourceProviders() ) {
+        for ( ResourceProvider p : currentResourceManager.getProviders() ) {
             if ( p.getConfigNamespace().endsWith( newConfigType ) ) {
                 ResourceProviderMetadata md = ResourceProviderMetadata.getMetadata( p );
                 newConfigTypeTemplates = new LinkedList<String>( md.getExamples().keySet() );
             }
         }
     }
-
-    private String getViewForMetadata( ResourceManagerMetadata<? extends Resource> md ) {
-        if ( md == null ) {
-            return FacesContext.getCurrentInstance().getViewRoot().getViewId();
-        }
-        ConsoleManaged ann = md.getClass().getAnnotation( ConsoleManaged.class );
-        if ( ann != null ) {
-            return ann.startPage();
-        }
-        return "/console/jsf/resources";
-    }
-
-    public String getViewForResourceManager() {
-        if ( currentResourceManager == null ) {
-            return FacesContext.getCurrentInstance().getViewRoot().getViewId();
-        }
-        ConsoleManaged ann = currentResourceManager.getClass().getAnnotation( ConsoleManaged.class );
-        if ( ann != null ) {
-            return ann.startPage();
-        }
-        return "/console/jsf/resources";
-    }
-
-    public void resourceManagerChanged( ActionEvent evt ) {
-        if ( resourceManagerMap == null ) {
-            return;
-        }
-        currentResourceManager = resourceManagerMap.get( ( (HtmlCommandLink) evt.getSource() ).getValue().toString() );
-        update();
-    }
-
-    private void findFiles( File dir, String prefix ) {
-        if ( dir.isDirectory() && !dir.getName().equalsIgnoreCase( ".svn" ) ) {
-            File[] fs = dir.listFiles();
-            if ( fs != null ) {
-                for ( File f : fs ) {
-                    if ( !f.isDirectory() ) {
-                        try {
-                            Config c = new Config( f, currentResourceManager.getMetadata(), this, prefix,
-                                                   getViewForResourceManager() );
-                            availableResources.add( c );
-                        } catch ( XMLStreamException e ) {
-                            LOG.debug( "Unable to load {}: {}", f.getName(), e.getLocalizedMessage() );
-                        } catch ( FactoryConfigurationError e ) {
-                            LOG.debug( "Unable to load {}: {}", f.getName(), e.getLocalizedMessage() );
-                        } catch ( IOException e ) {
-                            LOG.debug( "Unable to load {}: {}", f.getName(), e.getLocalizedMessage() );
-                        }
-                    } else {
-                        findFiles( f, prefix == null ? f.getName() : ( prefix + "/" + f.getName() ) );
-                    }
-                }
-            }
-        }
-    }
-
-    private void reloadResourceManagers() {
-        File ws = getServiceWorkspace().getLocation();
-
-        FacesContext.getCurrentInstance().getExternalContext().getApplicationMap().put( "workspace",
-                                                                                        getServiceWorkspace() );
-
-        resourceManagerMap = new TreeMap<String, ResourceManager>();
-
-        for ( org.deegree.commons.config.ResourceManager mgr : getServiceWorkspace().getResourceManagers() ) {
-            ResourceManagerMetadata<? extends Resource> md = mgr.getMetadata();
-            if ( md != null ) {
-                ResourceManager mng = new ResourceManager( getViewForMetadata( md ), md, mgr );
-                resourceManagerMap.put( mng.metadata.getName(), mng );
-            }
-        }
-
-        // File proxyFile = new File( ws, "proxy.xml" );
-        // URL schema = ConfigManager.class.getResource( "/META-INF/schemas/proxy/3.0.0/proxy.xsd" );
-        // URL template = ConfigManager.class.getResource( "/META-INF/schemas/proxy/3.0.0/example.xml" );
-        // try {
-        // proxyConfig = new Config( proxyFile, schema, template, this, "/console/jsf/proxy" );
-        // } catch ( IOException e ) {
-        // // TODO Auto-generated catch block
-        // e.printStackTrace();
-        // }
-        File metadataFile = new File( ws, "services/metadata.xml" );
-        URL schema = ConfigManager.class.getResource( "/META-INF/schemas/metadata/3.0.0/metadata.xsd" );
-        URL template = ConfigManager.class.getResource( "/META-INF/schemas/metadata/3.0.0/example.xml" );
-        try {
-            metadataConfig = new Config( metadataFile, schema, template, this, "/console/jsf/webservices" );
-        } catch ( IOException e ) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-        File mainFile = new File( ws, "services/main.xml" );
-        schema = ConfigManager.class.getResource( "/META-INF/schemas/controller/3.0.0/controller.xsd" );
-        template = ConfigManager.class.getResource( "/META-INF/schemas/controller/3.0.0/example.xml" );
-        try {
-            mainConfig = new Config( mainFile, schema, template, this, "/console/jsf/webservices" );
-        } catch ( IOException e ) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-    }
-
-    public void update() {
-        availableResources = new LinkedList<Config>();
-        if ( currentResourceManager != null ) {
-            providers = new LinkedList<String>();
-            for ( ResourceProvider p : currentResourceManager.metadata.getResourceProviders() ) {
-                providers.add( p.getConfigNamespace().substring( p.getConfigNamespace().lastIndexOf( "/" ) + 1 ) );
-            }
-            File dir = new File( OGCFrontController.getServiceWorkspace().getLocation(),
-                                 currentResourceManager.metadata.getPath() );
-            findFiles( dir, null );
-            Collections.sort( availableResources );
-            setNewConfigType( providers.get( 0 ) );
-        }
-    }
-
+    
     public String startWizard() {
 
         String nextView = "/console/jsf/wizard";
 
         ResourceProvider rp = null;
-        for ( ResourceProvider p : currentResourceManager.metadata.getResourceProviders() ) {
+        for ( ResourceProvider p : currentResourceManager.getProviders() ) {
             if ( p.getConfigNamespace().endsWith( newConfigType ) ) {
                 rp = p;
             }
@@ -296,59 +196,32 @@ public class ConfigManager {
     }
 
     public String createConfig() {
-        File dir = new File( OGCFrontController.getServiceWorkspace().getLocation(),
-                             currentResourceManager.metadata.getPath() );
-        if ( !dir.exists() && !dir.mkdirs() ) {
-            // TODO error
-            return "resources";
-        }
-        File conf = new File( dir, newConfigId + ".xml" );
-        if ( !conf.getParentFile().isDirectory() && !conf.getParentFile().mkdirs() ) {
-            // TODO error
-        }
-        boolean template = false;
-        URL schemaURL = null;
-        for ( ResourceProvider p : currentResourceManager.metadata.getResourceProviders() ) {
+
+        ResourceManager manager = currentResourceManager.getManager();
+
+        // lookup template
+        URL templateURL = null;
+        for ( ResourceProvider p : currentResourceManager.getProviders() ) {
             if ( p.getConfigNamespace().endsWith( newConfigType ) ) {
                 if ( newConfigTypeTemplate != null ) {
-                    schemaURL = p.getConfigSchema();
-                    template = true;
-                    try {
-                        ResourceProviderMetadata md = ResourceProviderMetadata.getMetadata( p );
-                        copyAndClose( md.getExamples().get( newConfigTypeTemplate ).getContentLocation().openStream(),
-                                      new FileOutputStream( conf ) );
-                    } catch ( FileNotFoundException e ) {
-                        // TODO Auto-generated catch block
-                        e.printStackTrace();
-                    } catch ( IOException e ) {
-                        // TODO Auto-generated catch block
-                        e.printStackTrace();
-                    }
+                    ResourceProviderMetadata md = ResourceProviderMetadata.getMetadata( p );
+                    templateURL = md.getExamples().get( newConfigTypeTemplate ).getContentLocation();
+                    LOG.info( "Found template URL: " + templateURL );
                 }
             }
         }
+
+        // let the resource manager do the dirty work
+        ResourceState rs = null;
         try {
-            Config c;
-            if ( template ) {
-                c = new Config( conf, currentResourceManager.metadata, this, null, getViewForResourceManager() );
-            } else {
-                c = new Config( conf, currentResourceManager.metadata, this, schemaURL, newConfigType,
-                                getViewForResourceManager() );
-            }
-            availableResources.add( c );
-            Collections.sort( availableResources );
+            rs = manager.createResource( newConfigId, templateURL.openStream() );
+            Config c = new Config( rs, this, currentResourceManager.getManager(), currentResourceManager.getStartView() );
             return c.edit();
-        } catch ( XMLStreamException e ) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch ( FactoryConfigurationError e ) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch ( IOException e ) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+        } catch ( Throwable t ) {
+            FacesMessage fm = new FacesMessage( SEVERITY_ERROR, "Unable to create config: " + t.getMessage(), null );
+            FacesContext.getCurrentInstance().addMessage( null, fm );
+            return null;
         }
-        return "resources";
     }
 
     public void setModified() {
@@ -403,9 +276,6 @@ public class ConfigManager {
         }
 
         modified = false;
-
-        reloadResourceManagers();
-        update();
 
         lastMessage = "Workspace changes have been applied.";
         FacesContext ctx = FacesContext.getCurrentInstance();
@@ -495,28 +365,6 @@ public class ConfigManager {
             return res;
         } finally {
             closeQuietly( in );
-        }
-    }
-
-    public static class ResourceManager {
-        @Getter
-        public String view;
-
-        @Getter
-        public ResourceManagerMetadata<? extends Resource> metadata;
-
-        @Getter
-        public org.deegree.commons.config.ResourceManager originalResourceManager;
-
-        public String view() {
-            return view;
-        }
-
-        ResourceManager( String view, ResourceManagerMetadata<? extends Resource> metadata,
-                         org.deegree.commons.config.ResourceManager originalResourceManager ) {
-            this.view = view;
-            this.metadata = metadata;
-            this.originalResourceManager = originalResourceManager;
         }
     }
 }

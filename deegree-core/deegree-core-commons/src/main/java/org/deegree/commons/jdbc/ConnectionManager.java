@@ -37,6 +37,8 @@
 package org.deegree.commons.jdbc;
 
 import static java.sql.DriverManager.registerDriver;
+import static org.deegree.commons.config.ResourceState.StateType.deactivated;
+import static org.deegree.commons.config.ResourceState.StateType.init_error;
 import static org.deegree.commons.config.ResourceState.StateType.init_ok;
 import static org.deegree.commons.jdbc.ConnectionManager.Type.H2;
 import static org.deegree.commons.jdbc.ConnectionManager.Type.MSSQL;
@@ -58,12 +60,14 @@ import java.util.Set;
 
 import javax.xml.bind.JAXBException;
 
-import org.deegree.commons.annotations.ConsoleManaged;
+import org.deegree.commons.config.AbstractBasicResourceManager;
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceManager;
 import org.deegree.commons.config.ResourceManagerMetadata;
 import org.deegree.commons.config.ResourceProvider;
 import org.deegree.commons.config.ResourceState;
+import org.deegree.commons.config.ResourceState.StateType;
+import org.deegree.commons.config.WorkspaceInitializationException;
 import org.deegree.commons.i18n.Messages;
 import org.deegree.commons.jdbc.jaxb.JDBCConnection;
 import org.deegree.commons.utils.ProxyUtils;
@@ -83,7 +87,7 @@ import org.slf4j.LoggerFactory;
  * 
  * @version $Revision: $, $Date: $
  */
-public class ConnectionManager implements ResourceManager, ResourceProvider {
+public class ConnectionManager extends AbstractBasicResourceManager implements ResourceProvider {
 
     private static Logger LOG = LoggerFactory.getLogger( ConnectionManager.class );
 
@@ -91,9 +95,9 @@ public class ConnectionManager implements ResourceManager, ResourceProvider {
 
     private static final String CONFIG_SCHEMA = "/META-INF/schemas/jdbc/3.0.0/jdbc.xsd";
 
-    private static Map<String, ConnectionPool> idToPools = new HashMap<String, ConnectionPool>();
-
     private static Map<String, Type> idToType = new HashMap<String, Type>();
+
+    private static Map<String, ConnectionPool> idToPools = new HashMap<String, ConnectionPool>();
 
     public static enum Type {
         PostgreSQL, MSSQL, Oracle, H2
@@ -115,18 +119,28 @@ public class ConnectionManager implements ResourceManager, ResourceProvider {
         File[] fsConfigFiles = jdbcDir.listFiles( new FilenameFilter() {
             @Override
             public boolean accept( File dir, String name ) {
-                return name.toLowerCase().endsWith( ".xml" );
+                return name.toLowerCase().endsWith( ".xml" ) || name.toLowerCase().endsWith( ".ignore" );
             }
         } );
         for ( File fsConfigFile : fsConfigFiles ) {
             String fileName = fsConfigFile.getName();
-            // 4 is the length of ".xml"
-            String fsId = fileName.substring( 0, fileName.length() - 4 );
-            LOG.info( "Setting up JDBC connection '" + fsId + "' from file '" + fileName + "'..." + "" );
-            try {
-                addConnection( fsConfigFile.toURI().toURL(), fsId, workspace );
-            } catch ( Exception e ) {
-                LOG.error( "Error initializing JDBC connection pool: " + e.getMessage(), e );
+            if ( fileName.toLowerCase().endsWith( ".ignore" ) ) {
+                // 7 is the length of ".xml"
+                String connId = fileName.substring( 0, fileName.length() - 7 );
+                LOG.info( "Found deactivated JDBC connection '" + connId + "', file '" + fileName + "'..." + "" );
+                idToState.put( connId, new ResourceState( connId, fsConfigFile, this, deactivated, null ) );
+            } else {
+                // 4 is the length of ".xml"
+                String connId = fileName.substring( 0, fileName.length() - 4 );
+                LOG.info( "Setting up JDBC connection '" + connId + "' from file '" + fileName + "'..." + "" );
+                try {
+                    addConnection( fsConfigFile.toURI().toURL(), connId, workspace );
+                    idToState.put( connId, new ResourceState( connId, fsConfigFile, this, init_ok, null ) );
+                } catch ( Throwable t ) {
+                    WorkspaceInitializationException e = new WorkspaceInitializationException( t.getMessage(), t );
+                    idToState.put( connId, new ResourceState( connId, fsConfigFile, this, init_error, e ) );
+                    LOG.error( "Error initializing JDBC connection pool: " + t.getMessage(), t );
+                }
             }
         }
         LOG.info( "" );
@@ -275,6 +289,7 @@ public class ConnectionManager implements ResourceManager, ResourceProvider {
     }
 
     public void startup( DeegreeWorkspace workspace ) {
+        this.workspace = workspace;
         try {
             for ( Driver d : ServiceLoader.load( Driver.class, workspace.getModuleClassLoader() ) ) {
                 registerDriver( new DriverWrapper( d ) );
@@ -283,7 +298,8 @@ public class ConnectionManager implements ResourceManager, ResourceProvider {
         } catch ( SQLException e ) {
             LOG.debug( "Unable to load MSSQL driver: {}", e.getLocalizedMessage() );
         }
-        init( new File( workspace.getLocation(), "jdbc" ), workspace );
+        dir = new File( workspace.getLocation(), "jdbc" );
+        init( dir, workspace );
     }
 
     @SuppressWarnings("unchecked")
@@ -291,7 +307,6 @@ public class ConnectionManager implements ResourceManager, ResourceProvider {
         return new Class[] { ProxyUtils.class };
     }
 
-    @ConsoleManaged(startPage = "/console/jdbc/buttons")
     class ConnectionManagerMetadata implements ResourceManagerMetadata {
         public String getName() {
             return "jdbc";
@@ -319,11 +334,72 @@ public class ConnectionManager implements ResourceManager, ResourceProvider {
     }
 
     @Override
-    public ResourceState getState( String id ) {
-        if ( idToPools.get( id ) != null ) {
-            return new ResourceState( init_ok, null );
+    public void deleteResource( String id ) {
+        ResourceState state = getState( id );
+        if ( state != null ) {
+            idToPools.remove( id );
+            idToType.remove( id );
+            idToState.remove( id );
+            try {
+                deactivate( id );
+            } catch ( WorkspaceInitializationException e ) {
+                // TODO
+            }
+            if ( state.getConfigLocation().delete() ) {
+                LOG.info( "Deleted " + state.getConfigLocation() + "'" );
+            }
         }
-        // TODO
-        return null;
+    }
+
+    @Override
+    protected void remove( String id ) {
+        idToPools.remove( id );
+        idToState.remove( id );
+        idToType.remove( id );
+    }
+
+    @Override
+    public void activate( String id )
+                            throws WorkspaceInitializationException {
+        ResourceState state = getState( id );
+        if ( state != null && state.getType() == deactivated ) {
+            File oldFile = state.getConfigLocation();
+            File newFile = new File( dir, id + ".xml" );
+            oldFile.renameTo( newFile );
+
+            LOG.info( "Setting up JDBC connection '" + id + "' from file '" + newFile + "'..." + "" );
+            try {
+                addConnection( newFile.toURI().toURL(), id, workspace );
+                idToState.put( id, new ResourceState( id, newFile, this, init_ok, null ) );
+            } catch ( Throwable t ) {
+                WorkspaceInitializationException e = new WorkspaceInitializationException( t.getMessage(), t );
+                idToState.put( id, new ResourceState( id, newFile, this, init_error, e ) );
+                LOG.error( "Error initializing JDBC connection pool: " + t.getMessage(), t );
+            }
+        }
+    }
+
+    @Override
+    public void deactivate( String id )
+                            throws WorkspaceInitializationException {
+        ResourceState state = getState( id );
+        if ( state != null && state.getType() != deactivated ) {
+            File oldFile = state.getConfigLocation();
+            File newFile = new File( dir, id + ".ignore" );
+            oldFile.renameTo( newFile );
+
+            ConnectionPool pool = idToPools.get( id );
+            try {
+                pool.destroy();
+            } catch ( Exception e ) {
+                e.printStackTrace();
+            }
+            idToState.put( id, new ResourceState( id, newFile, this, StateType.deactivated, null ) );
+        }
+    }
+
+    @Override
+    protected ResourceProvider getProvider( File file ) {
+        return this;
     }
 }
