@@ -62,10 +62,13 @@ public class ResourceProviderMetadata {
 
     private final Map<String, ConfigExample> exampleNameToExample = new HashMap<String, ConfigExample>();
 
+    private String name;
+
     private static final Map<Class<? extends ResourceProvider>, ResourceProviderMetadata> rpClassToMd = new HashMap<Class<? extends ResourceProvider>, ResourceProviderMetadata>();
 
     private ResourceProviderMetadata( ResourceProvider rp ) {
         String className = rp.getClass().getName();
+        name = rp.getClass().getSimpleName();
         URL url = this.getClass().getResource( "/META-INF/console/resourceprovider/" + className );
         if ( url != null ) {
             LOG.info( "Loading resource provider metadata from '" + url + "'" );
@@ -74,6 +77,9 @@ public class ResourceProviderMetadata {
             try {
                 is = url.openStream();
                 props.load( is );
+                if ( props.containsKey( "name" ) ) {
+                    name = props.getProperty( "name" ).trim();
+                }
                 if ( props.containsKey( "wizard" ) ) {
                     wizardView = props.getProperty( "wizard" ).trim();
                 }
@@ -112,6 +118,10 @@ public class ResourceProviderMetadata {
             rpClassToMd.put( cl, new ResourceProviderMetadata( rp ) );
         }
         return rpClassToMd.get( cl );
+    }
+
+    public String getName() {
+        return name;
     }
 
     public Map<String, ConfigExample> getExamples() {

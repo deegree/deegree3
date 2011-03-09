@@ -127,8 +127,7 @@ public class Config implements Comparable<Config> {
         try {
             resourceManager.activate( id );
         } catch ( Throwable t ) {
-            FacesMessage fm = new FacesMessage( SEVERITY_ERROR, "Unable to activate resource: " + t.getMessage(),
-                                                null );
+            FacesMessage fm = new FacesMessage( SEVERITY_ERROR, "Unable to activate resource: " + t.getMessage(), null );
             FacesContext.getCurrentInstance().addMessage( null, fm );
             return;
         }
@@ -159,9 +158,6 @@ public class Config implements Comparable<Config> {
 
     public String edit()
                             throws IOException {
-        // if ( !location.exists() && template != null ) {
-        // copyURLToFile( template, location );
-        // }
         this.content = readFileToString( location, "UTF-8" );
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put( "editConfig", this );
         return "/console/generic/xmleditor?faces-redirect=true";

@@ -23,7 +23,7 @@
           <h:panelGroup>
             <h:link styleClass="schema" value="#{labels.xmlEditor_schema}" outcome="schema" target="_blank" />
             <h:commandButton styleClass="buttonSave" value="#{labels.xmlEditor_save}" action="${editConfig.save}" />
-            <h:outputLink styleClass="buttonCancel" value="../../#{configManager.viewForResourceManager}.jsf">
+            <h:outputLink styleClass="buttonCancel" value="{configManager.currentResourceManager.startView}">
               <h:outputText value="#{labels.xmlEditor_cancel}" />
             </h:outputLink>
             <br />

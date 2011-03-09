@@ -50,6 +50,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -94,9 +95,6 @@ public class ConfigManager {
     private ResourceManagerMetadata2 currentResourceManager;
 
     @Getter
-    private List<String> providers;
-
-    @Getter
     private String newConfigType;
 
     @Getter
@@ -134,11 +132,11 @@ public class ConfigManager {
 
     private boolean modified;
 
-    public ConfigManager () {
+    public ConfigManager() {
         FacesContext.getCurrentInstance().getExternalContext().getApplicationMap().put( "workspace",
                                                                                         getServiceWorkspace() );
     }
-    
+
     public List<ResourceManagerMetadata2> getResourceManagers() {
         List<ResourceManagerMetadata2> rmMetadata = new ArrayList<ResourceManagerMetadata2>();
         for ( ResourceManager mgr : getServiceWorkspace().getResourceManagers() ) {
@@ -147,11 +145,12 @@ public class ConfigManager {
                 rmMetadata.add( md );
             }
         }
+        Collections.sort( rmMetadata );
         return rmMetadata;
     }
 
     public void resourceManagerChanged( ActionEvent evt ) {
-        String linkText = ((HtmlCommandLink) evt.getSource()).getValue().toString();
+        String linkText = ( (HtmlCommandLink) evt.getSource() ).getValue().toString();
         for ( ResourceManagerMetadata2 mgr : getResourceManagers() ) {
             if ( mgr.getName().equals( linkText ) ) {
                 currentResourceManager = mgr;
@@ -177,7 +176,7 @@ public class ConfigManager {
             }
         }
     }
-    
+
     public String startWizard() {
 
         String nextView = "/console/jsf/wizard";

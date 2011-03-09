@@ -37,8 +37,6 @@ package org.deegree.console;
 
 import java.net.URL;
 
-import org.deegree.commons.config.Resource;
-
 /**
  * TODO add class documentation here
  * 

@@ -12,7 +12,7 @@
         </h:panelGroup>
         <h:panelGroup rendered="#{logBean.loggedIn &amp;&amp; configManager.currentResourceManager != null}">
             <fieldset class="fieldset"><legend><h:outputText styleClass="titel"
-                value="Create new #{configManager.currentResourceManager.metadata.name}" /></legend>
+                value="Create new #{configManager.currentResourceManager.name}" /></legend>
                 <h:outputText value="Id: #{configManager.newConfigId}" /><br/>
                 <h:outputText value="Type: #{configManager.newConfigType}" /><br/>
                 <h:form>

@@ -38,6 +38,7 @@ package org.deegree.console;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -57,7 +58,7 @@ import org.slf4j.LoggerFactory;
  * 
  * @version $Revision$, $Date$
  */
-public class ResourceManagerMetadata2 {
+public class ResourceManagerMetadata2 implements Comparable<ResourceManagerMetadata2> {
 
     private static Logger LOG = LoggerFactory.getLogger( ResourceManagerMetadata2.class );
 
@@ -69,11 +70,18 @@ public class ResourceManagerMetadata2 {
 
     private ResourceManager mgr;
 
-    private List<ResourceProvider> providers;
+    private List<ResourceProvider> providers = new ArrayList<ResourceProvider>();
+
+    private List<String> providerNames = new ArrayList<String>();
 
     private ResourceManagerMetadata2( ResourceManager mgr ) {
         if ( mgr.getMetadata() != null ) {
-            providers = mgr.getMetadata().getResourceProviders();
+            for ( Object o : mgr.getMetadata().getResourceProviders() ) {
+                ResourceProvider provider = (ResourceProvider) o;
+                ResourceProviderMetadata providerMd = ResourceProviderMetadata.getMetadata( provider );
+                providers.add( provider );
+                providerNames.add( providerMd.getName() );
+            }
         } else {
             providers = Collections.emptyList();
         }
@@ -107,9 +115,9 @@ public class ResourceManagerMetadata2 {
         Class<? extends ResourceManager> cl = rm.getClass();
         if ( !rmClassToMd.containsKey( cl ) ) {
             ResourceManagerMetadata2 md = new ResourceManagerMetadata2( rm );
-            if (md.name == null) {
+            if ( md.name == null ) {
                 return null;
-            }                
+            }
             rmClassToMd.put( cl, new ResourceManagerMetadata2( rm ) );
         }
         return rmClassToMd.get( cl );
@@ -129,5 +137,14 @@ public class ResourceManagerMetadata2 {
 
     public List<ResourceProvider> getProviders() {
         return providers;
+    }
+
+    public List<String> getProviderNames() {
+        return providerNames;
+    }
+
+    @Override
+    public int compareTo( ResourceManagerMetadata2 o ) {
+        return this.name.compareTo( o.name );
     }
 }
