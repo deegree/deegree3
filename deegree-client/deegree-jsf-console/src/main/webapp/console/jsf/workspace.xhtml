@@ -1,102 +1,98 @@
 <ui:composition template="/layout.xhtml" xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html"
-    xmlns:f="http://java.sun.com/jsf/core" xmlns:ui="http://java.sun.com/jsf/facelets"
-    xmlns:c="http://java.sun.com/jsp/jstl/core" xmlns:fn="http://java.sun.com/jsp/jstl/functions"
-    xmlns:dg="http://deegree.org/jsf" xmlns:dgc="http://java.sun.com/jsf/composite/deegree">
-    <ui:define name="center">
-        <h:panelGroup rendered="#{!logBean.loggedIn}">
-            <ui:include src="accessForbidden.xhtml" />
-        </h:panelGroup>
-        <h:panelGroup rendered="#{logBean.loggedIn}">
-            <fieldset class="fieldset"><legend><h:outputText styleClass="titel"
-                value="#{labels.workspace_title}" /></legend>
-            <table style="font-size: small" border="0">
-                <tr>
-                    <td colspan="3"><h:outputFormat value="#{labels.workspace_name}"
-                        style="margin: 10px 0px; font-size:small">
-                        <f:param value="#{applicationBean.workspaceName}" />
-                    </h:outputFormat></td>
-                </tr>
-                <tr>
-                    <td colspan="3"><h:outputFormat value="#{labels.workspace_dir}"
-                        style="margin: 10px 0px; font-size:small">
-                        <f:param value="#{applicationBean.workspaceDirectory}" />
-                    </h:outputFormat></td>
-                </tr>
-                <tr>
-                    <td colspan="3" />
-                </tr>
-                <tr>
-                    <td colspan="3"><h:form>
-                        <h:inputText styleClass="liste" value="#{configManager.workspaceImportUrl}" size="32"
-                            required="true" requiredMessage="#{labels.workspace_import_url_req}" />
-                        <h:commandButton styleClass="buttonCreateNew" value="#{labels.import_workspace}"
-                            onclick="show();" actionListener="#{configManager.importWorkspace}" />
-                        <br />
-                        <br />
-                        <h:outputLabel styleClass="label" value="New workspace name: " />
-                        <h:inputText styleClass="liste" value="#{configManager.workspaceImportName}" size="32" />
-                    </h:form></td>
-                </tr>
-                <tr>
-                    <td colspan="3" />
-                </tr>
-                <tr>
-                    <td colspan="3"><h:outputLabel styleClass="label" value="Available workspaces:" /></td>
-                </tr>
-                <tr>
-                    <td colspan="3" />
-                </tr>
-                <tr align="left">
-                    <td><h:outputText style="margin: 10px 0px; font-size:small" value="Webapp workspace" /></td>
-                    <td colspan="2"><h:form>
-                        <h:commandButton styleClass="buttonInfo" label="" value="#{labels.start_original_workspace}"
-                            onclick="show();" rendered="#{applicationBean.workspaceName != 'default(external)'}"
-                            actionListener="#{configManager.startWorkspace}" />
-                        <h:outputText style="margin: 10px 0px; font-size:small" value="#{labels.running_workspace}"
-                            rendered="#{applicationBean.workspaceName == 'default(external)'}" />
-                    </h:form></td>
-                </tr>
-                <ui:repeat var="workspace" value="#{configManager.workspaceList}">
-                    <tr align="left">
+  xmlns:f="http://java.sun.com/jsf/core" xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:c="http://java.sun.com/jsp/jstl/core" xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+  xmlns:dg="http://deegree.org/jsf" xmlns:dgc="http://java.sun.com/jsf/composite/deegree">
+  <ui:define name="center">
+    <h:panelGroup rendered="#{!logBean.loggedIn}">
+      <ui:include src="accessForbidden.xhtml" />
+    </h:panelGroup>
+    <h:panelGroup rendered="#{logBean.loggedIn}">
+      <fieldset class="fieldset"><legend><h:outputText styleClass="titel"
+        value="#{labels.workspace_title}" /></legend>
+      <table style="font-size: small" border="0">
+        <tr>
+          <td colspan="3"><h:outputFormat value="#{labels.workspace_name}"
+            style="margin: 10px 0px; font-size:small">
+            <f:param value="#{workspace.activeWorkspace.name}" />
+          </h:outputFormat></td>
+        </tr>
+        <tr>
+          <td colspan="3"><h:outputFormat value="#{labels.workspace_dir}" style="margin: 10px 0px; font-size:small">
+            <f:param value="#{workspace.activeWorkspace.location}" />
+          </h:outputFormat></td>
+        </tr>
+        <tr>
+          <td colspan="3" />
+        </tr>
+        <tr>
+          <td colspan="3"><h:form>
+            <h:inputText styleClass="liste" value="#{workspace.workspaceImportUrl}" size="32" required="true"
+              requiredMessage="#{labels.workspace_import_url_req}" />
+            <h:commandButton styleClass="buttonCreateNew" value="#{labels.import_workspace}" onclick="show();"
+              actionListener="#{workspace.importWorkspace}" />
+            <br />
+            <br />
+            <h:outputLabel styleClass="label" value="New workspace name: " />
+            <h:inputText styleClass="liste" value="#{workspace.workspaceImportName}" size="32" />
+          </h:form></td>
+        </tr>
+        <tr>
+          <td colspan="3" />
+        </tr>
+        <tr>
+          <td colspan="3"><h:outputLabel styleClass="label" value="Available workspaces:" /></td>
+        </tr>
+        <tr>
+          <td colspan="3" />
+        </tr>
+        <tr align="left">
+          <td><h:outputText style="margin: 10px 0px; font-size:small" value="Webapp workspace" /></td>
+          <td colspan="2"><h:form>
+            <h:commandButton styleClass="buttonInfo" label="" value="#{labels.start_original_workspace}"
+              onclick="show();" rendered="#{workspace.activeWorkspace.name != 'default(external)'}"
+              actionListener="#{workspace.startWorkspace}" />
+            <h:outputText style="margin: 10px 0px; font-size:small" value="#{labels.running_workspace}"
+              rendered="#{workspace.activeWorkspace.name == 'default(external)'}" />
+          </h:form></td>
+        </tr>
+        <ui:repeat var="workspaceName" value="#{workspace.workspaceList}">
+          <tr align="left">
 
-                        <td><h:outputText style="margin: 10px 0px; font-size:small" value="#{workspace}" /></td>
-                        <td><h:form>
-                            <h:commandButton styleClass="buttonInfo" label="#{workspace}"
-                                value="#{labels.start_workspace}" onclick="show();"
-                                rendered="#{applicationBean.workspaceName != workspace}"
-                                actionListener="#{configManager.startWorkspace}" />
-                            <h:outputText style="margin: 10px 0px; font-size:small" value="#{labels.running_workspace}"
-                                rendered="#{applicationBean.workspaceName == workspace}" />
-                        </h:form></td>
-                        <td><h:form>
-                            <h:commandButton styleClass="buttonInfo" label="#{workspace}"
-                                onclick="return confirmDelete();" value="#{labels.delete_workspace}"
-                                rendered="#{applicationBean.workspaceName != workspace}"
-                                actionListener="#{configManager.deleteWorkspace}" />
-                        </h:form></td>
-                    </tr>
-                </ui:repeat>
-                <tr>
-                    <td colspan="3" />
-                </tr>
-                <tr>
-                    <td colspan="3"><h:outputLabel styleClass="label" value="Download an official workspace:" /></td>
-                </tr>
-                <tr>
-                    <td colspan="3" />
-                </tr>
-                <ui:repeat var="workspace" value="#{configManager.remoteWorkspaces}">
-                    <tr align="left">
-                        <td colspan="2"><h:outputText style="margin: 10px 0px; font-size:small"
-                            value="#{workspace}" /></td>
-                        <td><h:form>
-                            <h:commandButton styleClass="buttonInfo" label="#{workspace}" value="Download"
-                                onclick="show();" actionListener="#{configManager.downloadWorkspace}" />
-                        </h:form></td>
-                    </tr>
-                </ui:repeat>
-            </table>
-            </fieldset>
-        </h:panelGroup>
-    </ui:define>
+            <td><h:outputText style="margin: 10px 0px; font-size:small" value="#{workspaceName}" /></td>
+            <td><h:form>
+              <h:commandButton styleClass="buttonInfo" label="#{workspaceName}" value="#{labels.start_workspace}"
+                onclick="show();" rendered="#{workspace.activeWorkspace.name != workspaceName}"
+                actionListener="#{workspace.startWorkspace}" />
+              <h:outputText style="margin: 10px 0px; font-size:small" value="#{labels.running_workspace}"
+                rendered="#{workspace.activeWorkspace.name == workspaceName}" />
+            </h:form></td>
+            <td><h:form>
+              <h:commandButton styleClass="buttonInfo" label="#{workspaceName}" onclick="return confirmDelete();"
+                value="#{labels.delete_workspace}" rendered="#{workspace.activeWorkspace.name != workspaceName}"
+                actionListener="#{workspace.deleteWorkspace}" />
+            </h:form></td>
+          </tr>
+        </ui:repeat>
+        <tr>
+          <td colspan="3" />
+        </tr>
+        <tr>
+          <td colspan="3"><h:outputLabel styleClass="label" value="Download an official workspace:" /></td>
+        </tr>
+        <tr>
+          <td colspan="3" />
+        </tr>
+        <ui:repeat var="workspaceName" value="#{workspace.remoteWorkspaces}">
+          <tr align="left">
+            <td colspan="2"><h:outputText style="margin: 10px 0px; font-size:small" value="#{workspaceName}" /></td>
+            <td><h:form>
+              <h:commandButton styleClass="buttonInfo" label="#{workspaceName}" value="Download" onclick="show();"
+                actionListener="#{workspace.downloadWorkspace}" />
+            </h:form></td>
+          </tr>
+        </ui:repeat>
+      </table>
+      </fieldset>
+    </h:panelGroup>
+  </ui:define>
 </ui:composition>

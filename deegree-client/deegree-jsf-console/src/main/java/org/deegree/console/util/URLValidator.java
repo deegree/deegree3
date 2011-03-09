@@ -1,4 +1,4 @@
-//$HeadURL$
+//$HeadURL: svn+ssh://mschneider@svn.wald.intevation.org/deegree/deegree3/trunk/deegree-client/deegree-jsf-console/src/main/java/org/deegree/client/validation/URLValidator.java $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2010 by:
@@ -33,45 +33,39 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.client.util;
-
-import static org.slf4j.LoggerFactory.getLogger;
+package org.deegree.console.util;
 
 import java.net.MalformedURLException;
 import java.net.URL;
 
-import javax.faces.context.ExternalContext;
+import javax.faces.application.FacesMessage;
+import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
-
-import org.slf4j.Logger;
+import javax.faces.validator.FacesValidator;
+import javax.faces.validator.Validator;
+import javax.faces.validator.ValidatorException;
 
 /**
- * <code>FacesUtil</code>
+ * The URLValidator checks if a string is a valid URL
  * 
- * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
- * @author last edited by: $Author$
+ * @author <a href="mailto:buesching@lat-lon.de">Lyn Buesching</a>
+ * @author last edited by: $Author: mschneider $
  * 
- * @version $Revision$, $Date$
+ * @version $Revision: 29926 $, $Date: 2011-03-08 11:47:59 +0100 (Di, 08. Mär 2011) $
  */
-public class FacesUtil {
+@FacesValidator(value = "org.deegree.URLValidator")
+public class URLValidator implements Validator {
 
-    private static final Logger LOG = getLogger( FacesUtil.class );
-
-    /**
-     * @return the current URL, or null if an error occurred. Example: http://localhost:8080/context/
-     */
-    public static String getServerURL() {
-        ExternalContext ctx = FacesContext.getCurrentInstance().getExternalContext();
-        URL url;
+    @Override
+    public void validate( FacesContext arg0, UIComponent arg1, Object arg2 )
+                            throws ValidatorException {
         try {
-            url = new URL( ctx.getRequestScheme(), ctx.getRequestServerName(), ctx.getRequestServerPort(),
-                           ctx.getRequestContextPath() );
-            return url.toExternalForm() + "/";
+            new URL( (String) arg2 );
         } catch ( MalformedURLException e ) {
-            LOG.debug( "Constructing the url was a problem..." );
-            LOG.trace( "Stack trace:", e );
+            FacesMessage fm = new FacesMessage( "Invalid URL" );
+            fm.setSeverity( FacesMessage.SEVERITY_ERROR );
+            throw new ValidatorException( fm );
         }
-        return null;
     }
 
 }

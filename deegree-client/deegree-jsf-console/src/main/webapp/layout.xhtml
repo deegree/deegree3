@@ -1,6 +1,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core"
     xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:dg="http://deegree.org/jsf"
     xmlns:dgc="http://java.sun.com/jsf/composite/deegree">
+
 <h:head>
     <title>deegree 3 console</title>
     <h:outputStylesheet name="styles.css" />
@@ -25,14 +26,14 @@
   <pre><h:outputText value="#{applicationBean.logo}" /></pre> 
   --> <h:panelGroup rendered="#{logBean.loggedIn}">
         <h:form>
-            <h:commandButton value="#{labels.apply_changes}" styleClass="button" action="#{configManager.applyChanges}"
-                onclick="show();" rendered="#{configManager.pendingChanges}" />
+            <h:commandButton value="#{labels.apply_changes}" styleClass="button" action="#{workspace.applyChanges}"
+                onclick="show();" rendered="#{workspace.pendingChanges}" />
             <h:commandButton value="#{labels.apply_changes}" styleClass="buttongray"
-                action="#{configManager.applyChanges}" onclick="show();" rendered="#{!configManager.pendingChanges}" />
-            <h:outputText value="#{configManager.lastMessage}" styleClass="attention"
-                rendered="#{configManager.pendingChanges}" />
-            <h:outputText value="#{configManager.lastMessage}" styleClass="noattention"
-                rendered="#{!configManager.pendingChanges}" />
+                action="#{workspace.applyChanges}" onclick="show();" rendered="#{!workspace.pendingChanges}" />
+            <h:outputText value="#{workspace.lastMessage}" styleClass="attention"
+                rendered="#{workspace.pendingChanges}" />
+            <h:outputText value="#{workspace.lastMessage}" styleClass="noattention"
+                rendered="#{!workspace.pendingChanges}" />
         </h:form>
     </h:panelGroup></div>
     <div id="login"><h:panelGroup rendered="#{!logBean.loggedIn}">
@@ -51,10 +52,9 @@
                 rendered="#{facesContext.viewRoot.viewId == '/console/jsf/modules.xhtml'}" />
             <h:link styleClass="navi" value="modules" outcome="/console/jsf/modules.xhtml"
                 rendered="#{facesContext.viewRoot.viewId != '/console/jsf/modules.xhtml'}" />
-            <h:link styleClass="naviactive" value="workspace" outcome="/console/jsf/workspace.xhtml"
-                disabled="#{!logBean.loggedIn}"
-                rendered="#{facesContext.viewRoot.viewId == '/console/jsf/workspace.xhtml'}" />
-            <h:link styleClass="navi" value="workspace" outcome="/console/jsf/workspace.xhtml"
+      <h:link styleClass="naviactive" value="workspace" outcome="/console/jsf/workspace.xhtml"
+        disabled="#{!logBean.loggedIn}" rendered="#{facesContext.viewRoot.viewId == '/console/jsf/workspace.xhtml'}" />
+      <h:link styleClass="navi" value="workspace" outcome="/console/jsf/workspace.xhtml"
                 disabled="#{!logBean.loggedIn}"
                 rendered="#{facesContext.viewRoot.viewId != '/console/jsf/workspace.xhtml'}" />
             <h:link styleClass="naviactive" value="proxy" outcome="/console/jsf/proxy.xhtml"

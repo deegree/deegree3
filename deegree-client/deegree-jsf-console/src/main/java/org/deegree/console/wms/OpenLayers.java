@@ -1,4 +1,4 @@
-//$HeadURL$
+//$HeadURL: svn+ssh://mschneider@svn.wald.intevation.org/deegree/deegree3/trunk/deegree-client/deegree-jsf-console/src/main/java/org/deegree/client/wms/OpenLayers.java $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2010 by:
@@ -33,10 +33,9 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.client.wms;
+package org.deegree.console.wms;
 
 import static java.lang.System.currentTimeMillis;
-import static org.deegree.client.util.FacesUtil.getServerURL;
 import static org.deegree.commons.utils.time.DateUtils.formatISO8601Date;
 import static org.deegree.commons.utils.time.DateUtils.parseISO8601Date;
 import static org.slf4j.LoggerFactory.getLogger;
@@ -53,6 +52,8 @@ import java.util.LinkedList;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
 import javax.faces.component.html.HtmlPanelGroup;
+import javax.faces.context.ExternalContext;
+import javax.faces.context.FacesContext;
 import javax.faces.event.ValueChangeEvent;
 import javax.xml.stream.FactoryConfigurationError;
 import javax.xml.stream.XMLInputFactory;
@@ -68,9 +69,9 @@ import org.slf4j.Logger;
  * <code>OpenLayers</code>
  * 
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
- * @author last edited by: $Author$
+ * @author last edited by: $Author: mschneider $
  * 
- * @version $Revision$, $Date$
+ * @version $Revision: 29926 $, $Date: 2011-03-08 11:47:59 +0100 (Di, 08. Mär 2011) $
  */
 @ManagedBean
 @SessionScoped
@@ -132,6 +133,20 @@ public class OpenLayers implements Serializable {
         loadCapabilities();
     }
 
+    public static String getServerURL() {
+        ExternalContext ctx = FacesContext.getCurrentInstance().getExternalContext();
+        URL url;
+        try {
+            url = new URL( ctx.getRequestScheme(), ctx.getRequestServerName(), ctx.getRequestServerPort(),
+                           ctx.getRequestContextPath() );
+            return url.toExternalForm() + "/";
+        } catch ( MalformedURLException e ) {
+            LOG.debug( "Constructing the url was a problem..." );
+            LOG.trace( "Stack trace:", e );
+        }
+        return null;
+    }
+
     private void loadCapabilities() {
         String getCapas = url + "?request=GetCapabilities&service=WMS&version=1.1.1";
 
@@ -164,8 +179,7 @@ public class OpenLayers implements Serializable {
 
                 if ( reader.isStartElement() && reader.getLocalName().equals( "Layer" ) ) {
                     Layer l = new Layer();
-                    while ( !( reader.isStartElement() && ( reader.getLocalName().equals( "Name" ) || reader.getLocalName().equals(
-                                                                                                                                    "Title" ) ) ) ) {
+                    while ( !( reader.isStartElement() && ( reader.getLocalName().equals( "Name" ) || reader.getLocalName().equals( "Title" ) ) ) ) {
                         reader.next();
                         if ( reader.isEndElement() && reader.getLocalName().equals( "Layer" ) ) {
                             break;
@@ -188,10 +202,8 @@ public class OpenLayers implements Serializable {
                         layers.add( l );
                         if ( l.name.equals( "statistics" ) ) {
                             statisticsAvailable = true;
-                            while ( !( reader.isStartElement() && reader.getLocalName().equals( "Extent" ) && reader.getAttributeValue(
-                                                                                                                                        null,
-                                                                                                                                        "name" ).equals(
-                                                                                                                                                         "time" ) ) ) {
+                            while ( !( reader.isStartElement() && reader.getLocalName().equals( "Extent" ) && reader.getAttributeValue( null,
+                                                                                                                                        "name" ).equals( "time" ) ) ) {
                                 reader.next();
                             }
                             String def = reader.getAttributeValue( null, "default" );
@@ -274,9 +286,9 @@ public class OpenLayers implements Serializable {
      * <code>Layer</code>
      * 
      * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
-     * @author last edited by: $Author$
+     * @author last edited by: $Author: mschneider $
      * 
-     * @version $Revision$, $Date$
+     * @version $Revision: 29926 $, $Date: 2011-03-08 11:47:59 +0100 (Di, 08. Mär 2011) $
      */
     public static class Layer implements Serializable {
         private static final long serialVersionUID = -1563797064644908196L;

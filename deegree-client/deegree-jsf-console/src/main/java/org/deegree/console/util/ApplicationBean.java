@@ -1,4 +1,4 @@
-//$HeadURL$
+//$HeadURL: svn+ssh://mschneider@svn.wald.intevation.org/deegree/deegree3/trunk/deegree-client/deegree-jsf-console/src/main/java/org/deegree/client/generic/ApplicationBean.java $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2010 by:
@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.client.generic;
+package org.deegree.console.util;
 
 import static org.apache.commons.io.IOUtils.closeQuietly;
 import static org.deegree.commons.utils.CollectionUtils.addAllUncontained;
@@ -56,7 +56,6 @@ import javax.faces.bean.RequestScoped;
 
 import org.deegree.commons.utils.DeegreeAALogoUtils;
 import org.deegree.commons.version.DeegreeModuleInfo;
-import org.deegree.services.controller.OGCFrontController;
 import org.reflections.Reflections;
 import org.reflections.serializers.Serializer;
 import org.slf4j.Logger;
@@ -67,9 +66,9 @@ import com.google.common.base.Predicate;
  * Encapsulates informations about the status of the deegree web services.
  * 
  * @author <a href="mailto:buesching@lat-lon.de">Lyn Buesching</a>
- * @author last edited by: $Author$
+ * @author last edited by: $Author: mschneider $
  * 
- * @version $Revision$, $Date$
+ * @version $Revision: 29926 $, $Date: 2011-03-08 11:47:59 +0100 (Di, 08. Mär 2011) $
  */
 @ManagedBean
 @RequestScoped
@@ -215,16 +214,7 @@ public class ApplicationBean implements Serializable {
         return nameToController;
     }
 
-    public String getWorkspaceName() {
-        return OGCFrontController.getServiceWorkspace().getName();
-    }
-
-    public String getWorkspaceDirectory() {
-        return OGCFrontController.getServiceWorkspace().getLocation().getAbsolutePath();
-    }
-
     public List<String> getLoadedModules() {
         return loadedModules;
     }
-
 }
