@@ -53,7 +53,6 @@ import org.deegree.cs.exceptions.TransformationException;
 import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.filter.Expression;
 import org.deegree.filter.Filter;
-import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.IdFilter;
 import org.deegree.filter.Operator;
 import org.deegree.filter.OperatorFilter;
@@ -297,7 +296,6 @@ public class Filter110XMLEncoder {
      * @param writer
      *            target of the xml stream
      * @throws XMLStreamException
-     * @throws FilterEvaluationException
      */
     private static void export( ComparisonOperator operator, XMLStreamWriter writer )
                             throws XMLStreamException {
@@ -339,6 +337,8 @@ public class Filter110XMLEncoder {
             writer.writeAttribute( "wildCard", isLikeOperator.getWildCard() );
             writer.writeAttribute( "singleChar", isLikeOperator.getSingleChar() );
             writer.writeAttribute( "escapeChar", isLikeOperator.getEscapeChar() );
+            if ( !isLikeOperator.getMatchCase() )
+                writer.writeAttribute( "matchCase", "" + isLikeOperator.getMatchCase() );
             export( isLikeOperator.getPropertyName(), writer );
             export( isLikeOperator.getLiteral(), writer );
             break;
@@ -364,7 +364,6 @@ public class Filter110XMLEncoder {
      * @throws XMLStreamException
      * @throws TransformationException
      * @throws UnknownCRSException
-     * @throws FilterEvaluationException
      */
     private static void export( SpatialOperator operator, XMLStreamWriter writer )
                             throws XMLStreamException, UnknownCRSException, TransformationException {
@@ -445,8 +444,8 @@ public class Filter110XMLEncoder {
         if ( distance != null ) { // in case of Beyond- and DWithin-operators export their distance variable
             QName distanceElementName = new QName( CommonNamespaces.OGCNS, "Distance" );
             writer.writeStartElement( distanceElementName.getNamespaceURI(), distanceElementName.getLocalPart() );
-            writer.writeAttribute( "units", ( (Measure) distance ).getUomUri() );
-            writer.writeCharacters( ( (Measure) distance ).getValue().toString() );
+            writer.writeAttribute( "units", distance.getUomUri() );
+            writer.writeCharacters( distance.getValue().toString() );
             writer.writeEndElement();
         }
         writer.writeEndElement();
@@ -460,7 +459,6 @@ public class Filter110XMLEncoder {
      * @param writer
      *            target of the xml stream
      * @throws XMLStreamException
-     * @throws FilterEvaluationException
      */
     public static void export( Expression expression, XMLStreamWriter writer )
                             throws XMLStreamException {
