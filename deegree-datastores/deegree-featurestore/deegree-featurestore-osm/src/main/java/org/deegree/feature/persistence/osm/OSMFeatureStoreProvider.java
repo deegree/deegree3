@@ -42,7 +42,6 @@ import javax.xml.stream.XMLStreamException;
 
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceManager;
-import org.deegree.commons.config.WorkspaceInitializationException;
 import org.deegree.commons.utils.ProxyUtils;
 import org.deegree.feature.persistence.FeatureStoreProvider;
 
@@ -69,8 +68,7 @@ public class OSMFeatureStoreProvider implements FeatureStoreProvider {
     }
 
     @Override
-    public OSMFeatureStore create( URL configURL )
-                            throws WorkspaceInitializationException {
+    public OSMFeatureStore create( URL configURL ) {
         try {
             return new OSMFeatureStore();
         } catch ( FileNotFoundException e ) {
