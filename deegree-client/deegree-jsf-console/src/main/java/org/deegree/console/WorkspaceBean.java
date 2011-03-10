@@ -98,6 +98,14 @@ public class WorkspaceBean implements Serializable {
 
     private boolean modified;
 
+    public String getWorkspaceRoot (){
+        return DeegreeWorkspace.getWorkspaceRoot();
+    }
+    
+    public boolean getOtherAvailable () {
+        return getWorkspaceList().size() > 1;
+    }
+    
     /**
      * Returns the currently active {@link DeegreeWorkspace}.
      * 

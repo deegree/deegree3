@@ -7,91 +7,99 @@
       <ui:include src="accessForbidden.xhtml" />
     </h:panelGroup>
     <h:panelGroup rendered="#{logBean.loggedIn}">
-      <fieldset class="fieldset"><legend><h:outputText styleClass="titel"
-        value="#{labels.workspace_title}" /></legend>
+      <fieldset class="fieldset">
+        <legend>
+          <h:outputText styleClass="titel" value="#{labels.workspace_title}" />
+        </legend>
+      
       <table style="font-size: small" border="0">
-        <tr>
-          <td colspan="3"><h:outputFormat value="#{labels.workspace_name}"
-            style="margin: 10px 0px; font-size:small">
-            <f:param value="#{workspace.activeWorkspace.name}" />
-          </h:outputFormat></td>
-        </tr>
-        <tr>
-          <td colspan="3"><h:outputFormat value="#{labels.workspace_dir}" style="margin: 10px 0px; font-size:small">
-            <f:param value="#{workspace.activeWorkspace.location}" />
-          </h:outputFormat></td>
-        </tr>
-        <tr>
-          <td colspan="3" />
-        </tr>
-        <tr>
-          <td colspan="3"><h:form>
-            <h:inputText styleClass="liste" value="#{workspace.workspaceImportUrl}" size="32" required="true"
-              requiredMessage="#{labels.workspace_import_url_req}" />
-            <h:commandButton styleClass="buttonCreateNew" value="#{labels.import_workspace}" onclick="show();"
-              actionListener="#{workspace.importWorkspace}" />
-            <br />
-            <br />
-            <h:outputLabel styleClass="label" value="New workspace name: " />
-            <h:inputText styleClass="liste" value="#{workspace.workspaceImportName}" size="32" />
-          </h:form></td>
-        </tr>
-        <tr>
-          <td colspan="3" />
-        </tr>
-        <tr>
-          <td colspan="3"><h:outputLabel styleClass="label" value="Available workspaces:" /></td>
-        </tr>
-        <tr>
-          <td colspan="3" />
-        </tr>
-        <tr align="left">
-          <td><h:outputText style="margin: 10px 0px; font-size:small" value="Webapp workspace" /></td>
-          <td colspan="2"><h:form>
-            <h:commandButton styleClass="buttonInfo" label="" value="#{labels.start_original_workspace}"
-              onclick="show();" rendered="#{workspace.activeWorkspace.name != 'default(external)'}"
-              actionListener="#{workspace.startWorkspace}" />
-            <h:outputText style="margin: 10px 0px; font-size:small" value="#{labels.running_workspace}"
-              rendered="#{workspace.activeWorkspace.name == 'default(external)'}" />
-          </h:form></td>
-        </tr>
-        <ui:repeat var="workspaceName" value="#{workspace.workspaceList}">
-          <tr align="left">
+      <tr> 
+      <td style=".label"><h:outputText value="#{labels.workspace_dir}"/></td>
+      <td/>
+      <td style=".liste"><h:outputText value="#{workspace.workspaceRoot}"/></td>
+      </tr>      
+      <tr>  
+      <td style=".label"><h:outputText value="#{labels.workspace_name}"/></td>
+      <td/>
+      <td style=".liste">
+        <h:outputText value="#{workspace.activeWorkspace.name}"/>
+      </td>
+      </tr>
+      </table>
 
-            <td><h:outputText style="margin: 10px 0px; font-size:small" value="#{workspaceName}" /></td>
-            <td><h:form>
-              <h:commandButton styleClass="buttonInfo" label="#{workspaceName}" value="#{labels.start_workspace}"
-                onclick="show();" rendered="#{workspace.activeWorkspace.name != workspaceName}"
-                actionListener="#{workspace.startWorkspace}" />
-              <h:outputText style="margin: 10px 0px; font-size:small" value="#{labels.running_workspace}"
-                rendered="#{workspace.activeWorkspace.name == workspaceName}" />
-            </h:form></td>
-            <td><h:form>
-              <h:commandButton styleClass="buttonInfo" label="#{workspaceName}" onclick="return confirmDelete();"
-                value="#{labels.delete_workspace}" rendered="#{workspace.activeWorkspace.name != workspaceName}"
-                actionListener="#{workspace.deleteWorkspace}" />
-            </h:form></td>
-          </tr>
-        </ui:repeat>
-        <tr>
-          <td colspan="3" />
-        </tr>
-        <tr>
-          <td colspan="3"><h:outputLabel styleClass="label" value="Download an official workspace:" /></td>
-        </tr>
-        <tr>
-          <td colspan="3" />
-        </tr>
-        <ui:repeat var="workspaceName" value="#{workspace.remoteWorkspaces}">
+      <h:panelGroup rendered="#{workspace.otherAvailable}">
+      <br/>
+      <br/>
+      <h:outputText styleClass="titel" value="Inactive workspaces" />
+      <table style="margin: 10px 0px; font-size:small" border="0">
+        <ui:repeat var="workspaceName" value="#{workspace.workspaceList}">  
+          <h:panelGroup rendered="#{workspace.activeWorkspace.name != workspaceName}">
+          <h:form>
           <tr align="left">
-            <td colspan="2"><h:outputText style="margin: 10px 0px; font-size:small" value="#{workspaceName}" /></td>
-            <td><h:form>
-              <h:commandButton styleClass="buttonInfo" label="#{workspaceName}" value="Download" onclick="show();"
-                actionListener="#{workspace.downloadWorkspace}" />
-            </h:form></td>
+            <td><h:outputText value="#{workspaceName}" /></td>
+            <td>
+              <h:commandButton styleClass="buttonInfo" label="#{workspaceName}" value="#{labels.start_workspace}"
+                onclick="show();" actionListener="#{workspace.startWorkspace}" />
+            </td>
+            <td>
+              <h:commandButton styleClass="buttonInfo" label="#{workspaceName}" onclick="return confirmDelete();"
+                value="#{labels.delete_workspace}" actionListener="#{workspace.deleteWorkspace}" />
+            </td> 
           </tr>
+          </h:form>
+          </h:panelGroup>
         </ui:repeat>
       </table>
+      </h:panelGroup>
+      
+      <br/>
+      <br/>
+      <h:outputText styleClass="titel" value="Import official workspace" />
+      <table style="margin: 10px 0px; font-size:small" border="0">
+        <ui:repeat var="workspaceName" value="#{workspace.remoteWorkspaces}">
+          <h:form>
+          <tr align="left">
+            <td><h:outputText value="#{workspaceName}" /></td>
+            <td>
+              <h:commandButton styleClass="buttonInfo" label="#{workspaceName}" value="Import" onclick="show();"
+                actionListener="#{workspace.downloadWorkspace}" />
+            </td>
+          </tr>
+          </h:form>
+        </ui:repeat>     
+      </table>      
+      
+      <br/>
+      <br/>
+      <h:outputText styleClass="titel" value="Import workspace" />
+      <h:form>            
+      <table style="margin: 10px 0px; font-size:small" border="0">
+        <tr>
+          <td>
+            <h:outputLabel styleClass="label" value="URL:" />
+          </td>
+          <td>
+            <h:inputText styleClass="liste" value="#{workspace.workspaceImportUrl}" size="32" required="true"
+              requiredMessage="#{labels.workspace_import_url_req}" />
+          </td>
+         </tr>
+         <tr>
+           <td>
+             <h:outputLabel styleClass="label" value="Rename to:" />
+           </td>
+           <td>
+             <h:inputText styleClass="liste" value="#{workspace.workspaceImportName}" size="32" />
+           </td>
+        </tr>
+        <tr>
+          <td colspan="2">
+            <h:commandButton styleClass="buttonInfo" value="Import" onclick="show();"
+              actionListener="#{workspace.importWorkspace}" />
+          </td>
+        </tr>
+      </table>
+      </h:form>    
+  
       </fieldset>
     </h:panelGroup>
   </ui:define>
