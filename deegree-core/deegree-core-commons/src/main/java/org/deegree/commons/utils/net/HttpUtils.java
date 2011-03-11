@@ -53,8 +53,8 @@ import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.util.LinkedList;
 import java.util.Map;
-import java.util.TreeSet;
 import java.util.Map.Entry;
+import java.util.TreeSet;
 
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
@@ -74,6 +74,7 @@ import org.apache.http.entity.InputStreamEntity;
 import org.apache.http.impl.auth.BasicScheme;
 import org.apache.http.impl.client.BasicAuthCache;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.protocol.BasicHttpContext;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;
@@ -99,6 +100,10 @@ public class HttpUtils {
     private static final Logger LOG = getLogger( HttpUtils.class );
 
     static final XMLInputFactory xmlInputFactory = XMLInputFactory.newInstance();
+
+    private static final int DEFAULT_CONN_TIMEOUT = 10 * 1000;
+
+    private static final int DEFAULT_SOCKET_TIMEOUT = 60 * 1000;
 
     /**
      * <code>Worker</code> is used to specify how to return the stream from the remote location.
@@ -422,10 +427,11 @@ public class HttpUtils {
      * @return HttpClient with proxy configuration
      */
     public static DefaultHttpClient enableProxyUsage( DefaultHttpClient client, DURL url ) {
+        HttpConnectionParams.setConnectionTimeout( client.getParams(), DEFAULT_CONN_TIMEOUT );
+        HttpConnectionParams.setSoTimeout( client.getParams(), DEFAULT_SOCKET_TIMEOUT );
         String host = url.getURL().getHost();
         String protocol = url.getURL().getProtocol().toLowerCase();
         handleProxies( protocol, client, host );
         return client;
     }
-
 }
