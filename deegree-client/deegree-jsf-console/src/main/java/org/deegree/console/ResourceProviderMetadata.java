@@ -71,7 +71,7 @@ public class ResourceProviderMetadata {
         name = rp.getClass().getSimpleName();
         URL url = this.getClass().getResource( "/META-INF/console/resourceprovider/" + className );
         if ( url != null ) {
-            LOG.info( "Loading resource provider metadata from '" + url + "'" );
+            LOG.debug( "Loading resource provider metadata from '" + url + "'" );
             Properties props = new Properties();
             InputStream is = null;
             try {

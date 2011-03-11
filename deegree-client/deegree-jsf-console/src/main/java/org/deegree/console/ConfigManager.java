@@ -104,7 +104,6 @@ public class ConfigManager {
 
     public String getStartView() {
         ResourceManagerMetadata2 param1 = (ResourceManagerMetadata2) getParam1();
-        System.out.println( "HUHU: " + param1 );
         this.currentResourceManager = param1;
         return param1.getStartView();
     }

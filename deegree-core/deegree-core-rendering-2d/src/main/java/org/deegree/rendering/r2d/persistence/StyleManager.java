@@ -35,28 +35,24 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.rendering.r2d.persistence;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.deegree.commons.config.AbstractBasicResourceManager;
-import org.deegree.commons.config.DeegreeWorkspace;
+import org.deegree.commons.config.AbstractResourceManager;
 import org.deegree.commons.config.ResourceManager;
 import org.deegree.commons.config.ResourceManagerMetadata;
 import org.deegree.commons.config.ResourceProvider;
-import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.utils.ProxyUtils;
 
 /**
- * 
- * Currently a dummy resource manager.
+ * Currently a dummy manager with no actual state handling for {@link StyleFile} resources.
  * 
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
  */
-public class StyleManager extends AbstractBasicResourceManager implements ResourceManager {
+public class StyleManager extends AbstractResourceManager<StyleFile> {
 
     @SuppressWarnings("unchecked")
     public Class<? extends ResourceManager>[] getDependencies() {
@@ -80,40 +76,5 @@ public class StyleManager extends AbstractBasicResourceManager implements Resour
                 return list;
             }
         };
-    }
-
-    public void shutdown() {
-        // nothing to do currently
-    }
-
-    public void startup( DeegreeWorkspace workspace )
-                            throws ResourceInitException {
-        // nothing to do currently
-    }
-
-    @Override
-    public void activate( String id )
-                            throws ResourceInitException {
-        // TODO Auto-generated method stub
-        
-    }
-
-    @Override
-    public void deactivate( String id )
-                            throws ResourceInitException {
-        // TODO Auto-generated method stub
-        
-    }
-
-    @Override
-    protected ResourceProvider getProvider( File file ) {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    protected void remove( String id ) {
-        // TODO Auto-generated method stub
-        
     }
 }

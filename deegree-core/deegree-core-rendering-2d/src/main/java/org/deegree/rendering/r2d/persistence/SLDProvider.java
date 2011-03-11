@@ -37,7 +37,9 @@ package org.deegree.rendering.r2d.persistence;
 
 import java.net.URL;
 
-import org.deegree.commons.config.ResourceProvider;
+import org.deegree.commons.config.DeegreeWorkspace;
+import org.deegree.commons.config.ExtendedResourceProvider;
+import org.deegree.commons.config.ResourceInitException;
 
 /**
  * 
@@ -46,7 +48,7 @@ import org.deegree.commons.config.ResourceProvider;
  * 
  * @version $Revision$, $Date$
  */
-public class SLDProvider implements ResourceProvider {
+public class SLDProvider implements ExtendedResourceProvider<StyleFile> {
 
     public String getConfigNamespace() {
         return "http://www.opengis.net/sld";
@@ -54,5 +56,21 @@ public class SLDProvider implements ResourceProvider {
 
     public URL getConfigSchema() {
         return SLDProvider.class.getResource( "/META-INF/SCHEMAS_OPENGIS_NET/sld/1.1.0/StyledLayerDescriptor.xsd" );
+    }
+
+    @Override
+    public void init( DeegreeWorkspace workspace ) {
+        // TODO Auto-generated method stub
+    }
+
+    @Override
+    public StyleFile create( URL configUrl )
+                            throws ResourceInitException {
+        return new StyleFile();
+    }
+
+    @Override
+    public Class[] getDependencies() {
+        return new Class[0];
     }
 }

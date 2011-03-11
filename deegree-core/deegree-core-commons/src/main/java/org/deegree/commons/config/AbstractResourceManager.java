@@ -35,22 +35,22 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.commons.config;
 
-import static org.apache.commons.io.IOCase.INSENSITIVE;
 import static org.deegree.commons.config.ResourceState.StateType.deactivated;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FilenameFilter;
+import java.io.IOException;
 import java.net.URL;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamReader;
 
-import org.apache.commons.io.filefilter.SuffixFileFilter;
 import org.deegree.commons.config.ResourceState.StateType;
+import org.deegree.commons.utils.FileUtils;
 import org.deegree.commons.xml.stax.StAXParsingHelper;
 import org.slf4j.Logger;
 
@@ -103,8 +103,7 @@ public abstract class AbstractResourceManager<T extends Resource> extends Abstra
         if ( provider == null ) {
             String msg = "No {} provider for namespace '{}' (file: '{}') registered. Skipping it.";
             LOG.error( msg, new Object[] { md.getName(), namespace, configUrl } );
-            throw new ResourceInitException( "Creation of " + md.getName()
-                                                        + " via configuration file failed." );
+            throw new ResourceInitException( "Creation of " + md.getName() + " via configuration file failed." );
         }
         T resource = provider.create( configUrl );
 
@@ -140,40 +139,44 @@ public abstract class AbstractResourceManager<T extends Resource> extends Abstra
                 return;
             }
             LOG.info( "--------------------------------------------------------------------------------" );
-            LOG.info( "Setting up {}.", name );
+            LOG.info( "Setting up resources of type {}.", name );
             LOG.info( "--------------------------------------------------------------------------------" );
 
-            File[] configFiles = dir.listFiles( (FilenameFilter) new SuffixFileFilter( ".xml", INSENSITIVE ) );
-            for ( File configFile : configFiles ) {
-                String fileName = configFile.getName();
-                // 4 is the length of ".xml"
-                String id = fileName.substring( 0, fileName.length() - 4 );
-                ResourceProvider provider = getProvider( configFile );
-                LOG.info( "Setting up {} '{}' from file '{}'...", new Object[] { name, id, fileName } );
-                try {
-                    T resource = create( id, configFile.toURI().toURL() );
-                    idToState.put( id, new ResourceState( id, configFile, provider, StateType.created, null ) );
-                    resource.init( workspace );
-                    idToState.put( id, new ResourceState( id, configFile, provider, StateType.init_ok, null ) );
-                } catch ( ResourceInitException e ) {
-                    idToState.put( id, new ResourceState( id, configFile, provider, StateType.init_error, e ) );
-                    LOG.error( "Error creating {}: {}", new Object[] { name, e.getMessage(), e } );
-                } catch ( Throwable t ) {
-                    idToState.put( id, new ResourceState( id, configFile, provider, StateType.init_error,
-                                                          new ResourceInitException( t.getMessage(), t ) ) );
-                    LOG.error( "Error creating {}: {}", new Object[] { name, t.getMessage(), t } );
+            List<File> files = FileUtils.findFilesForExtensions( dir, true, "xml,ignore" );
+            try {
+                String dirName = dir.getCanonicalPath();
+                for ( File configFile : files ) {
+                    ResourceProvider provider = getProvider( configFile );
+                    String fileName = configFile.getCanonicalPath().substring( dirName.length() );
+                    if ( fileName.startsWith( File.separator ) ) {
+                        fileName = fileName.substring( 1 );
+                    }
+                    if ( fileName.endsWith( ".xml" ) ) {
+                        // 4 is the length of ".xml"
+                        String id = fileName.substring( 0, fileName.length() - 4 );
+                        LOG.info( "Setting up {} '{}' from file '{}'...", new Object[] { name, id, fileName } );
+                        try {
+                            T resource = create( id, configFile.toURI().toURL() );
+                            idToState.put( id, new ResourceState( id, configFile, provider, StateType.created, null ) );
+                            resource.init( workspace );
+                            idToState.put( id, new ResourceState( id, configFile, provider, StateType.init_ok, null ) );
+                        } catch ( ResourceInitException e ) {
+                            idToState.put( id, new ResourceState( id, configFile, provider, StateType.init_error, e ) );
+                            LOG.error( "Error creating {}: {}", new Object[] { name, e.getMessage(), e } );
+                        } catch ( Throwable t ) {
+                            idToState.put( id, new ResourceState( id, configFile, provider, StateType.init_error,
+                                                                  new ResourceInitException( t.getMessage(), t ) ) );
+                            LOG.error( "Error creating {}: {}", new Object[] { name, t.getMessage(), t } );
+                        }
+                    } else {
+                        // 7 is the length of ".ignore"
+                        String id = fileName.substring( 0, fileName.length() - 7 );
+                        idToState.put( id, new ResourceState( id, configFile, provider, StateType.deactivated, null ) );
+                    }
                 }
+            } catch ( IOException e ) {
+                e.printStackTrace();
             }
-
-            configFiles = dir.listFiles( (FilenameFilter) new SuffixFileFilter( ".ignore", INSENSITIVE ) );
-            for ( File configFile : configFiles ) {
-                ResourceProvider provider = getProvider( configFile );
-                String fileName = configFile.getName();
-                // 7 is the length of ".ignore"
-                String id = fileName.substring( 0, fileName.length() - 7 );
-                idToState.put( id, new ResourceState( id, configFile, provider, StateType.deactivated, null ) );
-            }
-
             LOG.info( "" );
         }
     }
@@ -195,6 +198,7 @@ public abstract class AbstractResourceManager<T extends Resource> extends Abstra
 
     protected void remove( String id ) {
         idToResource.remove( id );
+        idToState.remove( id );
     }
 
     @Override

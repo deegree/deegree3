@@ -1,7 +1,7 @@
 //$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
- Copyright (C) 2001-2010 by:
+ Copyright (C) 2001-2011 by:
  - Department of Geography, University of Bonn -
  and
  - lat/lon GmbH -
@@ -35,42 +35,29 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.rendering.r2d.persistence;
 
-import java.net.URL;
-
 import org.deegree.commons.config.DeegreeWorkspace;
-import org.deegree.commons.config.ExtendedResourceProvider;
+import org.deegree.commons.config.Resource;
 import org.deegree.commons.config.ResourceInitException;
 
+
 /**
+ * Dummy implementation of {@link Resource}.
  * 
- * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
+ * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
  */
-public class SEProvider implements ExtendedResourceProvider<StyleFile> {
-
-    public String getConfigNamespace() {
-        return "http://www.opengis.net/se";
-    }
-
-    public URL getConfigSchema() {
-        return SEProvider.class.getResource( "/META-INF/schemas/se/1.1.0/Symbolizer-deegree.xsd" );
-    }
+public class StyleFile implements Resource {
 
     @Override
-    public void init( DeegreeWorkspace workspace ) {
-        // TODO Auto-generated method stub
-    }
-
-    @Override
-    public StyleFile create( URL configUrl )
+    public void init( DeegreeWorkspace workspace )
                             throws ResourceInitException {
-        return new StyleFile();
+        // TODO Auto-generated method stub        
     }
 
     @Override
-    public Class[] getDependencies() {
-        return new Class[0];
+    public void destroy() {
+        // TODO Auto-generated method stub       
     }
 }

@@ -92,7 +92,7 @@ public class ResourceManagerMetadata2 implements Comparable<ResourceManagerMetad
         String className = mgr.getClass().getName();
         URL url = this.getClass().getResource( "/META-INF/console/resourcemanager/" + className );
         if ( url != null ) {
-            LOG.info( "Loading resource manager metadata from '" + url + "'" );
+            LOG.debug( "Loading resource manager metadata from '" + url + "'" );
             Properties props = new Properties();
             InputStream is = null;
             try {
