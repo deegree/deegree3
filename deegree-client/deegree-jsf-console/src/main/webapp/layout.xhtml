@@ -26,7 +26,8 @@
   <pre><h:outputText value="#{applicationBean.logo}" /></pre> 
   --> <h:panelGroup rendered="#{logBean.loggedIn}">
         <h:form>
-            <h:commandButton value="#{labels.apply_changes}" styleClass="button" action="#{workspace.applyChanges}"
+            <h:commandButton value="#{labels.apply_changes}" styleClass="button" 
+               action="#{workspace.applyChanges}"
                 onclick="show();" rendered="#{workspace.pendingChanges}" />
             <h:commandButton value="#{labels.apply_changes}" styleClass="buttongray"
                 action="#{workspace.applyChanges}" onclick="show();" rendered="#{!workspace.pendingChanges}" />
@@ -64,12 +65,17 @@
             <br />
             <ui:repeat value="#{configManager.resourceManagers}" var="resourceManager">
                 <tr>
-                    <td><h:commandLink styleClass="naviactive" value="#{resourceManager.name}"
-                        action="#{configManager.getStartView(resourceManager)}" disabled="#{!logBean.loggedIn}"
-                        rendered="#{configManager.currentResourceManager == resourceManager}" />
-                        <h:commandLink styleClass="navi"
-                        value="#{resourceManager.name}" action="#{configManager.getStartView(resourceManager)}" disabled="#{!logBean.loggedIn}"
-                        rendered="#{configManager.currentResourceManager != resourceManager}" />
+                    <td>
+                      <h:commandLink styleClass="naviactive" value="#{resourceManager.name}"
+                        action="#{configManager.getStartView}" disabled="#{!logBean.loggedIn}"
+                        rendered="#{configManager.currentResourceManager == resourceManager}">
+                        <f:setPropertyActionListener target="#{actionParams.param1}" value="#{resourceManager}" />
+                      </h:commandLink>
+                      <h:commandLink styleClass="navi"
+                        value="#{resourceManager.name}" action="#{configManager.getStartView}" disabled="#{!logBean.loggedIn}"
+                        rendered="#{configManager.currentResourceManager != resourceManager}">
+                        <f:setPropertyActionListener target="#{actionParams.param1}" value="#{resourceManager}" />
+                      </h:commandLink>
                     </td>
                 </tr>
             </ui:repeat>

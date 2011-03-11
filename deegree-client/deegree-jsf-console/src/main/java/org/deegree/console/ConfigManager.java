@@ -36,6 +36,7 @@
 package org.deegree.console;
 
 import static javax.faces.application.FacesMessage.SEVERITY_ERROR;
+import static org.deegree.client.core.utils.ActionParams.getParam1;
 import static org.deegree.services.controller.OGCFrontController.getServiceWorkspace;
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -100,10 +101,12 @@ public class ConfigManager {
         Collections.sort( rmMetadata );
         return rmMetadata;
     }
-    
-    public String getStartView( ResourceManagerMetadata2 resourceManager ) {
-        this.currentResourceManager = resourceManager;
-        return resourceManager.getStartView();
+
+    public String getStartView() {
+        ResourceManagerMetadata2 param1 = (ResourceManagerMetadata2) getParam1();
+        System.out.println( "HUHU: " + param1 );
+        this.currentResourceManager = param1;
+        return param1.getStartView();
     }
 
     public List<Config> getAvailableResources() {

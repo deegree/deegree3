@@ -39,6 +39,7 @@ import static javax.faces.application.FacesMessage.SEVERITY_ERROR;
 import static org.apache.commons.io.FileUtils.writeStringToFile;
 import static org.apache.commons.io.IOUtils.closeQuietly;
 import static org.apache.commons.io.IOUtils.readLines;
+import static org.deegree.client.core.utils.ActionParams.getParam1;
 import static org.deegree.commons.utils.net.HttpUtils.STREAM;
 import static org.deegree.commons.utils.net.HttpUtils.get;
 
@@ -122,8 +123,10 @@ public class WorkspaceBean implements Serializable {
         return DeegreeWorkspace.listWorkspaces();
     }
 
-    public void startWorkspace( String wsName )
+    public void startWorkspace()
                             throws Exception {
+
+        String wsName = (String) getParam1();
         ExternalContext ctx = FacesContext.getCurrentInstance().getExternalContext();
         File file = new File( ctx.getRealPath( "WEB-INF/workspace_name" ) );
         writeStringToFile( file, wsName );
@@ -135,8 +138,9 @@ public class WorkspaceBean implements Serializable {
         lastMessage = "Workspace has been started.";
     }
 
-    public void deleteWorkspace( String wsName )
+    public void deleteWorkspace()
                             throws IOException {
+        String wsName = (String) getParam1();
         DeegreeWorkspace dw = DeegreeWorkspace.getInstance( wsName );
         if ( dw.getLocation().isDirectory() ) {
             FileUtils.deleteDirectory( dw.getLocation() );
@@ -162,7 +166,8 @@ public class WorkspaceBean implements Serializable {
         return ctx.getViewRoot().getViewId();
     }
 
-    public void downloadWorkspace( String wsName ) {
+    public void downloadWorkspace() {
+        String wsName = (String) getParam1();
         InputStream in = null;
         try {
             in = get( STREAM, getDownloadBaseUrl(), null );
