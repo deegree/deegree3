@@ -83,8 +83,8 @@ public class WPSProvider implements OWSProvider<WPSRequestType> {
     }
 
     @Override
-    public OWS<WPSRequestType> getService() {
-        return new WPService();
+    public OWS<WPSRequestType> getService( URL configURL ) {
+        return new WPService( configURL, getImplementationMetadata() );
     }
 
     @Override

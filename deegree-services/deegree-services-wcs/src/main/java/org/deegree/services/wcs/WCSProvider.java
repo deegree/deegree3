@@ -84,8 +84,8 @@ public class WCSProvider implements OWSProvider<WCSRequestType> {
     }
 
     @Override
-    public OWS<WCSRequestType> getService() {
-        return new WCSController();
+    public OWS<WCSRequestType> getService( URL configURL ) {
+        return new WCSController( configURL, getImplementationMetadata() );
     }
 
     @Override

@@ -65,16 +65,15 @@ import javax.xml.stream.XMLStreamReader;
 import org.apache.commons.io.filefilter.SuffixFileFilter;
 import org.deegree.commons.config.AbstractBasicResourceManager;
 import org.deegree.commons.config.DeegreeWorkspace;
+import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.config.ResourceManager;
 import org.deegree.commons.config.ResourceManagerMetadata;
 import org.deegree.commons.config.ResourceProvider;
-import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.jdbc.ConnectionManager;
 import org.deegree.commons.utils.ProxyUtils;
 import org.deegree.commons.xml.jaxb.JAXBUtils;
 import org.deegree.services.OWS;
 import org.deegree.services.OWSProvider;
-import org.deegree.services.controller.exception.ControllerInitException;
 import org.deegree.services.controller.utils.StandardRequestLogger;
 import org.deegree.services.jaxb.controller.ConfiguredServicesType;
 import org.deegree.services.jaxb.controller.DeegreeServiceControllerType;
@@ -339,13 +338,15 @@ public class WebServicesConfiguration extends AbstractBasicResourceManager imple
             long time = System.currentTimeMillis();
             if ( configuredService.getControllerClass() != null ) {
                 LOG.info( "Using custom controller class '{}'.", configuredService.getControllerClass() );
-                subController = (OWS<? extends Enum<?>>) Class.forName( configuredService.getControllerClass(), false,
-                                                                        OGCFrontController.class.getClassLoader() ).newInstance();
-                subController.init( workspace, configURL, null );
+                LOG.warn( "TODO: implement invocation via Reflection" );
+                // subController = (OWS<? extends Enum<?>>) Class.forName( configuredService.getControllerClass(),
+                // false,
+                // OGCFrontController.class.getClassLoader() ).newInstance();
+                // subController.init( workspace );
             } else {
                 OWSProvider<? extends Enum<?>> p = providers.get( configuredService.getServiceName() );
-                subController = p.getService();
-                subController.init( workspace, configURL, (ImplementationMetadata) p.getImplementationMetadata() );
+                subController = p.getService( configURL );
+                subController.init( workspace );
             }
             LOG.info( "" );
             // round to exactly two decimals, I think their should be a java method for this though
@@ -387,20 +388,21 @@ public class WebServicesConfiguration extends AbstractBasicResourceManager imple
     }
 
     private <T extends Enum<T>> void loadOWS( OWSProvider<T> p, File configFile ) {
-        OWS<T> ows = p.getService();
+        OWS<T> ows;
+        try {
+            ows = p.getService( configFile.toURI().toURL() );
+        } catch ( MalformedURLException e ) {
+            LOG.trace( "Stack trace: ", e );
+            return;
+        }
 
         // associate service name (abbreviation) with controller instance
         ImplementationMetadata<T> md = p.getImplementationMetadata();
         LOG.info( " --- Starting up {}", md.getImplementedServiceName() );
 
         try {
-            ows.init( workspace, configFile.toURI().toURL(), md );
-        } catch ( MalformedURLException e ) {
-            LOG.warn( "Service from file {} could not be initialized: {}", configFile.getName(),
-                      e.getLocalizedMessage() );
-            LOG.trace( "Stack trace: ", e );
-            return;
-        } catch ( ControllerInitException e ) {
+            ows.init( workspace );
+        } catch ( ResourceInitException e ) {
             LOG.warn( "Service from file {} could not be initialized: {}", configFile.getName(),
                       e.getLocalizedMessage() );
             LOG.trace( "Stack trace: ", e );

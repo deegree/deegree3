@@ -43,6 +43,7 @@ import static org.deegree.services.wcs.WCSProvider.IMPLEMENTATION_METADATA;
 
 import java.io.IOException;
 import java.io.Writer;
+import java.net.URL;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -59,6 +60,7 @@ import javax.xml.stream.XMLStreamWriter;
 
 import org.apache.axiom.om.OMElement;
 import org.apache.commons.fileupload.FileItem;
+import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.tom.ows.Version;
 import org.deegree.commons.utils.Pair;
 import org.deegree.commons.utils.kvp.KVPUtils;
@@ -80,7 +82,6 @@ import org.deegree.protocol.wcs.capabilities.GetCapabilities100KVPAdapter;
 import org.deegree.services.controller.AbstractOGCServiceController;
 import org.deegree.services.controller.ImplementationMetadata;
 import org.deegree.services.controller.exception.ControllerException;
-import org.deegree.services.controller.exception.ControllerInitException;
 import org.deegree.services.controller.exception.serializer.XMLExceptionSerializer;
 import org.deegree.services.controller.ows.OWSException;
 import org.deegree.services.controller.utils.HttpResponseBuffer;
@@ -137,10 +138,14 @@ public class WCSController extends AbstractOGCServiceController<WCSRequestType> 
 
     private final static String PUBLISHED_SCHEMA_FILE = "/META-INF/schemas/wcs/3.0.0/wcs_published_information.xsd";
 
+    public WCSController( URL configURL, ImplementationMetadata serviceInfo ) {
+        super( configURL, serviceInfo );
+    }
+
     @Override
     public void init( DeegreeServicesMetadataType serviceMetadata, DeegreeServiceControllerType mainConf,
                       ImplementationMetadata<WCSRequestType> md, XMLAdapter controllerConf )
-                            throws ControllerInitException {
+                            throws ResourceInitException {
 
         LOG.info( "Initializing WCS." );
         super.init( serviceMetadata, mainConf, IMPLEMENTATION_METADATA, controllerConf );
@@ -189,7 +194,7 @@ public class WCSController extends AbstractOGCServiceController<WCSRequestType> 
     }
 
     private PublishedInformation parsePublishedInformation( XMLAdapter controllerConf, NamespaceBindings nsContext )
-                            throws ControllerInitException {
+                            throws ResourceInitException {
 
         PublishedInformation pubInf = null;
         XPath xp = new XPath( CONFIG_PRE + ":PublishedInformation", nsContext );

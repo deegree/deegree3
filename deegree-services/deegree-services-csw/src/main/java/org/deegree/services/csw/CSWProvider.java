@@ -83,8 +83,8 @@ public class CSWProvider implements OWSProvider<CSWRequestType> {
     }
 
     @Override
-    public OWS<CSWRequestType> getService() {
-        return new CSWController();
+    public OWS<CSWRequestType> getService( URL configURL ) {
+        return new CSWController( configURL, getImplementationMetadata() );
     }
 
     @Override

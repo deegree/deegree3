@@ -42,6 +42,7 @@ import static org.deegree.services.wps.WPSProvider.IMPLEMENTATION_METADATA;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -58,6 +59,7 @@ import org.apache.axiom.om.OMElement;
 import org.apache.axiom.soap.SOAPEnvelope;
 import org.apache.axiom.soap.SOAPFactory;
 import org.apache.commons.fileupload.FileItem;
+import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.tom.ows.CodeType;
 import org.deegree.commons.tom.ows.Version;
 import org.deegree.commons.utils.Pair;
@@ -78,7 +80,6 @@ import org.deegree.services.controller.AbstractOGCServiceController;
 import org.deegree.services.controller.ImplementationMetadata;
 import org.deegree.services.controller.OGCFrontController;
 import org.deegree.services.controller.exception.ControllerException;
-import org.deegree.services.controller.exception.ControllerInitException;
 import org.deegree.services.controller.exception.serializer.XMLExceptionSerializer;
 import org.deegree.services.controller.ows.OWSException;
 import org.deegree.services.controller.ows.OWSException110XMLAdapter;
@@ -138,10 +139,14 @@ public class WPService extends AbstractOGCServiceController<WPSRequestType> {
 
     private ExecutionManager executeHandler;
 
+    public WPService( URL configURL, ImplementationMetadata serviceInfo ) {
+        super( configURL, serviceInfo );
+    }
+
     @Override
     public void init( DeegreeServicesMetadataType serviceMetadata, DeegreeServiceControllerType mainConf,
                       ImplementationMetadata<WPSRequestType> md, XMLAdapter controllerConf )
-                            throws ControllerInitException {
+                            throws ResourceInitException {
 
         LOG.info( "Initializing WPS." );
         super.init( serviceMetadata, mainConf, IMPLEMENTATION_METADATA, controllerConf );

@@ -74,6 +74,7 @@ import javax.xml.stream.XMLStreamWriter;
 import org.apache.axiom.om.OMElement;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.io.IOUtils;
+import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.tom.ows.Version;
 import org.deegree.commons.utils.Pair;
 import org.deegree.commons.utils.kvp.InvalidParameterValueException;
@@ -113,7 +114,6 @@ import org.deegree.protocol.sos.getobservation.GetObservation100XMLAdapter.Resul
 import org.deegree.services.controller.AbstractOGCServiceController;
 import org.deegree.services.controller.ImplementationMetadata;
 import org.deegree.services.controller.exception.ControllerException;
-import org.deegree.services.controller.exception.ControllerInitException;
 import org.deegree.services.controller.exception.serializer.XMLExceptionSerializer;
 import org.deegree.services.controller.ows.OWSException;
 import org.deegree.services.controller.ows.OWSException110XMLAdapter;
@@ -161,10 +161,14 @@ public class SOSController extends AbstractOGCServiceController<SOSRequestType> 
 
     private ServiceProviderType provider;
 
+    public SOSController( URL configURL, ImplementationMetadata serviceInfo ) {
+        super( configURL, serviceInfo );
+    }
+
     @Override
     public void init( DeegreeServicesMetadataType serviceMetadata, DeegreeServiceControllerType mainConf,
                       ImplementationMetadata<SOSRequestType> md, XMLAdapter controllerConf )
-                            throws ControllerInitException {
+                            throws ResourceInitException {
 
         super.init( serviceMetadata, mainConf, IMPLEMENTATION_METADATA, controllerConf );
 
@@ -180,7 +184,7 @@ public class SOSController extends AbstractOGCServiceController<SOSRequestType> 
         try {
             this.sosService = SOSBuilder.createService( serviceConfigAdapter );
         } catch ( SOSConfigurationException e ) {
-            throw new ControllerInitException( "error while initializing SOS", e );
+            throw new ResourceInitException( "error while initializing SOS", e );
         }
 
         PublishedInformation pubInfo = null;
@@ -191,9 +195,9 @@ public class SOSController extends AbstractOGCServiceController<SOSRequestType> 
                                                                    new XPath( "sos:PublishedInformation", nsContext ) );
             pubInfo = (PublishedInformation) u.unmarshal( infElem.getXMLStreamReaderWithoutCaching() );
         } catch ( XMLParsingException e ) {
-            throw new ControllerInitException( "TODO", e );
+            throw new ResourceInitException( "TODO", e );
         } catch ( JAXBException e ) {
-            throw new ControllerInitException( "TODO", e );
+            throw new ResourceInitException( "TODO", e );
         }
         syncWithMainController( pubInfo );
 

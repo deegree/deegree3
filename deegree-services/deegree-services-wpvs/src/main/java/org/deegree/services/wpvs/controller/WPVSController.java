@@ -41,6 +41,7 @@ import static org.deegree.services.wpvs.controller.WPVSProvider.IMPLEMENTATION_M
 
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -58,6 +59,7 @@ import javax.xml.stream.XMLStreamWriter;
 
 import org.apache.axiom.om.OMElement;
 import org.apache.commons.fileupload.FileItem;
+import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.tom.ows.Version;
 import org.deegree.commons.utils.Pair;
 import org.deegree.commons.utils.kvp.KVPUtils;
@@ -73,7 +75,6 @@ import org.deegree.rendering.r3d.opengl.JOGLChecker;
 import org.deegree.services.controller.AbstractOGCServiceController;
 import org.deegree.services.controller.ImplementationMetadata;
 import org.deegree.services.controller.exception.ControllerException;
-import org.deegree.services.controller.exception.ControllerInitException;
 import org.deegree.services.controller.exception.serializer.XMLExceptionSerializer;
 import org.deegree.services.controller.ows.OWSException;
 import org.deegree.services.controller.ows.OWSException110XMLAdapter;
@@ -86,8 +87,8 @@ import org.deegree.services.jaxb.metadata.DeegreeServicesMetadataType;
 import org.deegree.services.jaxb.metadata.ServiceIdentificationType;
 import org.deegree.services.jaxb.metadata.ServiceProviderType;
 import org.deegree.services.jaxb.wpvs.PublishedInformation;
-import org.deegree.services.jaxb.wpvs.ServiceConfiguration;
 import org.deegree.services.jaxb.wpvs.PublishedInformation.AllowedOperations;
+import org.deegree.services.jaxb.wpvs.ServiceConfiguration;
 import org.deegree.services.wpvs.PerspectiveViewService;
 import org.deegree.services.wpvs.controller.capabilities.CapabilitiesXMLAdapter;
 import org.deegree.services.wpvs.controller.getview.GetView;
@@ -130,10 +131,14 @@ public class WPVSController extends AbstractOGCServiceController<WPVSRequestType
 
     private List<String> allowedOperations = new LinkedList<String>();
 
+    public WPVSController( URL configURL, ImplementationMetadata serviceInfo ) {
+        super( configURL, serviceInfo );
+    }
+
     @Override
     public void init( DeegreeServicesMetadataType serviceMetadata, DeegreeServiceControllerType mainConf,
                       ImplementationMetadata<WPVSRequestType> md, XMLAdapter controllerConf )
-                            throws ControllerInitException {
+                            throws ResourceInitException {
 
         super.init( serviceMetadata, mainConf, IMPLEMENTATION_METADATA, controllerConf );
 
@@ -151,7 +156,7 @@ public class WPVSController extends AbstractOGCServiceController<WPVSRequestType
             ServiceConfiguration sc = parseServerConfiguration( nsContext, controllerConf );
             service = new PerspectiveViewService( controllerConf, sc, workspace );
         } catch ( ServiceInitException e ) {
-            throw new ControllerInitException( e.getMessage(), e );
+            throw new ResourceInitException( e.getMessage(), e );
         }
     }
 
@@ -163,7 +168,7 @@ public class WPVSController extends AbstractOGCServiceController<WPVSRequestType
     }
 
     private PublishedInformation parsePublishedInformation( NamespaceBindings nsContext, XMLAdapter controllerConf )
-                            throws ControllerInitException {
+                            throws ResourceInitException {
 
         XPath xp = new XPath( "wpvs:PublishedInformation", nsContext );
         OMElement elem = controllerConf.getElement( controllerConf.getRootElement(), xp );
@@ -191,7 +196,7 @@ public class WPVSController extends AbstractOGCServiceController<WPVSRequestType
     }
 
     private ServiceConfiguration parseServerConfiguration( NamespaceBindings nsContext, XMLAdapter controllerConf )
-                            throws ControllerInitException {
+                            throws ResourceInitException {
         XPath xp = new XPath( "wpvs:ServiceConfiguration", nsContext );
         OMElement elem = controllerConf.getRequiredElement( controllerConf.getRootElement(), xp );
         return (ServiceConfiguration) unmarshallConfig( CONFIG_JAXB_PACKAGE, CONFIG_SCHEMA, elem );

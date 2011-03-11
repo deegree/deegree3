@@ -84,8 +84,8 @@ public class WPVSProvider implements OWSProvider<WPVSRequestType> {
     }
 
     @Override
-    public OWS<WPVSRequestType> getService() {
-        return new WPVSController();
+    public OWS<WPVSRequestType> getService(URL configURL) {
+        return new WPVSController(configURL, getImplementationMetadata());
     }
 
     @Override

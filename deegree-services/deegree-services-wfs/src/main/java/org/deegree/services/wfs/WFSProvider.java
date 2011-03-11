@@ -86,8 +86,8 @@ public class WFSProvider implements OWSProvider<WFSRequestType> {
     }
 
     @Override
-    public OWS<WFSRequestType> getService() {
-        return new WFSController();
+    public OWS<WFSRequestType> getService( URL configURL ) {
+        return new WFSController( configURL, getImplementationMetadata() );
     }
 
     @Override

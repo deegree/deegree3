@@ -36,7 +36,6 @@
 package org.deegree.services;
 
 import java.io.IOException;
-import java.net.URL;
 import java.util.List;
 import java.util.Map;
 
@@ -47,13 +46,12 @@ import javax.xml.stream.XMLStreamReader;
 import org.apache.axiom.soap.SOAPEnvelope;
 import org.apache.axiom.soap.SOAPFactory;
 import org.apache.commons.fileupload.FileItem;
-import org.deegree.commons.config.DeegreeWorkspace;
+import org.deegree.commons.config.Resource;
 import org.deegree.commons.tom.ows.Version;
 import org.deegree.commons.utils.Pair;
 import org.deegree.services.authentication.SecurityException;
 import org.deegree.services.controller.ImplementationMetadata;
 import org.deegree.services.controller.OGCFrontController;
-import org.deegree.services.controller.exception.ControllerInitException;
 import org.deegree.services.controller.exception.serializer.ExceptionSerializer;
 import org.deegree.services.controller.exception.serializer.XMLExceptionSerializer;
 import org.deegree.services.controller.ows.OWSException;
@@ -70,7 +68,7 @@ import org.deegree.services.controller.utils.HttpResponseBuffer;
  * 
  * @version $Revision: $, $Date: $
  */
-public interface OWS<T extends Enum<T>> {
+public interface OWS<T extends Enum<T>> extends Resource {
 
     /**
      * Called by the {@link OGCFrontController} to allow this {@link OWS} to handle an OGC-KVP request.
@@ -148,23 +146,6 @@ public interface OWS<T extends Enum<T>> {
      */
     @Deprecated
     public ImplementationMetadata<T> getImplementationMetadata();
-
-    /**
-     * Called by the {@link OGCFrontController} to indicate to this {@link OWS} that it is being taken into service.
-     * 
-     * @param workspace
-     * @param configURL
-     * @param metadata
-     * @throws ControllerInitException
-     *             indicates that the initialization failed
-     */
-    public void init( DeegreeWorkspace workspace, URL configURL, ImplementationMetadata<T> metadata )
-                            throws ControllerInitException;
-
-    /**
-     * Called by the {@link OGCFrontController} to indicate to this {@link OWS} that it is being taken out of service.
-     */
-    public void destroy();
 
     /**
      * Returns the {@link ExceptionSerializer} and mime-type suitable for the given request version.

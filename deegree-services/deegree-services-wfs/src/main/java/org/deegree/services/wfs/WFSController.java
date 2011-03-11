@@ -50,6 +50,7 @@ import static org.deegree.services.wfs.WFSProvider.IMPLEMENTATION_METADATA;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.net.URL;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -72,6 +73,7 @@ import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
 
 import org.apache.commons.fileupload.FileItem;
+import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.tom.ows.Version;
 import org.deegree.commons.utils.Pair;
 import org.deegree.commons.utils.StringUtils;
@@ -115,7 +117,6 @@ import org.deegree.services.controller.AbstractOGCServiceController;
 import org.deegree.services.controller.ImplementationMetadata;
 import org.deegree.services.controller.OGCFrontController;
 import org.deegree.services.controller.exception.ControllerException;
-import org.deegree.services.controller.exception.ControllerInitException;
 import org.deegree.services.controller.exception.serializer.XMLExceptionSerializer;
 import org.deegree.services.controller.ows.OGCExceptionXMLAdapter;
 import org.deegree.services.controller.ows.OWSException;
@@ -190,10 +191,14 @@ public class WFSController extends AbstractOGCServiceController<WFSRequestType> 
 
     private boolean checkAreaOfUse;
 
+    public WFSController( URL configURL, ImplementationMetadata serviceInfo ) {
+        super( configURL, serviceInfo );
+    }
+
     @Override
     public void init( DeegreeServicesMetadataType serviceMetadata, DeegreeServiceControllerType mainConf,
                       ImplementationMetadata<WFSRequestType> md, XMLAdapter controllerConf )
-                            throws ControllerInitException {
+                            throws ResourceInitException {
 
         LOG.info( "Initializing WFS." );
         super.init( serviceMetadata, mainConf, IMPLEMENTATION_METADATA, controllerConf );
@@ -221,7 +226,7 @@ public class WFSController extends AbstractOGCServiceController<WFSRequestType> 
         try {
             service.init( jaxbConfig, controllerConf.getSystemId(), workspace );
         } catch ( Exception e ) {
-            throw new ControllerInitException( "Error initializing WFS / FeatureStores: " + e.getMessage(), e );
+            throw new ResourceInitException( "Error initializing WFS / FeatureStores: " + e.getMessage(), e );
         }
 
         lockFeatureHandler = new LockFeatureHandler( this );
@@ -231,7 +236,7 @@ public class WFSController extends AbstractOGCServiceController<WFSRequestType> 
     }
 
     private void initOfferedVersions( SupportedVersions supportedVersions )
-                            throws ControllerInitException {
+                            throws ResourceInitException {
 
         List<String> versions = null;
         if ( supportedVersions != null ) {
@@ -248,7 +253,7 @@ public class WFSController extends AbstractOGCServiceController<WFSRequestType> 
     }
 
     private void initQueryCRS( List<String> queryCRSLists )
-                            throws ControllerInitException {
+                            throws ResourceInitException {
         // try {
         for ( String queryCRS : queryCRSLists ) {
             String[] querySrs = StringUtils.split( queryCRS, " ", REMOVE_EMPTY_FIELDS | REMOVE_DOUBLE_FIELDS );
@@ -270,7 +275,7 @@ public class WFSController extends AbstractOGCServiceController<WFSRequestType> 
     }
 
     private void initFormats( List<JAXBElement<? extends AbstractFormatType>> formatList )
-                            throws ControllerInitException {
+                            throws ResourceInitException {
 
         if ( formatList == null || formatList.isEmpty() ) {
             LOG.debug( "Using default format configuration." );
@@ -298,11 +303,11 @@ public class WFSController extends AbstractOGCServiceController<WFSRequestType> 
                         format = (org.deegree.services.wfs.format.CustomFormat) Class.forName( className ).newInstance();
                         ( (org.deegree.services.wfs.format.CustomFormat) format ).init( this, cf.getConfig() );
                     } catch ( Exception e ) {
-                        throw new ControllerInitException( "Error initializing WFS format: " + e.getMessage(), e );
+                        throw new ResourceInitException( "Error initializing WFS format: " + e.getMessage(), e );
                     }
                 } else {
-                    throw new ControllerInitException( "Internal error. Unhandled AbstractFormatType '"
-                                                       + formatDef.getClass() + "'." );
+                    throw new ResourceInitException( "Internal error. Unhandled AbstractFormatType '"
+                                                     + formatDef.getClass() + "'." );
                 }
                 for ( String mimeType : mimeTypes ) {
                     mimeTypeToFormat.put( mimeType, format );

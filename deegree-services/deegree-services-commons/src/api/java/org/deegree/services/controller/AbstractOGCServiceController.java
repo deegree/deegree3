@@ -61,6 +61,7 @@ import org.apache.axiom.soap.SOAPHeader;
 import org.apache.axiom.soap.SOAPVersion;
 import org.apache.commons.fileupload.FileItem;
 import org.deegree.commons.config.DeegreeWorkspace;
+import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.tom.ows.Version;
 import org.deegree.commons.utils.Pair;
 import org.deegree.commons.utils.kvp.InvalidParameterValueException;
@@ -124,12 +125,19 @@ public abstract class AbstractOGCServiceController<T extends Enum<T>> implements
 
     protected DeegreeWorkspace workspace;
 
+    protected URL configURL;
+
     protected ImplementationMetadata<T> serviceInfo;
 
-    public void init( DeegreeWorkspace workspace, URL configURL, ImplementationMetadata<T> serviceInfo )
-                            throws ControllerInitException {
-        this.workspace = workspace;
+    protected AbstractOGCServiceController( URL configURL, ImplementationMetadata<T> serviceInfo ) {
+        this.configURL = configURL;
         this.serviceInfo = serviceInfo;
+    }
+
+    @Override
+    public void init( DeegreeWorkspace workspace )
+                            throws ResourceInitException {
+        this.workspace = workspace;
         WebServicesConfiguration ws = workspace.getSubsystemManager( WebServicesConfiguration.class );
         XMLAdapter adapter = new XMLAdapter( configURL );
         init( ws.getMetadataConfiguration(), ws.getMainConfiguration(), serviceInfo, adapter );
@@ -151,7 +159,7 @@ public abstract class AbstractOGCServiceController<T extends Enum<T>> implements
      */
     protected void init( DeegreeServicesMetadataType mainMetadataConf, DeegreeServiceControllerType mainControllerConf,
                          ImplementationMetadata<T> serviceInformation, XMLAdapter controllerConfig )
-                            throws ControllerInitException {
+                            throws ResourceInitException {
         this.mainMetadataConf = mainMetadataConf;
         this.mainControllerConf = mainControllerConf;
         this.implementationMetadata = serviceInformation;
@@ -179,15 +187,15 @@ public abstract class AbstractOGCServiceController<T extends Enum<T>> implements
 
     /**
      * @param requestedVersions
-     * @throws ControllerInitException
+     * @throws ResourceInitException
      */
     protected final void validateAndSetOfferedVersions( Collection<String> requestedVersions )
-                            throws ControllerInitException {
+                            throws ResourceInitException {
         for ( String requestedVersion : requestedVersions ) {
             Version version = Version.parseVersion( requestedVersion );
             if ( !implementationMetadata.getImplementedVersions().contains( Version.parseVersion( requestedVersion ) ) ) {
                 String msg = "Version '" + requestedVersion + "' is not supported by the service implementation.";
-                throw new ControllerInitException( msg );
+                throw new ResourceInitException( msg );
             }
             offeredVersions.add( version );
         }
@@ -337,10 +345,10 @@ public abstract class AbstractOGCServiceController<T extends Enum<T>> implements
     /**
      * @param confFileURL
      * @param configVersionString
-     * @throws ControllerInitException
+     * @throws ResourceInitException
      */
     protected void checkConfigVersion( String confFileURL, String configVersionString )
-                            throws ControllerInitException {
+                            throws ResourceInitException {
 
         Version configVersion = Version.parseVersion( configVersionString );
         if ( !implementationMetadata.getSupportedConfigVersions().contains( configVersion ) ) {
@@ -358,24 +366,24 @@ public abstract class AbstractOGCServiceController<T extends Enum<T>> implements
                 separatorNeeded = true;
             }
             msg.append( " for this file type. Information on resolving this issue can be found at 'http://wiki.deegree.org/deegreeWiki/deegree3/ConfigurationVersions'. " );
-            throw new ControllerInitException( msg.toString() );
+            throw new ResourceInitException( msg.toString() );
         }
     }
 
     protected Object unmarshallConfig( String jaxbPackage, String schemaLocation, OMElement element )
-                            throws ControllerInitException {
+                            throws ResourceInitException {
         XMLAdapter adapter = new XMLAdapter( element );
         return unmarshallConfig( jaxbPackage, schemaLocation, adapter );
     }
 
     protected Object unmarshallConfig( String jaxbPackage, String schemaLocation, XMLAdapter xmlAdapter )
-                            throws ControllerInitException {
+                            throws ResourceInitException {
         try {
             return JAXBUtils.unmarshall( jaxbPackage, schemaLocation, xmlAdapter );
         } catch ( JAXBException e ) {
             LOG.error( "Could not load service configuration: '{}'", e.getLinkedException().getMessage() );
-            throw new ControllerInitException( "Error parsing service configuration: "
-                                               + e.getLinkedException().getMessage(), e );
+            throw new ResourceInitException( "Error parsing service configuration: "
+                                             + e.getLinkedException().getMessage(), e );
         }
     }
 
@@ -442,8 +450,7 @@ public abstract class AbstractOGCServiceController<T extends Enum<T>> implements
                 }
             }
             if ( agreedVersion == null ) {
-                String versionsString = Version.getVersionsString( request.getAcceptVersionsAsVersions().toArray(
-                                                                                                                  new Version[request.getAcceptVersions().size()] ) );
+                String versionsString = Version.getVersionsString( request.getAcceptVersionsAsVersions().toArray( new Version[request.getAcceptVersions().size()] ) );
                 throw new OWSException( "Version negotiation failed. No support for version(s): " + versionsString,
                                         OWSException.VERSION_NEGOTIATION_FAILED );
             }
@@ -595,8 +602,7 @@ public abstract class AbstractOGCServiceController<T extends Enum<T>> implements
      *            to be synchronized with the main configuration
      * @return the configured service provider, with missing values filled from the main configuration.
      */
-    protected ServiceProviderType synchronizeServiceProviderWithMainControllerConf(
-                                                                                    ServiceProviderType configuredServiceProvider ) {
+    protected ServiceProviderType synchronizeServiceProviderWithMainControllerConf( ServiceProviderType configuredServiceProvider ) {
         ServiceProviderType mainProvider = mainMetadataConf.getServiceProvider();
         ServiceProviderType result = configuredServiceProvider;
         if ( configuredServiceProvider == null ) {
@@ -618,8 +624,7 @@ public abstract class AbstractOGCServiceController<T extends Enum<T>> implements
      * @return the service identification with all missing values filled in from the main controller service
      *         identification.
      */
-    protected ServiceIdentificationType synchronizeServiceIdentificationWithMainController(
-                                                                                            ServiceIdentificationType serviceIdentification ) {
+    protected ServiceIdentificationType synchronizeServiceIdentificationWithMainController( ServiceIdentificationType serviceIdentification ) {
         ServiceIdentificationType mainID = mainMetadataConf.getServiceIdentification();
         ServiceIdentificationType result = serviceIdentification;
         if ( mainID != null ) {

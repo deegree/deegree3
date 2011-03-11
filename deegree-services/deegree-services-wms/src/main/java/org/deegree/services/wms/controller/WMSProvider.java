@@ -85,8 +85,8 @@ public class WMSProvider implements OWSProvider<WMSRequestType> {
     }
 
     @Override
-    public OWS<WMSRequestType> getService() {
-        return new WMSController();
+    public OWS<WMSRequestType> getService( URL configURL ) {
+        return new WMSController( configURL, getImplementationMetadata() );
     }
 
     @Override

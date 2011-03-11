@@ -35,6 +35,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.services;
 
+import java.net.URL;
+
 import org.deegree.commons.config.ResourceManager;
 import org.deegree.commons.config.ResourceProvider;
 import org.deegree.services.controller.ImplementationMetadata;
@@ -57,7 +59,7 @@ public interface OWSProvider<T extends Enum<T>> extends ResourceProvider {
      * 
      * @return new service instance, not initialized yet
      */
-    OWS<T> getService();
+    OWS<T> getService( URL configURL );
 
     /**
      * @return information about handled requests, namespaces and so on

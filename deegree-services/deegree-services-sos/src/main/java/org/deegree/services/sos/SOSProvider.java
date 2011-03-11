@@ -83,8 +83,8 @@ public class SOSProvider implements OWSProvider<SOSRequestType> {
     }
 
     @Override
-    public OWS<SOSRequestType> getService() {
-        return new SOSController();
+    public OWS<SOSRequestType> getService( URL configURL ) {
+        return new SOSController( configURL, getImplementationMetadata() );
     }
 
     @SuppressWarnings("unchecked")

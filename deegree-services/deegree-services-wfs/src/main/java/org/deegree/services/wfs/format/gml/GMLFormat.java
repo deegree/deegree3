@@ -66,6 +66,7 @@ import javax.xml.stream.FactoryConfigurationError;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
+import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.tom.ows.Version;
 import org.deegree.commons.utils.kvp.InvalidParameterValueException;
 import org.deegree.commons.utils.time.DateUtils;
@@ -106,7 +107,6 @@ import org.deegree.protocol.wfs.lockfeature.BBoxLock;
 import org.deegree.protocol.wfs.lockfeature.FeatureIdLock;
 import org.deegree.protocol.wfs.lockfeature.FilterLock;
 import org.deegree.protocol.wfs.lockfeature.LockOperation;
-import org.deegree.services.controller.exception.ControllerInitException;
 import org.deegree.services.controller.ows.OWSException;
 import org.deegree.services.controller.utils.HttpResponseBuffer;
 import org.deegree.services.i18n.Messages;
@@ -166,7 +166,7 @@ public class GMLFormat implements Format {
     }
 
     public GMLFormat( WFSController master, org.deegree.services.jaxb.wfs.GMLFormat formatDef )
-                            throws ControllerInitException {
+                            throws ResourceInitException {
 
         this.master = master;
         this.service = master.getService();
@@ -212,7 +212,7 @@ public class GMLFormat implements Format {
                 }
             }
         } catch ( Exception e ) {
-            throw new ControllerInitException( "Error initializing coordinate formatter: " + e.getMessage(), e );
+            throw new ResourceInitException( "Error initializing coordinate formatter: " + e.getMessage(), e );
         }
 
         this.gmlVersion = GMLVersion.valueOf( formatDef.getGmlVersion().value() );

@@ -38,6 +38,7 @@ package org.deegree.services.csw;
 import static org.deegree.services.csw.CSWProvider.IMPLEMENTATION_METADATA;
 
 import java.io.IOException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -58,6 +59,7 @@ import org.apache.axiom.soap.SOAPFactory;
 import org.apache.axiom.soap.SOAPFault;
 import org.apache.axiom.soap.SOAPFaultCode;
 import org.apache.commons.fileupload.FileItem;
+import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.tom.ows.Version;
 import org.deegree.commons.utils.Pair;
 import org.deegree.commons.utils.kvp.InvalidParameterValueException;
@@ -66,9 +68,9 @@ import org.deegree.commons.utils.kvp.MissingParameterException;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.stax.SchemaLocationXMLStreamWriter;
 import org.deegree.protocol.csw.CSWConstants;
-import org.deegree.protocol.csw.MetadataStoreException;
 import org.deegree.protocol.csw.CSWConstants.CSWRequestType;
 import org.deegree.protocol.csw.CSWConstants.Sections;
+import org.deegree.protocol.csw.MetadataStoreException;
 import org.deegree.protocol.ows.capabilities.GetCapabilities;
 import org.deegree.services.authentication.SecurityException;
 import org.deegree.services.authentication.soapauthentication.FailedAuthentication;
@@ -76,7 +78,6 @@ import org.deegree.services.controller.AbstractOGCServiceController;
 import org.deegree.services.controller.ImplementationMetadata;
 import org.deegree.services.controller.OGCFrontController;
 import org.deegree.services.controller.exception.ControllerException;
-import org.deegree.services.controller.exception.ControllerInitException;
 import org.deegree.services.controller.exception.serializer.XMLExceptionSerializer;
 import org.deegree.services.controller.ows.OWSException;
 import org.deegree.services.controller.ows.OWSException110XMLAdapter;
@@ -153,10 +154,14 @@ public class CSWController extends AbstractOGCServiceController<CSWRequestType> 
 
     private GetRecordByIdHandler getRecordByIdHandler;
 
+    protected CSWController( URL configURL, ImplementationMetadata serviceInfo ) {
+        super( configURL, serviceInfo );
+    }
+
     @Override
     public void init( DeegreeServicesMetadataType serviceMetadata, DeegreeServiceControllerType mainConf,
                       ImplementationMetadata<CSWRequestType> md, XMLAdapter controllerConf )
-                            throws ControllerInitException {
+                            throws ResourceInitException {
 
         LOG.info( "Initializing CSW controller." );
         super.init( serviceMetadata, mainConf, IMPLEMENTATION_METADATA, controllerConf );
@@ -167,7 +172,7 @@ public class CSWController extends AbstractOGCServiceController<CSWRequestType> 
             service = new CSWService( workspace );
         } catch ( MetadataStoreException e ) {
             LOG.error( "Could not instantiate CSWService: '{}' " + e.getMessage() );
-            throw new ControllerInitException( "Could not instantiate CSWService: " + e.getMessage(), e );
+            throw new ResourceInitException( "Could not instantiate CSWService: " + e.getMessage(), e );
         }
         if ( jaxbConfig.getSupportedVersions() == null ) {
             List<String> defaultVersion = new ArrayList<String>();
@@ -222,8 +227,7 @@ public class CSWController extends AbstractOGCServiceController<CSWRequestType> 
             case GetCapabilities:
 
                 GetCapabilities getCapabilities = securityManager == null ? GetCapabilities202KVPAdapter.parse( normalizedKVPParams )
-                                                                         : securityManager.preprocess(
-                                                                                                       GetCapabilities202KVPAdapter.parse(
+                                                                         : securityManager.preprocess( GetCapabilities202KVPAdapter.parse(
 
                                                                                                        normalizedKVPParams ),
                                                                                                        OGCFrontController.getContext().getCredentials(),
@@ -233,8 +237,7 @@ public class CSWController extends AbstractOGCServiceController<CSWRequestType> 
             case DescribeRecord:
 
                 DescribeRecord descRec = securityManager == null ? DescribeRecordKVPAdapter.parse( normalizedKVPParams )
-                                                                : securityManager.preprocess(
-                                                                                              DescribeRecordKVPAdapter.parse( normalizedKVPParams ),
+                                                                : securityManager.preprocess( DescribeRecordKVPAdapter.parse( normalizedKVPParams ),
                                                                                               OGCFrontController.getContext().getCredentials(),
                                                                                               false );
                 // describeRecordResponse = new DescribeRecordResponseXMLAdapter(service);
@@ -244,8 +247,7 @@ public class CSWController extends AbstractOGCServiceController<CSWRequestType> 
             case GetRecords:
 
                 GetRecords getRec = securityManager == null ? GetRecordsKVPAdapter.parse( normalizedKVPParams )
-                                                           : securityManager.preprocess(
-                                                                                         GetRecordsKVPAdapter.parse( normalizedKVPParams ),
+                                                           : securityManager.preprocess( GetRecordsKVPAdapter.parse( normalizedKVPParams ),
                                                                                          OGCFrontController.getContext().getCredentials(),
                                                                                          false );
                 getRecordsHandler.doGetRecords( getRec, response, false );
@@ -253,8 +255,7 @@ public class CSWController extends AbstractOGCServiceController<CSWRequestType> 
             case GetRecordById:
 
                 GetRecordById getRecBI = securityManager == null ? GetRecordByIdKVPAdapter.parse( normalizedKVPParams )
-                                                                : securityManager.preprocess(
-                                                                                              GetRecordByIdKVPAdapter.parse( normalizedKVPParams ),
+                                                                : securityManager.preprocess( GetRecordByIdKVPAdapter.parse( normalizedKVPParams ),
                                                                                               OGCFrontController.getContext().getCredentials(),
                                                                                               false );
 
@@ -263,8 +264,7 @@ public class CSWController extends AbstractOGCServiceController<CSWRequestType> 
             case Transaction:
                 checkTransactionsEnabled( rootElement );
                 Transaction trans = securityManager == null ? TransactionKVPAdapter.parse( normalizedKVPParams )
-                                                           : securityManager.preprocess(
-                                                                                         TransactionKVPAdapter.parse( normalizedKVPParams ),
+                                                           : securityManager.preprocess( TransactionKVPAdapter.parse( normalizedKVPParams ),
                                                                                          OGCFrontController.getContext().getCredentials(),
                                                                                          false );
 
@@ -317,8 +317,7 @@ public class CSWController extends AbstractOGCServiceController<CSWRequestType> 
                 // header.
                 GetCapabilities cswRequest = securityManager == null
                                              && ( request.getHeader( "authorization" ) != null || request.getHeader( "authorization" ) == null ) ? getCapabilitiesAdapter.parse()
-                                                                                                                                                : securityManager.preprocess(
-                                                                                                                                                                              getCapabilitiesAdapter.parse(),
+                                                                                                                                                : securityManager.preprocess( getCapabilitiesAdapter.parse(),
                                                                                                                                                                               OGCFrontController.getContext().getCredentials(),
                                                                                                                                                                               false );
 
@@ -330,8 +329,7 @@ public class CSWController extends AbstractOGCServiceController<CSWRequestType> 
 
                 DescribeRecord cswDRRequest = securityManager == null
                                               && ( request.getHeader( "authorization" ) != null || request.getHeader( "authorization" ) == null ) ? describeRecordAdapter.parse( requestVersion )
-                                                                                                                                                 : securityManager.preprocess(
-                                                                                                                                                                               describeRecordAdapter.parse( requestVersion ),
+                                                                                                                                                 : securityManager.preprocess( describeRecordAdapter.parse( requestVersion ),
                                                                                                                                                                                OGCFrontController.getContext().getCredentials(),
                                                                                                                                                                                false );
                 describeRecordHandler.doDescribeRecord( cswDRRequest, response, false );
@@ -342,8 +340,7 @@ public class CSWController extends AbstractOGCServiceController<CSWRequestType> 
 
                 GetRecords cswGRRequest = securityManager == null
                                           && ( request.getHeader( "authorization" ) != null || request.getHeader( "authorization" ) == null ) ? getRecordsAdapter.parse( requestVersion )
-                                                                                                                                             : securityManager.preprocess(
-                                                                                                                                                                           getRecordsAdapter.parse( requestVersion ),
+                                                                                                                                             : securityManager.preprocess( getRecordsAdapter.parse( requestVersion ),
                                                                                                                                                                            OGCFrontController.getContext().getCredentials(),
                                                                                                                                                                            false );
 
@@ -356,8 +353,7 @@ public class CSWController extends AbstractOGCServiceController<CSWRequestType> 
 
                 GetRecordById cswGRBIRequest = securityManager == null
                                                && ( request.getHeader( "authorization" ) != null || request.getHeader( "authorization" ) == null ) ? getRecordByIdAdapter.parse( requestVersion )
-                                                                                                                                                  : securityManager.preprocess(
-                                                                                                                                                                                getRecordByIdAdapter.parse( requestVersion ),
+                                                                                                                                                  : securityManager.preprocess( getRecordByIdAdapter.parse( requestVersion ),
                                                                                                                                                                                 OGCFrontController.getContext().getCredentials(),
                                                                                                                                                                                 false );
                 getRecordByIdHandler.doGetRecordById( cswGRBIRequest, response, false );
@@ -369,8 +365,7 @@ public class CSWController extends AbstractOGCServiceController<CSWRequestType> 
 
                 Transaction cswTRequest = securityManager == null
                                           && ( request.getHeader( "authorization" ) != null || request.getHeader( "authorization" ) == null ) ? transAdapter.parse( requestVersion )
-                                                                                                                                             : securityManager.preprocess(
-                                                                                                                                                                           transAdapter.parse( requestVersion ),
+                                                                                                                                             : securityManager.preprocess( transAdapter.parse( requestVersion ),
                                                                                                                                                                            OGCFrontController.getContext().getCredentials(),
                                                                                                                                                                            false );
                 transactionHandler.doTransaction( cswTRequest, response );
@@ -422,8 +417,7 @@ public class CSWController extends AbstractOGCServiceController<CSWRequestType> 
 
                 GetCapabilities cswRequest = securityManager == null
                                              && ( request.getHeader( "authorization" ) != null || request.getHeader( "authorization" ) == null ) ? getCapabilitiesAdapter.parse()
-                                                                                                                                                : securityManager.preprocess(
-                                                                                                                                                                              getCapabilitiesAdapter.parse(),
+                                                                                                                                                : securityManager.preprocess( getCapabilitiesAdapter.parse(),
                                                                                                                                                                               OGCFrontController.getContext().getCredentials(),
                                                                                                                                                                               true );
                 doGetCapabilities( cswRequest, request, response, true );
@@ -434,8 +428,7 @@ public class CSWController extends AbstractOGCServiceController<CSWRequestType> 
 
                 DescribeRecord cswDRRequest = securityManager == null
                                               && ( request.getHeader( "authorization" ) != null || request.getHeader( "authorization" ) == null ) ? describeRecordAdapter.parse( requestVersion )
-                                                                                                                                                 : securityManager.preprocess(
-                                                                                                                                                                               describeRecordAdapter.parse( requestVersion ),
+                                                                                                                                                 : securityManager.preprocess( describeRecordAdapter.parse( requestVersion ),
                                                                                                                                                                                OGCFrontController.getContext().getCredentials(),
                                                                                                                                                                                true );
                 describeRecordHandler.doDescribeRecord( cswDRRequest, response, true );
@@ -446,8 +439,7 @@ public class CSWController extends AbstractOGCServiceController<CSWRequestType> 
 
                 GetRecords cswGRRequest = securityManager == null
                                           && ( request.getHeader( "authorization" ) != null || request.getHeader( "authorization" ) == null ) ? getRecordsAdapter.parse( requestVersion )
-                                                                                                                                             : securityManager.preprocess(
-                                                                                                                                                                           getRecordsAdapter.parse( requestVersion ),
+                                                                                                                                             : securityManager.preprocess( getRecordsAdapter.parse( requestVersion ),
                                                                                                                                                                            OGCFrontController.getContext().getCredentials(),
                                                                                                                                                                            true );
                 getRecordsHandler.doGetRecords( cswGRRequest, response, true );
@@ -459,8 +451,7 @@ public class CSWController extends AbstractOGCServiceController<CSWRequestType> 
 
                 GetRecordById cswGRBIRequest = securityManager == null
                                                && ( request.getHeader( "authorization" ) != null || request.getHeader( "authorization" ) == null ) ? getRecordByIdAdapter.parse( requestVersion )
-                                                                                                                                                  : securityManager.preprocess(
-                                                                                                                                                                                getRecordByIdAdapter.parse( requestVersion ),
+                                                                                                                                                  : securityManager.preprocess( getRecordByIdAdapter.parse( requestVersion ),
                                                                                                                                                                                 OGCFrontController.getContext().getCredentials(),
                                                                                                                                                                                 true );
 
@@ -473,8 +464,7 @@ public class CSWController extends AbstractOGCServiceController<CSWRequestType> 
 
                 Transaction cswTRequest = securityManager == null
                                           && ( request.getHeader( "authorization" ) != null || request.getHeader( "authorization" ) == null ) ? transAdapter.parse( requestVersion )
-                                                                                                                                             : securityManager.preprocess(
-                                                                                                                                                                           transAdapter.parse( requestVersion ),
+                                                                                                                                             : securityManager.preprocess( transAdapter.parse( requestVersion ),
                                                                                                                                                                            OGCFrontController.getContext().getCredentials(),
                                                                                                                                                                            true );
 
