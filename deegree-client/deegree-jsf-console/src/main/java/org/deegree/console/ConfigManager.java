@@ -48,9 +48,7 @@ import java.util.List;
 import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
-import javax.faces.component.html.HtmlCommandLink;
 import javax.faces.context.FacesContext;
-import javax.faces.event.ActionEvent;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -91,6 +89,11 @@ public class ConfigManager {
     @Setter
     private String newConfigId;
 
+    public String getStartView( ResourceManagerMetadata2 resourceManager ) {
+        this.currentResourceManager = resourceManager;
+        return resourceManager.getStartView();
+    }
+
     public List<ResourceManagerMetadata2> getResourceManagers() {
         List<ResourceManagerMetadata2> rmMetadata = new ArrayList<ResourceManagerMetadata2>();
         for ( ResourceManager mgr : getServiceWorkspace().getResourceManagers() ) {
@@ -101,15 +104,6 @@ public class ConfigManager {
         }
         Collections.sort( rmMetadata );
         return rmMetadata;
-    }
-
-    public void resourceManagerChanged( ActionEvent evt ) {
-        String linkText = ( (HtmlCommandLink) evt.getSource() ).getValue().toString();
-        for ( ResourceManagerMetadata2 mgr : getResourceManagers() ) {
-            if ( mgr.getName().equals( linkText ) ) {
-                currentResourceManager = mgr;
-            }
-        }
     }
 
     public List<Config> getAvailableResources() {

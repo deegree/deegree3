@@ -142,6 +142,10 @@ public class ResourceManagerMetadata2 implements Comparable<ResourceManagerMetad
     public ResourceManager getManager() {
         return mgr;
     }
+    
+    public String getManagerClass() {
+        return mgr.getClass().getName();
+    }
 
     public ResourceProvider getProvider( String name ) {
         return nameToProvider.get( name );

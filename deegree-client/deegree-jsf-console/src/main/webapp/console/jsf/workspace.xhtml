@@ -39,11 +39,11 @@
             <td><h:outputText value="#{workspaceName}" /></td>
             <td>
               <h:commandButton styleClass="buttonInfo" label="#{workspaceName}" value="#{labels.start_workspace}"
-                onclick="show();" actionListener="#{workspace.startWorkspace}" />
+                onclick="show();" action="#{workspace.startWorkspace(workspaceName)}" />
             </td>
             <td>
               <h:commandButton styleClass="buttonInfo" label="#{workspaceName}" onclick="return confirmDelete();"
-                value="#{labels.delete_workspace}" actionListener="#{workspace.deleteWorkspace}" />
+                value="#{labels.delete_workspace}" action="#{workspace.deleteWorkspace(workspaceName)}" />
             </td> 
           </tr>
           </h:form>
@@ -62,7 +62,7 @@
             <td><h:outputText value="#{workspaceName}" /></td>
             <td>
               <h:commandButton styleClass="buttonInfo" label="#{workspaceName}" value="Import" onclick="show();"
-                actionListener="#{workspace.downloadWorkspace}" />
+                action="#{workspace.downloadWorkspace(workspaceName)}" />
             </td>
           </tr>
           </h:form>
@@ -93,8 +93,7 @@
         </tr>
         <tr>
           <td colspan="2">
-            <h:commandButton styleClass="buttonInfo" value="Import" onclick="show();"
-              actionListener="#{workspace.importWorkspace}" />
+            <h:commandButton styleClass="buttonInfo" value="Import" onclick="show();" action="#{workspace.importWorkspace}" />
           </td>
         </tr>
       </table>

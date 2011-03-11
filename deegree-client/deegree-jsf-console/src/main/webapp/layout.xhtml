@@ -65,11 +65,12 @@
             <ui:repeat value="#{configManager.resourceManagers}" var="resourceManager">
                 <tr>
                     <td><h:commandLink styleClass="naviactive" value="#{resourceManager.name}"
-                        action="#{resourceManager.getStartView}" disabled="#{!logBean.loggedIn}"
-                        rendered="#{configManager.currentResourceManager == resourceManager}" /> <h:commandLink
-                        actionListener="#{configManager.resourceManagerChanged}" styleClass="navi"
-                        value="#{resourceManager.name}" action="#{resourceManager.getStartView}" disabled="#{!logBean.loggedIn}"
-                        rendered="#{configManager.currentResourceManager != resourceManager}" /></td>
+                        action="#{configManager.getStartView(resourceManager)}" disabled="#{!logBean.loggedIn}"
+                        rendered="#{configManager.currentResourceManager == resourceManager}" />
+                        <h:commandLink styleClass="navi"
+                        value="#{resourceManager.name}" action="#{configManager.getStartView(resourceManager)}" disabled="#{!logBean.loggedIn}"
+                        rendered="#{configManager.currentResourceManager != resourceManager}" />
+                    </td>
                 </tr>
             </ui:repeat>
             <br />

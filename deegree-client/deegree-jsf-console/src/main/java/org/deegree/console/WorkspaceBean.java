@@ -54,10 +54,8 @@ import java.util.List;
 import javax.faces.application.FacesMessage;
 import javax.faces.bean.ApplicationScoped;
 import javax.faces.bean.ManagedBean;
-import javax.faces.component.html.HtmlCommandButton;
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
-import javax.faces.event.ActionEvent;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -124,31 +122,25 @@ public class WorkspaceBean implements Serializable {
         return DeegreeWorkspace.listWorkspaces();
     }
 
-    public void startWorkspace( ActionEvent evt )
+    public void startWorkspace( String wsName )
                             throws Exception {
-        if ( evt.getSource() instanceof HtmlCommandButton ) {
-            String ws = ( (HtmlCommandButton) evt.getSource() ).getLabel();
-            ExternalContext ctx = FacesContext.getCurrentInstance().getExternalContext();
-            File file = new File( ctx.getRealPath( "WEB-INF/workspace_name" ) );
-            writeStringToFile( file, ws );
-            try {
-                OGCFrontController.getInstance().reload( ws );
-            } catch ( Exception e ) {
-                e.printStackTrace();
-            }
-            lastMessage = "Workspace has been started.";
+        ExternalContext ctx = FacesContext.getCurrentInstance().getExternalContext();
+        File file = new File( ctx.getRealPath( "WEB-INF/workspace_name" ) );
+        writeStringToFile( file, wsName );
+        try {
+            OGCFrontController.getInstance().reload( wsName );
+        } catch ( Exception e ) {
+            e.printStackTrace();
         }
+        lastMessage = "Workspace has been started.";
     }
 
-    public void deleteWorkspace( ActionEvent evt )
+    public void deleteWorkspace( String wsName )
                             throws IOException {
-        if ( evt.getSource() instanceof HtmlCommandButton ) {
-            String ws = ( (HtmlCommandButton) evt.getSource() ).getLabel();
-            DeegreeWorkspace dw = DeegreeWorkspace.getInstance( ws );
-            if ( dw.getLocation().isDirectory() ) {
-                FileUtils.deleteDirectory( dw.getLocation() );
-                lastMessage = "Workspace has been deleted.";
-            }
+        DeegreeWorkspace dw = DeegreeWorkspace.getInstance( wsName );
+        if ( dw.getLocation().isDirectory() ) {
+            FileUtils.deleteDirectory( dw.getLocation() );
+            lastMessage = "Workspace has been deleted.";
         }
     }
 
@@ -170,17 +162,14 @@ public class WorkspaceBean implements Serializable {
         return ctx.getViewRoot().getViewId();
     }
 
-    public void downloadWorkspace( ActionEvent evt ) {
+    public void downloadWorkspace( String wsName ) {
         InputStream in = null;
         try {
-            if ( evt.getSource() instanceof HtmlCommandButton ) {
-                String ws = ( (HtmlCommandButton) evt.getSource() ).getLabel();
-                in = get( STREAM, getDownloadBaseUrl(), null );
-                for ( String s : readLines( in ) ) {
-                    String[] ss = s.split( " ", 2 );
-                    if ( ss[1].equals( ws ) ) {
-                        importWorkspace( ss[0] );
-                    }
+            in = get( STREAM, getDownloadBaseUrl(), null );
+            for ( String s : readLines( in ) ) {
+                String[] ss = s.split( " ", 2 );
+                if ( ss[1].equals( wsName ) ) {
+                    importWorkspace( ss[0] );
                 }
             }
         } catch ( Throwable t ) {
