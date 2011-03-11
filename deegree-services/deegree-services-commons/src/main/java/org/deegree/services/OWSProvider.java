@@ -35,10 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.services;
 
-import java.net.URL;
-
-import org.deegree.commons.config.ResourceManager;
-import org.deegree.commons.config.ResourceProvider;
+import org.deegree.commons.config.ExtendedResourceProvider;
 import org.deegree.services.controller.ImplementationMetadata;
 import org.deegree.services.controller.OGCFrontController;
 
@@ -52,23 +49,10 @@ import org.deegree.services.controller.OGCFrontController;
  * 
  * @version $Revision: $, $Date: $
  */
-public interface OWSProvider<T extends Enum<T>> extends ResourceProvider {
-
-    /**
-     * Creates a new {@link OWS} instance from the given configuration document.
-     * 
-     * @return new service instance, not initialized yet
-     */
-    OWS<T> getService( URL configURL );
+public interface OWSProvider<T extends Enum<T>> extends ExtendedResourceProvider<OWS<T>> {
 
     /**
      * @return information about handled requests, namespaces and so on
      */
     ImplementationMetadata<T> getImplementationMetadata();
-
-    /**
-     * @return an array of resource manager dependencies, never null
-     */
-    Class<? extends ResourceManager>[] getDependencies();
-
 }

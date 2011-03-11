@@ -345,7 +345,7 @@ public class WebServicesConfiguration extends AbstractBasicResourceManager imple
                 // subController.init( workspace );
             } else {
                 OWSProvider<? extends Enum<?>> p = providers.get( configuredService.getServiceName() );
-                subController = p.getService( configURL );
+                subController = p.create( configURL );
                 subController.init( workspace );
             }
             LOG.info( "" );
@@ -390,8 +390,11 @@ public class WebServicesConfiguration extends AbstractBasicResourceManager imple
     private <T extends Enum<T>> void loadOWS( OWSProvider<T> p, File configFile ) {
         OWS<T> ows;
         try {
-            ows = p.getService( configFile.toURI().toURL() );
+            ows = p.create( configFile.toURI().toURL() );
         } catch ( MalformedURLException e ) {
+            LOG.trace( "Stack trace: ", e );
+            return;
+        } catch ( ResourceInitException e ) {
             LOG.trace( "Stack trace: ", e );
             return;
         }

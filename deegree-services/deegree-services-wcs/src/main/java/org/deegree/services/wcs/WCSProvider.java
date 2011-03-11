@@ -41,6 +41,7 @@ import static org.deegree.protocol.wps.WPSConstants.VERSION_100;
 
 import java.net.URL;
 
+import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceManager;
 import org.deegree.commons.tom.ows.Version;
 import org.deegree.coverage.persistence.CoverageBuilderManager;
@@ -84,7 +85,7 @@ public class WCSProvider implements OWSProvider<WCSRequestType> {
     }
 
     @Override
-    public OWS<WCSRequestType> getService( URL configURL ) {
+    public OWS<WCSRequestType> create( URL configURL ) {
         return new WCSController( configURL, getImplementationMetadata() );
     }
 
@@ -92,5 +93,11 @@ public class WCSProvider implements OWSProvider<WCSRequestType> {
     @SuppressWarnings("unchecked")
     public Class<? extends ResourceManager>[] getDependencies() {
         return new Class[] { CoverageBuilderManager.class };
+    }
+
+    @Override
+    public void init( DeegreeWorkspace workspace ) {
+        // TODO Auto-generated method stub
+        
     }
 }

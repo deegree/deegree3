@@ -40,6 +40,7 @@ import static org.deegree.protocol.wpvs.WPVSConstants.WPVS_NS;
 
 import java.net.URL;
 
+import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceManager;
 import org.deegree.commons.tom.ows.Version;
 import org.deegree.protocol.wpvs.WPVSConstants.WPVSRequestType;
@@ -84,13 +85,19 @@ public class WPVSProvider implements OWSProvider<WPVSRequestType> {
     }
 
     @Override
-    public OWS<WPVSRequestType> getService(URL configURL) {
-        return new WPVSController(configURL, getImplementationMetadata());
+    public OWS<WPVSRequestType> create( URL configURL ) {
+        return new WPVSController( configURL, getImplementationMetadata() );
     }
 
     @Override
     @SuppressWarnings("unchecked")
     public Class<? extends ResourceManager>[] getDependencies() {
         return new Class[] { RenderableStoreManager.class, BatchedMTStoreManager.class };
+    }
+
+    @Override
+    public void init( DeegreeWorkspace workspace ) {
+        // TODO Auto-generated method stub
+
     }
 }

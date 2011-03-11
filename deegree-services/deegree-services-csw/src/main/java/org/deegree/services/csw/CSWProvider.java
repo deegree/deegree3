@@ -40,6 +40,7 @@ import static org.deegree.protocol.csw.CSWConstants.VERSION_202;
 
 import java.net.URL;
 
+import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceManager;
 import org.deegree.commons.tom.ows.Version;
 import org.deegree.metadata.persistence.MetadataStoreManager;
@@ -83,7 +84,7 @@ public class CSWProvider implements OWSProvider<CSWRequestType> {
     }
 
     @Override
-    public OWS<CSWRequestType> getService( URL configURL ) {
+    public OWS<CSWRequestType> create( URL configURL ) {
         return new CSWController( configURL, getImplementationMetadata() );
     }
 
@@ -91,5 +92,10 @@ public class CSWProvider implements OWSProvider<CSWRequestType> {
     @SuppressWarnings("unchecked")
     public Class<? extends ResourceManager>[] getDependencies() {
         return new Class[] { MetadataStoreManager.class };
+    }
+
+    @Override
+    public void init( DeegreeWorkspace workspace ) {
+        // TODO Auto-generated method stub        
     }
 }

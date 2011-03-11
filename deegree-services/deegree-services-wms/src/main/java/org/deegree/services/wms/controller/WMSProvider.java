@@ -40,6 +40,7 @@ import static org.deegree.protocol.wms.WMSConstants.VERSION_130;
 
 import java.net.URL;
 
+import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceManager;
 import org.deegree.commons.tom.ows.Version;
 import org.deegree.coverage.persistence.CoverageBuilderManager;
@@ -85,12 +86,18 @@ public class WMSProvider implements OWSProvider<WMSRequestType> {
     }
 
     @Override
-    public OWS<WMSRequestType> getService( URL configURL ) {
+    public OWS<WMSRequestType> create( URL configURL ) {
         return new WMSController( configURL, getImplementationMetadata() );
     }
 
     @Override
     public Class<? extends ResourceManager>[] getDependencies() {
         return new Class[] { RemoteOWSManager.class, FeatureStoreManager.class, CoverageBuilderManager.class };
+    }
+
+    @Override
+    public void init( DeegreeWorkspace workspace ) {
+        // TODO Auto-generated method stub
+        
     }
 }

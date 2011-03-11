@@ -40,6 +40,7 @@ import static org.deegree.protocol.wps.WPSConstants.WPS_100_NS;
 
 import java.net.URL;
 
+import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceManager;
 import org.deegree.commons.tom.ows.Version;
 import org.deegree.commons.utils.ProxyUtils;
@@ -83,7 +84,7 @@ public class WPSProvider implements OWSProvider<WPSRequestType> {
     }
 
     @Override
-    public OWS<WPSRequestType> getService( URL configURL ) {
+    public OWS<WPSRequestType> create( URL configURL ) {
         return new WPService( configURL, getImplementationMetadata() );
     }
 
@@ -91,5 +92,11 @@ public class WPSProvider implements OWSProvider<WPSRequestType> {
     @SuppressWarnings("unchecked")
     public Class<? extends ResourceManager>[] getDependencies() {
         return new Class[] { ProxyUtils.class, ProcessManager.class };
+    }
+
+    @Override
+    public void init( DeegreeWorkspace workspace ) {
+        // TODO Auto-generated method stub
+        
     }
 }

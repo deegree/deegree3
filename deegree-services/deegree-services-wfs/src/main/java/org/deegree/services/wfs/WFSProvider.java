@@ -43,6 +43,7 @@ import static org.deegree.protocol.wfs.WFSConstants.WFS_NS;
 
 import java.net.URL;
 
+import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceManager;
 import org.deegree.commons.tom.ows.Version;
 import org.deegree.feature.persistence.FeatureStoreManager;
@@ -86,7 +87,7 @@ public class WFSProvider implements OWSProvider<WFSRequestType> {
     }
 
     @Override
-    public OWS<WFSRequestType> getService( URL configURL ) {
+    public OWS<WFSRequestType> create( URL configURL ) {
         return new WFSController( configURL, getImplementationMetadata() );
     }
 
@@ -94,5 +95,11 @@ public class WFSProvider implements OWSProvider<WFSRequestType> {
     @SuppressWarnings("unchecked")
     public Class<? extends ResourceManager>[] getDependencies() {
         return new Class[] { FeatureStoreManager.class };
+    }
+
+    @Override
+    public void init( DeegreeWorkspace workspace ) {
+        // TODO Auto-generated method stub
+        
     }
 }
