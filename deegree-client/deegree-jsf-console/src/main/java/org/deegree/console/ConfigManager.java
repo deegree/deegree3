@@ -89,11 +89,6 @@ public class ConfigManager {
     @Setter
     private String newConfigId;
 
-    public String getStartView( ResourceManagerMetadata2 resourceManager ) {
-        this.currentResourceManager = resourceManager;
-        return resourceManager.getStartView();
-    }
-
     public List<ResourceManagerMetadata2> getResourceManagers() {
         List<ResourceManagerMetadata2> rmMetadata = new ArrayList<ResourceManagerMetadata2>();
         for ( ResourceManager mgr : getServiceWorkspace().getResourceManagers() ) {
@@ -104,6 +99,11 @@ public class ConfigManager {
         }
         Collections.sort( rmMetadata );
         return rmMetadata;
+    }
+    
+    public String getStartView( ResourceManagerMetadata2 resourceManager ) {
+        this.currentResourceManager = resourceManager;
+        return resourceManager.getStartView();
     }
 
     public List<Config> getAvailableResources() {

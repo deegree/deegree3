@@ -5,10 +5,10 @@
     xmlns:dgc="http://java.sun.com/jsf/composite/deegree">
     <ui:define name="extraButtons">
 
-        <td><h:commandButton styleClass="buttonInfo" rendered="#{config.active}"
+        <td><h:commandButton styleClass="buttonInfo" rendered="#{config.state=='init_ok'}"
             value="#{labels.featureStores_loader}" action="#{metadataStoreConfig.openImporter}" alt="#{config.id}"
             actionListener="#{metadataStoreConfig.updateId}" /></td>
-        <td><h:commandButton styleClass="buttonInfo" rendered="#{config.active}"
+        <td><h:commandButton styleClass="buttonInfo" rendered="#{config.state=='init_ok'}"
             value="#{labels.featureStores_setup}" action="#{metadataStoreConfig.createTables}" alt="#{config.id}"
             actionListener="#{metadataStoreConfig.updateId}" /></td>
 
