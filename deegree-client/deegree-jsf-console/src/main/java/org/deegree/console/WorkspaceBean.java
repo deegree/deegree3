@@ -35,10 +35,10 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.console;
 
+import static javax.faces.application.FacesMessage.SEVERITY_ERROR;
 import static org.apache.commons.io.FileUtils.writeStringToFile;
 import static org.apache.commons.io.IOUtils.closeQuietly;
 import static org.apache.commons.io.IOUtils.readLines;
-import static org.deegree.commons.config.DeegreeWorkspace.getWorkspaceRoot;
 import static org.deegree.commons.utils.net.HttpUtils.STREAM;
 import static org.deegree.commons.utils.net.HttpUtils.get;
 
@@ -48,8 +48,10 @@ import java.io.InputStream;
 import java.io.Serializable;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
+import javax.faces.application.FacesMessage;
 import javax.faces.bean.ApplicationScoped;
 import javax.faces.bean.ManagedBean;
 import javax.faces.component.html.HtmlCommandButton;
@@ -85,6 +87,9 @@ public class WorkspaceBean implements Serializable {
 
     private static final long serialVersionUID = -2225303815897732019L;
 
+    // only used when no module version information is available
+    private static final String DEFAULT_VERSION = "3.1-SNAPSHOT";
+
     @Getter
     private String lastMessage = "Workspace initialized.";
 
@@ -98,14 +103,14 @@ public class WorkspaceBean implements Serializable {
 
     private boolean modified;
 
-    public String getWorkspaceRoot (){
+    public String getWorkspaceRoot() {
         return DeegreeWorkspace.getWorkspaceRoot();
     }
-    
-    public boolean getOtherAvailable () {
+
+    public boolean getOtherAvailable() {
         return getWorkspaceList().size() > 1;
     }
-    
+
     /**
      * Returns the currently active {@link DeegreeWorkspace}.
      * 
@@ -170,15 +175,7 @@ public class WorkspaceBean implements Serializable {
         try {
             if ( evt.getSource() instanceof HtmlCommandButton ) {
                 String ws = ( (HtmlCommandButton) evt.getSource() ).getLabel();
-
-                // deal with missing version information (e.g. when running in Eclipse)
-                String version = DeegreeModuleInfo.getRegisteredModules().get( 0 ).getVersion().getVersionNumber();
-                if ( !version.startsWith( "3" ) ) {
-                    LOG.warn( "No valid version information for module available. Defaulting to 3.1" );
-                    version = "3.1-SNAPSHOT";
-                }
-                in = get( STREAM, "http://download.deegree.org/deegree3/workspaces/workspaces-" + version, null );
-
+                in = get( STREAM, getDownloadBaseUrl(), null );
                 for ( String s : readLines( in ) ) {
                     String[] ss = s.split( " ", 2 );
                     if ( ss[1].equals( ws ) ) {
@@ -186,8 +183,8 @@ public class WorkspaceBean implements Serializable {
                     }
                 }
             }
-        } catch ( IOException e ) {
-            lastMessage = "Workspace could not be loaded: " + e.getLocalizedMessage();
+        } catch ( Throwable t ) {
+            lastMessage = "Workspace could not be loaded: " + t.getLocalizedMessage();
         } finally {
             closeQuietly( in );
         }
@@ -228,24 +225,40 @@ public class WorkspaceBean implements Serializable {
                             throws IOException {
         InputStream in = null;
         try {
-            String version = DeegreeModuleInfo.getRegisteredModules().get( 0 ).getVersion().getVersionNumber();
-            if ( version.equals( "${project.version}" ) ) {
-                // workaround for Eclipse
-                LOG.warn( "No valid version information for module available. Defaulting to 3.1" );
-                version = "3.1-SNAPSHOT";
-            }
-            in = get( STREAM, "http://download.deegree.org/deegree3/workspaces/workspaces-" + version, null );
+            in = get( STREAM, getDownloadBaseUrl(), null );
             List<String> list = readLines( in );
             List<String> res = new ArrayList<String>( list.size() );
-
             for ( String s : list ) {
                 res.add( s.split( " ", 2 )[1] );
             }
-
             return res;
+        } catch ( Throwable t ) {
+            FacesMessage fm = new FacesMessage( SEVERITY_ERROR, "Unable to retrieve remote workspaces: "
+                                                                + t.getMessage(), null );
+            FacesContext.getCurrentInstance().addMessage( null, fm );
         } finally {
             closeQuietly( in );
         }
+        return Collections.emptyList();
+    }
+
+    private String getDownloadBaseUrl() {
+        return "http://download.deegree.org/deegree3/workspaces/workspaces-" + getVersion();
+    }
+
+    private String getVersion() {
+        String version = DEFAULT_VERSION;
+        List<DeegreeModuleInfo> modules = DeegreeModuleInfo.getRegisteredModules();
+        if ( !modules.isEmpty() ) {
+            if ( !( "${project.version}" ).equals( modules.get( 0 ).getVersion().getVersionNumber() ) ) {
+                version = modules.get( 0 ).getVersion().getVersionNumber();
+            } else {
+                LOG.warn( "No valid version information for modules available. Defaulting to " + DEFAULT_VERSION );
+            }
+        } else {
+            LOG.warn( "No valid version information for modules available. Defaulting to " + DEFAULT_VERSION );
+        }
+        return version;
     }
 
     public void setModified() {

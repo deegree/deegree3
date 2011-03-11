@@ -115,15 +115,20 @@ public class ResourceManagerMetadata2 implements Comparable<ResourceManagerMetad
     }
 
     public static synchronized ResourceManagerMetadata2 getMetadata( ResourceManager rm ) {
-        Class<? extends ResourceManager> cl = rm.getClass();
-        if ( !rmClassToMd.containsKey( cl ) ) {
-            ResourceManagerMetadata2 md = new ResourceManagerMetadata2( rm );
-            if ( md.name == null ) {
-                return null;
-            }
-            rmClassToMd.put( cl, new ResourceManagerMetadata2( rm ) );
-        }
-        return rmClassToMd.get( cl );
+        ResourceManagerMetadata2 md = new ResourceManagerMetadata2( rm );
+        if ( md.name == null ) {
+          return null;
+      }        
+      return md;
+//        Class<? extends ResourceManager> cl = rm.getClass();
+//        if ( !rmClassToMd.containsKey( cl ) ) {
+//            ResourceManagerMetadata2 md = new ResourceManagerMetadata2( rm );
+//            if ( md.name == null ) {
+//                return null;
+//            }
+//            rmClassToMd.put( cl, new ResourceManagerMetadata2( rm ) );
+//        }
+//        return rmClassToMd.get( cl );
     }
 
     public String getName() {

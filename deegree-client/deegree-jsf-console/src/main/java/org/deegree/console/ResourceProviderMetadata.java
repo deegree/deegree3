@@ -64,7 +64,7 @@ public class ResourceProviderMetadata {
 
     private String name;
 
-    private static final Map<Class<? extends ResourceProvider>, ResourceProviderMetadata> rpClassToMd = new HashMap<Class<? extends ResourceProvider>, ResourceProviderMetadata>();
+    private static final Map<String, ResourceProviderMetadata> rpClassNameToMd = new HashMap<String, ResourceProviderMetadata>();
 
     private ResourceProviderMetadata( ResourceProvider rp ) {
         String className = rp.getClass().getName();
@@ -113,11 +113,10 @@ public class ResourceProviderMetadata {
     }
 
     public static synchronized ResourceProviderMetadata getMetadata( ResourceProvider rp ) {
-        Class<? extends ResourceProvider> cl = rp.getClass();
-        if ( !rpClassToMd.containsKey( cl ) ) {
-            rpClassToMd.put( cl, new ResourceProviderMetadata( rp ) );
+        if ( !rpClassNameToMd.containsKey( rp.getClass().getName() ) ) {
+            rpClassNameToMd.put( rp.getClass().getName(), new ResourceProviderMetadata( rp ) );
         }
-        return rpClassToMd.get( cl );
+        return rpClassNameToMd.get( rp.getClass().getName() );
     }
 
     public String getName() {
