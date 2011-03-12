@@ -35,6 +35,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.console;
 
+import static org.deegree.commons.config.ResourceState.StateType.init_error;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
@@ -48,6 +50,8 @@ import java.util.Properties;
 import org.apache.commons.io.IOUtils;
 import org.deegree.commons.config.ResourceManager;
 import org.deegree.commons.config.ResourceProvider;
+import org.deegree.commons.config.ResourceState;
+import org.deegree.commons.config.ResourceState.StateType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -117,18 +121,18 @@ public class ResourceManagerMetadata2 implements Comparable<ResourceManagerMetad
     public static synchronized ResourceManagerMetadata2 getMetadata( ResourceManager rm ) {
         ResourceManagerMetadata2 md = new ResourceManagerMetadata2( rm );
         if ( md.name == null ) {
-          return null;
-      }        
-      return md;
-//        Class<? extends ResourceManager> cl = rm.getClass();
-//        if ( !rmClassToMd.containsKey( cl ) ) {
-//            ResourceManagerMetadata2 md = new ResourceManagerMetadata2( rm );
-//            if ( md.name == null ) {
-//                return null;
-//            }
-//            rmClassToMd.put( cl, new ResourceManagerMetadata2( rm ) );
-//        }
-//        return rmClassToMd.get( cl );
+            return null;
+        }
+        return md;
+        // Class<? extends ResourceManager> cl = rm.getClass();
+        // if ( !rmClassToMd.containsKey( cl ) ) {
+        // ResourceManagerMetadata2 md = new ResourceManagerMetadata2( rm );
+        // if ( md.name == null ) {
+        // return null;
+        // }
+        // rmClassToMd.put( cl, new ResourceManagerMetadata2( rm ) );
+        // }
+        // return rmClassToMd.get( cl );
     }
 
     public String getName() {
@@ -142,7 +146,7 @@ public class ResourceManagerMetadata2 implements Comparable<ResourceManagerMetad
     public ResourceManager getManager() {
         return mgr;
     }
-    
+
     public String getManagerClass() {
         return mgr.getClass().getName();
     }
@@ -161,6 +165,15 @@ public class ResourceManagerMetadata2 implements Comparable<ResourceManagerMetad
 
     public boolean getMultipleProviders() {
         return providers.size() > 1;
+    }
+
+    public boolean getHasErrors() {
+        for ( ResourceState state : mgr.getStates() ) {
+            if ( state.getType() == init_error ) {
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override

@@ -74,6 +74,24 @@ public abstract class AbstractResourceManager<T extends Resource> extends Abstra
     private String name = this.getClass().getSimpleName();
 
     /**
+     * Called when a new {@link Resource} has been successfully initialized.
+     *
+     * @param resource
+     */
+    protected void add (T resource) {
+        // nothing to do
+    }
+    
+    /**
+     * Called when a formerly active {@link Resource} is going to be destroyed.
+     *
+     * @param resource
+     */
+    protected void remove (T resource) {
+        // nothing to do
+    }
+    
+    /**
      * @return all managed resources
      */
     public Collection<T> getAll() {
@@ -106,6 +124,7 @@ public abstract class AbstractResourceManager<T extends Resource> extends Abstra
             throw new ResourceInitException( "Creation of " + md.getName() + " via configuration file failed." );
         }
         T resource = provider.create( configUrl );
+        add( resource );
 
         idToResource.put( id, resource );
         return resource;
@@ -117,6 +136,7 @@ public abstract class AbstractResourceManager<T extends Resource> extends Abstra
 
     public void shutdown() {
         for ( T t : idToResource.values() ) {
+            remove( t );
             t.destroy();
         }
         idToResource.clear();
@@ -139,7 +159,7 @@ public abstract class AbstractResourceManager<T extends Resource> extends Abstra
                 return;
             }
             LOG.info( "--------------------------------------------------------------------------------" );
-            LOG.info( "Setting up resources of type {}.", name );
+            LOG.info( "Setting up {}.", name );
             LOG.info( "--------------------------------------------------------------------------------" );
 
             List<File> files = FileUtils.findFilesForExtensions( dir, true, "xml,ignore" );
@@ -160,6 +180,7 @@ public abstract class AbstractResourceManager<T extends Resource> extends Abstra
                             idToState.put( id, new ResourceState( id, configFile, provider, StateType.created, null ) );
                             resource.init( workspace );
                             idToState.put( id, new ResourceState( id, configFile, provider, StateType.init_ok, null ) );
+                            add (resource);
                         } catch ( ResourceInitException e ) {
                             idToState.put( id, new ResourceState( id, configFile, provider, StateType.init_error, e ) );
                             LOG.error( "Error creating {}: {}", new Object[] { name, e.getMessage(), e } );
@@ -219,6 +240,7 @@ public abstract class AbstractResourceManager<T extends Resource> extends Abstra
                 idToState.put( id, new ResourceState( id, newFile, provider, StateType.created, null ) );
                 resource.init( workspace );
                 idToState.put( id, new ResourceState( id, newFile, provider, StateType.init_ok, null ) );
+                add (resource);
             } catch ( ResourceInitException e ) {
                 idToState.put( id, new ResourceState( id, newFile, provider, StateType.init_error, e ) );
                 LOG.error( "Error creating {}: {}", new Object[] { name, e.getMessage(), e } );
@@ -241,6 +263,7 @@ public abstract class AbstractResourceManager<T extends Resource> extends Abstra
 
             T resource = idToResource.get( id );
             if ( resource != null ) {
+                remove(resource );
                 try {
                     resource.destroy();
                 } catch ( Throwable t ) {

@@ -68,14 +68,15 @@
                     <td>
                       <h:commandLink styleClass="naviactive" value="#{resourceManager.name}"
                         action="#{configManager.getStartView}" disabled="#{!logBean.loggedIn}"
-                        rendered="#{configManager.currentResourceManager == resourceManager}">
-                        <f:setPropertyActionListener target="#{actionParams.param1}" value="#{resourceManager}" />
+                        rendered="#{configManager.currentResourceManager == resourceManager}">                                              
+                        <f:setPropertyActionListener target="#{actionParams.param1}" value="#{resourceManager}" />                        
                       </h:commandLink>
                       <h:commandLink styleClass="navi"
                         value="#{resourceManager.name}" action="#{configManager.getStartView}" disabled="#{!logBean.loggedIn}"
                         rendered="#{configManager.currentResourceManager != resourceManager}">
                         <f:setPropertyActionListener target="#{actionParams.param1}" value="#{resourceManager}" />
-                      </h:commandLink>
+                      </h:commandLink> 
+                      <h:outputText styleClass="buttonError" value=" !" rendered="#{logBean.loggedIn &amp;&amp; resourceManager.hasErrors}"/>                      
                     </td>
                 </tr>
             </ui:repeat>

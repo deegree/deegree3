@@ -36,16 +36,10 @@
 package org.deegree.services.controller;
 
 import static java.lang.Class.forName;
-import static org.apache.commons.io.IOUtils.closeQuietly;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FilenameFilter;
-import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -58,13 +52,10 @@ import java.util.Map;
 import java.util.ServiceLoader;
 
 import javax.xml.bind.JAXBElement;
-import javax.xml.stream.XMLInputFactory;
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamReader;
 
-import org.apache.commons.io.filefilter.SuffixFileFilter;
-import org.deegree.commons.config.AbstractBasicResourceManager;
+import org.deegree.commons.config.AbstractResourceManager;
 import org.deegree.commons.config.DeegreeWorkspace;
+import org.deegree.commons.config.ExtendedResourceManager;
 import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.config.ResourceManager;
 import org.deegree.commons.config.ResourceManagerMetadata;
@@ -75,21 +66,20 @@ import org.deegree.commons.xml.jaxb.JAXBUtils;
 import org.deegree.services.OWS;
 import org.deegree.services.OWSProvider;
 import org.deegree.services.controller.utils.StandardRequestLogger;
-import org.deegree.services.jaxb.controller.ConfiguredServicesType;
 import org.deegree.services.jaxb.controller.DeegreeServiceControllerType;
 import org.deegree.services.jaxb.controller.DeegreeServiceControllerType.RequestLogging;
-import org.deegree.services.jaxb.controller.ServiceType;
 import org.deegree.services.jaxb.metadata.DeegreeServicesMetadataType;
 import org.slf4j.Logger;
 
 /**
+ * {@link ExtendedResourceManager} for {@link OWS} (and web service configuration).
  * 
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
  */
-public class WebServicesConfiguration extends AbstractBasicResourceManager implements ResourceManager {
+public class WebServicesConfiguration extends AbstractResourceManager<OWS<?>> implements ResourceManager {
 
     private static final Logger LOG = getLogger( WebServicesConfiguration.class );
 
@@ -152,20 +142,12 @@ public class WebServicesConfiguration extends AbstractBasicResourceManager imple
         dependencies = deps.toArray( new Class[deps.size()] );
     }
 
+    @Override
     public void startup( DeegreeWorkspace workspace )
                             throws ResourceInitException {
+
         this.workspace = workspace;
         updateDependencies( workspace );
-
-        // clear controller maps
-        serviceNameToController.clear();
-        serviceNSToController.clear();
-        requestNameToController.clear();
-
-        LOG.info( "--------------------------------------------------------------------------------" );
-        LOG.info( "Starting webservices." );
-        LOG.info( "--------------------------------------------------------------------------------" );
-        LOG.info( "" );
 
         File metadata = new File( workspace.getLocation(), "services" + File.separator + "metadata.xml" );
         File main = new File( workspace.getLocation(), "services" + File.separator + "main.xml" );
@@ -213,221 +195,7 @@ public class WebServicesConfiguration extends AbstractBasicResourceManager imple
             OWSProvider<?> p = iter.next();
             providers.put( p.getImplementationMetadata().getImplementedServiceName().toUpperCase(), p );
         }
-
-        if ( mainConfig.getConfiguredServices() != null && mainConfig.getConfiguredServices().getService() != null
-             && !mainConfig.getConfiguredServices().getService().isEmpty() ) {
-            initServicesFromConfig( main, providers );
-        } else {
-            LOG.info( "No service elements were supplied in the file: '" + main
-                      + "' -- trying to use the default loading mechanism." );
-            loadServicesFromDefaultLocation( providers );
-        }
-        if ( this.serviceNameToController.values().size() == 0 ) {
-            LOG.info( "No deegree web services have been loaded." );
-        }
-
-        LOG.info( "" );
-        LOG.info( "--------------------------------------------------------------------------------" );
-        LOG.info( "Webservices started." );
-        LOG.info( "--------------------------------------------------------------------------------" );
-    }
-
-    @Deprecated
-    private void initServicesFromConfig( File main, Map<String, OWSProvider<? extends Enum<?>>> providers ) {
-        ConfiguredServicesType servicesConfigured = mainConfig.getConfiguredServices();
-        List<ServiceType> services = null;
-        if ( servicesConfigured != null ) {
-            services = servicesConfigured.getService();
-            if ( services != null && services.size() > 0 ) {
-                LOG.info( "The file: " + main );
-                LOG.info( "Provided following services:" );
-                for ( ServiceType s : services ) {
-                    URL configLocation = null;
-                    try {
-                        configLocation = new URL( main.toURI().toURL(), s.getConfigurationLocation() );
-                    } catch ( MalformedURLException e ) {
-                        LOG.error( e.getMessage(), e );
-                        return;
-                    }
-                    s.setConfigurationLocation( configLocation.toExternalForm() );
-
-                    OWS<? extends Enum<?>> serviceController = instantiateServiceController( s, providers );
-                    if ( serviceController != null ) {
-                        registerSubController( s, serviceController );
-                    }
-
-                    LOG.info( " - " + s.getServiceName() );
-                }
-                LOG.info( "ATTENTION - Skipping the loading of all services in conf/ which are not listed above." );
-            }
-        }
-    }
-
-    private void loadServicesFromDefaultLocation( Map<String, OWSProvider<? extends Enum<?>>> providers ) {
-        File serviceConfigDir = new File( workspace.getLocation(), "services" );
-
-        Map<String, OWSProvider<?>> nsToProvider = new HashMap<String, OWSProvider<?>>();
-        for ( OWSProvider<?> p : providers.values() ) {
-            nsToProvider.put( p.getConfigNamespace(), p );
-        }
-
-        LOG.info( "Using default directory: " + serviceConfigDir.getAbsolutePath()
-                  + " to scan for webservice configurations." );
-        File[] files = serviceConfigDir.listFiles( (FilenameFilter) new SuffixFileFilter( ".xml" ) );
-        if ( files == null || files.length == 0 ) {
-            LOG.error( "No files found in default configuration directory, hence no services to load." );
-            return;
-        }
-        XMLInputFactory fac = XMLInputFactory.newInstance();
-        for ( File f : files ) {
-            if ( !f.isDirectory() && !f.getName().equalsIgnoreCase( "metadata.xml" )
-                 && !f.getName().equalsIgnoreCase( "main.xml" ) ) {
-                InputStream in = null;
-                try {
-                    XMLStreamReader reader = fac.createXMLStreamReader( in = new FileInputStream( f ) );
-                    reader.next();
-                    String ns = reader.getNamespaceURI();
-                    if ( ns == null ) {
-                        LOG.info( "File {} has no namespace, skipping.", f.getName() );
-                        continue;
-                    }
-                    if ( ns.isEmpty() ) {
-                        LOG.info( "File {} has null namespace, skipping.", f.getName() );
-                        continue;
-                    }
-                    if ( nsToProvider.get( ns ) == null ) {
-                        LOG.info( "File {} has namespace {}, but no appropriate provider was found, skipping.",
-                                  f.getName(), ns );
-                        continue;
-                    }
-                    loadOWS( nsToProvider.get( ns ), f );
-                } catch ( XMLStreamException e ) {
-                    LOG.info( "File {} could not be parsed as XML: {}, skipping.", f.getName(), e.getLocalizedMessage() );
-                    LOG.trace( "Stack trace:", e );
-                    continue;
-                } catch ( FileNotFoundException e ) {
-                    LOG.info( "File {} could not be found: {}, skipping.", f.getName(), e.getLocalizedMessage() );
-                    LOG.trace( "Stack trace:", e );
-                } finally {
-                    closeQuietly( in );
-                }
-            }
-
-        }
-    }
-
-    // should sooner or later just be removed along with the option to configure available services
-    @SuppressWarnings("unchecked")
-    @Deprecated
-    private OWS<? extends Enum<?>> instantiateServiceController( ServiceType configuredService,
-                                                                 Map<String, OWSProvider<? extends Enum<?>>> providers ) {
-        OWS<? extends Enum<?>> subController = null;
-        if ( configuredService == null ) {
-            return subController;
-        }
-
-        final String serviceName = configuredService.getServiceName().name();
-
-        LOG.info( "" );
-        LOG.info( "--------------------------------------------------------------------------------" );
-        LOG.info( "Starting " + serviceName + "." );
-        LOG.info( "--------------------------------------------------------------------------------" );
-        LOG.info( "Configuration file: '" + configuredService.getConfigurationLocation() + "'" );
-        try {
-            URL configURL = new URL( configuredService.getConfigurationLocation() );
-            long time = System.currentTimeMillis();
-            if ( configuredService.getControllerClass() != null ) {
-                LOG.info( "Using custom controller class '{}'.", configuredService.getControllerClass() );
-                LOG.warn( "TODO: implement invocation via Reflection" );
-                // subController = (OWS<? extends Enum<?>>) Class.forName( configuredService.getControllerClass(),
-                // false,
-                // OGCFrontController.class.getClassLoader() ).newInstance();
-                // subController.init( workspace );
-            } else {
-                OWSProvider<? extends Enum<?>> p = providers.get( configuredService.getServiceName() );
-                subController = p.create( configURL );
-                subController.init( workspace );
-            }
-            LOG.info( "" );
-            // round to exactly two decimals, I think their should be a java method for this though
-            double startupTime = Math.round( ( ( System.currentTimeMillis() - time ) * 0.1 ) ) * 0.01;
-            LOG.info( serviceName + " startup successful (took: " + startupTime + " seconds)" );
-        } catch ( Exception e ) {
-            LOG.error( "Initializing {} failed: {}", serviceName, e.getMessage() );
-            LOG.error( "Set the log level to TRACE to get the stack trace." );
-            LOG.trace( "Stack trace:", e );
-            LOG.info( "" );
-            LOG.info( serviceName + " startup failed." );
-            subController = null;
-        }
-        return subController;
-    }
-
-    @Deprecated
-    private void registerSubController( ServiceType configuredService, OWS<?> serviceController ) {
-
-        // associate service name (abbreviation) with controller instance
-        LOG.debug( "Service name '" + configuredService.getServiceName() + "' -> '"
-                   + serviceController.getClass().getSimpleName() + "'" );
-        serviceNameToController.put( configuredService.getServiceName().toString().toUpperCase(), serviceController );
-
-        // associate request types with controller instance
-        for ( String request : serviceController.getImplementationMetadata().getHandledRequests() ) {
-            // skip GetCapabilities requests
-            if ( !( "GetCapabilities".equals( request ) ) ) {
-                LOG.debug( "Request type '" + request + "' -> '" + serviceController.getClass().getSimpleName() + "'" );
-                requestNameToController.put( request, serviceController );
-            }
-        }
-
-        // associate namespaces with controller instance
-        for ( String ns : serviceController.getImplementationMetadata().getHandledNamespaces() ) {
-            LOG.debug( "Namespace '" + ns + "' -> '" + serviceController.getClass().getSimpleName() + "'" );
-            serviceNSToController.put( ns, serviceController );
-        }
-    }
-
-    private <T extends Enum<T>> void loadOWS( OWSProvider<T> p, File configFile ) {
-        OWS<T> ows;
-        try {
-            ows = p.create( configFile.toURI().toURL() );
-        } catch ( MalformedURLException e ) {
-            LOG.trace( "Stack trace: ", e );
-            return;
-        } catch ( ResourceInitException e ) {
-            LOG.trace( "Stack trace: ", e );
-            return;
-        }
-
-        // associate service name (abbreviation) with controller instance
-        ImplementationMetadata<T> md = p.getImplementationMetadata();
-        LOG.info( " --- Starting up {}", md.getImplementedServiceName() );
-
-        try {
-            ows.init( workspace );
-        } catch ( ResourceInitException e ) {
-            LOG.warn( "Service from file {} could not be initialized: {}", configFile.getName(),
-                      e.getLocalizedMessage() );
-            LOG.trace( "Stack trace: ", e );
-            return;
-        }
-        LOG.debug( "Service name '" + md.getImplementedServiceName() + "' -> '" + ows.getClass().getSimpleName() + "'" );
-        serviceNameToController.put( md.getImplementedServiceName().toUpperCase(), ows );
-
-        // associate request types with controller instance
-        for ( String request : md.getHandledRequests() ) {
-            // skip GetCapabilities requests
-            if ( !( "GetCapabilities".equals( request ) ) ) {
-                LOG.debug( "Request type '" + request + "' -> '" + ows.getClass().getSimpleName() + "'" );
-                requestNameToController.put( request, ows );
-            }
-        }
-
-        // associate namespaces with controller instance
-        for ( String ns : md.getHandledNamespaces() ) {
-            LOG.debug( "Namespace '" + ns + "' -> '" + ows.getClass().getSimpleName() + "'" );
-            serviceNSToController.put( ns, ows );
-        }
+        super.startup( workspace );
     }
 
     /**
@@ -632,28 +400,44 @@ public class WebServicesConfiguration extends AbstractBasicResourceManager imple
     }
 
     @Override
-    public void activate( String id )
-                            throws ResourceInitException {
-        // TODO Auto-generated method stub
+    protected void add( OWS ows ) {
+        ImplementationMetadata<?> md = ows.getImplementationMetadata();
+        LOG.debug( "Service name '" + md.getImplementedServiceName() + "' -> '" + ows.getClass().getSimpleName() + "'" );
+        serviceNameToController.put( md.getImplementedServiceName().toUpperCase(), ows );
 
+        // associate request types with controller instance
+        for ( String request : md.getHandledRequests() ) {
+            // skip GetCapabilities requests
+            if ( !( "GetCapabilities".equals( request ) ) ) {
+                LOG.debug( "Request type '" + request + "' -> '" + ows.getClass().getSimpleName() + "'" );
+                requestNameToController.put( request, ows );
+            }
+        }
+
+        // associate namespaces with controller instance
+        for ( String ns : md.getHandledNamespaces() ) {
+            LOG.debug( "Namespace '" + ns + "' -> '" + ows.getClass().getSimpleName() + "'" );
+            serviceNSToController.put( ns, ows );
+        }
     }
 
     @Override
-    public void deactivate( String id )
-                            throws ResourceInitException {
-        // TODO Auto-generated method stub
+    protected void remove( OWS ows ) {
+        ImplementationMetadata<?> md = ows.getImplementationMetadata();
+        LOG.debug( "Service name '" + md.getImplementedServiceName() + "' -> '" + ows.getClass().getSimpleName() + "'" );
+        serviceNameToController.remove( md.getImplementedServiceName().toUpperCase() );
 
-    }
+        for ( String request : md.getHandledRequests() ) {
+            // skip GetCapabilities requests
+            if ( !( "GetCapabilities".equals( request ) ) ) {
+                LOG.debug( "Request type '" + request + "' -> '" + ows.getClass().getSimpleName() + "'" );
+                requestNameToController.remove( request );
+            }
+        }
 
-    @Override
-    protected ResourceProvider getProvider( File file ) {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    protected void remove( String id ) {
-        // TODO Auto-generated method stub
-
+        for ( String ns : md.getHandledNamespaces() ) {
+            LOG.debug( "Namespace '" + ns + "' -> '" + ows.getClass().getSimpleName() + "'" );
+            serviceNSToController.remove( ns );
+        }
     }
 }

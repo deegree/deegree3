@@ -37,12 +37,9 @@ package org.deegree.services;
 
 import org.deegree.commons.config.ExtendedResourceProvider;
 import org.deegree.services.controller.ImplementationMetadata;
-import org.deegree.services.controller.OGCFrontController;
 
 /**
- * Implementations provide OWS implementations for plugging into the {@link OGCFrontController}.
- * 
- * {@link OWS} {@link OGCFrontController}
+ * Implementations provide {@link OWS} instances.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author: markus $
