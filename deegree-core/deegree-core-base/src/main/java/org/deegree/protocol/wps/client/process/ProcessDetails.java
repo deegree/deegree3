@@ -139,7 +139,7 @@ public class ProcessDetails {
         List<InputType> inputs = new ArrayList<InputType>( omInputs.size() );
         for ( OMElement input : omInputs ) {
             String minOccurs = input.getAttribute( new QName( null, "minOccurs" ) ).getAttributeValue();
-            String maxOccurs = input.getAttribute( new QName( null, "minOccurs" ) ).getAttributeValue();
+            String maxOccurs = input.getAttribute( new QName( null, "maxOccurs" ) ).getAttributeValue();
 
             CodeType id = parseId( input );
             LanguageString inputTitle = parseLanguageString( input, "Title" );
