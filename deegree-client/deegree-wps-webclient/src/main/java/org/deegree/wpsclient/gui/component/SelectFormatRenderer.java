@@ -65,7 +65,7 @@ import com.sun.faces.renderkit.html_basic.MenuRenderer;
 @FacesRenderer(componentFamily = "javax.faces.SelectOne", rendererType = "org.deegree.SelectFormat")
 public class SelectFormatRenderer extends MenuRenderer {
 
-    private static final String FORMAT_SUFFIX = ":format";
+    public static final String FORMAT_SUFFIX = ":format";
 
     private static final String ONCHANGE_EVENT = "updateFormat";
 

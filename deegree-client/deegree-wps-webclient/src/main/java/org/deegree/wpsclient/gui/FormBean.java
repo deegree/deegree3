@@ -89,6 +89,7 @@ import org.deegree.protocol.wps.client.process.Process;
 import org.deegree.wpsclient.gui.MultipleComponentListener.MC_TYPE;
 import org.deegree.wpsclient.gui.component.HtmlLiteralInput;
 import org.deegree.wpsclient.gui.component.HtmlSelectFormat;
+import org.deegree.wpsclient.gui.component.SelectFormatRenderer;
 import org.deegree.wpsclient.gui.converter.ComplexFormatConverter;
 import org.slf4j.Logger;
 
@@ -242,6 +243,10 @@ public class FormBean {
                 occ = 1;
             if ( occ > maxOccurs && occ > -1 )
                 occ = maxOccurs;
+            
+            System.out.println("type " + input.getType());
+            System.out.println(occ);
+            System.out.println(maxOccurs);
             switch ( input.getType() ) {
             case COMPLEX:
                 HtmlPanelGrid gridC = new HtmlPanelGrid();
@@ -277,6 +282,7 @@ public class FormBean {
                 gridL.setId( inputId + "_PANEL" );
                 gridL.setColumns( 2 );
                 for ( int j = 0; j < occ; j++ ) {
+                    System.out.println("www " + j);
                     gridL.getChildren().add( getLiteralInput( fc, (LiteralInputType) input, minOccurs, maxOccurs, j ) );
                     if ( maxOccurs != 1 ) {
                         gridL.getChildren().add( createOccurenceButtons( input.getId(), j, maxOccurs, minOccurs ) );
@@ -355,6 +361,7 @@ public class FormBean {
 
         HtmlFieldset fieldset = new HtmlFieldset();
         String id = input.getId().toString() + index;
+        String formatId = id + "_format";
         fieldset.setId( id );
 
         // FileUpload
@@ -426,13 +433,14 @@ public class FormBean {
                 String title = MessageUtils.getResourceText( "labels", "loadRefBt" );
                 loadBt.setValue( title );
                 loadBt.setStyleClass( INPUT_CLASS + " button" );
-                loadBt.setOnclick( "loadReference('" + text.getId() + "','" + sourceId + "'); return false;" );
+                loadBt.setOnclick( "loadReference('" + text.getId() + "','" + sourceId + "', '" + formatId
+                                   + SelectFormatRenderer.FORMAT_SUFFIX + "'); return false;" );
                 refGrid.getChildren().add( loadBt );
             }
             fieldset.getChildren().add( refGrid );
         }
         HtmlSelectFormat format = new HtmlSelectFormat();
-        format.setId( id + "_format" );
+        format.setId( formatId );
         format.setStyleClass( INPUT_CLASS + " selectFormat" );
         format.setDefaultFormat( input.getDefaultFormat() );
         format.setConverter( new ComplexFormatConverter() );

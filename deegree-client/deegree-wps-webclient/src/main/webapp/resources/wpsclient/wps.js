@@ -1,4 +1,4 @@
-function loadReference(textFieldId, cbId) {
+function loadReference(textFieldId, cbId, formatID) {
 	var cb = document.getElementsByName(cbId);
 	if (cb != null) {
 		for ( var int = 0; int < cb.length; int++) {
@@ -6,9 +6,19 @@ function loadReference(textFieldId, cbId) {
 				// DO something!
 				var textF = document.getElementById("emptyForm:" + textFieldId);
 				textF.value = "Reference from " + cb[int].value;
+				if (cb[int].value == "WFS") {
+					var selectF = document.getElementById("emptyForm:"
+							+ formatID);
+					var optionsArray = selectF.options;
+					for ( var i = 0; i < optionsArray.length; i++) {
+						var pos = optionsArray[i].value.indexOf(";");
+						var schema = optionsArray[i].value.substring(0, pos);
+					}
+				}
 			}
 		}
 	}
+
 }
 
 function handleXMLOutput(requestRef) {
