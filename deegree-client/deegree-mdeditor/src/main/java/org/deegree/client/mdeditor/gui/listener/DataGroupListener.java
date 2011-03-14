@@ -35,13 +35,11 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.client.mdeditor.gui.listener;
 
-import static org.slf4j.LoggerFactory.getLogger;
-
-import static org.deegree.client.mdeditor.gui.GuiUtils.ACTION_ATT_VALUES;
-import static org.deegree.client.mdeditor.gui.GuiUtils.GROUPID_ATT_KEY;
 import static org.deegree.client.mdeditor.gui.GuiUtils.ACTION_ATT_KEY;
 import static org.deegree.client.mdeditor.gui.GuiUtils.DG_ID_PARAM;
+import static org.deegree.client.mdeditor.gui.GuiUtils.GROUPID_ATT_KEY;
 import static org.deegree.client.mdeditor.gui.GuiUtils.IS_GLOBAL_PARAM;
+import static org.slf4j.LoggerFactory.getLogger;
 
 import javax.faces.component.UIComponent;
 import javax.faces.component.UIParameter;
@@ -52,8 +50,8 @@ import javax.faces.event.AjaxBehaviorEvent;
 import javax.faces.event.AjaxBehaviorListener;
 
 import org.deegree.client.mdeditor.configuration.ConfigurationException;
-import org.deegree.client.mdeditor.gui.EditorBean;
 import org.deegree.client.mdeditor.gui.DataGroupBean;
+import org.deegree.client.mdeditor.gui.EditorBean;
 import org.deegree.client.mdeditor.gui.GuiUtils.ACTION_ATT_VALUES;
 import org.deegree.client.mdeditor.io.DataHandler;
 import org.deegree.client.mdeditor.io.DataIOException;
