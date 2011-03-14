@@ -217,7 +217,6 @@ public class ExecuteRequest100Writer {
 
             for ( int i = 0; i < inputList.size(); i++ ) {
                 ExecutionInput dataInput = inputList.get( i );
-
                 writer.writeStartElement( wpsPrefix, "Input", wpsNS );
                 writeIdentifier( dataInput.getId() );
 
@@ -225,6 +224,9 @@ public class ExecuteRequest100Writer {
                     writer.writeStartElement( wpsPrefix, "Reference", wpsNS );
                     writer.writeAttribute( XLINK_PREFIX, XLNNS, "href",
                                            dataInput.getWebAccessibleURL().toExternalForm() );
+                    if ( dataInput instanceof XMLInput ) {
+                        writeComplexAttributes( ( (XMLInput) dataInput ).getFormat() );
+                    }
                     writer.writeEndElement();
                 } else {
                     writer.writeStartElement( wpsPrefix, "Data", wpsNS );
