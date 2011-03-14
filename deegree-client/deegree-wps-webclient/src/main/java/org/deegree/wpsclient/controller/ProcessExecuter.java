@@ -45,6 +45,8 @@ import java.util.Map;
 
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
+import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.XMLStreamReader;
 
 import org.deegree.client.core.model.BBox;
 import org.deegree.client.core.model.UploadedFile;
@@ -104,6 +106,7 @@ public class ProcessExecuter {
                 LOG.debug( "input parameters (XML-REFS): " + xmlRefInputs );
                 LOG.debug( "input parameters (BINARY): " + binaryInputs );
                 LOG.debug( "input parameters (BBOX): " + bboxInputs );
+                LOG.debug( "formats: " + complexFormats );
                 LOG.debug( "outputs: " + outputs );
             }
             ProcessExecution execution = processToExecute.prepareExecution();
@@ -143,16 +146,19 @@ public class ProcessExecuter {
                             xmlRef = xmlRefInputs.get( key );
                     }
                     if ( xml != null ) {
-                        execution.addXMLInput( input.getId().getCode(), input.getId().getCodeSpace(), xml.getUrl(),
-                                               false, mimeType, encoding, schema );
+                        XMLStreamReader sr = XMLInputFactory.newInstance().createXMLStreamReader( xml.getUrl().openStream() );
+                        while ( sr.getEventType() != XMLStreamReader.START_ELEMENT ) {
+                            sr.next();
+                        }
+                        execution.addXMLInput( input.getId().getCode(), input.getId().getCodeSpace(), sr, mimeType,
+                                               encoding, schema );
                     } else if ( xmlRef != null && xmlRef.trim().length() > 0 ) {
                         execution.addXMLInput( input.getId().getCode(), input.getId().getCodeSpace(),
                                                new URL( xmlRef ), true, mimeType, encoding, schema );
                     }
                     for ( String key : binaryInputs.keySet() ) {
-                        if ( matches( id, key ) && binaryInputs.get( key ) != null )
-                            execution.addBinaryInput( input.getId().getCode(), input.getId().getCodeSpace(),
-                                                      binaryInputs.get( key ).getUrl(), false, mimeType, encoding );
+                        execution.addBinaryInput( input.getId().getCode(), input.getId().getCodeSpace(),
+                                                  binaryInputs.get( key ).getUrl().openStream(), mimeType, encoding );
                     }
                 } else if ( input instanceof BBoxInputType ) {
                     BBox bbox = bboxInputs.get( id );
