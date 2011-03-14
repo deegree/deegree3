@@ -249,7 +249,7 @@ public class ExecuteStatements implements GenericDatabaseExecution {
             if ( query != null && query.getStartPosition() != 1 && dbType == MSSQL ) {
                 String oldHeader = header.toString();
                 header = header.append( " from (" ).append( oldHeader );
-                header.append( ", ROW_NUMBER() OVER (ORDER BY ID) as rownum" );
+                header.append( ", ROW_NUMBER() OVER (ORDER BY X1.ID) as rownum" );
             }
 
             getPSBody( builder, header );
