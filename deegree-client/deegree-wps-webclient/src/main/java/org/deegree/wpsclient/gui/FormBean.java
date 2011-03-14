@@ -359,6 +359,8 @@ public class FormBean {
 
         // FileUpload
         String enableUpload = fc.getExternalContext().getInitParameter( "org.deegree.ENABLE_XML_FILEUPLOAD" );
+        if ( enableUpload == null || "".equals( enableUpload ) )
+            enableUpload = "true";
         if ( Boolean.parseBoolean( enableUpload ) ) {
             HtmlInputFile upload = new HtmlInputFile();
             upload.setId( id + "_asFile" );

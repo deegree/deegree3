@@ -159,7 +159,8 @@
               <dg:externalLink href="#{out.webAccessibleURL}" target="_blank" id="responseLinkXML" styleClass="output" />
               <br />
               <h:commandButton value="#{labels.takeOver}"
-                onclick="handleXMLOutput('#{out.webAccessibleURL}');return false;"
+                onclick="handleXMLOutput('#{out.webAccessibleURL}');return false;" 
+                rendered="#{initParam['org.deegree.ENABLE_INHERIT_RESULT'] != null ? initParam['org.deegree.ENABLE_INHERIT_RESULT'] : false}"
               />
             </ui:repeat>
           </h:panelGrid>
