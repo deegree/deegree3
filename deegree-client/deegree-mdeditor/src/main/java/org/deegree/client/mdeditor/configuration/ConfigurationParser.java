@@ -55,6 +55,7 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
 import org.deegree.client.mdeditor.model.FormConfigurationDescription;
+import org.deegree.commons.xml.CommonNamespaces;
 import org.slf4j.Logger;
 
 /**
@@ -85,8 +86,7 @@ public class ConfigurationParser extends Parser {
                             throws ConfigurationException {
         LOG.debug( "parse configuration from " + configuration.getPath() );
         try {
-            XMLStreamReader xmlStream = XMLInputFactory.newInstance().createXMLStreamReader(
-                                                                                             configuration.getPath(),
+            XMLStreamReader xmlStream = XMLInputFactory.newInstance().createXMLStreamReader( configuration.toURI().toURL().toExternalForm(),
                                                                                              new FileInputStream(
                                                                                                                   configuration ) );
 
@@ -146,7 +146,7 @@ public class ConfigurationParser extends Parser {
             if ( cl.equals( xmlStream.getName() ) && xmlStream.isStartElement() ) {
                 String codelist = null;
                 try {
-                    codelist = getRequiredAttributeValue( xmlStream, "href" );
+                    codelist = getRequiredAttributeValue( xmlStream, CommonNamespaces.XLNNS, "href" );
                     codeLists.add( resolve( codelist, xmlStream ) );
                     nextElement( xmlStream );
                 } catch ( MalformedURLException e ) {
@@ -167,7 +167,7 @@ public class ConfigurationParser extends Parser {
         List<FormConfigurationDescription> confs = new ArrayList<FormConfigurationDescription>();
         while ( !( xmlStream.isEndElement() && xmlStream.getName().equals( endElement ) ) ) {
             if ( xmlStream.isStartElement() && new QName( NS, "Configuration" ).equals( xmlStream.getName() ) ) {
-                String url = getRequiredAttributeValue( xmlStream, "href" );
+                String url = getRequiredAttributeValue( xmlStream, CommonNamespaces.XLNNS, "href" );
                 String id = getRequiredAttributeValue( xmlStream, "id" );
                 try {
                     URL confUrl = resolve( url, xmlStream );
