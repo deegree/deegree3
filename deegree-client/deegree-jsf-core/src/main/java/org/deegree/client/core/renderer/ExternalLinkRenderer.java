@@ -90,7 +90,7 @@ public class ExternalLinkRenderer extends Renderer {
                 responseWriter.writeAttribute( "onClick", onclick, "onclick" );
             }
 
-            Object title = command.getTitle();
+            String title = command.getTitle();
             responseWriter.writeText( title != null ? title : ( href != null ? href : "" ), null );
 
             responseWriter.endElement( "a" );

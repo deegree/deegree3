@@ -78,7 +78,7 @@ public class HtmlExternalLink extends UICommand {
     }
 
     public String getTitle() {
-        return (String) getStateHelper().eval( AdditionalPropertyKeys.title, "title" );
+        return (String) getStateHelper().eval( AdditionalPropertyKeys.title, null );
     }
 
     public void setStyleClass( String styleClass ) {
