@@ -58,7 +58,7 @@ public class ComplexFormatConverter implements Converter {
         String schema = value;
         String encoding = null, mimeType = null;
         if ( value != null && value.length() > 0 ) {
-            String[] split = value.split( ";" );
+            String[] split = value.split( "\\|" );
             if ( split != null && split.length > 0 ) {
                 schema = split[0];
                 if ( split.length > 1 )
@@ -85,7 +85,7 @@ public class ComplexFormatConverter implements Converter {
     public static String getAsString( ComplexFormat complexFormat ) {
         if ( complexFormat == null )
             return null;
-        return complexFormat.getSchema() + ";" + complexFormat.getEncoding() + ";" + complexFormat.getMimeType();
+        return complexFormat.getSchema() + "|" + complexFormat.getEncoding() + "|" + complexFormat.getMimeType();
     }
 
 }
