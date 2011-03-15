@@ -11,7 +11,7 @@ function loadReference(textFieldId, cbId, formatID) {
 							+ formatID);
 					var optionsArray = selectF.options;
 					for ( var i = 0; i < optionsArray.length; i++) {
-						var pos = optionsArray[i].value.indexOf(";");
+						var pos = optionsArray[i].value.indexOf("|");
 						var schema = optionsArray[i].value.substring(0, pos);
 					}
 				}
