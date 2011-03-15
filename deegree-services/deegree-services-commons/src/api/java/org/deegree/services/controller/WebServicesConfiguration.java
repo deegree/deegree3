@@ -36,14 +36,13 @@
 package org.deegree.services.controller;
 
 import static java.lang.Class.forName;
+import static java.util.Arrays.asList;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -79,17 +78,17 @@ import org.slf4j.Logger;
  * 
  * @version $Revision$, $Date$
  */
-public class WebServicesConfiguration extends AbstractResourceManager<OWS<?>> implements ResourceManager {
+public class WebServicesConfiguration extends AbstractResourceManager<OWS<?>> {
 
     private static final Logger LOG = getLogger( WebServicesConfiguration.class );
 
     private static final String CONTROLLER_JAXB_PACKAGE = "org.deegree.services.jaxb.controller";
 
-    private static final String CONTROLLER_CONFIG_SCHEMA = "/META-INF/schemas/controller/3.0.0/controller.xsd";
+    private static final URL CONTROLLER_CONFIG_SCHEMA = WebServicesConfiguration.class.getResource( "/META-INF/schemas/controller/3.0.0/controller.xsd" );
 
     private static final String METADATA_JAXB_PACKAGE = "org.deegree.services.jaxb.metadata";
 
-    private static final String METADATA_CONFIG_SCHEMA = "/META-INF/schemas/metadata/3.0.0/metadata.xsd";
+    private static final URL METADATA_CONFIG_SCHEMA = WebServicesConfiguration.class.getResource( "/META-INF/schemas/metadata/3.0.0/metadata.xsd" );
 
     // maps service names (e.g. 'WMS', 'WFS', ...) to responsible subcontrollers
     private final Map<String, OWS<? extends Enum<?>>> serviceNameToController = new HashMap<String, OWS<? extends Enum<?>>>();
@@ -136,7 +135,7 @@ public class WebServicesConfiguration extends AbstractResourceManager<OWS<?>> im
         while ( iter.hasNext() ) {
             OWSProvider<?> prov = iter.next();
             providers.add( prov );
-            deps.addAll( (Collection) Arrays.asList( prov.getDependencies() ) );
+            deps.addAll( asList( prov.getDependencies() ) );
         }
 
         dependencies = deps.toArray( new Class[deps.size()] );
@@ -161,7 +160,8 @@ public class WebServicesConfiguration extends AbstractResourceManager<OWS<?>> im
             } else {
                 mdurl = metadata.toURI().toURL();
             }
-            metadataConfig = (DeegreeServicesMetadataType) ( (JAXBElement<?>) JAXBUtils.unmarshall( METADATA_JAXB_PACKAGE,
+            metadataConfig = (DeegreeServicesMetadataType) ( (JAXBElement<?>) JAXBUtils.unmarshall(
+                                                                                                    METADATA_JAXB_PACKAGE,
                                                                                                     METADATA_CONFIG_SCHEMA,
                                                                                                     mdurl, workspace ) ).getValue();
         } catch ( Exception e ) {
@@ -174,7 +174,8 @@ public class WebServicesConfiguration extends AbstractResourceManager<OWS<?>> im
             mainConfig = new DeegreeServiceControllerType();
         } else {
             try {
-                mainConfig = (DeegreeServiceControllerType) ( (JAXBElement<?>) JAXBUtils.unmarshall( CONTROLLER_JAXB_PACKAGE,
+                mainConfig = (DeegreeServiceControllerType) ( (JAXBElement<?>) JAXBUtils.unmarshall(
+                                                                                                     CONTROLLER_JAXB_PACKAGE,
                                                                                                      CONTROLLER_CONFIG_SCHEMA,
                                                                                                      main.toURI().toURL(),
                                                                                                      workspace ) ).getValue();
@@ -271,9 +272,7 @@ public class WebServicesConfiguration extends AbstractResourceManager<OWS<?>> im
         return null;
     }
 
-    /**
-     * 
-     */
+    @Override
     public void shutdown() {
         LOG.info( "--------------------------------------------------------------------------------" );
         LOG.info( "Shutting down deegree web services in context..." );
