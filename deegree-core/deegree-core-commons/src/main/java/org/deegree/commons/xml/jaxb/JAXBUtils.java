@@ -95,13 +95,49 @@ public class JAXBUtils {
         }
     }
 
+    /**
+     * Use #unmarshall(String, URL, URL, DeegreeWorkspace) instead.
+     * 
+     * @param jaxbPackage
+     * @param schemaLocation
+     * @param url
+     * @throws JAXBException
+     */
     @Deprecated
     public static Object unmarshall( String jaxbPackage, String schemaLocation, URL url )
                             throws JAXBException {
         return unmarshall( jaxbPackage, schemaLocation, url, null );
     }
 
+    /**
+     * Use #unmarshall(String, URL, URL, DeegreeWorkspace) instead.
+     * 
+     * @param jaxbPackage
+     * @param schemaLocation
+     * @param url
+     * @param workspace
+     * @throws JAXBException
+     */
+    @Deprecated
     public static Object unmarshall( String jaxbPackage, String schemaLocation, URL url, DeegreeWorkspace workspace )
+                            throws JAXBException {
+        Object o = null;
+        URL schemaURL = JAXBUtils.class.getResource( schemaLocation );
+        Unmarshaller u = getUnmarshaller( jaxbPackage, schemaURL, workspace );
+        try {
+            o = u.unmarshal( url );
+        } catch ( JAXBException e ) {
+            LOG.error( "Error in configuration file: '{}'", url );
+            // whyever they use the linked exception here...
+            // http://www.jaxb.com/how/to/hide/important/information/from/the/user/of/the/api/unknown_xml_format.xml
+            LOG.error( "Error: " + e.getLinkedException().getMessage() );
+            LOG.error( "Hint: Try validating the file with an XML-schema aware editor." );
+            throw e;
+        }
+        return o;
+    }
+
+    public static Object unmarshall( String jaxbPackage, URL schemaLocation, URL url, DeegreeWorkspace workspace )
                             throws JAXBException {
         Object o = null;
         Unmarshaller u = getUnmarshaller( jaxbPackage, schemaLocation, workspace );
@@ -118,18 +154,28 @@ public class JAXBUtils {
         return o;
     }
 
+    /**
+     * Use #unmarshall(String, URL, URL, DeegreeWorkspace) instead.
+     * 
+     */
     @Deprecated
     public static Object unmarshall( String jaxbPackage, String schemaLocation, XMLAdapter xmlAdapter )
                             throws JAXBException {
         return unmarshall( jaxbPackage, schemaLocation, xmlAdapter, null );
     }
 
+    /**
+     * Use #unmarshall(String, URL, URL, DeegreeWorkspace) instead.
+     * 
+     */
+    @Deprecated
     public static Object unmarshall( String jaxbPackage, String schemaLocation, XMLAdapter xmlAdapter,
                                      DeegreeWorkspace workspace )
                             throws JAXBException {
         XMLStreamReader xmlStream = xmlAdapter.getRootElement().getXMLStreamReaderWithoutCaching();
         Object o = null;
-        Unmarshaller u = getUnmarshaller( jaxbPackage, schemaLocation, workspace );
+        URL schemaURL = JAXBUtils.class.getResource( schemaLocation );
+        Unmarshaller u = getUnmarshaller( jaxbPackage, schemaURL, workspace );
         try {
             o = u.unmarshal( xmlStream );
         } catch ( JAXBException e ) {
@@ -158,7 +204,7 @@ public class JAXBUtils {
      * @throws JAXBException
      *             if the {@link Unmarshaller} could not be created.
      */
-    public static Unmarshaller getUnmarshaller( String jaxbPackage, String schemaLocation, DeegreeWorkspace workspace )
+    private static Unmarshaller getUnmarshaller( String jaxbPackage, URL schemaLocation, DeegreeWorkspace workspace )
                             throws JAXBException {
 
         JAXBContext jc = null;
@@ -194,12 +240,11 @@ public class JAXBUtils {
      *            location like: "/META-INF/schemas/[SERVICE_NAME]/[VERSION]/[SERVICE_NAME]_service_configuration.xsd"
      * @return the schema for the given url or <code>null</code> if no schema could be loaded from the given url.
      */
-    public static Schema getSchemaForUrl( String schemaFile ) {
-        URL url = JAXBUtils.class.getResource( schemaFile );
+    private static Schema getSchemaForUrl( URL schemaFile ) {
         Schema result = null;
-        if ( url != null ) {
+        if ( schemaFile != null ) {
             try {
-                result = sf.newSchema( url );
+                result = sf.newSchema( schemaFile );
             } catch ( SAXException e ) {
                 LOG.error( "No schema could be loaded from file: " + schemaFile + " because: "
                            + e.getLocalizedMessage(), e );
