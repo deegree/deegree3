@@ -357,7 +357,7 @@ public class DatabaseXMLMapping {
 
     protected OMDocument transform( OMDocument xml, Properties outputProperties, Map<String, String> params )
                             throws Exception {
-        System.out.println( xml.getOMDocumentElement() );
+        LOG.debug( "transform: " + xml.getOMDocumentElement() );
         Source xmlSource = new OMSource( xml.getOMDocumentElement() );
         XMLAdapter xsltAdapter = new XMLAdapter( xslt );
         Source xslSource = new OMSource( xsltAdapter.getRootElement() );
