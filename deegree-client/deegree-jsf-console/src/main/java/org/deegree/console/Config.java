@@ -47,7 +47,6 @@ import java.net.URL;
 
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
-import javax.xml.stream.XMLStreamException;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -183,8 +182,7 @@ public class Config implements Comparable<Config> {
         FacesContext.getCurrentInstance().addMessage( null, fm );
     }
 
-    public String save()
-                            throws XMLStreamException, IOException {
+    public String save() {
 
         try {
             XMLAdapter adapter = new XMLAdapter( new StringReader( content ), XMLAdapter.DEFAULT_URL );

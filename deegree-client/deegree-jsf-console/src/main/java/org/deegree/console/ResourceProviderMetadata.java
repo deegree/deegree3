@@ -35,6 +35,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.console;
 
+import static org.apache.commons.io.IOUtils.closeQuietly;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
@@ -42,7 +44,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
-import org.apache.commons.io.IOUtils;
 import org.deegree.commons.config.ResourceProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -107,7 +108,7 @@ public class ResourceProviderMetadata {
             } catch ( IOException e ) {
                 LOG.error( e.getMessage(), e );
             } finally {
-                IOUtils.closeQuietly( is );
+                closeQuietly( is );
             }
         }
     }

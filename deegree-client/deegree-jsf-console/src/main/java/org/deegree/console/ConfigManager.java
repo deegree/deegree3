@@ -110,6 +110,10 @@ public class ConfigManager {
 
     public List<Config> getAvailableResources() {
         List<Config> configs = new ArrayList<Config>();
+        if ( currentResourceManager == null || currentResourceManager.getManager() == null ) {
+            FacesContext.getCurrentInstance().validationFailed();
+            return new LinkedList<Config>();
+        }
         for ( ResourceState state : currentResourceManager.getManager().getStates() ) {
             configs.add( new Config( state, this, currentResourceManager.getManager(),
                                      currentResourceManager.getStartView() ) );
@@ -153,6 +157,10 @@ public class ConfigManager {
         if ( newConfigTypeTemplate != null ) {
             templateURL = md.getExamples().get( newConfigTypeTemplate ).getContentLocation();
             LOG.info( "Found template URL: " + templateURL );
+        } else {
+            FacesMessage fm = new FacesMessage( SEVERITY_ERROR, "No template for config.", null );
+            FacesContext.getCurrentInstance().addMessage( null, fm );
+            return null;
         }
 
         // let the resource manager do the dirty work
