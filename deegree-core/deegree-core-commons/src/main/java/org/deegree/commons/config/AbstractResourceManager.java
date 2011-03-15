@@ -137,7 +137,8 @@ public abstract class AbstractResourceManager<T extends Resource> extends Abstra
     public void shutdown() {
         for ( T t : idToResource.values() ) {
             remove( t );
-            t.destroy();
+            if ( t != null )
+                t.destroy();
         }
         idToResource.clear();
         nsToProvider.clear();
