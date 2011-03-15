@@ -665,7 +665,7 @@ public class SymbologyParser {
 
         try {
             if ( pair != null ) {
-                if ( pair.first != null && format != null && !format.equalsIgnoreCase( "image/svg" ) ) {
+                if ( pair.first != null && format != null && ( format.toLowerCase().indexOf( "svg" ) == -1 ) ) {
                     img = ImageIO.read( pair.first );
                 }
                 url = pair.second;
