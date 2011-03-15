@@ -72,6 +72,7 @@ import org.deegree.commons.xml.NamespaceBindings;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.XPath;
 import org.deegree.cs.coordinatesystems.ICRS;
+import org.deegree.framework.util.StringTools;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.io.WKBReader;
 import org.deegree.gml.GMLVersion;
@@ -263,11 +264,13 @@ public class DatabaseXMLMapping {
             List<String> variables = subTable.getVariables();
             // replace variables with real values
             for ( String variable : variables ) {
-                Object value = targetRow.get( variable.substring( 1, variable.length() ).toLowerCase() );
+                Object value = targetRow.get( variable.substring( 1, variable.length() ).toLowerCase() );                
                 if ( value instanceof String ) {
-                    sql = StringUtils.replaceAll( sql, variable, "'" + value.toString() + "'" );
+                    sql = StringTools.replace( sql, variable, "'" + value.toString() + "'", true );
+                } else if ( value != null ) {
+                    sql = StringTools.replace( sql, variable, value.toString(), true );
                 } else {
-                    sql = StringUtils.replaceAll( sql, variable, value.toString() );
+                    sql = StringTools.replace( sql, variable, "'" + "XXXXXXXdummyXXXXXXX"+ "'", true );
                 }
             }
 
