@@ -37,6 +37,7 @@ package org.deegree.tools.jdbc;
 
 import static org.slf4j.LoggerFactory.getLogger;
 
+
 import java.io.File;
 import java.io.StringWriter;
 import java.net.URL;
@@ -72,7 +73,6 @@ import org.deegree.commons.xml.NamespaceBindings;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.XPath;
 import org.deegree.cs.coordinatesystems.ICRS;
-import org.deegree.framework.util.StringTools;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.io.WKBReader;
 import org.deegree.gml.GMLVersion;
@@ -266,11 +266,11 @@ public class DatabaseXMLMapping {
             for ( String variable : variables ) {
                 Object value = targetRow.get( variable.substring( 1, variable.length() ).toLowerCase() );                
                 if ( value instanceof String ) {
-                    sql = StringTools.replace( sql, variable, "'" + value.toString() + "'", true );
+                    sql = StringUtils.replaceAll( sql, variable, "'" + value.toString() + "'" );
                 } else if ( value != null ) {
-                    sql = StringTools.replace( sql, variable, value.toString(), true );
+                    sql = StringUtils.replaceAll( sql, variable, value.toString() );
                 } else {
-                    sql = StringTools.replace( sql, variable, "'" + "XXXXXXXdummyXXXXXXX"+ "'", true );
+                    sql = StringUtils.replaceAll( sql, variable,  "'XXXXXXXdummyXXXXXXX'");
                 }
             }
 
