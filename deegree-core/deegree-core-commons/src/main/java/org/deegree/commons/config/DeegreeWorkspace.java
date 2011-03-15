@@ -105,13 +105,16 @@ public class DeegreeWorkspace {
         return new ArrayList<ResourceManager>( managers );
     }
 
-    private void load() {
+    /**
+     * Call this if modules directory content has changed.
+     */
+    public void initClassloader() {
         // setup classloader
         File modules = new File( dir, "modules" );
         moduleClassLoader = Thread.currentThread().getContextClassLoader();
         if ( modules.exists() ) {
             File[] fs = modules.listFiles();
-            if ( fs != null ) {
+            if ( fs != null && fs.length > 0 ) {
                 List<URL> urls = new ArrayList<URL>( fs.length );
                 for ( int i = 0; i < fs.length; ++i ) {
                     if ( fs[i].isFile() ) {
@@ -124,8 +127,16 @@ public class DeegreeWorkspace {
                     }
                 }
                 moduleClassLoader = new URLClassLoader( urls.toArray( new URL[urls.size()] ), moduleClassLoader );
+            } else {
+                LOG.info( "Not loading additional modules." );
             }
+        } else {
+            LOG.info( "Not loading additional modules." );
         }
+    }
+
+    private void load() {
+        initClassloader();
 
         // setup managers
         Iterator<ResourceManager> iter = ServiceLoader.load( ResourceManager.class, getModuleClassLoader() ).iterator();
