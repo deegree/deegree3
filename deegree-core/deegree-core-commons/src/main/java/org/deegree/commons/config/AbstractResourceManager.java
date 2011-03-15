@@ -75,22 +75,22 @@ public abstract class AbstractResourceManager<T extends Resource> extends Abstra
 
     /**
      * Called when a new {@link Resource} has been successfully initialized.
-     *
+     * 
      * @param resource
      */
-    protected void add (T resource) {
+    protected void add( T resource ) {
         // nothing to do
     }
-    
+
     /**
      * Called when a formerly active {@link Resource} is going to be destroyed.
-     *
+     * 
      * @param resource
      */
-    protected void remove (T resource) {
+    protected void remove( T resource ) {
         // nothing to do
     }
-    
+
     /**
      * @return all managed resources
      */
@@ -149,6 +149,7 @@ public abstract class AbstractResourceManager<T extends Resource> extends Abstra
         ResourceManagerMetadata<T> md = getMetadata();
         if ( md != null ) {
             for ( ResourceProvider p : md.getResourceProviders() ) {
+                ( (ExtendedResourceProvider<?>) p ).init( workspace );
                 nsToProvider.put( p.getConfigNamespace(), (ExtendedResourceProvider<T>) p );
             }
 
@@ -180,7 +181,7 @@ public abstract class AbstractResourceManager<T extends Resource> extends Abstra
                             idToState.put( id, new ResourceState( id, configFile, provider, StateType.created, null ) );
                             resource.init( workspace );
                             idToState.put( id, new ResourceState( id, configFile, provider, StateType.init_ok, null ) );
-                            add (resource);
+                            add( resource );
                         } catch ( ResourceInitException e ) {
                             idToState.put( id, new ResourceState( id, configFile, provider, StateType.init_error, e ) );
                             LOG.error( "Error creating {}: {}", new Object[] { name, e.getMessage(), e } );
@@ -240,7 +241,7 @@ public abstract class AbstractResourceManager<T extends Resource> extends Abstra
                 idToState.put( id, new ResourceState( id, newFile, provider, StateType.created, null ) );
                 resource.init( workspace );
                 idToState.put( id, new ResourceState( id, newFile, provider, StateType.init_ok, null ) );
-                add (resource);
+                add( resource );
             } catch ( ResourceInitException e ) {
                 idToState.put( id, new ResourceState( id, newFile, provider, StateType.init_error, e ) );
                 LOG.error( "Error creating {}: {}", new Object[] { name, e.getMessage(), e } );
@@ -263,7 +264,7 @@ public abstract class AbstractResourceManager<T extends Resource> extends Abstra
 
             T resource = idToResource.get( id );
             if ( resource != null ) {
-                remove(resource );
+                remove( resource );
                 try {
                     resource.destroy();
                 } catch ( Throwable t ) {
