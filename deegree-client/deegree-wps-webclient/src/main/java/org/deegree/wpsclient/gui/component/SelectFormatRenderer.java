@@ -98,16 +98,15 @@ public class SelectFormatRenderer extends MenuRenderer {
 
         ComplexFormat selectedFormat = (ComplexFormat) getCurrentSelectedValues( formatComp );
 
-        if ( formatComp.getChildCount() > 1 ) {
-            writer.startElement( "select", null );
-            writer.writeAttribute( "id", clientId + FORMAT_SUFFIX, "id" );
-            writer.writeAttribute( "name", clientId, "id" );
-            writer.writeAttribute( "onChange", getOnChangeBehaviour( clientId ), "js" );
+        writer.startElement( "select", null );
+        writer.writeAttribute( "id", clientId + FORMAT_SUFFIX, "id" );
+        writer.writeAttribute( "name", clientId, "id" );
+        writer.writeAttribute( "onChange", getOnChangeBehaviour( clientId ), "js" );
 
-            Iterator<SelectItem> items = RenderKitUtils.getSelectItems( context, formatComp );
-            renderOptions( context, formatComp, items );
-            writer.endElement( "select" );
-        }
+        Iterator<SelectItem> items = RenderKitUtils.getSelectItems( context, formatComp );
+        renderOptions( context, formatComp, items );
+        writer.endElement( "select" );
+
         writer.startElement( "table", component );
 
         writer.startElement( "tr", null );
