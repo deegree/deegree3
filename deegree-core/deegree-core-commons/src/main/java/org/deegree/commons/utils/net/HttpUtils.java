@@ -53,8 +53,8 @@ import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.util.LinkedList;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.TreeSet;
+import java.util.Map.Entry;
 
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
@@ -74,6 +74,7 @@ import org.apache.http.entity.InputStreamEntity;
 import org.apache.http.impl.auth.BasicScheme;
 import org.apache.http.impl.client.BasicAuthCache;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.protocol.BasicHttpContext;
 import org.deegree.commons.xml.XMLAdapter;
@@ -257,6 +258,34 @@ public class HttpUtils {
         DefaultHttpClient client = enableProxyUsage( new DefaultHttpClient(), u );
         HttpPost post = new HttpPost( url );
         post.setEntity( new InputStreamEntity( postBody, -1 ) );
+        if ( headers != null ) {
+            for ( String key : headers.keySet() ) {
+                post.addHeader( key, headers.get( key ) );
+            }
+        }
+        return worker.work( client.execute( post ).getEntity().getContent() );
+    }
+
+    /**
+     * @param <T>
+     * @param worker
+     * @param url
+     * @param params
+     *            KVP parameter map to set in the post body
+     * @param headers
+     * @return some object from the url
+     * @throws IOException
+     */
+    public static <T> T post( Worker<T> worker, String url, Map<String, String> params, Map<String, String> headers )
+                            throws IOException {
+        DURL u = new DURL( url );
+        DefaultHttpClient client = enableProxyUsage( new DefaultHttpClient(), u );
+        HttpPost post = new HttpPost( url );
+        BasicHttpParams hparams = new BasicHttpParams();
+        for ( Entry<String, String> e : params.entrySet() ) {
+            hparams.setParameter( e.getKey(), e.getValue() );
+        }
+        post.setParams( hparams );
         if ( headers != null ) {
             for ( String key : headers.keySet() ) {
                 post.addHeader( key, headers.get( key ) );
