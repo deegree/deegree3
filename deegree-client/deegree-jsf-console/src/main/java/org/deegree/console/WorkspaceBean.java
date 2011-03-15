@@ -150,6 +150,7 @@ public class WorkspaceBean implements Serializable {
 
     public String applyChanges() {
         try {
+            OGCFrontController.getServiceWorkspace().initClassloader();
             OGCFrontController.getInstance().reload();
         } catch ( Exception e ) {
             e.printStackTrace();
@@ -215,8 +216,7 @@ public class WorkspaceBean implements Serializable {
         importWorkspace( workspaceImportUrl );
     }
 
-    public List<String> getRemoteWorkspaces()
-                            throws IOException {
+    public List<String> getRemoteWorkspaces() {
         InputStream in = null;
         try {
             in = get( STREAM, getDownloadBaseUrl(), null );
