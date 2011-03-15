@@ -100,13 +100,12 @@ public class ExecuteStatements implements GenericDatabaseExecution {
     @Override
     public int executeDeleteStatement( Connection connection, AbstractWhereBuilder builder )
                             throws MetadataStoreException {
-
         LOG.debug( Messages.getMessage( "INFO_EXEC", "delete-statement" ) );
         PreparedStatement preparedStatement = null;
         ResultSet rs = null;
         List<Integer> deletableDatasets;
+        int deleted = 0;
         try {
-
             StringBuilder header = getPreparedStatementDatasetIDs( true, builder );
             getPSBody( builder, header );
             preparedStatement = connection.prepareStatement( header.toString() );
@@ -121,7 +120,6 @@ public class ExecuteStatements implements GenericDatabaseExecution {
                     preparedStatement.setObject( i++, o.getValue() );
                 }
             }
-
             LOG.debug( Messages.getMessage( "INFO_TA_DELETE_FIND", preparedStatement.toString() ) );
 
             rs = preparedStatement.executeQuery();
@@ -134,34 +132,26 @@ public class ExecuteStatements implements GenericDatabaseExecution {
 
             deletableDatasets = new ArrayList<Integer>();
             if ( rs != null ) {
-
                 while ( rs.next() ) {
                     deletableDatasets.add( rs.getInt( 1 ) );
-
                 }
                 rs.close();
                 for ( int d : deletableDatasets ) {
-
                     preparedStatement = connection.prepareStatement( stringBuilder.toString() );
                     preparedStatement.setInt( 1, d );
 
                     LOG.debug( Messages.getMessage( "INFO_TA_DELETE_DEL", preparedStatement.toString() ) );
-                    preparedStatement.executeUpdate();
-
+                    deleted = deleted + preparedStatement.executeUpdate();
                 }
             }
-
         } catch ( SQLException e ) {
             String msg = Messages.getMessage( "ERROR_SQL", preparedStatement.toString(), e.getMessage() );
             LOG.debug( msg );
             throw new MetadataStoreException( msg );
         } finally {
             JDBCUtils.close( rs, preparedStatement, null, LOG );
-
         }
-
-        return deletableDatasets.size();
-
+        return deleted;
     }
 
     private StringBuilder getPreparedStatementDatasetIDs( boolean setDelete, AbstractWhereBuilder builder ) {
@@ -353,5 +343,5 @@ public class ExecuteStatements implements GenericDatabaseExecution {
         }
         return preparedStatement;
     }
-
+    
 }
