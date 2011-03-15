@@ -117,6 +117,7 @@ public class DeegreeWorkspace {
                     if ( fs[i].isFile() ) {
                         try {
                             urls.add( fs[i].toURI().toURL() );
+                            LOG.info( "Using module {}.", fs[i].getName() );
                         } catch ( MalformedURLException e ) {
                             LOG.warn( "Module {} could not be loaded: {}", fs[i].getName(), e.getLocalizedMessage() );
                         }
