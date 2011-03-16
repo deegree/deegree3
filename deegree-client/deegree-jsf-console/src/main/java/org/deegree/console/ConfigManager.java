@@ -105,6 +105,7 @@ public class ConfigManager {
     public String getStartView() {
         ResourceManagerMetadata2 param1 = (ResourceManagerMetadata2) getParam1();
         this.currentResourceManager = param1;
+        setNewConfigType( param1.getProviderNames().iterator().next() );
         return param1.getStartView();
     }
 
