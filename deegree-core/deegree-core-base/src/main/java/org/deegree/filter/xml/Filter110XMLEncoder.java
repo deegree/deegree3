@@ -308,8 +308,10 @@ public class Filter110XMLEncoder {
             PropertyIsBetween isBetween = (PropertyIsBetween) operator;
             export( isBetween.getExpression(), writer );
             writer.writeStartElement( CommonNamespaces.OGCNS, "LowerBoundary" );
+            export( isBetween.getLowerBoundary(), writer );
             writer.writeEndElement();
             writer.writeStartElement( CommonNamespaces.OGCNS, "UpperBoundary" );
+            export( isBetween.getUpperBoundary(), writer );
             writer.writeEndElement();
             break;
         case PROPERTY_IS_EQUAL_TO:
@@ -438,8 +440,10 @@ public class Filter110XMLEncoder {
         export( propertyName, writer );
 
         // serializing the geometry
-        gmlWriter.setOutputCRS( geometry.getCoordinateSystem() );
-        gmlWriter.write( geometry );
+        if ( geometry != null ) {
+            gmlWriter.setOutputCRS( geometry.getCoordinateSystem() );
+            gmlWriter.write( geometry );
+        }
 
         if ( distance != null ) { // in case of Beyond- and DWithin-operators export their distance variable
             QName distanceElementName = new QName( CommonNamespaces.OGCNS, "Distance" );
