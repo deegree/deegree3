@@ -77,31 +77,20 @@
       
       <br/>
       <br/>
-      <h:outputText styleClass="titel" value="Import workspace" />
-      <h:form>            
+      <h:outputText styleClass="titel" value="Upload workspace" />
+
+      <h:form enctype="multipart/form-data">            
       <table style="margin: 10px 0px; font-size:small" border="0">
         <tr>
           <td>
-            <h:outputLabel styleClass="label" value="URL:" />
+            <dg:inputFile value="#{workspace.upload}"/>
           </td>
-          <td>
-            <h:inputText styleClass="liste" value="#{workspace.workspaceImportUrl}" size="32" required="true"
-              requiredMessage="#{labels.workspace_import_url_req}" />
-          </td>
-         </tr>
-         <tr>
-           <td>
-             <h:outputLabel styleClass="label" value="Rename to:" />
-           </td>
-           <td>
-             <h:inputText styleClass="liste" value="#{workspace.workspaceImportName}" size="32" />
-           </td>
-        </tr>
+        </tr>        
         <tr>
-          <td colspan="2">
-            <h:commandButton styleClass="buttonInfo" value="Import" onclick="show();" action="#{workspace.importWorkspace}" />
+          <td>
+            <h:commandButton styleClass="buttonInfo" value="Upload" onclick="show();" action="#{workspace.uploadWorkspace}" />
           </td>
-        </tr>
+        </tr>        
       </table>
       </h:form>    
   

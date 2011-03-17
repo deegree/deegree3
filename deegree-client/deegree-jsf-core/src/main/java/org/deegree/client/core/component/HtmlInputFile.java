@@ -36,7 +36,6 @@
 package org.deegree.client.core.component;
 
 import javax.faces.application.FacesMessage;
-
 import javax.faces.component.FacesComponent;
 import javax.faces.component.UIInput;
 import javax.faces.component.behavior.ClientBehaviorHolder;
@@ -44,6 +43,8 @@ import javax.faces.context.FacesContext;
 
 import org.deegree.client.core.model.UploadedFile;
 import org.deegree.client.core.utils.MessageUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * 
@@ -57,7 +58,7 @@ import org.deegree.client.core.utils.MessageUtils;
  */
 @FacesComponent(value = "HtmlInputFile")
 public class HtmlInputFile extends UIInput implements ClientBehaviorHolder {
-
+   
     /**
      * <p>
      * The standard component type for this component.
@@ -91,8 +92,8 @@ public class HtmlInputFile extends UIInput implements ClientBehaviorHolder {
     }
 
     /**
-     * @return Location where to write the downloaded file, must begin at the webapp directory. If null, the file will
-     *         be stored in the webapp directory
+     * @return location where to write the downloaded file, must begin at the webapp directory. If null, the file will
+     *         be stored in deegree's temp directory
      */
     public String getTarget() {
         return (String) getStateHelper().eval( AdditionalPropertyKeys.target, null );

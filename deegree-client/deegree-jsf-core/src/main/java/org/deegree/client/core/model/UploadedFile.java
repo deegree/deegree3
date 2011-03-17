@@ -42,7 +42,6 @@ import java.net.URL;
 import org.apache.commons.fileupload.FileItem;
 
 /**
- * 
  * <code>UploadedFile</code> wraps the uploaded file item
  * 
  * @author <a href="mailto:buesching@lat-lon.de">Lyn Buesching</a>
@@ -59,7 +58,7 @@ public class UploadedFile implements Serializable {
     private URL url;
 
     private String absolutePath;
-
+    
     public UploadedFile() {
     }
 
@@ -93,7 +92,7 @@ public class UploadedFile implements Serializable {
     public FileItem getFileItem() {
         return fileItem;
     }
-
+    
     /**
      * @return the web accessible url of the uploaded file
      */

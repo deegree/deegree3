@@ -55,9 +55,11 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.fileupload.FileItem;
 import org.deegree.client.core.component.HtmlInputFile;
 import org.deegree.client.core.model.UploadedFile;
+import org.deegree.commons.utils.TempFileManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
- * 
  * <code>InputFileRenderer</code> rendering an input form element of type file.
  * 
  * @author <a href="mailto:buesching@lat-lon.de">Lyn Buesching</a>
@@ -68,6 +70,8 @@ import org.deegree.client.core.model.UploadedFile;
 @ResourceDependencies({ @ResourceDependency(library = "deegree", name = "css/inputFile.css") })
 @FacesRenderer(componentFamily = "javax.faces.Input", rendererType = "org.deegree.InputFile")
 public class InputFileRenderer extends Renderer {
+
+    private static Logger LOG = LoggerFactory.getLogger( HtmlInputFile.class );
 
     @Override
     public void encodeBegin( FacesContext context, UIComponent component )
@@ -105,31 +109,34 @@ public class InputFileRenderer extends Renderer {
                 String target = fileComponent.getTarget();
                 URL url = getUrl( request, target, item.getName() );
                 ServletContext sc = (ServletContext) external.getContext();
-                String absPath = getAbsolutePath( sc, target, item.getName() );
-                File file = new File( absPath );
+                File file = getTargetFile( sc, target, item.getName() );
                 item.write( file );
                 uploadedFile.setFileItem( item );
                 uploadedFile.setUrl( url );
-                uploadedFile.setAbsolutePath( absPath );
-            } catch ( MalformedURLException e ) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            } catch ( Exception e ) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+                uploadedFile.setAbsolutePath( file.getAbsolutePath() );
+            } catch ( Throwable t ) {
+                t.printStackTrace();
             }
         }
         fileComponent.setSubmittedValue( uploadedFile );
     }
 
-    private String getAbsolutePath( ServletContext servletContext, String target, String fileName ) {
-        if ( target == null ) {
-            target = "";
+    private File getTargetFile( ServletContext sc, String target, String fileName )
+                            throws IOException {
+        File targetFile = null;
+        if ( target != null ) {
+            if ( !target.endsWith( "/" ) ) {
+                target += "/";
+            }
+            targetFile = new File( sc.getRealPath( target + fileName ) );
+        } else {
+            // use deegree's temp directory
+            File tempDir = TempFileManager.getBaseDir();
+            targetFile = File.createTempFile( "upload", "", tempDir );
         }
-        if ( !target.endsWith( "/" ) ) {
-            target += "/";
-        }
-        return servletContext.getRealPath( target + fileName );
+
+        LOG.info( "Uploading file '" + fileName + "' to: '" + targetFile + "'" );
+        return targetFile;
     }
 
     private URL getUrl( HttpServletRequest request, String target, String fileName )

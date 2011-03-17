@@ -36,6 +36,7 @@
 package org.deegree.console;
 
 import static javax.faces.application.FacesMessage.SEVERITY_ERROR;
+import static javax.faces.application.FacesMessage.SEVERITY_INFO;
 import static org.apache.commons.io.FileUtils.writeStringToFile;
 import static org.apache.commons.io.IOUtils.closeQuietly;
 import static org.apache.commons.io.IOUtils.readLines;
@@ -44,6 +45,7 @@ import static org.deegree.commons.utils.net.HttpUtils.STREAM;
 import static org.deegree.commons.utils.net.HttpUtils.get;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
@@ -62,6 +64,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import org.apache.commons.io.FileUtils;
+import org.deegree.client.core.model.UploadedFile;
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.utils.io.Zip;
 import org.deegree.commons.version.DeegreeModuleInfo;
@@ -99,6 +102,10 @@ public class WorkspaceBean implements Serializable {
     @Getter
     @Setter
     private String workspaceImportName;
+
+    @Getter
+    @Setter
+    private UploadedFile upload;
 
     private boolean modified;
 
@@ -210,6 +217,42 @@ public class WorkspaceBean implements Serializable {
         } finally {
             closeQuietly( in );
         }
+    }
+
+    public String uploadWorkspace() {
+        LOG.info( "Uploaded workspace file: '" + upload.getFileName() + "'" );
+        workspaceImportName = upload.getFileName();
+        if ( workspaceImportName.endsWith( ".deegree-workspace" ) ) {
+            workspaceImportName = workspaceImportName.substring( 0,
+                                                                 workspaceImportName.length()
+                                                                                         - ".deegree-workspace".length() );
+        }
+        return "/console/workspace/upload";
+    }
+
+    public String unzipWorkspace() {
+        InputStream in = null;
+        try {
+            File wsRoot = new File( getWorkspaceRoot() );
+            in = new FileInputStream( new File( upload.getAbsolutePath() ) );
+            File target = new File( wsRoot, workspaceImportName );
+            if ( target.exists() ) {
+                throw new Exception( "Workspace '" + workspaceImportName + "' already exists." );
+            } else {
+                Zip.unzip( in, target );
+            }
+        } catch ( Throwable t ) {
+            FacesMessage fm = new FacesMessage( SEVERITY_ERROR, "Workspace could not be imported: " + t.getMessage(),
+                                                null );
+            FacesContext.getCurrentInstance().addMessage( null, fm );
+            return null;
+        } finally {
+            closeQuietly( in );
+        }
+        FacesMessage fm = new FacesMessage( SEVERITY_INFO,
+                                            "Workspace '" + workspaceImportName + "' added succesfully.", null );
+        FacesContext.getCurrentInstance().addMessage( null, fm );
+        return "/console/jsf/workspace";
     }
 
     public void importWorkspace() {
