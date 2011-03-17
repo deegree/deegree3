@@ -269,8 +269,10 @@ public class Filter110XMLEncoder {
             PropertyIsBetween isBetween = (PropertyIsBetween) operator;
             export( isBetween.getExpression(), writer );
             writer.writeStartElement( OGC_NS, "LowerBoundary" );
+            export( isBetween.getLowerBoundary(), writer );
             writer.writeEndElement();
             writer.writeStartElement( OGC_NS, "UpperBoundary" );
+            export( isBetween.getUpperBoundary(), writer );
             writer.writeEndElement();
             break;
         case PROPERTY_IS_EQUAL_TO:
@@ -298,6 +300,8 @@ public class Filter110XMLEncoder {
             writer.writeAttribute( "wildCard", isLikeOperator.getWildCard() );
             writer.writeAttribute( "singleChar", isLikeOperator.getSingleChar() );
             writer.writeAttribute( "escapeChar", isLikeOperator.getEscapeChar() );
+            if ( !isLikeOperator.getMatchCase() )
+                writer.writeAttribute( "matchCase", "" + isLikeOperator.getMatchCase() );
             export( isLikeOperator.getPropertyName(), writer );
             export( isLikeOperator.getLiteral(), writer );
             break;
