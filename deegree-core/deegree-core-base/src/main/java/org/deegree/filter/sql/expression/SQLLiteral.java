@@ -75,7 +75,7 @@ public class SQLLiteral implements SQLExpression {
 
     public SQLLiteral( Literal<?> literal ) throws UnmappableException {
 
-        this.value = literal.getValue();        
+        this.value = literal.getValue();
         if ( value != null ) {
             if ( value instanceof PrimitiveValue ) {
                 // TODO what about differentiating column types?
@@ -84,7 +84,7 @@ public class SQLLiteral implements SQLExpression {
                 throw new UnmappableException( "Unhandled literal content '" + value.getClass() + "'" );
             }
         }
-        
+
         this.sqlType = -1;
         this.isSpatial = false;
     }
@@ -97,10 +97,15 @@ public class SQLLiteral implements SQLExpression {
     public Object getValue() {
         return value;
     }
-    
+
     @Override
     public boolean isSpatial() {
         return isSpatial;
+    }
+
+    @Override
+    public boolean isMultiValued() {
+        return false;
     }
 
     @Override
@@ -115,12 +120,12 @@ public class SQLLiteral implements SQLExpression {
 
     @Override
     public StringBuilder getSQL() {
-        return new StringBuilder ("?");
+        return new StringBuilder( "?" );
     }
 
     @Override
     public ICRS getCRS() {
-        return isSpatial ? ((Geometry) value).getCoordinateSystem() : null;
+        return isSpatial ? ( (Geometry) value ).getCoordinateSystem() : null;
     }
 
     @Override

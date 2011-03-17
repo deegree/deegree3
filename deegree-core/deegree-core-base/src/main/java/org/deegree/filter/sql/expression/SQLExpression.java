@@ -65,6 +65,14 @@ public interface SQLExpression {
     public boolean isSpatial();
 
     /**
+     * Returns whether the expression has multiple values (currently this can only be a string column that stores
+     * multiple values in concatenated form).
+     * 
+     * @return true, if the expresion is multi-valued, false otherwise
+     */
+    public boolean isMultiValued();
+
+    /**
      * Returns the CRS of the expression (only for spatial ones).
      * 
      * @return the CRS, can be <code>null</code> (unknown or not a spatial expression)

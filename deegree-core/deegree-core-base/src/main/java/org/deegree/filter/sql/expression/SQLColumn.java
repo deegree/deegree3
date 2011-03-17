@@ -95,15 +95,8 @@ public class SQLColumn implements SQLExpression {
         return isSpatial;
     }
 
-    /**
-     * Returns whether the column stores multiple values (separated by '|').
-     * <p>
-     * NOTE: This is only applicable to String-columns.
-     * </p>
-     * 
-     * @return true, if the column stores multiple values, false otherwise
-     */
-    public boolean isConcatenated() {
+    @Override
+    public boolean isMultiValued() {
         return isConcatenated;
     }
 

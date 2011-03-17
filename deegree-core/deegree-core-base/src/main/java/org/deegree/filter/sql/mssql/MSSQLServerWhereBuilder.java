@@ -121,19 +121,23 @@ public class MSSQLServerWhereBuilder extends AbstractWhereBuilder {
         String wildCard = "" + op.getWildCard();
         String singleChar = "" + op.getSingleChar();
 
+        SQLExpression propName = toProtoSQL( op.getPropertyName() );
+
         IsLikeString specialString = new IsLikeString( literal, wildCard, singleChar, escape );
         String sqlEncoded = specialString.toSQL( !op.getMatchCase() );
 
+        if ( propName.isMultiValued() ) {
+            // TODO escaping of pipe symbols
+            sqlEncoded = "%|" + sqlEncoded + "|%";
+        }
+
         SQLOperationBuilder builder = new SQLOperationBuilder( op.getMatchCase() );
         if ( !op.getMatchCase() ) {
-            builder.add( "LOWER(" );
-        }
-        builder.add( toProtoSQL( op.getPropertyName() ) );
-        if ( op.getMatchCase() ) {
-            builder.add( " LIKE '" );
+            builder.add( "LOWER (" + propName + ")" );
         } else {
-            builder.add( ") LIKE '" );
+            builder.add( propName );
         }
+        builder.add( " LIKE '" );
         builder.add( sqlEncoded );
         builder.add( "'" );
         return builder.toOperation();
