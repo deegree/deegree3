@@ -125,7 +125,7 @@ public class ConnectionManager extends AbstractBasicResourceManager implements R
         for ( File fsConfigFile : fsConfigFiles ) {
             String fileName = fsConfigFile.getName();
             if ( fileName.toLowerCase().endsWith( ".ignore" ) ) {
-                // 7 is the length of ".xml"
+                // 7 is the length of ".ignore"
                 String connId = fileName.substring( 0, fileName.length() - 7 );
                 LOG.info( "Found deactivated JDBC connection '" + connId + "', file '" + fileName + "'..." + "" );
                 idToState.put( connId, new ResourceState( connId, fsConfigFile, this, deactivated, null ) );

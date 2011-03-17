@@ -108,7 +108,7 @@ class PostGISFeatureMapping implements PostGISMapping {
         ICRS crs = mapping.getCRS();
         String srid = mapping.getSRID();
 
-        PropertyNameMapping propMapping = new PropertyNameMapping( aliasManager, valueField, joins, crs, srid );
+        PropertyNameMapping propMapping = new PropertyNameMapping( aliasManager, valueField, joins, crs, srid, false );
         return propMapping;
     }
 

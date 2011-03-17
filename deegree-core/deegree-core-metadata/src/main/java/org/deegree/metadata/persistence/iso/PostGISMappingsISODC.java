@@ -456,7 +456,7 @@ public class PostGISMappingsISODC implements PostGISMapping {
                 }
                 // TODO primitive type
                 DBField valueField = new DBField( tableColumn.first, tableColumn.second );
-                mapping = new PropertyNameMapping( aliasManager, valueField, joins, null, "-1" );
+                mapping = new PropertyNameMapping( aliasManager, valueField, joins, null, "-1", false );
             } else {
 
                 String msg = Messages.getMessage( "ERROR_PROPNAME_MAPPING", qName );

@@ -79,7 +79,7 @@ public class H2WhereBuilder extends AbstractWhereBuilder {
     @Override
     protected SQLExpression toProtoSQL( PropertyName expr )
                             throws UnmappableException, FilterEvaluationException {
-        return new SQLColumn( expr.getAsQName().getLocalPart().toLowerCase() );
+        return new SQLColumn( null, expr.getAsQName().getLocalPart().toLowerCase(), true, 0, null, null, false );
     }
 
     // avoid setting a Date on fields which are strings just containing ISO dates...
