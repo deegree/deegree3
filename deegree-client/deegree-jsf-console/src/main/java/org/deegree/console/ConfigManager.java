@@ -141,6 +141,12 @@ public class ConfigManager {
         }
         ResourceProviderMetadata md = ResourceProviderMetadata.getMetadata( provider );
         nextView = md.getConfigWizardView();
+        if ( "/console/jsf/wizard".equals( nextView ) ) {
+            if ( md.getExamples().size() == 1 ) {
+                setNewConfigTypeTemplate( md.getExamples().keySet().iterator().next() );
+                return createConfig();
+            }
+        }
         return nextView;
     }
 

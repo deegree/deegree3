@@ -135,6 +135,7 @@ public class ConnectionManager extends AbstractBasicResourceManager implements R
                 LOG.info( "Setting up JDBC connection '" + connId + "' from file '" + fileName + "'..." + "" );
                 try {
                     addConnection( fsConfigFile.toURI().toURL(), connId, workspace );
+                    getConnection( connId ).close();
                     idToState.put( connId, new ResourceState( connId, fsConfigFile, this, init_ok, null ) );
                 } catch ( Throwable t ) {
                     ResourceInitException e = new ResourceInitException( t.getMessage(), t );
@@ -370,6 +371,7 @@ public class ConnectionManager extends AbstractBasicResourceManager implements R
             LOG.info( "Setting up JDBC connection '" + id + "' from file '" + newFile + "'..." + "" );
             try {
                 addConnection( newFile.toURI().toURL(), id, workspace );
+                getConnection( id ).close();
                 idToState.put( id, new ResourceState( id, newFile, this, init_ok, null ) );
             } catch ( Throwable t ) {
                 ResourceInitException e = new ResourceInitException( t.getMessage(), t );
