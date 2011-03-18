@@ -9,6 +9,11 @@
   <name>deegree</name>
   <url>http://www.deegree.org</url>
 
+  <scm>
+    <developerConnection>scm:svn:http://svn.wald.intevation.org/svn/deegree/deegree3/trunk</developerConnection>
+    <url>http://svn.wald.intevation.org/svn/deegree/deegree3/trunk</url>
+  </scm>
+
   <repositories>
     <repository>
       <id>deegree-repo</id>
