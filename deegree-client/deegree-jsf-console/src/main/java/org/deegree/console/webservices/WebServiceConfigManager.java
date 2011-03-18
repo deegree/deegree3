@@ -45,6 +45,8 @@ import javax.faces.bean.SessionScoped;
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 
+import lombok.Getter;
+
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.console.Config;
 import org.deegree.console.ConfigManager;
@@ -73,8 +75,10 @@ public class WebServiceConfigManager {
 
     private static final String MAIN_SCHEMA_URL = "/META-INF/schemas/controller/3.0.0/controller.xsd";
 
+    @Getter
     private final Config metadataConfig;
 
+    @Getter
     private final Config mainConfig;
 
     public WebServiceConfigManager() {

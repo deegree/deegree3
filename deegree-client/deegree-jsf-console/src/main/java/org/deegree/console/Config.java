@@ -46,17 +46,22 @@ import java.io.StringReader;
 import java.net.URL;
 
 import javax.faces.application.FacesMessage;
+import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
+import javax.servlet.http.HttpServletRequest;
 
 import lombok.Getter;
 import lombok.Setter;
 
+import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.Resource;
 import org.deegree.commons.config.ResourceManager;
 import org.deegree.commons.config.ResourceProvider;
 import org.deegree.commons.config.ResourceState;
 import org.deegree.commons.config.ResourceState.StateType;
 import org.deegree.commons.xml.XMLAdapter;
+import org.deegree.services.OWS;
+import org.deegree.services.controller.WebServicesConfiguration;
 
 /**
  * Wraps information on a {@link Resource} and its configuration file.
@@ -90,19 +95,19 @@ public class Config implements Comparable<Config> {
     private String resourceOutcome;
 
     @Getter
-    private String capabilitiesURL;
-
-    @Getter
     private URL schemaURL;
 
     private ResourceManager resourceManager;
 
     private ResourceState state;
 
+    private boolean requiresWSReload;
+
     public Config( File location, URL schemaURL, String resourceOutcome ) {
         this.location = location;
         this.schemaURL = schemaURL;
         this.resourceOutcome = resourceOutcome;
+        this.requiresWSReload = true;
     }
 
     public Config( ResourceState state, ConfigManager manager,
@@ -118,6 +123,18 @@ public class Config implements Comparable<Config> {
         if ( provider.getConfigSchema() != null ) {
             schemaURL = provider.getConfigSchema();
         }
+    }
+
+    public String getCapabilitiesURL() {
+        OWS<?> ows = ( (WebServicesConfiguration) resourceManager ).get( id );
+        String type = ows.getImplementationMetadata().getImplementedServiceName();
+
+        HttpServletRequest req = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
+        StringBuffer sb = req.getRequestURL();
+        
+        // HACK HACK HACK
+        int index = sb.indexOf( "/console" );
+        return sb.substring( 0, index ) + "/services?service=" + type + "&request=GetCapabilities";
     }
 
     public String getState() {
@@ -220,11 +237,18 @@ public class Config implements Comparable<Config> {
         if ( resourceManager != null ) {
             state = resourceManager.getState( id );
         }
-        if ( state.getLastException() != null ) {
+        if ( state != null && state.getLastException() != null ) {
             String msg = state.getLastException().getMessage();
             FacesMessage fm = new FacesMessage( SEVERITY_ERROR, msg, null );
             FacesContext.getCurrentInstance().addMessage( null, fm );
         }
+
+        if (requiresWSReload) {
+            ExternalContext ctx = FacesContext.getCurrentInstance().getExternalContext();
+            WorkspaceBean ws = (WorkspaceBean) ctx.getApplicationMap().get( "workspace" );
+            ws.setModified();
+        }
+        
         return resourceOutcome;
     }
 

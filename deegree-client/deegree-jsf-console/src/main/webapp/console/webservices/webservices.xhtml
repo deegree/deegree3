@@ -5,10 +5,10 @@
     xmlns:dgc="http://java.sun.com/jsf/composite/deegree">
     <ui:define name="extraButtons">
 
-        <td><h:panelGroup rendered="#{config.active}">
-            <dg:externalLink styleClass="buttonInfo" target="_blank" href="#{config.capabilitiesURL}"
-                title="#{labels.webservices_cap}" />
-        </h:panelGroup></td>
+    <td><h:panelGroup rendered="#{config.state=='init_ok'}">
+        <dg:externalLink styleClass="buttonInfo" target="_blank" href="#{config.capabilitiesURL}"
+            title="#{labels.webservices_cap}" />
+    </h:panelGroup></td>
 
     </ui:define>
     <ui:define name="extraConfig">

@@ -4,7 +4,7 @@
   xmlns:dg="http://deegree.org/jsf" xmlns:dgc="http://java.sun.com/jsf/composite/deegree">
   <ui:define name="center">
     <h:panelGroup rendered="#{!logBean.loggedIn}">
-      <ui:include src="accessForbidden.xhtml" />
+      <ui:include src="/console/jsf/accessForbidden.xhtml" />
     </h:panelGroup>
     <h:panelGroup rendered="#{logBean.loggedIn}">
       <fieldset class="fieldset">
