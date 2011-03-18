@@ -9,11 +9,6 @@
   <name>deegree</name>
   <url>http://www.deegree.org</url>
 
-  <scm>
-    <developerConnection>scm:svn:http://svn.wald.intevation.org/svn/deegree/deegree3/trunk</developerConnection>
-    <url>http://svn.wald.intevation.org/svn/deegree/deegree3/trunk</url>
-  </scm>
-
   <repositories>
     <repository>
       <id>deegree-repo</id>
@@ -52,12 +47,25 @@
     </pluginRepository>
   </pluginRepositories>
 
+  <build>
+    <plugins>
+     <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-release-plugin</artifactId>
+	<version>2.1</version>
+        <configuration>
+           <preparationGoals>clean install</preparationGoals>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+
   <modules>
-    <module>deegree-misc/deegree-parent</module>
     <module>deegree-client</module>
     <module>deegree-core</module>
     <module>deegree-datastores</module>
     <module>deegree-misc</module>
+    <module>deegree-misc/deegree-parent</module>
     <module>deegree-processproviders</module>
     <module>deegree-services</module>
     <module>deegree-tools</module>
