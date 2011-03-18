@@ -60,6 +60,11 @@
   <dependencies>
     <dependency>
       <groupId>org.deegree</groupId>
+      <artifactId>deegree-jsf-console</artifactId>
+      <version>3.1-SNAPSHOT</version>
+    </dependency>  
+    <dependency>
+      <groupId>org.deegree</groupId>
       <artifactId>deegree-services-config</artifactId>
       <version>3.1-SNAPSHOT</version>
     </dependency>

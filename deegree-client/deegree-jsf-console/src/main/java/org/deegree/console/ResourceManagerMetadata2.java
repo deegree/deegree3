@@ -51,8 +51,6 @@ import org.apache.commons.io.IOUtils;
 import org.deegree.commons.config.ResourceManager;
 import org.deegree.commons.config.ResourceProvider;
 import org.deegree.commons.config.ResourceState;
-import org.deegree.commons.config.ResourceState.StateType;
-import org.deegree.services.controller.OGCFrontController;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -95,7 +93,7 @@ public class ResourceManagerMetadata2 implements Comparable<ResourceManagerMetad
         }
 
         String className = mgr.getClass().getName();
-        URL url = OGCFrontController.getServiceWorkspace().getModuleClassLoader().getResource( "/META-INF/console/resourcemanager/" + className );
+        URL url = ResourceManagerMetadata2.class.getResource( "/META-INF/console/resourcemanager/" + className );
         if ( url != null ) {
             LOG.debug( "Loading resource manager metadata from '" + url + "'" );
             Properties props = new Properties();
