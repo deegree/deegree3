@@ -51,7 +51,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.MalformedURLException;
+import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.TreeSet;
 import java.util.Map.Entry;
@@ -65,6 +67,7 @@ import org.apache.http.auth.Credentials;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.AuthCache;
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.protocol.ClientContext;
@@ -74,7 +77,7 @@ import org.apache.http.entity.InputStreamEntity;
 import org.apache.http.impl.auth.BasicScheme;
 import org.apache.http.impl.client.BasicAuthCache;
 import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.params.BasicHttpParams;
+import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.protocol.BasicHttpContext;
 import org.deegree.commons.xml.XMLAdapter;
@@ -281,11 +284,12 @@ public class HttpUtils {
         DURL u = new DURL( url );
         DefaultHttpClient client = enableProxyUsage( new DefaultHttpClient(), u );
         HttpPost post = new HttpPost( url );
-        BasicHttpParams hparams = new BasicHttpParams();
+        List<BasicNameValuePair> list = new ArrayList<BasicNameValuePair>( params.size() );
         for ( Entry<String, String> e : params.entrySet() ) {
-            hparams.setParameter( e.getKey(), e.getValue() );
+            list.add( new BasicNameValuePair( e.getKey(), e.getValue() ) );
         }
-        post.setParams( hparams );
+
+        post.setEntity( new UrlEncodedFormEntity( list, "UTF-8" ) );
         if ( headers != null ) {
             for ( String key : headers.keySet() ) {
                 post.addHeader( key, headers.get( key ) );
