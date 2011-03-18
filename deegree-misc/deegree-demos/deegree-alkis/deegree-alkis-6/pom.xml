@@ -4,7 +4,7 @@
   <groupId>org.deegree</groupId>
   <artifactId>deegree-alkis-6</artifactId>
   <packaging>war</packaging>
-  <version>3.1-SNAPSHOT</version>
+  <version>3.1-pre3</version>
   <name>deegree-alkis-6</name>
   <url>http://www.deegree.org</url>
 
@@ -16,7 +16,7 @@
   <parent>
     <groupId>org.deegree</groupId>
     <artifactId>deegree-stable-service-parent</artifactId>
-    <version>3.1-SNAPSHOT</version>
+    <version>3.1-pre3</version>
   </parent>
 
   <repositories>
@@ -59,7 +59,7 @@
     <dependency>
       <groupId>org.deegree</groupId>
       <artifactId>deegree-alkis-base</artifactId>
-      <version>3.1-SNAPSHOT</version>
+      <version>3.1-pre3</version>
     </dependency>
   </dependencies>
 

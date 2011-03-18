@@ -5,7 +5,7 @@
   <groupId>org.deegree</groupId>
   <artifactId>deegree-wps-webclient</artifactId>
   <packaging>war</packaging>
-  <version>3.1-SNAPSHOT</version>
+  <version>3.1-pre3</version>
   <name>deegree-wps-webclient</name>
   <url>http://www.deegree.org</url>
   
@@ -17,7 +17,7 @@
   <parent>
     <groupId>org.deegree</groupId>
     <artifactId>deegree-parent</artifactId>
-    <version>3.1-SNAPSHOT</version>
+    <version>3.1-pre3</version>
   </parent>
 
   <repositories>
@@ -49,12 +49,12 @@
     <dependency>
       <groupId>org.deegree</groupId>
       <artifactId>deegree-core-base</artifactId>
-      <version>3.1-SNAPSHOT</version>
+      <version>3.1-pre3</version>
     </dependency>
     <dependency>
       <groupId>org.deegree</groupId>
       <artifactId>deegree-jsf-core</artifactId>
-      <version>3.1-SNAPSHOT</version>
+      <version>3.1-pre3</version>
     </dependency>
     <dependency>
       <groupId>org.apache.tomcat</groupId>

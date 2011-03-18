@@ -5,7 +5,7 @@
   <groupId>org.deegree</groupId>
   <artifactId>deegree-services-wpvs</artifactId>
   <packaging>jar</packaging>
-  <version>3.1-SNAPSHOT</version>
+  <version>3.1-pre3</version>
   <name>deegree-services-wpvs</name>
   <url>http://www.deegree.org</url>
   <scm>
@@ -16,7 +16,7 @@
   <parent>
     <groupId>org.deegree</groupId>
     <artifactId>deegree-parent</artifactId>
-    <version>3.1-SNAPSHOT</version>
+    <version>3.1-pre3</version>
   </parent>
 
   <repositories>
@@ -57,12 +57,12 @@
     <dependency>
       <groupId>org.deegree</groupId>
       <artifactId>deegree-services-commons</artifactId>
-      <version>3.1-SNAPSHOT</version>
+      <version>3.1-pre3</version>
     </dependency>
     <dependency>
       <groupId>org.deegree</groupId>
       <artifactId>deegree-core-3d</artifactId>
-      <version>3.1-SNAPSHOT</version>
+      <version>3.1-pre3</version>
     </dependency>
     <dependency>
       <groupId>javax.servlet</groupId>
