@@ -53,11 +53,11 @@
                 rendered="#{facesContext.viewRoot.viewId == '/console/jsf/modules.xhtml'}" />
             <h:link styleClass="navi" value="modules" outcome="/console/jsf/modules.xhtml"
                 rendered="#{facesContext.viewRoot.viewId != '/console/jsf/modules.xhtml'}" />
-      <h:link styleClass="naviactive" value="workspace" outcome="/console/jsf/workspace.xhtml"
-        disabled="#{!logBean.loggedIn}" rendered="#{facesContext.viewRoot.viewId == '/console/jsf/workspace.xhtml'}" />
-      <h:link styleClass="navi" value="workspace" outcome="/console/jsf/workspace.xhtml"
+      <h:link styleClass="naviactive" value="workspace" outcome="/console/workspace/workspace.xhtml"
+        disabled="#{!logBean.loggedIn}" rendered="#{facesContext.viewRoot.viewId == '/console/workspace/workspace.xhtml'}" />
+      <h:link styleClass="navi" value="workspace" outcome="/console/workspace/workspace.xhtml"
                 disabled="#{!logBean.loggedIn}"
-                rendered="#{facesContext.viewRoot.viewId != '/console/jsf/workspace.xhtml'}" />
+                rendered="#{facesContext.viewRoot.viewId != '/console/workspace/workspace.xhtml'}" />
             <h:link styleClass="naviactive" value="proxy" outcome="/console/jsf/proxy.xhtml"
                 disabled="#{!logBean.loggedIn}" rendered="#{facesContext.viewRoot.viewId == '/console/jsf/proxy.xhtml'}" />
             <h:link styleClass="navi" value="proxy" outcome="/console/jsf/proxy.xhtml" disabled="#{!logBean.loggedIn}"

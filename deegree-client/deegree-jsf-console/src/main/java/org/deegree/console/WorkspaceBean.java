@@ -89,6 +89,12 @@ public class WorkspaceBean implements Serializable {
 
     private static final long serialVersionUID = -2225303815897732019L;
 
+    public static final String WS_MAIN_VIEW = "/console/workspace/workspace";
+
+    public static final String WS_UPLOAD_VIEW = "/console/workspace/upload";
+
+    private static final String WS_DOWNLOAD_BASE_URL = "http://download.deegree.org/deegree3/workspaces/workspaces-";
+    
     // only used when no module version information is available
     private static final String DEFAULT_VERSION = "3.1-SNAPSHOT";
 
@@ -227,7 +233,7 @@ public class WorkspaceBean implements Serializable {
                                                                  workspaceImportName.length()
                                                                                          - ".deegree-workspace".length() );
         }
-        return "/console/workspace/upload";
+        return WS_UPLOAD_VIEW;
     }
 
     public String unzipWorkspace() {
@@ -252,7 +258,7 @@ public class WorkspaceBean implements Serializable {
         FacesMessage fm = new FacesMessage( SEVERITY_INFO,
                                             "Workspace '" + workspaceImportName + "' added succesfully.", null );
         FacesContext.getCurrentInstance().addMessage( null, fm );
-        return "/console/jsf/workspace";
+        return WS_MAIN_VIEW;
     }
 
     public void importWorkspace() {
@@ -280,7 +286,7 @@ public class WorkspaceBean implements Serializable {
     }
 
     private String getDownloadBaseUrl() {
-        return "http://download.deegree.org/deegree3/workspaces/workspaces-" + getVersion();
+        return WS_DOWNLOAD_BASE_URL + getVersion();
     }
 
     private String getVersion() {

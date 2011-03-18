@@ -169,32 +169,40 @@ public abstract class AbstractResourceManager<T extends Resource> extends Abstra
                 String dirName = dir.getCanonicalPath();
                 for ( File configFile : files ) {
                     ResourceProvider provider = getProvider( configFile );
-                    String fileName = configFile.getCanonicalPath().substring( dirName.length() );
-                    if ( fileName.startsWith( File.separator ) ) {
-                        fileName = fileName.substring( 1 );
-                    }
-                    if ( fileName.endsWith( ".xml" ) ) {
-                        // 4 is the length of ".xml"
-                        String id = fileName.substring( 0, fileName.length() - 4 );
-                        LOG.info( "Setting up {} '{}' from file '{}'...", new Object[] { name, id, fileName } );
-                        try {
-                            T resource = create( id, configFile.toURI().toURL() );
-                            idToState.put( id, new ResourceState( id, configFile, provider, StateType.created, null ) );
-                            resource.init( workspace );
-                            idToState.put( id, new ResourceState( id, configFile, provider, StateType.init_ok, null ) );
-                            add( resource );
-                        } catch ( ResourceInitException e ) {
-                            idToState.put( id, new ResourceState( id, configFile, provider, StateType.init_error, e ) );
-                            LOG.error( "Error creating {}: {}", new Object[] { name, e.getMessage(), e } );
-                        } catch ( Throwable t ) {
-                            idToState.put( id, new ResourceState( id, configFile, provider, StateType.init_error,
-                                                                  new ResourceInitException( t.getMessage(), t ) ) );
-                            LOG.error( "Error creating {}: {}", new Object[] { name, t.getMessage(), t } );
+                    if ( provider != null ) {
+                        String fileName = configFile.getCanonicalPath().substring( dirName.length() );
+                        if ( fileName.startsWith( File.separator ) ) {
+                            fileName = fileName.substring( 1 );
+                        }
+                        if ( fileName.endsWith( ".xml" ) ) {
+                            // 4 is the length of ".xml"
+                            String id = fileName.substring( 0, fileName.length() - 4 );
+                            LOG.info( "Setting up {} '{}' from file '{}'...", new Object[] { name, id, fileName } );
+                            try {
+                                T resource = create( id, configFile.toURI().toURL() );
+                                idToState.put( id,
+                                               new ResourceState( id, configFile, provider, StateType.created, null ) );
+                                resource.init( workspace );
+                                idToState.put( id,
+                                               new ResourceState( id, configFile, provider, StateType.init_ok, null ) );
+                                add( resource );
+                            } catch ( ResourceInitException e ) {
+                                idToState.put( id,
+                                               new ResourceState( id, configFile, provider, StateType.init_error, e ) );
+                                LOG.error( "Error creating {}: {}", new Object[] { name, e.getMessage(), e } );
+                            } catch ( Throwable t ) {
+                                idToState.put( id, new ResourceState( id, configFile, provider, StateType.init_error,
+                                                                      new ResourceInitException( t.getMessage(), t ) ) );
+                                LOG.error( "Error creating {}: {}", new Object[] { name, t.getMessage(), t } );
+                            }
+                        } else {
+                            // 7 is the length of ".ignore"
+                            String id = fileName.substring( 0, fileName.length() - 7 );
+                            idToState.put( id,
+                                           new ResourceState( id, configFile, provider, StateType.deactivated, null ) );
                         }
                     } else {
-                        // 7 is the length of ".ignore"
-                        String id = fileName.substring( 0, fileName.length() - 7 );
-                        idToState.put( id, new ResourceState( id, configFile, provider, StateType.deactivated, null ) );
+                        LOG.info( "No provider for file '" + configFile + "' found. Ignoring." );
                     }
                 }
             } catch ( IOException e ) {

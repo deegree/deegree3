@@ -85,16 +85,25 @@ public class Config implements Comparable<Config> {
     @Setter
     private String content;
 
-    private final ConfigManager manager;
+    private ConfigManager manager;
 
-    private final String resourceOutcome;
+    private String resourceOutcome;
 
     @Getter
     private String capabilitiesURL;
 
+    @Getter
+    private URL schemaURL;
+
     private ResourceManager resourceManager;
 
     private ResourceState state;
+
+    public Config( File location, URL schemaURL, String resourceOutcome ) {
+        this.location = location;
+        this.schemaURL = schemaURL;
+        this.resourceOutcome = resourceOutcome;
+    }
 
     public Config( ResourceState state, ConfigManager manager,
                    org.deegree.commons.config.ResourceManager originalResourceManager, String resourceOutcome ) {
@@ -104,14 +113,11 @@ public class Config implements Comparable<Config> {
         this.resourceManager = originalResourceManager;
         this.manager = manager;
         this.resourceOutcome = resourceOutcome;
-    }
 
-    public URL getSchemaURL() {
         ResourceProvider provider = state.getProvider();
         if ( provider.getConfigSchema() != null ) {
-            return provider.getConfigSchema();
+            schemaURL = provider.getConfigSchema();
         }
-        return null;
     }
 
     public String getState() {
@@ -191,14 +197,18 @@ public class Config implements Comparable<Config> {
             adapter.getRootElement().serialize( os );
             os.close();
             content = null;
-            if ( state.getType() == StateType.deactivated ) {
-                resourceManager.activate( id );
-            } else {
-                resourceManager.deactivate( id );
-                resourceManager.activate( id );
+            if ( resourceManager != null ) {
+                if ( state.getType() == StateType.deactivated ) {
+                    resourceManager.activate( id );
+                } else {
+                    resourceManager.deactivate( id );
+                    resourceManager.activate( id );
+                }
             }
         } catch ( Throwable t ) {
-            state = resourceManager.getState( id );
+            if ( resourceManager != null ) {
+                state = resourceManager.getState( id );
+            }
             String msg = "Error adapting changes.";
             if ( state.getLastException() != null ) {
                 msg = state.getLastException().getMessage();
@@ -207,7 +217,9 @@ public class Config implements Comparable<Config> {
             FacesContext.getCurrentInstance().addMessage( null, fm );
             return resourceOutcome;
         }
-        state = resourceManager.getState( id );
+        if ( resourceManager != null ) {
+            state = resourceManager.getState( id );
+        }
         if ( state.getLastException() != null ) {
             String msg = state.getLastException().getMessage();
             FacesMessage fm = new FacesMessage( SEVERITY_ERROR, msg, null );
