@@ -93,7 +93,7 @@ public class ConnectionManager extends AbstractBasicResourceManager implements R
 
     private static final String CONFIG_JAXB_PACKAGE = "org.deegree.commons.jdbc.jaxb";
 
-    private static final String CONFIG_SCHEMA = "/META-INF/schemas/jdbc/3.0.0/jdbc.xsd";
+    private static final URL CONFIG_SCHEMA = ConnectionManager.class.getResource( "/META-INF/schemas/jdbc/3.0.0/jdbc.xsd" );
 
     private static Map<String, Type> idToType = new HashMap<String, Type>();
 
@@ -125,7 +125,7 @@ public class ConnectionManager extends AbstractBasicResourceManager implements R
         for ( File fsConfigFile : fsConfigFiles ) {
             String fileName = fsConfigFile.getName();
             if ( fileName.toLowerCase().endsWith( ".ignore" ) ) {
-                // 7 is the length of ".xml"
+                // 7 is the length of ".ignore"
                 String connId = fileName.substring( 0, fileName.length() - 7 );
                 LOG.info( "Found deactivated JDBC connection '" + connId + "', file '" + fileName + "'..." + "" );
                 idToState.put( connId, new ResourceState( connId, fsConfigFile, this, deactivated, null ) );
@@ -135,6 +135,7 @@ public class ConnectionManager extends AbstractBasicResourceManager implements R
                 LOG.info( "Setting up JDBC connection '" + connId + "' from file '" + fileName + "'..." + "" );
                 try {
                     addConnection( fsConfigFile.toURI().toURL(), connId, workspace );
+                    getConnection( connId ).close();
                     idToState.put( connId, new ResourceState( connId, fsConfigFile, this, init_ok, null ) );
                 } catch ( Throwable t ) {
                     ResourceInitException e = new ResourceInitException( t.getMessage(), t );
@@ -330,7 +331,7 @@ public class ConnectionManager extends AbstractBasicResourceManager implements R
     }
 
     public URL getConfigSchema() {
-        return ConnectionManager.class.getResource( CONFIG_SCHEMA );
+        return CONFIG_SCHEMA;
     }
 
     @Override
@@ -370,6 +371,7 @@ public class ConnectionManager extends AbstractBasicResourceManager implements R
             LOG.info( "Setting up JDBC connection '" + id + "' from file '" + newFile + "'..." + "" );
             try {
                 addConnection( newFile.toURI().toURL(), id, workspace );
+                getConnection( id ).close();
                 idToState.put( id, new ResourceState( id, newFile, this, init_ok, null ) );
             } catch ( Throwable t ) {
                 ResourceInitException e = new ResourceInitException( t.getMessage(), t );
@@ -389,6 +391,7 @@ public class ConnectionManager extends AbstractBasicResourceManager implements R
             oldFile.renameTo( newFile );
 
             ConnectionPool pool = idToPools.get( id );
+            idToPools.remove( id );
             try {
                 pool.destroy();
             } catch ( Exception e ) {

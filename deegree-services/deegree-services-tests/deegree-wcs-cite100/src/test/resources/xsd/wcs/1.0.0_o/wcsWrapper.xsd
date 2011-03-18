@@ -1,0 +1,6 @@
+<?xml version="1.0"?>
+<xsd:schema targetNamespace="http://www.opengis.net/wcs" xmlns:wcs="http://www.opengis.net/wcs" xmlns:xsd="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified">
+	<xsd:include schemaLocation="describeCoverage.xsd"/>
+	<xsd:import namespace="http://www.opengis.net/ogc" schemaLocation="exception.xsd"/>
+</xsd:schema>
+

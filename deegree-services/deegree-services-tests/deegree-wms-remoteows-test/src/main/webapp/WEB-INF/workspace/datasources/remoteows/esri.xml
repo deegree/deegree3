@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<RemoteWMSStore xmlns="http://www.deegree.org/datasource/remoteows/wms" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.deegree.org/datasource/remoteows/wms remotewms.xsd" configVersion="3.1.0">
+  <CapabilitiesDocumentLocation
+    location="http://hazards.fema.gov/wmsconnector/wmsconnector/Servlet/NFHL?request=GetCapabilities&amp;service=WMS&amp;version=1.1.1" />
+  <RequestedLayer>
+    <Name>REF:FLOODMAPINDEX</Name>
+  </RequestedLayer>
+</RemoteWMSStore>

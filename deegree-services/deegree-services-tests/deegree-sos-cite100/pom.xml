@@ -1,0 +1,57 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>org.deegree</groupId>
+  <artifactId>deegree-sos-cite100</artifactId>
+  <packaging>war</packaging>
+  <version>3.1-SNAPSHOT</version>
+  <name>deegree-sos-cite100 Webapp</name>
+  <url>http://www.deegree.org</url>
+
+  <scm>
+    <developerConnection>scm:svn:http://svn.wald.intevation.org/svn/deegree/deegree3/trunk/deegree-test/deegree-sos-cite100</developerConnection>
+    <url>http://svn.wald.intevation.org/svn/deegree/deegree3/trunk/deegree-test/deegree-sos-cite100</url>
+  </scm>
+
+  <parent>
+    <groupId>org.deegree</groupId>
+    <artifactId>deegree-test-parent</artifactId>
+    <version>3.1-SNAPSHOT</version>
+  </parent>
+
+  <repositories>
+    <repository>
+      <id>deegree-repo</id>
+      <url>http://artefacts.deegree.org/repo</url>
+      <releases>
+        <updatePolicy>never</updatePolicy>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+    </repository>
+  </repositories>
+
+  <build>
+    <testResources>
+      <testResource>
+        <directory>src/test/resources</directory>
+        <filtering>true</filtering>
+      </testResource>
+    </testResources>
+  </build>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.deegree</groupId>
+      <artifactId>deegree-services-sos</artifactId>
+      <version>3.1-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.derby</groupId>
+      <artifactId>derby</artifactId>
+      <version>10.7.1.1</version>
+    </dependency>
+  </dependencies>
+
+</project>

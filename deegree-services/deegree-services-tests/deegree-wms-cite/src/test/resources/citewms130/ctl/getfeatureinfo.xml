@@ -1,0 +1,1106 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ctl:package
+ xmlns:functions="https://cite.opengeospatial.org/wms-1.3.0/src/ctl/functions.xml"
+ xmlns:getfeatureinfo="https://cite.opengeospatial.org/wms-1.3.0/src/ctl/getfeatureinfo.xml"
+ xmlns:ccf="http://www.opengis.net/cite/complex"
+ xmlns:cdf="http://www.opengis.net/cite/data"
+ xmlns:cgf="http://www.opengis.net/cite/geometry"
+ xmlns:citef="http://www.opengis.net/cite/functions"
+ xmlns:ctl="http://www.occamlab.com/ctl"
+ xmlns:gml="http://www.opengis.net/gml"
+ xmlns:ogc="http://www.opengis.net/ogc"
+ xmlns:parsers="http://www.occamlab.com/te/parsers"
+ xmlns:saxon="http://saxon.sf.net/"
+ xmlns:wms="http://www.opengis.net/wms"
+ xmlns:xlink="http://www.w3.org/1999/xlink"
+ xmlns:xs="http://www.w3.org/2001/XMLSchema"
+ xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+>
+
+   <ctl:test name="getfeatureinfo:main">
+      <ctl:param name="profile"/>
+      <ctl:context>WMS_Capabilities element</ctl:context>
+      <ctl:assertion>GetFeatureInfo</ctl:assertion>
+      <ctl:code>
+         <xsl:choose>
+            <xsl:when test="not(wms:Capability/wms:Request/wms:GetFeatureInfo/wms:DCPType/wms:HTTP/wms:Get)">
+               <ctl:message>The GetFeatureInfo request is not supported.</ctl:message>
+               <xsl:if test="$profile='queryable'">
+                  <ctl:fail/>
+               </xsl:if>
+            </xsl:when>
+            <xsl:otherwise>
+               <ctl:call-test name="getfeatureinfo:exceptions"/>
+               <xsl:choose>
+                  <xsl:when test="not(wms:Capability//wms:Layer[functions:boolean-as-integer(@queryable) = 1]/wms:Name)">
+                     <ctl:message>No queryable layers in capabilities XML.</ctl:message>
+                     <xsl:if test="$profile='queryable'">
+                        <ctl:fail/>
+                     </xsl:if>
+                  </xsl:when>
+                  <xsl:otherwise>
+                     <ctl:call-test name="getfeatureinfo:feature_count">
+                        <ctl:with-param name="profile" select="$profile"/>
+                     </ctl:call-test>
+                     <ctl:call-test name="getfeatureinfo:info_format"/>
+                     <ctl:call-test name="getfeatureinfo:i-and-j"/>
+                     <ctl:call-test name="getfeatureinfo:query-layers"/>
+                  </xsl:otherwise>
+               </xsl:choose>
+            </xsl:otherwise>
+         </xsl:choose>
+      </ctl:code>
+   </ctl:test>
+
+   <ctl:test name="getfeatureinfo:exceptions">
+      <ctl:context>WMS_Capabilities element</ctl:context>
+      <ctl:assertion>EXCEPTIONS Parameter</ctl:assertion>
+      <ctl:code>
+         <ctl:call-test name="getfeatureinfo:exceptions-default"/>
+         <ctl:call-test name="getfeatureinfo:exceptions-xml"/>
+      </ctl:code>
+   </ctl:test>
+
+   <ctl:test name="getfeatureinfo:feature_count">
+      <ctl:param name="profile"/>
+      <ctl:context>WMS_Capabilities element</ctl:context>
+      <ctl:assertion>FEATURE_COUNT Parameter</ctl:assertion>
+      <ctl:code>
+         <xsl:if test="$profile='queryable'">
+            <ctl:call-test name="getfeatureinfo:feature_count-default"/>
+            <ctl:call-test name="getfeatureinfo:feature_count-1"/>
+         </xsl:if>
+      </ctl:code>
+   </ctl:test>
+
+   <ctl:test name="getfeatureinfo:info_format">
+      <ctl:context>WMS_Capabilities element</ctl:context>
+      <ctl:assertion>FORMAT Parameter</ctl:assertion>
+      <ctl:code>
+         <ctl:call-test name="getfeatureinfo:invalid-info_format"/>
+         <xsl:variable name="capabilities" select="."/>
+         <ctl:for-each select="wms:Capability/wms:Request/wms:GetFeatureInfo/wms:Format">
+            <ctl:call-test name="getfeatureinfo:each-info_format">
+               <ctl:with-param name="capabilities" select="$capabilities"/>
+               <ctl:with-param name="format" select="." label="each GetFeatureInfo format" label-expr="concat('format &quot;', ., '&quot;')"/>
+            </ctl:call-test>
+         </ctl:for-each>
+      </ctl:code>
+   </ctl:test>
+
+   <ctl:test name="getfeatureinfo:i-and-j">
+      <ctl:context>WMS_Capabilities element</ctl:context>
+      <ctl:assertion>I and J Parameters</ctl:assertion>
+      <ctl:code>
+         <ctl:call-test name="getfeatureinfo:invalid-i"/>
+         <ctl:call-test name="getfeatureinfo:invalid-j"/>
+      </ctl:code>
+   </ctl:test>
+
+   <ctl:test name="getfeatureinfo:query-layers">
+      <ctl:context>WMS_Capabilities element</ctl:context>
+      <ctl:assertion>LAYERS Parameter</ctl:assertion>
+      <ctl:code>
+         <ctl:call-test name="getfeatureinfo:two-query_layers"/>
+         <ctl:call-test name="getfeatureinfo:three-query_layers"/>
+         <ctl:call-test name="getfeatureinfo:less-query_layers"/>
+         <ctl:call-test name="getfeatureinfo:invalid-query_layers"/>
+         <ctl:call-test name="getfeatureinfo:query_layers-not-queryable"/>
+         <xsl:variable name="capabilities" select="."/>
+         <ctl:for-each select="wms:Capability//wms:Layer[wms:Name and functions:boolean-as-integer(@queryable) = 1]/wms:Name">
+            <ctl:call-test name="getfeatureinfo:each-queryable-layer">
+               <ctl:with-param name="capabilities" select="$capabilities"/>
+               <ctl:with-param name="layer" select="string(.)" label="each queryable layer" label-expr="concat('layer &quot;', ., '&quot;')"/>
+            </ctl:call-test>
+         </ctl:for-each>
+      </ctl:code>
+   </ctl:test>
+
+   <ctl:test name="getfeatureinfo:exceptions-default">
+      <ctl:context>WMS_Capabilities element</ctl:context>
+      <ctl:assertion>When an exception is raised and the EXCEPTIONS parameter is absent from the request, then the response is a valid exception with a Content-type header of text/xml.</ctl:assertion>
+      <ctl:comment/>
+      <ctl:link title="WMS 1.3.0 section 7.4.3.8">http://cite.occamlab.com/OGCTestData/wms/1.3.0/spec/wms1_3.html#wmsops.getfeatureinfo.params.exceptions</ctl:link>
+      <ctl:link title="WMS 1.3.0 Annex E section E.2">http://cite.occamlab.com/OGCTestData/wms/1.3.0/spec/wms1_3.html#schemas.service_exception</ctl:link>
+      <ctl:code>
+         <xsl:variable name="image-format" select="wms:Capability/wms:Request/wms:GetMap/wms:Format[1]"/>
+         <xsl:variable name="info-format" select="wms:Capability/wms:Request/wms:GetFeatureInfo/wms:Format[1]"/>
+         <xsl:variable name="response">
+            <ctl:request>
+               <ctl:url>
+                  <xsl:value-of select="wms:Capability/wms:Request/wms:GetFeatureInfo/wms:DCPType/wms:HTTP/wms:Get/wms:OnlineResource/@xlink:href"/>
+               </ctl:url>
+               <ctl:method>get</ctl:method>
+               <ctl:param name="StYlEs"/>
+               <ctl:param name="InFo_fOrMaT">
+                  <xsl:value-of select="functions:encode($info-format)"/>
+               </ctl:param>
+               <ctl:param name="J">100</ctl:param>
+               <ctl:param name="CrS">CRS:84</ctl:param>
+               <ctl:param name="QuErY_LaYeRs">UndefinedLayer</ctl:param>
+               <ctl:param name="I">100</ctl:param>
+               <ctl:param name="LaYeRs">UndefinedLayer</ctl:param>
+               <ctl:param name="WiDtH">200</ctl:param>
+               <ctl:param name="VeRsIoN">
+                  <xsl:value-of select="functions:version()"/>
+               </ctl:param>
+               <ctl:param name="FoRmAt">
+                  <xsl:value-of select="functions:encode($image-format)"/>
+               </ctl:param>
+               <ctl:param name="HeIgHt">200</ctl:param>
+               <ctl:param name="BbOx">0,0,1,1</ctl:param>
+               <ctl:param name="ReQuEsT">GetFeatureInfo</ctl:param>
+               <parsers:HTTPParser>
+                  <parsers:parse>
+                     <parsers:XMLValidatingParser>
+                        <parsers:schemas>
+                           <parsers:schema type="url">http://schemas.opengis.net/wms/1.3.0/exceptions_1_3_0.xsd</parsers:schema>
+                        </parsers:schemas>
+                     </parsers:XMLValidatingParser>
+                  </parsers:parse>
+               </parsers:HTTPParser>
+            </ctl:request>
+         </xsl:variable>
+         <xsl:variable name="mime" select="string($response/response/headers/header[functions:to-lowercase(@name) = 'content-type'])"/>
+         <xsl:if test="functions:mime-match($mime, 'text/xml') = 'false'">
+            <ctl:message>Content-type header was <xsl:value-of select="$mime"/> instead of text/xml.</ctl:message>
+            <ctl:fail/>
+         </xsl:if>
+         <xsl:if test="not($response/response/content/ogc:ServiceExceptionReport)">
+            <ctl:message>The results do not validate against the exceptions schema.</ctl:message>
+            <ctl:fail/>
+         </xsl:if>
+      </ctl:code>
+   </ctl:test>
+
+   <ctl:test name="getfeatureinfo:exceptions-xml">
+      <ctl:context>WMS_Capabilities element</ctl:context>
+      <ctl:assertion>When an exception is raised and EXCEPTIONS=XML, then the response is a valid exception with a Content-type header of text/xml.</ctl:assertion>
+      <ctl:comment/>
+      <ctl:link title="WMS 1.3.0 section 7.4.3.8">http://cite.occamlab.com/OGCTestData/wms/1.3.0/spec/wms1_3.html#wmsops.getfeatureinfo.params.exceptions</ctl:link>
+      <ctl:link title="WMS 1.3.0 Annex E section E.2">http://cite.occamlab.com/OGCTestData/wms/1.3.0/spec/wms1_3.html#schemas.service_exception</ctl:link>
+      <ctl:code>
+         <xsl:variable name="image-format" select="wms:Capability/wms:Request/wms:GetMap/wms:Format[1]"/>
+         <xsl:variable name="info-format" select="wms:Capability/wms:Request/wms:GetFeatureInfo/wms:Format[1]"/>
+         <xsl:variable name="response">
+            <ctl:request>
+               <ctl:url>
+                  <xsl:value-of select="wms:Capability/wms:Request/wms:GetFeatureInfo/wms:DCPType/wms:HTTP/wms:Get/wms:OnlineResource/@xlink:href"/>
+               </ctl:url>
+               <ctl:method>get</ctl:method>
+               <ctl:param name="WiDtH">200</ctl:param>
+               <ctl:param name="ExCePtIoNs">XML</ctl:param>
+               <ctl:param name="CrS">CRS:84</ctl:param>
+               <ctl:param name="InFo_fOrMaT">
+                  <xsl:value-of select="functions:encode($info-format)"/>
+               </ctl:param>
+               <ctl:param name="ReQuEsT">GetFeatureInfo</ctl:param>
+               <ctl:param name="QuErY_LaYeRs">UndefinedLayer</ctl:param>
+               <ctl:param name="J">100</ctl:param>
+               <ctl:param name="BbOx">0,0,1,1</ctl:param>
+               <ctl:param name="I">100</ctl:param>
+               <ctl:param name="LaYeRs">UndefinedLayer</ctl:param>
+               <ctl:param name="VeRsIoN">
+                  <xsl:value-of select="functions:version()"/>
+               </ctl:param>
+               <ctl:param name="HeIgHt">200</ctl:param>
+               <ctl:param name="StYlEs"/>
+               <ctl:param name="FoRmAt">
+                  <xsl:value-of select="functions:encode($image-format)"/>
+               </ctl:param>
+               <parsers:HTTPParser>
+                  <parsers:parse>
+                     <parsers:XMLValidatingParser>
+                        <parsers:schemas>
+                           <parsers:schema type="url">http://schemas.opengis.net/wms/1.3.0/exceptions_1_3_0.xsd</parsers:schema>
+                        </parsers:schemas>
+                     </parsers:XMLValidatingParser>
+                  </parsers:parse>
+               </parsers:HTTPParser>
+            </ctl:request>
+         </xsl:variable>
+         <xsl:variable name="mime" select="string($response/response/headers/header[functions:to-lowercase(@name) = 'content-type'])"/>
+         <xsl:if test="functions:mime-match($mime, 'text/xml') = 'false'">
+            <ctl:message>Content-type header was <xsl:value-of select="$mime"/> instead of text/xml.</ctl:message>
+            <ctl:fail/>
+         </xsl:if>
+         <xsl:if test="not($response/response/content/ogc:ServiceExceptionReport)">
+            <ctl:message>The results do not validate against the exceptions schema.</ctl:message>
+            <ctl:fail/>
+         </xsl:if>
+      </ctl:code>
+   </ctl:test>
+
+   <ctl:test name="getfeatureinfo:feature_count-default">
+      <ctl:context>WMS_Capabilities element</ctl:context>
+      <ctl:assertion>When the FEATURE_COUNT parameter is not specified, then less data is returned than when FEATURE_COUNT is 2.</ctl:assertion>
+      <ctl:comment/>
+      <ctl:link title="WMS 1.3.0 section 7.4.3.6">http://cite.occamlab.com/OGCTestData/wms/1.3.0/spec/wms1_3.html#wmsops.getfeatureinfo.params.feature_count</ctl:link>
+      <ctl:code>
+         <xsl:variable name="image-format" select="wms:Capability/wms:Request/wms:GetMap/wms:Format[1]"/>
+         <xsl:variable name="info-format" select="wms:Capability/wms:Request/wms:GetFeatureInfo/wms:Format[1]"/>
+         <xsl:variable name="response-1">
+            <ctl:request>
+               <ctl:url>
+                  <xsl:value-of select="wms:Capability/wms:Request/wms:GetFeatureInfo/wms:DCPType/wms:HTTP/wms:Get/wms:OnlineResource/@xlink:href"/>
+               </ctl:url>
+               <ctl:method>get</ctl:method>
+               <ctl:param name="QuErY_LaYeRs">
+                  <xsl:value-of select="string(wms:Capability//wms:Layer[wms:Title = 'cite:BasicPolygons']/wms:Name)"/>
+               </ctl:param>
+               <ctl:param name="I">50</ctl:param>
+               <ctl:param name="LaYeRs">
+                  <xsl:value-of select="string(wms:Capability//wms:Layer[wms:Title = 'cite:BasicPolygons']/wms:Name)"/>
+               </ctl:param>
+               <ctl:param name="StYlEs"/>
+               <ctl:param name="WiDtH">100</ctl:param>
+               <ctl:param name="CrS">CRS:84</ctl:param>
+               <ctl:param name="ReQuEsT">GetFeatureInfo</ctl:param>
+               <ctl:param name="InFo_fOrMaT">
+                  <xsl:value-of select="functions:encode($info-format)"/>
+               </ctl:param>
+               <ctl:param name="BbOx">-2,2,2,6</ctl:param>
+               <ctl:param name="HeIgHt">100</ctl:param>
+               <ctl:param name="J">50</ctl:param>
+               <ctl:param name="VeRsIoN">
+                  <xsl:value-of select="functions:version()"/>
+               </ctl:param>
+               <ctl:param name="FoRmAt">
+                  <xsl:value-of select="functions:encode($image-format)"/>
+               </ctl:param>
+               <parsers:CDataParser/>
+            </ctl:request>
+         </xsl:variable>
+         <xsl:variable name="response-2">
+            <ctl:request>
+               <ctl:url>
+                  <xsl:value-of select="wms:Capability/wms:Request/wms:GetFeatureInfo/wms:DCPType/wms:HTTP/wms:Get/wms:OnlineResource/@xlink:href"/>
+               </ctl:url>
+               <ctl:method>get</ctl:method>
+               <ctl:param name="FoRmAt">
+                  <xsl:value-of select="functions:encode($image-format)"/>
+               </ctl:param>
+               <ctl:param name="BbOx">-2,2,2,6</ctl:param>
+               <ctl:param name="FeAtUrE_CoUnT">2</ctl:param>
+               <ctl:param name="StYlEs"/>
+               <ctl:param name="J">50</ctl:param>
+               <ctl:param name="LaYeRs">
+                  <xsl:value-of select="string(wms:Capability//wms:Layer[wms:Title = 'cite:BasicPolygons']/wms:Name)"/>
+               </ctl:param>
+               <ctl:param name="QuErY_LaYeRs">
+                  <xsl:value-of select="string(wms:Capability//wms:Layer[wms:Title = 'cite:BasicPolygons']/wms:Name)"/>
+               </ctl:param>
+               <ctl:param name="CrS">CRS:84</ctl:param>
+               <ctl:param name="HeIgHt">100</ctl:param>
+               <ctl:param name="WiDtH">100</ctl:param>
+               <ctl:param name="InFo_fOrMaT">
+                  <xsl:value-of select="functions:encode($info-format)"/>
+               </ctl:param>
+               <ctl:param name="VeRsIoN">
+                  <xsl:value-of select="functions:version()"/>
+               </ctl:param>
+               <ctl:param name="I">50</ctl:param>
+               <ctl:param name="ReQuEsT">GetFeatureInfo</ctl:param>
+               <parsers:CDataParser/>
+            </ctl:request>
+         </xsl:variable>
+         <xsl:if test="string-length($response-1) &gt; string-length($response-2)">
+            <ctl:fail/>
+         </xsl:if>
+      </ctl:code>
+   </ctl:test>
+
+   <ctl:test name="getfeatureinfo:feature_count-1">
+      <ctl:context>WMS_Capabilities element</ctl:context>
+      <ctl:assertion>When the FEATURE_COUNT parameter is 1, then less data is returned than when FEATURE_COUNT is 2.</ctl:assertion>
+      <ctl:comment/>
+      <ctl:link title="WMS 1.3.0 section 7.4.3.6">http://cite.occamlab.com/OGCTestData/wms/1.3.0/spec/wms1_3.html#wmsops.getfeatureinfo.params.feature_count</ctl:link>
+      <ctl:code>
+         <xsl:variable name="image-format" select="wms:Capability/wms:Request/wms:GetMap/wms:Format[1]"/>
+         <xsl:variable name="info-format" select="wms:Capability/wms:Request/wms:GetFeatureInfo/wms:Format[1]"/>
+         <xsl:variable name="response-1">
+            <ctl:request>
+               <ctl:url>
+                  <xsl:value-of select="wms:Capability/wms:Request/wms:GetFeatureInfo/wms:DCPType/wms:HTTP/wms:Get/wms:OnlineResource/@xlink:href"/>
+               </ctl:url>
+               <ctl:method>get</ctl:method>
+               <ctl:param name="QuErY_LaYeRs">
+                  <xsl:value-of select="string(wms:Capability//wms:Layer[wms:Title = 'cite:BasicPolygons']/wms:Name)"/>
+               </ctl:param>
+               <ctl:param name="I">50</ctl:param>
+               <ctl:param name="LaYeRs">
+                  <xsl:value-of select="string(wms:Capability//wms:Layer[wms:Title = 'cite:BasicPolygons']/wms:Name)"/>
+               </ctl:param>
+               <ctl:param name="StYlEs"/>
+               <ctl:param name="WiDtH">100</ctl:param>
+               <ctl:param name="CrS">CRS:84</ctl:param>
+               <ctl:param name="ReQuEsT">GetFeatureInfo</ctl:param>
+               <ctl:param name="InFo_fOrMaT">
+                  <xsl:value-of select="functions:encode($info-format)"/>
+               </ctl:param>
+               <ctl:param name="BbOx">-2,2,2,6</ctl:param>
+               <ctl:param name="HeIgHt">100</ctl:param>
+               <ctl:param name="J">50</ctl:param>
+               <ctl:param name="VeRsIoN">
+                  <xsl:value-of select="functions:version()"/>
+               </ctl:param>
+               <ctl:param name="FoRmAt">
+                  <xsl:value-of select="functions:encode($image-format)"/>
+               </ctl:param>
+               <ctl:param name="FeAtUrE_CoUnT">1</ctl:param>
+               <parsers:CDataParser/>
+            </ctl:request>
+         </xsl:variable>
+         <xsl:variable name="response-2">
+            <ctl:request>
+               <ctl:url>
+                  <xsl:value-of select="wms:Capability/wms:Request/wms:GetFeatureInfo/wms:DCPType/wms:HTTP/wms:Get/wms:OnlineResource/@xlink:href"/>
+               </ctl:url>
+               <ctl:method>get</ctl:method>
+               <ctl:param name="FoRmAt">
+                  <xsl:value-of select="functions:encode($image-format)"/>
+               </ctl:param>
+               <ctl:param name="BbOx">-2,2,2,6</ctl:param>
+               <ctl:param name="FeAtUrE_CoUnT">2</ctl:param>
+               <ctl:param name="StYlEs"/>
+               <ctl:param name="J">50</ctl:param>
+               <ctl:param name="LaYeRs">
+                  <xsl:value-of select="string(wms:Capability//wms:Layer[wms:Title = 'cite:BasicPolygons']/wms:Name)"/>
+               </ctl:param>
+               <ctl:param name="QuErY_LaYeRs">
+                  <xsl:value-of select="string(wms:Capability//wms:Layer[wms:Title = 'cite:BasicPolygons']/wms:Name)"/>
+               </ctl:param>
+               <ctl:param name="CrS">CRS:84</ctl:param>
+               <ctl:param name="HeIgHt">100</ctl:param>
+               <ctl:param name="WiDtH">100</ctl:param>
+               <ctl:param name="InFo_fOrMaT">
+                  <xsl:value-of select="functions:encode($info-format)"/>
+               </ctl:param>
+               <ctl:param name="VeRsIoN">
+                  <xsl:value-of select="functions:version()"/>
+               </ctl:param>
+               <ctl:param name="I">50</ctl:param>
+               <ctl:param name="ReQuEsT">GetFeatureInfo</ctl:param>
+               <parsers:CDataParser/>
+            </ctl:request>
+         </xsl:variable>
+         <xsl:if test="string-length($response-1) &gt; string-length($response-2)">
+            <ctl:fail/>
+         </xsl:if>
+      </ctl:code>
+   </ctl:test>
+
+   <ctl:test name="getfeatureinfo:invalid-info_format">
+      <ctl:context>WMS_Capabilities element</ctl:context>
+      <ctl:assertion>When a GetFeatureInfo request is made with an invalid INFO_FORMAT parameter, then the server returns an exception (code=InvalidFormat).</ctl:assertion>
+      <ctl:comment/>
+      <ctl:link title="WMS 1.3.0 section 7.4.3.5">http://cite.occamlab.com/OGCTestData/wms/1.3.0/spec/wms1_3.html#wmsops.getfeatureinfo.params.info_format</ctl:link>
+      <ctl:code>
+         <xsl:variable name="image-format" select="wms:Capability/wms:Request/wms:GetMap/wms:Format[1]"/>
+         <xsl:variable name="layer-info">
+            <ctl:call-function name="functions:queryable-layer-info">
+               <ctl:with-param name="root-layer" select="wms:Capability/wms:Layer"/>
+               <ctl:with-param name="preferred-name" select="wms:Capability//wms:Layer[wms:Title = 'cite:Lakes']/wms:Name"/>
+               <ctl:with-param name="preferred-crs">CRS:84</ctl:with-param>
+               <ctl:with-param name="preferred-bbox">0,-0.0020,0.0040,0</ctl:with-param>
+               <ctl:with-param name="preferred-width">200</ctl:with-param>
+               <ctl:with-param name="preferred-height">100</ctl:with-param>
+            </ctl:call-function>
+         </xsl:variable>
+         <xsl:variable name="response">
+            <ctl:request>
+               <ctl:url>
+                  <xsl:value-of select="wms:Capability/wms:Request/wms:GetFeatureInfo/wms:DCPType/wms:HTTP/wms:Get/wms:OnlineResource/@xlink:href"/>
+               </ctl:url>
+               <ctl:method>get</ctl:method>
+               <ctl:param name="LaYeRs">
+                  <xsl:value-of select="functions:encode($layer-info/LayerInfo/@name)"/>
+               </ctl:param>
+               <ctl:param name="ReQuEsT">GetFeatureInfo</ctl:param>
+               <ctl:param name="BbOx">
+                  <xsl:value-of select="$layer-info/LayerInfo/@bbox"/>
+               </ctl:param>
+               <ctl:param name="WiDtH">
+                  <xsl:value-of select="$layer-info/LayerInfo/@width"/>
+               </ctl:param>
+               <ctl:param name="CrS">
+                  <xsl:value-of select="functions:encode($layer-info/LayerInfo/@crs)"/>
+               </ctl:param>
+               <ctl:param name="QuErY_LaYeRs">
+                  <xsl:value-of select="functions:encode($layer-info/LayerInfo/@name)"/>
+               </ctl:param>
+               <ctl:param name="VeRsIoN">
+                  <xsl:value-of select="functions:version()"/>
+               </ctl:param>
+               <ctl:param name="StYlEs"/>
+               <ctl:param name="I">60</ctl:param>
+               <ctl:param name="J">60</ctl:param>
+               <ctl:param name="HeIgHt">
+                  <xsl:value-of select="$layer-info/LayerInfo/@height"/>
+               </ctl:param>
+               <ctl:param name="InFo_fOrMaT">InvalidInfoFormat</ctl:param>
+               <ctl:param name="FoRmAt">
+                  <xsl:value-of select="functions:encode($image-format)"/>
+               </ctl:param>
+            </ctl:request>
+         </xsl:variable>
+         <xsl:if test="not($response/ogc:ServiceExceptionReport/ogc:ServiceException[@code='InvalidFormat'])">
+            <ctl:fail/>
+         </xsl:if>
+      </ctl:code>
+   </ctl:test>
+
+   <ctl:test name="getfeatureinfo:each-info_format">
+      <ctl:param name="capabilities"/>
+      <ctl:param name="format"/>
+      <ctl:assertion>For {$format}, when the INFO_FORMAT parameter is set to that format, the MIME type of the response matches that format.</ctl:assertion>
+      <ctl:comment/>
+      <ctl:link title="WMS 1.3.0 section 7.4.3.5">http://cite.occamlab.com/OGCTestData/wms/1.3.0/spec/wms1_3.html#wmsops.getfeatureinfo.params.info_format</ctl:link>
+      <ctl:code>
+         <xsl:variable name="image-format" select="$capabilities/wms:Capability/wms:Request/wms:GetMap/wms:Format[1]"/>
+         <xsl:variable name="layer-info">
+            <ctl:call-function name="functions:queryable-layer-info">
+               <ctl:with-param name="root-layer" select="$capabilities/wms:Capability/wms:Layer"/>
+               <ctl:with-param name="preferred-name" select="$capabilities/wms:Capability//wms:Layer[wms:Title = 'cite:Lakes']/wms:Name"/>
+               <ctl:with-param name="preferred-crs">CRS:84</ctl:with-param>
+               <ctl:with-param name="preferred-bbox">0,-0.0020,0.0040,0</ctl:with-param>
+               <ctl:with-param name="preferred-width">200</ctl:with-param>
+               <ctl:with-param name="preferred-height">100</ctl:with-param>
+            </ctl:call-function>
+         </xsl:variable>
+         <xsl:variable name="response">
+            <ctl:request>
+               <ctl:url>
+                  <xsl:value-of select="$capabilities/wms:Capability/wms:Request/wms:GetFeatureInfo/wms:DCPType/wms:HTTP/wms:Get/wms:OnlineResource/@xlink:href"/>
+               </ctl:url>
+               <ctl:method>get</ctl:method>
+               <ctl:param name="LaYeRs">
+                  <xsl:value-of select="functions:encode($layer-info/LayerInfo/@name)"/>
+               </ctl:param>
+               <ctl:param name="ReQuEsT">GetFeatureInfo</ctl:param>
+               <ctl:param name="BbOx">
+                  <xsl:value-of select="$layer-info/LayerInfo/@bbox"/>
+               </ctl:param>
+               <ctl:param name="WiDtH">
+                  <xsl:value-of select="$layer-info/LayerInfo/@width"/>
+               </ctl:param>
+               <ctl:param name="CrS">
+                  <xsl:value-of select="functions:encode($layer-info/LayerInfo/@crs)"/>
+               </ctl:param>
+               <ctl:param name="QuErY_LaYeRs">
+                  <xsl:value-of select="functions:encode($layer-info/LayerInfo/@name)"/>
+               </ctl:param>
+               <ctl:param name="VeRsIoN">
+                  <xsl:value-of select="functions:version()"/>
+               </ctl:param>
+               <ctl:param name="StYlEs"/>
+               <ctl:param name="I">60</ctl:param>
+               <ctl:param name="J">60</ctl:param>
+               <ctl:param name="HeIgHt">
+                  <xsl:value-of select="$layer-info/LayerInfo/@height"/>
+               </ctl:param>
+               <ctl:param name="InFo_fOrMaT">
+                  <xsl:value-of select="functions:encode($format)"/>
+               </ctl:param>
+               <ctl:param name="FoRmAt">
+                  <xsl:value-of select="functions:encode($image-format)"/>
+               </ctl:param>
+               <parsers:HTTPParser>
+                  <parsers:parse>
+                     <parsers:NullParser/>
+                  </parsers:parse>
+               </parsers:HTTPParser>
+            </ctl:request>
+         </xsl:variable>
+         <xsl:if test="functions:mime-match($response/response/headers/header[functions:to-lowercase(@name) = 'content-type'], $format) = 'false'">
+            <ctl:fail/>
+         </xsl:if>
+      </ctl:code>
+   </ctl:test>
+
+   <ctl:test name="getfeatureinfo:invalid-i">
+      <ctl:context>WMS_Capabilities element</ctl:context>
+      <ctl:assertion>When a GetFeatureInfo request is made with an invalid I parameter, then the response is an exception (code=InvalidPoint).</ctl:assertion>
+      <ctl:comment/>
+      <ctl:link title="WMS 1.3.0 section 7.4.3.7">http://cite.occamlab.com/OGCTestData/wms/1.3.0/spec/wms1_3.html#wmsops.getfeatureinfo.params.i_j</ctl:link>
+      <ctl:code>
+         <xsl:variable name="image-format" select="wms:Capability/wms:Request/wms:GetMap/wms:Format[1]"/>
+         <xsl:variable name="info-format" select="wms:Capability/wms:Request/wms:GetFeatureInfo/wms:Format[1]"/>
+         <xsl:variable name="layer-info">
+            <ctl:call-function name="functions:queryable-layer-info">
+               <ctl:with-param name="root-layer" select="wms:Capability/wms:Layer"/>
+               <ctl:with-param name="preferred-name" select="wms:Capability//wms:Layer[wms:Title = 'cite:Lakes']/wms:Name"/>
+               <ctl:with-param name="preferred-crs">CRS:84</ctl:with-param>
+               <ctl:with-param name="preferred-bbox">0,-0.0020,0.0040,0</ctl:with-param>
+               <ctl:with-param name="preferred-width">200</ctl:with-param>
+               <ctl:with-param name="preferred-height">100</ctl:with-param>
+            </ctl:call-function>
+         </xsl:variable>
+         <xsl:variable name="response">
+            <ctl:request>
+               <ctl:url>
+                  <xsl:value-of select="wms:Capability/wms:Request/wms:GetFeatureInfo/wms:DCPType/wms:HTTP/wms:Get/wms:OnlineResource/@xlink:href"/>
+               </ctl:url>
+               <ctl:method>get</ctl:method>
+               <ctl:param name="LaYeRs">
+                  <xsl:value-of select="functions:encode($layer-info/LayerInfo/@name)"/>
+               </ctl:param>
+               <ctl:param name="ReQuEsT">GetFeatureInfo</ctl:param>
+               <ctl:param name="BbOx">
+                  <xsl:value-of select="$layer-info/LayerInfo/@bbox"/>
+               </ctl:param>
+               <ctl:param name="WiDtH">
+                  <xsl:value-of select="$layer-info/LayerInfo/@width"/>
+               </ctl:param>
+               <ctl:param name="CrS">
+                  <xsl:value-of select="functions:encode($layer-info/LayerInfo/@crs)"/>
+               </ctl:param>
+               <ctl:param name="QuErY_LaYeRs">
+                  <xsl:value-of select="functions:encode($layer-info/LayerInfo/@name)"/>
+               </ctl:param>
+               <ctl:param name="VeRsIoN">
+                  <xsl:value-of select="functions:version()"/>
+               </ctl:param>
+               <ctl:param name="StYlEs"/>
+               <ctl:param name="I">
+                  <xsl:value-of select="number($layer-info/LayerInfo/@width) + 50"/>
+               </ctl:param>
+               <ctl:param name="J">60</ctl:param>
+               <ctl:param name="HeIgHt">
+                  <xsl:value-of select="$layer-info/LayerInfo/@height"/>
+               </ctl:param>
+               <ctl:param name="InFo_fOrMaT">
+                  <xsl:value-of select="functions:encode($info-format)"/>
+               </ctl:param>
+               <ctl:param name="FoRmAt">
+                  <xsl:value-of select="functions:encode($image-format)"/>
+               </ctl:param>
+            </ctl:request>
+         </xsl:variable>
+         <xsl:if test="not($response/ogc:ServiceExceptionReport/ogc:ServiceException[@code='InvalidPoint'])">
+            <ctl:fail/>
+         </xsl:if>
+      </ctl:code>
+   </ctl:test>
+
+   <ctl:test name="getfeatureinfo:invalid-j">
+      <ctl:context>WMS_Capabilities element</ctl:context>
+      <ctl:assertion>When a GetFeatureInfo request is made with an invalid J parameter, then the response is an exception (code=InvalidPoint).</ctl:assertion>
+      <ctl:comment/>
+      <ctl:link title="WMS 1.3.0 section 7.4.3.7">http://cite.occamlab.com/OGCTestData/wms/1.3.0/spec/wms1_3.html#wmsops.getfeatureinfo.params.i_j</ctl:link>
+      <ctl:code>
+         <xsl:variable name="image-format" select="wms:Capability/wms:Request/wms:GetMap/wms:Format[1]"/>
+         <xsl:variable name="info-format" select="wms:Capability/wms:Request/wms:GetFeatureInfo/wms:Format[1]"/>
+         <xsl:variable name="layer-info">
+            <ctl:call-function name="functions:queryable-layer-info">
+               <ctl:with-param name="root-layer" select="wms:Capability/wms:Layer"/>
+               <ctl:with-param name="preferred-name" select="wms:Capability//wms:Layer[wms:Title = 'cite:Lakes']/wms:Name"/>
+               <ctl:with-param name="preferred-crs">CRS:84</ctl:with-param>
+               <ctl:with-param name="preferred-bbox">0,-0.0020,0.0040,0</ctl:with-param>
+               <ctl:with-param name="preferred-width">200</ctl:with-param>
+               <ctl:with-param name="preferred-height">100</ctl:with-param>
+            </ctl:call-function>
+         </xsl:variable>
+         <xsl:variable name="response">
+            <ctl:request>
+               <ctl:url>
+                  <xsl:value-of select="wms:Capability/wms:Request/wms:GetFeatureInfo/wms:DCPType/wms:HTTP/wms:Get/wms:OnlineResource/@xlink:href"/>
+               </ctl:url>
+               <ctl:method>get</ctl:method>
+               <ctl:param name="LaYeRs">
+                  <xsl:value-of select="functions:encode($layer-info/LayerInfo/@name)"/>
+               </ctl:param>
+               <ctl:param name="ReQuEsT">GetFeatureInfo</ctl:param>
+               <ctl:param name="BbOx">
+                  <xsl:value-of select="$layer-info/LayerInfo/@bbox"/>
+               </ctl:param>
+               <ctl:param name="WiDtH">
+                  <xsl:value-of select="$layer-info/LayerInfo/@width"/>
+               </ctl:param>
+               <ctl:param name="CrS">
+                  <xsl:value-of select="functions:encode($layer-info/LayerInfo/@crs)"/>
+               </ctl:param>
+               <ctl:param name="QuErY_LaYeRs">
+                  <xsl:value-of select="functions:encode($layer-info/LayerInfo/@name)"/>
+               </ctl:param>
+               <ctl:param name="VeRsIoN">
+                  <xsl:value-of select="functions:version()"/>
+               </ctl:param>
+               <ctl:param name="StYlEs"/>
+               <ctl:param name="I">60</ctl:param>
+               <ctl:param name="J">
+                  <xsl:value-of select="number($layer-info/LayerInfo/@height) + 50"/>
+               </ctl:param>
+               <ctl:param name="HeIgHt">
+                  <xsl:value-of select="$layer-info/LayerInfo/@height"/>
+               </ctl:param>
+               <ctl:param name="InFo_fOrMaT">
+                  <xsl:value-of select="functions:encode($info-format)"/>
+               </ctl:param>
+               <ctl:param name="FoRmAt">
+                  <xsl:value-of select="functions:encode($image-format)"/>
+               </ctl:param>
+            </ctl:request>
+         </xsl:variable>
+         <xsl:if test="not($response/ogc:ServiceExceptionReport/ogc:ServiceException[@code='InvalidPoint'])">
+            <ctl:fail/>
+         </xsl:if>
+      </ctl:code>
+   </ctl:test>
+
+   <ctl:test name="getfeatureinfo:two-query_layers">
+      <ctl:context>WMS_Capabilities element</ctl:context>
+      <ctl:assertion>When a GetFeatureInfo request contains two layers, then the response is valid.</ctl:assertion>
+      <ctl:comment/>
+      <ctl:link title="WMS 1.3.0 section 7.4.3.4">http://cite.occamlab.com/OGCTestData/wms/1.3.0/spec/wms1_3.html#wmsops.getfeatureinfo.params.query_layers</ctl:link>
+      <ctl:code>
+         <xsl:variable name="image-format" select="wms:Capability/wms:Request/wms:GetMap/wms:Format[1]"/>
+         <xsl:variable name="info-format" select="wms:Capability/wms:Request/wms:GetFeatureInfo/wms:Format[1]"/>
+         <xsl:variable name="layer-info-1">
+            <ctl:call-function name="functions:queryable-layer-info">
+               <ctl:with-param name="root-layer" select="wms:Capability/wms:Layer"/>
+               <ctl:with-param name="preferred-name" select="wms:Capability//wms:Layer[wms:Title = 'cite:NamedPlaces']/wms:Name"/>
+               <ctl:with-param name="preferred-crs">CRS:84</ctl:with-param>
+               <ctl:with-param name="preferred-bbox">0,-0.0020,0.0040,0</ctl:with-param>
+               <ctl:with-param name="preferred-width">200</ctl:with-param>
+               <ctl:with-param name="preferred-height">100</ctl:with-param>
+            </ctl:call-function>
+         </xsl:variable>
+         <xsl:variable name="layer-info-2">
+            <ctl:call-function name="functions:queryable-layer-info">
+               <ctl:with-param name="root-layer" select="wms:Capability/wms:Layer"/>
+               <ctl:with-param name="preferred-name" select="wms:Capability//wms:Layer[wms:Title = 'cite:Lakes']/wms:Name"/>
+               <ctl:with-param name="preferred-crs">CRS:84</ctl:with-param>
+               <ctl:with-param name="preferred-bbox">0,-0.0020,0.0040,0</ctl:with-param>
+               <ctl:with-param name="preferred-width">200</ctl:with-param>
+               <ctl:with-param name="preferred-height">100</ctl:with-param>
+            </ctl:call-function>
+         </xsl:variable>
+         <xsl:variable name="response">
+            <ctl:request>
+               <ctl:url>
+                  <xsl:value-of select="wms:Capability/wms:Request/wms:GetFeatureInfo/wms:DCPType/wms:HTTP/wms:Get/wms:OnlineResource/@xlink:href"/>
+               </ctl:url>
+               <ctl:method>get</ctl:method>
+               <ctl:param name="LaYeRs">
+                  <xsl:value-of select="functions:encode($layer-info-1/LayerInfo/@name)"/>,<xsl:value-of select="functions:encode($layer-info-2/LayerInfo/@name)"/>
+               </ctl:param>
+               <ctl:param name="WiDtH">
+                  <xsl:value-of select="$layer-info-1/LayerInfo/@width"/>
+               </ctl:param>
+               <ctl:param name="HeIgHt">
+                  <xsl:value-of select="$layer-info-1/LayerInfo/@height"/>
+               </ctl:param>
+               <ctl:param name="I">60</ctl:param>
+               <ctl:param name="BbOx">
+                  <xsl:value-of select="$layer-info-1/LayerInfo/@bbox"/>
+               </ctl:param>
+               <ctl:param name="CrS">
+                  <xsl:value-of select="functions:encode($layer-info-1/LayerInfo/@crs)"/>
+               </ctl:param>
+               <ctl:param name="ReQuEsT">GetFeatureInfo</ctl:param>
+               <ctl:param name="InFo_fOrMaT">
+                  <xsl:value-of select="functions:encode($info-format)"/>
+               </ctl:param>
+               <ctl:param name="J">60</ctl:param>
+               <ctl:param name="StYlEs"/>
+               <ctl:param name="FoRmAt">
+                  <xsl:value-of select="functions:encode($image-format)"/>
+               </ctl:param>
+               <ctl:param name="QuErY_LaYeRs">
+                  <xsl:value-of select="functions:encode($layer-info-1/LayerInfo/@name)"/>,<xsl:value-of select="functions:encode($layer-info-2/LayerInfo/@name)"/>
+               </ctl:param>
+               <ctl:param name="VeRsIoN">
+                  <xsl:value-of select="functions:version()"/>
+               </ctl:param>
+               <parsers:HTTPParser>
+                  <parsers:parse>
+                     <parsers:NullParser/>
+                  </parsers:parse>
+               </parsers:HTTPParser>
+            </ctl:request>
+         </xsl:variable>
+         <xsl:if test="functions:mime-match($response/response/headers/header[functions:to-lowercase(@name) = 'content-type'], $info-format) = 'false'">
+            <ctl:fail/>
+         </xsl:if>
+      </ctl:code>
+   </ctl:test>
+
+   <ctl:test name="getfeatureinfo:three-query_layers">
+      <ctl:context>WMS_Capabilities element</ctl:context>
+      <ctl:assertion>When a GetFeatureInfo request contains three layers, then the response is valid.</ctl:assertion>
+      <ctl:comment/>
+      <ctl:link title="WMS 1.3.0 section 7.4.3.4">http://cite.occamlab.com/OGCTestData/wms/1.3.0/spec/wms1_3.html#wmsops.getfeatureinfo.params.query_layers</ctl:link>
+      <ctl:code>
+         <xsl:variable name="image-format" select="wms:Capability/wms:Request/wms:GetMap/wms:Format[1]"/>
+         <xsl:variable name="info-format" select="wms:Capability/wms:Request/wms:GetFeatureInfo/wms:Format[1]"/>
+         <xsl:variable name="layer-info-1">
+            <ctl:call-function name="functions:queryable-layer-info">
+               <ctl:with-param name="root-layer" select="wms:Capability/wms:Layer"/>
+               <ctl:with-param name="preferred-name" select="wms:Capability//wms:Layer[wms:Title = 'cite:NamedPlaces']/wms:Name"/>
+               <ctl:with-param name="preferred-crs">CRS:84</ctl:with-param>
+               <ctl:with-param name="preferred-bbox">0,-0.0020,0.0040,0</ctl:with-param>
+               <ctl:with-param name="preferred-width">200</ctl:with-param>
+               <ctl:with-param name="preferred-height">100</ctl:with-param>
+            </ctl:call-function>
+         </xsl:variable>
+         <xsl:variable name="layer-info-2">
+            <ctl:call-function name="functions:queryable-layer-info">
+               <ctl:with-param name="root-layer" select="wms:Capability/wms:Layer"/>
+               <ctl:with-param name="preferred-name" select="wms:Capability//wms:Layer[wms:Title = 'cite:Lakes']/wms:Name"/>
+               <ctl:with-param name="preferred-crs">CRS:84</ctl:with-param>
+               <ctl:with-param name="preferred-bbox">0,-0.0020,0.0040,0</ctl:with-param>
+               <ctl:with-param name="preferred-width">200</ctl:with-param>
+               <ctl:with-param name="preferred-height">100</ctl:with-param>
+            </ctl:call-function>
+         </xsl:variable>
+         <xsl:variable name="layer-info-3">
+            <ctl:call-function name="functions:queryable-layer-info">
+               <ctl:with-param name="root-layer" select="wms:Capability/wms:Layer"/>
+               <ctl:with-param name="preferred-name" select="wms:Capability//wms:Layer[wms:Title = 'cite:Forests']/wms:Name"/>
+               <ctl:with-param name="preferred-crs">CRS:84</ctl:with-param>
+               <ctl:with-param name="preferred-bbox">0,-0.0020,0.0040,0</ctl:with-param>
+               <ctl:with-param name="preferred-width">200</ctl:with-param>
+               <ctl:with-param name="preferred-height">100</ctl:with-param>
+            </ctl:call-function>
+         </xsl:variable>
+         <xsl:variable name="response">
+            <ctl:request>
+               <ctl:url>
+                  <xsl:value-of select="wms:Capability/wms:Request/wms:GetFeatureInfo/wms:DCPType/wms:HTTP/wms:Get/wms:OnlineResource/@xlink:href"/>
+               </ctl:url>
+               <ctl:method>get</ctl:method>
+               <ctl:param name="LaYeRs">
+                  <xsl:value-of select="functions:encode($layer-info-1/LayerInfo/@name)"/>,<xsl:value-of select="functions:encode($layer-info-2/LayerInfo/@name)"/>,<xsl:value-of select="functions:encode($layer-info-3/LayerInfo/@name)"/>
+               </ctl:param>
+               <ctl:param name="WiDtH">
+                  <xsl:value-of select="$layer-info-1/LayerInfo/@width"/>
+               </ctl:param>
+               <ctl:param name="HeIgHt">
+                  <xsl:value-of select="$layer-info-1/LayerInfo/@height"/>
+               </ctl:param>
+               <ctl:param name="I">60</ctl:param>
+               <ctl:param name="BbOx">
+                  <xsl:value-of select="$layer-info-1/LayerInfo/@bbox"/>
+               </ctl:param>
+               <ctl:param name="CrS">
+                  <xsl:value-of select="functions:encode($layer-info-1/LayerInfo/@crs)"/>
+               </ctl:param>
+               <ctl:param name="ReQuEsT">GetFeatureInfo</ctl:param>
+               <ctl:param name="InFo_fOrMaT">
+                  <xsl:value-of select="functions:encode($info-format)"/>
+               </ctl:param>
+               <ctl:param name="J">60</ctl:param>
+               <ctl:param name="StYlEs"/>
+               <ctl:param name="FoRmAt">
+                  <xsl:value-of select="functions:encode($image-format)"/>
+               </ctl:param>
+               <ctl:param name="QuErY_LaYeRs">
+                  <xsl:value-of select="functions:encode($layer-info-1/LayerInfo/@name)"/>,<xsl:value-of select="functions:encode($layer-info-2/LayerInfo/@name)"/>,<xsl:value-of select="functions:encode($layer-info-3/LayerInfo/@name)"/>
+               </ctl:param>
+               <ctl:param name="VeRsIoN">
+                  <xsl:value-of select="functions:version()"/>
+               </ctl:param>
+               <parsers:HTTPParser>
+                  <parsers:parse>
+                     <parsers:NullParser/>
+                  </parsers:parse>
+               </parsers:HTTPParser>
+            </ctl:request>
+         </xsl:variable>
+         <xsl:if test="functions:mime-match($response/response/headers/header[functions:to-lowercase(@name) = 'content-type'], $info-format) = 'false'">
+            <ctl:fail/>
+         </xsl:if>
+      </ctl:code>
+   </ctl:test>
+
+   <ctl:test name="getfeatureinfo:less-query_layers">
+      <ctl:context>WMS_Capabilities element</ctl:context>
+      <ctl:assertion>When a GetFeatureInfo request contains fewer layers in the QUERY_LAYERS parameter than it does in the LAYERS parameter, then the response is valid.</ctl:assertion>
+      <ctl:comment/>
+      <ctl:link title="WMS 1.3.0 section 7.4.3.4">http://cite.occamlab.com/OGCTestData/wms/1.3.0/spec/wms1_3.html#wmsops.getfeatureinfo.params.query_layers</ctl:link>
+      <ctl:code>
+         <xsl:variable name="image-format" select="wms:Capability/wms:Request/wms:GetMap/wms:Format[1]"/>
+         <xsl:variable name="info-format" select="wms:Capability/wms:Request/wms:GetFeatureInfo/wms:Format[1]"/>
+         <xsl:variable name="layer-info-1">
+            <ctl:call-function name="functions:queryable-layer-info">
+               <ctl:with-param name="root-layer" select="wms:Capability/wms:Layer"/>
+               <ctl:with-param name="preferred-name" select="wms:Capability//wms:Layer[wms:Title = 'cite:NamedPlaces']/wms:Name"/>
+               <ctl:with-param name="preferred-crs">CRS:84</ctl:with-param>
+               <ctl:with-param name="preferred-bbox">0,-0.0020,0.0040,0</ctl:with-param>
+               <ctl:with-param name="preferred-width">200</ctl:with-param>
+               <ctl:with-param name="preferred-height">100</ctl:with-param>
+            </ctl:call-function>
+         </xsl:variable>
+         <xsl:variable name="layer-info-2">
+            <ctl:call-function name="functions:layer-info">
+               <ctl:with-param name="root-layer" select="wms:Capability/wms:Layer"/>
+               <ctl:with-param name="preferred-name" select="wms:Capability//wms:Layer[wms:Title = 'cite:Streams']/wms:Name"/>
+               <ctl:with-param name="preferred-crs">CRS:84</ctl:with-param>
+               <ctl:with-param name="preferred-bbox">0,-0.0020,0.0040,0</ctl:with-param>
+               <ctl:with-param name="preferred-width">200</ctl:with-param>
+               <ctl:with-param name="preferred-height">100</ctl:with-param>
+            </ctl:call-function>
+         </xsl:variable>
+         <xsl:variable name="layer-info-3">
+            <ctl:call-function name="functions:queryable-layer-info">
+               <ctl:with-param name="root-layer" select="wms:Capability/wms:Layer"/>
+               <ctl:with-param name="preferred-name" select="wms:Capability//wms:Layer[wms:Title = 'cite:Lakes']/wms:Name"/>
+               <ctl:with-param name="preferred-crs">CRS:84</ctl:with-param>
+               <ctl:with-param name="preferred-bbox">0,-0.0020,0.0040,0</ctl:with-param>
+               <ctl:with-param name="preferred-width">200</ctl:with-param>
+               <ctl:with-param name="preferred-height">100</ctl:with-param>
+            </ctl:call-function>
+         </xsl:variable>
+         <xsl:variable name="response">
+            <ctl:request>
+               <ctl:url>
+                  <xsl:value-of select="wms:Capability/wms:Request/wms:GetFeatureInfo/wms:DCPType/wms:HTTP/wms:Get/wms:OnlineResource/@xlink:href"/>
+               </ctl:url>
+               <ctl:method>get</ctl:method>
+               <ctl:param name="LaYeRs">
+                  <xsl:value-of select="functions:encode($layer-info-1/LayerInfo/@name)"/>,<xsl:value-of select="functions:encode($layer-info-2/LayerInfo/@name)"/>,<xsl:value-of select="functions:encode($layer-info-3/LayerInfo/@name)"/>
+               </ctl:param>
+               <ctl:param name="WiDtH">
+                  <xsl:value-of select="$layer-info-1/LayerInfo/@width"/>
+               </ctl:param>
+               <ctl:param name="HeIgHt">
+                  <xsl:value-of select="$layer-info-1/LayerInfo/@height"/>
+               </ctl:param>
+               <ctl:param name="I">60</ctl:param>
+               <ctl:param name="BbOx">
+                  <xsl:value-of select="$layer-info-1/LayerInfo/@bbox"/>
+               </ctl:param>
+               <ctl:param name="CrS">
+                  <xsl:value-of select="functions:encode($layer-info-1/LayerInfo/@crs)"/>
+               </ctl:param>
+               <ctl:param name="ReQuEsT">GetFeatureInfo</ctl:param>
+               <ctl:param name="InFo_fOrMaT">
+                  <xsl:value-of select="functions:encode($info-format)"/>
+               </ctl:param>
+               <ctl:param name="J">60</ctl:param>
+               <ctl:param name="StYlEs"/>
+               <ctl:param name="FoRmAt">
+                  <xsl:value-of select="functions:encode($image-format)"/>
+               </ctl:param>
+               <ctl:param name="QuErY_LaYeRs">
+                  <xsl:value-of select="functions:encode($layer-info-1/LayerInfo/@name)"/>,<xsl:value-of select="functions:encode($layer-info-3/LayerInfo/@name)"/>
+               </ctl:param>
+               <ctl:param name="VeRsIoN">
+                  <xsl:value-of select="functions:version()"/>
+               </ctl:param>
+               <parsers:HTTPParser>
+                  <parsers:parse>
+                     <parsers:NullParser/>
+                  </parsers:parse>
+               </parsers:HTTPParser>
+            </ctl:request>
+         </xsl:variable>
+         <xsl:if test="functions:mime-match($response/response/headers/header[functions:to-lowercase(@name) = 'content-type'], $info-format) = 'false'">
+            <ctl:fail/>
+         </xsl:if>
+      </ctl:code>
+   </ctl:test>
+
+   <ctl:test name="getfeatureinfo:invalid-query_layers">
+      <ctl:context>WMS_Capabilities element</ctl:context>
+      <ctl:assertion>When a layer requested is not contained in the Capabilities XML of the WMS, then the server issues a Service Exception (code=LayerNotDefined).</ctl:assertion>
+      <ctl:comment/>
+      <ctl:link title="WMS 1.3.0 section 7.4.3.4">http://cite.occamlab.com/OGCTestData/wms/1.3.0/spec/wms1_3.html#wmsops.getfeatureinfo.params.query_layers</ctl:link>
+      <ctl:code>
+         <xsl:variable name="image-format" select="wms:Capability/wms:Request/wms:GetMap/wms:Format[1]"/>
+         <xsl:variable name="info-format" select="wms:Capability/wms:Request/wms:GetFeatureInfo/wms:Format[1]"/>
+         <xsl:variable name="layer-info">
+            <ctl:call-function name="functions:queryable-layer-info">
+               <ctl:with-param name="root-layer" select="wms:Capability/wms:Layer"/>
+               <ctl:with-param name="preferred-name" select="wms:Capability//wms:Layer[wms:Title = 'cite:Lakes']/wms:Name"/>
+               <ctl:with-param name="preferred-crs">CRS:84</ctl:with-param>
+               <ctl:with-param name="preferred-bbox">0,-0.0020,0.0040,0</ctl:with-param>
+               <ctl:with-param name="preferred-width">200</ctl:with-param>
+               <ctl:with-param name="preferred-height">100</ctl:with-param>
+            </ctl:call-function>
+         </xsl:variable>
+         <xsl:variable name="response">
+            <ctl:request>
+               <ctl:url>
+                  <xsl:value-of select="wms:Capability/wms:Request/wms:GetFeatureInfo/wms:DCPType/wms:HTTP/wms:Get/wms:OnlineResource/@xlink:href"/>
+               </ctl:url>
+               <ctl:method>get</ctl:method>
+               <ctl:param name="LaYeRs">
+                  <xsl:value-of select="functions:encode($layer-info/LayerInfo/@name)"/>
+               </ctl:param>
+               <ctl:param name="ReQuEsT">GetFeatureInfo</ctl:param>
+               <ctl:param name="BbOx">
+                  <xsl:value-of select="$layer-info/LayerInfo/@bbox"/>
+               </ctl:param>
+               <ctl:param name="WiDtH">
+                  <xsl:value-of select="$layer-info/LayerInfo/@width"/>
+               </ctl:param>
+               <ctl:param name="CrS">
+                  <xsl:value-of select="functions:encode($layer-info/LayerInfo/@crs)"/>
+               </ctl:param>
+               <ctl:param name="QuErY_LaYeRs">InvalidLayer</ctl:param>
+               <ctl:param name="VeRsIoN">
+                  <xsl:value-of select="functions:version()"/>
+               </ctl:param>
+               <ctl:param name="StYlEs"/>
+               <ctl:param name="I">60</ctl:param>
+               <ctl:param name="J">60</ctl:param>
+               <ctl:param name="HeIgHt">
+                  <xsl:value-of select="$layer-info/LayerInfo/@height"/>
+               </ctl:param>
+               <ctl:param name="InFo_fOrMaT">
+                  <xsl:value-of select="functions:encode($info-format)"/>
+               </ctl:param>
+               <ctl:param name="FoRmAt">
+                  <xsl:value-of select="functions:encode($image-format)"/>
+               </ctl:param>
+            </ctl:request>
+         </xsl:variable>
+         <xsl:if test="not($response/ogc:ServiceExceptionReport/ogc:ServiceException[@code='LayerNotDefined'])">
+            <ctl:fail/>
+         </xsl:if>
+      </ctl:code>
+   </ctl:test>
+
+   <ctl:test name="getfeatureinfo:query_layers-not-queryable">
+      <ctl:context>WMS_Capabilities element</ctl:context>
+      <ctl:assertion>When GetFeatureInfo is requested on a Layer that is not queryable, then the server issues a Service Exception (code=LayerNotQueryable).</ctl:assertion>
+      <ctl:comment/>
+      <ctl:link title="WMS 1.3.0 section 7.4.3.4">http://cite.occamlab.com/OGCTestData/wms/1.3.0/spec/wms1_3.html#wmsops.getfeatureinfo.params.query_layers</ctl:link>
+      <ctl:link title="WMS 1.3.0 section 7.2.4.7.2">http://cite.occamlab.com/OGCTestData/wms/1.3.0/spec/wms1_3.html#wmsops.getcapabilities.response.layer_attributes.queryable</ctl:link>
+      <ctl:code>
+         <xsl:variable name="layer" select="string(wms:Capability//wms:Layer[wms:Name and functions:boolean-as-integer(@queryable) = 0]/wms:Name)"/>
+         <xsl:choose>
+            <xsl:when test="$layer = ''">
+               <ctl:message>No named layers that are not queryable.</ctl:message>
+            </xsl:when>
+            <xsl:otherwise>
+               <xsl:variable name="image-format" select="wms:Capability/wms:Request/wms:GetMap/wms:Format[1]"/>
+               <xsl:variable name="info-format" select="wms:Capability/wms:Request/wms:GetFeatureInfo/wms:Format[1]"/>
+               <xsl:variable name="layer-info">
+                  <ctl:call-function name="functions:layer-info">
+                     <ctl:with-param name="root-layer" select="wms:Capability/wms:Layer"/>
+                     <ctl:with-param name="preferred-name" select="$layer"/>
+                     <ctl:with-param name="preferred-crs"></ctl:with-param>
+                     <ctl:with-param name="preferred-bbox"></ctl:with-param>
+                     <ctl:with-param name="preferred-width">100</ctl:with-param>
+                     <ctl:with-param name="preferred-height">100</ctl:with-param>
+                  </ctl:call-function>
+               </xsl:variable>
+               <xsl:variable name="response">
+                  <ctl:request>
+                     <ctl:url>
+                        <xsl:value-of select="wms:Capability/wms:Request/wms:GetFeatureInfo/wms:DCPType/wms:HTTP/wms:Get/wms:OnlineResource/@xlink:href"/>
+                     </ctl:url>
+                     <ctl:method>get</ctl:method>
+                     <ctl:param name="LaYeRs">
+                        <xsl:value-of select="functions:encode($layer-info/LayerInfo/@name)"/>
+                     </ctl:param>
+                     <ctl:param name="ReQuEsT">GetFeatureInfo</ctl:param>
+                     <ctl:param name="BbOx">
+                        <xsl:value-of select="$layer-info/LayerInfo/@bbox"/>
+                     </ctl:param>
+                     <ctl:param name="WiDtH">
+                        <xsl:value-of select="$layer-info/LayerInfo/@width"/>
+                     </ctl:param>
+                     <ctl:param name="CrS">
+                        <xsl:value-of select="functions:encode($layer-info/LayerInfo/@crs)"/>
+                     </ctl:param>
+                     <ctl:param name="QuErY_LaYeRs">
+                        <xsl:value-of select="functions:encode($layer-info/LayerInfo/@name)"/>
+                     </ctl:param>
+                     <ctl:param name="VeRsIoN">
+                        <xsl:value-of select="functions:version()"/>
+                     </ctl:param>
+                     <ctl:param name="StYlEs"/>
+                     <ctl:param name="I">50</ctl:param>
+                     <ctl:param name="J">50</ctl:param>
+                     <ctl:param name="HeIgHt">
+                        <xsl:value-of select="$layer-info/LayerInfo/@height"/>
+                     </ctl:param>
+                     <ctl:param name="InFo_fOrMaT">
+                        <xsl:value-of select="functions:encode($info-format)"/>
+                     </ctl:param>
+                     <ctl:param name="FoRmAt">
+                        <xsl:value-of select="functions:encode($image-format)"/>
+                     </ctl:param>
+                  </ctl:request>
+               </xsl:variable>
+               <xsl:if test="not($response/ogc:ServiceExceptionReport/ogc:ServiceException[@code='LayerNotQueryable'])">
+                  <ctl:fail/>
+               </xsl:if>
+            </xsl:otherwise>
+         </xsl:choose>
+      </ctl:code>
+   </ctl:test>
+
+   <ctl:test name="getfeatureinfo:each-queryable-layer">
+      <ctl:param name="capabilities"/>
+      <ctl:param name="layer"/>
+      <ctl:assertion>For {$layer}, when the QUERY_LAYERS parameter is set to that layer name, the MIME type of the response is valid.</ctl:assertion>
+      <ctl:comment/>
+      <ctl:link title="WMS 1.3.0 section 7.4.3.4">http://cite.occamlab.com/OGCTestData/wms/1.3.0/spec/wms1_3.html#wmsops.getfeatureinfo.params.query_layers</ctl:link>
+      <ctl:code>
+         <xsl:variable name="image-format" select="$capabilities/wms:Capability/wms:Request/wms:GetMap/wms:Format[1]"/>
+         <xsl:variable name="info-format" select="$capabilities/wms:Capability/wms:Request/wms:GetFeatureInfo/wms:Format[1]"/>
+         <xsl:variable name="layer-info">
+            <ctl:call-function name="functions:queryable-layer-info">
+               <ctl:with-param name="root-layer" select="$capabilities/wms:Capability/wms:Layer"/>
+               <ctl:with-param name="preferred-name" select="$layer"/>
+               <ctl:with-param name="preferred-crs"></ctl:with-param>
+               <ctl:with-param name="preferred-bbox"></ctl:with-param>
+               <ctl:with-param name="preferred-width">100</ctl:with-param>
+               <ctl:with-param name="preferred-height">100</ctl:with-param>
+            </ctl:call-function>
+         </xsl:variable>
+         <xsl:variable name="response">
+            <ctl:request>
+               <ctl:url>
+                  <xsl:value-of select="$capabilities/wms:Capability/wms:Request/wms:GetFeatureInfo/wms:DCPType/wms:HTTP/wms:Get/wms:OnlineResource/@xlink:href"/>
+               </ctl:url>
+               <ctl:method>get</ctl:method>
+               <ctl:param name="LaYeRs">
+                  <xsl:value-of select="functions:encode($layer-info/LayerInfo/@name)"/>
+               </ctl:param>
+               <ctl:param name="WiDtH">
+                  <xsl:value-of select="$layer-info/LayerInfo/@width"/>
+               </ctl:param>
+               <ctl:param name="HeIgHt">
+                  <xsl:value-of select="$layer-info/LayerInfo/@height"/>
+               </ctl:param>
+               <ctl:param name="I">50</ctl:param>
+               <ctl:param name="BbOx">
+                  <xsl:value-of select="$layer-info/LayerInfo/@bbox"/>
+               </ctl:param>
+               <ctl:param name="CrS">
+                  <xsl:value-of select="functions:encode($layer-info/LayerInfo/@crs)"/>
+               </ctl:param>
+               <ctl:param name="ReQuEsT">GetFeatureInfo</ctl:param>
+               <ctl:param name="InFo_fOrMaT">
+                  <xsl:value-of select="functions:encode($info-format)"/>
+               </ctl:param>
+               <ctl:param name="J">50</ctl:param>
+               <ctl:param name="StYlEs"/>
+               <ctl:param name="FoRmAt">
+                  <xsl:value-of select="functions:encode($image-format)"/>
+               </ctl:param>
+               <ctl:param name="QuErY_LaYeRs">
+                  <xsl:value-of select="functions:encode($layer-info/LayerInfo/@name)"/>
+               </ctl:param>
+               <ctl:param name="VeRsIoN">
+                  <xsl:value-of select="functions:version()"/>
+               </ctl:param>
+               <parsers:HTTPParser>
+                  <parsers:parse>
+                     <parsers:NullParser/>
+                  </parsers:parse>
+               </parsers:HTTPParser>
+            </ctl:request>
+         </xsl:variable>
+         <xsl:if test="functions:mime-match($response/response/headers/header[functions:to-lowercase(@name) = 'content-type'], $info-format) = 'false'">
+            <ctl:fail/>
+         </xsl:if>
+      </ctl:code>
+   </ctl:test>
+</ctl:package>

@@ -64,12 +64,15 @@ public class PropertyNameMapping {
 
     private final String srid;
 
+    private final boolean isConcatenated;
+
     public PropertyNameMapping( String table, String column, ICRS crs, String srid ) {
         this.valueField = new DBField( table, column );
         this.joins = Collections.emptyList();
         this.pt = STRING;
         this.crs = crs;
         this.srid = srid;
+        isConcatenated = false;
     }
 
     /**
@@ -80,12 +83,13 @@ public class PropertyNameMapping {
      * @param srid
      */
     public PropertyNameMapping( TableAliasManager aliasManager, DBField valueField, List<Join> joins, ICRS crs,
-                                String srid ) {
+                                String srid, boolean isConcatenated ) {
         this.valueField = valueField;
         this.joins = joins;
         this.pt = STRING;
         this.crs = crs;
         this.srid = srid;
+        this.isConcatenated = isConcatenated;
 
         String currentAlias = aliasManager.getRootTableAlias();
         if ( joins != null ) {
@@ -124,6 +128,10 @@ public class PropertyNameMapping {
 
     public boolean isSpatial() {
         return true;
+    }
+
+    public boolean isConcatenated() {
+        return isConcatenated;
     }
 
     @Override

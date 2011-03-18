@@ -62,23 +62,17 @@ public class SQLColumn implements SQLExpression {
 
     private ICRS crs;
 
-    public SQLColumn( String column ) {
-        this.column = column;
-        isSpatial = true;
-    }
+    private boolean isConcatenated;
 
-    public SQLColumn( String column, int sqlType ) {
-        this.column = column;
-        this.sqlType = sqlType;
-    }
-
-    public SQLColumn( String table, String column, boolean spatial, int sqlType, ICRS crs, String srid ) {
+    public SQLColumn( String table, String column, boolean spatial, int sqlType, ICRS crs, String srid,
+                      boolean isConcatenated ) {
         this.table = table;
         this.column = column;
         this.sqlType = sqlType;
         this.isSpatial = spatial;
         this.crs = crs;
         this.srid = srid;
+        this.isConcatenated = isConcatenated;
     }
 
     @Override
@@ -99,6 +93,11 @@ public class SQLColumn implements SQLExpression {
     @Override
     public boolean isSpatial() {
         return isSpatial;
+    }
+
+    @Override
+    public boolean isMultiValued() {
+        return isConcatenated;
     }
 
     @Override

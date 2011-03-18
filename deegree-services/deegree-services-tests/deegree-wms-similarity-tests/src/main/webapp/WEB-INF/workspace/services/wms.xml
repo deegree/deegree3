@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<deegreeWMS configVersion="3.0.0" xmlns="http://www.deegree.org/services/wms" xmlns:xlink="http://www.w3.org/1999/xlink"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:dgws="http://www.deegree.org/webservices"
+  xsi:schemaLocation="http://www.deegree.org/services/wms http://schemas.deegree.org/wms/3.0.0/wms_configuration.xsd">
+  <ServiceConfiguration>
+    <UnrequestableLayer>
+      <Title>Root Layer</Title>
+      <CRS>EPSG:26912 EPSG:4326 AUTO:42001 AUTO:42002</CRS>
+
+      <RequestableLayer>
+        <Name>SGID024_Springs</Name>
+        <Title>SGID024_Springs</Title>
+        <FeatureStoreId>springs</FeatureStoreId>
+      </RequestableLayer>
+
+      <RequestableLayer>
+        <Name>SGID500_Contours500Ft</Name>
+        <Title>SGID500_Contours500Ft</Title>
+        <FeatureStoreId>contours</FeatureStoreId>
+      </RequestableLayer>
+
+      <RequestableLayer>
+        <Name>SGID500_DominantVegetation</Name>
+        <Title>SGID500_DominantVegetation</Title>
+        <FeatureStoreId>dominant</FeatureStoreId>
+      </RequestableLayer>
+
+      <RequestableLayer>
+        <Name>ttfsymbol</Name>
+        <Title>ttfsymbol</Title>
+        <FeatureStoreId>ttf</FeatureStoreId>
+        <DirectStyle>
+          <File>../../utah/ttfsymbol.sld</File>
+        </DirectStyle>
+      </RequestableLayer>
+
+    </UnrequestableLayer>
+  </ServiceConfiguration>
+</deegreeWMS>
+
+
+
+

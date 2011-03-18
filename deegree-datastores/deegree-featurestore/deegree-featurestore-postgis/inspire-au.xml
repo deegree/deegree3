@@ -1,0 +1,33 @@
+<PostGISFeatureStore configVersion="3.0.1" xmlns="http://www.deegree.org/datasource/feature/postgis" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.deegree.org/datasource/feature/postgis http://schemas.deegree.org/datasource/feature/postgis/3.0.1/postgis.xsd" xmlns:au="urn:x-inspire:specification:gmlas:AdministrativeUnits:3.0" xmlns:base="urn:x-inspire:specification:gmlas:BaseTypes:3.2" xmlns:gn="urn:x-inspire:specification:gmlas:GeographicalNames:3.0" xmlns:stat="urn:x-inspire:specification:gmlas:StatisticalUnits:0.0">
+  <JDBCConnId>testconn</JDBCConnId>
+  <FeatureType name="au:AdministrativeBoundary" table="au_administrativeboundary">
+    <FIDMapping>
+      <Column name="gml_id" type="string"/>
+      <UUIDGenerator/>
+    </FIDMapping>
+  </FeatureType>
+  <FeatureType name="au:AdministrativeUnit" table="au_administrativeunit">
+    <FIDMapping>
+      <Column name="gml_id" type="string"/>
+      <UUIDGenerator/>
+    </FIDMapping>
+  </FeatureType>
+  <FeatureType name="au:Condominium" table="au_condominium">
+    <FIDMapping>
+      <Column name="gml_id" type="string"/>
+      <UUIDGenerator/>
+    </FIDMapping>
+  </FeatureType>
+  <FeatureType name="gn:NamedPlace" table="gn_namedplace">
+    <FIDMapping>
+      <Column name="gml_id" type="string"/>
+      <UUIDGenerator/>
+    </FIDMapping>
+  </FeatureType>
+  <FeatureType name="stat:NUTSRegion" table="stat_nutsregion">
+    <FIDMapping>
+      <Column name="gml_id" type="string"/>
+      <UUIDGenerator/>
+    </FIDMapping>
+  </FeatureType>
+</PostGISFeatureStore>

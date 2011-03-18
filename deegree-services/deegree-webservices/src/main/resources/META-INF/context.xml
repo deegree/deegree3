@@ -1,0 +1,4 @@
+<Context>
+  <distributable />
+  <Manager className="org.apache.catalina.session.PersistentManager" saveOnRestart="false"/>
+</Context>

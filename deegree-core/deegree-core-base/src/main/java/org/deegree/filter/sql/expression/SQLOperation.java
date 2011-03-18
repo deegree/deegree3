@@ -72,6 +72,11 @@ public class SQLOperation implements SQLExpression {
     }
 
     @Override
+    public boolean isMultiValued() {
+        return false;
+    }
+
+    @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
         for ( Object particle : particles ) {
