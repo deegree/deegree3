@@ -7,6 +7,11 @@
   <version>3.1-SNAPSHOT</version>
   <name>deegree-wms-cite Webapp</name>
   <url>http://www.deegree.org</url>
+  
+  <scm>
+    <developerConnection>scm:svn:http://svn.wald.intevation.org/svn/deegree/deegree3/trunk/deegree-test/deegree-wms-cite</developerConnection>
+    <url>http://svn.wald.intevation.org/svn/deegree/deegree3/trunk/deegree-test/deegree-wms-cite</url>
+  </scm>
 
   <parent>
     <groupId>org.deegree</groupId>

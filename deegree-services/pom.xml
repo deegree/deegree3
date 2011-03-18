@@ -9,8 +9,8 @@
   <name>deegree-services</name>
   <url>http://www.deegree.org</url>
   <scm>
-    <developerConnection>scm:svn:http://svn.wald.intevation.org/svn/deegree/deegree3/services/trunk</developerConnection>
-    <url>http://svn.wald.intevation.org/svn/deegree/deegree3/services/trunk</url>
+    <developerConnection>scm:svn:http://svn.wald.intevation.org/svn/deegree/deegree3/trunk/deegree-services</developerConnection>
+    <url>http://svn.wald.intevation.org/svn/deegree/deegree3/trunk/deegree-services</url>
   </scm>
 
   <parent>
@@ -43,10 +43,10 @@
     <module>deegree-services-wps</module>
     <module>deegree-services-config</module>
     <!--module>deegree-services-tests</module-->
-    <module>deegree-webservices</module>
-    <module>deegree-services-parent</module>
-    <module>deegree-stable-service-parent</module>
-    <module>deegree-tomcat-parent</module>
+    <!--module>deegree-webservices</module-->
+    <!--module>deegree-services-parent</module-->
+    <!--module>deegree-stable-service-parent</module-->
+    <!--module>deegree-tomcat-parent</module-->
   </modules>
 
 </project>

@@ -7,6 +7,11 @@
   <version>1.0-SNAPSHOT</version>
   <name>deegree-maven-plugin</name>
   <url>http://www.deegree.org</url>
+  
+  <scm>
+    <developerConnection>scm:svn:http://svn.wald.intevation.org/svn/deegree/deegree3/trunk/deegree-misc/deegree-maven-plugin</developerConnection>
+    <url>http://svn.wald.intevation.org/svn/deegree/deegree3/trunk/deegree-misc/deegree-maven-plugin</url>
+  </scm>
 
   <parent>
     <groupId>org.deegree</groupId>
