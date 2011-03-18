@@ -10,8 +10,8 @@
   <url>http://www.deegree.org</url>
 
   <scm>
-    <developerConnection>scm:svn:http://svn.wald.intevation.org/svn/deegree/deegree3/trunk</developerConnection>
-    <url>http://svn.wald.intevation.org/svn/deegree/deegree3/trunk</url>
+    <developerConnection>scm:svn:http://svn.wald.intevation.org/svn/deegree/deegree3/trunk/</developerConnection>
+    <url>http://svn.wald.intevation.org/svn/deegree/deegree3/trunk/</url>
   </scm>
 
   <repositories>
@@ -60,17 +60,18 @@
 	<version>2.1</version>
         <configuration>
            <preparationGoals>clean install</preparationGoals>
+           <tagBase>svn+ssh://jwilden@svn.wald.intevation.org/deegree/deegree3/tags</tagBase>
         </configuration>
       </plugin>
     </plugins>
   </build>
 
   <modules>
+    <module>deegree-misc/deegree-parent</module>
     <module>deegree-client</module>
     <module>deegree-core</module>
     <module>deegree-datastores</module>
     <module>deegree-misc</module>
-    <module>deegree-misc/deegree-parent</module>
     <module>deegree-processproviders</module>
     <module>deegree-services</module>
     <module>deegree-tools</module>
