@@ -53,6 +53,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLDecoder;
+import java.nio.charset.Charset;
 import java.sql.Driver;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -90,7 +91,6 @@ import org.deegree.commons.annotations.LoggingNotes;
 import org.deegree.commons.concurrent.Executor;
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceInitException;
-import org.deegree.commons.jdbc.ConnectionManager;
 import org.deegree.commons.tom.ows.Version;
 import org.deegree.commons.utils.DeegreeAALogoUtils;
 import org.deegree.commons.utils.Pair;
@@ -885,20 +885,21 @@ public class OGCFrontController extends HttpServlet {
             LOG.info( "- operating system  : " + System.getProperty( "os.name" ) + " ("
                       + System.getProperty( "os.version" ) + ", " + System.getProperty( "os.arch" ) + ")" );
             LOG.info( "- default encoding  : " + DEFAULT_ENCODING );
+            LOG.info( "- system encoding   : " + Charset.defaultCharset().displayName() );
             LOG.info( "- temp directory    : " + defaultTMPDir );
             LOG.info( "" );
 
             LOG.info( "deegree workspace root is located at " + DeegreeWorkspace.getWorkspaceRoot() );
             File wsRoot = new File( DeegreeWorkspace.getWorkspaceRoot() );
-            if( !wsRoot.isDirectory() && !wsRoot.mkdirs() ) {
-            	LOG.warn( "The workspace root is not a directory and could not be created." );
-            	LOG.warn( "This will lead to problems when you'll try to download workspaces!" );
+            if ( !wsRoot.isDirectory() && !wsRoot.mkdirs() ) {
+                LOG.warn( "The workspace root is not a directory and could not be created." );
+                LOG.warn( "This will lead to problems when you'll try to download workspaces!" );
             }
-            if( wsRoot.isDirectory() && !wsRoot.canWrite() ) {
-            	LOG.warn( "The workspace root is not writable." );
-            	LOG.warn( "This will lead to problems when you'll try to download workspaces!" );
+            if ( wsRoot.isDirectory() && !wsRoot.canWrite() ) {
+                LOG.warn( "The workspace root is not writable." );
+                LOG.warn( "This will lead to problems when you'll try to download workspaces!" );
             }
-            
+
             initWorkspace( null );
 
         } catch ( NoClassDefFoundError e ) {
@@ -1011,7 +1012,7 @@ public class OGCFrontController extends HttpServlet {
     public void destroy() {
         super.destroy();
         destroyWorkspace();
-//        ConnectionManager.destroyLockdb();
+        // ConnectionManager.destroyLockdb();
         plugClassLoaderLeaks();
     }
 
