@@ -35,7 +35,6 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.remoteows.wms;
 
-import static java.util.Collections.singletonMap;
 import static org.deegree.commons.xml.jaxb.JAXBUtils.unmarshall;
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -76,16 +75,9 @@ public class RemoteWMSProvider implements RemoteOWSProvider {
 
     private static final String CONFIG_JAXB_PACKAGE = "org.deegree.remoteows.wms.jaxb";
 
-    private static final String CONFIG_SCHEMA = "/META-INF/schemas/datasource/remoteows/wms/3.1.0/remotewms.xsd";
+    private static final URL CONFIG_SCHEMA = RemoteWMSProvider.class.getResource( "/META-INF/schemas/datasource/remoteows/wms/3.1.0/remotewms.xsd" );
 
     private DeegreeWorkspace workspace;
-
-    /**
-     * 
-     */
-    public RemoteWMSProvider() {
-        // for spi
-    }
 
     public List<String> getCapabilitiesNamespaces() {
         return null;
@@ -171,16 +163,7 @@ public class RemoteWMSProvider implements RemoteOWSProvider {
     }
 
     public URL getConfigSchema() {
-        return RemoteWMSProvider.class.getResource( CONFIG_SCHEMA );
-    }
-
-    public Map<String, URL> getConfigTemplates() {
-        String path = "/META-INF/schemas/datasource/remoteows/wms/3.1.0/example.xml";
-        return singletonMap( "example", RemoteWMSProvider.class.getResource( path ) );
-    }
-
-    public String getConfigWizardView() {
-        return null;
+        return CONFIG_SCHEMA;
     }
 
     @SuppressWarnings("unchecked")
