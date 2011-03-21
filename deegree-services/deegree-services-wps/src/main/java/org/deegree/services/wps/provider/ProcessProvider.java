@@ -57,7 +57,7 @@ public interface ProcessProvider extends Resource {
      * 
      * @return all currently available processes, may be <code>null</code> or empty
      */
-    public Map<CodeType, WPSProcess> getProcesses();
+    public Map<CodeType, ? extends WPSProcess> getProcesses();
 
     /**
      * Returns the process with the specified identifier.

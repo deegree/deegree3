@@ -73,7 +73,7 @@ public class ProcessManager extends AbstractResourceManager<ProcessProvider> {
     public Map<CodeType, WPSProcess> getProcesses() {
         Map<CodeType, WPSProcess> processes = new HashMap<CodeType, WPSProcess>();
         for ( ProcessProvider manager : getAll() ) {
-            Map<CodeType, WPSProcess> managerProcesses = manager.getProcesses();
+            Map<CodeType, ? extends WPSProcess> managerProcesses = manager.getProcesses();
             if ( managerProcesses != null ) {
                 processes.putAll( manager.getProcesses() );
             }
