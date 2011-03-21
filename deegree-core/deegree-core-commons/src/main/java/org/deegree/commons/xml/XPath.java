@@ -54,6 +54,10 @@ public class XPath {
         this.nsContext = nsContext == null ? new NamespaceBindings() : nsContext;
     }
 
+    public XPath( String xpath ) {
+        this.xpath = xpath;
+    }
+
     public String getXPath() {
         return xpath;
     }
