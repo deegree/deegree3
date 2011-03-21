@@ -35,6 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.metadata;
 
+import java.io.UnsupportedEncodingException;
 import java.security.InvalidParameterException;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -421,7 +422,7 @@ public class ISORecord implements MetadataRecord {
     }
 
     public byte[] getAsByteArray()
-                            throws XMLStreamException, FactoryConfigurationError {
+                            throws FactoryConfigurationError {
         // XMLStreamReader reader = new WhitespaceElementFilter( getAsXMLStream() );
         // XMLStreamReader reader = getAsXMLStream();
         // XMLStreamWriter writer = null;
@@ -435,7 +436,12 @@ public class ISORecord implements MetadataRecord {
         // }
         // generateOutput( writer, reader );
         root.declareDefaultNamespace( "http://www.isotc211.org/2005/gmd" );
-        return root.toString().getBytes();
+        try {
+            return root.toString().getBytes( "UTF-8" );
+        } catch ( UnsupportedEncodingException e ) {
+            // should not happen with sane JDKs
+            return root.toString().getBytes();
+        }
 
     }
 
