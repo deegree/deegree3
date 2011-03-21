@@ -320,7 +320,31 @@ public class RemoteWMSStore implements RemoteOWSStore {
      * @return null, if cascaded WMS does not have a bbox for the layers in EPSG:4326
      */
     public Envelope getEnvelope() {
-        return client.getBoundingBox( "EPSG:4326", layerOrder );
+        Envelope bbox = client.getBoundingBox( "EPSG:4326", layerOrder );
+        if ( bbox == null ) {
+            bbox = client.getLatLonBoundingBox( layerOrder );
+        }
+        if ( bbox == null ) {
+            bbox = client.getBoundingBox( client.getCoordinateSystems( layerOrder.get( 0 ) ).getFirst(), layerOrder );
+            if ( bbox != null ) {
+                try {
+                    bbox = new GeometryTransformer( "EPSG:4326" ).transform( bbox );
+                } catch ( IllegalArgumentException e ) {
+                    LOG.info( "Cannot transform bounding box from {} to EPSG:4326.", bbox.getCoordinateSystem() );
+                    LOG.trace( "Stack trace: ", e );
+                } catch ( TransformationException e ) {
+                    LOG.info( "Cannot transform bounding box from {} to EPSG:4326.", bbox.getCoordinateSystem() );
+                    LOG.trace( "Stack trace: ", e );
+                } catch ( UnknownCRSException e ) {
+                    LOG.info( "Cannot transform bounding box from {} to EPSG:4326.", bbox.getCoordinateSystem() );
+                    LOG.trace( "Stack trace: ", e );
+                }
+            }
+        }
+        if ( bbox == null ) {
+            LOG.info( "Could not determine bounding box from remote WMS for remote WMS store." );
+        }
+        return bbox;
     }
 
     /**
