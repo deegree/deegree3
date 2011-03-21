@@ -35,7 +35,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.metadata;
 
-import java.io.UnsupportedEncodingException;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.security.InvalidParameterException;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -73,8 +74,8 @@ import org.deegree.metadata.persistence.iso19115.jaxb.ISOMetadataStoreConfig.Any
 import org.deegree.metadata.persistence.types.BoundingBox;
 import org.deegree.metadata.persistence.types.Format;
 import org.deegree.metadata.persistence.types.Keyword;
-import org.deegree.protocol.csw.CSWConstants.ReturnableElement;
 import org.deegree.protocol.csw.MetadataStoreException;
+import org.deegree.protocol.csw.CSWConstants.ReturnableElement;
 import org.jaxen.JaxenException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -437,9 +438,13 @@ public class ISORecord implements MetadataRecord {
         // generateOutput( writer, reader );
         root.declareDefaultNamespace( "http://www.isotc211.org/2005/gmd" );
         try {
-            return root.toString().getBytes( "UTF-8" );
-        } catch ( UnsupportedEncodingException e ) {
-            // should not happen with sane JDKs
+            ByteArrayOutputStream out = new ByteArrayOutputStream( 20000 );
+            root.serialize( out );
+            out.close();
+            return out.toByteArray();
+        } catch ( XMLStreamException e ) {
+            return root.toString().getBytes();
+        } catch ( IOException e ) {
             return root.toString().getBytes();
         }
 
