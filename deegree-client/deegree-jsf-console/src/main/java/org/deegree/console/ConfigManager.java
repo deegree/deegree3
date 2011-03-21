@@ -133,7 +133,6 @@ public class ConfigManager {
     }
 
     public String startWizard() {
-
         String nextView = "/console/jsf/wizard";
         ResourceProvider provider = currentResourceManager.getProvider( newConfigType );
         if ( provider == null ) {
