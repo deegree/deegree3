@@ -12,7 +12,7 @@
     <developerConnection>scm:svn:http://svn.wald.intevation.org/svn/deegree/deegree3/trunk/deegree-client/deegree-jsf-console</developerConnection>
     <url>http://svn.wald.intevation.org/svn/deegree/deegree3/trunk/deegree-client/deegree-jsf-console</url>
   </scm>
-  
+
   <parent>
     <groupId>org.deegree</groupId>
     <artifactId>deegree-parent</artifactId>
@@ -61,7 +61,7 @@
       <groupId>org.deegree</groupId>
       <artifactId>deegree-services-wms</artifactId>
       <version>3.1-SNAPSHOT</version>
-    </dependency>  
+    </dependency>
     <dependency>
       <groupId>org.deegree</groupId>
       <artifactId>deegree-services-wps</artifactId>
@@ -81,12 +81,12 @@
       <groupId>org.deegree</groupId>
       <artifactId>deegree-services-config</artifactId>
       <version>3.1-SNAPSHOT</version>
-    </dependency>    
+    </dependency>
     <dependency>
       <groupId>org.deegree</groupId>
       <artifactId>deegree-featurestore-postgis</artifactId>
       <version>3.1-SNAPSHOT</version>
-    </dependency>  
+    </dependency>
     <dependency>
       <groupId>org.deegree</groupId>
       <artifactId>deegree-core-metadata</artifactId>
@@ -118,7 +118,7 @@
       <artifactId>jsp-api</artifactId>
       <version>2.1</version>
       <scope>provided</scope>
-    </dependency>    
+    </dependency>
     <dependency>
       <groupId>javax.servlet</groupId>
       <artifactId>jstl</artifactId>
@@ -146,12 +146,7 @@
     <dependency>
       <groupId>commons-io</groupId>
       <artifactId>commons-io</artifactId>
-      <version>2.0</version>
-    </dependency>
-    <dependency>
-      <groupId>org.ol4jsf</groupId>
-      <artifactId>ol4jsf-core</artifactId>
-      <version>2.0-SNAPSHOT</version>
+      <version>2.0.1</version>
     </dependency>
   </dependencies>
 </project>
