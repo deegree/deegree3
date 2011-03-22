@@ -71,8 +71,6 @@ public class PROJ4CRSStoreProvider implements CRSStoreProvider {
 
     private static final String CONFIG_SCHEMA = "/META-INF/schemas/crs/stores/proj4/3.1.0/proj4.xsd";
 
-    private static final String CONFIG_TEMPLATE = "/META-INF/schemas/crs/stores/proj4/3.1.0/example.xml";
-
     @Override
     public String getConfigNamespace() {
         return CONFIG_NS;

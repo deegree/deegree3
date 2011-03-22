@@ -54,7 +54,7 @@ import org.deegree.cs.persistence.AbstractCRSStore.RESOURCETYPE;
 public class DeegreeReferenceResolver implements ReferenceResolver {
 
     private final DeegreeCRSStore store;
-    
+
     private RESOURCETYPE resourceType;
 
     public DeegreeReferenceResolver( DeegreeCRSStore store, RESOURCETYPE resourceType ) {
@@ -68,7 +68,7 @@ public class DeegreeReferenceResolver implements ReferenceResolver {
         if ( uri.startsWith( "#" ) ) {
             // OBJEKT-> keine REFERENZ!
             // CACHE
-            return store.getCRSResource(  uri.substring( 1 ), resourceType );
+            return store.getCRSResource( uri.substring( 1 ), resourceType );
         }
         throw new ReferenceResolvingException( "Deegree CRS Resolver does not support remote references." );
     }

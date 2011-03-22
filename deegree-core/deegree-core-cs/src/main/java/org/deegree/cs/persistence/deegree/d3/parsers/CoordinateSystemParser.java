@@ -314,9 +314,9 @@ public class CoordinateSystemParser extends DefinitionParser {
                                                                       "UsedGeographicCRS", id.getCode() ) );
         }
         IGeographicCRS geoCRS = new GeographicCRSRef( store.getResolver( RESOURCETYPE.CRS ), '#' + usedGeographicCRS,
-                                                            null );
+                                                      null );
         IProjection projection = new ProjectionRef( store.getResolver( RESOURCETYPE.PROJECTION ), '#' + usedProjection,
-                                                          null );
+                                                    null );
         // adding to cache will be done in AbstractCRSProvider.
         return new ProjectedCRS( transformations, geoCRS, projection, axis, id );
     }
@@ -385,8 +385,7 @@ public class CoordinateSystemParser extends DefinitionParser {
         try {
             usedCRS = getRequiredText( reader, new QName( CRS_NS, "UsedCRS" ), true );
         } catch ( XMLParsingException e ) {
-            throw new CRSConfigurationException( Messages.getMessage( "CRS_CONFIG_PARSE_ERROR",
-                                                                      "usedCRS",
+            throw new CRSConfigurationException( Messages.getMessage( "CRS_CONFIG_PARSE_ERROR", "usedCRS",
                                                                       ( ( reader == null ) ? "null"
                                                                                           : reader.getLocalName() ),
                                                                       e.getMessage() ), e );
@@ -397,8 +396,7 @@ public class CoordinateSystemParser extends DefinitionParser {
                                                                       id.getCode() ) );
         }
 
-        ICRS usedCoordinateSystem = new CRSRef( store.getResolver( RESOURCETYPE.CRS ),
-                                                                                '#' + usedCRS, null );
+        ICRS usedCoordinateSystem = new CRSRef( store.getResolver( RESOURCETYPE.CRS ), '#' + usedCRS, null );
         // get the datum
         Axis heightAxis = null;
         try {

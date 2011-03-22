@@ -237,8 +237,9 @@ public class CRSRef extends CRSResourceRef<ICRS> implements Serializable, ICRS {
                             throws ReferenceResolvingException {
         // ensure that getReferenced object returns a concrete CRS instance!
         ICRS referencedObject = super.getReferencedObject();
-        if ( referencedObject instanceof CRSRef )
+        if ( referencedObject instanceof CRSRef ) {
             return ( (CRSRef) referencedObject ).getReferencedObject();
+        }
         return referencedObject;
     }
 

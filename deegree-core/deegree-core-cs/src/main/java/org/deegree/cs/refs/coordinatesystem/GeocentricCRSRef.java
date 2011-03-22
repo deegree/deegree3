@@ -52,7 +52,7 @@ public class GeocentricCRSRef extends CRSRef implements IGeocentricCRS {
     private static final long serialVersionUID = -3378370139262163204L;
 
     /**
-     * Creates a reference to a {@link GeocentricCRS}a reference to a 
+     * Creates a reference to a {@link GeocentricCRS}a reference to a
      * 
      * @param resolver
      *            used for resolving the reference, must not be <code>null</code>

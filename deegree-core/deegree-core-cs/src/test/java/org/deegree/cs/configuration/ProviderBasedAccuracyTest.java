@@ -206,8 +206,8 @@ public class ProviderBasedAccuracyTest {
      * @throws AssertionError
      *             if one of the axis of the transformed point do not lie within the given epsilon range.
      */
-    private String doAccuracyTest( Point3d sourcePoint, Point3d targetPoint, Point3d epsilons,
-                                   ICRS sourceCRS, ICRS targetCRS )
+    private String doAccuracyTest( Point3d sourcePoint, Point3d targetPoint, Point3d epsilons, ICRS sourceCRS,
+                                   ICRS targetCRS )
                             throws TransformationException {
         assertNotNull( sourceCRS );
         assertNotNull( targetCRS );
@@ -263,8 +263,8 @@ public class ProviderBasedAccuracyTest {
      * @param inverseEpsilon
      * @throws TransformationException
      */
-    private void doForwardAndInverse( ICRS sourceCRS, ICRS targetCRS, Point3d source,
-                                      Point3d target, Point3d forwardEpsilon, Point3d inverseEpsilon )
+    private void doForwardAndInverse( ICRS sourceCRS, ICRS targetCRS, Point3d source, Point3d target,
+                                      Point3d forwardEpsilon, Point3d inverseEpsilon )
                             throws TransformationException {
         StringBuilder output = new StringBuilder();
         output.append( "Transforming forward/inverse -> crs with id: '" );

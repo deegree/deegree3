@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,22 +32,21 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 
 package org.deegree.cs.exceptions;
 
 /**
- * The <code>CRSConfigurationException</code> can be used to inform the user of an configuration
- * exception. Because the Configuration cannot recover from this error, it is a subclass of
- * RuntimeException, as described in
+ * The <code>CRSConfigurationException</code> can be used to inform the user of an configuration exception. Because the
+ * Configuration cannot recover from this error, it is a subclass of RuntimeException, as described in
  * http://java.sun.com/docs/books/tutorial/essential/exceptions/runtime.html (last ref: 02.01.2008).
- *
+ * 
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- *
+ * 
  * @author last edited by: $Author$
- *
+ * 
  * @version $Revision$, $Date$
- *
+ * 
  */
 
 public class CRSConfigurationException extends RuntimeException {
@@ -60,7 +59,7 @@ public class CRSConfigurationException extends RuntimeException {
     /**
      * @param message
      *            which describes the exception.
-     *
+     * 
      */
     public CRSConfigurationException( String message ) {
         super( message );

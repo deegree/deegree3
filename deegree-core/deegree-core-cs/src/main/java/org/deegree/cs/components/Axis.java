@@ -219,7 +219,10 @@ public class Axis extends CRSIdentifiable implements IAxis {
 
     @Override
     public String toString() {
-        return new StringBuilder( "name: " ).append( axisName ).append( " orientation: " ).append( getOrientationAsString() ).append( " units: " ).append( units ).toString();
+        return new StringBuilder( "name: " ).append( axisName ).append( " orientation: " ).append(
+                                                                                                   getOrientationAsString() ).append(
+                                                                                                                                      " units: " ).append(
+                                                                                                                                                           units ).toString();
     }
 
     @Override

@@ -120,8 +120,8 @@ public class StereographicAlternativeTest extends ProjectionBase {
      */
     @Test
     public void testConsistency() {
-        consistencyTest( projection_28992, 463000, 155000,
-                         new Point2d( Math.toRadians( 5.38763888888889 ), Math.toRadians( 52.15616055555555 ) ),
+        consistencyTest( projection_28992, 463000, 155000, new Point2d( Math.toRadians( 5.38763888888889 ),
+                                                                        Math.toRadians( 52.15616055555555 ) ),
                          Unit.METRE, 0.9999079, true, false, "stereographicAlternative" );
     }
 }

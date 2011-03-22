@@ -73,10 +73,12 @@ public class CRSCodeType {
      * @param codeSpace
      */
     public CRSCodeType( String code, String codeSpace ) {
-        if ( code == null )
+        if ( code == null ) {
             throw new IllegalArgumentException( "Code cannot be null!" );
-        if ( code.trim().equals( "" ) )
+        }
+        if ( code.trim().equals( "" ) ) {
             throw new IllegalArgumentException( "Code cannot be white space(s)!" );
+        }
 
         this.codeSpace = codeSpace.toLowerCase();
         this.code = code;
@@ -91,10 +93,12 @@ public class CRSCodeType {
      * @param codeAsString
      */
     public CRSCodeType( String codeAsString ) {
-        if ( codeAsString == null )
+        if ( codeAsString == null ) {
             throw new IllegalArgumentException( "Code string cannot be null!" );
-        if ( codeAsString.trim().equals( "" ) )
+        }
+        if ( codeAsString.trim().equals( "" ) ) {
             throw new IllegalArgumentException( "Code string cannot be white space(s)" );
+        }
 
         int n = codeAsString.length();
         String codenumber = "";

@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,7 +32,7 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 
 package org.deegree.cs.projections.azimuthal;
 
@@ -54,18 +54,18 @@ import org.deegree.cs.projections.Projection;
  * point are computed by a function r(d) of the true distance d, independent of the angle; correspondingly, circles with
  * the central point as center are mapped into circles which have as center the central point on the map.
  * </p>
- *
+ * 
  * <p>
  * The mapping of radial lines can be visualized by imagining a plane tangent to the Earth, with the central point as
  * tangent point.
  * </p>
- *
+ * 
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- *
+ * 
  * @author last edited by: $Author$
- *
+ * 
  * @version $Revision$, $Date$
- *
+ * 
  */
 
 public abstract class AzimuthalProjection extends Projection {
@@ -104,9 +104,8 @@ public abstract class AzimuthalProjection extends Projection {
      * @param id
      *            an identifiable instance containing information about this projection
      */
-    public AzimuthalProjection(  double falseNorthing, double falseEasting,
-                                Point2d naturalOrigin, IUnit units, double scale, boolean conformal, boolean equalArea,
-                                CRSResource id ) {
+    public AzimuthalProjection( double falseNorthing, double falseEasting, Point2d naturalOrigin, IUnit units,
+                                double scale, boolean conformal, boolean equalArea, CRSResource id ) {
         super( falseNorthing, falseEasting, naturalOrigin, units, scale, conformal, equalArea, id );
         if ( Math.abs( Math.abs( getProjectionLatitude() ) - HALFPI ) < EPS10 ) {
             mode = getProjectionLatitude() < 0. ? SOUTH_POLE : NORTH_POLE;
@@ -139,9 +138,9 @@ public abstract class AzimuthalProjection extends Projection {
      * <p>
      * Combining the hash code(s) computed above: result = 37 * result + code;
      * </p>
-     *
+     * 
      * @return (int) ( result >>> 32 ) ^ (int) result;
-     *
+     * 
      * @see java.lang.Object#hashCode()
      */
     @Override

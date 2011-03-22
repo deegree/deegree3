@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,7 +32,7 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 
 package org.deegree.cs.configuration.resources;
 
@@ -44,15 +44,15 @@ import org.deegree.cs.transformations.helmert.Helmert;
 /**
  * The <code>GMLResource</code> class defines the access to a resource containing GML crs definitions, often a
  * dictionary file or a database.
- *
+ * 
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- *
+ * 
  * @author last edited by: $Author$
- *
+ * 
  * @version $Revision$, $Date$
  * @param <T>
  *            of the resource
- *
+ * 
  */
 public interface CRSResource<T> extends XLinkResolver<T> {
 
@@ -60,7 +60,7 @@ public interface CRSResource<T> extends XLinkResolver<T> {
      * Implementations should find the helmert transformation which transforms coordinates of the geodetic datum into
      * coordinates of the WGS84 datum. If no such transformation could be found, the implementation should return
      * <code>null</code>
-     *
+     * 
      * @param sourceCRS
      *            to retrieve the transformation for.
      * @return the {@link Helmert} transformation or <code>null</code> if no such transformation was defined.
@@ -71,7 +71,7 @@ public interface CRSResource<T> extends XLinkResolver<T> {
      * Implementations should find a given transformation (chain) which transforms coordinates of the given coordinate
      * system into coordinates of the target crs. If no such transformation could be found, the implementation should
      * return <code>null</code>
-     *
+     * 
      * @param sourceCRS
      *            start point of the transformation.
      * @param targetCRS

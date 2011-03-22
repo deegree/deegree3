@@ -32,7 +32,7 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 package org.deegree.cs;
 
 import org.deegree.cs.coordinatesystems.CRS;
@@ -50,5 +50,5 @@ public class CRSUtils {
 
     /** The commonly used geographic 'EPSG:4326', with axis order X, Y. */
     public static final CRS EPSG_4326 = GeographicCRS.WGS84;
-    
+
 }

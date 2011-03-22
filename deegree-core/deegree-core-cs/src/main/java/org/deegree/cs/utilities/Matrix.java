@@ -256,12 +256,13 @@ public class Matrix extends GMatrix {
         if ( numRow != numCol ) {
             return false;
         }
-        for ( int j = 0; j < numRow; j++ )
+        for ( int j = 0; j < numRow; j++ ) {
             for ( int i = 0; i < numCol; i++ ) {
                 if ( Math.abs( getElement( j, i ) - ( i == j ? 1 : 0 ) ) > EPS11 ) {
                     return false;
                 }
             }
+        }
         return true;
     }
 
@@ -365,7 +366,8 @@ public class Matrix extends GMatrix {
                 if ( !( Unit.RADIAN.equals( targetUnit ) || Unit.METRE.equals( targetUnit ) ) ) {
                     if ( !( targetUnit.canConvert( Unit.RADIAN ) || targetUnit.canConvert( Unit.METRE ) ) ) {
                         throw new TransformationException(
-                                                           Messages.getMessage( "CRS_TRANSFORMATION_NO_APLLICABLE_UNIT",
+                                                           Messages.getMessage(
+                                                                                "CRS_TRANSFORMATION_NO_APLLICABLE_UNIT",
                                                                                 targetUnit ) );
                     }
                     // lazy instantiation

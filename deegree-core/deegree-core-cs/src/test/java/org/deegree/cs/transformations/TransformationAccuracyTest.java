@@ -48,8 +48,8 @@ import org.deegree.cs.CRSCodeType;
 import org.deegree.cs.CRSIdentifiable;
 import org.deegree.cs.CoordinateTransformer;
 import org.deegree.cs.components.IAxis;
-import org.deegree.cs.coordinatesystems.CompoundCRS;
 import org.deegree.cs.coordinatesystems.CRS;
+import org.deegree.cs.coordinatesystems.CompoundCRS;
 import org.deegree.cs.coordinatesystems.GeocentricCRS;
 import org.deegree.cs.coordinatesystems.GeographicCRS;
 import org.deegree.cs.coordinatesystems.ProjectedCRS;
@@ -138,8 +138,8 @@ public class TransformationAccuracyTest implements CRSDefines {
      * @throws AssertionError
      *             if one of the axis of the transformed point do not lie within the given epsilon range.
      */
-    private String doAccuracyTest( Point3d sourcePoint, Point3d targetPoint, Point3d epsilons,
-                                   CRS sourceCRS, CRS targetCRS )
+    private String doAccuracyTest( Point3d sourcePoint, Point3d targetPoint, Point3d epsilons, CRS sourceCRS,
+                                   CRS targetCRS )
                             throws TransformationException {
         assertNotNull( sourceCRS );
         assertNotNull( targetCRS );
@@ -209,8 +209,8 @@ public class TransformationAccuracyTest implements CRSDefines {
      * @param inverseEpsilon
      * @throws TransformationException
      */
-    private void doForwardAndInverse( CRS sourceCRS, CRS targetCRS, Point3d source,
-                                      Point3d target, Point3d forwardEpsilon, Point3d inverseEpsilon )
+    private void doForwardAndInverse( CRS sourceCRS, CRS targetCRS, Point3d source, Point3d target,
+                                      Point3d forwardEpsilon, Point3d inverseEpsilon )
                             throws TransformationException {
         StringBuilder output = new StringBuilder();
         output.append( "Transforming forward/inverse -> projected with id: '" );

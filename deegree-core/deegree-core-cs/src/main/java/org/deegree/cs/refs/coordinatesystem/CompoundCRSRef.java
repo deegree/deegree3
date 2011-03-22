@@ -39,8 +39,8 @@ import org.deegree.commons.tom.ReferenceResolver;
 import org.deegree.cs.components.IAxis;
 import org.deegree.cs.components.IUnit;
 import org.deegree.cs.coordinatesystems.CompoundCRS;
-import org.deegree.cs.coordinatesystems.ICompoundCRS;
 import org.deegree.cs.coordinatesystems.ICRS;
+import org.deegree.cs.coordinatesystems.ICompoundCRS;
 
 /**
  * {@link CRSRef} to a {@link CompoundCRS}
@@ -108,9 +108,9 @@ public class CompoundCRSRef extends CRSRef implements ICompoundCRS {
     public boolean equals( Object obj ) {
         return super.equals( obj ) ? true : getReferencedObject().equals( obj );
     }
-    
+
     @Override
-    public CompoundCRS getReferencedObject () {
+    public CompoundCRS getReferencedObject() {
         return (CompoundCRS) super.getReferencedObject();
     }
 }

@@ -389,8 +389,9 @@ public class CRSIdentifiable implements CRSResource {
      */
     public boolean hasCode( CRSCodeType id ) {
         for ( CRSCodeType code : codes ) {
-            if ( code.equals( id ) )
+            if ( code.equals( id ) ) {
                 return true;
+            }
         }
         return false;
     }

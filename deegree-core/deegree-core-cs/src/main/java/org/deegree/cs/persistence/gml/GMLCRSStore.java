@@ -156,12 +156,12 @@ public class GMLCRSStore extends AbstractCRSStore {
 
     public List<CRSCodeType[]> getAvailableCRSCodes()
                             throws CRSConfigurationException {
-        return ( (GMLResource) getResolver() ).getAvailableCRSIds();
+        return getResolver().getAvailableCRSIds();
     }
 
     public List<ICRS> getAvailableCRSs()
                             throws CRSConfigurationException {
-        return ( (GMLResource) getResolver() ).getAvailableCRSs();
+        return getResolver().getAvailableCRSs();
     }
 
     /**
@@ -1125,8 +1125,6 @@ public class GMLCRSStore extends AbstractCRSStore {
      * 
      * @param rootElement
      *            a gml:GeneralConversion element
-     * @param underlyingCRS
-     *            of the projection.
      * @return a Projection (Conversion) containing the mapped values from the given gml:Conversion
      *         XML-OM-representation.
      * @throws XMLParsingException
@@ -1487,10 +1485,10 @@ public class GMLCRSStore extends AbstractCRSStore {
                         }
                     } catch ( XMLParsingException e ) {
                         LOG.debug( "Could not get an identifiable for id: " + id.getOriginal() + " because: "
-                                                           + e.getLocalizedMessage(), e );
+                                   + e.getLocalizedMessage(), e );
                     } catch ( IOException e ) {
                         LOG.debug( "Could not get an identifiable for id: " + id.getOriginal() + " because: "
-                                                           + e.getLocalizedMessage(), e );
+                                   + e.getLocalizedMessage(), e );
                     }
 
                 }
@@ -1499,8 +1497,8 @@ public class GMLCRSStore extends AbstractCRSStore {
         return result;
     }
 
-    @Override
     public void init() {
+        // unused
     }
 
     /**

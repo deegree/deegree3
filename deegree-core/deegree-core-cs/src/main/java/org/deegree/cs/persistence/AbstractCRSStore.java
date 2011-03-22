@@ -138,7 +138,8 @@ public abstract class AbstractCRSStore implements CRSStore {
                 if ( result.getType() == COMPOUND ) {
                     addIdToCache( cachedCRSXY, ( (ICompoundCRS) result ).getUnderlyingCRS(), false );
                     if ( ( (ICompoundCRS) result ).getUnderlyingCRS().getType() == PROJECTED ) {
-                        addIdToCache( cachedCRSXY,
+                        addIdToCache(
+                                      cachedCRSXY,
                                       ( (IProjectedCRS) ( (ICompoundCRS) result ).getUnderlyingCRS() ).getGeographicCRS(),
                                       false );
                     }
@@ -150,7 +151,8 @@ public abstract class AbstractCRSStore implements CRSStore {
                 if ( result.getType() == COMPOUND ) {
                     addIdToCache( ( (ICompoundCRS) result ).getUnderlyingCRS(), false );
                     if ( ( (ICompoundCRS) result ).getUnderlyingCRS().getType() == PROJECTED ) {
-                        addIdToCache( ( (IProjectedCRS) ( (ICompoundCRS) result ).getUnderlyingCRS() ).getGeographicCRS(),
+                        addIdToCache(
+                                      ( (IProjectedCRS) ( (ICompoundCRS) result ).getUnderlyingCRS() ).getGeographicCRS(),
                                       false );
                     }
                 } else if ( result.getType() == PROJECTED ) {
