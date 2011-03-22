@@ -59,7 +59,6 @@ import com.vividsolutions.jts.geom.CoordinateSequence;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.impl.CoordinateArraySequence;
-import com.vividsolutions.jts.geomgraph.Position;
 
 /**
  * Tests for {@link CurveLinearizer}.
@@ -112,8 +111,8 @@ public class CurveLinearizerTest {
         Point lastPoint = null;
         for ( Point point : positions ) {
             if ( lastPoint != null ) {
-                double delta = Math.sqrt( ( point.get0() - lastPoint.get0() ) * ( point.get0() - lastPoint.get0() )
-                                          + ( point.get1() - lastPoint.get1() ) * ( point.get1() - lastPoint.get1() ) );
+                Math.sqrt( ( point.get0() - lastPoint.get0() ) * ( point.get0() - lastPoint.get0() )
+                           + ( point.get1() - lastPoint.get1() ) * ( point.get1() - lastPoint.get1() ) );
             }
             lastPoint = point;
         }
@@ -132,7 +131,7 @@ public class CurveLinearizerTest {
     }
 
     /**
-     * Tests if {@link LinearizationUtil#isClockwise(Position, Position, Position)} determines the correct point order.
+     * Tests if {@link CurveLinearizer#isClockwise(Point, Point, Point)} determines the correct point order.
      */
     @Test
     public void testIsClockwise() {
@@ -149,7 +148,7 @@ public class CurveLinearizerTest {
     }
 
     /**
-     * Tests if {@link LinearizationUtil#findCircleCenter(Point, Point, Point)} finds the correct midpoint.
+     * Tests if {@link CurveLinearizer#calcCircleCenter(Point, Point, Point)} finds the correct midpoint.
      */
     @Test
     public void testFindCircleCenter() {
@@ -161,8 +160,8 @@ public class CurveLinearizerTest {
     }
 
     /**
-     * Tests if {@link CurveLinearizer#interpolate(Point, Point, Point, int, boolean)} produces sequences of positions
-     * that coincide with the circle arc.
+     * Tests if interpolate(Point, Point, Point, int, boolean) produces sequences of positions that coincide with the
+     * circle arc.
      */
     @Test
     public void testLinearizeCircle() {
@@ -291,7 +290,6 @@ public class CurveLinearizerTest {
      * @param second
      * @param third
      * @param isCircle
-     * @return
      */
     private Points createLinearArc( double[] first, double[] second, double[] third, boolean isCircle ) {
 

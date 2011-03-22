@@ -59,7 +59,6 @@ import org.junit.Test;
  * 
  */
 public class QTreeTest {
-    private final static GeometryFactory geomFac = new GeometryFactory();
 
     private static final float[] env = new float[] { -5, -5, 5, 5 };
 

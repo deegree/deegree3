@@ -62,7 +62,7 @@ public class GeometryTest {
 
     private LineString l1, l2, l3;
 
-    private Envelope env1, env2;
+    private Envelope env1;
 
     /**
      * common envelopes as test geometry
@@ -84,9 +84,9 @@ public class GeometryTest {
         env1 = geomFactory.createEnvelope( 13.0, 7.0, 21.0, 21.0, crs );
     }
 
-    private Envelope createEnvelope( int x1, int y1, int x2, int y2 ) {
-        return geomFactory.createEnvelope( new double[] { x1, y1 }, new double[] { x2, y2 }, null );
-    }
+    // private Envelope createEnvelope( int x1, int y1, int x2, int y2 ) {
+    // return geomFactory.createEnvelope( new double[] { x1, y1 }, new double[] { x2, y2 }, null );
+    // }
 
     @Test
     public void testIntersects() {

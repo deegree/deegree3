@@ -69,8 +69,6 @@ public class SimpleRasterTest extends CenterOuterTest {
     private SimpleRaster soleRasterOuter;
 
     /**
-     * @param outer
-     * @return
      * @throws IOException
      */
     private SimpleRaster buildSoleRaster( OriginLocation type )

@@ -70,8 +70,6 @@ public class XMLMemoryStreamWriter {
 
     private StringWriter writer;
 
-    private Reader reader;
-
     /**
      * Create a {@link XMLStreamWriter} that writes into a buffer. Call {@link #getReader()} to close the writer and get
      * a {@link Reader} on the buffer.

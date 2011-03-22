@@ -35,8 +35,6 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.coverage.persistence;
 
-import static org.deegree.commons.config.ResourceState.StateType.init_ok;
-
 import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
@@ -57,11 +55,10 @@ import javax.xml.stream.XMLStreamReader;
 import org.apache.commons.io.filefilter.SuffixFileFilter;
 import org.deegree.commons.config.AbstractBasicResourceManager;
 import org.deegree.commons.config.DeegreeWorkspace;
+import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.config.ResourceManager;
 import org.deegree.commons.config.ResourceManagerMetadata;
 import org.deegree.commons.config.ResourceProvider;
-import org.deegree.commons.config.ResourceState;
-import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.utils.FileUtils;
 import org.deegree.commons.utils.ProxyUtils;
 import org.deegree.commons.xml.stax.StAXParsingHelper;

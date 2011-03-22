@@ -118,7 +118,6 @@ public class GriddedTileContainerTest extends CenterOuterTest {
      * For consistency with other center outer test, move to the resolution used.
      * 
      * @param oldPosition
-     * @return
      */
     double getPositionX( double oldPosition ) {
         return 1000 + ( ( oldPosition - 1000 ) * resX );
@@ -128,7 +127,6 @@ public class GriddedTileContainerTest extends CenterOuterTest {
      * For consistency with other center outer test, move to the resolution used.
      * 
      * @param oldPosition
-     * @return
      */
     double getPositionY( double oldPosition ) {
         // rb: '-' because the resY is negative

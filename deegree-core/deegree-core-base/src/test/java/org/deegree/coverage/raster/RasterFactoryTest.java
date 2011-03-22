@@ -57,11 +57,7 @@ import javax.imageio.stream.ImageInputStream;
 import javax.media.jai.BorderExtender;
 import javax.media.jai.ImageLayout;
 import javax.media.jai.JAI;
-import javax.media.jai.OperationRegistry;
 import javax.media.jai.ParameterBlockJAI;
-import javax.media.jai.ParameterListDescriptor;
-import javax.media.jai.RegistryElementDescriptor;
-import javax.media.jai.RegistryMode;
 import javax.media.jai.RenderedOp;
 
 import junit.framework.Assert;
@@ -208,8 +204,7 @@ public class RasterFactoryTest {
         t = System.currentTimeMillis();
     }
 
-    private void saveSubset( RenderedOp image, String name, int x, int y, int w, int h )
-                            throws IOException {
+    private void saveSubset( RenderedOp image, String name, int x, int y, int w, int h ) {
         LOG.debug( "getting subset: " + name );
         WritableRaster jpgRaster = image.getColorModel().createCompatibleWritableRaster( w, h ).createWritableTranslatedChild(
                                                                                                                                x,
@@ -261,10 +256,13 @@ public class RasterFactoryTest {
 
         RenderingHints hints = null;
         // if ( reader.isImageTiled( 0 ) ) {
+        if ( reader == null ) {
+            return null;
+        }
         int width = reader.getWidth( 0 );
         int height = reader.getHeight( 0 );
         int numberOfTiles = Rasters.calcApproxTiles( width, height, TILE_SIZE );
-        int tileSize = Rasters.calcTileSize( width, numberOfTiles );
+        Rasters.calcTileSize( width, numberOfTiles );
 
         ImageLayout layout = new ImageLayout();
         layout.setTileWidth( TILE_SIZE );
@@ -282,53 +280,53 @@ public class RasterFactoryTest {
         return result;
     }
 
-    private void enableTilingForReader( ImageReader imageReader, ImageInputStream iis ) {
-        ParameterBlockJAI pbj = new ParameterBlockJAI( "ImageRead" );
-        pbj.setParameter( "Input", iis );
-
-        RenderedOp result = JAI.create( "ImageRead", pbj, null );
-
-        int width = result.getWidth();
-        int height = result.getHeight();
-        int numberOfTiles = Rasters.calcApproxTiles( width, height, TILE_SIZE );
-        int tileSize = Rasters.calcTileSize( width, numberOfTiles );
-
-        ImageLayout layout = new ImageLayout();
-        layout.setTileWidth( tileSize );
-        layout.setTileHeight( tileSize );
-        result.setRenderingHint( JAI.KEY_IMAGE_LAYOUT, layout );
-    }
-
-    private void outputJAIParams() {
-        JAI jai = JAI.getDefaultInstance();
-        OperationRegistry reg = jai.getOperationRegistry();
-        RenderingHints renderingHints = jai.getRenderingHints();
-        LOG.debug( "values: " + renderingHints.values() );
-
-        String[] modeNames = RegistryMode.getModeNames();
-        for ( String modeName : modeNames ) {
-            LOG.debug( "**** " + modeName + " ****" );
-            String[] descriptorNames = reg.getDescriptorNames( modeName );
-            for ( String dn : descriptorNames ) {
-                LOG.debug( "- " + dn );
-                RegistryElementDescriptor descriptor = reg.getDescriptor( modeName, dn );
-                String[] supportedModes = descriptor.getSupportedModes();
-                for ( String sm : supportedModes ) {
-                    LOG.debug( " - " + sm );
-                    ParameterListDescriptor parameterListDescriptor = descriptor.getParameterListDescriptor( sm );
-                    if ( parameterListDescriptor != null ) {
-                        String[] parameterNames = parameterListDescriptor.getParamNames();
-                        if ( parameterNames != null ) {
-                            for ( String parameterName : parameterNames ) {
-                                LOG.debug( "  - " + parameterName );
-                            }
-                        }
-                    } else {
-                        LOG.debug( "  - no parameters" );
-                    }
-                }
-            }
-        }
-
-    }
+    // private void enableTilingForReader( ImageReader imageReader, ImageInputStream iis ) {
+    // ParameterBlockJAI pbj = new ParameterBlockJAI( "ImageRead" );
+    // pbj.setParameter( "Input", iis );
+    //
+    // RenderedOp result = JAI.create( "ImageRead", pbj, null );
+    //
+    // int width = result.getWidth();
+    // int height = result.getHeight();
+    // int numberOfTiles = Rasters.calcApproxTiles( width, height, TILE_SIZE );
+    // int tileSize = Rasters.calcTileSize( width, numberOfTiles );
+    //
+    // ImageLayout layout = new ImageLayout();
+    // layout.setTileWidth( tileSize );
+    // layout.setTileHeight( tileSize );
+    // result.setRenderingHint( JAI.KEY_IMAGE_LAYOUT, layout );
+    // }
+    //
+    // private void outputJAIParams() {
+    // JAI jai = JAI.getDefaultInstance();
+    // OperationRegistry reg = jai.getOperationRegistry();
+    // RenderingHints renderingHints = jai.getRenderingHints();
+    // LOG.debug( "values: " + renderingHints.values() );
+    //
+    // String[] modeNames = RegistryMode.getModeNames();
+    // for ( String modeName : modeNames ) {
+    // LOG.debug( "**** " + modeName + " ****" );
+    // String[] descriptorNames = reg.getDescriptorNames( modeName );
+    // for ( String dn : descriptorNames ) {
+    // LOG.debug( "- " + dn );
+    // RegistryElementDescriptor descriptor = reg.getDescriptor( modeName, dn );
+    // String[] supportedModes = descriptor.getSupportedModes();
+    // for ( String sm : supportedModes ) {
+    // LOG.debug( " - " + sm );
+    // ParameterListDescriptor parameterListDescriptor = descriptor.getParameterListDescriptor( sm );
+    // if ( parameterListDescriptor != null ) {
+    // String[] parameterNames = parameterListDescriptor.getParamNames();
+    // if ( parameterNames != null ) {
+    // for ( String parameterName : parameterNames ) {
+    // LOG.debug( "  - " + parameterName );
+    // }
+    // }
+    // } else {
+    // LOG.debug( "  - no parameters" );
+    // }
+    // }
+    // }
+    // }
+    //
+    // }
 }

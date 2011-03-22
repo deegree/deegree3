@@ -36,31 +36,15 @@
 package org.deegree.geometry;
 
 import static junit.framework.Assert.assertTrue;
-
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-
-import javax.xml.stream.FactoryConfigurationError;
-import javax.xml.stream.XMLOutputFactory;
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamWriter;
-
 import junit.framework.Assert;
 
-import org.deegree.commons.xml.stax.IndentingXMLStreamWriter;
 import org.deegree.cs.CRSUtils;
 import org.deegree.cs.coordinatesystems.ICRS;
-import org.deegree.cs.exceptions.TransformationException;
-import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.cs.persistence.CRSManager;
 import org.deegree.geometry.primitive.LineString;
 import org.deegree.geometry.primitive.Point;
 import org.deegree.geometry.standard.points.PackedPoints;
 import org.deegree.geometry.standard.primitive.DefaultPoint;
-import org.deegree.gml.GMLOutputFactory;
-import org.deegree.gml.GMLStreamWriter;
-import org.deegree.gml.GMLVersion;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -76,13 +60,16 @@ public class GeometryAnalysisTest {
 
     private static GeometryFactory geomFactory = new GeometryFactory();
 
-    private static double DELTA = 0.00000001;
+    // private static double DELTA = 0.00000001;
 
-    private Point p1, p2, p3, p4;
+    private Point p1
+    // , p2, p3
+                            ,
+                            p4;
 
     private LineString l1, l2, l3, l4;
 
-    private Envelope env1, env2;
+    // private Envelope env1, env2;
 
     /**
      * common envelopes as test geometry
@@ -92,20 +79,24 @@ public class GeometryAnalysisTest {
 
         ICRS crs = CRSManager.getCRSRef( "EPSG:4326" );
         p1 = geomFactory.createPoint( "p1", 0.0, 0.0, crs );
-        p2 = geomFactory.createPoint( "p2", 10.0, 10.0, crs );
-        p3 = geomFactory.createPoint( "p3", 10.0, 10.0, crs );
+        // p2 = geomFactory.createPoint( "p2", 10.0, 10.0, crs );
+        // p3 = geomFactory.createPoint( "p3", 10.0, 10.0, crs );
         p4 = geomFactory.createPoint( "p4", 20.0, 20.0, crs );
 
-        l1 = geomFactory.createLineString( "l1", crs, new PackedPoints( CRSUtils.EPSG_4326, new double[] { 10.0, 5.0, 15.0,
-                                                                                                     9.0, 20.0, 20.0 },
+        l1 = geomFactory.createLineString( "l1", crs, new PackedPoints( CRSUtils.EPSG_4326, new double[] { 10.0, 5.0,
+                                                                                                          15.0, 9.0,
+                                                                                                          20.0, 20.0 },
                                                                         2 ) );
-        l2 = geomFactory.createLineString( "l2", crs, new PackedPoints( CRSUtils.EPSG_4326, new double[] { 15.0, 20.0, 15.0,
-                                                                                                     6.0 }, 2 ) );
-        l3 = geomFactory.createLineString( "l3", crs, new PackedPoints( CRSUtils.EPSG_4326, new double[] { 9.0, 9.0, 12.0,
-                                                                                                     5.0 }, 2 ) );
-        l4 = geomFactory.createLineString( "l4", crs, new PackedPoints( CRSUtils.EPSG_4326, new double[] { 0, 0, 1, 0 }, 2 ) );
+        l2 = geomFactory.createLineString( "l2", crs, new PackedPoints( CRSUtils.EPSG_4326, new double[] { 15.0, 20.0,
+                                                                                                          15.0, 6.0 },
+                                                                        2 ) );
+        l3 = geomFactory.createLineString( "l3", crs, new PackedPoints( CRSUtils.EPSG_4326, new double[] { 9.0, 9.0,
+                                                                                                          12.0, 5.0 },
+                                                                        2 ) );
+        l4 = geomFactory.createLineString( "l4", crs, new PackedPoints( CRSUtils.EPSG_4326,
+                                                                        new double[] { 0, 0, 1, 0 }, 2 ) );
 
-        env1 = geomFactory.createEnvelope( 13.0, 7.0, 21.0, 21.0, crs );
+        // env1 = geomFactory.createEnvelope( 13.0, 7.0, 21.0, 21.0, crs );
     }
 
     @Test
@@ -130,34 +121,34 @@ public class GeometryAnalysisTest {
         Assert.assertTrue( l1.equals( result ) );
 
         result = l2.getIntersection( l1 );
-        Assert.assertTrue( result.equals( new DefaultPoint( null, CRSManager.getCRSRef( "EPSG:4326" ), null, new double[] { 15.0,
-                                                                                                              9.0 } ) ) );
+        Assert.assertTrue( result.equals( new DefaultPoint( null, CRSManager.getCRSRef( "EPSG:4326" ), null,
+                                                            new double[] { 15.0, 9.0 } ) ) );
 
         result = l3.getIntersection( l4 );
         Assert.assertNull( result );
     }
 
-    private void writeResult( Geometry result )
-                            throws UnknownCRSException, TransformationException {
-        try {
-            XMLStreamWriter writer = new IndentingXMLStreamWriter(
-                                                                   XMLOutputFactory.newInstance().createXMLStreamWriter( new FileWriter(
-                                                                                                                                         System.getProperty( "java.io.tmpdir" )
-                                                                                                                                                                 + File.separatorChar
-                                                                                                                                                                 + "out.gml" ) ) );
-            writer.setPrefix( "gml", "http://www.opengis.net/gml" );
-            GMLStreamWriter gmlStream = GMLOutputFactory.createGMLStreamWriter( GMLVersion.GML_31, writer );
-            gmlStream.write( result );
-            writer.close();
-        } catch ( XMLStreamException e ) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch ( FactoryConfigurationError e ) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch ( IOException e ) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-    }
+    // private void writeResult( Geometry result )
+    // throws UnknownCRSException, TransformationException {
+    // try {
+    // XMLStreamWriter writer = new IndentingXMLStreamWriter(
+    // XMLOutputFactory.newInstance().createXMLStreamWriter( new FileWriter(
+    // System.getProperty( "java.io.tmpdir" )
+    // + File.separatorChar
+    // + "out.gml" ) ) );
+    // writer.setPrefix( "gml", "http://www.opengis.net/gml" );
+    // GMLStreamWriter gmlStream = GMLOutputFactory.createGMLStreamWriter( GMLVersion.GML_31, writer );
+    // gmlStream.write( result );
+    // writer.close();
+    // } catch ( XMLStreamException e ) {
+    // // TODO Auto-generated catch block
+    // e.printStackTrace();
+    // } catch ( FactoryConfigurationError e ) {
+    // // TODO Auto-generated catch block
+    // e.printStackTrace();
+    // } catch ( IOException e ) {
+    // // TODO Auto-generated catch block
+    // e.printStackTrace();
+    // }
+    // }
 }

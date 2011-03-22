@@ -91,10 +91,6 @@ public class RasterRangeSetTest {
 
     int[] colors = new int[] { 255, 230, 205, 180, 155, 130, 105, 80, 55, 30 };
 
-    /**
-     * @return
-     * @throws IOException
-     */
     private BufferedImage createBufferedImage() {
         BufferedImage im = new BufferedImage( width, height, BufferedImage.TYPE_INT_RGB );
         int heightStep = 20;
@@ -427,20 +423,13 @@ public class RasterRangeSetTest {
                                                                                                colors[7] }, nullValues );
     }
 
-    /**
-     * @param newImage
-     * @param i
-     * @param j
-     * @param bs
-     * @param object
-     * @param bs2
-     */
     private void testImage( BufferedImage newImage ) {
         Assert.assertNotNull( newImage );
         Assert.assertEquals( width, newImage.getWidth() );
         Assert.assertEquals( height, newImage.getHeight() );
     }
 
+    @SuppressWarnings("null")
     private void testOneBandValues( BufferedImage newImage, int x, int y, int[] values, int nullValue ) {
         testImage( newImage );
         Assert.assertTrue( "Datatype of one band should be byte",
@@ -476,11 +465,13 @@ public class RasterRangeSetTest {
                 testValue( "one_band", color[0] & 0xFF, values, nullValue, matchedValues );
             }
         }
+        Assert.assertNotNull( values );
         for ( int i = 0; i < matchedValues.length; ++i ) {
             Assert.assertTrue( "Expected value: " + i + "(" + values[i] + ") was missing.", matchedValues[i] );
         }
     }
 
+    @SuppressWarnings("null")
     private void testBandValues( BufferedImage newImage, int x, int y, int[] redValues, int[] greenValues,
                                  int[] blueValues, int[] nullValues ) {
         testImage( newImage );

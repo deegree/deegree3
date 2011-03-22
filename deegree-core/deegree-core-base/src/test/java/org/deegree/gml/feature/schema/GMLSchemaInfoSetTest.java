@@ -47,7 +47,6 @@ import junit.framework.Assert;
 
 import org.apache.xerces.xs.XSElementDeclaration;
 import org.apache.xerces.xs.XSTypeDefinition;
-import org.deegree.gml.GMLVersion;
 import org.deegree.gml.schema.GMLSchemaInfoSet;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -71,13 +70,16 @@ public class GMLSchemaInfoSetTest {
 
         GMLSchemaInfoSet analyzer = new GMLSchemaInfoSet(
                                                           null,
-                                                          this.getClass().getResource( "../testdata/schema/Philosopher.xsd" ).toString() );
-        List<XSElementDeclaration> featureElementDecls = analyzer.getFeatureElementDeclarations( "http://www.deegree.org/app",
+                                                          this.getClass().getResource(
+                                                                                       "../testdata/schema/Philosopher.xsd" ).toString() );
+        List<XSElementDeclaration> featureElementDecls = analyzer.getFeatureElementDeclarations(
+                                                                                                 "http://www.deegree.org/app",
                                                                                                  false );
         for ( XSElementDeclaration featureElementDecl : featureElementDecls ) {
             LOG.debug( "- Feature type: " + featureElementDecl.getName() );
         }
-        List<XSElementDeclaration> featureCollectionElementDecls = analyzer.getFeatureCollectionElementDeclarations( null,
+        List<XSElementDeclaration> featureCollectionElementDecls = analyzer.getFeatureCollectionElementDeclarations(
+                                                                                                                     null,
                                                                                                                      false );
         for ( XSElementDeclaration featureCollectionElementDecl : featureCollectionElementDecls ) {
             LOG.debug( "- Feature collection type: " + featureCollectionElementDecl.getName() );
@@ -256,7 +258,8 @@ public class GMLSchemaInfoSetTest {
 
         String schemaURL = "http://schemas.opengis.net/gml/3.2.1/gml.xsd";
         GMLSchemaInfoSet analyzer = new GMLSchemaInfoSet( null, schemaURL );
-        List<XSElementDeclaration> elementDecls = analyzer.getSubstitutions( new QName(
+        List<XSElementDeclaration> elementDecls = analyzer.getSubstitutions(
+                                                                             new QName(
                                                                                         "http://www.opengis.net/gml/3.2",
                                                                                         "AbstractCurveSegment" ),
                                                                              "http://www.opengis.net/gml/3.2", true,
@@ -273,7 +276,8 @@ public class GMLSchemaInfoSetTest {
 
         String schemaURL = "http://schemas.opengis.net/gml/3.2.1/gml.xsd";
         GMLSchemaInfoSet analyzer = new GMLSchemaInfoSet( null, schemaURL );
-        List<XSElementDeclaration> elementDecls = analyzer.getSubstitutions( new QName(
+        List<XSElementDeclaration> elementDecls = analyzer.getSubstitutions(
+                                                                             new QName(
                                                                                         "http://www.opengis.net/gml/3.2",
                                                                                         "AbstractSurfacePatch" ),
                                                                              "http://www.opengis.net/gml/3.2", true,
@@ -290,7 +294,8 @@ public class GMLSchemaInfoSetTest {
 
         String schemaURL = "http://schemas.opengis.net/gml/3.2.1/gml.xsd";
         GMLSchemaInfoSet analyzer = new GMLSchemaInfoSet( null, schemaURL );
-        List<XSElementDeclaration> elementDecls = analyzer.getSubstitutions( new QName(
+        List<XSElementDeclaration> elementDecls = analyzer.getSubstitutions(
+                                                                             new QName(
                                                                                         "http://www.opengis.net/gml/3.2",
                                                                                         "AbstractGeometry" ),
                                                                              "http://www.opengis.net/gml/3.2", true,

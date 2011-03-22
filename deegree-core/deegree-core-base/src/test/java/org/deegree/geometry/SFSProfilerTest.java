@@ -194,7 +194,8 @@ public class SFSProfilerTest {
         Ring interior = fac.createLinearRing( null, CRSUtils.EPSG_4326, new PointsArray( p5, p6, p7, p8, p9 ) );
         Polygon polygon = fac.createPolygon( null, CRSUtils.EPSG_4326, exterior, Collections.singletonList( interior ) );
         Polygon simplified = (Polygon) simplifier.simplify( polygon );
-        assertEquals( "POLYGON ((0.000000 0.000000,10.000000 0.000000,10.000000 10.000000,10.000000 10.000000,0.000000 10.000000),(1.000000 1.000000,1.000000 9.000000,9.000000 9.000000,9.000000 1.000000,1.000000 10.000000))",
+        assertEquals(
+                      "POLYGON ((0.000000 0.000000,10.000000 0.000000,10.000000 10.000000,10.000000 10.000000,0.000000 10.000000),(1.000000 1.000000,1.000000 9.000000,9.000000 9.000000,9.000000 1.000000,1.000000 10.000000))",
                       simplified.toString() );
     }
 
@@ -219,7 +220,8 @@ public class SFSProfilerTest {
         SurfacePatch patch0 = fac.createPolygonPatch( exteriorRing, Collections.singletonList( interiorRing ) );
         Surface surface = fac.createSurface( null, Collections.singletonList( patch0 ), CRSUtils.EPSG_4326 );
         Polygon simplified = (Polygon) simplifier.simplify( surface );
-        assertEquals( "POLYGON ((0.000000 0.000000,10.000000 0.000000,10.000000 10.000000,10.000000 10.000000,0.000000 10.000000),(1.000000 1.000000,1.000000 9.000000,9.000000 9.000000,9.000000 1.000000,1.000000 10.000000))",
+        assertEquals(
+                      "POLYGON ((0.000000 0.000000,10.000000 0.000000,10.000000 10.000000,10.000000 10.000000,0.000000 10.000000),(1.000000 1.000000,1.000000 9.000000,9.000000 9.000000,9.000000 1.000000,1.000000 10.000000))",
                       simplified.toString() );
     }
 
@@ -265,7 +267,8 @@ public class SFSProfilerTest {
         Surface surface = fac.createSurface( null, patches, CRSUtils.EPSG_4326 );
         MultiPolygon simplified = (MultiPolygon) simplifier.simplify( surface );
         System.out.println( simplified );
-        assertEquals( "MULTIPOLYGON (((0.000000 0.000000,10.000000 0.000000,10.000000 10.000000,10.000000 10.000000,0.000000 10.000000),(1.000000 1.000000,1.000000 9.000000,9.000000 9.000000,9.000000 1.000000,1.000000 10.000000)),((10.000000 0.000000,20.000000 0.000000,20.000000 10.000000,20.000000 10.000000,10.000000 10.000000)))",
+        assertEquals(
+                      "MULTIPOLYGON (((0.000000 0.000000,10.000000 0.000000,10.000000 10.000000,10.000000 10.000000,0.000000 10.000000),(1.000000 1.000000,1.000000 9.000000,9.000000 9.000000,9.000000 1.000000,1.000000 10.000000)),((10.000000 0.000000,20.000000 0.000000,20.000000 10.000000,20.000000 10.000000,10.000000 10.000000)))",
                       simplified.toString() );
     }
 
@@ -287,9 +290,10 @@ public class SFSProfilerTest {
         List<Curve> memberCurves = new ArrayList<Curve>();
         memberCurves.add( ls );
         memberCurves.add( curve );
-        MultiCurve multiCurve = fac.createMultiCurve( null, CRSUtils.EPSG_4326, memberCurves );
+        MultiCurve<?> multiCurve = fac.createMultiCurve( null, CRSUtils.EPSG_4326, memberCurves );
         MultiLineString simplified = (MultiLineString) simplifier.simplify( multiCurve );
-        assertEquals( "MULTILINESTRING ((0.000000 0.000000,1.000000 1.000000,5.000000 5.000000,10.000000 10.000000,)(0.000000 0.000000,1.000000 1.000000,5.000000 5.000000,10.000000 10.000000,12.317848 12.699677,14.612186 15.419362,16.882842 18.158850,19.129644 20.917935,21.352424 23.696410,23.551014 26.494065,25.725249 29.310690,27.874965 32.146073,30.000000 35.000000))",
+        assertEquals(
+                      "MULTILINESTRING ((0.000000 0.000000,1.000000 1.000000,5.000000 5.000000,10.000000 10.000000,)(0.000000 0.000000,1.000000 1.000000,5.000000 5.000000,10.000000 10.000000,12.317848 12.699677,14.612186 15.419362,16.882842 18.158850,19.129644 20.917935,21.352424 23.696410,23.551014 26.494065,25.725249 29.310690,27.874965 32.146073,30.000000 35.000000))",
                       simplified.toString() );
     }
 
@@ -335,10 +339,11 @@ public class SFSProfilerTest {
         List<Surface> surfaces = new ArrayList<Surface>();
         surfaces.add( surface );
         surfaces.add( surface );
-        MultiSurface multiSurface = fac.createMultiSurface( null, CRSUtils.EPSG_4326, surfaces );
+        MultiSurface<?> multiSurface = fac.createMultiSurface( null, CRSUtils.EPSG_4326, surfaces );
         MultiPolygon simplified = (MultiPolygon) simplifier.simplify( multiSurface );
         System.out.println( simplified );
-        assertEquals( "MULTIPOLYGON (((0.000000 0.000000,10.000000 0.000000,10.000000 10.000000,10.000000 10.000000,0.000000 10.000000),(1.000000 1.000000,1.000000 9.000000,9.000000 9.000000,9.000000 1.000000,1.000000 10.000000)),((10.000000 0.000000,20.000000 0.000000,20.000000 10.000000,20.000000 10.000000,10.000000 10.000000)),((0.000000 0.000000,10.000000 0.000000,10.000000 10.000000,10.000000 10.000000,0.000000 10.000000),(1.000000 1.000000,1.000000 9.000000,9.000000 9.000000,9.000000 1.000000,1.000000 10.000000)),((10.000000 0.000000,20.000000 0.000000,20.000000 10.000000,20.000000 10.000000,10.000000 10.000000)))",
+        assertEquals(
+                      "MULTIPOLYGON (((0.000000 0.000000,10.000000 0.000000,10.000000 10.000000,10.000000 10.000000,0.000000 10.000000),(1.000000 1.000000,1.000000 9.000000,9.000000 9.000000,9.000000 1.000000,1.000000 10.000000)),((10.000000 0.000000,20.000000 0.000000,20.000000 10.000000,20.000000 10.000000,10.000000 10.000000)),((0.000000 0.000000,10.000000 0.000000,10.000000 10.000000,10.000000 10.000000,0.000000 10.000000),(1.000000 1.000000,1.000000 9.000000,9.000000 9.000000,9.000000 1.000000,1.000000 10.000000)),((10.000000 0.000000,20.000000 0.000000,20.000000 10.000000,20.000000 10.000000,10.000000 10.000000)))",
                       simplified.toString() );
     }
 }

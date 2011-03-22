@@ -123,11 +123,6 @@ public class CacheFileTest extends CenterOuterTest {
 
     private SimpleRaster soleRasterOuter = null;
 
-    /**
-     * @param outer
-     * @return
-     * @throws IOException
-     */
     private SimpleRaster buildSoleRaster( OriginLocation type )
                             throws IOException {
         RasterIOOptions opts = new RasterIOOptions( type );

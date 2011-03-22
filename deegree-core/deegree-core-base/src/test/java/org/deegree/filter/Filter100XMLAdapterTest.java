@@ -106,7 +106,7 @@ public class Filter100XMLAdapterTest extends TestCase {
 
         PropertyIsEqualTo prop = (PropertyIsEqualTo) opFilter.getOperator();
         assertEquals( "SomeProperty", ( (PropertyName) prop.getParameter1() ).getAsText() );
-        assertEquals( "100", ( (Literal<PrimitiveValue>) prop.getParameter2() ).getValue().toString() );
+        assertEquals( "100", ( (Literal<?>) prop.getParameter2() ).getValue().toString() );
     }
 
     /**
@@ -122,7 +122,7 @@ public class Filter100XMLAdapterTest extends TestCase {
 
         PropertyIsLessThan prop = (PropertyIsLessThan) opFilter.getOperator();
         assertEquals( "DEPTH", ( (PropertyName) prop.getParameter1() ).getAsText() );
-        assertEquals( "30", ( (Literal<PrimitiveValue>) prop.getParameter2() ).getValue().toString() );
+        assertEquals( "30", ( (Literal<?>) prop.getParameter2() ).getValue().toString() );
     }
 
     /**

@@ -280,6 +280,7 @@ public class WPSClientTest {
 
         OutputType fourthOutput = p2.getOutputTypes()[3];
         ComplexOutputType binaryOutput = (ComplexOutputType) fourthOutput;
+        System.out.println( binaryOutput.getDefaultFormat() );
         Assert.assertEquals( "text/xml", xmlOutput.getDefaultFormat().getMimeType() );
         Assert.assertEquals( "text/xml", xmlOutput.getSupportedFormats()[0].getMimeType() );
     }
@@ -556,8 +557,7 @@ public class WPSClientTest {
         Assert.assertNotSame( ExecutionState.SUCCEEDED, execution.getState() );
         Assert.assertNotSame( ExecutionState.FAILED, execution.getState() );
 
-        ExecutionState state = null;
-        while ( ( state = execution.getState() ) != ExecutionState.SUCCEEDED ) {
+        while ( ( execution.getState() ) != ExecutionState.SUCCEEDED ) {
             System.out.println( execution.getPercentCompleted() );
             Thread.sleep( 500 );
         }
@@ -626,7 +626,7 @@ public class WPSClientTest {
         ProcessExecution execution = proc.prepareExecution();
         // omitting required input parameter
         execution.addOutput( "Centroid", null, null, true, null, null, null );
-        ExecutionOutputs response = execution.execute();
+        execution.execute();
         assertEquals( ExecutionState.SUCCEEDED, execution.getState() );
     }
 }

@@ -109,7 +109,6 @@ public class RasterFilter extends CoverageFilter {
     /**
      * @param subsetRaster
      * @param axisFilter
-     * @return
      */
     private AbstractRaster applyDataFilter( AbstractRaster subsetRaster, List<AxisSubset> axisFilter,
                                             Map<BandType, AxisSubset> bands ) {
@@ -325,6 +324,7 @@ public class RasterFilter extends CoverageFilter {
     /**
      * @param axisSubset
      */
+    @SuppressWarnings("unchecked")
     private <T extends Comparable<T>> boolean isValid( T value, AxisSubset axisSubset ) {
         List<Interval<?, ?>> intervals = axisSubset.getIntervals();
         List<SingleValue<?>> singleValues = axisSubset.getSingleValues();

@@ -100,8 +100,6 @@ import org.slf4j.Logger;
 public class GML3GeometryReaderTest {
     private static final Logger LOG = getLogger( GML3GeometryReaderTest.class );
 
-    private static GeometryFactory geomFac = new GeometryFactory();
-
     private static final String BASE_DIR = "../../geometry/gml/testdata/geometries/";
 
     private static double DELTA = 0.00000001;
@@ -159,7 +157,7 @@ public class GML3GeometryReaderTest {
         XMLStreamReaderWrapper xmlReader = getParser( "LineString_pos.gml" );
         Assert.assertEquals( XMLStreamConstants.START_ELEMENT, xmlReader.getEventType() );
         Assert.assertEquals( new QName( "http://www.opengis.net/gml", "LineString" ), xmlReader.getName() );
-        Curve curve = (Curve) new GML3GeometryReader( GMLVersion.GML_31, null, null, 2 ).parse( xmlReader, null );
+        new GML3GeometryReader( GMLVersion.GML_31, null, null, 2 ).parse( xmlReader, null );
         Assert.assertEquals( XMLStreamConstants.END_ELEMENT, xmlReader.getEventType() );
         Assert.assertEquals( new QName( "http://www.opengis.net/gml", "LineString" ), xmlReader.getName() );
     }
@@ -371,7 +369,8 @@ public class GML3GeometryReaderTest {
         XMLStreamReaderWrapper xmlReader = getParser( "PolyhedralSurface.gml" );
         Assert.assertEquals( XMLStreamConstants.START_ELEMENT, xmlReader.getEventType() );
         Assert.assertEquals( new QName( "http://www.opengis.net/gml", "PolyhedralSurface" ), xmlReader.getName() );
-        PolyhedralSurface surface = (PolyhedralSurface) new GML3GeometryReader( GMLVersion.GML_31, null, null, 2 ).parse( xmlReader,
+        PolyhedralSurface surface = (PolyhedralSurface) new GML3GeometryReader( GMLVersion.GML_31, null, null, 2 ).parse(
+                                                                                                                          xmlReader,
                                                                                                                           null );
         Assert.assertEquals( XMLStreamConstants.END_ELEMENT, xmlReader.getEventType() );
         Assert.assertEquals( new QName( "http://www.opengis.net/gml", "PolyhedralSurface" ), xmlReader.getName() );
@@ -386,7 +385,8 @@ public class GML3GeometryReaderTest {
         XMLStreamReaderWrapper xmlReader = getParser( "TriangulatedSurface.gml" );
         Assert.assertEquals( XMLStreamConstants.START_ELEMENT, xmlReader.getEventType() );
         Assert.assertEquals( new QName( "http://www.opengis.net/gml", "TriangulatedSurface" ), xmlReader.getName() );
-        TriangulatedSurface surface = (TriangulatedSurface) new GML3GeometryReader( GMLVersion.GML_31, null, null, 2 ).parse( xmlReader,
+        TriangulatedSurface surface = (TriangulatedSurface) new GML3GeometryReader( GMLVersion.GML_31, null, null, 2 ).parse(
+                                                                                                                              xmlReader,
                                                                                                                               null );
         Assert.assertEquals( XMLStreamConstants.END_ELEMENT, xmlReader.getEventType() );
         Assert.assertEquals( new QName( "http://www.opengis.net/gml", "TriangulatedSurface" ), xmlReader.getName() );
@@ -420,7 +420,8 @@ public class GML3GeometryReaderTest {
         XMLStreamReaderWrapper xmlReader = getParser( "OrientableSurface.gml" );
         Assert.assertEquals( XMLStreamConstants.START_ELEMENT, xmlReader.getEventType() );
         Assert.assertEquals( new QName( "http://www.opengis.net/gml", "OrientableSurface" ), xmlReader.getName() );
-        OrientableSurface surface = (OrientableSurface) new GML3GeometryReader( GMLVersion.GML_31, null, null, 2 ).parse( xmlReader,
+        OrientableSurface surface = (OrientableSurface) new GML3GeometryReader( GMLVersion.GML_31, null, null, 2 ).parse(
+                                                                                                                          xmlReader,
                                                                                                                           null );
         Assert.assertEquals( XMLStreamConstants.END_ELEMENT, xmlReader.getEventType() );
         Assert.assertEquals( new QName( "http://www.opengis.net/gml", "OrientableSurface" ), xmlReader.getName() );
@@ -440,22 +441,28 @@ public class GML3GeometryReaderTest {
         Assert.assertEquals( SolidType.Solid, solid.getSolidType() );
         Assert.assertEquals( CRSManager.lookup( "EPSG:31466" ), solid.getCoordinateSystem() );
         Assert.assertEquals( 8, solid.getExteriorSurface().getPatches().size() );
-        Assert.assertEquals( 2568786.096,
+        Assert.assertEquals(
+                             2568786.096,
                              ( (PolygonPatch) solid.getExteriorSurface().getPatches().get( 7 ) ).getExteriorRing().getStartPoint().get0(),
                              DELTA );
-        Assert.assertEquals( 5662881.386,
+        Assert.assertEquals(
+                             5662881.386,
                              ( (PolygonPatch) solid.getExteriorSurface().getPatches().get( 7 ) ).getExteriorRing().getStartPoint().get1(),
                              DELTA );
-        Assert.assertEquals( 60.3842642785516,
+        Assert.assertEquals(
+                             60.3842642785516,
                              ( (PolygonPatch) solid.getExteriorSurface().getPatches().get( 7 ) ).getExteriorRing().getStartPoint().get2(),
                              DELTA );
-        Assert.assertEquals( 2568786.096,
+        Assert.assertEquals(
+                             2568786.096,
                              ( (PolygonPatch) solid.getExteriorSurface().getPatches().get( 7 ) ).getExteriorRing().getEndPoint().get0(),
                              DELTA );
-        Assert.assertEquals( 5662881.386,
+        Assert.assertEquals(
+                             5662881.386,
                              ( (PolygonPatch) solid.getExteriorSurface().getPatches().get( 7 ) ).getExteriorRing().getEndPoint().get1(),
                              DELTA );
-        Assert.assertEquals( 60.3842642785516,
+        Assert.assertEquals(
+                             60.3842642785516,
                              ( (PolygonPatch) solid.getExteriorSurface().getPatches().get( 7 ) ).getExteriorRing().getEndPoint().get2(),
                              DELTA );
     }
@@ -483,7 +490,8 @@ public class GML3GeometryReaderTest {
         XMLStreamReaderWrapper xmlReader = getParser( "CompositeSurface.gml" );
         Assert.assertEquals( XMLStreamConstants.START_ELEMENT, xmlReader.getEventType() );
         Assert.assertEquals( new QName( "http://www.opengis.net/gml", "CompositeSurface" ), xmlReader.getName() );
-        CompositeSurface surface = (CompositeSurface) new GML3GeometryReader( GMLVersion.GML_31, null, null, 2 ).parse( xmlReader,
+        CompositeSurface surface = (CompositeSurface) new GML3GeometryReader( GMLVersion.GML_31, null, null, 2 ).parse(
+                                                                                                                        xmlReader,
                                                                                                                         null );
         Assert.assertEquals( XMLStreamConstants.END_ELEMENT, xmlReader.getEventType() );
         Assert.assertEquals( new QName( "http://www.opengis.net/gml", "CompositeSurface" ), xmlReader.getName() );
@@ -496,7 +504,8 @@ public class GML3GeometryReaderTest {
         XMLStreamReaderWrapper xmlReader = getParser( "CompositeSolid.gml" );
         Assert.assertEquals( XMLStreamConstants.START_ELEMENT, xmlReader.getEventType() );
         Assert.assertEquals( new QName( "http://www.opengis.net/gml", "CompositeSolid" ), xmlReader.getName() );
-        CompositeSolid compositeSolid = (CompositeSolid) new GML3GeometryReader( GMLVersion.GML_31, null, null, 2 ).parse( xmlReader,
+        CompositeSolid compositeSolid = (CompositeSolid) new GML3GeometryReader( GMLVersion.GML_31, null, null, 2 ).parse(
+                                                                                                                           xmlReader,
                                                                                                                            null );
         Assert.assertEquals( XMLStreamConstants.END_ELEMENT, xmlReader.getEventType() );
         Assert.assertEquals( new QName( "http://www.opengis.net/gml", "CompositeSolid" ), xmlReader.getName() );
@@ -505,22 +514,28 @@ public class GML3GeometryReaderTest {
         Assert.assertEquals( SolidType.Solid, solid.getSolidType() );
         Assert.assertEquals( CRSManager.lookup( "EPSG:31466" ), solid.getCoordinateSystem() );
         Assert.assertEquals( 8, solid.getExteriorSurface().getPatches().size() );
-        Assert.assertEquals( 2568786.096,
+        Assert.assertEquals(
+                             2568786.096,
                              ( (PolygonPatch) solid.getExteriorSurface().getPatches().get( 7 ) ).getExteriorRing().getStartPoint().get0(),
                              DELTA );
-        Assert.assertEquals( 5662881.386,
+        Assert.assertEquals(
+                             5662881.386,
                              ( (PolygonPatch) solid.getExteriorSurface().getPatches().get( 7 ) ).getExteriorRing().getStartPoint().get1(),
                              DELTA );
-        Assert.assertEquals( 60.3842642785516,
+        Assert.assertEquals(
+                             60.3842642785516,
                              ( (PolygonPatch) solid.getExteriorSurface().getPatches().get( 7 ) ).getExteriorRing().getStartPoint().get2(),
                              DELTA );
-        Assert.assertEquals( 2568786.096,
+        Assert.assertEquals(
+                             2568786.096,
                              ( (PolygonPatch) solid.getExteriorSurface().getPatches().get( 7 ) ).getExteriorRing().getEndPoint().get0(),
                              DELTA );
-        Assert.assertEquals( 5662881.386,
+        Assert.assertEquals(
+                             5662881.386,
                              ( (PolygonPatch) solid.getExteriorSurface().getPatches().get( 7 ) ).getExteriorRing().getEndPoint().get1(),
                              DELTA );
-        Assert.assertEquals( 60.3842642785516,
+        Assert.assertEquals(
+                             60.3842642785516,
                              ( (PolygonPatch) solid.getExteriorSurface().getPatches().get( 7 ) ).getExteriorRing().getEndPoint().get2(),
                              DELTA );
     }
@@ -531,31 +546,38 @@ public class GML3GeometryReaderTest {
         XMLStreamReaderWrapper xmlReader = getParser( "GeometricComplex.gml" );
         Assert.assertEquals( XMLStreamConstants.START_ELEMENT, xmlReader.getEventType() );
         Assert.assertEquals( new QName( "http://www.opengis.net/gml", "GeometricComplex" ), xmlReader.getName() );
-        CompositeGeometry compositeGeometry = (CompositeGeometry) new GML3GeometryReader( GMLVersion.GML_31, null,
-                                                                                          null, 2 ).parse( xmlReader,
-                                                                                                           null );
+        CompositeGeometry<?> compositeGeometry = (CompositeGeometry<?>) new GML3GeometryReader( GMLVersion.GML_31,
+                                                                                                null, null, 2 ).parse(
+                                                                                                                       xmlReader,
+                                                                                                                       null );
         Assert.assertEquals( XMLStreamConstants.END_ELEMENT, xmlReader.getEventType() );
         Assert.assertEquals( new QName( "http://www.opengis.net/gml", "GeometricComplex" ), xmlReader.getName() );
         Solid solid = (Solid) compositeGeometry.get( 0 );
         Assert.assertEquals( SolidType.Solid, solid.getSolidType() );
         Assert.assertEquals( CRSManager.lookup( "EPSG:31466" ), solid.getCoordinateSystem() );
         Assert.assertEquals( 8, solid.getExteriorSurface().getPatches().size() );
-        Assert.assertEquals( 2568786.096,
+        Assert.assertEquals(
+                             2568786.096,
                              ( (PolygonPatch) solid.getExteriorSurface().getPatches().get( 7 ) ).getExteriorRing().getStartPoint().get0(),
                              DELTA );
-        Assert.assertEquals( 5662881.386,
+        Assert.assertEquals(
+                             5662881.386,
                              ( (PolygonPatch) solid.getExteriorSurface().getPatches().get( 7 ) ).getExteriorRing().getStartPoint().get1(),
                              DELTA );
-        Assert.assertEquals( 60.3842642785516,
+        Assert.assertEquals(
+                             60.3842642785516,
                              ( (PolygonPatch) solid.getExteriorSurface().getPatches().get( 7 ) ).getExteriorRing().getStartPoint().get2(),
                              DELTA );
-        Assert.assertEquals( 2568786.096,
+        Assert.assertEquals(
+                             2568786.096,
                              ( (PolygonPatch) solid.getExteriorSurface().getPatches().get( 7 ) ).getExteriorRing().getEndPoint().get0(),
                              DELTA );
-        Assert.assertEquals( 5662881.386,
+        Assert.assertEquals(
+                             5662881.386,
                              ( (PolygonPatch) solid.getExteriorSurface().getPatches().get( 7 ) ).getExteriorRing().getEndPoint().get1(),
                              DELTA );
-        Assert.assertEquals( 60.3842642785516,
+        Assert.assertEquals(
+                             60.3842642785516,
                              ( (PolygonPatch) solid.getExteriorSurface().getPatches().get( 7 ) ).getExteriorRing().getEndPoint().get2(),
                              DELTA );
         Curve curve = (Curve) compositeGeometry.get( 1 );
@@ -571,7 +593,8 @@ public class GML3GeometryReaderTest {
         XMLStreamReaderWrapper xmlReader = getParser( "MultiPoint.gml" );
         Assert.assertEquals( XMLStreamConstants.START_ELEMENT, xmlReader.getEventType() );
         Assert.assertEquals( new QName( "http://www.opengis.net/gml", "MultiPoint" ), xmlReader.getName() );
-        MultiPoint aggregate = (MultiPoint) new GML3GeometryReader( GMLVersion.GML_31, null, null, 2 ).parse( xmlReader,
+        MultiPoint aggregate = (MultiPoint) new GML3GeometryReader( GMLVersion.GML_31, null, null, 2 ).parse(
+                                                                                                              xmlReader,
                                                                                                               null );
         Assert.assertEquals( XMLStreamConstants.END_ELEMENT, xmlReader.getEventType() );
         Assert.assertEquals( new QName( "http://www.opengis.net/gml", "MultiPoint" ), xmlReader.getName() );
@@ -585,7 +608,8 @@ public class GML3GeometryReaderTest {
         XMLStreamReaderWrapper xmlReader = getParser( "MultiPoint_members.gml" );
         Assert.assertEquals( XMLStreamConstants.START_ELEMENT, xmlReader.getEventType() );
         Assert.assertEquals( new QName( "http://www.opengis.net/gml", "MultiPoint" ), xmlReader.getName() );
-        MultiPoint aggregate = (MultiPoint) new GML3GeometryReader( GMLVersion.GML_31, null, null, 2 ).parse( xmlReader,
+        MultiPoint aggregate = (MultiPoint) new GML3GeometryReader( GMLVersion.GML_31, null, null, 2 ).parse(
+                                                                                                              xmlReader,
                                                                                                               null );
         Assert.assertEquals( XMLStreamConstants.END_ELEMENT, xmlReader.getEventType() );
         Assert.assertEquals( new QName( "http://www.opengis.net/gml", "MultiPoint" ), xmlReader.getName() );
@@ -599,7 +623,8 @@ public class GML3GeometryReaderTest {
         XMLStreamReaderWrapper xmlReader = getParser( "MultiPoint_mixed.gml" );
         Assert.assertEquals( XMLStreamConstants.START_ELEMENT, xmlReader.getEventType() );
         Assert.assertEquals( new QName( "http://www.opengis.net/gml", "MultiPoint" ), xmlReader.getName() );
-        MultiPoint aggregate = (MultiPoint) new GML3GeometryReader( GMLVersion.GML_31, null, null, 2 ).parse( xmlReader,
+        MultiPoint aggregate = (MultiPoint) new GML3GeometryReader( GMLVersion.GML_31, null, null, 2 ).parse(
+                                                                                                              xmlReader,
                                                                                                               null );
         Assert.assertEquals( XMLStreamConstants.END_ELEMENT, xmlReader.getEventType() );
         Assert.assertEquals( new QName( "http://www.opengis.net/gml", "MultiPoint" ), xmlReader.getName() );
@@ -613,8 +638,9 @@ public class GML3GeometryReaderTest {
         XMLStreamReaderWrapper xmlReader = getParser( "MultiCurve.gml" );
         Assert.assertEquals( XMLStreamConstants.START_ELEMENT, xmlReader.getEventType() );
         Assert.assertEquals( new QName( "http://www.opengis.net/gml", "MultiCurve" ), xmlReader.getName() );
-        MultiCurve<Curve> aggregate = (MultiCurve<Curve>) new GML3GeometryReader( GMLVersion.GML_31, null, null, 2 ).parse( xmlReader,
-                                                                                                                            null );
+        MultiCurve<?> aggregate = (MultiCurve<?>) new GML3GeometryReader( GMLVersion.GML_31, null, null, 2 ).parse(
+                                                                                                                    xmlReader,
+                                                                                                                    null );
         Assert.assertEquals( XMLStreamConstants.END_ELEMENT, xmlReader.getEventType() );
         Assert.assertEquals( new QName( "http://www.opengis.net/gml", "MultiCurve" ), xmlReader.getName() );
         Assert.assertEquals( 2, aggregate.size() );
@@ -629,9 +655,9 @@ public class GML3GeometryReaderTest {
         XMLStreamReaderWrapper xmlReader = getParser( "MultiSurface.gml" );
         Assert.assertEquals( XMLStreamConstants.START_ELEMENT, xmlReader.getEventType() );
         Assert.assertEquals( new QName( "http://www.opengis.net/gml", "MultiSurface" ), xmlReader.getName() );
-        MultiSurface<Surface> aggregate = (MultiSurface<Surface>) new GML3GeometryReader( GMLVersion.GML_31, null,
-                                                                                          null, 2 ).parse( xmlReader,
-                                                                                                           null );
+        MultiSurface<?> aggregate = (MultiSurface<?>) new GML3GeometryReader( GMLVersion.GML_31, null, null, 2 ).parse(
+                                                                                                                        xmlReader,
+                                                                                                                        null );
         Assert.assertEquals( XMLStreamConstants.END_ELEMENT, xmlReader.getEventType() );
         Assert.assertEquals( new QName( "http://www.opengis.net/gml", "MultiSurface" ), xmlReader.getName() );
         Assert.assertEquals( 2, aggregate.size() );
@@ -646,7 +672,8 @@ public class GML3GeometryReaderTest {
         XMLStreamReaderWrapper xmlReader = getParser( "MultiPolygon.gml" );
         Assert.assertEquals( XMLStreamConstants.START_ELEMENT, xmlReader.getEventType() );
         Assert.assertEquals( new QName( "http://www.opengis.net/gml", "MultiPolygon" ), xmlReader.getName() );
-        MultiPolygon aggregate = (MultiPolygon) new GML3GeometryReader( GMLVersion.GML_31, null, null, 2 ).parse( xmlReader,
+        MultiPolygon aggregate = (MultiPolygon) new GML3GeometryReader( GMLVersion.GML_31, null, null, 2 ).parse(
+                                                                                                                  xmlReader,
                                                                                                                   null );
         Assert.assertEquals( XMLStreamConstants.END_ELEMENT, xmlReader.getEventType() );
         Assert.assertEquals( new QName( "http://www.opengis.net/gml", "MultiPolygon" ), xmlReader.getName() );
@@ -662,7 +689,8 @@ public class GML3GeometryReaderTest {
         XMLStreamReaderWrapper xmlReader = getParser( "MultiSolid.gml" );
         Assert.assertEquals( XMLStreamConstants.START_ELEMENT, xmlReader.getEventType() );
         Assert.assertEquals( new QName( "http://www.opengis.net/gml", "MultiSolid" ), xmlReader.getName() );
-        MultiSolid aggregate = (MultiSolid) new GML3GeometryReader( GMLVersion.GML_31, null, null, 2 ).parse( xmlReader,
+        MultiSolid aggregate = (MultiSolid) new GML3GeometryReader( GMLVersion.GML_31, null, null, 2 ).parse(
+                                                                                                              xmlReader,
                                                                                                               null );
         Assert.assertEquals( XMLStreamConstants.END_ELEMENT, xmlReader.getEventType() );
         Assert.assertEquals( new QName( "http://www.opengis.net/gml", "MultiSolid" ), xmlReader.getName() );
@@ -678,16 +706,16 @@ public class GML3GeometryReaderTest {
         XMLStreamReaderWrapper xmlReader = getParser( "MultiGeometry.gml" );
         Assert.assertEquals( XMLStreamConstants.START_ELEMENT, xmlReader.getEventType() );
         Assert.assertEquals( new QName( "http://www.opengis.net/gml", "MultiGeometry" ), xmlReader.getName() );
-        MultiGeometry<Geometry> aggregate = (MultiGeometry<Geometry>) new GML3GeometryReader( GMLVersion.GML_31, null,
-                                                                                              null, 2 ).parse( xmlReader,
-                                                                                                               null );
+        MultiGeometry<?> aggregate = (MultiGeometry<?>) new GML3GeometryReader( GMLVersion.GML_31, null, null, 2 ).parse(
+                                                                                                                          xmlReader,
+                                                                                                                          null );
         Assert.assertEquals( XMLStreamConstants.END_ELEMENT, xmlReader.getEventType() );
         Assert.assertEquals( new QName( "http://www.opengis.net/gml", "MultiGeometry" ), xmlReader.getName() );
         Assert.assertEquals( 5, aggregate.size() );
         Assert.assertTrue( aggregate.get( 0 ) instanceof Point );
         Assert.assertTrue( aggregate.get( 1 ) instanceof Point );
         Assert.assertTrue( aggregate.get( 2 ) instanceof Curve );
-        Assert.assertTrue( aggregate.get( 3 ) instanceof MultiSurface );
+        Assert.assertTrue( aggregate.get( 3 ) instanceof MultiSurface<?> );
         Assert.assertTrue( aggregate.get( 4 ) instanceof CompositeSolid );
     }
 
@@ -698,7 +726,8 @@ public class GML3GeometryReaderTest {
         XMLStreamReaderWrapper xmlReader = getParser( "MultiLineString.gml" );
         Assert.assertEquals( XMLStreamConstants.START_ELEMENT, xmlReader.getEventType() );
         Assert.assertEquals( new QName( "http://www.opengis.net/gml", "MultiLineString" ), xmlReader.getName() );
-        MultiLineString aggregate = (MultiLineString) new GML3GeometryReader( GMLVersion.GML_31, null, null, 2 ).parse( xmlReader,
+        MultiLineString aggregate = (MultiLineString) new GML3GeometryReader( GMLVersion.GML_31, null, null, 2 ).parse(
+                                                                                                                        xmlReader,
                                                                                                                         null );
         Assert.assertEquals( XMLStreamConstants.END_ELEMENT, xmlReader.getEventType() );
         Assert.assertEquals( new QName( "http://www.opengis.net/gml", "MultiLineString" ), xmlReader.getName() );
@@ -799,7 +828,8 @@ public class GML3GeometryReaderTest {
         Assert.assertEquals( XMLStreamConstants.START_ELEMENT, xmlReader.getEventType() );
         Assert.assertEquals( new QName( "http://www.opengis.net/gml", "MultiGeometry" ), xmlReader.getName() );
         GMLDocumentIdContext idContext = new GMLDocumentIdContext( GMLVersion.GML_31 );
-        MultiGeometry<Geometry> geom = new GML3GeometryReader( GMLVersion.GML_31, new GeometryFactory(), idContext, 2 ).parseMultiGeometry( xmlReader,
+        MultiGeometry<Geometry> geom = new GML3GeometryReader( GMLVersion.GML_31, new GeometryFactory(), idContext, 2 ).parseMultiGeometry(
+                                                                                                                                            xmlReader,
                                                                                                                                             null );
         Assert.assertEquals( XMLStreamConstants.END_ELEMENT, xmlReader.getEventType() );
         Assert.assertEquals( new QName( "http://www.opengis.net/gml", "MultiGeometry" ), xmlReader.getName() );
