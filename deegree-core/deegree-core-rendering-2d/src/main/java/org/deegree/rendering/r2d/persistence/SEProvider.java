@@ -40,6 +40,7 @@ import java.net.URL;
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ExtendedResourceProvider;
 import org.deegree.commons.config.ResourceInitException;
+import org.deegree.commons.config.ResourceManager;
 
 /**
  * 
@@ -58,19 +59,17 @@ public class SEProvider implements ExtendedResourceProvider<StyleFile> {
         return SEProvider.class.getResource( "/META-INF/schemas/se/1.1.0/Symbolizer-deegree.xsd" );
     }
 
-    @Override
     public void init( DeegreeWorkspace workspace ) {
-        // TODO Auto-generated method stub
+        // nothing to initialize
     }
 
-    @Override
     public StyleFile create( URL configUrl )
                             throws ResourceInitException {
         return new StyleFile();
     }
 
-    @Override
-    public Class[] getDependencies() {
+    @SuppressWarnings("unchecked")
+    public Class<? extends ResourceManager>[] getDependencies() {
         return new Class[0];
     }
 }

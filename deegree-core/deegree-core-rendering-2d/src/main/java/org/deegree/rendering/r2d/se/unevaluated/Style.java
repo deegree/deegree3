@@ -224,9 +224,9 @@ public class Style {
                     if ( geom instanceof Point || geom instanceof MultiPoint ) {
                         list.add( new Triple<Styling, LinkedList<Geometry>, String>( defaultPointStyle, geometries,
                                                                                      null ) );
-                    } else if ( geom instanceof Curve || geom instanceof MultiCurve || geom instanceof MultiLineString ) {
+                    } else if ( geom instanceof Curve || geom instanceof MultiCurve<?> || geom instanceof MultiLineString ) {
                         list.add( new Triple<Styling, LinkedList<Geometry>, String>( defaultLineStyle, geometries, null ) );
-                    } else if ( geom instanceof Surface || geom instanceof MultiSurface || geom instanceof MultiPolygon
+                    } else if ( geom instanceof Surface || geom instanceof MultiSurface<?> || geom instanceof MultiPolygon
                                 || geom instanceof Envelope ) {
                         list.add( new Triple<Styling, LinkedList<Geometry>, String>( defaultPolygonStyle, geometries,
                                                                                      null ) );
