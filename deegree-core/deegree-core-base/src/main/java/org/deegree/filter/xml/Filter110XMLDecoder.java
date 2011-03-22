@@ -858,10 +858,8 @@ public class Filter110XMLDecoder {
                 nextElement( xmlStream );
                 xmlStream.require( START_ELEMENT, OGC_NS, "Distance" );
                 String distanceUnits = getRequiredAttributeValue( xmlStream, "units" );
-                nextElement( xmlStream );
-                // In Filter 1.1.0 (with distinction to 1.0.0) the <Distance> element DOES NOT contain text
-                // and the value is in the "units" attribute. The UOM is taken from the enclosing CRS.
-                Measure distance = new Measure( distanceUnits, null );
+                String distanceValue = xmlStream.getElementText();
+                Measure distance = new Measure( distanceValue, distanceUnits );
                 spatialOperator = new Beyond( param1, param2, distance );
                 break;
             }
@@ -911,13 +909,10 @@ public class Filter110XMLDecoder {
                 // third parameter: 'ogc:Distance'
                 nextElement( xmlStream );
                 xmlStream.require( START_ELEMENT, OGC_NS, "Distance" );
-
                 String distanceUnits = getRequiredAttributeValue( xmlStream, "units" );
-                // In Filter 1.1.0 (with distinction to 1.0.0) the <Distance> element DOES NOT contain text
-                // and the value is in the "units" attribute. The UOM is taken from the enclosing CRS.
-                Measure distance = new Measure( distanceUnits, null );
+                String distanceValue = xmlStream.getElementText();
+                Measure distance = new Measure( distanceValue, distanceUnits );
                 spatialOperator = new DWithin( param1, param2, distance );
-                nextElement( xmlStream );
                 break;
             }
             case EQUALS: {

@@ -9,6 +9,6 @@
         <gml:Y>52</gml:Y>
       </gml:coord>
     </gml:Point>
-    <ogc:Distance units="1"/>
+    <ogc:Distance units="meter">1</ogc:Distance>
   </ogc:DWithin>
 </ogc:Filter>
