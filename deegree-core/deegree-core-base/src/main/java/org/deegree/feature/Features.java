@@ -137,7 +137,6 @@ public class Features {
      * 
      * @param value1
      * @param value2
-     * @return
      * @throws FilterEvaluationException
      */
     private static Pair<Object, Object> getPrimitives( Object value1, Object value2 )

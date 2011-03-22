@@ -55,8 +55,6 @@ import org.deegree.feature.types.FeatureCollectionType;
 import org.deegree.geometry.Geometry;
 import org.deegree.gml.GMLVersion;
 import org.deegree.gml.feature.StandardGMLFeatureProps;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Allows the representation of arbitrary {@link FeatureCollection}s, including those that use
@@ -69,7 +67,7 @@ import org.slf4j.LoggerFactory;
  */
 public class GenericFeatureCollection extends AbstractFeatureCollection {
 
-    private static final Logger LOG = LoggerFactory.getLogger( GenericFeatureCollection.class );
+    // private static final Logger LOG = LoggerFactory.getLogger( GenericFeatureCollection.class );
 
     private final List<Feature> memberFeatures = new ArrayList<Feature>();
 

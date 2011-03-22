@@ -83,10 +83,6 @@ public class GenericObjectPropertyType extends ObjectPropertyType {
         return xsdType;
     }
 
-    /**
-     * 
-     * @return
-     */
     public XSElementDeclaration getValueElementDecl() {
         XSElementDeclaration elementDecl = null;
         XSParticle particle = xsdType.getParticle();

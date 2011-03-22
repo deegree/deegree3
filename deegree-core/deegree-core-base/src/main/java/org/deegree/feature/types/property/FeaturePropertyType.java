@@ -61,13 +61,13 @@ public class FeaturePropertyType extends ObjectPropertyType {
 
     private FeatureType valueFt;
 
-    private final ValueRepresentation representation;
+    // private final ValueRepresentation representation;
 
     public FeaturePropertyType( QName name, int minOccurs, int maxOccurs, boolean isAbstract, boolean isNillable,
                                 List<PropertyType> substitutions, QName valueFtName, ValueRepresentation representation ) {
         super( name, minOccurs, maxOccurs, isAbstract, isNillable, substitutions, representation );
         this.valueFtName = valueFtName;
-        this.representation = representation;
+        // this.representation = representation;
     }
 
     /**
