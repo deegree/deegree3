@@ -162,8 +162,7 @@ public class PropertyName implements Expression {
      * 
      * @return the compiled expression, or <code>null</code> if the property name is not an XPath expression
      */
-    public Expr getAsXPath()
-                            throws FilterEvaluationException {
+    public Expr getAsXPath() {
         return xpath;
     }
 
@@ -179,7 +178,6 @@ public class PropertyName implements Expression {
     /**
      * If the property name is simple, the element name is returned.
      * 
-     * @see #isSimple()
      * @return the qualified name value, or <code>null</code> if the property name is not simple
      */
     public QName getAsQName() {
