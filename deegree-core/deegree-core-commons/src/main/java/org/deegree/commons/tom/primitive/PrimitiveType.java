@@ -51,10 +51,10 @@ import org.slf4j.LoggerFactory;
  * Based on XML schema types, but stripped down to leave out any distinctions that are not strictly necessary in the
  * feature model.
  * </p>
- *
+ * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
- *
+ * 
  * @version $Revision$, $Date$
  */
 public enum PrimitiveType {
@@ -92,7 +92,7 @@ public enum PrimitiveType {
 
     /**
      * Returns the class that primitive values of this type must have.
-     *
+     * 
      * @return the corresponding class for values
      */
     public Class<?> getValueClass() {
@@ -108,7 +108,7 @@ public enum PrimitiveType {
 
     /**
      * Returns the {@link PrimitiveType} for the given value.
-     *
+     * 
      * @param value
      * @return corresponding {@link PrimitiveType}, never <code>null</code>
      * @throws IllegalArgumentException
@@ -127,9 +127,9 @@ public enum PrimitiveType {
 
     /**
      * Returns the {@link PrimitiveType} for the given SQL type (from {@link Types}).
-     *
+     * 
      * @see Types
-     *
+     * 
      * @param sqlType
      * @return corresponding {@link PrimitiveType}, never <code>null</code>
      * @throws IllegalArgumentException

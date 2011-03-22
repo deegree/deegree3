@@ -62,12 +62,12 @@ import javax.xml.bind.JAXBException;
 
 import org.deegree.commons.config.AbstractBasicResourceManager;
 import org.deegree.commons.config.DeegreeWorkspace;
+import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.config.ResourceManager;
 import org.deegree.commons.config.ResourceManagerMetadata;
 import org.deegree.commons.config.ResourceProvider;
 import org.deegree.commons.config.ResourceState;
 import org.deegree.commons.config.ResourceState.StateType;
-import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.i18n.Messages;
 import org.deegree.commons.jdbc.jaxb.JDBCConnection;
 import org.deegree.commons.utils.ProxyUtils;

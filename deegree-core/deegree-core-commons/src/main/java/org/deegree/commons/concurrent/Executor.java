@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,7 +32,7 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 package org.deegree.commons.concurrent;
 
 import java.util.ArrayList;
@@ -48,26 +48,24 @@ import java.util.concurrent.TimeUnit;
 /**
  * The <code>Executor</code> is deegree's central place to:
  * <ul>
- * <li>Perform a task asynchronously (in an independent thread) optionally with a maximum execution
- * time.</li>
+ * <li>Perform a task asynchronously (in an independent thread) optionally with a maximum execution time.</li>
  * <li>Perform a task synchronously with a maximum execution time.</li>
  * <li>Perform several task synchronously (but in parallel threads) with a maximum execution time.</li>
  * </ul>
  * <p>
- * The <code>Executor</code> class is realized as a singleton and uses a cached thread pool
- * internally to minimize overhead for acquiring the necessary {@link Thread} instances and to
- * manage the number of concurrent threads.
+ * The <code>Executor</code> class is realized as a singleton and uses a cached thread pool internally to minimize
+ * overhead for acquiring the necessary {@link Thread} instances and to manage the number of concurrent threads.
  * </p>
- *
+ * 
  * @see java.util.concurrent.ExecutorService
  * @see ExecutionFinishedListener
- *
+ * 
  * @author <a href="mailto:poth@lat-lon.de">Andreas Poth</a>
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author: apoth $
- *
+ * 
  * @version $Revision: 9339 $, $Date: 2007-12-27 12:31:52 +0000 (Do, 27 Dez 2007) $
  */
 public class Executor {
@@ -85,7 +83,7 @@ public class Executor {
 
     /**
      * Returns the only instance of this class (singleton pattern).
-     *
+     * 
      * @return the only instance of this class
      */
     public synchronized static Executor getInstance() {
@@ -98,7 +96,7 @@ public class Executor {
 
     /**
      * Performs a task asynchronously (in an independent thread) without any time limit.
-     *
+     * 
      * @param <T>
      *            type of return value
      * @param task
@@ -106,8 +104,7 @@ public class Executor {
      * @param finishedListener
      *            notified when the method call finishes (succesfully or abnormally), may be null
      */
-    public <T> void performAsynchronously( Callable<T> task,
-                                           ExecutionFinishedListener<T> finishedListener ) {
+    public <T> void performAsynchronously( Callable<T> task, ExecutionFinishedListener<T> finishedListener ) {
 
         AsyncPerformer<T> runner = new AsyncPerformer<T>( task, finishedListener );
         this.execService.execute( runner );
@@ -115,19 +112,17 @@ public class Executor {
 
     /**
      * Performs a task asynchronously (in an independent thread) with a given time limit.
-     *
+     * 
      * @param <T>
      *            type of return value
      * @param task
-     *            task to be performed (specified in the {@link Callable#call()}} method)
+     *            task to be performed (specified in the {@link Callable#call()} method)
      * @param finishedListener
      *            notified when the method call finishes (succesfully or abnormally), may be null
      * @param timeout
      *            maximum time allowed for execution in milliseconds
      */
-    public <T> void performAsynchronously( Callable<T> task,
-                                           ExecutionFinishedListener<T> finishedListener,
-                                           long timeout ) {
+    public <T> void performAsynchronously( Callable<T> task, ExecutionFinishedListener<T> finishedListener, long timeout ) {
 
         AsyncPerformer<T> runner = new AsyncPerformer<T>( task, finishedListener, timeout );
         this.execService.execute( runner );
@@ -135,7 +130,7 @@ public class Executor {
 
     /**
      * Performs a task synchronously with a given timeout.
-     *
+     * 
      * @param <T>
      *            type of return value
      * @param task
@@ -158,7 +153,7 @@ public class Executor {
         tasks.add( task );
 
         try {
-            List<Future<T>> futures = this.execService.invokeAll(  tasks, timeout, TimeUnit.MILLISECONDS );
+            List<Future<T>> futures = this.execService.invokeAll( tasks, timeout, TimeUnit.MILLISECONDS );
             Future<T> future = futures.get( 0 );
             result = future.get();
         } catch ( ExecutionException e ) {
@@ -170,16 +165,18 @@ public class Executor {
     /**
      * Performs several tasks synchronously in parallel threads.
      * <p>
-     * This method does not return before all tasks are finished (successfully or abnormally). For
-     * each given {@link Callable}, an independent thread is used. For each task, an
-     * {@link ExecutionFinishedEvent} is generated and returned.
-     * @param <T> the result type of the callables
-     *
+     * This method does not return before all tasks are finished (successfully or abnormally). For each given
+     * {@link Callable}, an independent thread is used. For each task, an {@link ExecutionFinishedEvent} is generated
+     * and returned.
+     * 
+     * @param <T>
+     *            the result type of the callables
+     * 
      * @param tasks
      *            tasks to be performed (specified in the {@link Callable#call()} methods)
      * @return ExecutionFinishedEvents for all tasks
      * @throws InterruptedException
-     *            if the current thread was interrupted while waiting
+     *             if the current thread was interrupted while waiting
      */
     public <T> List<ExecutionFinishedEvent<T>> performSynchronously( List<Callable<T>> tasks )
                             throws InterruptedException {
@@ -209,26 +206,26 @@ public class Executor {
     /**
      * Performs several tasks synchronously with a given timeout in parallel threads.
      * <p>
-     * This method does not return before all tasks are finished (successfully or abnormally). For
-     * each given {@link Callable}, an independent thread is used. For each task, an
-     * {@link ExecutionFinishedEvent} is generated and returned.
-     * @param <T> the result type of the tasks
-     *
+     * This method does not return before all tasks are finished (successfully or abnormally). For each given
+     * {@link Callable}, an independent thread is used. For each task, an {@link ExecutionFinishedEvent} is generated
+     * and returned.
+     * 
+     * @param <T>
+     *            the result type of the tasks
+     * 
      * @param tasks
      *            tasks to be performed (specified in the {@link Callable#call()} methods)
      * @param timeout
      *            maximum time allowed for execution (in milliseconds)
      * @return ExecutionFinishedEvents for all tasks
      * @throws InterruptedException
-     *            if the current thread was interrupted while waiting
+     *             if the current thread was interrupted while waiting
      */
-    public <T> List<ExecutionFinishedEvent<T>> performSynchronously( List<Callable<T>> tasks,
-                                                              long timeout )
+    public <T> List<ExecutionFinishedEvent<T>> performSynchronously( List<Callable<T>> tasks, long timeout )
                             throws InterruptedException {
 
         List<ExecutionFinishedEvent<T>> results = new ArrayList<ExecutionFinishedEvent<T>>( tasks.size() );
-        List<Future<T>> futures = this.execService.invokeAll( tasks, timeout,
-                                                                   TimeUnit.MILLISECONDS );
+        List<Future<T>> futures = this.execService.invokeAll( tasks, timeout, TimeUnit.MILLISECONDS );
 
         for ( int i = 0; i < tasks.size(); i++ ) {
 
@@ -250,12 +247,12 @@ public class Executor {
     }
 
     // ///////////////////////////////////////////////////////////////////////////
-    //                           inner classes                                  //
+    // inner classes //
     // ///////////////////////////////////////////////////////////////////////////
 
     /**
      * Inner class for performing task asynchronously.
-     *
+     * 
      * @author <a href="mailto:poth@lat-lon.de">Andreas Poth</a>
      * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
      * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
@@ -276,8 +273,7 @@ public class Executor {
             this.finishedListener = finishedListener;
         }
 
-        AsyncPerformer( Callable<T> task, ExecutionFinishedListener<T> finishedListener,
-                                long timeout ) {
+        AsyncPerformer( Callable<T> task, ExecutionFinishedListener<T> finishedListener, long timeout ) {
             this.task = task;
             this.finishedListener = finishedListener;
             this.timeout = timeout;
@@ -285,7 +281,7 @@ public class Executor {
 
         /**
          * Performs the task using {@link Executor#performSynchronously(Callable, long)}.
-         *
+         * 
          * @see java.lang.Runnable#run()
          */
         public void run() {
@@ -306,12 +302,12 @@ public class Executor {
             }
         }
     }
-    
+
     /**
      * 
      */
-    public void shutdown(){
+    public void shutdown() {
         execService.shutdown();
     }
-    
+
 }

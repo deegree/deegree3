@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,7 +32,7 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 package org.deegree.commons.xml;
 
 import java.util.Iterator;
@@ -43,12 +43,12 @@ import org.deegree.commons.i18n.Messages;
 
 /**
  * This is a child element iterator that expects a fixed number of child elements. It will throw an
- * {@link XMLParsingException} when an element is missing, or when you access the last expected element and there
- * are stil child elements left.
- *
+ * {@link XMLParsingException} when an element is missing, or when you access the last expected element and there are
+ * stil child elements left.
+ * 
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
  * @author last edited by: $Author$
- *
+ * 
  * @version $Revision$, $Date$
  */
 public class FixedChildIterator implements Iterable<OMElement>, Iterator<OMElement> {

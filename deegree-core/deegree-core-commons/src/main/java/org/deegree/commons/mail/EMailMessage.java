@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,17 +32,17 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 package org.deegree.commons.mail;
 
 /**
  * This class encapsulates all the info need to send an email message. This object is passed to the MailerEJB
  * sendMail(...) method.
- *
- *
+ * 
+ * 
  * @author <a href="mailto:tfr@users.sourceforge.net">Torsten Friebe</A>
  * @author last edited by: $Author$
- *
+ * 
  * @version $Revision$,$Date$
  */
 public class EMailMessage implements java.io.Serializable, MailMessage {
@@ -75,7 +75,7 @@ public class EMailMessage implements java.io.Serializable, MailMessage {
 
     /**
      * Creates a new mail message with MIME type text/plain.
-     *
+     * 
      * @param from
      *            the sender
      * @param to
@@ -96,7 +96,7 @@ public class EMailMessage implements java.io.Serializable, MailMessage {
 
     /**
      * Creates a new mail message with the given MIME type.
-     *
+     * 
      * @param from
      *            the sender
      * @param to
@@ -119,7 +119,7 @@ public class EMailMessage implements java.io.Serializable, MailMessage {
     /**
      * Returns the state of this message. If sender and receiver are unequal null then this message is valid otherwise
      * invalid.
-     *
+     * 
      * @return validation state, <code>true</code> if sender and receiver are not <code>null</code>, otherwise
      *         <code>false</code>
      */
@@ -132,7 +132,7 @@ public class EMailMessage implements java.io.Serializable, MailMessage {
 
     /**
      * Return mail header including sender, receiver and subject.
-     *
+     * 
      * @return string with sender, receiver and subject
      */
     public String getHeader() {
@@ -141,7 +141,7 @@ public class EMailMessage implements java.io.Serializable, MailMessage {
 
     /**
      * Description of the Method
-     *
+     * 
      * @return Description of the Return Value
      */
     @Override
@@ -152,7 +152,7 @@ public class EMailMessage implements java.io.Serializable, MailMessage {
 
     /**
      * Method declaration
-     *
+     * 
      * @return sender
      */
     public String getSender() {
@@ -161,7 +161,7 @@ public class EMailMessage implements java.io.Serializable, MailMessage {
 
     /**
      * Method declaration
-     *
+     * 
      * @return The messageBody value
      */
     public String getMessageBody() {
@@ -170,7 +170,7 @@ public class EMailMessage implements java.io.Serializable, MailMessage {
 
     /**
      * Method declaration
-     *
+     * 
      * @return emailReceiver
      */
     public String getReceiver() {
@@ -179,7 +179,7 @@ public class EMailMessage implements java.io.Serializable, MailMessage {
 
     /**
      * Method declaration
-     *
+     * 
      * @param to
      */
     public void setReceiver( String to ) {
@@ -188,7 +188,7 @@ public class EMailMessage implements java.io.Serializable, MailMessage {
 
     /**
      * Method declaration
-     *
+     * 
      * @param message
      */
     public void setMessageBody( String message ) {
@@ -197,7 +197,7 @@ public class EMailMessage implements java.io.Serializable, MailMessage {
 
     /**
      * Method declaration
-     *
+     * 
      * @param from
      */
     public void setSender( String from ) {
@@ -206,7 +206,7 @@ public class EMailMessage implements java.io.Serializable, MailMessage {
 
     /**
      * Method declaration
-     *
+     * 
      * @param title
      */
     public void setSubject( String title ) {
@@ -215,7 +215,7 @@ public class EMailMessage implements java.io.Serializable, MailMessage {
 
     /**
      * Gets the subject attribute of the EMailMessage object
-     *
+     * 
      * @return The subject value
      */
     public String getSubject() {
@@ -224,7 +224,7 @@ public class EMailMessage implements java.io.Serializable, MailMessage {
 
     /**
      * Sets the mimeType attribute of the EMailMessage object
-     *
+     * 
      * @param mimeType
      *            The new mimeType value
      * @throws UnknownMimeTypeException
@@ -243,7 +243,7 @@ public class EMailMessage implements java.io.Serializable, MailMessage {
 
     /**
      * Gets the mimeType attribute of the EMailMessage object
-     *
+     * 
      * @return The mimeType value
      */
     public String getMimeType() {

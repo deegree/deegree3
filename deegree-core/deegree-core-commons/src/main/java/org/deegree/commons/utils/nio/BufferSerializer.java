@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,7 +32,7 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 
 package org.deegree.commons.utils.nio;
 
@@ -56,11 +56,11 @@ import com.sun.opengl.util.BufferUtil;
 
 /**
  * The <code>BufferSerializer</code> class TODO add class documentation here.
- *
+ * 
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
  * @author last edited by: $Author$
  * @version $Revision$, $Date$
- *
+ * 
  */
 public class BufferSerializer {
     private final static Logger LOG = LoggerFactory.getLogger( BufferSerializer.class );
@@ -70,7 +70,7 @@ public class BufferSerializer {
      * appropriately. Because of the ObjectOutputStream is not seekable, the serialized buffer will be corrupted if an
      * {@link IOException} occurs. The 'size' integer will in this case not be set to -1 and will not contain the
      * correct number of 'native-types' to read.
-     *
+     * 
      * @param buffer
      * @param out
      * @throws IOException
@@ -190,19 +190,19 @@ public class BufferSerializer {
      * an int and the read(s) thereafter will result in the number of values denoted by the first int value. Using this
      * class will result in a correct order. The following code will result in correct reading and writing of the
      * buffers:<code>
-     *
+     * 
      * FloatBuffer myFloatBuffer;
-     *
+     * 
      * private void writeObject( ObjectOutputStream out ){
      *    BufferSerializer.writeBufferToStream( out, myFloatBuffer );
      * }
-     *
+     * 
      * private void readObject( ObjectInputStream in ){
      *    myFloatBuffer = BufferSerializer.readFloatBufferFromStream( in );
      * }
      * </code>
      * </p>
-     *
+     * 
      * @param in
      * @param direct
      * @return the floatBuffer of <code>null</code> if no indication of the number of floats to read has been made.
@@ -243,19 +243,19 @@ public class BufferSerializer {
      * an int and the read(s) thereafter will result in the number of values denoted by the first int value. Using this
      * class will result in a correct order. The following code will result in correct reading and writing of the
      * buffers:<code>
-     *
+     * 
      * ByteBuffer myByteBuffer;
-     *
+     * 
      * private void writeObject( ObjectOutputStream out ){
      *    BufferSerializer.writeBufferToStream( out, myByteBuffer );
      * }
-     *
+     * 
      * private void readObject( ObjectInputStream in ){
      *    myByteBuffer = BufferSerializer.readByteBufferFromStream( in );
      * }
      * </code>
      * </p>
-     *
+     * 
      * @param in
      * @param direct
      * @return the floatBuffer of <code>null</code> if no indication of the number of floats to read has been made.

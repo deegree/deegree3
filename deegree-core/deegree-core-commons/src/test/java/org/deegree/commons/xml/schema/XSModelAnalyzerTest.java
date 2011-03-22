@@ -44,7 +44,6 @@ import javax.xml.namespace.QName;
 import org.apache.xerces.xs.XSComplexTypeDefinition;
 import org.apache.xerces.xs.XSConstants;
 import org.apache.xerces.xs.XSElementDeclaration;
-import org.apache.xerces.xs.XSModel;
 import org.apache.xerces.xs.XSModelGroup;
 import org.apache.xerces.xs.XSObjectList;
 import org.apache.xerces.xs.XSParticle;
@@ -104,16 +103,14 @@ public class XSModelAnalyzerTest {
         String schemaURL2 = "http://schemas.opengis.net/wfs/1.1.0/wfs.xsd";
 
         XMLSchemaInfoSet analyzer = new XMLSchemaInfoSet( schemaURL, schemaURL2 );
-        XSModel model = analyzer.getXSModel();
+        analyzer.getXSModel();
         XSElementDeclaration a = analyzer.getElementDecl( "Philosopher", "http://www.deegree.org/app" );
         XSElementDeclaration b = analyzer.getElementDecl( "FeatureCollection", "http://www.opengis.net/wfs" );
         LOG.debug( "" + a.getSubstitutionGroupAffiliation() );
         LOG.debug( "" + b.getSubstitutionGroupAffiliation().getSubstitutionGroupAffiliation() );
 
         QName abstractFeatureElementName = new QName( "http://www.opengis.net/gml", "_Feature" );
-        List<XSElementDeclaration> concreteFeatureElements = analyzer.getSubstitutions( abstractFeatureElementName,
-                                                                                        null, true, true );
-        // LOG.debug (concreteFeatureElements.size());
+        analyzer.getSubstitutions( abstractFeatureElementName, null, true, true );
     }
 
     // @Test

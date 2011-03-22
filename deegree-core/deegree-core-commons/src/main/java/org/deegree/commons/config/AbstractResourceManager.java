@@ -137,8 +137,9 @@ public abstract class AbstractResourceManager<T extends Resource> extends Abstra
     public void shutdown() {
         for ( T t : idToResource.values() ) {
             remove( t );
-            if ( t != null )
+            if ( t != null ) {
                 t.destroy();
+            }
         }
         idToResource.clear();
         nsToProvider.clear();
@@ -212,6 +213,7 @@ public abstract class AbstractResourceManager<T extends Resource> extends Abstra
         }
     }
 
+    @Override
     protected ResourceProvider getProvider( File file ) {
         String namespace = null;
         try {
@@ -227,6 +229,7 @@ public abstract class AbstractResourceManager<T extends Resource> extends Abstra
         return null;
     }
 
+    @Override
     protected void remove( String id ) {
         idToResource.remove( id );
         idToState.remove( id );

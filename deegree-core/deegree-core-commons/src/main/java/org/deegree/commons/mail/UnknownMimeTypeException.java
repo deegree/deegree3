@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,16 +32,16 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 package org.deegree.commons.mail;
 
 /**
  * A UnknownMimetypeException is thrown if the MIME type is not supported.
- *
+ * 
  * @author <a href="mailto:tfr@users.sourceforge.net">Torsten Friebe</A>
- *
+ * 
  * @author last edited by: $Author$
- *
+ * 
  * @version $Revision$, $Date$
  */
 public class UnknownMimeTypeException extends Exception {
@@ -50,10 +50,12 @@ public class UnknownMimeTypeException extends Exception {
      *
      */
     private static final long serialVersionUID = -3326395686226436933L;
+
     private String mimeType;
 
     /**
      * Creates a exception with the given message and MIME type
+     * 
      * @param message
      * @param mimeType
      */
@@ -64,7 +66,7 @@ public class UnknownMimeTypeException extends Exception {
 
     /**
      * @return the name of the unknown mime type
-     *
+     * 
      */
     public String getMimeType() {
         return this.mimeType;

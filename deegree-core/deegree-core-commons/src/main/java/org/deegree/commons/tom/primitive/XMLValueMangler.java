@@ -135,20 +135,20 @@ public class XMLValueMangler {
     public static String internalToXML( Object o ) {
         String xml = null;
         if ( o != null ) {
-//            PrimitiveType pt = PrimitiveType.determinePrimitiveType( o );
-//            switch ( pt ) {
-//            case BOOLEAN:
-//            case DATE:
-//            case DATE_TIME:
-//            case DECIMAL:
-//            case DOUBLE:
-//            case INTEGER:
-//            case STRING:
-//            case TIME:
-                // TODO is this always sufficient?
-                xml = o.toString();
-//                break;
-//            }
+            // PrimitiveType pt = PrimitiveType.determinePrimitiveType( o );
+            // switch ( pt ) {
+            // case BOOLEAN:
+            // case DATE:
+            // case DATE_TIME:
+            // case DECIMAL:
+            // case DOUBLE:
+            // case INTEGER:
+            // case STRING:
+            // case TIME:
+            // TODO is this always sufficient?
+            xml = o.toString();
+            // break;
+            // }
         }
         return xml;
     }
@@ -215,11 +215,11 @@ public class XMLValueMangler {
             return PrimitiveType.INTEGER;
         }
 
-        // true, false
-        case XSConstants.BOOLEAN_DT:{
+            // true, false
+        case XSConstants.BOOLEAN_DT: {
             return PrimitiveType.BOOLEAN;
         }
-        
+
             // other types
         case XSConstants.ANYSIMPLETYPE_DT:
         case XSConstants.ANYURI_DT:
@@ -249,6 +249,6 @@ public class XMLValueMangler {
             return PrimitiveType.STRING;
         }
         }
-        throw new IllegalArgumentException( "Unexpected simple type: " + xsdTypeDef);
+        throw new IllegalArgumentException( "Unexpected simple type: " + xsdTypeDef );
     }
 }

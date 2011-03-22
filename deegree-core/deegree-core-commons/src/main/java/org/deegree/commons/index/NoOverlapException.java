@@ -48,6 +48,11 @@ package org.deegree.commons.index;
 public class NoOverlapException extends Exception {
 
     /**
+     * 
+     */
+    private static final long serialVersionUID = 7034200118893198908L;
+
+    /**
      * @param string
      */
     public NoOverlapException( String string ) {

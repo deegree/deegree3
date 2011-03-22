@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,7 +32,7 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 
 package org.deegree.commons.utils.jaxb;
 
@@ -55,13 +55,13 @@ import org.deegree.commons.xml.stax.IndentingXMLStreamWriter;
 /**
  * The <code>CreateExternalBindings</code> is a little utitly class, which writes a jaxb binding file by reading java
  * files from a 'configuration' package and create a map=false schema binding file for those classes.
- *
+ * 
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- *
+ * 
  * @author last edited by: $Author$
- *
+ * 
  * @version $Revision$, $Date$
- *
+ * 
  */
 public class CreateExternalBindings {
 
@@ -122,9 +122,9 @@ public class CreateExternalBindings {
         factory.setProperty( "javax.xml.stream.isRepairingNamespaces", Boolean.TRUE );
         FileOutputStream fos = new FileOutputStream( targetFile );
         XMLStreamWriter writer = new IndentingXMLStreamWriter(
-                                                                factory.createXMLStreamWriter( new OutputStreamWriter(
-                                                                                                                       fos,
-                                                                                                                       "UTF-8" ) ) );
+                                                               factory.createXMLStreamWriter( new OutputStreamWriter(
+                                                                                                                      fos,
+                                                                                                                      "UTF-8" ) ) );
         writeBindings( classes, writer, targetSchemaFile, ns, packageName );
         writer.flush();
         System.out.println( "Successfully wrote external-bindings file: " + target.getAbsoluteFile().toString() );
@@ -289,15 +289,15 @@ public class CreateExternalBindings {
     }
 
     /**
-     *
+     * 
      * The <code>CustomFileFilter</code> class adds functionality to the filefilter mechanism of the JFileChooser.
-     *
+     * 
      * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
-     *
+     * 
      * @author last edited by: $Author$
-     *
+     * 
      * @version $Revision$, $Date$
-     *
+     * 
      */
     static class CustomFileFilter implements java.io.FileFilter {
 

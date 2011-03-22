@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,7 +32,7 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 
 package org.deegree.commons.utils;
 
@@ -44,11 +44,11 @@ import java.util.GregorianCalendar;
 /**
  * The <code>SunInfo</code> supplies methods for the calculation of the sun position at a given time and latitude. The
  * color of the sunlight may be requested as well.
- *
+ * 
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
  * @author last edited by: $Author$
  * @version $Revision$, $Date$
- *
+ * 
  */
 public class SunInfo {
 
@@ -81,7 +81,7 @@ public class SunInfo {
 
     /**
      * Constructs a sunposition with the given Calendar
-     *
+     * 
      * @param calendar
      *            a given Calendar
      */
@@ -100,24 +100,28 @@ public class SunInfo {
     public SunInfo( int year, int month, int day, int hour, int minute ) {
         this.year = year;
         this.month = month;
-        if ( month <= 0 || month > 12 )
+        if ( month <= 0 || month > 12 ) {
             this.month = 1;
+        }
         this.day = day;
-        if ( day <= 0 || day > 32 )
+        if ( day <= 0 || day > 32 ) {
             this.day = 1;
+        }
         this.hour = hour;
-        if ( hour < 0 || hour >= 24 )
+        if ( hour < 0 || hour >= 24 ) {
             this.hour = 0;
+        }
         this.minute = minute;
-        if ( minute < 0 || minute >= 60 )
+        if ( minute < 0 || minute >= 60 ) {
             this.minute = 0;
+        }
 
         daysSinceVernalEquinox = getDaySinceVernalEquinox();
     }
 
     /**
      * calculates the solar altitude for given latitude, year, month, date, hour and minute
-     *
+     * 
      * @param latitude
      *            latitude of the the viewers position
      * @return the solar altitude in radians for the given latitude
@@ -142,7 +146,7 @@ public class SunInfo {
 
     /**
      * calculates the horizontal angle of the sun depending only on hour and minute!
-     *
+     * 
      * @return the horizontal angle in radians
      */
     public double getHorizontalSunPosition() {
@@ -169,7 +173,7 @@ public class SunInfo {
 
     /**
      * Get the euclidean position of the sun.
-     *
+     * 
      * @param latitude
      * @return the euclidean position of the sun.
      */
@@ -182,9 +186,9 @@ public class SunInfo {
     /**
      * This method calculates the color of the sunlight for the current time and the given latitude. This method is
      * taken from deegree2, the values are undocumented.
-     *
+     * 
      * @param latitude
-     *
+     * 
      * @return a the color of the sunlight for the given latitude.
      */
     public float[] calculateSunlight( double latitude ) {

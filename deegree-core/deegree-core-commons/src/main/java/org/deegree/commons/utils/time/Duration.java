@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,7 +32,7 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 package org.deegree.commons.utils.time;
 
 import java.util.Calendar;
@@ -41,24 +41,30 @@ import java.util.TimeZone;
 
 /**
  * This class stores a time duration.
- *
+ * 
  * <p>
  * A {@link Duration} object is immutable.
- *
+ * 
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
  * @author last edited by: $Author$
- *
+ * 
  * @version $Revision$, $Date$
- *
+ * 
  */
 public class Duration {
 
     private final static TimeZone GMT = TimeZone.getTimeZone( "GMT" );
+
     private final int years;
+
     private final int months;
+
     private final int days;
+
     private final int hours;
+
     private final int minutes;
+
     private final int seconds;
 
     /**
@@ -83,7 +89,7 @@ public class Duration {
      * @return a new date that is before the given date
      */
     public Date getDateBefore( Date date ) {
-        Calendar tmp = Calendar.getInstance(GMT);
+        Calendar tmp = Calendar.getInstance( GMT );
         tmp.setTime( date );
         tmp.add( Calendar.YEAR, -years );
         tmp.add( Calendar.MONTH, -months );
@@ -99,7 +105,7 @@ public class Duration {
      * @return a new date that is after the given date
      */
     public Date getDateAfter( Date date ) {
-        Calendar tmp = Calendar.getInstance(GMT);
+        Calendar tmp = Calendar.getInstance( GMT );
         tmp.setTime( date );
         tmp.add( Calendar.YEAR, years );
         tmp.add( Calendar.MONTH, months );
@@ -112,16 +118,12 @@ public class Duration {
 
     @Override
     public boolean equals( Object obj ) {
-        if ( obj == null || ! (obj instanceof Duration) ) {
+        if ( obj == null || !( obj instanceof Duration ) ) {
             return false;
         }
         Duration that = (Duration) obj;
-        return this.years == that.years
-            && this.months == that.months
-            && this.days == that.days
-            && this.hours == that.hours
-            && this.minutes == that.minutes
-            && this.seconds == that.seconds;
+        return this.years == that.years && this.months == that.months && this.days == that.days
+               && this.hours == that.hours && this.minutes == that.minutes && this.seconds == that.seconds;
     }
 
     @Override

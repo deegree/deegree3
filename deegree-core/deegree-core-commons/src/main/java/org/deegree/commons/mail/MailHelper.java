@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,7 +32,7 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 package org.deegree.commons.mail;
 
 import java.io.File;
@@ -57,12 +57,12 @@ import org.slf4j.LoggerFactory;
 
 /**
  * A helper class to create and send mail.
- *
+ * 
  * @author <a href="mailto:tfr@users.sourceforge.net">Torsten Friebe </A>
  * @author last edited by: $Author$
- *
+ * 
  * @version $Revision$,$Date$
- *
+ * 
  * @see javax.mail.Message
  * @see javax.mail.internet.MimeMessage
  */
@@ -73,7 +73,7 @@ public final class MailHelper {
 
     /**
      * Creates a mail helper to send a message.
-     *
+     * 
      */
     public MailHelper() {
         // empty constructors are not necessary...
@@ -81,12 +81,12 @@ public final class MailHelper {
 
     /**
      * This method creates an email message and sends it using the J2EE mail services
-     *
+     * 
      * @param eMess
      *            a email message
      * @param mailHost
      *            name of the SMTP host
-     *
+     * 
      * @throws SendMailException
      *             an exception if the message is undeliverable
      */
@@ -99,7 +99,7 @@ public final class MailHelper {
 
     /**
      * This method creates an email message and sends it using the J2EE mail services
-     *
+     * 
      * @param eMess
      *            a email message
      * @param mailHost
@@ -119,7 +119,7 @@ public final class MailHelper {
 
     /**
      * This method creates an email message and sends it using the J2EE mail services
-     *
+     * 
      * @param eMess
      *            a email message
      * @param mailHost
@@ -139,14 +139,14 @@ public final class MailHelper {
 
     /**
      * This method creates an email message and sends it using the J2EE mail services
-     *
+     * 
      * @param eMess
      *            a email message
      * @param session
-     *
+     * 
      * @throws SendMailException
      *             an exception if the message is undeliverable
-     *
+     * 
      * @see javax.mail.Transport
      * @see <a href="http://java.sun.com/j2ee/tutorial/1_3-fcs/doc/Resources4.html#63060">J2EE Mail Session connection
      *      </a>
@@ -158,7 +158,7 @@ public final class MailHelper {
 
     /**
      * This method creates an email message and sends it using the J2EE mail services
-     *
+     * 
      * @param eMess
      *            an email message
      * @param session
@@ -220,7 +220,7 @@ public final class MailHelper {
 
     /**
      * This method creates an email message and sends it using the J2EE mail services
-     *
+     * 
      * @param eMess
      *            an email message
      * @param session

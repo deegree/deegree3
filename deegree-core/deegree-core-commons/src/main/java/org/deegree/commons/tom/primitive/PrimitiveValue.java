@@ -151,7 +151,7 @@ public class PrimitiveValue implements TypedObjectNode, Comparable<PrimitiveValu
     @Override
     public int compareTo( PrimitiveValue o ) {
         Pair<Object, Object> comparables = makeComparable( value, o.value );
-        return ( (Comparable) comparables.first ).compareTo( ( (Comparable) comparables.second ) );
+        return ( (Comparable) comparables.first ).compareTo( ( comparables.second ) );
     }
 
     @Override

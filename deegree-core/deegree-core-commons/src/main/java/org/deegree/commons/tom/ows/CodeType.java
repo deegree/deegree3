@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,7 +32,7 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 
 package org.deegree.commons.tom.ows;
 
@@ -43,10 +43,10 @@ import org.deegree.commons.utils.kvp.InvalidParameterValueException;
  * Name or code with an (optional) authority. If the codeSpace attribute is present, its value shall reference a
  * dictionary, thesaurus, or authority for the name or code, such as the organisation who assigned the value, or the
  * dictionary from which it is taken.
- *
+ * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author: schneider $
- *
+ * 
  * @version $Revision: $, $Date: $
  */
 public class CodeType implements TypedObjectNode {
@@ -57,7 +57,7 @@ public class CodeType implements TypedObjectNode {
 
     /**
      * Returns a new {@link CodeType} instance without authority.
-     *
+     * 
      * @param code
      *            code value, not null
      * @throws InvalidParameterValueException
@@ -72,7 +72,7 @@ public class CodeType implements TypedObjectNode {
 
     /**
      * Returns a new {@link CodeType} instance with optional authority.
-     *
+     * 
      * @param code
      *            code value, not null
      * @param codeSpace
@@ -90,7 +90,7 @@ public class CodeType implements TypedObjectNode {
 
     /**
      * Returns the code value.
-     *
+     * 
      * @return the code value, never null
      */
     public String getCode() {
@@ -99,7 +99,7 @@ public class CodeType implements TypedObjectNode {
 
     /**
      * Returns the authority of the code.
-     *
+     * 
      * @return the authority of the code or null if unspecified
      */
     public String getCodeSpace() {

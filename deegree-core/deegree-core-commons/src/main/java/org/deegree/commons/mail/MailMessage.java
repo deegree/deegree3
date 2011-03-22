@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,16 +32,16 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 package org.deegree.commons.mail;
 
 /**
  * Interface of a email message.
- *
+ * 
  * @author <a href="mailto:tfr@users.sourceforge.net">Torsten Friebe</A>
- *
+ * 
  * @author last edited by: $Author$
- *
+ * 
  * @version $Revision$, $Date$
  */
 
@@ -64,53 +64,53 @@ public interface MailMessage {
 
     /**
      * HTML mulitpart message with inline elements
-     *
+     * 
      * @see javax.mail.Part
      */
     short PART_INLINE = 0;
 
     /**
      * Mulitpart message with references
-     *
+     * 
      * @see javax.mail.Part
      */
     short PART_REF = 1;
 
     /**
      * Returns the subject.
-     *
-     *
+     * 
+     * 
      * @return the subjec string
      */
     String getSubject();
 
     /**
      * Returns the sender
-     *
-     *
+     * 
+     * 
      * @return the sender mail address
      */
     String getSender();
 
     /**
      * Returns the message body
-     *
+     * 
      * @return string representation of the message body
      */
     String getMessageBody();
 
     /**
      * Returns the receiver mail address
-     *
-     *
+     * 
+     * 
      * @return the mail address of the receiver
      */
     String getReceiver();
 
     /**
      * Sets the receiver mail address
-     *
-     *
+     * 
+     * 
      * @param to
      *            the receiver mail address
      */
@@ -118,7 +118,7 @@ public interface MailMessage {
 
     /**
      * Sets the message body
-     *
+     * 
      * @param message
      *            the string representation of the message body
      */
@@ -126,8 +126,8 @@ public interface MailMessage {
 
     /**
      * Sets the sender mail address.
-     *
-     *
+     * 
+     * 
      * @param from
      *            the sender mail address
      */
@@ -135,7 +135,7 @@ public interface MailMessage {
 
     /**
      * Sets the subject.
-     *
+     * 
      * @param title
      *            the message subject
      */
@@ -143,18 +143,18 @@ public interface MailMessage {
 
     /**
      * Return mail header including sender, receiver and subject.
-     *
+     * 
      * @return string with sender, receiver and subject
      */
     String getHeader();
 
     /**
      * Sets the MIME type of the message
-     *
+     * 
      * @param mimeType
      *            the MIME type as string
      * @throws UnknownMimeTypeException
-     *
+     * 
      * @see #PLAIN_TEXT
      * @see #TEXT_HTML
      * @see <a href="http://www.ietf.org/rfc/rfc1341.txt">IETF MIME RFC</a>
@@ -166,16 +166,16 @@ public interface MailMessage {
 
     /**
      * Returns the MIME type of the message body.
-     *
+     * 
      * @return the MIME type as a string
-     *
+     * 
      * @see javax.mail.Part#getContentType
      */
     String getMimeType();
 
     /**
      * Validates the message.
-     *
+     * 
      * @return <code>true</code> - if the message is complete, otherwise false.
      */
     boolean isValid();

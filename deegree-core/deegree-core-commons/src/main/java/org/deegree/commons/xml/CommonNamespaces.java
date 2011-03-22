@@ -58,7 +58,7 @@ public class CommonNamespaces {
      * The FES_20_NS namespace is currently bound to: "http://www.opengis.net/fes/2.0"
      */
     public static final String FES_20_NS = "http://www.opengis.net/fes/2.0";
-    
+
     public static final String FES_PREFIX = "fes";
 
     /**

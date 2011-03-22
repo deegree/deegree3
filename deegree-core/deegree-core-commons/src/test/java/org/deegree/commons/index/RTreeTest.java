@@ -55,8 +55,6 @@ import org.junit.Test;
  */
 public class RTreeTest {
 
-    private static final String STORAGE_PATH = "/org/deegree/commons/index/rtree_storage";;
-
     public int bigM = 4;
 
     float[] rootEnvelope = new float[] { 0, 0, 200, 200 };
@@ -169,7 +167,8 @@ public class RTreeTest {
     }
 
     @Test
-    public void testFromStorage() throws IOException {
+    public void testFromStorage()
+                            throws IOException {
         tree.writeTreeToDisk( "/tmp/rtree.txt" );
 
         tree = RTree.loadFromDisk( "/tmp/rtree.txt" );
