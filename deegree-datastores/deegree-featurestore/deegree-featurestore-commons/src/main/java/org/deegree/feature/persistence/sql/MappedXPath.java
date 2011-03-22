@@ -50,7 +50,6 @@ import org.deegree.feature.types.FeatureType;
 import org.deegree.feature.types.property.FeaturePropertyType;
 import org.deegree.feature.types.property.GeometryPropertyType;
 import org.deegree.feature.types.property.PropertyType;
-import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.expression.PropertyName;
 import org.deegree.filter.sql.DBField;
 import org.deegree.filter.sql.Join;
@@ -113,37 +112,34 @@ public class MappedXPath {
             steps.add( propName.getAsQName() );
         } else {
             LOG.debug( "XPath property name (not just a QName)." );
-            try {
-                Expr xpath = propName.getAsXPath();
-                if ( !( xpath instanceof LocationPath ) ) {
+
+            Expr xpath = propName.getAsXPath();
+            if ( !( xpath instanceof LocationPath ) ) {
+                String msg = "Unable to map PropertyName '" + propName.getAsText()
+                             + "': the root expression is not a LocationPath.";
+                LOG.debug( msg );
+                throw new UnmappableException( msg );
+            }
+            for ( Object step : ( (LocationPath) xpath ).getSteps() ) {
+                if ( !( step instanceof NameStep ) ) {
                     String msg = "Unable to map PropertyName '" + propName.getAsText()
-                                 + "': the root expression is not a LocationPath.";
+                                 + "': contains an expression that is not a NameStep.";
                     LOG.debug( msg );
                     throw new UnmappableException( msg );
                 }
-                for ( Object step : ( (LocationPath) xpath ).getSteps() ) {
-                    if ( !( step instanceof NameStep ) ) {
-                        String msg = "Unable to map PropertyName '" + propName.getAsText()
-                                     + "': contains an expression that is not a NameStep.";
-                        LOG.debug( msg );
-                        throw new UnmappableException( msg );
-                    }
-                    NameStep namestep = (NameStep) step;
-                    if ( namestep.getPredicates() != null && !namestep.getPredicates().isEmpty() ) {
-                        String msg = "Unable to map PropertyName '" + propName.getAsText()
-                                     + "': contains a NameStep with a predicate (needs implementation).";
-                        LOG.debug( msg );
-                        throw new UnmappableException( msg );
-                    }
-                    String prefix = namestep.getPrefix();
-                    String localPart = namestep.getLocalName();
-                    String namespace = propName.getNsContext().translateNamespacePrefixToUri( prefix );
-                    steps.add( new QName( namespace, localPart, prefix ) );
+                NameStep namestep = (NameStep) step;
+                if ( namestep.getPredicates() != null && !namestep.getPredicates().isEmpty() ) {
+                    String msg = "Unable to map PropertyName '" + propName.getAsText()
+                                 + "': contains a NameStep with a predicate (needs implementation).";
+                    LOG.debug( msg );
+                    throw new UnmappableException( msg );
                 }
-
-            } catch ( FilterEvaluationException e ) {
-                throw new UnmappableException( e.getMessage() );
+                String prefix = namestep.getPrefix();
+                String localPart = namestep.getLocalName();
+                String namespace = propName.getNsContext().translateNamespacePrefixToUri( prefix );
+                steps.add( new QName( namespace, localPart, prefix ) );
             }
+
         }
         map( schema, ftMapping, steps );
     }
