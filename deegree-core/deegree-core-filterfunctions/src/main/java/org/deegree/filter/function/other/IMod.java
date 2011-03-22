@@ -66,7 +66,7 @@ public class IMod implements FunctionProvider {
     public String getName() {
         return NAME;
     }
-    
+
     @Override
     public int getArgCount() {
         return 2;

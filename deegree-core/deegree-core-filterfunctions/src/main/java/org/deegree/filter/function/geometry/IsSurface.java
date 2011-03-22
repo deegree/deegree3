@@ -63,7 +63,7 @@ public class IsSurface implements FunctionProvider {
 
                 // TODO is handling of multi geometries like this ok?
                 boolean isSurface = geom instanceof Surface || geom instanceof MultiPolygon
-                                    || geom instanceof MultiSurface;
+                                    || geom instanceof MultiSurface<?>;
                 return new TypedObjectNode[] { new PrimitiveValue( Boolean.toString( isSurface ) ) };
             }
         };

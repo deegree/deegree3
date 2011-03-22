@@ -76,9 +76,9 @@ public class ExtraProp implements FunctionProvider {
             @Override
             public <T> TypedObjectNode[] evaluate( T obj, XPathEvaluator<T> xpathEvaluator )
                                     throws FilterEvaluationException {
-                if ( obj instanceof Feature && getParams()[0] instanceof Literal ) {
+                if ( obj instanceof Feature && getParams()[0] instanceof Literal<?> ) {
                     Feature f = (Feature) obj;
-                    String propName = ( (PrimitiveValue) ( (Literal) getParams()[0] ).getValue() ).getAsText();
+                    String propName = ( (PrimitiveValue) ( (Literal<?>) getParams()[0] ).getValue() ).getAsText();
                     ExtraProps extraProps = f.getExtraProperties();
                     if ( extraProps != null ) {
                         TypedObjectNode ton = extraProps.getProperty( propName );
