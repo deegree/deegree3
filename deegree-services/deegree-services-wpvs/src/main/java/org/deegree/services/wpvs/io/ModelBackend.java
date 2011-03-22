@@ -160,8 +160,7 @@ public abstract class ModelBackend<G> implements RenderableStore {
      * 
      * @return the list of prototypes or the empty list if an error occurred, never <code>null</code>.
      */
-    public abstract List<RenderablePrototype> loadProtoTypes( DirectGeometryBuffer geometryBuffer,
-                                                              ICRS baseCRS );
+    public abstract List<RenderablePrototype> loadProtoTypes( DirectGeometryBuffer geometryBuffer, ICRS baseCRS );
 
     /**
      * Retrieves the WorldRenderable objects from the backend.

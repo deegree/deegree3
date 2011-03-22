@@ -43,6 +43,8 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.deegree.commons.config.DeegreeWorkspace;
+import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.index.PositionableModel;
 import org.deegree.commons.utils.FileUtils;
 import org.deegree.cs.coordinatesystems.ICRS;
@@ -188,7 +190,6 @@ public class FileBackend extends ModelBackend<Envelope> {
 
     /**
      * @param objectType
-     * @return
      */
     private ModelFile<? extends PositionableModel> mapTypeToFile( Type objectType ) {
         switch ( objectType ) {
@@ -379,5 +380,14 @@ public class FileBackend extends ModelBackend<Envelope> {
                 file.createNewFile();
             }
         }
+    }
+
+    public void destroy() {
+        // nothing to cleanup
+    }
+
+    public void init( DeegreeWorkspace workspace )
+                            throws ResourceInitException {
+        // nothing to init
     }
 }

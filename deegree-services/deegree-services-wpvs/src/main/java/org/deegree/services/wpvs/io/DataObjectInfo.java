@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,7 +32,7 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 
 package org.deegree.services.wpvs.io;
 
@@ -42,13 +42,12 @@ import org.deegree.rendering.r3d.opengl.rendering.model.geometry.WorldRenderable
 
 /**
  * The <code>DataObjectInfo</code> class wraps the information needed to fill the backend into one class.
- *
+ * 
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
  * @author last edited by: $Author$
  * @version $Revision$, $Date$
- * @param
- *          <P>
- *
+ * @param <P>
+ * 
  */
 public class DataObjectInfo<P extends PositionableModel> {
 
@@ -85,7 +84,7 @@ public class DataObjectInfo<P extends PositionableModel> {
     }
 
     /**
-     *
+     * 
      * @param uuid
      * @param type
      * @param name

@@ -125,8 +125,8 @@ public class GetViewKVPAdapter {
         }
     }
 
-    private static Envelope getBoundingBox( Map<String, String> requestParams, ICRS coordinateSystem,
-                                            String encoding, double[] translationVector )
+    private static Envelope getBoundingBox( Map<String, String> requestParams, ICRS coordinateSystem, String encoding,
+                                            double[] translationVector )
                             throws OWSException {
         String boxstring = getRequired( requestParams, "BOUNDINGBOX" );
         try {
