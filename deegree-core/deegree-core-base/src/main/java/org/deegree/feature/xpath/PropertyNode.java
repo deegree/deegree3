@@ -35,6 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.feature.xpath;
 
+import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.feature.property.Property;
 
 /**
@@ -47,18 +48,18 @@ import org.deegree.feature.property.Property;
  */
 public class PropertyNode extends ElementNode<Property> {
 
-    private GMLObjectNode parent;
+    private GMLObjectNode<? extends TypedObjectNode, ? extends TypedObjectNode> parent;
 
     private Property prop;
 
-    PropertyNode( GMLObjectNode parent, final Property prop ) {
+    PropertyNode( GMLObjectNode<? extends TypedObjectNode, ? extends TypedObjectNode> parent, final Property prop ) {
         super( prop.getName() );
         this.parent = parent;
         this.prop = prop;
     }
 
     @Override
-    public XPathNode getParent() {
+    public GMLObjectNode<? extends TypedObjectNode, ? extends TypedObjectNode> getParent() {
         return parent;
     }
 

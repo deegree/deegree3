@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,7 +32,7 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 package org.deegree.feature.xpath;
 
 import javax.xml.namespace.QName;
@@ -41,23 +41,23 @@ import org.deegree.commons.tom.TypedObjectNode;
 
 /**
  * {@link XPathNode} that represents an XML element node.
- *
+ * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
- *
+ * 
  * @version $Revision:$, $Date:$
  */
 public abstract class ElementNode<V extends TypedObjectNode> implements XPathNode<V> {
 
     private QName name;
 
-    protected ElementNode (QName name) {
+    protected ElementNode( QName name ) {
         this.name = name;
     }
 
     public boolean isElement() {
         return true;
-    }   
+    }
 
     public String getLocalName() {
         return name.getLocalPart();
@@ -66,7 +66,7 @@ public abstract class ElementNode<V extends TypedObjectNode> implements XPathNod
     public String getPrefixedName() {
         String prefixedName = "";
         String prefix = name.getPrefix();
-        if (prefix != null && prefix.length() > 0) {
+        if ( prefix != null && prefix.length() > 0 ) {
             prefixedName = prefix + ":";
         }
         prefixedName += name.getLocalPart();

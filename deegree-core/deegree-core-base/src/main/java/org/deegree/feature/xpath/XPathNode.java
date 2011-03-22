@@ -52,12 +52,10 @@ public interface XPathNode<V extends TypedObjectNode> {
      * 
      * @return the parent node or <code>null</code> if this is the root node
      */
-    public XPathNode getParent();
-    
+    public XPathNode<? extends TypedObjectNode> getParent();
+
     /**
-     * Returns the value of the node.
-     * 
-     * @return
+     * @return the value of the node.
      */
     public V getValue();
 

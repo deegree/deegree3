@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,24 +32,25 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 package org.deegree.feature.xpath;
 
+import org.deegree.feature.Feature;
 import org.deegree.gml.GMLObject;
 
 /**
  * {@link XPathNode} that represents an XML document node.
- *
+ * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author$
- *
+ * 
  * @version $Revision$, $Date$
  */
-class DocumentNode implements XPathNode<GMLObject> {
+class DocumentNode implements XPathNode<Feature> {
 
-    private final GMLObjectNode rootNode;
+    private final GMLObjectNode<Feature, ? extends GMLObject> rootNode;
 
-    DocumentNode (GMLObjectNode rootNode) {
+    DocumentNode( GMLObjectNode<Feature, ? extends GMLObject> rootNode ) {
         this.rootNode = rootNode;
     }
 
@@ -58,16 +59,16 @@ class DocumentNode implements XPathNode<GMLObject> {
     }
 
     @Override
-    public XPathNode getParent() {
+    public XPathNode<? extends GMLObject> getParent() {
         return null;
     }
-    
-    public GMLObjectNode getRootNode () {
+
+    public GMLObjectNode<Feature, ? extends GMLObject> getRootNode() {
         return rootNode;
     }
 
     @Override
-    public GMLObject getValue() {
+    public Feature getValue() {
         return rootNode.getValue();
     }
 }

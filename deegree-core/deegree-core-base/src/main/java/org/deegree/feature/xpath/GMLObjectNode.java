@@ -37,6 +37,7 @@ package org.deegree.feature.xpath;
 
 import javax.xml.namespace.QName;
 
+import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.feature.Feature;
 import org.deegree.geometry.Geometry;
 import org.deegree.gml.GMLObject;
@@ -52,13 +53,13 @@ import org.deegree.gml.GMLVersion;
  * 
  * @version $Revision:$, $Date:$
  */
-public class GMLObjectNode<V extends GMLObject> extends ElementNode<V> {
+public class GMLObjectNode<V extends GMLObject, P extends TypedObjectNode> extends ElementNode<V> {
 
-    private XPathNode parentNode;
+    private XPathNode<P> parentNode;
 
     private V object;
 
-    public GMLObjectNode( XPathNode parentNode, V object, GMLVersion version ) {
+    public GMLObjectNode( XPathNode<P> parentNode, V object, GMLVersion version ) {
         super( getName( object, version ) );
         this.parentNode = parentNode;
         this.object = object;
@@ -76,7 +77,7 @@ public class GMLObjectNode<V extends GMLObject> extends ElementNode<V> {
     }
 
     @Override
-    public XPathNode getParent() {
+    public XPathNode<P> getParent() {
         return parentNode;
     }
 
