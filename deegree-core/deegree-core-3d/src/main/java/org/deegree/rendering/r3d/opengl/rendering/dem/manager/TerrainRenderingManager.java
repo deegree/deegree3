@@ -435,7 +435,6 @@ public class TerrainRenderingManager {
      * @param glRenderContext
      * @param zScale
      * @param textureManagers
-     * @return
      */
     private Set<RenderMeshFragment> getNewLOD( RenderContext glRenderContext, float zScale,
                                                TextureManager[] textureManagers ) {

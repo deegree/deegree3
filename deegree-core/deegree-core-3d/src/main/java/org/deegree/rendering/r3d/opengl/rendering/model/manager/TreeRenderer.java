@@ -65,7 +65,7 @@ import com.sun.opengl.util.texture.Texture;
  * @version $Revision$, $Date$
  * 
  */
-public class TreeRenderer extends RenderableManager<BillBoard>{
+public class TreeRenderer extends RenderableManager<BillBoard> {
 
     private final static org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger( TreeRenderer.class );
 
@@ -205,31 +205,6 @@ public class TreeRenderer extends RenderableManager<BillBoard>{
                        + " ms" );
         } else {
             LOG.debug( "Not rendering any trees." );
-        }
-
-    }
-
-    private class TreeComparator implements Comparator<BillBoard> {
-        private float[] eye;
-
-        /**
-         * @param eye
-         *            to compare this billboard to.
-         * 
-         */
-        public TreeComparator( Point3d eye ) {
-            this.eye = new float[] { (float) eye.x, (float) eye.y, (float) eye.z };
-        }
-
-        @Override
-        public int compare( BillBoard o1, BillBoard o2 ) {
-            int res = o1.getTextureID().compareTo( o2.getTextureID() );
-            if ( res == 0 ) {
-                float distA = Vectors3f.distance( eye, o1.getPosition() );
-                float distB = Vectors3f.distance( eye, o2.getPosition() );
-                res = -Float.compare( distA, distB );
-            }
-            return res;
         }
 
     }

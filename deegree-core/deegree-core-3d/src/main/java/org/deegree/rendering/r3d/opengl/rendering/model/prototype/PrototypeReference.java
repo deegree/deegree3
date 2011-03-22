@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,7 +32,7 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 
 package org.deegree.rendering.r3d.opengl.rendering.model.prototype;
 
@@ -43,13 +43,13 @@ import org.deegree.commons.utils.memory.AllocatedHeapMemory;
 /**
  * The <code>PrototypeData</code> saves information of a prototype, and the transformation matrix to apply before
  * rendering the prototype.
- *
+ * 
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- *
+ * 
  * @author last edited by: $Author$
- *
+ * 
  * @version $Revision$, $Date$
- *
+ * 
  */
 public class PrototypeReference implements Serializable {
 
@@ -72,7 +72,7 @@ public class PrototypeReference implements Serializable {
 
     /**
      * Construct a reference to a prototype, by supplying an id and the transformations
-     *
+     * 
      * @param prototypeID
      * @param angle
      * @param location

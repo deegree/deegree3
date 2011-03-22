@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,7 +32,7 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 
 package org.deegree.rendering.r3d.opengl.rendering.model.prototype;
 
@@ -52,13 +52,13 @@ import org.deegree.rendering.r3d.opengl.rendering.model.geometry.RenderableQuali
  * The <code>PrototypePool</code> holds a set of prototyes which can be referenced by supplying their id. Before the
  * rendering of the prototype the translation, rotation and scale will ge applied to the modelview matrix. This implies,
  * that each prototype should be defined between [0,1] at the origin.
- *
+ * 
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- *
+ * 
  * @author last edited by: $Author$
- *
+ * 
  * @version $Revision$, $Date$
- *
+ * 
  */
 public class PrototypePool {
     private final static org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger( PrototypePool.class );
@@ -103,9 +103,6 @@ public class PrototypePool {
         context.glPopMatrix();
     }
 
-    /**
-     * @return
-     */
     private static RenderablePrototype createBoxPrototype() {
         RenderableQualityModel rqm = new RenderableQualityModel();
 

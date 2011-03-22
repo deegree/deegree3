@@ -63,6 +63,11 @@ import org.deegree.rendering.r3d.ViewParams;
  */
 public class QTModelScene<T extends PositionableModel> extends QTree<T> {
 
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 3400650143709933646L;
+
     // the most significant error of a node.
     private float maxError = Float.MIN_VALUE;
 

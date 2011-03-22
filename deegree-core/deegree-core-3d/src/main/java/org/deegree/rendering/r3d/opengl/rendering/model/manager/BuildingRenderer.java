@@ -38,14 +38,11 @@ package org.deegree.rendering.r3d.opengl.rendering.model.manager;
 
 import java.nio.FloatBuffer;
 import java.util.Collection;
-import java.util.Comparator;
 import java.util.Iterator;
 import java.util.Set;
 
 import javax.media.opengl.GL;
-import javax.vecmath.Point3d;
 
-import org.deegree.commons.utils.math.Vectors3f;
 import org.deegree.geometry.Envelope;
 import org.deegree.rendering.r3d.ViewParams;
 import org.deegree.rendering.r3d.opengl.rendering.RenderContext;
@@ -60,7 +57,7 @@ import org.deegree.rendering.r3d.opengl.rendering.model.geometry.WorldRenderable
  * @version $Revision$, $Date$
  * 
  */
-public class BuildingRenderer extends RenderableManager<WorldRenderableObject>  {
+public class BuildingRenderer extends RenderableManager<WorldRenderableObject> {
 
     private final static org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger( BuildingRenderer.class );
 
@@ -107,7 +104,7 @@ public class BuildingRenderer extends RenderableManager<WorldRenderableObject>  
         long begin = System.currentTimeMillis();
         ViewParams params = glRenderContext.getViewParams();
         GL context = glRenderContext.getContext();
-        Point3d eye = params.getViewFrustum().getEyePos();
+        params.getViewFrustum().getEyePos();
         Set<WorldRenderableObject> buildings = getObjects( params );
         if ( !buildings.isEmpty() ) {
             // List<WorldRenderableObject> allBuildings = new ArrayList<WorldRenderableObject>( buildings );
@@ -134,37 +131,6 @@ public class BuildingRenderer extends RenderableManager<WorldRenderableObject>  
             }
         } else {
             LOG.debug( "Not rendering any buildings." );
-        }
-
-    }
-
-    /**
-     * 
-     * The <code>DistComparator</code> class compares two renderable objects' positions and sorts them to their negative
-     * distance to the given viewer location.
-     * 
-     * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
-     * @author last edited by: $Author$
-     * @version $Revision$, $Date$
-     * 
-     */
-    private class DistComparator implements Comparator<WorldRenderableObject> {
-        private float[] eye;
-
-        /**
-         * @param eye
-         *            to compare this billboard to.
-         * 
-         */
-        public DistComparator( Point3d eye ) {
-            this.eye = new float[] { (float) eye.x, (float) eye.y, (float) eye.z };
-        }
-
-        @Override
-        public int compare( WorldRenderableObject o1, WorldRenderableObject o2 ) {
-            float distA = Vectors3f.distance( eye, o1.getPosition() );
-            float distB = Vectors3f.distance( eye, o2.getPosition() );
-            return -Float.compare( distA, distB );
         }
 
     }

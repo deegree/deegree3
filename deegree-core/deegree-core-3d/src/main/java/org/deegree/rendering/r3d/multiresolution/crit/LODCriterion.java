@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,7 +32,7 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 package org.deegree.rendering.r3d.multiresolution.crit;
 
 import org.deegree.rendering.r3d.multiresolution.Arc;
@@ -43,14 +43,14 @@ import org.deegree.rendering.r3d.multiresolution.SpatialSelection;
 /**
  * Interface for LOD criteria, i.e. functions that determine whether {@link Arc}s in the DAG have to be "applied" (the
  * arcs correspond to mesh refinements) during <i>selective refinement</i> / <i>spatial selection</i>.
- *
+ * 
  * @see MultiresolutionMesh
  * @see SelectiveRefinement
  * @see SpatialSelection
- *
+ * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
- *
+ * 
  * @version $Revision$
  */
 public interface LODCriterion {
@@ -69,7 +69,7 @@ public interface LODCriterion {
 
     /**
      * Checks whether the given {@link Arc} is necessary in order to satisfy this LOD criterion.
-     *
+     * 
      * @param arc
      *            arc to be checked
      * @return true, if the arc is necessary, false otherwise

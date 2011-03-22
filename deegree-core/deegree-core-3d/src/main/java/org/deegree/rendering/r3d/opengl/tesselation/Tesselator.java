@@ -51,8 +51,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The <code>Tesselator</code> class is a {@link GLUtessellator} utility wrapper. Its main purpose is the creation of
- * a {@link RenderableQualityModel} out of a {@link GeometryQualityModel} by triangulating (tesselating) all it's
+ * The <code>Tesselator</code> class is a {@link GLUtessellator} utility wrapper. Its main purpose is the creation of a
+ * {@link RenderableQualityModel} out of a {@link GeometryQualityModel} by triangulating (tesselating) all it's
  * {@link SimpleAccessGeometry}.
  * 
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
@@ -163,7 +163,6 @@ public class Tesselator {
      * 
      * @param tess
      * @param geom
-     * @return
      */
     private final GeometryCallBack createAndRegisterCallBack( GLUtessellator tess, SimpleAccessGeometry geom ) {
         final GeometryCallBack callBack;
@@ -180,8 +179,6 @@ public class Tesselator {
      * Tesselate the given geometry with respect to the innerrings and texture coordinates.
      * 
      * @param tess
-     * @param geom
-     * @return
      */
     @SuppressWarnings("null")
     private final RenderableGeometry tesselatePolygon( GLUtessellator tess, GeometryCallBack callBack ) {
@@ -225,11 +222,9 @@ public class Tesselator {
     /**
      * Tesselate a ring indexed by the begin and end vertices not array positions.
      * 
-     * @param glu
      * @param tess
      * @param begin
      * @param end
-     * @param coords
      * @param callBack
      */
     private final void tesselateRing( GLUtessellator tess, int begin, int end, GeometryCallBack callBack ) {

@@ -290,7 +290,6 @@ public class RenderMeshFragment implements Comparable<RenderMeshFragment> {
 
     /**
      * @param textures
-     * @param fragShaderProgramId
      */
     private void enableAndRenderTextures( GL gl, List<FragmentTexture> textures, ShaderProgram shaderProgram ) {
         // render with or without texture

@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,19 +32,19 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 
 package org.deegree.rendering.r3d.opengl.tesselation;
 
 /**
  * The <code>TexturedVertex</code> a textured vertex.
- *
+ * 
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- *
+ * 
  * @author last edited by: $Author$
- *
+ * 
  * @version $Revision$, $Date$
- *
+ * 
  */
 public class TexturedVertex extends Vertex {
 
@@ -54,7 +54,7 @@ public class TexturedVertex extends Vertex {
 
     /**
      * Construct a textured vertex and calculate it's values from the given vertices
-     *
+     * 
      * @param coordinates
      *            of the vertex may not be <code>null</code> and must have a length of 3
      */
@@ -67,7 +67,7 @@ public class TexturedVertex extends Vertex {
 
     /**
      * Use the weights to calculate the u/v coordinates of this vertex
-     *
+     * 
      * @param otherVertices
      *            used to create this vertex
      * @param weights
@@ -89,7 +89,7 @@ public class TexturedVertex extends Vertex {
 
     /**
      * Construct a textured vertex with a white color and a 1,0,0 normal.
-     *
+     * 
      * @param coordinates
      *            of the vertex may not be <code>null</code> and must have a length of 3
      * @param textureCoordinates
@@ -101,7 +101,7 @@ public class TexturedVertex extends Vertex {
 
     /**
      * Construct a textured vertex with given color and normal.
-     *
+     * 
      * @param coordinates
      *            of the vertex may not be <code>null</code> and must have a length of 3
      * @param normal
@@ -119,7 +119,7 @@ public class TexturedVertex extends Vertex {
     }
 
     /**
-     *
+     * 
      * @return the u and v (x,y) texture coordinates of this vertex.
      */
     public float[] getTextureCoords() {

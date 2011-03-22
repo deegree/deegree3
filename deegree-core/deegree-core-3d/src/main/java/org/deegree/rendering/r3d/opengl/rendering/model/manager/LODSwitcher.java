@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,7 +32,7 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 
 package org.deegree.rendering.r3d.opengl.rendering.model.manager;
 
@@ -49,11 +49,11 @@ import org.deegree.rendering.r3d.opengl.rendering.model.geometry.WorldRenderable
 /**
  * The <code>LODSwitcher</code> holds (configured) scale values for a {@link WorldRenderableObject} with which the
  * latter can decide which LOD it should use to represent it self. The values are supposed to be units per pixel.
- *
+ * 
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
  * @author last edited by: $Author$
  * @version $Revision$, $Date$
- *
+ * 
  */
 public class LODSwitcher {
 
@@ -66,7 +66,7 @@ public class LODSwitcher {
 
     /**
      * Create a new lod switch containing no levels.
-     *
+     * 
      */
     public LODSwitcher() {
         this( null );
@@ -74,7 +74,7 @@ public class LODSwitcher {
 
     /**
      * Create a new level
-     *
+     * 
      * @param levels
      */
     public LODSwitcher( List<Pair<Double, Double>> levels ) {
@@ -113,7 +113,7 @@ public class LODSwitcher {
     }
 
     /**
-     *
+     * 
      * @param glRenderContext
      * @param position
      * @param maxNumberOfLevels

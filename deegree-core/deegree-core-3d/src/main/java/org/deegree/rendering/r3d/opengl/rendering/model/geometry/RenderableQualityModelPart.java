@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,7 +32,7 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 
 package org.deegree.rendering.r3d.opengl.rendering.model.geometry;
 
@@ -42,11 +42,11 @@ import org.deegree.rendering.r3d.opengl.rendering.RenderContext;
 
 /**
  * The <code>RenderableQualityModelPart</code> a part of a {@link RenderableQualityModel}, normally a geometry.
- *
+ * 
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
  * @author last edited by: $Author$
  * @version $Revision$, $Date$
- *
+ * 
  */
 public interface RenderableQualityModelPart extends QualityModelPart, JOGLRenderable {
 
@@ -64,7 +64,7 @@ public interface RenderableQualityModelPart extends QualityModelPart, JOGLRender
      * This method is a more specific render method than the {@link JOGLRenderable#render(RenderContext)}, it defines a
      * contract that the geometryBuffer holds the geometry for the implementation and the implementation holds indizes
      * which are valid for the given buffer.
-     *
+     * 
      * @param glRenderContext
      *            holding all relevant data for the current gl context.
      * @param geometryBuffer

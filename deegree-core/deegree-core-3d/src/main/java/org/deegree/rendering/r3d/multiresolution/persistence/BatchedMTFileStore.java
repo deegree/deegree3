@@ -32,7 +32,7 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 package org.deegree.rendering.r3d.multiresolution.persistence;
 
 import java.io.File;
@@ -40,8 +40,9 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
 
+import org.deegree.commons.config.DeegreeWorkspace;
+import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.utils.nio.DirectByteBufferPool;
-import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.rendering.r3d.multiresolution.MultiresolutionMesh;
 
 /**
@@ -54,18 +55,24 @@ import org.deegree.rendering.r3d.multiresolution.MultiresolutionMesh;
  */
 public class BatchedMTFileStore implements BatchedMTStore {
 
-    private ICRS crs;
-    
     private MultiresolutionMesh mesh;
 
-    public BatchedMTFileStore( ICRS crs, URL dir, int maxDirectMemBytes ) throws IOException, URISyntaxException {
-        this.crs = crs;
+    public BatchedMTFileStore( URL dir, int maxDirectMemBytes ) throws IOException, URISyntaxException {
         DirectByteBufferPool pool = new DirectByteBufferPool( maxDirectMemBytes, "TODO" );
-        mesh = new MultiresolutionMesh( new File (dir.toURI()), pool );
+        mesh = new MultiresolutionMesh( new File( dir.toURI() ), pool );
     }
 
     @Override
     public MultiresolutionMesh getMesh() {
         return mesh;
+    }
+
+    public void destroy() {
+        // nothing to cleanup
+    }
+
+    public void init( DeegreeWorkspace workspace )
+                            throws ResourceInitException {
+        // nothing to init
     }
 }
