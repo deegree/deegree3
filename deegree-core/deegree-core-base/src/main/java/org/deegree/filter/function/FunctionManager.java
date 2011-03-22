@@ -59,7 +59,7 @@ import org.slf4j.LoggerFactory;
  * 
  * @version $Revision$, $Date$
  */
-public class FunctionManager extends AbstractBasicResourceManager implements ResourceManager {
+public class FunctionManager extends AbstractBasicResourceManager {
 
     private static final Logger LOG = LoggerFactory.getLogger( FunctionManager.class );
 
@@ -110,7 +110,7 @@ public class FunctionManager extends AbstractBasicResourceManager implements Res
         return new Class[] { ProxyUtils.class, CRSManager.class };
     }
 
-    public ResourceManagerMetadata getMetadata() {
+    public ResourceManagerMetadata<?> getMetadata() {
         return null;
     }
 
@@ -131,14 +131,14 @@ public class FunctionManager extends AbstractBasicResourceManager implements Res
     public void activate( String id )
                             throws ResourceInitException {
         // TODO Auto-generated method stub
-        
+
     }
 
     @Override
     public void deactivate( String id )
                             throws ResourceInitException {
         // TODO Auto-generated method stub
-        
+
     }
 
     @Override
@@ -150,6 +150,6 @@ public class FunctionManager extends AbstractBasicResourceManager implements Res
     @Override
     protected void remove( String id ) {
         // TODO Auto-generated method stub
-        
+
     }
 }
