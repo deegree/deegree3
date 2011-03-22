@@ -35,21 +35,17 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.filter.function;
 
-import static org.deegree.commons.config.ResourceState.StateType.init_ok;
-
 import java.io.File;
-import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.ServiceLoader;
 
 import org.deegree.commons.config.AbstractBasicResourceManager;
 import org.deegree.commons.config.DeegreeWorkspace;
+import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.config.ResourceManager;
 import org.deegree.commons.config.ResourceManagerMetadata;
 import org.deegree.commons.config.ResourceProvider;
-import org.deegree.commons.config.ResourceState;
-import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.utils.ProxyUtils;
 import org.deegree.cs.persistence.CRSManager;
 import org.slf4j.Logger;

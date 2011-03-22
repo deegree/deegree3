@@ -80,6 +80,7 @@ public class Intersects extends SpatialOperator {
     /**
      * @return the propName
      */
+    @Override
     public PropertyName getPropName() {
         return propName;
     }

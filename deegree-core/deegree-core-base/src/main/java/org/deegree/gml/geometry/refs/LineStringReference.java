@@ -63,6 +63,7 @@ public class LineStringReference extends CurveReference<LineString> implements L
         super( resolver, uri, baseURL );
     }
 
+    @Override
     public CurveType getCurveType() {
         return CurveType.LineString;
     }

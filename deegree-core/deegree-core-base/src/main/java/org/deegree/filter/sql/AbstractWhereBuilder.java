@@ -314,7 +314,7 @@ public abstract class AbstractWhereBuilder {
                 Expression propName = propIsEqualTo.getParameter1();
                 Expression literal = propIsEqualTo.getParameter2();
                 if ( propName instanceof PropertyName && literal instanceof Literal ) {
-                    PropertyIsLike propIsLike = buildIsLike( (PropertyName) propName, (Literal<?>) literal,
+                    PropertyIsLike propIsLike = buildIsLike( propName, literal,
                                                              propIsEqualTo.getMatchCase() );
                     sqlOper = toProtoSQL( propIsLike );
                 } else {
@@ -378,7 +378,7 @@ public abstract class AbstractWhereBuilder {
                 Expression propName = propIsNotEqualTo.getParameter1();
                 Expression literal = propIsNotEqualTo.getParameter2();
                 if ( propName instanceof PropertyName && literal instanceof Literal ) {
-                    PropertyIsLike propIsLike = buildIsLike( (PropertyName) propName, literal,
+                    PropertyIsLike propIsLike = buildIsLike( propName, literal,
                                                              propIsNotEqualTo.getMatchCase() );
                     sqlOper = toProtoSQL( new Not( propIsLike ) );
                 } else {

@@ -80,6 +80,7 @@ public class Within extends SpatialOperator {
         return s;
     }
 
+    @Override
     public PropertyName getPropName() {
         return propName;
     }

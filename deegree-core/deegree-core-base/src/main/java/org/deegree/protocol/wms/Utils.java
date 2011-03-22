@@ -237,7 +237,7 @@ public class Utils {
                 // transform the bounding box of the request to EPSG:4326
                 GeometryTransformer trans = new GeometryTransformer( WGS84 );
                 try {
-                    bbox = (Envelope) trans.transform( bbox, crs );
+                    bbox = trans.transform( bbox, crs );
                 } catch ( IllegalArgumentException e ) {
                     LOG.error( "Unknown error", e );
                 } catch ( TransformationException e ) {
@@ -291,7 +291,7 @@ public class Utils {
                 // transform the bounding box of the request to EPSG:4326
                 GeometryTransformer trans = new GeometryTransformer( WGS84 );
                 try {
-                    bbox = (Envelope) trans.transform( bbox, crs );
+                    bbox = trans.transform( bbox, crs );
                 } catch ( IllegalArgumentException e ) {
                     LOG.error( "Unknown error", e );
                 } catch ( TransformationException e ) {

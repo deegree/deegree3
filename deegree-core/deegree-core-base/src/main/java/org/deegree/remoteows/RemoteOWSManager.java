@@ -38,9 +38,9 @@ package org.deegree.remoteows;
 import org.deegree.commons.config.AbstractResourceManager;
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.DefaultResourceManagerMetadata;
+import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.config.ResourceManager;
 import org.deegree.commons.config.ResourceManagerMetadata;
-import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.utils.ProxyUtils;
 
 /**

@@ -76,6 +76,7 @@ public class Disjoint extends SpatialOperator {
     /**
      * @return the propName
      */
+    @Override
     public PropertyName getPropName() {
         return propName;
     }
