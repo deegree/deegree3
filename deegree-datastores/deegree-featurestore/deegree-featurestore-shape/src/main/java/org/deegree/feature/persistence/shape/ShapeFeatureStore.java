@@ -218,7 +218,8 @@ public class ShapeFeatureStore implements FeatureStore {
                     try {
                         crs = new WKTParser( prj ).parseCoordinateSystem();
                     } catch ( IOException e ) {
-                        String msg = "The shape datastore for '" + shpName + "' could not be initialized, because no CRS was defined.";
+                        String msg = "The shape datastore for '" + shpName
+                                     + "' could not be initialized, because no CRS was defined.";
                         throw new ResourceInitException( msg );
                     } catch ( Exception e1 ) {
                         getCRSFromFile( prj );
@@ -264,8 +265,9 @@ public class ShapeFeatureStore implements FeatureStore {
         try {
             shp = getSHP( false );
         } catch ( IOException e ) {
-            String msg = "The shape datastore for '" + shpName + "' could not be initialized, because the .shp could not be loaded.";
-            throw new ResourceInitException( msg );            
+            String msg = "The shape datastore for '" + shpName
+                         + "' could not be initialized, because the .shp could not be loaded.";
+            throw new ResourceInitException( msg );
         }
 
         String namespace = ftName.getNamespaceURI();
@@ -452,14 +454,19 @@ public class ShapeFeatureStore implements FeatureStore {
             throw new FeatureStoreException( e );
         }
 
+        // don't forget about filters if dbf index could not be queried
+        if ( p == null ) {
+            p = new Pair<Filter, SortProperty[]>( filterPair.first, query.getSortProperties() );
+        }
+
         FeatureResultSet rs = new IteratorResultSet( new FeatureIterator( recNumsAndPos.iterator() ) );
 
-        if ( p != null && p.first != null ) {
+        if ( p.first != null ) {
             LOG.debug( "Applying in-memory filtering." );
             rs = new FilteredFeatureResultSet( rs, p.first );
         }
 
-        if ( p != null && p.second != null && p.second.length > 0 ) {
+        if ( p.second != null && p.second.length > 0 ) {
             LOG.debug( "Applying in-memory sorting." );
             rs = new MemoryFeatureResultSet( Features.sortFc( rs.toCollection(), p.second ) );
         }
