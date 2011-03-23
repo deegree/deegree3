@@ -3,26 +3,36 @@
   xmlns:c="http://java.sun.com/jsp/jstl/core" xmlns:fn="http://java.sun.com/jsp/jstl/functions"
   xmlns:dg="http://deegree.org/jsf" xmlns:dgc="http://java.sun.com/jsf/composite/deegree">
   <ui:define name="center">
-    <script type="text/javascript" src="editarea/edit_area/edit_area_full.js"></script>
-    <!-- script type="text/javascript">
-    editAreaLoader.init({
-	  id : "xmlForm:inputXML",syntax: "xml",start_highlight: true
-    });
-  </script-->
+    <script type="text/javascript" src="CodeMirror-0.94/js/codemirror.js"></script>
+    <script type="text/javascript">
+    var editor
+    function activateEditor(){
+        editor = CodeMirror.fromTextArea("xmlForm:inputXML", {
+          parserfile: "parsexml.js",
+          path: "CodeMirror-0.94/js/",
+          stylesheet: "CodeMirror-0.94/css/xmlcolors.css"
+        })
+        var p = document.getElementById("highlighting")
+        p.parentNode.removeChild(p)
+    }
+    function save(){
+        editor &amp;&amp; editor.toTextArea()
+    }
+  </script>
     <h:panelGroup rendered="#{editConfig == null}">
       <p class="welcomeText">Please navigate around using the links to your left.</p>
     </h:panelGroup>
     <h:panelGroup rendered="#{editConfig != null}">
       <br />
       <div style="width: 580px;">Editing: <br />
-      ${editConfig.location} <h:panelGroup rendered="#{editConfig.schemaURL != null}">
+      #{editConfig.location} <h:panelGroup rendered="#{editConfig.schemaURL != null}">
         <br />
         <br />
 
         <h:form id="xmlForm">
           <h:panelGroup>
             <h:link styleClass="schema" value="#{labels.xmlEditor_schema}" outcome="schema" target="_blank" />
-            <h:commandButton styleClass="buttonSave" value="#{labels.xmlEditor_save}" action="${editConfig.save}" />
+            <h:commandButton styleClass="buttonSave" value="#{labels.xmlEditor_save}" onclick="save()" action="${editConfig.save}" />
             <h:outputLink styleClass="buttonCancel" value="../../#{configManager.currentResourceManager.startView}.jsf">
               <h:outputText value="#{labels.xmlEditor_cancel}" />
             </h:outputLink>
@@ -33,6 +43,7 @@
             cols="70" rows="20" />
           <!-- h:message for="inputXML" /-->
         </h:form>
+        <p id="highlighting" style="cursor: pointer;" class="schema" onclick="activateEditor();">Turn on highlighting</p>
       </h:panelGroup></div>
     </h:panelGroup>
   </ui:define>
