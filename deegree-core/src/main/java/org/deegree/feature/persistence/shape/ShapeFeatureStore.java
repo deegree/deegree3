@@ -452,12 +452,17 @@ public class ShapeFeatureStore implements FeatureStore {
 
         FeatureResultSet rs = new IteratorResultSet( new FeatureIterator( recNumsAndPos.iterator() ) );
 
-        if ( p != null && p.first != null ) {
+        // don't forget about filters if dbf index could not be queried
+        if ( p == null ) {
+            p = new Pair<Filter, SortProperty[]>( filter, query.getSortProperties() );
+        }
+
+        if ( p.first != null ) {
             LOG.debug( "Applying in-memory filtering." );
             rs = new FilteredFeatureResultSet( rs, p.first );
         }
 
-        if ( p != null && p.second != null && p.second.length > 0 ) {
+        if ( p.second != null && p.second.length > 0 ) {
             LOG.debug( "Applying in-memory sorting." );
             rs = new MemoryFeatureResultSet( Features.sortFc( rs.toCollection(), p.second ) );
         }
