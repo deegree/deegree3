@@ -141,7 +141,8 @@ public class Capabilities130XMLAdapter extends XMLAdapter {
         writer.writeNamespace( "xlink", XLNNS );
         writer.writeNamespace( "sld", SLDNS );
 
-        writer.writeAttribute( XSINS,
+        writer.writeAttribute(
+                               XSINS,
                                "schemaLocation",
                                "http://www.opengis.net/wms http://schemas.opengis.net/wms/1.3.0/capabilities_1_3_0.xsd "
                                                        + "http://www.opengis.net/sld http://schemas.opengis.net/sld/1.1.0/sld_capabilities.xsd" );
@@ -226,13 +227,13 @@ public class Capabilities130XMLAdapter extends XMLAdapter {
                     if ( crs.getAlias().startsWith( "AUTO" ) ) {
                         continue;
                     }
-//                    try {
-//                        crs.getWrappedCRS();
-//                    } catch ( UnknownCRSException e ) {
-//                        LOG.warn( "Cannot find: {}", e.getLocalizedMessage() );
-//                        LOG.trace( "Stack trace:", e );
-//                        continue;
-//                    }
+                    // try {
+                    // crs.getWrappedCRS();
+                    // } catch ( UnknownCRSException e ) {
+                    // LOG.warn( "Cannot find: {}", e.getLocalizedMessage() );
+                    // LOG.trace( "Stack trace:", e );
+                    // continue;
+                    // }
                     Envelope envelope;
                     ICRS srs = crs;
                     try {
@@ -268,13 +269,13 @@ public class Capabilities130XMLAdapter extends XMLAdapter {
                     }
 
                     // check for srs with northing as first axis
-//                    try {
-                        srs = WMSController130.getCRS( crs.getAlias() );
-//                    } catch ( UnknownCRSException e ) {
-//                        // may fail if CRS is determined eg. from .prj
-//                        LOG.warn( "Cannot find: {}", e.getLocalizedMessage() );
-//                        LOG.trace( "Stack trace:", e );
-//                    }
+                    // try {
+                    srs = WMSController130.getCRS( crs.getAlias() );
+                    // } catch ( UnknownCRSException e ) {
+                    // // may fail if CRS is determined eg. from .prj
+                    // LOG.warn( "Cannot find: {}", e.getLocalizedMessage() );
+                    // LOG.trace( "Stack trace:", e );
+                    // }
                     switch ( srs.getAxis()[0].getOrientation() ) {
                     case Axis.AO_NORTH:
                         writer.writeAttribute( "miny", Double.toString( min.get0() ) );
@@ -310,8 +311,8 @@ public class Capabilities130XMLAdapter extends XMLAdapter {
             writer.writeAttribute( "units", dim.getUnits() == null ? "CRS:88" : dim.getUnits() );
             writer.writeAttribute( "unitSymbol", dim.getUnitSymbol() == null ? "" : dim.getUnitSymbol() );
             if ( dim.getDefaultValue() != null ) {
-                writer.writeAttribute( "default",
-                                       formatDimensionValueList( dim.getDefaultValue(), "time".equals( entry.getKey() ) ) );
+                writer.writeAttribute( "default", formatDimensionValueList( dim.getDefaultValue(),
+                                                                            "time".equals( entry.getKey() ) ) );
             }
             if ( dim.getNearestValue() ) {
                 writer.writeAttribute( "nearestValue", "1" );
@@ -530,12 +531,12 @@ public class Capabilities130XMLAdapter extends XMLAdapter {
                         maybeWriteElementNS( writer, WMSNS, "AccessConstraints", cons );
                     }
                 }
+            } else {
+                writeElement( writer, WMSNS, "Fees", "none" );
+                writeElement( writer, WMSNS, "AccessConstraints", "none" );
             }
 
         }
-
-        writeElement( writer, WMSNS, "Fees", "none" );
-        writeElement( writer, WMSNS, "AccessConstraints", "none" );
 
         writer.writeEndElement();
     }
