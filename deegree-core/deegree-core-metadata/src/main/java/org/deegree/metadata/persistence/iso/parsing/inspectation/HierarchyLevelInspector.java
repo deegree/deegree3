@@ -61,23 +61,19 @@ public class HierarchyLevelInspector implements RecordInspector {
 
     private static Logger LOG = LoggerFactory.getLogger( HierarchyLevelInspector.class );
 
-    private final XMLAdapter a;
+    private final NamespaceBindings nsContext = new NamespaceBindings();
 
     public HierarchyLevelInspector() {
-        this.a = new XMLAdapter();
+        nsContext.addNamespace( "srv", "http://www.isotc211.org/2005/srv" );
+        nsContext.addNamespace( "gmd", "http://www.isotc211.org/2005/gmd" );
+        nsContext.addNamespace( "gco", "http://www.isotc211.org/2005/gco" );
     }
 
     @Override
     public OMElement inspect( OMElement record, Connection conn )
                             throws MetadataInspectorException {
 
-        a.setRootElement( record );
-
-        NamespaceBindings nsContext = a.getNamespaceContext( record );
-        // NamespaceContext newNSC = generateNSC(nsContext);
-        nsContext.addNamespace( "srv", "http://www.isotc211.org/2005/srv" );
-        nsContext.addNamespace( "gmd", "http://www.isotc211.org/2005/gmd" );
-        nsContext.addNamespace( "gco", "http://www.isotc211.org/2005/gco" );
+        XMLAdapter a = new XMLAdapter( record );
 
         /**
          * if provided data is a dataset: type = dataset (default)
@@ -92,24 +88,20 @@ public class HierarchyLevelInspector implements RecordInspector {
                                                             nsContext ), null );
 
         if ( type == null ) {
-
             OMElement hln = a.getElement( record, new XPath( "./gmd:hierarchyLevelName", nsContext ) );
             OMElement contact = record.getFirstChildWithName( new QName( "http://www.isotc211.org/2005/gmd", "contact" ) );
             if ( hln != null ) {
-                hln.insertSiblingBefore( GenerateOMElement.newInstance().createHierarchieLevelElement() );
+                hln.insertSiblingBefore( new GenerateOMElement().createHierarchyLevelElement() );
             } else {
                 if ( contact != null ) {
-                    contact.insertSiblingBefore( GenerateOMElement.newInstance().createHierarchieLevelElement() );
+                    contact.insertSiblingBefore( new GenerateOMElement().createHierarchyLevelElement() );
                 } else {
                     String msg = Messages.getMessage( "ERROR_MANDATORY_ELEMENT_MISSING", "contact" );
                     LOG.debug( msg );
                     throw new MetadataInspectorException( msg );
                 }
             }
-
         }
-
         return record;
     }
-
 }

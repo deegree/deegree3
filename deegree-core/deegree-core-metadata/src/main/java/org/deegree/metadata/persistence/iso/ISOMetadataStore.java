@@ -80,12 +80,12 @@ import org.deegree.metadata.persistence.iso.parsing.inspectation.RecordInspector
 import org.deegree.metadata.persistence.iso19115.jaxb.CoupledResourceInspector;
 import org.deegree.metadata.persistence.iso19115.jaxb.FileIdentifierInspector;
 import org.deegree.metadata.persistence.iso19115.jaxb.ISOMetadataStoreConfig;
+import org.deegree.metadata.persistence.iso19115.jaxb.ISOMetadataStoreConfig.Inspectors;
 import org.deegree.metadata.persistence.iso19115.jaxb.InspireInspector;
 import org.deegree.metadata.persistence.iso19115.jaxb.SchemaValidator;
-import org.deegree.metadata.persistence.iso19115.jaxb.ISOMetadataStoreConfig.Inspectors;
 import org.deegree.metadata.publication.InsertTransaction;
-import org.deegree.protocol.csw.MetadataStoreException;
 import org.deegree.protocol.csw.CSWConstants.ResultType;
+import org.deegree.protocol.csw.MetadataStoreException;
 import org.slf4j.Logger;
 
 /**
@@ -109,6 +109,8 @@ public class ISOMetadataStore implements MetadataStore {
     private ISOMetadataStoreConfig config;
 
     private Type connectionType;
+
+    private final List<RecordInspector> inspectorChain = new ArrayList<RecordInspector>();
 
     // TODO remove...just inside for getById
     private static final String datasets = PostGISMappingsISODC.DatabaseTables.datasets.name();
@@ -137,6 +139,28 @@ public class ISOMetadataStore implements MetadataStore {
         // String systemStartDate = "2010-11-16";
         // varToValue.put( "${SYSTEM_START_DATE}", systemStartDate );
 
+        // build inspector chain
+        Inspectors inspectors = config.getInspectors();
+        if ( inspectors != null ) {
+            FileIdentifierInspector fi = inspectors.getFileIdentifierInspector();
+            InspireInspector ii = inspectors.getInspireInspector();
+            CoupledResourceInspector cri = inspectors.getCoupledResourceInspector();
+            SchemaValidator sv = inspectors.getSchemaValidator();
+            if ( fi != null ) {
+                inspectorChain.add( new FIInspector( fi ) );
+            }
+            if ( ii != null ) {
+                inspectorChain.add( new InspireComplianceInspector( ii ) );
+            }
+            if ( cri != null ) {
+                inspectorChain.add( new CoupledDataInspector( cri ) );
+            }
+            if ( sv != null ) {
+                inspectorChain.add( new MetadataSchemaValidationInspector() );
+            }
+        }
+        // hard coded because there is no configuration planned
+        inspectorChain.add( new HierarchyLevelInspector() );
     }
 
     /**
@@ -428,36 +452,14 @@ public class ISOMetadataStore implements MetadataStore {
     @Override
     public MetadataStoreTransaction acquireTransaction()
                             throws MetadataStoreException {
+
         ISOMetadataStoreTransaction ta = null;
         Connection conn = null;
         try {
             conn = ConnectionManager.getConnection( connectionId );
-            List<RecordInspector> ri = new ArrayList<RecordInspector>();
-            Inspectors inspectors = config.getInspectors();
-
-            if ( inspectors != null ) {
-                FileIdentifierInspector fi = inspectors.getFileIdentifierInspector();
-                InspireInspector ii = inspectors.getInspireInspector();
-                CoupledResourceInspector cri = inspectors.getCoupledResourceInspector();
-                SchemaValidator sv = inspectors.getSchemaValidator();
-                if ( fi != null ) {
-                    ri.add( new FIInspector( fi ) );
-                }
-                if ( ii != null ) {
-                    ri.add( new InspireComplianceInspector( ii ) );
-                }
-                if ( cri != null ) {
-                    ri.add( new CoupledDataInspector( cri ) );
-                }
-                if ( sv != null ) {
-                    ri.add( new MetadataSchemaValidationInspector( sv ) );
-                }
-
-            }
-            // hard coded because there is no configuration planned
-            ri.add( new HierarchyLevelInspector() );
-            ta = new ISOMetadataStoreTransaction( conn, ri, config.getAnyText(), useLegacyPredicates, connectionType );
-        } catch ( SQLException e ) {
+            ta = new ISOMetadataStoreTransaction( conn, inspectorChain, config.getAnyText(), useLegacyPredicates,
+                                                  connectionType );
+        } catch ( Throwable e ) {
             throw new MetadataStoreException( e.getMessage() );
         }
         return ta;

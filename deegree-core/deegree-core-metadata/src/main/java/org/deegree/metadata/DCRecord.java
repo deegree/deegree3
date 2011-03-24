@@ -67,6 +67,8 @@ import org.deegree.protocol.csw.CSWConstants.ReturnableElement;
  */
 public class DCRecord implements MetadataRecord {
 
+    public static final String SCHEMA_URL = "http://schemas.opengis.net/csw/2.0.2/record.xsd";
+
     private final QName root;
 
     private final String[] titles;

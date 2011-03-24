@@ -51,7 +51,6 @@ import java.util.regex.Pattern;
 
 import org.deegree.metadata.i18n.Messages;
 import org.deegree.metadata.persistence.MetadataInspectorException;
-import org.deegree.metadata.persistence.iso.PostGISMappingsISODC;
 import org.deegree.protocol.csw.MetadataStoreException;
 import org.slf4j.Logger;
 
@@ -141,79 +140,6 @@ public class IdUtils {
             close( stm );
         }
         return uuid;
-
-    }
-
-    /**
-     * Proves the availability of the identifier in the backend.
-     * 
-     * @param identifier
-     *            that is proved, not <Code>null</Code>.
-     * @return the identifier that is a duplicate of one identifier in backend, or <Code>null</Code> if the metadata
-     *         with the identifier is not stored so far.
-     * @throws MetadataStoreException
-     */
-    public String proveIdExistence( String[] identifier )
-                            throws MetadataStoreException {
-        PreparedStatement stm = null;
-        ResultSet rs = null;
-        boolean notAvailable = false;
-        String foundID = null;
-        try {
-
-            if ( !idList.isEmpty() ) {
-                for ( String i : identifier ) {
-                    notAvailable = idList.contains( i );
-                }
-            } else {
-
-                for ( String i : identifier ) {
-                    // String s = "SELECT i.identifier FROM " + PostGISMappingsISODC.DatabaseTables.qp_identifier.name()
-                    // + " AS i WHERE i.identifier = ?;";
-                    String s = "SELECT identifier FROM " + PostGISMappingsISODC.DatabaseTables.qp_identifier.name()
-                               + ";";
-                    stm = conn.prepareStatement( s );
-                    // stm.setObject( 1, i );
-                    rs = stm.executeQuery();
-                    LOG.debug( s );
-
-                    while ( rs.next() ) {
-                        idList.add( rs.getString( 1 ) );
-                    }
-
-                    notAvailable = idList.contains( i );
-                    if ( notAvailable ) {
-                        foundID = i;
-                        return foundID;
-                    }
-
-                }
-            }
-
-        } catch ( SQLException e ) {
-            String msg = Messages.getMessage( "ERROR_SQL", stm.toString(), e.getMessage() );
-            LOG.debug( msg );
-            throw new MetadataStoreException( msg );
-        } finally {
-            close( stm );
-            close( rs );
-        }
-        return foundID;
-    }
-
-    /**
-     * Proves the availability of the identifier in backend.
-     * 
-     * @param identifier
-     *            that is proved, not <Code>null</Code>.
-     * @return the identifier that is a duplicate of one identifier in backend, or <Code>null</Code> if the metadata
-     *         with the identifier is not stored so far.
-     * @throws MetadataStoreException
-     */
-    public String proveIdExistence( String identifier )
-                            throws MetadataStoreException {
-        String[] wrappedID = new String[] { identifier };
-        return proveIdExistence( wrappedID );
     }
 
     public boolean checkUUIDCompliance( String uuid ) {
@@ -235,9 +161,6 @@ public class IdUtils {
                 return false;
             }
         }
-
         return true;
-
     }
-
 }

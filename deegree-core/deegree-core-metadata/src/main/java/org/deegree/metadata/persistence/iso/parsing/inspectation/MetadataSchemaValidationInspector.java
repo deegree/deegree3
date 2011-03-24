@@ -35,43 +35,35 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.metadata.persistence.iso.parsing.inspectation;
 
-import java.io.ByteArrayInputStream;
+import static org.deegree.metadata.DCRecord.SCHEMA_URL;
+import static org.deegree.metadata.ISORecord.SCHEMA_URL_GMD;
+import static org.deegree.metadata.ISORecord.SCHEMA_URL_SRV;
+
 import java.io.InputStream;
-import java.io.StringWriter;
 import java.sql.Connection;
-import java.util.ArrayList;
 import java.util.List;
 
-import javax.xml.stream.XMLStreamException;
+import javax.xml.namespace.QName;
 
 import org.apache.axiom.om.OMElement;
+import org.deegree.commons.utils.io.StreamBufferStore;
 import org.deegree.metadata.i18n.Messages;
 import org.deegree.metadata.persistence.MetadataInspectorException;
-import org.deegree.metadata.persistence.iso19115.jaxb.SchemaValidator;
 import org.deegree.protocol.csw.MetadataStoreException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Validates the inserted Metadata.
+ * {@link RecordInspector} that performs schema-validation.
  * 
  * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
- * @param <MSVInspector>
  */
 public class MetadataSchemaValidationInspector implements RecordInspector {
+
     private static Logger LOG = LoggerFactory.getLogger( MetadataSchemaValidationInspector.class );
-
-    private boolean isValidate = false;
-
-    public MetadataSchemaValidationInspector( SchemaValidator config ) {
-        if ( config != null ) {
-            this.isValidate = true;
-        }
-
-    }
 
     /**
      * Before any transaction operation is possible there should be an evaluation of the record. The response of the
@@ -84,25 +76,23 @@ public class MetadataSchemaValidationInspector implements RecordInspector {
      */
     private List<String> validate( OMElement elem )
                             throws MetadataInspectorException {
-        StringWriter s = new StringWriter();
-        if ( isValidate ) {
-            try {
-                elem.serialize( s );
-            } catch ( XMLStreamException e ) {
-                LOG.debug( "error: " + e.getMessage(), e );
-                throw new MetadataInspectorException( e.getMessage() );
-            }
-            InputStream is = new ByteArrayInputStream( s.toString().getBytes() );
-            if ( elem.getLocalName().equals( "MD_Metadata" ) ) {
-                // TODO use local copy of schema
-                return org.deegree.commons.xml.schema.SchemaValidator.validate( is,
-                                                                                "http://www.isotc211.org/2005/gmd/metadataEntity.xsd" );
 
-            }
-            return org.deegree.commons.xml.schema.SchemaValidator.validate( is,
-                                                                            "http://schemas.opengis.net/csw/2.0.2/record.xsd" );
+        InputStream is = null;
+        try {
+            StreamBufferStore os = new StreamBufferStore();
+            elem.serialize( os );
+            is = os.getInputStream();
+        } catch ( Throwable e ) {
+            LOG.debug( "error: " + e.getMessage(), e );
+            throw new MetadataInspectorException( e.getMessage() );
         }
-        return new ArrayList<String>();
+
+        // TODO cache schema
+        if ( new QName( "http://www.isotc211.org/2005/gmd", "MD_Metadata" ).equals( elem.getQName() ) ) {
+            return org.deegree.commons.xml.schema.SchemaValidator.validate( is, SCHEMA_URL_GMD, SCHEMA_URL_SRV );
+        }
+        // DublinCore
+        return org.deegree.commons.xml.schema.SchemaValidator.validate( is, SCHEMA_URL );
     }
 
     @Override
@@ -112,11 +102,14 @@ public class MetadataSchemaValidationInspector implements RecordInspector {
         if ( errors.isEmpty() ) {
             return record;
         } else {
-            String msg = Messages.getMessage( "ERROR_VALIDATE" );
+            StringBuilder sb = new StringBuilder();
+            for ( String error : errors ) {
+                sb.append( error );
+                sb.append( "\n" );
+            }
+            String msg = Messages.getMessage( "ERROR_VALIDATE" + sb );
             LOG.debug( msg );
             throw new MetadataInspectorException( msg );
         }
-
     }
-
 }

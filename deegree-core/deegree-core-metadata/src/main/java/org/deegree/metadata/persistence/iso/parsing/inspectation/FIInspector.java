@@ -67,15 +67,15 @@ public class FIInspector implements RecordInspector {
 
     private static final Logger LOG = getLogger( FIInspector.class );
 
-    private Connection conn;
-
-    private final XMLAdapter a;
-
     private final FileIdentifierInspector config;
+
+    private final NamespaceBindings nsContext = new NamespaceBindings();
 
     public FIInspector( FileIdentifierInspector inspector ) {
         this.config = inspector;
-        this.a = new XMLAdapter();
+        nsContext.addNamespace( "srv", "http://www.isotc211.org/2005/srv" );
+        nsContext.addNamespace( "gmd", "http://www.isotc211.org/2005/gmd" );
+        nsContext.addNamespace( "gco", "http://www.isotc211.org/2005/gco" );
     }
 
     /**
@@ -90,7 +90,8 @@ public class FIInspector implements RecordInspector {
      *            the uuid-attribure, can be <Code>null</Code>.
      * @return the new fileIdentifier.
      */
-    private List<String> determineFileIdentifier( String[] fi, List<String> rsList, String id, String uuid )
+    private List<String> determineFileIdentifier( Connection conn, String[] fi, List<String> rsList, String id,
+                                                  String uuid )
                             throws MetadataInspectorException {
         List<String> idList = new ArrayList<String>();
         if ( fi.length != 0 ) {
@@ -134,22 +135,14 @@ public class FIInspector implements RecordInspector {
     @Override
     public OMElement inspect( OMElement record, Connection conn )
                             throws MetadataInspectorException {
-        this.conn = conn;
-        a.setRootElement( record );
 
-        NamespaceBindings nsContext = a.getNamespaceContext( record );
-        // NamespaceContext newNSC = generateNSC(nsContext);
-        nsContext.addNamespace( "srv", "http://www.isotc211.org/2005/srv" );
-        nsContext.addNamespace( "gmd", "http://www.isotc211.org/2005/gmd" );
-        nsContext.addNamespace( "gco", "http://www.isotc211.org/2005/gco" );
-        // String GMD_PRE = "gmd";
+        XMLAdapter a = new XMLAdapter( record );
 
         String[] fileIdentifierString = a.getNodesAsStrings( record,
                                                              new XPath( "./gmd:fileIdentifier/gco:CharacterString",
                                                                         nsContext ) );
 
-        OMElement sv_service_OR_md_dataIdentification = a.getElement(
-                                                                      record,
+        OMElement sv_service_OR_md_dataIdentification = a.getElement( record,
                                                                       new XPath(
                                                                                  "./gmd:identificationInfo/srv:SV_ServiceIdentification | ./gmd:identificationInfo/gmd:MD_DataIdentification",
                                                                                  nsContext ) );
@@ -160,28 +153,22 @@ public class FIInspector implements RecordInspector {
                                                                nsContext ) );
         List<String> resourceIdentifierList = new ArrayList<String>();
         for ( OMElement resourceElement : identifier ) {
-            String resourceIdentifier = a.getNodeAsString(
-                                                           resourceElement,
+            String resourceIdentifier = a.getNodeAsString( resourceElement,
                                                            new XPath(
                                                                       "./gmd:MD_Identifier/gmd:code/gco:CharacterString | ./gmd:RS_Identifier/gmd:code/gco:CharacterString",
                                                                       nsContext ), null );
             LOG.debug( "resourceIdentifier: '" + resourceIdentifier + "' " );
             resourceIdentifierList.add( resourceIdentifier );
-
         }
 
-        List<String> idList = determineFileIdentifier( fileIdentifierString, resourceIdentifierList,
+        List<String> idList = determineFileIdentifier( conn, fileIdentifierString, resourceIdentifierList,
                                                        dataIdentificationId, dataIdentificationUuId );
-        // if ( idList.isEmpty() ) {
-        // return null;
-        // }
         if ( !idList.isEmpty() && fileIdentifierString.length == 0 ) {
             for ( String id : idList ) {
                 OMElement firstElement = record.getFirstElement();
-                firstElement.insertSiblingBefore( GenerateOMElement.newInstance().createFileIdentifierElement( id ) );
+                firstElement.insertSiblingBefore( new GenerateOMElement().createFileIdentifierElement( id ) );
             }
         }
         return record;
     }
-
 }

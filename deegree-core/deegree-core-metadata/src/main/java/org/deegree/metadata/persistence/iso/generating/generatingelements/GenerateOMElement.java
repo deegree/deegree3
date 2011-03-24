@@ -56,15 +56,10 @@ public class GenerateOMElement {
 
     private final OMNamespace namespaceGCO;
 
-    private GenerateOMElement() {
+    public GenerateOMElement() {
         this.factory = OMAbstractFactory.getOMFactory();
         namespaceGMD = factory.createOMNamespace( "http://www.isotc211.org/2005/gmd", "gmd" );
         namespaceGCO = factory.createOMNamespace( "http://www.isotc211.org/2005/gco", "gco" );
-    }
-
-    public static GenerateOMElement newInstance() {
-
-        return new GenerateOMElement();
     }
 
     /**
@@ -89,7 +84,7 @@ public class GenerateOMElement {
      * 
      * @return the generated element of the hierarchieLevel.
      */
-    public OMElement createHierarchieLevelElement() {
+    public OMElement createHierarchyLevelElement() {
         OMElement omHierarchieLevel = factory.createOMElement( "hierarchyLevel", namespaceGMD );
         OMElement omScopeCode = factory.createOMElement( "MD_ScopeCode", namespaceGMD );
         omHierarchieLevel.addChild( omScopeCode );
