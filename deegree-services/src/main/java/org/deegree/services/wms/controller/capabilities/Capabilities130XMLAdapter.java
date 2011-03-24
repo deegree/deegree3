@@ -528,12 +528,12 @@ public class Capabilities130XMLAdapter extends XMLAdapter {
                         maybeWriteElementNS( writer, WMSNS, "AccessConstraints", cons );
                     }
                 }
+            } else {
+                writeElement( writer, WMSNS, "Fees", "none" );
+                writeElement( writer, WMSNS, "AccessConstraints", "none" );
             }
 
         }
-
-        writeElement( writer, WMSNS, "Fees", "none" );
-        writeElement( writer, WMSNS, "AccessConstraints", "none" );
 
         writer.writeEndElement();
     }

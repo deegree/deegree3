@@ -69,7 +69,6 @@ import org.deegree.services.jaxb.metadata.AddressType;
 import org.deegree.services.jaxb.metadata.ServiceContactType;
 import org.deegree.services.jaxb.metadata.ServiceIdentificationType;
 import org.deegree.services.jaxb.metadata.ServiceProviderType;
-import org.deegree.services.jaxb.wms.KeywordsType;
 import org.deegree.services.jaxb.wms.LanguageStringType;
 import org.deegree.services.wms.MapService;
 import org.deegree.services.wms.controller.WMSController;
@@ -419,7 +418,8 @@ public class Capabilities111XMLAdapter extends XMLAdapter {
             writeElement( writer, "Abstract", abstracts.get( 0 ) );
         }
 
-        List<org.deegree.services.jaxb.metadata.KeywordsType> keywords = identification == null ? null : identification.getKeywords();
+        List<org.deegree.services.jaxb.metadata.KeywordsType> keywords = identification == null ? null
+                                                                                               : identification.getKeywords();
         if ( keywords != null && !keywords.isEmpty() ) {
             writer.writeStartElement( "KeywordList" );
 
@@ -482,12 +482,12 @@ public class Capabilities111XMLAdapter extends XMLAdapter {
                         maybeWriteElement( writer, "AccessConstraints", cons );
                     }
                 }
+            } else {
+                writeElement( writer, "Fees", "none" );
+                writeElement( writer, "AccessConstraints", "none" );
             }
 
         }
-
-        writeElement( writer, "Fees", "none" );
-        writeElement( writer, "AccessConstraints", "none" );
 
         writer.writeEndElement();
     }
