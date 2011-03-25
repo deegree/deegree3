@@ -60,7 +60,7 @@
 	<version>2.1</version>
         <configuration>
            <preparationGoals>clean install</preparationGoals>
-           <tagBase>svn+ssh://jwilden@svn.wald.intevation.org/deegree/deegree3/tags</tagBase>
+           <tagBase>svn+ssh://svn.wald.intevation.org/deegree/deegree3/tags</tagBase>
         </configuration>
       </plugin>
     </plugins>
