@@ -44,7 +44,6 @@ import static org.slf4j.LoggerFactory.getLogger;
 import java.io.IOException;
 import java.net.URL;
 
-import javax.xml.bind.JAXBException;
 import javax.xml.namespace.QName;
 import javax.xml.stream.FactoryConfigurationError;
 import javax.xml.stream.XMLInputFactory;
@@ -140,9 +139,7 @@ public class GMLFeatureReaderTest {
     @Test
     public void testParsingCiteSF0()
                             throws XMLStreamException, FactoryConfigurationError, IOException, ClassCastException,
-                            ClassNotFoundException, InstantiationException, IllegalAccessException,
-                            XMLParsingException, UnknownCRSException, JAXBException, TransformationException,
-                            ReferenceResolvingException {
+                            XMLParsingException, UnknownCRSException, ReferenceResolvingException {
 
         URL docURL = GMLFeatureReaderTest.class.getResource( BASE_DIR + "dataset-sf0.xml" );
         GMLStreamReader gmlReader = GMLInputFactory.createGMLStreamReader( GMLVersion.GML_31, docURL );
@@ -208,9 +205,7 @@ public class GMLFeatureReaderTest {
     @Test
     public void testParsingCiteSF2()
                             throws XMLStreamException, FactoryConfigurationError, IOException, ClassCastException,
-                            ClassNotFoundException, InstantiationException, IllegalAccessException,
-                            XMLParsingException, UnknownCRSException, JAXBException, TransformationException,
-                            ReferenceResolvingException {
+                            XMLParsingException, UnknownCRSException, ReferenceResolvingException {
 
         URL docURL = GMLFeatureReaderTest.class.getResource( BASE_DIR + "dataset-sf2.xml" );
         GMLStreamReader gmlReader = GMLInputFactory.createGMLStreamReader( GMLVersion.GML_31, docURL );
@@ -263,8 +258,7 @@ public class GMLFeatureReaderTest {
     public void testParsingCityGML()
                             throws XMLStreamException, FactoryConfigurationError, IOException, ClassCastException,
                             ClassNotFoundException, InstantiationException, IllegalAccessException,
-                            XMLParsingException, UnknownCRSException, JAXBException, TransformationException,
-                            ReferenceResolvingException {
+                            XMLParsingException, UnknownCRSException, ReferenceResolvingException {
 
         String schemaURL = "http://schemas.opengis.net/citygml/profiles/base/1.0/CityGML.xsd";
         ApplicationSchemaXSDDecoder adapter = new ApplicationSchemaXSDDecoder( GMLVersion.GML_31, null, schemaURL );
@@ -286,8 +280,7 @@ public class GMLFeatureReaderTest {
     // @Test
     public void testParsingXPlan20()
                             throws XMLStreamException, FactoryConfigurationError, IOException, ClassCastException,
-                            ClassNotFoundException, InstantiationException, IllegalAccessException,
-                            XMLParsingException, UnknownCRSException, JAXBException, ReferenceResolvingException {
+                            XMLParsingException, UnknownCRSException, ReferenceResolvingException {
 
         // BP2070
         URL docURL = new URL(
@@ -319,13 +312,13 @@ public class GMLFeatureReaderTest {
         gmlReader = GMLInputFactory.createGMLStreamReader( GMLVersion.GML_31, docURL );
         fc = (FeatureCollection) gmlReader.readFeature();
         gmlReader.getIdContext().resolveLocalRefs();
+        fc.size();
     }
 
     @Test
     public void testParsingCustomProps()
                             throws XMLStreamException, FactoryConfigurationError, IOException, ClassCastException,
-                            ClassNotFoundException, InstantiationException, IllegalAccessException,
-                            XMLParsingException, UnknownCRSException, JAXBException, ReferenceResolvingException {
+                            XMLParsingException, UnknownCRSException, ReferenceResolvingException {
 
         URL docURL = GMLFeatureReaderTest.class.getResource( BASE_DIR + "CustomProperties.xml" );
         GMLStreamReader gmlReader = GMLInputFactory.createGMLStreamReader( GMLVersion.GML_31, docURL );
@@ -361,8 +354,7 @@ public class GMLFeatureReaderTest {
     public void testINSPIREAddresses1()
                             throws XMLStreamException, FactoryConfigurationError, IOException, ClassCastException,
                             ClassNotFoundException, InstantiationException, IllegalAccessException,
-                            XMLParsingException, UnknownCRSException, JAXBException, TransformationException,
-                            ReferenceResolvingException {
+                            XMLParsingException, UnknownCRSException, ReferenceResolvingException {
 
         String schemaURL = CoreTstProperties.getProperty( "schema_inspire_addresses" );
         if ( schemaURL == null ) {
@@ -384,8 +376,7 @@ public class GMLFeatureReaderTest {
     public void testINSPIREAddresses1Stream()
                             throws XMLStreamException, FactoryConfigurationError, IOException, ClassCastException,
                             ClassNotFoundException, InstantiationException, IllegalAccessException,
-                            XMLParsingException, UnknownCRSException, JAXBException, TransformationException,
-                            ReferenceResolvingException {
+                            XMLParsingException, UnknownCRSException, ReferenceResolvingException {
 
         String schemaURL = CoreTstProperties.getProperty( "schema_inspire_addresses" );
         if ( schemaURL == null ) {
@@ -409,8 +400,7 @@ public class GMLFeatureReaderTest {
     public void testINSPIREAddresses2()
                             throws XMLStreamException, FactoryConfigurationError, IOException, ClassCastException,
                             ClassNotFoundException, InstantiationException, IllegalAccessException,
-                            XMLParsingException, UnknownCRSException, JAXBException, TransformationException,
-                            ReferenceResolvingException {
+                            XMLParsingException, UnknownCRSException, ReferenceResolvingException {
 
         String schemaURL = CoreTstProperties.getProperty( "schema_inspire_addresses" );
         if ( schemaURL == null ) {
@@ -432,8 +422,7 @@ public class GMLFeatureReaderTest {
     public void testINSPIREAddresses2Stream()
                             throws XMLStreamException, FactoryConfigurationError, IOException, ClassCastException,
                             ClassNotFoundException, InstantiationException, IllegalAccessException,
-                            XMLParsingException, UnknownCRSException, JAXBException, TransformationException,
-                            ReferenceResolvingException {
+                            XMLParsingException, UnknownCRSException, ReferenceResolvingException {
 
         String schemaURL = CoreTstProperties.getProperty( "schema_inspire_addresses" );
         if ( schemaURL == null ) {
@@ -456,9 +445,7 @@ public class GMLFeatureReaderTest {
     @Test
     public void testGeoServerWFS100FC()
                             throws XMLStreamException, FactoryConfigurationError, IOException, ClassCastException,
-                            ClassNotFoundException, InstantiationException, IllegalAccessException,
-                            XMLParsingException, UnknownCRSException, JAXBException, TransformationException,
-                            ReferenceResolvingException {
+                            XMLParsingException, UnknownCRSException, ReferenceResolvingException {
 
         URL docURL = GMLFeatureReaderTest.class.getResource( BASE_DIR + "GeoServer_FC_WFS100.xml" );
         GMLStreamReader gmlReader = GMLInputFactory.createGMLStreamReader( GMLVersion.GML_2, docURL );
@@ -470,9 +457,7 @@ public class GMLFeatureReaderTest {
     @Test
     public void testGeoServerWFS100FCStream()
                             throws XMLStreamException, FactoryConfigurationError, IOException, ClassCastException,
-                            ClassNotFoundException, InstantiationException, IllegalAccessException,
-                            XMLParsingException, UnknownCRSException, JAXBException, TransformationException,
-                            ReferenceResolvingException {
+                            XMLParsingException, UnknownCRSException, ReferenceResolvingException {
 
         URL docURL = GMLFeatureReaderTest.class.getResource( BASE_DIR + "GeoServer_FC_WFS100.xml" );
         GMLStreamReader gmlReader = GMLInputFactory.createGMLStreamReader( GMLVersion.GML_2, docURL );
@@ -487,9 +472,7 @@ public class GMLFeatureReaderTest {
     @Test
     public void testGeoServerWFS110FC()
                             throws XMLStreamException, FactoryConfigurationError, IOException, ClassCastException,
-                            ClassNotFoundException, InstantiationException, IllegalAccessException,
-                            XMLParsingException, UnknownCRSException, JAXBException, TransformationException,
-                            ReferenceResolvingException {
+                            XMLParsingException, UnknownCRSException, ReferenceResolvingException {
 
         URL docURL = GMLFeatureReaderTest.class.getResource( BASE_DIR + "GeoServer_FC_WFS110.xml" );
         GMLStreamReader gmlReader = GMLInputFactory.createGMLStreamReader( GML_31, docURL );
@@ -501,9 +484,7 @@ public class GMLFeatureReaderTest {
     @Test
     public void testGeoServerWFS110FCStream()
                             throws XMLStreamException, FactoryConfigurationError, IOException, ClassCastException,
-                            ClassNotFoundException, InstantiationException, IllegalAccessException,
-                            XMLParsingException, UnknownCRSException, JAXBException, TransformationException,
-                            ReferenceResolvingException {
+                            XMLParsingException, UnknownCRSException, ReferenceResolvingException {
 
         URL docURL = GMLFeatureReaderTest.class.getResource( BASE_DIR + "GeoServer_FC_WFS110.xml" );
         GMLStreamReader gmlReader = GMLInputFactory.createGMLStreamReader( GML_31, docURL );

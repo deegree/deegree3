@@ -26,15 +26,14 @@ import org.deegree.metadata.i18n.Messages;
 import org.deegree.metadata.persistence.MetadataInspectorException;
 import org.deegree.metadata.persistence.MetadataStoreTransaction;
 import org.deegree.metadata.persistence.iso.generating.GenerateQueryableProperties;
-import org.deegree.metadata.persistence.iso.parsing.IdUtils;
 import org.deegree.metadata.persistence.iso.parsing.inspectation.RecordInspector;
 import org.deegree.metadata.persistence.iso19115.jaxb.ISOMetadataStoreConfig.AnyText;
 import org.deegree.metadata.publication.DeleteTransaction;
 import org.deegree.metadata.publication.InsertTransaction;
 import org.deegree.metadata.publication.MetadataProperty;
 import org.deegree.metadata.publication.UpdateTransaction;
-import org.deegree.protocol.csw.MetadataStoreException;
 import org.deegree.protocol.csw.CSWConstants.ResultType;
+import org.deegree.protocol.csw.MetadataStoreException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -119,31 +118,20 @@ public class ISOMetadataStoreTransaction implements MetadataStoreTransaction {
 
         List<String> identifierList = new ArrayList<String>();
         for ( OMElement element : insert.getElements() ) {
-
             try {
                 for ( RecordInspector r : inspectors ) {
                     element = r.inspect( element, conn );
                 }
                 if ( element != null ) {
                     ISORecord rec = new ISORecord( element, anyText );
-                    String id = IdUtils.newInstance( conn ).proveIdExistence( rec.getIdentifier() );
-
-                    if ( id == null ) {
-                        GenerateQueryableProperties generateQP = new GenerateQueryableProperties( connectionType );
-                        int operatesOnId = generateQP.generateMainDatabaseDataset( conn, rec );
-                        generateQP.executeQueryableProperties( false, conn, operatesOnId, rec );
-                        identifierList.addAll( Arrays.asList( rec.getIdentifier() ) );
-                    } else {
-                        String msg = Messages.getMessage( "ERROR_DUPLICATE_INSERT", id );
-                        LOG.info( msg );
-                        throw new MetadataStoreException( msg );
-                    }
+                    GenerateQueryableProperties generateQP = new GenerateQueryableProperties( connectionType );
+                    int operatesOnId = generateQP.generateMainDatabaseDataset( conn, rec );
+                    generateQP.executeQueryableProperties( false, conn, operatesOnId, rec );
+                    identifierList.addAll( Arrays.asList( rec.getIdentifier() ) );
                 }
-
             } catch ( XMLStreamException e ) {
                 throw new MetadataStoreException( "Error on insert: " + e.getMessage(), e );
             }
-
         }
         return identifierList;
     }

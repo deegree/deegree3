@@ -108,7 +108,7 @@ public class GLPBufferPool {
     private int determineMaxPBufferSize() {
         GLPbuffer buffer = createBuffer( 2, 2 );
         if ( buffer.getWidth() == 0 || buffer.getHeight() == 0 ) {
-            LOG.warn( "No PBuffer could be create for size 2 implying that your Graphicsboard does not support PBuffers, you might not be able to use the WPVS.");
+            LOG.warn( "No PBuffer could be create for size 2 implying that your Graphicsboard does not support PBuffers, you might not be able to use the WPVS." );
         }
         PBufferSizeTest test = new PBufferSizeTest();
         buffer.addGLEventListener( test );

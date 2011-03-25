@@ -59,7 +59,6 @@ import org.deegree.gml.GMLInputFactory;
 import org.deegree.gml.GMLStreamReader;
 import org.deegree.gml.GMLVersion;
 import org.deegree.gml.feature.schema.ApplicationSchemaXSDDecoder;
-import org.jaxen.JaxenException;
 import org.jaxen.SimpleNamespaceContext;
 import org.junit.Assert;
 import org.junit.Before;
@@ -79,7 +78,7 @@ public class FilterEvaluationTest {
 
     private SimpleNamespaceContext nsContext;
 
-    private static final String BASE_DIR = "../gml/feature/testdata/features/";
+    // private static final String BASE_DIR = "../gml/feature/testdata/features/";
 
     @Before
     public void setUp()
@@ -145,48 +144,42 @@ public class FilterEvaluationTest {
 
     @Test
     public void filterCollection7()
-                            throws FilterEvaluationException, XMLStreamException, FactoryConfigurationError,
-                            JaxenException {
+                            throws FilterEvaluationException, XMLStreamException, FactoryConfigurationError {
         Filter filter = parseFilter( "testfilter7.xml" );
         assertResultSet( fc.getMembers( filter, new FeatureXPathEvaluator( GML_31 ) ), "PHILOSOPHER_1" );
     }
 
     @Test
     public void filterCollection8()
-                            throws FilterEvaluationException, XMLStreamException, FactoryConfigurationError,
-                            JaxenException {
+                            throws FilterEvaluationException, XMLStreamException, FactoryConfigurationError {
         Filter filter = parseFilter( "testfilter8.xml" );
         assertResultSet( fc.getMembers( filter, new FeatureXPathEvaluator( GML_31 ) ), "PHILOSOPHER_1" );
     }
 
     @Test
     public void filterCollection9()
-                            throws FilterEvaluationException, XMLStreamException, FactoryConfigurationError,
-                            JaxenException {
+                            throws FilterEvaluationException, XMLStreamException, FactoryConfigurationError {
         Filter filter = parseFilter( "testfilter9.xml" );
         assertResultSet( fc.getMembers( filter, new FeatureXPathEvaluator( GML_31 ) ), "PHILOSOPHER_6" );
     }
 
     @Test
     public void filterCollection10()
-                            throws FilterEvaluationException, XMLStreamException, FactoryConfigurationError,
-                            JaxenException {
+                            throws FilterEvaluationException, XMLStreamException, FactoryConfigurationError {
         Filter filter = parseFilter( "testfilter10.invalid_xml" );
         assertResultSet( fc.getMembers( filter, new FeatureXPathEvaluator( GML_31 ) ) );
     }
 
     @Test
     public void filterCollection11()
-                            throws FilterEvaluationException, XMLStreamException, FactoryConfigurationError,
-                            JaxenException {
+                            throws FilterEvaluationException, XMLStreamException, FactoryConfigurationError {
         Filter filter = parseFilter( "testfilter11.xml" );
         assertResultSet( fc.getMembers( filter, new FeatureXPathEvaluator( GML_31 ) ), "PHILOSOPHER_1", "PHILOSOPHER_2" );
     }
 
     @Test
     public void filterCollection12()
-                            throws FilterEvaluationException, XMLStreamException, FactoryConfigurationError,
-                            JaxenException {
+                            throws FilterEvaluationException, XMLStreamException, FactoryConfigurationError {
         Filter filter = parseFilter( "testfilter12.xml" );
         assertResultSet( fc.getMembers( filter, new FeatureXPathEvaluator( GML_31 ) ), "PHILOSOPHER_1",
                          "PHILOSOPHER_2", "PHILOSOPHER_3" );

@@ -99,7 +99,7 @@ public class CapabilitiesXMLAdapter extends OWSCapabilitiesXMLAdapter {
         writer.writeStartElement( WPVS_PREFIX, "Capabilities", WPVS_NS );
         writer.writeNamespace( OWS_PREFIX, OWS110_NS );
         writer.writeNamespace( XSI_PREFIX, XSINS );
-        writer.writeNamespace( XLINK_PREFIX, XLNNS );        
+        writer.writeNamespace( XLINK_PREFIX, XLNNS );
         writer.writeAttribute( "service", "WPVS" );
         writer.writeAttribute( "version", "0.5.0" );
         // writer.writeAttribute( XSINS, "schemaLocation",
@@ -235,7 +235,7 @@ public class CapabilitiesXMLAdapter extends OWSCapabilitiesXMLAdapter {
             writeOptionalElement( writer, WPVS_NS, "Name", abstractDatatype.getName() );
             writeElement( writer, WPVS_NS, "Title", abstractDatatype.getTitle() );
             writeOptionalElement( writer, WPVS_NS, "Abstract", abstractDatatype.getAbstract() );
-//            exportKeyWords110( writer, abstractDatatype.getKeywords() );
+            // exportKeyWords110( writer, abstractDatatype.getKeywords() );
             // exportBoundingBoxType110( writer, abstractDatatype.getBoundingBox() );
             exportSimpleStrings( writer, abstractDatatype.getMetadataURL(), WPVS_NS, "MetadataURL" );
             // exportScales( writer, abstractDatatype.getScaleDenominators() );

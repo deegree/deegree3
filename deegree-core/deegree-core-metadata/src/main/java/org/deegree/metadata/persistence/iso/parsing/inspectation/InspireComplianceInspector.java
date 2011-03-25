@@ -35,19 +35,17 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.metadata.persistence.iso.parsing.inspectation;
 
-import static org.slf4j.LoggerFactory.getLogger;
-
 import java.sql.Connection;
-import java.util.ArrayList;
-import java.util.List;
 
 import org.apache.axiom.om.OMElement;
 import org.deegree.metadata.persistence.MetadataInspectorException;
 import org.deegree.metadata.persistence.iso19115.jaxb.InspireInspector;
-import org.slf4j.Logger;
 
 /**
- * Inspects the INSPIRE compliance of the metadataset.
+ * {@link RecordInspector} for ensuring INSPIRE compliance.
+ * <p>
+ * This inspector performs the following checks (currently nothing).
+ * </p>
  * 
  * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
  * @author last edited by: $Author$
@@ -56,31 +54,15 @@ import org.slf4j.Logger;
  */
 public class InspireComplianceInspector implements RecordInspector {
 
-    private static final Logger LOG = getLogger( InspireComplianceInspector.class );
+    private final InspireInspector config;
 
-    private final InspireInspector ric;
-
-    private Connection conn;
-
-    public InspireComplianceInspector( InspireInspector ric ) {
-        this.ric = ric;
-    }
-
-    public InspireInspector getRic() {
-        return ric;
+    public InspireComplianceInspector( InspireInspector config ) {
+        this.config = config;
     }
 
     @Override
     public OMElement inspect( OMElement record, Connection conn )
                             throws MetadataInspectorException {
-        this.conn = conn;
-        // TODO make it plugable.
-        List<InspireCompliance> inspireList = new ArrayList<InspireCompliance>();
-        inspireList.add( new ResourceIdentifier( ric ) );
-        for ( InspireCompliance c : inspireList ) {
-            record = c.inspect( record, conn );
-        }
-
         return record;
     }
 }

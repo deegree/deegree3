@@ -57,7 +57,7 @@ public class ResourceState {
      */
     public static enum StateType {
         /** Resource is deactivated */
-        deactivated,        
+        deactivated,
         /** Resource has been created, but not initialized yet */
         created,
         /** Resource has been successfully initialized */

@@ -41,6 +41,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.deegree.commons.utils.Pair;
+import org.deegree.cs.coordinatesystems.CRS;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.filter.comparison.ComparisonOperator;
 import org.deegree.filter.expression.PropertyName;

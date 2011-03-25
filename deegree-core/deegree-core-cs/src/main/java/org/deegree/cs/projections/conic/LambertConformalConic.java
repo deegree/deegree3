@@ -362,7 +362,8 @@ public class LambertConformalConic extends ConicProjection implements ILambertCo
             // Snyder (p.106 15-1a) pay attention to the '-n' power term...
             rho0 = ( Math.abs( Math.abs( getProjectionLatitude() ) - HALFPI ) < EPS10 ) ? 0.
                                                                                        : largeF
-                                                                                         * Math.pow( Math.tan( QUARTERPI
+                                                                                         * Math.pow(
+                                                                                                     Math.tan( QUARTERPI
                                                                                                                + ( .5 * getProjectionLatitude() ) ),
                                                                                                      -n );
         } else {
@@ -386,7 +387,9 @@ public class LambertConformalConic extends ConicProjection implements ILambertCo
                 // Snyder (p.108 15-7). or 0 if the projectionlatitude is on one of the poles e.g.± pi*0.5.
                 rho0 = ( Math.abs( Math.abs( getProjectionLatitude() ) - HALFPI ) < EPS10 ) ? 0.
                                                                                            : largeF
-                                                                                             * Math.pow( tanHalfCoLatitude( getProjectionLatitude(),
+                                                                                             * Math.pow(
+                                                                                                         tanHalfCoLatitude(
+                                                                                                                            getProjectionLatitude(),
                                                                                                                             getSinphi0(),
                                                                                                                             getEccentricity( geographicCRS ) ),
                                                                                                          n );

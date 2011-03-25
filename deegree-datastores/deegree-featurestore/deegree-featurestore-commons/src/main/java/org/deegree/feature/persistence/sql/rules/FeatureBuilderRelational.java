@@ -66,7 +66,6 @@ import org.deegree.feature.property.GenericProperty;
 import org.deegree.feature.property.Property;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.feature.types.property.PropertyType;
-import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.sql.DBField;
 import org.deegree.filter.sql.MappingExpression;
 import org.deegree.geometry.Geometry;
@@ -329,66 +328,62 @@ public class FeatureBuilderRelational implements FeatureBuilder {
                                                                                                      rs, i, pk );
                 i = particleValues.second;
 
-                try {
-                    Expr xpath = particleMapping.getPath().getAsXPath();
-                    if ( xpath instanceof LocationPath ) {
-                        LocationPath lp = (LocationPath) xpath;
-                        if ( lp.getSteps().size() != 1 ) {
-                            LOG.warn( "Unhandled location path: '" + particleMapping.getPath()
-                                      + "'. Only single step paths are handled." );
-                            continue;
+                Expr xpath = particleMapping.getPath().getAsXPath();
+                if ( xpath instanceof LocationPath ) {
+                    LocationPath lp = (LocationPath) xpath;
+                    if ( lp.getSteps().size() != 1 ) {
+                        LOG.warn( "Unhandled location path: '" + particleMapping.getPath()
+                                  + "'. Only single step paths are handled." );
+                        continue;
+                    }
+                    if ( lp.isAbsolute() ) {
+                        LOG.warn( "Unhandled location path: '" + particleMapping.getPath()
+                                  + "'. Only relative paths are handled." );
+                        continue;
+                    }
+                    Step step = (Step) lp.getSteps().get( 0 );
+                    if ( !step.getPredicates().isEmpty() ) {
+                        LOG.warn( "Unhandled location path: '" + particleMapping.getPath()
+                                  + "'. Only unpredicated steps are handled." );
+                        continue;
+                    }
+                    if ( step instanceof TextNodeStep ) {
+                        for ( Pair<TypedObjectNode, Boolean> particleValue : particleValues.first ) {
+                            children.add( particleValue.first );
                         }
-                        if ( lp.isAbsolute() ) {
-                            LOG.warn( "Unhandled location path: '" + particleMapping.getPath()
-                                      + "'. Only relative paths are handled." );
-                            continue;
+                    } else if ( step instanceof NameStep ) {
+                        NameStep ns = (NameStep) step;
+                        String prefix = ns.getPrefix();
+                        QName name = null;
+                        if ( prefix == null || prefix.isEmpty() ) {
+                            name = new QName( ns.getLocalName() );
+                        } else {
+                            String nsUri = fs.getSchema().getNamespaceBindings().get( prefix );
+                            if ( nsUri == null ) {
+                                nsUri = "";
+                                throw new IllegalArgumentException( "No namespace for prefix " + prefix );
+                            }
+                            name = new QName( nsUri, ns.getLocalName(), prefix );
                         }
-                        Step step = (Step) lp.getSteps().get( 0 );
-                        if ( !step.getPredicates().isEmpty() ) {
-                            LOG.warn( "Unhandled location path: '" + particleMapping.getPath()
-                                      + "'. Only unpredicated steps are handled." );
-                            continue;
-                        }
-                        if ( step instanceof TextNodeStep ) {
+                        if ( step.getAxis() == Axis.ATTRIBUTE ) {
                             for ( Pair<TypedObjectNode, Boolean> particleValue : particleValues.first ) {
-                                children.add( particleValue.first );
+                                if ( particleValue.first instanceof PrimitiveValue ) {
+                                    attrs.put( name, (PrimitiveValue) particleValue.first );
+                                } else {
+                                    LOG.warn( "Value not suitable for attribute." );
+                                }
                             }
-                        } else if ( step instanceof NameStep ) {
-                            NameStep ns = (NameStep) step;
-                            String prefix = ns.getPrefix();
-                            QName name = null;
-                            if ( prefix == null || prefix.isEmpty() ) {
-                                name = new QName( ns.getLocalName() );
-                            } else {
-                                String nsUri = fs.getSchema().getNamespaceBindings().get( prefix );
-                                if ( nsUri == null ) {
-                                    nsUri = "";
-                                    throw new IllegalArgumentException( "No namespace for prefix " + prefix );
+                        } else if ( step.getAxis() == Axis.CHILD ) {
+                            for ( Pair<TypedObjectNode, Boolean> particleValue : particleValues.first ) {
+                                if ( particleValue.first != null ) {
+                                    XSTypeDefinition childType = null;
+                                    GenericXMLElement child = new GenericXMLElement(
+                                                                                     name,
+                                                                                     childType,
+                                                                                     Collections.<QName, PrimitiveValue> emptyMap(),
+                                                                                     Collections.singletonList( particleValue.first ) );
+                                    children.add( child );
                                 }
-                                name = new QName( nsUri, ns.getLocalName(), prefix );
-                            }
-                            if ( step.getAxis() == Axis.ATTRIBUTE ) {
-                                for ( Pair<TypedObjectNode, Boolean> particleValue : particleValues.first ) {
-                                    if ( particleValue.first instanceof PrimitiveValue ) {
-                                        attrs.put( name, (PrimitiveValue) particleValue.first );
-                                    } else {
-                                        LOG.warn( "Value not suitable for attribute." );
-                                    }
-                                }
-                            } else if ( step.getAxis() == Axis.CHILD ) {
-                                for ( Pair<TypedObjectNode, Boolean> particleValue : particleValues.first ) {
-                                    if ( particleValue.first != null ) {
-                                        XSTypeDefinition childType = null;
-                                        GenericXMLElement child = new GenericXMLElement(
-                                                                                         name,
-                                                                                         childType,
-                                                                                         Collections.EMPTY_MAP,
-                                                                                         Collections.singletonList( particleValue.first ) );
-                                        children.add( child );
-                                    }
-                                }
-                            } else {
-                                LOG.warn( "Unhandled path: '" + particleMapping.getPath() + "'" );
                             }
                         } else {
                             LOG.warn( "Unhandled path: '" + particleMapping.getPath() + "'" );
@@ -396,8 +391,8 @@ public class FeatureBuilderRelational implements FeatureBuilder {
                     } else {
                         LOG.warn( "Unhandled path: '" + particleMapping.getPath() + "'" );
                     }
-                } catch ( FilterEvaluationException e ) {
-                    throw new SQLException( e.getMessage(), e );
+                } else {
+                    LOG.warn( "Unhandled path: '" + particleMapping.getPath() + "'" );
                 }
             }
 

@@ -132,6 +132,7 @@ public class PropertyIsBetween extends ComparisonOperator {
         return s;
     }
 
+    @Override
     public Expression[] getParams() {
         return new Expression[] { lowerBoundary, expression, upperBoundary };
     }

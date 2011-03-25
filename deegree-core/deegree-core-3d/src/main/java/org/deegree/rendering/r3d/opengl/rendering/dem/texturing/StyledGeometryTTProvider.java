@@ -397,7 +397,7 @@ public class StyledGeometryTTProvider implements TextureTileProvider {
         } catch ( IOException e ) {
             // could not create a grid writer, don't add to cache
             LOG.debug( "Not adding styled geometry to cache because no grid writer could be created: "
-                                               + e.getLocalizedMessage(), e );
+                       + e.getLocalizedMessage(), e );
             LOG.warn( "Not writing cachefile becaue: " + e.getLocalizedMessage() );
             newCacheFile.delete();
             return;

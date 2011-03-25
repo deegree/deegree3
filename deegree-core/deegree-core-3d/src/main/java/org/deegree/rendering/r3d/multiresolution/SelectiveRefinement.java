@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,7 +32,7 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 package org.deegree.rendering.r3d.multiresolution;
 
 import java.util.ArrayList;
@@ -52,14 +52,14 @@ import org.slf4j.LoggerFactory;
  * determine the smallest mesh produceable by <i>M</i> so that <i>c</i> is fullfilled everywhere on the surface of the
  * mesh.
  * </p>
- *
+ * 
  * @see MultiresolutionMesh
  * @see LODCriterion
  * @see SpatialSelection
- *
+ * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
- *
+ * 
  * @version $Revision$
  */
 public class SelectiveRefinement {
@@ -81,7 +81,7 @@ public class SelectiveRefinement {
     /**
      * Creates a new <code>SelectiveRefinement</code> instance for the given {@link MultiresolutionMesh} and
      * {@link LODCriterion}.
-     *
+     * 
      * @param mt
      * @param crit
      */
@@ -92,7 +92,7 @@ public class SelectiveRefinement {
 
     /**
      * Determines the LOD corresponding to the associated {@link LODCriterion}.
-     *
+     * 
      * @return PatchInfo objects of all patches that make up the LOD
      */
     public List<MeshFragment> determineLOD() {

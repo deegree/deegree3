@@ -60,7 +60,7 @@ public class PropertyIsLike extends ComparisonOperator {
 
     private final PropertyName propName;
 
-    private final Literal literal;
+    private final Literal<?> literal;
 
     private final boolean matchCase;
 
@@ -72,7 +72,7 @@ public class PropertyIsLike extends ComparisonOperator {
      * @param escapeChar
      * @param matchCase
      */
-    public PropertyIsLike( PropertyName propName, Literal literal, String wildCard, String singleChar,
+    public PropertyIsLike( PropertyName propName, Literal<?> literal, String wildCard, String singleChar,
                            String escapeChar, boolean matchCase ) {
         super( matchCase );
         this.propName = propName;
@@ -87,7 +87,7 @@ public class PropertyIsLike extends ComparisonOperator {
         return propName;
     }
 
-    public Literal getLiteral() {
+    public Literal<?> getLiteral() {
         return literal;
     }
 
@@ -115,7 +115,8 @@ public class PropertyIsLike extends ComparisonOperator {
         TypedObjectNode[] paramValues = propName.evaluate( obj, xpathEvaluator );
 
         for ( TypedObjectNode value : paramValues ) {
-            if ( matches( literal.getValue().toString(), value.toString() ) ) {
+            if ( matchCase && matches( literal.getValue().toString().toLowerCase(), value.toString().toLowerCase() )
+                 || matches( literal.getValue().toString(), value.toString() ) ) {
                 return true;
             }
         }

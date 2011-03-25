@@ -94,9 +94,9 @@ public class LambertConformalConicTest extends ProjectionBase {
      */
     @Test
     public void testConsistency() {
-        consistencyTest( projection_26985, 0, 400000,
-                         new Point2d( Math.toRadians( -77 ), Math.toRadians( 37.66666666666665 ) ), Unit.METRE, 1,
-                         true, false, "lambertConformalConic" );
+        consistencyTest( projection_26985, 0, 400000, new Point2d( Math.toRadians( -77 ),
+                                                                   Math.toRadians( 37.66666666666665 ) ), Unit.METRE,
+                         1, true, false, "lambertConformalConic" );
         assertEquals( Math.toRadians( 39.45 ), projection_26985.getFirstParallelLatitude(), DELTA );
         assertEquals( Math.toRadians( 38.3 ), projection_26985.getSecondParallelLatitude(), DELTA );
     }

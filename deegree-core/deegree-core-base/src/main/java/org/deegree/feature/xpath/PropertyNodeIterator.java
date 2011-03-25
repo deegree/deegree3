@@ -53,13 +53,13 @@ import org.deegree.gml.GMLVersion;
  */
 class PropertyNodeIterator implements Iterator<PropertyNode> {
 
-    private GMLObjectNode<Feature> parent;
+    private GMLObjectNode<Feature, Feature> parent;
 
     private Iterator<Property> stdProps;
 
     private Iterator<Property> props;
 
-    PropertyNodeIterator( GMLObjectNode<Feature> parent, GMLVersion version ) {
+    PropertyNodeIterator( GMLObjectNode<Feature, Feature> parent, GMLVersion version ) {
         this.parent = parent;
         this.props = Arrays.asList( parent.getValue().getProperties( version ) ).iterator();
     }

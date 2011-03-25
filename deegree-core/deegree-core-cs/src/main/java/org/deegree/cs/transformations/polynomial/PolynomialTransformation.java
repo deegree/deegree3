@@ -74,8 +74,8 @@ public abstract class PolynomialTransformation extends Transformation {
      * @param id
      *            an identifiable instance containing information about this transformation
      */
-    public PolynomialTransformation( List<Double> firstParameters, List<Double> secondParameters,
-                                     ICRS sourceCRS, ICRS targetCRS, CRSResource id ) {
+    public PolynomialTransformation( List<Double> firstParameters, List<Double> secondParameters, ICRS sourceCRS,
+                                     ICRS targetCRS, CRSResource id ) {
         super( sourceCRS, targetCRS, id );
         if ( firstParameters == null ) {
             throw new IllegalArgumentException( "The first parameter list my not be null" );

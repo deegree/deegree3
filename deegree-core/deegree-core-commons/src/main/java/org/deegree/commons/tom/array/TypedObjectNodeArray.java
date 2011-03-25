@@ -54,7 +54,7 @@ public class TypedObjectNodeArray<T extends TypedObjectNode> implements TypedObj
     private T[] elements;
 
     /**
-     * @param elements 
+     * @param elements
      * 
      */
     public TypedObjectNodeArray( T[] elements ) {

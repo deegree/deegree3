@@ -89,12 +89,8 @@ public class StereographicTest extends ProjectionBase {
                                                                                                                 "GEO_CRS_204" ) } );
 
     private static final StereographicAzimuthal projection_28992 = new StereographicAzimuthal(
-                                                                                               
-                                                                                               463000.0,
-                                                                                               155000.0,
-                                                                                               new Point2d(
-                                                                                                            Math.toRadians( 5.38763888888889 ),
-                                                                                                            Math.toRadians( 52.15616055555555 ) ),
+
+    463000.0, 155000.0, new Point2d( Math.toRadians( 5.38763888888889 ), Math.toRadians( 52.15616055555555 ) ),
                                                                                                Unit.METRE, 0.9999079 );
 
     /**
@@ -114,7 +110,7 @@ public class StereographicTest extends ProjectionBase {
         Point2d sourcePoint = new Point2d( Math.toRadians( 6.610765 ), Math.toRadians( 53.235916 ) );
         Point2d targetPoint = new Point2d( 236660.95112449, 583829.78324175 );
 
-        doForwardAndInverse( projection_28992,geographic_204, sourcePoint, targetPoint );
+        doForwardAndInverse( projection_28992, geographic_204, sourcePoint, targetPoint );
     }
 
     /**
@@ -131,14 +127,14 @@ public class StereographicTest extends ProjectionBase {
     public void testAccuracyNorthPole()
                             throws IllegalArgumentException, ProjectionException {
 
-        StereographicAzimuthal projection_32166 = new StereographicAzimuthal(  2000000, 2000000,
+        StereographicAzimuthal projection_32166 = new StereographicAzimuthal( 2000000, 2000000,
                                                                               new Point2d( Math.toRadians( 0 ),
                                                                                            Math.toRadians( 90 ) ),
                                                                               Unit.METRE, 0.994 );
         Point2d sourcePoint = new Point2d( Math.toRadians( 6.610765 ), Math.toRadians( 53.235916 ) );
         Point2d targetPoint = new Point2d( 2486063.23, -2194020.02 );
 
-        doForwardAndInverse( projection_32166,GeographicCRS.WGS84, sourcePoint, targetPoint );
+        doForwardAndInverse( projection_32166, GeographicCRS.WGS84, sourcePoint, targetPoint );
     }
 
     /**
@@ -155,14 +151,14 @@ public class StereographicTest extends ProjectionBase {
     public void testAccuracySouthPole()
                             throws IllegalArgumentException, ProjectionException {
 
-        StereographicAzimuthal projection_32761 = new StereographicAzimuthal(  2000000, 2000000,
+        StereographicAzimuthal projection_32761 = new StereographicAzimuthal( 2000000, 2000000,
                                                                               new Point2d( Math.toRadians( 0 ),
                                                                                            Math.toRadians( -90 ) ),
                                                                               Unit.METRE, 0.994 );
         Point2d sourcePoint = new Point2d( Math.toRadians( 6.610765 ), Math.toRadians( 53.235916 ) );
         Point2d targetPoint = new Point2d( 6354589.64, 39573786.54 );
 
-        doForwardAndInverse( projection_32761,GeographicCRS.WGS84, sourcePoint, targetPoint );
+        doForwardAndInverse( projection_32761, GeographicCRS.WGS84, sourcePoint, targetPoint );
     }
 
     /**

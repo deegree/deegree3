@@ -39,6 +39,8 @@ package org.deegree.protocol.wms.client;
 import static java.util.Arrays.asList;
 import static org.deegree.commons.tom.primitive.PrimitiveType.STRING;
 import static org.deegree.commons.utils.ArrayUtils.join;
+import static org.deegree.commons.utils.ProxyUtils.getHttpProxyPassword;
+import static org.deegree.commons.utils.ProxyUtils.getHttpProxyUser;
 import static org.deegree.commons.utils.net.HttpUtils.IMAGE;
 import static org.deegree.commons.utils.net.HttpUtils.XML;
 import static org.deegree.commons.xml.CommonNamespaces.getNamespaceContext;
@@ -505,8 +507,8 @@ public class WMSClient111 {
 
         URL theUrl = new URL( url );
         LOG.debug( "Connecting to URL " + theUrl );
-        URLConnection conn = ProxyUtils.openURLConnection( theUrl, ProxyUtils.getHttpProxyUser( true ),
-                                                           ProxyUtils.getHttpProxyPassword( true ) );
+        URLConnection conn = ProxyUtils.openURLConnection( theUrl, getHttpProxyUser( true ),
+                                                           getHttpProxyPassword( true ), httpBasicUser, httpBasicPass );
         conn.setConnectTimeout( connectionTimeout * 1000 );
         conn.setReadTimeout( requestTimeout * 1000 );
         conn.connect();

@@ -211,7 +211,7 @@ public class RasterTransformer extends Transformer {
             GeometryTransformer srcTransf = new GeometryTransformer( srcCRS );
 
             // the envelope from which we need data
-            Envelope workEnv = (Envelope) srcTransf.transform( dstEnvelope, getTargetCRS() );
+            Envelope workEnv = srcTransf.transform( dstEnvelope, getTargetCRS() );
 
             Envelope dataEnvelope = sourceRaster.getEnvelope();
             // the envelope from which we have data

@@ -411,9 +411,6 @@ public class TestRasterCache {
         resetCache();
     }
 
-    /**
-     * @param strings
-     */
     private void checkFiles( FileInfo[] expected ) {
         File[] curFiles = CACHE_DIR.listFiles();
         Assert.assertNotNull( "The files of the raster cache could not be listed, this may not be.", curFiles );
@@ -518,13 +515,13 @@ public class TestRasterCache {
             return false;
         }
 
-        boolean matchExtension( File f ) {
-            if ( f != null ) {
-                String ext = FileUtils.getFileExtension( f );
-                return ".d3rcache".equals( ext ) || ".info".equals( ext );
-            }
-            return false;
-        }
+        // boolean matchExtension( File f ) {
+        // if ( f != null ) {
+        // String ext = FileUtils.getFileExtension( f );
+        // return ".d3rcache".equals( ext ) || ".info".equals( ext );
+        // }
+        // return false;
+        // }
     }
 
 }

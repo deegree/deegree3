@@ -389,7 +389,7 @@ public class Ellipsoid extends CRSIdentifiable implements IEllipsoid {
      */
     @Override
     public boolean equals( Object other ) {
-        if(other instanceof EllipsoidRef){
+        if ( other instanceof EllipsoidRef ) {
             other = ( (EllipsoidRef) other ).getReferencedObject();
         }
         if ( other != null && other instanceof Ellipsoid ) {

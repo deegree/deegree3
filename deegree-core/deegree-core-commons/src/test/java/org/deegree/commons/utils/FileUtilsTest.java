@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,7 +32,7 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 package org.deegree.commons.utils;
 
 import static org.junit.Assert.assertEquals;
@@ -42,11 +42,11 @@ import java.io.File;
 import org.junit.Test;
 
 /**
- *
- *
+ * 
+ * 
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
  * @author last edited by: $Author$
- *
+ * 
  * @version $Revision$, $Date$ }
  */
 public class FileUtilsTest {
@@ -57,12 +57,12 @@ public class FileUtilsTest {
     @Test
     public void testGetBasename() {
         // this tests don't work on windows (backslash!)
-//        assertEquals( "/tmp/foo", FileUtils.getBasename( new File( "/tmp/foo.txt" ) ) );
-//        assertEquals( "/tmp/foo", FileUtils.getBasename( new File( "/tmp/foo" ) ) );
-//        assertEquals( "../foo", FileUtils.getBasename( new File( "../foo.txt" ) ) );
-//        assertEquals( "/tmp", FileUtils.getBasename( new File( "/tmp/" ) ) );
-//        assertEquals( "/tmp.dir/foo", FileUtils.getBasename( new File( "/tmp.dir/foo" ) ) );
-//        assertEquals( "", FileUtils.getBasename( new File( "" ) ) );
+        // assertEquals( "/tmp/foo", FileUtils.getBasename( new File( "/tmp/foo.txt" ) ) );
+        // assertEquals( "/tmp/foo", FileUtils.getBasename( new File( "/tmp/foo" ) ) );
+        // assertEquals( "../foo", FileUtils.getBasename( new File( "../foo.txt" ) ) );
+        // assertEquals( "/tmp", FileUtils.getBasename( new File( "/tmp/" ) ) );
+        // assertEquals( "/tmp.dir/foo", FileUtils.getBasename( new File( "/tmp.dir/foo" ) ) );
+        // assertEquals( "", FileUtils.getBasename( new File( "" ) ) );
     }
 
     /**

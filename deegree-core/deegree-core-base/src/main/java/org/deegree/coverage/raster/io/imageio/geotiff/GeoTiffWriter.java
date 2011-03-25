@@ -70,8 +70,8 @@ import org.deegree.coverage.raster.geom.RasterGeoReference.OriginLocation;
 import org.deegree.coverage.raster.utils.RasterFactory;
 import org.deegree.cs.CRSCodeType;
 import org.deegree.cs.EPSGCode;
-import org.deegree.cs.coordinatesystems.CRS.CRSType;
 import org.deegree.cs.coordinatesystems.ICRS;
+import org.deegree.cs.coordinatesystems.CRS.CRSType;
 
 import com.sun.media.imageio.plugins.tiff.GeoTIFFTagSet;
 import com.sun.media.imageio.plugins.tiff.TIFFDirectory;

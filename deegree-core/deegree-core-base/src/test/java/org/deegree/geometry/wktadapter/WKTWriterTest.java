@@ -39,12 +39,10 @@ import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.net.URL;
-import java.sql.SQLException;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import javax.xml.bind.JAXBException;
 import javax.xml.stream.FactoryConfigurationError;
 import javax.xml.stream.XMLStreamException;
 
@@ -67,6 +65,7 @@ import org.deegree.geometry.primitive.Curve;
 import org.deegree.geometry.primitive.segments.Arc;
 import org.deegree.geometry.primitive.segments.CurveSegment;
 import org.deegree.geometry.primitive.segments.LineStringSegment;
+import org.deegree.geometry.primitive.segments.CurveSegment.CurveSegmentType;
 import org.deegree.gml.GMLInputFactory;
 import org.deegree.gml.GMLStreamReader;
 import org.deegree.gml.GMLVersion;
@@ -89,6 +88,7 @@ public class WKTWriterTest extends TestCase {
 
     private DecimalCoordinateFormatter decimalFormatter;
 
+    @Override
     @Before
     public void setUp() {
         decimalFormatter = new DecimalCoordinateFormatter( 1 );
@@ -99,7 +99,7 @@ public class WKTWriterTest extends TestCase {
     @Test
     public void test_LinearRingDKT()
                             throws XMLParsingException, XMLStreamException, FactoryConfigurationError, IOException,
-                            UnknownCRSException, SQLException, JAXBException {
+                            UnknownCRSException {
 
         Set<WKTFlag> flag = new HashSet<WKTFlag>();
         flag.add( WKTFlag.USE_DKT );
@@ -119,7 +119,7 @@ public class WKTWriterTest extends TestCase {
     @Test
     public void test_PointDKT()
                             throws XMLParsingException, XMLStreamException, FactoryConfigurationError, IOException,
-                            UnknownCRSException, SQLException, JAXBException {
+                            UnknownCRSException {
 
         Set<WKTFlag> flag = new HashSet<WKTFlag>();
         flag.add( WKTFlag.USE_DKT );
@@ -137,7 +137,7 @@ public class WKTWriterTest extends TestCase {
     @Test
     public void test_LineStringDKT()
                             throws XMLParsingException, XMLStreamException, FactoryConfigurationError, IOException,
-                            UnknownCRSException, SQLException, JAXBException {
+                            UnknownCRSException {
 
         Set<WKTFlag> flag = new HashSet<WKTFlag>();
         flag.add( WKTFlag.USE_DKT );
@@ -157,7 +157,7 @@ public class WKTWriterTest extends TestCase {
     @Test
     public void test_PolygonDKT()
                             throws XMLParsingException, XMLStreamException, FactoryConfigurationError, IOException,
-                            UnknownCRSException, SQLException, JAXBException {
+                            UnknownCRSException {
 
         Set<WKTFlag> flag = new HashSet<WKTFlag>();
         flag.add( WKTFlag.USE_DKT );
@@ -166,7 +166,7 @@ public class WKTWriterTest extends TestCase {
         WKTWriter WKTwriter = new WKTWriter( flag, decimalFormatter );
         Geometry geom = parseGeometry( "Polygon.gml" );
         WKTwriter.writeGeometry( geom, writer );
-//        System.out.print( writer.toString() + "\n" );
+        // System.out.print( writer.toString() + "\n" );
 
         assertEquals(
                       "POLYGON [id='',metadataproperty=(),description='',name=()]((0.0 0.0,10.0 0.0,10.0 10.0,0.0 10.0,0.0 0.0),(1.0 9.0,1.0 9.5,2.0 9.5,2.0 9.0,1.0 9.0),(9.0 1.0,9.0 2.0,9.5 2.0,9.5 1.0,9.0 1.0))",
@@ -177,7 +177,7 @@ public class WKTWriterTest extends TestCase {
     @Test
     public void test_SurfaceDKT()
                             throws XMLParsingException, XMLStreamException, FactoryConfigurationError, IOException,
-                            UnknownCRSException, SQLException, JAXBException {
+                            UnknownCRSException {
 
         Set<WKTFlag> flag = new HashSet<WKTFlag>();
         flag.add( WKTFlag.USE_DKT );
@@ -199,7 +199,7 @@ public class WKTWriterTest extends TestCase {
     @Test
     public void test_CurveDKT()
                             throws XMLParsingException, XMLStreamException, FactoryConfigurationError, IOException,
-                            UnknownCRSException, SQLException, JAXBException {
+                            UnknownCRSException {
 
         Set<WKTFlag> flag = new HashSet<WKTFlag>();
         flag.add( WKTFlag.USE_DKT );
@@ -212,7 +212,8 @@ public class WKTWriterTest extends TestCase {
         int count = 0;
         String s = "";
         for ( CurveSegment curveSegment : segments ) {
-            switch ( curveSegment.getSegmentType() ) {
+            CurveSegmentType segmentType = curveSegment.getSegmentType();
+            switch ( segmentType ) {
             case ARC:
                 count++;
                 Arc arc = (Arc) curveSegment;
@@ -226,6 +227,32 @@ public class WKTWriterTest extends TestCase {
                 s += "LINESTRINGSEGMENT (";
                 s += writeSegments( lss.getControlPoints() );
 
+                break;
+            case ARC_BY_BULGE:
+                break;
+            case ARC_BY_CENTER_POINT:
+                break;
+            case ARC_STRING:
+                break;
+            case ARC_STRING_BY_BULGE:
+                break;
+            case BEZIER:
+                break;
+            case BSPLINE:
+                break;
+            case CIRCLE:
+                break;
+            case CIRCLE_BY_CENTER_POINT:
+                break;
+            case CLOTHOID:
+                break;
+            case CUBIC_SPLINE:
+                break;
+            case GEODESIC:
+                break;
+            case GEODESIC_STRING:
+                break;
+            case OFFSET_CURVE:
                 break;
 
             }
@@ -247,7 +274,7 @@ public class WKTWriterTest extends TestCase {
     @Test
     public void test_StandartPropsDKT()
                             throws XMLParsingException, XMLStreamException, FactoryConfigurationError, IOException,
-                            UnknownCRSException, SQLException, JAXBException {
+                            UnknownCRSException {
 
         Set<WKTFlag> flag = new HashSet<WKTFlag>();
         flag.add( WKTFlag.USE_DKT );
@@ -267,8 +294,7 @@ public class WKTWriterTest extends TestCase {
 
     @Test
     public void test_EnvelopeDKT()
-                            throws XMLParsingException, XMLStreamException, FactoryConfigurationError, IOException,
-                            UnknownCRSException, SQLException, JAXBException {
+                            throws XMLParsingException, XMLStreamException, FactoryConfigurationError, IOException {
 
         Set<WKTFlag> flag = new HashSet<WKTFlag>();
         flag.add( WKTFlag.USE_DKT );
@@ -287,7 +313,7 @@ public class WKTWriterTest extends TestCase {
     @Test
     public void test_LinearRing_FLAGLinearRing()
                             throws XMLParsingException, XMLStreamException, FactoryConfigurationError, IOException,
-                            UnknownCRSException, SQLException, JAXBException {
+                            UnknownCRSException {
 
         Set<WKTFlag> flag = new HashSet<WKTFlag>();
         flag.add( WKTFlag.USE_LINEARRING );
@@ -303,8 +329,7 @@ public class WKTWriterTest extends TestCase {
 
     @Test
     public void test_Envelope_FLAGEnvelope()
-                            throws XMLParsingException, XMLStreamException, FactoryConfigurationError, IOException,
-                            UnknownCRSException, SQLException, JAXBException {
+                            throws XMLParsingException, XMLStreamException, FactoryConfigurationError, IOException {
 
         Set<WKTFlag> flag = new HashSet<WKTFlag>();
         flag.add( WKTFlag.USE_ENVELOPE );
@@ -322,7 +347,7 @@ public class WKTWriterTest extends TestCase {
     @Test
     public void test_Point()
                             throws XMLParsingException, XMLStreamException, FactoryConfigurationError, IOException,
-                            UnknownCRSException, SQLException, JAXBException {
+                            UnknownCRSException {
 
         Set<WKTFlag> flag = new HashSet<WKTFlag>();
         Writer writer = new StringWriter();
@@ -339,7 +364,7 @@ public class WKTWriterTest extends TestCase {
     @Test
     public void test_LineString()
                             throws XMLParsingException, XMLStreamException, FactoryConfigurationError, IOException,
-                            UnknownCRSException, SQLException, JAXBException {
+                            UnknownCRSException {
 
         Set<WKTFlag> flag = new HashSet<WKTFlag>();
         Writer writer = new StringWriter();
@@ -356,7 +381,7 @@ public class WKTWriterTest extends TestCase {
     @Test
     public void test_LinearRing()
                             throws XMLParsingException, XMLStreamException, FactoryConfigurationError, IOException,
-                            UnknownCRSException, SQLException, JAXBException {
+                            UnknownCRSException {
 
         Set<WKTFlag> flag = new HashSet<WKTFlag>();
         Writer writer = new StringWriter();
@@ -372,14 +397,14 @@ public class WKTWriterTest extends TestCase {
     @Test
     public void test_Polygon()
                             throws XMLParsingException, XMLStreamException, FactoryConfigurationError, IOException,
-                            UnknownCRSException, SQLException, JAXBException {
+                            UnknownCRSException {
 
         Set<WKTFlag> flag = new HashSet<WKTFlag>();
         Writer writer = new StringWriter();
         WKTWriter WKTwriter = new WKTWriter( flag, decimalFormatter );
         Geometry geom = parseGeometry( "Polygon.gml" );
         WKTwriter.writeGeometry( geom, writer );
-//        System.out.print( writer.toString() + "\n" );
+        // System.out.print( writer.toString() + "\n" );
 
         assertEquals(
                       "POLYGON ((0.0 0.0,10.0 0.0,10.0 10.0,0.0 10.0,0.0 0.0),(1.0 9.0,1.0 9.5,2.0 9.5,2.0 9.0,1.0 9.0),(9.0 1.0,9.0 2.0,9.5 2.0,9.5 1.0,9.0 1.0))",
@@ -390,7 +415,7 @@ public class WKTWriterTest extends TestCase {
     @Test
     public void test_Curve()
                             throws XMLParsingException, XMLStreamException, FactoryConfigurationError, IOException,
-                            UnknownCRSException, SQLException, JAXBException {
+                            UnknownCRSException {
 
         Set<WKTFlag> flag = new HashSet<WKTFlag>();
         Writer writer = new StringWriter();
@@ -439,7 +464,7 @@ public class WKTWriterTest extends TestCase {
     @Test
     public void test_Surface()
                             throws XMLParsingException, XMLStreamException, FactoryConfigurationError, IOException,
-                            UnknownCRSException, SQLException, JAXBException {
+                            UnknownCRSException {
 
         Set<WKTFlag> flag = new HashSet<WKTFlag>();
         Writer writer = new StringWriter();
@@ -458,8 +483,7 @@ public class WKTWriterTest extends TestCase {
 
     @Test
     public void test_Envelope()
-                            throws XMLParsingException, XMLStreamException, FactoryConfigurationError, IOException,
-                            UnknownCRSException, SQLException, JAXBException {
+                            throws XMLParsingException, XMLStreamException, FactoryConfigurationError, IOException {
 
         Set<WKTFlag> flag = new HashSet<WKTFlag>();
         Writer writer = new StringWriter();
@@ -475,14 +499,14 @@ public class WKTWriterTest extends TestCase {
     @Test
     public void test_MultiPolygon()
                             throws XMLParsingException, XMLStreamException, FactoryConfigurationError, IOException,
-                            UnknownCRSException, SQLException, JAXBException {
+                            UnknownCRSException {
 
         Set<WKTFlag> flag = new HashSet<WKTFlag>();
         Writer writer = new StringWriter();
         WKTWriter WKTwriter = new WKTWriter( flag, decimalFormatter );
         Geometry geom = parseGeometry( "MultiPolygon.gml" );
         WKTwriter.writeGeometry( geom, writer );
-//        System.out.print( writer.toString() + "\n" );
+        // System.out.print( writer.toString() + "\n" );
         assertEquals(
                       "MULTIPOLYGON (((2.0 0.0,0.0 2.0,-2.0 0.0,-4.0 2.0,-6.0 0.0,0.0 10.0,2.0 0.0),(2.0 0.0,0.0 2.0,-2.0 0.0,-4.0 2.0,-6.0 0.0,0.0 10.0,2.0 0.0),(2.0 0.0,0.0 2.0,-2.0 0.0,-4.0 2.0,-6.0 0.0,0.0 10.0,2.0 0.0)),((2.0 0.0,0.0 2.0,-2.0 0.0,-4.0 2.0,-6.0 0.0,0.0 10.0,2.0 0.0),(2.0 0.0,0.0 2.0,-2.0 0.0,-4.0 2.0,-6.0 0.0,0.0 10.0,2.0 0.0),(2.0 0.0,0.0 2.0,-2.0 0.0,-4.0 2.0,-6.0 0.0,0.0 10.0,2.0 0.0)))",
                       writer.toString() );
@@ -501,8 +525,7 @@ public class WKTWriterTest extends TestCase {
 
     // ############################## PARSING THE ENVELOPE-FILE
     private Geometry parseEnvelope( String fileName )
-                            throws XMLStreamException, FactoryConfigurationError, IOException, XMLParsingException,
-                            UnknownCRSException {
+                            throws XMLStreamException, FactoryConfigurationError, IOException, XMLParsingException {
 
         XMLStreamReaderWrapper xmlReader = new XMLStreamReaderWrapper(
                                                                        this.getClass().getResource( BASE_DIR + fileName ) );

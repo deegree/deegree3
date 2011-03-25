@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,28 +32,29 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 
 package org.deegree.commons.jdbc;
+
 import org.junit.Test;
 
 public class ConnectionManagerTest {
-    
+
     // TODO use configuration that works in every environment (derby??)
 
     @Test
-    public void testConnectionAllocation () {
-//
-//        URL configURL = ConnectionManagerTest.class.getResource( "jdbc_connections.xml");
-//        ConnectionManager.addConnections( configURL);
-//
-//        Connection[] conns = new Connection[20];
-//        for ( int i = 0; i < conns.length; i++ ) {
-//            conns [i] = ConnectionManager.getConnection( "conn1" );
-//        }
-//
-//        for ( int i = 0; i < conns.length; i++ ) {
-//            conns [i].close();
-//        }
+    public void testConnectionAllocation() {
+        //
+        // URL configURL = ConnectionManagerTest.class.getResource( "jdbc_connections.xml");
+        // ConnectionManager.addConnections( configURL);
+        //
+        // Connection[] conns = new Connection[20];
+        // for ( int i = 0; i < conns.length; i++ ) {
+        // conns [i] = ConnectionManager.getConnection( "conn1" );
+        // }
+        //
+        // for ( int i = 0; i < conns.length; i++ ) {
+        // conns [i].close();
+        // }
     }
 }

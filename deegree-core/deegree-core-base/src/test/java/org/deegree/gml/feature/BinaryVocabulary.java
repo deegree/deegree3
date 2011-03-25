@@ -3,7 +3,6 @@ package org.deegree.gml.feature;
 import com.sun.xml.fastinfoset.QualifiedName;
 import com.sun.xml.fastinfoset.tools.PrintTable;
 import com.sun.xml.fastinfoset.util.DuplicateAttributeVerifier;
-import com.sun.xml.fastinfoset.util.KeyIntMap;
 import com.sun.xml.fastinfoset.util.LocalNameQualifiedNamesMap;
 import com.sun.xml.fastinfoset.util.StringArray;
 import com.sun.xml.fastinfoset.vocab.ParserVocabulary;
@@ -37,7 +36,7 @@ public class BinaryVocabulary {
         addElement( "http://www.opengis.net/gml", "gml", "FeatureCollection" );
         addElement( "http://www.opengis.net/gml", "gml", "featureMember" );
         addElement( "http://www.opengis.net/gml", "gml", "boundedBy" );
-        addElement( "http://www.deegree.org/app", "app1", "id" );        
+        addElement( "http://www.deegree.org/app", "app1", "id" );
         addElement( "http://www.deegree.org/app", "app1", "Philosopher" );
 
         reserveElement( 512 );
@@ -166,17 +165,11 @@ public class BinaryVocabulary {
         }
     }
 
-    /**
-     * Add an attribute value to the tables.
-     * 
-     * @param s
-     *            the value
-     */
-    private static final void addAttributeValue( String s ) {
-        if ( serializerVoc.attributeValue.obtainIndex( s ) == KeyIntMap.NOT_PRESENT ) {
-            parserVoc.attributeValue.add( s );
-        }
-    }
+    // private static final void addAttributeValue( String s ) {
+    // if ( serializerVoc.attributeValue.obtainIndex( s ) == KeyIntMap.NOT_PRESENT ) {
+    // parserVoc.attributeValue.add( s );
+    // }
+    // }
 
     /*
      * Print tables needed for ISO specification.

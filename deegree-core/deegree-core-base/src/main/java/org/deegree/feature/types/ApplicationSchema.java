@@ -44,9 +44,9 @@ import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.Map.Entry;
 
 import javax.xml.namespace.QName;
 
@@ -199,10 +199,10 @@ public class ApplicationSchema {
         if ( xsModel != null ) {
             XSNamespaceItemList nsItems = xsModel.getNamespaces();
             for ( int i = 0; i < nsItems.getLength(); i++ ) {
-                String ns = nsItems.item( i ).getSchemaNamespace();                
+                String ns = nsItems.item( i ).getSchemaNamespace();
                 if ( !( NULL_NS_URI.equals( ns ) ) ) {
                     if ( !this.prefixToNs.values().contains( ns ) && this.prefixToNs != null ) {
-                        String prefix = nsToPrefix.get( ns );      
+                        String prefix = nsToPrefix.get( ns );
                         if ( prefix == null ) {
                             prefix = "app" + ( generatedPrefixId++ );
                         }
@@ -435,10 +435,6 @@ public class ApplicationSchema {
         return propDecls.subList( firstNewIdx, propDecls.size() );
     }
 
-    /**
-     * 
-     * @return
-     */
     public Map<FeatureType, FeatureType> getFtToSuperFt() {
         return ftToSuperFt;
     }
@@ -542,9 +538,8 @@ public class ApplicationSchema {
                 }
             }
 
-            // TODO
             if ( xsModel != null ) {
-
+                // TODO
             }
 
             dependencies.remove( ns );

@@ -11,7 +11,7 @@
     </xs:appinfo>
   </xs:annotation>
 
-  <xs:element name="deegreeServiceController" type="controller:deegreeServiceControllerType"/>
+  <xs:element name="deegreeServiceController" type="controller:deegreeServiceControllerType" />
   <xs:complexType name="deegreeServiceControllerType">
     <xs:annotation>
       <xs:documentation>
@@ -21,6 +21,7 @@
     <xs:sequence>
       <xs:element name="DCP" type="controller:DCPType" minOccurs="0" />
       <xs:element name="ConfiguredServices" type="controller:ConfiguredServicesType" minOccurs="0" />
+      <xs:element name="PreventClassloaderLeaks" type="xs:boolean" minOccurs="0" default="true" />
       <xs:element name="RequestLogging" minOccurs="0">
         <xs:complexType>
           <xs:annotation>

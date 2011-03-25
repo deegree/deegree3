@@ -96,8 +96,6 @@ public class ShaderProgram {
      *            either {@link GL#GL_VERTEX_SHADER} or {@link GL#GL_FRAGMENT_SHADER}
      * @param shaderSource
      *            to be used
-     * @param shaderProgramId
-     *            the id to attach and link the shader too, if -1 a new program will be generated.
      * @return the id of the shader program and the id of teh shader.
      */
     private int compileShader( GL gl, int GL_SHADER_ID, String shaderSource )
@@ -153,8 +151,6 @@ public class ShaderProgram {
      * 
      * @param gl
      *            context to compile for
-     * @param shaderId
-     *            to link
      * 
      */
     private void linkShaderProgram( GL gl ) {
@@ -178,8 +174,6 @@ public class ShaderProgram {
      * 
      * @param gl
      *            the program is linked against
-     * @param shaderProgramId
-     *            to validate.
      */
     private void validateShaderProgram( GL gl ) {
         // validate program

@@ -39,6 +39,8 @@ import static org.deegree.commons.utils.kvp.KVPUtils.getRequired;
 
 import java.util.Map;
 
+import org.deegree.protocol.ows.exception.OWSException;
+
 /**
  * This is an kvp adapter for SOS 1.0.0 DescribeSensor requests.
  * 

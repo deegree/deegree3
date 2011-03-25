@@ -5,7 +5,7 @@
     <groupId>org.deegree</groupId>
     <artifactId>deegree-mdeditor</artifactId>
     <packaging>war</packaging>
-    <version>3.1-pre3</version>
+    <version>3.1-SNAPSHOT</version>
     <name>deegree-mdeditor</name>
     <url>http://www.deegree.org</url>
     
@@ -17,7 +17,7 @@
     <parent>
         <groupId>org.deegree</groupId>
         <artifactId>deegree-parent</artifactId>
-        <version>3.1-pre3</version>
+        <version>3.1-SNAPSHOT</version>
     </parent>
 
     <repositories>
@@ -36,12 +36,12 @@
         <dependency>
             <groupId>org.deegree</groupId>
             <artifactId>deegree-core-base</artifactId>
-            <version>3.1-pre3</version>
+            <version>3.1-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.deegree</groupId>
             <artifactId>deegree-core-commons</artifactId>
-            <version>3.1-pre3</version>
+            <version>3.1-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>javax.servlet</groupId>

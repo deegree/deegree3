@@ -245,8 +245,7 @@ public class MatrixTransform extends Transformation {
      * @param id
      *            an identifiable instance containing information about this transformation
      */
-    public MatrixTransform( ICRS source, ICRS target, Matrix4d matrix,
-                            String transformationName, CRSResource id ) {
+    public MatrixTransform( ICRS source, ICRS target, Matrix4d matrix, String transformationName, CRSResource id ) {
         this( source, target, matrix, id );
         if ( transformationName != null ) {
             this.transformationName = transformationName;
@@ -265,8 +264,7 @@ public class MatrixTransform extends Transformation {
      * @param transformationName
      *            the 'optional' name of the transformation, which is useful to specify the 'helmert' transformation.
      */
-    public MatrixTransform( ICRS source, ICRS target, Matrix4d matrix,
-                            String transformationName ) {
+    public MatrixTransform( ICRS source, ICRS target, Matrix4d matrix, String transformationName ) {
         this( source, target, matrix,
               new CRSIdentifiable( CRSCodeType.valueOf( createFromTo( source.getCode().toString(),
                                                                       target.getCode().toString() ) ) ) );
@@ -399,8 +397,8 @@ public class MatrixTransform extends Transformation {
      * 
      * <p>
      * For example, a square matrix of size 4&times;4. Is a three-dimensional transformation for incoming and outgoing
-     * coordinates. The transformed points <code>(x',y',z')</code> are computed as below (note that this computation is
-     * similar to {@link PerspectiveTransform}):
+     * coordinates. The transformed points <code>(x',y',z')</code> are computed as below (note that this computation is similar to
+     * {@link PerspectiveTransform}):
      * 
      * <blockquote> <code>
      * <pre>
@@ -544,8 +542,7 @@ public class MatrixTransform extends Transformation {
      *             if the matrix is not affine.
      * 
      */
-    public static MatrixTransform createMatrixTransform( ICRS sourceCRS, ICRS targetCRS,
-                                                         final Matrix matrix )
+    public static MatrixTransform createMatrixTransform( ICRS sourceCRS, ICRS targetCRS, final Matrix matrix )
                             throws TransformationException {
         if ( matrix == null ) {
             return null;

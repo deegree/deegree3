@@ -265,8 +265,8 @@ public class TransformationParser extends DefinitionParser {
             /**
              * Load the constructor with the standard projection values and the element list.
              */
-            Constructor<?> constructor = t.getConstructor( CRSIdentifiable.class, ICRS.class,
-                                                           ICRS.class, XMLStreamReader.class );
+            Constructor<?> constructor = t.getConstructor( CRSIdentifiable.class, ICRS.class, ICRS.class,
+                                                           XMLStreamReader.class );
             result = (Transformation) constructor.newInstance( id, sourceCRS, targetCRS, reader );
         } catch ( ClassNotFoundException e ) {
             LOG.error( e.getMessage(), e );
@@ -298,8 +298,8 @@ public class TransformationParser extends DefinitionParser {
      * @return
      * @throws XMLStreamException
      */
-    private Transformation parseLeastSquare( XMLStreamReader reader, ICRS sourceCRS,
-                                             ICRS targetCRS, CRSResource identifiable )
+    private Transformation parseLeastSquare( XMLStreamReader reader, ICRS sourceCRS, ICRS targetCRS,
+                                             CRSResource identifiable )
                             throws XMLStreamException {
         List<Double> aValues = new LinkedList<Double>();
         List<Double> bValues = new LinkedList<Double>();
@@ -356,8 +356,7 @@ public class TransformationParser extends DefinitionParser {
      * @return
      * @throws XMLStreamException
      */
-    private Transformation parseNTv2( XMLStreamReader reader, ICRS sourceCRS, ICRS targetCRS,
-                                      CRSResource identifiable )
+    private Transformation parseNTv2( XMLStreamReader reader, ICRS sourceCRS, ICRS targetCRS, CRSResource identifiable )
                             throws XMLStreamException {
         URL gridFile = null;
         try {
@@ -379,8 +378,8 @@ public class TransformationParser extends DefinitionParser {
      * @return
      * @throws XMLStreamException
      */
-    private Transformation parseHelmert( XMLStreamReader reader, ICRS sourceCRS,
-                                         ICRS targetCRS, CRSResource identifiable )
+    private Transformation parseHelmert( XMLStreamReader reader, ICRS sourceCRS, ICRS targetCRS,
+                                         CRSResource identifiable )
                             throws XMLStreamException {
         double xT = 0, yT = 0, zT = 0, xR = 0, yR = 0, zR = 0, scale = 0;
         try {

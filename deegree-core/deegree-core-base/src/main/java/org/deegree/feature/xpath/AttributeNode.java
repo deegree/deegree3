@@ -37,6 +37,7 @@ package org.deegree.feature.xpath;
 
 import javax.xml.namespace.QName;
 
+import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
 
 /**
@@ -47,15 +48,15 @@ import org.deegree.commons.tom.primitive.PrimitiveValue;
  * 
  * @version $Revision:$, $Date:$
  */
-public class AttributeNode implements XPathNode<PrimitiveValue> {
+public class AttributeNode<P extends TypedObjectNode> implements XPathNode<PrimitiveValue> {
 
-    private ElementNode parentNode;
+    private ElementNode<P> parentNode;
 
     private QName name;
 
     private PrimitiveValue value;
 
-    AttributeNode( ElementNode parentNode, QName attrName, PrimitiveValue value ) {
+    AttributeNode( ElementNode<P> parentNode, QName attrName, PrimitiveValue value ) {
         this.parentNode = parentNode;
         this.name = attrName;
         this.value = value;
@@ -67,7 +68,7 @@ public class AttributeNode implements XPathNode<PrimitiveValue> {
     }
 
     @Override
-    public ElementNode getParent() {
+    public ElementNode<P> getParent() {
         return parentNode;
     }
 

@@ -51,6 +51,7 @@ import org.deegree.commons.uom.Measure;
 import org.deegree.commons.xml.CommonNamespaces;
 import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;
+import org.deegree.cs.coordinatesystems.CRS;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.persistence.CRSManager;
 import org.deegree.geometry.GeometryFactory;

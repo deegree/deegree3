@@ -279,8 +279,7 @@ public class MappingUtils {
      * @param chain
      *            (stack) containing the transformations found recursively.
      */
-    private static void obtainChain( Transformation ct, ICRS sourceCRS, ICRS targetCRS,
-                                     Deque<Transformation> chain ) {
+    private static void obtainChain( Transformation ct, ICRS sourceCRS, ICRS targetCRS, Deque<Transformation> chain ) {
         // if the source and target are the same
         if ( sourceCRS.equals( targetCRS ) ) {
             return;

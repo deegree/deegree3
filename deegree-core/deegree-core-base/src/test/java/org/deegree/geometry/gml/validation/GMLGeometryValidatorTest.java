@@ -69,7 +69,7 @@ public class GMLGeometryValidatorTest {
     @Test
     public void validateCurve()
                             throws XMLStreamException, FactoryConfigurationError, IOException, ClassCastException,
-                            ClassNotFoundException, InstantiationException, IllegalAccessException, UnknownCRSException {
+                            UnknownCRSException {
 
         XMLStreamReaderWrapper xmlReader = getParser( "Curve.gml" );
         DummyGMLValidationEventHandler eventHandler = new DummyGMLValidationEventHandler();
@@ -80,7 +80,7 @@ public class GMLGeometryValidatorTest {
     @Test
     public void validateInvalidCurve()
                             throws XMLStreamException, FactoryConfigurationError, IOException, ClassCastException,
-                            ClassNotFoundException, InstantiationException, IllegalAccessException, UnknownCRSException {
+                            UnknownCRSException {
 
         XMLStreamReaderWrapper xmlReader = getParser( "invalid/Curve_discontinuity.gml" );
         DummyGMLValidationEventHandler eventHandler = new DummyGMLValidationEventHandler();

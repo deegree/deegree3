@@ -72,15 +72,15 @@ public class SimpleSQLFeatureStoreProvider implements FeatureStoreProvider {
 
     private static final String CONFIG_JAXB_PACKAGE = "org.deegree.feature.persistence.simplesql.jaxb";
 
-    private static final String CONFIG_SCHEMA = "/META-INF/schemas/datasource/feature/simplesql/3.0.1/simplesql.xsd";
+    private static final URL CONFIG_SCHEMA = SimpleSQLFeatureStoreProvider.class.getResource( "/META-INF/schemas/datasource/feature/simplesql/3.0.1/simplesql.xsd" );
+
+    private DeegreeWorkspace workspace;
 
     private static Mapper<Pair<Integer, String>, LODStatement> lodMapper = new Mapper<Pair<Integer, String>, LODStatement>() {
         public Pair<Integer, String> apply( LODStatement u ) {
             return new Pair<Integer, String>( u.getAboveScale(), u.getValue() );
         }
     };
-
-    private DeegreeWorkspace workspace;
 
     @Override
     public String getConfigNamespace() {
@@ -89,7 +89,7 @@ public class SimpleSQLFeatureStoreProvider implements FeatureStoreProvider {
 
     @Override
     public URL getConfigSchema() {
-        return SimpleSQLFeatureStoreProvider.class.getResource( CONFIG_SCHEMA );
+        return CONFIG_SCHEMA;
     }
 
     @Override
@@ -98,10 +98,9 @@ public class SimpleSQLFeatureStoreProvider implements FeatureStoreProvider {
 
         SimpleSQLFeatureStore fs = null;
         try {
-            SimpleSQLFeatureStoreConfig config = (SimpleSQLFeatureStoreConfig) JAXBUtils.unmarshall( CONFIG_JAXB_PACKAGE,
-                                                                                                     CONFIG_SCHEMA,
-                                                                                                     configURL,
-                                                                                                     workspace );
+            SimpleSQLFeatureStoreConfig config;
+            config = (SimpleSQLFeatureStoreConfig) JAXBUtils.unmarshall( CONFIG_JAXB_PACKAGE, CONFIG_SCHEMA, configURL,
+                                                                         workspace );
             String connId = config.getConnectionPoolId();
             if ( connId == null ) {
                 connId = config.getJDBCConnId();

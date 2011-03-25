@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,26 +32,27 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 package org.deegree.feature.xpath;
 
+import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
 
 /**
  * {@link XPathNode} that represents an XML text node.
- *
+ * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
- *
+ * 
  * @version $Revision:$, $Date:$
  */
-public class TextNode implements XPathNode {
+public class TextNode<P extends TypedObjectNode> implements XPathNode<PrimitiveValue> {
 
-    private ElementNode parent;
+    private ElementNode<P> parent;
 
     private PrimitiveValue value;
 
-    TextNode (ElementNode parent, PrimitiveValue value) {
+    TextNode( ElementNode<P> parent, PrimitiveValue value ) {
         this.parent = parent;
         this.value = value;
     }
@@ -62,11 +63,11 @@ public class TextNode implements XPathNode {
     }
 
     @Override
-    public ElementNode getParent() {
+    public ElementNode<P> getParent() {
         return parent;
     }
 
-    public PrimitiveValue getValue () {
+    public PrimitiveValue getValue() {
         return value;
     }
 }

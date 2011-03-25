@@ -271,10 +271,12 @@ public class ConcatenatedTransform extends Transformation {
      * @return A concatenated transform, or <code>null</code> if all arguments was nul.
      */
     public static Transformation concatenate( final Transformation step1, final Transformation step2 ) {
-        if ( step1 == null )
+        if ( step1 == null ) {
             return step2;
-        if ( step2 == null )
+        }
+        if ( step2 == null ) {
             return step1;
+        }
         return concatenateTransformations( step1, step2 );
     }
 

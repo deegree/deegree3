@@ -36,7 +36,9 @@
 package org.deegree.console;
 
 import static javax.faces.application.FacesMessage.SEVERITY_ERROR;
+import static org.apache.commons.io.FileUtils.copyURLToFile;
 import static org.apache.commons.io.FileUtils.readFileToString;
+import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -53,7 +55,7 @@ import javax.servlet.http.HttpServletRequest;
 import lombok.Getter;
 import lombok.Setter;
 
-import org.deegree.commons.config.DeegreeWorkspace;
+import org.apache.commons.io.IOUtils;
 import org.deegree.commons.config.Resource;
 import org.deegree.commons.config.ResourceManager;
 import org.deegree.commons.config.ResourceProvider;
@@ -62,6 +64,7 @@ import org.deegree.commons.config.ResourceState.StateType;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.services.OWS;
 import org.deegree.services.controller.WebServicesConfiguration;
+import org.slf4j.Logger;
 
 /**
  * Wraps information on a {@link Resource} and its configuration file.
@@ -73,6 +76,8 @@ import org.deegree.services.controller.WebServicesConfiguration;
  * @version $Revision$, $Date$
  */
 public class Config implements Comparable<Config> {
+
+    private static final Logger LOG = getLogger( Config.class );
 
     @Getter
     private File location;
@@ -108,6 +113,30 @@ public class Config implements Comparable<Config> {
         this.schemaURL = schemaURL;
         this.resourceOutcome = resourceOutcome;
         this.requiresWSReload = true;
+        if ( schemaURL != null ) {
+            try {
+                schemaAsText = IOUtils.toString( schemaURL.openStream(), "UTF-8" );
+            } catch ( IOException e ) {
+                LOG.warn( "Schema not available: {}", schemaURL );
+                LOG.trace( "Stack trace:", e );
+            }
+        }
+    }
+
+    public Config( File location, URL schemaURL, URL template, String resourceOutcome ) {
+        this.location = location;
+        this.schemaURL = schemaURL;
+        this.template = template;
+        this.resourceOutcome = resourceOutcome;
+        this.requiresWSReload = true;
+        if ( schemaURL != null ) {
+            try {
+                schemaAsText = IOUtils.toString( schemaURL.openStream(), "UTF-8" );
+            } catch ( IOException e ) {
+                LOG.warn( "Schema not available: {}", schemaURL );
+                LOG.trace( "Stack trace:", e );
+            }
+        }
     }
 
     public Config( ResourceState state, ConfigManager manager,
@@ -123,6 +152,14 @@ public class Config implements Comparable<Config> {
         if ( provider.getConfigSchema() != null ) {
             schemaURL = provider.getConfigSchema();
         }
+        if ( schemaURL != null ) {
+            try {
+                schemaAsText = IOUtils.toString( schemaURL.openStream(), "UTF-8" );
+            } catch ( IOException e ) {
+                LOG.warn( "Schema not available: {}", schemaURL );
+                LOG.trace( "Stack trace:", e );
+            }
+        }
     }
 
     public String getCapabilitiesURL() {
@@ -131,7 +168,7 @@ public class Config implements Comparable<Config> {
 
         HttpServletRequest req = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
         StringBuffer sb = req.getRequestURL();
-        
+
         // HACK HACK HACK
         int index = sb.indexOf( "/console" );
         return sb.substring( 0, index ) + "/services?service=" + type + "&request=GetCapabilities";
@@ -180,6 +217,9 @@ public class Config implements Comparable<Config> {
 
     public String edit()
                             throws IOException {
+        if ( !location.exists() ) {
+            copyURLToFile( template, location );
+        }
         this.content = readFileToString( location, "UTF-8" );
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put( "editConfig", this );
         return "/console/generic/xmleditor?faces-redirect=true";
@@ -243,12 +283,12 @@ public class Config implements Comparable<Config> {
             FacesContext.getCurrentInstance().addMessage( null, fm );
         }
 
-        if (requiresWSReload) {
+        if ( requiresWSReload ) {
             ExternalContext ctx = FacesContext.getCurrentInstance().getExternalContext();
             WorkspaceBean ws = (WorkspaceBean) ctx.getApplicationMap().get( "workspace" );
             ws.setModified();
         }
-        
+
         return resourceOutcome;
     }
 

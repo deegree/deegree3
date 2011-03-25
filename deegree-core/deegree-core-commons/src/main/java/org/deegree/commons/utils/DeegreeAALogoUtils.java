@@ -124,14 +124,14 @@ public class DeegreeAALogoUtils {
 
     /**
      * Returns the logo as a single string, with newline separators.
-     *
+     * 
      * @return the logo as a single string
      */
-    public static String getAsString () {
+    public static String getAsString() {
         StringBuffer sb = new StringBuffer();
         for ( String line : lines ) {
-            sb.append (line);
-            sb.append ('\n');
+            sb.append( line );
+            sb.append( '\n' );
         }
         return sb.toString();
     }

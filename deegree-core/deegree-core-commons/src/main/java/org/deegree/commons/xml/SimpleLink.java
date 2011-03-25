@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,15 +32,15 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 package org.deegree.commons.xml;
 
 import java.net.URI;
 
 /**
- * Class representation of an <code>xlink:simpleLink</code> according to the
- * <code>xlinks.xsd</code> provided with the <code>OWS Common Specification 0.3</code>.
- *
+ * Class representation of an <code>xlink:simpleLink</code> according to the <code>xlinks.xsd</code> provided with the
+ * <code>OWS Common Specification 0.3</code>.
+ * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  */
 public class SimpleLink {
@@ -63,7 +63,7 @@ public class SimpleLink {
 
     /**
      * Creates a new <code>SimpleLink</code> instance with the minimum of neeeded information.
-     *
+     * 
      * @param href
      *            may even be null (!)
      */
@@ -73,7 +73,7 @@ public class SimpleLink {
 
     /**
      * Creates a new <code>SimpleLink</code> instance with the minimum of neeeded information.
-     *
+     * 
      * @param href
      *            may even be null (!)
      * @param role

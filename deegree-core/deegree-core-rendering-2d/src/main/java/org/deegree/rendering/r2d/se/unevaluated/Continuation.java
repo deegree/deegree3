@@ -68,13 +68,13 @@ public abstract class Continuation<T> {
 
     /**
      * @param base
-     * @param f
+     * @param obj
      */
     public abstract void updateStep( T base, Feature obj, XPathEvaluator<Feature> evaluator );
 
     /**
      * @param base
-     * @param f
+     * @param obj
      */
     public void evaluate( T base, Feature obj, XPathEvaluator<Feature> evaluator ) {
         updateStep( base, obj, evaluator );

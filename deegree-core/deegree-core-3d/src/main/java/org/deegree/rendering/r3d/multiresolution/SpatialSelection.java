@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,7 +32,7 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 package org.deegree.rendering.r3d.multiresolution;
 
 import java.util.ArrayList;
@@ -51,12 +51,12 @@ import org.slf4j.LoggerFactory;
  * This is a variant of the {@link SelectiveRefinement} algorithm that only extracts a region of an LOD that lies inside
  * a certain region of interest (ROI). Mesh fragments outside the roi are clipped.
  * </p>
- *
+ * 
  * @see SelectiveRefinement
- *
+ * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
- *
+ * 
  * @version $Revision$
  */
 public class SpatialSelection {
@@ -83,7 +83,7 @@ public class SpatialSelection {
     /**
      * Creates a new <code>SpatialSelection</code> instance for the given {@link MultiresolutionMesh},
      * {@link LODCriterion} and region of interest.
-     *
+     * 
      * @param mt
      * @param crit
      * @param roi
@@ -99,7 +99,7 @@ public class SpatialSelection {
 
     /**
      * Determines the LOD fragment that corresponds to the associated {@link LODCriterion} and region of interest.
-     *
+     * 
      * @return PatchInfo objects of all patches that make up the LOD fragment
      */
     public List<MeshFragment> determineLODFragment() {

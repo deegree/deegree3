@@ -118,7 +118,7 @@ public class ApplicationSchemaXSDDecoderTest {
 
         ApplicationSchemaXSDDecoder adapter = new ApplicationSchemaXSDDecoder( null, null, schemaURL );
         ApplicationSchema schema = adapter.extractFeatureTypeSchema();
-        FeatureType[] fts = schema.getFeatureTypes();
+        schema.getFeatureTypes();
     }
 
     @Test

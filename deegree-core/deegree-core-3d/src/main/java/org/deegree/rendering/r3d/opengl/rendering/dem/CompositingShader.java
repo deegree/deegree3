@@ -68,18 +68,18 @@ public class CompositingShader {
         sb.append( "  gl_FragColor = vec4(1.0, 1.0, 1.0, 1.0);\n" );
 
         // add a GL_DECAL-like function for each texture unit
-        for (int i = 0; i < numTextures; i++) {
-        	if (i == 0) {
-                sb.append( "\n  vec2 tCoord = gl_TexCoord[" + i + "].st;" );        		
-        	} else {
+        for ( int i = 0; i < numTextures; i++ ) {
+            if ( i == 0 ) {
+                sb.append( "\n  vec2 tCoord = gl_TexCoord[" + i + "].st;" );
+            } else {
                 sb.append( "\n  tCoord = gl_TexCoord[" + i + "].st;" );
-        	}
-        	sb.append( "tCoord = gl_TexCoord[" + i + "].st;" );
+            }
+            sb.append( "tCoord = gl_TexCoord[" + i + "].st;" );
             sb.append( "\n  if( tCoord.s >= 0.0 && tCoord.t >= 0.0){" );
-            sb.append( "\n    vec4 texColor = texture2D(tex" + i + ", tCoord );" );            
+            sb.append( "\n    vec4 texColor = texture2D(tex" + i + ", tCoord );" );
             sb.append( "\n    gl_FragColor = ((1.0 - texColor.a) * gl_FragColor) + (texColor.a * texColor);" );
-            sb.append( "\n  }" );			
-		}
+            sb.append( "\n  }" );
+        }
 
         // end main method
         sb.append( "\n\n  gl_FragColor = gl_FragColor * gl_Color;\n" );

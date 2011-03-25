@@ -211,7 +211,7 @@ public class PrimeMeridian extends CRSIdentifiable implements IPrimeMeridian {
     @Override
     public boolean equals( Object other ) {
         if ( other instanceof PrimeMeridianRef ) {
-            other = ((PrimeMeridianRef) other).getReferencedObject();
+            other = ( (PrimeMeridianRef) other ).getReferencedObject();
         }
         if ( other != null && other instanceof PrimeMeridian ) {
             PrimeMeridian that = (PrimeMeridian) other;

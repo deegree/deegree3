@@ -38,11 +38,15 @@ package org.deegree.metadata.persistence.iso.parsing.inspectation;
 import java.sql.Connection;
 
 import org.apache.axiom.om.OMElement;
+import org.deegree.metadata.MetadataRecord;
 import org.deegree.metadata.persistence.MetadataInspectorException;
 import org.deegree.protocol.csw.MetadataStoreException;
 
 /**
- * Abstract base class for all inspector implementations.
+ * Implementations perform validity checks and / or modifications of {@link MetadataRecord} instances.
+ * <p>
+ * NOTE: Implementations must be thread-safe.
+ * </p>
  * 
  * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
  * @author last edited by: $Author$
@@ -52,13 +56,13 @@ import org.deegree.protocol.csw.MetadataStoreException;
 public interface RecordInspector {
 
     /**
-     * Inpectation of one record. The metadatarecord goes into the chain of inspectation.
+     * Inspects the given {@link MetdataRecord}.
      * 
      * @param record
      * @return the inspected and (possibly) modified metadatarecord.
      * @throws MetadataStoreException
+     *             if the record is considered invalid
      */
     public OMElement inspect( OMElement record, Connection conn )
                             throws MetadataInspectorException;
-
 }

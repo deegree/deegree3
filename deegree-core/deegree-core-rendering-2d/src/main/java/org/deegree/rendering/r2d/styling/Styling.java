@@ -44,6 +44,6 @@ package org.deegree.rendering.r2d.styling;
  * 
  * @version $Revision$, $Date$
  */
-public interface Styling {
+public interface Styling<T> extends Copyable<T> {
     // just to introduce a common type name not based on generics
 }

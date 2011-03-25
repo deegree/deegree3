@@ -62,12 +62,12 @@ import javax.xml.bind.JAXBException;
 
 import org.deegree.commons.config.AbstractBasicResourceManager;
 import org.deegree.commons.config.DeegreeWorkspace;
+import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.config.ResourceManager;
 import org.deegree.commons.config.ResourceManagerMetadata;
 import org.deegree.commons.config.ResourceProvider;
 import org.deegree.commons.config.ResourceState;
 import org.deegree.commons.config.ResourceState.StateType;
-import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.i18n.Messages;
 import org.deegree.commons.jdbc.jaxb.JDBCConnection;
 import org.deegree.commons.utils.ProxyUtils;
@@ -160,8 +160,28 @@ public class ConnectionManager extends AbstractBasicResourceManager implements R
      * @return the type of the connection, null if the connection is unknown or the connection type could not be
      *         determined
      */
-    public static Type getType( String id ) {
+    public Type getType( String id ) {
         return idToType.get( id );
+    }
+
+    /**
+     * Returns a connection from the connection pool with the given id.
+     * 
+     * @param id
+     *            id of the connection pool
+     * @return connection from the corresponding connection pool, null, if not available
+     */
+    public Connection get( String id ) {
+        ConnectionPool pool = idToPools.get( id );
+        if ( pool == null ) {
+            return null;
+        }
+        try {
+            return pool.getConnection();
+        } catch ( SQLException e ) {
+            LOG.trace( "Stack trace: ", e );
+            return null;
+        }
     }
 
     /**

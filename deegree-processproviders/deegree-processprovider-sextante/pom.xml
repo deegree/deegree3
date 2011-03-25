@@ -1,5 +1,4 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.deegree</groupId>
   <artifactId>deegree-processprovider-sextante</artifactId>
@@ -8,9 +7,9 @@
   <name>deegree-processprovider-sextante</name>
   <url>http://www.deegree.org</url>
   <scm>
-    <connection>scm:svn:http://svn.wald.intevation.org/svn/deegree/deegree3/trunk/deegree-processproviders/deegree-processprovider-sextante</connection>
-    <developerConnection>scm:svn:svn+ssh://developername@svn.wald.intevation.org/deegree/deegree3/trunk/deegree-processproviders/deegree-processprovider-sextante</developerConnection>
-    <url>http://wald.intevation.org/plugins/scmsvn/viewcvs.php/deegree3/trunk/deegree-processproviders/deegree-processprovider-sextante?root=deegree</url>
+    <connection>scm:svn:svn+ssh://svn.wald.intevation.org/deegree/deegree3/tags/3.1-pre3/deegree-processproviders/deegree-processprovider-sextante</connection>
+    <developerConnection>scm:svn:svn+ssh://svn.wald.intevation.org/deegree/deegree3/tags/3.1-pre3/deegree-processproviders/deegree-processprovider-sextante</developerConnection>
+    <url>scm:svn:svn+ssh://svn.wald.intevation.org/deegree/deegree3/tags/3.1-pre3/deegree-processproviders/deegree-processprovider-sextante?root=deegree</url>
   </scm>
   <parent>
     <groupId>org.deegree</groupId>

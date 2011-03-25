@@ -54,7 +54,6 @@ import org.deegree.geometry.primitive.patches.Rectangle;
 import org.deegree.geometry.primitive.patches.Sphere;
 import org.deegree.geometry.primitive.patches.Triangle;
 import org.deegree.gml.GMLVersion;
-import org.junit.Before;
 import org.junit.Test;
 
 /**
@@ -68,20 +67,13 @@ import org.junit.Test;
  */
 public class GML3SurfacePatchReaderTest {
 
-    private GeometryFactory geomFac;
-
-    @Before
-    public void setUp()
-                            throws Exception {
-        geomFac = new GeometryFactory();
-    }
-
     @Test
     public void parsePolygonPatch()
                             throws XMLStreamException, FactoryConfigurationError, IOException, XMLParsingException,
                             UnknownCRSException {
         XMLStreamReaderWrapper parser = getParser( "PolygonPatch.gml" );
-        PolygonPatch patch = (PolygonPatch) getPatchParser().parseSurfacePatch( parser, CRSManager.getCRSRef( "EPSG:4326" ) );
+        PolygonPatch patch = (PolygonPatch) getPatchParser().parseSurfacePatch( parser,
+                                                                                CRSManager.getCRSRef( "EPSG:4326" ) );
         Assert.assertEquals( 2.0, patch.getExteriorRing().getStartPoint().get0() );
         Assert.assertEquals( 0.0, patch.getExteriorRing().getStartPoint().get1() );
         Assert.assertEquals( 2.0, patch.getExteriorRing().getEndPoint().get0() );

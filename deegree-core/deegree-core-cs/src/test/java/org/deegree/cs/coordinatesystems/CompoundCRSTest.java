@@ -138,11 +138,10 @@ public class CompoundCRSTest extends TestCase {
         GeographicCRS targetGEO = new GeographicCRS( targetDatum, new Axis[] { new Axis( "longitude", Axis.AO_EAST ),
                                                                               new Axis( "latitude", Axis.AO_NORTH ) },
                                                      new CRSCodeType[] { new CRSCodeType( "4258", "ESPG" ) } );
-        Projection targetProj = new TransverseMercator( true,  0, 500000.0, new Point2d( Math.toRadians( 9 ),
-                                                                                                   0 ), Unit.METRE,
-                                                        0.9996 );
-        ProjectedCRS targetCRS = new ProjectedCRS( targetProj, targetGEO,new Axis[] { new Axis( "x", Axis.AO_EAST ),
-                                                                           new Axis( "y", Axis.AO_NORTH ) },
+        Projection targetProj = new TransverseMercator( true, 0, 500000.0, new Point2d( Math.toRadians( 9 ), 0 ),
+                                                        Unit.METRE, 0.9996 );
+        ProjectedCRS targetCRS = new ProjectedCRS( targetProj, targetGEO, new Axis[] { new Axis( "x", Axis.AO_EAST ),
+                                                                                      new Axis( "y", Axis.AO_NORTH ) },
                                                    new CRSCodeType[] { new CRSCodeType( "28992", "ESPG" ) } );
         CompoundCRS targetCompound = new CompoundCRS(
                                                       new Axis( "z", Axis.AO_UP ),
@@ -157,7 +156,8 @@ public class CompoundCRSTest extends TestCase {
         assertEquals( 0., ( (IProjectedCRS) targetCompound.getUnderlyingCRS() ).getProjection().getProjectionLatitude() );
 
         // wgs84
-        assertEquals( false,
+        assertEquals(
+                      false,
                       ( (ProjectedCRS) targetCompound.getUnderlyingCRS() ).getGeodeticDatum().getWGS84Conversion().hasValues() );
 
         // the datum.equals method

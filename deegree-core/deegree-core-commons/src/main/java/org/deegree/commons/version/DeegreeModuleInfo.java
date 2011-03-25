@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,7 +32,7 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 
 package org.deegree.commons.version;
 
@@ -57,10 +57,10 @@ import org.slf4j.LoggerFactory;
  * Registration of modules is based on the {@link ServiceLoader} mechanism, i.e. it is required that each deegree module
  * is packaged in a jar and with a corresponding <code>META-INF/services/org.deegree.CoreModuleInfo</code> file.
  * </p>
- *
+ * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author: schneider $
- *
+ * 
  * @version $Revision: $, $Date: $
  */
 public abstract class DeegreeModuleInfo {
@@ -73,14 +73,14 @@ public abstract class DeegreeModuleInfo {
 
     /**
      * Returns the canonical name of the module (corresponds to the SVN module name).
-     *
+     * 
      * @return the canonical name
      */
     public abstract String getName();
 
     /**
      * Returns the version and build information of the module.
-     *
+     * 
      * @return the version and build information
      */
     public ModuleVersion getVersion() {
@@ -98,7 +98,7 @@ public abstract class DeegreeModuleInfo {
 
     /**
      * Returns info about all registered modules.
-     *
+     * 
      * @return info about all registered modules
      */
     public static List<DeegreeModuleInfo> getRegisteredModules() {

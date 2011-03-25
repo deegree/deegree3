@@ -314,7 +314,8 @@ public class StereographicAlternative extends AzimuthalProjection {
         latitudeOnCS = Math.asin( sinPhi0 / centralGeographicLatitude );
         clExponent = 0.5 * centralGeographicLatitude * getEccentricity( geographicCRS );
         K = Math.tan( .5 * latitudeOnCS + QUARTERPI )
-            / ( Math.pow( Math.tan( .5 * getProjectionLatitude() + QUARTERPI ), centralGeographicLatitude ) * srat( getEccentricity( geographicCRS )
+            / ( Math.pow( Math.tan( .5 * getProjectionLatitude() + QUARTERPI ), centralGeographicLatitude ) * srat(
+                                                                                                                    getEccentricity( geographicCRS )
                                                                                                                                             * sinPhi0,
                                                                                                                     clExponent ) );
         sinc0 = Math.sin( latitudeOnCS );

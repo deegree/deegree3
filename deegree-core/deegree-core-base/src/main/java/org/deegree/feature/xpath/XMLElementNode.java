@@ -35,6 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.feature.xpath;
 
+import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.commons.tom.genericxml.GenericXMLElement;
 
 /**
@@ -45,20 +46,20 @@ import org.deegree.commons.tom.genericxml.GenericXMLElement;
  * 
  * @version $Revision$, $Date$
  */
-public class XMLElementNode extends ElementNode<GenericXMLElement> {
+public class XMLElementNode<P extends TypedObjectNode> extends ElementNode<GenericXMLElement> {
 
-    private XPathNode parentNode;
+    private XPathNode<P> parentNode;
 
     private GenericXMLElement element;
 
-    public XMLElementNode( XPathNode parentNode, GenericXMLElement element ) {
+    public XMLElementNode( XPathNode<P> parentNode, GenericXMLElement element ) {
         super( element.getName() );
         this.parentNode = parentNode;
         this.element = element;
     }
 
     @Override
-    public XPathNode getParent() {
+    public XPathNode<P> getParent() {
         return parentNode;
     }
 

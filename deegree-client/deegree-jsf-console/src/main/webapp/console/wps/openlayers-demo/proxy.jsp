@@ -1,5 +1,5 @@
 <%@page import="java.net.URL"%><%@ page language="java"
-    import="java.io.OutputStream,java.io.InputStream,org.apache.commons.httpclient.*,org.apache.commons.httpclient.methods.*,org.apache.commons.io.input.BoundedInputStream"
+    import="java.io.OutputStream,java.io.InputStream,org.apache.commons.io.input.BoundedInputStream"
     pageEncoding="UTF-8"%><%
 
             // force character encoding to UTF-8

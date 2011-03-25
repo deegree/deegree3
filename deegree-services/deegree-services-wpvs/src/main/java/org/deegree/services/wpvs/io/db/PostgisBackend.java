@@ -41,6 +41,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+import org.deegree.commons.config.DeegreeWorkspace;
+import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.utils.JDBCUtils;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.persistence.CRSManager;
@@ -201,5 +203,14 @@ public class PostgisBackend extends DBBackend<PGgeometry> {
             JDBCUtils.close( statement );
         }
         return result;
+    }
+
+    public void destroy() {
+        // nothing to init
+    }
+
+    public void init( DeegreeWorkspace workspace )
+                            throws ResourceInitException {
+        // nothing to init
     }
 }

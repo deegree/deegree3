@@ -174,8 +174,7 @@ public class NTv2Transformation extends Transformation {
      * @param gsf
      *            the loaded gridshift file
      */
-    public NTv2Transformation( ICRS sourceCRS, ICRS targetCRS, CRSResource id,
-                               GridShiftFile gsf ) {
+    public NTv2Transformation( ICRS sourceCRS, ICRS targetCRS, CRSResource id, GridShiftFile gsf ) {
         this( sourceCRS, targetCRS, id );
         this.gsf = gsf;
         String fromEllips = gsf.getFromEllipsoid();
@@ -271,10 +270,12 @@ public class NTv2Transformation extends Transformation {
                 LOG.info( sb.toString() );
             } else {
                 StringBuilder sb = new StringBuilder( "Successfully applied " );
-                sb.append( ( isInverseTransform() ? "an inverse" : "a forward" ) ).append( " transform for incoming points: " );
+                sb.append( ( isInverseTransform() ? "an inverse" : "a forward" ) ).append(
+                                                                                           " transform for incoming points: " );
                 sb.append( shifter.getLonPositiveEastDegrees() ).append( "," ).append( shifter.getLatDegrees() );
                 sb.append( ", result->" );
-                sb.append( shifter.getShiftedLonPositiveEastDegrees() ).append( "," ).append( shifter.getShiftedLatDegrees() );
+                sb.append( shifter.getShiftedLonPositiveEastDegrees() ).append( "," ).append(
+                                                                                              shifter.getShiftedLatDegrees() );
                 LOG.debug( sb.toString() );
             }
             // if ( swapToTarget ) {

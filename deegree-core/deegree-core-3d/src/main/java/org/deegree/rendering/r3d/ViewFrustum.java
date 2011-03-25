@@ -356,11 +356,11 @@ public class ViewFrustum {
             // is the positive vertex outside?
             Point3d pVertex = pl[i].getPositiveVertex( box );
             Point3d nVertex = pl[i].getNegativeVertex( box );
-            if ( pl[i].distance( pVertex ) < 0 )
+            if ( pl[i].distance( pVertex ) < 0 ) {
                 return OUTSIDE;
-            // is the negative vertex outside?
-            else if ( pl[i].distance( nVertex ) < 0 )
+            } else if ( pl[i].distance( nVertex ) < 0 ) {
                 result = INTERSECT;
+            }
         }
         return result;
     }
@@ -373,11 +373,11 @@ public class ViewFrustum {
             // is the positive vertex outside?
             Point3d pVertex = pl[i].getPositiveVertex( box );
             Point3d nVertex = pl[i].getNegativeVertex( box );
-            if ( pl[i].distance( pVertex ) < 0 )
+            if ( pl[i].distance( pVertex ) < 0 ) {
                 return OUTSIDE;
-            // is the negative vertex outside?
-            else if ( pl[i].distance( nVertex ) < 0 )
+            } else if ( pl[i].distance( nVertex ) < 0 ) {
                 result = INTERSECT;
+            }
         }
         return result;
     }

@@ -59,8 +59,8 @@ public class StyleManager extends AbstractResourceManager<StyleFile> {
         return new Class[] { ProxyUtils.class };
     }
 
-    public ResourceManagerMetadata getMetadata() {
-        return new ResourceManagerMetadata() {
+    public ResourceManagerMetadata<StyleFile> getMetadata() {
+        return new ResourceManagerMetadata<StyleFile>() {
             public String getName() {
                 return "render styles";
             }

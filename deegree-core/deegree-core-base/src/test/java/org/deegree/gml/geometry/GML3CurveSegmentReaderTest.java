@@ -182,7 +182,8 @@ public class GML3CurveSegmentReaderTest {
     public void parseBezier()
                             throws XMLStreamException, FactoryConfigurationError, IOException, XMLParsingException,
                             UnknownCRSException {
-        Bezier arc = (Bezier) getParser().parseCurveSegment( getReader( "Bezier.gml" ), CRSManager.getCRSRef( "EPSG:4326" ) );
+        Bezier arc = (Bezier) getParser().parseCurveSegment( getReader( "Bezier.gml" ),
+                                                             CRSManager.getCRSRef( "EPSG:4326" ) );
         Assert.assertEquals( 4, arc.getControlPoints().size() );
         Assert.assertEquals( 2.0, arc.getControlPoints().get( 0 ).get0() );
         Assert.assertEquals( 1.0, arc.getControlPoints().get( 0 ).get1() );
@@ -206,7 +207,8 @@ public class GML3CurveSegmentReaderTest {
     public void parseBSpline()
                             throws XMLStreamException, FactoryConfigurationError, IOException, XMLParsingException,
                             UnknownCRSException {
-        BSpline arc = (BSpline) getParser().parseCurveSegment( getReader( "BSpline.gml" ), CRSManager.getCRSRef( "EPSG:4326" ) );
+        BSpline arc = (BSpline) getParser().parseCurveSegment( getReader( "BSpline.gml" ),
+                                                               CRSManager.getCRSRef( "EPSG:4326" ) );
         Assert.assertEquals( 4, arc.getControlPoints().size() );
         Assert.assertEquals( 2.0, arc.getControlPoints().get( 0 ).get0() );
         Assert.assertEquals( 1.0, arc.getControlPoints().get( 0 ).get1() );
@@ -263,7 +265,8 @@ public class GML3CurveSegmentReaderTest {
     public void parseClothoid()
                             throws XMLStreamException, FactoryConfigurationError, IOException, XMLParsingException,
                             UnknownCRSException {
-        Clothoid segment = (Clothoid) getParser().parseCurveSegment( getReader( "Clothoid.gml" ), CRSManager.getCRSRef( "EPSG:4326" ) );
+        Clothoid segment = (Clothoid) getParser().parseCurveSegment( getReader( "Clothoid.gml" ),
+                                                                     CRSManager.getCRSRef( "EPSG:4326" ) );
         Assert.assertEquals( 47.0, segment.getReferenceLocation().getLocation().get0() );
         Assert.assertEquals( 11.0, segment.getReferenceLocation().getLocation().get1() );
         Assert.assertEquals( 13.0, segment.getReferenceLocation().getLocation().get2() );
@@ -358,14 +361,14 @@ public class GML3CurveSegmentReaderTest {
                             throws XMLStreamException, FactoryConfigurationError, IOException {
         XMLStreamReaderWrapper xmlReader = new XMLStreamReaderWrapper(
                                                                        GML3CurveSegmentReaderTest.class.getResource( "../../geometry/gml/testdata/segments/"
-                                                                                                                      + fileName ) );
+                                                                                                                     + fileName ) );
         xmlReader.nextTag();
         return xmlReader;
     }
 
     private GML3CurveSegmentReader getParser()
-                            throws XMLStreamException, FactoryConfigurationError, IOException {
-        GMLDocumentIdContext idContext = new GMLDocumentIdContext( GMLVersion.GML_31 );
+                            throws FactoryConfigurationError {
+        new GMLDocumentIdContext( GMLVersion.GML_31 );
         return new GML3CurveSegmentReader( new GML3GeometryReader( GMLVersion.GML_31, null, null, 2 ), geomFac, 2 );
     }
 }

@@ -100,7 +100,6 @@ public class TextureTileManager {
 
     /**
      * @param request
-     * @return
      */
     private TextureTile getMatchingTileWithout( TextureTileRequest request ) {
         TextureTile tile = null;
@@ -124,7 +123,6 @@ public class TextureTileManager {
 
     /**
      * @param request
-     * @return
      */
     private TextureTile getMatchingTileWithLogging( TextureTileRequest request ) {
         TextureTile tile = null;

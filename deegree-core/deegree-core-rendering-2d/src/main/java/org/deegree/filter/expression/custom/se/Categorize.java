@@ -147,11 +147,28 @@ public class Categorize extends AbstractCustomExpression {
         Iterator<Continuation<StringBuffer>> barrierContns = thresholdContns.iterator();
 
         String curVal = eval( vals.next(), valContns.next(), f, xpathEvaluator );
+
+        boolean stringMode = false;
+
         while ( barriers.hasNext() ) {
             String cur = eval( barriers.next(), barrierContns.next(), f, xpathEvaluator );
             String nextVal = eval( vals.next(), valContns.next(), f, xpathEvaluator );
             if ( cur.equals( val ) ) {
                 return new TypedObjectNode[] { new PrimitiveValue( precedingBelongs ? curVal : nextVal ) };
+            }
+            if ( !stringMode ) {
+                try {
+                    float val1 = Float.parseFloat( cur );
+                    float val2 = Float.parseFloat( val );
+                    if ( val2 < val1 ) {
+                        return new TypedObjectNode[] { new PrimitiveValue( curVal ) };
+                    }
+                    curVal = nextVal;
+                    continue;
+                } catch ( NumberFormatException e ) {
+                    // must be a string valued categorize then
+                    stringMode = true;
+                }
             }
             if ( val.compareTo( cur ) == -1 ) {
                 return new TypedObjectNode[] { new PrimitiveValue( curVal ) };

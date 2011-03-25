@@ -39,8 +39,8 @@ import org.deegree.cs.i18n.Messages;
 
 /**
  * 
- * The <code>UnknownCRSException</code> class just wraps a message telling the user, his/her requested CRS is not
- * known to the CRSPovider.
+ * The <code>UnknownCRSException</code> class just wraps a message telling the user, his/her requested CRS is not known
+ * to the CRSPovider.
  * 
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
  * @author last edited by: $Author$

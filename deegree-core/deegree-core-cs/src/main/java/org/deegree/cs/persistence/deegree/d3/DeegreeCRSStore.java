@@ -321,8 +321,9 @@ public class DeegreeCRSStore extends AbstractCRSStore {
             } else {
                 for ( RESOURCETYPE type : RESOURCETYPE.values() ) {
                     result = getCRSResource( id, type );
-                    if ( result != null )
+                    if ( result != null ) {
                         break;
+                    }
                 }
             }
             addIdToCache( result, false );

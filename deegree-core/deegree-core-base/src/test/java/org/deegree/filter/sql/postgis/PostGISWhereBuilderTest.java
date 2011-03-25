@@ -39,7 +39,6 @@ import java.io.IOException;
 import java.net.URL;
 
 import javax.xml.stream.FactoryConfigurationError;
-import javax.xml.stream.Location;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
@@ -145,11 +144,11 @@ public class PostGISWhereBuilderTest {
         XMLStreamReader xmlStream = XMLInputFactory.newInstance().createXMLStreamReader( url.toString(),
                                                                                          url.openStream() );
         xmlStream.nextTag();
-        Location loc = xmlStream.getLocation();
+        xmlStream.getLocation();
         return (OperatorFilter) Filter110XMLDecoder.parse( xmlStream );
     }
 
-    private class DummyPostGISMapping implements PostGISMapping {
+    static class DummyPostGISMapping implements PostGISMapping {
 
         @Override
         public PropertyNameMapping getMapping( PropertyName propName, TableAliasManager aliasManager )
@@ -179,7 +178,7 @@ public class PostGISWhereBuilderTest {
         }
 
         @Override
-        public Object getPostGISValue( Literal literal, PropertyName propName )
+        public Object getPostGISValue( Literal<?> literal, PropertyName propName )
                                 throws FilterEvaluationException {
             return null;
         }

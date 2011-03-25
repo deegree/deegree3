@@ -222,7 +222,7 @@ public abstract class RenderableManager<T extends PositionableModel> implements 
     }
 
     @Override
-    public <T> T[] toArray( T[] a ) {
+    public <U> U[] toArray( U[] a ) {
         return root.getObjects().toArray( a );
     }
 

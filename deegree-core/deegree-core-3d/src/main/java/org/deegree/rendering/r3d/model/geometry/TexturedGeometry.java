@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,7 +32,7 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 
 package org.deegree.rendering.r3d.model.geometry;
 
@@ -44,13 +44,13 @@ import org.slf4j.LoggerFactory;
 
 /**
  * The <code>RenderableTexturedGeometry</code> class TODO add class documentation here.
- *
+ * 
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- *
+ * 
  * @author last edited by: $Author$
- *
+ * 
  * @version $Revision$, $Date$
- *
+ * 
  */
 public class TexturedGeometry extends SimpleAccessGeometry {
     /**
@@ -176,7 +176,7 @@ public class TexturedGeometry extends SimpleAccessGeometry {
 
     /**
      * Method called while serializing this object
-     *
+     * 
      * @param out
      *            to write to.
      * @throws IOException
@@ -190,7 +190,7 @@ public class TexturedGeometry extends SimpleAccessGeometry {
 
     /**
      * Method called while de-serializing (instancing) this object.
-     *
+     * 
      * @param in
      *            to create the methods from.
      * @throws IOException

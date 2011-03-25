@@ -194,9 +194,9 @@ public class ProjectedCRS extends CRS implements IProjectedCRS {
         return projection.doInverseProjection( this.underlyingCRS, x, y );
     }
 
+    @Override
     public boolean equals( Object other ) {
-        if ( other != null && other instanceof ICRS
-             && this.getType().equals( ( (ICRS) other ).getType() ) ) {
+        if ( other != null && other instanceof ICRS && this.getType().equals( ( (ICRS) other ).getType() ) ) {
             final ProjectedCRS that;
             if ( other instanceof CRSRef ) {
                 that = (ProjectedCRS) ( (CRSRef) other ).getReferencedObject();

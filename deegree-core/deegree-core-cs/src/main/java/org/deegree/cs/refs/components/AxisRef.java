@@ -80,6 +80,7 @@ public class AxisRef extends CRSResourceRef<IAxis> implements Serializable, IAxi
         return getReferencedObject().getOrientationAsString();
     }
 
+    @Override
     public String getName() {
         return getReferencedObject().getName();
     }

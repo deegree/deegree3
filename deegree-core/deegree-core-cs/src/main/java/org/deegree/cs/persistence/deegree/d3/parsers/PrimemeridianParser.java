@@ -39,7 +39,6 @@
 package org.deegree.cs.persistence.deegree.d3.parsers;
 
 import static org.deegree.cs.persistence.deegree.d3.DeegreeCRSStore.CRS_NS;
-
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.net.URL;

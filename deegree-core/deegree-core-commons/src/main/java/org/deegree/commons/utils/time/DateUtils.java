@@ -200,11 +200,13 @@ public final class DateUtils {
         String week = matcher.group( 4 );
         String dayOfWeek = matcher.group( 5 );
         String month = matcher.group( 7 );
-        if ( month == null )
+        if ( month == null ) {
             month = matcher.group( 10 );
+        }
         String dayOfMonth = matcher.group( 9 );
-        if ( dayOfMonth == null )
+        if ( dayOfMonth == null ) {
             dayOfMonth = matcher.group( 11 );
+        }
         String dayOfYear = matcher.group( 12 );
         String hourOfDay = matcher.group( 14 );
         String minutesOfHour = matcher.group( 15 );
@@ -236,37 +238,46 @@ public final class DateUtils {
         // And start setting the fields. Note that Integer.parseInt should never fail, since we're checking for null and
         // the
         // regular expression should only have digits in these strings!
-        if ( year != null )
+        if ( year != null ) {
             calendar.set( Calendar.YEAR, Integer.parseInt( year ) );
+        }
         if ( month != null ) {
             calendar.set( Calendar.MONTH, Integer.parseInt( month ) - 1 ); // month is zero-based!
-            if ( dayOfMonth != null )
+            if ( dayOfMonth != null ) {
                 calendar.set( Calendar.DAY_OF_MONTH, Integer.parseInt( dayOfMonth ) );
+            }
         } else if ( week != null ) {
             calendar.set( Calendar.WEEK_OF_YEAR, Integer.parseInt( week ) );
-            if ( dayOfWeek != null )
+            if ( dayOfWeek != null ) {
                 calendar.set( Calendar.DAY_OF_WEEK, Integer.parseInt( dayOfWeek ) );
+            }
         } else if ( dayOfYear != null ) {
             calendar.set( Calendar.DAY_OF_YEAR, Integer.parseInt( dayOfYear ) );
         }
-        if ( hourOfDay != null )
+        if ( hourOfDay != null ) {
             calendar.set( Calendar.HOUR_OF_DAY, Integer.parseInt( hourOfDay ) );
-        if ( minutesOfHour != null )
+        }
+        if ( minutesOfHour != null ) {
             calendar.set( Calendar.MINUTE, Integer.parseInt( minutesOfHour ) );
-        if ( seconds != null )
+        }
+        if ( seconds != null ) {
             calendar.set( Calendar.SECOND, Integer.parseInt( seconds ) );
+        }
         if ( milliseconds != null ) {
             int ms = Integer.parseInt( milliseconds );
-            if ( milliseconds.length() == 1 )
+            if ( milliseconds.length() == 1 ) {
                 ms *= 100;
-            if ( milliseconds.length() == 2 )
+            }
+            if ( milliseconds.length() == 2 ) {
                 ms *= 10;
+            }
             calendar.set( Calendar.MILLISECOND, ms );
         }
         if ( timeZoneHour != null ) {
             int zoneOffsetInMillis = Integer.parseInt( timeZoneHour ) * 60 * 60 * 1000;
-            if ( "-".equals( timeZoneSign ) )
+            if ( "-".equals( timeZoneSign ) ) {
                 zoneOffsetInMillis *= -1;
+            }
             if ( timeZoneMinutes != null ) {
                 int minuteOffsetInMillis = Integer.parseInt( timeZoneMinutes ) * 60 * 1000;
                 if ( zoneOffsetInMillis < 0 ) {

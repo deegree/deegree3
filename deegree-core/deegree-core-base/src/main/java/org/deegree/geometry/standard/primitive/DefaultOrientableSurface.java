@@ -119,6 +119,7 @@ public class DefaultOrientableSurface extends AbstractDefaultGeometry implements
     // Surface methods that are just delegated to the wrapped base surface
     // -----------------------------------------------------------------------
 
+    @Override
     public boolean contains( Geometry geometry ) {
         return baseSurface.contains( geometry );
     }
@@ -128,6 +129,7 @@ public class DefaultOrientableSurface extends AbstractDefaultGeometry implements
         return baseSurface.crosses( geometry );
     }
 
+    @Override
     public Geometry getDifference( Geometry geometry ) {
         return baseSurface.getDifference( geometry );
     }
@@ -137,6 +139,7 @@ public class DefaultOrientableSurface extends AbstractDefaultGeometry implements
         return baseSurface.getDistance( geometry, requestedUnit );
     }
 
+    @Override
     public boolean equals( Geometry geometry ) {
         return baseSurface.equals( geometry );
     }
@@ -145,14 +148,17 @@ public class DefaultOrientableSurface extends AbstractDefaultGeometry implements
         return baseSurface.getArea( requestedBaseUnit );
     }
 
+    @Override
     public Geometry getBuffer( Measure distance ) {
         return baseSurface.getBuffer( distance );
     }
 
+    @Override
     public Point getCentroid() {
         return baseSurface.getCentroid();
     }
 
+    @Override
     public Geometry getConvexHull() {
         return baseSurface.getConvexHull();
     }
@@ -162,6 +168,7 @@ public class DefaultOrientableSurface extends AbstractDefaultGeometry implements
         return baseSurface.getCoordinateDimension();
     }
 
+    @Override
     public Envelope getEnvelope() {
         return baseSurface.getEnvelope();
     }
@@ -178,6 +185,7 @@ public class DefaultOrientableSurface extends AbstractDefaultGeometry implements
         return baseSurface.getPerimeter( requestedUnit );
     }
 
+    @Override
     public PrecisionModel getPrecision() {
         return baseSurface.getPrecision();
     }
@@ -186,10 +194,12 @@ public class DefaultOrientableSurface extends AbstractDefaultGeometry implements
         return baseSurface.getPrimitiveType();
     }
 
+    @Override
     public Geometry getIntersection( Geometry geometry ) {
         return baseSurface.getIntersection( geometry );
     }
 
+    @Override
     public boolean intersects( Geometry geometry ) {
         return baseSurface.intersects( geometry );
     }
@@ -209,18 +219,22 @@ public class DefaultOrientableSurface extends AbstractDefaultGeometry implements
         return baseSurface.touches( geometry );
     }
 
+    @Override
     public boolean isBeyond( Geometry geometry, Measure distance ) {
         return baseSurface.isBeyond( geometry, distance );
     }
 
+    @Override
     public boolean isWithin( Geometry geometry ) {
         return baseSurface.isWithin( geometry );
     }
 
+    @Override
     public boolean isWithinDistance( Geometry geometry, Measure distance ) {
         return baseSurface.isWithinDistance( geometry, distance );
     }
 
+    @Override
     public Geometry getUnion( Geometry geometry ) {
         return baseSurface.getUnion( geometry );
     }

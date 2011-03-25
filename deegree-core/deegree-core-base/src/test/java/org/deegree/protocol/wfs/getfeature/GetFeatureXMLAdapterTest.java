@@ -526,30 +526,28 @@ public class GetFeatureXMLAdapterTest extends TestCase {
 
         assertTrue( op0.getParameter( 0 ) instanceof PropertyIsGreaterThanOrEqualTo );
         PropertyIsGreaterThanOrEqualTo op00 = (PropertyIsGreaterThanOrEqualTo) op0.getParameter( 0 );
-        assertEquals( "myns:Person/myns:Address/myns:StreetNumber",
-                      ( (PropertyName) op00.getParameter1() ).getAsText() );
-        assertEquals( "10000", ( (Literal) op00.getParameter2() ).getValue().toString() );
+        assertEquals( "myns:Person/myns:Address/myns:StreetNumber", ( (PropertyName) op00.getParameter1() ).getAsText() );
+        assertEquals( "10000", ( (Literal<?>) op00.getParameter2() ).getValue().toString() );
 
         assertTrue( rootOp.getParameter( 1 ) instanceof And );
         And op1 = (And) rootOp.getParameter( 1 );
 
         assertTrue( op1.getParameter( 0 ) instanceof PropertyIsEqualTo );
         PropertyIsEqualTo op10 = (PropertyIsEqualTo) op1.getParameter( 0 );
-        assertEquals( "myns:Person/myns:Address/myns:StreetName",
-                      ( (PropertyName) op10.getParameter1() ).getAsText() );
-        assertEquals( "Main St.", ( (Literal) op10.getParameter2() ).getValue().toString() );
+        assertEquals( "myns:Person/myns:Address/myns:StreetName", ( (PropertyName) op10.getParameter1() ).getAsText() );
+        assertEquals( "Main St.", ( (Literal<?>) op10.getParameter2() ).getValue().toString() );
 
         PropertyIsEqualTo op11 = (PropertyIsEqualTo) op1.getParameter( 1 );
         assertEquals( "myns:Person/myns:Address/myns:City", ( (PropertyName) op11.getParameter1() ).getAsText() );
-        assertEquals( "SomeTown", ( (Literal) op11.getParameter2() ).getValue().toString() );
+        assertEquals( "SomeTown", ( (Literal<?>) op11.getParameter2() ).getValue().toString() );
 
         PropertyIsEqualTo op12 = (PropertyIsEqualTo) op1.getParameter( 2 );
         assertEquals( "myns:Person/myns:Sex", ( (PropertyName) op12.getParameter1() ).getAsText() );
-        assertEquals( "Female", ( (Literal) op12.getParameter2() ).getValue().toString() );
+        assertEquals( "Female", ( (Literal<?>) op12.getParameter2() ).getValue().toString() );
 
         PropertyIsGreaterThan op13 = (PropertyIsGreaterThan) op1.getParameter( 3 );
         assertEquals( "myns:Person/myns:Salary", ( (PropertyName) op13.getParameter1() ).getAsText() );
-        assertEquals( "35000", ( (Literal) op13.getParameter2() ).getValue().toString() );
+        assertEquals( "35000", ( (Literal<?>) op13.getParameter2() ).getValue().toString() );
 
     }
 
@@ -597,8 +595,8 @@ public class GetFeatureXMLAdapterTest extends TestCase {
         assertTrue( ( (PropertyIsGreaterThanOrEqualTo) op11 ).getParameter1() instanceof PropertyName );
         assertEquals( ( (PropertyName) ( (PropertyIsGreaterThanOrEqualTo) op11 ).getParameter1() ).getAsText(),
                       "myns:Person/myns:mailAddress/myns:Address/myns:streetNumber" );
-        assertTrue( ( (PropertyIsGreaterThanOrEqualTo) op11 ).getParameter2() instanceof Literal );
-        assertEquals( ( (Literal) ( (PropertyIsGreaterThanOrEqualTo) op11 ).getParameter2() ).getValue().toString(),
+        assertTrue( ( (PropertyIsGreaterThanOrEqualTo) op11 ).getParameter2() instanceof Literal<?> );
+        assertEquals( ( (Literal<?>) ( (PropertyIsGreaterThanOrEqualTo) op11 ).getParameter2() ).getValue().toString(),
                       "10000" );
 
         Operator op12 = andOp1.getParameter( 1 );
@@ -608,8 +606,8 @@ public class GetFeatureXMLAdapterTest extends TestCase {
         assertTrue( ( (PropertyIsLessThanOrEqualTo) op12 ).getParameter1() instanceof PropertyName );
         assertEquals( ( (PropertyName) ( (PropertyIsLessThanOrEqualTo) op12 ).getParameter1() ).getAsText(),
                       "myns:Person/myns:mailAddress/myns:Address/myns:streetNumber" );
-        assertTrue( ( (PropertyIsLessThanOrEqualTo) op12 ).getParameter2() instanceof Literal );
-        assertEquals( ( (Literal) ( (PropertyIsLessThanOrEqualTo) op12 ).getParameter2() ).getValue().toString(),
+        assertTrue( ( (PropertyIsLessThanOrEqualTo) op12 ).getParameter2() instanceof Literal<?> );
+        assertEquals( ( (Literal<?>) ( (PropertyIsLessThanOrEqualTo) op12 ).getParameter2() ).getValue().toString(),
                       "10999" );
 
         Operator op2 = andOp.getParameter( 1 );
@@ -626,8 +624,8 @@ public class GetFeatureXMLAdapterTest extends TestCase {
         assertTrue( ( (PropertyIsEqualTo) op21 ).getParameter1() instanceof PropertyName );
         assertEquals( ( (PropertyName) ( (PropertyIsEqualTo) op21 ).getParameter1() ).getAsText(),
                       "myns:Person/myns:mailAddress/myns:Address/myns:streetName" );
-        assertTrue( ( (PropertyIsEqualTo) op21 ).getParameter2() instanceof Literal );
-        assertEquals( ( (Literal) ( (PropertyIsEqualTo) op21 ).getParameter2() ).getValue().toString(), "Main St." );
+        assertTrue( ( (PropertyIsEqualTo) op21 ).getParameter2() instanceof Literal<?> );
+        assertEquals( ( (Literal<?>) ( (PropertyIsEqualTo) op21 ).getParameter2() ).getValue().toString(), "Main St." );
 
         Operator op22 = andOp2.getParameter( 1 );
         assertEquals( op22.getType(), COMPARISON );
@@ -636,8 +634,8 @@ public class GetFeatureXMLAdapterTest extends TestCase {
         assertTrue( ( (PropertyIsEqualTo) op22 ).getParameter1() instanceof PropertyName );
         assertEquals( ( (PropertyName) ( (PropertyIsEqualTo) op22 ).getParameter1() ).getAsText(),
                       "myns:Person/myns:mailAddress/myns:Address/myns:city" );
-        assertTrue( ( (PropertyIsEqualTo) op22 ).getParameter2() instanceof Literal );
-        assertEquals( ( (Literal) ( (PropertyIsEqualTo) op22 ).getParameter2() ).getValue().toString(), "SomeTown" );
+        assertTrue( ( (PropertyIsEqualTo) op22 ).getParameter2() instanceof Literal<?> );
+        assertEquals( ( (Literal<?>) ( (PropertyIsEqualTo) op22 ).getParameter2() ).getValue().toString(), "SomeTown" );
 
         Operator op23 = andOp2.getParameter( 2 );
         assertEquals( op23.getType(), COMPARISON );
@@ -646,8 +644,8 @@ public class GetFeatureXMLAdapterTest extends TestCase {
         assertTrue( ( (PropertyIsEqualTo) op23 ).getParameter1() instanceof PropertyName );
         assertEquals( ( (PropertyName) ( (PropertyIsEqualTo) op23 ).getParameter1() ).getAsText(),
                       "myns:Person/myns:sex" );
-        assertTrue( ( (PropertyIsEqualTo) op23 ).getParameter2() instanceof Literal );
-        assertEquals( ( (Literal) ( (PropertyIsEqualTo) op23 ).getParameter2() ).getValue().toString(), "Female" );
+        assertTrue( ( (PropertyIsEqualTo) op23 ).getParameter2() instanceof Literal<?> );
+        assertEquals( ( (Literal<?>) ( (PropertyIsEqualTo) op23 ).getParameter2() ).getValue().toString(), "Female" );
 
         Operator op24 = andOp2.getParameter( 3 );
         assertEquals( op24.getType(), COMPARISON );
@@ -656,8 +654,8 @@ public class GetFeatureXMLAdapterTest extends TestCase {
         assertTrue( ( (PropertyIsGreaterThan) op24 ).getParameter1() instanceof PropertyName );
         assertEquals( ( (PropertyName) ( (PropertyIsGreaterThan) op24 ).getParameter1() ).getAsText(),
                       "myns:Person/myns:salary" );
-        assertTrue( ( (PropertyIsGreaterThan) op24 ).getParameter2() instanceof Literal );
-        assertEquals( ( (Literal) ( (PropertyIsGreaterThan) op24 ).getParameter2() ).getValue().toString(), "35000" );
+        assertTrue( ( (PropertyIsGreaterThan) op24 ).getParameter2() instanceof Literal<?> );
+        assertEquals( ( (Literal<?>) ( (PropertyIsGreaterThan) op24 ).getParameter2() ).getValue().toString(), "35000" );
     }
 
     /**

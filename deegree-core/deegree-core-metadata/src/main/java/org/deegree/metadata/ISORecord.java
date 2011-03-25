@@ -35,6 +35,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.metadata;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.security.InvalidParameterException;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -80,6 +82,15 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Represents an ISO 19115 {@link MetadataRecord}.
+ * <p>
+ * An ISO 19115 record can be either a data or a service metadata record. The root element name for both types of
+ * records is {http://www.isotc211.org/2005/gmd}MD_Metadata.
+ * <ul>
+ * <li>Data Metadata: /gmd:hierarchyLevel/gmd:MD_ScopeCode/@codeListValue='dataset' (or missing) or 'series' or
+ * 'application'</li>
+ * <li>Service Metadata: /gmd:hierarchyLevel/gmd:MD_ScopeCode/@codeListValue='service'</li>
+ * </ul>
+ * </p>
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
@@ -89,6 +100,12 @@ import org.slf4j.LoggerFactory;
 public class ISORecord implements MetadataRecord {
 
     private static Logger LOG = LoggerFactory.getLogger( ISORecord.class );
+
+    /** Schema URL for ISO Data and Service Metadata records **/
+    public static final String SCHEMA_URL_GMD = "http://schemas.opengis.net/iso/19139/20060504/gmd/gmd.xsd";
+
+    /** Additional schema URL for Service Metadata records **/
+    public static final String SCHEMA_URL_SRV = "http://schemas.opengis.net/iso/19139/20060504/srv/srv.xsd";
 
     private OMElement root;
 
@@ -421,7 +438,7 @@ public class ISORecord implements MetadataRecord {
     }
 
     public byte[] getAsByteArray()
-                            throws XMLStreamException, FactoryConfigurationError {
+                            throws FactoryConfigurationError {
         // XMLStreamReader reader = new WhitespaceElementFilter( getAsXMLStream() );
         // XMLStreamReader reader = getAsXMLStream();
         // XMLStreamWriter writer = null;
@@ -435,7 +452,16 @@ public class ISORecord implements MetadataRecord {
         // }
         // generateOutput( writer, reader );
         root.declareDefaultNamespace( "http://www.isotc211.org/2005/gmd" );
-        return root.toString().getBytes();
+        try {
+            ByteArrayOutputStream out = new ByteArrayOutputStream( 20000 );
+            root.serialize( out );
+            out.close();
+            return out.toByteArray();
+        } catch ( XMLStreamException e ) {
+            return root.toString().getBytes();
+        } catch ( IOException e ) {
+            return root.toString().getBytes();
+        }
 
     }
 

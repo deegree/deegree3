@@ -99,8 +99,9 @@ public class WMSTextureTileProvider implements TextureTileProvider {
      * @param requestTimeout
      *            maximum number of seconds to wait for a WMS response or -1 if unconstrained
      */
-    public WMSTextureTileProvider( URL capabilitiesURL, String[] requestedLayers, ICRS requestCRS, String requestFormat,
-                                   boolean transparent, double res, int maxWidth, int maxHeight, int requestTimeout ) {
+    public WMSTextureTileProvider( URL capabilitiesURL, String[] requestedLayers, ICRS requestCRS,
+                                   String requestFormat, boolean transparent, double res, int maxWidth, int maxHeight,
+                                   int requestTimeout ) {
         this.client = new WMSClient111( capabilitiesURL );
         this.client.setMaxMapDimensions( maxWidth, maxHeight );
         this.layers = Arrays.asList( requestedLayers );

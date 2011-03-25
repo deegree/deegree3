@@ -125,7 +125,8 @@ public class ProjectionTransform extends Transformation {
         this(
               projectedCRS,
               new CRSIdentifiable(
-                                   CRSCodeType.valueOf( createFromTo( projectedCRS.getGeographicCRS().getCode().toString(),
+                                   CRSCodeType.valueOf( createFromTo(
+                                                                      projectedCRS.getGeographicCRS().getCode().toString(),
                                                                       projectedCRS.getCode().toString() ) ) ) );
     }
 

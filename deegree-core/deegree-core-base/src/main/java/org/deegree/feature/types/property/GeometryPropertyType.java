@@ -287,7 +287,7 @@ public class GeometryPropertyType extends ObjectPropertyType {
             case LINEAR_RING:
                 return geometry instanceof LinearRing;
             case MULTI_CURVE:
-                return geometry instanceof MultiCurve;
+                return geometry instanceof MultiCurve<?>;
             case MULTI_GEOMETRY:
                 return geometry instanceof MultiGeometry<?>;
             case MULTI_LINE_STRING:
@@ -299,7 +299,7 @@ public class GeometryPropertyType extends ObjectPropertyType {
             case MULTI_SOLID:
                 return geometry instanceof MultiSolid;
             case MULTI_SURFACE:
-                return geometry instanceof MultiSurface;
+                return geometry instanceof MultiSurface<?>;
             case ORIENTABLE_CURVE:
                 return geometry instanceof OrientableCurve;
             case ORIENTABLE_SURFACE:
@@ -337,9 +337,9 @@ public class GeometryPropertyType extends ObjectPropertyType {
 
     private final Set<GeometryType> allowedGeometryTypes;
 
-    public GeometryPropertyType( QName name, int minOccurs, int maxOccurs, boolean isAbstract,
-                                 boolean isNillable, List<PropertyType> substitutions, GeometryType geomType,
-                                 CoordinateDimension dim, ValueRepresentation representation ) {
+    public GeometryPropertyType( QName name, int minOccurs, int maxOccurs, boolean isAbstract, boolean isNillable,
+                                 List<PropertyType> substitutions, GeometryType geomType, CoordinateDimension dim,
+                                 ValueRepresentation representation ) {
         super( name, minOccurs, maxOccurs, isAbstract, isNillable, substitutions, representation );
         this.geomType = geomType;
         this.allowedGeometryTypes = new HashSet<GeometryType>();
@@ -359,8 +359,8 @@ public class GeometryPropertyType extends ObjectPropertyType {
      * @param dim
      * @param representation
      */
-    public GeometryPropertyType( QName name, int minOccurs, int maxOccurs, boolean isAbstract,
-                                 boolean isNillable, List<PropertyType> substitutions, Set<GeometryType> geomTypes,
+    public GeometryPropertyType( QName name, int minOccurs, int maxOccurs, boolean isAbstract, boolean isNillable,
+                                 List<PropertyType> substitutions, Set<GeometryType> geomTypes,
                                  CoordinateDimension dim, ValueRepresentation representation ) {
         super( name, minOccurs, maxOccurs, isAbstract, isNillable, substitutions, representation );
         this.allowedGeometryTypes = geomTypes;

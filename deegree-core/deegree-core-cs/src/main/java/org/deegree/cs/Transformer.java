@@ -180,8 +180,7 @@ public abstract class Transformer {
      *             if the given ICoordinateSystem is <code>null</code>
      * 
      */
-    protected Transformation createCRSTransformation( ICRS sourceCRS,
-                                                      List<Transformation> toBeUsedTransformations )
+    protected Transformation createCRSTransformation( ICRS sourceCRS, List<Transformation> toBeUsedTransformations )
                             throws TransformationException {
         if ( sourceCRS == null ) {
             throw new IllegalArgumentException( Messages.getMessage( "CRS_PARAMETER_NOT_NULL",
@@ -237,7 +236,8 @@ public abstract class Transformer {
                                                                      List<Transformation> toBeUsedTransformations )
                             throws TransformationException {
         if ( definedTransformation == null
-             || !( definedTransformation.getSourceCRS().equals( sourceCRS ) && definedTransformation.getTargetCRS().equals( targetCRS ) ) ) {
+             || !( definedTransformation.getSourceCRS().equals( sourceCRS ) && definedTransformation.getTargetCRS().equals(
+                                                                                                                            targetCRS ) ) ) {
             definedTransformation = CRSManager.getTransformation( null, sourceCRS, targetCRS, toBeUsedTransformations );
             if ( LOG.isDebugEnabled() ) {
                 if ( definedTransformation == null ) {

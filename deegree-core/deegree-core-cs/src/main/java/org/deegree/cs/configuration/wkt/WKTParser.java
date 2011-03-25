@@ -72,8 +72,8 @@ import org.deegree.cs.components.IUnit;
 import org.deegree.cs.components.PrimeMeridian;
 import org.deegree.cs.components.Unit;
 import org.deegree.cs.components.VerticalDatum;
-import org.deegree.cs.coordinatesystems.CompoundCRS;
 import org.deegree.cs.coordinatesystems.CRS;
+import org.deegree.cs.coordinatesystems.CompoundCRS;
 import org.deegree.cs.coordinatesystems.GeocentricCRS;
 import org.deegree.cs.coordinatesystems.GeographicCRS;
 import org.deegree.cs.coordinatesystems.IGeographicCRS;
@@ -176,10 +176,11 @@ public class WKTParser {
     protected void passOverClosingBracket()
                             throws IOException {
         tokenizer.nextToken();
-        if ( tokenizer.ttype != ']' && tokenizer.ttype != ')' )
+        if ( tokenizer.ttype != ']' && tokenizer.ttype != ')' ) {
             throw new WKTParsingException(
                                            "The tokenizer expects a closing square/round bracket while the current token is "
                                                                    + tokenizer.toString() );
+        }
     }
 
     /**
@@ -195,9 +196,10 @@ public class WKTParser {
     protected void passOverWord( String s )
                             throws IOException {
         tokenizer.nextToken();
-        if ( tokenizer.sval == null || !tokenizer.sval.equalsIgnoreCase( s ) )
+        if ( tokenizer.sval == null || !tokenizer.sval.equalsIgnoreCase( s ) ) {
             throw new WKTParsingException( "The tokenizer expects the word " + s + " while the current token is "
                                            + tokenizer.toString() );
+        }
     }
 
     /**
@@ -226,9 +228,10 @@ public class WKTParser {
     protected String parseString()
                             throws IOException {
         tokenizer.nextToken();
-        if ( tokenizer.ttype != '"' )
+        if ( tokenizer.ttype != '"' ) {
             throw new WKTParsingException( "The tokenizer expects the opening double quote while the current token is "
                                            + tokenizer.toString() );
+        }
         return tokenizer.sval;
     }
 
@@ -249,10 +252,11 @@ public class WKTParser {
         String orientation = tokenizer.sval;
         if ( !( orientation.equalsIgnoreCase( "NORTH" ) || orientation.equalsIgnoreCase( "SOUTH" )
                 || orientation.equalsIgnoreCase( "WEST" ) || orientation.equalsIgnoreCase( "EAST" )
-                || orientation.equalsIgnoreCase( "UP" ) || orientation.equalsIgnoreCase( "DOWN" ) || orientation.equalsIgnoreCase( "OTHER" ) ) )
+                || orientation.equalsIgnoreCase( "UP" ) || orientation.equalsIgnoreCase( "DOWN" ) || orientation.equalsIgnoreCase( "OTHER" ) ) ) {
             throw new WKTParsingException(
                                            "The tokenizer expects a valid Axis Orientation: NORTH | SOUTH | WEST | EAST | UP | DOWN | OTHER. The current token is "
                                                                    + tokenizer.toString() );
+        }
         passOverClosingBracket();
         return new Axis( name, "AO_" + orientation );
     }
@@ -284,15 +288,17 @@ public class WKTParser {
                 if ( tokenizer.sval.equalsIgnoreCase( "AUTHORITY" ) ) {
                     tokenizer.pushBack();
                     // code = parseAuthority();
-                } else
+                } else {
                     throw new WKTParsingException( "Unknown word encountered in the UNIT element: " + tokenizer );
+                }
                 break;
             default:
                 throw new WKTParsingException( "Unknown token encountered in the UNIT element: " + tokenizer );
             }
             tokenizer.nextToken();
-            if ( tokenizer.ttype == ']' || tokenizer.ttype == ')' )
+            if ( tokenizer.ttype == ']' || tokenizer.ttype == ')' ) {
                 break;
+            }
         }
         if ( name == null ) {
             throw new UnknownUnitException( "Unit name is missing" );
@@ -324,19 +330,22 @@ public class WKTParser {
                 if ( tokenizer.sval.equalsIgnoreCase( "AUTHORITY" ) ) {
                     tokenizer.pushBack();
                     code = parseAuthority();
-                } else
+                } else {
                     throw new WKTParsingException( "Unknown word encountered in the PRIMEM element: " + tokenizer );
+                }
                 break;
             default:
                 throw new WKTParsingException( "Unknown token encountered in the PRIMEM element: " + tokenizer );
             }
             tokenizer.nextToken();
-            if ( tokenizer.ttype == ']' || tokenizer.ttype == ')' )
+            if ( tokenizer.ttype == ']' || tokenizer.ttype == ')' ) {
                 break;
+            }
         }
-        if ( longitude == null )
+        if ( longitude == null ) {
             throw new WKTParsingException( "The PRIMEM element must containt the longitude paramaeter. Before line  "
                                            + tokenizer.lineno() );
+        }
 
         if ( code.equals( CRSCodeType.getUndefined() ) ) {
             code = new CRSCodeType( name );
@@ -374,20 +383,23 @@ public class WKTParser {
                 if ( tokenizer.sval.equalsIgnoreCase( "AUTHORITY" ) ) {
                     tokenizer.pushBack();
                     code = parseAuthority();
-                } else
+                } else {
                     throw new WKTParsingException( "Unknown word encountered in the SPHEROID element: " + tokenizer );
+                }
                 break;
             default:
                 throw new WKTParsingException( "Unknown token encountered in the SPHEROID element: " + tokenizer );
             }
             tokenizer.nextToken();
-            if ( tokenizer.ttype == ']' || tokenizer.ttype == ')' )
+            if ( tokenizer.ttype == ']' || tokenizer.ttype == ')' ) {
                 break;
+            }
         }
-        if ( semiMajorAxis == null || inverseFlattening == null )
+        if ( semiMajorAxis == null || inverseFlattening == null ) {
             throw new WKTParsingException(
                                            "Te SPHEROID element must contain the semi-major axis and inverse flattening parameters. Before line "
                                                                    + tokenizer.lineno() );
+        }
 
         if ( code.equals( CRSCodeType.getUndefined() ) ) {
             code = new CRSCodeType( name );
@@ -440,19 +452,22 @@ public class WKTParser {
                 if ( tokenizer.sval.equalsIgnoreCase( "AUTHORITY" ) ) {
                     tokenizer.pushBack();
                     code = parseAuthority();
-                } else
+                } else {
                     throw new WKTParsingException( "The TOWGS84 contains an unknown keyword: " + tokenizer.sval
                                                    + " at line " + tokenizer.lineno() );
+                }
                 break;
             default:
                 throw new WKTParsingException( "The TOWGS84 contains an unknown keyword: " + tokenizer );
             }
             tokenizer.nextToken();
-            if ( tokenizer.ttype == ']' || tokenizer.ttype == ')' )
+            if ( tokenizer.ttype == ']' || tokenizer.ttype == ')' ) {
                 break;
+            }
         }
-        if ( dx == null || dy == null || dz == null || ex == null || ey == null || ez == null || ppm == null )
+        if ( dx == null || dy == null || dz == null || ex == null || ey == null || ez == null || ppm == null ) {
             throw new WKTParsingException( "The TOWGS84 must contain all 7 parameters." );
+        }
         return new Helmert( dx, dy, dz, ex, ey, ez, ppm, null, GeographicCRS.WGS84, code );
     }
 
@@ -485,21 +500,24 @@ public class WKTParser {
                 } else if ( tokenizer.sval.equalsIgnoreCase( "AUTHORITY" ) ) {
                     tokenizer.pushBack();
                     code = parseAuthority();
-                } else
+                } else {
                     throw new WKTParsingException( "The DATUM contains an unknown keyword: " + tokenizer.sval
                                                    + " at line " + tokenizer.lineno() );
+                }
                 break;
             default:
                 throw new WKTParsingException( "The DATUM contains an unknown keyword: " + tokenizer + " at line "
                                                + tokenizer.lineno() );
             }
             tokenizer.nextToken();
-            if ( tokenizer.ttype == ']' || tokenizer.ttype == ')' )
+            if ( tokenizer.ttype == ']' || tokenizer.ttype == ')' ) {
                 break;
+            }
         }
-        if ( ellipsoid == null )
+        if ( ellipsoid == null ) {
             throw new WKTParsingException( "The DATUM element must contain a SPHEROID. Before line "
                                            + tokenizer.lineno() );
+        }
 
         if ( code.equals( CRSCodeType.getUndefined() ) ) {
             code = new CRSCodeType( name );
@@ -528,9 +546,10 @@ public class WKTParser {
                 if ( tokenizer.sval.equalsIgnoreCase( "AUTHORITY" ) ) {
                     tokenizer.pushBack();
                     code = parseAuthority();
-                } else
+                } else {
                     throw new WKTParsingException( "The VERT_DATUM contains an unknown keyword: " + tokenizer.sval
                                                    + " at line " + tokenizer.lineno() );
+                }
                 break;
             case StreamTokenizer.TT_NUMBER:
                 // datumType = tokenizer.nval;
@@ -539,8 +558,9 @@ public class WKTParser {
                 throw new WKTParsingException( "The VERT_DATUM contains an unknown token: " + tokenizer );
             }
             tokenizer.nextToken();
-            if ( tokenizer.ttype == ']' || tokenizer.ttype == ')' )
+            if ( tokenizer.ttype == ']' || tokenizer.ttype == ')' ) {
                 break;
+            }
         }
         if ( name == null ) {
             throw new WKTParsingException(
@@ -579,9 +599,10 @@ public class WKTParser {
         } else if ( equalsParameterVariants( crsType, "VERT_CS" ) ) {
             return parseVerticalCRS();
 
-        } else
+        } else {
             throw new WKTParsingException( "Expected a CRS element but an unknown keyword was encountered: "
                                            + tokenizer.sval + " at line " + tokenizer.lineno() );
+        }
     }
 
     /**
@@ -615,9 +636,10 @@ public class WKTParser {
                 } else if ( tokenizer.sval.equalsIgnoreCase( "AUTHORITY" ) ) {
                     tokenizer.pushBack();
                     code = parseAuthority();
-                } else
+                } else {
                     throw new WKTParsingException( "An unexpected keyword was encountered in the GEOCCS element: "
                                                    + tokenizer.sval + ". At line: " + tokenizer.lineno() );
+                }
                 break;
 
             default:
@@ -625,15 +647,18 @@ public class WKTParser {
                                                + tokenizer.lineno() );
             }
             tokenizer.nextToken();
-            if ( tokenizer.ttype == ']' || tokenizer.ttype == ')' )
+            if ( tokenizer.ttype == ']' || tokenizer.ttype == ')' ) {
                 break;
+            }
         }
-        if ( unit == null )
+        if ( unit == null ) {
             throw new WKTParsingException( "The VERT_CS element must contain a UNIT keyword element. Before line "
                                            + tokenizer.lineno() );
-        if ( verticalDatum == null )
+        }
+        if ( verticalDatum == null ) {
             throw new WKTParsingException( "The VERT_CS element must contain a VERT_DATUM. Before line "
                                            + tokenizer.lineno() );
+        }
 
         if ( code.equals( CRSCodeType.getUndefined() ) ) {
             code = new CRSCodeType( name );
@@ -685,9 +710,10 @@ public class WKTParser {
                 } else if ( tokenizer.sval.equalsIgnoreCase( "AUTHORITY" ) ) {
                     tokenizer.pushBack();
                     code = parseAuthority();
-                } else
+                } else {
                     throw new WKTParsingException( "An unexpected keyword was encountered in the GEOCCS element: "
                                                    + tokenizer.sval + ". At line: " + tokenizer.lineno() );
+                }
                 break;
 
             default:
@@ -695,17 +721,21 @@ public class WKTParser {
                                                + tokenizer.lineno() );
             }
             tokenizer.nextToken();
-            if ( tokenizer.ttype == ']' || tokenizer.ttype == ')' )
+            if ( tokenizer.ttype == ']' || tokenizer.ttype == ')' ) {
                 break;
+            }
         }
-        if ( unit == null )
+        if ( unit == null ) {
             throw new WKTParsingException( "The GEOCCS element must contain a UNIT keyword element. Before line "
                                            + tokenizer.lineno() );
-        if ( datum == null )
+        }
+        if ( datum == null ) {
             throw new WKTParsingException( "The GEOCCS element must contain a DATUM. Before line " + tokenizer.lineno() );
-        if ( pm == null )
+        }
+        if ( pm == null ) {
             throw new WKTParsingException( "The GEOCCS element must contain a PRIMEM. Before line "
                                            + tokenizer.lineno() );
+        }
 
         pm.setAngularUnit( unit );
         datum.setPrimeMeridian( pm );
@@ -756,9 +786,10 @@ public class WKTParser {
                 } else if ( tokenizer.sval.equalsIgnoreCase( "AUTHORITY" ) ) {
                     tokenizer.pushBack();
                     code = parseAuthority();
-                } else
+                } else {
                     throw new WKTParsingException( "An unexpected keyword was encountered in the GEOGCS element: "
                                                    + tokenizer.sval + ". At line: " + tokenizer.lineno() );
+                }
                 break;
 
             default:
@@ -766,20 +797,25 @@ public class WKTParser {
                                                + tokenizer.lineno() );
             }
             tokenizer.nextToken();
-            if ( tokenizer.ttype == ']' || tokenizer.ttype == ')' )
+            if ( tokenizer.ttype == ']' || tokenizer.ttype == ')' ) {
                 break;
+            }
         }
-        if ( name == null )
+        if ( name == null ) {
             throw new WKTParsingException( "The GEOGCS element must contain a name as a quoted String. Before line "
                                            + tokenizer.lineno() );
-        if ( unit == null )
+        }
+        if ( unit == null ) {
             throw new WKTParsingException( "The GEOGCS element must contain a UNIT keyword element. Before line "
                                            + tokenizer.lineno() );
-        if ( datum == null )
+        }
+        if ( datum == null ) {
             throw new WKTParsingException( "The GEOGCS element must contain a DATUM. Before line " + tokenizer.lineno() );
-        if ( pm == null )
+        }
+        if ( pm == null ) {
             throw new WKTParsingException( "The GEOGCS element must contain a PRIMEM. Before line "
                                            + tokenizer.lineno() );
+        }
 
         pm.setAngularUnit( unit );
         datum.setPrimeMeridian( pm );

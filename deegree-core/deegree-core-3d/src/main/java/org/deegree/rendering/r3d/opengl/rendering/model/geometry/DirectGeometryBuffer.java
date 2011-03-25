@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,7 +32,7 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 
 package org.deegree.rendering.r3d.opengl.rendering.model.geometry;
 
@@ -48,11 +48,11 @@ import com.sun.opengl.util.BufferUtil;
 /**
  * The <code>DirectGeometryBuffer</code> encapsulates the directbuffers (coordinate, normals and texture) for all
  * buildings defined in a scene.
- *
+ * 
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
  * @author last edited by: $Author$
  * @version $Revision$, $Date$
- *
+ * 
  */
 public class DirectGeometryBuffer {
 
@@ -85,8 +85,7 @@ public class DirectGeometryBuffer {
      *            in the coordinates buffer.
      * @param limit
      *            the number of ordinates to copy
-     * @return a copy of the direct coordinate floatbuffer, or <code>null</code> if the position /limit is out of
-     *         range.
+     * @return a copy of the direct coordinate floatbuffer, or <code>null</code> if the position /limit is out of range.
      */
     public FloatBuffer getCoords( int position, int limit ) {
         if ( position < 0 || position > coordBuffer.capacity() ) {
@@ -135,7 +134,7 @@ public class DirectGeometryBuffer {
     /**
      * Add the given {@link FloatBuffer} to the direct coordinates buffer, if the direct coordinate buffer does not have
      * the capacity this method will return -1;
-     *
+     * 
      * @param coordBuffer
      *            to add to the coordinates direct buffer.
      * @return the position of the copy in the coordinate buffer or -1 if the given buffer could not be copied in the
@@ -148,7 +147,7 @@ public class DirectGeometryBuffer {
     /**
      * Add the given {@link FloatBuffer} to the direct coordinates buffer, if the direct normal buffer does not have the
      * capacity this method will return -1;
-     *
+     * 
      * @param normalBuffer
      *            to add to the normal direct buffer.
      * @return the position of the copy in the coordinate buffer or -1 if the given buffer could not be copied in the
@@ -161,7 +160,7 @@ public class DirectGeometryBuffer {
     /**
      * Add the given {@link FloatBuffer} to the direct texture buffer, if the direct texture buffer does not have the
      * capacity this method will return -1;
-     *
+     * 
      * @param textureBuffer
      *            to add to the texture direct buffer.
      * @return the position of the copy in the texture buffer or -1 if the given buffer could not be copied in the
@@ -173,10 +172,9 @@ public class DirectGeometryBuffer {
 
     /**
      * Add the values from the given buffer to the directbuffer.
-     *
+     * 
      * @param directBuffer
      * @param newBuffer
-     * @return
      */
     private int addBuffer( FloatBuffer directBuffer, FloatBuffer newBuffer ) {
         int oldPosition = directBuffer.position();
@@ -191,7 +189,7 @@ public class DirectGeometryBuffer {
     /**
      * Read the floats from the given {@link DataInputStream} to the direct coordinates buffer, if the direct coordinate
      * buffer does not have the capacity this method will return -1,-1;
-     *
+     * 
      * @param in
      *            the stream to add to the coordinates from.
      * @return the position [0] of the copy in the coordinate buffer and the number of ordinates [1] inserted. Both will
@@ -206,7 +204,7 @@ public class DirectGeometryBuffer {
     /**
      * Read the floats from the given {@link DataInputStream} to the direct normal buffer, if the direct normal buffer
      * does not have the capacity this method will return -1,-1;
-     *
+     * 
      * @param in
      *            the stream to add to the coordinates from.
      * @return the position [0] of the copy in the normal buffer and the number of ordinates [1] inserted. Both will
@@ -221,7 +219,7 @@ public class DirectGeometryBuffer {
     /**
      * Read the floats from the given {@link DataInputStream} to the direct texture buffer, if the direct texture buffer
      * does not have the capacity this method will return -1,-1;
-     *
+     * 
      * @param in
      *            the stream to add to the coordinates from.
      * @return the position [0] of the copy in the texture buffer and the number of ordinates [1] inserted. Both will
@@ -234,9 +232,7 @@ public class DirectGeometryBuffer {
     }
 
     /**
-     * @param coordBuffer2
      * @param in
-     * @return
      * @throws IOException
      */
     private int[] readFromStreamBuffer( FloatBuffer directBuffer, DataInputStream in )
@@ -255,10 +251,10 @@ public class DirectGeometryBuffer {
     }
 
     /**
-     * Add the floats read from the given {@link ObjectInputStream} to the direct coordinate {@link FloatBuffer}, if
-     * the direct coordinate buffer does not have the capacity this method will return -1. This method assumes that the
+     * Add the floats read from the given {@link ObjectInputStream} to the direct coordinate {@link FloatBuffer}, if the
+     * direct coordinate buffer does not have the capacity this method will return -1. This method assumes that the
      * stream is positioned so, that the next value is an int, declaring the size of the number of floats to be read.
-     *
+     * 
      * @param in
      *            the stream to get the floats from.
      * @return the position of the copy in the texture buffer or -1 if the given buffer could not be copied in the
@@ -284,7 +280,7 @@ public class DirectGeometryBuffer {
      * Add the floats read from the given {@link ObjectInputStream} to the direct normal {@link FloatBuffer}, if the
      * direct normal buffer does not have the capacity this method will return -1. This method assumes that the stream
      * is positioned so, that the next value is an int, declaring the size of the number of floats to be read.
-     *
+     * 
      * @param in
      *            the stream to get the floats from.
      * @return the position of the copy in the normal buffer or -1 if the given buffer could not be copied in the direct
@@ -309,7 +305,7 @@ public class DirectGeometryBuffer {
      * Add the floats read from the given {@link ObjectInputStream} to the direct texture {@link FloatBuffer}, if the
      * direct texture buffer does not have the capacity this method will return -1. This method assumes that the stream
      * is positioned so, that the next value is an int, declaring the size of the number of floats to be read.
-     *
+     * 
      * @param in
      *            the stream to get the floats from.
      * @return the position of the copy in the texture buffer or -1 if the given buffer could not be copied in the
@@ -324,10 +320,9 @@ public class DirectGeometryBuffer {
 
     /**
      * Read from the given stream the values into the given direct buffer.
-     *
+     * 
      * @param directBuffer
      * @param in
-     * @return
      * @throws IOException
      */
     private int addFromStream( FloatBuffer directBuffer, ObjectInputStream in )

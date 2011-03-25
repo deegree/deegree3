@@ -92,7 +92,7 @@ public class SurfaceLinearizerTest {
     @Test
     public void linearizePolygon() {
         Polygon polygon = new DefaultPolygon( null, null, null, createExteriorRing(), createInteriorRings() );
-        Polygon res = (Polygon) linearizer.linearize( polygon, new MaxErrorCriterion( MAX_ERROR, MAX_POINTS ) );
+        Polygon res = linearizer.linearize( polygon, new MaxErrorCriterion( MAX_ERROR, MAX_POINTS ) );
         LOG.debug( "exterior ring:" );
         for ( Curve curve : res.getExteriorRing().getMembers() ) {
             for ( Point p : curve.getControlPoints() ) {

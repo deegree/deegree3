@@ -280,9 +280,6 @@ public class GenerateQueryableProperties {
             String msg = Messages.getMessage( "ERROR_PARSING", time, e.getMessage() );
             LOG.debug( msg );
             throw new MetadataStoreException( msg );
-        } catch ( XMLStreamException e ) {
-            LOG.debug( "error: " + e.getMessage(), e );
-            throw new MetadataStoreException( e.getMessage() );
         } catch ( FactoryConfigurationError e ) {
             LOG.debug( "error: " + e.getMessage(), e );
             throw new MetadataStoreException( e.getMessage() );

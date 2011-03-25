@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.deegree</groupId>
   <artifactId>deegree</artifactId>
@@ -10,8 +9,8 @@
   <url>http://www.deegree.org</url>
 
   <scm>
-    <developerConnection>scm:svn:http://svn.wald.intevation.org/svn/deegree/deegree3/trunk</developerConnection>
-    <url>http://svn.wald.intevation.org/svn/deegree/deegree3/trunk</url>
+    <developerConnection>scm:svn:svn+ssh://svn.wald.intevation.org/deegree/deegree3/tags/3.1-pre3</developerConnection>
+    <url>svn+ssh://svn.wald.intevation.org/deegree/deegree3/tags/3.1-pre3</url>
   </scm>
 
   <repositories>
@@ -60,17 +59,18 @@
 	<version>2.1</version>
         <configuration>
            <preparationGoals>clean install</preparationGoals>
+           <tagBase>svn+ssh://svn.wald.intevation.org/deegree/deegree3/tags</tagBase>
         </configuration>
       </plugin>
     </plugins>
   </build>
 
   <modules>
+    <module>deegree-misc/deegree-parent</module>
     <module>deegree-client</module>
     <module>deegree-core</module>
     <module>deegree-datastores</module>
     <module>deegree-misc</module>
-    <module>deegree-misc/deegree-parent</module>
     <module>deegree-processproviders</module>
     <module>deegree-services</module>
     <module>deegree-tools</module>

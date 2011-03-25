@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,7 +32,7 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 
 package org.deegree.rendering.r3d;
 
@@ -42,10 +42,10 @@ import javax.vecmath.Vector3d;
 /**
  * Encapsulates the relevant viewing and projection parameters that are needed for performing view frustum culling and
  * LOD (level-of-detail) adaptation.
- *
+ * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
- *
+ * 
  * @version $Revision$, $Date$
  */
 public class ViewParams {
@@ -57,7 +57,7 @@ public class ViewParams {
     private int projectionHeight = -1;
 
     /**
-     *
+     * 
      * @param eye
      * @param lookingAt
      * @param viewerUp
@@ -71,14 +71,14 @@ public class ViewParams {
 
     /**
      * Creates a new {@link ViewParams} instance from the given parameters.
-     *
+     * 
      * @param vf
      *            view frustum (volume visible to the viewer)
      * @param projectionWidth
      *            number of pixels of the projected image in the x direction
      * @param projectionHeight
      *            number of pixels of the projected image in the y direction
-     *
+     * 
      */
     public ViewParams( ViewFrustum vf, int projectionWidth, int projectionHeight ) {
         this.vf = vf;
@@ -88,7 +88,7 @@ public class ViewParams {
 
     /**
      * Returns the view frustum (volume visible to the viewer).
-     *
+     * 
      * @return view frustum
      */
     public ViewFrustum getViewFrustum() {
@@ -97,7 +97,7 @@ public class ViewParams {
 
     /**
      * Returns the number of pixels of the projected image in x direction.
-     *
+     * 
      * @return number of pixels in x direction
      */
     public int getScreenPixelsX() {
@@ -106,7 +106,7 @@ public class ViewParams {
 
     /**
      * Returns the number of pixels of the projected image in y direction.
-     *
+     * 
      * @return number of pixels in y direction
      */
     public int getScreenPixelsY() {
@@ -116,7 +116,7 @@ public class ViewParams {
     /**
      * Returns a guaranteed upper bound for the size that a world-space unit (e.g. a line with length 1) has in pixels
      * after perspective projection, i.e. in pixels on the screen.
-     *
+     * 
      * @param dist
      *            distance of the object (from the point-of-view)
      * @return maximum number of pixels that an object of size 1 will cover
@@ -128,7 +128,7 @@ public class ViewParams {
 
     /**
      * Set the new projection plane dimensions
-     *
+     * 
      * @param width
      * @param height
      */

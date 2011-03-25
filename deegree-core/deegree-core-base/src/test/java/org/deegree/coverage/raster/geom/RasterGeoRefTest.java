@@ -412,7 +412,7 @@ public class RasterGeoRefTest {
     }
 
     /**
-     * Test {@link RasterGeoReference#getEnvelope(int, int, CRS)}
+     * Test {@link RasterGeoReference#getEnvelope(int, int, ICRS)}
      */
     @Test
     public void getEnvelope() {
@@ -445,7 +445,7 @@ public class RasterGeoRefTest {
     }
 
     /**
-     * Test {@link RasterGeoReference#getEnvelope(OriginLocation, int, int, CRS)}
+     * Test {@link RasterGeoReference#getEnvelope(OriginLocation, int, int, ICRS)}
      */
     @Test
     public void getEnvelopeWithTarget() {
@@ -479,7 +479,7 @@ public class RasterGeoRefTest {
     }
 
     /**
-     * Test {@link RasterGeoReference#getEnvelope(OriginLocation, RasterRect, CRS)}
+     * Test {@link RasterGeoReference#getEnvelope(OriginLocation, RasterRect, ICRS)}
      */
     @Test
     public void getSubEnvelope() {
@@ -513,7 +513,7 @@ public class RasterGeoRefTest {
     }
 
     /**
-     * Test {@link RasterGeoReference#getEnvelope(OriginLocation, RasterRect, CRS)}
+     * Test {@link RasterGeoReference#getEnvelope(OriginLocation, RasterRect, ICRS)}
      */
     @Test
     public void getSubEnvelopeWithTarget() {

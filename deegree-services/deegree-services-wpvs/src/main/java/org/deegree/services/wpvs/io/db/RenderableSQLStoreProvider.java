@@ -74,7 +74,7 @@ public class RenderableSQLStoreProvider implements RenderableStoreProvider {
 
     private static final String CONFIG_JAXB_PACKAGE = RenderableSQLStoreConfig.class.getPackage().getName();
 
-    private static final String CONFIG_SCHEMA = "/META-INF/schemas/datasource/3d/renderable/3.0.0/sql.xsd";
+    private static final URL CONFIG_SCHEMA = RenderableSQLStoreProvider.class.getResource( "/META-INF/schemas/datasource/3d/renderable/3.0.0/sql.xsd" );
 
     @Override
     public String getConfigNamespace() {
@@ -141,6 +141,6 @@ public class RenderableSQLStoreProvider implements RenderableStoreProvider {
     }
 
     public URL getConfigSchema() {
-        return RenderableSQLStoreProvider.class.getResource( CONFIG_SCHEMA );
+        return CONFIG_SCHEMA;
     }
 }

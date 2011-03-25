@@ -36,11 +36,9 @@
 package org.deegree.rendering.r3d.multiresolution.persistence;
 
 import static java.io.File.separator;
-import static org.deegree.commons.config.ResourceState.StateType.init_ok;
 
 import java.io.File;
 import java.io.FilenameFilter;
-import java.io.InputStream;
 import java.net.URL;
 import java.util.Collection;
 import java.util.Collections;
@@ -56,11 +54,10 @@ import javax.xml.stream.XMLStreamReader;
 
 import org.deegree.commons.config.AbstractBasicResourceManager;
 import org.deegree.commons.config.DeegreeWorkspace;
+import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.config.ResourceManager;
 import org.deegree.commons.config.ResourceManagerMetadata;
 import org.deegree.commons.config.ResourceProvider;
-import org.deegree.commons.config.ResourceState;
-import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.jdbc.ConnectionManager;
 import org.deegree.commons.utils.FileUtils;
 import org.deegree.commons.utils.ProxyUtils;
@@ -77,7 +74,7 @@ import org.slf4j.LoggerFactory;
  * 
  * @version $Revision$, $Date$
  */
-public class BatchedMTStoreManager extends AbstractBasicResourceManager implements ResourceManager {
+public class BatchedMTStoreManager extends AbstractBasicResourceManager {
 
     private static final Logger LOG = LoggerFactory.getLogger( BatchedMTStoreManager.class );
 
@@ -197,6 +194,7 @@ public class BatchedMTStoreManager extends AbstractBasicResourceManager implemen
         return builder.build( configURL, workspace );
     }
 
+    @SuppressWarnings("unchecked")
     public Class<? extends ResourceManager>[] getDependencies() {
         // TODO verify deps
         return new Class[] { ProxyUtils.class, ConnectionManager.class, CoverageBuilderManager.class };
@@ -231,8 +229,8 @@ public class BatchedMTStoreManager extends AbstractBasicResourceManager implemen
         init( new File( workspace.getLocation(), "datasources" + separator + "batchedmt" ) );
     }
 
-    public ResourceManagerMetadata getMetadata() {
-        return new ResourceManagerMetadata() {
+    public ResourceManagerMetadata<BatchedMTStore> getMetadata() {
+        return new ResourceManagerMetadata<BatchedMTStore>() {
             public String getName() {
                 return "batched mt stores";
             }
@@ -251,14 +249,14 @@ public class BatchedMTStoreManager extends AbstractBasicResourceManager implemen
     public void activate( String id )
                             throws ResourceInitException {
         // TODO Auto-generated method stub
-        
+
     }
 
     @Override
     public void deactivate( String id )
                             throws ResourceInitException {
         // TODO Auto-generated method stub
-        
+
     }
 
     @Override
@@ -270,6 +268,6 @@ public class BatchedMTStoreManager extends AbstractBasicResourceManager implemen
     @Override
     protected void remove( String id ) {
         // TODO Auto-generated method stub
-        
+
     }
 }

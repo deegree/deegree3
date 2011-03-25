@@ -279,7 +279,9 @@ public abstract class Layer {
         }
 
         for ( String c : crs.split( "\\s" ) ) {
-            list.add( CRSManager.getCRSRef( c ) );
+            if ( !c.isEmpty() ) {
+                list.add( CRSManager.getCRSRef( c ) );
+            }
         }
 
         return list;

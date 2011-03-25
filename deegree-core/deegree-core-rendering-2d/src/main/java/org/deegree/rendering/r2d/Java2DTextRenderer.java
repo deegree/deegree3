@@ -213,8 +213,8 @@ public class Java2DTextRenderer implements TextRenderer {
             for ( Point p : (MultiPoint) geom ) {
                 render( styling, font, text, p );
             }
-        } else if ( geom instanceof MultiCurve && styling.linePlacement != null ) {
-            for ( Curve c : (MultiCurve<Curve>) geom ) {
+        } else if ( geom instanceof MultiCurve<?> && styling.linePlacement != null ) {
+            for ( Curve c : (MultiCurve<?>) geom ) {
                 render( styling, font, text, c );
             }
         } else if ( geom instanceof MultiLineString && styling.linePlacement != null ) {

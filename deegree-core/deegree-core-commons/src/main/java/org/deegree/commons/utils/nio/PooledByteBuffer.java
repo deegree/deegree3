@@ -90,8 +90,9 @@ public class PooledByteBuffer {
      * Mark this bytebuffer as free.
      */
     public void free() {
-        if ( pool != null )
+        if ( pool != null ) {
             pool.deallocate( this );
+        }
     }
 
     /**

@@ -35,6 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.rendering.r3d.multiresolution.persistence;
 
+import org.deegree.commons.config.Resource;
 import org.deegree.rendering.r3d.multiresolution.MultiresolutionMesh;
 
 /**
@@ -45,7 +46,7 @@ import org.deegree.rendering.r3d.multiresolution.MultiresolutionMesh;
  * 
  * @version $Revision$, $Date$
  */
-public interface BatchedMTStore {
+public interface BatchedMTStore extends Resource {
 
     public MultiresolutionMesh getMesh();
 

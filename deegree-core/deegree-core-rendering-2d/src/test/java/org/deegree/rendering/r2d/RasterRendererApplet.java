@@ -69,7 +69,7 @@ public class RasterRendererApplet extends JApplet {
 
     public static final Logger LOG = LoggerFactory.getLogger( RasterRendererApplet.class );
 
-    private AbstractRaster image, car, dem, doll, snow;
+    private AbstractRaster car, dem, doll;
 
     @Override
     public void paint( Graphics g ) {
@@ -90,16 +90,14 @@ public class RasterRendererApplet extends JApplet {
         RasterStyling style = loadRasterStylingFromXml( name );
         if ( style != null )
             return style.categorize;
-        else
-            return null;
+        return null;
     }
 
     public Interpolate loadInterpolateFromXml( String name ) {
         RasterStyling style = loadRasterStylingFromXml( name );
         if ( style != null )
             return style.interpolate;
-        else
-            return null;
+        return null;
     }
 
     public RasterStyling loadRasterStylingFromXml( String fname ) {
@@ -183,7 +181,7 @@ public class RasterRendererApplet extends JApplet {
             LOG.trace( "Loading images..." );
 
             URI uri = SymbologyParserTest.class.getResource( "image.png" ).toURI();
-            image = RasterFactory.loadRasterFromFile( new File( uri ) );
+            RasterFactory.loadRasterFromFile( new File( uri ) );
 
             uri = RasterRendererApplet.class.getResource( "car.jpg" ).toURI();
             car = RasterFactory.loadRasterFromFile( new File( uri ) );
@@ -195,7 +193,7 @@ public class RasterRendererApplet extends JApplet {
             doll = RasterFactory.loadRasterFromFile( new File( uri ) );
 
             uri = RasterRendererApplet.class.getResource( "snow.jpg" ).toURI();
-            snow = RasterFactory.loadRasterFromFile( new File( uri ) );
+            RasterFactory.loadRasterFromFile( new File( uri ) );
 
             LOG.trace( "Loaded images" );
         } catch ( Exception e ) {

@@ -301,10 +301,10 @@ public class Capabilities111XMLAdapter extends XMLAdapter {
         if ( hint.first != NEGATIVE_INFINITY || hint.second != POSITIVE_INFINITY ) {
             double fac = 0.00028;
             writer.writeStartElement( "ScaleHint" );
-            writer.writeAttribute( "min",
-                                   Double.toString( hint.first == NEGATIVE_INFINITY ? MIN_VALUE : hint.first * fac ) );
-            writer.writeAttribute( "max",
-                                   Double.toString( hint.second == POSITIVE_INFINITY ? MAX_VALUE : hint.second * fac ) );
+            writer.writeAttribute( "min", Double.toString( hint.first == NEGATIVE_INFINITY ? MIN_VALUE : hint.first
+                                                                                                         * fac ) );
+            writer.writeAttribute( "max", Double.toString( hint.second == POSITIVE_INFINITY ? MAX_VALUE : hint.second
+                                                                                                          * fac ) );
             writer.writeEndElement();
         }
 
@@ -484,12 +484,12 @@ public class Capabilities111XMLAdapter extends XMLAdapter {
                         maybeWriteElement( writer, "AccessConstraints", cons );
                     }
                 }
+            } else {
+                writeElement( writer, "Fees", "none" );
+                writeElement( writer, "AccessConstraints", "none" );
             }
 
         }
-
-        writeElement( writer, "Fees", "none" );
-        writeElement( writer, "AccessConstraints", "none" );
 
         writer.writeEndElement();
     }

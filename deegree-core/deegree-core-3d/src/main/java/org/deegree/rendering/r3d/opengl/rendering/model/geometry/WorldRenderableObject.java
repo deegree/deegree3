@@ -94,8 +94,6 @@ public class WorldRenderableObject extends WorldObject<RenderableQualityModelPar
     /**
      * Renders the model at the given quality level or the lesser quality level if the requested one is not available.
      * 
-     * @param context
-     * @param params
      * @param level
      * @param geomBuffer
      */

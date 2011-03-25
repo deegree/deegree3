@@ -35,21 +35,17 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.filter.function;
 
-import static org.deegree.commons.config.ResourceState.StateType.init_ok;
-
 import java.io.File;
-import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.ServiceLoader;
 
 import org.deegree.commons.config.AbstractBasicResourceManager;
 import org.deegree.commons.config.DeegreeWorkspace;
+import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.config.ResourceManager;
 import org.deegree.commons.config.ResourceManagerMetadata;
 import org.deegree.commons.config.ResourceProvider;
-import org.deegree.commons.config.ResourceState;
-import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.utils.ProxyUtils;
 import org.deegree.cs.persistence.CRSManager;
 import org.slf4j.Logger;
@@ -63,7 +59,7 @@ import org.slf4j.LoggerFactory;
  * 
  * @version $Revision$, $Date$
  */
-public class FunctionManager extends AbstractBasicResourceManager implements ResourceManager {
+public class FunctionManager extends AbstractBasicResourceManager {
 
     private static final Logger LOG = LoggerFactory.getLogger( FunctionManager.class );
 
@@ -114,7 +110,7 @@ public class FunctionManager extends AbstractBasicResourceManager implements Res
         return new Class[] { ProxyUtils.class, CRSManager.class };
     }
 
-    public ResourceManagerMetadata getMetadata() {
+    public ResourceManagerMetadata<?> getMetadata() {
         return null;
     }
 
@@ -135,14 +131,14 @@ public class FunctionManager extends AbstractBasicResourceManager implements Res
     public void activate( String id )
                             throws ResourceInitException {
         // TODO Auto-generated method stub
-        
+
     }
 
     @Override
     public void deactivate( String id )
                             throws ResourceInitException {
         // TODO Auto-generated method stub
-        
+
     }
 
     @Override
@@ -154,6 +150,6 @@ public class FunctionManager extends AbstractBasicResourceManager implements Res
     @Override
     protected void remove( String id ) {
         // TODO Auto-generated method stub
-        
+
     }
 }

@@ -129,9 +129,8 @@ public class Helmert extends Transformation {
      * @param inRadians
      *            true if the rotation parameters are in radians
      */
-    public Helmert( double dx, double dy, double dz, double ex, double ey, double ez, double ppm,
-                    ICRS sourceCRS, ICRS targetCRS, CRSResource identifiable,
-                    boolean inRadians ) {
+    public Helmert( double dx, double dy, double dz, double ex, double ey, double ez, double ppm, ICRS sourceCRS,
+                    ICRS targetCRS, CRSResource identifiable, boolean inRadians ) {
         super( sourceCRS, targetCRS, identifiable );
         this.dx = dx;
         this.dy = dy;
@@ -165,8 +164,8 @@ public class Helmert extends Transformation {
      * @param identifiable
      *            object containing all relevant id.
      */
-    public Helmert( double dx, double dy, double dz, double ex, double ey, double ez, double ppm,
-                    ICRS sourceCRS, ICRS targetCRS, CRSResource identifiable ) {
+    public Helmert( double dx, double dy, double dz, double ex, double ey, double ez, double ppm, ICRS sourceCRS,
+                    ICRS targetCRS, CRSResource identifiable ) {
         this( dx, dy, dz, ex, ey, ez, ppm, sourceCRS, targetCRS, identifiable, false );
     }
 
@@ -184,8 +183,8 @@ public class Helmert extends Transformation {
      * @param descriptions
      * @param areasOfUse
      */
-    public Helmert( ICRS sourceCRS, ICRS targetCRS, CRSCodeType[] codes, String[] names,
-                    String[] versions, String[] descriptions, String[] areasOfUse ) {
+    public Helmert( ICRS sourceCRS, ICRS targetCRS, CRSCodeType[] codes, String[] names, String[] versions,
+                    String[] descriptions, String[] areasOfUse ) {
         this( 0, 0, 0, 0, 0, 0, 0, sourceCRS, targetCRS, new CRSIdentifiable( codes, names, versions, descriptions,
                                                                               areasOfUse ) );
     }
@@ -252,9 +251,9 @@ public class Helmert extends Transformation {
      * @param descriptions
      * @param areaOfUses
      */
-    public Helmert( double dx, double dy, double dz, double ex, double ey, double ez, double ppm,
-                    ICRS sourceCRS, ICRS targetCRS, CRSCodeType[] codes, String[] names,
-                    String[] versions, String[] descriptions, String[] areaOfUses ) {
+    public Helmert( double dx, double dy, double dz, double ex, double ey, double ez, double ppm, ICRS sourceCRS,
+                    ICRS targetCRS, CRSCodeType[] codes, String[] names, String[] versions, String[] descriptions,
+                    String[] areaOfUses ) {
         this( dx, dy, dz, ex, ey, ez, ppm, sourceCRS, targetCRS, new CRSIdentifiable( codes, names, versions,
                                                                                       descriptions, areaOfUses ) );
     }
@@ -284,9 +283,8 @@ public class Helmert extends Transformation {
      * @param description
      * @param areaOfUse
      */
-    public Helmert( double dx, double dy, double dz, double ex, double ey, double ez, double ppm,
-                    ICRS sourceCRS, ICRS targetCRS, CRSCodeType code, String name,
-                    String version, String description, String areaOfUse ) {
+    public Helmert( double dx, double dy, double dz, double ex, double ey, double ez, double ppm, ICRS sourceCRS,
+                    ICRS targetCRS, CRSCodeType code, String name, String version, String description, String areaOfUse ) {
         this( dx, dy, dz, ex, ey, ez, ppm, sourceCRS, targetCRS, new CRSCodeType[] { code }, new String[] { name },
               new String[] { version }, new String[] { description }, new String[] { areaOfUse } );
     }
@@ -312,8 +310,8 @@ public class Helmert extends Transformation {
      *            of this helmert transformation
      * @param codes
      */
-    public Helmert( double dx, double dy, double dz, double ex, double ey, double ez, double ppm,
-                    ICRS sourceCRS, ICRS targetCRS, CRSCodeType[] codes ) {
+    public Helmert( double dx, double dy, double dz, double ex, double ey, double ez, double ppm, ICRS sourceCRS,
+                    ICRS targetCRS, CRSCodeType[] codes ) {
         this( dx, dy, dz, ex, ey, ez, ppm, sourceCRS, targetCRS, codes, null, null, null, null );
     }
 
@@ -338,8 +336,8 @@ public class Helmert extends Transformation {
      *            of this helmert transformation
      * @param code
      */
-    public Helmert( double dx, double dy, double dz, double ex, double ey, double ez, double ppm,
-                    ICRS sourceCRS, ICRS targetCRS, CRSCodeType code ) {
+    public Helmert( double dx, double dy, double dz, double ex, double ey, double ez, double ppm, ICRS sourceCRS,
+                    ICRS targetCRS, CRSCodeType code ) {
         this( dx, dy, dz, ex, ey, ez, ppm, sourceCRS, targetCRS, new CRSCodeType[] { code } );
     }
 
@@ -559,8 +557,8 @@ public class Helmert extends Transformation {
                     // call inverseTransform from geocentric
                     geocentricTransform.inverse();
                 }
-                Transformation step3 = concatenate( geocentricTransform,
-                                                    createMatrixTransform( alignedTarget, targetCRS, second ) );
+                Transformation step3 = concatenate( geocentricTransform, createMatrixTransform( alignedTarget,
+                                                                                                targetCRS, second ) );
                 return concatenate( step1, result, step3 );
             } catch ( TransformationException e ) {
                 LOG.warn( "Could not create an alignment matrix for the supplied Helmert transformation, are the coordinate systems correctly defined?" );

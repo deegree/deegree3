@@ -54,10 +54,10 @@ import javax.xml.stream.XMLStreamReader;
 
 import org.deegree.commons.config.AbstractBasicResourceManager;
 import org.deegree.commons.config.DeegreeWorkspace;
+import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.config.ResourceManager;
 import org.deegree.commons.config.ResourceManagerMetadata;
 import org.deegree.commons.config.ResourceProvider;
-import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.tom.Object;
 import org.deegree.commons.tom.ReferenceResolver;
 import org.deegree.commons.tom.ows.CodeType;
@@ -495,8 +495,9 @@ public class CRSManager extends AbstractBasicResourceManager implements Resource
             for ( CRSStore store : idToCRSStore.values() ) {
                 try {
                     ICRS crs = lookupStore( store, name, forceXY );
-                    if ( crs != null )
+                    if ( crs != null ) {
                         return crs;
+                    }
                 } catch ( UnknownCRSException e ) {
                     // nothing to do
                 }
@@ -527,8 +528,9 @@ public class CRSManager extends AbstractBasicResourceManager implements Resource
             for ( CRSStore store : idToCRSStore.values() ) {
                 try {
                     ICRS crs = lookupStore( store, crsCodeType, false );
-                    if ( crs != null )
+                    if ( crs != null ) {
                         return crs;
+                    }
                 } catch ( UnknownCRSException e ) {
                     // nothing to do
                 }
@@ -649,8 +651,9 @@ public class CRSManager extends AbstractBasicResourceManager implements Resource
         if ( crsStore == null ) {
             for ( CRSStore store : idToCRSStore.values() ) {
                 Transformation transformation = getTransformation( store, id );
-                if ( transformation != null )
+                if ( transformation != null ) {
                     return transformation;
+                }
             }
         }
         return getTransformation( crsStore, id );
@@ -745,14 +748,14 @@ public class CRSManager extends AbstractBasicResourceManager implements Resource
     public void activate( String id )
                             throws ResourceInitException {
         // TODO Auto-generated method stub
-        
+
     }
 
     @Override
     public void deactivate( String id )
                             throws ResourceInitException {
         // TODO Auto-generated method stub
-        
+
     }
 
     @Override
@@ -764,6 +767,6 @@ public class CRSManager extends AbstractBasicResourceManager implements Resource
     @Override
     protected void remove( String id ) {
         // TODO Auto-generated method stub
-        
+
     }
 }

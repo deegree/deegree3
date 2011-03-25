@@ -95,9 +95,8 @@ public class LeastSquareApproximation extends PolynomialTransformation {
      * @param id
      *            an identifiable instance containing information about this transformation
      */
-    public LeastSquareApproximation( List<Double> firstParameters, List<Double> secondParameters,
-                                     ICRS sourceCRS, ICRS targetCRS, float scaleX,
-                                     float scaleY, CRSResource id ) {
+    public LeastSquareApproximation( List<Double> firstParameters, List<Double> secondParameters, ICRS sourceCRS,
+                                     ICRS targetCRS, float scaleX, float scaleY, CRSResource id ) {
         super( firstParameters, secondParameters, sourceCRS, targetCRS, id );
         if ( getSecondParams().size() != getFirstParams().size() ) {
             throw new IllegalArgumentException( "The given parameter lists do not have equal length" );
@@ -154,9 +153,8 @@ public class LeastSquareApproximation extends PolynomialTransformation {
      * @param scaleY
      *            to apply to incoming data's y value, if 1 (or 0) no scale will be applied.
      */
-    public LeastSquareApproximation( List<Double> firstParameters, List<Double> secondParameters,
-                                     ICRS sourceCRS, ICRS targetCRS, float scaleX,
-                                     float scaleY ) {
+    public LeastSquareApproximation( List<Double> firstParameters, List<Double> secondParameters, ICRS sourceCRS,
+                                     ICRS targetCRS, float scaleX, float scaleY ) {
         this( firstParameters, secondParameters, sourceCRS, targetCRS, scaleX, scaleY,
               new CRSIdentifiable( new EPSGCode( 9645 ) ) );
     }

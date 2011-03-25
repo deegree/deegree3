@@ -5,7 +5,7 @@
   <groupId>org.deegree</groupId>
   <artifactId>deegree-services-tests</artifactId>
   <packaging>pom</packaging>
-  <version>3.1-pre3</version>
+  <version>3.1-SNAPSHOT</version>
   <name>deegree-services-tests</name>
   <url>http://www.deegree.org</url>
   <scm>
@@ -16,7 +16,7 @@
   <parent>
     <groupId>org.deegree</groupId>
     <artifactId>deegree-parent</artifactId>
-    <version>3.1-pre3</version>
+    <version>3.1-SNAPSHOT</version>
   </parent>
 
   <repositories>

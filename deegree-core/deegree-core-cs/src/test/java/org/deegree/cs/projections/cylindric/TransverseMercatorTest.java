@@ -58,8 +58,6 @@ import org.junit.Test;
  */
 public class TransverseMercatorTest extends ProjectionBase {
 
-    private static final double DELTA = 0.0000001;
-
     private static final TransverseMercator projection_25832 = new TransverseMercator( true,
 
     0, 500000.0, new Point2d( Math.toRadians( 9 ), 0 ), Unit.METRE, 0.9996 );

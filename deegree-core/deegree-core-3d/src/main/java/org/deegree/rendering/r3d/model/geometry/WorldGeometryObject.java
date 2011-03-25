@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,7 +32,7 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 
 package org.deegree.rendering.r3d.model.geometry;
 
@@ -41,11 +41,11 @@ import org.deegree.rendering.r3d.model.WorldObject;
 
 /**
  * The <code>WorldRenderableObject</code> is kind of a marker class for DataObjects based on geometry quality models.
- *
+ * 
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- *
+ * 
  * @author last edited by: $Author$
- *
+ * 
  * @version $Revision$, $Date$
  */
 public class WorldGeometryObject extends WorldObject<SimpleAccessGeometry, GeometryQualityModel> {
@@ -57,11 +57,11 @@ public class WorldGeometryObject extends WorldObject<SimpleAccessGeometry, Geome
 
     /**
      * Creates a new WorldGeometryObject with given number of data quality levels (LOD)
-     *
+     * 
      * @param id
      * @param time
      * @param bbox
-     *
+     * 
      * @param levels
      */
     public WorldGeometryObject( String id, String time, Envelope bbox, int levels ) {

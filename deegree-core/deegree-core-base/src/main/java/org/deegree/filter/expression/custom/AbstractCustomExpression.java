@@ -75,7 +75,6 @@ public abstract class AbstractCustomExpression implements CustomExpressionProvid
 
     /**
      * @param xmlStream
-     * @return
      * @throws XMLStreamException
      */
     public abstract CustomExpressionProvider parse( XMLStreamReader xmlStream )

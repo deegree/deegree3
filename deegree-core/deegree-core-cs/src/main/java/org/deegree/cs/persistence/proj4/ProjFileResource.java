@@ -126,8 +126,9 @@ public class ProjFileResource implements CRSResource<Map<String, String>> {
         // convert codes to ids
         CRSCodeType[] codes = sourceCRS.getCodes();
         String[] ids = new String[codes.length];
-        for ( int i = 0; i < ids.length; i++ )
+        for ( int i = 0; i < ids.length; i++ ) {
             ids[i] = codes[i].getOriginal();
+        }
 
         for ( String id : ids ) {
             Map<String, String> params = null;
@@ -293,7 +294,8 @@ public class ProjFileResource implements CRSResource<Map<String, String>> {
                         t.nextToken();
                         if ( t.ttype != StreamTokenizer.TT_WORD ) {
                             throw new CRSConfigurationException(
-                                                                 Messages.getMessage( "CRS_CONFIG_PROJ4_INVALID_ID",
+                                                                 Messages.getMessage(
+                                                                                      "CRS_CONFIG_PROJ4_INVALID_ID",
                                                                                       lineNumber,
                                                                                       "A Value",
                                                                                       "=",

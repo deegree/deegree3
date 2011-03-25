@@ -137,8 +137,9 @@ public abstract class AbstractResourceManager<T extends Resource> extends Abstra
     public void shutdown() {
         for ( T t : idToResource.values() ) {
             remove( t );
-            if ( t != null )
+            if ( t != null ) {
                 t.destroy();
+            }
         }
         idToResource.clear();
         nsToProvider.clear();
@@ -190,10 +191,12 @@ public abstract class AbstractResourceManager<T extends Resource> extends Abstra
                                 idToState.put( id,
                                                new ResourceState( id, configFile, provider, StateType.init_error, e ) );
                                 LOG.error( "Error creating {}: {}", new Object[] { name, e.getMessage(), e } );
+                                LOG.trace( "Stack trace: ", e );
                             } catch ( Throwable t ) {
                                 idToState.put( id, new ResourceState( id, configFile, provider, StateType.init_error,
                                                                       new ResourceInitException( t.getMessage(), t ) ) );
                                 LOG.error( "Error creating {}: {}", new Object[] { name, t.getMessage(), t } );
+                                LOG.trace( "Stack trace: ", t );
                             }
                         } else {
                             // 7 is the length of ".ignore"
@@ -212,6 +215,7 @@ public abstract class AbstractResourceManager<T extends Resource> extends Abstra
         }
     }
 
+    @Override
     protected ResourceProvider getProvider( File file ) {
         String namespace = null;
         try {
@@ -227,6 +231,7 @@ public abstract class AbstractResourceManager<T extends Resource> extends Abstra
         return null;
     }
 
+    @Override
     protected void remove( String id ) {
         idToResource.remove( id );
         idToState.remove( id );
@@ -254,10 +259,12 @@ public abstract class AbstractResourceManager<T extends Resource> extends Abstra
             } catch ( ResourceInitException e ) {
                 idToState.put( id, new ResourceState( id, newFile, provider, StateType.init_error, e ) );
                 LOG.error( "Error creating {}: {}", new Object[] { name, e.getMessage(), e } );
+                LOG.trace( "Stack trace: ", e );
             } catch ( Throwable t ) {
                 idToState.put( id, new ResourceState( id, newFile, provider, StateType.init_error,
                                                       new ResourceInitException( t.getMessage(), t ) ) );
                 LOG.error( "Error creating {}: {}", new Object[] { name, t.getMessage(), t } );
+                LOG.trace( "Stack trace: ", t );
             }
         }
     }

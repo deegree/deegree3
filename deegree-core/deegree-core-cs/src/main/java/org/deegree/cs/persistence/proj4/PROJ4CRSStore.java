@@ -185,8 +185,9 @@ public class PROJ4CRSStore extends AbstractCRSStore {
 
         // convert ids to codes
         CRSCodeType[] codes = new CRSCodeType[ids.length];
-        for ( int i = 0; i < ids.length; i++ )
+        for ( int i = 0; i < ids.length; i++ ) {
             codes[i] = CRSCodeType.valueOf( ids[i] );
+        }
 
         String geoID = "GEO_CRS_" + geographicCRSCount;
         if ( "3068".equals( id ) || "31466".equals( id ) || "31467".equals( id ) || "31468".equals( id )
@@ -238,8 +239,9 @@ public class PROJ4CRSStore extends AbstractCRSStore {
             ids = getPredefinedIDs( tmpIdentifier );
 
             // convert ids to codes
-            for ( int i = 0; i < ids.length; i++ )
+            for ( int i = 0; i < ids.length; i++ ) {
                 codes[i] = CRSCodeType.valueOf( ids[i] );
+            }
 
             // if the id was not set, we create a geocrs, which means that no projectedID has been
             // set, we want to build the datum with the id though!
@@ -398,8 +400,9 @@ public class PROJ4CRSStore extends AbstractCRSStore {
             }
 
             CRSCodeType[] codes = new CRSCodeType[ids.length];
-            for ( int i = 0; i < ids.length; i++ )
+            for ( int i = 0; i < ids.length; i++ ) {
                 codes[i] = CRSCodeType.valueOf( ids[i] );
+            }
             result = new PrimeMeridian( Unit.RADIAN, longitude, codes, names, meridianVersions, descs, aous );
         }
         return result;
@@ -533,7 +536,8 @@ public class PROJ4CRSStore extends AbstractCRSStore {
             // }
             if ( Double.isNaN( semiMajorAxis ) ) {
                 throw new CRSConfigurationException(
-                                                     Messages.getMessage( "CRS_CONFIG_PROJ4_ELLIPSOID_WITHOUT_SEMIMAJOR",
+                                                     Messages.getMessage(
+                                                                          "CRS_CONFIG_PROJ4_ELLIPSOID_WITHOUT_SEMIMAJOR",
                                                                           params.get( EPSG_PRE + "identifier" ) ) );
             }
             String id = "ELLIPSOID_" + ellipsCount++;
@@ -587,8 +591,9 @@ public class PROJ4CRSStore extends AbstractCRSStore {
             if ( "GGRS87".equalsIgnoreCase( datumName ) ) {
                 String[] ids = getPredefinedIDs( "1272" );
                 CRSCodeType[] codes = new CRSCodeType[ids.length];
-                for ( int i = 0; i < ids.length; i++ )
+                for ( int i = 0; i < ids.length; i++ ) {
                     codes[i] = CRSCodeType.valueOf( ids[i] );
+                }
                 confInfo = new Helmert( -199.87, 74.79, 246.62, 0, 0, 0, 0, GeographicCRS.WGS84, GeographicCRS.WGS84,
                                         codes, new String[] {}, null, null, null );
 
@@ -603,8 +608,9 @@ public class PROJ4CRSStore extends AbstractCRSStore {
             } else if ( "NAD27".equalsIgnoreCase( datumName ) ) {
                 String[] ids = getPredefinedIDs( "1173" );
                 CRSCodeType[] codes = new CRSCodeType[ids.length];
-                for ( int i = 0; i < ids.length; i++ )
+                for ( int i = 0; i < ids.length; i++ ) {
                     codes[i] = CRSCodeType.valueOf( ids[i] );
+                }
 
                 confInfo = new Helmert( -8, 160, 176, 0, 0, 0, 0, GeographicCRS.WGS84, GeographicCRS.WGS84, codes,
                                         new String[] { "North_American_Datum_1983" }, null, null, null );
@@ -622,8 +628,9 @@ public class PROJ4CRSStore extends AbstractCRSStore {
             } else if ( "NAD83".equalsIgnoreCase( datumName ) ) {
                 String[] ids = getPredefinedIDs( "1188" );
                 CRSCodeType[] codes = new CRSCodeType[ids.length];
-                for ( int i = 0; i < ids.length; i++ )
+                for ( int i = 0; i < ids.length; i++ ) {
                     codes[i] = CRSCodeType.valueOf( ids[i] );
+                }
 
                 confInfo = new Helmert( GeographicCRS.WGS84, GeographicCRS.WGS84, codes, null, null,
                                         new String[] { "Derived at 312 stations." },
@@ -639,8 +646,9 @@ public class PROJ4CRSStore extends AbstractCRSStore {
             } else if ( "OSGB36".equalsIgnoreCase( datumName ) ) {
                 String[] ids = getPredefinedIDs( "1314" );
                 CRSCodeType[] codes = new CRSCodeType[ids.length];
-                for ( int i = 0; i < ids.length; i++ )
+                for ( int i = 0; i < ids.length; i++ ) {
                     codes[i] = CRSCodeType.valueOf( ids[i] );
+                }
 
                 confInfo = new Helmert(
                                         446.448,
@@ -670,8 +678,9 @@ public class PROJ4CRSStore extends AbstractCRSStore {
             } else if ( "carthage".equalsIgnoreCase( datumName ) ) {
                 String[] ids = getPredefinedIDs( "1130" );
                 CRSCodeType[] codes = new CRSCodeType[ids.length];
-                for ( int i = 0; i < ids.length; i++ )
+                for ( int i = 0; i < ids.length; i++ ) {
                     codes[i] = CRSCodeType.valueOf( ids[i] );
+                }
 
                 confInfo = new Helmert( -263.0, 6.0, 431.0, 0, 0, 0, 0, GeographicCRS.WGS84, GeographicCRS.WGS84,
                                         codes, null, null, new String[] { "Derived at 5 stations." },
@@ -687,8 +696,9 @@ public class PROJ4CRSStore extends AbstractCRSStore {
             } else if ( "hermannskogel".equalsIgnoreCase( datumName ) ) {
                 String[] ids = new String[] { "kogel", EPSG_PRE + "1306" };
                 CRSCodeType[] codes = new CRSCodeType[ids.length];
-                for ( int i = 0; i < ids.length; i++ )
+                for ( int i = 0; i < ids.length; i++ ) {
                     codes[i] = CRSCodeType.valueOf( ids[i] );
+                }
 
                 confInfo = new Helmert( 653.0, -212.0, 449.0, 0, 0, 0, 0, GeographicCRS.WGS84, GeographicCRS.WGS84,
                                         codes, null, null, new String[] { "No epsg code was found." }, null );
@@ -703,8 +713,9 @@ public class PROJ4CRSStore extends AbstractCRSStore {
             } else if ( "ire65".equalsIgnoreCase( datumName ) ) {
                 String[] ids = new String[] { "ire65_conversion" };
                 CRSCodeType[] codes = new CRSCodeType[ids.length];
-                for ( int i = 0; i < ids.length; i++ )
+                for ( int i = 0; i < ids.length; i++ ) {
                     codes[i] = CRSCodeType.valueOf( ids[i] );
+                }
 
                 confInfo = new Helmert( 482.530, -130.596, 564.557, -1.042, -0.214, -0.631, 8.15, GeographicCRS.WGS84,
                                         GeographicCRS.WGS84, codes, null, null,
@@ -720,8 +731,9 @@ public class PROJ4CRSStore extends AbstractCRSStore {
             } else if ( "nzgd49".equalsIgnoreCase( datumName ) ) {
                 String[] ids = getPredefinedIDs( "1564" );
                 CRSCodeType[] codes = new CRSCodeType[ids.length];
-                for ( int i = 0; i < ids.length; i++ )
+                for ( int i = 0; i < ids.length; i++ ) {
                     codes[i] = CRSCodeType.valueOf( ids[i] );
+                }
 
                 confInfo = new Helmert(
                                         59.47,
@@ -752,8 +764,9 @@ public class PROJ4CRSStore extends AbstractCRSStore {
                      || "31469".equals( crsID ) ) {
                     String[] ids = getPredefinedIDs( "1777" );
                     CRSCodeType[] codes = new CRSCodeType[ids.length];
-                    for ( int i = 0; i < ids.length; i++ )
+                    for ( int i = 0; i < ids.length; i++ ) {
                         codes[i] = CRSCodeType.valueOf( ids[i] );
+                    }
 
                     confInfo = new Helmert(
                                             598.1,
@@ -778,8 +791,9 @@ public class PROJ4CRSStore extends AbstractCRSStore {
                 } else {
                     String[] ids = getPredefinedIDs( "15955" );
                     CRSCodeType[] codes = new CRSCodeType[ids.length];
-                    for ( int i = 0; i < ids.length; i++ )
+                    for ( int i = 0; i < ids.length; i++ ) {
                         codes[i] = CRSCodeType.valueOf( ids[i] );
+                    }
 
                     confInfo = new Helmert(
                                             606.0,
@@ -813,8 +827,9 @@ public class PROJ4CRSStore extends AbstractCRSStore {
 
             // convert datumIDs to datumCodes
             datumCodes = new CRSCodeType[datumIDs.length];
-            for ( int i = 0; i < datumIDs.length; i++ )
+            for ( int i = 0; i < datumIDs.length; i++ ) {
                 datumCodes[i] = CRSCodeType.valueOf( datumIDs[i] );
+            }
 
             return new GeodeticDatum( ellipsoid, PrimeMeridian.GREENWICH, confInfo, datumCodes, datumNames,
                                       datumVersions, datumDescriptions, datumAOU );
@@ -1349,30 +1364,35 @@ public class PROJ4CRSStore extends AbstractCRSStore {
             }
         }
         int i = text.indexOf( 'd' );
-        if ( i == -1 )
+        if ( i == -1 ) {
             i = text.indexOf( '\u00b0' );
+        }
         if ( i != -1 ) {
             String dd = text.substring( 0, i );
             String mmss = text.substring( i + 1 );
             d = Double.valueOf( dd ).doubleValue();
             i = mmss.indexOf( 'm' );
-            if ( i == -1 )
+            if ( i == -1 ) {
                 i = mmss.indexOf( '\'' );
+            }
             if ( i != -1 ) {
                 if ( i != 0 ) {
                     String mm = mmss.substring( 0, i );
                     m = Double.valueOf( mm ).doubleValue();
                 }
-                if ( mmss.endsWith( "s" ) || mmss.endsWith( "\"" ) )
+                if ( mmss.endsWith( "s" ) || mmss.endsWith( "\"" ) ) {
                     mmss = mmss.substring( 0, mmss.length() - 1 );
+                }
                 if ( i != mmss.length() - 1 ) {
                     String ss = mmss.substring( i + 1 );
                     s = Double.valueOf( ss ).doubleValue();
                 }
-                if ( m < 0 || m > 59 )
+                if ( m < 0 || m > 59 ) {
                     throw new NumberFormatException( "Minutes must be between 0 and 59" );
-                if ( s < 0 || s >= 60 )
+                }
+                if ( s < 0 || s >= 60 ) {
                     throw new NumberFormatException( "Seconds must be between 0 and 59" );
+                }
             } else if ( i != 0 ) {
                 m = Double.valueOf( mmss ).doubleValue();
             }
@@ -1383,8 +1403,9 @@ public class PROJ4CRSStore extends AbstractCRSStore {
             }
         } else {
             result = Double.parseDouble( text );
-            if ( !toDegrees )
+            if ( !toDegrees ) {
                 result = Math.toRadians( result );
+            }
         }
         if ( negate ) {// South
             result = -result;

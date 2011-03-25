@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,17 +32,17 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 
 package org.deegree.commons.tom.ows;
 
 /**
- * Text string with the language of the string identified as recommended in the XML 1.0 W3C Recommendation, section
- * 2.12 (RFC 4646 language code).
- *
+ * Text string with the language of the string identified as recommended in the XML 1.0 W3C Recommendation, section 2.12
+ * (RFC 4646 language code).
+ * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author: schneider $
- *
+ * 
  * @version $Revision: $, $Date: $
  */
 public class LanguageString {
@@ -53,7 +53,7 @@ public class LanguageString {
 
     /**
      * Creates a new {@link LanguageString} instance with the given string value and optional language information.
-     *
+     * 
      * @param value
      *            string value
      * @param lang
@@ -66,7 +66,7 @@ public class LanguageString {
 
     /**
      * Returns the string value.
-     *
+     * 
      * @return the string value
      */
     public String getString() {
@@ -75,7 +75,7 @@ public class LanguageString {
 
     /**
      * Returns the RFC 4646 language code.
-     *
+     * 
      * @return the RFC 4646 language code, or null if not specified
      */
     public String getLanguage() {
@@ -84,6 +84,6 @@ public class LanguageString {
 
     @Override
     public String toString() {
-        return string + (lang != null ? " (lang=" + lang + ")" : "");
+        return string + ( lang != null ? " (lang=" + lang + ")" : "" );
     }
 }

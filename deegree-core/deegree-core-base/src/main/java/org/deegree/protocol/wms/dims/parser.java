@@ -29,7 +29,8 @@ public class parser extends java_cup.runtime.lr_parser {
     "\005\005" });
 
   /** Access to production table. */
-  public short[][] production_table() {return _production_table;}
+  @Override
+public short[][] production_table() {return _production_table;}
 
   /** Parse-action table. */
   protected static final short[][] _action_table = 
@@ -47,7 +48,8 @@ public class parser extends java_cup.runtime.lr_parser {
     "\001\002\000\004\002\ufffc\001\002" });
 
   /** Access to parse-action table. */
-  public short[][] action_table() {return _action_table;}
+  @Override
+public short[][] action_table() {return _action_table;}
 
   /** <code>reduce_goto</code> table. */
   protected static final short[][] _reduce_table = 
@@ -62,19 +64,22 @@ public class parser extends java_cup.runtime.lr_parser {
     "\001" });
 
   /** Access to <code>reduce_goto</code> table. */
-  public short[][] reduce_table() {return _reduce_table;}
+  @Override
+public short[][] reduce_table() {return _reduce_table;}
 
   /** Instance of action encapsulation class. */
   protected CUP$parser$actions action_obj;
 
   /** Action encapsulation object initializer. */
-  protected void init_actions()
+  @Override
+protected void init_actions()
     {
       action_obj = new CUP$parser$actions(this);
     }
 
   /** Invoke a user supplied parse action. */
-  public java_cup.runtime.Symbol do_action(
+  @Override
+public java_cup.runtime.Symbol do_action(
     int                        act_num,
     java_cup.runtime.lr_parser parser,
     java.util.Stack            stack,
@@ -86,15 +91,19 @@ public class parser extends java_cup.runtime.lr_parser {
   }
 
   /** Indicates start state. */
-  public int start_state() {return 0;}
+  @Override
+public int start_state() {return 0;}
   /** Indicates start production. */
-  public int start_production() {return 1;}
+  @Override
+public int start_production() {return 1;}
 
   /** <code>EOF</code> Symbol index. */
-  public int EOF_sym() {return 0;}
+  @Override
+public int EOF_sym() {return 0;}
 
   /** <code>error</code> Symbol index. */
-  public int error_sym() {return 1;}
+  @Override
+public int error_sym() {return 1;}
 
 }
 
@@ -127,7 +136,7 @@ class CUP$parser$actions {
               Object RESULT = null;
 		int minleft = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-2)).left;
 		int minright = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-2)).right;
-		Object min = (Object)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-2)).value;
+		Object min = ((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-2)).value;
 		 String msg = "Missing max value for interval.";
                                                           parser.report_error(msg, null);
                                                           RESULT = new Exception(msg); 
@@ -141,7 +150,7 @@ class CUP$parser$actions {
               Object RESULT = null;
 		int minleft = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-1)).left;
 		int minright = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-1)).right;
-		Object min = (Object)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-1)).value;
+		Object min = ((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-1)).value;
 		 String msg = "Missing '/' after " + min + ".";
                                                           parser.report_error(msg, null);
                                                           RESULT = new Exception(msg); 
@@ -155,13 +164,13 @@ class CUP$parser$actions {
               Object RESULT = null;
 		int minleft = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-4)).left;
 		int minright = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-4)).right;
-		Object min = (Object)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-4)).value;
+		Object min = ((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-4)).value;
 		int maxleft = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-2)).left;
 		int maxright = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-2)).right;
-		Object max = (Object)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-2)).value;
+		Object max = ((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-2)).value;
 		int resleft = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-0)).left;
 		int resright = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-0)).right;
-		Object res = (Object)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-0)).value;
+		Object res = ((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-0)).value;
 		 RESULT = new DimensionInterval(min, max, res); 
               CUP$parser$result = new java_cup.runtime.Symbol(3/*interval*/, ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-4)).left, ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-0)).right, RESULT);
             }
@@ -173,10 +182,10 @@ class CUP$parser$actions {
               Object RESULT = null;
 		int minleft = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-3)).left;
 		int minright = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-3)).right;
-		Object min = (Object)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-3)).value;
+		Object min = ((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-3)).value;
 		int maxleft = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-1)).left;
 		int maxright = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-1)).right;
-		Object max = (Object)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-1)).value;
+		Object max = ((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-1)).value;
 		 RESULT = new DimensionInterval(min, max, 0); 
               CUP$parser$result = new java_cup.runtime.Symbol(3/*interval*/, ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-3)).left, ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-0)).right, RESULT);
             }
@@ -188,10 +197,10 @@ class CUP$parser$actions {
               Object RESULT = null;
 		int minleft = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-2)).left;
 		int minright = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-2)).right;
-		Object min = (Object)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-2)).value;
+		Object min = ((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-2)).value;
 		int maxleft = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-0)).left;
 		int maxright = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-0)).right;
-		Object max = (Object)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-0)).value;
+		Object max = ((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-0)).value;
 		 RESULT = new DimensionInterval(min, max, 0); 
               CUP$parser$result = new java_cup.runtime.Symbol(3/*interval*/, ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-2)).left, ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-0)).right, RESULT);
             }
@@ -203,11 +212,11 @@ class CUP$parser$actions {
               Object RESULT = null;
 		int valleft = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-2)).left;
 		int valright = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-2)).right;
-		Object val = (Object)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-2)).value;
+		Object val = ((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-2)).value;
 		int errleft = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-0)).left;
 		int errright = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-0)).right;
-		Object err = (Object)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-0)).value;
-		 String msg = (String)(err == null ? "Expected another interval after '" + val + ",'." : ((Exception)err).getMessage());
+		Object err = ((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-0)).value;
+		 String msg = (err == null ? "Expected another interval after '" + val + ",'." : ((Exception)err).getMessage());
                                            parser.report_error(msg, null);
                                            RESULT = new Exception(msg); 
               CUP$parser$result = new java_cup.runtime.Symbol(2/*values*/, ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-2)).left, ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-0)).right, RESULT);
@@ -220,7 +229,7 @@ class CUP$parser$actions {
               Object RESULT = null;
 		int valleft = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-0)).left;
 		int valright = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-0)).right;
-		Object val = (Object)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-0)).value;
+		Object val = ((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-0)).value;
 		 if(val instanceof Exception){
                                              RESULT = val;
                                            }else{
@@ -237,10 +246,10 @@ class CUP$parser$actions {
               Object RESULT = null;
 		int valleft = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-2)).left;
 		int valright = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-2)).right;
-		Object val = (Object)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-2)).value;
+		Object val = ((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-2)).value;
 		int valsleft = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-0)).left;
 		int valsright = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-0)).right;
-		Object vals = (Object)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-0)).value;
+		Object vals = ((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-0)).value;
 		
                                            if(val instanceof Exception){
                                              RESULT = val;
@@ -258,7 +267,7 @@ class CUP$parser$actions {
               Object RESULT = null;
 		int valleft = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-2)).left;
 		int valright = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-2)).right;
-		Object val = (Object)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-2)).value;
+		Object val = ((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-2)).value;
 		 String msg = "Expected another value after '" + val + ",'.";
                                            parser.report_error(msg, null);
                                            RESULT = new Exception(msg); 
@@ -272,7 +281,7 @@ class CUP$parser$actions {
               Object RESULT = null;
 		int valleft = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-0)).left;
 		int valright = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-0)).right;
-		Object val = (Object)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-0)).value;
+		Object val = ((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-0)).value;
 		 RESULT = new LinkedList();
                                            ((LinkedList)RESULT).add(val); 
               CUP$parser$result = new java_cup.runtime.Symbol(2/*values*/, ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-0)).left, ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-0)).right, RESULT);
@@ -285,10 +294,10 @@ class CUP$parser$actions {
               Object RESULT = null;
 		int valleft = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-2)).left;
 		int valright = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-2)).right;
-		Object val = (Object)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-2)).value;
+		Object val = ((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-2)).value;
 		int valsleft = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-0)).left;
 		int valsright = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-0)).right;
-		Object vals = (Object)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-0)).value;
+		Object vals = ((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-0)).value;
 		 if(vals instanceof LinkedList) ((LinkedList)vals).addFirst(val);
                                            RESULT = vals; 
               CUP$parser$result = new java_cup.runtime.Symbol(2/*values*/, ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-2)).left, ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-0)).right, RESULT);
@@ -301,7 +310,7 @@ class CUP$parser$actions {
               Object RESULT = null;
 		int start_valleft = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-1)).left;
 		int start_valright = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-1)).right;
-		Object start_val = (Object)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-1)).value;
+		Object start_val = ((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-1)).value;
 		RESULT = start_val;
               CUP$parser$result = new java_cup.runtime.Symbol(0/*$START*/, ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-1)).left, ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-0)).right, RESULT);
             }
@@ -315,7 +324,7 @@ class CUP$parser$actions {
               Object RESULT = null;
 		int valsleft = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-0)).left;
 		int valsright = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-0)).right;
-		Object vals = (Object)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-0)).value;
+		Object vals = ((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-0)).value;
 		 RESULT = vals; 
               CUP$parser$result = new java_cup.runtime.Symbol(1/*strt*/, ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-0)).left, ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-0)).right, RESULT);
             }

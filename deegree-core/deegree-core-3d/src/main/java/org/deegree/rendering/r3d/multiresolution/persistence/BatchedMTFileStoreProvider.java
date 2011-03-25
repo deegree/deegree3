@@ -40,7 +40,6 @@ import java.net.URL;
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.jaxb.JAXBUtils;
-import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.persistence.CRSManager;
 import org.deegree.rendering.r3d.jaxb.batchedmt.BatchedMTFileStoreConfig;
 import org.slf4j.Logger;
@@ -62,7 +61,7 @@ public class BatchedMTFileStoreProvider implements BatchedMTStoreProvider {
 
     private static final String CONFIG_JAXB_PACKAGE = "org.deegree.rendering.r3d.jaxb.batchedmt";
 
-    private static final String CONFIG_SCHEMA = "/META-INF/schemas/datasource/3d/batchedmt/3.0.0/file.xsd";
+    private static final URL CONFIG_SCHEMA = BatchedMTFileStoreProvider.class.getResource( "/META-INF/schemas/datasource/3d/batchedmt/3.0.0/file.xsd" );
 
     public String getConfigNamespace() {
         return CONFIG_NS;
@@ -80,10 +79,10 @@ public class BatchedMTFileStoreProvider implements BatchedMTStoreProvider {
             XMLAdapter resolver = new XMLAdapter();
             resolver.setSystemId( configURL.toString() );
 
-            ICRS crs = CRSManager.getCRSRef( config.getCrs() );
+            CRSManager.getCRSRef( config.getCrs() );
             URL dir = resolver.resolve( config.getDirectory() );
             int maxDirectMem = config.getMaxDirectMemory().intValue();
-            bs = new BatchedMTFileStore( crs, dir, maxDirectMem );
+            bs = new BatchedMTFileStore( dir, maxDirectMem );
 
         } catch ( Exception e ) {
             e.printStackTrace();
@@ -96,6 +95,6 @@ public class BatchedMTFileStoreProvider implements BatchedMTStoreProvider {
 
     @Override
     public URL getConfigSchema() {
-        return BatchedMTFileStoreProvider.class.getResource( CONFIG_SCHEMA );
-    }  
+        return CONFIG_SCHEMA;
+    }
 }

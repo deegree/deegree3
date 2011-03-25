@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,7 +32,7 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 
 package org.deegree.rendering.r3d.opengl.tesselation;
 
@@ -52,13 +52,13 @@ import org.slf4j.LoggerFactory;
 /**
  * The <code>GeometryCallBack</code> class will be called by the {@link Tesselator} if a {@link SimpleAccessGeometry}
  * must be triangulated. This class will calculate the normals from the resulting vertices as well.
- *
+ * 
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- *
+ * 
  * @author last edited by: $Author$
- *
+ * 
  * @version $Revision$, $Date$
- *
+ * 
  */
 public class GeometryCallBack extends GLUtessellatorCallbackAdapter {
 
@@ -170,7 +170,7 @@ public class GeometryCallBack extends GLUtessellatorCallbackAdapter {
 
     /**
      * Create a vertex appropriate for the tesselation of the given type of geometry.
-     *
+     * 
      * @param currentVertexLocation
      *            of the coordinates (the Vertex count)
      * @return the vertex used for the tesselation process.
@@ -183,10 +183,10 @@ public class GeometryCallBack extends GLUtessellatorCallbackAdapter {
     /**
      * Calculate the normals for the tesselated geometry and return a renderable geometry created from the given
      * {@link SimpleAccessGeometry}
-     *
+     * 
      * @param useDirectBuffers
      *            to use direct buffers instead of heap buffers.
-     *
+     * 
      * @return the tesselated {@link SimpleAccessGeometry} as a {@link RenderableGeometry}
      */
     public RenderableGeometry createRenderableGeometry( boolean useDirectBuffers ) {
@@ -211,7 +211,7 @@ public class GeometryCallBack extends GLUtessellatorCallbackAdapter {
 
     /**
      * Calculate the normals according to the openGL type.
-     *
+     * 
      * @return the normals appropriate for the openGL type.
      */
     protected float[] calculateNormals() {
@@ -268,7 +268,7 @@ public class GeometryCallBack extends GLUtessellatorCallbackAdapter {
      * even triangles  consist of vertices v+1,v,v+2 (reversed orientation)
      * odd triangles  consist of vertices v,v+1,v+2
      * </code>
-     *
+     * 
      */
     private void calcNormalsForTriangleStrip( float[] normals ) {
         float[] calculatedNormal = new float[3];
@@ -303,12 +303,9 @@ public class GeometryCallBack extends GLUtessellatorCallbackAdapter {
 
     /**
      * Add the given normal to the already present normal 're'-normalize it.
-     *
+     * 
      * @param normals
      *            to use
-     * @param calculatedNormal
-     *            to add
-     * @param vertex
      */
     private void averageNormal( float[] normals, float[] normal, int vertexIndex ) {
         int offset = vertexIndex * 3;

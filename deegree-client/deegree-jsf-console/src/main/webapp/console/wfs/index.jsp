@@ -83,7 +83,7 @@ deegree 3 WFS configuration<br/>
 ---------------------------<br/><br/>
 Protocol information<br/><br/>
 <%
-  WFSController controller = (WFSController) OGCFrontController.getServiceController(WFSController.class);
+  WFSController controller = OGCFrontController.getServiceController(WFSController.class);
   out.println (" - active versions: " + controller.getOfferedVersionsString());  
 %>
 <br/><br/><br/>Configured feature stores<br/><br/>

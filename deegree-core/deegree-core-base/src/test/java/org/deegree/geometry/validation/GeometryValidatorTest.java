@@ -50,7 +50,6 @@ import junit.framework.Assert;
 import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.geometry.Geometry;
-import org.deegree.geometry.GeometryFactory;
 import org.deegree.geometry.primitive.Curve;
 import org.deegree.geometry.primitive.Point;
 import org.deegree.geometry.primitive.Ring;
@@ -70,9 +69,6 @@ import org.slf4j.Logger;
  * @version $Revision:$, $Date:$
  */
 public class GeometryValidatorTest {
-    private static final Logger LOG = getLogger( GeometryValidatorTest.class );
-
-    private static GeometryFactory geomFac = new GeometryFactory();
 
     private static final String BASE_DIR = "../../geometry/gml/testdata/geometries/";
 

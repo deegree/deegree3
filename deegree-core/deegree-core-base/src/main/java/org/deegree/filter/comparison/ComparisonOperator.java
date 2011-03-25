@@ -83,13 +83,13 @@ public abstract class ComparisonOperator implements Operator {
      * @throws FilterEvaluationException
      *             if the value is neither <code>null</code> nor a {@link Comparable}
      */
-    protected Comparable<Object> checkComparableOrNull( Object value )
+    protected Comparable<?> checkComparableOrNull( Object value )
                             throws FilterEvaluationException {
         if ( value != null && !( value instanceof Comparable<?> ) ) {
             String msg = Messages.getMessage( "FILTER_EVALUATION_NOT_COMPARABLE", this.getType().name(), value );
             throw new FilterEvaluationException( msg );
         }
-        return (Comparable<Object>) value;
+        return (Comparable<?>) value;
     }
 
     /**
@@ -98,7 +98,6 @@ public abstract class ComparisonOperator implements Operator {
      * 
      * @param value1
      * @param value2
-     * @return
      * @throws FilterEvaluationException
      */
     protected Pair<PrimitiveValue, PrimitiveValue> getPrimitives( TypedObjectNode value1, TypedObjectNode value2 )

@@ -69,29 +69,31 @@ public class CoupledDataInspector implements RecordInspector {
 
     private static final Logger LOG = getLogger( CoupledDataInspector.class );
 
-    private final XMLAdapter a;
+    private final CoupledResourceInspector config;
 
-    private Connection conn;
+    private final NamespaceBindings nsContext;
 
-    private final CoupledResourceInspector ci;
-
-    public CoupledDataInspector( CoupledResourceInspector ci ) {
-        this.ci = ci;
-        this.a = new XMLAdapter();
+    public CoupledDataInspector( CoupledResourceInspector config ) {
+        this.config = config;
+        nsContext = new NamespaceBindings();
+        nsContext.addNamespace( "srv", "http://www.isotc211.org/2005/srv" );
+        nsContext.addNamespace( "gmd", "http://www.isotc211.org/2005/gmd" );
+        nsContext.addNamespace( "gco", "http://www.isotc211.org/2005/gco" );
     }
 
     /**
      * 
+     * @param conn
      * @param operatesOnStringUuIdAttribute
      * @return true if there is a coupling with a data-metadata, otherwise false.
      */
-    private boolean determineCoupling( List<String> operatesOnStringUuIdAttribute )
+    private boolean determineCoupling( Connection conn, List<String> operatesOnStringUuIdAttribute )
                             throws MetadataInspectorException {
         // consistencyCheck( operatesOnStringUuIdAttribute );
         boolean isCoupled = false;
 
         for ( String a : operatesOnStringUuIdAttribute ) {
-            isCoupled = getCoupledDataMetadatasets( a.trim() );
+            isCoupled = getCoupledDataMetadatasets( conn, a.trim() );
         }
 
         return isCoupled;
@@ -112,36 +114,20 @@ public class CoupledDataInspector implements RecordInspector {
             }
             i.remove( 0 );
         }
-        // if ( !isConsistent ) {
-        //
-        // }
-
         return isConsistent;
     }
-
-    // private void consistencyCheck( List<String> operatesOnList )
-    // throws MetadataInspectorException {
-    // if ( ci.isThrowConsistencyError() ) {
-    // for ( String operatesOnString : operatesOnList ) {
-    // if ( !getCoupledDataMetadatasets( operatesOnString ) ) {
-    // String msg = Messages.getMessage( "ERROR_INSPECT_NO_RSID", operatesOnString );
-    // LOG.info( msg );
-    // throw new MetadataInspectorException( msg );
-    // }
-    // }
-    // }
-    //
-    // }
 
     /**
      * If there is a data metadata record available for the service metadata record.
      * 
+     * @param conn
+     * 
      */
-    private boolean getCoupledDataMetadatasets( String resourceIdentifier )
+    private boolean getCoupledDataMetadatasets( Connection conn, String resourceIdentifier )
                             throws MetadataInspectorException {
-        System.out.println( "@" + resourceIdentifier + "@" );
         ResultSet rs = null;
         PreparedStatement stm = null;
+        LOG.warn( "Check table / column names." );
         String s = "SELECT resourceidentifier FROM isoqp_resourceidentifier WHERE resourceidentifier = ?;";
 
         try {
@@ -162,17 +148,10 @@ public class CoupledDataInspector implements RecordInspector {
     @Override
     public OMElement inspect( OMElement record, Connection conn )
                             throws MetadataInspectorException {
-        this.conn = conn;
-        a.setRootElement( record );
 
-        NamespaceBindings nsContext = a.getNamespaceContext( record );
-        // NamespaceContext newNSC = generateNSC(nsContext);
-        nsContext.addNamespace( "srv", "http://www.isotc211.org/2005/srv" );
-        nsContext.addNamespace( "gmd", "http://www.isotc211.org/2005/gmd" );
-        nsContext.addNamespace( "gco", "http://www.isotc211.org/2005/gco" );
+        XMLAdapter a = new XMLAdapter( record );
 
-        OMElement identificationInfo = a.getElement( a.getRootElement(), new XPath( "./gmd:identificationInfo[1]",
-                                                                                    nsContext ) );
+        OMElement identificationInfo = a.getElement( record, new XPath( "./gmd:identificationInfo[1]", nsContext ) );
 
         List<OMElement> operatesOnElemList = a.getElements( identificationInfo,
                                                             new XPath( "./srv:SV_ServiceIdentification/srv:operatesOn",
@@ -181,12 +160,9 @@ public class CoupledDataInspector implements RecordInspector {
         List<String> resourceIDs = new ArrayList<String>();
         for ( OMElement operatesOnElem : operatesOnElemList ) {
             operatesOnUuidList.add( operatesOnElem.getAttributeValue( new QName( "uuidref" ) ).trim() );
-            // String operatesOnXLink =
-            operatesOnElem.getAttributeValue( new QName( "xlink:href" ) );
         }
 
-        List<OMElement> operatesOnCoupledResources = a.getElements(
-                                                                    identificationInfo,
+        List<OMElement> operatesOnCoupledResources = a.getElements( identificationInfo,
                                                                     new XPath(
                                                                                "./srv:SV_ServiceIdentification/srv:coupledResource/srv:SV_CoupledResource",
                                                                                nsContext ) );
@@ -197,8 +173,7 @@ public class CoupledDataInspector implements RecordInspector {
                                                              new XPath( "./srv:identifier/gco:CharacterString",
                                                                         nsContext ), null );
 
-            String operationName = a.getNodeAsString(
-                                                      operatesOnCoupledResource,
+            String operationName = a.getNodeAsString( operatesOnCoupledResource,
                                                       new XPath( "./srv:operationName/gco:CharacterString", nsContext ),
                                                       null );
 
@@ -209,8 +184,7 @@ public class CoupledDataInspector implements RecordInspector {
 
         }
 
-        String couplingType = a.getNodeAsString(
-                                                 identificationInfo,
+        String couplingType = a.getNodeAsString( identificationInfo,
                                                  new XPath(
                                                             "./srv:SV_ServiceIdentification/srv:couplingType/srv:SV_CouplingType/@codeListValue",
                                                             nsContext ), null );
@@ -229,24 +203,15 @@ public class CoupledDataInspector implements RecordInspector {
 
             } else {
                 LOG.debug( "coupling: tight/mixed..." );
-                boolean throwException = determineCoupling( operatesOnUuidList )
+                boolean throwException = determineCoupling( conn, operatesOnUuidList )
                                          && !checkConsistency( operatesOnUuidList, resourceIDs );
-                if ( ci != null ) {
-                    if ( throwException && ci.isThrowConsistencyError() ) {
-                        String msg = Messages.getMessage( "ERROR_COUPLING" );
-                        // JDBCUtils.close( conn );
-                        LOG.debug( msg );
-                        throw new MetadataInspectorException( msg );
-                    }
+                if ( throwException && config.isThrowConsistencyError() ) {
+                    String msg = Messages.getMessage( "ERROR_COUPLING" );
+                    LOG.debug( msg );
+                    throw new MetadataInspectorException( msg );
                 }
-
             }
         }
-
         return record;
-    }
-
-    public CoupledResourceInspector getCi() {
-        return ci;
     }
 }
