@@ -57,6 +57,7 @@ import org.deegree.feature.persistence.postgis.PostGISFeatureStoreProvider;
 import org.deegree.feature.persistence.sql.DataTypeMapping;
 import org.deegree.feature.persistence.sql.FeatureTypeMapping;
 import org.deegree.feature.persistence.sql.MappedApplicationSchema;
+import org.deegree.feature.persistence.sql.blob.BlobMapping;
 import org.deegree.feature.persistence.sql.expressions.JoinChain;
 import org.deegree.feature.persistence.sql.id.AutoIDGenerator;
 import org.deegree.feature.persistence.sql.id.FIDMapping;
@@ -154,6 +155,10 @@ public class PostGISFeatureStoreConfigWriter {
             writer.writeEndElement();
         }
 
+        if ( schema.getBlobMapping() != null ) {
+            writeBlobMapping( writer, schema.getBlobMapping(), schemaURLs );
+        }
+
         List<FeatureType> fts = schema.getFeatureTypes( null, false, false );
         SortedSet<String> ftNames = new TreeSet<String>();
         for ( FeatureType ft : fts ) {
@@ -163,7 +168,9 @@ public class PostGISFeatureStoreConfigWriter {
         for ( String qName : ftNames ) {
             QName ftName = QName.valueOf( qName );
             FeatureType ft = schema.getFeatureType( ftName );
-            writeFeatureTypeMapping( writer, ft );
+            if ( schema.getFtMapping( ft.getName() ) != null ) {
+                writeFeatureTypeMapping( writer, ft );
+            }
         }
 
         for ( QName dtName : schema.getDtMappings().keySet() ) {
@@ -176,6 +183,21 @@ public class PostGISFeatureStoreConfigWriter {
             writer.writeEndElement();
         }
 
+        writer.writeEndElement();
+    }
+
+    private void writeBlobMapping( XMLStreamWriter writer, BlobMapping blobMapping, List<String> schemaURLs )
+                            throws XMLStreamException {
+        writer.writeStartElement( CONFIG_NS, "BLOBMapping" );
+        writer.writeStartElement( CONFIG_NS, "StorageCRS" );
+        writer.writeCharacters( schema.getStorageCRS().getAlias() );
+        writer.writeEndElement();
+        for ( String schemaUrl : schemaURLs ) {
+            writer.writeStartElement( CONFIG_NS, "GMLSchema" );
+            writer.writeAttribute( "version", "GML_32" );
+            writer.writeCharacters( schemaUrl );
+            writer.writeEndElement();
+        }
         writer.writeEndElement();
     }
 
@@ -258,9 +280,9 @@ public class PostGISFeatureStoreConfigWriter {
         writeCommonAttrs( writer, pt );
         writer.writeAttribute( "type", pt.getPrimitiveType().getXSTypeName() );
         writer.writeAttribute( "mapping", mapping.getMapping().toString() );
-        if (mapping.getNilMapping() != null) {
-            writer.writeAttribute( "nilMapping", mapping.getNilMapping().toString() );    
-        }        
+        if ( mapping.getNilMapping() != null ) {
+            writer.writeAttribute( "nilMapping", mapping.getNilMapping().toString() );
+        }
         if ( mapping.getJoinedTable() != null ) {
             writeJoinedTable( writer, mapping.getJoinedTable() );
         }
@@ -274,9 +296,9 @@ public class PostGISFeatureStoreConfigWriter {
         writeCommonAttrs( writer, pt );
         writer.writeAttribute( "mapping", mapping.getMapping().toString() );
         writer.writeAttribute( "codeSpaceMapping", mapping.getCodeSpaceMapping().toString() );
-        if (mapping.getNilMapping() != null) {
-            writer.writeAttribute( "nilMapping", mapping.getNilMapping().toString() );    
-        }        
+        if ( mapping.getNilMapping() != null ) {
+            writer.writeAttribute( "nilMapping", mapping.getNilMapping().toString() );
+        }
         if ( mapping.getJoinedTable() != null ) {
             writeJoinedTable( writer, mapping.getJoinedTable() );
         }
@@ -289,9 +311,9 @@ public class PostGISFeatureStoreConfigWriter {
         writer.writeStartElement( CONFIG_NS, "GeometryProperty" );
         writeCommonAttrs( writer, pt );
         writer.writeAttribute( "mapping", mapping.getMapping().toString() );
-        if (mapping.getNilMapping() != null) {
-            writer.writeAttribute( "nilMapping", mapping.getNilMapping().toString() );    
-        }        
+        if ( mapping.getNilMapping() != null ) {
+            writer.writeAttribute( "nilMapping", mapping.getNilMapping().toString() );
+        }
 
         GeometryType gt = pt.getGeometryType();
         switch ( gt ) {
@@ -365,9 +387,9 @@ public class PostGISFeatureStoreConfigWriter {
             writer.writeAttribute( "type", getName( pt.getFTName() ) );
         }
         writer.writeAttribute( "mapping", mapping.getMapping().toString() );
-        if (mapping.getNilMapping() != null) {
-            writer.writeAttribute( "nilMapping", mapping.getNilMapping().toString() );    
-        }        
+        if ( mapping.getNilMapping() != null ) {
+            writer.writeAttribute( "nilMapping", mapping.getNilMapping().toString() );
+        }
         JoinChain jc = mapping.getJoinedTable();
         if ( jc != null ) {
             writeJoinedTable( writer, jc );
@@ -380,9 +402,9 @@ public class PostGISFeatureStoreConfigWriter {
 
         writer.writeStartElement( CONFIG_NS, "CustomProperty" );
         writeCommonAttrs( writer, pt );
-        if (mapping.getNilMapping() != null) {
-            writer.writeAttribute( "nilMapping", mapping.getNilMapping().toString() );    
-        }        
+        if ( mapping.getNilMapping() != null ) {
+            writer.writeAttribute( "nilMapping", mapping.getNilMapping().toString() );
+        }
         if ( mapping.getJoinedTable() != null ) {
             writeJoinedTable( writer, mapping.getJoinedTable() );
         }
@@ -398,9 +420,9 @@ public class PostGISFeatureStoreConfigWriter {
 
         writer.writeStartElement( CONFIG_NS, "GenericObjectProperty" );
         writeCommonAttrs( writer, pt );
-        if (mapping.getNilMapping() != null) {
-            writer.writeAttribute( "nilMapping", mapping.getNilMapping().toString() );    
-        }        
+        if ( mapping.getNilMapping() != null ) {
+            writer.writeAttribute( "nilMapping", mapping.getNilMapping().toString() );
+        }
         XSElementDeclaration elDecl = pt.getValueElementDecl();
         QName elName = new QName( elDecl.getNamespace(), elDecl.getName() );
         writer.writeAttribute( "valueElement", getName( elName ) );
@@ -425,9 +447,9 @@ public class PostGISFeatureStoreConfigWriter {
             } else {
                 writer.writeAttribute( "mapping", mapping.toString() );
             }
-            if (particle.getNilMapping() != null) {
-                writer.writeAttribute( "nilMapping", particle.getNilMapping().toString() );    
-            }            
+            if ( particle.getNilMapping() != null ) {
+                writer.writeAttribute( "nilMapping", particle.getNilMapping().toString() );
+            }
             if ( particle.getJoinedTable() != null ) {
                 writeJoinedTable( writer, particle.getJoinedTable() );
             }
@@ -437,9 +459,9 @@ public class PostGISFeatureStoreConfigWriter {
             writer.writeStartElement( CONFIG_NS, "GeometryMapping" );
             writer.writeAttribute( "path", particle.getPath().getAsText() );
             writer.writeAttribute( "mapping", gm.getMapping().toString() );
-            if (particle.getNilMapping() != null) {
-                writer.writeAttribute( "nilMapping", particle.getNilMapping().toString() );    
-            }             
+            if ( particle.getNilMapping() != null ) {
+                writer.writeAttribute( "nilMapping", particle.getNilMapping().toString() );
+            }
             GeometryType gt = gm.getType();
             switch ( gt ) {
             case POINT: {
@@ -504,9 +526,9 @@ public class PostGISFeatureStoreConfigWriter {
         } else if ( particle instanceof FeatureMapping ) {
             writer.writeStartElement( CONFIG_NS, "FeatureMapping" );
             writer.writeAttribute( "path", particle.getPath().getAsText() );
-            if (particle.getNilMapping() != null) {
-                writer.writeAttribute( "nilMapping", particle.getNilMapping().toString() );    
-            }             
+            if ( particle.getNilMapping() != null ) {
+                writer.writeAttribute( "nilMapping", particle.getNilMapping().toString() );
+            }
             if ( particle.getJoinedTable() != null ) {
                 writeJoinedTable( writer, particle.getJoinedTable() );
             }
@@ -514,9 +536,9 @@ public class PostGISFeatureStoreConfigWriter {
         } else if ( particle instanceof CompoundMapping ) {
             writer.writeStartElement( CONFIG_NS, "ComplexMapping" );
             writer.writeAttribute( "path", particle.getPath().getAsText() );
-            if (particle.getNilMapping() != null) {
-                writer.writeAttribute( "nilMapping", particle.getNilMapping().toString() );    
-            }             
+            if ( particle.getNilMapping() != null ) {
+                writer.writeAttribute( "nilMapping", particle.getNilMapping().toString() );
+            }
             if ( particle.getJoinedTable() != null ) {
                 writeJoinedTable( writer, particle.getJoinedTable() );
             }
