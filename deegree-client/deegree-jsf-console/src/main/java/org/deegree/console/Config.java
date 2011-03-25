@@ -36,6 +36,7 @@
 package org.deegree.console;
 
 import static javax.faces.application.FacesMessage.SEVERITY_ERROR;
+import static org.apache.commons.io.FileUtils.copyURLToFile;
 import static org.apache.commons.io.FileUtils.readFileToString;
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -110,6 +111,22 @@ public class Config implements Comparable<Config> {
     public Config( File location, URL schemaURL, String resourceOutcome ) {
         this.location = location;
         this.schemaURL = schemaURL;
+        this.resourceOutcome = resourceOutcome;
+        this.requiresWSReload = true;
+        if ( schemaURL != null ) {
+            try {
+                schemaAsText = IOUtils.toString( schemaURL.openStream(), "UTF-8" );
+            } catch ( IOException e ) {
+                LOG.warn( "Schema not available: {}", schemaURL );
+                LOG.trace( "Stack trace:", e );
+            }
+        }
+    }
+
+    public Config( File location, URL schemaURL, URL template, String resourceOutcome ) {
+        this.location = location;
+        this.schemaURL = schemaURL;
+        this.template = template;
         this.resourceOutcome = resourceOutcome;
         this.requiresWSReload = true;
         if ( schemaURL != null ) {
@@ -200,6 +217,9 @@ public class Config implements Comparable<Config> {
 
     public String edit()
                             throws IOException {
+        if ( !location.exists() ) {
+            copyURLToFile( template, location );
+        }
         this.content = readFileToString( location, "UTF-8" );
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put( "editConfig", this );
         return "/console/generic/xmleditor?faces-redirect=true";

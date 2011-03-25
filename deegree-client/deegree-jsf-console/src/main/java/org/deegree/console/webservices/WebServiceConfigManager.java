@@ -67,13 +67,13 @@ public class WebServiceConfigManager {
 
     private static final Logger LOG = getLogger( ConfigManager.class );
 
-    private static final String METADATA_EXAMPLE_URL = "/META-INF/schemas/metadata/3.0.0/example.xml";
+    private static final URL METADATA_EXAMPLE_URL = WebServiceConfigManager.class.getResource( "/META-INF/schemas/metadata/3.0.0/example.xml" );
 
-    private static final String METADATA_SCHEMA_URL = "/META-INF/schemas/metadata/3.0.0/metadata.xsd";
+    private static final URL METADATA_SCHEMA_URL = WebServiceConfigManager.class.getResource( "/META-INF/schemas/metadata/3.0.0/metadata.xsd" );
 
-    private static final String MAIN_EXAMPLE_URL = "/META-INF/schemas/controller/3.0.0/example.xml";
+    private static final URL MAIN_EXAMPLE_URL = WebServiceConfigManager.class.getResource( "/META-INF/schemas/controller/3.0.0/example.xml" );
 
-    private static final String MAIN_SCHEMA_URL = "/META-INF/schemas/controller/3.0.0/controller.xsd";
+    private static final URL MAIN_SCHEMA_URL = WebServiceConfigManager.class.getResource( "/META-INF/schemas/controller/3.0.0/controller.xsd" );
 
     @Getter
     private final Config metadataConfig;
@@ -82,17 +82,15 @@ public class WebServiceConfigManager {
     private final Config mainConfig;
 
     public WebServiceConfigManager() {
-
         ExternalContext ctx = FacesContext.getCurrentInstance().getExternalContext();
         DeegreeWorkspace ws = ( (WorkspaceBean) ctx.getApplicationMap().get( "workspace" ) ).getActiveWorkspace();
         File wsRootDir = ws.getLocation();
 
         File metadataLocation = new File( wsRootDir, "services/metadata.xml" );
-        URL metadataSchemaURL = WebServiceConfigManager.class.getResource( METADATA_SCHEMA_URL );
-        metadataConfig = new Config( metadataLocation, metadataSchemaURL, "/console/webservices/webservices" );
+        metadataConfig = new Config( metadataLocation, METADATA_SCHEMA_URL, METADATA_EXAMPLE_URL,
+                                     "/console/webservices/webservices" );
 
         File mainLocation = new File( wsRootDir, "services/main.xml" );
-        URL mainSchemaURL = WebServiceConfigManager.class.getResource( MAIN_SCHEMA_URL );
-        mainConfig = new Config( mainLocation, mainSchemaURL, "/console/webservices/webservices" );
+        mainConfig = new Config( mainLocation, MAIN_SCHEMA_URL, MAIN_EXAMPLE_URL, "/console/webservices/webservices" );
     }
 }
