@@ -383,7 +383,7 @@ public class SymbologyParser {
                             if ( val.contains( "," ) ) {
                                 obj.dasharray = splitAsDoubles( val, "," );
                             } else {
-                                obj.dasharray = splitAsDoubles( val, " " );
+                                obj.dasharray = splitAsDoubles( val, "\\s" );
                             }
                         }
                     }, contn ).second;
