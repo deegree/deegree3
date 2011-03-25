@@ -90,7 +90,7 @@ public class WMSProvider implements OWSProvider<WMSRequestType> {
         return new WMSController( configURL, getImplementationMetadata() );
     }
 
-    @Override
+    @SuppressWarnings("unchecked")
     public Class<? extends ResourceManager>[] getDependencies() {
         return new Class[] { RemoteOWSManager.class, FeatureStoreManager.class, CoverageBuilderManager.class };
     }
