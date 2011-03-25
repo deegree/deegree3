@@ -53,7 +53,7 @@ import org.deegree.rendering.r2d.styling.components.UOM;
  * 
  * @version $Revision$, $Date$
  */
-public class TextStyling implements Copyable<TextStyling>, Styling {
+public class TextStyling implements Styling<TextStyling> {
 
     /**
      * The unit of measure for all values.

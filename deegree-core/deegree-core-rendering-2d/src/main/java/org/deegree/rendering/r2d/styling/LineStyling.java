@@ -51,7 +51,7 @@ import org.deegree.rendering.r2d.styling.components.UOM;
  * 
  * @version $Revision$, $Date$
  */
-public class LineStyling implements Copyable<LineStyling>, Styling {
+public class LineStyling implements Styling<LineStyling> {
 
     /**
      * The unit of measure for all values.

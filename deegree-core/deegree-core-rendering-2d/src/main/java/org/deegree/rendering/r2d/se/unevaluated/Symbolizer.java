@@ -51,7 +51,7 @@ import org.deegree.filter.Expression;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.XPathEvaluator;
 import org.deegree.geometry.Geometry;
-import org.deegree.rendering.r2d.styling.Copyable;
+import org.deegree.rendering.r2d.styling.Styling;
 import org.slf4j.Logger;
 
 /**
@@ -63,7 +63,7 @@ import org.slf4j.Logger;
  * @version $Revision$, $Date$
  * @param <T>
  */
-public class Symbolizer<T extends Copyable<T>> {
+public class Symbolizer<T extends Styling<T>> {
 
     private static final Logger LOG = getLogger( Symbolizer.class );
 

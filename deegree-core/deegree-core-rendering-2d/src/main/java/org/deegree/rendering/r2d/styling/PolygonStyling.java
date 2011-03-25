@@ -52,7 +52,7 @@ import org.deegree.rendering.r2d.styling.components.UOM;
  * 
  * @version $Revision$, $Date$
  */
-public class PolygonStyling implements Copyable<PolygonStyling>, Styling {
+public class PolygonStyling implements Styling<PolygonStyling> {
 
     /**
      * The unit of measure for all values.

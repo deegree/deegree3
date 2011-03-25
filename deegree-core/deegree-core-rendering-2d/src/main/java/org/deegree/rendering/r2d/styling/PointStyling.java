@@ -50,7 +50,7 @@ import org.deegree.rendering.r2d.styling.components.UOM;
  * 
  * @version $Revision$, $Date$
  */
-public class PointStyling implements Copyable<PointStyling>, Styling {
+public class PointStyling implements Styling<PointStyling> {
 
     /**
      * The unit of measure for all values.

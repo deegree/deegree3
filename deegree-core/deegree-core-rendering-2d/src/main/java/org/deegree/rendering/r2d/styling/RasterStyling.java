@@ -56,7 +56,7 @@ import org.deegree.rendering.r2d.styling.components.UOM;
  * 
  * @version $Revision$, $Date$
  */
-public class RasterStyling implements Copyable<RasterStyling>, Styling {
+public class RasterStyling implements Styling<RasterStyling> {
 
     /**
      * The unit of measure for all values.
