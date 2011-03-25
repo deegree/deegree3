@@ -72,9 +72,7 @@ public class ShapeFeatureStoreProvider implements FeatureStoreProvider {
 
     private static final String CONFIG_JAXB_PACKAGE = "org.deegree.feature.persistence.shape.jaxb";
 
-    private static final String CONFIG_SCHEMA = "/META-INF/schemas/datasource/feature/shape/3.0.0/shape.xsd";
-
-    private static final String CONFIG_TEMPLATE = "/META-INF/schemas/datasource/feature/shape/3.0.0/example.xml";
+    private static final URL CONFIG_SCHEMA = ShapeFeatureStoreProvider.class.getResource( "/META-INF/schemas/datasource/feature/shape/3.0.0/shape.xsd" );
 
     private DeegreeWorkspace workspace;
 
@@ -85,7 +83,7 @@ public class ShapeFeatureStoreProvider implements FeatureStoreProvider {
 
     @Override
     public URL getConfigSchema() {
-        return ShapeFeatureStoreProvider.class.getResource( CONFIG_SCHEMA );
+        return CONFIG_SCHEMA;
     }
 
     @Override
