@@ -63,7 +63,7 @@ public class MappingUtils {
 
     private static final DecimalFormatSymbols dfs = new DecimalFormatSymbols( Locale.ENGLISH );
 
-    private static final NumberFormat nf = new DecimalFormat( "#.##", dfs );
+    private static final NumberFormat nf = new DecimalFormat( "#.####", dfs );
 
     private static final com.vividsolutions.jts.io.WKTReader jtsReader = new com.vividsolutions.jts.io.WKTReader();
 
