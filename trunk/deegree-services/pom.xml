@@ -1,0 +1,48 @@
+<?xml version="1.0"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>org.deegree</groupId>
+  <artifactId>deegree-services</artifactId>
+  <packaging>pom</packaging>
+  <version>3.1-pre3</version>
+  <name>deegree-services</name>
+  <url>http://www.deegree.org</url>
+  <scm>
+    <developerConnection>scm:svn:svn+ssh://svn.wald.intevation.org/deegree/deegree3/tags/3.1-pre3/deegree-services</developerConnection>
+    <url>svn+ssh://svn.wald.intevation.org/deegree/deegree3/tags/3.1-pre3/deegree-services</url>
+  </scm>
+
+  <parent>
+    <groupId>org.deegree</groupId>
+    <artifactId>deegree-parent</artifactId>
+    <version>3.1-pre3</version>
+  </parent>
+
+  <repositories>
+    <repository>
+      <id>deegree-repo</id>
+      <url>http://artefacts.deegree.org/repo</url>
+      <releases>
+        <updatePolicy>never</updatePolicy>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+    </repository>
+  </repositories>
+
+  <modules>
+    <module>deegree-services-commons</module>
+    <module>deegree-services-wfs</module>
+    <module>deegree-services-wms</module>
+    <module>deegree-services-wcs</module>
+    <module>deegree-services-csw</module>
+    <module>deegree-services-sos</module>
+    <module>deegree-services-wpvs</module>
+    <module>deegree-services-wps</module>
+    <module>deegree-services-config</module>
+    <!--module>deegree-services-tests</module-->
+    <module>deegree-webservices</module>
+  </modules>
+
+</project>

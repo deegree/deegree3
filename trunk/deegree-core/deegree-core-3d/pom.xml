@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>org.deegree</groupId>
+  <artifactId>deegree-core-3d</artifactId>
+  <packaging>jar</packaging>
+  <version>3.1-pre3</version>
+  <name>deegree-core-3d</name>
+  <url>http://www.deegree.org</url>
+  <scm>
+    <developerConnection>scm:svn:svn+ssh://svn.wald.intevation.org/deegree/deegree3/tags/3.1-pre3/deegree-core/deegree-core-3d</developerConnection>
+    <url>svn+ssh://svn.wald.intevation.org/deegree/deegree3/tags/3.1-pre3/deegree-core/deegree-core-3d</url>
+  </scm>
+
+  <parent>
+    <groupId>org.deegree</groupId>
+    <artifactId>deegree-parent</artifactId>
+    <version>3.1-pre3</version>
+  </parent>
+
+  <repositories>
+    <repository>
+      <id>deegree-repo</id>
+      <url>http://artefacts.deegree.org/repo</url>
+      <releases>
+        <updatePolicy>never</updatePolicy>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+    </repository>
+  </repositories>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>jaxb2-maven-plugin</artifactId>
+        <version>1.3</version>
+        <executions>
+          <execution>
+            <goals>
+              <goal>xjc</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <schemaFiles>datasource/3d/renderable/3.0.0/file.xsd,datasource/3d/renderable/3.0.0/sql.xsd,datasource/3d/batchedmt/3.0.0/file.xsd</schemaFiles>
+          <schemaDirectory>src/main/resources/META-INF/schemas/</schemaDirectory>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+  <dependencies>
+    <dependency>
+      <groupId>org.deegree</groupId>
+      <artifactId>deegree-featurestore-commons</artifactId>
+      <version>3.1-pre3</version>
+    </dependency>
+    <dependency>
+      <groupId>org.deegree</groupId>
+      <artifactId>deegree-core-rendering-2d</artifactId>
+      <version>3.1-pre3</version>
+    </dependency>
+    <dependency>
+      <groupId>jogl</groupId>
+      <artifactId>jogl</artifactId>
+      <version>1.1.2</version>
+    </dependency>
+    <dependency>
+      <groupId>jogl</groupId>
+      <artifactId>gluegen-rt</artifactId>
+      <version>1.1.2</version>
+    </dependency>
+  </dependencies>
+</project>

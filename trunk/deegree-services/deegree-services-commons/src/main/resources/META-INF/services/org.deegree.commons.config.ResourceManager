@@ -1,0 +1,2 @@
+org.deegree.services.controller.WebServicesConfiguration
+org.deegree.services.controller.security.SecurityConfiguration

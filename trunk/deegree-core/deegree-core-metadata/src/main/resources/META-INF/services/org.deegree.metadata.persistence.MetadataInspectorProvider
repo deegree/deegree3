@@ -1,0 +1,3 @@
+org.deegree.metadata.persistence.iso.parsing.inspectation.CoupledDataInspector
+org.deegree.metadata.persistence.iso.parsing.inspectation.FileIdentifierInspector
+org.deegree.metadata.persistence.iso.parsing.inspectation.InspireInspector

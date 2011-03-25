@@ -1,0 +1,19 @@
+<?xml version="1.0" ?>
+<crs:DatumDefinitions configVersion="3.0.0" xmlns:crs="http://www.deegree.org/crs" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.deegree.org/crs http://schemas.deegree.org/crs/3.0.0/crsdefinition.xsd">
+  <crs:GeodeticDatum>
+    <crs:Id>epsg:6200</crs:Id>
+    <crs:Name>Pulkovo 1995</crs:Name>
+    <crs:Version>2008-06-24</crs:Version>
+    <crs:UsedEllipsoid>epsg:7024</crs:UsedEllipsoid>
+    <crs:UsedPrimeMeridian>epsg:8901</crs:UsedPrimeMeridian>
+  </crs:GeodeticDatum>
+  <crs:GeodeticDatum>
+    <crs:Id>epsg:6300</crs:Id>
+    <crs:Name>Geodetic Datum of 1965</crs:Name>
+    <crs:Version>2003-06-27</crs:Version>
+    <crs:Description>Differences from the 1965 adjustment (datum code 6299) are: average difference in Eastings 0.092m; average difference in Northings 0.108m; maximum vector difference 0.548m.</crs:Description>
+    <crs:UsedEllipsoid>epsg:7002</crs:UsedEllipsoid>
+    <crs:UsedPrimeMeridian>epsg:8901</crs:UsedPrimeMeridian>
+  </crs:GeodeticDatum>
+</crs:DatumDefinitions>

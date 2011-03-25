@@ -1,0 +1,6 @@
+<?xml version="1.0"?>
+<DeegreeCRSStore xmlns="http://www.deegree.org/crs/stores/deegree" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.deegree.org/crs http://schemas.deegree.org/crs/stores/deegree/3.1.0/deegree.xsd">
+  <!-- [1] -->
+  <File>deegree/d3/parser-files.xml</File>
+</DeegreeCRSStore>

@@ -1,0 +1,5 @@
+SERVICE=WFS
+VERSION=1.0.0
+REQUEST=GetFeature
+TYPENAME=INWATERA_1M
+FILTER=<Filter xmlns="http://www.opengis.net/ogc" xmlns:gml="http://www.opengis.net/gml" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/ogc http://schemas.opengis.net/filter/1.0.0/filter.xsd http://www.opengis.net/gml http://schemas.opengis.net/gml/2.1.2/geometry.xsd"><Within><PropertyName>INWATERA_1M/WKB_GEOM</PropertyName><gml:Box><gml:coordinates>10,10 20,20</gml:coordinates></gml:Box></Within></Filter>

@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<crs:ProjectionDefinitions configVersion="3.0.0" xmlns:crs="http://www.deegree.org/crs" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.deegree.org/crs http://schemas.deegree.org/crs/3.0.0/crsdefinition.xsd">
+	<crs:TransverseMercator>
+    <crs:Id>epsg:16210</crs:Id>
+		<crs:Name>6-degree Gauss-Kruger zone 10</crs:Name>
+		<crs:LatitudeOfNaturalOrigin>0.0</crs:LatitudeOfNaturalOrigin>
+		<crs:LongitudeOfNaturalOrigin>57.0</crs:LongitudeOfNaturalOrigin>
+		<crs:ScaleFactor>1.0</crs:ScaleFactor>
+		<crs:FalseEasting>1.05E7</crs:FalseEasting>
+		<crs:FalseNorthing>0.0</crs:FalseNorthing>
+	</crs:TransverseMercator>
+</crs:ProjectionDefinitions>

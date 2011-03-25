@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sld:LineSymbolizer xmlns:sld="http://www.opengis.net/se">
+  <sld:Stroke>
+    <sld:SvgParameter name="stroke">#000000</sld:SvgParameter>
+    <sld:SvgParameter name="stroke-opacity">1.0</sld:SvgParameter>
+    <sld:SvgParameter name="stroke-width">3</sld:SvgParameter>
+    <sld:SvgParameter name="stroke-dasharray">1</sld:SvgParameter>
+  </sld:Stroke>
+</sld:LineSymbolizer>

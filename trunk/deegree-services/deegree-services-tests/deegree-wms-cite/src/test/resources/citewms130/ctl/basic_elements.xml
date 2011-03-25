@@ -1,0 +1,452 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ctl:package
+ xmlns:basic_elements="https://cite.opengeospatial.org/wms-1.3.0/src/ctl/basic_elements.xml"
+ xmlns:functions="https://cite.opengeospatial.org/wms-1.3.0/src/ctl/functions.xml"
+ xmlns:ccf="http://www.opengis.net/cite/complex"
+ xmlns:cdf="http://www.opengis.net/cite/data"
+ xmlns:cgf="http://www.opengis.net/cite/geometry"
+ xmlns:citef="http://www.opengis.net/cite/functions"
+ xmlns:ctl="http://www.occamlab.com/ctl"
+ xmlns:gml="http://www.opengis.net/gml"
+ xmlns:ogc="http://www.opengis.net/ogc"
+ xmlns:parsers="http://www.occamlab.com/te/parsers"
+ xmlns:saxon="http://saxon.sf.net/"
+ xmlns:wms="http://www.opengis.net/wms"
+ xmlns:xlink="http://www.w3.org/1999/xlink"
+ xmlns:xs="http://www.w3.org/2001/XMLSchema"
+ xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
+
+   <ctl:test name="basic_elements:main">
+      <ctl:context>WMS_Capabilities element</ctl:context>
+      <ctl:assertion>Basic Service Elements</ctl:assertion>
+      <ctl:code>
+         <ctl:call-test name="basic_elements:version-negotiation"/>
+         <ctl:call-test name="basic_elements:reserved-chars"/>
+         <ctl:call-test name="basic_elements:param-rules"/>
+      </ctl:code>
+   </ctl:test>
+
+   <ctl:test name="basic_elements:version-negotiation">
+      <ctl:context>WMS_Capabilities element</ctl:context>
+      <ctl:assertion>Version Negotiation</ctl:assertion>
+      <ctl:code>
+         <ctl:call-test name="basic_elements:negotiate-no-version"/>
+         <ctl:call-test name="basic_elements:negotiate-basic_elements-version"/>
+         <ctl:call-test name="basic_elements:negotiate-higher-version"/>
+         <ctl:call-test name="basic_elements:negotiate-lower-version"/>
+      </ctl:code>
+   </ctl:test>
+
+   <ctl:test name="basic_elements:reserved-chars">
+      <ctl:context>WMS_Capabilities element</ctl:context>
+      <ctl:assertion>Reserved characters in HTTP GET URLs</ctl:assertion>
+      <ctl:code>
+         <ctl:call-test name="basic_elements:escaped-chars"/>
+         <ctl:call-test name="basic_elements:escaped-space"/>
+      </ctl:code>
+   </ctl:test>
+
+   <ctl:test name="basic_elements:param-rules">
+      <ctl:context>WMS_Capabilities element</ctl:context>
+      <ctl:assertion>Request Parameter Rules</ctl:assertion>
+      <ctl:code>
+         <ctl:call-test name="basic_elements:extra-GetCapabilities-param"/>
+         <ctl:call-test name="basic_elements:extra-GetMap-param"/>
+         <ctl:call-test name="basic_elements:extra-GetFeatureInfo-param"/>
+      </ctl:code>
+   </ctl:test>
+
+   <ctl:test name="basic_elements:extra-GetCapabilities-param">
+      <ctl:context>WMS_Capabilities element</ctl:context>
+      <ctl:assertion>When a GetCapabilities request contains a parameter which is not defined by the spec, the result is valid.</ctl:assertion>
+      <ctl:link title="WMS 1.3.0 section 6.8.1">http://cite.occamlab.com/OGCTestData/wms/1.3.0/spec/wms1_3.html#basic_elements.param_rules.order_and_case</ctl:link>
+      <ctl:code>
+         <xsl:variable name="response">
+            <ctl:request>
+               <ctl:url>
+                  <xsl:value-of select="wms:Capability/wms:Request/wms:GetCapabilities/wms:DCPType/wms:HTTP/wms:Get/wms:OnlineResource/@xlink:href"/>
+               </ctl:url>
+               <ctl:method>get</ctl:method>
+               <ctl:param name="BoGuS">ignored</ctl:param>
+               <ctl:param name="ReQuEsT">GetCapabilities</ctl:param>
+               <ctl:param name="VeRsIoN">
+                  <xsl:value-of select="functions:version()"/>
+               </ctl:param>
+               <ctl:param name="SeRvIcE">WMS</ctl:param>
+            </ctl:request>
+         </xsl:variable>
+         <xsl:if test="not($response/wms:WMS_Capabilities)">
+            <ctl:fail/>
+         </xsl:if>
+      </ctl:code>
+   </ctl:test>
+
+   <ctl:test name="basic_elements:extra-GetMap-param">
+      <ctl:context>WMS_Capabilities element</ctl:context>
+      <ctl:assertion>When a GetMap request contains a parameter which is not defined by the spec, the result is valid.</ctl:assertion>
+      <ctl:link title="WMS 1.3.0 section 6.8.1">http://cite.occamlab.com/OGCTestData/wms/1.3.0/spec/wms1_3.html#basic_elements.param_rules.order_and_case</ctl:link>
+      <ctl:code>
+         <xsl:variable name="image-format" select="wms:Capability/wms:Request/wms:GetMap/wms:Format[1]"/>
+         <xsl:variable name="layer-info">
+            <ctl:call-function name="functions:layer-info">
+               <ctl:with-param name="root-layer" select="wms:Capability/wms:Layer"/>
+               <ctl:with-param name="preferred-name" select="//wms:Layer[wms:Title = 'cite:Lakes']/wms:Name"/>
+               <ctl:with-param name="preferred-crs">CRS:84</ctl:with-param>
+               <ctl:with-param name="preferred-bbox">-0.0025,-0.0025,0.0025,0.0025</ctl:with-param>
+               <ctl:with-param name="preferred-width">200</ctl:with-param>
+               <ctl:with-param name="preferred-height">200</ctl:with-param>
+            </ctl:call-function>
+         </xsl:variable>
+         <xsl:choose>
+            <xsl:when test="$layer-info/LayerInfo/@name = 'NoNamedLayers'">
+              <ctl:message>Error: No Named layers in capabilities XML.</ctl:message>
+              <ctl:fail/>
+            </xsl:when>
+            <xsl:when test="$layer-info/LayerInfo/@crs = 'NoCRSForLayer'">
+              <ctl:message>Error: No CRS for layer <xsl:value-of select="$layer-info/LayerInfo/@name"/> in capabilities XML.</ctl:message>
+              <ctl:fail/>
+            </xsl:when>
+            <xsl:otherwise>
+               <xsl:variable name="response">
+                  <ctl:request>
+                     <ctl:url>
+                        <xsl:value-of select="wms:Capability/wms:Request/wms:GetMap/wms:DCPType/wms:HTTP/wms:Get/wms:OnlineResource/@xlink:href"/>
+                     </ctl:url>
+                     <ctl:method>get</ctl:method>
+                     <ctl:param name="FoRmAt">
+                        <xsl:value-of select="functions:encode($image-format)"/>
+                     </ctl:param>
+                     <ctl:param name="ReQuEsT">GetMap</ctl:param>
+                     <ctl:param name="VeRsIoN">
+                        <xsl:value-of select="functions:version()"/>
+                     </ctl:param>
+                     <ctl:param name="BbOx">
+                        <xsl:value-of select="$layer-info/LayerInfo/@bbox"/>
+                     </ctl:param>
+                     <ctl:param name="CrS">
+                        <xsl:value-of select="functions:encode($layer-info/LayerInfo/@crs)"/>
+                     </ctl:param>
+                     <ctl:param name="WiDtH">
+                        <xsl:value-of select="$layer-info/LayerInfo/@width"/>
+                     </ctl:param>
+                     <ctl:param name="StYlEs"/>
+                     <ctl:param name="HeIgHt">
+                        <xsl:value-of select="$layer-info/LayerInfo/@height"/>
+                     </ctl:param>
+                     <ctl:param name="LaYeRs">
+                        <xsl:value-of select="functions:encode($layer-info/LayerInfo/@name)"/>
+                     </ctl:param>
+                     <ctl:param name="BoGuS">ignored</ctl:param>
+                     <parsers:HTTPParser>
+                        <parsers:parse>
+                           <parsers:NullParser/>
+                        </parsers:parse>
+                     </parsers:HTTPParser>
+                  </ctl:request>
+               </xsl:variable>
+               <xsl:if test="functions:mime-match($response/response/headers/header[functions:to-lowercase(@name) = 'content-type'], $image-format) = 'false'">
+                  <ctl:fail/>
+               </xsl:if>
+            </xsl:otherwise>
+         </xsl:choose>
+      </ctl:code>
+   </ctl:test>
+
+   <ctl:test name="basic_elements:extra-GetFeatureInfo-param">
+      <ctl:context>WMS_Capabilities element</ctl:context>
+      <ctl:assertion>When a GetFeatureInfo request contains a parameter which is not defined by the spec, the result is valid.</ctl:assertion>
+      <ctl:comment/>
+      <ctl:link title="WMS 1.3.0 section 6.8.1">http://cite.occamlab.com/OGCTestData/wms/1.3.0/spec/wms1_3.html#basic_elements.param_rules.order_and_case</ctl:link>
+      <ctl:code>
+         <xsl:choose>
+            <xsl:when test="wms:Capability/wms:Request/wms:GetFeatureInfo">
+               <xsl:variable name="image-format" select="wms:Capability/wms:Request/wms:GetMap/wms:Format[1]"/>
+               <xsl:variable name="featureinfo-format" select="wms:Capability/wms:Request/wms:GetFeatureInfo/wms:Format[1]"/>
+               <xsl:variable name="layer-info">
+                  <ctl:call-function name="functions:queryable-layer-info">
+                     <ctl:with-param name="root-layer" select="wms:Capability/wms:Layer"/>
+                     <ctl:with-param name="preferred-name" select="//wms:Layer[wms:Title = 'cite:Lakes']/wms:Name"/>
+                     <ctl:with-param name="preferred-crs">CRS:84</ctl:with-param>
+                     <ctl:with-param name="preferred-bbox">-0.0025,-0.0025,0.0025,0.0025</ctl:with-param>
+                     <ctl:with-param name="preferred-width">200</ctl:with-param>
+                     <ctl:with-param name="preferred-height">200</ctl:with-param>
+                  </ctl:call-function>
+               </xsl:variable>
+               <xsl:choose>
+                  <xsl:when test="$layer-info/LayerInfo/@name = 'NoNamedLayers'">
+                    <ctl:message>Error: No queryable layers in capabilities XML.</ctl:message>
+                    <ctl:fail/>
+                  </xsl:when>
+                  <xsl:when test="$layer-info/LayerInfo/@crs = 'NoCRSForLayer'">
+                    <ctl:message>Error: No CRS for layer <xsl:value-of select="$layer-info/LayerInfo/@name"/> in capabilities XML.</ctl:message>
+                    <ctl:fail/>
+                  </xsl:when>
+                  <xsl:otherwise>
+                     <xsl:variable name="response">
+                        <ctl:request>
+                           <ctl:url>
+                              <xsl:value-of select="wms:Capability/wms:Request/wms:GetFeatureInfo/wms:DCPType/wms:HTTP/wms:Get/wms:OnlineResource/@xlink:href"/>
+                           </ctl:url>
+                           <ctl:method>get</ctl:method>
+                           <ctl:param name="ReQuEsT">GetFeatureInfo</ctl:param>
+                           <ctl:param name="StYlEs"/>
+                           <ctl:param name="FoRmAt">
+                              <xsl:value-of select="functions:encode($image-format)"/>
+                           </ctl:param>
+                           <ctl:param name="J">64</ctl:param>
+                           <ctl:param name="CrS">
+                              <xsl:value-of select="functions:encode($layer-info/LayerInfo/@crs)"/>
+                           </ctl:param>
+                           <ctl:param name="InFo_fOrMaT">
+                              <xsl:value-of select="functions:encode($featureinfo-format)"/>
+                           </ctl:param>
+                           <ctl:param name="LaYeRs">
+                              <xsl:value-of select="functions:encode($layer-info/LayerInfo/@name)"/>
+                           </ctl:param>
+                           <ctl:param name="I">188</ctl:param>
+                           <ctl:param name="VeRsIoN">
+                              <xsl:value-of select="functions:version()"/>
+                           </ctl:param>
+                           <ctl:param name="HeIgHt">
+                              <xsl:value-of select="$layer-info/LayerInfo/@height"/>
+                           </ctl:param>
+                           <ctl:param name="BbOx">
+                              <xsl:value-of select="$layer-info/LayerInfo/@bbox"/>
+                           </ctl:param>
+                           <ctl:param name="WiDtH">
+                              <xsl:value-of select="$layer-info/LayerInfo/@width"/>
+                           </ctl:param>
+                           <ctl:param name="QuErY_LaYeRs">
+                              <xsl:value-of select="functions:encode($layer-info/LayerInfo/@name)"/>
+                           </ctl:param>
+                           <ctl:param name="BoGuS">ignored</ctl:param>
+                           <parsers:HTTPParser>
+                              <parsers:parse>
+                                <parsers:NullParser/>
+                              </parsers:parse>
+                           </parsers:HTTPParser>
+                        </ctl:request>
+                     </xsl:variable>
+                     <xsl:if test="functions:mime-match($response/response/headers/header[functions:to-lowercase(@name) = 'content-type'], $featureinfo-format) = 'false'">
+                        <ctl:fail/>
+                     </xsl:if>
+                  </xsl:otherwise>
+               </xsl:choose>
+            </xsl:when>
+            <xsl:otherwise>
+               <ctl:message>GetFeatureInfo requests are not supported.</ctl:message>
+            </xsl:otherwise>
+         </xsl:choose>
+      </ctl:code>
+   </ctl:test>
+
+   <ctl:test name="basic_elements:escaped-chars">
+      <ctl:context>WMS_Capabilities element</ctl:context>
+      <ctl:assertion>The server can decode escaped hex values.</ctl:assertion>
+      <ctl:link title="WMS 1.3.0 section 6.3.2">http://cite.occamlab.com/OGCTestData/wms/1.3.0/spec/wms1_3.html#basic_elements.request_rules.reserved_chars</ctl:link>
+      <ctl:code>
+         <xsl:variable name="response">
+            <ctl:request>
+               <ctl:url>
+                  <xsl:value-of select="wms:Capability/wms:Request/wms:GetCapabilities/wms:DCPType/wms:HTTP/wms:Get/wms:OnlineResource/@xlink:href"/>
+               </ctl:url>
+               <ctl:method>get</ctl:method>
+               <ctl:param name="ReQuEsT">%47%65%74%43%61%70%61%62%69%6C%69%74%69%65%73</ctl:param> <!-- The escaped value for GetCapabilities -->
+               <ctl:param name="VeRsIoN">
+                  <xsl:value-of select="functions:version()"/>
+               </ctl:param>
+               <ctl:param name="SeRvIcE">WMS</ctl:param>
+            </ctl:request>
+         </xsl:variable>
+         <xsl:if test="not($response/wms:WMS_Capabilities)">
+            <ctl:fail/>
+         </xsl:if>
+      </ctl:code>
+   </ctl:test>
+
+   <ctl:test name="basic_elements:escaped-space">
+      <ctl:context>WMS_Capabilities element</ctl:context>
+      <ctl:assertion>The server can decode the "+" character as a space.</ctl:assertion>
+      <ctl:link title="WMS 1.3.0 section 6.3.2">http://cite.occamlab.com/OGCTestData/wms/1.3.0/spec/wms1_3.html#basic_elements.request_rules.reserved_chars</ctl:link>
+      <ctl:code>
+         <xsl:variable name="image-format" select="wms:Capability/wms:Request/wms:GetMap/wms:Format[1]"/>
+         <xsl:variable name="layer-info">
+            <ctl:call-function name="functions:layer-info">
+               <ctl:with-param name="root-layer" select="wms:Capability/wms:Layer"/>
+               <ctl:with-param name="preferred-name" select="//wms:Layer[contains(wms:Name, ' ')][1]/wms:Name"/>
+               <ctl:with-param name="preferred-crs">CRS:84</ctl:with-param>
+               <ctl:with-param name="preferred-bbox">-0.0025,-0.0025,0.0025,0.0025</ctl:with-param>
+               <ctl:with-param name="preferred-width">200</ctl:with-param>
+               <ctl:with-param name="preferred-height">200</ctl:with-param>
+            </ctl:call-function>
+         </xsl:variable>
+         <xsl:choose>
+            <xsl:when test="not(contains($layer-info/LayerInfo/@name, ' '))">
+               <ctl:message>Can't check since no layer names contain spaces.</ctl:message>
+            </xsl:when>
+            <xsl:when test="$layer-info/LayerInfo/@crs = ''">
+              <ctl:message>Error: No CRS for layer <xsl:value-of select="$layer-info/LayerInfo/@name"/> in capabilities XML.</ctl:message>
+              <ctl:fail/>
+            </xsl:when>
+            <xsl:otherwise>
+               <xsl:variable name="response">
+                  <ctl:request>
+                     <ctl:url>
+                        <xsl:value-of select="wms:Capability/wms:Request/wms:GetMap/wms:DCPType/wms:HTTP/wms:Get/wms:OnlineResource/@xlink:href"/>
+                     </ctl:url>
+                     <ctl:method>get</ctl:method>
+                     <ctl:param name="FoRmAt">
+                        <xsl:value-of select="functions:encode($image-format)"/>
+                     </ctl:param>
+                     <ctl:param name="ReQuEsT">GetMap</ctl:param>
+                     <ctl:param name="VeRsIoN">
+                        <xsl:value-of select="functions:version()"/>
+                     </ctl:param>
+                     <ctl:param name="BbOx">
+                        <xsl:value-of select="$layer-info/LayerInfo/@bbox"/>
+                     </ctl:param>
+                     <ctl:param name="CrS">
+                        <xsl:value-of select="functions:encode($layer-info/LayerInfo/@crs)"/>
+                     </ctl:param>
+                     <ctl:param name="WiDtH">
+                        <xsl:value-of select="$layer-info/LayerInfo/@width"/>
+                     </ctl:param>
+                     <ctl:param name="StYlEs"/>
+                     <ctl:param name="HeIgHt">
+                        <xsl:value-of select="$layer-info/LayerInfo/@height"/>
+                     </ctl:param>
+                     <ctl:param name="LaYeRs">
+                        <xsl:value-of select="translate($layer-info/LayerInfo/@name, ' ', '+')"/>
+                     </ctl:param>
+                     <ctl:param name="BoGuS">ignored</ctl:param>
+                     <parsers:HTTPParser>
+                        <parsers:parse>
+                          <parsers:NullParser/>
+                        </parsers:parse>
+                     </parsers:HTTPParser>
+                  </ctl:request>
+               </xsl:variable>
+               <xsl:if test="functions:mime-match($response/response/headers/header[functions:to-lowercase(@name) = 'content-type'], $image-format) = 'false'">
+                  <ctl:fail/>
+               </xsl:if>
+            </xsl:otherwise>
+         </xsl:choose>
+      </ctl:code>
+   </ctl:test>
+
+   <ctl:test name="basic_elements:negotiate-no-version">
+      <ctl:context>WMS_Capabilities element</ctl:context>
+      <ctl:assertion>When a GetCapabilities request is made without a version number, then the response is not lower than 1.3.0.</ctl:assertion>
+      <ctl:link title="WMS 1.3.0 section 6.2.4">http://cite.occamlab.com/OGCTestData/wms/1.3.0/spec/wms1_3.html#basic_elements.version.negotiation</ctl:link>
+      <ctl:code>
+         <xsl:variable name="response">
+            <ctl:request>
+               <ctl:url>
+                  <xsl:value-of select="wms:Capability/wms:Request/wms:GetCapabilities/wms:DCPType/wms:HTTP/wms:Get/wms:OnlineResource/@xlink:href"/>
+               </ctl:url>
+               <ctl:method>get</ctl:method>
+               <ctl:param name="ReQuEsT">GetCapabilities</ctl:param>
+               <ctl:param name="SeRvIcE">WMS</ctl:param>
+            </ctl:request>
+         </xsl:variable>
+         <xsl:variable name="version">
+            <xsl:value-of select="$response/WMT_MS_Capabilities/@version"/>
+            <xsl:value-of select="$response/wms:WMS_Capabilities/@version"/>
+         </xsl:variable>
+         <xsl:choose>
+           <xsl:when test="$version = ''">
+              <ctl:message>Warning: Could not determine version number.</ctl:message>
+           </xsl:when>
+           <xsl:when test="functions:version-as-integer($version) &lt; functions:version-as-integer(functions:version())">
+              <ctl:fail/>
+           </xsl:when>
+         </xsl:choose>
+      </ctl:code>
+   </ctl:test>
+
+   <ctl:test name="basic_elements:negotiate-basic_elements-version">
+      <ctl:context>WMS_Capabilities element</ctl:context>
+      <ctl:assertion>When a GetCapabilities request is made for version 1.3.0, then the response is version 1.3.0.</ctl:assertion>
+      <ctl:link title="WMS 1.3.0 section 6.2.4">http://cite.occamlab.com/OGCTestData/wms/1.3.0/spec/wms1_3.html#basic_elements.version.negotiation</ctl:link>
+      <ctl:code>
+         <xsl:variable name="response">
+            <ctl:request>
+               <ctl:url>
+                  <xsl:value-of select="wms:Capability/wms:Request/wms:GetCapabilities/wms:DCPType/wms:HTTP/wms:Get/wms:OnlineResource/@xlink:href"/>
+               </ctl:url>
+               <ctl:method>get</ctl:method>
+               <ctl:param name="ReQuEsT">GetCapabilities</ctl:param>
+               <ctl:param name="VeRsIoN">
+                  <xsl:value-of select="functions:version()"/>
+               </ctl:param>
+               <ctl:param name="SeRvIcE">WMS</ctl:param>
+            </ctl:request>
+         </xsl:variable>
+         <xsl:if test="not($response/wms:WMS_Capabilities/@version = functions:version())">
+            <ctl:fail/>
+         </xsl:if>
+      </ctl:code>
+   </ctl:test>
+
+   <ctl:test name="basic_elements:negotiate-higher-version">
+      <ctl:context>WMS_Capabilities element</ctl:context>
+      <ctl:assertion>When a GetCapabilities request is made for version 100.0.0, then the response is not lower than 1.3.0.</ctl:assertion>
+      <ctl:link title="WMS 1.3.0 section 6.2.4">http://cite.occamlab.com/OGCTestData/wms/1.3.0/spec/wms1_3.html#basic_elements.version.negotiation</ctl:link>
+      <ctl:code>
+         <xsl:variable name="response">
+            <ctl:request>
+               <ctl:url>
+                  <xsl:value-of select="wms:Capability/wms:Request/wms:GetCapabilities/wms:DCPType/wms:HTTP/wms:Get/wms:OnlineResource/@xlink:href"/>
+               </ctl:url>
+               <ctl:method>get</ctl:method>
+               <ctl:param name="ReQuEsT">GetCapabilities</ctl:param>
+               <ctl:param name="VeRsIoN">100.0.0</ctl:param>
+               <ctl:param name="SeRvIcE">WMS</ctl:param>
+            </ctl:request>
+         </xsl:variable>
+         <xsl:variable name="version">
+            <xsl:value-of select="$response/WMT_MS_Capabilities/@version"/>
+            <xsl:value-of select="$response/wms:WMS_Capabilities/@version"/>
+         </xsl:variable>
+         <xsl:choose>
+           <xsl:when test="$version = ''">
+              <ctl:message>Warning: Could not determine version number.</ctl:message>
+           </xsl:when>
+           <xsl:when test="functions:version-as-integer($version) &lt; functions:version-as-integer(functions:version())">
+              <ctl:fail/>
+           </xsl:when>
+         </xsl:choose>
+      </ctl:code>
+   </ctl:test>
+
+   <ctl:test name="basic_elements:negotiate-lower-version">
+      <ctl:context>WMS_Capabilities element</ctl:context>
+      <ctl:assertion>When a GetCapabilities request is made for version 0.0.0, the response is not higher than 1.3.0.</ctl:assertion>
+      <ctl:link title="WMS 1.3.0 section 6.2.4">http://cite.occamlab.com/OGCTestData/wms/1.3.0/spec/wms1_3.html#basic_elements.version.negotiation</ctl:link>
+      <ctl:code>
+         <xsl:variable name="response">
+            <ctl:request>
+               <ctl:url>
+                  <xsl:value-of select="wms:Capability/wms:Request/wms:GetCapabilities/wms:DCPType/wms:HTTP/wms:Get/wms:OnlineResource/@xlink:href"/>
+               </ctl:url>
+               <ctl:method>get</ctl:method>
+               <ctl:param name="ReQuEsT">GetCapabilities</ctl:param>
+               <ctl:param name="VeRsIoN">100.0.0</ctl:param>
+               <ctl:param name="SeRvIcE">WMS</ctl:param>
+            </ctl:request>
+         </xsl:variable>
+         <xsl:variable name="version">
+            <xsl:value-of select="$response/WMT_MS_Capabilities/@version"/>
+            <xsl:value-of select="$response/wms:WMS_Capabilities/@version"/>
+         </xsl:variable>
+         <xsl:choose>
+           <xsl:when test="$version = ''">
+              <ctl:message>Warning: Could not determine version number.</ctl:message>
+           </xsl:when>
+           <xsl:when test="functions:version-as-integer($version) &gt; functions:version-as-integer(functions:version())">
+              <ctl:fail/>
+           </xsl:when>
+         </xsl:choose>
+      </ctl:code>
+   </ctl:test>
+</ctl:package>

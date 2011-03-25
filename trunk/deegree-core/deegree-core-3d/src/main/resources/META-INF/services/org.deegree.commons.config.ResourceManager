@@ -1,0 +1,2 @@
+org.deegree.rendering.r3d.multiresolution.persistence.BatchedMTStoreManager
+org.deegree.rendering.r3d.persistence.RenderableStoreManager

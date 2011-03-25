@@ -1,0 +1,204 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>org.deegree</groupId>
+  <artifactId>deegree-featurestore-memory</artifactId>
+  <packaging>jar</packaging>
+  <version>3.1-pre3</version>
+  <name>deegree-featurestore-memory</name>
+  <url>http://www.deegree.org</url>
+  <scm>
+    <developerConnection>scm:svn:svn+ssh://svn.wald.intevation.org/deegree/deegree3/tags/3.1-pre3/deegree-datastores/deegree-featurestore/deegree-featurestore-memory</developerConnection>
+    <url>svn+ssh://svn.wald.intevation.org/deegree/deegree3/tags/3.1-pre3/deegree-datastores/deegree-featurestore/deegree-featurestore-memory</url>
+  </scm>
+
+  <parent>
+    <groupId>org.deegree</groupId>
+    <artifactId>deegree-parent</artifactId>
+    <version>3.1-pre3</version>
+  </parent>
+
+  <repositories>
+    <repository>
+      <id>deegree-repo</id>
+      <url>http://artefacts.deegree.org/repo</url>
+      <releases>
+        <updatePolicy>never</updatePolicy>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+    </repository>
+  </repositories>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>jaxb2-maven-plugin</artifactId>
+        <version>1.3</version>
+        <executions>
+          <execution>
+            <goals>
+              <goal>xjc</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <schemaFiles>datasource/feature/memory/3.0.0/memory.xsd</schemaFiles>
+          <schemaDirectory>src/main/resources/META-INF/schemas/</schemaDirectory>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.deegree</groupId>
+      <artifactId>deegree-featurestore-commons</artifactId>
+      <version>3.1-pre3</version>
+    </dependency>
+  <!--   <dependency> -->
+  <!--     <groupId>org.antlr</groupId> -->
+  <!--     <artifactId>antlr-runtime</artifactId> -->
+  <!--     <version>3.2</version> -->
+  <!--   </dependency> -->
+  <!--   <dependency> -->
+  <!--     <groupId>net.sf.squirrel-sql.thirdparty.non-maven</groupId> -->
+  <!--     <artifactId>java-cup</artifactId> -->
+  <!--     <version>0.11a</version> -->
+  <!--   </dependency> -->
+  <!--   <dependency> -->
+  <!--     <groupId>net.sf.ehcache</groupId> -->
+  <!--     <artifactId>ehcache-core</artifactId> -->
+  <!--     <version>2.0.0</version> -->
+  <!--   </dependency> -->
+  <!--   <dependency> -->
+  <!--     <groupId>xerces</groupId> -->
+  <!--     <artifactId>xercesImpl</artifactId> -->
+  <!--     <version>2.9.1</version> -->
+  <!--   </dependency> -->
+  <!--   <dependency> -->
+  <!--     <groupId>javax.xml.bind</groupId> -->
+  <!--     <artifactId>jaxb-api</artifactId> -->
+  <!--     <version>2.1</version> -->
+  <!--   </dependency> -->
+  <!--   <dependency> -->
+  <!--     <groupId>com.sun.xml.bind</groupId> -->
+  <!--     <artifactId>jaxb-impl</artifactId> -->
+  <!--     <version>2.1.10</version> -->
+  <!--   </dependency> -->
+  <!--   <dependency> -->
+  <!--     <groupId>commons-codec</groupId> -->
+  <!--     <artifactId>commons-codec</artifactId> -->
+  <!--     <version>1.4</version> -->
+  <!--   </dependency> -->
+  <!--   <dependency> -->
+  <!--     <groupId>org.apache.commons</groupId> -->
+  <!--     <artifactId>commons-math</artifactId> -->
+  <!--     <version>2.0</version> -->
+  <!--   </dependency> -->
+  <!--   <dependency> -->
+  <!--     <groupId>jai</groupId> -->
+  <!--     <artifactId>jai-codec</artifactId> -->
+  <!--     <version>1.1.3</version> -->
+  <!--   </dependency> -->
+  <!--   <dependency> -->
+  <!--     <groupId>jai</groupId> -->
+  <!--     <artifactId>jai-imageio</artifactId> -->
+  <!--     <version>1.1.3</version> -->
+  <!--   </dependency> -->
+  <!--   <dependency> -->
+  <!--     <groupId>jai</groupId> -->
+  <!--     <artifactId>jai-mlibwrapper</artifactId> -->
+  <!--     <version>1.1.3</version> -->
+  <!--   </dependency> -->
+  <!--   <dependency> -->
+  <!--     <groupId>batik</groupId> -->
+  <!--     <artifactId>batik-bridge</artifactId> -->
+  <!--     <version>1.6-1</version> -->
+  <!--   </dependency> -->
+  <!--   <dependency> -->
+  <!--     <groupId>batik</groupId> -->
+  <!--     <artifactId>batik-dom</artifactId> -->
+  <!--     <version>1.6-1</version> -->
+  <!--   </dependency> -->
+  <!--   <dependency> -->
+  <!--     <groupId>batik</groupId> -->
+  <!--     <artifactId>batik-gvt</artifactId> -->
+  <!--     <version>1.6-1</version> -->
+  <!--   </dependency> -->
+  <!--   <dependency> -->
+  <!--     <groupId>batik</groupId> -->
+  <!--     <artifactId>batik-svg-dom</artifactId> -->
+  <!--     <version>1.6-1</version> -->
+  <!--   </dependency> -->
+  <!--   <dependency> -->
+  <!--     <groupId>batik</groupId> -->
+  <!--     <artifactId>batik-awt-util</artifactId> -->
+  <!--     <version>1.6-1</version> -->
+  <!--   </dependency> -->
+  <!--   <dependency> -->
+  <!--     <groupId>batik</groupId> -->
+  <!--     <artifactId>batik-css</artifactId> -->
+  <!--     <version>1.6-1</version> -->
+  <!--   </dependency> -->
+  <!--   <dependency> -->
+  <!--     <groupId>batik</groupId> -->
+  <!--     <artifactId>batik-ext</artifactId> -->
+  <!--     <version>1.6-1</version> -->
+  <!--   </dependency> -->
+  <!--   <dependency> -->
+  <!--     <groupId>batik</groupId> -->
+  <!--     <artifactId>batik-parser</artifactId> -->
+  <!--     <version>1.6-1</version> -->
+  <!--   </dependency> -->
+  <!--   <dependency> -->
+  <!--     <groupId>batik</groupId> -->
+  <!--     <artifactId>batik-script</artifactId> -->
+  <!--     <version>1.6-1</version> -->
+  <!--   </dependency> -->
+  <!--   <dependency> -->
+  <!--     <groupId>batik</groupId> -->
+  <!--     <artifactId>batik-util</artifactId> -->
+  <!--     <version>1.6-1</version> -->
+  <!--     <exclusions> -->
+  <!--       <exclusion> -->
+  <!--         <groupId>batik</groupId> -->
+  <!--         <artifactId>batik-gui-util</artifactId> -->
+  <!--       </exclusion> -->
+  <!--     </exclusions> -->
+  <!--   </dependency> -->
+  <!--   <dependency> -->
+  <!--     <groupId>batik</groupId> -->
+  <!--     <artifactId>batik-xml</artifactId> -->
+  <!--     <version>1.6-1</version> -->
+  <!--   </dependency> -->
+  <!--   <dependency> -->
+  <!--     <groupId>com.vividsolutions</groupId> -->
+  <!--     <artifactId>jts</artifactId> -->
+  <!--     <version>1.10</version> -->
+  <!--   </dependency> -->
+  <!--   <dependency> -->
+  <!--     <groupId>org.postgis</groupId> -->
+  <!--     <artifactId>postgis-jdbc</artifactId> -->
+  <!--     <version>1.3.3</version> -->
+  <!--     <exclusions> -->
+  <!--       <exclusion> -->
+  <!--         <groupId>org.postgis</groupId> -->
+  <!--         <artifactId>postgis-stubs</artifactId> -->
+  <!--       </exclusion> -->
+  <!--     </exclusions> -->
+  <!--   </dependency> -->
+  <!--   <dependency> -->
+  <!--     <groupId>postgresql</groupId> -->
+  <!--     <artifactId>postgresql</artifactId> -->
+  <!--     <version>9.0-801.jdbc4</version> -->
+  <!--   </dependency> -->
+  <!--   <dependency> -->
+  <!--     <groupId>com.h2database</groupId> -->
+  <!--     <artifactId>h2</artifactId> -->
+  <!--     <version>1.2.140</version> -->
+  <!--   </dependency> -->
+  </dependencies>
+</project>

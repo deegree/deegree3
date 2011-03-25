@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sld:PointSymbolizer xmlns:sld="http://www.opengis.net/se">
+  <sld:Graphic>
+    <sld:Mark>
+      <sld:WellKnownName>square</sld:WellKnownName>
+      <sld:Fill>
+        <sld:SvgParameter name="fill">#000000</sld:SvgParameter>
+        <sld:SvgParameter name="fill-opacity">1.0</sld:SvgParameter>
+      </sld:Fill>
+    </sld:Mark>
+    <sld:Size>4</sld:Size>
+    <sld:Rotation>0</sld:Rotation>
+  </sld:Graphic>
+</sld:PointSymbolizer>
