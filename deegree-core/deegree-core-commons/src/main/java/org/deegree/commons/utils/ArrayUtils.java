@@ -315,7 +315,7 @@ public class ArrayUtils {
         double[] ds = new double[ss.length];
         int cnt = 0;
         for ( int i = 0; i < ss.length; ++i ) {
-            if ( !ss[i].isEmpty() ) {
+            if ( !ss[i].trim().isEmpty() ) {
                 ds[cnt++] = parseDouble( ss[i] );
             }
         }
