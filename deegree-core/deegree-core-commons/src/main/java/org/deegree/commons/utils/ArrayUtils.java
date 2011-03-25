@@ -313,10 +313,13 @@ public class ArrayUtils {
     public static double[] splitAsDoubles( String str, String delim ) {
         String[] ss = str.split( delim );
         double[] ds = new double[ss.length];
+        int cnt = 0;
         for ( int i = 0; i < ss.length; ++i ) {
-            ds[i] = parseDouble( ss[i] );
+            if ( !ss[i].isEmpty() ) {
+                ds[cnt++] = parseDouble( ss[i] );
+            }
         }
-        return ds;
+        return Arrays.copyOf( ds, cnt );
     }
 
     /**
