@@ -1,21 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.deegree</groupId>
   <artifactId>deegree-core-base</artifactId>
   <packaging>jar</packaging>
-  <version>3.1-pre3</version>
+  <version>3.1-SNAPSHOT</version>
   <name>deegree-core-base</name>
   <url>http://www.deegree.org</url>
   <scm>
-    <developerConnection>scm:svn:svn+ssh://jwilden@svn.wald.intevation.org/deegree/deegree3/tags/3.1-pre3/deegree-core/deegree-core-base</developerConnection>
-    <url>svn+ssh://jwilden@svn.wald.intevation.org/deegree/deegree3/tags/3.1-pre3/deegree-core/deegree-core-base</url>
+    <developerConnection>scm:svn:http://svn.wald.intevation.org/svn/deegree/deegree3/trunk/deegree-core/deegree-core-base</developerConnection>
+    <url>http://svn.wald.intevation.org/svn/deegree/deegree3/trunk/deegree-core/deegree-core-base</url>
   </scm>
 
   <parent>
     <groupId>org.deegree</groupId>
     <artifactId>deegree-parent</artifactId>
-    <version>3.1-pre3</version>
+    <version>3.1-SNAPSHOT</version>
   </parent>
 
   <repositories>
@@ -68,7 +69,7 @@
     <dependency>
       <groupId>org.deegree</groupId>
       <artifactId>deegree-core-cs</artifactId>
-      <version>3.1-pre3</version>
+      <version>3.1-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>org.antlr</groupId>
