@@ -36,7 +36,6 @@
 package org.deegree.feature.persistence.simplesql;
 
 import static java.lang.System.currentTimeMillis;
-import static org.deegree.commons.jdbc.ConnectionManager.getConnection;
 import static org.deegree.feature.persistence.query.Query.QueryHint.HINT_SCALE;
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -53,7 +52,9 @@ import javax.xml.namespace.QName;
 import org.deegree.commons.annotations.LoggingNotes;
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceInitException;
+import org.deegree.commons.jdbc.ConnectionManager;
 import org.deegree.commons.jdbc.ResultSetIterator;
+import org.deegree.commons.jdbc.ConnectionManager.Type;
 import org.deegree.commons.utils.Pair;
 import org.deegree.cs.CRSUtils;
 import org.deegree.cs.coordinatesystems.ICRS;
@@ -132,6 +133,8 @@ public class SimpleSQLFeatureStore implements FeatureStore {
 
     private Pair<Long, Envelope> cachedEnvelope = new Pair<Long, Envelope>();
 
+    private DeegreeWorkspace workspace;
+
     /**
      * @param connId
      * @param crs
@@ -195,7 +198,7 @@ public class SimpleSQLFeatureStore implements FeatureStore {
             PreparedStatement stmt = null;
             Connection conn = null;
             try {
-                conn = getConnection( connId );
+                conn = workspace.getSubsystemManager( ConnectionManager.class ).get( connId );
                 stmt = conn.prepareStatement( bbox );
                 LOG.debug( "Getting bbox with query '{}'.", stmt );
                 stmt.execute();
@@ -274,6 +277,7 @@ public class SimpleSQLFeatureStore implements FeatureStore {
 
     public void init( DeegreeWorkspace workspace )
                             throws ResourceInitException {
+        this.workspace = workspace;
         featureType = DBUtils.determineFeatureType( ftName, connId, lods.values().iterator().next() );
         if ( featureType == null ) {
             available = false;
@@ -322,10 +326,11 @@ public class SimpleSQLFeatureStore implements FeatureStore {
                     }
                 }
 
-                conn = getConnection( connId );
-                boolean isOracle = conn.getMetaData().getDriverName().contains( "Oracle" );
+                ConnectionManager mgr = workspace.getSubsystemManager( ConnectionManager.class );
+                conn = mgr.get( connId );
+                Type connType = mgr.getType( connId );
 
-                if ( q.getMaxFeatures() > 0 && !isOracle ) {
+                if ( q.getMaxFeatures() > 0 && connType == Type.PostgreSQL ) {
                     sql += " limit " + q.getMaxFeatures();
                 }
 
@@ -347,7 +352,7 @@ public class SimpleSQLFeatureStore implements FeatureStore {
                     return null;
                 }
                 stmt.setString( 1, WKTWriter.write( bbox ) );
-                LOG.debug( "Statement to fetch features was '{}'.", isOracle ? sql : stmt );
+                LOG.debug( "Statement to fetch features was '{}'.", connType == Type.Oracle ? sql : stmt );
                 stmt.execute();
 
                 set = new IteratorResultSet( new ResultSetIterator<Feature>( stmt.getResultSet(), conn, stmt ) {
