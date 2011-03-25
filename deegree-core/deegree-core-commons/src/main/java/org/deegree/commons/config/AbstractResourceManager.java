@@ -191,10 +191,12 @@ public abstract class AbstractResourceManager<T extends Resource> extends Abstra
                                 idToState.put( id,
                                                new ResourceState( id, configFile, provider, StateType.init_error, e ) );
                                 LOG.error( "Error creating {}: {}", new Object[] { name, e.getMessage(), e } );
+                                LOG.trace( "Stack trace: ", e );
                             } catch ( Throwable t ) {
                                 idToState.put( id, new ResourceState( id, configFile, provider, StateType.init_error,
                                                                       new ResourceInitException( t.getMessage(), t ) ) );
                                 LOG.error( "Error creating {}: {}", new Object[] { name, t.getMessage(), t } );
+                                LOG.trace( "Stack trace: ", t );
                             }
                         } else {
                             // 7 is the length of ".ignore"
@@ -257,10 +259,12 @@ public abstract class AbstractResourceManager<T extends Resource> extends Abstra
             } catch ( ResourceInitException e ) {
                 idToState.put( id, new ResourceState( id, newFile, provider, StateType.init_error, e ) );
                 LOG.error( "Error creating {}: {}", new Object[] { name, e.getMessage(), e } );
+                LOG.trace( "Stack trace: ", e );
             } catch ( Throwable t ) {
                 idToState.put( id, new ResourceState( id, newFile, provider, StateType.init_error,
                                                       new ResourceInitException( t.getMessage(), t ) ) );
                 LOG.error( "Error creating {}: {}", new Object[] { name, t.getMessage(), t } );
+                LOG.trace( "Stack trace: ", t );
             }
         }
     }
