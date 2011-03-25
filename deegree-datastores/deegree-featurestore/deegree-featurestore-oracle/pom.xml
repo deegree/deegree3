@@ -3,19 +3,19 @@
   <groupId>org.deegree</groupId>
   <artifactId>deegree-featurestore-oracle</artifactId>
   <packaging>jar</packaging>
-  <version>3.1-pre3</version>
+  <version>3.1-pre4-SNAPSHOT</version>
   <name>deegree-featurestore-oracle</name>
   <url>http://www.deegree.org</url>
   <scm>
-    <connection>scm:svn:svn+ssh://svn.wald.intevation.org/deegree/deegree3/tags/3.1-pre3/deegree-datastores/deegree-featurestore/deegree-featurestore-oracle</connection>
-    <developerConnection>scm:svn:svn+ssh://svn.wald.intevation.org/deegree/deegree3/tags/3.1-pre3/deegree-datastores/deegree-featurestore/deegree-featurestore-oracle</developerConnection>
-    <url>scm:svn:svn+ssh://svn.wald.intevation.org/deegree/deegree3/tags/3.1-pre3/deegree-datastores-deegree-featurestore/deegree-featurestore-oracle/?root=deegree</url>
+    <connection>scm:svn:http://svn.wald.intevation.org/svn/deegree/deegree3/trunk/deegree-datastores/deegree-featurestore/deegree-featurestore-oracle</connection>
+    <developerConnection>scm:svn:svn+ssh://developername@svn.wald.intevation.org/deegree/deegree3/trunk/deegree-datastores/deegree-featurestore/deegree-featurestore-oracle</developerConnection>
+    <url>http://wald.intevation.org/plugins/scmsvn/viewcvs.php/deegree3/trunk/deegree-datastores-deegree-featurestore/deegree-featurestore-oracle/?root=deegree</url>
   </scm>
 
   <parent>
     <groupId>org.deegree</groupId>
     <artifactId>deegree-parent</artifactId>
-    <version>3.1-pre3</version>
+    <version>3.1-pre4-SNAPSHOT</version>
   </parent>
 
   <build>
@@ -57,7 +57,7 @@
     <dependency>
       <groupId>org.deegree</groupId>
       <artifactId>deegree-featurestore-commons</artifactId>
-      <version>3.1-pre3</version>
+      <version>3.1-pre4-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>com.oracle</groupId>
