@@ -94,9 +94,9 @@ public class WorkspaceBean implements Serializable {
     public static final String WS_UPLOAD_VIEW = "/console/workspace/upload";
 
     private static final String WS_DOWNLOAD_BASE_URL = "http://download.deegree.org/deegree3/workspaces/workspaces-";
-    
+
     // only used when no module version information is available
-    private static final String DEFAULT_VERSION = "3.1-SNAPSHOT";
+    private static final String DEFAULT_VERSION = "3.1-pre4-SNAPSHOT";
 
     @Getter
     private String lastMessage = "Workspace initialized.";
@@ -272,10 +272,14 @@ public class WorkspaceBean implements Serializable {
             List<String> list = readLines( in );
             List<String> res = new ArrayList<String>( list.size() );
             for ( String s : list ) {
-                res.add( s.split( " ", 2 )[1] );
+                String[] tokens = s.split( " " );
+                if ( tokens.length > 2 ) {
+                    res.add( s.split( " ", 2 )[1] );
+                }
             }
             return res;
         } catch ( Throwable t ) {
+            t.printStackTrace();
             FacesMessage fm = new FacesMessage( SEVERITY_ERROR, "Unable to retrieve remote workspaces: "
                                                                 + t.getMessage(), null );
             FacesContext.getCurrentInstance().addMessage( null, fm );
