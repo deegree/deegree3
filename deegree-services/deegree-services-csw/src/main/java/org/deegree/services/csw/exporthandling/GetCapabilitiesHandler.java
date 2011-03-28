@@ -64,7 +64,6 @@ import javax.xml.stream.XMLStreamWriter;
 
 import org.deegree.commons.tom.ows.Version;
 import org.deegree.commons.utils.kvp.InvalidParameterValueException;
-import org.deegree.commons.xml.CommonNamespaces;
 import org.deegree.filter.xml.FilterCapabilitiesExporter;
 import org.deegree.protocol.csw.CSWConstants;
 import org.deegree.protocol.csw.CSWConstants.CSWRequestType;
@@ -282,7 +281,7 @@ public class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
                             throws XMLStreamException {
         writer.writeStartElement( owsNS, "OperationsMetadata" );
 
-        if ( isTransactionEnabled ) {
+        if ( isTransactionEnabled && !supportedOperations.contains( CSWRequestType.Transaction.name() ) ) {
             supportedOperations.add( CSWRequestType.Transaction.name() );
         }
 
