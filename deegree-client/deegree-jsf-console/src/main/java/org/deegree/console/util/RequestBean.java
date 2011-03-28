@@ -35,6 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.console.util;
 
+import static java.io.File.separator;
 import static java.util.Collections.sort;
 import static org.deegree.commons.utils.CollectionUtils.unzipPair;
 import static org.deegree.commons.utils.net.HttpUtils.enableProxyUsage;
@@ -139,6 +140,10 @@ public class RequestBean implements Serializable {
     private String request;
 
     @Getter
+    @Setter
+    private String saveRequestName;
+
+    @Getter
     private String kvpRequestSel;
 
     private TreeSet<String> originalKvpRequests = new TreeSet<String>(
@@ -204,6 +209,46 @@ public class RequestBean implements Serializable {
             }
         }
         loadExample();
+    }
+
+    public void addRequest() {
+        String subdir = new File( selectedRequest ).getParentFile().getParentFile().getName();
+        File file = new File( requestsBaseDir, selectedService + separator + selectedReqProfile + separator + subdir
+                                               + separator + "xml" + separator + saveRequestName + ".xml" );
+        FileOutputStream out = null;
+        try {
+            out = new FileOutputStream( file );
+            IOUtils.write( request, out );
+            allRequests.clear();
+            initRequestMap();
+        } catch ( IOException e ) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } finally {
+            IOUtils.closeQuietly( out );
+        }
+    }
+
+    public void saveRequest() {
+        File file = new File( requestsBaseDir, selectedRequest );
+        FileOutputStream out = null;
+        try {
+            out = new FileOutputStream( file );
+            IOUtils.write( request, out );
+            allRequests.clear();
+            initRequestMap();
+        } catch ( IOException e ) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } finally {
+            IOUtils.closeQuietly( out );
+        }
+    }
+
+    public void deleteRequest() {
+        new File( requestsBaseDir, selectedRequest ).delete();
+        allRequests.clear();
+        initRequestMap();
     }
 
     public void sendRequest()

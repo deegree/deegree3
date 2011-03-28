@@ -38,6 +38,10 @@
             <f:selectItems value="#{requestBean.requests}" />
             <f:ajax render="requestArea" />
           </h:selectOneMenu>
+          <h:inputText value="#{requestBean.saveRequestName}" rendered="#{logBean.loggedIn}" />
+          <h:commandButton value="add request" action="#{requestBean.addRequest}" rendered="#{logBean.loggedIn}" />
+          <h:commandButton value="save request" action="#{requestBean.saveRequest}" rendered="#{logBean.loggedIn}" />
+          <h:commandButton value="delete request" action="#{requestBean.deleteRequest}" rendered="#{logBean.loggedIn}" />
         </h:column>
         <h:column>
           <h:inputTextarea id="requestArea" value="#{requestBean.request}" styleClass="textarea" />
