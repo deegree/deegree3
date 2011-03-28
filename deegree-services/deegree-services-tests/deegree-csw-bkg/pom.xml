@@ -4,7 +4,7 @@
   <groupId>org.deegree</groupId>
   <artifactId>deegree-csw-bkg</artifactId>
   <packaging>war</packaging>
-  <version>3.1-SNAPSHOT</version>
+  <version>3.1-pre4-SNAPSHOT</version>
   <name>deegree-csw-bkg Webapp</name>
   <url>http://www.deegree.org</url>
   
@@ -107,7 +107,7 @@
     <dependency>
       <groupId>org.deegree</groupId>
       <artifactId>deegree-services</artifactId>
-      <version>3.1-SNAPSHOT</version>
+      <version>3.1-pre4-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>cite</groupId>
