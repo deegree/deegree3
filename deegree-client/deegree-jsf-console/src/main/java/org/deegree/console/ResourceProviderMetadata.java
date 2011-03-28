@@ -91,7 +91,7 @@ public class ResourceProviderMetadata {
                     if ( exampleLocation == null ) {
                         break;
                     }
-                    exampleLocation.trim();
+                    exampleLocation = exampleLocation.trim();
                     String exampleName = "example";
                     if ( props.containsKey( examplePrefix + "name" ) ) {
                         exampleName = props.getProperty( examplePrefix + "name" ).trim();
