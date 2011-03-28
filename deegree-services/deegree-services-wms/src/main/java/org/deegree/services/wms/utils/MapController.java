@@ -609,8 +609,8 @@ public class MapController {
             stopZoomin();
             return false;
         }
-        setEnvelope( min( zoomMinx, zoomMaxx ), min( zoomMiny, zoomMaxy ), max( zoomMinx, zoomMaxx ),
-                     max( zoomMaxy, zoomMiny ) );
+        setEnvelope( min( zoomMinx, zoomMaxx ), min( zoomMiny, zoomMaxy ), max( zoomMinx, zoomMaxx ), max( zoomMaxy,
+                                                                                                           zoomMiny ) );
         stopZoomin();
         return true;
     }

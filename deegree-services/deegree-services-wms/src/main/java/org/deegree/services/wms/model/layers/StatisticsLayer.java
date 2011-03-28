@@ -140,9 +140,8 @@ public class StatisticsLayer extends FeatureLayer {
         List<Object> defaultVals = new ArrayList<Object>();
         date = new Date( System.currentTimeMillis() );
         defaultVals.add( new DimensionInterval<Date, String, Integer>( date, "current", 0 ) );
-        dimensions.put( "time",
-                        new Dimension<Object>( "time", defaultVals, true, true, true, "ISO8601", null,
-                                               timeProp.getName(), extent ) );
+        dimensions.put( "time", new Dimension<Object>( "time", defaultVals, true, true, true, "ISO8601", null,
+                                                       timeProp.getName(), extent ) );
     }
 
     @Override

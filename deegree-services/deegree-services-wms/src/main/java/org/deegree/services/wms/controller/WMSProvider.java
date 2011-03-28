@@ -98,6 +98,6 @@ public class WMSProvider implements OWSProvider<WMSRequestType> {
     @Override
     public void init( DeegreeWorkspace workspace ) {
         // TODO Auto-generated method stub
-        
+
     }
 }
