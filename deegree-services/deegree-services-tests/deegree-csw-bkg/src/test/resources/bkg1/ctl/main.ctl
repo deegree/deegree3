@@ -28,8 +28,8 @@
     <assertion>Run the CSW 2.0.2 AP ISO 1.0 compliance tests</assertion>
     <code>
 
-	  <!-- ***** Hard-wired the URL ***** -->
-      <xsl:variable name="csw.capabilities.url" select="'http://localhost:18089/deegree-csw-bkg/services?service=CSW&amp;request=GetCapabilities'"/>
+          <!-- ***** Hard-wired the URL ***** -->
+      <xsl:variable name="csw.capabilities.url" select="'http://localhost:${portnumber}/deegree-csw-bkg/services?service=CSW&amp;request=GetCapabilities'"/>
 
       <message>Capabilities request/URL used: <xsl:value-of select="$csw.capabilities.url" /></message>
 
