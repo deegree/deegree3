@@ -164,6 +164,7 @@ public class SLDParser {
                 }
 
                 if ( in.getLocalName().equals( "NamedStyle" ) ) {
+                    in.nextTag();
                     String name = in.getElementText();
                     Style style = service.getStyles().get( layer.getName(), name );
                     if ( style == null ) {
