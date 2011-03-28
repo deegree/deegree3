@@ -245,7 +245,7 @@ public class GetFeature110XMLEncoder {
                         writer.writeAttribute( "traverseXlinkDepth", "*" );
                     }
 
-                    if ( ( traverseXlinkExpiry != null ) && ( !traverseXlinkExpiry.equals( "" ) ) ) {
+                    if ( traverseXlinkExpiry != null ) {
                         writer.writeAttribute( "traverseXlinkExpiry", traverseXlinkExpiry.toString() );
                     }
 
@@ -335,7 +335,8 @@ public class GetFeature110XMLEncoder {
 
                 for ( String usedPrefix : usedPrefixes ) {
                     if ( namespaceBindings.translateNamespacePrefixToUri( usedPrefix ) != null ) {
-                        usedNamespaceBindings.addNamespace( usedPrefix,
+                        usedNamespaceBindings.addNamespace(
+                                                            usedPrefix,
                                                             namespaceBindings.translateNamespacePrefixToUri( usedPrefix ) );
                     } else {
                         throw new FilterEvaluationException( "found prefix '" + usedPrefix
@@ -354,7 +355,7 @@ public class GetFeature110XMLEncoder {
      * attributes an open xml-element inside the {@link XMLStreamWriter} with namespaces-declarations passed by the
      * parameter <code>namespaceContext</code>
      * 
-     * @param namespaceContext
+     * @param namespaceBindings
      *            contains the namespace-prefix mappings used for xpath-expressions
      * @param writer
      *            target of the xml stream

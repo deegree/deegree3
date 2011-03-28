@@ -151,11 +151,23 @@ public class WMSClient111 {
      *            http basic password
      */
     public WMSClient111( URL url, int connectionTimeout, int requestTimeout, String user, String pass ) {
-        this( url );
         this.connectionTimeout = connectionTimeout;
         this.requestTimeout = requestTimeout;
         this.httpBasicUser = user;
         this.httpBasicPass = pass;
+        try {
+            if ( httpBasicUser != null ) {
+                capabilities = new XMLAdapter();
+                capabilities.load( url, httpBasicUser, httpBasicPass );
+            } else {
+                capabilities = new XMLAdapter( url );
+            }
+        } catch ( Exception e ) {
+            LOG.error( e.getLocalizedMessage(), e );
+            throw new NullPointerException( "Could not read from URL: " + url + " error was: "
+                                            + e.getLocalizedMessage() );
+        }
+        checkCapabilities( this.capabilities );
     }
 
     /**
@@ -176,12 +188,7 @@ public class WMSClient111 {
      */
     public WMSClient111( URL url ) {
         try {
-            if ( httpBasicUser != null ) {
-                capabilities = new XMLAdapter();
-                capabilities.load( url, httpBasicUser, httpBasicPass );
-            } else {
-                capabilities = new XMLAdapter( url );
-            }
+            capabilities = new XMLAdapter( url );
         } catch ( Exception e ) {
             LOG.error( e.getLocalizedMessage(), e );
             throw new NullPointerException( "Could not read from URL: " + url + " error was: "
