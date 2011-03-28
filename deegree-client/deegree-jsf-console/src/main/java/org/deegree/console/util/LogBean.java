@@ -40,6 +40,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.PrintWriter;
 import java.io.Serializable;
 
 import javax.faces.bean.ManagedBean;
@@ -83,6 +84,17 @@ public class LogBean implements Serializable {
         try {
             File workspace = OGCFrontController.getServiceWorkspace().getLocation();
             pwFile = new File( workspace, PASSWORD_FILE );
+
+            if ( !pwFile.exists() ) {
+                LOG.info( "Password file '{}' does not exist. Creating default with default content.", pwFile );
+                if ( !pwFile.getParentFile().exists() ) {
+                    pwFile.getParentFile().mkdirs();
+                }
+                PrintWriter writer = new PrintWriter( pwFile );
+                writer.print( "deegree" );
+                writer.close();
+            }
+
             BufferedReader in = new BufferedReader( new InputStreamReader( new FileInputStream( pwFile ) ) );
             try {
                 String line;
