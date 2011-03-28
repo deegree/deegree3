@@ -6,7 +6,7 @@
   <version>3.1-pre4-SNAPSHOT</version>
   <name>deegree webservices</name>
   <url>http://www.deegree.org</url>
-  
+
   <scm>
     <developerConnection>scm:svn:http://svn.wald.intevation.org/svn/deegree/deegree3/trunk/deegree-services/deegree-webservices</developerConnection>
     <url>http://svn.wald.intevation.org/svn/deegree/deegree3/trunk/deegree-services/deegree-webservices</url>
@@ -36,7 +36,7 @@
       <plugin>
         <groupId>org.deegree</groupId>
         <artifactId>deegree-maven-plugin</artifactId>
-        <version>1.0</version>
+        <version>1.1</version>
         <executions>
           <execution>
             <goals>
@@ -61,7 +61,7 @@
       <groupId>org.deegree</groupId>
       <artifactId>deegree-jsf-console</artifactId>
       <version>3.1-pre4-SNAPSHOT</version>
-    </dependency>  
+    </dependency>
     <dependency>
       <groupId>org.deegree</groupId>
       <artifactId>deegree-services-config</artifactId>

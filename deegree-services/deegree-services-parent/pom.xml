@@ -7,7 +7,7 @@
   <version>3.1-pre4-SNAPSHOT</version>
   <name>deegree-services-parent</name>
   <url>http://www.deegree.org</url>
-  
+
   <scm>
     <developerConnection>scm:svn:http://svn.wald.intevation.org/svn/deegree/deegree3/trunk/deegree-services/deegree-services-parent</developerConnection>
     <url>http://svn.wald.intevation.org/svn/deegree/deegree3/trunk/deegree-services/deegree-services-parent</url>
@@ -47,7 +47,7 @@
       <plugin>
         <groupId>org.deegree</groupId>
         <artifactId>deegree-maven-plugin</artifactId>
-        <version>1.0</version>
+        <version>1.1</version>
         <executions>
           <execution>
             <goals>
