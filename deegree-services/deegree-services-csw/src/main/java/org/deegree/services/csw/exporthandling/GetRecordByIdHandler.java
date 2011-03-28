@@ -245,7 +245,7 @@ public class GetRecordByIdHandler {
     private void removeId( MetadataRecord recordResponse, List<String> requestedIdList )
                             throws MetadataStoreException {
         try {
-            String identifier = recordResponse.getIdentifier()[0];
+            String identifier = recordResponse.getIdentifier();
             requestedIdList.remove( identifier );
         } catch ( NullPointerException e ) {
             // should not occur!
