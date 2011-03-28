@@ -37,6 +37,8 @@ package org.deegree.metadata.persistence.iso;
 
 import static org.deegree.commons.tom.primitive.PrimitiveType.BOOLEAN;
 import static org.deegree.commons.tom.primitive.PrimitiveType.DATE;
+import static org.deegree.commons.tom.primitive.PrimitiveType.DECIMAL;
+import static org.deegree.commons.tom.primitive.PrimitiveType.INTEGER;
 import static org.deegree.commons.tom.primitive.PrimitiveType.STRING;
 import static org.deegree.protocol.csw.CSWConstants.APISO_NS;
 import static org.deegree.protocol.csw.CSWConstants.CSW_202_NS;
@@ -55,6 +57,7 @@ import javax.xml.namespace.QName;
 import org.deegree.commons.tom.primitive.PrimitiveType;
 import org.deegree.commons.tom.primitive.SQLValueMangler;
 import org.deegree.commons.tom.primitive.XMLValueMangler;
+import org.deegree.commons.utils.Pair;
 import org.deegree.commons.utils.Triple;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.expression.Literal;
@@ -89,7 +92,7 @@ public class PostGISMappingsISODC implements PostGISMapping {
 
     private static final Logger LOG = getLogger( PostGISMappingsISODC.class );
 
-    private static Map<QName, Triple<String, String, PrimitiveType>> propToTableAndCol = new HashMap<QName, Triple<String, String, PrimitiveType>>();
+    private static Map<QName, Triple<Pair<String, String>, Boolean, PrimitiveType>> propToTableAndCol = new HashMap<QName, Triple<Pair<String, String>, Boolean, PrimitiveType>>();
 
     /**
      * XML element name in the representation of the response
@@ -101,95 +104,88 @@ public class PostGISMappingsISODC implements PostGISMapping {
         // ----------------------------------------------------------------------------------------
         // ----------------------<common queryable properties>-------------------------------------
 
-        addStringProp( APISO_NS, "title", DatabaseTables.isoqp_title, "title" );
-        addStringProp( APISO_NS, "Title", DatabaseTables.isoqp_title, "title" );
-        addStringProp( "", "Title", DatabaseTables.isoqp_title, "title" );
-        addStringProp( DC_NS, "Title", DatabaseTables.isoqp_title, "title" );
-        addStringProp( CSW_202_NS, "Title", DatabaseTables.isoqp_title, "title" );
-        addStringProp( APISO_NS, "abstract", DatabaseTables.isoqp_abstract, "abstract" );
-        addStringProp( APISO_NS, "Abstract", DatabaseTables.isoqp_abstract, "abstract" );
-        addStringProp( DCT_NS, "Abstract", DatabaseTables.isoqp_abstract, "abstract" );
-        addStringProp( "", "Abstract", DatabaseTables.isoqp_abstract, "abstract" );
-        addStringProp( CSW_202_NS, "Abstract", DatabaseTables.isoqp_abstract, "abstract" );
-        addStringProp( APISO_NS, "BoundingBox", DatabaseTables.isoqp_BoundingBox, "bbox" );
-        addStringProp( DC_NS, "coverage", DatabaseTables.isoqp_BoundingBox, "bbox" );
-        addStringProp( OWS_NS, "BoundingBox", DatabaseTables.isoqp_BoundingBox, "bbox" );
-        addStringProp( OWS_NS, "boundingBox", DatabaseTables.isoqp_BoundingBox, "bbox" );
-        addStringProp( "", "boundingBox", DatabaseTables.isoqp_BoundingBox, "bbox" );
-        addStringProp( CSW_202_NS, "BoundingBox", DatabaseTables.isoqp_BoundingBox, "bbox" );
-        addStringProp( APISO_NS, "type", DatabaseTables.isoqp_type, "type" );
-        addStringProp( APISO_NS, "Type", DatabaseTables.isoqp_type, "type" );
-        addStringProp( DC_NS, "Type", DatabaseTables.isoqp_type, "type" );
-        addStringProp( "", "Type", DatabaseTables.isoqp_type, "type" );
-        addStringProp( CSW_202_NS, "Type", DatabaseTables.isoqp_type, "type" );
-        addStringProp( APISO_NS, "format", DatabaseTables.isoqp_format, "format" );
-        addStringProp( APISO_NS, "Format", DatabaseTables.isoqp_format, "format" );
-        addStringProp( DC_NS, "Format", DatabaseTables.isoqp_format, "format" );
-        addStringProp( "", "Format", DatabaseTables.isoqp_format, "format" );
-        addStringProp( CSW_202_NS, "Format", DatabaseTables.isoqp_format, "format" );
-        addStringProp( APISO_NS, "Subject", DatabaseTables.isoqp_keyword, "keyword" );
-        addStringProp( APISO_NS, "subject", DatabaseTables.isoqp_keyword, "keyword" );
-        addStringProp( DC_NS, "Subject", DatabaseTables.isoqp_keyword, "keyword" );
-        addStringProp( "", "Subject", DatabaseTables.isoqp_keyword, "keyword" );
-        addStringProp( CSW_202_NS, "Subject", DatabaseTables.isoqp_keyword, "keyword" );
-        addStringProp( APISO_NS, "AnyText", DatabaseTables.datasets, "anytext" );
-        addStringProp( APISO_NS, "anyText", DatabaseTables.datasets, "anytext" );
-        addStringProp( CSW_202_NS, "AnyText", DatabaseTables.datasets, "anytext" );
-        addStringProp( "", "AnyText", DatabaseTables.datasets, "anytext" );
-        addStringProp( APISO_NS, "identifier", DatabaseTables.qp_identifier, "identifier" );
-        addStringProp( APISO_NS, "Identifier", DatabaseTables.qp_identifier, "identifier" );
-        addStringProp( DC_NS, "Identifier", DatabaseTables.qp_identifier, "identifier" );
-        addStringProp( "", "Identifier", DatabaseTables.qp_identifier, "identifier" );
-        addStringProp( CSW_202_NS, "Identifier", DatabaseTables.qp_identifier, "identifier" );
-        addDateProp( APISO_NS, "modified", DatabaseTables.datasets, "modified" );
-        addDateProp( APISO_NS, "Modified", DatabaseTables.datasets, "modified" );
-        addDateProp( DCT_NS, "Modified", DatabaseTables.datasets, "modified" );
-        addDateProp( "", "Modified", DatabaseTables.datasets, "modified" );
-        addDateProp( CSW_202_NS, "Modified", DatabaseTables.datasets, "modified" );
-        addStringProp( APISO_NS, "CRS", DatabaseTables.isoqp_crs, "crs" );
-        addStringProp( DC_NS, "CRS", DatabaseTables.isoqp_crs, "crs" );
-        addStringProp( "", "CRS", DatabaseTables.isoqp_crs, "crs" );
-        addStringProp( APISO_NS, "association", DatabaseTables.isoqp_association, "relation" );
-        addStringProp( APISO_NS, "Association", DatabaseTables.isoqp_association, "relation" );
-        addStringProp( CSW_202_NS, "Association", DatabaseTables.isoqp_association, "relation" );
-        addStringProp( "", "Association", DatabaseTables.isoqp_association, "relation" );
-        addStringProp( DC_NS, "Relation", DatabaseTables.isoqp_association, "relation" );
-        addStringProp( "", "Relation", DatabaseTables.isoqp_association, "relation" );
+        addStringProp( APISO_NS, "title", DatabaseTables.idxtb_main, "title", true );
+        addStringProp( APISO_NS, "Title", DatabaseTables.idxtb_main, "title", true );
+        addStringProp( "", "Title", DatabaseTables.idxtb_main, "title", true );
+        addStringProp( DC_NS, "Title", DatabaseTables.idxtb_main, "title", true );
+        addStringProp( CSW_202_NS, "Title", DatabaseTables.idxtb_main, "title", true );
+        addStringProp( APISO_NS, "abstract", DatabaseTables.idxtb_main, "_abstract", true );
+        addStringProp( APISO_NS, "Abstract", DatabaseTables.idxtb_main, "_abstract", true );
+        addStringProp( DCT_NS, "Abstract", DatabaseTables.idxtb_main, "_abstract", true );
+        addStringProp( "", "Abstract", DatabaseTables.idxtb_main, "_abstract", true );
+        addStringProp( CSW_202_NS, "Abstract", DatabaseTables.idxtb_main, "_abstract", true );
+        addStringProp( APISO_NS, "BoundingBox", DatabaseTables.idxtb_main, "bbox", false );
+        addStringProp( DC_NS, "coverage", DatabaseTables.idxtb_main, "bbox", false );
+        addStringProp( OWS_NS, "BoundingBox", DatabaseTables.idxtb_main, "bbox", false );
+        addStringProp( OWS_NS, "boundingBox", DatabaseTables.idxtb_main, "bbox", false );
+        addStringProp( "", "boundingBox", DatabaseTables.idxtb_main, "bbox", false );
+        addStringProp( CSW_202_NS, "BoundingBox", DatabaseTables.idxtb_main, "bbox", false );
+        addStringProp( APISO_NS, "type", DatabaseTables.idxtb_main, "type", false );
+        addStringProp( APISO_NS, "Type", DatabaseTables.idxtb_main, "type", false );
+        addStringProp( DC_NS, "Type", DatabaseTables.idxtb_main, "type", false );
+        addStringProp( "", "Type", DatabaseTables.idxtb_main, "type", false );
+        addStringProp( CSW_202_NS, "Type", DatabaseTables.idxtb_main, "type", false );
+        addStringProp( APISO_NS, "format", DatabaseTables.idxtb_main, "formats", true );
+        addStringProp( APISO_NS, "Format", DatabaseTables.idxtb_main, "formats", true );
+        addStringProp( DC_NS, "Format", DatabaseTables.idxtb_main, "formats", true );
+        addStringProp( "", "Format", DatabaseTables.idxtb_main, "formats", true );
+        addStringProp( CSW_202_NS, "Format", DatabaseTables.idxtb_main, "formats", true );
+        addStringProp( APISO_NS, "Subject", DatabaseTables.idxtb_keyword, "keywords", true );
+        addStringProp( APISO_NS, "subject", DatabaseTables.idxtb_keyword, "keywords", true );
+        addStringProp( DC_NS, "Subject", DatabaseTables.idxtb_keyword, "keywords", true );
+        addStringProp( "", "Subject", DatabaseTables.idxtb_keyword, "keywords", true );
+        addStringProp( CSW_202_NS, "Subject", DatabaseTables.idxtb_keyword, "keywords", true );
+        addStringProp( APISO_NS, "AnyText", DatabaseTables.idxtb_main, "anytext", false );
+        addStringProp( APISO_NS, "anyText", DatabaseTables.idxtb_main, "anytext", false );
+        addStringProp( CSW_202_NS, "AnyText", DatabaseTables.idxtb_main, "anytext", false );
+        addStringProp( "", "AnyText", DatabaseTables.idxtb_main, "anytext", false );
+        addStringProp( APISO_NS, "identifier", DatabaseTables.idxtb_main, "fileidentifier", false );
+        addStringProp( APISO_NS, "Identifier", DatabaseTables.idxtb_main, "fileidentifier", false );
+        addStringProp( DC_NS, "Identifier", DatabaseTables.idxtb_main, "fileidentifier", false );
+        addStringProp( "", "Identifier", DatabaseTables.idxtb_main, "fileidentifier", false );
+        addStringProp( CSW_202_NS, "Identifier", DatabaseTables.idxtb_main, "fileidentifier", false );
+        addDateProp( APISO_NS, "modified", DatabaseTables.idxtb_main, "modified" );
+        addDateProp( APISO_NS, "Modified", DatabaseTables.idxtb_main, "modified" );
+        addDateProp( DCT_NS, "Modified", DatabaseTables.idxtb_main, "modified" );
+        addDateProp( "", "Modified", DatabaseTables.idxtb_main, "modified" );
+        addDateProp( CSW_202_NS, "Modified", DatabaseTables.idxtb_main, "modified" );
+        addStringProp( APISO_NS, "CRS", DatabaseTables.idxtb_crs, "crsid", false );
+        addStringProp( DC_NS, "CRS", DatabaseTables.idxtb_crs, "crsid", false );
+        addStringProp( "", "CRS", DatabaseTables.idxtb_crs, "crsid", false );
 
         // ----------------------</common queryable properties>------------------------------------
         // ----------------------------------------------------------------------------------------
 
         // ----------------------------------------------------------------------------------------
         // ----------------------<additional common queryable properties>--------------------------
-        addStringProp( APISO_NS, "Language", DatabaseTables.datasets, "language" );
-        addStringProp( APISO_NS, "language", DatabaseTables.datasets, "language" );
-        addDateProp( APISO_NS, "RevisionDate", DatabaseTables.isoqp_revisiondate, "revisiondate" );
-        addDateProp( APISO_NS, "CreationDate", DatabaseTables.isoqp_creationdate, "creationdate" );
-        addStringProp( APISO_NS, "AlternateTitle", DatabaseTables.isoqp_alternatetitle, "alternatetitle" );
-        // addDateProp( APISO_NS, "RevisionDate", "isoqp_revisiondate", "revisiondate" );
-        addDateProp( APISO_NS, "PublicationDate", DatabaseTables.isoqp_publicationdate, "publicationdate" );
-        addStringProp( APISO_NS, "OrganisationName", DatabaseTables.isoqp_organisationname, "organisationname" );
-        addBooleanProp( APISO_NS, "HasSecurityConstraints", DatabaseTables.datasets, "hassecurityconstraint" );
-        addStringProp( APISO_NS, "ResourceIdentifier", DatabaseTables.isoqp_resourceidentifier, "resourceidentifier" );
-        addStringProp( APISO_NS, "ParentIdentifier", DatabaseTables.datasets, "parentidentifier" );
-        addStringProp( APISO_NS, "KeywordType", DatabaseTables.isoqp_keyword, "keywordType" );
-        addStringProp( APISO_NS, "TopicCategory", DatabaseTables.isoqp_topiccategory, "topiccategory" );
-        addStringProp( APISO_NS, "ResourceLanguage", DatabaseTables.isoqp_resourcelanguage, "resourcelanguage" );
-        addStringProp( APISO_NS, "GeographicDescriptionCode", DatabaseTables.isoqp_geographicdescriptioncode,
-                       "geographicdescriptioncode" );
-        addStringProp( APISO_NS, "Denominator", DatabaseTables.isoqp_spatialresolution, "denominator" );
-        addStringProp( APISO_NS, "DistanceValue", DatabaseTables.isoqp_spatialresolution, "distancevalue" );
-        addStringProp( APISO_NS, "DistanceUOM", DatabaseTables.isoqp_spatialresolution, "distanceuom" );
-        addStringProp( APISO_NS, "Denominator", DatabaseTables.isoqp_spatialresolution, "denominator" );
-        addDateProp( APISO_NS, "TempExtent_begin", DatabaseTables.isoqp_temporalextent, "tempextent_begin" );
-        addDateProp( APISO_NS, "TempExtent_end", DatabaseTables.isoqp_temporalextent, "tempextent_end" );
-        addStringProp( APISO_NS, "ServiceType", DatabaseTables.isoqp_servicetype, "servicetype" );
-        addStringProp( APISO_NS, "ServiceTypeVersion", DatabaseTables.isoqp_servicetypeversion, "servicetypeversion" );
-        addStringProp( APISO_NS, "Operation", DatabaseTables.isoqp_operation, "operation" );
-        addStringProp( APISO_NS, "OperatesOn", DatabaseTables.isoqp_operatesondata, "operateson" );
-        addStringProp( APISO_NS, "OperatesOnIdentifier", DatabaseTables.isoqp_operatesondata, "operatesonidentifier" );
-        addStringProp( APISO_NS, "OperatesOnName", DatabaseTables.isoqp_operatesondata, "operatesonname" );
-        addStringProp( APISO_NS, "CouplingType", DatabaseTables.isoqp_couplingtype, "couplingtype" );
+        addStringProp( APISO_NS, "Language", DatabaseTables.idxtb_main, "language", false );
+        addStringProp( APISO_NS, "language", DatabaseTables.idxtb_main, "language", false );
+        addDateProp( APISO_NS, "RevisionDate", DatabaseTables.idxtb_main, "revisiondate" );
+        addDateProp( APISO_NS, "CreationDate", DatabaseTables.idxtb_main, "creationdate" );
+        addStringProp( APISO_NS, "AlternateTitle", DatabaseTables.idxtb_main, "alternatetitle", true );
+        addDateProp( APISO_NS, "PublicationDate", DatabaseTables.idxtb_main, "publicationdate" );
+        addStringProp( APISO_NS, "OrganisationName", DatabaseTables.idxtb_main, "organisationname", false );
+        addBooleanProp( APISO_NS, "HasSecurityConstraints", DatabaseTables.idxtb_main, "hassecurityconstraint" );
+        addStringProp( APISO_NS, "ResourceIdentifier", DatabaseTables.idxtb_main, "resourceid", false );
+        addStringProp( APISO_NS, "ParentIdentifier", DatabaseTables.idxtb_main, "parentid", false );
+        addStringProp( APISO_NS, "KeywordType", DatabaseTables.idxtb_keyword, "keywordtype", false );
+        addStringProp( APISO_NS, "TopicCategory", DatabaseTables.idxtb_main, "topicCategories", true );
+        addStringProp( APISO_NS, "ResourceLanguage", DatabaseTables.idxtb_main, "resourcelanguage", false );
+        addStringProp( APISO_NS, "GeographicDescriptionCode", DatabaseTables.idxtb_main, "geographicdescriptioncode",
+                       true );
+        addIntProp( APISO_NS, "Denominator", DatabaseTables.idxtb_main, "denominator" );
+        addDecimalProp( APISO_NS, "DistanceValue", DatabaseTables.idxtb_main, "distancevalue" );
+        addStringProp( APISO_NS, "DistanceUOM", DatabaseTables.idxtb_main, "distanceuom", false );
+        addDateProp( APISO_NS, "TempExtent_begin", DatabaseTables.idxtb_main, "tempextent_begin" );
+        addDateProp( APISO_NS, "TempExtent_end", DatabaseTables.idxtb_main, "tempextent_end" );
+        addStringProp( APISO_NS, "ServiceType", DatabaseTables.idxtb_main, "servicetype", false );
+        addStringProp( APISO_NS, "ServiceTypeVersion", DatabaseTables.idxtb_main, "servicetypeversion", true );
+
+        addStringProp( APISO_NS, "Operation", DatabaseTables.idxtb_main, "operations", true );
+        addStringProp( APISO_NS, "OperatesOn", DatabaseTables.idxtb_operatesondata, "operateson", false );
+        addStringProp( APISO_NS, "OperatesOnIdentifier", DatabaseTables.idxtb_operatesondata, "operatesonid", false );
+        addStringProp( APISO_NS, "OperatesOnName", DatabaseTables.idxtb_operatesondata, "operatesonname", false );
+        addStringProp( APISO_NS, "CouplingType", DatabaseTables.idxtb_main, "couplingtype", false );
 
         // ----------------------</additional common queryable properties>-------------------------
         // ----------------------------------------------------------------------------------------
@@ -197,15 +193,16 @@ public class PostGISMappingsISODC implements PostGISMapping {
         // ----------------------------------------------------------------------------------------
         // ----------------------<additional queryable properties for INSPIRE>--------------------------
 
-        addBooleanProp( APISO_NS, "Degree", DatabaseTables.addqp_degree, "degree" );
-        addStringProp( APISO_NS, "AccessConstraints", DatabaseTables.addqp_accessconstraint, "accessconstraint" );
-        addStringProp( APISO_NS, "OtherConstraints", DatabaseTables.addqp_otherconstraint, "otherconstraint" );
-        addStringProp( APISO_NS, "Classification", DatabaseTables.addqp_classification, "classification" );
-        addStringProp( APISO_NS, "ConditionApplyingToAccessAndUse", DatabaseTables.addqp_limitation, "limitation" );
-        addStringProp( APISO_NS, "Lineage", DatabaseTables.addqp_lineage, "lineage" );
-        addStringProp( APISO_NS, "SpecificationTitle", DatabaseTables.addqp_specification, "specificationtitle" );
-        addStringProp( APISO_NS, "SpecificationDateType", DatabaseTables.addqp_specification, "specificationdatetype" );
-        addDateProp( APISO_NS, "SpecificationDate", DatabaseTables.addqp_specification, "specificationdate" );
+        addBooleanProp( APISO_NS, "Degree", DatabaseTables.idxtb_main, "degree" );
+        addStringProp( APISO_NS, "AccessConstraints", DatabaseTables.idxtb_constraint, "accessconstraints", true );
+        addStringProp( APISO_NS, "OtherConstraints", DatabaseTables.idxtb_constraint, "otherconstraints", true );
+        addStringProp( APISO_NS, "Classification", DatabaseTables.idxtb_constraint, "classification", false );
+        addStringProp( APISO_NS, "ConditionApplyingToAccessAndUse", DatabaseTables.idxtb_constraint,
+                       "conditionapptoacc", true );
+        addStringProp( APISO_NS, "Lineage", DatabaseTables.idxtb_main, "lineage", true );
+        addStringProp( APISO_NS, "SpecificationTitle", DatabaseTables.idxtb_main, "spectitle", true );
+        addStringProp( APISO_NS, "SpecificationDateType", DatabaseTables.idxtb_main, "specdatetype", false );
+        addDateProp( APISO_NS, "SpecificationDate", DatabaseTables.idxtb_main, "specdate" );
 
         // ----------------------</additional queryable properties for INSPIRE>-------------------------
         // ----------------------------------------------------------------------------------------
@@ -229,29 +226,25 @@ public class PostGISMappingsISODC implements PostGISMapping {
         id,
 
         /**
-         * the foreignkey of a databasetable
-         */
-        fk_datasets,
-
-        /**
-         * the BLOB data of the record
-         */
-        data,
-
-        /**
-         * the format of the record, 1 == DC, 2 == ISO
-         */
-        format,
-
-        /**
          * the identifier of the record
          */
-        identifier,
+        fileidentifier,
+        
+
+        /**
+         * the resourceIdentifier of the record
+         */
+        resourceid,
 
         /**
          * the BLOB data for the reecord
          */
-        recordfull;
+        recordfull,
+
+        /**
+         * the foreign key from sub idx to idx_main
+         */
+        fk_main;
 
     }
 
@@ -267,168 +260,7 @@ public class PostGISMappingsISODC implements PostGISMapping {
         /**
          * main databasetable, all of the other tables derive from this table
          */
-        datasets,
-
-        /**
-         * record identifier
-         */
-        qp_identifier,
-
-        /**
-         * organisationname which is responsible of the content
-         */
-        isoqp_organisationname,
-
-        /**
-         * temporal extent of the record
-         */
-        isoqp_temporalextent,
-
-        /**
-         * spatial resolution of the record
-         */
-        isoqp_spatialresolution,
-
-        /**
-         * couplingtype of the service record
-         */
-        isoqp_couplingtype,
-
-        /**
-         * tightly coupled dataset relation
-         */
-        isoqp_operatesondata,
-
-        /**
-         * name of the service operation
-         */
-        isoqp_operation,
-
-        /**
-         * the geographicdescriptioncode of the record
-         */
-        isoqp_geographicdescriptioncode,
-
-        /**
-         * the version of the service type
-         */
-        isoqp_servicetypeversion,
-
-        /**
-         * name of the service type, e.g. WFS
-         */
-        isoqp_servicetype,
-
-        /**
-         * language of the record
-         */
-        isoqp_resourcelanguage,
-
-        /**
-         * revision date of the record
-         */
-        isoqp_revisiondate,
-
-        /**
-         * creation date of the record
-         */
-        isoqp_creationdate,
-
-        /**
-         * publication date of the record
-         */
-        isoqp_publicationdate,
-
-        /**
-         * identifier of the resource that can be coupled with a service record
-         */
-        isoqp_resourceidentifier,
-
-        /**
-         * alternate title of the record
-         */
-        isoqp_alternatetitle,
-        /**
-         * the relation of the record
-         */
-        isoqp_association,
-
-        /**
-         * the title of the record
-         */
-        isoqp_title,
-
-        /**
-         * the nature of the record, one of dataset, datasetcollection, service, application
-         */
-        isoqp_type,
-
-        /**
-         * the topic or content of the record
-         */
-        isoqp_keyword,
-
-        /**
-         * main theme(s) of the record
-         */
-        isoqp_topiccategory,
-
-        /**
-         * the physical or digital manifestation of the record
-         */
-        isoqp_format,
-
-        /**
-         * the abstract of the record
-         */
-        isoqp_abstract,
-
-        /**
-         * the bounding box that encapsulates the record by spatial boundaries
-         */
-        isoqp_BoundingBox,
-
-        /**
-         * the coordinate reference system of the bounding box(es)
-         */
-        isoqp_crs,
-
-        /**
-         * Boolean value - indication of conformance result
-         */
-        addqp_degree,
-
-        /**
-         * citation of the product specification or user requirement against which data is being evaluated
-         */
-        addqp_specification,
-
-        /**
-         * restrictions on the access and use of a resource or metadata
-         */
-        addqp_limitation,
-
-        /**
-         * assures the protection of privacy or intellectual property. Regarding special restrictions or limitations on
-         * obtaining the resource.
-         */
-        addqp_accessconstraint,
-
-        /**
-         * legal prerequisites for accessing and using the resource or metadata
-         */
-        addqp_otherconstraint,
-
-        /**
-         * name of the handling restrictions on the resource.
-         */
-        addqp_classification,
-
-        /**
-         * general explanation of the data producer's knowledge about the lineage of a dataset.
-         */
-        addqp_lineage
-
+        idxtb_main, idxtb_constraint, idxtb_crs, idxtb_keyword, idxtb_operatesondata
     }
 
     @Override
@@ -443,20 +275,21 @@ public class PostGISMappingsISODC implements PostGISMapping {
             LOG.debug( msg );
         } else {
 
-            Triple<String, String, PrimitiveType> tableColumn = propToTableAndCol.get( qName );
+            Triple<Pair<String, String>, Boolean, PrimitiveType> tableColumn = propToTableAndCol.get( qName );
+
             if ( tableColumn != null ) {
-                String datasets = DatabaseTables.datasets.name();
+                String mainTable = DatabaseTables.idxtb_main.name();
                 String id = CommonColumnNames.id.name();
-                String fk_datasets = CommonColumnNames.fk_datasets.name();
+                String fk_main = CommonColumnNames.fk_main.name();
                 List<Join> joins = new ArrayList<Join>();
-                if ( !tableColumn.first.equals( datasets ) ) {
-                    DBField from = new DBField( datasets, id );
-                    DBField to = new DBField( tableColumn.first, fk_datasets );
+                if ( !tableColumn.first.first.equals( mainTable ) ) {
+                    DBField from = new DBField( mainTable, id );
+                    DBField to = new DBField( tableColumn.first.first, fk_main );
                     joins.add( new Join( from, to, null, 0 ) );
                 }
                 // TODO primitive type
-                DBField valueField = new DBField( tableColumn.first, tableColumn.second );
-                mapping = new PropertyNameMapping( aliasManager, valueField, joins, null, "-1", false );
+                DBField valueField = new DBField( tableColumn.first.first, tableColumn.first.second );
+                mapping = new PropertyNameMapping( aliasManager, valueField, joins, null, "-1", tableColumn.second );
             } else {
 
                 String msg = Messages.getMessage( "ERROR_PROPNAME_MAPPING", qName );
@@ -469,29 +302,64 @@ public class PostGISMappingsISODC implements PostGISMapping {
 
     private static void addBooleanProp( String propNs, String propName, DatabaseTables table, String column ) {
         QName qName = new QName( propNs, propName );
-        Triple<String, String, PrimitiveType> mapping = new Triple<String, String, PrimitiveType>( table.name(),
-                                                                                                   column, BOOLEAN );
+        Triple<Pair<String, String>, Boolean, PrimitiveType> mapping = new Triple<Pair<String, String>, Boolean, PrimitiveType>(
+                                                                                                                                 new Pair<String, String>(
+                                                                                                                                                           table.name(),
+                                                                                                                                                           column ),
+                                                                                                                                 false,
+                                                                                                                                 BOOLEAN );
         propToTableAndCol.put( qName, mapping );
 
     }
 
     private static void addDateProp( String propNs, String propName, DatabaseTables table, String column ) {
         QName qName = new QName( propNs, propName );
-        Triple<String, String, PrimitiveType> mapping = new Triple<String, String, PrimitiveType>( table.name(),
-                                                                                                   column, DATE );
+        Triple<Pair<String, String>, Boolean, PrimitiveType> mapping = new Triple<Pair<String, String>, Boolean, PrimitiveType>(
+                                                                                                                                 new Pair<String, String>(
+                                                                                                                                                           table.name(),
+                                                                                                                                                           column ),
+                                                                                                                                 false,
+                                                                                                                                 DATE );
         propToTableAndCol.put( qName, mapping );
 
     }
 
-    private static void addStringProp( String propNs, String propName, DatabaseTables table, String column ) {
+    private static void addStringProp( String propNs, String propName, DatabaseTables table, String column,
+                                       boolean concatenated ) {
         QName qName = new QName( propNs, propName );
-        Triple<String, String, PrimitiveType> mapping = new Triple<String, String, PrimitiveType>( table.name(),
-                                                                                                   column, STRING );
+        Triple<Pair<String, String>, Boolean, PrimitiveType> mapping = new Triple<Pair<String, String>, Boolean, PrimitiveType>(
+                                                                                                                                 new Pair<String, String>(
+                                                                                                                                                           table.name(),
+                                                                                                                                                           column ),
+                                                                                                                                 concatenated,
+                                                                                                                                 STRING );
+        propToTableAndCol.put( qName, mapping );
+    }
+
+    private static void addIntProp( String propNs, String propName, DatabaseTables table, String column ) {
+        QName qName = new QName( propNs, propName );
+        Triple<Pair<String, String>, Boolean, PrimitiveType> mapping = new Triple<Pair<String, String>, Boolean, PrimitiveType>(
+                                                                                                                                 new Pair<String, String>(
+                                                                                                                                                           table.name(),
+                                                                                                                                                           column ),
+                                                                                                                                 false,
+                                                                                                                                 INTEGER );
+        propToTableAndCol.put( qName, mapping );
+    }
+
+    private static void addDecimalProp( String propNs, String propName, DatabaseTables table, String column ) {
+        QName qName = new QName( propNs, propName );
+        Triple<Pair<String, String>, Boolean, PrimitiveType> mapping = new Triple<Pair<String, String>, Boolean, PrimitiveType>(
+                                                                                                                                 new Pair<String, String>(
+                                                                                                                                                           table.name(),
+                                                                                                                                                           column ),
+                                                                                                                                 false,
+                                                                                                                                 DECIMAL );
         propToTableAndCol.put( qName, mapping );
     }
 
     @Override
-    public Object getPostGISValue( Literal literal, PropertyName propName )
+    public Object getPostGISValue( Literal<?> literal, PropertyName propName )
                             throws FilterEvaluationException {
 
         Object pgValue = null;
@@ -620,7 +488,7 @@ public class PostGISMappingsISODC implements PostGISMapping {
      * 
      * @return a map&lang;QName, PropertyNameMapping&rang; can not be <Code>null</Code>
      */
-    public Map<QName, Triple<String, String, PrimitiveType>> getPropToTableAndCol() {
+    public Map<QName, Triple<Pair<String, String>, Boolean, PrimitiveType>> getPropToTableAndCol() {
         return propToTableAndCol;
     }
 }

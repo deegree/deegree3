@@ -42,6 +42,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.deegree.commons.jdbc.ConnectionManager.Type;
 import org.deegree.commons.utils.JDBCUtils;
 import org.deegree.protocol.csw.MetadataStoreException;
 
@@ -57,22 +58,28 @@ public class FillProperties {
 
     // private static Logger LOG = LoggerFactory.getLogger( FillProperties.class );
 
-    private static final String fk_datasets = PostGISMappingsISODC.CommonColumnNames.fk_datasets.name();
-
-    private static final StringBuilder s = new StringBuilder().append( "SELECT ? FROM ? WHERE " ).append( fk_datasets ).append(
-                                                                                                                                " = ?" );
-
     private final Connection conn;
 
     private final int id;
 
-    public FillProperties( Connection conn, int id ) {
+    private final StringBuilder s;
+
+    public FillProperties( Connection conn, int id, Type connectionType ) {
         this.conn = conn;
         this.id = id;
+        s = new StringBuilder();
+        s.append( "SELECT ? FROM ? WHERE " );
+        if ( connectionType == Type.MSSQL ) {
+            s.append( MSSQLMappingsISODC.CommonColumnNames.fk_main );
+        } else {
+            s.append( PostGISMappingsISODC.CommonColumnNames.fk_main );
+        }
+        s.append( " = ?" );
     }
 
-    String[] getTitle()
+    String[] getTitle( Type connectionType )
                             throws MetadataStoreException {
+
         PreparedStatement ps = null;
         ResultSet rs = null;
         List<String> l = new ArrayList<String>();

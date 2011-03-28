@@ -134,7 +134,9 @@ public class InspectorCouplingTest extends AbstractISOTest {
 
     }
 
-    @Test(expected = MetadataInspectorException.class)
+    
+    // strictness when testing for coupling was set more relaxed
+//    @Test(expected = MetadataInspectorException.class)
     public void testCouplingConsistencyErrorTRUE_WITH_Exception()
                             throws MetadataStoreException, MetadataInspectorException, ResourceInitException {
         LOG.info( "START Test: test if an exception will be thrown if there is an insert of the service metadata. " );

@@ -75,7 +75,7 @@ public class ExecuteStatements implements GenericDatabaseExecution {
 
     private static final Logger LOG = getLogger( ExecuteStatements.class );
 
-    private String databaseTable = PostGISMappingsISODC.DatabaseTables.datasets.name();
+    private String mainTable;
 
     private String id = PostGISMappingsISODC.CommonColumnNames.id.name();
 
@@ -86,12 +86,12 @@ public class ExecuteStatements implements GenericDatabaseExecution {
     public ExecuteStatements( Type dbType ) {
         this.dbType = dbType;
         if ( dbType == PostgreSQL ) {
-            databaseTable = PostGISMappingsISODC.DatabaseTables.datasets.name();
+            mainTable = PostGISMappingsISODC.DatabaseTables.idxtb_main.name();
             id = PostGISMappingsISODC.CommonColumnNames.id.name();
             rf = PostGISMappingsISODC.CommonColumnNames.recordfull.name();
         }
         if ( dbType == MSSQL ) {
-            databaseTable = MSSQLMappingsISODC.DatabaseTables.datasets.name();
+            mainTable = MSSQLMappingsISODC.DatabaseTables.idxtb_main.name();
             id = MSSQLMappingsISODC.CommonColumnNames.id.name();
             rf = MSSQLMappingsISODC.CommonColumnNames.recordfull.name();
         }
@@ -126,8 +126,8 @@ public class ExecuteStatements implements GenericDatabaseExecution {
 
             StringBuilder stringBuilder = new StringBuilder();
             stringBuilder.append( "DELETE FROM " );
-            stringBuilder.append( PostGISMappingsISODC.DatabaseTables.datasets.name() );
-            stringBuilder.append( " WHERE " ).append( PostGISMappingsISODC.CommonColumnNames.id.name() );
+            stringBuilder.append( mainTable );
+            stringBuilder.append( " WHERE " ).append( id );
             stringBuilder.append( " = ?" );
 
             deletableDatasets = new ArrayList<Integer>();
@@ -193,7 +193,7 @@ public class ExecuteStatements implements GenericDatabaseExecution {
 
         String rootTableAlias = builder.getAliasManager().getRootTableAlias();
         getDatasetIDs.append( " FROM " );
-        getDatasetIDs.append( databaseTable );
+        getDatasetIDs.append( mainTable );
         getDatasetIDs.append( " " );
         getDatasetIDs.append( rootTableAlias );
 
@@ -343,5 +343,5 @@ public class ExecuteStatements implements GenericDatabaseExecution {
         }
         return preparedStatement;
     }
-    
+
 }

@@ -46,6 +46,7 @@ import java.util.List;
 import javax.xml.namespace.QName;
 
 import org.apache.axiom.om.OMElement;
+import org.deegree.commons.jdbc.ConnectionManager.Type;
 import org.deegree.commons.utils.io.StreamBufferStore;
 import org.deegree.metadata.i18n.Messages;
 import org.deegree.metadata.persistence.MetadataInspectorException;
@@ -62,7 +63,7 @@ import org.slf4j.LoggerFactory;
  * @version $Revision$, $Date$
  */
 public class MetadataSchemaValidationInspector implements RecordInspector {
-
+   
     private static Logger LOG = LoggerFactory.getLogger( MetadataSchemaValidationInspector.class );
 
     /**
@@ -76,7 +77,6 @@ public class MetadataSchemaValidationInspector implements RecordInspector {
      */
     private List<String> validate( OMElement elem )
                             throws MetadataInspectorException {
-
         InputStream is = null;
         try {
             StreamBufferStore os = new StreamBufferStore();
@@ -93,10 +93,11 @@ public class MetadataSchemaValidationInspector implements RecordInspector {
         }
         // DublinCore
         return org.deegree.commons.xml.schema.SchemaValidator.validate( is, SCHEMA_URL );
+   
     }
 
     @Override
-    public OMElement inspect( OMElement record, Connection conn )
+    public OMElement inspect( OMElement record, Connection conn, Type connectionType )
                             throws MetadataInspectorException {
         List<String> errors = validate( record );
         if ( errors.isEmpty() ) {
@@ -111,5 +112,7 @@ public class MetadataSchemaValidationInspector implements RecordInspector {
             LOG.debug( msg );
             throw new MetadataInspectorException( msg );
         }
+
     }
+
 }

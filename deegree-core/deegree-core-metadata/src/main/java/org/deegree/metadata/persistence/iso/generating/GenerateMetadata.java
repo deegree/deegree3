@@ -427,14 +427,11 @@ public class GenerateMetadata {
         OMNamespace namespaceDC = factory.createOMNamespace( "http://purl.org/dc/elements/1.1/", "dc" );
 
         OMElement omType = factory.createOMElement( "type", namespaceDC );
-        // String identifier = qp.getIdentifier().get( 0 );
 
-        for ( String identifierDC : qp.getIdentifier() ) {
-            OMElement omIdentifier = factory.createOMElement( "identifier", namespaceDC );
-            omIdentifier.setText( identifierDC );
-            omElement.addChild( omIdentifier );
+        OMElement omIdentifier = factory.createOMElement( "identifier", namespaceDC );
+        omIdentifier.setText( qp.getIdentifier() );
+        omElement.addChild( omIdentifier );
 
-        }
         for ( String title : qp.getTitle() ) {
             OMElement omTitle = factory.createOMElement( "title", namespaceDC );
             omTitle.setText( title );
@@ -511,7 +508,7 @@ public class GenerateMetadata {
         // omElement.addChild( omModified );
         // }
 
-        if ( qp.getModified() != null && !qp.getModified()[0].equals( new Date( "0000-00-00" ) ) ) {
+        if ( qp.getModified() != null && !qp.getModified().equals( new Date( "0000-00-00" ) ) ) {
             OMElement omModified = factory.createOMElement( "modified", namespaceDCT );
             omModified.setText( qp.getModified().toString() );
             omElement.addChild( omModified );

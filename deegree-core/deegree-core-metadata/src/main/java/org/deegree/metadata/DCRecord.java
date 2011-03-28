@@ -73,7 +73,7 @@ public class DCRecord implements MetadataRecord {
 
     private final String[] titles;
 
-    private final String[] identifier;
+    private final String identifier;
 
     private final String[] _abstract;
 
@@ -83,7 +83,7 @@ public class DCRecord implements MetadataRecord {
 
     private final String[] formats;
 
-    private final Date[] modified;
+    private final Date modified;
 
     private final String[] relations;
 
@@ -168,13 +168,13 @@ public class DCRecord implements MetadataRecord {
     }
 
     @Override
-    public String[] getIdentifier() {
+    public String getIdentifier() {
 
         return identifier;
     }
 
     @Override
-    public Date[] getModified() {
+    public Date getModified() {
 
         return modified;
     }
@@ -312,9 +312,9 @@ public class DCRecord implements MetadataRecord {
             writer.writeCharacters( r );
             writer.writeEndElement();
         }
-        for ( Date d : getModified() ) {
+        if ( getModified() != null ) {
             writer.writeStartElement( dct.getPrefix(), "modified", dct.getNamespaceURI() );
-            writer.writeCharacters( d.getDate().toString() );
+            writer.writeCharacters( getModified().getDate().toString() );
             writer.writeEndElement();
         }
         for ( String a : getAbstract() ) {
@@ -336,9 +336,9 @@ public class DCRecord implements MetadataRecord {
 
     private void writeBriefElements( XMLStreamWriter writer )
                             throws XMLStreamException {
-        for ( String i : getIdentifier() ) {
+        if ( getIdentifier() != null ) {
             writer.writeStartElement( dc.getPrefix(), "identifier", dc.getNamespaceURI() );
-            writer.writeCharacters( i );
+            writer.writeCharacters( getIdentifier() );
             writer.writeEndElement();
         }
         for ( String t : getTitle() ) {

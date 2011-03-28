@@ -109,6 +109,7 @@ public class TstUtils {
                 if ( ta != null ) {
                     ta.rollback();
                     LOG.info( msg );
+                    e.printStackTrace();
                     // throw new MetadataInspectorException();
                 }
             } catch ( MetadataInspectorException e ) {

@@ -48,11 +48,14 @@ import java.util.List;
 import javax.xml.namespace.QName;
 
 import org.apache.axiom.om.OMElement;
+import org.deegree.commons.jdbc.ConnectionManager.Type;
 import org.deegree.commons.xml.NamespaceBindings;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.XPath;
 import org.deegree.metadata.i18n.Messages;
 import org.deegree.metadata.persistence.MetadataInspectorException;
+import org.deegree.metadata.persistence.iso.MSSQLMappingsISODC;
+import org.deegree.metadata.persistence.iso.PostGISMappingsISODC;
 import org.deegree.metadata.persistence.iso19115.jaxb.CoupledResourceInspector;
 import org.deegree.metadata.persistence.types.OperatesOnData;
 import org.slf4j.Logger;
@@ -87,13 +90,14 @@ public class CoupledDataInspector implements RecordInspector {
      * @param operatesOnStringUuIdAttribute
      * @return true if there is a coupling with a data-metadata, otherwise false.
      */
-    private boolean determineCoupling( Connection conn, List<String> operatesOnStringUuIdAttribute )
+    private boolean determineCoupling( Connection conn, List<String> operatesOnStringUuIdAttribute, Type connectionType )
                             throws MetadataInspectorException {
         // consistencyCheck( operatesOnStringUuIdAttribute );
         boolean isCoupled = false;
 
         for ( String a : operatesOnStringUuIdAttribute ) {
-            isCoupled = getCoupledDataMetadatasets( conn, a.trim() );
+//            isCoupled = getCoupledDataMetadatasets( a.trim(), connectionType );
+            isCoupled = getCoupledDataMetadatasets( conn, a.trim(), connectionType );
         }
 
         return isCoupled;
@@ -120,16 +124,22 @@ public class CoupledDataInspector implements RecordInspector {
     /**
      * If there is a data metadata record available for the service metadata record.
      * 
-     * @param conn
-     * 
      */
-    private boolean getCoupledDataMetadatasets( Connection conn, String resourceIdentifier )
+    private boolean getCoupledDataMetadatasets( Connection conn,String resourceIdentifier, Type connectionType )
                             throws MetadataInspectorException {
+        String resourceIdCol;
+        String mainTable;
+        if ( connectionType == Type.MSSQL ) {
+            resourceIdCol = MSSQLMappingsISODC.CommonColumnNames.resourceid.name();
+            mainTable = MSSQLMappingsISODC.DatabaseTables.idxtb_main.name();
+        } else {
+            resourceIdCol = PostGISMappingsISODC.CommonColumnNames.resourceid.name();
+            mainTable = PostGISMappingsISODC.DatabaseTables.idxtb_main.name();
+        }
         ResultSet rs = null;
         PreparedStatement stm = null;
         LOG.warn( "Check table / column names." );
-        String s = "SELECT resourceidentifier FROM isoqp_resourceidentifier WHERE resourceidentifier = ?;";
-
+        String s = "SELECT " + resourceIdCol + " FROM " + mainTable + " WHERE " + resourceIdCol + " = ?;";
         try {
             stm = conn.prepareStatement( s );
             stm.setString( 1, resourceIdentifier );
@@ -146,7 +156,7 @@ public class CoupledDataInspector implements RecordInspector {
     }
 
     @Override
-    public OMElement inspect( OMElement record, Connection conn )
+    public OMElement inspect( OMElement record, Connection conn, Type connectionType )
                             throws MetadataInspectorException {
 
         XMLAdapter a = new XMLAdapter( record );
@@ -203,15 +213,19 @@ public class CoupledDataInspector implements RecordInspector {
 
             } else {
                 LOG.debug( "coupling: tight/mixed..." );
-                boolean throwException = determineCoupling( conn, operatesOnUuidList )
+                boolean throwException = determineCoupling( conn, operatesOnUuidList, connectionType )
                                          && !checkConsistency( operatesOnUuidList, resourceIDs );
                 if ( throwException && config.isThrowConsistencyError() ) {
-                    String msg = Messages.getMessage( "ERROR_COUPLING" );
-                    LOG.debug( msg );
-                    throw new MetadataInspectorException( msg );
-                }
+                        String msg = Messages.getMessage( "ERROR_COUPLING" );
+                        LOG.debug( msg );
+                        throw new MetadataInspectorException( msg );
+                    }
             }
         }
         return record;
+    }
+
+    public CoupledResourceInspector getCi() {
+        return config;
     }
 }

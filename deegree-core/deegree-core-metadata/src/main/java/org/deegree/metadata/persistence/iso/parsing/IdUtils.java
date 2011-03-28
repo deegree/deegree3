@@ -38,6 +38,7 @@ package org.deegree.metadata.persistence.iso.parsing;
 import static org.deegree.commons.utils.JDBCUtils.close;
 import static org.slf4j.LoggerFactory.getLogger;
 
+import java.io.StringWriter;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -49,8 +50,11 @@ import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.deegree.commons.jdbc.ConnectionManager.Type;
 import org.deegree.metadata.i18n.Messages;
 import org.deegree.metadata.persistence.MetadataInspectorException;
+import org.deegree.metadata.persistence.iso.MSSQLMappingsISODC;
+import org.deegree.metadata.persistence.iso.PostGISMappingsISODC;
 import org.deegree.protocol.csw.MetadataStoreException;
 import org.slf4j.Logger;
 
@@ -69,13 +73,25 @@ public class IdUtils {
 
     private List<String> idList;
 
-    private IdUtils( Connection conn ) {
+    private String mainTable;
+
+    private String fileIdColumn;
+
+    private IdUtils( Connection conn, Type connectionType ) {
         this.conn = conn;
         idList = Collections.synchronizedList( new ArrayList<String>() );
+        if ( connectionType == Type.MSSQL ) {
+            mainTable = MSSQLMappingsISODC.DatabaseTables.idxtb_main.name();
+            fileIdColumn = MSSQLMappingsISODC.CommonColumnNames.fileidentifier.name();
+        }
+        if ( connectionType == Type.PostgreSQL ) {
+            mainTable = PostGISMappingsISODC.DatabaseTables.idxtb_main.name();
+            fileIdColumn = PostGISMappingsISODC.CommonColumnNames.fileidentifier.name();
+        }
     }
 
-    public static IdUtils newInstance( Connection conn ) {
-        return new IdUtils( conn );
+    public static IdUtils newInstance( Connection conn, Type connectionType ) {
+        return new IdUtils( conn, connectionType );
     }
 
     /**
@@ -117,7 +133,8 @@ public class IdUtils {
             }
             boolean uuidIsEqual = false;
 
-            String compareIdentifier = "SELECT identifier FROM qp_identifier WHERE identifier = ?";
+            String compareIdentifier = "SELECT " + fileIdColumn + " FROM " + mainTable + " WHERE " + fileIdColumn
+                                       + " = ?";
             stm = conn.prepareStatement( compareIdentifier );
             stm.setObject( 1, uuid );
             rs = stm.executeQuery();
@@ -140,7 +157,9 @@ public class IdUtils {
             close( stm );
         }
         return uuid;
+
     }
+
 
     public boolean checkUUIDCompliance( String uuid ) {
 
@@ -161,6 +180,9 @@ public class IdUtils {
                 return false;
             }
         }
+
         return true;
+
     }
+
 }

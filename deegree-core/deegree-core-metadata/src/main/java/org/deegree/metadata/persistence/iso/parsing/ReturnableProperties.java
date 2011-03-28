@@ -59,7 +59,7 @@ public class ReturnableProperties {
 
     private List<String> rights;
 
-    private String source;
+    private List<String> sources;
 
     private List<String> relation;
 
@@ -139,18 +139,27 @@ public class ReturnableProperties {
     }
 
     /**
-     * @return the source
+     * @return the firstsource
      */
     public String getSource() {
-        return source;
+        if ( sources != null && !sources.isEmpty() )
+            return sources.get( 0 );
+        return null;
     }
 
     /**
-     * @param source
-     *            the source to set
+     * @return the sources
      */
-    public void setSource( String source ) {
-        this.source = source;
+    public List<String> getSources() {
+        return sources;
+    }
+
+    /**
+     * @param sources
+     *            the sources to set
+     */
+    public void setSources( List<String> sources ) {
+        this.sources = sources;
     }
 
     /**

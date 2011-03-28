@@ -1,540 +1,205 @@
--- Create Tables 
-CREATE TABLE Datasets ( 
-	ID integer NOT NULL,
-	version integer,    -- version of the record 
+CREATE TABLE IDXTB_MAIN ( 
+	id integer NOT NULL,
+	version integer,   
 	status numeric(1),
-	AnyText text,    -- common queryable property (ISO AP 1.0): Whole resource text. 
-	Modified timestamp,    -- common queryable property (ISO AP 1.0): MD_Metadata.dateStamp .Date 
-	HasSecurityConstraints boolean,    -- additional queryable property (ISO AP 1.0): MD_Metadata.AbstractMD_Identification.resourceConstraints.MD_securityConstraints (If an instance of the class MD_SecurityConstraint exists for a resource, the "HasSecurityConstraints" is "true", otherwise "false") 
-	Language varchar(50),    -- additional queryable property (ISO AP 1.0): MD_Metadata.language 
-	ParentIdentifier varchar(150),    -- additional queryable property (ISO AP 1.0): MD_Metadata.parentIdentifier 
-    recordfull bytea NOT NULL
-	);
-COMMENT ON COLUMN Datasets.version
-    IS 'version of the record';
-COMMENT ON COLUMN Datasets.AnyText
-    IS 'common queryable property (ISO AP 1.0): Whole resource text.';
-COMMENT ON COLUMN Datasets.Modified
-    IS 'common queryable property (ISO AP 1.0): MD_Metadata.dateStamp .Date';
-COMMENT ON COLUMN Datasets.HasSecurityConstraints
-    IS 'additional queryable property (ISO AP 1.0): MD_Metadata.AbstractMD_Identification.resourceConstraints.MD_securityConstraints (If an instance of the class MD_SecurityConstraint exists for a resource, the "HasSecurityConstraints" is "true", otherwise "false")';
-COMMENT ON COLUMN Datasets.Language
-    IS 'additional queryable property (ISO AP 1.0): MD_Metadata.language';
-COMMENT ON COLUMN Datasets.ParentIdentifier
-    IS 'additional queryable property (ISO AP 1.0): MD_Metadata.parentIdentifier';
-
-CREATE TABLE ISOQP_Abstract ( 
-	ID integer NOT NULL,
-	fk_datasets integer NOT NULL,
-	Abstract text NOT NULL    -- MD_Metadata.identificationInfo.AbstractMD_Identification.abstract 
+	title varchar(500) NOT NULL, -- can occure multiple times, considering multi languages
+	alternatetitles varchar(500),
+	abstract text NOT NULL, -- can occure multiple times, considering multi languages
+	anytext text NOT NULL,
+	fileidentifier varchar(150) NOT NULL,
+	modified timestamp NOT NULL,
+	type varchar(15),
+	topicCategories varchar(1000), 
+	revisiondate timestamp,
+	creationdate timestamp,
+	publicationdate timestamp,
+	OrganisationName varchar(250),
+	HasSecurityConstraints boolean,
+	Language char(3),
+	ResourceId varchar(150),-- NOT NULL,
+	ParentId varchar(150),
+	ResourceLanguage char(3),
+	GeographicDescriptionCode varchar(500),
+	Denominator integer,
+	DistanceValue decimal(10,2),
+	DistanceUOM varchar(10),
+	TempExtent_begin timestamp,
+	TempExtent_end timestamp,
+	ServiceType varchar(10),
+	ServiceTypeVersion varchar(1000),
+	CouplingType varchar(10),
+	formats varchar(2000),
+	Operations varchar(2000),
+	degree boolean,
+	lineage text,
+	RespPartyRole varchar(20) NOT NULL,
+	SpecDate timestamp,
+	SpecDateType varchar(15),
+	SpecTitle varchar(500),
+	recordfull bytea NOT NULL
 );
-COMMENT ON TABLE ISOQP_Abstract
-    IS 'common queryable property (ISO AP 1.0)';
-COMMENT ON COLUMN ISOQP_Abstract.Abstract
-    IS 'MD_Metadata.identificationInfo.AbstractMD_Identification.abstract';
 
-CREATE TABLE ISOQP_AlternateTitle ( 
-	ID integer NOT NULL,
-	fk_datasets integer NOT NULL,
-	AlternateTitle varchar(500) NOT NULL    -- MD_Metadata.identificationInfo.AbstractMD_Identification.citation.CI_Citation.alternateTitle 
+-- ISO AP CQPs
+COMMENT ON COLUMN IDXTB_MAIN.version IS 'version of the record';
+COMMENT ON COLUMN IDXTB_MAIN.title IS 'A name given to the resource: MD_Metadata.identificationInfo[1].AbstractMD_Identification.citation.CI_Citation.title';
+COMMENT ON COLUMN IDXTB_MAIN.abstract IS 'A summary of the content of the resource: MD_Metadata.identificationInfo[1].AbstractMD_Identification.abstract';
+COMMENT ON COLUMN IDXTB_MAIN.anytext IS 'A target for full-text search of character data types in a catalogue';
+COMMENT ON COLUMN IDXTB_MAIN.fileidentifier IS 'A unique reference to the record within the catalogue: MD_Metadata.fileIdentifier';
+COMMENT ON COLUMN IDXTB_MAIN.modified IS 'Date on which the record was created or updated within the catalogue: MD_Metadata.dateStamp.Date';
+COMMENT ON COLUMN IDXTB_MAIN.type IS 'The nature or genre of the content of the resource. Type can include general categories, genres or aggregation levels of content: MD_Metadata.hierarchyLevel.MD_ScopeCode/@codeListValue. If MD_Metadata .hierarchyLevel is missing, Type will be considered as Dataset (default).';
+COMMENT ON COLUMN IDXTB_MAIN.topicCategories IS 'The topic of the content of the resource: this field will be addesser by CQP subject and TopicCategory!: MD_Metadata.identificationInfo[1].MD_DataIdentification.topicCategory (also MD_Metadata.identificationInfo.AbstractMD_Identification.descriptiveKeywords.MD_Keywords.keyword is mapped to CQP subject)';
+COMMENT ON COLUMN IDXTB_MAIN.revisiondate IS 'Revision date of the resource: MD_Metadata.identificationInfo[1].AbstractMD_Identification.citation.CI_Citation.date.CI_Date[dateType.CI_DateTypeCode.@codeListValue="revision"].date.Date';
+COMMENT ON COLUMN IDXTB_MAIN.creationdate IS 'Creation date of the resource: MD_Metadata.identificationInfo[1].AbstractMD_Identification.citation.CI_Citation.date.CI_Date[dateType.CI_DateTypeCode.@codeListValue="creation"].date.Date';
+COMMENT ON COLUMN IDXTB_MAIN.publicationdate IS 'Publication date of the resource: MD_Metadata.identificationInfo[1].AbstractMD_Identification.citation.CI_Citation.date.CI_Date[dateType.CI_DateTypeCode.@codeListValue="publication"].date.Date';
+COMMENT ON COLUMN IDXTB_MAIN.OrganisationName IS 'Name of the organisation providing the resource: MD_Metadata.identificationInfo[1].AbstractMD_Identification.pointOfContact.CI_ResponsibleParty.organisationName';
+COMMENT ON COLUMN IDXTB_MAIN.HasSecurityConstraints IS 'Are there any security constraints?: MD_Metadata.identificationInfo[1].AbstractMD_Identification.resourceConstraints.MD_SecurityConstraints';
+COMMENT ON COLUMN IDXTB_MAIN.Language IS 'Language of the metadata: MD_Metadata.language';
+COMMENT ON COLUMN IDXTB_MAIN.ResourceId IS 'Identifier of the resource: MD_Metadata.identificationInfo[1].AbstractMD_Identification.citation.CI_Citation.identifier.MD_Identifier.code';
+COMMENT ON COLUMN IDXTB_MAIN.ParentId IS 'Fileidentifier of the metadata to which this metadata is a subset (child): MD_Metadata.parentIdentifier';
+COMMENT ON COLUMN IDXTB_MAIN.ResourceLanguage IS 'Language(s) used within the dataset: MD_Metadata.identificationInfo[1].MD_DataIdentification.language';
+COMMENT ON COLUMN IDXTB_MAIN.GeographicDescriptionCode IS 'Description of the geographic area using identifiers. MD_Metadata.identificationInfo[1].MD_DataIdentification.extent.EX_Extent.geographicElement.EX_GeographicDescription.geographicIdentifier.MD_Identifier.code or MD_Metadata.identificationInfo[1].SV_ServiceIdentification.extent.EX_Extent.geographicElement.EX_GeographicDescription.geographicIdentifier.MD_Identifier.code';
+COMMENT ON COLUMN IDXTB_MAIN.Denominator IS 'Level of detail expressed as a scale factor or a ground distance. Here: the number below the line in a vulgar fraction. Only used, if DistanceValue and DistanceUOM are not used: MD_Metadata.identificationInfo[1].MD_DataIdentification.spatialResolution.MD_Resolution.equivalentScale.MD_RepresentativeFraction.denominator';
+COMMENT ON COLUMN IDXTB_MAIN.DistanceValue IS 'Sample ground distance. Here: the distance as decimal value. Only used, if Denominator is not used. MD_Metadata.identificationInfo[1].MD_DataIdentification.spatialResolution.MD_Resolution.distance.gco:Distance';
+COMMENT ON COLUMN IDXTB_MAIN.DistanceUOM IS 'Sample ground distance. Here: the name of the unit of measure. Only used, if Denominator is not used. MD_Metadata.identificationInfo[1].MD_DataIdentification.spatialResolution.MD_Resolution.distance.gco:Distance@uom';
+COMMENT ON COLUMN IDXTB_MAIN.TempExtent_begin IS 'Temporal extent information begin: MD_Metadata.identificationInfo[1].MD_DataIdentification.extent.EX_Extent.temporalElement.EX_TemporalExtent.extent.TimePeriod.beginPosition';
+COMMENT ON COLUMN IDXTB_MAIN.TempExtent_end IS 'Temporal extent information end: MD_Metadata.identificationInfo[1].MD_DataIdentification.extent.EX_Extent.temporalElement.EX_TemporalExtent.extent.TimePeriod.endPosition';
+COMMENT ON COLUMN IDXTB_MAIN.ServiceType IS 'Name of a service type. MD_Metadata.identificationInfo[1].SV_ServiceIdentification.serviceType';
+COMMENT ON COLUMN IDXTB_MAIN.ServiceTypeVersion IS 'The version of a service type. MD_Metadata.identificationInfo[1].SV_ServiceIdentification.serviceTypeVersion';
+COMMENT ON COLUMN IDXTB_MAIN.CouplingType IS 'The coupling type of thisservice: MD_Metadata.identificationInfo[1].SV_ServiceIdentification.couplingType.SV_CouplingType.code@codeListValue';
+COMMENT ON COLUMN IDXTB_MAIN.Operations IS 'Name of a service operation.: MD_Metadata.identificationInfo[1].SV_ServiceIdentification.containsOperations.SV_OperationMetadata.operationName';
+COMMENT ON COLUMN IDXTB_MAIN.formats IS 'The physical or digital manifestation of the resource: MD_Metadata.distributionInfo.MD_Distribution.distributionFormat.MD_Format.name';
+-- INSPIRE CQPs
+COMMENT ON COLUMN IDXTB_MAIN.degree IS 'This is the degree of conformity of the resource to the related specification: dataQualityInfo/*/report/*/result/*/pass';
+COMMENT ON COLUMN IDXTB_MAIN.lineage IS 'This is a statement on process history and/or overall quality of the spatial dataset. dataQualityInfo/*/lineage/*/statement';
+COMMENT ON COLUMN IDXTB_MAIN.RespPartyRole IS 'The function performed by the responsible party. identificationInfo[1]/*/pointOfContact/*/role';
+COMMENT ON COLUMN IDXTB_MAIN.SpecDate IS 'Reference date of specification: dataQualityInfo/*/report/*/result/*/specification/*/date/*/date';
+COMMENT ON COLUMN IDXTB_MAIN.SpecDateType IS 'Type reference date of specification: dataQualityInfo/*/report/*/result/*/specification/*/date/*/dateType';
+COMMENT ON COLUMN IDXTB_MAIN.SpecTitle IS 'Title of the specification dataQualityInfo/*/report/*/result/*/specification/*/title';
+
+
+--Geospatial column in idxtb_main.bbox
+SELECT AddGeometryColumn('public','idxtb_main','bbox','-1','POLYGON','2');
+
+CREATE TABLE IDXTB_Constraint ( 
+	id integer NOT NULL,
+	fk_main integer NOT NULL,
+	ConditionAppToAcc text,
+	AccessConstraints varchar(25),
+	OtherConstraints text,
+	Classification varchar(20)
 );
-COMMENT ON TABLE ISOQP_AlternateTitle
-    IS 'additional queryable property (ISO AP 1.0)';
-COMMENT ON COLUMN ISOQP_AlternateTitle.AlternateTitle
-    IS 'MD_Metadata.identificationInfo.AbstractMD_Identification.citation.CI_Citation.alternateTitle';
 
-CREATE TABLE ISOQP_BoundingBox ( 
-	ID integer NOT NULL,
-	fk_datasets integer NOT NULL,
-	Authority varchar(250),    -- MD_Metadata.referenceSystemInfo.MD_ReferenceSystem.referenceSystemIdentifier.RS_Identifier.codeSpace 
-	ID_CRS varchar(50),    -- MD_Metadata.referenceSystemInfo.MD_ReferenceSystem.referenceSystemIdentifier.RS_Identifier.code 
-	Version varchar(50)    -- MD_Metadata.referenceSystemInfo.MD_ReferenceSystem.referenceSystemIdentifier.RS_Identifier.version 
+COMMENT ON COLUMN IDXTB_Constraint.ConditionAppToAcc IS 'This metadata element defines the conditions for access and use of spatial datasets and services, and where applicable, corresponding fees as required by Articles 5-2 (b) and 11-2 (f). identificationInfo[1]/*/resourceConstraints/*/useLimitation';
+COMMENT ON COLUMN IDXTB_Constraint.AccessConstraints IS 'Access constraints applied to assure the protection of privacy or intellectual property, and any special restrictions or limitations on obtaining the resource. identificationInfo[1]/*/resourceConstraints/*/accessConstraints';
+COMMENT ON COLUMN IDXTB_Constraint.OtherConstraints IS 'other restrictions and legal prerequisites for accessing and using the resource: identificationInfo[1]/*/reso urceConstraints/*/otherC onstraints';
+COMMENT ON COLUMN IDXTB_Constraint.Classification IS 'name of the handling restrictions on the resource. identificationInfo[1]/*/resourceConstraints/*/classification';
+
+CREATE TABLE IDXTB_CRS ( 
+	id integer NOT NULL,
+	fk_main integer NOT NULL,
+	authority varchar(500),
+	crsid varchar(500) NOT NULL,
+	version varchar(50)
 );
-COMMENT ON TABLE ISOQP_BoundingBox
-    IS 'common queryable property (ISO AP 1.0): MD_Metadata.identificationInfo.MD_DataIdentification.extent.EX_Extent.geographicElement.EX_GeographicBoundingBox.westBoundLongitude,  MD_Metadata.identificationInfo.MD_DataIdentification.extent.EX_Extent.geographicElement.EX_GeographicBoundingBox.southBoundLatitude, MD_Metadata.identificationInfo.MD_DataIdentification.extent.EX_Extent.geographicElement.EX_GeographicBoundingBox.eastBoundLongitude, MD_Metadata.identificationInfo.MD_DataIdentification.extent.EX_Extent.geographicElement.EX_GeographicBoundingBox.northBoundLatitude 
- as BoundingBox';
 
-CREATE TABLE ISOQP_CouplingType ( 
-	ID integer NOT NULL,
-	fk_datasets integer NOT NULL,
-	CouplingType varchar(5) NOT NULL    -- MD_Metadata.identificationInfo.SV_ServiceIdentification.couplingType.SV_CouplingType.code@codeListValue 
+COMMENT ON COLUMN IDXTB_CRS.authority IS 'Authority of the CRS: MD_Metadata.referenceSystemInfo.MD_ReferenceSystem.referenceSystemIdentifier.RS_Identifier.codeSpace';
+COMMENT ON COLUMN IDXTB_CRS.crsid IS 'ID of the CRS: MD_Metadata.referenceSystemInfo.MD_ReferenceSystem.referenceSystemIdentifier.RS_Identifier.code';
+COMMENT ON COLUMN IDXTB_CRS.version IS 'Version to which the CRS encoding refers to: MD_Metadata.referenceSystemInfo.MD_ReferenceSystem.referenceSystemIdentifier.RS_Identifier.version';
+
+CREATE TABLE IDXTB_KEYWORD ( 
+	id integer NOT NULL,
+	fk_main integer NOT NULL,
+	keywords text NOT NULL,
+	keywordtype varchar(250)
 );
-COMMENT ON TABLE ISOQP_CouplingType
-    IS 'additional queryable property (ISO AP 1.0) - service';
-COMMENT ON COLUMN ISOQP_CouplingType.CouplingType
-    IS 'MD_Metadata.identificationInfo.SV_ServiceIdentification.couplingType.SV_CouplingType.code@codeListValue';
 
-CREATE TABLE ISOQP_CreationDate ( 
-	fk_datasets integer NOT NULL,
-	CreationDate timestamp NOT NULL,    -- MD_Identification.citation.CI_Citation.date.CI_Date[dateType.CI_DateTypeCode.@codeListValue='creation'].date.Date 
-	ID integer NOT NULL
+COMMENT ON COLUMN IDXTB_KEYWORD.keywords IS 'The topic of the content of the resource: MD_Metadata.identificationInfo[1].AbstractMD_Identification.descriptiveKeywords.MD_Keywords.keyword';
+COMMENT ON COLUMN IDXTB_KEYWORD.keywordtype IS 'Methods used to group similar keywords: MD_Metadata.identificationInfo.Abstract.MD_Identification.descriptiveKeywords.MD_Keywords.type';
+
+CREATE TABLE IDXTB_OperatesOnData ( 
+	id integer NOT NULL,
+	fk_main integer NOT NULL,
+	OperatesOn varchar(150),
+	OperatesOnId varchar(150) NOT NULL,
+	OperatesOnName varchar(150) NOT NULL
 );
-COMMENT ON TABLE ISOQP_CreationDate
-    IS 'additional queryable property (ISO AP 1.0)';
-COMMENT ON COLUMN ISOQP_CreationDate.CreationDate
-    IS 'MD_Identification.citation.CI_Citation.date.CI_Date[dateType.CI_DateTypeCode.@codeListValue=''creation''].date.Date';
 
-CREATE TABLE ISOQP_Format ( 
-	ID integer NOT NULL,
-	fk_datasets integer NOT NULL,
-	Format varchar(500) NOT NULL    -- MD_Metadata.distributionInfo.MD_Distribution.distributionFormat.MD_Format.name 
-);
-COMMENT ON TABLE ISOQP_Format
-    IS 'common queryable property (ISO AP 1.0)';
-COMMENT ON COLUMN ISOQP_Format.Format
-    IS 'MD_Metadata.distributionInfo.MD_Distribution.distributionFormat.MD_Format.name';
-
-CREATE TABLE ISOQP_GeographicDescriptionCode ( 
-	ID integer NOT NULL,
-	fk_datasets integer NOT NULL,
-	GeographicDescriptionCode varchar(50)    -- dataset, datasetcollection, application: MD_Metadata.identificationInfo.MD_DataIdentification.extent.EX_Extent.geographicElement.EX_GeographicDescription.geographicIdentifier.MD_Identifier.code 
--- service: MD_Metadata.identificationInfo.SV_ServiceIdentification.extent.EX_Extent.geographicElement.EX_GeographicDescription.geographicIdentifier.MD_Identifier.code 
-);
-COMMENT ON TABLE ISOQP_GeographicDescriptionCode
-    IS 'additional queryable property (ISO AP 1.0) - dataset, datasetcollection, application, service';
-COMMENT ON COLUMN ISOQP_GeographicDescriptionCode.GeographicDescriptionCode
-    IS 'dataset, datasetcollection, application: MD_Metadata.identificationInfo.MD_DataIdentification.extent.EX_Extent.geographicElement.EX_GeographicDescription.geographicIdentifier.MD_Identifier.code 
- service: MD_Metadata.identificationInfo.SV_ServiceIdentification.extent.EX_Extent.geographicElement.EX_GeographicDescription.geographicIdentifier.MD_Identifier.code';
-
-CREATE TABLE ISOQP_Keyword ( 
-	ID integer NOT NULL,
-	fk_datasets integer NOT NULL,
-	KeywordType varchar(50),    -- MD_Metadata.identificationInfo.AbstractMD_Identification.descriptiveKeywords.MD_Keywords.type 
-	Keyword varchar(500),    -- MD_Metadata.identificationInfo.AbstractMD_Identification.descriptiveKeywords.MD_Keywords.keyword 
-	Thesaurus varchar(500)    -- MD_Metadata.identificationInfo.AbstractMD_Identification.descriptiveKeywords.MD_Keywords.thesaurusName.CI_Citation.title 
-);
-COMMENT ON TABLE ISOQP_Keyword
-    IS 'contains the queryable properties:  KeywordType - additional queryable property (ISO AP 1.0) part of Subject (TopicCategory is missing) - common queryable property (ISO AP 1.0)';
-COMMENT ON COLUMN ISOQP_Keyword.KeywordType
-    IS 'MD_Metadata.identificationInfo.AbstractMD_Identification.descriptiveKeywords.MD_Keywords.type';
-COMMENT ON COLUMN ISOQP_Keyword.Keyword
-    IS 'MD_Metadata.identificationInfo.AbstractMD_Identification.descriptiveKeywords.MD_Keywords.keyword';
-COMMENT ON COLUMN ISOQP_Keyword.Thesaurus
-    IS 'MD_Metadata.identificationInfo.AbstractMD_Identification.descriptiveKeywords.MD_Keywords.thesaurusName.CI_Citation.title';
-
-CREATE TABLE ISOQP_OperatesOnData ( 
-	ID integer NOT NULL,
-	fk_datasets integer NOT NULL,
-	OperatesOn varchar(50),    -- MD_Metadata.identificationInfo.SV_ServiceIdentification.operatesOn.MD_DataIdentification.citation.CI_Citation.identifier 
-	OperatesOnIdentifier varchar(50),    -- MD_Metadata.identificationInfo.SV_ServiceIdentification.coupledResource.SV_CoupledResource.identifier 
-	OperatesOnName varchar(50)    -- MD_Metadata.identificationInfo.SV_ServiceIdentification.coupledResource.SV_CoupledResource.operationName 
-);
-COMMENT ON TABLE ISOQP_OperatesOnData
-    IS 'additional queryable property (ISO AP 1.0) - service';
-COMMENT ON COLUMN ISOQP_OperatesOnData.OperatesOn
-    IS 'MD_Metadata.identificationInfo.SV_ServiceIdentification.operatesOn.MD_DataIdentification.citation.CI_Citation.identifier';
-COMMENT ON COLUMN ISOQP_OperatesOnData.OperatesOnIdentifier
-    IS 'MD_Metadata.identificationInfo.SV_ServiceIdentification.coupledResource.SV_CoupledResource.identifier';
-COMMENT ON COLUMN ISOQP_OperatesOnData.OperatesOnName
-    IS 'MD_Metadata.identificationInfo.SV_ServiceIdentification.coupledResource.SV_CoupledResource.operationName';
-
-CREATE TABLE ISOQP_Operation ( 
-	ID integer NOT NULL,
-	fk_datasets integer NOT NULL,
-	Operation varchar(50) NOT NULL    -- MD_Metadata.identificationInfo.SV_ServiceIdentification.containsOperations.SV_OperationMetadata.operationName 
-);
-COMMENT ON TABLE ISOQP_Operation
-    IS 'additional queryable property (ISO AP 1.0) - service';
-COMMENT ON COLUMN ISOQP_Operation.Operation
-    IS 'MD_Metadata.identificationInfo.SV_ServiceIdentification.containsOperations.SV_OperationMetadata.operationName';
-
-CREATE TABLE ISOQP_OrganisationName ( 
-	ID integer NOT NULL,
-	fk_datasets integer NOT NULL,
-	OrganisationName varchar(500) NOT NULL    -- MD_Metadata.identificationInfo.AbstractMD_Identification.pointOfContact.CI_ResponsibleParty.organisationName 
-);
-COMMENT ON TABLE ISOQP_OrganisationName
-    IS 'additional queryable property (ISO AP 1.0)';
-COMMENT ON COLUMN ISOQP_OrganisationName.OrganisationName
-    IS 'MD_Metadata.identificationInfo.AbstractMD_Identification.pointOfContact.CI_ResponsibleParty.organisationName';
-
-CREATE TABLE ISOQP_PublicationDate ( 
-	ID integer NOT NULL,
-	fk_datasets integer NOT NULL,
-	PublicationDate timestamp NOT NULL    -- MD_Metadata.identificationInfo.AbstractMD_Identification.citation.CI_Citation.date.CI_Date[dateType.CI_DateTypeCode.@codeListValue='publication'].date.Date 
-);
-COMMENT ON TABLE ISOQP_PublicationDate
-    IS 'additional queryable property (ISO AP 1.0)';
-COMMENT ON COLUMN ISOQP_PublicationDate.PublicationDate
-    IS 'MD_Metadata.identificationInfo.AbstractMD_Identification.citation.CI_Citation.date.CI_Date[dateType.CI_DateTypeCode.@codeListValue=''publication''].date.Date';
-
-CREATE TABLE ISOQP_ResourceIdentifier ( 
-	ID integer NOT NULL,
-	fk_datasets integer NOT NULL,
-	ResourceIdentifier varchar(500) NOT NULL    -- MD_Metadata.identificationInfo.AbstractMD_Identification.citation.CI_Citation.identifier.MD_Identifier.code 
-);
-COMMENT ON TABLE ISOQP_ResourceIdentifier
-    IS 'additional queryable property (ISO AP 1.0)';
-COMMENT ON COLUMN ISOQP_ResourceIdentifier.ResourceIdentifier
-    IS 'MD_Metadata.identificationInfo.AbstractMD_Identification.citation.CI_Citation.identifier.MD_Identifier.code';
-
-CREATE TABLE ISOQP_ResourceLanguage ( 
-	ID integer NOT NULL,
-	fk_datasets integer NOT NULL,
-	ResourceLanguage varchar(50) NOT NULL    -- MD_Metadata.identificationInfo.MD_DataIdentification.language 
-);
-COMMENT ON TABLE ISOQP_ResourceLanguage
-    IS ' 	1) additional queryable property (ISO AP 1.0) - dataset, datasetcollection, application';
-COMMENT ON COLUMN ISOQP_ResourceLanguage.ResourceLanguage
-    IS 'MD_Metadata.identificationInfo.MD_DataIdentification.language';
-
-CREATE TABLE ISOQP_RevisionDate ( 
-	ID integer NOT NULL,
-	fk_datasets integer NOT NULL,
-	RevisionDate timestamp NOT NULL    -- MD_Metadata.identificationInfo.AbstractMD_Identification.citation.CI_Citation.date.CI_Date[dateType.CI_DateTypeCode.@codeListValue='revision'].date.Date 
-);
-COMMENT ON TABLE ISOQP_RevisionDate
-    IS 'additional queryable property (ISO AP 1.0)';
-COMMENT ON COLUMN ISOQP_RevisionDate.RevisionDate
-    IS 'MD_Metadata.identificationInfo.AbstractMD_Identification.citation.CI_Citation.date.CI_Date[dateType.CI_DateTypeCode.@codeListValue=''revision''].date.Date';
-
-CREATE TABLE ISOQP_ServiceType ( 
-	ID integer NOT NULL,
-	fk_datasets integer NOT NULL,
-	ServiceType varchar(50) NOT NULL    -- MD_Metadata.identificationInfo.SV_ServiceIdentification.serviceType 
-);
-COMMENT ON TABLE ISOQP_ServiceType
-    IS 'additional queryable property (ISO AP 1.0) - service';
-COMMENT ON COLUMN ISOQP_ServiceType.ServiceType
-    IS 'MD_Metadata.identificationInfo.SV_ServiceIdentification.serviceType';
-
-CREATE TABLE ISOQP_ServiceTypeVersion ( 
-	ID integer NOT NULL,
-	fk_datasets integer NOT NULL,
-	ServiceTypeVersion varchar(15) NOT NULL    -- MD_Metadata.identificationInfo.SV_ServiceIdentification.serviceTypeVersion 
-);
-COMMENT ON TABLE ISOQP_ServiceTypeVersion
-    IS 'additional queryable property (ISO AP 1.0) - service';
-COMMENT ON COLUMN ISOQP_ServiceTypeVersion.ServiceTypeVersion
-    IS 'MD_Metadata.identificationInfo.SV_ServiceIdentification.serviceTypeVersion';
-
-CREATE TABLE ISOQP_SpatialResolution ( 
-	ID integer NOT NULL,
-	fk_datasets integer NOT NULL,
-	Denominator integer,    -- MD_Metadata.identificationInfo.MD_DataIdentification.spatialResolution.MD_Resolution.equivalentScale.MD_RepresentativeFraction.denominator 
-	DistanceValue decimal(10,4),    -- MD_Metadata.identificationInfo.MD_DataIdentification.spatialResolution.MD_Resolution.distance.gco:Distance 
-	DistanceUOM varchar(50)    -- MD_Metadata.identificationInfo.MD_DataIdentification.spatialResolution.MD_Resolution.distance.gco:Distance@uom 
-);
-COMMENT ON TABLE ISOQP_SpatialResolution
-    IS 'additional queryable property (ISO AP 1.0) - dataset, datasetcollection, application';
-COMMENT ON COLUMN ISOQP_SpatialResolution.Denominator
-    IS 'MD_Metadata.identificationInfo.MD_DataIdentification.spatialResolution.MD_Resolution.equivalentScale.MD_RepresentativeFraction.denominator';
-COMMENT ON COLUMN ISOQP_SpatialResolution.DistanceValue
-    IS 'MD_Metadata.identificationInfo.MD_DataIdentification.spatialResolution.MD_Resolution.distance.gco:Distance';
-COMMENT ON COLUMN ISOQP_SpatialResolution.DistanceUOM
-    IS 'MD_Metadata.identificationInfo.MD_DataIdentification.spatialResolution.MD_Resolution.distance.gco:Distance@uom';
-
-CREATE TABLE ISOQP_TemporalExtent ( 
-	ID integer NOT NULL,
-	fk_datasets integer NOT NULL,
-	TempExtent_begin timestamp NOT NULL,    -- MD_Metadata.identificationInfo.MD_DataIdentification.extent.EX_Extent.temporalElement.EX_TemporalExtent.extent.TimePeriod.beginPosition 
-	TempExtent_end timestamp NOT NULL    -- MD_Metadata.identificationInfo.MD_DataIdentification.extent.EX_Extent.temporalElement.EX_TemporalExtent.extent.TimePeriod.endPosition 
-);
-COMMENT ON TABLE ISOQP_TemporalExtent
-    IS 'additional queryable property (ISO AP 1.0) - dataset, datasetcollection, application';
-COMMENT ON COLUMN ISOQP_TemporalExtent.TempExtent_begin
-    IS 'MD_Metadata.identificationInfo.MD_DataIdentification.extent.EX_Extent.temporalElement.EX_TemporalExtent.extent.TimePeriod.beginPosition';
-COMMENT ON COLUMN ISOQP_TemporalExtent.TempExtent_end
-    IS 'MD_Metadata.identificationInfo.MD_DataIdentification.extent.EX_Extent.temporalElement.EX_TemporalExtent.extent.TimePeriod.endPosition';
-
-CREATE TABLE ISOQP_Title ( 
-	ID integer NOT NULL,
-	fk_datasets integer NOT NULL,
-	Title varchar(500) NOT NULL    -- MD_Metadata.identificationInfo.AbstractMD_Identification.citation.CI_Citation.title 
-);
-COMMENT ON TABLE ISOQP_Title
-    IS 'common queryable property (ISO AP 1.0)';
-COMMENT ON COLUMN ISOQP_Title.Title
-    IS 'MD_Metadata.identificationInfo.AbstractMD_Identification.citation.CI_Citation.title';
-
-CREATE TABLE ISOQP_TopicCategory ( 
-	ID integer NOT NULL,
-	fk_datasets integer NOT NULL,
-	TopicCategory varchar(50) NOT NULL    -- MD_Metadata.identificationInfo.MD_DataIdentification.topicCategory 
-);
-COMMENT ON TABLE ISOQP_TopicCategory
-    IS 'additional queryable property (ISO AP 1.0) - dataset, datasetcollection, application';
-COMMENT ON COLUMN ISOQP_TopicCategory.TopicCategory
-    IS 'MD_Metadata.identificationInfo.MD_DataIdentification.topicCategory';
-
-CREATE TABLE ISOQP_Type ( 
-	ID integer NOT NULL,
-	fk_datasets integer NOT NULL,
-	Type varchar(50) NOT NULL    -- MD_Metadata.hierarchyLevel.MD_ScopeCode/@codeListValue. If MD_Metadata.hierarchyLevel is missing, 'Type' will be considered as "Dataset" (default). 
-);
-COMMENT ON TABLE ISOQP_Type
-    IS 'common queryable property (ISO AP 1.0)';
-COMMENT ON COLUMN ISOQP_Type.Type
-    IS 'MD_Metadata.hierarchyLevel.MD_ScopeCode/@codeListValue. If MD_Metadata.hierarchyLevel is missing, ''Type'' will be considered as "Dataset" (default).';
-
-CREATE TABLE QP_Identifier ( 
-ID integer NOT NULL,
-fk_datasets integer NOT NULL,
-identifier varchar(150) NOT NULL    -- MD_Metadata.fileIdentifier
-);
-COMMENT ON TABLE QP_Identifier
-    IS 'common queryable property (ISO AP 1.0)';
-COMMENT ON COLUMN QP_Identifier.identifier
-    IS 'MD_Metadata.fileIdentifier';
-
-
-CREATE TABLE DCQP_RIGHTS ( 
-	ID integer NOT NULL,
-	fk_datasets integer NOT NULL,
-	rights varchar(100) NOT NULL   
-);
-COMMENT ON TABLE DCQP_RIGHTS
-    IS 'dublin core queryable property (DC)';
-COMMENT ON COLUMN DCQP_RIGHTS.Rights
-    IS 'Rights is not in the ISO AP but in DC';
-
-
--- Create Primary Key Constraints 
-ALTER TABLE Datasets ADD CONSTRAINT PK_Datasets 
-	PRIMARY KEY (ID);
-	
-ALTER TABLE QP_Identifier ADD CONSTRAINT PK_QP_Identifier 
-	PRIMARY KEY (ID);
-
-
-ALTER TABLE ISOQP_Abstract ADD CONSTRAINT PK_ISOQP_Abstract 
-	PRIMARY KEY (ID);
-
-
-ALTER TABLE ISOQP_AlternateTitle ADD CONSTRAINT PK_ISOQP_AlternateTitle 
-	PRIMARY KEY (ID);
-
-
-ALTER TABLE ISOQP_BoundingBox ADD CONSTRAINT PK_ISOQP_BoundingBox 
-	PRIMARY KEY (ID);
-
-
-ALTER TABLE ISOQP_CouplingType ADD CONSTRAINT PK_ISOQP_CouplingType 
-	PRIMARY KEY (ID);
-
-
-ALTER TABLE ISOQP_CreationDate ADD CONSTRAINT PK_ISOQP_CreationDate 
-	PRIMARY KEY (ID);
-
-
-ALTER TABLE ISOQP_Format ADD CONSTRAINT PK_ISOQP_Format 
-	PRIMARY KEY (ID);
-
-
-ALTER TABLE ISOQP_GeographicDescriptionCode ADD CONSTRAINT PK_ISOQP_GeographicDescriptionCode 
-	PRIMARY KEY (ID);
-
-
-ALTER TABLE ISOQP_Keyword ADD CONSTRAINT PK_ISOQP_Keyword 
-	PRIMARY KEY (ID);
-
-
-ALTER TABLE ISOQP_OperatesOnData ADD CONSTRAINT PK_ISOQP_OperatesOnData 
-	PRIMARY KEY (ID);
-
-
-ALTER TABLE ISOQP_Operation ADD CONSTRAINT PK_ISOQP_Operation 
-	PRIMARY KEY (ID);
-
-
-ALTER TABLE ISOQP_OrganisationName ADD CONSTRAINT PK_ISOQP_OrganisationName 
-	PRIMARY KEY (ID);
-
-
-ALTER TABLE ISOQP_PublicationDate ADD CONSTRAINT PK_ISOQP_PublicationDate 
-	PRIMARY KEY (ID);
-
-
-ALTER TABLE ISOQP_ResourceIdentifier ADD CONSTRAINT PK_ISOQP_ResourceIdentifier 
-	PRIMARY KEY (ID);
-
-
-ALTER TABLE ISOQP_ResourceLanguage ADD CONSTRAINT PK_ISOQP_ResourceLanguage 
-	PRIMARY KEY (ID);
-
-
-ALTER TABLE ISOQP_RevisionDate ADD CONSTRAINT PK_ISOQP_RevisionDate 
-	PRIMARY KEY (ID);
-
-
-ALTER TABLE ISOQP_ServiceType ADD CONSTRAINT PK_ISOQP_ServiceType 
-	PRIMARY KEY (ID);
-
-
-ALTER TABLE ISOQP_ServiceTypeVersion ADD CONSTRAINT PK_ISOQP_ServiceTypeVersion 
-	PRIMARY KEY (ID);
-
-
-ALTER TABLE ISOQP_SpatialResolution ADD CONSTRAINT PK_ISOQP_SpatialResolution 
-	PRIMARY KEY (ID);
-
-
-ALTER TABLE ISOQP_TemporalExtent ADD CONSTRAINT PK_ISOQP_TemporalExtent 
-	PRIMARY KEY (ID);
-
-
-ALTER TABLE ISOQP_Title ADD CONSTRAINT PK_ISOQP_Title 
-	PRIMARY KEY (ID);
-
-
-ALTER TABLE ISOQP_TopicCategory ADD CONSTRAINT PK_ISOQP_TopicCategory 
-	PRIMARY KEY (ID);
-
-
-ALTER TABLE ISOQP_Type ADD CONSTRAINT PK_ISOQP_Type 
-	PRIMARY KEY (ID);
-
-
---ALTER TABLE UserDefinedQueryableProperties ADD CONSTRAINT PK_SelfQueryableProperties 
---	PRIMARY KEY (fk_datasets);
-
-
-ALTER TABLE DCQP_Rights ADD CONSTRAINT PK_DCQP_Rights 
-	PRIMARY KEY (ID);
-
-
-
--- Create Indexes 
-ALTER TABLE Datasets
-	ADD CONSTRAINT UQ_Datasets_ID UNIQUE (ID);
-ALTER TABLE QP_Identifier
-	ADD CONSTRAINT UQ_QP_Identifier_ID UNIQUE (ID);
-ALTER TABLE QP_Identifier
-	ADD CONSTRAINT UQ_QP_Identifier_Identifier UNIQUE (identifier);
-ALTER TABLE ISOQP_Abstract
-	ADD CONSTRAINT UQ_ISOQP_Abstract_ID UNIQUE (ID);
-ALTER TABLE ISOQP_AlternateTitle
-	ADD CONSTRAINT UQ_ISOQP_AlternateTitle_ID UNIQUE (ID);
-ALTER TABLE ISOQP_BoundingBox
-	ADD CONSTRAINT UQ_ISOQP_BoundingBox_ID UNIQUE (ID);
-ALTER TABLE ISOQP_CouplingType
-	ADD CONSTRAINT UQ_ISOQP_CouplingType_ID UNIQUE (ID);
-ALTER TABLE ISOQP_CreationDate
-	ADD CONSTRAINT UQ_ISOQP_CreationDate_ID UNIQUE (ID);
-ALTER TABLE ISOQP_Format
-	ADD CONSTRAINT UQ_ISOQP_Format_ID UNIQUE (ID);
-ALTER TABLE ISOQP_GeographicDescriptionCode
-	ADD CONSTRAINT UQ_ISOQP_GeographicDescriptionCode_ID UNIQUE (ID);
-ALTER TABLE ISOQP_Keyword
-	ADD CONSTRAINT UQ_ISOQP_Keyword_ID UNIQUE (ID);
-ALTER TABLE ISOQP_OperatesOnData
-	ADD CONSTRAINT UQ_ISOQP_OperatesOnData_ID UNIQUE (ID);
-ALTER TABLE ISOQP_Operation
-	ADD CONSTRAINT UQ_ISOQP_Operation_ID UNIQUE (ID);
-ALTER TABLE ISOQP_OrganisationName
-	ADD CONSTRAINT UQ_ISOQP_OrganisationName_ID UNIQUE (ID);
-ALTER TABLE ISOQP_PublicationDate
-	ADD CONSTRAINT UQ_ISOQP_PublicationDate_ID UNIQUE (ID);
-ALTER TABLE ISOQP_ResourceIdentifier
-	ADD CONSTRAINT UQ_ISOQP_ResourceIdentifier_ID UNIQUE (ID);
-ALTER TABLE ISOQP_ResourceLanguage
-	ADD CONSTRAINT UQ_ISOQP_ResourceLanguage_ID UNIQUE (ID);
-ALTER TABLE ISOQP_RevisionDate
-	ADD CONSTRAINT UQ_ISOQP_RevisionDate_ID UNIQUE (ID);
-ALTER TABLE ISOQP_ServiceType
-	ADD CONSTRAINT UQ_ISOQP_ServiceType_ID UNIQUE (ID);
-ALTER TABLE ISOQP_ServiceTypeVersion
-	ADD CONSTRAINT UQ_ISOQP_ServiceTypeVersion_ID UNIQUE (ID);
-ALTER TABLE ISOQP_SpatialResolution
-	ADD CONSTRAINT UQ_ISOQP_SpatialResolution_ID UNIQUE (ID);
-ALTER TABLE ISOQP_TemporalExtent
-	ADD CONSTRAINT UQ_ISOQP_TemporalExtent_ID UNIQUE (ID);
-ALTER TABLE ISOQP_Title
-	ADD CONSTRAINT UQ_ISOQP_Title_ID UNIQUE (ID);
-ALTER TABLE ISOQP_TopicCategory
-	ADD CONSTRAINT UQ_ISOQP_TopicCategory_ID UNIQUE (ID);
-ALTER TABLE ISOQP_Type
-	ADD CONSTRAINT UQ_ISOQP_Type_ID UNIQUE (ID);
---ALTER TABLE UserDefinedQueryableProperties
---	ADD CONSTRAINT UQ_SelfQueryableProperties_fk_datasets UNIQUE (fk_datasets);
-ALTER TABLE DCQP_Rights
-	ADD CONSTRAINT UQ_DCQP_Rights_ID UNIQUE (ID);
+COMMENT ON COLUMN IDXTB_OperatesOnData.OperatesOn IS 'Identifier of a dataset tightly coupled with the service instance: MD_Metadata.identificationInfo[1].SV_ServiceIdentification.operatesOn.MD_DataIdentification.citation.CI_Citation.identifier';
+COMMENT ON COLUMN IDXTB_OperatesOnData.OperatesOnId IS 'Identifier of a tightly coupled dataset on which the service operates with a specific operation: MD_Metadata.identificationInfo[1].SV_ServiceIdentification.coupledResource.SV_CoupledResource.identifier';
+COMMENT ON COLUMN IDXTB_OperatesOnData.OperatesOnName IS 'Name of an operation with which the service operates on a tightly coupled dataset with a specific identifier: MD_Metadata.identificationInfo[0].SV_ServiceIdentification.coupledResource.SV_CoupledResource.operationName';
+
+
+-- set primary keys including unique constraints
+ALTER TABLE IDXTB_MAIN ADD CONSTRAINT PK_IDXTB_MAIN PRIMARY KEY (id);
+ALTER TABLE IDXTB_Constraint ADD CONSTRAINT PK_Constraint PRIMARY KEY (id);
+ALTER TABLE IDXTB_CRS ADD CONSTRAINT PK_IDXTB_CRS  PRIMARY KEY (id);
+ALTER TABLE IDXTB_KEYWORD ADD CONSTRAINT PK_IDXTB_KEYWORD PRIMARY KEY (id);
+ALTER TABLE IDXTB_OperatesOnData ADD CONSTRAINT PK_OperatesOnData PRIMARY KEY (id);
+
+ALTER TABLE IDXTB_MAIN ADD CONSTRAINT UQ_IDXTB_MAIN_id UNIQUE (id);
+ALTER TABLE IDXTB_Constraint ADD CONSTRAINT UQ_Constraint_id UNIQUE (id);
+ALTER TABLE IDXTB_CRS ADD CONSTRAINT UQ_IDXTB_CRS_id UNIQUE (id);
+ALTER TABLE IDXTB_KEYWORD ADD CONSTRAINT UQ_IDXTB_KEYWORD_id UNIQUE (id);
+ALTER TABLE IDXTB_OperatesOnData ADD CONSTRAINT UQ_OperatesOnData_id UNIQUE (id);
 
 -- Create Foreign Key Constraints 
-ALTER TABLE QP_Identifier ADD CONSTRAINT FK_QP_Identifier_Datasets 
-	FOREIGN KEY (fk_datasets) REFERENCES Datasets (ID) ON DELETE CASCADE;
-	
-ALTER TABLE ISOQP_Abstract ADD CONSTRAINT FK_ISOQP_Abstract_Datasets 
-	FOREIGN KEY (fk_datasets) REFERENCES Datasets (ID) ON DELETE CASCADE;
+ALTER TABLE IDXTB_Constraint ADD CONSTRAINT FK_IDXTB_Constraint_IDXTB_MAIN FOREIGN KEY (fk_main) REFERENCES IDXTB_MAIN (ID) ON DELETE CASCADE;
+ALTER TABLE IDXTB_CRS ADD CONSTRAINT FK_IDXTB_CRS_IDXTB_MAIN FOREIGN KEY (fk_main) REFERENCES IDXTB_MAIN (ID) ON DELETE CASCADE;
+ALTER TABLE IDXTB_KEYWORD ADD CONSTRAINT FK_IDXTB_KEYWORD_IDXTB_MAIN FOREIGN KEY (fk_main) REFERENCES IDXTB_MAIN (ID) ON DELETE CASCADE;
+ALTER TABLE IDXTB_OperatesOnData ADD CONSTRAINT FK_IDXTB_OperatesOnData_IDXTB_MAIN FOREIGN KEY (fk_main) REFERENCES IDXTB_MAIN (ID) ON DELETE CASCADE;
 
-ALTER TABLE ISOQP_AlternateTitle ADD CONSTRAINT FK_ISOQP_AlternateTitle_Datasets 
-	FOREIGN KEY (fk_datasets) REFERENCES Datasets (ID) ON DELETE CASCADE;
+-- set index for alpha numeric columns 
+-- IDXTB_MAIN
+CREATE INDEX title_idx ON IDXTB_MAIN (title);
+CREATE INDEX abstract_idx ON IDXTB_MAIN (abstract);
+CREATE INDEX anytext_idx ON IDXTB_MAIN (anytext);
+CREATE INDEX fileidentifier_idx ON IDXTB_MAIN (fileidentifier);
+CREATE INDEX modified_idx ON IDXTB_MAIN (fileidentifier);
+CREATE INDEX type_idx ON IDXTB_MAIN (type);
+CREATE INDEX topicCategories_idx ON IDXTB_MAIN (topicCategories);
+CREATE INDEX publicationdate_idx ON IDXTB_MAIN (publicationdate);
+CREATE INDEX creationdate_idx ON IDXTB_MAIN (creationdate);
+CREATE INDEX revisiondate_idx ON IDXTB_MAIN (revisiondate);
+CREATE INDEX OrganisationName_idx ON IDXTB_MAIN (OrganisationName);
+CREATE INDEX Language_idx ON IDXTB_MAIN (Language);
+CREATE INDEX ResourceId_idx ON IDXTB_MAIN (ResourceId);
+CREATE INDEX ParentId_idx ON IDXTB_MAIN (ParentId);
+CREATE INDEX ResourceLanguage_idx ON IDXTB_MAIN (ResourceLanguage);
+CREATE INDEX Denominator_idx ON IDXTB_MAIN (Denominator);
+CREATE INDEX DistanceValue_idx ON IDXTB_MAIN (DistanceValue);
+CREATE INDEX DistanceUOM_idx ON IDXTB_MAIN (DistanceUOM);
+CREATE INDEX TempExtent_begin_idx ON IDXTB_MAIN (TempExtent_begin);
+CREATE INDEX TempExtent_end_idx ON IDXTB_MAIN (TempExtent_end);
+CREATE INDEX ServiceType_idx ON IDXTB_MAIN (ServiceType);
+CREATE INDEX ServiceTypeVersion_idx ON IDXTB_MAIN (ServiceTypeVersion);
+CREATE INDEX CouplingType_idx ON IDXTB_MAIN (CouplingType);
+CREATE INDEX lineage_idx ON IDXTB_MAIN (lineage);
+CREATE INDEX RespPartyRole_idx ON IDXTB_MAIN (RespPartyRole);
+CREATE INDEX SpecDate_idx ON IDXTB_MAIN (SpecDate);
+CREATE INDEX SpecDateType_idx ON IDXTB_MAIN (SpecDateType);
+CREATE INDEX SpecTitle_idx ON IDXTB_MAIN (SpecTitle);
+CREATE INDEX formats_idx ON IDXTB_MAIN (formats);
+CREATE INDEX Operations_idx ON IDXTB_MAIN (Operations);
+-- IDXTB_Constraint
+CREATE INDEX fk_main_constraint_idx ON IDXTB_Constraint (fk_main);
+CREATE INDEX ConditionAppToAcc_idx ON IDXTB_Constraint (ConditionAppToAcc);
+CREATE INDEX AccessConstraints_idx ON IDXTB_Constraint (AccessConstraints);
+CREATE INDEX OtherConstraints_idx ON IDXTB_Constraint (OtherConstraints);
+CREATE INDEX Classification_idx ON IDXTB_Constraint (Classification);
+-- IDXTB_CRS
+CREATE INDEX fk_main_crs_idx ON IDXTB_CRS (fk_main);
+CREATE INDEX crsid_idx ON IDXTB_CRS (crsid);
+CREATE INDEX authority_idx ON IDXTB_CRS (authority);
+CREATE INDEX version_idx ON IDXTB_CRS (version);
+-- IDXTB_KEYWORD
+CREATE INDEX fk_main_keyword_idx ON IDXTB_KEYWORD (fk_main);
+CREATE INDEX keywords_idx ON IDXTB_KEYWORD (keywords);
+CREATE INDEX keywordtype_idx ON IDXTB_KEYWORD (keywordtype);
+-- IDXTB_OperatesOnData
+CREATE INDEX fk_main_OperatesOnData_idx ON IDXTB_OperatesOnData (fk_main);
+CREATE INDEX OperatesOnId_idx ON IDXTB_OperatesOnData (OperatesOnId);
+CREATE INDEX OperatesOnName_idx ON IDXTB_OperatesOnData (OperatesOnName);
+CREATE INDEX OperatesOn_idx ON IDXTB_OperatesOnData (OperatesOn);
 
-ALTER TABLE ISOQP_BoundingBox ADD CONSTRAINT FK_ISOQP_BoundingBox_Datasets 
-	FOREIGN KEY (fk_datasets) REFERENCES Datasets (ID) ON DELETE CASCADE;
-
-ALTER TABLE ISOQP_CouplingType ADD CONSTRAINT FK_ISOQP_CouplingType_Datasets 
-	FOREIGN KEY (fk_datasets) REFERENCES Datasets (ID) ON DELETE CASCADE;
-
-ALTER TABLE ISOQP_CreationDate ADD CONSTRAINT FK_ISOQP_CreationDate_Datasets 
-	FOREIGN KEY (fk_datasets) REFERENCES Datasets (ID) ON DELETE CASCADE;
-
-ALTER TABLE ISOQP_Format ADD CONSTRAINT FK_ISOQP_Format_Datasets 
-	FOREIGN KEY (fk_datasets) REFERENCES Datasets (ID) ON DELETE CASCADE;
-
-ALTER TABLE ISOQP_GeographicDescriptionCode ADD CONSTRAINT FK_ISOQP_GeographicDescriptionCode_Datasets 
-	FOREIGN KEY (fk_datasets) REFERENCES Datasets (ID) ON DELETE CASCADE;
-
-ALTER TABLE ISOQP_Keyword ADD CONSTRAINT FK_ISOQP_KeywordType_Datasets 
-	FOREIGN KEY (fk_datasets) REFERENCES Datasets (ID) ON DELETE CASCADE;
-
-ALTER TABLE ISOQP_OperatesOnData ADD CONSTRAINT FK_ISOQP_OperatesOnData_Datasets 
-	FOREIGN KEY (fk_datasets) REFERENCES Datasets (ID) ON DELETE CASCADE;
-
-ALTER TABLE ISOQP_Operation ADD CONSTRAINT FK_ISOQP_Operation_Datasets 
-	FOREIGN KEY (fk_datasets) REFERENCES Datasets (ID) ON DELETE CASCADE;
-
-ALTER TABLE ISOQP_OrganisationName ADD CONSTRAINT FK_ISOQP_OrganisationName_Datasets 
-	FOREIGN KEY (fk_datasets) REFERENCES Datasets (ID) ON DELETE CASCADE;
-
-ALTER TABLE ISOQP_PublicationDate ADD CONSTRAINT FK_ISOQP_PublicationDate_Datasets 
-	FOREIGN KEY (fk_datasets) REFERENCES Datasets (ID) ON DELETE CASCADE;
-
-ALTER TABLE ISOQP_ResourceIdentifier ADD CONSTRAINT FK_ISOQP_ResourceIdentifier_Datasets 
-	FOREIGN KEY (fk_datasets) REFERENCES Datasets (ID) ON DELETE CASCADE;
-
-ALTER TABLE ISOQP_ResourceLanguage ADD CONSTRAINT FK_ISOQP_ResourceLanguage_Datasets 
-	FOREIGN KEY (fk_datasets) REFERENCES Datasets (ID) ON DELETE CASCADE;
-
-ALTER TABLE ISOQP_RevisionDate ADD CONSTRAINT FK_ISOQP_RevisionDate_Datasets 
-	FOREIGN KEY (fk_datasets) REFERENCES Datasets (ID) ON DELETE CASCADE;
-
-ALTER TABLE ISOQP_ServiceType ADD CONSTRAINT FK_ISOQP_ServiceType_Datasets 
-	FOREIGN KEY (fk_datasets) REFERENCES Datasets (ID) ON DELETE CASCADE;
-
-ALTER TABLE ISOQP_ServiceTypeVersion ADD CONSTRAINT FK_ISOQP_ServiceTypeVersion_Datasets 
-	FOREIGN KEY (fk_datasets) REFERENCES Datasets (ID) ON DELETE CASCADE;
-
-ALTER TABLE ISOQP_SpatialResolution ADD CONSTRAINT FK_ISOQP_SpatialResolution_Datasets 
-	FOREIGN KEY (fk_datasets) REFERENCES Datasets (ID) ON DELETE CASCADE;
-
-ALTER TABLE ISOQP_TemporalExtent ADD CONSTRAINT FK_ISOQP_TemporalExtent_Datasets 
-	FOREIGN KEY (fk_datasets) REFERENCES Datasets (ID) ON DELETE CASCADE;
-
-ALTER TABLE ISOQP_Title ADD CONSTRAINT FK_ISOQP_Title_Datasets 
-	FOREIGN KEY (fk_datasets) REFERENCES Datasets (ID) ON DELETE CASCADE;
-
-ALTER TABLE ISOQP_TopicCategory ADD CONSTRAINT FK_ISOQP_TopicCategory_Datasets 
-	FOREIGN KEY (fk_datasets) REFERENCES Datasets (ID) ON DELETE CASCADE;
-
-ALTER TABLE ISOQP_Type ADD CONSTRAINT FK_ISOQP_Type_Datasets 
-	FOREIGN KEY (fk_datasets) REFERENCES Datasets (ID) ON DELETE CASCADE;
-	
-ALTER TABLE DCQP_Rights ADD CONSTRAINT FK_DCQP_Rights_Datasets 
-	FOREIGN KEY (fk_datasets) REFERENCES Datasets (ID);
-
-	
-	
-	
---Source column in datasets
-ALTER TABLE datasets ADD COLUMN source character varying(250);
-ALTER TABLE datasets ALTER COLUMN source SET STORAGE EXTENDED;
-COMMENT ON COLUMN datasets.source IS 'common queryable property in DC, but is not supported in ISO AP';
-
---Association column in datasets
-ALTER TABLE datasets ADD COLUMN association character varying(50);
-ALTER TABLE datasets ALTER COLUMN association SET STORAGE EXTENDED;
-COMMENT ON COLUMN datasets.association IS 'common queryable property in DC, but is not supported in ISO AP';
-
---Geospatial column in isoqp_boundingbox
-SELECT AddGeometryColumn('public','isoqp_boundingbox','bbox','-1','POLYGON','2');
+-- set spatial index 
+CREATE INDEX IDXTB_MAIN_spx ON IDXTB_MAIN USING GIST ( bbox );

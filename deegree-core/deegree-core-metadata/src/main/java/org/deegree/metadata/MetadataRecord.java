@@ -58,7 +58,7 @@ public interface MetadataRecord {
 
     public QName getName();
 
-    public String[] getIdentifier();
+    public String getIdentifier();
 
     public String[] getTitle();
 
@@ -70,7 +70,7 @@ public interface MetadataRecord {
 
     public String[] getRelation();
 
-    public Date[] getModified();
+    public Date getModified();
 
     public String[] getAbstract();
 

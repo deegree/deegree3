@@ -40,6 +40,7 @@ import java.sql.Connection;
 import javax.xml.namespace.QName;
 
 import org.apache.axiom.om.OMElement;
+import org.deegree.commons.jdbc.ConnectionManager.Type;
 import org.deegree.commons.xml.NamespaceBindings;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.XPath;
@@ -70,7 +71,7 @@ public class HierarchyLevelInspector implements RecordInspector {
     }
 
     @Override
-    public OMElement inspect( OMElement record, Connection conn )
+    public OMElement inspect( OMElement record, Connection conn, Type connectionType )
                             throws MetadataInspectorException {
 
         XMLAdapter a = new XMLAdapter( record );

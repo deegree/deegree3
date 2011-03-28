@@ -26,6 +26,7 @@ import org.deegree.metadata.i18n.Messages;
 import org.deegree.metadata.persistence.MetadataInspectorException;
 import org.deegree.metadata.persistence.MetadataStoreTransaction;
 import org.deegree.metadata.persistence.iso.generating.GenerateQueryableProperties;
+import org.deegree.metadata.persistence.iso.parsing.IdUtils;
 import org.deegree.metadata.persistence.iso.parsing.inspectation.RecordInspector;
 import org.deegree.metadata.persistence.iso19115.jaxb.ISOMetadataStoreConfig.AnyText;
 import org.deegree.metadata.publication.DeleteTransaction;
@@ -118,20 +119,22 @@ public class ISOMetadataStoreTransaction implements MetadataStoreTransaction {
 
         List<String> identifierList = new ArrayList<String>();
         for ( OMElement element : insert.getElements() ) {
+
             try {
                 for ( RecordInspector r : inspectors ) {
-                    element = r.inspect( element, conn );
+                    element = r.inspect( element, conn, connectionType );
                 }
                 if ( element != null ) {
                     ISORecord rec = new ISORecord( element, anyText );
-                    GenerateQueryableProperties generateQP = new GenerateQueryableProperties( connectionType );
-                    int operatesOnId = generateQP.generateMainDatabaseDataset( conn, rec );
-                    generateQP.executeQueryableProperties( false, conn, operatesOnId, rec );
-                    identifierList.addAll( Arrays.asList( rec.getIdentifier() ) );
+                        GenerateQueryableProperties generateQP = new GenerateQueryableProperties( connectionType );
+                        int operatesOnId = generateQP.generateMainDatabaseDataset( conn, rec );
+                        generateQP.executeQueryableProperties( false, conn, operatesOnId, rec );
+                        identifierList.addAll( Arrays.asList( rec.getIdentifier() ) );
                 }
             } catch ( XMLStreamException e ) {
                 throw new MetadataStoreException( "Error on insert: " + e.getMessage(), e );
             }
+
         }
         return identifierList;
     }
@@ -144,7 +147,7 @@ public class ISOMetadataStoreTransaction implements MetadataStoreTransaction {
         if ( update.getElement() != null ) {
             OMElement element = update.getElement();
             for ( RecordInspector r : inspectors ) {
-                element = r.inspect( element, conn );
+                element = r.inspect( element, conn, connectionType );
             }
             ISORecord rec = new ISORecord( element, anyText );
             int operatesOnId = generateQP.updateMainDatabaseTable( conn, rec, null );
@@ -199,7 +202,7 @@ public class ISOMetadataStoreTransaction implements MetadataStoreTransaction {
                     // inspect element if it is still valid
                     OMElement element = rec.getAsOMElement();
                     for ( RecordInspector r : inspectors ) {
-                        element = r.inspect( element, conn );
+                        element = r.inspect( element, conn, connectionType );
                     }
                     int operatesOnId = generateQP.updateMainDatabaseTable( conn, rec, rec.getIdentifier() );
                     generateQP.executeQueryableProperties( true, conn, operatesOnId, rec );

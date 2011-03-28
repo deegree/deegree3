@@ -42,6 +42,7 @@ import static org.junit.Assert.assertTrue;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -81,8 +82,8 @@ import org.deegree.metadata.persistence.iso.helper.TstUtils;
 import org.deegree.metadata.publication.DeleteTransaction;
 import org.deegree.metadata.publication.MetadataProperty;
 import org.deegree.metadata.publication.UpdateTransaction;
-import org.deegree.protocol.csw.MetadataStoreException;
 import org.deegree.protocol.csw.CSWConstants.ReturnableElement;
+import org.deegree.protocol.csw.MetadataStoreException;
 import org.jaxen.JaxenException;
 import org.junit.Assert;
 import org.junit.Test;
@@ -106,7 +107,7 @@ public class CommonISOTest extends AbstractISOTest {
     @Test
     public void testInsert()
                             throws MetadataStoreException, FactoryConfigurationError, IOException,
-                            MetadataInspectorException, ResourceInitException {
+                            MetadataInspectorException, ResourceInitException, URISyntaxException {
         LOG.info( "START Test: testInsert" );
 
         if ( jdbcURL != null && jdbcUser != null && jdbcPass != null ) {
@@ -116,7 +117,9 @@ public class CommonISOTest extends AbstractISOTest {
             LOG.warn( "Skipping test (needs configuration)." );
             return;
         }
-        String test_folder = "/home/thomas/Dokumente/metadata/testCases/";
+        String test_folder = "/home/lyn/Dokumente/metadata/";
+        // URL data_folder = CommonISOTest.class.getResource( "../metadatarecords" );
+
         // String test_folder = "/home/thomas/Dokumente/metadata/test/";// CoreTstProperties.getProperty(
         // "iso_metadata_insert_test_folder"
         // );
@@ -128,15 +131,15 @@ public class CommonISOTest extends AbstractISOTest {
         File folder = new File( test_folder );
         File[] fileArray = folder.listFiles();
         // LOG.info( "" + fileArray.length );
-        URL[] urlArray = null;
-        if ( fileArray != null ) {
-            urlArray = new URL[fileArray.length];
-            int counter = 0;
-            for ( File f : fileArray ) {
-                urlArray[counter++] = new URL( "file:" + f.getAbsolutePath() );
+        if ( fileArray == null ) {
+            LOG.error( "test folder does not exist: " + test_folder );
+            return;
+        }
 
-            }
-
+        URL[] urlArray = new URL[fileArray.length];
+        int counter = 0;
+        for ( File f : fileArray ) {
+            urlArray[counter++] = new URL( "file:" + f.getAbsolutePath() );
         }
 
         TstUtils.insertMetadata( store, urlArray );
@@ -147,11 +150,8 @@ public class CommonISOTest extends AbstractISOTest {
         while ( resultSet.next() ) {
             size++;
         }
-
-        Assert.assertEquals( 3, size );
-
+        Assert.assertEquals( 1, size );
         // TODO test various queries
-
     }
 
     @Test
@@ -302,8 +302,7 @@ public class CommonISOTest extends AbstractISOTest {
         List<String> ids = TstUtils.insertMetadata( store, TstConstants.fullRecord );
         resultSet = store.getRecordById( ids );
 
-        XMLStreamReader xmlStreamActual = XMLInputFactory.newInstance().createXMLStreamReader(
-                                                                                               TstConstants.briefRecord.openStream() );
+        XMLStreamReader xmlStreamActual = XMLInputFactory.newInstance().createXMLStreamReader( TstConstants.briefRecord.openStream() );
 
         // create the should be output
         StringBuilder streamActual = TstUtils.stringBuilderFromXMLStream( xmlStreamActual );
@@ -351,8 +350,7 @@ public class CommonISOTest extends AbstractISOTest {
         List<String> ids = TstUtils.insertMetadata( store, TstConstants.fullRecord );
         resultSet = store.getRecordById( ids );
 
-        XMLStreamReader xmlStreamActual = XMLInputFactory.newInstance().createXMLStreamReader(
-                                                                                               TstConstants.summaryRecord.openStream() );
+        XMLStreamReader xmlStreamActual = XMLInputFactory.newInstance().createXMLStreamReader( TstConstants.summaryRecord.openStream() );
 
         // create the should be output
         StringBuilder streamActual = TstUtils.stringBuilderFromXMLStream( xmlStreamActual );
@@ -390,7 +388,7 @@ public class CommonISOTest extends AbstractISOTest {
             MetadataQuery query = new MetadataQuery( null, null, 1 );
             resultSet = store.getRecords( query );
             // identifier
-            String[] identifier = null;
+            String identifier = null;
             String[] title = null;
             String type = null;
             String[] subject = null;
@@ -412,9 +410,7 @@ public class CommonISOTest extends AbstractISOTest {
                 bbox = m.getBoundingBox();
             }
             StringBuilder s_ident = new StringBuilder();
-            for ( String id : identifier ) {
-                s_ident.append( id );
-            }
+            s_ident.append( identifier );
             StringBuilder s_title = new StringBuilder();
             for ( String t : title ) {
                 s_title.append( t );
@@ -495,15 +491,12 @@ public class CommonISOTest extends AbstractISOTest {
         MetadataRecord m = resultSet.getRecord();
         assertNotNull( m );
         assertTrue( m instanceof ISORecord );
-        String[] identifier = m.getIdentifier();
+        String identifier = m.getIdentifier();
 
         // test if the updated was successfull
-        for ( int i = 0; i < identifier.length; i++ ) {
-            if ( identifier[i].equals( idToUpdate ) ) {
-                String updatedString = ( (ISORecord) m ).getStringFromXPath( new XPath( xPath, nsContext ) );
-                Assert.assertEquals( value, updatedString );
-                break;
-            }
+        if ( identifier.equals( idToUpdate ) ) {
+            String updatedString = ( (ISORecord) m ).getStringFromXPath( new XPath( xPath, nsContext ) );
+            Assert.assertEquals( value, updatedString );
         }
     }
 
@@ -543,17 +536,14 @@ public class CommonISOTest extends AbstractISOTest {
         MetadataRecord m = resultSet.getRecord();
         assertNotNull( m );
         assertTrue( m instanceof ISORecord );
-        String[] identifier = m.getIdentifier();
+        String identifier = m.getIdentifier();
 
         // test if the updated was successfull
-        for ( int i = 0; i < identifier.length; i++ ) {
-            if ( identifier[i].equals( idToUpdate ) ) {
-                String updatedString = ( (ISORecord) m ).getStringFromXPath( new XPath(
-                                                                                        "/gmd:MD_Metadata/gmd:dateStamp/gco:Date",
-                                                                                        nsContext ) );
-                Assert.assertEquals( value, updatedString );
-                break;
-            }
+        if ( identifier.equals( idToUpdate ) ) {
+            String updatedString = ( (ISORecord) m ).getStringFromXPath( new XPath(
+                                                                                    "/gmd:MD_Metadata/gmd:dateStamp/gco:Date",
+                                                                                    nsContext ) );
+            Assert.assertEquals( value, updatedString );
         }
     }
 
@@ -595,20 +585,17 @@ public class CommonISOTest extends AbstractISOTest {
         MetadataRecord m = resultSet.getRecord();
         assertNotNull( m );
         assertTrue( m instanceof ISORecord );
-        String[] identifier = m.getIdentifier();
+        String identifier = m.getIdentifier();
 
         // test if the updated was successfull
-        for ( int i = 0; i < identifier.length; i++ ) {
-            if ( identifier[i].equals( idToUpdate ) ) {
-                String testXpath = xPath + "/gmd:CI_ResponsibleParty/gmd:individualName/gco:CharacterString";
-                OMElement updatedNode = ( (ISORecord) m ).getNodeFromXPath( new XPath( testXpath, nsContext ) );
+        if ( identifier.equals( idToUpdate ) ) {
+            String testXpath = xPath + "/gmd:CI_ResponsibleParty/gmd:individualName/gco:CharacterString";
+            OMElement updatedNode = ( (ISORecord) m ).getNodeFromXPath( new XPath( testXpath, nsContext ) );
 
-                AXIOMXPath p = new AXIOMXPath( testXpath );
-                p.setNamespaceContext( nsContext );
-                Object valueNode = p.selectSingleNode( value );
-                Assert.assertEquals( ( (OMElement) valueNode ).getText(), updatedNode.getText() );
-                break;
-            }
+            AXIOMXPath p = new AXIOMXPath( testXpath );
+            p.setNamespaceContext( nsContext );
+            Object valueNode = p.selectSingleNode( value );
+            Assert.assertEquals( ( (OMElement) valueNode ).getText(), updatedNode.getText() );
         }
 
     }
@@ -659,15 +646,12 @@ public class CommonISOTest extends AbstractISOTest {
         m = resultSet.getRecord();
         assertNotNull( m );
         assertTrue( m instanceof ISORecord );
-        String[] identifier = m.getIdentifier();
+        String identifier = m.getIdentifier();
 
         // test if the updated was successfull
-        for ( int i = 0; i < identifier.length; i++ ) {
-            if ( identifier[i].equals( idToUpdate ) ) {
-                updatedNode = ( (ISORecord) m ).getNodeFromXPath( new XPath( xPath, nsContext ) );
-                assertNull( updatedNode );
-                break;
-            }
+        if ( identifier.equals( idToUpdate ) ) {
+            updatedNode = ( (ISORecord) m ).getNodeFromXPath( new XPath( xPath, nsContext ) );
+            assertNull( updatedNode );
         }
     }
 
@@ -704,20 +688,17 @@ public class CommonISOTest extends AbstractISOTest {
         MetadataRecord m = resultSet.getRecord();
         assertNotNull( m );
         assertTrue( m instanceof ISORecord );
-        String[] identifier = m.getIdentifier();
+        String identifier = m.getIdentifier();
 
         // test if the updated was successfull
-        for ( int i = 0; i < identifier.length; i++ ) {
-            if ( identifier[i].equals( idToUpdate ) ) {
-                String testXpath = "/gmd:MD_Metadata/gmd:contact/gmd:CI_ResponsibleParty/gmd:organisationName/gco:CharacterString";
-                OMElement updatedNode = ( (ISORecord) m ).getNodeFromXPath( new XPath( testXpath, nsContext ) );
+        if ( identifier.equals( idToUpdate ) ) {
+            String testXpath = "/gmd:MD_Metadata/gmd:contact/gmd:CI_ResponsibleParty/gmd:organisationName/gco:CharacterString";
+            OMElement updatedNode = ( (ISORecord) m ).getNodeFromXPath( new XPath( testXpath, nsContext ) );
 
-                AXIOMXPath p = new AXIOMXPath( testXpath );
-                p.setNamespaceContext( nsContext );
-                Object valueNode = p.selectSingleNode( value );
-                Assert.assertEquals( ( (OMElement) valueNode ).getText(), updatedNode.getText() );
-                break;
-            }
+            AXIOMXPath p = new AXIOMXPath( testXpath );
+            p.setNamespaceContext( nsContext );
+            Object valueNode = p.selectSingleNode( value );
+            Assert.assertEquals( ( (OMElement) valueNode ).getText(), updatedNode.getText() );
         }
     }
 
@@ -755,20 +736,17 @@ public class CommonISOTest extends AbstractISOTest {
         MetadataRecord m = resultSet.getRecord();
         assertNotNull( m );
         assertTrue( m instanceof ISORecord );
-        String[] identifier = m.getIdentifier();
+        String identifier = m.getIdentifier();
 
         // test if the updated was successfull
-        for ( int i = 0; i < identifier.length; i++ ) {
-            if ( identifier[i].equals( idToUpdate ) ) {
-                String testXpath = "/gmd:MD_Metadata/gmd:contact/gmd:CI_ResponsibleParty/gmd:organisationName/gco:CharacterString";
-                OMElement updatedNode = ( (ISORecord) m ).getNodeFromXPath( new XPath( testXpath, nsContext ) );
+        if ( identifier.equals( idToUpdate ) ) {
+            String testXpath = "/gmd:MD_Metadata/gmd:contact/gmd:CI_ResponsibleParty/gmd:organisationName/gco:CharacterString";
+            OMElement updatedNode = ( (ISORecord) m ).getNodeFromXPath( new XPath( testXpath, nsContext ) );
 
-                AXIOMXPath p = new AXIOMXPath( testXpath );
-                p.setNamespaceContext( nsContext );
-                Object valueNode = p.selectSingleNode( value );
-                Assert.assertEquals( ( (OMElement) valueNode ).getText(), ( (OMElement) updatedNode ).getText() );
-                break;
-            }
+            AXIOMXPath p = new AXIOMXPath( testXpath );
+            p.setNamespaceContext( nsContext );
+            Object valueNode = p.selectSingleNode( value );
+            Assert.assertEquals( ( (OMElement) valueNode ).getText(), ( (OMElement) updatedNode ).getText() );
         }
     }
 

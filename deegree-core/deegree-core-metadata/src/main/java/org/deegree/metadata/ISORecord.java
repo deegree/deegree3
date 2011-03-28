@@ -236,14 +236,14 @@ public class ISORecord implements MetadataRecord {
             for ( String f : getFormat() ) {
                 sb.append( f ).append( STOPWORD );
             }
-            for ( String i : getIdentifier() ) {
-                sb.append( i ).append( STOPWORD );
+            if ( getIdentifier() != null ) {
+                sb.append( getIdentifier() ).append( STOPWORD );
             }
             if ( getLanguage() != null ) {
                 sb.append( getLanguage() ).append( STOPWORD );
             }
-            for ( Date i : getModified() ) {
-                sb.append( i.getDate() ).append( STOPWORD );
+            if ( getModified() != null ) {
+                sb.append( getModified().getDate() ).append( STOPWORD );
             }
             for ( String f : getRelation() ) {
                 sb.append( f ).append( STOPWORD );
@@ -348,14 +348,12 @@ public class ISORecord implements MetadataRecord {
     }
 
     @Override
-    public String[] getIdentifier() {
-
+    public String getIdentifier() {
         return pElem.getQueryableProperties().getIdentifier();
     }
 
     @Override
-    public Date[] getModified() {
-
+    public Date getModified() {
         return pElem.getQueryableProperties().getModified();
     }
 
@@ -739,7 +737,7 @@ public class ISORecord implements MetadataRecord {
 
     @Override
     public String toString() {
-        return getIdentifier()[0];
+        return getIdentifier();
     }
 
 }

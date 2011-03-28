@@ -35,6 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.metadata.persistence.iso.parsing;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.deegree.commons.tom.datetime.Date;
@@ -43,6 +44,7 @@ import org.deegree.metadata.persistence.types.BoundingBox;
 import org.deegree.metadata.persistence.types.Format;
 import org.deegree.metadata.persistence.types.Keyword;
 import org.deegree.metadata.persistence.types.OperatesOnData;
+import org.deegree.metadata.persistence.types.inspire.Constraint;
 
 /**
  * Properties that are queryable by applicationprofiles such as ISO application profile version 1.0 document 07-045.
@@ -66,9 +68,9 @@ public class QueryableProperties {
 
     private List<Format> format;
 
-    private String[] identifier;
+    private String identifier;
 
-    private Date[] modified;
+    private Date modified;
 
     private String type;
 
@@ -94,11 +96,11 @@ public class QueryableProperties {
 
     private String language;
 
-    private List<String> resourceIdentifier;
+    private List<String> resourceIdentifiers;
 
     private String parentIdentifier;
 
-    private List<String> resourceLanguage;
+    private List<String> resourceLanguages;
 
     private List<String> topicCategory;
 
@@ -140,13 +142,9 @@ public class QueryableProperties {
 
     private Date specificationDate;
 
-    private List<String> limitation;
+    private List<Constraint> constraints;
 
-    private List<String> accessConstraints;
-
-    private List<String> otherConstraints;
-
-    private List<String> classification;
+    private String respPartyRole;
 
     /**
      * @return the degree
@@ -209,84 +207,39 @@ public class QueryableProperties {
     }
 
     /**
-     * @return the limitation
+     * @return the constraints
      */
-    public List<String> getLimitation() {
-        return limitation;
+    public List<Constraint> getConstraints() {
+        return constraints;
     }
 
     /**
-     * @param limitation
-     *            the limitation to set
+     * @param constraints
+     *            the constraints to set
      */
-    public void setLimitation( List<String> limitation ) {
-        this.limitation = limitation;
-    }
-
-    /**
-     * @return the accessConstraints
-     */
-    public List<String> getAccessConstraints() {
-        return accessConstraints;
-    }
-
-    /**
-     * @param accessConstraints
-     *            the accessConstraints to set
-     */
-    public void setAccessConstraints( List<String> accessConstraints ) {
-        this.accessConstraints = accessConstraints;
-    }
-
-    /**
-     * @return the otherConstraints
-     */
-    public List<String> getOtherConstraints() {
-        return otherConstraints;
-    }
-
-    /**
-     * @param otherConstraints
-     *            the otherConstraints to set
-     */
-    public void setOtherConstraints( List<String> otherConstraints ) {
-        this.otherConstraints = otherConstraints;
-    }
-
-    /**
-     * @return the classification
-     */
-    public List<String> getClassification() {
-        return classification;
-    }
-
-    /**
-     * @param classification
-     *            the classification to set
-     */
-    public void setClassification( List<String> classification ) {
-        this.classification = classification;
+    public void setConstraints( List<Constraint> constraints ) {
+        this.constraints = constraints;
     }
 
     /**
      * @return the lineage
      */
-    public String getLineage() {
-        return lineage;
+    public List<String> getLineages() {
+        return lineages;
     }
 
     /**
      * @param lineage
      *            the lineage to set
      */
-    public void setLineage( String lineage ) {
-        if ( lineage != null ) {
-            lineage = lineage.replace( "'", "''" );
+    public void setLineages( List<String> lineages ) {
+        this.lineages = new ArrayList<String>();
+        for ( String lineage : lineages ) {
+            this.lineages.add( lineage.replace( "'", "''" ) );
         }
-        this.lineage = lineage;
     }
 
-    private String lineage;
+    private List<String> lineages;
 
     // ---</additional common queryable properties for INSPIRE>
 
@@ -342,7 +295,7 @@ public class QueryableProperties {
     /**
      * @return the identifier
      */
-    public String[] getIdentifier() {
+    public String getIdentifier() {
         return identifier;
     }
 
@@ -350,14 +303,14 @@ public class QueryableProperties {
      * @param identifier
      *            the identifier to set
      */
-    public void setIdentifier( String[] identifier ) {
+    public void setIdentifier( String identifier ) {
         this.identifier = identifier;
     }
 
     /**
      * @return the modified
      */
-    public Date[] getModified() {
+    public Date getModified() {
         return modified;
     }
 
@@ -365,7 +318,7 @@ public class QueryableProperties {
      * @param modified
      *            the modified to set
      */
-    public void setModified( Date[] modified ) {
+    public void setModified( Date modified ) {
         this.modified = modified;
     }
 
@@ -462,16 +415,25 @@ public class QueryableProperties {
     /**
      * @return the resourceLanguage
      */
-    public List<String> getResourceLanguage() {
-        return resourceLanguage;
+    public String getResourceLanguage() {
+        if ( resourceLanguages != null && !resourceLanguages.isEmpty() )
+            return resourceLanguages.get( 0 );
+        return null;
     }
 
     /**
-     * @param resourceLanguage
-     *            the resourceLanguage to set
+     * @return the resourceLanguages
      */
-    public void setResourceLanguage( List<String> resourceLanguage ) {
-        this.resourceLanguage = resourceLanguage;
+    public List<String> getResourceLanguages() {
+        return resourceLanguages;
+    }
+
+    /**
+     * @param resourceLanguages
+     *            the resourceLanguages to set
+     */
+    public void setResourceLanguages( List<String> resourceLanguages ) {
+        this.resourceLanguages = resourceLanguages;
     }
 
     /**
@@ -570,16 +532,25 @@ public class QueryableProperties {
     /**
      * @return the resourceIdentifier
      */
-    public List<String> getResourceIdentifier() {
-        return resourceIdentifier;
+    public String getResourceIdentifier() {
+        if ( resourceIdentifiers != null && !resourceIdentifiers.isEmpty() )
+            return resourceIdentifiers.get( 0 );
+        return null;
     }
 
     /**
-     * @param resourceIdentifier
-     *            the resourceIdentifier to set
+     * @return the resourceIdentifiers
      */
-    public void setResourceIdentifier( List<String> resourceIdentifier ) {
-        this.resourceIdentifier = resourceIdentifier;
+    public List<String> getResourceIdentifiers() {
+        return resourceIdentifiers;
+    }
+
+    /**
+     * @param resourceIdentifiers
+     *            the resourceIdentifiers to set
+     */
+    public void setResourceIdentifiers( List<String> resourceIdentifiers ) {
+        this.resourceIdentifiers = resourceIdentifiers;
     }
 
     /**
@@ -779,6 +750,24 @@ public class QueryableProperties {
      */
     public void setTemporalExtentEnd( Date temporalExtentEnd ) {
         this.temporalExtentEnd = temporalExtentEnd;
+    }
+
+    /**
+     * @return the respPartyRole
+     */
+    public String getRespPartyRole() {
+        return respPartyRole;
+    }
+
+    /**
+     * @param respPartyRole
+     *            the respPartyRole to set
+     */
+    public void setRespPartyRole( String respPartyRole ) {
+        if ( respPartyRole != null ) {
+            respPartyRole = respPartyRole.replace( "'", "''" );
+        }
+        this.respPartyRole = respPartyRole;
     }
 
 }

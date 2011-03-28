@@ -35,6 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.metadata.persistence.iso;
 
+import static org.deegree.commons.jdbc.ConnectionManager.Type.MSSQL;
 import static org.deegree.commons.jdbc.ConnectionManager.Type.PostgreSQL;
 import static org.deegree.commons.utils.JDBCUtils.close;
 import static org.slf4j.LoggerFactory.getLogger;
@@ -112,33 +113,30 @@ public class ISOMetadataStore implements MetadataStore {
 
     private final List<RecordInspector> inspectorChain = new ArrayList<RecordInspector>();
 
-    // TODO remove...just inside for getById
-    private static final String datasets = PostGISMappingsISODC.DatabaseTables.datasets.name();
-
-    private static final String qp_identifier = PostGISMappingsISODC.DatabaseTables.qp_identifier.name();
-
-    private static final String id = PostGISMappingsISODC.CommonColumnNames.id.name();
-
-    private static final String backendIdentifier = PostGISMappingsISODC.CommonColumnNames.identifier.name();
-
-    // private static final String data = PostGISMappingsISODC.CommonColumnNames.data.name();
-
-    private static final String recordfull = PostGISMappingsISODC.CommonColumnNames.recordfull.name();
-
-    // private final Map<String, String> varToValue;
-
     /**
      * Creates a new {@link ISOMetadataStore} instance from the given JAXB configuration object.
      * 
      * @param config
+     * @throws ResourceInitException
      */
-    public ISOMetadataStore( ISOMetadataStoreConfig config ) {
+    public ISOMetadataStore( ISOMetadataStoreConfig config ) throws ResourceInitException {
         this.connectionId = config.getJDBCConnId();
         this.config = config;
+
+        DeegreeWorkspace dw = DeegreeWorkspace.getInstance();
+        ConnectionManager mgr = dw.getSubsystemManager( ConnectionManager.class );
+        this.connectionType = mgr.getType( connectionId );
+
+        // this.connectionType = ConnectionManager.getType( connectionId );
+
+        if ( connectionType == null )
+            throw new ResourceInitException( "ConnectionType is null, this may not be!" );
+        if ( connectionType != PostgreSQL && connectionType != MSSQL )
+            throw new ResourceInitException( "ConnectionType " + connectionType
+                                             + "is not supported, only Postgres and MSSql are supported, yet!" );
         // this.varToValue = new HashMap<String, String>();
         // String systemStartDate = "2010-11-16";
         // varToValue.put( "${SYSTEM_START_DATE}", systemStartDate );
-
         // build inspector chain
         Inspectors inspectors = config.getInspectors();
         if ( inspectors != null ) {
@@ -227,17 +225,14 @@ public class ISOMetadataStore implements MetadataStore {
     @Override
     public void init( DeegreeWorkspace workspace )
                             throws ResourceInitException {
-
         LOG.debug( "init" );
         // lockManager = new DefaultLockManager( this, "LOCK_DB" );
-
         ConnectionManager mgr = workspace.getSubsystemManager( ConnectionManager.class );
         connectionType = mgr.getType( connectionId );
         if ( connectionType == PostgreSQL ) {
             Connection conn = null;
             try {
                 conn = ConnectionManager.getConnection( connectionId );
-
                 String version = determinePostGISVersion( conn );
                 if ( version.startsWith( "0." ) || version.startsWith( "1.0" ) || version.startsWith( "1.1" )
                      || version.startsWith( "1.2" ) ) {
@@ -254,7 +249,6 @@ public class ISOMetadataStore implements MetadataStore {
                 close( conn );
             }
         }
-
     }
 
     private String determinePostGISVersion( Connection conn ) {
@@ -302,23 +296,18 @@ public class ISOMetadataStore implements MetadataStore {
     @Override
     public MetadataResultSet getRecords( MetadataQuery query )
                             throws MetadataStoreException {
-
         String operationName = "getRecords";
         LOG.debug( Messages.getMessage( "INFO_EXEC", operationName ) );
         Connection conn = null;
         MetadataResultSet result = null;
-
         try {
             conn = ConnectionManager.getConnection( connectionId );
-
             AbstractWhereBuilder builder = getWhereBuilder( query );
-
             result = doResultsOnGetRecord( query, builder, conn );
             // break;
             // case hits:
             // resultType = doHitsOnGetRecord( query, ResultType.hits, builder, conn, new ExecuteStatements() );
             // result = new ISOMetadataResultSet( null, conn, resultType, config.getAnyText() );
-
         } catch ( FilterEvaluationException e ) {
             String msg = Messages.getMessage( "ERROR_OPERATION", operationName, e.getLocalizedMessage() );
             LOG.debug( msg );
@@ -328,7 +317,6 @@ public class ISOMetadataStore implements MetadataStore {
             LOG.debug( msg );
             throw new MetadataStoreException( msg );
         }
-
         return result;
     }
 
@@ -347,16 +335,13 @@ public class ISOMetadataStore implements MetadataStore {
         Connection conn = null;
         try {
             AbstractWhereBuilder builder = getWhereBuilder( query );
-
             conn = ConnectionManager.getConnection( connectionId );
-
             ps = new ExecuteStatements( connectionType ).executeCounting( builder, conn );
             LOG.info( ps.toString() );
             rs = ps.executeQuery();
             rs.next();
             countRows = rs.getInt( 1 );
             LOG.info( "rs for rowCount: " + rs.getInt( 1 ) );
-
         } catch ( Throwable t ) {
             JDBCUtils.close( rs, ps, conn, LOG );
             String msg = Messages.getMessage( "ERROR_REQUEST_TYPE", ResultType.results.name(), t.getMessage() );
@@ -365,9 +350,7 @@ public class ISOMetadataStore implements MetadataStore {
         } finally {
             JDBCUtils.close( rs, ps, conn, LOG );
         }
-
         return countRows;
-
     }
 
     /**
@@ -391,19 +374,25 @@ public class ISOMetadataStore implements MetadataStore {
             LOG.debug( msg );
             throw new MetadataStoreException( msg );
         }
-
         return new ISOMetadataResultSet( rs, conn, preparedStatement, config.getAnyText() );
-
     }
 
     @Override
     public MetadataResultSet getRecordById( List<String> idList )
                             throws MetadataStoreException {
-
-        String operationName = "getRecordsById";
-
-        LOG.debug( Messages.getMessage( "INFO_EXEC", operationName ) );
-
+        LOG.debug( Messages.getMessage( "INFO_EXEC", "getRecordsById" ) );
+        String mainTable;
+        String fileidentifier;
+        String recordfull;
+        if ( connectionType == Type.MSSQL ) {
+            mainTable = MSSQLMappingsISODC.DatabaseTables.idxtb_main.name();
+            fileidentifier = MSSQLMappingsISODC.CommonColumnNames.fileidentifier.name();
+            recordfull = MSSQLMappingsISODC.CommonColumnNames.recordfull.name();
+        } else {
+            mainTable = PostGISMappingsISODC.DatabaseTables.idxtb_main.name();
+            fileidentifier = PostGISMappingsISODC.CommonColumnNames.fileidentifier.name();
+            recordfull = PostGISMappingsISODC.CommonColumnNames.recordfull.name();
+        }
         ResultSet rs = null;
         Connection conn = null;
         PreparedStatement stmt = null;
@@ -412,21 +401,15 @@ public class ISOMetadataStore implements MetadataStore {
             conn = ConnectionManager.getConnection( connectionId );
 
             StringBuilder select = new StringBuilder();
-            select.append( "SELECT " ).append( "d." ).append( recordfull );
-            select.append( " FROM " ).append( datasets ).append( " AS d" ).append( ',' );
-            select.append( qp_identifier );
-            select.append( " AS i" );
-            select.append( " WHERE d." ).append( id );
-            select.append( " = " ).append( "i.fk_datasets" ).append( " AND (" );
+            select.append( "SELECT " ).append( recordfull );
+            select.append( " FROM " ).append( mainTable );
+            select.append( " WHERE " );
             for ( int iter = 0; iter < size; iter++ ) {
-                select.append( "i." );
-                select.append( backendIdentifier ).append( " = ? " );
+                select.append( fileidentifier ).append( " = ? " );
                 if ( iter < size - 1 ) {
                     select.append( " OR " );
                 }
-
             }
-            select.append( ')' );
 
             stmt = conn.prepareStatement( select.toString() );
             LOG.debug( "select RecordById statement: " + stmt );
@@ -452,7 +435,6 @@ public class ISOMetadataStore implements MetadataStore {
     @Override
     public MetadataStoreTransaction acquireTransaction()
                             throws MetadataStoreException {
-
         ISOMetadataStoreTransaction ta = null;
         Connection conn = null;
         try {

@@ -44,6 +44,7 @@ import java.util.List;
 import javax.xml.namespace.QName;
 
 import org.apache.axiom.om.OMElement;
+import org.deegree.commons.jdbc.ConnectionManager.Type;
 import org.deegree.commons.xml.NamespaceBindings;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.XPath;
@@ -90,8 +91,8 @@ public class FIInspector implements RecordInspector {
      *            the uuid-attribure, can be <Code>null</Code>.
      * @return the new fileIdentifier.
      */
-    private List<String> determineFileIdentifier( Connection conn, String[] fi, List<String> rsList, String id,
-                                                  String uuid )
+    private List<String> determineFileIdentifier( Connection conn, String[] fi, List<String> rsList, String id, String uuid,
+                                                  Type connectionType )
                             throws MetadataInspectorException {
         List<String> idList = new ArrayList<String>();
         if ( fi.length != 0 ) {
@@ -105,7 +106,7 @@ public class FIInspector implements RecordInspector {
             if ( rsList.size() == 0 && id == null && uuid == null ) {
 
                 LOG.debug( Messages.getMessage( "INFO_FI_GENERATE_NEW" ) );
-                idList.add( IdUtils.newInstance( conn ).generateUUID() );
+                idList.add( IdUtils.newInstance( conn, connectionType ).generateUUID() );
                 LOG.debug( Messages.getMessage( "INFO_FI_NEW", idList ) );
             } else {
                 if ( rsList.size() == 0 && id != null ) {
@@ -133,7 +134,7 @@ public class FIInspector implements RecordInspector {
     }
 
     @Override
-    public OMElement inspect( OMElement record, Connection conn )
+    public OMElement inspect( OMElement record, Connection conn, Type connectionType )
                             throws MetadataInspectorException {
 
         XMLAdapter a = new XMLAdapter( record );
@@ -159,10 +160,11 @@ public class FIInspector implements RecordInspector {
                                                                       nsContext ), null );
             LOG.debug( "resourceIdentifier: '" + resourceIdentifier + "' " );
             resourceIdentifierList.add( resourceIdentifier );
+
         }
 
         List<String> idList = determineFileIdentifier( conn, fileIdentifierString, resourceIdentifierList,
-                                                       dataIdentificationId, dataIdentificationUuId );
+                                                       dataIdentificationId, dataIdentificationUuId, connectionType );
         if ( !idList.isEmpty() && fileIdentifierString.length == 0 ) {
             for ( String id : idList ) {
                 OMElement firstElement = record.getFirstElement();
@@ -171,4 +173,5 @@ public class FIInspector implements RecordInspector {
         }
         return record;
     }
+
 }

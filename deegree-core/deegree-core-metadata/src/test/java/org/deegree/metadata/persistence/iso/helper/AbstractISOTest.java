@@ -130,7 +130,12 @@ public abstract class AbstractISOTest {
             stmt = conn.createStatement();
 
             for ( String sql : new ISOMetadataStoreProvider().getDropStatements( TstConstants.configURL ) ) {
-                stmt.executeUpdate( sql );
+                try {
+                    stmt.executeUpdate( sql );
+                } catch ( Exception e ) {
+                    // TODO: handle exception
+                    System.out.println(e.getMessage());
+                }
             }
 
             for ( String sql : new ISOMetadataStoreProvider().getCreateStatements( TstConstants.configURL ) ) {
@@ -170,7 +175,7 @@ public abstract class AbstractISOTest {
         Statement stmt = null;
         try {
             stmt = conn.createStatement();
-            String sql = "DELETE from datasets;";
+            String sql = "DELETE from idxtb_main;";
             stmt.executeUpdate( sql );
 
         } finally {

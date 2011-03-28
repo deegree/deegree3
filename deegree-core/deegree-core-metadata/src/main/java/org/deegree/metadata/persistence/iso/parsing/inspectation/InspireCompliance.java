@@ -38,6 +38,7 @@ package org.deegree.metadata.persistence.iso.parsing.inspectation;
 import java.sql.Connection;
 
 import org.apache.axiom.om.OMElement;
+import org.deegree.commons.jdbc.ConnectionManager.Type;
 import org.deegree.metadata.persistence.MetadataInspectorException;
 
 /**
@@ -50,7 +51,7 @@ import org.deegree.metadata.persistence.MetadataInspectorException;
  */
 public interface InspireCompliance {
 
-    OMElement inspect( OMElement record, Connection conn )
+    OMElement inspect( OMElement record, Connection conn, Type connectionType )
                             throws MetadataInspectorException;
 
 }
