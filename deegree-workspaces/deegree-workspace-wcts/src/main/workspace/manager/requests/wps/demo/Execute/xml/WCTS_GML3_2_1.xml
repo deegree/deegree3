@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<wps:Execute service="WPS" version="1.0.0" xmlns:wps="http://www.opengis.net/wps/1.0.0" xmlns:ows="http://www.opengis.net/ows/1.1"
+  xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/wps/1.0.0
+http://schemas.opengis.net/wps/1.0.0/wpsExecute_request.xsd">
+  <!--
+    An example TransformCoordinates Process (inspire WPS application profile equivalent to the OGC:WCTS) execute request. Demonstrates: transforming
+    GML3.2.1 input data
+  -->
+  <ows:Identifier>TransformCoordinates</ows:Identifier>
+  <wps:DataInputs>
+    <wps:Input>
+      <ows:Identifier>SourceCRS</ows:Identifier>
+      <wps:Data>
+        <wps:LiteralData>epsg:4326</wps:LiteralData>
+      </wps:Data>
+    </wps:Input>
+    <wps:Input>
+      <ows:Identifier>TargetCRS</ows:Identifier>
+      <wps:Data>
+        <wps:LiteralData>epsg:31466</wps:LiteralData>
+      </wps:Data>
+    </wps:Input>
+    <wps:Input>
+      <ows:Identifier>InputData</ows:Identifier>
+      <wps:Data>
+        <wps:ComplexData mimeType="text/xml; subtype=gml/3.2.1">
+          <gml:Curve gml:id="C11" xsi:schemaLocation="http://www.opengis.net/gml/3.2 http://schemas.opengis.net/gml/3.2.1/gml.xsd" xmlns:gml="http://www.opengis.net/gml/3.2"
+            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+            <gml:segments>
+              <gml:Clothoid>
+                <gml:refLocation>
+                  <gml:AffinePlacement>
+                    <gml:location srsName="epsg:4326">7.5 52</gml:location>
+                    <gml:refDirection>10 1</gml:refDirection>
+                    <gml:refDirection>11 8</gml:refDirection>
+                    <gml:inDimension>2</gml:inDimension>
+                    <gml:outDimension>2</gml:outDimension>
+                  </gml:AffinePlacement>
+                </gml:refLocation>
+                <gml:scaleFactor>10</gml:scaleFactor>
+                <gml:startParameter>5</gml:startParameter>
+                <gml:endParameter>3</gml:endParameter>
+              </gml:Clothoid>
+            </gml:segments>
+          </gml:Curve>
+        </wps:ComplexData>
+      </wps:Data>
+    </wps:Input>
+  </wps:DataInputs>
+  <wps:ResponseForm>
+    <wps:RawDataOutput mimeType="text/xml; subtype=gml/3.2.1">
+      <ows:Identifier>TransformedData</ows:Identifier>
+    </wps:RawDataOutput>
+  </wps:ResponseForm>
+</wps:Execute>

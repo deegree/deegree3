@@ -1,0 +1,73 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>org.deegree</groupId>
+  <artifactId>deegree-workspace-utah</artifactId>
+  <packaging>deegree-workspace</packaging>
+  <version>3.1-pre4-SNAPSHOT</version>
+  <name>deegree 3 Utah Demo</name>
+  <url>http://maven.apache.org</url>
+
+  <parent>
+    <groupId>org.deegree</groupId>
+    <artifactId>deegree-workspace-parent</artifactId>
+    <version>3.1-pre4-SNAPSHOT</version>
+  </parent>
+
+  <repositories>
+    <repository>
+      <id>deegree-repo</id>
+      <url>http://artefacts.deegree.org/repo</url>
+      <releases>
+        <updatePolicy>never</updatePolicy>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+    </repository>
+  </repositories>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <version>2.0</version>
+        <executions>
+          <execution>
+            <phase>generate-resources</phase>
+            <goals>
+              <goal>unpack-dependencies</goal>
+            </goals>
+            <configuration>
+              <type>zip</type>
+              <includeGroupIds>org.deegree</includeGroupIds>
+              <includeArtifactIds>utah-demodata</includeArtifactIds>
+              <outputDirectory>src/main/webapp/WEB-INF/workspace/</outputDirectory>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.deegree</groupId>
+      <artifactId>deegree-workspace-base</artifactId>
+      <version>3.1-pre4-SNAPSHOT</version>
+      <type>deegree-workspace</type>
+    </dependency>
+    <dependency>
+      <groupId>org.deegree</groupId>
+      <artifactId>utah-demodata</artifactId>
+      <version>3.1</version>
+      <type>zip</type>
+    </dependency>
+    <dependency>
+      <groupId>org.deegree</groupId>
+      <artifactId>deegree-services-wfs</artifactId>
+      <version>3.1-pre4-SNAPSHOT</version>
+    </dependency>
+  </dependencies>
+
+</project>

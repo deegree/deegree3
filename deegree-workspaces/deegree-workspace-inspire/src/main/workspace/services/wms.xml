@@ -1,0 +1,74 @@
+<deegreeWMS xmlns="http://www.deegree.org/services/wms" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" configVersion="3.0.0" xsi:schemaLocation="http://www.deegree.org/services/wms http://schemas.deegree.org/services/wms/3.0.0/wms_configuration.xsd">
+  <ServiceConfiguration>
+
+    <UnrequestableLayer>
+      <Title>Root Layer</Title>
+      <CRS>EPSG:4258 EPSG:4326 EPSG:900913 EPSG:28992</CRS>
+
+      <!-- Layers from AdministrativeUnit (AU) data theme -->
+      <RequestableLayer>
+        <Name>AU.AdministrativeUnit</Name>
+        <Title>Administrative unit</Title>
+        <FeatureStoreId>inspire</FeatureStoreId>
+        <DirectStyle>
+          <File>../styles/AU_AdministrativeUnit_Default.xml</File>
+          <Name>AU.AdministrativeUnit.Default</Name>
+        </DirectStyle>
+      </RequestableLayer>
+      <RequestableLayer>
+        <Name>AU.AdministrativeBoundary</Name>
+        <Title>Administrative boundary</Title>
+        <FeatureStoreId>inspire</FeatureStoreId>
+        <DirectStyle>
+          <File>../styles/AU_AdministrativeBoundary_Default.xml</File>
+          <Name>AU.AdministrativeBoundary.Default</Name>
+        </DirectStyle>
+      </RequestableLayer>
+
+      <!-- Layers from Cadastral Parcel (CP) data theme -->
+      <RequestableLayer>
+        <Name>CP.CadastralParcel</Name>
+        <Title>Cadastral Parcels</Title>
+        <FeatureStoreId>inspire</FeatureStoreId>
+        <DirectStyle>
+          <File>../styles/CP_CadastralParcel_Default.xml</File>
+          <Name>CP.CadastralParcel.Default</Name>
+        </DirectStyle>
+        <DirectStyle>
+          <File>../styles/CP_CadastralParcel_BoundariesOnly.xml</File>
+          <Name>CP.CadastralParcel.BoundariesOnly</Name>
+        </DirectStyle>
+      </RequestableLayer>    
+      <RequestableLayer>
+        <Name>CP.CadastralZoning</Name>
+        <Title>Cadastral Zoning Default Style</Title>
+        <FeatureStoreId>inspire</FeatureStoreId>
+        <DirectStyle>
+          <File>../styles/CP_CadastralZoning.xml</File>
+          <Name>CP.CadastralZoning</Name>
+        </DirectStyle>
+      </RequestableLayer>
+      <RequestableLayer>
+        <Name>CP.CadastralBoundary</Name>
+        <Title>Cadastral Boundary Default Style</Title>
+        <FeatureStoreId>inspire</FeatureStoreId>
+        <DirectStyle>
+          <File>../styles/CP_CadastralBoundary.xml</File>
+          <Name>CP.CadastralBoundary</Name>
+        </DirectStyle>
+      </RequestableLayer>
+
+      <!-- Layers from Address (AD) data theme -->
+      <RequestableLayer>
+        <Name>AD.Address</Name>
+        <Title>Addresses</Title>
+        <FeatureStoreId>inspire</FeatureStoreId>
+        <DirectStyle>
+          <File>../styles/AD_Address_Default.xml</File>
+          <Name>AD.Address.Default</Name>
+        </DirectStyle>
+      </RequestableLayer>
+
+    </UnrequestableLayer>
+  </ServiceConfiguration>
+</deegreeWMS>

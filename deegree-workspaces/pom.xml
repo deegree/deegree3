@@ -1,0 +1,64 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>org.deegree</groupId>
+  <artifactId>deegree-workspaces</artifactId>
+  <packaging>pom</packaging>
+  <version>3.1-pre4-SNAPSHOT</version>
+  <name>deegree workspaces</name>
+  <url>http://maven.apache.org</url>
+
+  <scm>
+    <developerConnection>scm:svn:svn+ssh://svn.wald.intevation.org/deegree/applications/deegree-workspaces/trunk/</developerConnection>
+    <url>svn+ssh://svn.wald.intevation.org/deegree/applications/deegree-workspaces/trunk/</url>
+  </scm>
+
+  <parent>
+    <groupId>org.deegree</groupId>
+    <artifactId>deegree-parent</artifactId>
+    <version>3.1-pre4-SNAPSHOT</version>
+  </parent>
+
+  <repositories>
+    <repository>
+      <id>deegree-repo</id>
+      <url>http://artefacts.deegree.org/repo</url>
+      <releases>
+        <updatePolicy>never</updatePolicy>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+    </repository>
+  </repositories>
+
+  <modules>
+    <module>deegree-workspace-parent</module>
+    <module>deegree-workspace-base</module>
+    <module>deegree-workspace-aixm</module>
+    <module>deegree-workspace-csw</module>
+    <module>deegree-workspace-geosciml</module>
+    <module>deegree-workspace-inspire</module>
+    <module>deegree-workspace-sos</module>
+    <module>deegree-workspace-tests</module>
+    <module>deegree-workspace-utah</module>
+    <module>deegree-workspace-wcts</module>
+    <module>deegree-workspace-wps</module>
+    <module>deegree-workspace-wpvs</module>
+    <module>deegree-workspace-xplan40</module>
+  </modules>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-release-plugin</artifactId>
+        <version>2.1</version>
+        <configuration>
+          <preparationGoals>clean install</preparationGoals>
+          <tagBase>svn+ssh://svn.wald.intevation.org/deegree/applications/deegree-workspaces/tags/</tagBase>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+
+</project>

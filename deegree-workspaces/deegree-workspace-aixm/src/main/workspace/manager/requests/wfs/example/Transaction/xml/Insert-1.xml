@@ -1,0 +1,34 @@
+<wfs:Transaction xmlns:wfs="http://www.opengis.net/wfs" version="1.1.0" service="WFS" xmlns:gml="http://www.opengis.net/gml/3.2" xmlns:aixm="http://www.aixm.aero/schema/5.1">
+  <wfs:Insert handle="insert" idgen="UseExisting" inputFormat="text/xml; subtype=gml/3.2.1">
+    <aixm:Airspace gml:id="id.86bef5ed-020d-4c22-8e6c-a96a2c0b4a18">
+      <gml:identifier codeSpace="urn:ietf:rfc:4122">86bef5ed-020d-4c22-8e6c-a96a2c0b4a18</gml:identifier>
+      <aixm:timeSlice>
+        <aixm:AirspaceTimeSlice gml:id="id.86bef5ed-020d-4c22-8e6c-a96a2c0b4a18.BASELINE">
+          <gml:validTime>
+            <gml:TimePeriod gml:id="id.86bef5ed-020d-4c22-8e6c-a96a2c0b4a18.BASELINE.validTime">
+              <gml:beginPosition>2000-01-01</gml:beginPosition>
+              <gml:endPosition/>
+            </gml:TimePeriod>
+          </gml:validTime>
+          <aixm:interpretation>BASELINE</aixm:interpretation>
+          <aixm:sequenceNumber>1</aixm:sequenceNumber>
+          <aixm:correctionNumber>0</aixm:correctionNumber>
+          <aixm:type>OTHER:SOMETYPE</aixm:type>
+          <aixm:designator>SOMEDESIG</aixm:designator>
+          <aixm:name>SOMENAME</aixm:name>
+          <aixm:activation>
+            <aixm:AirspaceActivation gml:id="id.86bef5ed-020d-4c22-8e6c-a96a2c0b4a18.BASELINE.activation">
+              <aixm:status>AVBL_FOR_ACTIVATION</aixm:status>
+              <aixm:levels>
+                <aixm:AirspaceLayer gml:id="id.86bef5ed-020d-4c22-8e6c-a96a2c0b4a18.BASELINE.levels">
+                  <aixm:upperLimit uom="FL">400</aixm:upperLimit>
+                  <aixm:lowerLimit uom="FL">300</aixm:lowerLimit>
+                </aixm:AirspaceLayer>
+              </aixm:levels>
+            </aixm:AirspaceActivation>
+          </aixm:activation>
+        </aixm:AirspaceTimeSlice>
+      </aixm:timeSlice>
+    </aixm:Airspace>
+  </wfs:Insert>
+</wfs:Transaction>
