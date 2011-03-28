@@ -67,10 +67,6 @@ public abstract class XMLFileResource extends XMLAdapter implements XMLResource 
     /**
      * @param provider
      *            to use for the reverse lookup of coordinate systems, required
-     * @param properties
-     *            to read the crs configuration file from, required, a property crs.configuration should be present, if
-     *            not the crs.default.configuration property is checked, if this is missing as well, a
-     *            {@link NullPointerException} will be thrown.
      * @param requiredRootLocalName
      *            check for the root elements localname, may be <code>null</code>
      * @param requiredNamespace
@@ -80,7 +76,7 @@ public abstract class XMLFileResource extends XMLAdapter implements XMLResource 
         if ( provider == null ) {
             throw new NullPointerException( "The provider is null, this may not be." );
         }
-        if ( file == null || "".equals( file ) ) {
+        if ( file == null ) {
             throw new NullPointerException(
                                             "The CRS_FILE property was not set, this resolver can not function without a file. " );
         }
