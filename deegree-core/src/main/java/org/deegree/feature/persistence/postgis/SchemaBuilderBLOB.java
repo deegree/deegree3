@@ -189,7 +189,7 @@ class SchemaBuilderBLOB {
                                                        getHintMap( blobMappingConf.getNamespaceHint() ), schemaURLs );
         }
 
-        CRS storageCRS = new CRS( blobMappingConf.getStorageCRS(), true );
+        CRS storageCRS = new CRS( blobMappingConf.getStorageCRS(), false );
         ApplicationSchema appSchema = decoder.extractFeatureTypeSchema();
         BBoxTableMapping bboxMapping = new BBoxTableMapping( storageCRS );
         BlobMapping blobMapping = new BlobMapping( "GML_OBJECTS", storageCRS, new BlobCodec( GML_32, NONE ) );
