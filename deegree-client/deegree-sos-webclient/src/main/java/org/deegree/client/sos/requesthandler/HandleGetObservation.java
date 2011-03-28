@@ -1,12 +1,12 @@
 package org.deegree.client.sos.requesthandler;
 
 import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -16,17 +16,13 @@ import javax.xml.namespace.QName;
 
 import org.apache.axiom.om.OMAttribute;
 import org.apache.axiom.om.OMElement;
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.HttpException;
-import org.apache.commons.httpclient.HttpMethodBase;
-import org.apache.commons.httpclient.methods.PostMethod;
-import org.apache.commons.httpclient.methods.StringRequestEntity;
 import org.deegree.client.sos.storage.StorageGetObservation;
 import org.deegree.client.sos.storage.components.DataArray;
 import org.deegree.client.sos.storage.components.Field;
 import org.deegree.client.sos.storage.components.OWSException;
 import org.deegree.client.sos.storage.components.Observation;
 import org.deegree.commons.utils.Pair;
+import org.deegree.commons.utils.net.HttpUtils;
 import org.deegree.commons.xml.CommonNamespaces;
 import org.deegree.commons.xml.NamespaceBindings;
 import org.deegree.commons.xml.XMLAdapter;
@@ -73,30 +69,14 @@ public class HandleGetObservation {
      */
     public HandleGetObservation( Map<String, String> parameters ) {
 
-        HttpClient client = new HttpClient();
-        HttpMethodBase http = new PostMethod( parameters.get( "host" ) );
-
         String template = loadTemplate( parameters.get( "path" ) );
 
         String request = buildRequest( template, parameters );
 
-        try {
-            ( (PostMethod) http ).setRequestEntity( new StringRequestEntity( request, "text/xml", "UTF-8" ) );
-        } catch ( UnsupportedEncodingException e ) {
-            LOG.error( "Unexpected stack trace:", e.getMessage() );
-        }
-
-        try {
-            client.executeMethod( http );
-        } catch ( HttpException e1 ) {
-            LOG.error( "Unexpected stack trace:", e1.getMessage() );
-        } catch ( IOException e1 ) {
-            LOG.error( "Unexpected stack trace:", e1.getMessage() );
-        }
-
         InputStream is = null;
         try {
-            is = http.getResponseBodyAsStream();
+            is = HttpUtils.post( HttpUtils.STREAM, parameters.get( "host" ),
+                                 new ByteArrayInputStream( request.getBytes( "UTF-8" ) ), null );
         } catch ( IOException e ) {
             LOG.error( "Unexpected error:", e.getLocalizedMessage() );
             LOG.debug( "Stack trace:", e );
