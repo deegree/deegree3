@@ -304,13 +304,16 @@ public class FileUtils {
     }
 
     private static void findFiles( File dir, List<File> result, boolean recurse, FilenameFilter filter ) {
-        for ( File file : dir.listFiles() ) {
-            if ( file.isFile() ) {
-                if ( filter.accept( dir, file.getName() ) ) {
-                    result.add( file );
+        File[] fs = dir.listFiles();
+        if ( fs != null ) {
+            for ( File file : fs ) {
+                if ( file.isFile() ) {
+                    if ( filter.accept( dir, file.getName() ) ) {
+                        result.add( file );
+                    }
+                } else if ( file.isDirectory() && recurse ) {
+                    findFiles( file, result, recurse, filter );
                 }
-            } else if ( file.isDirectory() && recurse ) {
-                findFiles( file, result, recurse, filter );
             }
         }
     }
