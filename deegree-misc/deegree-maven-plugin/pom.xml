@@ -4,10 +4,10 @@
   <groupId>org.deegree</groupId>
   <artifactId>deegree-maven-plugin</artifactId>
   <packaging>maven-plugin</packaging>
-  <version>1.1-SNAPSHOT</version>
+  <version>1.2-SNAPSHOT</version>
   <name>deegree-maven-plugin</name>
   <url>http://www.deegree.org</url>
-  
+
   <scm>
     <developerConnection>scm:svn:http://svn.wald.intevation.org/svn/deegree/deegree3/trunk/deegree-misc/deegree-maven-plugin</developerConnection>
     <url>http://svn.wald.intevation.org/svn/deegree/deegree3/trunk/deegree-misc/deegree-maven-plugin</url>
