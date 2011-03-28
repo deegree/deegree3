@@ -219,12 +219,12 @@ public class EncodingGuesser {
         TreeMap<Integer, Integer> map = new TreeMap<Integer, Integer>();
 
         for ( byte b : bs ) {
-            if ( b < 128 ) {
+            if ( ( b & 0xff ) < 128 ) {
                 continue;
             }
 
             if ( map.containsKey( (int) b ) ) {
-                map.put( (int) b, map.get( b ) + 1 );
+                map.put( (int) b, map.get( (int) b ) + 1 );
             } else {
                 map.put( (int) b, 1 );
             }
