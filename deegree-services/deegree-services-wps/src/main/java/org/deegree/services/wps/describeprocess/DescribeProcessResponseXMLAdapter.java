@@ -119,7 +119,7 @@ public class DescribeProcessResponseXMLAdapter extends XMLAdapter {
 
         if ( processes != null && !processes.isEmpty() ) {
             for ( WPSProcess process : processes ) {
-                exportDescription100( writer, process, processDefToWSDLUrl.get( process ) );
+                exportDescription100( writer, process, processDefToWSDLUrl.get( process.getDescription() ) );
             }
         }
 
