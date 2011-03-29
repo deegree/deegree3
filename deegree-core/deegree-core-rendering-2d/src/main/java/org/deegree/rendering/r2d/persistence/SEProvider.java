@@ -56,7 +56,7 @@ public class SEProvider implements ExtendedResourceProvider<StyleFile> {
     }
 
     public URL getConfigSchema() {
-        return SEProvider.class.getResource( "/META-INF/schemas/se/1.1.0/Symbolizer-deegree.xsd" );
+        return SEProvider.class.getResource( "/META-INF/schemas/se/1.1.0/symbology.xsd" );
     }
 
     public void init( DeegreeWorkspace workspace ) {

@@ -213,14 +213,13 @@ public class SymbologyParser {
             common.name = in.getElementText();
         }
         Location l = in.getLocation();
-        if ( in.getLocalName().equals( "Geometry" ) ) {
+        if ( in.getLocalName().startsWith( "Geometry" ) ) {
             common.loc = l.getSystemId();
             common.line = l.getLineNumber();
             common.col = l.getColumnNumber();
             in.nextTag();
             common.geometry = parseExpression( in );
             in.nextTag();
-            in.require( END_ELEMENT, null, "Geometry" );
         }
         if ( in.getLocalName().equals( "Description" ) ) {
             while ( !( in.isEndElement() && in.getLocalName().equals( "Description" ) ) ) {
