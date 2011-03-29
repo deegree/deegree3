@@ -78,7 +78,7 @@ public class CSWBKG1IT {
         int currentLine = 0;
         while ( currentLine < lines.size() ) {
             String trimmed = lines.get( currentLine++ ).trim();
-            if ( trimmed.startsWith( "Testing" ) && !trimmed.startsWith( "Testing suite" ) ) {
+            if ( trimmed.startsWith( "Testing ctl" ) || trimmed.startsWith( "Testing csw" ) ) {
                 String s = trimmed.substring( 8 );
                 String caseId = s.substring( 0, s.indexOf( ' ' ) );
                 String result = findCorrespondingResult( lines, currentLine, caseId );
