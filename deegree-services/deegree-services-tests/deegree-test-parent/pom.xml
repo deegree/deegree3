@@ -61,7 +61,7 @@
         <version>1.1</version>
         <executions>
           <execution>
-            <phase>generate-sources</phase>
+            <phase>pre-integration-test</phase>
             <goals>
               <goal>generate-portnumber</goal>
             </goals>
