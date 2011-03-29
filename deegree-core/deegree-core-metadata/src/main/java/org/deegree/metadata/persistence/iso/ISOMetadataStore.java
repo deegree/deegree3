@@ -35,7 +35,6 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.metadata.persistence.iso;
 
-import static org.deegree.commons.jdbc.ConnectionManager.Type.MSSQL;
 import static org.deegree.commons.jdbc.ConnectionManager.Type.PostgreSQL;
 import static org.deegree.commons.utils.JDBCUtils.close;
 import static org.slf4j.LoggerFactory.getLogger;
@@ -122,18 +121,7 @@ public class ISOMetadataStore implements MetadataStore {
     public ISOMetadataStore( ISOMetadataStoreConfig config ) throws ResourceInitException {
         this.connectionId = config.getJDBCConnId();
         this.config = config;
-
-        DeegreeWorkspace dw = DeegreeWorkspace.getInstance();
-        ConnectionManager mgr = dw.getSubsystemManager( ConnectionManager.class );
-        this.connectionType = mgr.getType( connectionId );
-
-        // this.connectionType = ConnectionManager.getType( connectionId );
-
-        if ( connectionType == null )
-            throw new ResourceInitException( "ConnectionType is null, this may not be!" );
-        if ( connectionType != PostgreSQL && connectionType != MSSQL )
-            throw new ResourceInitException( "ConnectionType " + connectionType
-                                             + "is not supported, only Postgres and MSSql are supported, yet!" );
+       
         // this.varToValue = new HashMap<String, String>();
         // String systemStartDate = "2010-11-16";
         // varToValue.put( "${SYSTEM_START_DATE}", systemStartDate );
@@ -165,6 +153,11 @@ public class ISOMetadataStore implements MetadataStore {
      * @return the db type, null, if unknown
      */
     public Type getDBType() {
+        if ( connectionType == null ) {
+            DeegreeWorkspace dw = DeegreeWorkspace.getInstance();
+            ConnectionManager mgr = dw.getSubsystemManager( ConnectionManager.class );
+            this.connectionType = mgr.getType( connectionId );
+        }
         return connectionType;
     }
 
@@ -275,12 +268,12 @@ public class ISOMetadataStore implements MetadataStore {
 
     private AbstractWhereBuilder getWhereBuilder( MetadataQuery query )
                             throws FilterEvaluationException {
-        if ( connectionType == PostgreSQL ) {
+        if ( getDBType() == PostgreSQL ) {
             PostGISMappingsISODC mapping = new PostGISMappingsISODC();
             return new PostGISWhereBuilder( mapping, (OperatorFilter) query.getFilter(), query.getSorting(),
                                             useLegacyPredicates );
         }
-        if ( connectionType == Type.MSSQL ) {
+        if ( getDBType() == Type.MSSQL ) {
             MSSQLMappingsISODC mapping = new MSSQLMappingsISODC();
             return new MSSQLServerWhereBuilder( mapping, (OperatorFilter) query.getFilter(), query.getSorting() );
         }
@@ -336,7 +329,7 @@ public class ISOMetadataStore implements MetadataStore {
         try {
             AbstractWhereBuilder builder = getWhereBuilder( query );
             conn = ConnectionManager.getConnection( connectionId );
-            ps = new ExecuteStatements( connectionType ).executeCounting( builder, conn );
+            ps = new ExecuteStatements( getDBType() ).executeCounting( builder, conn );
             LOG.info( ps.toString() );
             rs = ps.executeQuery();
             rs.next();
@@ -363,7 +356,7 @@ public class ISOMetadataStore implements MetadataStore {
         LOG.debug( Messages.getMessage( "INFO_EXEC", "do results on getRecords" ) );
         ResultSet rs = null;
         PreparedStatement preparedStatement = null;
-        ExecuteStatements exe = new ExecuteStatements( connectionType );
+        ExecuteStatements exe = new ExecuteStatements( getDBType() );
         try {
             preparedStatement = exe.executeGetRecords( recordStoreOptions, builder, conn );
             rs = preparedStatement.executeQuery();
@@ -384,7 +377,7 @@ public class ISOMetadataStore implements MetadataStore {
         String mainTable;
         String fileidentifier;
         String recordfull;
-        if ( connectionType == Type.MSSQL ) {
+        if ( getDBType() == Type.MSSQL ) {
             mainTable = MSSQLMappingsISODC.DatabaseTables.idxtb_main.name();
             fileidentifier = MSSQLMappingsISODC.CommonColumnNames.fileidentifier.name();
             recordfull = MSSQLMappingsISODC.CommonColumnNames.recordfull.name();
@@ -440,7 +433,7 @@ public class ISOMetadataStore implements MetadataStore {
         try {
             conn = ConnectionManager.getConnection( connectionId );
             ta = new ISOMetadataStoreTransaction( conn, inspectorChain, config.getAnyText(), useLegacyPredicates,
-                                                  connectionType );
+                                                  getDBType() );
         } catch ( Throwable e ) {
             throw new MetadataStoreException( e.getMessage() );
         }
