@@ -330,6 +330,7 @@ public class StyleRegistry extends TimerTask {
      */
     public void load( String layerName, XMLAdapter adapter, List<SLDStyleType> styles ) {
         for ( SLDStyleType sty : styles ) {
+            FileInputStream is = null;
             try {
                 File file = new File( adapter.resolve( sty.getFile() ).toURI() );
                 String namedLayer = sty.getNamedLayer();
@@ -364,14 +365,13 @@ public class StyleRegistry extends TimerTask {
                     }
                 }
                 XMLInputFactory fac = XMLInputFactory.newInstance();
-                FileInputStream is = new FileInputStream( file );
+                is = new FileInputStream( file );
                 XMLStreamReader in = fac.createXMLStreamReader( file.toURI().toURL().toString(), is );
                 Pair<LinkedList<Filter>, LinkedList<Style>> parsedStyles = getStyles( in, namedLayer, map );
                 for ( Style s : parsedStyles.second ) {
                     put( layerName, s, false );
                     s.setLegendFile( legends.get( s.getName() ) );
                 }
-                is.close();
             } catch ( MalformedURLException e ) {
                 LOG.trace( "Stack trace", e );
                 LOG.info( "Style file '{}' for layer '{}' could not be resolved.", sty.getFile(), layerName );
@@ -389,6 +389,8 @@ public class StyleRegistry extends TimerTask {
                 LOG.trace( "Stack trace", e );
                 LOG.info( "Style file '{}' for layer '{}' could not be closed: '{}'.",
                           new Object[] { sty.getFile(), layerName, e.getLocalizedMessage() } );
+            } finally {
+                closeQuietly( is );
             }
         }
     }
