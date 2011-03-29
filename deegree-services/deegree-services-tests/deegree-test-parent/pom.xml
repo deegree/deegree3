@@ -78,7 +78,7 @@
             <id>start-tomcat</id>
             <phase>pre-integration-test</phase>
             <goals>
-              <goal>run</goal>
+              <goal>run-war</goal>
             </goals>
             <configuration>
               <port>${portnumber}</port>
