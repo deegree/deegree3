@@ -41,7 +41,7 @@
     <module>deegree-wfs-cite110</module>
     <module>deegree-wfs-cite100</module>
     <module>deegree-sos-cite100</module>
-    <module>deegree-wms-remoteows-test</module>
+    <!-- <module>deegree-wms-remoteows-test</module> -->
   </modules>
 
 </project>
