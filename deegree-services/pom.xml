@@ -18,6 +18,15 @@
     <version>3.1-pre4-SNAPSHOT</version>
   </parent>
 
+  <profiles>
+    <profile>
+      <id>run-service-tests</id>
+      <modules>
+        <module>deegree-services-tests</module>
+      </modules>
+    </profile>
+  </profiles>
+
   <repositories>
     <repository>
       <id>deegree-repo</id>
@@ -41,7 +50,6 @@
     <module>deegree-services-wpvs</module>
     <module>deegree-services-wps</module>
     <module>deegree-services-config</module>
-    <!--module>deegree-services-tests</module-->
     <module>deegree-webservices</module>
   </modules>
 
