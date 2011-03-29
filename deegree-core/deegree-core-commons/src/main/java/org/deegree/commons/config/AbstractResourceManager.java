@@ -35,12 +35,14 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.commons.config;
 
+import static org.apache.commons.io.IOUtils.closeQuietly;
 import static org.deegree.commons.config.ResourceState.StateType.deactivated;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
 import java.util.Collection;
 import java.util.HashMap;
@@ -107,14 +109,18 @@ public abstract class AbstractResourceManager<T extends Resource> extends Abstra
         }
 
         String namespace = null;
+        InputStream is = null;
         try {
-            XMLStreamReader xmlReader = XMLInputFactory.newInstance().createXMLStreamReader( configUrl.openStream() );
+            is = configUrl.openStream();
+            XMLStreamReader xmlReader = XMLInputFactory.newInstance().createXMLStreamReader( is );
             StAXParsingHelper.nextElement( xmlReader );
             namespace = xmlReader.getNamespaceURI();
         } catch ( Exception e ) {
             String msg = "Error determining configuration namespace for file '" + configUrl + "'";
             LOG.error( msg );
             throw new ResourceInitException( msg );
+        } finally {
+            closeQuietly( is );
         }
         LOG.debug( "Config namespace: '" + namespace + "'" );
         ExtendedResourceProvider<T> provider = nsToProvider.get( namespace );
