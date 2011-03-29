@@ -21784,9 +21784,16 @@
         </crs:ProjectedCRS>
         <crs:ProjectedCRS>
                 <crs:Id>epsg:900913</crs:Id>
+                <crs:Id>epsg:3785</crs:Id>
+                <crs:Id>osm_slippy_map</crs:Id>
+                <crs:Id>urn:ogc:def:crs:epsg::3785</crs:Id>
+                <crs:Id>urn:opengis:def:crs:epsg::3785</crs:Id>
+                <crs:Name>OSM_Slippy_Map</crs:Name>
                 <crs:Name>Google_Maps projected crs based on a mercator projection</crs:Name>
                 <crs:Version>2009-12-09T13:39</crs:Version>
                 <crs:Description>Projected crs based on the spherical ellipsoid, google maps uses, note this might be changed in the future.</crs:Description>
+                <crs:AreaOfUse>-180.0,-80.0,180.0,84.0</crs:AreaOfUse>
+                <crs:AreaOfUse>World between 80°S and 84°N.</crs:AreaOfUse>
                 <crs:Axis>
                         <crs:Name>x</crs:Name>
                         <crs:Units>metre</crs:Units>
@@ -21805,10 +21812,11 @@
                 <crs:Id>epsg:3857</crs:Id>
                 <crs:Id>google_maps</crs:Id>
                 <crs:Id>http://www.opengis.net/gml/srs/epsg.xml#3395</crs:Id>
-                <crs:Id>osm_slippy_map</crs:Id>
                 <crs:Id>urn:ogc:def:crs:epsg::3395</crs:Id>
                 <crs:Id>urn:opengis:def:crs:epsg::3395</crs:Id>
-                <crs:Name>OSM_Slippy_Map</crs:Name>
+                <crs:Id>http://www.opengis.net/gml/srs/epsg.xml#3857</crs:Id>
+                <crs:Id>urn:ogc:def:crs:epsg::3857</crs:Id>
+                <crs:Id>urn:opengis:def:crs:epsg::3857</crs:Id>
                 <crs:Name>Google_Maps</crs:Name>
                 <crs:Name>WGS 84 / Pseudo-Mercator</crs:Name>
                 <crs:Name>WGS 84 / Popular Visualisation Pseudo-Mercator</crs:Name>
