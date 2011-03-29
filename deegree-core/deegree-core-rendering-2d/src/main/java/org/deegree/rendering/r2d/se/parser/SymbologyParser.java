@@ -48,6 +48,7 @@ import static java.lang.Math.min;
 import static javax.xml.stream.XMLStreamConstants.END_ELEMENT;
 import static javax.xml.stream.XMLStreamConstants.START_DOCUMENT;
 import static javax.xml.stream.XMLStreamConstants.START_ELEMENT;
+import static org.apache.commons.io.IOUtils.closeQuietly;
 import static org.deegree.commons.utils.ArrayUtils.splitAsDoubles;
 import static org.deegree.commons.utils.ColorUtils.decodeWithAlpha;
 import static org.deegree.commons.xml.CommonNamespaces.SENS;
@@ -556,6 +557,8 @@ public class SymbologyParser {
                         } catch ( IOException e ) {
                             LOG.debug( "Stack trace:", e );
                             LOG.warn( "The file could not be read: '{}'.", e.getLocalizedMessage() );
+                        } finally {
+                            closeQuietly( is );
                         }
                     }
                 } else if ( in.getLocalName().equals( "Fill" ) ) {
