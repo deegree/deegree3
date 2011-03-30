@@ -51,6 +51,7 @@ import org.apache.axiom.om.OMFactory;
 import org.deegree.commons.tom.datetime.Date;
 import org.deegree.commons.xml.NamespaceBindings;
 import org.deegree.commons.xml.XMLAdapter;
+import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.commons.xml.XPath;
 import org.deegree.metadata.i18n.Messages;
 import org.deegree.metadata.persistence.types.BoundingBox;
@@ -100,25 +101,17 @@ public class ParseIdentificationInfo extends XMLAdapter {
     protected void parseIdentificationInfo( List<OMElement> identificationInfo, QueryableProperties qp,
                                             ReturnableProperties rp )
                             throws MetadataStoreException {
-
         List<OMElement> identificationInfo_Update = new ArrayList<OMElement>();
-
         for ( OMElement root_identInfo : identificationInfo ) {
-
-            // OMElement root_identInfo_Update = factory.createOMElement( "identificationInfo", namespaceGMD );
-
             OMElement md_dataIdentification = getElement( root_identInfo, new XPath( "./gmd:MD_DataIdentification",
                                                                                      nsContextParseII ) );
-
             OMElement sv_serviceIdentification = getElement( root_identInfo,
                                                              new XPath( "./srv:SV_ServiceIdentification",
                                                                         nsContextParseII ) );
-
             OMElement sv_service_OR_md_dataIdentification = getElement( root_identInfo,
                                                                         new XPath(
                                                                                    "./srv:SV_ServiceIdentification | ./gmd:MD_DataIdentification",
                                                                                    nsContextParseII ) );
-
             /*---------------------------------------------------------------
              * 
              * Citation
@@ -126,35 +119,25 @@ public class ParseIdentificationInfo extends XMLAdapter {
              *---------------------------------------------------------------*/
             OMElement citation = getElement( sv_service_OR_md_dataIdentification, new XPath( "./gmd:citation",
                                                                                              nsContextParseII ) );
-
             OMElement ci_citation = getElement( citation, new XPath( "./gmd:CI_Citation", nsContextParseII ) );
-
             OMElement title = getElement( ci_citation, new XPath( "./gmd:title", nsContextParseII ) );
-
             String[] titleList = getNodesAsStrings( title,
                                                     new XPath(
                                                                "./gmd:PT_FreeText/gmd:textGroup/gmd:LocalisedCharacterString",
                                                                nsContextParseII ) );
-
             List<OMElement> alternateTitle = getElements( ci_citation, new XPath( "./gmd:alternateTitle",
                                                                                   nsContextParseII ) );
-
             String[] alternateTitleOtherLang = null;
             for ( OMElement alternateTitleElement : alternateTitle ) {
                 alternateTitleOtherLang = getNodesAsStrings( alternateTitleElement,
                                                              new XPath(
                                                                         "./gmd:PT_FreeText/gmd:textGroup/gmd:LocalisedCharacterString",
                                                                         nsContextParseII ) );
-
             }
-
             OMElement edition = getElement( ci_citation, new XPath( "./gmd:edition", nsContextParseII ) );
             OMElement editionDate = getElement( ci_citation, new XPath( "./gmd:editionDate", nsContextParseII ) );
-
             List<OMElement> identifier = getElements( ci_citation, new XPath( "./gmd:identifier", nsContextParseII ) );
-
             String[] titleElements = getNodesAsStrings( title, new XPath( "./gco:CharacterString", nsContextParseII ) );
-
             String[] alternateTitleElements = getNodesAsStrings( sv_service_OR_md_dataIdentification,
                                                                  new XPath(
                                                                             "./gmd:citation/gmd:CI_Citation/gmd:alternateTitle/gco:CharacterString",
@@ -187,13 +170,10 @@ public class ParseIdentificationInfo extends XMLAdapter {
                                                              new XPath(
                                                                         "./gmd:MD_Identifier/gmd:code/gco:CharacterString | ./gmd:RS_Identifier/gmd:code/gco:CharacterString",
                                                                         nsContextParseII ), null );
-
                 if ( resourceIdentifier != null ) {
                     resourceIdentifierList.add( resourceIdentifier.trim() );
                 }
-
             }
-
             qp.setResourceIdentifiers( resourceIdentifierList );
 
             List<OMElement> citedResponsibleParty = getElements( ci_citation, new XPath( "./gmd:citedResponsibleParty",
@@ -373,7 +353,6 @@ public class ParseIdentificationInfo extends XMLAdapter {
 
                 supplementalInformation = getElement( md_dataIdentification,
                                                       new XPath( "./gmd:supplementalInformation", nsContextParseII ) );
-
                 for ( OMElement langElem : language_md_dataIdent ) {
                     String resourceLanguage = getNodeAsString( langElem,
                                                                new XPath( "./gmd:language/gco:CharacterString",
@@ -387,21 +366,17 @@ public class ParseIdentificationInfo extends XMLAdapter {
                                                                "./gmd:equivalentScale/gmd:MD_RepresentativeFraction/gmd:denominator/gco:Integer",
                                                                nsContextParseII ), -1 );
                     qp.setDenominator( denominator );
-
                     // TODO put here the constraint that there can a denominator be available iff distanceValue and
                     // distanceUOM are not set and vice versa!!
                     float distanceValue = getNodeAsFloat( spatialResolutionElem,
                                                           new XPath( "./gmd:distance/gco:Distance", nsContextParseII ),
                                                           -1 );
                     qp.setDistanceValue( distanceValue );
-
                     String distanceUOM = getNodeAsString( spatialResolutionElem,
                                                           new XPath( "./gmd:distance/gco:Distance/@uom",
                                                                      nsContextParseII ), null );
                     qp.setDistanceUOM( distanceUOM );
-
                 }
-
             }
 
             qp.setTopicCategory( topicCategory );
@@ -409,11 +384,9 @@ public class ParseIdentificationInfo extends XMLAdapter {
 
             List<String> relationList = new ArrayList<String>();
             for ( OMElement aggregatInfoElem : aggregationInfo ) {
-
                 String relation = getNodeAsString( aggregatInfoElem, new XPath( "./gco:CharacterString",
                                                                                 nsContextParseII ), null );
                 relationList.add( relation );
-
             }
             rp.setRelation( relationList );
 
@@ -426,19 +399,16 @@ public class ParseIdentificationInfo extends XMLAdapter {
             for ( OMElement pointOfContactElem : pointOfContact ) {
                 OMElement ci_responsibleParty = getElement( pointOfContactElem, new XPath( "./gmd:CI_ResponsibleParty",
                                                                                            nsContextParseII ) );
-
                 String creator = getNodeAsString( ci_responsibleParty,
                                                   new XPath(
                                                              "./gmd:organisationName[../gmd:role/gmd:CI_RoleCode/@codeListValue='originator']/gco:CharacterString",
                                                              nsContextParseII ), null );
-
                 rp.setCreator( creator );
 
                 String publisher = getNodeAsString( ci_responsibleParty,
                                                     new XPath(
                                                                "./gmd:organisationName[../gmd:role/gmd:CI_RoleCode/@codeListValue='publisher']/gco:CharacterString",
                                                                nsContextParseII ), null );
-
                 rp.setPublisher( publisher );
 
                 String contributor = getNodeAsString( ci_responsibleParty,
@@ -474,12 +444,10 @@ public class ParseIdentificationInfo extends XMLAdapter {
                  * ServiceType
                  * 
                  *---------------------------------------------------------------*/
-
                 String serviceType = getNodeAsString( sv_serviceIdentification,
                                                       new XPath( "./srv:serviceType/gco:LocalName", nsContextParseII ),
                                                       null );
                 qp.setServiceType( serviceType );
-
                 serviceTypeElem = getElement( sv_serviceIdentification, new XPath( "./srv:serviceType",
                                                                                    nsContextParseII ) );
 
@@ -493,7 +461,6 @@ public class ParseIdentificationInfo extends XMLAdapter {
                                                                             "./srv:serviceTypeVersion/gco:CharacterString",
                                                                             nsContextParseII ) );
                 qp.setServiceTypeVersion( Arrays.asList( serviceTypeVersion ) );
-
                 serviceTypeVersionElem = getElements( sv_serviceIdentification, new XPath( "./srv:serviceTypeVersion",
                                                                                            nsContextParseII ) );
 
@@ -554,17 +521,14 @@ public class ParseIdentificationInfo extends XMLAdapter {
                                                                    "./srv:containsOperations/srv:SV_OperationMetadata/srv:operationName/gco:CharacterString",
                                                                    nsContextParseII ) );
                 for ( OMElement containsOpElem : containsOperations ) {
-
                     String operation_dcp = getNodeAsString( containsOpElem,
                                                             new XPath(
                                                                        "./srv:SV_OperationMetadata/srv:DCP/srv:DCPList",
                                                                        nsContextParseII ), null );
-
                     String operation_linkage = getNodeAsString( containsOpElem,
                                                                 new XPath(
                                                                            "./srv:SV_OperationMetadata/srv:connectPoint/srv:CI_OnlineResource/srv:linkage/srv:URL",
                                                                            nsContextParseII ), null );
-
                 }
                 qp.setOperation( Arrays.asList( operation ) );
 
@@ -581,27 +545,21 @@ public class ParseIdentificationInfo extends XMLAdapter {
              * 
              *---------------------------------------------------------------*/
             List<OMElement> extent = ( extent_md_dataIdent.size() != 0 ? extent_md_dataIdent : extent_service );
-
             Date tempBeg = null;
             Date tempEnd = null;
-
             String geographicDescriptionCode_service = null;
             String[] geographicDescriptionCode_serviceOtherLang = null;
             List<BoundingBox> bboxList = new LinkedList<BoundingBox>();
-
             if ( extent != null ) {
                 for ( OMElement extentElem : extent ) {
-
                     String temporalExtentBegin = getNodeAsString( extentElem,
                                                                   new XPath(
                                                                              "./gmd:EX_Extent/gmd:temporalElement/gmd:EX_TemporalExtent/gmd:extent/gmd:TimePeriod/gmd:beginPosition",
                                                                              nsContextParseII ), null );
-
                     String temporalExtentEnd = getNodeAsString( extentElem,
                                                                 new XPath(
                                                                            "./gmd:EX_Extent/gmd:temporalElement/gmd:EX_TemporalExtent/gmd:extent/gmd:TimePeriod/gmd:endPosition",
                                                                            nsContextParseII ), null );
-
                     try {
                         if ( temporalExtentBegin != null && temporalExtentEnd != null ) {
                             tempBeg = new Date( temporalExtentBegin );
@@ -613,50 +571,46 @@ public class ParseIdentificationInfo extends XMLAdapter {
                         LOG.debug( msg );
                         throw new MetadataStoreException( msg );
                     }
-
                     List<OMElement> geographicElement = getElements( extentElem,
                                                                      new XPath(
                                                                                 "./gmd:EX_Extent/gmd:geographicElement",
                                                                                 nsContextParseII ) );
-
                     for ( OMElement geographicElem : geographicElement ) {
-
                         double boundingBoxWestLongitude = 0.0;
                         double boundingBoxEastLongitude = 0.0;
                         double boundingBoxSouthLatitude = 0.0;
                         double boundingBoxNorthLatitude = 0.0;
-
                         OMElement bbox = getElement( geographicElem, new XPath( "./gmd:EX_GeographicBoundingBox",
                                                                                 nsContextParseII ) );
-                        if ( boundingBoxWestLongitude == 0.0 ) {
-                            boundingBoxWestLongitude = getNodeAsDouble( bbox,
-                                                                        new XPath(
-                                                                                   "./gmd:westBoundLongitude/gco:Decimal",
-                                                                                   nsContextParseII ), 0.0 );
-
+                        try {
+                            if ( boundingBoxWestLongitude == 0.0 ) {
+                                boundingBoxWestLongitude = getNodeAsDouble( bbox,
+                                                                            new XPath(
+                                                                                       "./gmd:westBoundLongitude/gco:Decimal",
+                                                                                       nsContextParseII ), 0.0 );
+                            }
+                            if ( boundingBoxEastLongitude == 0.0 ) {
+                                boundingBoxEastLongitude = getNodeAsDouble( bbox,
+                                                                            new XPath(
+                                                                                       "./gmd:eastBoundLongitude/gco:Decimal",
+                                                                                       nsContextParseII ), 0.0 );
+                            }
+                            if ( boundingBoxSouthLatitude == 0.0 ) {
+                                boundingBoxSouthLatitude = getNodeAsDouble( bbox,
+                                                                            new XPath(
+                                                                                       "./gmd:southBoundLatitude/gco:Decimal",
+                                                                                       nsContextParseII ), 0.0 );
+                            }
+                            if ( boundingBoxNorthLatitude == 0.0 ) {
+                                boundingBoxNorthLatitude = getNodeAsDouble( bbox,
+                                                                            new XPath(
+                                                                                       "./gmd:northBoundLatitude/gco:Decimal",
+                                                                                       nsContextParseII ), 0.0 );
+                            }
+                        } catch ( XMLParsingException e ) {
+                            throw new MetadataStoreException( "Could not parse EX_GeographicBoundingBox, cause: "
+                                                              + e.getMessage() );
                         }
-                        if ( boundingBoxEastLongitude == 0.0 ) {
-                            boundingBoxEastLongitude = getNodeAsDouble( bbox,
-                                                                        new XPath(
-                                                                                   "./gmd:eastBoundLongitude/gco:Decimal",
-                                                                                   nsContextParseII ), 0.0 );
-
-                        }
-                        if ( boundingBoxSouthLatitude == 0.0 ) {
-                            boundingBoxSouthLatitude = getNodeAsDouble( bbox,
-                                                                        new XPath(
-                                                                                   "./gmd:southBoundLatitude/gco:Decimal",
-                                                                                   nsContextParseII ), 0.0 );
-
-                        }
-                        if ( boundingBoxNorthLatitude == 0.0 ) {
-                            boundingBoxNorthLatitude = getNodeAsDouble( bbox,
-                                                                        new XPath(
-                                                                                   "./gmd:northBoundLatitude/gco:Decimal",
-                                                                                   nsContextParseII ), 0.0 );
-
-                        }
-
                         if ( geographicDescriptionCode_service == null ) {
                             OMElement geographicDescriptionCode_serviceElem = getElement( geographicElem,
                                                                                           new XPath(
@@ -670,21 +624,20 @@ public class ParseIdentificationInfo extends XMLAdapter {
                                                                                                        "./gmd:PT_FreeText/gmd:textGroup/gmd:LocalisedCharacterString",
                                                                                                        nsContextParseII ) );
                         }
-
                         if ( bbox != null ) {
                             bboxList.add( new BoundingBox( boundingBoxWestLongitude, boundingBoxSouthLatitude,
                                                            boundingBoxEastLongitude, boundingBoxNorthLatitude ) );
                         }
                     }
-
                 }
-
                 qp.setTemporalExtentBegin( tempBeg );
                 qp.setTemporalExtentEnd( tempEnd );
                 qp.setBoundingBox( bboxList );
             }
             List<String> geographicDescCode_serviceList = new ArrayList<String>();
-            geographicDescCode_serviceList.addAll( Arrays.asList( geographicDescriptionCode_service ) );
+            if ( geographicDescriptionCode_service != null ) {
+                geographicDescCode_serviceList.add( geographicDescriptionCode_service );
+            }
             if ( geographicDescriptionCode_serviceOtherLang != null ) {
                 geographicDescCode_serviceList.addAll( Arrays.asList( geographicDescriptionCode_serviceOtherLang ) );
             }
@@ -704,35 +657,28 @@ public class ParseIdentificationInfo extends XMLAdapter {
 
             List<Keyword> listOfKeywords = new ArrayList<Keyword>();
             for ( OMElement md_keywords : commonKeywords ) {
-
                 String keywordType = getNodeAsString( md_keywords,
                                                       new XPath(
                                                                  "./gmd:MD_Keywords/gmd:type/gmd:MD_KeywordTypeCode/@codeListValue",
                                                                  nsContextParseII ), null );
-
                 String[] keywords = getNodesAsStrings( md_keywords,
                                                        new XPath( "./gmd:MD_Keywords/gmd:keyword/gco:CharacterString",
                                                                   nsContextParseII ) );
-
                 String[] keywordsOtherLang = getNodesAsStrings( md_keywords,
                                                                 new XPath(
                                                                            "./gmd:MD_Keywords/gmd:keyword/gmd:PT_FreeText/gmd:textGroup/gmd:LocalisedCharacterString",
                                                                            nsContextParseII ) );
-
                 String thesaurus = getNodeAsString( md_keywords,
                                                     new XPath(
                                                                "./gmd:MD_Keywords/gmd:thesaurusName/gmd:CI_Citation/gmd:title/gco:CharacterString",
                                                                nsContextParseII ), null );
-
                 List<String> keywordList = new ArrayList<String>();
                 keywordList.addAll( Arrays.asList( keywords ) );
                 if ( keywordsOtherLang != null ) {
                     keywordList.addAll( Arrays.asList( keywordsOtherLang ) );
                 }
                 listOfKeywords.add( new Keyword( keywordType, keywordList, thesaurus ) );
-
             }
-
             qp.setKeywords( listOfKeywords );
 
             /*---------------------------------------------------------------
@@ -757,9 +703,7 @@ public class ParseIdentificationInfo extends XMLAdapter {
                     }
                     operatesOnList.add( operatesOnString );
                 }
-
             }
-
             List<OMElement> operatesOnCoupledResources = getElements( sv_serviceIdentification,
                                                                       new XPath(
                                                                                  "./srv:coupledResource/srv:SV_CoupledResource",
@@ -768,30 +712,22 @@ public class ParseIdentificationInfo extends XMLAdapter {
                                                                    new XPath(
                                                                               "./srv:coupledResource/srv:SV_CoupledResource/srv:identifier/gco:CharacterString",
                                                                               nsContextParseII ) );
-
             for ( OMElement operatesOnCoupledResource : operatesOnCoupledResources ) {
                 String operatesOnIdentifierString = getNodeAsString(
                                                                      operatesOnCoupledResource,
                                                                      new XPath( "./srv:identifier/gco:CharacterString",
                                                                                 nsContextParseII ), "" ).trim();
-
                 String operatesOnNameString = getNodeAsString( operatesOnCoupledResource,
                                                                new XPath( "./srv:operationName/gco:CharacterString",
                                                                           nsContextParseII ), "" );
-
                 OperatesOnData ood = null;
-
                 for ( String operatesOnId : operatesOnList ) {
-
                     if ( operatesOnId.trim().equals( operatesOnIdentifierString ) ) {
-
                         ood = new OperatesOnData( operatesOnId.trim(), operatesOnIdentifierString, operatesOnNameString );
                         break;
                     }
-
                 }
                 if ( ood != null ) {
-
                     operatesOnDataList.add( ood );
                 }
             }
@@ -804,9 +740,7 @@ public class ParseIdentificationInfo extends XMLAdapter {
             if ( couplingTypeString != null ) {
                 qp.setCouplingType( couplingTypeString );
             }
-
         }
-
     }
 
     /**
@@ -814,8 +748,10 @@ public class ParseIdentificationInfo extends XMLAdapter {
      * 
      * @param qp
      * @param ci_citation
+     * @throws MetadataStoreException
      */
-    private void parseDateComponents( QueryableProperties qp, OMElement ci_citation ) {
+    private void parseDateComponents( QueryableProperties qp, OMElement ci_citation )
+                            throws MetadataStoreException {
         String revisionDateString = getNodeAsString( ci_citation,
                                                      new XPath(
                                                                 "./gmd:date/gmd:CI_Date[./gmd:dateType/gmd:CI_DateTypeCode/@codeListValue='revision']/gmd:date/gco:Date | ./gmd:date/gmd:CI_Date[./gmd:dateType/gmd:CI_DateTypeCode/@codeListValue='revision']/gmd:date/gco:DateTime",
@@ -828,17 +764,15 @@ public class ParseIdentificationInfo extends XMLAdapter {
                 date = null;
             }
         } catch ( ParseException e ) {
-
-            e.printStackTrace();
+            throw new MetadataStoreException( "Could not parse revision date ('" + revisionDateString + "'), cause: "
+                                              + e.getMessage() );
         }
-
         qp.setRevisionDate( date );
 
         String creationDateString = getNodeAsString( ci_citation,
                                                      new XPath(
                                                                 "./gmd:date/gmd:CI_Date[./gmd:dateType/gmd:CI_DateTypeCode/@codeListValue='creation']/gmd:date/gco:DateTime | ./gmd:date/gmd:CI_Date[./gmd:dateType/gmd:CI_DateTypeCode/@codeListValue='creation']/gmd:date/gco:Date",
                                                                 nsContextParseII ), null );
-
         try {
             if ( creationDateString != null ) {
                 date = new Date( creationDateString );
@@ -846,17 +780,15 @@ public class ParseIdentificationInfo extends XMLAdapter {
                 date = null;
             }
         } catch ( ParseException e ) {
-
-            e.printStackTrace();
+            throw new MetadataStoreException( "Could not creation revision date ('" + revisionDateString
+                                              + "'), cause: " + e.getMessage() );
         }
-
         qp.setCreationDate( date );
 
         String publicationDateString = getNodeAsString( ci_citation,
                                                         new XPath(
                                                                    "./gmd:date/gmd:CI_Date[./gmd:dateType/gmd:CI_DateTypeCode/@codeListValue='publication']/gmd:date/gco:Date | ./gmd:date/gmd:CI_Date[./gmd:dateType/gmd:CI_DateTypeCode/@codeListValue='publication']/gmd:date/gco:DateTime",
                                                                    nsContextParseII ), null );
-
         try {
             if ( publicationDateString != null ) {
                 date = new Date( publicationDateString );
@@ -864,12 +796,10 @@ public class ParseIdentificationInfo extends XMLAdapter {
                 date = null;
             }
         } catch ( ParseException e ) {
-
-            e.printStackTrace();
+            throw new MetadataStoreException( "Could not parse publication date ('" + revisionDateString
+                                              + "'), cause: " + e.getMessage() );
         }
-
         qp.setPublicationDate( date );
-
     }
 
     /**
@@ -882,7 +812,6 @@ public class ParseIdentificationInfo extends XMLAdapter {
     private void parseResourceConstraints( QueryableProperties qp, ReturnableProperties rp, OMElement parent ) {
         List<OMElement> resourceConstraints = getElements( parent, new XPath( "./gmd:resourceConstraints",
                                                                               nsContextParseII ) );
-
         boolean hasSecurityConstraint = false;
         List<String> rightsElements = new ArrayList<String>();
         List<Constraint> constraints = new ArrayList<Constraint>();
@@ -909,7 +838,6 @@ public class ParseIdentificationInfo extends XMLAdapter {
                                                                 "./gmd:MD_LegalConstraints/gmd:otherConstraints/gco:CharacterString",
                                                                 nsContextParseII ) );
             constraint.setOtherConstraints( Arrays.asList( otherConst ) );
-
             constraint.setClassification( getNodeAsString( omElement,
                                                            new XPath(
                                                                       "./gmd:MD_SecurityConstraints/gmd:classification/gmd:MD_ClassificationCode/@codeListValue",
@@ -936,15 +864,12 @@ public class ParseIdentificationInfo extends XMLAdapter {
      * @param rp
      */
     private void parseGraphicOverview( ReturnableProperties rp, OMElement parent ) {
-
         List<OMElement> graphicOverview = getElements( parent, new XPath( "./gmd:graphicOverview", nsContextParseII ) );
-
         String graphicOverviewString = getNodeAsString( parent,
                                                         new XPath(
                                                                    "./gmd:graphicOverview/gmd:MD_BrowseGraphic/gmd:fileName/gco:CharacterString",
                                                                    nsContextParseII ), null );
         rp.setGraphicOverview( graphicOverviewString );
-
     }
 
     private void parseAbstract( QueryableProperties qp, OMElement parent ) {
@@ -954,7 +879,6 @@ public class ParseIdentificationInfo extends XMLAdapter {
          * 
          *---------------------------------------------------------------*/
         OMElement _abstract = getElement( parent, new XPath( "./gmd:abstract", nsContextParseII ) );
-
         String[] _abstractOtherLang = getNodesAsStrings( _abstract,
                                                          new XPath(
                                                                     "./gmd:PT_FreeText/gmd:textGroup/gmd:LocalisedCharacterString",
@@ -967,7 +891,6 @@ public class ParseIdentificationInfo extends XMLAdapter {
             _abstractList.addAll( Arrays.asList( _abstractOtherLang ) );
         }
         qp.set_abstract( _abstractList );
-
     }
 
 }
