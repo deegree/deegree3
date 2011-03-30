@@ -330,11 +330,11 @@ public class ISOMetadataStore implements MetadataStore {
             AbstractWhereBuilder builder = getWhereBuilder( query );
             conn = ConnectionManager.getConnection( connectionId );
             ps = new ExecuteStatements( getDBType() ).executeCounting( builder, conn );
-            LOG.info( ps.toString() );
+            LOG.debug( ps.toString() );
             rs = ps.executeQuery();
             rs.next();
             countRows = rs.getInt( 1 );
-            LOG.info( "rs for rowCount: " + rs.getInt( 1 ) );
+            LOG.debug( "rs for rowCount: " + rs.getInt( 1 ) );
         } catch ( Throwable t ) {
             JDBCUtils.close( rs, ps, conn, LOG );
             String msg = Messages.getMessage( "ERROR_REQUEST_TYPE", ResultType.results.name(), t.getMessage() );

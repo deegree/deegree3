@@ -254,7 +254,6 @@ public class ExecuteStatements implements GenericDatabaseExecution {
                 header.append( ") as X1 where X1.rownum > " );
                 header.append( query.getStartPosition() - 1 );
             }
-            System.out.println( header );
             preparedStatement = conn.prepareStatement( header.toString() );
 
             int i = 1;
@@ -303,7 +302,7 @@ public class ExecuteStatements implements GenericDatabaseExecution {
         java.util.Date date = null;
         try {
 
-            LOG.info( "new Counting" );
+            LOG.debug( "new Counting" );
             StringBuilder getDatasetIDs = new StringBuilder();
             getDatasetIDs.append( "SELECT " );
             getDatasetIDs.append( "COUNT( DISTINCT(" );
