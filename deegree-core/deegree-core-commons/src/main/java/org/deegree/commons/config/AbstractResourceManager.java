@@ -35,14 +35,14 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.commons.config;
 
-import static org.apache.commons.io.IOUtils.closeQuietly;
+import static org.apache.commons.io.FileUtils.moveFile;
 import static org.deegree.commons.config.ResourceState.StateType.deactivated;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Collection;
 import java.util.HashMap;
@@ -51,6 +51,7 @@ import java.util.List;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamReader;
 
+import org.apache.commons.io.IOUtils;
 import org.deegree.commons.config.ResourceState.StateType;
 import org.deegree.commons.utils.FileUtils;
 import org.deegree.commons.xml.stax.StAXParsingHelper;
@@ -102,32 +103,24 @@ public abstract class AbstractResourceManager<T extends Resource> extends Abstra
 
     public T create( String id, URL configUrl )
                             throws ResourceInitException {
+
         ResourceManagerMetadata<T> md = getMetadata();
-
         if ( md == null ) {
-            throw new ResourceInitException( "Creating from config file is not supported." );
+            throw new ResourceInitException( "Internal error: No metadata for resource manager class "
+                                             + this.getClass().getName() + " available." );
         }
 
-        String namespace = null;
-        InputStream is = null;
+        ExtendedResourceProvider<T> provider;
         try {
-            is = configUrl.openStream();
-            XMLStreamReader xmlReader = XMLInputFactory.newInstance().createXMLStreamReader( is );
-            StAXParsingHelper.nextElement( xmlReader );
-            namespace = xmlReader.getNamespaceURI();
-        } catch ( Exception e ) {
-            String msg = "Error determining configuration namespace for file '" + configUrl + "'";
-            LOG.error( msg );
-            throw new ResourceInitException( msg );
-        } finally {
-            closeQuietly( is );
+            provider = getProvider( new File( configUrl.toURI() ) );
+        } catch ( URISyntaxException e ) {
+            LOG.error( e.getMessage(), e );
+            throw new ResourceInitException( e.getMessage() );
         }
-        LOG.debug( "Config namespace: '" + namespace + "'" );
-        ExtendedResourceProvider<T> provider = nsToProvider.get( namespace );
         if ( provider == null ) {
-            String msg = "No {} provider for namespace '{}' (file: '{}') registered. Skipping it.";
-            LOG.error( msg, new Object[] { md.getName(), namespace, configUrl } );
-            throw new ResourceInitException( "Creation of " + md.getName() + " via configuration file failed." );
+            String msg = "No {} provider for file: '{}' found. Skipping it.";
+            LOG.error( msg, new Object[] { md.getName(), configUrl } );
+            throw new ResourceInitException( "Creation of " + md.getName() + " via configuration file failed: " + msg );
         }
         T resource = provider.create( configUrl );
         add( resource );
@@ -222,17 +215,22 @@ public abstract class AbstractResourceManager<T extends Resource> extends Abstra
     }
 
     @Override
-    protected ResourceProvider getProvider( File file ) {
+    protected ExtendedResourceProvider<T> getProvider( File file ) {
         String namespace = null;
+        FileInputStream is = null;
         try {
-            XMLStreamReader xmlReader = XMLInputFactory.newInstance().createXMLStreamReader( new FileInputStream( file ) );
+            is = new FileInputStream( file );
+            XMLStreamReader xmlReader = XMLInputFactory.newInstance().createXMLStreamReader( is );
             StAXParsingHelper.nextElement( xmlReader );
             namespace = xmlReader.getNamespaceURI();
             LOG.debug( "Config namespace: '" + namespace + "'" );
+            xmlReader.close();
             return nsToProvider.get( namespace );
         } catch ( Throwable e ) {
             String msg = "Error determining configuration namespace for file '" + file + "'";
             LOG.error( msg );
+        } finally {
+            IOUtils.closeQuietly( is );
         }
         return null;
     }
@@ -246,11 +244,19 @@ public abstract class AbstractResourceManager<T extends Resource> extends Abstra
     @Override
     public void activate( String id )
                             throws ResourceInitException {
+
         ResourceState state = getState( id );
         if ( state != null && state.getType() == deactivated ) {
             File oldFile = state.getConfigLocation();
             File newFile = new File( dir, id + ".xml" );
-            oldFile.renameTo( newFile );
+            try {
+                moveFile( oldFile, newFile );
+            } catch ( IOException e ) {
+                e.printStackTrace();
+                String msg = "Renaming of file '" + oldFile + "' to '" + newFile + "' failed. Activation of resource '"
+                             + id + "' failed.";
+                throw new ResourceInitException( msg );
+            }
 
             String fileName = newFile.getName();
             // 4 is the length of ".xml"
@@ -278,11 +284,19 @@ public abstract class AbstractResourceManager<T extends Resource> extends Abstra
     @Override
     public void deactivate( String id )
                             throws ResourceInitException {
+
         ResourceState state = getState( id );
         if ( state != null && state.getType() != deactivated ) {
             File oldFile = state.getConfigLocation();
             File newFile = new File( dir, id + ".ignore" );
-            oldFile.renameTo( newFile );
+            try {
+                moveFile( oldFile, newFile );
+            } catch ( IOException e ) {
+                e.printStackTrace();
+                String msg = "Renaming of file '" + oldFile + "' to '" + newFile
+                             + "' failed. Deactivation of resource '" + id + "' failed.";
+                throw new ResourceInitException( msg );
+            }
 
             T resource = idToResource.get( id );
             if ( resource != null ) {
