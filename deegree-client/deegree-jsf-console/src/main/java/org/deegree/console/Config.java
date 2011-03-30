@@ -152,7 +152,7 @@ public class Config implements Comparable<Config> {
         this.autoActivate = autoActivate;
 
         ResourceProvider provider = state.getProvider();
-        if ( provider.getConfigSchema() != null ) {
+        if ( provider != null && provider.getConfigSchema() != null ) {
             schemaURL = provider.getConfigSchema();
         }
         if ( schemaURL != null ) {
@@ -269,7 +269,7 @@ public class Config implements Comparable<Config> {
             if ( resourceManager != null ) {
                 state = resourceManager.getState( id );
             }
-            String msg = "Error adapting changes.";
+            String msg = "Error adapting changes: " + t.getMessage();
             if ( state.getLastException() != null ) {
                 msg = state.getLastException().getMessage();
             }
