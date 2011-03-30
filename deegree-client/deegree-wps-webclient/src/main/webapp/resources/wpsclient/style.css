@@ -74,7 +74,7 @@ fieldset.field legend {
 	font-weight: bold;
 }
 
-.paramBody {
+.paramBodyCol {
 	margin-bottom: 10px;
 }
 
@@ -87,6 +87,26 @@ fieldset.field legend {
 	text-decoration: underline;
 	font-style: normal;
 	font-weight: normal;
+}
+
+.formatGrid {
+	text-align: left;
+	margin-left: 15px;
+}
+
+.formatHeader {
+	font-style: italic;
+	font-weight: normal;
+}
+
+.formatForCol {
+	text-align: left;
+	vertical-align: top;
+	margin-right: 10px;
+}
+
+.formatSelCol {
+	
 }
 
 .selectFormat table {

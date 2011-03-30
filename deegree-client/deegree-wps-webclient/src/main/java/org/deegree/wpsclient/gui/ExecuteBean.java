@@ -99,7 +99,10 @@ public class ExecuteBean implements Serializable {
 
     private List<String> outputs = new ArrayList<String>();
 
-    private Map<String, ComplexFormat> complexFormats = new HashMap<String, ComplexFormat>();
+    private Map<String, ComplexFormat> complexInputFormats = new HashMap<String, ComplexFormat>();
+    
+    private Map<String, ComplexFormat> complexOutputFormats = new HashMap<String, ComplexFormat>();
+    
 
     /**
      * ajax listener to execute the process (the source component of this event must contain an attribute with key
@@ -131,7 +134,7 @@ public class ExecuteBean implements Serializable {
 
             ExecutionOutput[] executionOutput = executer.execute( selectedProcess, literalInputs, bboxInputs,
                                                                   xmlInputs, xmlRefInputs, binaryInputs,
-                                                                  complexFormats, outputs );
+                                                                  complexInputFormats, outputs, complexOutputFormats );
 
             if ( executionOutput != null ) {
                 for ( int i = 0; i < executionOutput.length; i++ ) {
@@ -204,12 +207,22 @@ public class ExecuteBean implements Serializable {
         return binaryOutputs;
     }
 
-    public void setComplexFormats( Map<String, ComplexFormat> complexFormats ) {
-        this.complexFormats = complexFormats;
+    public void setComplexInputFormats( Map<String, ComplexFormat> complexInputFormats ) {
+        this.complexInputFormats = complexInputFormats;
     }
 
-    public Map<String, ComplexFormat> getComplexFormats() {
-        return complexFormats;
+    public Map<String, ComplexFormat> getComplexInputFormats() {
+        return complexInputFormats;
+    }
+
+
+    public void setComplexOutputFormats( Map<String, ComplexFormat> complexOutputFormats ) {
+        this.complexOutputFormats = complexOutputFormats;
+    }
+
+
+    public Map<String, ComplexFormat> getComplexOutputFormats() {
+        return complexOutputFormats;
     }
 
 }

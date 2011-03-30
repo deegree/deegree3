@@ -82,6 +82,7 @@ import org.deegree.protocol.wps.client.input.type.BBoxInputType;
 import org.deegree.protocol.wps.client.input.type.ComplexInputType;
 import org.deegree.protocol.wps.client.input.type.InputType;
 import org.deegree.protocol.wps.client.input.type.LiteralInputType;
+import org.deegree.protocol.wps.client.output.type.ComplexOutputType;
 import org.deegree.protocol.wps.client.output.type.OutputType;
 import org.deegree.protocol.wps.client.param.ComplexFormat;
 import org.deegree.protocol.wps.client.param.ValueWithRef;
@@ -243,10 +244,7 @@ public class FormBean {
                 occ = 1;
             if ( occ > maxOccurs && occ > -1 )
                 occ = maxOccurs;
-            
-            System.out.println("type " + input.getType());
-            System.out.println(occ);
-            System.out.println(maxOccurs);
+
             switch ( input.getType() ) {
             case COMPLEX:
                 HtmlPanelGrid gridC = new HtmlPanelGrid();
@@ -282,7 +280,6 @@ public class FormBean {
                 gridL.setId( inputId + "_PANEL" );
                 gridL.setColumns( 2 );
                 for ( int j = 0; j < occ; j++ ) {
-                    System.out.println("www " + j);
                     gridL.getChildren().add( getLiteralInput( fc, (LiteralInputType) input, minOccurs, maxOccurs, j ) );
                     if ( maxOccurs != 1 ) {
                         gridL.getChildren().add( createOccurenceButtons( input.getId(), j, maxOccurs, minOccurs ) );
@@ -338,7 +335,7 @@ public class FormBean {
         format.setDefaultFormat( input.getDefaultFormat() );
         format.setConverter( new ComplexFormatConverter() );
 
-        String valueFEL = "#{executeBean.complexFormats['" + input.getId().toString() + "']}";
+        String valueFEL = "#{executeBean.complexInputFormats['" + input.getId().toString() + "']}";
         ValueExpression valueFVE = fc.getApplication().getExpressionFactory().createValueExpression( fc.getELContext(),
                                                                                                      valueFEL,
                                                                                                      Object.class );
@@ -445,7 +442,7 @@ public class FormBean {
         format.setDefaultFormat( input.getDefaultFormat() );
         format.setConverter( new ComplexFormatConverter() );
 
-        String valueFEL = "#{executeBean.complexFormats['" + getMapId( input.getId(), index ) + "']}";
+        String valueFEL = "#{executeBean.complexInputFormats['" + getMapId( input.getId(), index ) + "']}";
         ValueExpression valueFVE = fc.getApplication().getExpressionFactory().createValueExpression( fc.getELContext(),
                                                                                                      valueFEL,
                                                                                                      Object.class );
@@ -633,22 +630,70 @@ public class FormBean {
         return addBt;
     }
 
-    private void setOutputParams( FacesContext fc, UIComponent parent, OutputType[] outputs ) {
-        if ( outputs.length > 1 ) {
-            HtmlPanelGrid outputGrid = new HtmlPanelGrid();
-            outputGrid.setId( getUniqueId() );
-            outputGrid.setStyleClass( "paramBody outGrid" );
-            outputGrid.setHeaderClass( "paramHeader" );
-            outputGrid.setColumns( 2 );
-            HtmlOutputText headerText = new HtmlOutputText();
-            headerText.setId( getUniqueId() );
-            String headerTextEL = "#{labels['outputParams']}";
-            ValueExpression outputTextVE = fc.getApplication().getExpressionFactory().createValueExpression( fc.getELContext(),
-                                                                                                             headerTextEL,
-                                                                                                             String.class );
-            headerText.setValueExpression( "value", outputTextVE );
-            outputGrid.getFacets().put( "header", headerText );
+    // private void setOutputParams( FacesContext fc, UIComponent parent, OutputType[] outputs ) {
+    // if ( outputs.length > 1 ) {
+    // HtmlPanelGrid outputGrid = new HtmlPanelGrid();
+    // outputGrid.setId( getUniqueId() );
+    // outputGrid.setStyleClass( "paramBody outGrid" );
+    // outputGrid.setHeaderClass( "paramHeader" );
+    // outputGrid.setColumns( 2 );
+    // HtmlOutputText headerText = new HtmlOutputText();
+    // headerText.setId( getUniqueId() );
+    // String headerTextEL = "#{labels['outputParams']}";
+    // ValueExpression outputTextVE = fc.getApplication().getExpressionFactory().createValueExpression(
+    // fc.getELContext(),
+    // headerTextEL,
+    // String.class );
+    // headerText.setValueExpression( "value", outputTextVE );
+    // outputGrid.getFacets().put( "header", headerText );
+    //
+    // HtmlSelectManyCheckbox cb = new HtmlSelectManyCheckbox();
+    // cb.setLayout( "pageDirection" );
+    // cb.setId( getUniqueId() );
+    //
+    // String valueEL = "#{executeBean.outputs}";
+    // ValueExpression valueVE = fc.getApplication().getExpressionFactory().createValueExpression( fc.getELContext(),
+    // valueEL,
+    // List.class );
+    // cb.setValueExpression( "value", valueVE );
+    // // cb.setRequired( true );
+    // for ( int i = 0; i < outputs.length; i++ ) {
+    // OutputType output = outputs[i];
+    // UISelectItem item = new UISelectItem();
+    // item.setItemLabel( output.getTitle().getString() );
+    // item.setItemValue( output.getId().toString() );
+    // if ( output.getAbstract() != null ) {
+    // item.setItemDescription( output.getAbstract().toString() );
+    // }
+    // cb.getChildren().add( item );
+    // }
+    //
+    // outputGrid.getChildren().add( cb );
+    // // TODO!
+    // // outputGrid.getChildren().add( createInfoBt( "", ) );
+    //
+    // parent.getChildren().add( outputGrid );
+    // }
+    // }
 
+    private void setOutputParams( FacesContext fc, UIComponent parent, OutputType[] outputs ) {
+        // if ( outputs.length > 1 ) {
+        HtmlPanelGrid outputGrid = new HtmlPanelGrid();
+        outputGrid.setId( getUniqueId() );
+        outputGrid.setStyleClass( "paramBody" );
+        outputGrid.setStyleClass( "paramBodyCol" );
+        outputGrid.setHeaderClass( "paramHeader" );
+        outputGrid.setColumns( 1 );
+        HtmlOutputText headerText = new HtmlOutputText();
+        headerText.setId( getUniqueId() );
+        String headerTextEL = "#{labels['outputParams']}";
+        ValueExpression outputTextVE = fc.getApplication().getExpressionFactory().createValueExpression( fc.getELContext(),
+                                                                                                         headerTextEL,
+                                                                                                         String.class );
+        headerText.setValueExpression( "value", outputTextVE );
+        outputGrid.getFacets().put( "header", headerText );
+
+        if ( outputs.length > 1 ) {
             HtmlSelectManyCheckbox cb = new HtmlSelectManyCheckbox();
             cb.setLayout( "pageDirection" );
             cb.setId( getUniqueId() );
@@ -669,14 +714,75 @@ public class FormBean {
                 }
                 cb.getChildren().add( item );
             }
-
             outputGrid.getChildren().add( cb );
-            // TODO!
-            // outputGrid.getChildren().add( createInfoBt( "", ) );
+        }
 
-            parent.getChildren().add( outputGrid );
+        HtmlPanelGrid formatGrid = new HtmlPanelGrid();
+        formatGrid.setColumns( 2 );
+        formatGrid.setStyleClass( "formatGrid" );
+        formatGrid.setColumnClasses( "formatForCol formatSelCol" );
+        formatGrid.setHeaderClass( "formatHeader" );
+
+        HtmlOutputText formatText = new HtmlOutputText();
+
+        String formatTextEL = "#{labels['outputParamFormat']}";
+        ValueExpression formatTextVE = fc.getApplication().getExpressionFactory().createValueExpression( fc.getELContext(),
+                                                                                                         formatTextEL,
+                                                                                                         String.class );
+        formatText.setValueExpression( "value", formatTextVE );
+        formatGrid.getFacets().put( "header", formatText );
+
+        for ( int i = 0; i < outputs.length; i++ ) {
+            addOutputFormat( fc, outputs[i], formatGrid );
+        }
+        outputGrid.getChildren().add( formatGrid );
+        // TODO!
+        // outputGrid.getChildren().add( createInfoBt( "", ) );
+        parent.getChildren().add( outputGrid );
+        // }
+    }
+
+    private void addOutputFormat( FacesContext fc, OutputType output, UIComponent parent ) {
+        if ( output instanceof ComplexOutputType ) {
+            HtmlOutputText formatText = new HtmlOutputText();
+            formatText.setStyleClass( "formatForLabel" );
+            formatText.setValue( output.getTitle().getString() );
+            parent.getChildren().add( formatText );
+
+            HtmlSelectFormat format = new HtmlSelectFormat();
+            format.setId( output.getId() + "_format" );
+            format.setStyleClass( INPUT_CLASS + " selectFormat" );
+            format.setDefaultFormat( ( (ComplexOutputType) output ).getDefaultFormat() );
+            format.setConverter( new ComplexFormatConverter() );
+
+            String valueFEL = "#{executeBean.complexOutputFormats['" + output.getId() + "']}";
+            ValueExpression valueFVE = fc.getApplication().getExpressionFactory().createValueExpression( fc.getELContext(),
+                                                                                                         valueFEL,
+                                                                                                         Object.class );
+
+            format.setValueExpression( "value", valueFVE );
+            ComplexFormat[] supportedFormats = ( (ComplexOutputType) output ).getSupportedFormats();
+            for ( ComplexFormat complexFormat : supportedFormats ) {
+                UISelectItem item = new UISelectItem();
+                item.setItemLabel( complexFormat.getSchema() );
+                item.setItemDescription( ComplexFormatConverter.getAsDesc( complexFormat ) );
+                item.setItemValue( complexFormat );
+                format.getChildren().add( item );
+            }
+            format.setConverter( new ComplexFormatConverter() );
+            parent.getChildren().add( format );
         }
     }
+
+    // private String createFormatLabel( ComplexFormat format ) {
+    // String s = null;
+    // if ( format != null ) {
+    // s = ( format.getSchema() != null ? format.getSchema() : "--" ) + "|";
+    // s = s + ( format.getEncoding() != null ? format.getEncoding() : "--" ) + "|";
+    // s = s + ( format.getMimeType() != null ? format.getMimeType() : "--" ) + "|";
+    // }
+    // return null;
+    // }
 
     private static String getUniqueId() {
         return "id_" + UUID.randomUUID();

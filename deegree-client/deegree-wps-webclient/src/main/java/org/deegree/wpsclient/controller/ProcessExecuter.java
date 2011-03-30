@@ -90,12 +90,14 @@ public class ProcessExecuter {
      *            all binaryInputs; must not be null!
      * @param outputs
      *            the outputs
+     * @param complexOutputFormats
      * @return the response of the WPS request
      */
     public ExecutionOutput[] execute( Process processToExecute, Map<String, StringPair> literalInputs,
                                       Map<String, BBox> bboxInputs, Map<String, UploadedFile> xmlInputs,
                                       Map<String, String> xmlRefInputs, Map<String, UploadedFile> binaryInputs,
-                                      Map<String, ComplexFormat> complexFormats, List<String> outputs ) {
+                                      Map<String, ComplexFormat> complexInputFormats, List<String> outputs,
+                                      Map<String, ComplexFormat> complexOutputFormats ) {
 
         FacesContext fc = FacesContext.getCurrentInstance();
         try {
@@ -106,8 +108,9 @@ public class ProcessExecuter {
                 LOG.debug( "input parameters (XML-REFS): " + xmlRefInputs );
                 LOG.debug( "input parameters (BINARY): " + binaryInputs );
                 LOG.debug( "input parameters (BBOX): " + bboxInputs );
-                LOG.debug( "formats: " + complexFormats );
+                LOG.debug( "input formats: " + complexInputFormats );
                 LOG.debug( "outputs: " + outputs );
+                LOG.debug( "output formats: " + complexOutputFormats );
             }
             ProcessExecution execution = processToExecute.prepareExecution();
             InputType[] inputDescription = processToExecute.getInputTypes();
@@ -125,9 +128,9 @@ public class ProcessExecuter {
 
                 } else if ( input instanceof ComplexInputType ) {
                     String schema = null, encoding = null, mimeType = null;
-                    for ( String key : complexFormats.keySet() ) {
-                        if ( matches( id, key ) && complexFormats.get( key ) != null ) {
-                            ComplexFormat complexFormat = complexFormats.get( key );
+                    for ( String key : complexInputFormats.keySet() ) {
+                        if ( matches( id, key ) && complexInputFormats.get( key ) != null ) {
+                            ComplexFormat complexFormat = complexInputFormats.get( key );
                             if ( complexFormat != null ) {
                                 schema = complexFormat.getSchema();
                                 mimeType = complexFormat.getMimeType();
@@ -170,7 +173,14 @@ public class ProcessExecuter {
                 }
             }
             for ( String out : outputs ) {
-                execution.addOutput( out, null, null, true, null, null, null );
+                String schema = null, encoding = null, mimeType = null;
+                if ( complexOutputFormats.containsKey( out ) ) {
+                    schema = complexOutputFormats.get( out ).getSchema();
+                    encoding = complexOutputFormats.get( out ).getEncoding();
+                    mimeType = complexOutputFormats.get( out ).getMimeType();
+                }
+                LOG.debug( "Append output " + out + " with format " + schema + ", " + encoding + ", " + mimeType );
+                execution.addOutput( out, null, null, true, mimeType, encoding, schema );
             }
             ExecutionOutputs response = execution.execute();
             // // OR, not yet finished

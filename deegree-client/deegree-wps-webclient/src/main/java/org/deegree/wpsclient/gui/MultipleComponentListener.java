@@ -136,7 +136,7 @@ public class MultipleComponentListener implements AjaxBehaviorListener {
                     eb.getBboxInputs().remove( id + ":" + index );
                     eb.getLiteralInputs().remove( id + ":" + index );
                     eb.getBinaryInputs().remove( id + ":" + index );
-                    eb.getComplexFormats().remove( id + ":" + index );
+                    eb.getComplexInputFormats().remove( id + ":" + index );
                 }
             }
         }
