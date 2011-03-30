@@ -307,6 +307,8 @@ public class ExecuteStatements implements GenericDatabaseExecution {
             StringBuilder getDatasetIDs = new StringBuilder();
             getDatasetIDs.append( "SELECT " );
             getDatasetIDs.append( "COUNT( DISTINCT(" );
+            getDatasetIDs.append( builder.getAliasManager().getRootTableAlias() );
+            getDatasetIDs.append( "." );
             getDatasetIDs.append( id );
             getDatasetIDs.append( "))" );
             getPSBody( builder, getDatasetIDs );
