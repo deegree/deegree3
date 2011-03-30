@@ -53,7 +53,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Implementation of {@link MetadataResultSet} for the ISO Application Profile.
+ * {@link MetadataResultSet} for the {@link ISOMetadataStore}.
  * 
  * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
  * @author last edited by: $Author$
@@ -108,5 +108,4 @@ public class ISOMetadataResultSet implements MetadataResultSet {
             throw new MetadataStoreException( e.getMessage(), e );
         }
     }
-
 }
