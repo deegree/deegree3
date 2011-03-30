@@ -62,6 +62,10 @@
                 disabled="#{!logBean.loggedIn}" rendered="#{facesContext.viewRoot.viewId == '/console/jsf/proxy.xhtml'}" />
             <h:link styleClass="navi" value="proxy" outcome="/console/jsf/proxy.xhtml" disabled="#{!logBean.loggedIn}"
                 rendered="#{facesContext.viewRoot.viewId != '/console/jsf/proxy.xhtml'}" />
+            <h:link styleClass="naviactive" value="jdbc" outcome="/console/jsf/jdbc.xhtml"
+                disabled="#{!logBean.loggedIn}" rendered="#{facesContext.viewRoot.viewId == '/console/jsf/jdbc.xhtml'}" />
+            <h:link styleClass="navi" value="jdbc" outcome="/console/jsf/jdbc.xhtml" disabled="#{!logBean.loggedIn}"
+                rendered="#{facesContext.viewRoot.viewId != '/console/jsf/jdbc.xhtml'}" />
             <br />
             <ui:repeat value="#{configManager.resourceManagers}" var="resourceManager">
                 <tr>
