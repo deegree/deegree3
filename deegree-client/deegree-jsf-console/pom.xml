@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.deegree</groupId>
   <artifactId>deegree-jsf-console</artifactId>
-  <packaging>war</packaging>
+  <packaging>jar</packaging>
   <version>3.1-pre4-SNAPSHOT</version>
   <name>deegree 3 JSF console</name>
   <url>http://maven.apache.org</url>
