@@ -434,34 +434,6 @@ public final class DateUtils {
     }
 
     /**
-     * Obtain an JDBC timestamp string representation of the supplied date.
-     * 
-     * @param date
-     *            the date
-     * @return the string in the JDBC timestamp format
-     */
-    public static String formatJDBCTimeStamp( final java.util.Date date ) {
-        SimpleDateFormat sdf = new SimpleDateFormat( JDBC_TIMESTAMP_FORMAT );
-        sdf.setTimeZone( GMT );
-        return sdf.format( date );
-    }
-
-    /**
-     * Obtain an JDBC timestamp string representation of the supplied date.
-     * 
-     * @param date
-     *            the date
-     * @param tz
-     *            the timezone of the result date
-     * @return the string in the JDBC timestamp format
-     */
-    public static String formatJDBCTimeStamp( final java.util.Date date, TimeZone tz ) {
-        SimpleDateFormat sdf = new SimpleDateFormat( JDBC_TIMESTAMP_FORMAT );
-        sdf.setTimeZone( tz );
-        return sdf.format( date );
-    }
-
-    /**
      * Return a string representation of the supplied date with the current default locale.
      * 
      * @param date
@@ -485,5 +457,4 @@ public final class DateUtils {
     private DateUtils() {
         // Prevent instantiation
     }
-
 }
