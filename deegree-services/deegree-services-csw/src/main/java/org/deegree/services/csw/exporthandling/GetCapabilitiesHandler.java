@@ -62,6 +62,7 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
 
+import org.apache.commons.io.IOUtils;
 import org.deegree.commons.tom.ows.Version;
 import org.deegree.commons.utils.kvp.InvalidParameterValueException;
 import org.deegree.filter.xml.FilterCapabilitiesExporter;
@@ -95,7 +96,7 @@ public class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
 
     private static final String OGC_PREFIX = "ogc";
 
-    private static LinkedList<String> parameterValues;
+    private LinkedList<String> parameterValues;
 
     private final boolean isTransactionEnabled;
 
@@ -115,18 +116,31 @@ public class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
 
     private final boolean isEnabledInspireExtension;
 
-    private static List<String> additionalQueryables = new ArrayList<String>();
+    private List<String> additionalQueryables = new ArrayList<String>();
 
     /**
      * additional queryable properties in ISO
      */
-    private static List<String> isoQueryables = new ArrayList<String>();
+    private List<String> isoQueryables = new ArrayList<String>();
 
-    private static LinkedList<String> supportedOperations = new LinkedList<String>();
+    private LinkedList<String> supportedOperations = new LinkedList<String>();
 
     private final Map<String, String> varToValue;
 
-    static {
+    public GetCapabilitiesHandler( XMLStreamWriter writer, DeegreeServicesMetadataType mainControllerConf,
+                                   DeegreeServiceControllerType mainConf, Set<Sections> sections,
+                                   ServiceIdentificationType identification, Version version,
+                                   boolean isTransactionEnabled, boolean isEnabledInspireExtension, boolean isSoap ) {
+        this.writer = writer;
+        this.mainControllerConf = mainControllerConf;
+        this.mainConf = mainConf;
+        this.sections = sections;
+        this.identification = identification;
+        this.version = version;
+        this.isSoap = isSoap;
+        this.isTransactionEnabled = isTransactionEnabled;
+        this.isEnabledInspireExtension = isEnabledInspireExtension;
+
         isoQueryables.add( "Format" );
         isoQueryables.add( "Type" );
         isoQueryables.add( "AnyText" );
@@ -176,23 +190,6 @@ public class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
         supportedOperations.add( CSWRequestType.DescribeRecord.name() );
         supportedOperations.add( CSWRequestType.GetRecords.name() );
         supportedOperations.add( CSWRequestType.GetRecordById.name() );
-        // supportedOperations.add( CSWRequestType.Transaction.name() );
-
-    }
-
-    public GetCapabilitiesHandler( XMLStreamWriter writer, DeegreeServicesMetadataType mainControllerConf,
-                                   DeegreeServiceControllerType mainConf, Set<Sections> sections,
-                                   ServiceIdentificationType identification, Version version,
-                                   boolean isTransactionEnabled, boolean isEnabledInspireExtension, boolean isSoap ) {
-        this.writer = writer;
-        this.mainControllerConf = mainControllerConf;
-        this.mainConf = mainConf;
-        this.sections = sections;
-        this.identification = identification;
-        this.version = version;
-        this.isSoap = isSoap;
-        this.isTransactionEnabled = isTransactionEnabled;
-        this.isEnabledInspireExtension = isEnabledInspireExtension;
 
         this.varToValue = new HashMap<String, String>();
         String serverAddress = OGCFrontController.getHttpGetURL();
@@ -367,12 +364,15 @@ public class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
                             throws XMLStreamException {
 
         writer.writeStartElement( owsNS, "ExtendedCapabilities" );
-
         InputStream in = GetCapabilitiesHandler.class.getResourceAsStream( "extendedCapInspire.xml" );
-        XMLStreamReader reader = XMLInputFactory.newInstance().createXMLStreamReader( in );
-        reader.nextTag();
-        writeTemplateElement( writer, reader );
-        writer.writeEndElement();
+        try {
+            XMLStreamReader reader = XMLInputFactory.newInstance().createXMLStreamReader( in );
+            reader.nextTag();
+            writeTemplateElement( writer, reader );
+            writer.writeEndElement();
+        } finally {
+            IOUtils.closeQuietly( in );
+        }
     }
 
     private void writeTemplateElement( XMLStreamWriter writer, XMLStreamReader inStream )
@@ -521,9 +521,7 @@ public class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
                     writer.writeEndElement();// WCS_100_NS, "keywords" );
                 }
             }
-
         }
-
     }
 
     /**
@@ -552,7 +550,6 @@ public class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
                 }
             }
         }
-
     }
 
     /**
