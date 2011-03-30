@@ -41,7 +41,7 @@ import org.deegree.metadata.MetadataRecord;
 import org.deegree.protocol.csw.MetadataStoreException;
 
 /**
- * Has a {@link MetadataCollection} and the corresponding {@link MetadataResultType} as content.
+ * Has a corresponding {@link MetadataResultType} as content.
  * 
  * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
  * @author last edited by: $Author$
