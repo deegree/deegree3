@@ -38,10 +38,10 @@ package org.deegree.console.featurestore;
 import static javax.faces.application.FacesMessage.SEVERITY_ERROR;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -59,12 +59,16 @@ import javax.xml.stream.XMLStreamWriter;
 import org.apache.commons.io.IOUtils;
 import org.deegree.client.core.utils.SQLExecution;
 import org.deegree.commons.config.DeegreeWorkspace;
+import org.deegree.commons.config.ResourceState;
 import org.deegree.commons.jdbc.ConnectionManager;
 import org.deegree.commons.utils.FileUtils;
 import org.deegree.commons.xml.stax.IndentingXMLStreamWriter;
+import org.deegree.console.Config;
+import org.deegree.console.ConfigManager;
 import org.deegree.console.WorkspaceBean;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.persistence.CRSManager;
+import org.deegree.feature.persistence.FeatureStoreManager;
 import org.deegree.feature.persistence.postgis.config.PostGISDDLCreator;
 import org.deegree.feature.persistence.postgis.config.PostGISFeatureStoreConfigWriter;
 import org.deegree.feature.persistence.postgis.jaxb.PostGISFeatureStoreConfig;
@@ -112,12 +116,8 @@ public class MappingWizardSQL {
                             throws ClassNotFoundException, SecurityException, NoSuchMethodException,
                             IllegalArgumentException, IllegalAccessException, InvocationTargetException {
         ExternalContext ctx = FacesContext.getCurrentInstance().getExternalContext();
-        Object o = ctx.getSessionMap().get( "configManager" );
-
-        // TODO clean up modularization
-        Class<?> c = Class.forName( "org.deegree.console.ConfigManager" );
-        Method m = c.getDeclaredMethod( "getNewConfigId" );
-        return (String) m.invoke( o );
+        ConfigManager mgr = (ConfigManager) ctx.getSessionMap().get( "configManager" );
+        return mgr.getNewConfigId();
     }
 
     public SortedSet<String> getAvailableJdbcConns() {
@@ -146,7 +146,7 @@ public class MappingWizardSQL {
     public File getAppSchemaDirectory()
                             throws IOException {
         ExternalContext ctx = FacesContext.getCurrentInstance().getExternalContext();
-        DeegreeWorkspace ws = ((WorkspaceBean) ctx.getApplicationMap().get( "workspace" )).getActiveWorkspace();
+        DeegreeWorkspace ws = ( (WorkspaceBean) ctx.getApplicationMap().get( "workspace" ) ).getActiveWorkspace();
         File appSchemaDirectory = new File( ws.getLocation(), "appschemas" );
         return appSchemaDirectory;
     }
@@ -249,7 +249,7 @@ public class MappingWizardSQL {
 
         try {
             ExternalContext ctx = FacesContext.getCurrentInstance().getExternalContext();
-            DeegreeWorkspace ws = ((WorkspaceBean) ctx.getApplicationMap().get( "workspace" )).getActiveWorkspace();
+            DeegreeWorkspace ws = ( (WorkspaceBean) ctx.getApplicationMap().get( "workspace" ) ).getActiveWorkspace();
 
             ICRS storageCrs = CRSManager.lookup( this.storageCrs );
             boolean createBlobMapping = storageMode.equals( "hybrid" ) || storageMode.equals( "blob" );
@@ -258,8 +258,8 @@ public class MappingWizardSQL {
                                                           storageCrs, storageSrid );
             mappedSchema = mapper.getMappedSchema();
             PostGISFeatureStoreConfigWriter configWriter = new PostGISFeatureStoreConfigWriter( mappedSchema );
-            File file = new File( ws.getLocation(), "datasources/feature/" + getFeatureStoreId() + ".xml" );
-            FileOutputStream fos = new FileOutputStream( file );
+            File tmpConfigFile = File.createTempFile( "fsconfig", ".xml" );
+            FileOutputStream fos = new FileOutputStream( tmpConfigFile );
             XMLStreamWriter xmlWriter = XMLOutputFactory.newInstance().createXMLStreamWriter( fos );
             xmlWriter = new IndentingXMLStreamWriter( xmlWriter );
 
@@ -270,19 +270,36 @@ public class MappingWizardSQL {
             configWriter.writeConfig( xmlWriter, jdbcId, schemaUrls );
             xmlWriter.close();
             IOUtils.closeQuietly( fos );
-            System.out.println( "Wrote to file " + file );
+            System.out.println( "Wrote to file " + tmpConfigFile );
+
+            // let the resource manager do the dirty work
+
+            ConfigManager mgr = (ConfigManager) ctx.getSessionMap().get( "configManager" );
+
+            // let the resource manager do the dirty work
+            ResourceState rs = null;
+            try {
+                FeatureStoreManager fsMgr = ws.getSubsystemManager( FeatureStoreManager.class );
+                rs = fsMgr.createResource( getFeatureStoreId(), new FileInputStream( tmpConfigFile ) );
+                Config c = new Config( rs, mgr, fsMgr, "/console/featurestore/sql/wizard4", false );
+                return c.edit();
+            } catch ( Throwable t ) {
+                t.printStackTrace();
+                FacesMessage fm = new FacesMessage( SEVERITY_ERROR, "Unable to create config: " + t.getMessage(), null );
+                FacesContext.getCurrentInstance().addMessage( null, fm );
+                return null;
+            }
         } catch ( Throwable t ) {
             String msg = "Error generating feature store configuration.";
             FacesMessage fm = new FacesMessage( SEVERITY_ERROR, msg, t.getMessage() );
             FacesContext.getCurrentInstance().addMessage( null, fm );
             return "/console/featurestore/sql/wizard3";
         }
-        return "/console/featurestore/sql/wizard4";
     }
 
     public String createTables() {
         String[] createStmts = new PostGISDDLCreator( mappedSchema ).getDDL();
-        SQLExecution execution = new SQLExecution( jdbcId, createStmts, "/console/featurestore/buttons" );
+        SQLExecution execution = new SQLExecution( jdbcId, createStmts, "/console/featurestore/sql/wizard5" );
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put( "execution", execution );
         return "/console/generic/sql.jsf?faces-redirect=true";
     }
@@ -301,5 +318,21 @@ public class MappingWizardSQL {
 
     public Integer getTableNameLength() {
         return tableNameLength;
+    }
+
+    public String activateFS() {
+        try {
+            ExternalContext ctx = FacesContext.getCurrentInstance().getExternalContext();
+            DeegreeWorkspace ws = ( (WorkspaceBean) ctx.getApplicationMap().get( "workspace" ) ).getActiveWorkspace();
+            FeatureStoreManager fsMgr = ws.getSubsystemManager( FeatureStoreManager.class );
+            fsMgr.activate( getFeatureStoreId() );
+        } catch ( Throwable t ) {
+            t.printStackTrace();
+            String msg = "Error activating new feature store";
+            FacesMessage fm = new FacesMessage( SEVERITY_ERROR, msg, t.getMessage() );
+            FacesContext.getCurrentInstance().addMessage( null, fm );
+            return null;
+        }
+        return "/console/featurestore/buttons";
     }
 }

@@ -196,7 +196,7 @@ public class PostGISFeatureStoreConfigParser {
 
         BLOBMapping blobMappingConf = config.getBLOBMapping();
         if ( blobMappingConf != null ) {
-            ICRS storageCRS = CRSManager.getCRSRef( blobMappingConf.getStorageCRS(), true );
+            ICRS storageCRS = CRSManager.getCRSRef( blobMappingConf.getStorageCRS(), false );
             String ftTable = blobMappingConf.getFeatureTypeTable() == null ? "feature_types"
                                                                           : blobMappingConf.getFeatureTypeTable();
             bboxMapping = new BBoxTableMapping( ftTable, storageCRS );

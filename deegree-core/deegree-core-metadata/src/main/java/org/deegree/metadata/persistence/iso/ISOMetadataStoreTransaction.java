@@ -119,22 +119,20 @@ public class ISOMetadataStoreTransaction implements MetadataStoreTransaction {
 
         List<String> identifierList = new ArrayList<String>();
         for ( OMElement element : insert.getElements() ) {
-
             try {
                 for ( RecordInspector r : inspectors ) {
                     element = r.inspect( element, conn, connectionType );
                 }
                 if ( element != null ) {
                     ISORecord rec = new ISORecord( element, anyText );
-                        GenerateQueryableProperties generateQP = new GenerateQueryableProperties( connectionType );
-                        int operatesOnId = generateQP.generateMainDatabaseDataset( conn, rec );
-                        generateQP.executeQueryableProperties( false, conn, operatesOnId, rec );
-                        identifierList.addAll( Arrays.asList( rec.getIdentifier() ) );
+                    GenerateQueryableProperties generateQP = new GenerateQueryableProperties( connectionType );
+                    int operatesOnId = generateQP.generateMainDatabaseDataset( conn, rec );
+                    generateQP.executeQueryableProperties( false, conn, operatesOnId, rec );
+                    identifierList.addAll( Arrays.asList( rec.getIdentifier() ) );
                 }
             } catch ( XMLStreamException e ) {
                 throw new MetadataStoreException( "Error on insert: " + e.getMessage(), e );
             }
-
         }
         return identifierList;
     }

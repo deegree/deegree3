@@ -11,9 +11,9 @@
     </h:panelGroup>
     <h:panelGroup rendered="#{logBean.loggedIn &amp;&amp; configManager.currentResourceManager != null}">    
       <h:form>
-        <div>Configuration / mapping created successfully.<br /><br /></div>
+        <div>Mapping finished.<br /><br /></div>
         <div>
-          <h:commandButton styleClass="buttonCreateNew" value="Create DB tables" action="#{mappingWizardSQL.createTables}" onclick="show();" />
+          <h:commandButton styleClass="buttonCreateNew" value="Start feature store" action="#{mappingWizardSQL.activateFS}" onclick="show();" />
         </div>
       </h:form>
     </h:panelGroup>

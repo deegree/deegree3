@@ -108,6 +108,8 @@ public class Config implements Comparable<Config> {
 
     private boolean requiresWSReload;
 
+    private boolean autoActivate;
+
     public Config( File location, URL schemaURL, String resourceOutcome ) {
         this.location = location;
         this.schemaURL = schemaURL;
@@ -140,13 +142,14 @@ public class Config implements Comparable<Config> {
     }
 
     public Config( ResourceState state, ConfigManager manager,
-                   org.deegree.commons.config.ResourceManager originalResourceManager, String resourceOutcome ) {
+                   org.deegree.commons.config.ResourceManager originalResourceManager, String resourceOutcome, boolean autoActivate ) {
         this.state = state;
         this.id = state.getId();
         this.location = state.getConfigLocation();
         this.resourceManager = originalResourceManager;
         this.manager = manager;
         this.resourceOutcome = resourceOutcome;
+        this.autoActivate = autoActivate;
 
         ResourceProvider provider = state.getProvider();
         if ( provider.getConfigSchema() != null ) {
@@ -254,7 +257,7 @@ public class Config implements Comparable<Config> {
             adapter.getRootElement().serialize( os );
             os.close();
             content = null;
-            if ( resourceManager != null ) {
+            if ( autoActivate && resourceManager != null ) {
                 if ( state.getType() == StateType.deactivated ) {
                     resourceManager.activate( id );
                 } else {

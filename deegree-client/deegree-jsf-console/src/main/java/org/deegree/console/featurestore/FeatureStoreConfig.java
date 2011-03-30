@@ -83,12 +83,12 @@ public class FeatureStoreConfig implements Serializable {
 
     private FeatureStoreManager getFeatureStoreManager() {
         ExternalContext ctx = FacesContext.getCurrentInstance().getExternalContext();
-        DeegreeWorkspace ws = ((WorkspaceBean) ctx.getApplicationMap().get( "workspace" )).getActiveWorkspace();
+        DeegreeWorkspace ws = ( (WorkspaceBean) ctx.getApplicationMap().get( "workspace" ) ).getActiveWorkspace();
         return ws.getSubsystemManager( FeatureStoreManager.class );
     }
 
     public boolean getSql() {
-        FeatureStore fs = getFeatureStoreManager().get( getId() );        
+        FeatureStore fs = getFeatureStoreManager().get( getId() );
         return fs != null && fs instanceof SQLFeatureStore;
     }
 
@@ -230,6 +230,8 @@ public class FeatureStoreConfig implements Serializable {
         if ( ft.isAbstract() ) {
             sb.append( indent + "- <i>" + ft.getName().getPrefix() + ":" + ft.getName().getLocalPart()
                        + " (abstract)</i><br/>" );
+        } else if ( ft instanceof FeatureCollectionType ) {
+            sb.append( indent + "- " + ft.getName().getPrefix() + ":" + ft.getName().getLocalPart() );
         } else {
             Query query = new Query( ft.getName(), null, 0, -1, -1 );
             int numInstances = -1;

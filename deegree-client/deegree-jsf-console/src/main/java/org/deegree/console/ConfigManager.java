@@ -117,7 +117,7 @@ public class ConfigManager {
         }
         for ( ResourceState state : currentResourceManager.getManager().getStates() ) {
             configs.add( new Config( state, this, currentResourceManager.getManager(),
-                                     currentResourceManager.getStartView() ) );
+                                     currentResourceManager.getStartView(), true ) );
         }
         return configs;
     }
@@ -173,7 +173,8 @@ public class ConfigManager {
         ResourceState rs = null;
         try {
             rs = manager.createResource( newConfigId, templateURL.openStream() );
-            Config c = new Config( rs, this, currentResourceManager.getManager(), currentResourceManager.getStartView() );
+            Config c = new Config( rs, this, currentResourceManager.getManager(),
+                                   currentResourceManager.getStartView(), true );
             return c.edit();
         } catch ( Throwable t ) {
             FacesMessage fm = new FacesMessage( SEVERITY_ERROR, "Unable to create config: " + t.getMessage(), null );

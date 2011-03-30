@@ -226,7 +226,7 @@ public class AppSchemaMapper {
     }
 
     private Mapping generatePropMapping( PropertyType pt, MappingContext mc ) {
-        LOG.info( "Mapping property '" + pt.getName() + "'" );
+        LOG.debug( "Mapping property '" + pt.getName() + "'" );
         Mapping mapping = null;
         if ( pt instanceof SimplePropertyType ) {
             mapping = generatePropMapping( (SimplePropertyType) pt, mc );
@@ -500,6 +500,12 @@ public class AppSchemaMapper {
                                            Map<QName, QName> elements ) {
 
         List<Mapping> mappings = new ArrayList<Mapping>();
+        
+        QName eName = new QName (elDecl.getNamespace(), elDecl.getName());
+        if (eName.equals( new QName ("http://www.isotc211.org/2005/gmd", "CI_Citation") )) {
+            LOG.warn ("Skipping mapping of CI_Citation element");
+            return mappings;
+        }
 
         // consider every concrete element substitution
         List<XSElementDeclaration> substitutions = appSchema.getXSModel().getSubstitutions( elDecl, null, true, true );
@@ -620,14 +626,14 @@ public class AppSchemaMapper {
 
     private List<Mapping> generateMapping( XSWildcard wildCard, int occurrence, MappingContext mc,
                                            Map<QName, QName> elements ) {
-        LOG.warn( "Handling of wild cards not implemented yet." );
+        LOG.debug( "Handling of wild cards not implemented yet." );
         StringBuffer sb = new StringBuffer( "Path: " );
         for ( QName qName : elements.keySet() ) {
             sb.append( qName );
             sb.append( " -> " );
         }
         sb.append( "wildcard" );
-        LOG.info( "Skipping wildcard at path: " + sb );
+        LOG.debug( "Skipping wildcard at path: " + sb );
         return new ArrayList<Mapping>();
     }
 

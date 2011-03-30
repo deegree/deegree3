@@ -210,10 +210,10 @@ public class PostGISFeatureStoreConfigWriter {
         writer.writeStartElement( CONFIG_NS, "FeatureType" );
         writer.writeAttribute( "name", getName( ft.getName() ) );
 
-        FeatureType parentFt = schema.getParentFt( ft );
-        if ( parentFt != null ) {
-            writer.writeAttribute( "parent", getName( parentFt.getName() ) );
-        }
+//        FeatureType parentFt = schema.getParentFt( ft );
+//        if ( parentFt != null ) {
+//            writer.writeAttribute( "parent", getName( parentFt.getName() ) );
+//        }
 
         writer.writeAttribute( "table", ftMapping.getFtTable().toString() );
 

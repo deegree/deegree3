@@ -68,6 +68,7 @@ import org.deegree.commons.xml.stax.IndentingXMLStreamWriter;
 import org.deegree.cs.CRSUtils;
 import org.deegree.cs.exceptions.TransformationException;
 import org.deegree.cs.exceptions.UnknownCRSException;
+import org.deegree.cs.persistence.CRSManager;
 import org.deegree.feature.Feature;
 import org.deegree.feature.FeatureCollection;
 import org.deegree.feature.StreamFeatureCollection;
@@ -133,7 +134,7 @@ public class PostGISFeatureStoreTest {
         AppSchemaMapper mapper = new AppSchemaMapper( appSchema, false, true, CRSUtils.EPSG_4326, "-1" );
         MappedApplicationSchema mappedSchema = mapper.getMappedSchema();
         PostGISFeatureStoreConfigWriter configWriter = new PostGISFeatureStoreConfigWriter( mappedSchema );
-        File file = new File( "/home/schneider/.deegree/inspire-test/datasources/feature/inspire-au.xml" );
+        File file = new File( "/home/schneider/.deegree/inspire-test/datasources/feature/inspire-ad.xml" );
         FileOutputStream fos = new FileOutputStream( file );
         XMLStreamWriter xmlWriter = XMLOutputFactory.newInstance().createXMLStreamWriter( fos );
         xmlWriter = new IndentingXMLStreamWriter( xmlWriter );
@@ -144,7 +145,42 @@ public class PostGISFeatureStoreTest {
         IOUtils.closeQuietly( fos );
         System.out.println( "Wrote to file " + file );
 
-        file = new File( "/tmp/inspire-au.sql" );
+        file = new File( "/tmp/inspire-ad.sql" );
+        PrintWriter writer = new PrintWriter( file );
+        String[] createStmts = new PostGISDDLCreator( mappedSchema ).getDDL();
+        for ( String stmt : createStmts ) {
+            writer.println( stmt + ";" );
+        }
+        IOUtils.closeQuietly( writer );
+        System.out.println( "Wrote to file " + file );
+    }
+
+    @Test
+    public void testMappingBoreholeML()
+                            throws ClassCastException, ClassNotFoundException, InstantiationException,
+                            IllegalAccessException, IOException, XMLStreamException, FactoryConfigurationError {
+
+        File addressesFile = new File(
+                                       "/home/schneider/workspaces/projekte/bgrbmlwfs-trunk/modules/bgrbmlwfs-workspace/src/main/workspace/appschemas/boreholeml/BoreholeML.xsd" );
+        URL url = addressesFile.toURI().toURL();
+        ApplicationSchemaXSDDecoder decoder = new ApplicationSchemaXSDDecoder( GML_32, null, addressesFile );
+        ApplicationSchema appSchema = decoder.extractFeatureTypeSchema();
+
+        AppSchemaMapper mapper = new AppSchemaMapper( appSchema, false, true, CRSManager.getCRSRef( "EPSG:7432" ), "-1" );
+        MappedApplicationSchema mappedSchema = mapper.getMappedSchema();
+        PostGISFeatureStoreConfigWriter configWriter = new PostGISFeatureStoreConfigWriter( mappedSchema );
+        File file = new File( "/tmp/boreholeml.xml" );
+        FileOutputStream fos = new FileOutputStream( file );
+        XMLStreamWriter xmlWriter = XMLOutputFactory.newInstance().createXMLStreamWriter( fos );
+        xmlWriter = new IndentingXMLStreamWriter( xmlWriter );
+        configWriter.writeConfig( xmlWriter,
+                                  "testconn",
+                                  Collections.singletonList( "file:/home/schneider/.deegree/inspire-test/schemas/inspire/annex1/AdministrativeUnits.xsd" ) );
+        xmlWriter.close();
+        IOUtils.closeQuietly( fos );
+        System.out.println( "Wrote to file " + file );
+
+        file = new File( "/tmp/boreholeml.sql" );
         PrintWriter writer = new PrintWriter( file );
         String[] createStmts = new PostGISDDLCreator( mappedSchema ).getDDL();
         for ( String stmt : createStmts ) {
@@ -560,11 +596,7 @@ public class PostGISFeatureStoreTest {
                             throws MalformedURLException, ClassCastException, UnsupportedEncodingException,
                             ClassNotFoundException, InstantiationException, IllegalAccessException {
 
-        String inspireDir = TstSettings.getProperty( "inspire_annex1_schemas_root" );
-        if ( inspireDir == null ) {
-            return null;
-        }
-        File addressesFile = new File( inspireDir, "AdministrativeUnits.xsd" );
+        File addressesFile = new File( "/home/schneider/workspaces/deegree-trunk/XMLExamples/inspire/annex1" );
         URL url = addressesFile.toURI().toURL();
         ApplicationSchemaXSDDecoder decoder = new ApplicationSchemaXSDDecoder( GML_32, null, addressesFile );
         return decoder.extractFeatureTypeSchema();
