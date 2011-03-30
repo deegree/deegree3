@@ -43,7 +43,6 @@ import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
@@ -112,6 +111,9 @@ public class ISOMetadataStore implements MetadataStore {
 
     private final List<RecordInspector> inspectorChain = new ArrayList<RecordInspector>();
 
+    /** Used to limit the fetch size for SELECT statements that potentially return a lot of rows. */
+    public static final int DEFAULT_FETCH_SIZE = 100;
+
     /**
      * Creates a new {@link ISOMetadataStore} instance from the given JAXB configuration object.
      * 
@@ -121,7 +123,7 @@ public class ISOMetadataStore implements MetadataStore {
     public ISOMetadataStore( ISOMetadataStoreConfig config ) throws ResourceInitException {
         this.connectionId = config.getJDBCConnId();
         this.config = config;
-       
+
         // this.varToValue = new HashMap<String, String>();
         // String systemStartDate = "2010-11-16";
         // varToValue.put( "${SYSTEM_START_DATE}", systemStartDate );
@@ -210,22 +212,16 @@ public class ISOMetadataStore implements MetadataStore {
         }
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.deegree.record.persistence.RecordStore#init()
-     */
     @Override
     public void init( DeegreeWorkspace workspace )
                             throws ResourceInitException {
         LOG.debug( "init" );
-        // lockManager = new DefaultLockManager( this, "LOCK_DB" );
         ConnectionManager mgr = workspace.getSubsystemManager( ConnectionManager.class );
         connectionType = mgr.getType( connectionId );
         if ( connectionType == PostgreSQL ) {
             Connection conn = null;
             try {
-                conn = ConnectionManager.getConnection( connectionId );
+                conn = getConnection();
                 String version = determinePostGISVersion( conn );
                 if ( version.startsWith( "0." ) || version.startsWith( "1.0" ) || version.startsWith( "1.1" )
                      || version.startsWith( "1.2" ) ) {
@@ -234,8 +230,7 @@ public class ISOMetadataStore implements MetadataStore {
                 } else {
                     LOG.debug( Messages.getMessage( "DET_POSTGIS_PREDICATES_MODERN", version ) );
                 }
-
-            } catch ( SQLException e ) {
+            } catch ( Throwable e ) {
                 LOG.debug( e.getMessage(), e );
                 throw new ResourceInitException( e.getMessage(), e );
             } finally {
@@ -280,21 +275,14 @@ public class ISOMetadataStore implements MetadataStore {
         return null;
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.deegree.record.persistence.RecordStore#getRecords(javax.xml.stream.XMLStreamWriter,
-     * javax.xml.namespace.QName)
-     */
     @Override
     public MetadataResultSet getRecords( MetadataQuery query )
                             throws MetadataStoreException {
         String operationName = "getRecords";
         LOG.debug( Messages.getMessage( "INFO_EXEC", operationName ) );
-        Connection conn = null;
+        Connection conn = getConnection();
         MetadataResultSet result = null;
         try {
-            conn = ConnectionManager.getConnection( connectionId );
             AbstractWhereBuilder builder = getWhereBuilder( query );
             result = doResultsOnGetRecord( query, builder, conn );
             // break;
@@ -303,10 +291,6 @@ public class ISOMetadataStore implements MetadataStore {
             // result = new ISOMetadataResultSet( null, conn, resultType, config.getAnyText() );
         } catch ( FilterEvaluationException e ) {
             String msg = Messages.getMessage( "ERROR_OPERATION", operationName, e.getLocalizedMessage() );
-            LOG.debug( msg );
-            throw new MetadataStoreException( msg );
-        } catch ( SQLException e ) {
-            String msg = Messages.getMessage( "ERROR_OPERATION", operationName, e.getMessage() );
             LOG.debug( msg );
             throw new MetadataStoreException( msg );
         }
@@ -328,7 +312,7 @@ public class ISOMetadataStore implements MetadataStore {
         Connection conn = null;
         try {
             AbstractWhereBuilder builder = getWhereBuilder( query );
-            conn = ConnectionManager.getConnection( connectionId );
+            conn = getConnection();
             ps = new ExecuteStatements( getDBType() ).executeCounting( builder, conn );
             LOG.debug( ps.toString() );
             rs = ps.executeQuery();
@@ -348,7 +332,6 @@ public class ISOMetadataStore implements MetadataStore {
 
     /**
      * The mandatory "resultType" attribute in the GetRecords operation is set to "results".
-     * 
      */
     private MetadataResultSet doResultsOnGetRecord( MetadataQuery recordStoreOptions, AbstractWhereBuilder builder,
                                                     Connection conn )
@@ -359,8 +342,8 @@ public class ISOMetadataStore implements MetadataStore {
         ExecuteStatements exe = new ExecuteStatements( getDBType() );
         try {
             preparedStatement = exe.executeGetRecords( recordStoreOptions, builder, conn );
+            preparedStatement.setFetchSize( DEFAULT_FETCH_SIZE );
             rs = preparedStatement.executeQuery();
-            // close( preparedStatement );
         } catch ( Throwable t ) {
             JDBCUtils.close( rs, preparedStatement, conn, LOG );
             String msg = Messages.getMessage( "ERROR_REQUEST_TYPE", ResultType.results.name(), t.getMessage() );
@@ -391,7 +374,7 @@ public class ISOMetadataStore implements MetadataStore {
         PreparedStatement stmt = null;
         try {
             int size = idList.size();
-            conn = ConnectionManager.getConnection( connectionId );
+            conn = getConnection();
 
             StringBuilder select = new StringBuilder();
             select.append( "SELECT " ).append( recordfull );
@@ -405,6 +388,7 @@ public class ISOMetadataStore implements MetadataStore {
             }
 
             stmt = conn.prepareStatement( select.toString() );
+            stmt.setFetchSize( DEFAULT_FETCH_SIZE );
             LOG.debug( "select RecordById statement: " + stmt );
 
             int i = 1;
@@ -429,14 +413,38 @@ public class ISOMetadataStore implements MetadataStore {
     public MetadataStoreTransaction acquireTransaction()
                             throws MetadataStoreException {
         ISOMetadataStoreTransaction ta = null;
-        Connection conn = null;
+        Connection conn = getConnection();
         try {
-            conn = ConnectionManager.getConnection( connectionId );
             ta = new ISOMetadataStoreTransaction( conn, inspectorChain, config.getAnyText(), useLegacyPredicates,
                                                   getDBType() );
         } catch ( Throwable e ) {
             throw new MetadataStoreException( e.getMessage() );
         }
         return ta;
+    }
+
+    /**
+     * Acquires a new JDBC connection from the configured connection pool.
+     * <p>
+     * The returned connection has auto commit off to make it suitable for dealing with very large result sets
+     * (cursor-based results). If auto commit is not disabled, some JDBC drivers (e.g. PostGIS) will always fetch all
+     * rows at once (which will lead to out of memory errors). See <a
+     * href="http://jdbc.postgresql.org/documentation/81/query.html"/> for more information. Note that it may still be
+     * necessary to set the fetch size and to close the connection to return it to the pool.
+     * </p>
+     * 
+     * @return connection with auto commit set to off, never <code>null</code>
+     * @throws MetadataStoreException
+     */
+    private Connection getConnection()
+                            throws MetadataStoreException {
+        Connection conn = null;
+        try {
+            conn = ConnectionManager.getConnection( connectionId );
+            conn.setAutoCommit( false );
+        } catch ( Throwable e ) {
+            throw new MetadataStoreException( e.getMessage() );
+        }
+        return conn;
     }
 }

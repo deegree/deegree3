@@ -26,7 +26,6 @@ import org.deegree.metadata.i18n.Messages;
 import org.deegree.metadata.persistence.MetadataInspectorException;
 import org.deegree.metadata.persistence.MetadataStoreTransaction;
 import org.deegree.metadata.persistence.iso.generating.GenerateQueryableProperties;
-import org.deegree.metadata.persistence.iso.parsing.IdUtils;
 import org.deegree.metadata.persistence.iso.parsing.inspectation.RecordInspector;
 import org.deegree.metadata.persistence.iso19115.jaxb.ISOMetadataStoreConfig.AnyText;
 import org.deegree.metadata.publication.DeleteTransaction;
@@ -67,7 +66,6 @@ public class ISOMetadataStoreTransaction implements MetadataStoreTransaction {
         this.inspectors = inspectors;
         this.useLegacyPredicates = useLegacyPredicates;
         this.connectionType = connectionType;
-        conn.setAutoCommit( false );
     }
 
     @Override
@@ -163,6 +161,7 @@ public class ISOMetadataStoreTransaction implements MetadataStoreTransaction {
                 ExecuteStatements execStm = new ExecuteStatements( connectionType );
                 execStm.executeGetRecords( null, builder, conn );
                 preparedStatement = exe.executeGetRecords( null, builder, conn );
+                preparedStatement.setFetchSize( ISOMetadataStore.DEFAULT_FETCH_SIZE );
                 rs = preparedStatement.executeQuery();
 
                 // get all metadatasets to update
@@ -232,5 +231,4 @@ public class ISOMetadataStoreTransaction implements MetadataStoreTransaction {
             JDBCUtils.close( conn );
         }
     }
-
 }
