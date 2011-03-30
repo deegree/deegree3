@@ -38,7 +38,6 @@ package org.deegree.metadata.persistence.iso.generating;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.StringWriter;
-import java.io.Writer;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -52,7 +51,6 @@ import javax.xml.stream.FactoryConfigurationError;
 import javax.xml.stream.XMLStreamException;
 
 import org.deegree.commons.jdbc.ConnectionManager.Type;
-import org.deegree.commons.tom.datetime.Date;
 import org.deegree.commons.utils.JDBCUtils;
 import org.deegree.commons.utils.time.DateUtils;
 import org.deegree.cs.CRSCodeType;
@@ -154,11 +152,24 @@ public class GenerateQueryableProperties {
 
             StringWriter s_columns = new StringWriter( 200 );
             StringWriter s_values = new StringWriter( 500 );
-            createQPInsertPart( rec, s_columns, s_values );
-            s_columns.append( idColumn ).append( ',' ).append( recordColumn ).append( ",fileidentifier,version,status" );
-            s_values.append( "?,?,?,?,?" );
+            s_columns.append( idColumn ).append( ',' ).append( recordColumn ).append( ",fileidentifier,version,status," );
+            s_values.append( "?,?,?,?,?," );
+            s_columns.append( "abstract, anytext, language, modified, parentid, type, title, hassecurityconstraints, topiccategories, " );
+            s_values.append( "?,?,?,?,?,?,?,?,?," );
+            s_columns.append( "alternateTitles, revisiondate, creationdate, publicationdate, organisationname, resourceid, resourcelanguage, " );
+            s_values.append( "?,?,?,?,?,?,?," );
+            s_columns.append( "geographicdescriptioncode, denominator, distancevalue, distanceuom, tempextent_begin, tempextent_end, " );
+            s_values.append( "?,?,?,?,?,?," );
+            s_columns.append( "servicetype, servicetypeversion,  couplingtype, formats, operations,  degree, lineage, resppartyrole, " );
+            s_values.append( "?,?,?,?,?,?,?,?," );
+            s_columns.append( "spectitle, specdate, specdatetype " );
+            s_values.append( "?,?,?" );
+            String bbox = getBBox( rec.getParsedElement().getQueryableProperties().getBoundingBox() );
+            if ( bbox != null && bbox.length() > 0 ) {
+                s_columns.append( ", bbox" );
+                s_values.append( ',' ).append( bbox );
+            }
 
-            // concatenate all
             PreparedStatement stm = null;
 
             sqlStatement.append( "INSERT INTO " ).append( mainTable );
@@ -172,6 +183,8 @@ public class GenerateQueryableProperties {
             stm.setObject( 4, null );
             stm.setObject( 5, null );
 
+            appendValues( rec, stm, 6 );
+
             LOG.debug( stm.toString() );
             stm.executeUpdate();
             stm.close();
@@ -179,8 +192,133 @@ public class GenerateQueryableProperties {
             String msg = Messages.getMessage( "ERROR_SQL", sqlStatement.toString(), e.getMessage() );
             LOG.debug( msg );
             throw new MetadataStoreException( msg );
+        } catch ( ParseException e ) {
+            String msg = Messages.getMessage( "ERROR_SQL", sqlStatement.toString(), e.getMessage() );
+            LOG.debug( msg );
+            throw new MetadataStoreException( msg );
         }
         return operatesOnId;
+    }
+
+    private void appendValues( ISORecord rec, PreparedStatement stm, int next )
+                            throws SQLException, ParseException {
+        // abstract, anytext, language, modified, parentid, type, title, hassecurityconstraints, topiccategories,
+        stm.setString( next++, concatenate( Arrays.asList( rec.getAbstract() ) ) );
+        stm.setString( next++, rec.getAnyText() );
+        stm.setString( next++, rec.getLanguage() );
+        if ( rec.getModified() != null ) {
+            stm.setTimestamp( next, new Timestamp( rec.getModified().getDate().getTime() ) );
+        } else {
+            stm.setTimestamp( next, null );
+        }
+        next++;
+        stm.setString( next++, rec.getParentIdentifier() );
+        stm.setString( next++, rec.getType() );
+        stm.setString( next++, concatenate( Arrays.asList( rec.getTitle() ) ) );
+        stm.setBoolean( next++, rec.isHasSecurityConstraints() );
+
+        QueryableProperties qp = rec.getParsedElement().getQueryableProperties();
+        stm.setString( next++, concatenate( qp.getTopicCategory() ) );
+        // alternateTitles, revisiondate, creationdate, publicationdate, organisationname, resourceid,
+        // resourcelanguage
+        stm.setString( next++, concatenate( qp.getAlternateTitle() ) );
+        if ( qp.getRevisionDate() != null ) {
+            stm.setTimestamp( next, new Timestamp( qp.getRevisionDate().getDate().getTime() ) );
+        } else {
+            stm.setTimestamp( next, null );
+        }
+        next++;
+        if ( qp.getCreationDate() != null ) {
+            stm.setTimestamp( next, new Timestamp( qp.getCreationDate().getDate().getTime() ) );
+        } else {
+            stm.setTimestamp( next, null );
+        }
+        next++;
+        if ( qp.getPublicationDate() != null ) {
+            stm.setTimestamp( next, new Timestamp( qp.getPublicationDate().getDate().getTime() ) );
+        } else {
+            stm.setTimestamp( next, null );
+        }
+        next++;
+        stm.setString( next++, qp.getOrganisationName() );
+        stm.setString( next++, qp.getResourceIdentifier() );
+        stm.setString( next++, qp.getResourceLanguage() );
+
+        // "geographicdescriptioncode, denominator, distancevalue, distanceuom, tempextent_begin, tempextent_end
+        stm.setString( next++, concatenate( qp.getGeographicDescriptionCode_service() ) );
+        stm.setInt( next++, qp.getDenominator() );
+        stm.setFloat( next++, qp.getDistanceValue() );
+        stm.setString( next++, qp.getDistanceUOM() );
+        if ( qp.getTemporalExtentBegin() != null ) {
+            stm.setTimestamp( next, new Timestamp( qp.getTemporalExtentBegin().getDate().getTime() ) );
+        } else {
+            stm.setTimestamp( next, null );
+        }
+        next++;
+        if ( qp.getTemporalExtentEnd() != null ) {
+            stm.setTimestamp( next, new Timestamp( qp.getTemporalExtentEnd().getDate().getTime() ) );
+        } else {
+            stm.setTimestamp( next, null );
+        }
+        next++;
+        // servicetype, servicetypeversion, couplingtype, formats, operations, degree, lineage, resppartyrole
+        stm.setString( next++, qp.getServiceType() );
+        stm.setString( next++, concatenate( qp.getServiceTypeVersion() ) );
+        stm.setString( next++, qp.getCouplingType() );
+        stm.setString( next++, getFormats( qp.getFormat() ) );
+        stm.setString( next++, concatenate( qp.getOperation() ) );
+        stm.setBoolean( next++, qp.isDegree() );
+        stm.setString( next++, concatenate( qp.getLineages() ) );
+        stm.setString( next++, qp.getRespPartyRole() );
+
+        // spectitle, specdate, specdatetype, bbox
+        stm.setString( next++, concatenate( qp.getSpecificationTitle() ) );
+        if ( qp.getSpecificationDate() != null ) {
+            stm.setTimestamp( next, new Timestamp( qp.getSpecificationDate().getDate().getTime() ) );
+        } else {
+            stm.setTimestamp( next, null );
+        }
+        next++;
+        stm.setString( next++, qp.getSpecificationDateType() );
+        // stm.setObject( next++, getBBox( qp.getBoundingBox() ), Types. );
+    }
+
+    private String getBBox( List<BoundingBox> bboxs ) {
+        BoundingBox bbox = calculateMainBBox( bboxs );
+        StringBuffer sb = new StringBuffer();
+        if ( bbox != null ) {
+            LOG.debug( "Boundingbox = " + bboxs );
+            double east = bbox.getEastBoundLongitude();
+            double north = bbox.getNorthBoundLatitude();
+            double west = bbox.getWestBoundLongitude();
+            double south = bbox.getSouthBoundLatitude();
+            if ( connectionType == Type.MSSQL ) {
+                sb.append( "geometry::STGeomFromText('POLYGON((" + west ).append( " " + south );
+                sb.append( "," + west ).append( " " + north );
+                sb.append( "," + east ).append( " " + north );
+                sb.append( "," + east ).append( " " + south );
+                sb.append( "," + west ).append( " " + south ).append( "))', 0)" );
+            } else if ( connectionType == Type.PostgreSQL ) {
+                sb.append( "SetSRID('BOX3D(" + west ).append( " " + south ).append( "," + east );
+                sb.append( " " + north ).append( ")'::box3d,-1)" );
+            }
+        }
+        return ( sb.toString() != null && sb.length() > 0 ) ? sb.toString() : null;
+    }
+
+    private String getFormats( List<Format> list ) {
+        StringBuffer sb = new StringBuffer();
+        if ( list != null && list.size() > 0 ) {
+            sb.append( '\'' );
+            for ( Format f : list ) {
+                sb.append( '|' ).append( f.getName() );
+            }
+            if ( !list.isEmpty() ) {
+                sb.append( "|" );
+            }
+            sb.append( "'," );
+        }
+        return ( sb.toString() != null && sb.length() > 0 ) ? sb.toString() : null;
     }
 
     /**
@@ -224,13 +362,15 @@ public class GenerateQueryableProperties {
 
             if ( requestedId != 0 ) {
                 s.append( "UPDATE " ).append( mainTable ).append( " SET " );
-
-                createQPUpdatePart( rec, s );
-
                 s.append( " version = ?, " );
                 s.append( " status = ?, " );
-                s.append( " modified = ?, " );
-                s.append( recordColumn ).append( " = ? " );
+                s.append( recordColumn ).append( " = ?, " );
+                s.append( "abstract=?, anytext=?, language=?, modified=?, parentid=?, type=?, title=?, hassecurityconstraints=?, topiccategories=?, " );
+                s.append( "alternateTitles=?, revisiondate=?, creationdate=?, publicationdate=?, organisationname=?, resourceid=?, resourcelanguage=?, " );
+                s.append( "geographicdescriptioncode=?, denominator=?, distancevalue=?, distanceuom=?, tempextent_begin=?, tempextent_end=?, " );
+                s.append( "servicetype=?, servicetypeversion=?,  couplingtype=?, formats=?, operations=?,  degree=?, lineage=?, resppartyrole=?, " );
+                s.append( "spectitle=?, specdate=?, specdatetype=?," );
+                s.append( " bbox = " + getBBox( rec.getParsedElement().getQueryableProperties().getBoundingBox() ) );
 
                 s.append( "WHERE " );
                 s.append( idColumn ).append( '=' );
@@ -239,15 +379,10 @@ public class GenerateQueryableProperties {
 
                 stm.setObject( 1, null );
                 stm.setObject( 2, null );
-                // TODO should be anyText
-                if ( rec.getModified() != null ) {
-                    time = rec.getModified().toString();
-                    stm.setTimestamp( 3,
-                                      Timestamp.valueOf( DateUtils.formatJDBCTimeStamp( DateUtils.parseISO8601Date( time ) ) ) );
-                } else {
-                    stm.setTimestamp( 3, null );
-                }
-                stm.setBytes( 4, rec.getAsByteArray() );
+                stm.setBytes( 3, rec.getAsByteArray() );
+
+                appendValues( rec, stm, 4 );
+
                 LOG.debug( stm.toString() );
                 stm.executeUpdate();
                 stm.close();
@@ -267,174 +402,6 @@ public class GenerateQueryableProperties {
             JDBCUtils.close( rs );
         }
         return requestedId;
-    }
-
-    private void createQPInsertPart( ISORecord rec, StringWriter s_columns, StringWriter s_values ) {
-        QueryableProperties qp = rec.getParsedElement().getQueryableProperties();
-        append( s_columns, s_values, rec.getAbstract(), "abstract" );
-        append( s_columns, s_values, rec.getAnyText(), "anytext" );
-        append( s_columns, s_values, rec.getLanguage(), "language" );
-        append( s_columns, s_values, rec.getModified(), "modified" );
-        append( s_columns, s_values, rec.getParentIdentifier(), "parentid" );
-        append( s_columns, s_values, rec.getType(), "type" );
-        append( s_columns, s_values, rec.getTitle(), "title" );
-        append( s_columns, s_values, rec.isHasSecurityConstraints(), "hassecurityconstraints" );
-        append( s_columns, s_values, qp.getTopicCategory(), "topiccategories" );
-        append( s_columns, s_values, qp.getAlternateTitle(), "alternateTitles" );
-        append( s_columns, s_values, qp.getRevisionDate(), "revisiondate" );
-        append( s_columns, s_values, qp.getCreationDate(), "creationdate" );
-        append( s_columns, s_values, qp.getPublicationDate(), "publicationdate" );
-        append( s_columns, s_values, qp.getOrganisationName(), "organisationname" );
-        append( s_columns, s_values, qp.getResourceIdentifier(), "resourceid" );
-        append( s_columns, s_values, qp.getResourceLanguage(), "resourcelanguage" );
-        append( s_columns, s_values, qp.getGeographicDescriptionCode_service(), "geographicdescriptioncode" );
-        append( s_columns, s_values, qp.getDenominator(), "denominator" );
-        append( s_columns, s_values, qp.getDistanceValue(), "distancevalue" );
-        append( s_columns, s_values, qp.getDistanceUOM(), "distanceuom" );
-        append( s_columns, s_values, qp.getTemporalExtentBegin(), "tempextent_begin" );
-        append( s_columns, s_values, qp.getTemporalExtentEnd(), "tempextent_end" );
-        append( s_columns, s_values, qp.getServiceType(), "servicetype" );
-        append( s_columns, s_values, qp.getServiceTypeVersion(), "servicetypeversion" );
-        append( s_columns, s_values, qp.getCouplingType(), "couplingtype" );
-        List<Format> list = qp.getFormat();
-        if ( list != null && list.size() > 0 ) {
-            s_columns.append( "formats" ).append( ',' );
-            s_values.append( '\'' );
-            for ( Format f : list ) {
-                s_values.append( '|' ).append( f.getName() );
-            }
-            if ( !list.isEmpty() ) {
-                s_values.append( "|" );
-            }
-            s_values.append( "'," );
-        }
-        append( s_columns, s_values, qp.getOperation(), "operations" );
-        append( s_columns, s_values, qp.isDegree(), "degree" );
-        append( s_columns, s_values, qp.getLineages(), "lineage" );
-        append( s_columns, s_values, qp.getRespPartyRole(), "resppartyrole" );
-        append( s_columns, s_values, qp.getSpecificationTitle(), "spectitle" );
-        append( s_columns, s_values, qp.getSpecificationDate(), "specdate" );
-        append( s_columns, s_values, qp.getSpecificationDateType(), "specdatetype" );
-        // append( s_PRE, s_POST, qp.get, "data" );
-        BoundingBox bbox = calculateMainBBox( qp.getBoundingBox() );
-        if ( bbox != null ) {
-            LOG.debug( "Boundingbox = " + qp.getBoundingBox() );
-            double east = bbox.getEastBoundLongitude();
-            double north = bbox.getNorthBoundLatitude();
-            double west = bbox.getWestBoundLongitude();
-            double south = bbox.getSouthBoundLatitude();
-            if ( connectionType == Type.MSSQL ) {
-                s_columns.append( "bbox" ).append( ',' );
-                s_values.append( "geometry::STGeomFromText('POLYGON((" + west ).append( " " + south );
-                s_values.append( "," + west ).append( " " + north );
-                s_values.append( "," + east ).append( " " + north );
-                s_values.append( "," + east ).append( " " + south );
-                s_values.append( "," + west ).append( " " + south ).append( "))', 0)" ).append( ',' );
-            } else if ( connectionType == Type.PostgreSQL ) {
-                s_columns.append( "bbox" ).append( ',' );
-                s_values.append( "SetSRID('BOX3D(" + west ).append( " " + south ).append( "," + east );
-                s_values.append( " " + north ).append( ")'::box3d,-1)" ).append( ',' );
-            }
-        }
-    }
-
-    private void createQPUpdatePart( ISORecord rec, StringWriter s ) {
-        QueryableProperties qp = rec.getParsedElement().getQueryableProperties();
-        appendUpdate( s, Arrays.asList( rec.getAbstract() ), "abstract" );
-        appendUpdate( s, rec.getAnyText(), "anytext" );
-        appendUpdate( s, rec.getIdentifier(), "fileidentifier" );
-        // appendUpdate( s, rec.getModified(), "modified" );
-        appendUpdate( s, rec.getLanguage(), "language" );
-        appendUpdate( s, rec.getParentIdentifier(), "parentid" );
-        appendUpdate( s, rec.getType(), "type" );
-        appendUpdate( s, Arrays.asList( rec.getTitle() ), "title" );
-        s.append( "hassecurityconstraints=" ).append( Boolean.toString( rec.isHasSecurityConstraints() ) ).append( ',' );
-        appendUpdate( s, qp.getTopicCategory(), "topiccategories" );
-        appendUpdate( s, qp.getAlternateTitle(), "alternateTitles" );
-
-        appendUpdate( s, qp.getRevisionDate(), "revisiondate" );
-        appendUpdate( s, qp.getCreationDate(), "creationdate" );
-        appendUpdate( s, qp.getPublicationDate(), "publicationdate" );
-        appendUpdate( s, qp.getOrganisationName(), "organisationname" );
-        appendUpdate( s, qp.getResourceIdentifier(), "resourceid" );
-        appendUpdate( s, qp.getResourceLanguage(), "resourcelanguage" );
-        appendUpdate( s, qp.getGeographicDescriptionCode_service(), "geographicdescriptioncode" );
-        s.append( "denominator=" ).append( Integer.toString( qp.getDenominator() ) ).append( ',' );
-        s.append( "distancevalue=" ).append( Float.isNaN( qp.getDistanceValue() ) ? "null"
-                                                                                 : Float.toString( qp.getDistanceValue() ) ).append( ',' );
-
-        appendUpdate( s, qp.getDistanceUOM(), "distanceuom" );
-        appendUpdate( s, qp.getTemporalExtentBegin(), "tempextent_begin" );
-        appendUpdate( s, qp.getTemporalExtentEnd(), "tempextent_end" );
-        appendUpdate( s, qp.getServiceType(), "servicetype" );
-        appendUpdate( s, qp.getServiceTypeVersion(), "servicetypeversion" );
-        appendUpdate( s, qp.getCouplingType(), "couplingtype" );
-        List<Format> list = qp.getFormat();
-        if ( list != null && list.size() > 0 ) {
-            s.append( "formats='" );
-            for ( Format f : list ) {
-                s.append( '|' ).append( f.getName() );
-            }
-            if ( !list.isEmpty() ) {
-                s.append( "|" );
-            }
-            s.append( "'," );
-        } else {
-            s.append( "formats=null" );
-        }
-        appendUpdate( s, qp.getOperation(), "operations" );
-        s.append( "degree=" ).append( Boolean.toString( qp.isDegree() ) ).append( ',' );
-        appendUpdate( s, qp.getLineages(), "lineage" );
-        appendUpdate( s, qp.getRespPartyRole(), "resppartyrole" );
-        appendUpdate( s, qp.getSpecificationTitle(), "spectitle" );
-        appendUpdate( s, qp.getSpecificationDate(), "specdate" );
-        appendUpdate( s, qp.getSpecificationDateType(), "specdatetype" );
-        BoundingBox bbox = calculateMainBBox( qp.getBoundingBox() );
-        if ( bbox != null ) {
-            LOG.debug( "Boundingbox = " + qp.getBoundingBox() );
-            double east = bbox.getEastBoundLongitude();
-            double north = bbox.getNorthBoundLatitude();
-            double west = bbox.getWestBoundLongitude();
-            double south = bbox.getSouthBoundLatitude();
-            if ( connectionType == Type.MSSQL ) {
-                s.append( "bbox=" );
-                s.append( "geometry::STGeomFromText('POLYGON((" + west ).append( " " + south );
-                s.append( "," + west ).append( " " + north );
-                s.append( "," + east ).append( " " + north );
-                s.append( "," + east ).append( " " + south );
-                s.append( "," + west ).append( " " + south ).append( "))', 0)" ).append( ',' );
-            } else if ( connectionType == Type.PostgreSQL ) {
-                s.append( "bbox=" );
-                s.append( "SetSRID('BOX3D(" + west ).append( " " + south ).append( "," + east ).append( " " + north ).append( ")'::box3d,-1)" ).append( ',' );
-            }
-        }
-    }
-
-    private void appendUpdate( StringWriter s, String value, String column ) {
-        s.append( column ).append( '=' );
-        if ( value == null )
-            s.append( "null" );
-        else
-            s.append( '\'' ).append( value ).append( '\'' );
-        s.append( ',' );
-    }
-
-    private void appendUpdate( StringWriter s, List<String> values, String column ) {
-        s.append( column ).append( '=' );
-        if ( values == null || values.isEmpty() )
-            s.append( "null" );
-        else
-            s.append( '\'' ).append( concatenate( values ) ).append( '\'' );
-        s.append( ',' );
-    }
-
-    private void appendUpdate( StringWriter s, Date date, String column ) {
-        s.append( column ).append( '=' );
-        if ( date == null )
-            s.append( "null" );
-        else
-            s.append( "'" + date + "'" );
-        s.append( ',' );
     }
 
     private BoundingBox calculateMainBBox( List<BoundingBox> bbox ) {
@@ -465,139 +432,154 @@ public class GenerateQueryableProperties {
      */
     public void executeQueryableProperties( boolean isUpdate, Connection connection, int operatesOnId, ISORecord rec )
                             throws MetadataStoreException {
-        // createMainTableStm( isUpdate, rec, operatesOnId, connection );
-
         QueryableProperties qp = rec.getParsedElement().getQueryableProperties();
         generateIDXTB_CRSStatement( isUpdate, connection, operatesOnId, qp );
         generateIDXTB_KeywordStatement( isUpdate, connection, operatesOnId, qp );
         generateIDXTB_OperatesOnStatement( isUpdate, connection, operatesOnId, qp );
         generateIDXTB_ConstraintStatement( isUpdate, connection, operatesOnId, qp );
+
     }
 
     private void generateIDXTB_ConstraintStatement( boolean isUpdate, Connection connection, int operatesOnId,
                                                     QueryableProperties qp )
                             throws MetadataStoreException {
-        StringWriter s_PRE = new StringWriter( 200 );
-        StringWriter s_POST = new StringWriter( 50 );
         List<Constraint> constraintss = qp.getConstraints();
-        if ( constraintss != null && constraintss.size() > 0 )
-            for ( Constraint constraint : constraintss ) {
-                s_PRE.append( "INSERT INTO " ).append( constraintTable );
-                s_PRE.append( '(' ).append( idColumn ).append( ',' ).append( fk_main ).append( ",conditionapptoacc,accessconstraints,otherconstraints,classification)" );
-                append( s_POST, constraint.getLimitations() ).append( ',' );
-                append( s_POST, constraint.getAccessConstraints() ).append( ',' );
-                append( s_POST, constraint.getOtherConstraints() ).append( ',' );
-                append( s_POST, constraint.getClassification() ).append( ");" );
-                executeQPDatabasetables( isUpdate, connection, operatesOnId, constraintTable, s_PRE, s_POST );
+        if ( constraintss != null && constraintss.size() > 0 ) {
+            PreparedStatement stm = null;
+            StringWriter sw = null;
+            try {
+                for ( Constraint constraint : constraintss ) {
+                    sw = new StringWriter( 300 );
+                    sw.append( "INSERT INTO " ).append( constraintTable );
+                    sw.append( '(' ).append( idColumn ).append( ',' ).append( fk_main ).append( ",conditionapptoacc,accessconstraints,otherconstraints,classification)" );
+                    sw.append( "VALUES( ?,?,?,?,?,? )" );
+
+                    int localId = executeQPDatabasetables( isUpdate, connection, operatesOnId, constraintTable );
+                    stm = connection.prepareStatement( sw.toString() );
+                    stm.setInt( 1, localId );
+                    stm.setInt( 2, operatesOnId );
+                    stm.setString( 3, concatenate( constraint.getLimitations() ) );
+                    stm.setString( 4, concatenate( constraint.getAccessConstraints() ) );
+                    stm.setString( 5, concatenate( constraint.getOtherConstraints() ) );
+                    stm.setString( 6, constraint.getClassification() );
+                    stm.executeUpdate();
+                }
+            } catch ( SQLException e ) {
+                String msg = Messages.getMessage( "ERROR_SQL", sw, e.getMessage() );
+                LOG.debug( msg );
+                throw new MetadataStoreException( msg );
             }
+            closeStm( stm );
+        }
     }
 
     private void generateIDXTB_CRSStatement( boolean isUpdate, Connection connection, int operatesOnId,
                                              QueryableProperties qp )
                             throws MetadataStoreException {
-        StringWriter s_PRE = new StringWriter( 200 );
-        StringWriter s_POST = new StringWriter( 50 );
         List<CRSCodeType> crss = qp.getCrs();
-        if ( crss != null && crss.size() > 0 )
-            for ( CRSCodeType crs : crss ) {
-                s_PRE.append( "INSERT INTO " ).append( crsTable );
-                s_PRE.append( '(' ).append( idColumn ).append( ',' ).append( fk_main ).append( ", authority, crsid, version)" );
-                append( s_POST, crs.getCodeSpace() ).append( ',' );
-                append( s_POST, crs.getCode() ).append( ',' );
-                append( s_POST, crs.getCodeVersion() ).append( ");" );
-                executeQPDatabasetables( isUpdate, connection, operatesOnId, crsTable, s_PRE, s_POST );
+        if ( crss != null && crss.size() > 0 ) {
+            PreparedStatement stm = null;
+            StringWriter sw = null;
+            try {
+                for ( CRSCodeType crs : crss ) {
+                    sw = new StringWriter( 300 );
+                    sw.append( "INSERT INTO " ).append( crsTable );
+                    sw.append( '(' ).append( idColumn ).append( ',' ).append( fk_main ).append( ", authority, crsid, version)" );
+                    sw.append( "VALUES( ?,?,?,?,? )" );
+
+                    int localId = executeQPDatabasetables( isUpdate, connection, operatesOnId, crsTable );
+                    stm = connection.prepareStatement( sw.toString() );
+                    stm.setInt( 1, localId );
+                    stm.setInt( 2, operatesOnId );
+                    stm.setString( 3,
+                                   ( crs.getCodeSpace() != null && crs.getCodeSpace().length() > 0 ) ? crs.getCodeSpace()
+                                                                                                    : null );
+                    stm.setString( 4, ( crs.getCode() != null && crs.getCode().length() > 0 ) ? crs.getCode() : null );
+                    stm.setString( 5,
+                                   ( crs.getCodeVersion() != null && crs.getCodeVersion().length() > 0 ) ? crs.getCodeVersion()
+                                                                                                        : null );
+                    stm.executeUpdate();
+                }
+            } catch ( SQLException e ) {
+                String msg = Messages.getMessage( "ERROR_SQL", sw, e.getMessage() );
+                LOG.debug( msg );
+                throw new MetadataStoreException( msg );
             }
-    }
-
-    private StringWriter append( StringWriter s, String value ) {
-        if ( value != null ) {
-            s.append( '\'' ).append( value ).append( '\'' );
-        } else {
-            s.append( "null" );
+            closeStm( stm );
         }
-        return s;
-    }
-
-    private StringWriter append( StringWriter s, List<String> value ) {
-        if ( value != null && value.size() > 0 ) {
-            s.append( '\'' ).append( concatenate( value ) ).append( '\'' );
-        } else {
-            s.append( "null" );
-        }
-        return s;
     }
 
     private void generateIDXTB_KeywordStatement( boolean isUpdate, Connection connection, int operatesOnId,
                                                  QueryableProperties qp )
                             throws MetadataStoreException {
-        StringWriter s_PRE = new StringWriter( 200 );
-        StringWriter s_POST = new StringWriter( 50 );
         List<Keyword> keywords = qp.getKeywords();
-        if ( keywords != null && keywords.size() > 0 )
-            for ( Keyword keyword : keywords ) {
-                s_PRE.append( "INSERT INTO " ).append( keywordTable );
-                s_PRE.append( '(' ).append( idColumn ).append( ',' ).append( fk_main ).append( ", keywords, keywordtype)" );
+        if ( keywords != null && keywords.size() > 0 ) {
+            PreparedStatement stm = null;
+            StringWriter sw = null;
+            try {
+                for ( Keyword keyword : keywords ) {
+                    sw = new StringWriter( 300 );
+                    sw.append( "INSERT INTO " ).append( keywordTable );
+                    sw.append( '(' ).append( idColumn ).append( ',' ).append( fk_main ).append( ", keywords, keywordtype)" );
+                    sw.append( "VALUES( ?,?,?,? )" );
 
-                s_POST.append( "'" ).append( concatenate( keyword.getKeywords() ) ).append( "','" );
-                s_POST.append( keyword.getKeywordType() ).append( "');" );
-                executeQPDatabasetables( isUpdate, connection, operatesOnId, keywordTable, s_PRE, s_POST );
+                    int localId = executeQPDatabasetables( isUpdate, connection, operatesOnId, keywordTable );
+                    stm = connection.prepareStatement( sw.toString() );
+                    stm.setInt( 1, localId );
+                    stm.setInt( 2, operatesOnId );
+                    stm.setString( 3, concatenate( keyword.getKeywords() ) );
+                    stm.setString( 4, keyword.getKeywordType() );
+                    stm.executeUpdate();
+                }
+            } catch ( SQLException e ) {
+                String msg = Messages.getMessage( "ERROR_SQL", sw, e.getMessage() );
+                LOG.debug( msg );
+                throw new MetadataStoreException( msg );
             }
+
+            closeStm( stm );
+        }
     }
 
     private void generateIDXTB_OperatesOnStatement( boolean isUpdate, Connection connection, int operatesOnId,
                                                     QueryableProperties qp )
                             throws MetadataStoreException {
-        StringWriter s_PRE = new StringWriter( 200 );
-        StringWriter s_POST = new StringWriter( 50 );
         List<OperatesOnData> opOns = qp.getOperatesOnData();
-        if ( opOns != null && opOns.size() > 0 )
-            for ( OperatesOnData opOn : opOns ) {
-                s_PRE.append( "INSERT INTO " ).append( opOnTable );
-                s_PRE.append( '(' ).append( idColumn ).append( ',' ).append( fk_main ).append( ", operateson, operatesonid, operatesonname )" );
+        if ( opOns != null && opOns.size() > 0 ) {
+            PreparedStatement stm = null;
+            StringWriter sw = null;
+            try {
+                for ( OperatesOnData opOn : opOns ) {
+                    sw = new StringWriter( 300 );
+                    sw.append( "INSERT INTO " ).append( opOnTable );
+                    sw.append( '(' ).append( idColumn ).append( ',' ).append( fk_main ).append( ", operateson, operatesonid, operatesonname )" );
+                    sw.append( "VALUES ( ?,?,?,?,? )" );
 
-                s_POST.append( "'" ).append( opOn.getOperatesOnId() ).append( "','" );
-                s_POST.append( opOn.getOperatesOnId() ).append( "','" );
-                s_POST.append( opOn.getOperatesOnName() ).append( "');" );
-                executeQPDatabasetables( isUpdate, connection, operatesOnId, opOnTable, s_PRE, s_POST );
+                    int localId = executeQPDatabasetables( isUpdate, connection, operatesOnId, opOnTable );
+                    stm = connection.prepareStatement( sw.toString() );
+                    stm.setInt( 1, localId );
+                    stm.setInt( 2, operatesOnId );
+                    stm.setString( 3, opOn.getOperatesOnId() );
+                    stm.setString( 4, opOn.getOperatesOnIdentifier() );
+                    stm.setString( 5, opOn.getOperatesOnName() );
+                    stm.executeUpdate();
+                }
+            } catch ( SQLException e ) {
+                String msg = Messages.getMessage( "ERROR_SQL", sw, e.getMessage() );
+                LOG.debug( msg );
+                throw new MetadataStoreException( msg );
             }
-    }
-
-    private void append( StringWriter s_PRE, StringWriter s_POST, boolean value, String dbColumn ) {
-        s_PRE.append( dbColumn ).append( ',' );
-        s_POST.append( Boolean.toString( value ) ).append( ',' );
-    }
-
-    private void append( StringWriter s_PRE, StringWriter s_POST, Number value, String dbColumn ) {
-        s_PRE.append( dbColumn ).append( ',' );
-        s_POST.append( "" + value ).append( ',' );
-    }
-
-    private void append( StringWriter s_PRE, StringWriter s_POST, Date date, String dbColumn ) {
-        if ( date != null ) {
-            s_PRE.append( dbColumn ).append( ',' );
-            s_POST.append( "'" + date + "'" ).append( ',' );
+            closeStm( stm );
         }
     }
 
-    private void append( StringWriter s_PRE, StringWriter s_POST, String[] value, String dbColumn ) {
-        if ( value != null && value.length > 0 ) {
-            s_PRE.append( dbColumn ).append( ',' );
-            s_POST.append( "'" + concatenate( Arrays.asList( value ) ) + "'" ).append( ',' );
-        }
-    }
-
-    private void append( StringWriter s_PRE, StringWriter s_POST, List<String> value, String dbColumn ) {
-        if ( value != null && value.size() > 0 ) {
-            s_PRE.append( dbColumn ).append( ',' );
-            s_POST.append( "'" + concatenate( value ) + "'" ).append( ',' );
-        }
-    }
-
-    private void append( StringWriter s_PRE, StringWriter s_POST, String value, String dbColumn ) {
-        if ( value != null ) {
-            s_PRE.append( dbColumn ).append( ',' );
-            s_POST.append( "'" + stringInspectation( value ) + "'" ).append( ',' );
-        }
+    private void closeStm( PreparedStatement stm ) {
+        if ( stm != null )
+            try {
+                stm.close();
+            } catch ( SQLException e ) {
+                LOG.warn( "Could not close stm: ", e.getMessage() );
+            }
     }
 
     /**
@@ -615,18 +597,15 @@ public class GenerateQueryableProperties {
      *            the precondition to generate an executable statement
      * @param queryablePropertyStatement_POST
      *            the postcondition to generate an executable statement
+     * @return
      * @throws MetadataStoreException
      */
-    private void executeQPDatabasetables( boolean isUpdate, Connection connection, int operatesOnId,
-                                          String databaseTable, Writer queryablePropertyStatement_PRE,
-                                          Writer queryablePropertyStatement_POST )
+    private int executeQPDatabasetables( boolean isUpdate, Connection connection, int operatesOnId, String databaseTable )
                             throws MetadataStoreException {
         StringWriter sqlStatement = new StringWriter( 500 );
         PreparedStatement stm = null;
-
         int localId = 0;
         try {
-
             localId = getLastDatasetId( connection, databaseTable );
             localId++;
             if ( isUpdate == true ) {
@@ -636,33 +615,13 @@ public class GenerateQueryableProperties {
                 LOG.debug( stm.toString() );
                 stm.executeUpdate();
             }
-            sqlStatement = new StringWriter( 500 );
-            sqlStatement.append( queryablePropertyStatement_PRE.toString() + " VALUES ( ?,?,"
-                                 + queryablePropertyStatement_POST.toString() );
-
-            stm = connection.prepareStatement( sqlStatement.toString() );
-            LOG.debug( stm.toString() );
-            stm.setInt( 1, localId );
-            stm.setInt( 2, operatesOnId );
-            stm.executeUpdate();
-            stm.close();
-
-            /*
-             * clean the Writer...TODO is that really necessary?
-             */
-            StringBuffer buf = ( (StringWriter) queryablePropertyStatement_POST ).getBuffer();
-            buf.setLength( 0 );
-            buf = ( (StringWriter) queryablePropertyStatement_PRE ).getBuffer();
-            buf.setLength( 0 );
-            buf = sqlStatement.getBuffer();
-            buf.setLength( 0 );
-
+            closeStm( stm );
         } catch ( SQLException e ) {
             String msg = Messages.getMessage( "ERROR_SQL", sqlStatement.toString(), e.getMessage() );
             LOG.debug( msg );
             throw new MetadataStoreException( msg );
         }
-
+        return localId;
     }
 
     /**
@@ -705,6 +664,8 @@ public class GenerateQueryableProperties {
     }
 
     private String concatenate( List<String> values ) {
+        if ( values == null || values.isEmpty() )
+            return null;
         String s = "";
         for ( String value : values ) {
             s = s + '|' + stringInspectation( value );
