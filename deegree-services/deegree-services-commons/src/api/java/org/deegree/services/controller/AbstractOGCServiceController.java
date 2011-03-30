@@ -35,6 +35,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.services.controller;
 
+import java.io.ByteArrayInputStream;
+import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -60,6 +62,7 @@ import org.apache.axiom.soap.SOAPFactory;
 import org.apache.axiom.soap.SOAPHeader;
 import org.apache.axiom.soap.SOAPVersion;
 import org.apache.commons.fileupload.FileItem;
+import org.apache.commons.io.FileUtils;
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.tom.ows.Version;
@@ -125,7 +128,7 @@ public abstract class AbstractOGCServiceController<T extends Enum<T>> implements
 
     protected DeegreeWorkspace workspace;
 
-    protected URL configURL;
+    private URL configURL;
 
     protected ImplementationMetadata<T> serviceInfo;
 
@@ -139,7 +142,18 @@ public abstract class AbstractOGCServiceController<T extends Enum<T>> implements
                             throws ResourceInitException {
         this.workspace = workspace;
         WebServicesConfiguration ws = workspace.getSubsystemManager( WebServicesConfiguration.class );
-        XMLAdapter adapter = new XMLAdapter( configURL );
+
+        // Copying to temporary input stream is necessary to avoid config file locks (on Windows)
+        // Only remove this if you know what you are doing! It may break the services-console!
+        byte[] bytes = null;
+        try {
+            bytes = FileUtils.readFileToByteArray( new File( configURL.toURI() ) );
+        } catch ( Throwable t ) {
+            LOG.error( t.getMessage(), t );
+            throw new ResourceInitException( t.getMessage() );
+        }
+
+        XMLAdapter adapter = new XMLAdapter( new ByteArrayInputStream( bytes ) );
         init( ws.getMetadataConfiguration(), ws.getMainConfiguration(), serviceInfo, adapter );
     }
 
