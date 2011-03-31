@@ -37,7 +37,6 @@
     <module>deegree-featurestore-memory</module>
     <module>deegree-featurestore-simplesql</module>
     <module>deegree-featurestore-postgis</module>
-    <module>deegree-featurestore-oracle</module>
     <!--module>deegree-featurestore-osm</module-->
   </modules>
 
