@@ -35,20 +35,6 @@
         <version>1.1</version>
         <executions>
           <execution>
-            <id>copy-creds</id>
-            <goals>
-              <goal>copy</goal>
-            </goals>
-            <configuration>
-              <files>
-                <file>
-                  <from>src/main/tomcat/tomcat-users.xml</from>
-                  <to>target/tomcat/conf/tomcat-users.xml</to>
-                </file>
-              </files>
-            </configuration>
-          </execution>
-          <execution>
             <id>test-workspaces</id>
             <goals>
               <goal>test-workspaces</goal>
