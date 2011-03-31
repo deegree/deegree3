@@ -654,6 +654,7 @@ public class PostGISFeatureStoreConfigParser {
         PrimitiveType pt = null;
         if ( config != null && config.getColumn().getType() != null ) {
             pt = getPrimitiveType( config.getColumn().getType() );
+            columnName = config.getColumn().getName();
         } else {
             ColumnMetadata md = getColumn( table, columnName.toLowerCase() );
             pt = PrimitiveType.determinePrimitiveType( md.sqlType );

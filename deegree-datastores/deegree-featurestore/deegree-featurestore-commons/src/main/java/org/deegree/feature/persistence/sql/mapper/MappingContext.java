@@ -45,20 +45,24 @@ import org.deegree.feature.types.FeatureType;
  * 
  * @version $Revision$, $Date$
  */
-public class MappingContext {
-
+public class MappingContext {    
+    
     private final String table;
+    
+    private final String idColumn;
 
     private final String column;
 
-    MappingContext( String table ) {
+    MappingContext( String table, String idColumn ) {
         this.table = table;
         this.column = "";
+        this.idColumn = idColumn;
     }
 
-    MappingContext( String table, String column ) {
+    MappingContext( String table, String idColumn, String column ) {
         this.table = table;
         this.column = column;
+        this.idColumn = idColumn;
     }
 
     public String getTable() {
@@ -67,5 +71,9 @@ public class MappingContext {
 
     public String getColumn() {
         return column;
+    }
+    
+    public String getIdColumn () {
+        return idColumn;
     }
 }

@@ -45,6 +45,7 @@ import static org.deegree.gml.GMLVersion.GML_32;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -160,7 +161,16 @@ public class AppSchemaMapper {
         Map<String, String> prefixToNs = appSchema.getNamespaceBindings();
         GMLSchemaInfoSet xsModel = appSchema.getXSModel();
         FeatureTypeMapping[] ftMappings = null;
-        mcManager = new MappingContextManager( xsModel.getNamespacePrefixes() );
+
+        Map<String, String> nsToPrefix = new HashMap<String, String>();
+        Iterator<String> nsIter = CommonNamespaces.getNamespaceContext().getNamespaceURIs();
+        while ( nsIter.hasNext() ) {
+            String ns = nsIter.next();
+            nsToPrefix.put( ns, CommonNamespaces.getNamespaceContext().getPrefix( ns ) );
+        }
+        nsToPrefix.putAll( xsModel.getNamespacePrefixes() );
+
+        mcManager = new MappingContextManager( nsToPrefix );
         if ( createRelationalMapping ) {
             ftMappings = generateFtMappings( fts );
         }
@@ -207,7 +217,7 @@ public class AppSchemaMapper {
 
     private FeatureTypeMapping generateFtMapping( FeatureType ft ) {
         LOG.info( "Mapping feature type '" + ft.getName() + "'" );
-        MappingContext mc = mcManager.newContext( ft.getName() );
+        MappingContext mc = mcManager.newContext( ft.getName(), "attr_gml_id" );
 
         // TODO
         QTableName table = new QTableName( mc.getTable() );
@@ -302,7 +312,7 @@ public class AppSchemaMapper {
             mapping = new DBField( mc2.getColumn() );
         } else {
             mc2 = mcManager.mapOneToManyElements( mc, pt.getName() );
-            jc = generateJoinChain( "attr_gml_id", mc, mc2 );
+            jc = generateJoinChain( mc, mc2 );
             mapping = new DBField( "ref" );
         }
         DBField nilMapping = null;
@@ -323,14 +333,14 @@ public class AppSchemaMapper {
             mapping = new DBField( mc2.getColumn() );
         } else {
             mc2 = mcManager.mapOneToManyElements( mc, pt.getName() );
-            jc = generateJoinChain( "attr_gml_id", mc, mc2 );
+            jc = generateJoinChain( mc, mc2 );
             mapping = new DBField( "ref" );
         }
         QTableName table = new QTableName( mc2.getColumn() );
         XSElementDeclaration xsElementDecl = pt.getValueElementDecl();
         XSComplexTypeDefinition xsTypeDef = (XSComplexTypeDefinition) xsElementDecl.getTypeDefinition();
         QName name = new QName( xsElementDecl.getNamespace(), xsElementDecl.getName() );
-        MappingContext newMc = new MappingContext( getName( name ) );
+        MappingContext newMc = mcManager.newContext( name, "id" );
         List<Mapping> particles = generateMapping( xsTypeDef, newMc, new HashMap<QName, QName>() );
         DataTypeMapping dtMapping = new DataTypeMapping( xsElementDecl, table, particles );
         dtMappings.add( dtMapping );
@@ -360,7 +370,7 @@ public class AppSchemaMapper {
             propMc = mcManager.mapOneToOneElement( mc, pt.getName() );
         } else {
             propMc = mcManager.mapOneToManyElements( mc, pt.getName() );
-            jc = generateJoinChain( "attr_gml_id", mc, propMc );
+            jc = generateJoinChain( mc, propMc );
         }
         List<Mapping> particles = generateMapping( pt.getXSDValueType(), propMc, new HashMap<QName, QName>() );
         DBField nilMapping = null;
@@ -384,7 +394,7 @@ public class AppSchemaMapper {
         } else {
             propMc = mcManager.mapOneToManyElements( mc, pt.getName() );
             codeSpaceMc = mcManager.mapOneToOneAttribute( propMc, new QName( "codeSpace" ) );
-            jc = generateJoinChain( "attr_gml_id", mc, propMc );
+            jc = generateJoinChain( mc, propMc );
             mapping = new DBField( "value" );
         }
         MappingExpression csMapping = new DBField( codeSpaceMc.getColumn() );
@@ -395,8 +405,9 @@ public class AppSchemaMapper {
         return new CodeMapping( path, mapping, STRING, jc, csMapping, nilMapping );
     }
 
-    private JoinChain generateJoinChain( String idColumn, MappingContext from, MappingContext to ) {
-        return new JoinChain( new DBField( from.getTable(), idColumn ), new DBField( to.getTable(), "parentfk" ) );
+    private JoinChain generateJoinChain( MappingContext from, MappingContext to ) {
+        return new JoinChain( new DBField( from.getTable(), from.getIdColumn() ), new DBField( to.getTable(),
+                                                                                               "parentfk" ) );
     }
 
     private List<Mapping> generateMapping( XSComplexTypeDefinition typeDef, MappingContext mc,
@@ -500,37 +511,37 @@ public class AppSchemaMapper {
                                            Map<QName, QName> elements ) {
 
         List<Mapping> mappings = new ArrayList<Mapping>();
-        
-        QName eName = new QName (elDecl.getNamespace(), elDecl.getName());
-        if (eName.equals( new QName ("http://www.opengis.net/gml/3.2", "AbstractCRS") )) {
-            LOG.warn ("Skipping mapping of AbstractCRS element");
+
+        QName eName = new QName( elDecl.getNamespace(), elDecl.getName() );
+        if ( eName.equals( new QName( "http://www.opengis.net/gml/3.2", "AbstractCRS" ) ) ) {
+            LOG.warn( "Skipping mapping of AbstractCRS element" );
             return mappings;
         }
-        if (eName.equals( new QName ("http://www.opengis.net/gml/3.2", "TimeOrdinalEra") )) {
-            LOG.warn ("Skipping mapping of TimeOrdinalEra element");
+        if ( eName.equals( new QName( "http://www.opengis.net/gml/3.2", "TimeOrdinalEra" ) ) ) {
+            LOG.warn( "Skipping mapping of TimeOrdinalEra element" );
             return mappings;
         }
 
-        if (eName.equals( new QName ("http://www.opengis.net/gml/3.2", "TimePeriod") )) {
-            LOG.warn ("Skipping mapping of TimePeriod element");
+        if ( eName.equals( new QName( "http://www.opengis.net/gml/3.2", "TimePeriod" ) ) ) {
+            LOG.warn( "Skipping mapping of TimePeriod element" );
             return mappings;
         }
-        
-        if (eName.equals( new QName ("http://www.isotc211.org/2005/gmd", "EX_GeographicDescription") )) {
-            LOG.warn ("Skipping mapping of EX_GeographicDescription element");
+
+        if ( eName.equals( new QName( "http://www.isotc211.org/2005/gmd", "EX_GeographicDescription" ) ) ) {
+            LOG.warn( "Skipping mapping of EX_GeographicDescription element" );
         }
-        
+
         // consider every concrete element substitution
         List<XSElementDeclaration> substitutions = appSchema.getXSModel().getSubstitutions( elDecl, null, true, true );
-        if (eName.equals( new QName ("http://www.isotc211.org/2005/gco", "CharacterString") )) {
+        if ( eName.equals( new QName( "http://www.isotc211.org/2005/gco", "CharacterString" ) ) ) {
             substitutions.clear();
-            substitutions.add( elDecl);
+            substitutions.add( elDecl );
         }
-        
-        if (eName.equals( new QName ("http://www.isotc211.org/2005/gmd", "MD_Identifier") )) {
+
+        if ( eName.equals( new QName( "http://www.isotc211.org/2005/gmd", "MD_Identifier" ) ) ) {
             substitutions.clear();
-            substitutions.add( elDecl);
-        }        
+            substitutions.add( elDecl );
+        }
 
         for ( XSElementDeclaration substitution : substitutions ) {
             ObjectPropertyType opt = appSchema.getCustomElDecl( substitution );
@@ -613,7 +624,7 @@ public class AppSchemaMapper {
 
                     JoinChain jc = null;
                     if ( occurence == -1 ) {
-                        jc = generateJoinChain( "id", mc, elMC );
+                        jc = generateJoinChain( mc, elMC );
                     }
 
                     DBField nilMapping = null;

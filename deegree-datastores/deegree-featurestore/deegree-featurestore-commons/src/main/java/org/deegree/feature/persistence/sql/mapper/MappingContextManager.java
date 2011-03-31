@@ -58,23 +58,23 @@ public class MappingContextManager {
         this.nsToPrefix = nsToPrefix;
     }
 
-    public MappingContext newContext( QName name ) {
-        return new MappingContext( getSQLIdentifier( "", toString( name ) ) );
+    public MappingContext newContext( QName name, String idColumn ) {
+        return new MappingContext( getSQLIdentifier( "", toString( name ) ), idColumn );
     }
 
     public MappingContext mapOneToOneElement( MappingContext mc, QName childElement ) {
         String newColumn = getSQLIdentifier( mc.getColumn(), toString( childElement ) );
-        return new MappingContext( mc.getTable(), newColumn );
+        return new MappingContext( mc.getTable(), mc.getIdColumn(), newColumn );
     }
 
     public MappingContext mapOneToOneAttribute( MappingContext mc, QName attribute ) {
         String newColumn = getSQLIdentifier( mc.getColumn(), "attr_" + toString( attribute ) );
-        return new MappingContext( mc.getTable(), newColumn );
+        return new MappingContext( mc.getTable(), mc.getIdColumn(), newColumn );
     }
 
     public MappingContext mapOneToManyElements( MappingContext mc, QName childElement ) {
         String newTable = getSQLIdentifier( mc.getTable(), toString( childElement ) );
-        return new MappingContext( newTable, mc.getColumn() );
+        return new MappingContext( newTable, "id", mc.getColumn() );
     }
 
     private String getSQLIdentifier( String prefix, String name ) {
