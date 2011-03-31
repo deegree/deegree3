@@ -296,7 +296,7 @@ public class PostGISFeatureStoreConfigParser {
         FeatureType[] fts = ftNameToFt.values().toArray( new FeatureType[ftNameToFt.size()] );
         FeatureTypeMapping[] ftMappings = ftNameToMapping.values().toArray( new FeatureTypeMapping[ftNameToMapping.size()] );
         Map<FeatureType, FeatureType> ftToSuperFt = null;
-        Map<String,String> prefixToNs = null;
+        Map<String, String> prefixToNs = null;
         GMLSchemaInfoSet xsModel = null;
         if ( gmlSchema != null ) {
             fts = gmlSchema.getFeatureTypes();
@@ -304,7 +304,8 @@ public class PostGISFeatureStoreConfigParser {
             xsModel = gmlSchema.getXSModel();
             prefixToNs = gmlSchema.getNamespaceBindings();
         }
-        return new MappedApplicationSchema( fts, ftToSuperFt, prefixToNs, xsModel, ftMappings, null, bboxMapping, blobMapping );
+        return new MappedApplicationSchema( fts, ftToSuperFt, prefixToNs, xsModel, ftMappings, null, bboxMapping,
+                                            blobMapping );
     }
 
     private void process( FeatureTypeDecl ftDecl )
@@ -595,8 +596,18 @@ public class PostGISFeatureStoreConfigParser {
             return new PrimitiveMapping( path, me, pt, joinedTable, nilMapping );
         } else if ( mapping instanceof org.deegree.feature.persistence.postgis.jaxb.GeometryMapping ) {
             org.deegree.feature.persistence.postgis.jaxb.GeometryMapping gm = (org.deegree.feature.persistence.postgis.jaxb.GeometryMapping) mapping;
+            LOG.warn( "Unhandled geometry mapping: " + mapping.getClass() );
+            DBField nilMapping = buildNilMapping( gm.getNilMapping() );
+            GeometryType type = getGeometryType( gm.getType().name() );
+            // TODO
+            CoordinateDimension dim = CoordinateDimension.DIM_2;
+            ICRS crs = CRSManager.getCRSRef( gm.getCrs() );
+            String srid = "" + gm.getSrid();
+            MappingExpression me = parseMappingExpression( gm.getMapping() );
+            return new GeometryMapping( path, me, type, dim, crs, srid, joinedTable, nilMapping );
         } else if ( mapping instanceof org.deegree.feature.persistence.postgis.jaxb.FeatureMapping ) {
             org.deegree.feature.persistence.postgis.jaxb.FeatureMapping fm = (org.deegree.feature.persistence.postgis.jaxb.FeatureMapping) mapping;
+            LOG.warn( "Unhandled feature mapping: " + mapping.getClass() );
         } else if ( mapping instanceof org.deegree.feature.persistence.postgis.jaxb.ComplexMapping ) {
             org.deegree.feature.persistence.postgis.jaxb.ComplexMapping cm = (org.deegree.feature.persistence.postgis.jaxb.ComplexMapping) mapping;
             List<JAXBElement<? extends CustomMapping>> children = cm.getAbstractCustomMapping();

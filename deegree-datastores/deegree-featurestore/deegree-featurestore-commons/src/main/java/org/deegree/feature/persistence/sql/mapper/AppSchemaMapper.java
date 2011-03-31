@@ -258,7 +258,7 @@ public class AppSchemaMapper {
 
     private PrimitiveMapping generatePropMapping( SimplePropertyType pt, MappingContext mc ) {
         LOG.debug( "Mapping simple property '" + pt.getName() + "'" );
-        PropertyName path = new PropertyName( pt.getName() );
+        PropertyName path = getPropName( pt.getName() );
         MappingContext propMc = null;
         JoinChain jc = null;
         if ( pt.getMaxOccurs() == 1 ) {
@@ -283,7 +283,7 @@ public class AppSchemaMapper {
 
     private GeometryMapping generatePropMapping( GeometryPropertyType pt, MappingContext mc ) {
         LOG.debug( "Mapping geometry property '" + pt.getName() + "'" );
-        PropertyName path = new PropertyName( pt.getName() );
+        PropertyName path = getPropName( pt.getName() );
         MappingContext propMc = null;
         JoinChain jc = null;
         if ( pt.getMaxOccurs() == 1 ) {
@@ -303,7 +303,7 @@ public class AppSchemaMapper {
 
     private FeatureMapping generatePropMapping( FeaturePropertyType pt, MappingContext mc ) {
         LOG.debug( "Mapping feature property '" + pt.getName() + "'" );
-        PropertyName path = new PropertyName( pt.getName() );
+        PropertyName path = getPropName( pt.getName() );
         JoinChain jc = null;
         MappingContext mc2 = null;
         MappingExpression mapping = null;
@@ -324,7 +324,7 @@ public class AppSchemaMapper {
 
     private GenericObjectMapping generatePropMapping( GenericObjectPropertyType pt, MappingContext mc ) {
         LOG.warn( "Mapping generic object property '" + pt.getName() + "'" );
-        PropertyName path = new PropertyName( pt.getName() );
+        PropertyName path = getPropName( pt.getName() );
         JoinChain jc = null;
         MappingContext mc2 = null;
         MappingExpression mapping = null;
@@ -362,7 +362,7 @@ public class AppSchemaMapper {
             return null;
         }
 
-        PropertyName path = new PropertyName( pt.getName() );
+        PropertyName path = getPropName( pt.getName() );
 
         MappingContext propMc = null;
         JoinChain jc = null;
@@ -382,7 +382,7 @@ public class AppSchemaMapper {
 
     private CodeMapping generatePropMapping( CodePropertyType pt, MappingContext mc ) {
         LOG.debug( "Mapping code property '" + pt.getName() + "'" );
-        PropertyName path = new PropertyName( pt.getName() );
+        PropertyName path = getPropName( pt.getName() );
         MappingContext propMc = null;
         MappingContext codeSpaceMc = null;
         JoinChain jc = null;
@@ -693,5 +693,16 @@ public class AppSchemaMapper {
             return prefix + ":" + name.getLocalPart();
         }
         return name.getLocalPart();
+    }
+
+    private PropertyName getPropName( QName name ) {
+        if ( name.getNamespaceURI() != null && !name.getNamespaceURI().equals( NULL_NS_URI ) ) {
+            String prefix = name.getPrefix();
+            if ( prefix == null || prefix.isEmpty() ) {
+                prefix = appSchema.getXSModel().getNamespacePrefixes().get( name.getNamespaceURI() );
+            }
+            name = new QName( name.getNamespaceURI(), name.getLocalPart(), prefix );
+        }
+        return new PropertyName( name );
     }
 }

@@ -508,7 +508,7 @@ public class PostGISFeatureStoreTransaction implements FeatureStoreTransaction {
 
     private void insertParticle( Mapping mapping, DBField nilMapping, GenericXMLElement particle, InsertRow insertRow,
                                  InsertRowManager rowManager )
-                            throws FilterEvaluationException {
+                            throws FilterEvaluationException, FeatureStoreException {
 
         if ( mapping.getJoinedTable() != null ) {
             // TODO
@@ -562,8 +562,41 @@ public class PostGISFeatureStoreTransaction implements FeatureStoreTransaction {
                         }
                     }
                 }
+            } else if ( mapping instanceof GeometryMapping ) {
+                PropertyName path = mapping.getPath();
+                // TODO: GML version
+                FeatureXPathEvaluator evaluator = new FeatureXPathEvaluator( GML_32 );
+                Geometry geom = getGeometry( evaluator.eval( particle, path ) );
+                if ( geom != null ) {
+                    byte[] sqlValue = null;
+                    String srid = ( (GeometryMapping) mapping ).getSrid();
+                    ICRS storageCRS = ( (GeometryMapping) mapping ).getCRS();
+                    try {
+                        Geometry compatible = fs.getCompatibleGeometry( geom, storageCRS );
+                        sqlValue = WKBWriter.write( compatible );
+                    } catch ( Exception e ) {
+                        throw new FeatureStoreException( e.getMessage(), e );
+                    }
+                    insertRow.addPreparedArgument( ( (GeometryMapping) mapping ).getMapping().toString(), sqlValue,
+                                                   fs.getWKBParamTemplate( srid ) );
+                }
+            } else {
+                LOG.warn( "Unhandled mapping type {} (path: {})", mapping.getClass(), mapping.getPath() );
             }
         }
+    }
+
+    private Geometry getGeometry( TypedObjectNode[] tons ) {
+        for ( TypedObjectNode ton : tons ) {
+            if ( ton instanceof Geometry ) {
+                return (Geometry) ton;
+            }
+            if ( ton instanceof GenericXMLElementContent ) {
+                List<TypedObjectNode> children = ( (GenericXMLElementContent) ton ).getChildren();
+                return getGeometry( children.toArray( new TypedObjectNode[children.size()] ) );
+            }
+        }
+        return null;
     }
 
     private String generateNewId() {
@@ -713,7 +746,6 @@ public class PostGISFeatureStoreTransaction implements FeatureStoreTransaction {
                     buildInsertRows( value, particle, child );
                 }
             }
-
         } else {
             if ( propMapping instanceof PrimitiveMapping ) {
                 MappingExpression me = ( (PrimitiveMapping) propMapping ).getMapping();
@@ -774,18 +806,18 @@ public class PostGISFeatureStoreTransaction implements FeatureStoreTransaction {
                         row.getRow().addPreparedArgument( column, sqlValue );
                     }
                 } else if ( mapping instanceof GeometryMapping ) {
+
                     LOG.warn( "TODO geometry mapping" );
+
                 } else if ( mapping instanceof FeatureMapping ) {
                     LOG.warn( "TODO feature mapping" );
                 } else if ( mapping instanceof CompoundMapping ) {
-
                     GenericXMLElement value = null;
                     if ( node instanceof GenericXMLElement ) {
                         value = (GenericXMLElement) node;
                     } else if ( node instanceof GenericXMLElementContent ) {
                         value = new GenericXMLElement( null, (GenericXMLElementContent) node );
                     }
-
                     for ( Mapping particle : ( (CompoundMapping) mapping ).getParticles() ) {
                         buildInsertRows( value, particle, row );
                     }
