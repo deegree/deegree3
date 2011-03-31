@@ -108,7 +108,7 @@ public class CodeType implements TypedObjectNode {
 
     @Override
     public String toString() {
-        return codeSpace == null ? code : ( codeSpace + ":" + code );
+        return code;
     }
 
     @Override
