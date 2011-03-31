@@ -108,12 +108,17 @@ public class CodeType implements TypedObjectNode {
 
     @Override
     public String toString() {
-        return code;
+        return codeSpace == null ? code : ( codeSpace + ":" + code );
     }
 
     @Override
     public int hashCode() {
-        return code.hashCode();
+        long code = 32452843;
+        code = code * 37 + this.code.hashCode();
+        if ( codeSpace != null ) {
+            code = code * 37 + codeSpace.hashCode();
+        }
+        return (int) ( code >>> 32 ) ^ (int) code;
     }
 
     @Override
