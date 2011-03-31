@@ -71,7 +71,6 @@ import org.deegree.feature.persistence.FeatureStore;
 import org.deegree.feature.persistence.FeatureStoreException;
 import org.deegree.feature.persistence.FeatureStoreGMLIdResolver;
 import org.deegree.feature.persistence.FeatureStoreTransaction;
-import org.deegree.feature.persistence.postgis.config.PostGISDDLCreator;
 import org.deegree.feature.persistence.postgis.jaxb.PostGISFeatureStoreConfig;
 import org.deegree.feature.persistence.query.CombinedResultSet;
 import org.deegree.feature.persistence.query.FeatureResultSet;
