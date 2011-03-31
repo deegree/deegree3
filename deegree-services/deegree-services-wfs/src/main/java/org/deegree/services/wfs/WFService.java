@@ -43,8 +43,8 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Set;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import javax.xml.namespace.QName;
 
@@ -153,7 +153,7 @@ public class WFService {
 
         if ( ft == null ) {
             QName match = QNameUtils.findBestMatch( ftName, ftNameToFt.keySet() );
-            if ( match != null ) {
+            if ( match != null && ( !match.equals( ftName ) ) ) {
                 LOG.warn( "Repairing unqualified FeatureType name: " + QNameUtils.toString( ftName ) + " -> "
                           + QNameUtils.toString( match ) );
                 ft = ftNameToFt.get( match );
