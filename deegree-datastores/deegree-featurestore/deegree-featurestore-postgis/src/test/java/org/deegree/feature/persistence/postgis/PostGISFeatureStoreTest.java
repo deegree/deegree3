@@ -596,10 +596,11 @@ public class PostGISFeatureStoreTest {
     private ApplicationSchema getInspireSchemaAU()
                             throws MalformedURLException, ClassCastException, UnsupportedEncodingException,
                             ClassNotFoundException, InstantiationException, IllegalAccessException {
-        File addressesFile = new File(
-                                       "/home/schneider/.deegree/deegree-workspace-inspire-3.1-pre4-SNAPSHOT/appschemas/inspire/annex1", "AdministrativeUnits.xsd" );
-        URL url = addressesFile.toURI().toURL();
-        ApplicationSchemaXSDDecoder decoder = new ApplicationSchemaXSDDecoder( GML_32, null, addressesFile );
-        return decoder.extractFeatureTypeSchema();
+        return null;
+//        File addressesFile = new File(
+//                                       "/home/schneider/.deegree/deegree-workspace-inspire-3.1-pre4-SNAPSHOT/appschemas/inspire/annex1", "AdministrativeUnits.xsd" );
+//        URL url = addressesFile.toURI().toURL();
+//        ApplicationSchemaXSDDecoder decoder = new ApplicationSchemaXSDDecoder( GML_32, null, addressesFile );
+//        return decoder.extractFeatureTypeSchema();
     }
 }
