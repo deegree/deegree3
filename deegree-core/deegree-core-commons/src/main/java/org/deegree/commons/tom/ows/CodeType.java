@@ -106,6 +106,9 @@ public class CodeType implements TypedObjectNode {
         return codeSpace;
     }
 
+    /**
+     * @return the code (codeSpaces are ignored for now because the filter model needs #toString...)
+     */
     @Override
     public String toString() {
         return code;
