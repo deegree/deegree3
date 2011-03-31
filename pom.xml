@@ -78,6 +78,7 @@
     <module>deegree-processproviders</module>
     <module>deegree-services</module>
     <module>deegree-tools</module>
+    <module>deegree-workspaces</module>
   </modules>
 </project>
 

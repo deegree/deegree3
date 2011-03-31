@@ -31,6 +31,15 @@
     </repository>
   </repositories>
 
+  <profiles>
+    <profile>
+      <id>run-service-tests</id>
+      <modules>
+        <module>deegree-workspace-tests</module>
+      </modules>
+    </profile>
+  </profiles>
+
   <modules>
     <module>deegree-workspace-parent</module>
     <module>deegree-workspace-base</module>
@@ -39,7 +48,6 @@
     <module>deegree-workspace-geosciml</module>
     <module>deegree-workspace-inspire</module>
     <module>deegree-workspace-sos</module>
-    <module>deegree-workspace-tests</module>
     <module>deegree-workspace-utah</module>
     <module>deegree-workspace-wcts</module>
     <module>deegree-workspace-wps</module>
