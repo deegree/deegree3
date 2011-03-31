@@ -191,7 +191,7 @@ class TransactionHandler {
                 throw new OWSException( "Cannot acquire lock manager: " + e.getMessage(),
                                         ControllerException.NO_APPLICABLE_CODE );
             }
-            if ( lockId != null ) {
+            if ( lockId != null && manager != null) {
                 lock = manager.getLock( lockId );
             }
 
