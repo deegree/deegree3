@@ -1,7 +1,7 @@
-//$HeadURL$
+//$HeadURL: svn+ssh://mschneider@svn.wald.intevation.org/deegree/base/trunk/resources/eclipse/files_template.xml $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
- Copyright (C) 2001-2009 by:
+ Copyright (C) 2001-2011 by:
  - Department of Geography, University of Bonn -
  and
  - lat/lon GmbH -
@@ -35,41 +35,40 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.feature.persistence.sql.rules;
 
-import java.util.List;
-
-import org.deegree.feature.persistence.sql.expressions.JoinChain;
+import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.filter.expression.PropertyName;
-import org.deegree.filter.sql.DBField;
 
 /**
- * Composite {@link Mapping} of complex particles.
+ * {@link Mapping} of a particle to a fixed value.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
+ * @author last edited by: $Author: markus $
  * 
- * @version $Revision$, $Date$
+ * @version $Revision: $, $Date: $
  */
-public class CompoundMapping extends Mapping {
+public class ConstantMapping<T extends TypedObjectNode> extends Mapping {
 
-    private final List<Mapping> particles;
+    private final T value;
 
-    public CompoundMapping( PropertyName path, List<Mapping> particles, JoinChain joinedTable, DBField nilMapping ) {
-        super( path, joinedTable, nilMapping );
-        this.particles = particles;
+    /**
+     * Creates a new {@link ConstantMapping} instance.
+     * 
+     * @param path
+     *            relative xpath expression, must not be <code>null</code>
+     * @param value
+     *            the value of the particle, must not be <code>null</code>
+     */
+    public ConstantMapping( PropertyName path, T value ) {
+        super( path, null, null );
+        this.value = value;
     }
 
-    public List<Mapping> getParticles() {
-        return particles;
-    }
-
-    @Override
-    public String toString() {
-        String s = super.toString();
-        s += "{";
-        for ( Mapping particle : particles ) {
-            s += particle + ",";
-        }
-        s += "}";
-        return s;
+    /**
+     * Returns the value that the particle is mapped to.
+     * 
+     * @return the value of the particle, never <code>null</code>
+     */
+    public T getValue() {
+        return value;
     }
 }

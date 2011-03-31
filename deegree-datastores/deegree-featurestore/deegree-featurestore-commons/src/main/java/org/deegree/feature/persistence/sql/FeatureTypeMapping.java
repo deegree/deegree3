@@ -45,7 +45,7 @@ import org.deegree.feature.persistence.sql.rules.Mapping;
 import org.deegree.feature.types.FeatureType;
 
 /**
- * Defines the mapping between a {@link FeatureType} and a table in a relational database.
+ * Defines the mapping between a {@link FeatureType} and tables in a relational database.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
@@ -84,7 +84,7 @@ public class FeatureTypeMapping {
     /**
      * Returns the name of the feature type.
      * 
-     * @return the name of the feature type, never <code>null</code>
+     * @return name of the feature type, never <code>null</code>
      */
     public QName getFeatureType() {
         return ftName;
@@ -93,7 +93,7 @@ public class FeatureTypeMapping {
     /**
      * Returns the identifier of the table that the feature type is mapped to.
      * 
-     * @return the identifier of the table, never <code>null</code>
+     * @return identifier of the table, never <code>null</code>
      */
     public QTableName getFtTable() {
         return table;

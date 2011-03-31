@@ -41,7 +41,7 @@ import org.deegree.filter.expression.PropertyName;
 import org.deegree.filter.sql.DBField;
 import org.deegree.filter.sql.MappingExpression;
 
-public class GenericObjectMapping extends Mapping {
+public class GenericObjectMapping extends ReferenceMapping {
 
     private final MappingExpression mapping;
 

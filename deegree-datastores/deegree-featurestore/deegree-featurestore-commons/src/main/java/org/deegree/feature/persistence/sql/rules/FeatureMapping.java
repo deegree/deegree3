@@ -44,20 +44,21 @@ import org.deegree.filter.sql.DBField;
 import org.deegree.filter.sql.MappingExpression;
 
 /**
- * {@link Mapping} of {@link Feature} particles.
+ * {@link ReferenceMapping} for {@link Feature}-valued particles.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
  */
-public class FeatureMapping extends Mapping {
+public class FeatureMapping extends ReferenceMapping {
 
     private MappingExpression mapping;
 
     private QName valueFtName;
 
-    public FeatureMapping( PropertyName path, MappingExpression mapping, QName valueFtName, JoinChain joinedTable, DBField nilMapping ) {
+    public FeatureMapping( PropertyName path, MappingExpression mapping, QName valueFtName, JoinChain joinedTable,
+                           DBField nilMapping ) {
         super( path, joinedTable, nilMapping );
         this.mapping = mapping;
         this.valueFtName = valueFtName;

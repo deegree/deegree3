@@ -40,8 +40,11 @@ import org.deegree.filter.expression.PropertyName;
 import org.deegree.filter.sql.DBField;
 
 /**
- * A {@link Mapping} identifies a relative XPath-expression in the feature type model with a mapping / join rule in the
- * relational model.
+ * A {@link Mapping} describes how a particle of a feature type is mapped to a relational model (tables/columns).
+ * <p>
+ * The mapping is defined by identifying a relative XPath-expression in the feature model with a column mapping/join
+ * rule in the relational model.
+ * </p>
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
@@ -62,7 +65,7 @@ public abstract class Mapping {
      * @param path
      *            relative xpath expression, must not be <code>null</code>
      * @param joinRule
-     *            the table joins, can be <code>null</code> (no joins involved)
+     *            table joins, can be <code>null</code> (no joins involved)
      * @param nilMapping
      *            name of (boolean) column that stores whether the element is nilled, can be <code>null</code>
      */
@@ -83,7 +86,7 @@ public abstract class Mapping {
     }
 
     /**
-     * Returns the table joins in the relational model.
+     * Returns the table joins that have to be performed in the relational model to follow the particle path.
      * 
      * @return the table joins, can be <code>null</code> (no joins involved)
      */
@@ -92,7 +95,7 @@ public abstract class Mapping {
     }
 
     /**
-     * Returns the name of the boolean column that is used for storing if the element is nilled.
+     * Returns the name of the boolean column that is used for storing whether the element is nilled.
      * 
      * @return name of the boolean column, can be <code>null</code>
      */
