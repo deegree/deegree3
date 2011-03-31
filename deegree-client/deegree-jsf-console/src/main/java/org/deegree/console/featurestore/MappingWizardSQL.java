@@ -69,7 +69,7 @@ import org.deegree.console.WorkspaceBean;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.persistence.CRSManager;
 import org.deegree.feature.persistence.FeatureStoreManager;
-import org.deegree.feature.persistence.postgis.config.PostGISDDLCreator;
+import org.deegree.feature.persistence.postgis.PostGISDDLCreator;
 import org.deegree.feature.persistence.postgis.jaxb.PostGISFeatureStoreConfig;
 import org.deegree.feature.persistence.sql.MappedApplicationSchema;
 import org.deegree.feature.persistence.sql.config.PostGISFeatureStoreConfigWriter;
