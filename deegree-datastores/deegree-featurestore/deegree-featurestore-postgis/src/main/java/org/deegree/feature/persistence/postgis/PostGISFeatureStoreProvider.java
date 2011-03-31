@@ -98,8 +98,10 @@ public class PostGISFeatureStoreProvider implements FeatureStoreProvider, SQLFea
                                                                                               workspace );
             ConnectionManager mgr = workspace.getSubsystemManager( ConnectionManager.class );
             Type connType = mgr.getType( cfg.getJDBCConnId() );
+            LOG.debug( "Connection type is {}.", connType );
             SQLFeatureStoreProvider<? extends SQLFeatureStore> provider = providers.get( connType );
             if ( provider != null ) {
+                LOG.debug( "Found SQL provider {}", provider.getClass().getSimpleName() );
                 return provider.create( cfg, configURL, workspace );
             }
             throw new ResourceInitException( "No provider found for " + connType.name() + " SQL feature stores." );
