@@ -76,6 +76,8 @@ import org.deegree.feature.persistence.sql.config.PostGISFeatureStoreConfigWrite
 import org.deegree.feature.persistence.sql.mapper.AppSchemaMapper;
 import org.deegree.feature.types.ApplicationSchema;
 import org.deegree.gml.feature.schema.ApplicationSchemaXSDDecoder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * JSF bean that helps with creating {@link PostGISFeatureStoreConfig} instances.
@@ -89,6 +91,8 @@ import org.deegree.gml.feature.schema.ApplicationSchemaXSDDecoder;
 @SessionScoped
 public class MappingWizardSQL {
 
+    private static transient Logger LOG = LoggerFactory.getLogger( MappingWizardSQL.class );
+    
     private String jdbcId;
 
     private String wizardMode = "template";
@@ -284,12 +288,13 @@ public class MappingWizardSQL {
                 Config c = new Config( rs, mgr, fsMgr, "/console/featurestore/sql/wizard4", false );
                 return c.edit();
             } catch ( Throwable t ) {
-                t.printStackTrace();
+                LOG.error( t.getMessage(), t );
                 FacesMessage fm = new FacesMessage( SEVERITY_ERROR, "Unable to create config: " + t.getMessage(), null );
                 FacesContext.getCurrentInstance().addMessage( null, fm );
                 return null;
             }
         } catch ( Throwable t ) {
+            LOG.error( t.getMessage(), t );
             String msg = "Error generating feature store configuration.";
             FacesMessage fm = new FacesMessage( SEVERITY_ERROR, msg, t.getMessage() );
             FacesContext.getCurrentInstance().addMessage( null, fm );
