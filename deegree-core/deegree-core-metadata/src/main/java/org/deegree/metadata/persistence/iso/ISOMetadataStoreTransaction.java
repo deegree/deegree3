@@ -140,7 +140,9 @@ public class ISOMetadataStoreTransaction implements MetadataStoreTransaction {
                             throws MetadataStoreException, MetadataInspectorException {
         GenerateQueryableProperties generateQP = new GenerateQueryableProperties( connectionType );
         int result = 0;
-        if ( update.getElement() != null ) {
+
+        if ( update.getElement() != null && update.getConstraint() == null ) {
+            LOG.warn( "Update with complete metadatset and without constraint is deprecated. Updating is forwarded, the fileIdentifer is used to find the record to update." );
             OMElement element = update.getElement();
             for ( RecordInspector r : inspectors ) {
                 element = r.inspect( element, conn, connectionType );
@@ -148,29 +150,38 @@ public class ISOMetadataStoreTransaction implements MetadataStoreTransaction {
             ISORecord rec = new ISORecord( element, anyText );
             int operatesOnId = generateQP.updateMainDatabaseTable( conn, rec, null );
             generateQP.executeQueryableProperties( true, conn, operatesOnId, rec );
-            result++;
-        } else if ( update.getConstraint() != null
-                    && ( update.getRecordProperty() != null && update.getRecordProperty().size() > 0 ) ) {
+            return 1;
+        }
 
-            ResultSet rs = null;
-            PreparedStatement preparedStatement = null;
-            ExecuteStatements exe = new ExecuteStatements( connectionType );
-            try {
+        ResultSet rs = null;
+        PreparedStatement preparedStatement = null;
+        ExecuteStatements exe = new ExecuteStatements( connectionType );
+        try {
+            AbstractWhereBuilder builder = getWhereBuilder( (OperatorFilter) update.getConstraint() );
+            ExecuteStatements execStm = new ExecuteStatements( connectionType );
+            execStm.executeGetRecords( null, builder, conn );
+            preparedStatement = exe.executeGetRecords( null, builder, conn );
+            preparedStatement.setFetchSize( ISOMetadataStore.DEFAULT_FETCH_SIZE );
+            rs = preparedStatement.executeQuery();
 
-                AbstractWhereBuilder builder = getWhereBuilder( (OperatorFilter) update.getConstraint() );
-                ExecuteStatements execStm = new ExecuteStatements( connectionType );
-                execStm.executeGetRecords( null, builder, conn );
-                preparedStatement = exe.executeGetRecords( null, builder, conn );
-                preparedStatement.setFetchSize( ISOMetadataStore.DEFAULT_FETCH_SIZE );
-                rs = preparedStatement.executeQuery();
+            // get all metadatasets to update
+            ISOMetadataResultSet isoRs = new ISOMetadataResultSet( rs, conn, preparedStatement, anyText );
+            while ( isoRs.next() ) {
+                ISORecord rec = isoRs.getRecord();
+                LOG.debug( "record to update" + rec );
+                ISORecord newRec = null;
+                boolean updated = false;
 
-                // get all metadatasets to update
-                ISOMetadataResultSet isoRs = new ISOMetadataResultSet( rs, conn, preparedStatement, anyText );
-                while ( isoRs.next() ) {
-                    ISORecord rec = isoRs.getRecord();
-                    LOG.debug( "Update record " + rec );
+                if ( update.getElement() != null ) {
+                    OMElement element = update.getElement();
+                    for ( RecordInspector r : inspectors ) {
+                        element = r.inspect( element, conn, connectionType );
+                    }
+                    newRec = new ISORecord( element, anyText );
+                    updated = true;
+                } else if ( update.getConstraint() != null
+                            && ( update.getRecordProperty() != null && update.getRecordProperty().size() > 0 ) ) {
                     List<MetadataProperty> recordProperty = update.getRecordProperty();
-                    boolean updated = false;
                     for ( MetadataProperty metadataProperty : recordProperty ) {
                         PropertyName name = metadataProperty.getPropertyName();
                         Object value = metadataProperty.getReplacementValue();
@@ -201,19 +212,23 @@ public class ISOMetadataStoreTransaction implements MetadataStoreTransaction {
                     for ( RecordInspector r : inspectors ) {
                         element = r.inspect( element, conn, connectionType );
                     }
-                    int operatesOnId = generateQP.updateMainDatabaseTable( conn, rec, rec.getIdentifier() );
-                    generateQP.executeQueryableProperties( true, conn, operatesOnId, rec );
+                    newRec = rec;
+                }
+                if ( newRec != null ) {
+                    int operatesOnId = generateQP.updateMainDatabaseTable( conn, newRec, newRec.getIdentifier() );
+                    generateQP.executeQueryableProperties( true, conn, operatesOnId, newRec );
                     if ( updated )
                         result++;
                 }
-            } catch ( Throwable t ) {
-                String msg = Messages.getMessage( "ERROR_REQUEST_TYPE", ResultType.results.name(), t.getMessage() );
-                LOG.info( msg );
-                throw new MetadataStoreException( msg );
-            } finally {
-                JDBCUtils.close( rs, preparedStatement, null, LOG );
             }
+        } catch ( Throwable t ) {
+            String msg = Messages.getMessage( "ERROR_REQUEST_TYPE", ResultType.results.name(), t.getMessage() );
+            LOG.info( msg );
+            throw new MetadataStoreException( msg );
+        } finally {
+            JDBCUtils.close( rs, preparedStatement, null, LOG );
         }
+
         return result;
     }
 

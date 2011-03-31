@@ -35,6 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.metadata.persistence.iso.testclasses;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -674,7 +675,8 @@ public class CommonISOTest extends AbstractISOTest {
         // update!
         MetadataStoreTransaction mst = store.acquireTransaction();
         UpdateTransaction update = new UpdateTransaction( null, value, null, null, null );
-        mst.performUpdate( update );
+        int noOfUp = mst.performUpdate( update );
+        assertEquals( 1, noOfUp );
         mst.commit();
 
         // get record which should be updated
@@ -724,7 +726,8 @@ public class CommonISOTest extends AbstractISOTest {
         // update!
         MetadataStoreTransaction mst = store.acquireTransaction();
         UpdateTransaction update = new UpdateTransaction( null, value, null, constraint, null );
-        mst.performUpdate( update );
+        int noOfUp = mst.performUpdate( update );
+        assertEquals( 1, noOfUp );
         mst.commit();
 
         // get record which should be updated
@@ -748,6 +751,33 @@ public class CommonISOTest extends AbstractISOTest {
             Object valueNode = p.selectSingleNode( value );
             Assert.assertEquals( ( (OMElement) valueNode ).getText(), ( (OMElement) updatedNode ).getText() );
         }
+    }
+
+    @Test
+    public void updateNotExistingRecord()
+                            throws MetadataStoreException, MetadataInspectorException, JaxenException,
+                            ResourceInitException {
+        String idToUpdate = prepareUpdate();
+        if ( idToUpdate == null ) {
+            return;
+        }
+
+        // constraint
+        Operator op = new PropertyIsEqualTo( new PropertyName( "apiso:identifier", nsContext ),
+                                             new Literal<PrimitiveValue>( "dummyDoesNotExist" ), true );
+        Filter constraint = new OperatorFilter( op );
+
+        // md to update
+        InputStream is = CommonISOTest.class.getResourceAsStream( "../update/9update.xml" );
+        XMLAdapter a = new XMLAdapter( is );
+        OMElement value = a.getRootElement();
+
+        // update!
+        MetadataStoreTransaction mst = store.acquireTransaction();
+        UpdateTransaction update = new UpdateTransaction( null, value, null, constraint, null );
+        int noOfUp = mst.performUpdate( update );
+        assertEquals( 0, noOfUp );
+        mst.commit();
     }
 
     public String prepareUpdate()
