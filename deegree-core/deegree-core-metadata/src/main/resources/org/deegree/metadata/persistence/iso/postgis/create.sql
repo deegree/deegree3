@@ -32,7 +32,7 @@ CREATE TABLE IDXTB_MAIN (
 	Operations varchar(2000),
 	degree boolean,
 	lineage text,
-	RespPartyRole varchar(20) NOT NULL,
+	RespPartyRole varchar(20),
 	SpecDate timestamp,
 	SpecDateType varchar(15),
 	SpecTitle varchar(500),
@@ -141,6 +141,9 @@ ALTER TABLE IDXTB_Constraint ADD CONSTRAINT UQ_Constraint_id UNIQUE (id);
 ALTER TABLE IDXTB_CRS ADD CONSTRAINT UQ_IDXTB_CRS_id UNIQUE (id);
 ALTER TABLE IDXTB_KEYWORD ADD CONSTRAINT UQ_IDXTB_KEYWORD_id UNIQUE (id);
 ALTER TABLE IDXTB_OperatesOnData ADD CONSTRAINT UQ_OperatesOnData_id UNIQUE (id);
+
+-- set unique constraint
+ALTER TABLE IDXTB_MAIN ADD CONSTRAINT UQ_IDXTB_MAIN_fileidentifier UNIQUE (fileidentifier);
 
 -- Create Foreign Key Constraints 
 ALTER TABLE IDXTB_Constraint ADD CONSTRAINT FK_IDXTB_Constraint_IDXTB_MAIN FOREIGN KEY (fk_main) REFERENCES IDXTB_MAIN (ID) ON DELETE CASCADE;
