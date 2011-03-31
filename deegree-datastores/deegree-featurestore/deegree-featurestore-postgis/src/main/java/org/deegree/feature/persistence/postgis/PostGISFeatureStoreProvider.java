@@ -35,13 +35,24 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.feature.persistence.postgis;
 
+import static org.deegree.commons.jdbc.ConnectionManager.Type.PostgreSQL;
+
 import java.net.URL;
+import java.util.HashMap;
+import java.util.ServiceLoader;
+
+import javax.xml.bind.JAXBException;
 
 import org.deegree.commons.config.DeegreeWorkspace;
-import org.deegree.commons.config.ResourceManager;
 import org.deegree.commons.config.ResourceInitException;
+import org.deegree.commons.config.ResourceManager;
 import org.deegree.commons.jdbc.ConnectionManager;
+import org.deegree.commons.jdbc.ConnectionManager.Type;
+import org.deegree.commons.xml.jaxb.JAXBUtils;
 import org.deegree.feature.persistence.FeatureStoreProvider;
+import org.deegree.feature.persistence.postgis.jaxb.PostGISFeatureStoreConfig;
+import org.deegree.feature.persistence.sql.SQLFeatureStore;
+import org.deegree.feature.persistence.sql.SQLFeatureStoreProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -53,7 +64,7 @@ import org.slf4j.LoggerFactory;
  * 
  * @version $Revision$, $Date$
  */
-public class PostGISFeatureStoreProvider implements FeatureStoreProvider {
+public class PostGISFeatureStoreProvider implements FeatureStoreProvider, SQLFeatureStoreProvider<PostGISFeatureStore> {
 
     private static final Logger LOG = LoggerFactory.getLogger( PostGISFeatureStoreProvider.class );
 
@@ -61,9 +72,11 @@ public class PostGISFeatureStoreProvider implements FeatureStoreProvider {
 
     static final String CONFIG_JAXB_PACKAGE = "org.deegree.feature.persistence.postgis.jaxb";
 
-    static final String CONFIG_SCHEMA = "/META-INF/schemas/datasource/feature/sql/3.1.0/sql.xsd";
+    static final URL CONFIG_SCHEMA = PostGISFeatureStoreProvider.class.getResource( "/META-INF/schemas/datasource/feature/sql/3.1.0/sql.xsd" );
 
     private DeegreeWorkspace workspace;
+
+    private HashMap<Type, SQLFeatureStoreProvider<? extends SQLFeatureStore>> providers = new HashMap<Type, SQLFeatureStoreProvider<? extends SQLFeatureStore>>();
 
     @Override
     public String getConfigNamespace() {
@@ -72,21 +85,50 @@ public class PostGISFeatureStoreProvider implements FeatureStoreProvider {
 
     @Override
     public URL getConfigSchema() {
-        return PostGISFeatureStoreProvider.class.getResource( CONFIG_SCHEMA );
+        return CONFIG_SCHEMA;
     }
 
     @Override
-    public PostGISFeatureStore create( URL configURL )
+    public SQLFeatureStore create( URL configURL )
                             throws ResourceInitException {
-        return new PostGISFeatureStore( configURL, workspace );
+
+        try {
+            PostGISFeatureStoreConfig cfg = (PostGISFeatureStoreConfig) JAXBUtils.unmarshall( CONFIG_JAXB_PACKAGE,
+                                                                                              CONFIG_SCHEMA, configURL,
+                                                                                              workspace );
+            ConnectionManager mgr = workspace.getSubsystemManager( ConnectionManager.class );
+            Type connType = mgr.getType( cfg.getJDBCConnId() );
+            SQLFeatureStoreProvider<? extends SQLFeatureStore> provider = providers.get( connType );
+            if ( provider != null ) {
+                return provider.create( cfg, configURL, workspace );
+            }
+            throw new ResourceInitException( "No provider found for " + connType.name() + " SQL feature stores." );
+        } catch ( JAXBException e ) {
+            LOG.trace( "Stack trace: ", e );
+            throw new ResourceInitException( "Error when parsing configuration: " + e.getLocalizedMessage(), e );
+        }
+
     }
 
     public void init( DeegreeWorkspace workspace ) {
         this.workspace = workspace;
+        for ( SQLFeatureStoreProvider<? extends SQLFeatureStore> p : ServiceLoader.load(
+                                                                                         SQLFeatureStoreProvider.class,
+                                                                                         workspace.getModuleClassLoader() ) ) {
+            providers.put( p.getSupportedType(), p );
+        }
     }
 
     @SuppressWarnings("unchecked")
     public Class<? extends ResourceManager>[] getDependencies() {
         return new Class[] { ConnectionManager.class };
+    }
+
+    public Type getSupportedType() {
+        return PostgreSQL;
+    }
+
+    public PostGISFeatureStore create( PostGISFeatureStoreConfig config, URL configURL, DeegreeWorkspace workspace ) {
+        return new PostGISFeatureStore( config, configURL, workspace );
     }
 }

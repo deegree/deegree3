@@ -353,7 +353,7 @@ public class PostGISFeatureStoreTest {
                                      "file:/home/schneider/.deegree/deegree-inspire-node-1.1/datasources/feature/inspire-au.xml" );
 
             PostGISFeatureStoreProvider provider = new PostGISFeatureStoreProvider();
-            PostGISFeatureStore fs = provider.create( configURL );
+            PostGISFeatureStore fs = (PostGISFeatureStore) provider.create( configURL );
             try {
                 fs.init( null );
             } catch ( Throwable t ) {

@@ -149,19 +149,24 @@ public class PostGISFeatureStore extends AbstractSQLFeatureStore {
 
     private Map<String, String> nsContext;
 
-    private final URL configURL;
-
     private final DeegreeWorkspace workspace;
+
+    private PostGISFeatureStoreConfig config;
+
+    private final URL configURL;
 
     /**
      * Creates a new {@link PostGISFeatureStore} for the given {@link ApplicationSchema}.
      * 
+     * @param config
+     *            jaxb configuration object
      * @param configURL
-     *            schema information, must not be <code>null</code>
+     *            configuration systemid
      * @param workspace
      *            deegree workspace, must not be <code>null</code>
      */
-    PostGISFeatureStore( URL configURL, DeegreeWorkspace workspace ) {
+    protected PostGISFeatureStore( PostGISFeatureStoreConfig config, URL configURL, DeegreeWorkspace workspace ) {
+        this.config = config;
         this.configURL = configURL;
         this.workspace = workspace;
     }
@@ -448,7 +453,6 @@ public class PostGISFeatureStore extends AbstractSQLFeatureStore {
                             throws ResourceInitException {
 
         LOG.debug( "init" );
-        PostGISFeatureStoreConfig config = parseConfig( configURL );
         MappedApplicationSchema schema = getSchema( configURL.toString(), config );
         String jdbcConnId = config.getJDBCConnId();
         init( schema, jdbcConnId );
