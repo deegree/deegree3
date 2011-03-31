@@ -76,6 +76,8 @@ public class PostGISDDLCreator {
 
     private final boolean hasBlobTable;
 
+    private QTableName currentFtTable;
+
     /**
      * Creates a new {@link PostGISDDLCreator} instance for the given {@link MappedApplicationSchema}.
      * 
@@ -173,6 +175,8 @@ public class PostGISDDLCreator {
 
         List<StringBuffer> ddls = new ArrayList<StringBuffer>();
 
+        currentFtTable = ftMapping.getFtTable();
+        
         StringBuffer sql = new StringBuffer( "CREATE TABLE " );
         ddls.add( sql );
         sql.append( ftMapping.getFtTable() );
@@ -327,7 +331,7 @@ public class PostGISDDLCreator {
         sb.append( "id serial PRIMARY KEY,\n    " );
         sb.append( to.getColumn() );
         // TODO implement this correctly
-        if ( StringUtils.count( to.getTable(), "_" ) > 4 ) {
+        if ( !fromTable.equals( currentFtTable ) ) {
             sb.append( " integer NOT NULL REFERENCES" );
         } else {
             sb.append( " text NOT NULL REFERENCES" );

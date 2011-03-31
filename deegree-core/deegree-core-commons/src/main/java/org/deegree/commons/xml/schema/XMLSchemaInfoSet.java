@@ -187,8 +187,8 @@ public class XMLSchemaInfoSet {
     /**
      * Returns the prefix to namespace bindings used in the original XML schema documents.
      * 
-     * @return the prefix to namespace bindings, never <code>null</code> (but does not necessarily bindings for all
-     *         namespaces)
+     * @return the prefix to namespace bindings, never <code>null</code> (but does not necessarily contain bindings for
+     *         all namespaces)
      */
     public synchronized Map<String, String> getNamespacePrefixes() {
         if ( nsToPrefix == null ) {

@@ -502,13 +502,35 @@ public class AppSchemaMapper {
         List<Mapping> mappings = new ArrayList<Mapping>();
         
         QName eName = new QName (elDecl.getNamespace(), elDecl.getName());
-        if (eName.equals( new QName ("http://www.isotc211.org/2005/gmd", "CI_Citation") )) {
-            LOG.warn ("Skipping mapping of CI_Citation element");
+        if (eName.equals( new QName ("http://www.opengis.net/gml/3.2", "AbstractCRS") )) {
+            LOG.warn ("Skipping mapping of AbstractCRS element");
+            return mappings;
+        }
+        if (eName.equals( new QName ("http://www.opengis.net/gml/3.2", "TimeOrdinalEra") )) {
+            LOG.warn ("Skipping mapping of TimeOrdinalEra element");
             return mappings;
         }
 
+        if (eName.equals( new QName ("http://www.opengis.net/gml/3.2", "TimePeriod") )) {
+            LOG.warn ("Skipping mapping of TimePeriod element");
+            return mappings;
+        }
+        
+        if (eName.equals( new QName ("http://www.isotc211.org/2005/gmd", "EX_GeographicDescription") )) {
+            LOG.warn ("Skipping mapping of EX_GeographicDescription element");
+        }
+        
         // consider every concrete element substitution
         List<XSElementDeclaration> substitutions = appSchema.getXSModel().getSubstitutions( elDecl, null, true, true );
+        if (eName.equals( new QName ("http://www.isotc211.org/2005/gco", "CharacterString") )) {
+            substitutions.clear();
+            substitutions.add( elDecl);
+        }
+        
+        if (eName.equals( new QName ("http://www.isotc211.org/2005/gmd", "MD_Identifier") )) {
+            substitutions.clear();
+            substitutions.add( elDecl);
+        }        
 
         for ( XSElementDeclaration substitution : substitutions ) {
             ObjectPropertyType opt = appSchema.getCustomElDecl( substitution );

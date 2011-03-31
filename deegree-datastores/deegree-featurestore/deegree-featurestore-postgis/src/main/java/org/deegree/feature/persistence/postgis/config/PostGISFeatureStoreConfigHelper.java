@@ -47,6 +47,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -114,7 +116,16 @@ public class PostGISFeatureStoreConfigHelper {
 
     public PostGISFeatureStoreConfigHelper( ApplicationSchema schema ) {
         this.schema = schema;
-        mcManager = new MappingContextManager( schema.getXSModel().getNamespacePrefixes() );
+        Map<String, String> nsToPrefix = new HashMap<String, String>();
+        Iterator<String> nsIter = CommonNamespaces.getNamespaceContext().getNamespaceURIs();
+        while ( nsIter.hasNext() ) {
+            String ns = nsIter.next();
+            System.out.println ("HUHU: " + ns);
+            nsToPrefix.put( ns, CommonNamespaces.getNamespaceContext().getPrefix( ns ) );
+        }
+
+        nsToPrefix.putAll( schema.getXSModel().getNamespacePrefixes() );
+        mcManager = new MappingContextManager( nsToPrefix );
     }
 
     public void writeConfig( XMLStreamWriter writer, String storageCrs, Map<String, String> namespaceHints,
@@ -198,7 +209,7 @@ public class PostGISFeatureStoreConfigHelper {
 
     private void writePropertyMapping( XMLStreamWriter writer, PropertyType pt, MappingContext mc )
                             throws XMLStreamException {
-        LOG.info( "Mapping property type '" + pt.getName() + "'");
+        LOG.info( "Mapping property type '" + pt.getName() + "'" );
         if ( pt instanceof CodePropertyType ) {
             writePropertyMapping( writer, (CodePropertyType) pt, mc );
         } else if ( pt instanceof CustomPropertyType ) {
@@ -208,7 +219,7 @@ public class PostGISFeatureStoreConfigHelper {
         } else if ( pt instanceof GeometryPropertyType ) {
             writePropertyMapping( writer, (GeometryPropertyType) pt, mc );
         } else if ( pt instanceof GenericObjectPropertyType ) {
-            LOG.info ("Skipping property: " + pt.getName());
+            LOG.info( "Skipping property: " + pt.getName() );
         } else if ( pt instanceof MeasurePropertyType ) {
             writePropertyMapping( writer, (MeasurePropertyType) pt, mc );
         } else if ( pt instanceof SimplePropertyType ) {
@@ -595,8 +606,7 @@ public class PostGISFeatureStoreConfigHelper {
 
         PostGISFeatureStoreConfigHelper helper = new PostGISFeatureStoreConfigHelper( schema );
 
-        OutputStream os = new FileOutputStream(
-                                                "/tmp/out.xml" );
+        OutputStream os = new FileOutputStream( "/tmp/out.xml" );
         XMLStreamWriter xmlStream = XMLOutputFactory.newInstance().createXMLStreamWriter( os );
         xmlStream = new IndentingXMLStreamWriter( xmlStream );
 

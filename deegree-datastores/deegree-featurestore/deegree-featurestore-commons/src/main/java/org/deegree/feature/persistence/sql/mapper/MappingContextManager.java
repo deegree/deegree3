@@ -82,8 +82,8 @@ public class MappingContextManager {
         if ( !prefix.isEmpty() ) {
             id = prefix + "_" + name;
         }
-        if ( id.length() > maxLength ) {
-            String substring = id.substring( 0, maxLength - 5 );
+        if ( id.length() >= maxLength ) {
+            String substring = id.substring( 0, maxLength - 6 );
             id = substring + "_" + ( this.id++ );
         }
         return id;
@@ -94,7 +94,7 @@ public class MappingContextManager {
         if ( qName.getNamespaceURI() != null && !qName.getNamespaceURI().equals( NULL_NS_URI ) ) {
             String nsPrefix = nsToPrefix.get( qName.getNamespaceURI() );
             if ( nsPrefix == null ) {
-                LOG.warn( "Prefix null!?" );
+                LOG.warn( "No prefix for namespace {}!?", qName.getNamespaceURI() );
                 nsPrefix = "app";
             }
             name = toSQL( nsPrefix.toLowerCase() ) + "_" + toSQL( qName.getLocalPart() );
