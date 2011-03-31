@@ -174,8 +174,8 @@ public abstract class AbstractSQLFeatureStore implements SQLFeatureStore {
     @Override
     public LockManager getLockManager()
                             throws FeatureStoreException {
-        throw new FeatureStoreException( "Locking is currently not implemented by the '" + this.getClass().getName()
-                                         + "' implementation." );
+        // TODO
+        return null;
     }
 
     /**

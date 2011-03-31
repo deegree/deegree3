@@ -175,9 +175,10 @@ public interface FeatureStore extends Resource {
     /**
      * Returns the associated {@link LockManager}.
      * 
-     * @return the associated {@link LockManager} instance, never <code>null</code>
+     * @return the associated {@link LockManager} instance, or <code>null</code> if the {@link FeatureStore} does not
+     *         implement locking
      * @throws FeatureStoreException
-     *             if the {@link FeatureStore} does not implement locking
+     *             if the lock manager could not be acquired
      */
     public LockManager getLockManager()
                             throws FeatureStoreException;
