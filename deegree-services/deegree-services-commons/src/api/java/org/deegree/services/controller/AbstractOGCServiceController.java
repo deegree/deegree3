@@ -153,7 +153,7 @@ public abstract class AbstractOGCServiceController<T extends Enum<T>> implements
             throw new ResourceInitException( t.getMessage() );
         }
 
-        XMLAdapter adapter = new XMLAdapter( new ByteArrayInputStream( bytes ) );
+        XMLAdapter adapter = new XMLAdapter( new ByteArrayInputStream( bytes ), configURL.toString() );
         init( ws.getMetadataConfiguration(), ws.getMainConfiguration(), serviceInfo, adapter );
     }
 
