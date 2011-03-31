@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.feature.persistence.postgis.config;
+package org.deegree.feature.persistence.sql.config;
 
 import static javax.xml.XMLConstants.DEFAULT_NS_PREFIX;
 import static javax.xml.XMLConstants.NULL_NS_URI;

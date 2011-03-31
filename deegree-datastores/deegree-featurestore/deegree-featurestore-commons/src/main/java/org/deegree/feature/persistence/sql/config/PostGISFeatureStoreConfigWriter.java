@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.feature.persistence.postgis.config;
+package org.deegree.feature.persistence.sql.config;
 
 import static javax.xml.XMLConstants.DEFAULT_NS_PREFIX;
 import static javax.xml.XMLConstants.NULL_NS_URI;
@@ -52,8 +52,6 @@ import org.apache.xerces.xs.XSElementDeclaration;
 import org.apache.xerces.xs.XSSimpleTypeDefinition;
 import org.apache.xerces.xs.XSTypeDefinition;
 import org.deegree.commons.tom.primitive.XMLValueMangler;
-import org.deegree.feature.persistence.postgis.PostGISFeatureStore;
-import org.deegree.feature.persistence.postgis.PostGISFeatureStoreProvider;
 import org.deegree.feature.persistence.sql.DataTypeMapping;
 import org.deegree.feature.persistence.sql.FeatureTypeMapping;
 import org.deegree.feature.persistence.sql.MappedApplicationSchema;
@@ -98,7 +96,7 @@ public class PostGISFeatureStoreConfigWriter {
 
     private static Logger LOG = LoggerFactory.getLogger( PostGISFeatureStoreConfigWriter.class );
 
-    private static final String CONFIG_NS = new PostGISFeatureStoreProvider().getConfigNamespace();
+    private static final String CONFIG_NS = "http://www.deegree.org/datasource/feature/postgis";
 
     private static final String SCHEMA_LOCATION = "http://www.deegree.org/datasource/feature/postgis http://schemas.deegree.org/datasource/feature/postgis/3.1.0/postgis.xsd";
 
@@ -210,10 +208,10 @@ public class PostGISFeatureStoreConfigWriter {
         writer.writeStartElement( CONFIG_NS, "FeatureType" );
         writer.writeAttribute( "name", getName( ft.getName() ) );
 
-//        FeatureType parentFt = schema.getParentFt( ft );
-//        if ( parentFt != null ) {
-//            writer.writeAttribute( "parent", getName( parentFt.getName() ) );
-//        }
+        // FeatureType parentFt = schema.getParentFt( ft );
+        // if ( parentFt != null ) {
+        // writer.writeAttribute( "parent", getName( parentFt.getName() ) );
+        // }
 
         writer.writeAttribute( "table", ftMapping.getFtTable().toString() );
 

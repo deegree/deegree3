@@ -61,7 +61,7 @@ public class PostGISFeatureStoreProvider implements FeatureStoreProvider {
 
     static final String CONFIG_JAXB_PACKAGE = "org.deegree.feature.persistence.postgis.jaxb";
 
-    static final String CONFIG_SCHEMA = "/META-INF/schemas/datasource/feature/postgis/3.1.0/postgis.xsd";
+    static final String CONFIG_SCHEMA = "/META-INF/schemas/datasource/feature/sql/3.1.0/sql.xsd";
 
     private DeegreeWorkspace workspace;
 
