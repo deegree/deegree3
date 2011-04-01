@@ -41,7 +41,6 @@ import static org.apache.xerces.xs.XSComplexTypeDefinition.CONTENTTYPE_EMPTY;
 import static org.deegree.commons.tom.primitive.PrimitiveType.STRING;
 import static org.deegree.feature.persistence.sql.blob.BlobCodec.Compression.NONE;
 import static org.deegree.feature.types.property.GeometryPropertyType.CoordinateDimension.DIM_2;
-import static org.deegree.gml.GMLVersion.GML_32;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -100,7 +99,6 @@ import org.deegree.feature.types.property.SimplePropertyType;
 import org.deegree.filter.expression.PropertyName;
 import org.deegree.filter.sql.DBField;
 import org.deegree.filter.sql.MappingExpression;
-import org.deegree.gml.GMLVersion;
 import org.deegree.gml.schema.GMLSchemaInfoSet;
 import org.jaxen.NamespaceContext;
 import org.slf4j.Logger;
@@ -160,6 +158,7 @@ public class AppSchemaMapper {
         Map<FeatureType, FeatureType> ftToSuperFt = appSchema.getFtToSuperFt();
         Map<String, String> prefixToNs = appSchema.getNamespaceBindings();
         GMLSchemaInfoSet xsModel = appSchema.getXSModel();
+
         FeatureTypeMapping[] ftMappings = null;
 
         Map<String, String> nsToPrefix = new HashMap<String, String>();
@@ -197,7 +196,7 @@ public class AppSchemaMapper {
         // TODO
         String table = "GML_OBJECTS";
         // TODO
-        BlobCodec codec = new BlobCodec( GMLVersion.GML_32, NONE );
+        BlobCodec codec = new BlobCodec( appSchema.getXSModel().getVersion(), NONE );
         return new BlobMapping( table, storageCrs, codec );
     }
 
@@ -228,7 +227,7 @@ public class AppSchemaMapper {
 
         List<Mapping> mappings = new ArrayList<Mapping>();
         // TODO: gml properties
-        for ( PropertyType pt : ft.getPropertyDeclarations( GML_32 ) ) {
+        for ( PropertyType pt : ft.getPropertyDeclarations( appSchema.getXSModel().getVersion() ) ) {
             mappings.add( generatePropMapping( pt, mc ) );
         }
         return new FeatureTypeMapping( ft.getName(), table, fidMapping, mappings );
