@@ -39,7 +39,7 @@ import java.net.URL;
 
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.jdbc.ConnectionManager.Type;
-import org.deegree.feature.persistence.postgis.jaxb.PostGISFeatureStoreConfig;
+import org.deegree.feature.persistence.postgis.jaxb.PostGISFeatureStoreJAXB;
 
 /**
  * 
@@ -61,6 +61,6 @@ public interface SQLFeatureStoreProvider<T extends SQLFeatureStore> {
      * @param workspace
      * @return a new SQL feature store
      */
-    T create( PostGISFeatureStoreConfig config, URL configURL, DeegreeWorkspace workspace );
+    T create( PostGISFeatureStoreJAXB config, URL configURL, DeegreeWorkspace workspace );
 
 }

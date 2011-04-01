@@ -50,7 +50,7 @@ import org.deegree.commons.jdbc.ConnectionManager;
 import org.deegree.commons.jdbc.ConnectionManager.Type;
 import org.deegree.commons.xml.jaxb.JAXBUtils;
 import org.deegree.feature.persistence.FeatureStoreProvider;
-import org.deegree.feature.persistence.postgis.jaxb.PostGISFeatureStoreConfig;
+import org.deegree.feature.persistence.postgis.jaxb.PostGISFeatureStoreJAXB;
 import org.deegree.feature.persistence.sql.SQLFeatureStore;
 import org.deegree.feature.persistence.sql.SQLFeatureStoreProvider;
 import org.slf4j.Logger;
@@ -93,9 +93,9 @@ public class PostGISFeatureStoreProvider implements FeatureStoreProvider, SQLFea
                             throws ResourceInitException {
 
         try {
-            PostGISFeatureStoreConfig cfg = (PostGISFeatureStoreConfig) JAXBUtils.unmarshall( CONFIG_JAXB_PACKAGE,
-                                                                                              CONFIG_SCHEMA, configURL,
-                                                                                              workspace );
+            PostGISFeatureStoreJAXB cfg = (PostGISFeatureStoreJAXB) JAXBUtils.unmarshall( CONFIG_JAXB_PACKAGE,
+                                                                                          CONFIG_SCHEMA, configURL,
+                                                                                          workspace );
             ConnectionManager mgr = workspace.getSubsystemManager( ConnectionManager.class );
             Type connType = mgr.getType( cfg.getJDBCConnId() );
             LOG.debug( "Connection type is {}.", connType );
@@ -114,8 +114,7 @@ public class PostGISFeatureStoreProvider implements FeatureStoreProvider, SQLFea
 
     public void init( DeegreeWorkspace workspace ) {
         this.workspace = workspace;
-        for ( SQLFeatureStoreProvider<? extends SQLFeatureStore> p : ServiceLoader.load(
-                                                                                         SQLFeatureStoreProvider.class,
+        for ( SQLFeatureStoreProvider<? extends SQLFeatureStore> p : ServiceLoader.load( SQLFeatureStoreProvider.class,
                                                                                          workspace.getModuleClassLoader() ) ) {
             providers.put( p.getSupportedType(), p );
         }
@@ -130,7 +129,7 @@ public class PostGISFeatureStoreProvider implements FeatureStoreProvider, SQLFea
         return PostgreSQL;
     }
 
-    public PostGISFeatureStore create( PostGISFeatureStoreConfig config, URL configURL, DeegreeWorkspace workspace ) {
+    public PostGISFeatureStore create( PostGISFeatureStoreJAXB config, URL configURL, DeegreeWorkspace workspace ) {
         return new PostGISFeatureStore( config, configURL, workspace );
     }
 }

@@ -42,7 +42,6 @@ import javax.xml.namespace.QName;
 
 import org.deegree.commons.jdbc.QTableName;
 import org.deegree.commons.tom.primitive.PrimitiveType;
-import org.deegree.commons.utils.StringUtils;
 import org.deegree.feature.persistence.sql.FeatureTypeMapping;
 import org.deegree.feature.persistence.sql.MappedApplicationSchema;
 import org.deegree.feature.persistence.sql.expressions.JoinChain;
@@ -176,7 +175,7 @@ public class PostGISDDLCreator {
         List<StringBuffer> ddls = new ArrayList<StringBuffer>();
 
         currentFtTable = ftMapping.getFtTable();
-        
+
         StringBuffer sql = new StringBuffer( "CREATE TABLE " );
         ddls.add( sql );
         sql.append( ftMapping.getFtTable() );
@@ -216,17 +215,17 @@ public class PostGISDDLCreator {
             sql.append( propMapping.getNilMapping().getColumn() );
             sql.append( " boolean" );
         }
-        
+
         if ( propMapping instanceof PrimitiveMapping ) {
             PrimitiveMapping primitiveMapping = (PrimitiveMapping) propMapping;
-            MappingExpression me = primitiveMapping.getMapping();             
+            MappingExpression me = primitiveMapping.getMapping();
             if ( me instanceof DBField ) {
                 DBField dbField = (DBField) me;
                 sql.append( ",\n    " );
                 sql.append( dbField.getColumn() );
                 sql.append( " " );
                 sql.append( getPostgreSQLType( primitiveMapping.getType() ) );
-            }           
+            }
         } else if ( propMapping instanceof GeometryMapping ) {
             GeometryMapping geometryMapping = (GeometryMapping) propMapping;
             MappingExpression me = geometryMapping.getMapping();
@@ -237,7 +236,7 @@ public class PostGISDDLCreator {
             }
         } else if ( propMapping instanceof FeatureMapping ) {
             FeatureMapping featureMapping = (FeatureMapping) propMapping;
-            MappingExpression me = featureMapping.getMapping();          
+            MappingExpression me = featureMapping.getMapping();
             if ( me instanceof DBField ) {
                 sql.append( ",\n    " );
                 sql.append( ( (DBField) me ).getColumn() );
@@ -248,7 +247,7 @@ public class PostGISDDLCreator {
             ddls.addAll( process( sql, table, compoundMapping ) );
         } else if ( propMapping instanceof CodeMapping ) {
             CodeMapping codeMapping = (CodeMapping) propMapping;
-            MappingExpression me = codeMapping.getMapping();        
+            MappingExpression me = codeMapping.getMapping();
             if ( me instanceof DBField ) {
                 DBField dbField = (DBField) me;
                 sql.append( ",\n    " );
@@ -283,8 +282,8 @@ public class PostGISDDLCreator {
                 sb.append( ",\n    " );
                 sb.append( mapping.getNilMapping().getColumn() );
                 sb.append( " boolean" );
-            }            
-            
+            }
+
             if ( mapping instanceof PrimitiveMapping ) {
                 PrimitiveMapping primitiveMapping = (PrimitiveMapping) mapping;
                 MappingExpression me = primitiveMapping.getMapping();

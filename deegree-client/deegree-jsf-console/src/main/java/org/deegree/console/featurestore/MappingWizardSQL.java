@@ -70,7 +70,7 @@ import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.persistence.CRSManager;
 import org.deegree.feature.persistence.FeatureStoreManager;
 import org.deegree.feature.persistence.postgis.PostGISDDLCreator;
-import org.deegree.feature.persistence.postgis.jaxb.PostGISFeatureStoreConfig;
+import org.deegree.feature.persistence.sql.AbstractSQLFeatureStore;
 import org.deegree.feature.persistence.sql.MappedApplicationSchema;
 import org.deegree.feature.persistence.sql.config.PostGISFeatureStoreConfigWriter;
 import org.deegree.feature.persistence.sql.mapper.AppSchemaMapper;
@@ -80,7 +80,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * JSF bean that helps with creating {@link PostGISFeatureStoreConfig} instances.
+ * JSF bean that helps with creating configurations for the {@link AbstractSQLFeatureStore}.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
@@ -92,7 +92,7 @@ import org.slf4j.LoggerFactory;
 public class MappingWizardSQL {
 
     private static transient Logger LOG = LoggerFactory.getLogger( MappingWizardSQL.class );
-    
+
     private String jdbcId;
 
     private String wizardMode = "template";

@@ -200,7 +200,10 @@ public class ApplicationSchemaXSDDecoder {
      * Creates a new {@link ApplicationSchemaXSDDecoder} from the given schema file (which may be a directory).
      * 
      * @param gmlVersion
+     *            gml version of the schema files, can be null (auto-detect GML version)
      * @param namespaceHints
+     *            optional hints (key: prefix, value: namespaces) for generating 'nice' qualified feature type and
+     *            property type names, may be null
      * @param schemaFile
      * @throws ClassCastException
      * @throws ClassNotFoundException

@@ -71,7 +71,7 @@ import org.deegree.feature.persistence.FeatureStore;
 import org.deegree.feature.persistence.FeatureStoreException;
 import org.deegree.feature.persistence.FeatureStoreGMLIdResolver;
 import org.deegree.feature.persistence.FeatureStoreTransaction;
-import org.deegree.feature.persistence.postgis.jaxb.PostGISFeatureStoreConfig;
+import org.deegree.feature.persistence.postgis.jaxb.PostGISFeatureStoreJAXB;
 import org.deegree.feature.persistence.query.CombinedResultSet;
 import org.deegree.feature.persistence.query.FeatureResultSet;
 import org.deegree.feature.persistence.query.FilteredFeatureResultSet;
@@ -86,7 +86,7 @@ import org.deegree.feature.persistence.sql.MappedApplicationSchema;
 import org.deegree.feature.persistence.sql.blob.BlobCodec;
 import org.deegree.feature.persistence.sql.blob.BlobMapping;
 import org.deegree.feature.persistence.sql.blob.FeatureBuilderBlob;
-import org.deegree.feature.persistence.sql.config.PostGISFeatureStoreConfigParser;
+import org.deegree.feature.persistence.sql.config.MappedSchemaBuilderGML;
 import org.deegree.feature.persistence.sql.expressions.JoinChain;
 import org.deegree.feature.persistence.sql.id.FIDMapping;
 import org.deegree.feature.persistence.sql.id.IdAnalysis;
@@ -151,7 +151,7 @@ public class PostGISFeatureStore extends AbstractSQLFeatureStore {
 
     private final DeegreeWorkspace workspace;
 
-    private PostGISFeatureStoreConfig config;
+    private PostGISFeatureStoreJAXB config;
 
     private final URL configURL;
 
@@ -165,7 +165,7 @@ public class PostGISFeatureStore extends AbstractSQLFeatureStore {
      * @param workspace
      *            deegree workspace, must not be <code>null</code>
      */
-    protected PostGISFeatureStore( PostGISFeatureStoreConfig config, URL configURL, DeegreeWorkspace workspace ) {
+    protected PostGISFeatureStore( PostGISFeatureStoreJAXB config, URL configURL, DeegreeWorkspace workspace ) {
         this.config = config;
         this.configURL = configURL;
         this.workspace = workspace;
@@ -453,7 +453,14 @@ public class PostGISFeatureStore extends AbstractSQLFeatureStore {
                             throws ResourceInitException {
 
         LOG.debug( "init" );
-        MappedApplicationSchema schema = getSchema( configURL.toString(), config );
+
+        MappedApplicationSchema schema;
+        try {
+            schema = MappedSchemaBuilderGML.build( configURL.toString(), config );
+        } catch ( Throwable t ) {
+            LOG.error( t.getMessage(), t );
+            throw new ResourceInitException( t.getMessage(), t );
+        }
         String jdbcConnId = config.getJDBCConnId();
         init( schema, jdbcConnId );
 
@@ -475,27 +482,11 @@ public class PostGISFeatureStore extends AbstractSQLFeatureStore {
         taManager = new TransactionManager( this, getConnId() );
     }
 
-    private MappedApplicationSchema getSchema( String configURL, PostGISFeatureStoreConfig config )
-                            throws ResourceInitException {
-
-        MappedApplicationSchema schema = null;
-        LOG.debug( "Building mapped application schema from config" );
-        try {
-            PostGISFeatureStoreConfigParser schemaBuilder = new PostGISFeatureStoreConfigParser( config, configURL );
-            schema = schemaBuilder.getMappedSchema();
-        } catch ( Throwable t ) {
-            String msg = Messages.getMessage( "STORE_MANAGER_STORE_SETUP_ERROR", t.getMessage() );
-            LOG.error( msg, t );
-            throw new ResourceInitException( msg, t );
-        }
-        return schema;
-    }
-
-    private PostGISFeatureStoreConfig parseConfig( URL configURL )
+    private PostGISFeatureStoreJAXB parseConfig( URL configURL )
                             throws ResourceInitException {
         try {
-            return (PostGISFeatureStoreConfig) JAXBUtils.unmarshall( CONFIG_JAXB_PACKAGE, CONFIG_SCHEMA, configURL,
-                                                                     workspace );
+            return (PostGISFeatureStoreJAXB) JAXBUtils.unmarshall( CONFIG_JAXB_PACKAGE, CONFIG_SCHEMA, configURL,
+                                                                   workspace );
         } catch ( JAXBException e ) {
             String msg = Messages.getMessage( "STORE_MANAGER_STORE_SETUP_ERROR", e.getMessage() );
             throw new ResourceInitException( msg, e );

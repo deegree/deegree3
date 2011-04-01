@@ -35,6 +35,9 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.feature.persistence.sql;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.xml.namespace.QName;
@@ -62,6 +65,8 @@ public class FeatureTypeMapping {
 
     private final Map<QName, Mapping> propToMapping;
 
+    private final List<Mapping> particles = new ArrayList<Mapping>();
+
     /**
      * Creates a new {@link FeatureTypeMapping} instance.
      * 
@@ -71,14 +76,25 @@ public class FeatureTypeMapping {
      *            name of the database table that the feature type is mapped to, must not be <code>null</code>
      * @param fidMapping
      *            mapping for the feature id, must not be <code>null</code>
-     * @param propToMapping
-     *            mapping parameters for the properties of the feature type, must not be <code>null</code>
+     * @param particleMappings
+     *            particle mappings for the feature type, must not be <code>null</code>
      */
-    public FeatureTypeMapping( QName ftName, QTableName table, FIDMapping fidMapping, Map<QName, Mapping> propToMapping ) {
+    public FeatureTypeMapping( QName ftName, QTableName table, FIDMapping fidMapping, List<Mapping> particleMappings ) {
         this.ftName = ftName;
         this.table = table;
         this.fidMapping = fidMapping;
-        this.propToMapping = propToMapping;
+        this.propToMapping = new HashMap<QName, Mapping>();
+        // TODO cope with non-QName XPaths as well
+        for ( Mapping mapping : particleMappings ) {
+            if ( mapping != null && mapping.getPath().getAsQName() != null ) {
+                propToMapping.put( mapping.getPath().getAsQName(), mapping );
+            }
+        }
+        for ( Mapping mapping : particleMappings ) {
+            if ( mapping != null ) {
+                this.particles.add( mapping );
+            }
+        }
     }
 
     /**
@@ -117,5 +133,14 @@ public class FeatureTypeMapping {
      */
     public Mapping getMapping( QName propName ) {
         return propToMapping.get( propName );
+    }
+
+    /**
+     * Returns the {@link Mapping} particles.
+     * 
+     * @return mapping particles, may be empty, but never <code>null</code>
+     */
+    public List<Mapping> getMappings() {
+        return particles;
     }
 }

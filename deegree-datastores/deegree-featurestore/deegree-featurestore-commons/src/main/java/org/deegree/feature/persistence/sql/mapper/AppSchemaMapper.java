@@ -226,13 +226,12 @@ public class AppSchemaMapper {
         // TODO
         FIDMapping fidMapping = new FIDMapping( "", "attr_gml_id", STRING, generator );
 
-        Map<QName, Mapping> propToMapping = new HashMap<QName, Mapping>();
+        List<Mapping> mappings = new ArrayList<Mapping>();
         // TODO: gml properties
         for ( PropertyType pt : ft.getPropertyDeclarations( GML_32 ) ) {
-            Mapping propMapping = generatePropMapping( pt, mc );
-            propToMapping.put( pt.getName(), propMapping );
+            mappings.add( generatePropMapping( pt, mc ) );
         }
-        return new FeatureTypeMapping( ft.getName(), table, fidMapping, propToMapping );
+        return new FeatureTypeMapping( ft.getName(), table, fidMapping, mappings );
     }
 
     private Mapping generatePropMapping( PropertyType pt, MappingContext mc ) {
