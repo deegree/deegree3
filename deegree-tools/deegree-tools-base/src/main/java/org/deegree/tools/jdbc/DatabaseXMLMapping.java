@@ -104,8 +104,8 @@ public class DatabaseXMLMapping {
     protected Table mainTable;
 
     private String jdbcId;
-
-    protected URL xslt;
+    
+    private Source xslSource; 
 
     static {
         nsc.addNamespace( "dxm", namespace );
@@ -132,7 +132,10 @@ public class DatabaseXMLMapping {
 
         String xsltFileName = adapter.getNodeAsString( rootElement, new XPath( "/dxm:XMLMapping/dxm:XSLT", nsc ), null );
         if ( xsltFileName != null ) {
-            xslt = adapter.resolve( xsltFileName );
+            URL xslt = adapter.resolve( xsltFileName );
+            XMLAdapter xsltAdapter = new XMLAdapter( xslt );
+            xslSource = new OMSource( xsltAdapter.getRootElement() );
+            xslSource.setSystemId( xsltAdapter.getSystemId() );
         }
 
         // parse table relations
@@ -187,12 +190,14 @@ public class DatabaseXMLMapping {
     public void run()
                             throws Exception {
         Connection conn = ConnectionManager.getConnection( jdbcId );
+        conn.setAutoCommit( false ); 
         Statement stmt = null;
         ResultSet rs = null;
 
         try {
             String sql = mainTable.getSelect();
-            stmt = conn.createStatement();
+            stmt = conn.createStatement();            
+            stmt.setFetchSize( 1000 );
             rs = stmt.executeQuery( sql );
             ResultSetMetaData rsmd = rs.getMetaData();
             int colCount = rsmd.getColumnCount();
@@ -230,7 +235,7 @@ public class DatabaseXMLMapping {
                     appendTable( tableElement, conn, row, table );
                 }
                 row.clear();
-                if ( xslt != null ) {
+                if ( xslSource != null ) {
                     result = transform( result );
                 }
                 performAction( result );
@@ -276,6 +281,7 @@ public class DatabaseXMLMapping {
 
             LOG.debug( sql );
             stmt = conn.createStatement();
+            stmt.setFetchSize( 1000 );
             ResultSet rs = stmt.executeQuery( sql );
             ResultSetMetaData rsmd = rs.getMetaData();
             int colCount = rsmd.getColumnCount();
@@ -359,9 +365,7 @@ public class DatabaseXMLMapping {
                             throws Exception {
         LOG.debug( "transform: " + xml.getOMDocumentElement() );
         Source xmlSource = new OMSource( xml.getOMDocumentElement() );
-        XMLAdapter xsltAdapter = new XMLAdapter( xslt );
-        Source xslSource = new OMSource( xsltAdapter.getRootElement() );
-        xslSource.setSystemId( xsltAdapter.getSystemId() );
+        
 
         OMResult sr = new OMResult();
         try {
