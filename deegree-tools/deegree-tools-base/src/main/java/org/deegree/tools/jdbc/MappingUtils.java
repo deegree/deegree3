@@ -36,6 +36,7 @@
 package org.deegree.tools.jdbc;
 
 import java.text.DecimalFormat;
+
 import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
 import java.util.Date;
@@ -174,19 +175,23 @@ public class MappingUtils {
      */
     private static String getStringValue( Node node ) {
         NodeList children = node.getChildNodes();
-        StringBuffer sb = new StringBuffer( children.getLength() * 500 );
-        if ( node.getNodeValue() != null ) {
-            sb.append( node.getNodeValue().trim() );
-        }
-        if ( node.getNodeType() != Node.ATTRIBUTE_NODE ) {
-            for ( int i = 0; i < children.getLength(); i++ ) {
-                if ( children.item( i ).getNodeType() == Node.TEXT_NODE
-                     || children.item( i ).getNodeType() == Node.CDATA_SECTION_NODE ) {
-                    sb.append( children.item( i ).getNodeValue() );
+        if ( children != null ) {
+            StringBuffer sb = new StringBuffer( children.getLength() * 500 );
+            if ( node.getNodeValue() != null ) {
+                sb.append( node.getNodeValue().trim() );
+            }
+            if ( node.getNodeType() != Node.ATTRIBUTE_NODE ) {
+                for ( int i = 0; i < children.getLength(); i++ ) {
+                    if ( children.item( i ).getNodeType() == Node.TEXT_NODE
+                         || children.item( i ).getNodeType() == Node.CDATA_SECTION_NODE ) {
+                        sb.append( children.item( i ).getNodeValue() );
+                    }
                 }
             }
+            return sb.toString();
+        } else {
+            return "";
         }
-        return sb.toString();
     }
 
     public static Date createDate( String isoDate )
