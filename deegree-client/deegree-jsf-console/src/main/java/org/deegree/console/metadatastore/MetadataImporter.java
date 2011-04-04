@@ -35,6 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.console.metadatastore;
 
+import static java.util.Collections.singletonList;
 import static javax.faces.application.FacesMessage.SEVERITY_ERROR;
 import static javax.faces.application.FacesMessage.SEVERITY_INFO;
 
@@ -48,8 +49,8 @@ import javax.faces.bean.ManagedBean;
 import javax.faces.bean.RequestScoped;
 import javax.faces.context.FacesContext;
 
-import org.apache.axiom.om.OMElement;
-import org.deegree.commons.xml.XMLAdapter;
+import org.deegree.metadata.MetadataRecord;
+import org.deegree.metadata.MetadataRecordFactory;
 import org.deegree.metadata.persistence.MetadataInspectorException;
 import org.deegree.metadata.persistence.MetadataStore;
 import org.deegree.metadata.persistence.MetadataStoreTransaction;
@@ -124,15 +125,12 @@ public class MetadataImporter implements Serializable {
             }
             File[] fileArray = folder.listFiles();
 
-            List<OMElement> records = null;
             InsertOperation insert = null;
             for ( File file : fileArray ) {
                 this.file = file;
                 ta = ms.acquireTransaction();
-                records = new ArrayList<OMElement>();
-                OMElement record = new XMLAdapter( file ).getRootElement();
-                records.add( record );
-                insert = new InsertOperation( records, records.get( 0 ).getQName(), "insert" );
+                MetadataRecord record = MetadataRecordFactory.create( file );
+                insert = new InsertOperation( singletonList( record ), record.getAsOMElement().getQName(), "insert" );
                 try {
                     ta.performInsert( insert );
                     ta.commit();

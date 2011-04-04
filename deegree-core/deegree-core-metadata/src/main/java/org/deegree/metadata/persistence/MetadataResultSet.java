@@ -48,7 +48,7 @@ import org.deegree.protocol.csw.MetadataStoreException;
  * 
  * @version $Revision$, $Date$
  */
-public interface MetadataResultSet {
+public interface MetadataResultSet<T extends MetadataRecord> {
 
     /**
      * Must be invoked after using to close underlying resources, e.g. SQL {@link ResultSet}s.
@@ -69,9 +69,8 @@ public interface MetadataResultSet {
     /**
      * Returns the {@link MetadataRecord} at the current cursor position.
      * 
-     * @return
+     * @return record at the current position, never <code>null</code>
      */
-    public MetadataRecord getRecord()
+    public T getRecord()
                             throws MetadataStoreException;
-
 }

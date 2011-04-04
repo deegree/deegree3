@@ -58,13 +58,14 @@ import javax.xml.stream.XMLStreamWriter;
 import org.apache.axiom.om.OMElement;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.stax.StAXParsingHelper;
+import org.deegree.metadata.ISORecord;
 import org.deegree.metadata.persistence.MetadataInspectorException;
 import org.deegree.metadata.persistence.MetadataResultSet;
 import org.deegree.metadata.persistence.MetadataStoreTransaction;
 import org.deegree.metadata.persistence.iso.ISOMetadataStore;
 import org.deegree.metadata.persistence.transaction.InsertOperation;
-import org.deegree.protocol.csw.MetadataStoreException;
 import org.deegree.protocol.csw.CSWConstants.ReturnableElement;
+import org.deegree.protocol.csw.MetadataStoreException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -83,7 +84,7 @@ public class TstUtils {
     public static List<String> insertMetadata( ISOMetadataStore store, URL... URLInput )
                             throws MetadataStoreException, MetadataInspectorException {
 
-        List<OMElement> records = null;
+        List<ISORecord> records = null;
         InsertOperation insert = null;
         MetadataStoreTransaction ta = null;
 
@@ -93,14 +94,15 @@ public class TstUtils {
         countInsert = URLInput.length;
 
         for ( URL file : URLInput ) {
-            records = new ArrayList<OMElement>();
+            records = new ArrayList<ISORecord>();
             ta = store.acquireTransaction();
             OMElement record = new XMLAdapter( file ).getRootElement();
             LOG.info( "inserting filename: " + file.getFile() );
-            records.add( record );
+            // TODO anytext
+            records.add( new ISORecord( record, null ) );
             try {
                 if ( countInsert > 0 ) {
-                    insert = new InsertOperation( records, records.get( 0 ).getQName(), "insert" );
+                    insert = new InsertOperation( records, records.get( 0 ).getAsOMElement().getQName(), "insert" );
                     ids.addAll( ta.performInsert( insert ) );
                     ta.commit();
                 }
@@ -133,8 +135,7 @@ public class TstUtils {
 
     public static XMLStreamReader readXMLStream( String fileString )
                             throws FileNotFoundException, XMLStreamException, FactoryConfigurationError {
-        XMLStreamReader xmlStream = XMLInputFactory.newInstance().createXMLStreamReader(
-                                                                                         new FileInputStream(
+        XMLStreamReader xmlStream = XMLInputFactory.newInstance().createXMLStreamReader( new FileInputStream(
                                                                                                               new File(
                                                                                                                         fileString ) ) );
         StAXParsingHelper.skipStartDocument( xmlStream );

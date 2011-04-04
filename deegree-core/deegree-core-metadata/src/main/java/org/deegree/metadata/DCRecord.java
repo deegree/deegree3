@@ -67,6 +67,8 @@ import org.deegree.protocol.csw.CSWConstants.ReturnableElement;
  */
 public class DCRecord implements MetadataRecord {
 
+    public static String DC_RECORD_NS = "http://www.opengis.net/cat/csw/2.0.2";
+
     public static final String SCHEMA_URL = "http://schemas.opengis.net/csw/2.0.2/record.xsd";
 
     private final QName root;
@@ -140,8 +142,7 @@ public class DCRecord implements MetadataRecord {
 
     @Override
     public boolean eval( Filter filter ) {
-        // TODO Auto-generated method stub
-        return false;
+        throw new UnsupportedOperationException( "In-memory filter evaluation not implemented yet." );
     }
 
     @Override
@@ -424,4 +425,8 @@ public class DCRecord implements MetadataRecord {
         throw new UnsupportedOperationException( "Remove is not allowed for DCRecords" );
     }
 
+    @Override
+    public OMElement getAsOMElement() {
+        throw new UnsupportedOperationException( "Needs implementation." );
+    }
 }

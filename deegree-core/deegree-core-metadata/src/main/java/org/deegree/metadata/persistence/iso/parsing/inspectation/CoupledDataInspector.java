@@ -52,6 +52,7 @@ import org.deegree.commons.jdbc.ConnectionManager.Type;
 import org.deegree.commons.xml.NamespaceBindings;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.XPath;
+import org.deegree.metadata.ISORecord;
 import org.deegree.metadata.i18n.Messages;
 import org.deegree.metadata.persistence.MetadataInspectorException;
 import org.deegree.metadata.persistence.iso.MSSQLMappingsISODC;
@@ -68,7 +69,7 @@ import org.slf4j.Logger;
  * 
  * @version $Revision$, $Date$
  */
-public class CoupledDataInspector implements RecordInspector {
+public class CoupledDataInspector implements RecordInspector<ISORecord> {
 
     private static final Logger LOG = getLogger( CoupledDataInspector.class );
 
@@ -96,7 +97,7 @@ public class CoupledDataInspector implements RecordInspector {
         boolean isCoupled = false;
 
         for ( String a : operatesOnStringUuIdAttribute ) {
-//            isCoupled = getCoupledDataMetadatasets( a.trim(), connectionType );
+            // isCoupled = getCoupledDataMetadatasets( a.trim(), connectionType );
             isCoupled = getCoupledDataMetadatasets( conn, a.trim(), connectionType );
         }
 
@@ -125,7 +126,7 @@ public class CoupledDataInspector implements RecordInspector {
      * If there is a data metadata record available for the service metadata record.
      * 
      */
-    private boolean getCoupledDataMetadatasets( Connection conn,String resourceIdentifier, Type connectionType )
+    private boolean getCoupledDataMetadatasets( Connection conn, String resourceIdentifier, Type connectionType )
                             throws MetadataInspectorException {
         String resourceIdCol;
         String mainTable;
@@ -156,12 +157,13 @@ public class CoupledDataInspector implements RecordInspector {
     }
 
     @Override
-    public OMElement inspect( OMElement record, Connection conn, Type connectionType )
+    public ISORecord inspect( ISORecord record, Connection conn, Type connectionType )
                             throws MetadataInspectorException {
 
-        XMLAdapter a = new XMLAdapter( record );
+        XMLAdapter a = new XMLAdapter( record.getAsOMElement() );
 
-        OMElement identificationInfo = a.getElement( record, new XPath( "./gmd:identificationInfo[1]", nsContext ) );
+        OMElement identificationInfo = a.getElement( a.getRootElement(), new XPath( "./gmd:identificationInfo[1]",
+                                                                                    nsContext ) );
 
         List<OMElement> operatesOnElemList = a.getElements( identificationInfo,
                                                             new XPath( "./srv:SV_ServiceIdentification/srv:operatesOn",
@@ -216,12 +218,13 @@ public class CoupledDataInspector implements RecordInspector {
                 boolean throwException = determineCoupling( conn, operatesOnUuidList, connectionType )
                                          && !checkConsistency( operatesOnUuidList, resourceIDs );
                 if ( throwException && config.isThrowConsistencyError() ) {
-                        String msg = Messages.getMessage( "ERROR_COUPLING" );
-                        LOG.debug( msg );
-                        throw new MetadataInspectorException( msg );
-                    }
+                    String msg = Messages.getMessage( "ERROR_COUPLING" );
+                    LOG.debug( msg );
+                    throw new MetadataInspectorException( msg );
+                }
             }
         }
+        // TODO create new instance
         return record;
     }
 

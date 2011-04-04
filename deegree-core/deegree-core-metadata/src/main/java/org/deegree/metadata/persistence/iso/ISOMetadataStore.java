@@ -39,7 +39,6 @@ import static org.deegree.commons.jdbc.ConnectionManager.Type.PostgreSQL;
 import static org.deegree.commons.utils.JDBCUtils.close;
 import static org.slf4j.LoggerFactory.getLogger;
 
-import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -47,12 +46,6 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.xml.stream.FactoryConfigurationError;
-import javax.xml.stream.XMLInputFactory;
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamReader;
-
-import org.apache.axiom.om.OMElement;
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.jdbc.ConnectionManager;
@@ -65,7 +58,6 @@ import org.deegree.filter.sql.mssql.MSSQLServerWhereBuilder;
 import org.deegree.filter.sql.postgis.PostGISWhereBuilder;
 import org.deegree.metadata.ISORecord;
 import org.deegree.metadata.i18n.Messages;
-import org.deegree.metadata.persistence.MetadataInspectorException;
 import org.deegree.metadata.persistence.MetadataQuery;
 import org.deegree.metadata.persistence.MetadataResultSet;
 import org.deegree.metadata.persistence.MetadataStore;
@@ -82,7 +74,6 @@ import org.deegree.metadata.persistence.iso19115.jaxb.ISOMetadataStoreConfig;
 import org.deegree.metadata.persistence.iso19115.jaxb.ISOMetadataStoreConfig.Inspectors;
 import org.deegree.metadata.persistence.iso19115.jaxb.InspireInspector;
 import org.deegree.metadata.persistence.iso19115.jaxb.SchemaValidator;
-import org.deegree.metadata.persistence.transaction.InsertOperation;
 import org.deegree.protocol.csw.CSWConstants.ResultType;
 import org.deegree.protocol.csw.MetadataStoreException;
 import org.slf4j.Logger;
@@ -96,7 +87,7 @@ import org.slf4j.Logger;
  * 
  * @version $Revision$, $Date$
  */
-public class ISOMetadataStore implements MetadataStore {
+public class ISOMetadataStore implements MetadataStore<ISORecord> {
 
     private static final Logger LOG = getLogger( ISOMetadataStore.class );
 
@@ -109,7 +100,7 @@ public class ISOMetadataStore implements MetadataStore {
 
     private Type connectionType;
 
-    private final List<RecordInspector> inspectorChain = new ArrayList<RecordInspector>();
+    private final List<RecordInspector<ISORecord>> inspectorChain = new ArrayList<RecordInspector<ISORecord>>();
 
     /** Used to limit the fetch size for SELECT statements that potentially return a lot of rows. */
     public static final int DEFAULT_FETCH_SIZE = 100;
@@ -184,35 +175,6 @@ public class ISOMetadataStore implements MetadataStore {
     }
 
     @Override
-    public void setupMetametadata()
-                            throws MetadataStoreException {
-
-        try {
-            InputStream in = ISOMetadataStore.class.getResourceAsStream( "metametadata.xml" );
-            XMLStreamReader inStream = XMLInputFactory.newInstance().createXMLStreamReader( in );
-            List<OMElement> om = new ArrayList<OMElement>();
-            ISORecord rec = new ISORecord( inStream, null );
-            om.add( rec.getAsOMElement() );
-            MetadataStoreTransaction ta = acquireTransaction();
-            InsertOperation insert = new InsertOperation( om, rec.getAsOMElement().getQName(), "insertMetametadata" );
-            ta.performInsert( insert );
-            ta.commit();
-        } catch ( XMLStreamException e ) {
-            LOG.debug( e.getMessage(), e );
-            throw new MetadataStoreException( e.getMessage(), e );
-        } catch ( FactoryConfigurationError e ) {
-            LOG.debug( e.getMessage(), e );
-            throw new MetadataStoreException( e.getMessage(), e );
-        } catch ( MetadataStoreException e ) {
-            LOG.debug( e.getMessage(), e );
-            throw new MetadataStoreException( e.getMessage(), e );
-        } catch ( MetadataInspectorException e ) {
-            LOG.debug( e.getMessage(), e );
-            throw new MetadataStoreException( e.getMessage(), e );
-        }
-    }
-
-    @Override
     public void init( DeegreeWorkspace workspace )
                             throws ResourceInitException {
         LOG.debug( "init" );
@@ -276,12 +238,12 @@ public class ISOMetadataStore implements MetadataStore {
     }
 
     @Override
-    public MetadataResultSet getRecords( MetadataQuery query )
+    public MetadataResultSet<ISORecord> getRecords( MetadataQuery query )
                             throws MetadataStoreException {
         String operationName = "getRecords";
         LOG.debug( Messages.getMessage( "INFO_EXEC", operationName ) );
         Connection conn = getConnection();
-        MetadataResultSet result = null;
+        MetadataResultSet<ISORecord> result = null;
         try {
             AbstractWhereBuilder builder = getWhereBuilder( query );
             result = doResultsOnGetRecord( query, builder, conn );
@@ -333,8 +295,8 @@ public class ISOMetadataStore implements MetadataStore {
     /**
      * The mandatory "resultType" attribute in the GetRecords operation is set to "results".
      */
-    private MetadataResultSet doResultsOnGetRecord( MetadataQuery recordStoreOptions, AbstractWhereBuilder builder,
-                                                    Connection conn )
+    private MetadataResultSet<ISORecord> doResultsOnGetRecord( MetadataQuery recordStoreOptions,
+                                                               AbstractWhereBuilder builder, Connection conn )
                             throws MetadataStoreException {
         LOG.debug( Messages.getMessage( "INFO_EXEC", "do results on getRecords" ) );
         ResultSet rs = null;
@@ -354,7 +316,7 @@ public class ISOMetadataStore implements MetadataStore {
     }
 
     @Override
-    public MetadataResultSet getRecordById( List<String> idList )
+    public MetadataResultSet<ISORecord> getRecordById( List<String> idList )
                             throws MetadataStoreException {
         LOG.debug( Messages.getMessage( "INFO_EXEC", "getRecordsById" ) );
         String mainTable;

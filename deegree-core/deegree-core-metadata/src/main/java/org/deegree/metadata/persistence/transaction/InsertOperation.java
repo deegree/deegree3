@@ -39,7 +39,7 @@ import java.util.List;
 
 import javax.xml.namespace.QName;
 
-import org.apache.axiom.om.OMElement;
+import org.deegree.metadata.MetadataRecord;
 import org.deegree.protocol.csw.CSWConstants.TransactionType;
 
 /**
@@ -52,37 +52,30 @@ import org.deegree.protocol.csw.CSWConstants.TransactionType;
  */
 public class InsertOperation extends TransactionOperation {
 
-    private List<OMElement> element;
+    private List<? extends MetadataRecord> records;
 
     private QName typeName;
 
     /**
      * 
-     * @param insertElement
+     * @param records
      * @param typeName
      * @param handle
      */
-    public InsertOperation( List<OMElement> insertElement, QName typeName, String handle ) {
+    public InsertOperation( List<? extends MetadataRecord> records, QName typeName, String handle ) {
         super( handle );
-        this.element = insertElement;
+        this.records = records;
         this.typeName = typeName;
 
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.deegree.services.controller.csw.transaction.TransactionOperation#getType()
-     */
     @Override
     public TransactionType getType() {
-
         return TransactionType.INSERT;
     }
 
-    // @Override
-    public List<OMElement> getElements() {
-        return element;
+    public List<? extends MetadataRecord> getRecords() {
+        return records;
     }
 
     /**

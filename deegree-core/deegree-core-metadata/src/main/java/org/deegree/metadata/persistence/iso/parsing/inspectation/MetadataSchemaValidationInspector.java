@@ -48,6 +48,7 @@ import javax.xml.namespace.QName;
 import org.apache.axiom.om.OMElement;
 import org.deegree.commons.jdbc.ConnectionManager.Type;
 import org.deegree.commons.utils.io.StreamBufferStore;
+import org.deegree.metadata.MetadataRecord;
 import org.deegree.metadata.i18n.Messages;
 import org.deegree.metadata.persistence.MetadataInspectorException;
 import org.deegree.protocol.csw.MetadataStoreException;
@@ -62,8 +63,8 @@ import org.slf4j.LoggerFactory;
  * 
  * @version $Revision$, $Date$
  */
-public class MetadataSchemaValidationInspector implements RecordInspector {
-   
+public class MetadataSchemaValidationInspector<T extends MetadataRecord> implements RecordInspector<T> {
+
     private static Logger LOG = LoggerFactory.getLogger( MetadataSchemaValidationInspector.class );
 
     /**
@@ -87,19 +88,17 @@ public class MetadataSchemaValidationInspector implements RecordInspector {
             throw new MetadataInspectorException( e.getMessage() );
         }
 
-        // TODO cache schema
         if ( new QName( "http://www.isotc211.org/2005/gmd", "MD_Metadata" ).equals( elem.getQName() ) ) {
             return org.deegree.commons.xml.schema.SchemaValidator.validate( is, SCHEMA_URL_GMD, SCHEMA_URL_SRV );
         }
         // DublinCore
         return org.deegree.commons.xml.schema.SchemaValidator.validate( is, SCHEMA_URL );
-   
     }
 
     @Override
-    public OMElement inspect( OMElement record, Connection conn, Type connectionType )
+    public T inspect( T record, Connection conn, Type connectionType )
                             throws MetadataInspectorException {
-        List<String> errors = validate( record );
+        List<String> errors = validate( record.getAsOMElement() );
         if ( errors.isEmpty() ) {
             return record;
         } else {
@@ -112,7 +111,5 @@ public class MetadataSchemaValidationInspector implements RecordInspector {
             LOG.debug( msg );
             throw new MetadataInspectorException( msg );
         }
-
     }
-
 }

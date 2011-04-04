@@ -48,6 +48,7 @@ import org.deegree.commons.jdbc.ConnectionManager.Type;
 import org.deegree.commons.xml.NamespaceBindings;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.XPath;
+import org.deegree.metadata.ISORecord;
 import org.deegree.metadata.i18n.Messages;
 import org.deegree.metadata.persistence.MetadataInspectorException;
 import org.deegree.metadata.persistence.iso.generating.generatingelements.GenerateOMElement;
@@ -64,7 +65,7 @@ import org.slf4j.Logger;
  * 
  * @version $Revision$, $Date$
  */
-public class FIInspector implements RecordInspector {
+public class FIInspector implements RecordInspector<ISORecord> {
 
     private static final Logger LOG = getLogger( FIInspector.class );
 
@@ -91,8 +92,8 @@ public class FIInspector implements RecordInspector {
      *            the uuid-attribure, can be <Code>null</Code>.
      * @return the new fileIdentifier.
      */
-    private List<String> determineFileIdentifier( Connection conn, String[] fi, List<String> rsList, String id, String uuid,
-                                                  Type connectionType )
+    private List<String> determineFileIdentifier( Connection conn, String[] fi, List<String> rsList, String id,
+                                                  String uuid, Type connectionType )
                             throws MetadataInspectorException {
         List<String> idList = new ArrayList<String>();
         if ( fi.length != 0 ) {
@@ -134,16 +135,17 @@ public class FIInspector implements RecordInspector {
     }
 
     @Override
-    public OMElement inspect( OMElement record, Connection conn, Type connectionType )
+    public ISORecord inspect( ISORecord record, Connection conn, Type connectionType )
                             throws MetadataInspectorException {
 
-        XMLAdapter a = new XMLAdapter( record );
+        XMLAdapter a = new XMLAdapter( record.getAsOMElement() );
+        OMElement rootEl = record.getAsOMElement();
 
-        String[] fileIdentifierString = a.getNodesAsStrings( record,
+        String[] fileIdentifierString = a.getNodesAsStrings( rootEl,
                                                              new XPath( "./gmd:fileIdentifier/gco:CharacterString",
                                                                         nsContext ) );
 
-        OMElement sv_service_OR_md_dataIdentification = a.getElement( record,
+        OMElement sv_service_OR_md_dataIdentification = a.getElement( rootEl,
                                                                       new XPath(
                                                                                  "./gmd:identificationInfo/srv:SV_ServiceIdentification | ./gmd:identificationInfo/gmd:MD_DataIdentification",
                                                                                  nsContext ) );
@@ -167,11 +169,10 @@ public class FIInspector implements RecordInspector {
                                                        dataIdentificationId, dataIdentificationUuId, connectionType );
         if ( !idList.isEmpty() && fileIdentifierString.length == 0 ) {
             for ( String id : idList ) {
-                OMElement firstElement = record.getFirstElement();
+                OMElement firstElement = rootEl.getFirstElement();
                 firstElement.insertSiblingBefore( new GenerateOMElement().createFileIdentifierElement( id ) );
             }
         }
         return record;
     }
-
 }

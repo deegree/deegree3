@@ -51,7 +51,7 @@ import org.deegree.protocol.csw.MetadataStoreException;
  * 
  * @version $Revision$, $Date$
  */
-public interface MetadataStore extends Resource {
+public interface MetadataStore<T extends MetadataRecord> extends Resource {
 
     /**
      * Performs the given {@link MetadataQuery} and provides access to the {@link MetadataRecord}s that match it.
@@ -61,7 +61,7 @@ public interface MetadataStore extends Resource {
      * @return result set for accessing the matching records, never <code>null</code>
      * @throws MetadataStoreException
      */
-    public MetadataResultSet getRecords( MetadataQuery query )
+    public MetadataResultSet<T> getRecords( MetadataQuery query )
                             throws MetadataStoreException;
 
     /**
@@ -82,7 +82,7 @@ public interface MetadataStore extends Resource {
      *            list of the requested record identifiers, can be empty, but must not be <code>null</code>
      * @throws MetadataStoreException
      */
-    public MetadataResultSet getRecordById( List<String> idList )
+    public MetadataResultSet<T> getRecordById( List<String> idList )
                             throws MetadataStoreException;
 
     /**
@@ -93,9 +93,5 @@ public interface MetadataStore extends Resource {
      *             if the transactional access could not be acquired or is not available for this implementation
      */
     public MetadataStoreTransaction acquireTransaction()
-                            throws MetadataStoreException;
-
-    // TODO: what does this method do?
-    public void setupMetametadata()
                             throws MetadataStoreException;
 }

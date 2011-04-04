@@ -156,29 +156,6 @@ public class CommonISOTest extends AbstractISOTest {
     }
 
     @Test
-    public void testInsertMetametadata()
-                            throws MetadataStoreException, FactoryConfigurationError, ResourceInitException {
-        LOG.info( "START Test: testInsertMetametadata" );
-
-        if ( jdbcURL != null && jdbcUser != null && jdbcPass != null ) {
-            store = (ISOMetadataStore) new ISOMetadataStoreProvider().create( TstConstants.configURL );
-        }
-        if ( store == null ) {
-            LOG.warn( "Skipping test (needs configuration)." );
-            return;
-        }
-        store.setupMetametadata();
-        MetadataQuery query = new MetadataQuery( null, null, 1 );
-        resultSet = store.getRecords( query );
-        int size = 0;
-        while ( resultSet.next() ) {
-            size++;
-        }
-        Assert.assertEquals( 1, size );
-
-    }
-
-    @Test
     public void testNamespaces()
                             throws MetadataStoreException, XMLStreamException, FactoryConfigurationError, IOException,
                             MetadataInspectorException, ResourceInitException {
@@ -670,7 +647,8 @@ public class CommonISOTest extends AbstractISOTest {
         // md to update
         InputStream is = CommonISOTest.class.getResourceAsStream( "../update/9update.xml" );
         XMLAdapter a = new XMLAdapter( is );
-        OMElement value = a.getRootElement();
+        // TODO anytext
+        ISORecord value = new ISORecord( a.getRootElement(), null );
 
         // update!
         MetadataStoreTransaction mst = store.acquireTransaction();
@@ -721,7 +699,8 @@ public class CommonISOTest extends AbstractISOTest {
         // md to update
         InputStream is = CommonISOTest.class.getResourceAsStream( "../update/9update.xml" );
         XMLAdapter a = new XMLAdapter( is );
-        OMElement value = a.getRootElement();
+        // TODO anytext
+        ISORecord value = new ISORecord( a.getRootElement(), null );
 
         // update!
         MetadataStoreTransaction mst = store.acquireTransaction();
@@ -770,7 +749,8 @@ public class CommonISOTest extends AbstractISOTest {
         // md to update
         InputStream is = CommonISOTest.class.getResourceAsStream( "../update/9update.xml" );
         XMLAdapter a = new XMLAdapter( is );
-        OMElement value = a.getRootElement();
+        // TODO anytext
+        ISORecord value = new ISORecord( a.getRootElement(), null);        
 
         // update!
         MetadataStoreTransaction mst = store.acquireTransaction();

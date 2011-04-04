@@ -101,8 +101,7 @@ public final class ISOQPParsing extends XMLAdapter {
      * @return {@link ParsedProfileElement}
      * @throws IOException
      */
-    public ParsedProfileElement parseAPISO( OMElement element )
-                            throws MetadataStoreException {
+    public ParsedProfileElement parseAPISO( OMElement element ) {
 
         OMFactory factory = OMAbstractFactory.getOMFactory();
 
@@ -218,7 +217,7 @@ public final class ISOQPParsing extends XMLAdapter {
         } catch ( ParseException e ) {
             String msg = Messages.getMessage( "ERROR_PARSING", dateString[0], e.getMessage() );
             LOG.debug( msg );
-            throw new MetadataStoreException( msg );
+            throw new IllegalArgumentException( msg );
         }
 
         /*---------------------------------------------------------------
@@ -479,7 +478,7 @@ public final class ISOQPParsing extends XMLAdapter {
      * @throws MetadataStoreException
      */
     private void parseDataQualityInfo()
-                            throws MetadataStoreException {
+                            throws IllegalArgumentException {
         List<OMElement> lineageElems = getElements( rootElement,
                                                     new XPath(
                                                                "./gmd:dataQualityInfo/gmd:DQ_DataQuality/gmd:lineage/gmd:LI_Lineage/gmd:statement",
@@ -488,7 +487,7 @@ public final class ISOQPParsing extends XMLAdapter {
         for ( OMElement lineageElem : lineageElems ) {
             String[] lineageList = getNodesAsStrings( lineageElem, new XPath( "./gco:CharacterString",
                                                                               nsContextISOParsing ) );
-            
+
             lineages.addAll( Arrays.asList( lineageList ) );
             lineageList = getNodesAsStrings( lineageElem,
                                              new XPath( "./gmd:PT_FreeText/gmd:textGroup/gmd:LocalisedCharacterString",
@@ -549,7 +548,7 @@ public final class ISOQPParsing extends XMLAdapter {
 
             String msg = Messages.getMessage( "ERROR_PARSING", specificationDateString, e.getMessage() );
             LOG.debug( msg );
-            throw new MetadataStoreException( msg );
+            throw new IllegalArgumentException( msg );
 
         }
         if ( dateSpecificationDate != null ) {

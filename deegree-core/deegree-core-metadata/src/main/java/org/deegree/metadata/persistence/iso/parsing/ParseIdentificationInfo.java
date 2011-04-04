@@ -100,7 +100,7 @@ public class ParseIdentificationInfo extends XMLAdapter {
      */
     protected void parseIdentificationInfo( List<OMElement> identificationInfo, QueryableProperties qp,
                                             ReturnableProperties rp )
-                            throws MetadataStoreException {
+                            throws IllegalArgumentException {
         List<OMElement> identificationInfo_Update = new ArrayList<OMElement>();
         for ( OMElement root_identInfo : identificationInfo ) {
             OMElement md_dataIdentification = getElement( root_identInfo, new XPath( "./gmd:MD_DataIdentification",
@@ -569,7 +569,7 @@ public class ParseIdentificationInfo extends XMLAdapter {
                         String msg = Messages.getMessage( "ERROR_PARSING_TEMP_EXTENT", temporalExtentBegin,
                                                           temporalExtentEnd, e.getMessage() );
                         LOG.debug( msg );
-                        throw new MetadataStoreException( msg );
+                        throw new IllegalArgumentException( msg );
                     }
                     List<OMElement> geographicElement = getElements( extentElem,
                                                                      new XPath(
@@ -608,8 +608,8 @@ public class ParseIdentificationInfo extends XMLAdapter {
                                                                                        nsContextParseII ), 0.0 );
                             }
                         } catch ( XMLParsingException e ) {
-                            throw new MetadataStoreException( "Could not parse EX_GeographicBoundingBox, cause: "
-                                                              + e.getMessage() );
+                            throw new IllegalArgumentException( "Could not parse EX_GeographicBoundingBox, cause: "
+                                                                + e.getMessage() );
                         }
                         if ( geographicDescriptionCode_service == null ) {
                             OMElement geographicDescriptionCode_serviceElem = getElement( geographicElem,
@@ -751,7 +751,7 @@ public class ParseIdentificationInfo extends XMLAdapter {
      * @throws MetadataStoreException
      */
     private void parseDateComponents( QueryableProperties qp, OMElement ci_citation )
-                            throws MetadataStoreException {
+                            throws IllegalArgumentException {
         String revisionDateString = getNodeAsString( ci_citation,
                                                      new XPath(
                                                                 "./gmd:date/gmd:CI_Date[./gmd:dateType/gmd:CI_DateTypeCode/@codeListValue='revision']/gmd:date/gco:Date | ./gmd:date/gmd:CI_Date[./gmd:dateType/gmd:CI_DateTypeCode/@codeListValue='revision']/gmd:date/gco:DateTime",
@@ -764,8 +764,8 @@ public class ParseIdentificationInfo extends XMLAdapter {
                 date = null;
             }
         } catch ( ParseException e ) {
-            throw new MetadataStoreException( "Could not parse revision date ('" + revisionDateString + "'), cause: "
-                                              + e.getMessage() );
+            throw new IllegalArgumentException( "Could not parse revision date ('" + revisionDateString + "'), cause: "
+                                                + e.getMessage() );
         }
         qp.setRevisionDate( date );
 
@@ -780,8 +780,8 @@ public class ParseIdentificationInfo extends XMLAdapter {
                 date = null;
             }
         } catch ( ParseException e ) {
-            throw new MetadataStoreException( "Could not creation revision date ('" + revisionDateString
-                                              + "'), cause: " + e.getMessage() );
+            throw new IllegalArgumentException( "Could not creation revision date ('" + revisionDateString
+                                                + "'), cause: " + e.getMessage() );
         }
         qp.setCreationDate( date );
 
@@ -796,8 +796,8 @@ public class ParseIdentificationInfo extends XMLAdapter {
                 date = null;
             }
         } catch ( ParseException e ) {
-            throw new MetadataStoreException( "Could not parse publication date ('" + revisionDateString
-                                              + "'), cause: " + e.getMessage() );
+            throw new IllegalArgumentException( "Could not parse publication date ('" + revisionDateString
+                                                + "'), cause: " + e.getMessage() );
         }
         qp.setPublicationDate( date );
     }

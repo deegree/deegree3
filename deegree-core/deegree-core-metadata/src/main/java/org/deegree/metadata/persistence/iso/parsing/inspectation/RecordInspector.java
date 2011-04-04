@@ -37,7 +37,6 @@ package org.deegree.metadata.persistence.iso.parsing.inspectation;
 
 import java.sql.Connection;
 
-import org.apache.axiom.om.OMElement;
 import org.deegree.commons.jdbc.ConnectionManager.Type;
 import org.deegree.metadata.MetadataRecord;
 import org.deegree.metadata.persistence.MetadataInspectorException;
@@ -54,16 +53,16 @@ import org.deegree.protocol.csw.MetadataStoreException;
  * 
  * @version $Revision$, $Date$
  */
-public interface RecordInspector {
+public interface RecordInspector<T extends MetadataRecord> {
 
     /**
      * Inspects the given {@link MetdataRecord}.
      * 
      * @param record
-     * @return the inspected and (possibly) modified metadatarecord.
+     * @return the inspected and (possibly) modified metadata record
      * @throws MetadataStoreException
      *             if the record is considered invalid
      */
-    public OMElement inspect( OMElement record, Connection conn, Type connectionType )
+    public T inspect( T record, Connection conn, Type connectionType )
                             throws MetadataInspectorException;
 }

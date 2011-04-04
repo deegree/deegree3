@@ -50,13 +50,12 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 
 import org.deegree.commons.config.DeegreeWorkspace;
-import org.deegree.commons.config.ResourceManager;
 import org.deegree.commons.config.ResourceInitException;
+import org.deegree.commons.config.ResourceManager;
 import org.deegree.commons.jdbc.ConnectionManager;
 import org.deegree.commons.utils.ProxyUtils;
 import org.deegree.filter.function.FunctionManager;
 import org.deegree.metadata.i18n.Messages;
-import org.deegree.metadata.persistence.MetadataStore;
 import org.deegree.metadata.persistence.MetadataStoreProvider;
 import org.deegree.metadata.persistence.iso19115.jaxb.ISOMetadataStoreConfig;
 import org.slf4j.Logger;
@@ -159,7 +158,7 @@ public class ISOMetadataStoreProvider implements MetadataStoreProvider {
 
     }
 
-    public MetadataStore create( URL configUrl )
+    public ISOMetadataStore create( URL configUrl )
                             throws ResourceInitException {
         return new ISOMetadataStore( getConfig( configUrl ) );
     }

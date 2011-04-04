@@ -44,6 +44,7 @@ import org.deegree.commons.jdbc.ConnectionManager.Type;
 import org.deegree.commons.xml.NamespaceBindings;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.XPath;
+import org.deegree.metadata.ISORecord;
 import org.deegree.metadata.i18n.Messages;
 import org.deegree.metadata.persistence.MetadataInspectorException;
 import org.deegree.metadata.persistence.iso.generating.generatingelements.GenerateOMElement;
@@ -58,7 +59,7 @@ import org.slf4j.LoggerFactory;
  * 
  * @version $Revision$, $Date$
  */
-public class HierarchyLevelInspector implements RecordInspector {
+public class HierarchyLevelInspector implements RecordInspector<ISORecord> {
 
     private static Logger LOG = LoggerFactory.getLogger( HierarchyLevelInspector.class );
 
@@ -71,10 +72,10 @@ public class HierarchyLevelInspector implements RecordInspector {
     }
 
     @Override
-    public OMElement inspect( OMElement record, Connection conn, Type connectionType )
+    public ISORecord inspect( ISORecord record, Connection conn, Type connectionType )
                             throws MetadataInspectorException {
 
-        XMLAdapter a = new XMLAdapter( record );
+        XMLAdapter a = new XMLAdapter( record.getAsOMElement() );
 
         /**
          * if provided data is a dataset: type = dataset (default)
@@ -85,12 +86,13 @@ public class HierarchyLevelInspector implements RecordInspector {
          * <p>
          * if provided data is a service: type = service
          */
-        String type = a.getNodeAsString( record, new XPath( "./gmd:hierarchyLevel/gmd:MD_ScopeCode/@codeListValue",
+        OMElement rootEl = record.getAsOMElement();
+        String type = a.getNodeAsString( rootEl, new XPath( "./gmd:hierarchyLevel/gmd:MD_ScopeCode/@codeListValue",
                                                             nsContext ), null );
 
         if ( type == null ) {
-            OMElement hln = a.getElement( record, new XPath( "./gmd:hierarchyLevelName", nsContext ) );
-            OMElement contact = record.getFirstChildWithName( new QName( "http://www.isotc211.org/2005/gmd", "contact" ) );
+            OMElement hln = a.getElement( rootEl, new XPath( "./gmd:hierarchyLevelName", nsContext ) );
+            OMElement contact = rootEl.getFirstChildWithName( new QName( "http://www.isotc211.org/2005/gmd", "contact" ) );
             if ( hln != null ) {
                 hln.insertSiblingBefore( new GenerateOMElement().createHierarchyLevelElement() );
             } else {

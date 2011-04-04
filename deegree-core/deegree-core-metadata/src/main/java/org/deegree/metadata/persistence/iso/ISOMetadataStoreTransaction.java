@@ -22,6 +22,7 @@ import org.deegree.filter.sql.AbstractWhereBuilder;
 import org.deegree.filter.sql.mssql.MSSQLServerWhereBuilder;
 import org.deegree.filter.sql.postgis.PostGISWhereBuilder;
 import org.deegree.metadata.ISORecord;
+import org.deegree.metadata.MetadataRecord;
 import org.deegree.metadata.i18n.Messages;
 import org.deegree.metadata.persistence.MetadataInspectorException;
 import org.deegree.metadata.persistence.MetadataStoreTransaction;
@@ -51,7 +52,7 @@ public class ISOMetadataStoreTransaction implements MetadataStoreTransaction {
 
     private final Connection conn;
 
-    private final List<RecordInspector> inspectors;
+    private final List<RecordInspector<ISORecord>> inspectors;
 
     private final AnyText anyText;
 
@@ -59,7 +60,7 @@ public class ISOMetadataStoreTransaction implements MetadataStoreTransaction {
 
     private final Type connectionType;
 
-    ISOMetadataStoreTransaction( Connection conn, List<RecordInspector> inspectors, AnyText anyText,
+    ISOMetadataStoreTransaction( Connection conn, List<RecordInspector<ISORecord>> inspectors, AnyText anyText,
                                  boolean useLegacyPredicates, Type connectionType ) throws SQLException {
         this.conn = conn;
         this.anyText = anyText;
@@ -116,13 +117,13 @@ public class ISOMetadataStoreTransaction implements MetadataStoreTransaction {
                             throws MetadataStoreException, MetadataInspectorException {
 
         List<String> identifierList = new ArrayList<String>();
-        for ( OMElement element : insert.getElements() ) {
+        for ( MetadataRecord record : insert.getRecords() ) {
             try {
                 for ( RecordInspector r : inspectors ) {
-                    element = r.inspect( element, conn, connectionType );
+                    record = r.inspect( record, conn, connectionType );
                 }
-                if ( element != null ) {
-                    ISORecord rec = new ISORecord( element, anyText );
+                if ( record != null ) {
+                    ISORecord rec = new ISORecord( record.getAsOMElement(), anyText );
                     GenerateQueryableProperties generateQP = new GenerateQueryableProperties( connectionType );
                     int operatesOnId = generateQP.generateMainDatabaseDataset( conn, rec );
                     generateQP.executeQueryableProperties( false, conn, operatesOnId, rec );
@@ -141,13 +142,14 @@ public class ISOMetadataStoreTransaction implements MetadataStoreTransaction {
         GenerateQueryableProperties generateQP = new GenerateQueryableProperties( connectionType );
         int result = 0;
 
-        if ( update.getElement() != null && update.getConstraint() == null ) {
+        if ( update.getRecord() != null && update.getConstraint() == null ) {
             LOG.warn( "Update with complete metadatset and without constraint is deprecated. Updating is forwarded, the fileIdentifer is used to find the record to update." );
-            OMElement element = update.getElement();
-            for ( RecordInspector r : inspectors ) {
-                element = r.inspect( element, conn, connectionType );
+            ISORecord record = (ISORecord) update.getRecord();
+            for ( RecordInspector<ISORecord> r : inspectors ) {
+                record = r.inspect( record, conn, connectionType );
             }
-            ISORecord rec = new ISORecord( element, anyText );
+            // TODO outfactor anyText
+            ISORecord rec = new ISORecord( record.getAsOMElement(), anyText );
             int operatesOnId = generateQP.updateMainDatabaseTable( conn, rec, null );
             generateQP.executeQueryableProperties( true, conn, operatesOnId, rec );
             return 1;
@@ -172,12 +174,12 @@ public class ISOMetadataStoreTransaction implements MetadataStoreTransaction {
                 ISORecord newRec = null;
                 boolean updated = false;
 
-                if ( update.getElement() != null ) {
-                    OMElement element = update.getElement();
-                    for ( RecordInspector r : inspectors ) {
-                        element = r.inspect( element, conn, connectionType );
+                if ( update.getRecord() != null ) {
+                    ISORecord record = (ISORecord) update.getRecord();
+                    for ( RecordInspector<ISORecord> r : inspectors ) {
+                        record = r.inspect( record, conn, connectionType );
                     }
-                    newRec = new ISORecord( element, anyText );
+                    newRec = new ISORecord( record.getAsOMElement(), anyText );
                     updated = true;
                 } else if ( update.getConstraint() != null
                             && ( update.getRecordProperty() != null && update.getRecordProperty().size() > 0 ) ) {
@@ -208,15 +210,13 @@ public class ISOMetadataStoreTransaction implements MetadataStoreTransaction {
                         }
                     }
                     // inspect element if it is still valid
-                    OMElement element = rec.getAsOMElement();
-                    for ( RecordInspector r : inspectors ) {
-                        element = r.inspect( element, conn, connectionType );
+                    for ( RecordInspector<ISORecord> inspector : inspectors ) {
+                        rec = inspector.inspect( rec, conn, connectionType );
                     }
-                    newRec = rec;
                 }
-                if ( newRec != null ) {
-                    int operatesOnId = generateQP.updateMainDatabaseTable( conn, newRec, newRec.getIdentifier() );
-                    generateQP.executeQueryableProperties( true, conn, operatesOnId, newRec );
+                if ( rec != null ) {
+                    int operatesOnId = generateQP.updateMainDatabaseTable( conn, rec, rec.getIdentifier() );
+                    generateQP.executeQueryableProperties( true, conn, operatesOnId, rec );
                     if ( updated )
                         result++;
                 }

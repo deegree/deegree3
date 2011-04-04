@@ -93,6 +93,13 @@ public interface MetadataRecord {
     public Envelope[] getBoundingBox();
 
     /**
+     * Returns the root element of the record.
+     * 
+     * @return the root element, never <code>null</code>
+     */
+    public OMElement getAsOMElement();
+
+    /**
      * Returns the Dublin Core representation of the requested record.
      * 
      * @return {@link DCRecord}.

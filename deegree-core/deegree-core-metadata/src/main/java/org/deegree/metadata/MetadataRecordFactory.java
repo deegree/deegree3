@@ -1,7 +1,7 @@
 //$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
- Copyright (C) 2001-2009 by:
+ Copyright (C) 2001-2011 by:
  - Department of Geography, University of Bonn -
  and
  - lat/lon GmbH -
@@ -33,56 +33,40 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.metadata.persistence.transaction;
+package org.deegree.metadata;
 
-import javax.xml.namespace.QName;
+import static org.deegree.metadata.DCRecord.DC_RECORD_NS;
+import static org.deegree.metadata.ISORecord.ISO_RECORD_NS;
 
-import org.deegree.filter.Filter;
-import org.deegree.protocol.csw.CSWConstants.TransactionType;
+import java.io.File;
+
+import org.apache.axiom.om.OMElement;
+import org.deegree.commons.xml.XMLAdapter;
 
 /**
- * Represents a CSW <code>Delete</code> action (part of a Transaction request).
+ * Main entry point for creating {@link MetadataRecord} instances.
  * 
- * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
+ * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
  */
-public class DeleteOperation extends TransactionOperation {
+public class MetadataRecordFactory {
 
-    private QName typeName;
-
-    private Filter constraint;
-
-    /**
-     * Creates a new {@link DeleteOperation} instance.
-     * 
-     * @param handle
-     * @param typeName
-     * @param constraint
-     */
-    public DeleteOperation( String handle, QName typeName, Filter constraint ) {
-        super( handle );
-        this.typeName = typeName;
-        this.constraint = constraint;
+    public static MetadataRecord create( OMElement rootEl )
+                            throws IllegalArgumentException {
+        String ns = rootEl.getNamespace().getNamespaceURI();
+        if ( ISO_RECORD_NS.equals( ns ) ) {
+            // TODO anytext
+            return new ISORecord( rootEl, null );
+        }
+        if ( DC_RECORD_NS.equals( ns ) ) {
+            throw new UnsupportedOperationException( "Creating DC records from XML is not implemented yet." );
+        }
+        throw new IllegalArgumentException( "Unknown / unsuppported metadata namespace '" + ns + "'." );
     }
 
-    @Override
-    public TransactionType getType() {
-        return TransactionType.DELETE;
-    }
-
-    /**
-     * @return the typeName
-     */
-    public QName getTypeName() {
-        return typeName;
-    }
-
-    /**
-     * @return the constraint
-     */
-    public Filter getConstraint() {
-        return constraint;
+    public static MetadataRecord create( File file ) {
+        return create( new XMLAdapter( file ).getRootElement() );
     }
 }

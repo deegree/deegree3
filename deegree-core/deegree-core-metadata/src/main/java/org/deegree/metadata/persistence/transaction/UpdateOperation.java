@@ -39,8 +39,8 @@ import java.util.List;
 
 import javax.xml.namespace.QName;
 
-import org.apache.axiom.om.OMElement;
 import org.deegree.filter.Filter;
+import org.deegree.metadata.MetadataRecord;
 import org.deegree.protocol.csw.CSWConstants.TransactionType;
 
 /**
@@ -53,7 +53,7 @@ import org.deegree.protocol.csw.CSWConstants.TransactionType;
  */
 public class UpdateOperation extends TransactionOperation {
 
-    private OMElement element;
+    private MetadataRecord record;
 
     private QName typeName;
 
@@ -65,25 +65,20 @@ public class UpdateOperation extends TransactionOperation {
      * Creates a new {@link UpdateOperation} instance.
      * 
      * @param handle
-     * @param element
+     * @param record
      * @param typeName
      * @param constraint
      * @param recordProperty
      */
-    public UpdateOperation( String handle, OMElement element, QName typeName, Filter constraint,
-                              List<MetadataProperty> recordProperty ) {
+    public UpdateOperation( String handle, MetadataRecord record, QName typeName, Filter constraint,
+                            List<MetadataProperty> recordProperty ) {
         super( handle );
-        this.element = element;
+        this.record = record;
         this.typeName = typeName;
         this.constraint = constraint;
         this.recordProperty = recordProperty;
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.deegree.services.controller.csw.transaction.TransactionOperation#getType()
-     */
     @Override
     public TransactionType getType() {
         return TransactionType.UPDATE;
@@ -106,8 +101,8 @@ public class UpdateOperation extends TransactionOperation {
     /**
      * @return the element
      */
-    public OMElement getElement() {
-        return element;
+    public MetadataRecord getRecord() {
+        return record;
     }
 
     /**

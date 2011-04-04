@@ -60,7 +60,7 @@ import org.slf4j.LoggerFactory;
  * 
  * @version $Revision$, $Date$
  */
-public class ISOMetadataResultSet implements MetadataResultSet {
+public class ISOMetadataResultSet implements MetadataResultSet<ISORecord> {
 
     private static Logger LOG = LoggerFactory.getLogger( ISOMetadataResultSet.class );
 

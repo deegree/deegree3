@@ -55,6 +55,8 @@ import org.deegree.filter.Filter;
 import org.deegree.filter.expression.PropertyName;
 import org.deegree.filter.xml.Filter100XMLDecoder;
 import org.deegree.filter.xml.Filter110XMLDecoder;
+import org.deegree.metadata.MetadataRecord;
+import org.deegree.metadata.MetadataRecordFactory;
 import org.deegree.metadata.persistence.transaction.DeleteOperation;
 import org.deegree.metadata.persistence.transaction.InsertOperation;
 import org.deegree.metadata.persistence.transaction.MetadataProperty;
@@ -139,13 +141,15 @@ public class TransactionXMLAdapter extends AbstractCSWRequestXMLAdapter {
             switch ( type ) {
 
             case INSERT:
-
-                List<OMElement> transChildElementInsert = getRequiredElements( transChildElement, new XPath( "*",
-                                                                                                             nsContext ) );
+                List<OMElement> recordEls = getRequiredElements( transChildElement, new XPath( "*", nsContext ) );
+                List<MetadataRecord> records = new ArrayList<MetadataRecord>( recordEls.size() );
+                for ( OMElement el : recordEls ) {
+                    records.add( MetadataRecordFactory.create( el ) );
+                }
                 typeName = getNodeAsQName( transChildElement, new XPath( "@typeName", nsContext ), null );
                 handle = getNodeAsString( transChildElement, new XPath( "@handle", nsContext ), null );
 
-                operations.add( new InsertOperation( transChildElementInsert, typeName, handle ) );
+                operations.add( new InsertOperation( records, typeName, handle ) );
                 break;
 
             case DELETE:
@@ -199,7 +203,11 @@ public class TransactionXMLAdapter extends AbstractCSWRequestXMLAdapter {
             case UPDATE:
                 List<MetadataProperty> recordProperties = new ArrayList<MetadataProperty>();
 
-                OMElement recordToUpdate = getElement( transChildElement, new XPath( "child::*[1]", nsContext ) );
+                OMElement newRecordEl = getElement( transChildElement, new XPath( "child::*[1]", nsContext ) );
+                MetadataRecord newRecord = null;
+                if ( newRecordEl != null ) {
+                    MetadataRecordFactory.create( newRecordEl );
+                }
                 List<OMElement> recordPropertyElements = getElements( transChildElement,
                                                                       new XPath( "./csw:RecordProperty", nsContext ) );
                 OMElement constraintElement = getElement( transChildElement, new XPath( "./csw:Constraint", nsContext ) );
@@ -237,16 +245,16 @@ public class TransactionXMLAdapter extends AbstractCSWRequestXMLAdapter {
                         recordProperties.add( recordProperty );
                     }
                     // set record to update to null - is not longer relevant
-                    recordToUpdate = null;
+                    newRecord = null;
                 } else {
-                    if ( recordToUpdate == null ) {
+                    if ( newRecord == null ) {
                         String msg = "Either a RecordProperty or a record to update must be specified!";
                         LOG.debug( msg );
                         throw new InvalidParameterValueException( msg );
                     }
                 }
-                operations.add( new UpdateOperation( handle, recordToUpdate, typeName,
-                                                       parseConstraint( constraintElement ), recordProperties ) );
+                operations.add( new UpdateOperation( handle, newRecord, typeName, parseConstraint( constraintElement ),
+                                                     recordProperties ) );
                 break;
 
             }

@@ -76,7 +76,6 @@ import org.deegree.metadata.persistence.types.BoundingBox;
 import org.deegree.metadata.persistence.types.Format;
 import org.deegree.metadata.persistence.types.Keyword;
 import org.deegree.protocol.csw.CSWConstants.ReturnableElement;
-import org.deegree.protocol.csw.MetadataStoreException;
 import org.jaxen.JaxenException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -101,6 +100,9 @@ import org.slf4j.LoggerFactory;
 public class ISORecord implements MetadataRecord {
 
     private static Logger LOG = LoggerFactory.getLogger( ISORecord.class );
+
+    /** Namespace for ISORecord elements */
+    public static String ISO_RECORD_NS = CommonNamespaces.ISOAP10GMDNS;
 
     /** Schema URL for ISO Data and Service Metadata records **/
     public static final String SCHEMA_URL_GMD = "http://schemas.opengis.net/iso/19139/20060504/gmd/gmd.xsd";
@@ -185,7 +187,7 @@ public class ISORecord implements MetadataRecord {
 
     private static List<XPath> briefFilterElementsXPath;
 
-    public ISORecord( XMLStreamReader xmlStream, AnyText anyText ) throws MetadataStoreException {
+    public ISORecord( XMLStreamReader xmlStream, AnyText anyText ) {
 
         this.anyText = anyText;
         this.root = new XMLAdapter( xmlStream ).getRootElement();
@@ -197,7 +199,7 @@ public class ISORecord implements MetadataRecord {
 
     }
 
-    public ISORecord( OMElement root, AnyText anyText ) throws MetadataStoreException {
+    public ISORecord( OMElement root, AnyText anyText ) {
         this( root.getXMLStreamReader(), anyText );
     }
 
@@ -208,8 +210,7 @@ public class ISORecord implements MetadataRecord {
 
     @Override
     public boolean eval( Filter filter ) {
-        // TODO Auto-generated method stub
-        return false;
+        throw new UnsupportedOperationException( "In-memory filter evaluation not implemented yet." );
     }
 
     @Override
@@ -432,6 +433,7 @@ public class ISORecord implements MetadataRecord {
         return xmlStream;
     }
 
+    @Override
     public OMElement getAsOMElement() {
         return root;
     }
