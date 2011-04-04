@@ -43,7 +43,10 @@ import java.util.List;
 
 import javax.xml.namespace.QName;
 
+import org.apache.axiom.om.OMAbstractFactory;
 import org.apache.axiom.om.OMElement;
+import org.apache.axiom.om.OMFactory;
+import org.apache.axiom.om.OMNamespace;
 import org.deegree.commons.jdbc.ConnectionManager.Type;
 import org.deegree.commons.xml.NamespaceBindings;
 import org.deegree.commons.xml.XMLAdapter;
@@ -52,7 +55,6 @@ import org.deegree.metadata.ISORecord;
 import org.deegree.metadata.i18n.Messages;
 import org.deegree.metadata.persistence.MetadataInspectorException;
 import org.deegree.metadata.persistence.inspectors.RecordInspector;
-import org.deegree.metadata.persistence.iso.generating.GenerateOMElement;
 import org.deegree.metadata.persistence.iso.parsing.IdUtils;
 import org.deegree.metadata.persistence.iso19115.jaxb.FileIdentifierInspector;
 import org.slf4j.Logger;
@@ -171,9 +173,20 @@ public class FIInspector implements RecordInspector<ISORecord> {
         if ( !idList.isEmpty() && fileIdentifierString.length == 0 ) {
             for ( String id : idList ) {
                 OMElement firstElement = rootEl.getFirstElement();
-                firstElement.insertSiblingBefore( new GenerateOMElement().createFileIdentifierElement( id ) );
+                firstElement.insertSiblingBefore( createFileIdentifierElement( id ) );
             }
         }
         return record;
+    }
+
+    private OMElement createFileIdentifierElement( String id ) {
+        OMFactory factory = OMAbstractFactory.getOMFactory();
+        OMNamespace namespaceGMD = factory.createOMNamespace( "http://www.isotc211.org/2005/gmd", "gmd" );
+        OMNamespace namespaceGCO = factory.createOMNamespace( "http://www.isotc211.org/2005/gco", "gco" );
+        OMElement omFileIdentifier = factory.createOMElement( "fileIdentifier", namespaceGMD );
+        OMElement omFileCharacterString = factory.createOMElement( "CharacterString", namespaceGCO );
+        omFileIdentifier.addChild( omFileCharacterString );
+        omFileCharacterString.setText( id );
+        return omFileIdentifier;
     }
 }

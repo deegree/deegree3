@@ -39,7 +39,10 @@ import java.sql.Connection;
 
 import javax.xml.namespace.QName;
 
+import org.apache.axiom.om.OMAbstractFactory;
 import org.apache.axiom.om.OMElement;
+import org.apache.axiom.om.OMFactory;
+import org.apache.axiom.om.OMNamespace;
 import org.deegree.commons.jdbc.ConnectionManager.Type;
 import org.deegree.commons.xml.NamespaceBindings;
 import org.deegree.commons.xml.XMLAdapter;
@@ -48,7 +51,6 @@ import org.deegree.metadata.ISORecord;
 import org.deegree.metadata.i18n.Messages;
 import org.deegree.metadata.persistence.MetadataInspectorException;
 import org.deegree.metadata.persistence.inspectors.RecordInspector;
-import org.deegree.metadata.persistence.iso.generating.GenerateOMElement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -95,10 +97,10 @@ public class HierarchyLevelInspector implements RecordInspector<ISORecord> {
             OMElement hln = a.getElement( rootEl, new XPath( "./gmd:hierarchyLevelName", nsContext ) );
             OMElement contact = rootEl.getFirstChildWithName( new QName( "http://www.isotc211.org/2005/gmd", "contact" ) );
             if ( hln != null ) {
-                hln.insertSiblingBefore( new GenerateOMElement().createHierarchyLevelElement() );
+                hln.insertSiblingBefore( createHierarchyLevelElement() );
             } else {
                 if ( contact != null ) {
-                    contact.insertSiblingBefore( new GenerateOMElement().createHierarchyLevelElement() );
+                    contact.insertSiblingBefore( createHierarchyLevelElement() );
                 } else {
                     String msg = Messages.getMessage( "ERROR_MANDATORY_ELEMENT_MISSING", "contact" );
                     LOG.debug( msg );
@@ -107,5 +109,19 @@ public class HierarchyLevelInspector implements RecordInspector<ISORecord> {
             }
         }
         return record;
+    }
+
+    private OMElement createHierarchyLevelElement() {
+        OMFactory factory = OMAbstractFactory.getOMFactory();
+        OMNamespace namespaceGMD = factory.createOMNamespace( "http://www.isotc211.org/2005/gmd", "gmd" );
+        OMElement omHierarchieLevel = factory.createOMElement( "hierarchyLevel", namespaceGMD );
+        OMElement omScopeCode = factory.createOMElement( "MD_ScopeCode", namespaceGMD );
+        omHierarchieLevel.addChild( omScopeCode );
+        omScopeCode.addAttribute( "codeList",
+                                  "http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/Codelist/ML_gmxCodelists.xml#MD_ScopeCode",
+                                  null );
+        omScopeCode.addAttribute( "codeListValue", "dataset", null );
+        omScopeCode.setText( "dataset" );
+        return omHierarchieLevel;
     }
 }
