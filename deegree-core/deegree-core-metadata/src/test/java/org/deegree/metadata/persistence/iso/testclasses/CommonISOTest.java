@@ -674,7 +674,7 @@ public class CommonISOTest extends AbstractISOTest {
 
             AXIOMXPath p = new AXIOMXPath( testXpath );
             p.setNamespaceContext( nsContext );
-            Object valueNode = p.selectSingleNode( value );
+            Object valueNode = p.selectSingleNode( value.getAsOMElement() );
             Assert.assertEquals( ( (OMElement) valueNode ).getText(), updatedNode.getText() );
         }
     }
@@ -723,7 +723,7 @@ public class CommonISOTest extends AbstractISOTest {
 
             AXIOMXPath p = new AXIOMXPath( testXpath );
             p.setNamespaceContext( nsContext );
-            Object valueNode = p.selectSingleNode( value );
+            Object valueNode = p.selectSingleNode( value.getAsOMElement() );
             Assert.assertEquals( ( (OMElement) valueNode ).getText(), ( (OMElement) updatedNode ).getText() );
         }
     }
