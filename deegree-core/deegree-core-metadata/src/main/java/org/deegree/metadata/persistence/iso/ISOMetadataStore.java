@@ -247,10 +247,6 @@ public class ISOMetadataStore implements MetadataStore<ISORecord> {
         try {
             AbstractWhereBuilder builder = getWhereBuilder( query );
             result = doResultsOnGetRecord( query, builder, conn );
-            // break;
-            // case hits:
-            // resultType = doHitsOnGetRecord( query, ResultType.hits, builder, conn, new ExecuteStatements() );
-            // result = new ISOMetadataResultSet( null, conn, resultType, config.getAnyText() );
         } catch ( FilterEvaluationException e ) {
             String msg = Messages.getMessage( "ERROR_OPERATION", operationName, e.getLocalizedMessage() );
             LOG.debug( msg );

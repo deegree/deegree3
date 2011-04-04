@@ -51,6 +51,7 @@ import org.deegree.protocol.csw.CSWConstants.ResultType;
  * @version $Revision$, $Date$
  */
 public class MetadataQuery {
+
     private final int startPosition;
 
     private final Filter filter;
