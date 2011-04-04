@@ -33,12 +33,11 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.metadata.persistence.iso.parsing;
+package org.deegree.metadata.persistence.iso.inspectors;
 
 import static org.deegree.commons.utils.JDBCUtils.close;
 import static org.slf4j.LoggerFactory.getLogger;
 
-import java.io.StringWriter;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -66,7 +65,8 @@ import org.slf4j.Logger;
  * 
  * @version $Revision$, $Date$
  */
-public class IdUtils {
+class IdUtils {
+
     private static final Logger LOG = getLogger( IdUtils.class );
 
     private final Connection conn;
@@ -77,7 +77,7 @@ public class IdUtils {
 
     private String fileIdColumn;
 
-    private IdUtils( Connection conn, Type connectionType ) {
+    IdUtils( Connection conn, Type connectionType ) {
         this.conn = conn;
         idList = Collections.synchronizedList( new ArrayList<String>() );
         if ( connectionType == Type.MSSQL ) {
@@ -88,10 +88,6 @@ public class IdUtils {
             mainTable = PostGISMappingsISODC.DatabaseTables.idxtb_main.name();
             fileIdColumn = PostGISMappingsISODC.CommonColumnNames.fileidentifier.name();
         }
-    }
-
-    public static IdUtils newInstance( Connection conn, Type connectionType ) {
-        return new IdUtils( conn, connectionType );
     }
 
     /**
@@ -105,7 +101,7 @@ public class IdUtils {
      * @return a uuid that is unique in the backend.
      * @throws MetadataStoreException
      */
-    public String generateUUID()
+    String generateUUID()
                             throws MetadataInspectorException {
 
         ResultSet rs = null;
@@ -160,8 +156,7 @@ public class IdUtils {
 
     }
 
-
-    public boolean checkUUIDCompliance( String uuid ) {
+    boolean checkUUIDCompliance( String uuid ) {
 
         char firstChar = uuid.charAt( 0 );
         Pattern p = Pattern.compile( "[0-9]" );
@@ -172,7 +167,7 @@ public class IdUtils {
         return true;
     }
 
-    public boolean checkUUIDCompliance( List<String> list ) {
+    boolean checkUUIDCompliance( List<String> list ) {
 
         for ( String s : list ) {
             boolean isUUID = checkUUIDCompliance( s );
@@ -180,9 +175,6 @@ public class IdUtils {
                 return false;
             }
         }
-
         return true;
-
     }
-
 }

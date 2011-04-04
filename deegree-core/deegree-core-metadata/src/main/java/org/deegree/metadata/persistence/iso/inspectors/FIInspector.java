@@ -55,7 +55,6 @@ import org.deegree.metadata.ISORecord;
 import org.deegree.metadata.i18n.Messages;
 import org.deegree.metadata.persistence.MetadataInspectorException;
 import org.deegree.metadata.persistence.inspectors.RecordInspector;
-import org.deegree.metadata.persistence.iso.parsing.IdUtils;
 import org.deegree.metadata.persistence.iso19115.jaxb.FileIdentifierInspector;
 import org.slf4j.Logger;
 
@@ -108,9 +107,8 @@ public class FIInspector implements RecordInspector<ISORecord> {
         }
         if ( config != null && !config.isRejectEmpty() ) {
             if ( rsList.size() == 0 && id == null && uuid == null ) {
-
                 LOG.debug( Messages.getMessage( "INFO_FI_GENERATE_NEW" ) );
-                idList.add( IdUtils.newInstance( conn, connectionType ).generateUUID() );
+                idList.add( new IdUtils( conn, connectionType ).generateUUID() );
                 LOG.debug( Messages.getMessage( "INFO_FI_NEW", idList ) );
             } else {
                 if ( rsList.size() == 0 && id != null ) {
