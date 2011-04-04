@@ -52,7 +52,7 @@ import org.deegree.metadata.ISORecord;
 import org.deegree.metadata.i18n.Messages;
 import org.deegree.metadata.persistence.MetadataInspectorException;
 import org.deegree.metadata.persistence.inspectors.RecordInspector;
-import org.deegree.metadata.persistence.iso.generating.generatingelements.GenerateOMElement;
+import org.deegree.metadata.persistence.iso.generating.GenerateOMElement;
 import org.deegree.metadata.persistence.iso.parsing.IdUtils;
 import org.deegree.metadata.persistence.iso19115.jaxb.FileIdentifierInspector;
 import org.slf4j.Logger;
