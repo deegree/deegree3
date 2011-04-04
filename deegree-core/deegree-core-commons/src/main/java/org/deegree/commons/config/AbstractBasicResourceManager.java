@@ -35,6 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.commons.config;
 
+import static org.apache.commons.io.FileUtils.deleteQuietly;
 import static org.deegree.commons.config.ResourceState.StateType.deactivated;
 import static org.deegree.commons.config.ResourceState.StateType.init_error;
 
@@ -137,9 +138,10 @@ public abstract class AbstractBasicResourceManager implements ResourceManager {
     public ResourceState deleteResource( String id ) {
         ResourceState state = idToState.get( id );
         if ( state != null ) {
-            remove( id );
             state = deactivate( id );
-            if ( !state.getConfigLocation().delete() ) {
+            remove( id );
+
+            if ( !deleteQuietly( state.getConfigLocation() ) ) {
                 ResourceInitException e = new ResourceInitException( "Unable to delete file '"
                                                                      + state.getConfigLocation() + "'." );
                 state = new ResourceState( id, state.getConfigLocation(), state.getProvider(), init_error,

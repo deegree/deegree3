@@ -301,6 +301,17 @@ public abstract class AbstractResourceManager<T extends Resource> extends Abstra
             File newFile = new File( dir, id + ".ignore" );
             try {
                 moveFile( oldFile, newFile );
+
+                T resource = state.getResource();
+                if ( resource != null ) {
+                    try {
+                        remove( resource );
+                        resource.destroy();
+                    } catch ( Throwable t ) {
+                        LOG.error( t.getMessage(), t );
+                    }
+                }
+                state = new ResourceState<T>( id, newFile, state.getProvider(), deactivated, null, null );
             } catch ( Throwable t ) {
                 LOG.error( t.getMessage(), t );
                 String msg = "Renaming of file '" + oldFile + "' to '" + newFile
@@ -308,18 +319,7 @@ public abstract class AbstractResourceManager<T extends Resource> extends Abstra
                 ResourceInitException e = new ResourceInitException( msg, t );
                 state = new ResourceState<T>( id, oldFile, state.getProvider(), init_error, state.getResource(), e );
             }
-
-            T resource = state.getResource();
-            if ( resource != null ) {
-                remove( resource );
-                try {
-                    resource.destroy();
-                } catch ( Throwable t ) {
-                    t.printStackTrace();
-                }
-            }
-            ResourceProvider provider = getProvider( newFile );
-            idToState.put( id, new ResourceState<T>( id, newFile, provider, deactivated, null, null ) );
+            idToState.put( id, state );
         }
         return state;
     }
