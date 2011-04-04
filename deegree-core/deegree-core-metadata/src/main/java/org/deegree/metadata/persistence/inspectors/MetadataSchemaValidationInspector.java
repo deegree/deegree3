@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.metadata.persistence.iso.parsing.inspectation;
+package org.deegree.metadata.persistence.inspectors;
 
 import static org.deegree.metadata.DCRecord.SCHEMA_URL;
 import static org.deegree.metadata.ISORecord.SCHEMA_URL_GMD;
