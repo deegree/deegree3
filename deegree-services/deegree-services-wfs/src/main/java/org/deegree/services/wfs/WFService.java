@@ -49,6 +49,7 @@ import java.util.Set;
 import javax.xml.namespace.QName;
 
 import org.deegree.commons.config.DeegreeWorkspace;
+import org.deegree.commons.config.ResourceState;
 import org.deegree.commons.utils.QNameUtils;
 import org.deegree.feature.persistence.FeatureStore;
 import org.deegree.feature.persistence.FeatureStoreException;
@@ -94,9 +95,11 @@ public class WFService {
         LOG.debug( "Adding configured feature stores." );
 
         FeatureStoreManager mgr = workspace.getSubsystemManager( FeatureStoreManager.class );
-        for ( FeatureStore fs : mgr.getAll() ) {
-            addStore( fs );
-            addNotYetHintedNamespaces( fs.getSchema().getNamespaceBindings().values() );
+        for ( ResourceState<FeatureStore> state : mgr.getStates() ) {
+            if ( state.getResource() != null ) {
+                addStore( state.getResource() );
+                addNotYetHintedNamespaces( state.getResource().getSchema().getNamespaceBindings().values() );
+            }
         }
 
         LOG.debug( "The following prefix-to-namespace and namespace-to-prefix bindings are used for resolution..." );

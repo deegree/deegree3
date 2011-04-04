@@ -38,14 +38,14 @@ package org.deegree.commons.config;
 import java.io.File;
 
 /**
- * Encapsulates information on the state of a {@link Resource}.
+ * Encapsulates information on the state of a managed {@link Resource} (and provides access to it).
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
  */
-public class ResourceState {
+public class ResourceState<T extends Resource> {
 
     /**
      * Represents the lifecycle phases of a {@link Resource}.
@@ -76,24 +76,32 @@ public class ResourceState {
 
     private final File configLocation;
 
+    private final T resource;
+
     private final ResourceProvider provider;
 
     /**
      * Creates a new {@link ResourceState} instance.
      * 
      * @param id
+     *            resource identifier, never <code>null</code>
      * @param configLocation
+     *            config file location, can be <code>null</code>
      * @param type
      *            state type, must not be <code>null</code>
+     * @param resource
+     *            actual resource object, can be <code>null</code>
      * @param lastException
-     *            last exception that occurred for the resource, can be <code>null</code>
+     *            exception that occurred during the last state change of the resource, can be <code>null</code> (no
+     *            exception)
      */
-    public ResourceState( String id, File configLocation, ResourceProvider provider, StateType type,
+    public ResourceState( String id, File configLocation, ResourceProvider provider, StateType type, T resource,
                           ResourceInitException lastException ) {
         this.id = id;
         this.configLocation = configLocation;
         this.provider = provider;
         this.type = type;
+        this.resource = resource;
         this.lastException = lastException;
     }
 
@@ -111,6 +119,11 @@ public class ResourceState {
         return configLocation;
     }
 
+    /**
+     * Returns the {@link ResourceProvider} responsible for this resource.
+     * 
+     * @return resource provider, can be <code>null</code> (no suitable resource provider available)
+     */
     public ResourceProvider getProvider() {
         return provider;
     }
@@ -125,7 +138,16 @@ public class ResourceState {
     }
 
     /**
-     * Returns the last exception that occurred for the resource.
+     * Returns the actual resource.
+     * 
+     * @return resource, can be <code>null</code>
+     */
+    public T getResource() {
+        return resource;
+    }
+
+    /**
+     * Returns the exception that occurred during the last state change of the resource.
      * 
      * @return the last exception, can be <code>null</code>
      */

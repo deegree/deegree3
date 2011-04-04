@@ -56,7 +56,7 @@ import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceManager;
 import org.deegree.commons.config.ResourceManagerMetadata;
 import org.deegree.commons.config.ResourceProvider;
-import org.deegree.commons.config.ResourceInitException;
+import org.deegree.commons.config.ResourceState;
 import org.deegree.commons.jdbc.ConnectionManager;
 import org.deegree.commons.utils.ProxyUtils;
 import org.deegree.commons.xml.stax.StAXParsingHelper;
@@ -298,17 +298,13 @@ public class ObservationStoreManager extends AbstractBasicResourceManager implem
     }
 
     @Override
-    public void activate( String id )
-                            throws ResourceInitException {
-        // TODO Auto-generated method stub
-
+    public ResourceState activate( String id ) {
+        return null;
     }
 
     @Override
-    public void deactivate( String id )
-                            throws ResourceInitException {
-        // TODO Auto-generated method stub
-
+    public ResourceState deactivate( String id ) {
+        return null;
     }
 
     @Override

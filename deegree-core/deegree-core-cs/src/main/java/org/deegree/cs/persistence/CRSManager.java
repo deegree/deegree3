@@ -58,6 +58,7 @@ import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.config.ResourceManager;
 import org.deegree.commons.config.ResourceManagerMetadata;
 import org.deegree.commons.config.ResourceProvider;
+import org.deegree.commons.config.ResourceState;
 import org.deegree.commons.tom.Object;
 import org.deegree.commons.tom.ReferenceResolver;
 import org.deegree.commons.tom.ows.CodeType;
@@ -745,17 +746,13 @@ public class CRSManager extends AbstractBasicResourceManager implements Resource
     }
 
     @Override
-    public void activate( String id )
-                            throws ResourceInitException {
-        // TODO Auto-generated method stub
-
+    public ResourceState activate( String id ) {
+        return null;
     }
 
     @Override
-    public void deactivate( String id )
-                            throws ResourceInitException {
-        // TODO Auto-generated method stub
-
+    public ResourceState deactivate( String id ) {
+        return null;
     }
 
     @Override

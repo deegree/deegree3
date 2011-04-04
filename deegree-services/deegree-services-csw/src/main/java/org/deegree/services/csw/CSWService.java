@@ -41,6 +41,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.deegree.commons.config.DeegreeWorkspace;
+import org.deegree.commons.config.ResourceState;
 import org.deegree.metadata.persistence.MetadataStore;
 import org.deegree.metadata.persistence.MetadataStoreManager;
 import org.deegree.protocol.csw.MetadataStoreException;
@@ -76,8 +77,10 @@ public class CSWService {
 
         MetadataStoreManager mgr = workspace.getSubsystemManager( MetadataStoreManager.class );
 
-        for ( MetadataStore rs : mgr.getAll() ) {
-            addToStore( rs );
+        for ( ResourceState<MetadataStore> state : mgr.getStates() ) {
+            if (state.getResource() != null) {
+                addToStore( state.getResource() );
+            }
         }
     }
 

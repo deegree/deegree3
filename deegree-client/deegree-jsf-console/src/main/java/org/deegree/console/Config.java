@@ -104,7 +104,7 @@ public class Config implements Comparable<Config> {
 
     private ResourceManager resourceManager;
 
-    private ResourceState state;
+    private ResourceState<?> state;
 
     private boolean requiresWSReload;
 
@@ -141,8 +141,9 @@ public class Config implements Comparable<Config> {
         }
     }
 
-    public Config( ResourceState state, ConfigManager manager,
-                   org.deegree.commons.config.ResourceManager originalResourceManager, String resourceOutcome, boolean autoActivate ) {
+    public Config( ResourceState<?> state, ConfigManager manager,
+                   org.deegree.commons.config.ResourceManager originalResourceManager, String resourceOutcome,
+                   boolean autoActivate ) {
         this.state = state;
         this.id = state.getId();
         this.location = state.getConfigLocation();
@@ -178,7 +179,7 @@ public class Config implements Comparable<Config> {
     }
 
     public String getState() {
-        ResourceState stateType = resourceManager.getState( id );
+        ResourceState<?> stateType = resourceManager.getState( id );
         if ( stateType == null ) {
             return "unknown";
         }
@@ -239,11 +240,16 @@ public class Config implements Comparable<Config> {
     }
 
     public void showErrors() {
-        String msg = "Initialization failed (see application server logs for more details).";
-        ResourceState state = manager.getCurrentResourceManager().getManager().getState( id );
+        ResourceState<?> state = manager.getCurrentResourceManager().getManager().getState( id );
+
+        String msg = "Initialization of resource with id '" + id + "' failed";
+
         if ( state.getLastException() != null ) {
-            msg += "" + state.getLastException().getMessage();
+            msg += ": " + state.getLastException().getMessage();
+        } else {
+            msg += ".";
         }
+        msg += " The application server log main contain additional information.";
         FacesMessage fm = new FacesMessage( SEVERITY_ERROR, msg, null );
         FacesContext.getCurrentInstance().addMessage( null, fm );
     }

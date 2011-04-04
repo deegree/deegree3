@@ -55,11 +55,14 @@ import javax.xml.bind.JAXBElement;
 import org.deegree.commons.config.AbstractResourceManager;
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ExtendedResourceManager;
+import org.deegree.commons.config.ExtendedResourceProvider;
 import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.config.ResourceManager;
 import org.deegree.commons.config.ResourceManagerMetadata;
 import org.deegree.commons.config.ResourceProvider;
+import org.deegree.commons.config.ResourceState;
 import org.deegree.commons.jdbc.ConnectionManager;
+import org.deegree.commons.utils.FileUtils;
 import org.deegree.commons.utils.ProxyUtils;
 import org.deegree.commons.xml.jaxb.JAXBUtils;
 import org.deegree.services.OWS;
@@ -107,8 +110,6 @@ public class WebServicesConfiguration extends AbstractResourceManager<OWS<?>> {
     private RequestLogger requestLogger;
 
     private boolean logOnlySuccessful;
-
-    private DeegreeWorkspace workspace;
 
     static List<ResourceProvider> providers = new ArrayList<ResourceProvider>();
 
@@ -160,8 +161,7 @@ public class WebServicesConfiguration extends AbstractResourceManager<OWS<?>> {
             } else {
                 mdurl = metadata.toURI().toURL();
             }
-            metadataConfig = (DeegreeServicesMetadataType) ( (JAXBElement<?>) JAXBUtils.unmarshall(
-                                                                                                    METADATA_JAXB_PACKAGE,
+            metadataConfig = (DeegreeServicesMetadataType) ( (JAXBElement<?>) JAXBUtils.unmarshall( METADATA_JAXB_PACKAGE,
                                                                                                     METADATA_CONFIG_SCHEMA,
                                                                                                     mdurl, workspace ) ).getValue();
         } catch ( Exception e ) {
@@ -174,8 +174,7 @@ public class WebServicesConfiguration extends AbstractResourceManager<OWS<?>> {
             mainConfig = new DeegreeServiceControllerType();
         } else {
             try {
-                mainConfig = (DeegreeServiceControllerType) ( (JAXBElement<?>) JAXBUtils.unmarshall(
-                                                                                                     CONTROLLER_JAXB_PACKAGE,
+                mainConfig = (DeegreeServiceControllerType) ( (JAXBElement<?>) JAXBUtils.unmarshall( CONTROLLER_JAXB_PACKAGE,
                                                                                                      CONTROLLER_CONFIG_SCHEMA,
                                                                                                      main.toURI().toURL(),
                                                                                                      workspace ) ).getValue();
@@ -196,7 +195,40 @@ public class WebServicesConfiguration extends AbstractResourceManager<OWS<?>> {
             OWSProvider<?> p = iter.next();
             providers.put( p.getImplementationMetadata().getImplementedServiceName().toUpperCase(), p );
         }
-        super.startup( workspace );
+
+        this.workspace = workspace;
+        ResourceManagerMetadata<OWS<?>> md = getMetadata();
+        if ( md != null ) {
+            for ( ResourceProvider p : md.getResourceProviders() ) {
+                ( (OWSProvider<?>) p ).init( workspace );
+                nsToProvider.put( p.getConfigNamespace(), (ExtendedResourceProvider<OWS<?>>) p );
+            }
+
+            dir = new File( workspace.getLocation(), md.getPath() );
+            name = md.getName();
+            if ( !dir.exists() ) {
+                LOG.info( "No '{}' directory -- skipping initialization of {}.", md.getPath(), name );
+                return;
+            }
+            LOG.info( "--------------------------------------------------------------------------------" );
+            LOG.info( "Setting up {}.", name );
+            LOG.info( "--------------------------------------------------------------------------------" );
+
+            List<File> files = FileUtils.findFilesForExtensions( dir, true, "xml,ignore" );
+
+            for ( File configFile : files ) {
+                String fileName = configFile.getName();
+                if ( !fileName.equals( "metadata.xml" ) && !fileName.equals( "main.xml" ) ) {
+                    try {
+                        ResourceState<OWS<?>> state = processResourceConfig( configFile );
+                        idToState.put( state.getId(), state );
+                    } catch ( Throwable t ) {
+                        LOG.error( t.getMessage(), t );
+                    }
+                }
+            }
+            LOG.info( "" );
+        }
     }
 
     /**

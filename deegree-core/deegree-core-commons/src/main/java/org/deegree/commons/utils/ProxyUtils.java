@@ -47,10 +47,10 @@ import java.util.Properties;
 import org.apache.axiom.om.util.Base64;
 import org.deegree.commons.config.AbstractBasicResourceManager;
 import org.deegree.commons.config.DeegreeWorkspace;
-import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.config.ResourceManager;
 import org.deegree.commons.config.ResourceManagerMetadata;
 import org.deegree.commons.config.ResourceProvider;
+import org.deegree.commons.config.ResourceState;
 import org.deegree.commons.proxy.jaxb.ProxyConfiguration;
 import org.deegree.commons.xml.jaxb.JAXBUtils;
 import org.slf4j.Logger;
@@ -125,8 +125,7 @@ public final class ProxyUtils extends AbstractBasicResourceManager implements Re
         LOG.info( "Proxy configuration." );
         LOG.info( "--------------------------------------------------------------------------------" );
         try {
-            ProxyConfiguration proxyConfig = (ProxyConfiguration) JAXBUtils.unmarshall(
-                                                                                        CONFIG_JAXB_PACKAGE,
+            ProxyConfiguration proxyConfig = (ProxyConfiguration) JAXBUtils.unmarshall( CONFIG_JAXB_PACKAGE,
                                                                                         CONFIG_SCHEMA,
                                                                                         proxyConfigFile.toURI().toURL(),
                                                                                         workspace );
@@ -462,17 +461,13 @@ public final class ProxyUtils extends AbstractBasicResourceManager implements Re
     }
 
     @Override
-    public void activate( String id )
-                            throws ResourceInitException {
-        // TODO Auto-generated method stub
-
+    public ResourceState activate( String id ) {
+        return null;
     }
 
     @Override
-    public void deactivate( String id )
-                            throws ResourceInitException {
-        // TODO Auto-generated method stub
-
+    public ResourceState deactivate( String id ) {
+        return null;
     }
 
     @Override

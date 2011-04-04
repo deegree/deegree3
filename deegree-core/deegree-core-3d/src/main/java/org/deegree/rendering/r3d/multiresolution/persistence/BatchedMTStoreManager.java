@@ -54,10 +54,10 @@ import javax.xml.stream.XMLStreamReader;
 
 import org.deegree.commons.config.AbstractBasicResourceManager;
 import org.deegree.commons.config.DeegreeWorkspace;
-import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.config.ResourceManager;
 import org.deegree.commons.config.ResourceManagerMetadata;
 import org.deegree.commons.config.ResourceProvider;
+import org.deegree.commons.config.ResourceState;
 import org.deegree.commons.jdbc.ConnectionManager;
 import org.deegree.commons.utils.FileUtils;
 import org.deegree.commons.utils.ProxyUtils;
@@ -246,28 +246,22 @@ public class BatchedMTStoreManager extends AbstractBasicResourceManager {
     }
 
     @Override
-    public void activate( String id )
-                            throws ResourceInitException {
-        // TODO Auto-generated method stub
-
+    public ResourceState<BatchedMTStore> activate( String id ) {
+        throw new UnsupportedOperationException( "Needs implementation." );
     }
 
     @Override
-    public void deactivate( String id )
-                            throws ResourceInitException {
-        // TODO Auto-generated method stub
-
+    public ResourceState<BatchedMTStore> deactivate( String id ) {
+        throw new UnsupportedOperationException( "Needs implementation." );
     }
 
     @Override
     protected ResourceProvider getProvider( File file ) {
-        // TODO Auto-generated method stub
-        return null;
+        throw new UnsupportedOperationException( "Needs implementation." );
     }
 
     @Override
     protected void remove( String id ) {
-        // TODO Auto-generated method stub
-
+        throw new UnsupportedOperationException( "Needs implementation." );
     }
 }

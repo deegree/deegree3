@@ -75,42 +75,55 @@ public interface ResourceManager {
      * 
      * @return the states, never <code>null</code>
      */
-    public ResourceState[] getStates();
+    public ResourceState<?>[] getStates();
 
     /**
      * Returns the state of the resource.
      * 
      * @param id
-     *            resource id, must not be <code>null</code>
-     * @return the state or <code>null</code> (if the resource does not exist)
+     *            resource identifier, must not be <code>null</code>
+     * @return the state or <code>null</code> (if the specified resource does not exist)
      */
-    public ResourceState getState( String id );
+    public ResourceState<?> getState( String id );
 
-    public void activate( String id )
-                            throws ResourceInitException;
+    /**
+     * Activates the resource with the given identifier.
+     * 
+     * @param id
+     *            resource identifier, must not be <code>null</code>
+     * @return resource state after activation (may be unsuccessful), but never <code>null</code>
+     */
+    public ResourceState<?> activate( String id );
 
-    public void deactivate( String id )
-                            throws ResourceInitException;
+    /**
+     * Deactivates the resource with the given identifier.
+     * 
+     * @param id
+     *            resource identifier, must not be <code>null</code>
+     * @return resource state after deactivation (may be unsuccessful), but never <code>null</code>
+     */
+    public ResourceState<?> deactivate( String id );
 
     /**
      * Creates a new {@link Resource} (which is initially in state {@link StateType#deactivated}).
      * 
      * @param id
-     *            resource id, must not be <code>null</code>
+     *            resource identifier, must not be <code>null</code>
      * @param config
-     *            provides the configuration, must not be <code>null</code>
-     * @throws ResourceInitException
-     *             if initialization of the resource fails
-     * @return state information, never <code>null</code>
+     *            provides the configuration file content, must not be <code>null</code>
+     * @return resource state after creation ({@link StateType#deactivated}), never <code>null</code>
+     * @throws IllegalArgumentException
+     *             if a resource with the specified identifier already exists
      */
-    public ResourceState createResource( String id, InputStream config )
-                            throws ResourceInitException;
+    public ResourceState<?> createResource( String id, InputStream config )
+                            throws IllegalArgumentException;
 
     /**
      * Removes the specified resource and deletes the corresponding configuration file.
      * 
      * @param id
-     *            resource id, must not be <code>null</code>
+     *            resource identifier, must not be <code>null</code>
+     * @return resource state after deletion, usually <code>null</code> (if not, deletion failed)
      */
-    public void deleteResource( String id );
+    public ResourceState<?> deleteResource( String id );
 }

@@ -55,10 +55,10 @@ import javax.xml.stream.XMLStreamReader;
 import org.apache.commons.io.filefilter.SuffixFileFilter;
 import org.deegree.commons.config.AbstractBasicResourceManager;
 import org.deegree.commons.config.DeegreeWorkspace;
-import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.config.ResourceManager;
 import org.deegree.commons.config.ResourceManagerMetadata;
 import org.deegree.commons.config.ResourceProvider;
+import org.deegree.commons.config.ResourceState;
 import org.deegree.commons.utils.FileUtils;
 import org.deegree.commons.utils.ProxyUtils;
 import org.deegree.commons.xml.stax.StAXParsingHelper;
@@ -249,28 +249,22 @@ public class CoverageBuilderManager extends AbstractBasicResourceManager impleme
     }
 
     @Override
-    public void activate( String id )
-                            throws ResourceInitException {
-        // TODO Auto-generated method stub
-        
+    public ResourceState activate( String id ) {
+        return null;
     }
 
     @Override
-    public void deactivate( String id )
-                            throws ResourceInitException {
-        // TODO Auto-generated method stub
-        
+    public ResourceState deactivate( String id ) {
+        return null;
     }
 
     @Override
     protected ResourceProvider getProvider( File file ) {
-        // TODO Auto-generated method stub
         return null;
     }
 
     @Override
     protected void remove( String id ) {
         // TODO Auto-generated method stub
-        
     }
 }

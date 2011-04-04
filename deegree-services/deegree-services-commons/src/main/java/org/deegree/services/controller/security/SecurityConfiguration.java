@@ -42,7 +42,6 @@ import java.io.File;
 import java.io.FileFilter;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -61,7 +60,6 @@ import org.deegree.commons.config.ResourceManager;
 import org.deegree.commons.config.ResourceManagerMetadata;
 import org.deegree.commons.config.ResourceProvider;
 import org.deegree.commons.config.ResourceState;
-import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.jdbc.ConnectionManager;
 import org.deegree.commons.utils.ProxyUtils;
 import org.deegree.services.controller.Credentials;
@@ -203,17 +201,13 @@ public class SecurityConfiguration extends AbstractBasicResourceManager implemen
     }
 
     @Override
-    public void activate( String id )
-                            throws ResourceInitException {
-        // TODO Auto-generated method stub
-        
+    public ResourceState activate( String id ) {
+        throw new UnsupportedOperationException( "Needs implementation." );
     }
 
     @Override
-    public void deactivate( String id )
-                            throws ResourceInitException {
-        // TODO Auto-generated method stub
-        
+    public ResourceState deactivate( String id ) {
+        throw new UnsupportedOperationException( "Needs implementation." );
     }
 
     @Override
@@ -225,6 +219,6 @@ public class SecurityConfiguration extends AbstractBasicResourceManager implemen
     @Override
     protected void remove( String id ) {
         // TODO Auto-generated method stub
-        
+
     }
 }

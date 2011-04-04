@@ -36,7 +36,10 @@
 package org.deegree.commons.config;
 
 import static org.apache.commons.io.FileUtils.moveFile;
+import static org.deegree.commons.config.ResourceState.StateType.created;
 import static org.deegree.commons.config.ResourceState.StateType.deactivated;
+import static org.deegree.commons.config.ResourceState.StateType.init_error;
+import static org.deegree.commons.config.ResourceState.StateType.init_ok;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.File;
@@ -44,7 +47,6 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 
@@ -52,7 +54,6 @@ import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamReader;
 
 import org.apache.commons.io.IOUtils;
-import org.deegree.commons.config.ResourceState.StateType;
 import org.deegree.commons.utils.FileUtils;
 import org.deegree.commons.xml.stax.StAXParsingHelper;
 import org.slf4j.Logger;
@@ -70,11 +71,9 @@ public abstract class AbstractResourceManager<T extends Resource> extends Abstra
 
     private static final Logger LOG = getLogger( AbstractResourceManager.class );
 
-    private final HashMap<String, ExtendedResourceProvider<T>> nsToProvider = new HashMap<String, ExtendedResourceProvider<T>>();
+    protected final HashMap<String, ExtendedResourceProvider<T>> nsToProvider = new HashMap<String, ExtendedResourceProvider<T>>();
 
-    private final HashMap<String, T> idToResource = new HashMap<String, T>();
-
-    private String name = this.getClass().getSimpleName();
+    protected String name = this.getClass().getSimpleName();
 
     /**
      * Called when a new {@link Resource} has been successfully initialized.
@@ -92,13 +91,6 @@ public abstract class AbstractResourceManager<T extends Resource> extends Abstra
      */
     protected void remove( T resource ) {
         // nothing to do
-    }
-
-    /**
-     * @return all managed resources
-     */
-    public Collection<T> getAll() {
-        return idToResource.values();
     }
 
     public T create( String id, URL configUrl )
@@ -124,28 +116,36 @@ public abstract class AbstractResourceManager<T extends Resource> extends Abstra
         }
         T resource = provider.create( configUrl );
         add( resource );
-
-        idToResource.put( id, resource );
         return resource;
     }
 
     public T get( String id ) {
-        return idToResource.get( id );
+        ResourceState<T> state = getState( id );
+        if ( state != null ) {
+            return state.getResource();
+        }
+        return null;
     }
 
     public void shutdown() {
-        for ( T t : idToResource.values() ) {
-            remove( t );
-            if ( t != null ) {
-                t.destroy();
+        for ( ResourceState<T> state : getStates() ) {
+            try {
+                T resource = state.getResource();
+                if ( resource != null ) {
+                    remove( resource );
+                    resource.destroy();
+                }
+            } catch ( Throwable t ) {
+                LOG.error( t.getMessage(), t );
             }
         }
-        idToResource.clear();
+        idToState.clear();
         nsToProvider.clear();
     }
 
     public void startup( DeegreeWorkspace workspace )
                             throws ResourceInitException {
+
         this.workspace = workspace;
         ResourceManagerMetadata<T> md = getMetadata();
         if ( md != null ) {
@@ -165,50 +165,14 @@ public abstract class AbstractResourceManager<T extends Resource> extends Abstra
             LOG.info( "--------------------------------------------------------------------------------" );
 
             List<File> files = FileUtils.findFilesForExtensions( dir, true, "xml,ignore" );
-            try {
-                String dirName = dir.getCanonicalPath();
-                for ( File configFile : files ) {
-                    ResourceProvider provider = getProvider( configFile );
-                    if ( provider != null ) {
-                        String fileName = configFile.getCanonicalPath().substring( dirName.length() );
-                        if ( fileName.startsWith( File.separator ) ) {
-                            fileName = fileName.substring( 1 );
-                        }
-                        if ( fileName.endsWith( ".xml" ) ) {
-                            // 4 is the length of ".xml"
-                            String id = fileName.substring( 0, fileName.length() - 4 );
-                            LOG.info( "Setting up {} '{}' from file '{}'...", new Object[] { name, id, fileName } );
-                            try {
-                                T resource = create( id, configFile.toURI().toURL() );
-                                idToState.put( id,
-                                               new ResourceState( id, configFile, provider, StateType.created, null ) );
-                                resource.init( workspace );
-                                idToState.put( id,
-                                               new ResourceState( id, configFile, provider, StateType.init_ok, null ) );
-                                add( resource );
-                            } catch ( ResourceInitException e ) {
-                                idToState.put( id,
-                                               new ResourceState( id, configFile, provider, StateType.init_error, e ) );
-                                LOG.error( "Error creating {}: {}", new Object[] { name, e.getMessage(), e } );
-                                LOG.trace( "Stack trace: ", e );
-                            } catch ( Throwable t ) {
-                                idToState.put( id, new ResourceState( id, configFile, provider, StateType.init_error,
-                                                                      new ResourceInitException( t.getMessage(), t ) ) );
-                                LOG.error( "Error creating {}: {}", new Object[] { name, t.getMessage(), t } );
-                                LOG.trace( "Stack trace: ", t );
-                            }
-                        } else {
-                            // 7 is the length of ".ignore"
-                            String id = fileName.substring( 0, fileName.length() - 7 );
-                            idToState.put( id,
-                                           new ResourceState( id, configFile, provider, StateType.deactivated, null ) );
-                        }
-                    } else {
-                        LOG.info( "No provider for file '" + configFile + "' found. Ignoring." );
-                    }
+
+            for ( File configFile : files ) {
+                try {
+                    ResourceState<T> state = processResourceConfig( configFile );
+                    idToState.put( state.getId(), state );
+                } catch ( Throwable t ) {
+                    LOG.error( t.getMessage(), t );
                 }
-            } catch ( IOException e ) {
-                e.printStackTrace();
             }
             LOG.info( "" );
         }
@@ -237,68 +201,115 @@ public abstract class AbstractResourceManager<T extends Resource> extends Abstra
 
     @Override
     protected void remove( String id ) {
-        idToResource.remove( id );
         idToState.remove( id );
     }
 
-    @Override
-    public void activate( String id )
-                            throws ResourceInitException {
+    /**
+     * Processes the given resource configuration file and returns the resulting resource state.
+     * <p>
+     * This method does not update the resource / state maps.
+     * </p>
+     * 
+     * @param configFile
+     *            configuration file, must not be <code>null</code>
+     * @return resource state, never <code>null</code>
+     * @throws IOException
+     *             if the resource filename is invalid / could not be processed
+     */
+    protected ResourceState<T> processResourceConfig( File configFile )
+                            throws IOException {
 
-        ResourceState state = getState( id );
+        LOG.debug( "Processing file '{}'" + configFile );
+
+        ResourceState<T> state = null;
+
+        String dirName = dir.getCanonicalPath();
+        String fileName = configFile.getCanonicalPath().substring( dirName.length() );
+
+        ResourceProvider provider = getProvider( configFile );
+
+        if ( fileName.startsWith( File.separator ) ) {
+            fileName = fileName.substring( 1 );
+        }
+        if ( fileName.endsWith( ".xml" ) ) {
+            // 4 is the length of ".xml"
+            String id = fileName.substring( 0, fileName.length() - 4 );
+            LOG.info( "Setting up {} '{}' from file '{}'...", new Object[] { name, id, fileName } );
+            if ( provider != null ) {
+                try {
+                    T resource = create( id, configFile.toURI().toURL() );
+                    state = new ResourceState<T>( id, configFile, provider, created, resource, null );
+                    resource.init( workspace );
+                    state = new ResourceState<T>( id, configFile, provider, init_ok, resource, null );
+                    add( resource );
+                } catch ( ResourceInitException e ) {
+                    LOG.error( "Error creating {}: {}", new Object[] { name, e.getMessage(), e } );
+                    LOG.error( "Stack trace: ", e );
+                    state = new ResourceState<T>( id, configFile, provider, init_error, null, e );
+                } catch ( Throwable t ) {
+                    LOG.error( "Error creating {}: {}", new Object[] { name, t.getMessage(), t } );
+                    LOG.error( "Stack trace: ", t );
+                    state = new ResourceState<T>( id, configFile, provider, init_error, null,
+                                                  new ResourceInitException( t.getMessage(), t ) );
+                }
+            } else {
+                String msg = "No suitable resource provider available.";
+                ResourceInitException e = new ResourceInitException( msg );
+                state = new ResourceState<T>( id, configFile, provider, init_error, null, e );
+            }
+        } else {
+            // 7 is the length of ".ignore"
+            String id = fileName.substring( 0, fileName.length() - 7 );
+            state = new ResourceState<T>( id, configFile, provider, deactivated, null, null );
+        }
+        return state;
+    }
+
+    @Override
+    public ResourceState<T> activate( String id ) {
+
+        ResourceState<T> state = getState( id );
         if ( state != null && state.getType() == deactivated ) {
             File oldFile = state.getConfigLocation();
             File newFile = new File( dir, id + ".xml" );
             try {
                 moveFile( oldFile, newFile );
-            } catch ( IOException e ) {
-                e.printStackTrace();
+            } catch ( Throwable t ) {
+                LOG.error( t.getMessage(), t );
                 String msg = "Renaming of file '" + oldFile + "' to '" + newFile + "' failed. Activation of resource '"
                              + id + "' failed.";
-                throw new ResourceInitException( msg );
+                ResourceInitException e = new ResourceInitException( msg, t );
+                state = new ResourceState<T>( id, oldFile, state.getProvider(), init_error, null, e );
             }
-
-            String fileName = newFile.getName();
-            // 4 is the length of ".xml"
-            ResourceProvider provider = getProvider( newFile );
-            LOG.info( "Setting up {} '{}' from file '{}'...", new Object[] { name, id, fileName } );
             try {
-                T resource = create( id, newFile.toURI().toURL() );
-                idToState.put( id, new ResourceState( id, newFile, provider, StateType.created, null ) );
-                resource.init( workspace );
-                idToState.put( id, new ResourceState( id, newFile, provider, StateType.init_ok, null ) );
-                add( resource );
-            } catch ( ResourceInitException e ) {
-                idToState.put( id, new ResourceState( id, newFile, provider, StateType.init_error, e ) );
-                LOG.error( "Error creating {}: {}", new Object[] { name, e.getMessage(), e } );
-                LOG.trace( "Stack trace: ", e );
-            } catch ( Throwable t ) {
-                idToState.put( id, new ResourceState( id, newFile, provider, StateType.init_error,
-                                                      new ResourceInitException( t.getMessage(), t ) ) );
-                LOG.error( "Error creating {}: {}", new Object[] { name, t.getMessage(), t } );
-                LOG.trace( "Stack trace: ", t );
+                state = processResourceConfig( newFile );
+            } catch ( IOException e ) {
+                state = new ResourceState<T>( id, oldFile, state.getProvider(), init_error, null,
+                                              new ResourceInitException( e.getMessage(), e ) );
             }
+            idToState.put( id, state );
         }
+        return state;
     }
 
     @Override
-    public void deactivate( String id )
-                            throws ResourceInitException {
+    public ResourceState<T> deactivate( String id ) {
 
-        ResourceState state = getState( id );
+        ResourceState<T> state = getState( id );
         if ( state != null && state.getType() != deactivated ) {
             File oldFile = state.getConfigLocation();
             File newFile = new File( dir, id + ".ignore" );
             try {
                 moveFile( oldFile, newFile );
-            } catch ( IOException e ) {
-                e.printStackTrace();
+            } catch ( Throwable t ) {
+                LOG.error( t.getMessage(), t );
                 String msg = "Renaming of file '" + oldFile + "' to '" + newFile
                              + "' failed. Deactivation of resource '" + id + "' failed.";
-                throw new ResourceInitException( msg );
+                ResourceInitException e = new ResourceInitException( msg, t );
+                state = new ResourceState<T>( id, oldFile, state.getProvider(), init_error, state.getResource(), e );
             }
 
-            T resource = idToResource.get( id );
+            T resource = state.getResource();
             if ( resource != null ) {
                 remove( resource );
                 try {
@@ -308,7 +319,8 @@ public abstract class AbstractResourceManager<T extends Resource> extends Abstra
                 }
             }
             ResourceProvider provider = getProvider( newFile );
-            idToState.put( id, new ResourceState( id, newFile, provider, StateType.deactivated, null ) );
+            idToState.put( id, new ResourceState<T>( id, newFile, provider, deactivated, null, null ) );
         }
+        return state;
     }
 }

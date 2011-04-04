@@ -42,9 +42,10 @@ import java.util.Map;
 import org.deegree.commons.config.AbstractResourceManager;
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.DefaultResourceManagerMetadata;
+import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.config.ResourceManager;
 import org.deegree.commons.config.ResourceManagerMetadata;
-import org.deegree.commons.config.ResourceInitException;
+import org.deegree.commons.config.ResourceState;
 import org.deegree.commons.tom.ows.CodeType;
 import org.deegree.commons.utils.ProxyUtils;
 import org.deegree.services.wps.provider.ProcessProvider;
@@ -72,10 +73,12 @@ public class ProcessManager extends AbstractResourceManager<ProcessProvider> {
      */
     public Map<CodeType, WPSProcess> getProcesses() {
         Map<CodeType, WPSProcess> processes = new HashMap<CodeType, WPSProcess>();
-        for ( ProcessProvider manager : getAll() ) {
-            Map<CodeType, ? extends WPSProcess> managerProcesses = manager.getProcesses();
-            if ( managerProcesses != null ) {
-                processes.putAll( manager.getProcesses() );
+        for ( ResourceState<ProcessProvider> state : getStates() ) {
+            if ( state.getResource() != null ) {
+                Map<CodeType, ? extends WPSProcess> idToProcess = state.getResource().getProcesses();
+                if ( idToProcess != null ) {
+                    processes.putAll( state.getResource().getProcesses() );
+                }
             }
         }
         return processes;
@@ -90,10 +93,12 @@ public class ProcessManager extends AbstractResourceManager<ProcessProvider> {
      */
     public WPSProcess getProcess( CodeType id ) {
         WPSProcess process = null;
-        for ( ProcessProvider manager : getAll() ) {
-            process = manager.getProcess( id );
-            if ( process != null ) {
-                break;
+        for ( ResourceState<ProcessProvider> state : getStates() ) {
+            if ( state.getResource() != null ) {
+                process = state.getResource().getProcess( id );
+                if ( process != null ) {
+                    break;
+                }
             }
         }
         return process;

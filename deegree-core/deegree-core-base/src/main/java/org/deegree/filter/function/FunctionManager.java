@@ -46,6 +46,7 @@ import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.config.ResourceManager;
 import org.deegree.commons.config.ResourceManagerMetadata;
 import org.deegree.commons.config.ResourceProvider;
+import org.deegree.commons.config.ResourceState;
 import org.deegree.commons.utils.ProxyUtils;
 import org.deegree.cs.persistence.CRSManager;
 import org.slf4j.Logger;
@@ -128,17 +129,13 @@ public class FunctionManager extends AbstractBasicResourceManager {
     }
 
     @Override
-    public void activate( String id )
-                            throws ResourceInitException {
-        // TODO Auto-generated method stub
-
+    public ResourceState activate( String id ) {
+        return null;
     }
 
     @Override
-    public void deactivate( String id )
-                            throws ResourceInitException {
-        // TODO Auto-generated method stub
-
+    public ResourceState deactivate( String id ) {
+        return null;
     }
 
     @Override

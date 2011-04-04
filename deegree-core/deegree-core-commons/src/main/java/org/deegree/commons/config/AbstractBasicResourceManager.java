@@ -36,12 +36,13 @@
 package org.deegree.commons.config;
 
 import static org.deegree.commons.config.ResourceState.StateType.deactivated;
+import static org.deegree.commons.config.ResourceState.StateType.init_error;
 
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -61,11 +62,12 @@ public abstract class AbstractBasicResourceManager implements ResourceManager {
 
     private static Logger LOG = LoggerFactory.getLogger( AbstractBasicResourceManager.class );
 
-    protected Map<String, ResourceState> idToState = new HashMap<String, ResourceState>();
-
     protected DeegreeWorkspace workspace;
 
     protected File dir;
+
+    // keys: resource identifiers, values: resource states
+    protected Map<String, ResourceState> idToState = Collections.synchronizedMap( new HashMap<String, ResourceState>() );
 
     // TODO this should happen in the constructor to ensure that it is always invoked!!!
     protected void init( DeegreeWorkspace workspace, File resourceDir ) {
@@ -89,56 +91,61 @@ public abstract class AbstractBasicResourceManager implements ResourceManager {
 
     @Override
     public ResourceState createResource( String id, InputStream is )
-                            throws ResourceInitException {
+                            throws IllegalArgumentException {
 
-        LOG.info( "Creating new resource with id " + id );
+        LOG.debug( "Creating new resource with id " + id );
+        ResourceState state = null;
         if ( idToState.containsKey( id ) ) {
             String msg = "Cannot create resource '" + id + "' (" + this.getClass().getSimpleName()
                          + "). Resource already exists.";
-            throw new ResourceInitException( msg );
+            throw new IllegalArgumentException( msg );
         }
-        if ( !dir.exists() ) {
-            try {
+
+        File file = new File( dir, id + ".ignore" );
+
+        try {
+            if ( !dir.exists() ) {
                 if ( !dir.mkdirs() ) {
                     String msg = "Unable to create resource directory '" + dir + "'";
-                    throw new ResourceInitException( msg );
+                    state = new ResourceState( id, file, null, init_error, null, new ResourceInitException( msg ) );
                 }
-            } catch ( Throwable t ) {
-                String msg = "Unable to create resource directory '" + dir + "': " + t.getMessage();
-                throw new ResourceInitException( msg );
             }
+        } catch ( Throwable t ) {
+            String msg = "Unable to access / create resource directory '" + dir + "': " + t.getMessage();
+            state = new ResourceState( id, file, null, init_error, null, new ResourceInitException( msg, t ) );
         }
-        File file = new File( dir, id + ".ignore" );
+
         OutputStream os = null;
         try {
             os = new FileOutputStream( file );
             IOUtils.copy( is, os );
-        } catch ( IOException e ) {
+            state = new ResourceState( id, file, getProvider( file ), deactivated, null, null );
+        } catch ( Throwable t ) {
             String msg = "Cannot create config file for resource '" + id + "' (" + this.getClass().getSimpleName()
-                         + "): " + e.getMessage();
-            throw new ResourceInitException( msg );
+                         + "): " + t.getMessage();
+            state = new ResourceState( id, file, null, init_error, null, new ResourceInitException( msg, t ) );
         } finally {
             IOUtils.closeQuietly( is );
             IOUtils.closeQuietly( os );
         }
 
-        ResourceState state = new ResourceState( id, file, getProvider( file ), deactivated, null );
         idToState.put( id, state );
         return state;
     }
 
     @Override
-    public void deleteResource( String id ) {
+    public ResourceState deleteResource( String id ) {
         ResourceState state = idToState.get( id );
         if ( state != null ) {
             remove( id );
-            try {
-                deactivate( id );
-            } catch ( ResourceInitException e ) {
-                // TODO
-                e.printStackTrace();
+            state = deactivate( id );
+            if ( !state.getConfigLocation().delete() ) {
+                ResourceInitException e = new ResourceInitException( "Unable to delete file '"
+                                                                     + state.getConfigLocation() + "'." );
+                state = new ResourceState( id, state.getConfigLocation(), state.getProvider(), init_error,
+                                           state.getResource(), e );
             }
-            state.getConfigLocation().delete();
         }
+        return state;
     }
 }
