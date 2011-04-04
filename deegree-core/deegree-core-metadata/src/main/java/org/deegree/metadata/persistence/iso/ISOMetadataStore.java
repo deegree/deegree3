@@ -135,7 +135,7 @@ public class ISOMetadataStore implements MetadataStore<ISORecord> {
                 inspectorChain.add( new CoupledDataInspector( cri ) );
             }
             if ( sv != null ) {
-                inspectorChain.add( new MetadataSchemaValidationInspector() );
+                inspectorChain.add( new MetadataSchemaValidationInspector<ISORecord>() );
             }
         }
         // hard coded because there is no configuration planned
@@ -312,7 +312,7 @@ public class ISOMetadataStore implements MetadataStore<ISORecord> {
             LOG.debug( msg );
             throw new MetadataStoreException( msg );
         }
-        return new ISOMetadataResultSet( rs, conn, preparedStatement, config.getAnyText() );
+        return new ISOMetadataResultSet( rs, conn, preparedStatement );
     }
 
     @Override
@@ -368,7 +368,7 @@ public class ISOMetadataStore implements MetadataStore<ISORecord> {
             LOG.debug( msg );
             throw new MetadataStoreException( msg );
         }
-        return new ISOMetadataResultSet( rs, conn, stmt, config.getAnyText() );
+        return new ISOMetadataResultSet( rs, conn, stmt );
     }
 
     @Override

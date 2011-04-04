@@ -359,7 +359,7 @@ public class MSSQLMappingsISODC implements MSSQLServerMapping {
     }
 
     @Override
-    public Object getDBValue( Literal literal, PropertyName propName )
+    public Object getDBValue( Literal<?> literal, PropertyName propName )
                             throws FilterEvaluationException {
 
         Object pgValue = null;

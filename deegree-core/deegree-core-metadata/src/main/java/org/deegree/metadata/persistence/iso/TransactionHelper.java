@@ -675,5 +675,4 @@ class TransactionHelper {
             s = s + '|';
         return s;
     }
-
 }

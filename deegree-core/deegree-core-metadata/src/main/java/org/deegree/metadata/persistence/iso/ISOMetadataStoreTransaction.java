@@ -123,8 +123,7 @@ public class ISOMetadataStoreTransaction implements MetadataStoreTransaction {
                 }
                 if ( record != null ) {
                     ISORecord rec = new ISORecord( record.getAsOMElement() );
-                    TransactionHelper generateQP = new TransactionHelper( connectionType,
-                                                                                              anyTextConfig );
+                    TransactionHelper generateQP = new TransactionHelper( connectionType, anyTextConfig );
                     int operatesOnId = generateQP.generateMainDatabaseDataset( conn, rec );
                     generateQP.executeQueryableProperties( false, conn, operatesOnId, rec );
                     identifierList.addAll( Arrays.asList( rec.getIdentifier() ) );
@@ -166,7 +165,7 @@ public class ISOMetadataStoreTransaction implements MetadataStoreTransaction {
             rs = preparedStatement.executeQuery();
 
             // get all metadatasets to update
-            ISOMetadataResultSet isoRs = new ISOMetadataResultSet( rs, conn, preparedStatement, anyTextConfig );
+            ISOMetadataResultSet isoRs = new ISOMetadataResultSet( rs, conn, preparedStatement );
             while ( isoRs.next() ) {
                 ISORecord rec = isoRs.getRecord();
                 LOG.debug( "record to update" + rec );

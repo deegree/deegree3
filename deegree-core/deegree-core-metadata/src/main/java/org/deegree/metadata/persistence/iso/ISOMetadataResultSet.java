@@ -47,7 +47,6 @@ import javax.xml.stream.XMLStreamReader;
 import org.deegree.commons.utils.JDBCUtils;
 import org.deegree.metadata.ISORecord;
 import org.deegree.metadata.persistence.MetadataResultSet;
-import org.deegree.metadata.persistence.iso19115.jaxb.ISOMetadataStoreConfig.AnyText;
 import org.deegree.protocol.csw.MetadataStoreException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -60,23 +59,20 @@ import org.slf4j.LoggerFactory;
  * 
  * @version $Revision$, $Date$
  */
-public class ISOMetadataResultSet implements MetadataResultSet<ISORecord> {
+class ISOMetadataResultSet implements MetadataResultSet<ISORecord> {
 
     private static Logger LOG = LoggerFactory.getLogger( ISOMetadataResultSet.class );
 
     private final ResultSet rs;
 
-    private final AnyText anyText;
-
     private final Connection conn;
 
     private final PreparedStatement stmt;
 
-    public ISOMetadataResultSet( ResultSet rs, Connection conn, PreparedStatement stmt, AnyText anyText ) {
+    ISOMetadataResultSet( ResultSet rs, Connection conn, PreparedStatement stmt ) {
         this.rs = rs;
         this.conn = conn;
         this.stmt = stmt;
-        this.anyText = anyText;
     }
 
     @Override
