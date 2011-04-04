@@ -102,6 +102,6 @@ public class HtmlExternalLink extends UICommand {
     }
 
     public String getOnclick() {
-        return (String) getStateHelper().eval( AdditionalPropertyKeys.onclick, "onlclick" );
+        return (String) getStateHelper().eval( AdditionalPropertyKeys.onclick, null );
     }
 }
