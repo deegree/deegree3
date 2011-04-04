@@ -33,9 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.metadata;
-
-import java.util.Set;
+package org.deegree.metadata.filter;
 
 import javax.xml.namespace.NamespaceContext;
 import javax.xml.namespace.QName;
@@ -54,16 +52,12 @@ import org.deegree.commons.xml.stax.StAXParsingHelper;
  * 
  * @version $Revision$, $Date$
  */
-public class NamedElementFilter implements XMLStreamReader {
+public class WhitespaceElementFilter implements XMLStreamReader {
 
     private final XMLStreamReader input;
 
-    private final Set<QName> removeElements;
-
-    public NamedElementFilter( XMLStreamReader input, Set<QName> removeElements ) {
+    public WhitespaceElementFilter( XMLStreamReader input ) {
         this.input = input;
-        this.removeElements = removeElements;
-
     }
 
     public void close()
@@ -238,8 +232,7 @@ public class NamedElementFilter implements XMLStreamReader {
     public int next()
                             throws XMLStreamException {
         int event = input.next();
-        while ( ( event == XMLStreamConstants.START_ELEMENT || event == XMLStreamConstants.END_ELEMENT )
-                && removeElements.contains( getName() ) ) {
+        if ( event != XMLStreamConstants.START_ELEMENT || event != XMLStreamConstants.END_ELEMENT ) {
             StAXParsingHelper.skipElement( input );
             event = StAXParsingHelper.nextElement( input );
         }
@@ -249,8 +242,7 @@ public class NamedElementFilter implements XMLStreamReader {
     public int nextTag()
                             throws XMLStreamException {
         int event = input.nextTag();
-        while ( ( event == XMLStreamConstants.START_ELEMENT || event == XMLStreamConstants.END_ELEMENT )
-                && removeElements.contains( getName() ) ) {
+        if ( input.isWhiteSpace() ) {
             StAXParsingHelper.skipElement( input );
             event = StAXParsingHelper.nextElement( input );
         }

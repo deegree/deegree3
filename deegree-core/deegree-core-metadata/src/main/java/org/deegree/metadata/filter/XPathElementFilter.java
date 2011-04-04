@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.metadata;
+package org.deegree.metadata.filter;
 
 import java.io.OutputStream;
 import java.io.Writer;
