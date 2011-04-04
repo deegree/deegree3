@@ -61,6 +61,7 @@ import java.util.Map.Entry;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 
+import org.apache.http.HttpEntity;
 import org.apache.http.HttpHost;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.Credentials;
@@ -282,6 +283,7 @@ public class HttpUtils {
     public static <T> T post( Worker<T> worker, String url, Map<String, String> params, Map<String, String> headers )
                             throws IOException {
         DURL u = new DURL( url );
+        LOG.debug( "Sending HTTP POST against {}", url );
         DefaultHttpClient client = enableProxyUsage( new DefaultHttpClient(), u );
         HttpPost post = new HttpPost( url );
         List<BasicNameValuePair> list = new ArrayList<BasicNameValuePair>( params.size() );
@@ -295,7 +297,9 @@ public class HttpUtils {
                 post.addHeader( key, headers.get( key ) );
             }
         }
-        return worker.work( client.execute( post ).getEntity().getContent() );
+        HttpEntity entity = client.execute( post ).getEntity();
+        LOG.debug( "Received response with content type {}", entity.getContentType() );
+        return worker.work( entity.getContent() );
     }
 
     private static void authenticate( DefaultHttpClient client, String user, String pass, DURL u ) {
