@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.metadata.persistence.iso.generating;
+package org.deegree.metadata.persistence.iso;
 
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -55,8 +55,6 @@ import org.deegree.commons.utils.JDBCUtils;
 import org.deegree.cs.CRSCodeType;
 import org.deegree.metadata.ISORecord;
 import org.deegree.metadata.i18n.Messages;
-import org.deegree.metadata.persistence.iso.MSSQLMappingsISODC;
-import org.deegree.metadata.persistence.iso.PostGISMappingsISODC;
 import org.deegree.metadata.persistence.iso.parsing.QueryableProperties;
 import org.deegree.metadata.persistence.iso19115.jaxb.ISOMetadataStoreConfig.AnyText;
 import org.deegree.metadata.persistence.types.BoundingBox;
@@ -76,9 +74,9 @@ import org.slf4j.Logger;
  * 
  * @version $Revision$, $Date$
  */
-public class GenerateQueryableProperties {
+class TransactionHelper {
 
-    private static final Logger LOG = getLogger( GenerateQueryableProperties.class );
+    private static final Logger LOG = getLogger( TransactionHelper.class );
 
     private String idColumn;
 
@@ -102,7 +100,7 @@ public class GenerateQueryableProperties {
 
     private AnyText anyTextConfig;
 
-    public GenerateQueryableProperties( Type dbtype, AnyText anyTextConfig ) {
+    TransactionHelper( Type dbtype, AnyText anyTextConfig ) {
         this.connectionType = dbtype;
         this.anyTextConfig = anyTextConfig;
         if ( connectionType == Type.PostgreSQL ) {
@@ -143,7 +141,7 @@ public class GenerateQueryableProperties {
      * @throws MetadataStoreException
      * @throws XMLStreamException
      */
-    public int generateMainDatabaseDataset( Connection connection, ISORecord rec )
+    int generateMainDatabaseDataset( Connection connection, ISORecord rec )
                             throws MetadataStoreException, XMLStreamException {
 
         int operatesOnId = 0;

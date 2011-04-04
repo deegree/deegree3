@@ -27,7 +27,6 @@ import org.deegree.metadata.i18n.Messages;
 import org.deegree.metadata.persistence.MetadataInspectorException;
 import org.deegree.metadata.persistence.MetadataStoreTransaction;
 import org.deegree.metadata.persistence.inspectors.RecordInspector;
-import org.deegree.metadata.persistence.iso.generating.GenerateQueryableProperties;
 import org.deegree.metadata.persistence.iso19115.jaxb.ISOMetadataStoreConfig.AnyText;
 import org.deegree.metadata.persistence.transaction.DeleteOperation;
 import org.deegree.metadata.persistence.transaction.InsertOperation;
@@ -124,7 +123,7 @@ public class ISOMetadataStoreTransaction implements MetadataStoreTransaction {
                 }
                 if ( record != null ) {
                     ISORecord rec = new ISORecord( record.getAsOMElement() );
-                    GenerateQueryableProperties generateQP = new GenerateQueryableProperties( connectionType,
+                    TransactionHelper generateQP = new TransactionHelper( connectionType,
                                                                                               anyTextConfig );
                     int operatesOnId = generateQP.generateMainDatabaseDataset( conn, rec );
                     generateQP.executeQueryableProperties( false, conn, operatesOnId, rec );
@@ -140,7 +139,7 @@ public class ISOMetadataStoreTransaction implements MetadataStoreTransaction {
     @Override
     public int performUpdate( UpdateOperation update )
                             throws MetadataStoreException, MetadataInspectorException {
-        GenerateQueryableProperties generateQP = new GenerateQueryableProperties( connectionType, anyTextConfig );
+        TransactionHelper generateQP = new TransactionHelper( connectionType, anyTextConfig );
         int result = 0;
 
         if ( update.getRecord() != null && update.getConstraint() == null ) {
