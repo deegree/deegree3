@@ -63,6 +63,7 @@ import javax.xml.stream.XMLStreamException;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpHost;
+import org.apache.http.HttpResponse;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.Credentials;
 import org.apache.http.auth.UsernamePasswordCredentials;
@@ -81,6 +82,7 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.protocol.BasicHttpContext;
+import org.deegree.commons.utils.Pair;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;
 import org.slf4j.Logger;
@@ -300,6 +302,40 @@ public class HttpUtils {
         HttpEntity entity = client.execute( post ).getEntity();
         LOG.debug( "Received response with content type {}", entity.getContentType() );
         return worker.work( entity.getContent() );
+    }
+
+    /**
+     * @param <T>
+     * @param worker
+     * @param url
+     * @param params
+     *            KVP parameter map to set in the post body
+     * @param headers
+     * @return some object from the url and the http response object for complete inspection
+     * @throws IOException
+     */
+    public static <T> Pair<T, HttpResponse> postFullResponse( Worker<T> worker, String url, Map<String, String> params,
+                                                              Map<String, String> headers )
+                            throws IOException {
+        DURL u = new DURL( url );
+        LOG.debug( "Sending HTTP POST against {}", url );
+        DefaultHttpClient client = enableProxyUsage( new DefaultHttpClient(), u );
+        HttpPost post = new HttpPost( url );
+        List<BasicNameValuePair> list = new ArrayList<BasicNameValuePair>( params.size() );
+        for ( Entry<String, String> e : params.entrySet() ) {
+            list.add( new BasicNameValuePair( e.getKey(), e.getValue() ) );
+        }
+
+        post.setEntity( new UrlEncodedFormEntity( list, "UTF-8" ) );
+        if ( headers != null ) {
+            for ( String key : headers.keySet() ) {
+                post.addHeader( key, headers.get( key ) );
+            }
+        }
+        HttpResponse resp = client.execute( post );
+        HttpEntity entity = resp.getEntity();
+        LOG.debug( "Received response with content type {}", entity.getContentType() );
+        return new Pair<T, HttpResponse>( worker.work( entity.getContent() ), resp );
     }
 
     private static void authenticate( DefaultHttpClient client, String user, String pass, DURL u ) {
