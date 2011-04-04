@@ -28,10 +28,10 @@ import org.deegree.metadata.persistence.MetadataStoreTransaction;
 import org.deegree.metadata.persistence.iso.generating.GenerateQueryableProperties;
 import org.deegree.metadata.persistence.iso.parsing.inspectation.RecordInspector;
 import org.deegree.metadata.persistence.iso19115.jaxb.ISOMetadataStoreConfig.AnyText;
-import org.deegree.metadata.persistence.transaction.DeleteTransaction;
-import org.deegree.metadata.persistence.transaction.InsertTransaction;
+import org.deegree.metadata.persistence.transaction.DeleteOperation;
+import org.deegree.metadata.persistence.transaction.InsertOperation;
 import org.deegree.metadata.persistence.transaction.MetadataProperty;
-import org.deegree.metadata.persistence.transaction.UpdateTransaction;
+import org.deegree.metadata.persistence.transaction.UpdateOperation;
 import org.deegree.protocol.csw.CSWConstants.ResultType;
 import org.deegree.protocol.csw.MetadataStoreException;
 import org.slf4j.Logger;
@@ -97,7 +97,7 @@ public class ISOMetadataStoreTransaction implements MetadataStoreTransaction {
     }
 
     @Override
-    public int performDelete( DeleteTransaction delete )
+    public int performDelete( DeleteOperation delete )
                             throws MetadataStoreException {
 
         try {
@@ -112,7 +112,7 @@ public class ISOMetadataStoreTransaction implements MetadataStoreTransaction {
     }
 
     @Override
-    public List<String> performInsert( InsertTransaction insert )
+    public List<String> performInsert( InsertOperation insert )
                             throws MetadataStoreException, MetadataInspectorException {
 
         List<String> identifierList = new ArrayList<String>();
@@ -136,7 +136,7 @@ public class ISOMetadataStoreTransaction implements MetadataStoreTransaction {
     }
 
     @Override
-    public int performUpdate( UpdateTransaction update )
+    public int performUpdate( UpdateOperation update )
                             throws MetadataStoreException, MetadataInspectorException {
         GenerateQueryableProperties generateQP = new GenerateQueryableProperties( connectionType );
         int result = 0;

@@ -48,20 +48,20 @@ import org.deegree.protocol.csw.CSWConstants.TransactionType;
  * 
  * @version $Revision$, $Date$
  */
-public class DeleteTransaction extends TransactionOperation {
+public class DeleteOperation extends TransactionOperation {
 
     private QName typeName;
 
     private Filter constraint;
 
     /**
-     * Creates a new {@link DeleteTransaction} instance.
+     * Creates a new {@link DeleteOperation} instance.
      * 
      * @param handle
      * @param typeName
      * @param constraint
      */
-    public DeleteTransaction( String handle, QName typeName, Filter constraint ) {
+    public DeleteOperation( String handle, QName typeName, Filter constraint ) {
         super( handle );
         this.typeName = typeName;
         this.constraint = constraint;

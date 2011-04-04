@@ -40,33 +40,43 @@ import java.util.List;
 import javax.xml.namespace.QName;
 
 import org.apache.axiom.om.OMElement;
+import org.deegree.filter.Filter;
 import org.deegree.protocol.csw.CSWConstants.TransactionType;
 
 /**
- * Represents a CSW <code>Insert</code> action (part of a Transaction request).
+ * Represents a CSW <code>Update</code> action (part of a Transaction request).
  * 
  * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
  */
-public class InsertTransaction extends TransactionOperation {
+public class UpdateOperation extends TransactionOperation {
 
-    private List<OMElement> element;
+    private OMElement element;
 
     private QName typeName;
 
-    /**
-     * 
-     * @param insertElement
-     * @param typeName
-     * @param handle
-     */
-    public InsertTransaction( List<OMElement> insertElement, QName typeName, String handle ) {
-        super( handle );
-        this.element = insertElement;
-        this.typeName = typeName;
+    private Filter constraint;
 
+    private List<MetadataProperty> recordProperty;
+
+    /**
+     * Creates a new {@link UpdateOperation} instance.
+     * 
+     * @param handle
+     * @param element
+     * @param typeName
+     * @param constraint
+     * @param recordProperty
+     */
+    public UpdateOperation( String handle, OMElement element, QName typeName, Filter constraint,
+                              List<MetadataProperty> recordProperty ) {
+        super( handle );
+        this.element = element;
+        this.typeName = typeName;
+        this.constraint = constraint;
+        this.recordProperty = recordProperty;
     }
 
     /*
@@ -76,12 +86,27 @@ public class InsertTransaction extends TransactionOperation {
      */
     @Override
     public TransactionType getType() {
-
-        return TransactionType.INSERT;
+        return TransactionType.UPDATE;
     }
 
-    // @Override
-    public List<OMElement> getElements() {
+    /**
+     * @return the constraint
+     */
+    public Filter getConstraint() {
+        return constraint;
+    }
+
+    /**
+     * @return the recordProperty
+     */
+    public List<MetadataProperty> getRecordProperty() {
+        return recordProperty;
+    }
+
+    /**
+     * @return the element
+     */
+    public OMElement getElement() {
         return element;
     }
 

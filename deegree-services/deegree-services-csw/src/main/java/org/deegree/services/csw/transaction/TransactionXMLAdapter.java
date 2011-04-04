@@ -55,11 +55,11 @@ import org.deegree.filter.Filter;
 import org.deegree.filter.expression.PropertyName;
 import org.deegree.filter.xml.Filter100XMLDecoder;
 import org.deegree.filter.xml.Filter110XMLDecoder;
-import org.deegree.metadata.persistence.transaction.DeleteTransaction;
-import org.deegree.metadata.persistence.transaction.InsertTransaction;
+import org.deegree.metadata.persistence.transaction.DeleteOperation;
+import org.deegree.metadata.persistence.transaction.InsertOperation;
 import org.deegree.metadata.persistence.transaction.MetadataProperty;
 import org.deegree.metadata.persistence.transaction.TransactionOperation;
-import org.deegree.metadata.persistence.transaction.UpdateTransaction;
+import org.deegree.metadata.persistence.transaction.UpdateOperation;
 import org.deegree.protocol.csw.CSWConstants.TransactionType;
 import org.deegree.protocol.csw.MetadataStoreException;
 import org.deegree.protocol.i18n.Messages;
@@ -145,7 +145,7 @@ public class TransactionXMLAdapter extends AbstractCSWRequestXMLAdapter {
                 typeName = getNodeAsQName( transChildElement, new XPath( "@typeName", nsContext ), null );
                 handle = getNodeAsString( transChildElement, new XPath( "@handle", nsContext ), null );
 
-                operations.add( new InsertTransaction( transChildElementInsert, typeName, handle ) );
+                operations.add( new InsertOperation( transChildElementInsert, typeName, handle ) );
                 break;
 
             case DELETE:
@@ -193,7 +193,7 @@ public class TransactionXMLAdapter extends AbstractCSWRequestXMLAdapter {
                     throw new XMLParsingException( this, filterEl, e.getMessage() );
                 }
 
-                operations.add( new DeleteTransaction( handle, typeName, constraintDelete ) );
+                operations.add( new DeleteOperation( handle, typeName, constraintDelete ) );
                 break;
 
             case UPDATE:
@@ -245,7 +245,7 @@ public class TransactionXMLAdapter extends AbstractCSWRequestXMLAdapter {
                         throw new InvalidParameterValueException( msg );
                     }
                 }
-                operations.add( new UpdateTransaction( handle, recordToUpdate, typeName,
+                operations.add( new UpdateOperation( handle, recordToUpdate, typeName,
                                                        parseConstraint( constraintElement ), recordProperties ) );
                 break;
 

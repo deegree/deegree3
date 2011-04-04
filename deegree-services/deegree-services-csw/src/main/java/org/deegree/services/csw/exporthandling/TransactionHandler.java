@@ -53,10 +53,10 @@ import org.deegree.metadata.persistence.MetadataInspectorException;
 import org.deegree.metadata.persistence.MetadataResultSet;
 import org.deegree.metadata.persistence.MetadataStore;
 import org.deegree.metadata.persistence.MetadataStoreTransaction;
-import org.deegree.metadata.persistence.transaction.DeleteTransaction;
-import org.deegree.metadata.persistence.transaction.InsertTransaction;
+import org.deegree.metadata.persistence.transaction.DeleteOperation;
+import org.deegree.metadata.persistence.transaction.InsertOperation;
 import org.deegree.metadata.persistence.transaction.TransactionOperation;
-import org.deegree.metadata.persistence.transaction.UpdateTransaction;
+import org.deegree.metadata.persistence.transaction.UpdateOperation;
 import org.deegree.protocol.csw.MetadataStoreException;
 import org.deegree.protocol.csw.CSWConstants.ReturnableElement;
 import org.deegree.services.controller.ows.OWSException;
@@ -189,16 +189,16 @@ public class TransactionHandler {
                 currentHandle = transact.getHandle();
                 switch ( transact.getType() ) {
                 case INSERT:
-                    List<String> ids = doInsert( ta, (InsertTransaction) transact );
+                    List<String> ids = doInsert( ta, (InsertOperation) transact );
                     insertHandles.add( transact.getHandle() );
                     insertIds.add( ids );
                     insertCount += ids.size();
                     break;
                 case UPDATE:
-                    updateCount = doUpdate( ta, (UpdateTransaction) transact );
+                    updateCount = doUpdate( ta, (UpdateOperation) transact );
                     break;
                 case DELETE:
-                    deleteCount = doDelete( ta, (DeleteTransaction) transact );
+                    deleteCount = doDelete( ta, (DeleteOperation) transact );
                     break;
                 }
             }
@@ -254,21 +254,21 @@ public class TransactionHandler {
 
     }
 
-    private int doDelete( MetadataStoreTransaction ta, DeleteTransaction delete )
+    private int doDelete( MetadataStoreTransaction ta, DeleteOperation delete )
                             throws MetadataStoreException {
         int i = ta.performDelete( delete );
         LOG.info( "Delete done!" );
         return i;
     }
 
-    private int doUpdate( MetadataStoreTransaction ta, UpdateTransaction update )
+    private int doUpdate( MetadataStoreTransaction ta, UpdateOperation update )
                             throws MetadataStoreException, MetadataInspectorException {
         int i = ta.performUpdate( update );
         LOG.info( "Update done!" );
         return i;
     }
 
-    private List<String> doInsert( MetadataStoreTransaction ta, InsertTransaction insert )
+    private List<String> doInsert( MetadataStoreTransaction ta, InsertOperation insert )
                             throws MetadataStoreException, OWSException, MetadataInspectorException {
         // TODO the first element determines the metadataStore
         // String uri = insert.getElements().get( 0 ).getNamespace().getNamespaceURI();

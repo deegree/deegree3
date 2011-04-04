@@ -82,7 +82,7 @@ import org.deegree.metadata.persistence.iso19115.jaxb.ISOMetadataStoreConfig;
 import org.deegree.metadata.persistence.iso19115.jaxb.ISOMetadataStoreConfig.Inspectors;
 import org.deegree.metadata.persistence.iso19115.jaxb.InspireInspector;
 import org.deegree.metadata.persistence.iso19115.jaxb.SchemaValidator;
-import org.deegree.metadata.persistence.transaction.InsertTransaction;
+import org.deegree.metadata.persistence.transaction.InsertOperation;
 import org.deegree.protocol.csw.CSWConstants.ResultType;
 import org.deegree.protocol.csw.MetadataStoreException;
 import org.slf4j.Logger;
@@ -194,7 +194,7 @@ public class ISOMetadataStore implements MetadataStore {
             ISORecord rec = new ISORecord( inStream, null );
             om.add( rec.getAsOMElement() );
             MetadataStoreTransaction ta = acquireTransaction();
-            InsertTransaction insert = new InsertTransaction( om, rec.getAsOMElement().getQName(), "insertMetametadata" );
+            InsertOperation insert = new InsertOperation( om, rec.getAsOMElement().getQName(), "insertMetametadata" );
             ta.performInsert( insert );
             ta.commit();
         } catch ( XMLStreamException e ) {

@@ -53,7 +53,7 @@ import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.metadata.persistence.MetadataInspectorException;
 import org.deegree.metadata.persistence.MetadataStore;
 import org.deegree.metadata.persistence.MetadataStoreTransaction;
-import org.deegree.metadata.persistence.transaction.InsertTransaction;
+import org.deegree.metadata.persistence.transaction.InsertOperation;
 import org.deegree.protocol.csw.MetadataStoreException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -125,14 +125,14 @@ public class MetadataImporter implements Serializable {
             File[] fileArray = folder.listFiles();
 
             List<OMElement> records = null;
-            InsertTransaction insert = null;
+            InsertOperation insert = null;
             for ( File file : fileArray ) {
                 this.file = file;
                 ta = ms.acquireTransaction();
                 records = new ArrayList<OMElement>();
                 OMElement record = new XMLAdapter( file ).getRootElement();
                 records.add( record );
-                insert = new InsertTransaction( records, records.get( 0 ).getQName(), "insert" );
+                insert = new InsertOperation( records, records.get( 0 ).getQName(), "insert" );
                 try {
                     ta.performInsert( insert );
                     ta.commit();

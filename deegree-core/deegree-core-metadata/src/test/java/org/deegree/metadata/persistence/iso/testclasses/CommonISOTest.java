@@ -80,9 +80,9 @@ import org.deegree.metadata.persistence.iso.ISOMetadataStoreProvider;
 import org.deegree.metadata.persistence.iso.helper.AbstractISOTest;
 import org.deegree.metadata.persistence.iso.helper.TstConstants;
 import org.deegree.metadata.persistence.iso.helper.TstUtils;
-import org.deegree.metadata.persistence.transaction.DeleteTransaction;
+import org.deegree.metadata.persistence.transaction.DeleteOperation;
 import org.deegree.metadata.persistence.transaction.MetadataProperty;
-import org.deegree.metadata.persistence.transaction.UpdateTransaction;
+import org.deegree.metadata.persistence.transaction.UpdateOperation;
 import org.deegree.protocol.csw.CSWConstants.ReturnableElement;
 import org.deegree.protocol.csw.MetadataStoreException;
 import org.jaxen.JaxenException;
@@ -260,7 +260,7 @@ public class CommonISOTest extends AbstractISOTest {
         xmlStreamFilter.close();
 
         MetadataStoreTransaction taDel = store.acquireTransaction();
-        DeleteTransaction delete = new DeleteTransaction( "delete", null, constraintDelete );
+        DeleteOperation delete = new DeleteOperation( "delete", null, constraintDelete );
         taDel.performDelete( delete );
         taDel.commit();
         // test query
@@ -479,7 +479,7 @@ public class CommonISOTest extends AbstractISOTest {
 
         // update!
         MetadataStoreTransaction mst = store.acquireTransaction();
-        UpdateTransaction update = new UpdateTransaction( null, null, null, constraint, recordProperties );
+        UpdateOperation update = new UpdateOperation( null, null, null, constraint, recordProperties );
         mst.performUpdate( update );
         mst.commit();
 
@@ -524,7 +524,7 @@ public class CommonISOTest extends AbstractISOTest {
 
         // update!
         MetadataStoreTransaction mst = store.acquireTransaction();
-        UpdateTransaction update = new UpdateTransaction( null, null, null, constraint, recordProperties );
+        UpdateOperation update = new UpdateOperation( null, null, null, constraint, recordProperties );
         mst.performUpdate( update );
         mst.commit();
 
@@ -573,7 +573,7 @@ public class CommonISOTest extends AbstractISOTest {
 
         // update!
         MetadataStoreTransaction mst = store.acquireTransaction();
-        UpdateTransaction update = new UpdateTransaction( null, null, null, constraint, recordProperties );
+        UpdateOperation update = new UpdateOperation( null, null, null, constraint, recordProperties );
         mst.performUpdate( update );
         mst.commit();
 
@@ -635,7 +635,7 @@ public class CommonISOTest extends AbstractISOTest {
 
         // update!
         MetadataStoreTransaction mst = store.acquireTransaction();
-        UpdateTransaction update = new UpdateTransaction( null, null, null, constraint, recordProperties );
+        UpdateOperation update = new UpdateOperation( null, null, null, constraint, recordProperties );
         mst.performUpdate( update );
         mst.commit();
 
@@ -674,7 +674,7 @@ public class CommonISOTest extends AbstractISOTest {
 
         // update!
         MetadataStoreTransaction mst = store.acquireTransaction();
-        UpdateTransaction update = new UpdateTransaction( null, value, null, null, null );
+        UpdateOperation update = new UpdateOperation( null, value, null, null, null );
         int noOfUp = mst.performUpdate( update );
         assertEquals( 1, noOfUp );
         mst.commit();
@@ -725,7 +725,7 @@ public class CommonISOTest extends AbstractISOTest {
 
         // update!
         MetadataStoreTransaction mst = store.acquireTransaction();
-        UpdateTransaction update = new UpdateTransaction( null, value, null, constraint, null );
+        UpdateOperation update = new UpdateOperation( null, value, null, constraint, null );
         int noOfUp = mst.performUpdate( update );
         assertEquals( 1, noOfUp );
         mst.commit();
@@ -774,7 +774,7 @@ public class CommonISOTest extends AbstractISOTest {
 
         // update!
         MetadataStoreTransaction mst = store.acquireTransaction();
-        UpdateTransaction update = new UpdateTransaction( null, value, null, constraint, null );
+        UpdateOperation update = new UpdateOperation( null, value, null, constraint, null );
         int noOfUp = mst.performUpdate( update );
         assertEquals( 0, noOfUp );
         mst.commit();

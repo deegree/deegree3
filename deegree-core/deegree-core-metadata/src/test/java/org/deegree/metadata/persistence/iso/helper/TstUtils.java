@@ -62,7 +62,7 @@ import org.deegree.metadata.persistence.MetadataInspectorException;
 import org.deegree.metadata.persistence.MetadataResultSet;
 import org.deegree.metadata.persistence.MetadataStoreTransaction;
 import org.deegree.metadata.persistence.iso.ISOMetadataStore;
-import org.deegree.metadata.persistence.transaction.InsertTransaction;
+import org.deegree.metadata.persistence.transaction.InsertOperation;
 import org.deegree.protocol.csw.MetadataStoreException;
 import org.deegree.protocol.csw.CSWConstants.ReturnableElement;
 import org.slf4j.Logger;
@@ -84,7 +84,7 @@ public class TstUtils {
                             throws MetadataStoreException, MetadataInspectorException {
 
         List<OMElement> records = null;
-        InsertTransaction insert = null;
+        InsertOperation insert = null;
         MetadataStoreTransaction ta = null;
 
         List<String> ids = new ArrayList<String>();
@@ -100,7 +100,7 @@ public class TstUtils {
             records.add( record );
             try {
                 if ( countInsert > 0 ) {
-                    insert = new InsertTransaction( records, records.get( 0 ).getQName(), "insert" );
+                    insert = new InsertOperation( records, records.get( 0 ).getQName(), "insert" );
                     ids.addAll( ta.performInsert( insert ) );
                     ta.commit();
                 }

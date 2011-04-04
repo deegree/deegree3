@@ -37,9 +37,9 @@ package org.deegree.metadata.persistence;
 
 import java.util.List;
 
-import org.deegree.metadata.persistence.transaction.DeleteTransaction;
-import org.deegree.metadata.persistence.transaction.InsertTransaction;
-import org.deegree.metadata.persistence.transaction.UpdateTransaction;
+import org.deegree.metadata.persistence.transaction.DeleteOperation;
+import org.deegree.metadata.persistence.transaction.InsertOperation;
+import org.deegree.metadata.persistence.transaction.UpdateOperation;
 import org.deegree.protocol.csw.MetadataStoreException;
 
 /**
@@ -78,7 +78,7 @@ public interface MetadataStoreTransaction {
                             throws MetadataStoreException;
 
     /**
-     * Performs the given {@link InsertTransaction}.
+     * Performs the given {@link InsertOperation}.
      * 
      * @param insert
      *            operation to be performed, must not be <code>null</code>
@@ -86,11 +86,11 @@ public interface MetadataStoreTransaction {
      * @throws MetadataStoreException
      *             if the insertion failed
      */
-    public List<String> performInsert( InsertTransaction insert )
+    public List<String> performInsert( InsertOperation insert )
                             throws MetadataStoreException, MetadataInspectorException;
 
     /**
-     * Performs the given {@link DeleteTransaction}.
+     * Performs the given {@link DeleteOperation}.
      * 
      * @param delete
      *            operation to be performed, must not be <code>null</code>
@@ -98,11 +98,11 @@ public interface MetadataStoreTransaction {
      * @throws MetadataStoreException
      *             if the deletion failed
      */
-    public int performDelete( DeleteTransaction delete )
+    public int performDelete( DeleteOperation delete )
                             throws MetadataStoreException;
 
     /**
-     * Performs the given {@link UpdateTransaction}.
+     * Performs the given {@link UpdateOperation}.
      * 
      * @param update
      *            operation to be performed, must not be <code>null</code>
@@ -110,6 +110,6 @@ public interface MetadataStoreTransaction {
      * @throws MetadataStoreException
      *             if the update failed
      */
-    public int performUpdate( UpdateTransaction update )
+    public int performUpdate( UpdateOperation update )
                             throws MetadataStoreException, MetadataInspectorException;
 }
